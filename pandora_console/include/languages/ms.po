@@ -1,22 +1,21 @@
-# Romanian translation for pandora-fms
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# Malay translation for pandora-fms
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the pandora-fms package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: pandora-fms\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-04-22 18:49+0200\n"
-"PO-Revision-Date: 2010-09-13 12:55+0000\n"
-"Last-Translator: Miguel de Dios <tres.14159@gmail.com>\n"
-"Language-Team: Romanian <ro@li.org>\n"
+"PO-Revision-Date: 2012-01-27 04:32+0000\n"
+"Last-Translator: HoodLai <hoodlai@gmail.com>\n"
+"Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2013-05-14 08:57+0000\n"
 "X-Generator: Launchpad (build 16617)\n"
-"Language: ro\n"
 
 #: ../../operation/search_main.php:33
 #: ../../operation/agentes/networkmap.php:318
@@ -70,7 +69,7 @@ msgstr ""
 #: ../../extensions/agents_alerts.php:168
 #: ../../extensions/agents_modules.php:173
 msgid "Agents"
-msgstr "Agenţi"
+msgstr ""
 
 #: ../../operation/search_main.php:34 ../../operation/search_main.php:42
 #: ../../operation/search_main.php:50 ../../operation/search_main.php:58
@@ -134,7 +133,7 @@ msgstr ""
 #: ../../extensions/snmp_explorer.php:375
 #: ../../extensions/agents_modules.php:173
 msgid "Modules"
-msgstr "Module"
+msgstr ""
 
 #: ../../operation/search_main.php:49
 #: ../../operation/agentes/ver_agente.php:712
@@ -204,7 +203,7 @@ msgstr "Module"
 #: ../../godmode/alerts/alert_list.php:294
 #: ../../extensions/agents_alerts.php:234
 msgid "Alerts"
-msgstr "Alarme"
+msgstr ""
 
 #: ../../operation/search_main.php:57 ../../operation/search_results.php:76
 #: ../../enterprise/meta/advanced/synchronizing.user.php:528
@@ -254,7 +253,7 @@ msgstr ""
 #: ../../operation/visual_console/public_console.php:93
 #: ../../operation/visual_console/render_view.php:147
 msgid "Autorefresh time"
-msgstr "Timp de autoreîmprospătare"
+msgstr ""
 
 #: ../../operation/visual_console/public_console.php:101
 #: ../../operation/visual_console/render_view.php:155
@@ -267,12 +266,12 @@ msgstr "Timp de autoreîmprospătare"
 #: ../../extensions/agents_alerts.php:78
 #: ../../extensions/agents_modules.php:86
 msgid "Refresh"
-msgstr "Reîmprospătare"
+msgstr ""
 
 #: ../../operation/visual_console/public_console.php:142
 #: ../../operation/visual_console/render_view.php:205
 msgid "Until refresh"
-msgstr "Până la reîmprospătare"
+msgstr ""
 
 #: ../../operation/visual_console/render_view.php:83
 #: ../../godmode/reporting/visual_console_builder.php:413
@@ -332,7 +331,7 @@ msgstr ""
 #: ../../godmode/agentes/modificar_agente.php:488
 #: ../../godmode/agentes/configurar_agente.php:240
 msgid "View"
-msgstr "Vizualizare"
+msgstr ""
 
 #: ../../operation/visual_console/render_view.php:109
 #: ../../operation/gis_maps/render_view.php:91
@@ -363,7 +362,7 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.php:443
 #: ../../extensions/resource_exportation.php:360
 msgid "Visual console"
-msgstr "Consolă vizuală"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:106
 #: ../../operation/netflow/nf_live_view.php:115
@@ -439,7 +438,7 @@ msgstr ""
 #: ../../extensions/users_connected.php:79
 #: ../../extensions/insert_data.php:169
 msgid "Date"
-msgstr "Data"
+msgstr "Tarikh"
 
 #: ../../operation/netflow/nf_live_view.php:183
 #: ../../operation/servers/recon_view.php:87
@@ -482,7 +481,7 @@ msgstr "Data"
 #: ../../godmode/massive/massive_edit_agents.php:251
 #: ../../godmode/massive/massive_edit_modules.php:352
 msgid "Interval"
-msgstr "Interval"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:186
 #: ../../operation/integria_incidents/incident.list.php:97
@@ -557,7 +556,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_templates.php:233
 #: ../../godmode/alerts/alert_templates.php:273
 msgid "Type"
-msgstr "Tip:"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:195
 #: ../../godmode/netflow/nf_item_list.php:148
@@ -671,7 +670,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_commands.php:256
 #: ../../godmode/alerts/alert_actions.php:332
 msgid "Name"
-msgstr "Nume"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:258
 #: ../../operation/users/user_edit.php:359
@@ -820,7 +819,7 @@ msgstr "Nume"
 #: ../../extensions/agents_alerts.php:73
 #: ../../extensions/agents_modules.php:81
 msgid "Group"
-msgstr "Grup"
+msgstr "Kumpulan"
 
 #: ../../operation/netflow/nf_live_view.php:269
 #: ../../operation/agentes/networkmap_list.php:77
@@ -849,7 +848,7 @@ msgstr "Grup"
 #: ../../godmode/snmpconsole/snmp_filters.php:129
 #: ../../godmode/tag/tag.php:128
 msgid "Filter"
-msgstr "Filtru"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:271
 #: ../../operation/agentes/group_view.php:97
@@ -873,7 +872,7 @@ msgstr "Filtru"
 #: ../../mobile/operation/groups.php:104 ../../mobile/operation/agents.php:33
 #: ../../godmode/netflow/nf_edit_form.php:193
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:272
 #: ../../enterprise/meta/general/main_header.php:149
@@ -1126,7 +1125,7 @@ msgstr ""
 #: ../../extensions/snmp_explorer.php:270
 #: ../../extensions/snmp_explorer.php:349
 msgid "None"
-msgstr "Niciunul"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../include/functions_netflow.php:1338
@@ -1292,7 +1291,7 @@ msgstr ""
 #: ../../extensions/module_groups.php:41
 #: ../../extensions/agents_alerts.php:319 ../../extensions/insert_data.php:150
 msgid "Agent"
-msgstr "Agent"
+msgstr ""
 
 #. ////////////////
 #. 
@@ -1415,7 +1414,7 @@ msgstr "Agent"
 #: ../../extensions/module_groups.php:43
 #: ../../extensions/agents_alerts.php:260 ../../extensions/insert_data.php:161
 msgid "Module"
-msgstr "Modul"
+msgstr ""
 
 #: ../../operation/search_alerts.php:45
 #: ../../operation/servers/recon_view.php:96
@@ -1433,7 +1432,7 @@ msgstr "Modul"
 #: ../../godmode/alerts/alert_list.builder.php:79
 #: ../../extensions/agents_alerts.php:319
 msgid "Template"
-msgstr "Șablon"
+msgstr ""
 
 #: ../../operation/search_alerts.php:48 ../../operation/extensions.php:49
 #: ../../operation/agentes/alerts_status.php:296
@@ -1488,7 +1487,7 @@ msgstr "Șablon"
 #: ../../godmode/events/event_filter.php:101
 #: ../../extensions/agents_alerts.php:261
 msgid "Action"
-msgstr "Acţiune"
+msgstr "Tindakan"
 
 #: ../../operation/servers/recon_view.php:28
 msgid "Recon View"
@@ -1514,7 +1513,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:169
 #: ../../godmode/servers/manage_recontask.php:227
 msgid "Network"
-msgstr "Rețea"
+msgstr ""
 
 #: ../../operation/servers/recon_view.php:93
 #: ../../operation/agentes/alerts_status.php:298
@@ -1613,7 +1612,7 @@ msgstr "Rețea"
 #: ../../godmode/alerts/alert_list.list.php:367
 #: ../../extensions/net_tools.php:163 ../../extensions/agents_alerts.php:263
 msgid "Status"
-msgstr "Stare"
+msgstr ""
 
 #: ../../operation/servers/recon_view.php:99
 #: ../../operation/servers/recon_view.php:153
@@ -1626,7 +1625,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident_detail.php:235
 #: ../../operation/incidents/incident_detail.php:255
 msgid "Updated at"
-msgstr "Actualizat la"
+msgstr ""
 
 #: ../../operation/servers/recon_view.php:105
 #: ../../operation/agentes/networkmap_list.php:113
@@ -1704,11 +1703,11 @@ msgstr ""
 
 #: ../../operation/servers/recon_view.php:132
 msgid "Done"
-msgstr "Terminat"
+msgstr ""
 
 #: ../../operation/servers/recon_view.php:135
 msgid "Pending"
-msgstr "În așteptare"
+msgstr ""
 
 #: ../../operation/servers/recon_view.php:140
 #: ../../godmode/servers/manage_recontask.php:249
@@ -1722,7 +1721,7 @@ msgstr ""
 #: ../../operation/users/user_edit.php:82
 #: ../../godmode/users/configure_user.php:88
 msgid "User detail editor"
-msgstr "Editor detalii utilizator"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:138
 #: ../../operation/users/user_edit.php:145
@@ -1761,7 +1760,7 @@ msgstr ""
 #: ../../godmode/users/user_list.php:188
 #: ../../godmode/users/configure_user.php:384
 msgid "User ID"
-msgstr "ID utilizator"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:184
 #: ../../godmode/users/configure_user.php:388
@@ -1786,7 +1785,7 @@ msgstr ""
 #: ../../operation/users/user_edit.php:229
 #: ../../godmode/users/configure_user.php:400
 msgid "Password confirmation"
-msgstr "Confirmare parolă"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:243
 msgid ""
@@ -1805,7 +1804,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:461
 #: ../../godmode/events/event_edit_filter.php:215
 msgid "Block size for pagination"
-msgstr "Dimensiunea blocului pentru paginare"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:252
 msgid "If checkbox is clicked then block size global configuration is used"
@@ -1925,7 +1924,7 @@ msgstr ""
 #: ../../godmode/massive/massive_edit_modules.php:412
 #: ../../godmode/massive/massive_edit_modules.php:435
 msgid "Yes"
-msgstr "Da"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:269
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:76
@@ -1991,7 +1990,7 @@ msgstr "Da"
 #: ../../godmode/massive/massive_edit_modules.php:412
 #: ../../godmode/massive/massive_edit_modules.php:435
 msgid "No"
-msgstr "Nu"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:288
 msgid "Shortcut bar"
@@ -2055,7 +2054,7 @@ msgstr ""
 #: ../../operation/users/user_edit.php:437
 #: ../../operation/agentes/alerts_status.php:106 ../../operation/menu.php:51
 msgid "Alert detail"
-msgstr "Detalii alarmă"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:304
 #: ../../operation/users/user_edit.php:442
@@ -2077,7 +2076,7 @@ msgstr "Detalii alarmă"
 #: ../../godmode/groups/configure_group.php:145
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Other"
-msgstr "Altceva"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:319 ../../general/logon_ok.php:99
 #: ../../enterprise/meta/event/event_view.php:1153
@@ -2087,7 +2086,7 @@ msgstr "Altceva"
 #: ../../godmode/users/configure_user.php:428
 #: ../../godmode/admin_access_logs.php:191
 msgid "Comments"
-msgstr "Comentarii"
+msgstr "Komen"
 
 #: ../../operation/users/user_edit.php:340
 msgid ""
@@ -2209,7 +2208,7 @@ msgstr ""
 #: ../../extensions/update_manager/settings.php:114
 #: ../../extensions/update_manager/main.php:143
 msgid "Update"
-msgstr "Actualizare"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:349
 #: ../../godmode/users/configure_user.php:539
@@ -2262,7 +2261,7 @@ msgstr ""
 #: ../../operation/users/webchat.php:87
 #: ../../operation/messages/message_edit.php:193
 msgid "Send message"
-msgstr "Trimitere mesaj"
+msgstr ""
 
 #: ../../operation/users/webchat.php:155
 msgid "Connection established...get last 24h messages..."
@@ -2283,19 +2282,19 @@ msgstr ""
 #: ../../operation/extensions.php:27 ../../operation/menu.php:353
 #: ../../godmode/extensions.php:27 ../../godmode/menu.php:250
 msgid "Extensions"
-msgstr "Extensii"
+msgstr ""
 
 #: ../../operation/extensions.php:27 ../../godmode/extensions.php:27
 msgid "Defined extensions"
-msgstr "Extensii definite"
+msgstr ""
 
 #: ../../operation/extensions.php:30 ../../godmode/extensions.php:32
 msgid "There are no extensions defined"
-msgstr "Nu sunt definite extensii"
+msgstr ""
 
 #: ../../operation/extensions.php:48 ../../godmode/extensions.php:144
 msgid "Version"
-msgstr "Versiune"
+msgstr ""
 
 #: ../../operation/extensions.php:64 ../../include/functions_events.php:1656
 #: ../../extensions/net_tools.php:74
@@ -2329,7 +2328,7 @@ msgstr ""
 #: ../../godmode/users/user_list.php:194
 #: ../../godmode/agentes/planned_downtime.editor.php:525
 msgid "Last contact"
-msgstr "Ultimul contact"
+msgstr ""
 
 #: ../../operation/gis_maps/ajax.php:145
 msgid "Num reports"
@@ -2354,7 +2353,7 @@ msgstr ""
 #: ../../godmode/servers/modificar_server.php:45
 #: ../../godmode/agentes/agent_manager.php:178
 msgid "IP Address"
-msgstr "Adresa IP"
+msgstr ""
 
 #: ../../operation/gis_maps/ajax.php:173
 #: ../../operation/agentes/estado_agente.php:385 ../../operation/tree.php:502
@@ -2374,7 +2373,7 @@ msgstr "Adresa IP"
 #: ../../godmode/agentes/agent_manager.php:210
 #: ../../godmode/massive/massive_edit_agents.php:255
 msgid "OS"
-msgstr "SO"
+msgstr ""
 
 #: ../../operation/gis_maps/ajax.php:185
 #: ../../operation/reporting/graph_viewer.php:240
@@ -2521,14 +2520,14 @@ msgstr "SO"
 #: ../../godmode/alerts/configure_alert_template.php:629
 #: ../../godmode/alerts/alert_commands.php:258
 msgid "Description"
-msgstr "Descriere"
+msgstr ""
 
 #: ../../operation/gis_maps/ajax.php:188
 #: ../../operation/agentes/estado_generalagente.php:120
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1106
 #: ../../include/functions_treeview.php:267
 msgid "Agent Version"
-msgstr "Versiune Agent"
+msgstr ""
 
 #: ../../operation/gis_maps/ajax.php:191
 #: ../../operation/agentes/estado_generalagente.php:162
@@ -2539,7 +2538,7 @@ msgstr "Versiune Agent"
 #: ../../godmode/snmpconsole/snmp_alert.php:496
 #: ../../extensions/update_manager.php:60
 msgid "Never"
-msgstr "Niciodată"
+msgstr ""
 
 #: ../../operation/gis_maps/ajax.php:196
 #: ../../operation/agentes/estado_generalagente.php:157
@@ -2547,7 +2546,7 @@ msgstr "Niciodată"
 #: ../../include/functions_treeview.php:299
 #: ../../mobile/operation/agent.php:113
 msgid "Remote"
-msgstr "De la distanţă"
+msgstr ""
 
 #: ../../operation/gis_maps/index.php:26 ../../operation/menu.php:185
 msgid "GIS Maps"
@@ -2561,7 +2560,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:5165
 #: ../../include/functions_reporting.php:5512
 msgid "Summary"
-msgstr "Sumar"
+msgstr ""
 
 #: ../../operation/gis_maps/index.php:68
 msgid "No maps found"
@@ -2624,7 +2623,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:880 ../../include/ajax/module.php:78
 #: ../../godmode/setup/performance.php:81
 msgid "1 hour"
-msgstr "1 oră"
+msgstr ""
 
 #: ../../operation/gis_maps/render_view.php:115
 #: ../../enterprise/dashboard/widgets/single_graph.php:58
@@ -2634,7 +2633,7 @@ msgstr "1 oră"
 #: ../../include/functions_netflow.php:848
 #: ../../include/functions_netflow.php:881
 msgid "2 hours"
-msgstr "2 ore"
+msgstr ""
 
 #: ../../operation/gis_maps/render_view.php:117
 msgid "Refresh: "
@@ -2802,7 +2801,7 @@ msgstr ""
 #: ../../mobile/operation/groups.php:112 ../../mobile/operation/agents.php:31
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1018
 msgid "Critical"
-msgstr "Critic(ă)"
+msgstr ""
 
 #: ../../operation/gis_maps/render_view.php:122
 #: ../../operation/agentes/group_view.php:98
@@ -2843,7 +2842,7 @@ msgstr "Critic(ă)"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1020
 #: ../../godmode/massive/massive_edit_agents.php:350
 msgid "Warning"
-msgstr "Avertisment"
+msgstr ""
 
 #: ../../operation/gis_maps/render_view.php:123
 #: ../../enterprise/operation/services/services.list.php:120
@@ -2851,7 +2850,7 @@ msgstr "Avertisment"
 #: ../../enterprise/load_enterprise.php:395
 #: ../../godmode/massive/massive_edit_agents.php:348
 msgid "Ok"
-msgstr "Ok"
+msgstr ""
 
 #: ../../operation/gis_maps/render_view.php:126
 msgid "Show agents by state: "
@@ -2935,7 +2934,7 @@ msgstr ""
 #: ../../godmode/events/event_filter.php:53
 #: ../../godmode/events/event_filter.php:81
 msgid "Not deleted. Error deleting data"
-msgstr "Nu s-a sters.Eroare la stergerea datelor"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:117
 #: ../../godmode/reporting/graph_builder.php:187
@@ -2968,7 +2967,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:1440
 #: ../../godmode/reporting/graphs.php:68
 msgid "Reporting"
-msgstr "Raportare"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:140 ../../operation/menu.php:162
 #: ../../godmode/reporting/graphs.php:68
@@ -2979,30 +2978,30 @@ msgstr ""
 #: ../../operation/agentes/stat_win.php:277
 #: ../../operation/agentes/graphs.php:86
 msgid "Time range"
-msgstr "Interval de timp"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:169
 #: ../../operation/reporting/graph_viewer.php:179
 msgid "Graph defined"
-msgstr "Stabilită de grafic"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:170
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:206
 #: ../../godmode/reporting/graph_builder.main.php:143
 msgid "Area"
-msgstr "Zonă"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:171
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:207
 #: ../../godmode/reporting/graph_builder.main.php:144
 msgid "Stacked area"
-msgstr "Zona stivuita"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:172
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:208
 #: ../../godmode/reporting/graph_builder.main.php:145
 msgid "Line"
-msgstr "Linie"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:173
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:209
@@ -3012,15 +3011,15 @@ msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:180
 msgid "Zoom x1"
-msgstr "Mărire x1"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:181
 msgid "Zoom x2"
-msgstr "Mărire x2"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:182
 msgid "Zoom x3"
-msgstr "Mărire x3"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:204
 #: ../../operation/reporting/reporting_viewer.php:196
@@ -3064,7 +3063,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:932
 #: ../../extensions/insert_data.php:198
 msgid "Hour"
-msgstr "Oră"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:207
 #: ../../operation/reporting/reporting_viewer.php:199
@@ -3137,7 +3136,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:221
 #: ../../operation/reporting/reporting_viewer.php:246
 msgid "Invalid date selected"
-msgstr "S-a selectat o dată invalidă"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:229
 msgid "Custom graph viewer"
@@ -3146,12 +3145,12 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:239
 #: ../../operation/search_graphs.php:33 ../../godmode/reporting/graphs.php:143
 msgid "Graph name"
-msgstr "Nume grafic"
+msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:255
 #: ../../operation/reporting/custom_reporting.php:32
 msgid "There are no defined reportings"
-msgstr "Nu sunt definite rapoarte"
+msgstr ""
 
 #: ../../operation/reporting/custom_reporting.php:27
 #: ../../operation/reporting/reporting_viewer.php:110
@@ -3167,26 +3166,26 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_csv.php:154
 #: ../../godmode/reporting/reporting_builder.php:357
 msgid "Report name"
-msgstr "Nume raport"
+msgstr ""
 
 #: ../../operation/reporting/custom_reporting.php:40
 #: ../../operation/search_reports.php:40
 #: ../../godmode/reporting/reporting_builder.php:359
 msgid "HTML"
-msgstr "HTML"
+msgstr ""
 
 #: ../../operation/reporting/custom_reporting.php:41
 #: ../../operation/search_reports.php:41
 #: ../../godmode/reporting/reporting_builder.php:360
 msgid "XML"
-msgstr "XML"
+msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:246
 #: ../../enterprise/include/functions_reporting_xml.php:191
 #: ../../include/functions_reporting.php:2976
 #: ../../include/functions_reports.php:494
 msgid "Simple graph"
-msgstr "Grafic simplu"
+msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:316
 #: ../../enterprise/include/functions_reporting_xml.php:261
@@ -3328,7 +3327,7 @@ msgstr ""
 #: ../../mobile/operation/groups.php:96
 #: ../../godmode/alerts/alert_list.builder.php:209
 msgid "Unknown"
-msgstr "Necunoscut"
+msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:522
 #: ../../enterprise/include/functions_reporting_xml.php:455
@@ -3336,7 +3335,7 @@ msgstr "Necunoscut"
 #: ../../include/functions_reporting.php:3510
 #: ../../include/functions_reports.php:548
 msgid "Monitor report"
-msgstr "Raport monitor"
+msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:540
 #: ../../enterprise/include/functions_reporting_xml.php:473
@@ -3346,7 +3345,7 @@ msgstr "Raport monitor"
 #: ../../include/functions_graph.php:639
 #: ../../include/functions_graph.php:2789
 msgid "Avg. Value"
-msgstr "Valoare medie"
+msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:554
 #: ../../enterprise/include/functions_reporting_xml.php:487
@@ -3359,7 +3358,7 @@ msgstr "Valoare medie"
 #: ../../godmode/modules/manage_network_components_form_common.php:140
 #: ../../godmode/agentes/module_manager_editor_common.php:315
 msgid "Max. Value"
-msgstr "Valoarea maximă"
+msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:568
 #: ../../enterprise/include/functions_reporting_xml.php:501
@@ -3372,7 +3371,7 @@ msgstr "Valoarea maximă"
 #: ../../godmode/modules/manage_network_components_form_common.php:138
 #: ../../godmode/agentes/module_manager_editor_common.php:311
 msgid "Min. Value"
-msgstr "Valoare minimă"
+msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:582
 #: ../../enterprise/include/functions_reporting_xml.php:515
@@ -3398,7 +3397,7 @@ msgstr ""
 #: ../../include/functions_reports.php:576 ../../godmode/setup/news.php:117
 #: ../../godmode/reporting/reporting_builder.item_editor.php:888
 msgid "Text"
-msgstr "Text"
+msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:680
 #: ../../enterprise/include/functions_reporting_csv.php:553
@@ -3561,7 +3560,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_templates.php:92
 #: ../../godmode/alerts/alert_list.list.php:487
 msgid "From"
-msgstr "De la"
+msgstr ""
 
 #: ../../operation/reporting/reporting_viewer.php:164
 msgid "Items period before"
@@ -3591,7 +3590,7 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_modules.php:697
 #: ../../godmode/massive/massive_copy_modules.php:146
 msgid "Loading"
-msgstr "Se încarcă"
+msgstr "Sedang dimuatkan"
 
 #: ../../operation/agentes/ver_agente.php:406
 #: ../../enterprise/operation/agentes/ver_agente.php:70
@@ -3602,7 +3601,7 @@ msgstr ""
 #: ../../enterprise/operation/agentes/ver_agente.php:76
 #: ../../include/functions_events.php:1863
 msgid "Last remote contact"
-msgstr "Ultimul acces de la distanţă"
+msgstr ""
 
 #: ../../operation/agentes/ver_agente.php:464
 #: ../../enterprise/operation/agentes/ver_agente.php:113
@@ -3620,7 +3619,7 @@ msgstr ""
 #: ../../include/functions_groups.php:771
 #: ../../mobile/operation/groups.php:115 ../../mobile/operation/groups.php:116
 msgid "Alerts fired"
-msgstr "Alarme declanşate"
+msgstr ""
 
 #: ../../operation/agentes/ver_agente.php:555
 #: ../../operation/agentes/networkmap.php:308
@@ -3644,13 +3643,13 @@ msgstr "Alarme declanşate"
 #: ../../godmode/massive/massive_edit_modules.php:384
 #: ../../extensions/agents_modules.php:75
 msgid "Module group"
-msgstr "Grup modul"
+msgstr ""
 
 #: ../../operation/agentes/ver_agente.php:567
 #: ../../enterprise/godmode/servers/manage_export.php:129
 #: ../../enterprise/godmode/servers/manage_export_form.php:82
 msgid "Address"
-msgstr "Adresă"
+msgstr ""
 
 #: ../../operation/agentes/ver_agente.php:599
 #: ../../operation/agentes/estado_generalagente.php:197
@@ -3662,7 +3661,7 @@ msgstr "Adresă"
 #: ../../godmode/groups/configure_group.php:117
 #: ../../godmode/massive/massive_edit_agents.php:238
 msgid "Parent"
-msgstr "Părinte"
+msgstr ""
 
 #: ../../operation/agentes/ver_agente.php:608
 msgid "Sons"
@@ -3671,7 +3670,7 @@ msgstr ""
 #: ../../operation/agentes/ver_agente.php:688
 #: ../../operation/search_agents.php:102
 msgid "Manage"
-msgstr "Administrează"
+msgstr ""
 
 #: ../../operation/agentes/ver_agente.php:740
 #: ../../godmode/agentes/configurar_agente.php:329
@@ -3757,7 +3756,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask.php:227
 #: ../../godmode/agentes/agent_incidents.php:78
 msgid "Incident"
-msgstr "Incident"
+msgstr ""
 
 #: ../../operation/agentes/alerts_status.php:112
 msgid "Insufficient permissions to validate alerts"
@@ -3851,7 +3850,7 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:471
 #: ../../extensions/agents_alerts.php:262
 msgid "Last fired"
-msgstr "Ultima declanşare"
+msgstr ""
 
 #: ../../operation/agentes/alerts_status.php:300
 #: ../../operation/agentes/alerts_status.php:320
@@ -3868,7 +3867,7 @@ msgstr "Ultima declanşare"
 #: ../../enterprise/godmode/alerts/alert_events_list.php:612
 #: ../../mobile/operation/events.php:461
 msgid "Validate"
-msgstr "Validare"
+msgstr ""
 
 #: ../../operation/agentes/alerts_status.php:401
 msgid "No alerts found"
@@ -3876,7 +3875,7 @@ msgstr ""
 
 #: ../../operation/agentes/stat_win.php:104
 msgid "There was a problem locating the source of the graph"
-msgstr "A apărut o problemă la determinarea sursei graficului"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:210
 msgid "Pandora FMS Graph configuration menu"
@@ -3885,38 +3884,36 @@ msgstr ""
 #: ../../operation/agentes/stat_win.php:212
 msgid "Please, make your changes and apply with the <i>Reload</i> button"
 msgstr ""
-"Vă rog, operați modificările și aplicați-le folosind butonul "
-"<i>Reîncărcare</i>"
 
 #: ../../operation/agentes/stat_win.php:243
 msgid "Refresh time"
-msgstr "Perioada de reîmprospătare"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:250
 msgid "Avg. Only"
-msgstr "Doar valori medii"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:258
 #: ../../operation/agentes/graphs.php:73
 #: ../../operation/agentes/exportdata.php:262
 #: ../../mobile/operation/module_graph.php:384
 msgid "Begin date"
-msgstr "Data de început"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:265
 #: ../../operation/agentes/graphs.php:77
 msgid "Zoom factor"
-msgstr "Factor de scalare"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:283
 #: ../../operation/agentes/graphs.php:90
 msgid "Show events"
-msgstr "Afişează evenimentele"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:289
 #: ../../operation/agentes/graphs.php:92
 msgid "Show alerts"
-msgstr "Afișează alertele"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:295
 msgid "Show event graph"
@@ -3987,7 +3984,7 @@ msgstr ""
 #: ../../mobile/operation/modules.php:595 ../../extensions/insert_data.php:167
 #: ../../extensions/insert_data.php:168
 msgid "Data"
-msgstr "Date"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.excel.php:76
 #: ../../operation/agentes/status_monitor.php:824
@@ -4019,7 +4016,7 @@ msgstr "Date"
 #: ../../godmode/events/custom_events.php:153
 #: ../../extensions/update_manager/lib/functions.ajax.php:549
 msgid "Timestamp"
-msgstr "Marcaj de timp"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.excel.php:163
 #: ../../operation/agentes/exportdata.csv.php:169
@@ -4161,7 +4158,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:335
 #: ../../extensions/update_manager/update_pandora.php:184
 msgid "Delete"
-msgstr "Ștergere"
+msgstr ""
 
 #: ../../operation/agentes/networkmap_list.php:142
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:100
@@ -4281,7 +4278,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:371
 #: ../../godmode/alerts/alert_actions.php:374
 msgid "Are you sure?"
-msgstr "Sunteti sigur?"
+msgstr ""
 
 #: ../../operation/agentes/networkmap_list.php:182
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:198
@@ -4419,7 +4416,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:381
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:392
 msgid "No Overlap"
-msgstr "Fără suprapuneri"
+msgstr ""
 
 #: ../../operation/agentes/networkmap.php:332
 msgid "Only modules with alerts"
@@ -4433,22 +4430,22 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:400
 #: ../../enterprise/dashboard/widgets/network_map.php:40
 msgid "Simple"
-msgstr "Simplu"
+msgstr ""
 
 #: ../../operation/agentes/networkmap.php:345
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:367
 msgid "Regenerate"
-msgstr "Regenerare"
+msgstr ""
 
 #: ../../operation/agentes/networkmap.php:358
 #: ../../enterprise/include/functions_networkmap_enterprise.php:276
 msgid "Zoom"
-msgstr "Mărire"
+msgstr ""
 
 #: ../../operation/agentes/networkmap.php:362
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:384
 msgid "Distance between nodes"
-msgstr "Distanţa dintre noduri"
+msgstr ""
 
 #: ../../operation/agentes/networkmap.php:363
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:385
@@ -4494,7 +4491,7 @@ msgstr ""
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1047
 #: ../../include/functions_treeview.php:208
 msgid "There was a problem loading agent"
-msgstr "A apărut o problemă la încărcarea agentului"
+msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:66
 #: ../../operation/agentes/estado_generalagente.php:213
@@ -4527,7 +4524,7 @@ msgstr "A apărut o problemă la încărcarea agentului"
 #: ../../godmode/alerts/configure_alert_template.php:574
 #: ../../extensions/update_manager/lib/libupdate_manager.php:814
 msgid "Disabled"
-msgstr "Dezactivat(ă)"
+msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:69
 #: ../../operation/agentes/estado_agente.php:442
@@ -4585,7 +4582,7 @@ msgstr ""
 #: ../../godmode/groups/group_list.php:349
 #: ../../godmode/alerts/configure_alert_template.php:574
 msgid "Enabled"
-msgstr "Activat"
+msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:229
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1113
@@ -4614,7 +4611,7 @@ msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:299
 msgid "Refresh data"
-msgstr "Reîmprospătare date"
+msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:309
 #: ../../mobile/operation/agent.php:132
@@ -4669,13 +4666,13 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.list.php:578
 #: ../../extensions/agents_alerts.php:298
 msgid "Alert fired"
-msgstr "Alarmă declanşată"
+msgstr ""
 
 #: ../../operation/agentes/group_view.php:112
 #: ../../operation/agentes/estado_agente.php:506
 #: ../../godmode/agentes/modificar_agente.php:547
 msgid "There are no defined agents"
-msgstr "Nu sunt definiţi agenţi"
+msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:45
 #: ../../enterprise/meta/general/main_header.php:124
@@ -4733,7 +4730,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_template.php:192
 #: ../../godmode/alerts/alert_list.list.php:77
 msgid "Module name"
-msgstr "Nume modul"
+msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:392
 msgid "Only it is show tags in use."
@@ -4781,7 +4778,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_templates.php:236
 #: ../../godmode/alerts/alert_templates.php:240
 msgid "Search"
-msgstr "Căutare"
+msgstr "Carian"
 
 #: ../../operation/agentes/status_monitor.php:425 ../../operation/tree.php:605
 #: ../../operation/incidents/incident.php:212
@@ -4791,7 +4788,7 @@ msgstr "Căutare"
 #: ../../enterprise/dashboard/main_dashboard.php:273
 #: ../../godmode/agentes/modificar_agente.php:150
 msgid "Show"
-msgstr "Afișare"
+msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:810
 #: ../../operation/agentes/estado_monitores.php:290
@@ -4799,7 +4796,7 @@ msgstr "Afișare"
 #: ../../enterprise/dashboard/widgets/custom_graph.php:29
 #: ../../include/functions_events.php:1910
 msgid "Graph"
-msgstr "Grafic"
+msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:813
 #: ../../operation/agentes/estado_monitores.php:286
@@ -4982,11 +4979,11 @@ msgstr ""
 #: ../../operation/agentes/bulbs.php:30
 #: ../../include/functions_reporting.php:2738
 msgid "Agent without data"
-msgstr "Agent fără date"
+msgstr ""
 
 #: ../../operation/agentes/bulbs.php:31
 msgid "Agent down"
-msgstr "Agent oprit"
+msgstr ""
 
 #: ../../operation/agentes/bulbs.php:33
 #: ../../operation/snmpconsole/snmp_view.php:512
@@ -5002,7 +4999,7 @@ msgstr "Agent oprit"
 #: ../../godmode/alerts/alert_list.list.php:586
 #: ../../extensions/agents_alerts.php:306
 msgid "Alert not fired"
-msgstr "Alarmă nedeclanșată"
+msgstr ""
 
 #: ../../operation/agentes/networkmap.groups.php:35
 #: ../../operation/agentes/networkmap.topology.php:35
@@ -5033,7 +5030,7 @@ msgstr ""
 #: ../../enterprise/operation/policies/networkmap.policies.php:37
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:470
 msgid "No agents found"
-msgstr ""
+msgstr "Tiada agen ditemui"
 
 #: ../../operation/agentes/graphs.php:103
 msgid "Filter graphs"
@@ -5042,7 +5039,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:138 ../../operation/menu.php:46
 #: ../../godmode/agentes/agent_manager.php:160
 msgid "Agent detail"
-msgstr "Detalii agent"
+msgstr ""
 
 #: ../../operation/agentes/estado_agente.php:147
 msgid "Sucessfully deleted agent"
@@ -5084,7 +5081,7 @@ msgstr ""
 #: ../../godmode/agentes/modificar_agente.php:171
 #: ../../godmode/agentes/modificar_agente.php:556
 msgid "Create agent"
-msgstr "Creare agent"
+msgstr ""
 
 #: ../../operation/agentes/estado_agente.php:405
 #: ../../godmode/agentes/modificar_agente.php:405
@@ -5203,7 +5200,7 @@ msgstr ""
 
 #: ../../operation/agentes/status_events.php:27
 msgid "Latest events for this agent"
-msgstr "Ultimele evenimente pentru acest agent"
+msgstr ""
 
 #: ../../operation/agentes/alerts_status.functions.php:32
 #: ../../enterprise/godmode/alerts/alert_events_list.php:304
@@ -5229,7 +5226,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:4370
 #: ../../mobile/operation/alerts.php:37
 msgid "Fired"
-msgstr "Declanşată"
+msgstr ""
 
 #: ../../operation/agentes/alerts_status.functions.php:49
 #: ../../operation/snmpconsole/snmp_view.php:165
@@ -5309,13 +5306,13 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:36 ../../operation/menu.php:168
 msgid "Export data"
-msgstr "Exportare date"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.php:196
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:152
 #: ../../godmode/db/db_refine.php:68
 msgid "Source agent"
-msgstr "Agent sursă"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.php:228
 msgid "No modules of type string. You can not calculate their average"
@@ -5331,12 +5328,12 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:275
 msgid "Export type"
-msgstr "Tip export"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.php:278
 #: ../../include/functions_netflow.php:831
 msgid "Data table"
-msgstr "Tabel de date"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.php:279
 #: ../../enterprise/operation/reporting/custom_reporting.php:18
@@ -5350,14 +5347,14 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:281
 msgid "Average per hour/day"
-msgstr "Media pe oră/zi"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.php:289
 #: ../../enterprise/extensions/resource_exportation/functions.php:19
 #: ../../extensions/resource_exportation.php:359
 #: ../../extensions/resource_exportation.php:362
 msgid "Export"
-msgstr "Exportare"
+msgstr ""
 
 #: ../../operation/agentes/agent_fields.php:38
 msgid "Agent custom fields"
@@ -5365,7 +5362,7 @@ msgstr ""
 
 #: ../../operation/agentes/datos_agente.php:167
 msgid "Received data from"
-msgstr "S-au primit date de la"
+msgstr ""
 
 #: ../../operation/agentes/datos_agente.php:174
 msgid "Main database"
@@ -5404,7 +5401,7 @@ msgstr ""
 #: ../../include/ajax/module.php:240
 #: ../../godmode/agentes/module_manager.php:451
 msgid "No available data to show"
-msgstr "Nu sunt date de afişat"
+msgstr ""
 
 #: ../../operation/tree.php:168 ../../operation/tree.php:302
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:176
@@ -5488,7 +5485,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident_detail.php:213
 #: ../../operation/incidents/incident_detail.php:227
 msgid "Incident details"
-msgstr "Detalii incident"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.php:62
 #: ../../operation/integria_incidents/incident.list.php:134
@@ -5513,7 +5510,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.php:75
 #: ../../operation/incidents/incident.php:28
 msgid "Incident management"
-msgstr "Administrare incident"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.php:99
 msgid "Incident updated"
@@ -5539,13 +5536,13 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:74
 #: ../../enterprise/meta/include/ajax/wizard.ajax.php:259
 msgid "No description available"
-msgstr "Nu există descriere"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.php:156
 #: ../../operation/integria_incidents/incident_detail.php:156
 #: ../../operation/incidents/incident_detail.php:167
 msgid "File uploaded"
-msgstr "Fişierul a fost încărcat"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.php:159
 msgid "There was a problem uploading file"
@@ -5653,7 +5650,7 @@ msgstr ""
 #: ../../godmode/events/event_edit_filter.php:270
 #: ../../godmode/events/event_edit_filter.php:287
 msgid "Add"
-msgstr "Adăugare"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.files.php:35
 msgid "Add a file"
@@ -5665,7 +5662,7 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:445
 #: ../../operation/incidents/incident_detail.php:497
 msgid "Filename"
-msgstr "Nume  fişier"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.files.php:45
 #: ../../operation/integria_incidents/incident_detail.php:390
@@ -5677,7 +5674,7 @@ msgstr "Nume  fişier"
 #: ../../godmode/events/event_responses.editor.php:76
 #: ../../extensions/update_manager/lib/functions.ajax.php:300
 msgid "Size"
-msgstr "Mărime"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.files.php:66
 msgid "Delete file"
@@ -5705,7 +5702,7 @@ msgstr ""
 #: ../../godmode/massive/massive_add_action_alerts.php:141
 #: ../../godmode/events/event_edit_filter.php:223
 msgid "Any"
-msgstr "Oricare"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.list.php:34
 msgid "Not closed"
@@ -5743,14 +5740,14 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.list.php:113
 #: ../../godmode/alerts/configure_alert_template.php:633
 msgid "Priority"
-msgstr "Prioritate"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.list.php:99
 #: ../../operation/incidents/incident.php:303
 #: ../../godmode/servers/servers.build_table.php:62
 #: ../../godmode/agentes/agent_incidents.php:81
 msgid "Updated"
-msgstr "Actualizat"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.list.php:99
 msgid "Started"
@@ -5767,7 +5764,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.incident.php:100
 #: ../../operation/incidents/incident_detail.php:321
 msgid "Creator"
-msgstr "Creator"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.list.php:102
 #: ../../operation/integria_incidents/incident_detail.php:237
@@ -5780,12 +5777,12 @@ msgstr "Creator"
 #: ../../godmode/events/custom_events.php:110
 #: ../../godmode/events/custom_events.php:162
 msgid "Owner"
-msgstr "Deținător"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.list.php:134
 #: ../../operation/integria_incidents/incident.workunits.php:61
 msgid "Hours"
-msgstr "Ore"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.list.php:137
 msgid "Delete incident"
@@ -5865,7 +5862,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident_detail.php:143
 #: ../../operation/incidents/incident_detail.php:154
 msgid "File could not be saved due to database error"
-msgstr "Fişierul nu a putut fi salvat din cauza unei erori a bazei de date"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:157
 #: ../../operation/incidents/incident_detail.php:168
@@ -5876,12 +5873,12 @@ msgstr ""
 #: ../../operation/incidents/incident.php:374
 #: ../../operation/incidents/incident_detail.php:232
 msgid "Create incident"
-msgstr "Creare incident"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:234
 #: ../../operation/incidents/incident_detail.php:253
 msgid "Opened at"
-msgstr "Deschis la"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:255
 #: ../../operation/integria_incidents/incident.incident.php:103
@@ -5905,12 +5902,12 @@ msgstr "Deschis la"
 #: ../../godmode/events/custom_events.php:104
 #: ../../godmode/events/custom_events.php:160
 msgid "Source"
-msgstr "Sursa"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:313
 #: ../../operation/incidents/incident_detail.php:370
 msgid "Update incident"
-msgstr "Actualizare incident"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:316
 #: ../../operation/integria_incidents/incident.incident.php:133
@@ -5997,42 +5994,42 @@ msgstr "Actualizare incident"
 #: ../../godmode/alerts/alert_actions.php:388
 #: ../../godmode/alerts/alert_list.php:294
 msgid "Create"
-msgstr "Creare"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:319
 #: ../../operation/incidents/incident_detail.php:376
 msgid "Submit"
-msgstr "Trimite"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:333
 #: ../../operation/integria_incidents/incident_detail.php:336
 #: ../../operation/incidents/incident_detail.php:390
 #: ../../operation/incidents/incident_detail.php:393
 msgid "Add note"
-msgstr "Adăugare notă"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:354
 #: ../../operation/incidents/incident_detail.php:411
 #: ../../godmode/setup/news.php:144
 msgid "Author"
-msgstr "Autor"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:367
 #: ../../operation/incidents/incident_detail.php:424
 msgid "Notes attached to incident"
-msgstr "Note ataşate incidentului"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:410
 #: ../../operation/incidents/incident_detail.php:473
 msgid "Attached files"
-msgstr "Fişiere ataşate"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:428
 #: ../../operation/integria_incidents/incident_detail.php:432
 #: ../../operation/incidents/incident_detail.php:491
 #: ../../operation/incidents/incident_detail.php:495
 msgid "Add attachment"
-msgstr "Adăugare ataşament"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_detail.php:436
 #: ../../operation/incidents/incident_detail.php:499
@@ -6042,7 +6039,7 @@ msgstr "Adăugare ataşament"
 #: ../../extensions/extension_uploader.php:84
 #: ../../extensions/resource_registration.php:864
 msgid "Upload"
-msgstr "Încarcă"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.incident.php:89
 #: ../../enterprise/dashboard/widget.php:58
@@ -6069,7 +6066,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.workunits.php:61
 #: ../../extensions/update_manager/lib/libupdate_manager.php:813
 msgid "Public"
-msgstr "Public"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.workunits.php:42
 msgid "Add workunit"
@@ -6084,32 +6081,32 @@ msgstr ""
 #: ../../operation/incidents/incident_statistics.php:30
 #: ../../operation/events/event_statistics.php:32
 msgid "Statistics"
-msgstr "Statistici"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_statistics.php:32
 #: ../../operation/incidents/incident_statistics.php:33
 msgid "Incidents by status"
-msgstr "Incidente după stare"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_statistics.php:35
 #: ../../operation/incidents/incident_statistics.php:36
 msgid "Incidents by priority"
-msgstr "Incidente după prioritate"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_statistics.php:38
 #: ../../operation/incidents/incident_statistics.php:39
 msgid "Incidents by group"
-msgstr "Incidente după grup"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_statistics.php:41
 #: ../../operation/incidents/incident_statistics.php:42
 msgid "Incidents by user"
-msgstr "Incidente după utilizator"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident_statistics.php:44
 #: ../../operation/incidents/incident_statistics.php:45
 msgid "Incidents by source"
-msgstr "Incidente după sursă"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.tracking.php:22
 #: ../../operation/search_users.php:68
@@ -6135,7 +6132,7 @@ msgstr "Incidente după sursă"
 #: ../../godmode/events/custom_events.php:150
 #: ../../extensions/users_connected.php:77 ../../extensions/ssh_gateway.php:59
 msgid "User"
-msgstr "Utilizator"
+msgstr "Pengguna"
 
 #: ../../operation/menu.php:31
 #: ../../enterprise/operation/services/services.list.php:37
@@ -6166,15 +6163,15 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.main.php:152
 #: ../../godmode/events/events.php:34
 msgid "View events"
-msgstr "Vezi evenimente"
+msgstr ""
 
 #: ../../operation/menu.php:237
 msgid "RSS"
-msgstr "RSS"
+msgstr ""
 
 #: ../../operation/menu.php:241
 msgid "CSV File"
-msgstr "Fişier CSV"
+msgstr ""
 
 #: ../../operation/menu.php:245
 msgid "Marquee"
@@ -6206,11 +6203,11 @@ msgstr ""
 #: ../../operation/menu.php:312 ../../operation/messages/message_edit.php:46
 #: ../../operation/messages/message_list.php:43
 msgid "Messages"
-msgstr "Mesaje"
+msgstr ""
 
 #: ../../operation/menu.php:316
 msgid "New message"
-msgstr "Mesaj  nou"
+msgstr ""
 
 #: ../../operation/menu.php:327
 msgid "Netflow Live View"
@@ -6218,11 +6215,11 @@ msgstr ""
 
 #: ../../operation/menu.php:336 ../../operation/events/events_rss.php:152
 msgid "SNMP"
-msgstr "SNMP"
+msgstr ""
 
 #: ../../operation/menu.php:342
 msgid "SNMP console"
-msgstr "Consolă SNMP"
+msgstr ""
 
 #: ../../operation/menu.php:343
 msgid "SNMP browser"
@@ -6235,7 +6232,7 @@ msgstr ""
 
 #: ../../operation/menu.php:345 ../../include/functions_menu.php:424
 msgid "SNMP alerts"
-msgstr "Alarme SNMP"
+msgstr ""
 
 #: ../../operation/menu.php:346 ../../include/functions_menu.php:425
 msgid "SNMP filters"
@@ -6248,7 +6245,7 @@ msgstr ""
 #: ../../operation/search_maps.php:33
 #: ../../enterprise/godmode/services/services.elements.php:83
 msgid "Elements"
-msgstr "Elemente"
+msgstr ""
 
 #: ../../operation/search_results.php:60 ../../mobile/operation/home.php:37
 msgid "Global search"
@@ -6278,11 +6275,11 @@ msgstr ""
 #: ../../operation/messages/message_edit.php:155
 #: ../../operation/messages/message_list.php:127
 msgid "Sender"
-msgstr "Expeditor"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:78
 msgid "at"
-msgstr "la"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:80
 #: ../../operation/messages/message_edit.php:164
@@ -6295,13 +6292,13 @@ msgstr ""
 #: ../../operation/messages/message_list.php:128
 #: ../../godmode/setup/news.php:114 ../../godmode/setup/news.php:143
 msgid "Subject"
-msgstr "Subiect"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:90
 #: ../../operation/messages/message_edit.php:186
 #: ../../enterprise/dashboard/widgets/example.php:25
 msgid "Message"
-msgstr "Mesaj"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:102
 msgid "wrote"
@@ -6309,7 +6306,7 @@ msgstr ""
 
 #: ../../operation/messages/message_edit.php:117
 msgid "Reply"
-msgstr "Răspunde"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:133
 #, php-format
@@ -6323,7 +6320,7 @@ msgstr ""
 
 #: ../../operation/messages/message_edit.php:142
 msgid "Message successfully sent"
-msgstr "Mesaj trimis cu succes"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:143
 #, php-format
@@ -6361,7 +6358,7 @@ msgstr ""
 
 #: ../../operation/messages/message_list.php:100
 msgid "There are no messages"
-msgstr "Nu sunt mesaje"
+msgstr ""
 
 #: ../../operation/messages/message_list.php:138
 msgid "Click to read"
@@ -6442,15 +6439,15 @@ msgstr ""
 
 #: ../../operation/incidents/incident.php:129
 msgid "Error creating incident"
-msgstr "Eroare la crearea incidentului"
+msgstr ""
 
 #: ../../operation/incidents/incident.php:208
 msgid "All incidents"
-msgstr "Toate incidentele"
+msgstr ""
 
 #: ../../operation/incidents/incident.php:230
 msgid "All priorities"
-msgstr "Toate priorităţile"
+msgstr ""
 
 #: ../../operation/incidents/incident.php:234
 msgid "All users"
@@ -6459,11 +6456,11 @@ msgstr ""
 #: ../../operation/incidents/incident.php:248
 #: ../../godmode/db/db_purge.php:151
 msgid "All agents"
-msgstr "Toţi agenţii"
+msgstr ""
 
 #: ../../operation/incidents/incident.php:264
 msgid "No incidents match your search filter"
-msgstr "Niciun incident nu corespunde filtrului de căutare"
+msgstr ""
 
 #: ../../operation/incidents/incident.php:358
 msgid "Delete incidents"
@@ -6493,7 +6490,7 @@ msgstr ""
 #: ../../operation/search_users.php:64 ../../godmode/users/user_list.php:276
 #: ../../godmode/users/configure_user.php:411
 msgid "Administrator"
-msgstr "Administrator"
+msgstr ""
 
 #: ../../operation/search_users.php:69 ../../godmode/users/user_list.php:281
 #: ../../godmode/users/configure_user.php:416
@@ -6517,7 +6514,7 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_filters.php:38
 #: ../../godmode/snmpconsole/snmp_filters.php:42
 msgid "SNMP Console"
-msgstr "Consolă SNMP"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:152
 msgid "There are no SNMP traps in database"
@@ -6563,7 +6560,7 @@ msgstr ""
 #: ../../include/functions_events.php:2539
 #: ../../include/functions_events.php:2545
 msgid "Not validated"
-msgstr "Not validated"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:345
 #: ../../operation/snmpconsole/snmp_view.php:446
@@ -6579,7 +6576,7 @@ msgstr "Not validated"
 #: ../../include/functions_graph.php:1991
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1016
 msgid "Validated"
-msgstr "Validat"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:349
 #: ../../operation/events/events_list.php:383
@@ -6589,7 +6586,7 @@ msgstr "Validat"
 #: ../../mobile/operation/agents.php:183
 #: ../../godmode/events/event_edit_filter.php:191
 msgid "Free search"
-msgstr "Căutare liberă"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:349
 msgid "Search by any alphanumeric field in the trap"
@@ -6640,7 +6637,7 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:482
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:67
 msgid "SNMP Agent"
-msgstr "Agent SNMP"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:400
 #: ../../enterprise/operation/services/services.list.php:87
@@ -6669,7 +6666,7 @@ msgstr "Agent SNMP"
 #: ../../godmode/massive/massive_edit_modules.php:379
 #: ../../godmode/alerts/configure_alert_template.php:656
 msgid "Value"
-msgstr "Valoare"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:404
 #: ../../enterprise/godmode/setup/setup_acl.php:69
@@ -6680,7 +6677,7 @@ msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:461
 msgid "View agent details"
-msgstr "Vizualizare detalii agenţi"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:527
 #: ../../operation/events/events.build_table.php:506
@@ -6713,7 +6710,7 @@ msgstr ""
 #: ../../enterprise/operation/services/services.service_map.php:89
 #: ../../godmode/snmpconsole/snmp_alert.php:521
 msgid "Legend"
-msgstr "Legendă"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_mib_uploader.php:65
 #: ../../enterprise/meta/advanced/metasetup.file_manager.php:83
@@ -6733,7 +6730,7 @@ msgstr ""
 #: ../../include/functions_graph.php:2240
 #: ../../godmode/setup/setup_general.php:62
 msgid "System"
-msgstr "Sistem"
+msgstr ""
 
 #: ../../operation/events/sound_events.php:65
 msgid "Sound console"
@@ -6760,7 +6757,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:277
 msgid "RSS Events"
-msgstr "Evenimente RSS"
+msgstr ""
 
 #: ../../operation/events/events.php:282
 msgid "Marquee display"
@@ -6805,11 +6802,11 @@ msgstr ""
 #: ../../include/functions_graph.php:3342 ../../mobile/operation/home.php:50
 #: ../../mobile/include/functions_web.php:24
 msgid "Events"
-msgstr "Evenimente"
+msgstr "Acara"
 
 #: ../../operation/events/events.php:374
 msgid "Main event view"
-msgstr "Afişaj principal evenimente"
+msgstr ""
 
 #: ../../operation/events/events.php:392
 msgid "No events selected"
@@ -6885,7 +6882,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:720
 msgid "Error deleting event"
-msgstr "Eroare la ştergerea evenimentului"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:34
 #: ../../enterprise/meta/monitoring/group_view.php:60
@@ -6936,7 +6933,7 @@ msgstr ""
 #: ../../godmode/events/custom_events.php:71
 #: ../../godmode/events/custom_events.php:149
 msgid "Agent name"
-msgstr "Nume agent"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:79
 #: ../../operation/events/events_list.php:356
@@ -6949,7 +6946,7 @@ msgstr "Nume agent"
 #: ../../godmode/events/custom_events.php:86
 #: ../../godmode/events/custom_events.php:154
 msgid "Event type"
-msgstr "Tip eveniment"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:84
 msgid "Agent Module"
@@ -6995,14 +6992,14 @@ msgstr ""
 #: ../../operation/events/events.build_table.php:484
 #: ../../enterprise/meta/event/event_view.php:868
 msgid "Validate event"
-msgstr "Validare eveniment"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:493
 #: ../../enterprise/meta/event/event_view.php:881
 #: ../../include/functions_events.php:1624
 #: ../../include/functions_events.php:1626
 msgid "Delete event"
-msgstr "Ştergere eveniment"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:546
 msgid "Validate selected"
@@ -7018,13 +7015,13 @@ msgstr ""
 #: ../../include/functions_events.php:776
 #: ../../mobile/operation/events.php:751 ../../mobile/operation/events.php:754
 msgid "No events"
-msgstr "Nu sunt evenimente"
+msgstr ""
 
 #: ../../operation/events/events_list.php:168
 #: ../../operation/events/events_list.php:171
 #: ../../enterprise/meta/event/event_view.php:412
 msgid "Event control filter"
-msgstr "Filtru de control a evenimentelor"
+msgstr ""
 
 #: ../../operation/events/events_list.php:174
 msgid "Show events graph"
@@ -7102,7 +7099,7 @@ msgstr ""
 #: ../../godmode/events/event_edit_filter.php:278
 #: ../../godmode/events/event_edit_filter.php:295
 msgid "Remove"
-msgstr "Eliminare"
+msgstr ""
 
 #: ../../operation/events/events_list.php:370
 #: ../../enterprise/meta/event/event_view.php:451
@@ -7110,7 +7107,7 @@ msgstr "Eliminare"
 #: ../../godmode/events/event_edit_filter.php:188
 #: ../../godmode/events/event_filter.php:99
 msgid "Event status"
-msgstr "Stare eveniment"
+msgstr ""
 
 #: ../../operation/events/events_list.php:373
 #: ../../enterprise/meta/event/event_view.php:504
@@ -7152,7 +7149,7 @@ msgstr ""
 #: ../../enterprise/meta/event/event_view.php:470
 #: ../../godmode/events/event_edit_filter.php:194
 msgid "Agent search"
-msgstr "Căutare agent"
+msgstr ""
 
 #: ../../operation/events/events_list.php:402
 #: ../../enterprise/meta/event/event_view.php:511
@@ -7180,7 +7177,7 @@ msgstr ""
 
 #: ../../operation/events/events_list.php:494
 msgid "Events generated -by module-"
-msgstr "Evenimente generate -de modul-"
+msgstr ""
 
 #: ../../operation/events/events_list.php:669
 #: ../../enterprise/meta/event/event_view.php:1409
@@ -7201,11 +7198,11 @@ msgstr ""
 #: ../../operation/events/event_statistics.php:37
 #: ../../include/functions_events.php:924
 msgid "Event graph"
-msgstr "Grafic evenimente"
+msgstr ""
 
 #: ../../operation/events/event_statistics.php:41
 msgid "Event graph by user"
-msgstr "Grafic evenimente după utilizator"
+msgstr ""
 
 #: ../../operation/events/event_statistics.php:61
 #: ../../include/functions_events.php:929
@@ -7224,11 +7221,11 @@ msgstr ""
 #: ../../mobile/include/ui.class.php:253
 #, php-format
 msgid "Pandora FMS %s - Build %s"
-msgstr ""
+msgstr "Pandora FMS %s - Build %s"
 
 #: ../../general/footer.php:32
 msgid "Page generated at"
-msgstr "Pagina generată la"
+msgstr "Mukasurat dijana di"
 
 #: ../../general/login_page.php:35
 msgid "Go to Pandora FMS Website"
@@ -7244,13 +7241,15 @@ msgstr ""
 
 #: ../../general/login_page.php:108
 msgid "Logged out"
-msgstr ""
+msgstr "Daftar Keluar"
 
 #: ../../general/login_page.php:110 ../../mobile/include/user.class.php:152
 msgid ""
 "Your session is over. Please close your browser window to close this Pandora "
 "session."
 msgstr ""
+"Sessi anda telah tamat. Sila tutup tetingkap pelayar internet untuk "
+"menamatkan sessi Pandora ini."
 
 #: ../../general/login_page.php:118
 msgid "View details"
@@ -7259,12 +7258,12 @@ msgstr ""
 #: ../../general/login_page.php:127
 #: ../../enterprise/meta/general/login_page.php:82
 msgid "Build"
-msgstr "Versiune"
+msgstr "Binaan"
 
 #: ../../general/login_page.php:146
 #: ../../enterprise/meta/general/login_page.php:92
 msgid "Login failed"
-msgstr "Autentificare eșuată"
+msgstr "Daftar masuk gagal"
 
 #: ../../general/login_page.php:169
 msgid ""
@@ -7307,11 +7306,11 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1221
 #: ../../extensions/net_tools.php:60
 msgid "Operation"
-msgstr "Operație"
+msgstr ""
 
 #: ../../general/main_menu.php:39 ../../include/functions_menu.php:472
 msgid "Administration"
-msgstr "Administrare"
+msgstr ""
 
 #: ../../general/noaccess.php:18 ../../general/noaccess.php:21
 #: ../../enterprise/meta/general/noaccess.php:21
@@ -7322,12 +7321,12 @@ msgstr "Administrare"
 #: ../../mobile/operation/tactical.php:47 ../../mobile/operation/agent.php:62
 #: ../../mobile/operation/agents.php:141
 msgid "You don't have access to this page"
-msgstr "Nu aveţi acces la această pagină"
+msgstr "Anda tiada akses ke laman ini"
 
 #: ../../general/noaccess.php:29 ../../enterprise/meta/general/noaccess.php:29
 #: ../../enterprise/meta/general/metaconsole_no_activated.php:21
 msgid "No access"
-msgstr ""
+msgstr "Tiada akses"
 
 #: ../../general/noaccess.php:33 ../../enterprise/meta/general/noaccess.php:33
 #: ../../mobile/operation/modules.php:161 ../../mobile/operation/groups.php:56
@@ -7341,10 +7340,10 @@ msgid ""
 "attempts to access this page are recorded in security logs of Pandora System "
 "Database"
 msgstr ""
-"Accesul la această pagină este limitat la utilizatorii autorizaţi, pentru "
-"ajutor contactaţi administratorul de sistem. <br><br>Toate încercările de "
-"acces ale acestei pagini sunt înregistrate în jurnalele de securitate ale "
-"bazei de date a sistemului Pandora"
+"Akses ke laman ini terhad kepada pengguna yang berkuasa, sila hubungi sistem "
+"admin jika memerlukan bantuan. <br><br> Ketahuilah yang setiap cubaan "
+"memasuki laman ini dirakam dalam log keselamatan pangkalan data sistem "
+"Pandora"
 
 #: ../../general/login_help_dialog.php:39
 #: ../../enterprise/dashboard/widgets/example.php:35
@@ -7388,19 +7387,19 @@ msgstr ""
 
 #: ../../general/header.php:69 ../../general/header.php:77
 msgid "All systems"
-msgstr "Toate sistemele"
+msgstr "Semua sistem"
 
 #: ../../general/header.php:69
 msgid "Down"
-msgstr "Jos"
+msgstr "Mati"
 
 #: ../../general/header.php:73
 msgid "servers down"
-msgstr "servere oprite"
+msgstr "Server mati"
 
 #: ../../general/header.php:77
 msgid "Ready"
-msgstr "Pregătit"
+msgstr "Bersedia"
 
 #: ../../general/header.php:108
 msgid "Configure autorefresh"
@@ -7449,7 +7448,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:649
 #: ../../extensions/insert_data.php:166
 msgid "Select"
-msgstr ""
+msgstr "Pilih"
 
 #: ../../general/header.php:132
 msgid "Disabled autorefresh"
@@ -7457,12 +7456,12 @@ msgstr ""
 
 #: ../../general/header.php:153
 msgid "System alerts detected - Please fix as soon as possible"
-msgstr ""
+msgstr "Amaran sistem ditemui - Sila baiki secepat mungkin"
 
 #: ../../general/header.php:159
 #, php-format
 msgid "You have %d warning(s)"
-msgstr ""
+msgstr "Anda punyai %d amaran"
 
 #: ../../general/header.php:162
 msgid "There are not warnings"
@@ -7471,7 +7470,7 @@ msgstr ""
 #: ../../general/header.php:172 ../../mobile/include/functions_web.php:33
 #: ../../mobile/include/ui.class.php:176
 msgid "Logout"
-msgstr "Deconectare"
+msgstr "Daftar Keluar"
 
 #: ../../general/header.php:188
 msgid "New chat message"
@@ -7479,16 +7478,16 @@ msgstr ""
 
 #: ../../general/header.php:198
 msgid "Message overview"
-msgstr ""
+msgstr "Ringkasan mesej"
 
 #: ../../general/header.php:199
 #, php-format
 msgid "You have %d unread message(s)"
-msgstr ""
+msgstr "Anda ada %d mesej tidak dibaca"
 
 #: ../../general/header.php:208 ../../general/header.php:210
 msgid "Enter keywords to search"
-msgstr ""
+msgstr "Masukkan perkataan untuk carian"
 
 #: ../../general/header.php:224
 msgid "Blank characters are used as AND conditions"
@@ -7496,27 +7495,25 @@ msgstr ""
 
 #: ../../general/pandora_help.php:24 ../../general/pandora_help.php:79
 msgid "Pandora FMS help system"
-msgstr "Sistemul de asistenţă al Pandora FMS"
+msgstr ""
 
 #: ../../general/pandora_help.php:64
 msgid "Help system error"
-msgstr "Eroare a sistemului de asistenţă"
+msgstr ""
 
 #: ../../general/pandora_help.php:69
 msgid ""
 "Pandora FMS help system has been called with a help reference that currently "
 "don't exist. There is no help content to show."
 msgstr ""
-"Sistemul de asistenţă al Pandora FMS a fost apelat cu un subiect inexistent "
-"în prezent. Nu sunt informaţii de afişat."
 
 #: ../../general/links_menu.php:20 ../../godmode/menu.php:212
 msgid "Links"
-msgstr "Legături"
+msgstr ""
 
 #: ../../general/logon_failed.php:21
 msgid "Authentication error"
-msgstr ""
+msgstr "Ralat pengesahan"
 
 #: ../../general/logon_failed.php:33
 msgid ""
@@ -7526,6 +7523,11 @@ msgid ""
 "these can be reviewed by each user, please report to admin any incident or "
 "malfunction."
 msgstr ""
+"Samaada katalaluan anda atau nama daftar masuk anda salah. Sila siasat kunci "
+"CAPS LOCK, nama pengguna dan kata laluan adalah sensitif terhadap huruf "
+"besar dan kecil. <br><br>Semua aksi, termasuk kegagalan daftar masuk akan "
+"disimpan dalam daftar log Pandora FMS, dan ini boleh dilihat semula oleh "
+"admin, sila laporkan sebarang masalah atau kegagalan fungsi."
 
 #: ../../general/shortcut_bar.php:127
 msgid "Press here to activate shortcut bar"
@@ -7554,7 +7556,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:31
 msgid "Welcome to Pandora FMS Web Console"
-msgstr "Consola Web a Pandora FMS"
+msgstr "Selamat Datang ke Konsole Pandora FMS"
 
 #: ../../general/logon_ok.php:57
 msgid "News board"
@@ -7562,28 +7564,28 @@ msgstr ""
 
 #: ../../general/logon_ok.php:62
 msgid "ago"
-msgstr ""
+msgstr "lalu"
 
 #: ../../general/logon_ok.php:66
 msgid "by"
-msgstr "de"
+msgstr "oleh"
 
 #: ../../general/logon_ok.php:74
 msgid "No news articles at this moment"
-msgstr "Nu sunt știri în acest moment"
+msgstr "Tiada artikel terbaru pada masa ini"
 
 #: ../../general/logon_ok.php:98 ../../mobile/operation/tactical.php:192
 #: ../../godmode/admin_access_logs.php:190
 msgid "Source IP"
-msgstr "IP sursă"
+msgstr "Sumber IP"
 
 #: ../../general/logon_ok.php:100
 msgid "This is your last activity in Pandora FMS console"
-msgstr "Aceasta este ultima ta activitate în consola Pandora FMS"
+msgstr "Ini adalah aktiviti terakhir anda dalam Konsole Pandora FMS"
 
 #: ../../general/logon_ok.php:181
 msgid "Pandora FMS Overview"
-msgstr ""
+msgstr "Ringkasan Pandora FMS"
 
 #: ../../enterprise/operation/log/log_viewer.php:80
 #: ../../enterprise/operation/menu.php:82
@@ -7615,7 +7617,7 @@ msgstr ""
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:16
 msgid "PDF"
-msgstr "PDF"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:95
 msgid "Success be updated."
@@ -7723,7 +7725,7 @@ msgstr ""
 #: ../../godmode/massive/massive_copy_modules.php:180
 #: ../../godmode/alerts/alert_actions.php:334
 msgid "Copy"
-msgstr "Copiază"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:170
 msgid "Generate networkmap from"
@@ -8172,7 +8174,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:527
 #: ../../godmode/agentes/module_manager_editor_prediction.php:142
 msgid "Period"
-msgstr "Perioada"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_csv.php:324
 #: ../../enterprise/include/functions_reporting_pdf.php:1484
@@ -8321,7 +8323,7 @@ msgstr ""
 #: ../../enterprise/dashboard/widgets/tactical.php:154
 #: ../../include/functions_reporting.php:1209 ../../godmode/db/db_main.php:99
 msgid "Total agents"
-msgstr "Total agenţi"
+msgstr "Jumlah agen"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Uknown agents"
@@ -8833,7 +8835,7 @@ msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2829
 msgid "Info"
-msgstr "Informații"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2830
 #: ../../enterprise/include/functions_reporting_pdf.php:3053
@@ -8864,7 +8866,7 @@ msgstr ""
 #: ../../include/functions_graph.php:1496
 #: ../../include/functions_graph.php:1542
 msgid "Out of limits"
-msgstr "În afara limitelor"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2845
 #: ../../enterprise/include/functions_reporting_pdf.php:2851
@@ -8881,13 +8883,13 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1557
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1095
 msgid "SLA Min. (value)"
-msgstr "SLA Minim (valoare)"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2956
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1558
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1096
 msgid "SLA Max. (value)"
-msgstr "SLA Maxim (valoare)"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2957
 #: ../../include/functions_reporting.php:3235
@@ -9462,7 +9464,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_wmi.php:53
 #: ../../godmode/massive/massive_edit_modules.php:394
 msgid "Password"
-msgstr "Parolă"
+msgstr "Kata Laluan"
 
 #: ../../enterprise/include/functions_setup.php:37
 #: ../../enterprise/include/functions_setup.php:67
@@ -9489,7 +9491,7 @@ msgstr ""
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:94
 #: ../../extensions/update_manager/lib/functions.ajax.php:535
 msgid "Server connection failed"
-msgstr "Conexiunea la server a eşuat"
+msgstr ""
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:76
 msgid ""
@@ -9633,7 +9635,7 @@ msgstr ""
 #: ../../godmode/users/profile_list.php:43
 #: ../../godmode/users/profile_list.php:51
 msgid "User management"
-msgstr "Administrare utilizatori"
+msgstr ""
 
 #: ../../enterprise/meta/general/main_header.php:154
 #: ../../enterprise/godmode/modules/local_components.php:87
@@ -9645,7 +9647,7 @@ msgstr "Administrare utilizatori"
 #: ../../godmode/modules/manage_nc_groups.php:38
 #: ../../godmode/modules/module_list.php:28
 msgid "Module management"
-msgstr "Administrare modul"
+msgstr ""
 
 #: ../../enterprise/meta/general/main_header.php:155
 msgid "Alert management"
@@ -9794,7 +9796,7 @@ msgstr ""
 #: ../../godmode/massive/massive_delete_modules.php:243
 #: ../../godmode/massive/massive_edit_modules.php:210
 msgid "Module type"
-msgstr "Tip modul"
+msgstr ""
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:133
 #: ../../include/functions_reporting.php:2154
@@ -9843,7 +9845,7 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:173
 #: ../../godmode/menu.php:76
 msgid "Manage modules"
-msgstr "Administrare module"
+msgstr ""
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:177
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:228
@@ -9866,14 +9868,14 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:401
 #: ../../godmode/snmpconsole/snmp_alert.php:30
 msgid "Create alert"
-msgstr "Creare alarmă"
+msgstr ""
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:329
 #: ../../godmode/users/configure_profile.php:166 ../../godmode/menu.php:101
 #: ../../godmode/alerts/alert_list.php:291
 #: ../../godmode/alerts/alert_list.php:294
 msgid "Manage alerts"
-msgstr "Administrare alarme"
+msgstr ""
 
 #: ../../enterprise/meta/monitoring/group_view.php:31
 msgid "Group View"
@@ -9918,7 +9920,7 @@ msgstr ""
 
 #: ../../enterprise/meta/agentsearch.php:188
 msgid "There are no agents included in this group"
-msgstr "Nu există agenţi incluşi în acest grup"
+msgstr ""
 
 #: ../../enterprise/meta/event/event_view.php:193
 msgid "Event View"
@@ -9933,7 +9935,7 @@ msgstr ""
 #: ../../include/functions_events.php:1407
 #: ../../include/functions_events.php:1426
 msgid "All event"
-msgstr "Toate evenimentele"
+msgstr ""
 
 #: ../../enterprise/meta/event/event_view.php:454
 #: ../../include/functions_events.php:1408
@@ -9946,7 +9948,7 @@ msgstr ""
 #: ../../include/functions_events.php:1409
 #: ../../include/functions_events.php:1432
 msgid "Only validated"
-msgstr "Numai cele validate"
+msgstr ""
 
 #: ../../enterprise/meta/event/event_view.php:456
 #: ../../include/functions_events.php:1410
@@ -9983,7 +9985,7 @@ msgstr ""
 #: ../../godmode/events/custom_events.php:68
 #: ../../godmode/events/custom_events.php:148
 msgid "Event name"
-msgstr "Nume eveniment"
+msgstr ""
 
 #: ../../enterprise/meta/event/event_view.php:902
 msgid "Comment:"
@@ -10359,7 +10361,7 @@ msgstr ""
 #: ../../include/functions_config.php:361
 #: ../../godmode/setup/setup_visuals.php:47
 msgid "Date format string"
-msgstr "Format dată"
+msgstr ""
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:71
 #: ../../godmode/setup/setup_visuals.php:48
@@ -10388,28 +10390,28 @@ msgstr ""
 #: ../../include/functions_config.php:365
 #: ../../godmode/setup/setup_visuals.php:70
 msgid "Graph color (min)"
-msgstr "Culoare grafic (min)"
+msgstr ""
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:97
 #: ../../enterprise/meta/include/functions_meta.php:273
 #: ../../include/functions_config.php:367
 #: ../../godmode/setup/setup_visuals.php:75
 msgid "Graph color (avg)"
-msgstr "Culoare grafic (medie)"
+msgstr ""
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:102
 #: ../../enterprise/meta/include/functions_meta.php:283
 #: ../../include/functions_config.php:369
 #: ../../godmode/setup/setup_visuals.php:80
 msgid "Graph color (max)"
-msgstr "Culoare grafic (max)"
+msgstr ""
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:107
 #: ../../enterprise/meta/include/functions_meta.php:293
 #: ../../include/functions_config.php:371
 #: ../../godmode/setup/setup_visuals.php:85
 msgid "Graphic resolution (1-low, 5-high)"
-msgstr "Rezoluţia grafică (1-joasă; 5-înaltă)"
+msgstr ""
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:117
 #: ../../enterprise/meta/include/functions_meta.php:313
@@ -10971,7 +10973,7 @@ msgstr ""
 #: ../../godmode/setup/setup_general.php:63
 #: ../../extensions/update_manager/lib/libupdate_manager.php:822
 msgid "Database"
-msgstr "Bază de date"
+msgstr ""
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:90
 #: ../../enterprise/meta/include/functions_meta.php:73
@@ -11191,7 +11193,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_components_meta.php:66
 #: ../../godmode/menu.php:81
 msgid "Component groups"
-msgstr "Grupuri de componente"
+msgstr ""
 
 #: ../../enterprise/meta/include/functions_components_meta.php:52
 #: ../../enterprise/meta/include/functions_components_meta.php:69
@@ -11221,14 +11223,14 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_ui_meta.php:54
 #: ../../include/functions_ui.php:1146
 msgid "the Flexible Monitoring System"
-msgstr "Sistemul de Monitorizare Flexibil"
+msgstr ""
 
 #: ../../enterprise/meta/include/functions_ui_meta.php:687
 #: ../../include/functions_ui.php:215 ../../include/functions_events.php:1075
 #: ../../include/functions_events.php:1335 ../../include/functions.php:884
 #: ../../godmode/db/db_refine.php:42 ../../godmode/db/db_refine.php:47
 msgid "Error"
-msgstr "Eroare"
+msgstr ""
 
 #: ../../enterprise/meta/include/functions_alerts_meta.php:115
 #: ../../enterprise/meta/include/functions_alerts_meta.php:131
@@ -11375,7 +11377,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_wizard_meta.php:752
 #: ../../include/functions_reporting.php:1646
 msgid "Alert description"
-msgstr "Descriere alarmă"
+msgstr ""
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:970
 msgid "Checks"
@@ -11452,7 +11454,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_users_meta.php:176
 #: ../../enterprise/meta/include/functions_users_meta.php:199
 msgid "Group management"
-msgstr "Administrare grupuri"
+msgstr ""
 
 #: ../../enterprise/meta/include/functions_users_meta.php:187
 msgid "User synchronization"
@@ -11475,7 +11477,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_special_days.php:75
 #: ../../godmode/alerts/alert_special_days.php:186
 msgid "Monday"
-msgstr "Luni"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:122
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1064
@@ -11485,7 +11487,7 @@ msgstr "Luni"
 #: ../../godmode/alerts/configure_alert_special_days.php:76
 #: ../../godmode/alerts/alert_special_days.php:189
 msgid "Tuesday"
-msgstr "Marţi"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:123
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1065
@@ -11495,7 +11497,7 @@ msgstr "Marţi"
 #: ../../godmode/alerts/configure_alert_special_days.php:77
 #: ../../godmode/alerts/alert_special_days.php:192
 msgid "Wednesday"
-msgstr "Miercuri"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:124
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1066
@@ -11515,7 +11517,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_special_days.php:79
 #: ../../godmode/alerts/alert_special_days.php:198
 msgid "Friday"
-msgstr "Vineri"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:126
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1068
@@ -11525,7 +11527,7 @@ msgstr "Vineri"
 #: ../../godmode/alerts/configure_alert_special_days.php:80
 #: ../../godmode/alerts/alert_special_days.php:201
 msgid "Saturday"
-msgstr "Sâmbătă"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:127
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1069
@@ -11535,14 +11537,14 @@ msgstr "Sâmbătă"
 #: ../../godmode/alerts/configure_alert_special_days.php:81
 #: ../../godmode/alerts/alert_special_days.php:204
 msgid "Sunday"
-msgstr "Duminică"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:129
 #: ../../enterprise/godmode/setup/setup_history.php:61
 #: ../../include/functions_config.php:485
 #: ../../godmode/alerts/alert_templates.php:71
 msgid "Days"
-msgstr "Zile"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:129
 #: ../../godmode/alerts/alert_templates.php:71
@@ -11566,7 +11568,7 @@ msgstr ""
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1158
 #: ../../include/functions_treeview.php:320
 msgid "Next agent contact"
-msgstr "Următorul contact cu agentul"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1190
 msgid "Go to agent detail"
@@ -11591,7 +11593,7 @@ msgstr ""
 #: ../../godmode/groups/configure_modu_group.php:47
 #: ../../godmode/groups/configure_group.php:66
 msgid "There was a problem loading group"
-msgstr "A apărut o problemă la încărcarea grupului"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1258
 msgid "Group name"
@@ -11607,7 +11609,7 @@ msgstr ""
 #: ../../godmode/groups/group_list.php:255
 #: ../../godmode/groups/configure_group.php:102
 msgid "Icon"
-msgstr "Pictogramă"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1335
 #: ../../include/functions_treeview.php:47
@@ -11629,7 +11631,7 @@ msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1457
 msgid "There was a problem loading alert"
-msgstr "A apărut o problemă la încărcarea alarmei"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1472
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:217
@@ -11694,7 +11696,7 @@ msgstr ""
 #: ../../enterprise/meta/index.php:305 ../../enterprise/meta/index.php:315
 #: ../../index.php:462
 msgid "Sorry! I can't find the page!"
-msgstr "Îmi pare rău, pagina nu a fost  găsită!"
+msgstr ""
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:32
 msgid "Dashboard replicate"
@@ -11790,28 +11792,28 @@ msgstr ""
 #: ../../include/functions_reporting.php:1253
 #: ../../include/functions_reporting.php:1285
 msgid "Monitor health"
-msgstr ""
+msgstr "Pantau kesihatan"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:50
 #: ../../enterprise/dashboard/widgets/tactical.php:88
 #: ../../include/functions_reporting.php:1255
 #: ../../include/functions_reporting.php:1286
 msgid "of monitors up"
-msgstr "de monitoare active"
+msgstr "dari pemantauan hidup"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:52
 #: ../../enterprise/dashboard/widgets/tactical.php:89
 #: ../../include/functions_reporting.php:1261
 #: ../../include/functions_reporting.php:1288
 msgid "Module sanity"
-msgstr ""
+msgstr "Kebersihan modul"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:54
 #: ../../enterprise/dashboard/widgets/tactical.php:91
 #: ../../include/functions_reporting.php:1263
 #: ../../include/functions_reporting.php:1289
 msgid "of total modules inited"
-msgstr ""
+msgstr "dari jumlah modul tersedia"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:56
 #: ../../enterprise/dashboard/widgets/tactical.php:92
@@ -11819,14 +11821,14 @@ msgstr ""
 #: ../../include/functions_reporting.php:1269
 #: ../../include/functions_reporting.php:1291
 msgid "Alert level"
-msgstr "Nivel alertă"
+msgstr "Tahap alert"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:58
 #: ../../enterprise/dashboard/widgets/tactical.php:94
 #: ../../include/functions_reporting.php:1271
 #: ../../include/functions_reporting.php:1292
 msgid "of defined alerts not fired"
-msgstr "de alarme definite nedeclanşate"
+msgstr "dari alert ditakrif tidak disebar"
 
 #: ../../enterprise/dashboard/widgets/groups_status.php:24
 msgid "Groups status"
@@ -11844,12 +11846,12 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:200
 #: ../../godmode/reporting/graph_builder.main.php:137
 msgid "Stacked"
-msgstr "Stivuit"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:49
 #: ../../include/functions.php:148
 msgid "You don't have access"
-msgstr "Nu aveţi accesul"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/network_map.php:29
 msgid "Show a map of the monitored network"
@@ -11921,7 +11923,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:883 ../../include/ajax/module.php:80
 #: ../../godmode/setup/performance.php:82
 msgid "12 hours"
-msgstr "12 ore"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/single_graph.php:61
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:184
@@ -11930,7 +11932,7 @@ msgstr "12 ore"
 #: ../../include/functions.php:1674 ../../include/functions_netflow.php:851
 #: ../../include/functions_netflow.php:884 ../../include/ajax/module.php:81
 msgid "1 day"
-msgstr "o zi"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/events_list.php:28
 msgid "Latest events list"
@@ -11942,7 +11944,7 @@ msgstr ""
 
 #: ../../enterprise/dashboard/widgets/events_list.php:46
 msgid "Only pending"
-msgstr "Numai cele în aşteptare"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:23
 msgid "Welcome message to Pandora FMS"
@@ -11950,7 +11952,7 @@ msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:26
 msgid "Welcome"
-msgstr "Bine ați venit"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:36
 msgid ""
@@ -11969,8 +11971,6 @@ msgid ""
 "To delete this message, click on the delete button on top right corner of "
 "this element."
 msgstr ""
-"Pentru ştergerea acestui mesaj daţi clic pe butonul de ştergere din colţul "
-"drept sus al acestui element"
 
 #: ../../enterprise/dashboard/widgets/example.php:39
 msgid ""
@@ -12019,7 +12019,7 @@ msgstr ""
 #: ../../enterprise/dashboard/widgets/tactical.php:97
 #: ../../include/functions_reporting.php:1213
 msgid "Monitor checks"
-msgstr ""
+msgstr "Pemantauan teruji"
 
 #: ../../enterprise/dashboard/widgets/tactical.php:36
 #: ../../enterprise/dashboard/widgets/tactical.php:129
@@ -12033,19 +12033,19 @@ msgstr ""
 
 #: ../../enterprise/dashboard/widgets/tactical.php:99
 msgid "Monitors critical"
-msgstr ""
+msgstr "Pemantauan Kritikal"
 
 #: ../../enterprise/dashboard/widgets/tactical.php:101
 msgid "Monitors warning"
-msgstr ""
+msgstr "Pemantauan amaran"
 
 #: ../../enterprise/dashboard/widgets/tactical.php:103
 msgid "Monitors normal"
-msgstr ""
+msgstr "Pemantauan normal"
 
 #: ../../enterprise/dashboard/widgets/tactical.php:105
 msgid "Monitors unknown"
-msgstr ""
+msgstr "Pemantauan tidak diketahui"
 
 #: ../../enterprise/dashboard/widgets/tactical.php:107
 msgid "Monitors not init"
@@ -12053,7 +12053,7 @@ msgstr ""
 
 #: ../../enterprise/dashboard/widgets/tactical.php:109
 msgid "Alerts defined"
-msgstr "Alarme definite"
+msgstr "Amaran tertakrif"
 
 #: ../../enterprise/dashboard/widgets/tactical.php:130
 msgid "Local modules rate"
@@ -12080,7 +12080,7 @@ msgstr ""
 
 #: ../../enterprise/dashboard/widgets/tactical.php:156
 msgid "Uninitialized modules"
-msgstr "Module neiniţializate"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/tactical.php:158
 #: ../../include/functions_groups.php:739
@@ -12144,7 +12144,7 @@ msgstr ""
 #: ../../extensions/agents_alerts.php:80
 #: ../../extensions/agents_modules.php:88
 msgid "seconds"
-msgstr "secunde"
+msgstr "saat"
 
 #: ../../enterprise/dashboard/main_dashboard.php:345
 msgid "Add widget"
@@ -12389,7 +12389,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_network.php:58
 #: ../../extensions/snmp_explorer.php:281
 msgid "Port"
-msgstr "Port"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_history.php:55
 #: ../../include/functions_config.php:481
@@ -12460,7 +12460,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/setup/setup.php:57
 msgid "Seconds"
-msgstr "Secunde"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup.php:60
 #: ../../include/functions_config.php:199
@@ -12557,13 +12557,13 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components.php:217
 #: ../../godmode/servers/recon_script.php:153
 msgid "Created successfully"
-msgstr "Creat cu succes"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/local_components.php:274
 #: ../../godmode/modules/manage_network_components.php:297
 #: ../../godmode/servers/recon_script.php:132
 msgid "Updated successfully"
-msgstr "Aducere la zi terminata cu succes."
+msgstr ""
 
 #: ../../enterprise/godmode/modules/local_components.php:319
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:133
@@ -12633,7 +12633,7 @@ msgstr ""
 #: ../../godmode/massive/massive_edit_modules.php:380
 #: ../../godmode/alerts/configure_alert_template.php:671
 msgid "Min."
-msgstr "Min."
+msgstr ""
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:173
 #: ../../enterprise/godmode/modules/configure_local_component.php:186
@@ -12649,7 +12649,7 @@ msgstr "Min."
 #: ../../godmode/massive/massive_edit_modules.php:382
 #: ../../godmode/alerts/configure_alert_template.php:674
 msgid "Max."
-msgstr "Max."
+msgstr ""
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:176
 #: ../../enterprise/godmode/modules/configure_local_component.php:189
@@ -12868,19 +12868,19 @@ msgstr ""
 #: ../../enterprise/godmode/servers/manage_export_form.php:56
 #: ../../enterprise/godmode/menu.php:78
 msgid "Export targets"
-msgstr "Destinaţii de export"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export.php:61
 msgid "Error updating export target"
-msgstr "Eroare la actulizarea destinației exportulu"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export.php:64
 msgid "Successfully updated export target"
-msgstr "Destinația exportului a fost actualizată"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export.php:73
 msgid "Error deleting export target"
-msgstr "Eroare la ștergerea destinației de export"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export.php:76
 msgid "Successfully deleted export target"
@@ -12895,25 +12895,25 @@ msgstr ""
 #: ../../enterprise/godmode/servers/manage_export.php:129
 #: ../../enterprise/godmode/servers/manage_export_form.php:74
 msgid "Preffix"
-msgstr "Prefix"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export.php:129
 #: ../../enterprise/godmode/servers/manage_export_form.php:86
 msgid "Transfer mode"
-msgstr "Mod transfer"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export_form.php:69
 #: ../../include/functions_servers.php:360
 msgid "Export server"
-msgstr "Server de export"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export_form.php:107
 msgid "Target directory"
-msgstr "Director destinaţie"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export_form.php:111
 msgid "Extra options"
-msgstr "Opţiuni suplimentare"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_item_editor.php:49
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:73
@@ -13005,7 +13005,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.template_list_item.php:212
 #: ../../godmode/reporting/reporting_builder.list_items.php:262
 msgid "Options"
-msgstr "Opțiuni"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_list_item.php:244
 #: ../../godmode/netflow/nf_item_list.php:204
@@ -13373,7 +13373,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:936
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1047
 msgid "Order"
-msgstr "Ordine"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1307
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:170
@@ -13528,7 +13528,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1559
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1097
 msgid "SLA Limit (%)"
-msgstr "Limita SLA (%)"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1568
 msgid "Please save the SLA template for start to add items in this list."
@@ -13584,7 +13584,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.main.php:123
 #: ../../godmode/events/event_responses.editor.php:83
 msgid "Width"
-msgstr "Lățime"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:174
 #: ../../godmode/setup/gis_step_2.php:258
@@ -13592,18 +13592,18 @@ msgstr "Lățime"
 #: ../../godmode/reporting/graph_builder.main.php:127
 #: ../../godmode/events/event_responses.editor.php:85
 msgid "Height"
-msgstr "Înălțime"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:181
 msgid "3 hours"
-msgstr "3 ore"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:182
 #: ../../enterprise/godmode/agentes/inventory_manager.php:174
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:194
 #: ../../include/ajax/module.php:79
 msgid "6 hours"
-msgstr "6 ore"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:185
 #: ../../enterprise/godmode/agentes/inventory_manager.php:177
@@ -13612,17 +13612,17 @@ msgstr "6 ore"
 #: ../../include/functions_netflow.php:885
 #: ../../godmode/setup/performance.php:84
 msgid "2 days"
-msgstr "2 zile"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:186
 msgid "4 days"
-msgstr "4 zile"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:187
 #: ../../include/functions_netflow.php:855
 #: ../../godmode/setup/performance.php:86
 msgid "Last week"
-msgstr "Săptămâna trecută"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:188
 #: ../../enterprise/godmode/agentes/inventory_manager.php:179
@@ -13630,28 +13630,28 @@ msgstr "Săptămâna trecută"
 #: ../../include/functions.php:1676 ../../include/functions_netflow.php:854
 #: ../../include/functions_netflow.php:887 ../../include/ajax/module.php:83
 msgid "15 days"
-msgstr "15 zile"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:189
 #: ../../include/functions_netflow.php:856
 #: ../../godmode/setup/performance.php:88
 msgid "Last month"
-msgstr "Ultima lună"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:190
 #: ../../include/functions_netflow.php:857
 msgid "2 months"
-msgstr "2 luni"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:191
 #: ../../include/functions_netflow.php:859 ../../include/ajax/module.php:86
 msgid "6 months"
-msgstr "6 luni"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:192
 #: ../../include/functions.php:1680 ../../include/ajax/module.php:87
 msgid "1 year"
-msgstr "1 an"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:91
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:91
@@ -13705,7 +13705,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:219
 #: ../../godmode/reporting/reporting_builder.php:371
 msgid "Private"
-msgstr "Privat"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:128
 msgid "SLA min value"
@@ -13970,7 +13970,7 @@ msgstr ""
 #: ../../include/functions.php:1677 ../../include/functions_netflow.php:889
 #: ../../include/ajax/module.php:84
 msgid "1 month"
-msgstr "1 lună"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:183
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:203
@@ -13979,7 +13979,7 @@ msgstr "1 lună"
 #: ../../godmode/agentes/module_manager_editor_wmi.php:51
 #: ../../godmode/massive/massive_edit_modules.php:392
 msgid "Username"
-msgstr "Nume utilizator"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:188
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:209
@@ -14100,7 +14100,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:141
 msgid "Source group"
-msgstr "Grup sursă"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:183
 msgid "To agent(s):"
@@ -14288,7 +14288,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/menu.php:23 ../../enterprise/godmode/menu.php:96
 msgid "Duplicate config"
-msgstr "Configurație duplicată"
+msgstr ""
 
 #: ../../enterprise/godmode/menu.php:41
 msgid "Manage policies"
@@ -14720,7 +14720,7 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_agents.php:387
 #: ../../godmode/agentes/agent_manager.php:168
 msgid "This agent can be remotely configured"
-msgstr "Acest agent poate fi configurat de la distanţă"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:392
 msgid "This agent can not be remotely configured"
@@ -14787,7 +14787,7 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_linking.php:139
 #: ../../godmode/setup/links.php:107
 msgid "Link"
-msgstr "Legătură"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policies.php:171
 msgid "All policy agents added to delete queue"
@@ -15271,7 +15271,7 @@ msgstr ""
 #: ../../enterprise/godmode/alerts/alert_events.php:413
 #: ../../godmode/alerts/configure_alert_template.php:488
 msgid "Days of week"
-msgstr "Zilele săptămânii"
+msgstr ""
 
 #: ../../enterprise/godmode/alerts/alert_events.php:414
 #: ../../include/functions.php:755
@@ -15333,13 +15333,13 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:361
 #: ../../godmode/alerts/configure_alert_template.php:519
 msgid "Min. number of alerts"
-msgstr "Numărul min. de alarme"
+msgstr ""
 
 #: ../../enterprise/godmode/alerts/alert_events.php:443
 #: ../../godmode/snmpconsole/snmp_alert.php:364
 #: ../../godmode/alerts/configure_alert_template.php:522
 msgid "Max. number of alerts"
-msgstr "Numărul max. de alarme"
+msgstr ""
 
 #: ../../enterprise/godmode/alerts/alert_events.php:447
 msgid "Field 1"
@@ -15477,7 +15477,7 @@ msgstr ""
 #: ../../enterprise/extensions/backup/main.php:88
 #: ../../godmode/agentes/planned_downtime.list.php:200
 msgid "Running"
-msgstr "În execuţie"
+msgstr ""
 
 #: ../../enterprise/extensions/backup/main.php:113
 msgid "Lost"
@@ -15904,7 +15904,7 @@ msgstr ""
 
 #: ../../include/functions_events.php:784
 msgid "Latest events"
-msgstr "Ultimele evenimente"
+msgstr ""
 
 #: ../../include/functions_events.php:914
 msgid "Events -by module-"
@@ -15942,7 +15942,7 @@ msgstr ""
 #: ../../include/functions_events.php:1060
 #: ../../include/functions_graph.php:2108
 msgid "SYSTEM"
-msgstr "SYSTEM"
+msgstr ""
 
 #: ../../include/functions_events.php:1063
 msgid "Recon server detected a new host"
@@ -15980,7 +15980,7 @@ msgstr ""
 
 #: ../../include/functions_events.php:1326 ../../include/functions.php:881
 msgid "Alert manual validation"
-msgstr "Validare manuală alarmă"
+msgstr ""
 
 #: ../../include/functions_events.php:1329 ../../include/functions.php:882
 msgid "Recon host detected"
@@ -15994,14 +15994,14 @@ msgstr ""
 #: ../../include/functions_graph.php:2161
 #: ../../include/functions_graph.php:2162
 msgid "Maintenance"
-msgstr "Mentenanţă"
+msgstr ""
 
 #: ../../include/functions_events.php:1375 ../../include/functions.php:712
 #: ../../include/functions.php:910 ../../include/functions.php:944
 #: ../../include/functions_graph.php:2165
 #: ../../include/functions_graph.php:2166
 msgid "Informational"
-msgstr "Informaţional"
+msgstr ""
 
 #: ../../include/functions_events.php:1476
 msgid "Agent address"
@@ -16176,15 +16176,15 @@ msgstr ""
 #: ../../include/functions_reporting.php:2229
 #: ../../godmode/snmpconsole/snmp_alert.php:468
 msgid "Times fired"
-msgstr "Numărul de declanşări"
+msgstr ""
 
 #: ../../include/functions_reporting.php:2054
 msgid "Alerts not fired"
-msgstr "Alarme nedeclanşate"
+msgstr ""
 
 #: ../../include/functions_reporting.php:2061
 msgid "Total alerts monitored"
-msgstr "Nr. total de alarme monitorizate"
+msgstr ""
 
 #: ../../include/functions_reporting.php:2112
 msgid "Total monitors"
@@ -16394,7 +16394,7 @@ msgstr ""
 #: ../../include/functions_db.php:1044 ../../godmode/db/db_refine.php:33
 #: ../../godmode/menu.php:240
 msgid "Database debug"
-msgstr "Depanare baza de date"
+msgstr ""
 
 #: ../../include/functions_db.php:1060
 msgid "SQL sentence"
@@ -16418,11 +16418,11 @@ msgstr ""
 
 #: ../../include/functions.php:152
 msgid "You don't have enough permission to access this resource"
-msgstr "Nu aveţi permisiunile necesare pentru a accesa această resursă"
+msgstr ""
 
 #: ../../include/functions.php:169 ../../include/functions.php:173
 msgid "Unmanaged error"
-msgstr "Eroare netratată"
+msgstr ""
 
 #: ../../include/functions.php:246
 msgid "."
@@ -16436,7 +16436,7 @@ msgstr ""
 #: ../../godmode/db/db_main.php:82 ../../godmode/db/db_main.php:88
 #: ../../godmode/setup/setup_visuals.php:96
 msgid "days"
-msgstr "zile"
+msgstr ""
 
 #: ../../include/functions.php:431 ../../include/functions_html.php:610
 #: ../../godmode/setup/setup_visuals.php:97
@@ -16451,12 +16451,12 @@ msgstr ""
 #: ../../include/functions.php:433 ../../include/functions_html.php:606
 #: ../../godmode/setup/setup_visuals.php:94
 msgid "minutes"
-msgstr "minute"
+msgstr "minit"
 
 #: ../../include/functions.php:434 ../../include/functions_html.php:607
 #: ../../godmode/setup/setup_visuals.php:95
 msgid "hours"
-msgstr "ore"
+msgstr ""
 
 #: ../../include/functions.php:438
 msgid "s"
@@ -16523,7 +16523,7 @@ msgstr ""
 #: ../../include/functions.php:1675 ../../include/functions_netflow.php:888
 #: ../../include/ajax/module.php:82
 msgid "1 week"
-msgstr "1 săptămînă"
+msgstr ""
 
 #: ../../include/functions.php:1678 ../../include/functions.php:1679
 #, php-format
@@ -16650,7 +16650,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:853
 #: ../../include/functions_netflow.php:886
 msgid "5 days"
-msgstr "5 zile"
+msgstr ""
 
 #: ../../include/functions_netflow.php:858 ../../include/ajax/module.php:85
 msgid "3 months"
@@ -16741,19 +16741,19 @@ msgstr ""
 #: ../../include/functions_incidents.php:54
 #: ../../include/functions_graph.php:1810
 msgid "Informative"
-msgstr "Informativ"
+msgstr ""
 
 #: ../../include/functions_incidents.php:30
 #: ../../include/functions_incidents.php:57
 #: ../../include/functions_graph.php:1811
 msgid "Low"
-msgstr "Scăzută"
+msgstr ""
 
 #: ../../include/functions_incidents.php:31
 #: ../../include/functions_incidents.php:60
 #: ../../include/functions_graph.php:1812
 msgid "Medium"
-msgstr "Mediu"
+msgstr ""
 
 #: ../../include/functions_incidents.php:32
 #: ../../include/functions_incidents.php:63
@@ -16765,32 +16765,32 @@ msgstr ""
 #: ../../include/functions_incidents.php:66
 #: ../../include/functions_graph.php:1814
 msgid "Very serious"
-msgstr "Foarte serios"
+msgstr ""
 
 #: ../../include/functions_incidents.php:87
 #: ../../include/functions_incidents.php:106
 msgid "Active incidents"
-msgstr "Incidente active"
+msgstr ""
 
 #: ../../include/functions_incidents.php:88
 #: ../../include/functions_incidents.php:109
 msgid "Active incidents, with comments"
-msgstr "Incidente active, cu comentarii"
+msgstr ""
 
 #: ../../include/functions_incidents.php:89
 #: ../../include/functions_incidents.php:112
 msgid "Rejected incidents"
-msgstr "Incidente respinse"
+msgstr ""
 
 #: ../../include/functions_incidents.php:90
 #: ../../include/functions_incidents.php:115
 msgid "Expired incidents"
-msgstr "Incidente expirate"
+msgstr ""
 
 #: ../../include/functions_incidents.php:91
 #: ../../include/functions_incidents.php:118
 msgid "Closed incidents"
-msgstr "Incidente închise"
+msgstr ""
 
 #: ../../include/functions_gis.php:27 ../../include/functions_gis.php:31
 #: ../../include/functions_gis.php:36
@@ -16802,7 +16802,7 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.data.php:90
 #: ../../godmode/reporting/visual_console_builder.elements.php:85
 msgid "Background"
-msgstr "Fundal"
+msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:54
 #: ../../include/functions_visual_map_editor.php:351
@@ -16839,13 +16839,13 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.elements.php:58
 #: ../../godmode/reporting/visual_console_builder.elements.php:131
 msgid "Label"
-msgstr "Etichetă"
+msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:94
 #: ../../godmode/reporting/visual_console_builder.wizard.php:89
 #: ../../godmode/reporting/visual_console_builder.elements.php:59
 msgid "Image"
-msgstr "Imagine"
+msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:102
 msgid "Enable link"
@@ -16906,7 +16906,7 @@ msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:324
 msgid "Label color"
-msgstr "Culoare etichetă"
+msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:354
 #: ../../include/functions_visual_map.php:1841
@@ -17166,21 +17166,21 @@ msgstr ""
 #: ../../include/functions_graph.php:1638
 #: ../../include/functions_graph.php:1646
 msgid "Today"
-msgstr "Astăzi"
+msgstr ""
 
 #: ../../include/functions_graph.php:1627
 #: ../../include/functions_graph.php:1633
 #: ../../include/functions_graph.php:1639
 #: ../../include/functions_graph.php:1646
 msgid "Week"
-msgstr "Săptămână"
+msgstr ""
 
 #: ../../include/functions_graph.php:1628
 #: ../../include/functions_graph.php:1634
 #: ../../include/functions_graph.php:1640
 #: ../../include/functions_graph.php:1647 ../../include/functions_html.php:717
 msgid "Month"
-msgstr "Luna"
+msgstr ""
 
 #: ../../include/functions_graph.php:1629
 #: ../../include/functions_graph.php:1635
@@ -17188,7 +17188,7 @@ msgstr "Luna"
 #: ../../include/functions_graph.php:1644
 #: ../../include/functions_graph.php:1647
 msgid "Months"
-msgstr "Luni"
+msgstr ""
 
 #: ../../include/functions_graph.php:1630
 #: ../../include/functions_graph.php:1636
@@ -17196,7 +17196,7 @@ msgstr "Luni"
 #: ../../include/functions_graph.php:1644
 #: ../../include/functions_graph.php:1647
 msgid "Older"
-msgstr "Mai vechi"
+msgstr ""
 
 #: ../../include/functions_graph.php:1831
 #: ../../include/functions_graph.php:1843
@@ -17304,7 +17304,7 @@ msgstr ""
 
 #: ../../include/functions_html.php:609
 msgid "weeks"
-msgstr "săptămâni"
+msgstr ""
 
 #: ../../include/functions_html.php:716
 msgid "Month day"
@@ -17492,7 +17492,7 @@ msgstr ""
 #: ../../include/functions_config.php:338
 #: ../../godmode/setup/performance.php:63
 msgid "Max. days before compact data"
-msgstr "Nr. max. de zile înainte de compactarea datelor"
+msgstr ""
 
 #: ../../include/functions_config.php:340
 #: ../../godmode/setup/performance.php:76
@@ -17522,7 +17522,7 @@ msgstr ""
 #: ../../include/functions_config.php:376
 #: ../../godmode/setup/setup_visuals.php:116
 msgid "Style template"
-msgstr "Şablon de stil"
+msgstr ""
 
 #: ../../include/functions_config.php:382
 #: ../../godmode/setup/setup_visuals.php:132
@@ -17739,7 +17739,7 @@ msgstr ""
 #: ../../include/functions_menu.php:394
 #: ../../godmode/users/profile_list.php:206
 msgid "Agents management"
-msgstr "Administrare agenţi"
+msgstr ""
 
 #: ../../include/functions_menu.php:396
 msgid "View agent"
@@ -17786,7 +17786,7 @@ msgstr ""
 
 #: ../../include/functions_menu.php:413 ../../godmode/menu.php:41
 msgid "Manage groups"
-msgstr "Administrare grupuri"
+msgstr ""
 
 #: ../../include/functions_menu.php:414
 msgid "Manage module groups"
@@ -17922,7 +17922,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_network.php:56
 #: ../../extensions/snmp_explorer.php:278
 msgid "Target IP"
-msgstr "IP destinaţie"
+msgstr ""
 
 #: ../../include/functions_snmp_browser.php:382
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:61
@@ -19013,7 +19013,7 @@ msgstr ""
 
 #: ../../mobile/include/user.class.php:180
 msgid "Login"
-msgstr "Autentificare"
+msgstr "Daftar Masuk"
 
 #: ../../godmode/db/db_purge.php:37 ../../godmode/db/db_event.php:21
 #: ../../godmode/db/db_audit.php:19 ../../godmode/db/db_info.php:25
@@ -19027,7 +19027,7 @@ msgstr ""
 
 #: ../../godmode/db/db_purge.php:42
 msgid "Get data from agent"
-msgstr "Obţinere date de la agent"
+msgstr ""
 
 #: ../../godmode/db/db_purge.php:73
 msgid "Purge task launched for agent"
@@ -19035,19 +19035,17 @@ msgstr ""
 
 #: ../../godmode/db/db_purge.php:73
 msgid "Data older than"
-msgstr "Date mai vechi decât"
+msgstr ""
 
 #: ../../godmode/db/db_purge.php:74
 msgid ""
 "Please be patient. This operation can take a long time depending on the "
 "amount of modules."
 msgstr ""
-"Aveţi răbdare. Această operaţie poate dura mai mult în funcţie de numărul de "
-"module."
 
 #: ../../godmode/db/db_purge.php:88
 msgid "Deleting records for module"
-msgstr "Se şterg înregistrările pentru modul"
+msgstr ""
 
 #: ../../godmode/db/db_purge.php:132
 msgid "Total records deleted: "
@@ -19055,15 +19053,15 @@ msgstr ""
 
 #: ../../godmode/db/db_purge.php:137
 msgid "Deleting records for all agents"
-msgstr "Se şterg înregistrările pentru toţi agenţii"
+msgstr ""
 
 #: ../../godmode/db/db_purge.php:150
 msgid "Choose agent"
-msgstr "Selectare agent"
+msgstr ""
 
 #: ../../godmode/db/db_purge.php:156
 msgid "Select the agent you want information about"
-msgstr "Selectaţi agentul despre care doriţi informaţii"
+msgstr ""
 
 #: ../../godmode/db/db_purge.php:158
 msgid "Get data"
@@ -19108,7 +19106,7 @@ msgstr ""
 
 #: ../../godmode/db/db_purge.php:285
 msgid "Total number of packets"
-msgstr "Număr total de pachete"
+msgstr ""
 
 #: ../../godmode/db/db_purge.php:291 ../../godmode/db/db_event.php:66
 #: ../../godmode/db/db_audit.php:92
@@ -19161,11 +19159,11 @@ msgstr ""
 
 #: ../../godmode/db/db_event.php:55 ../../godmode/db/db_audit.php:81
 msgid "Records"
-msgstr "Înregistrări"
+msgstr ""
 
 #: ../../godmode/db/db_event.php:57 ../../godmode/db/db_audit.php:84
 msgid "First date"
-msgstr "Prima dată"
+msgstr ""
 
 #: ../../godmode/db/db_event.php:60
 msgid "Latest data"
@@ -19217,7 +19215,7 @@ msgstr ""
 
 #: ../../godmode/db/db_audit.php:88
 msgid "Latest date"
-msgstr "Cea mai recentă dată"
+msgstr ""
 
 #: ../../godmode/db/db_audit.php:97
 msgid "Purge audit data over 90 days"
@@ -19293,7 +19291,7 @@ msgstr ""
 
 #: ../../godmode/db/db_refine.php:77
 msgid "Get Info"
-msgstr "Obţinere Informaţii"
+msgstr ""
 
 #: ../../godmode/db/db_refine.php:90
 msgid "Purge data out of these limits"
@@ -19301,11 +19299,11 @@ msgstr ""
 
 #: ../../godmode/db/db_refine.php:92 ../../godmode/db/db_refine.php:94
 msgid "Minimum"
-msgstr "Minim"
+msgstr ""
 
 #: ../../godmode/db/db_refine.php:97 ../../godmode/db/db_refine.php:99
 msgid "Maximum"
-msgstr "Maxim"
+msgstr ""
 
 #: ../../godmode/db/db_main.php:69
 msgid "Current database maintenance setup"
@@ -19388,7 +19386,7 @@ msgstr ""
 
 #: ../../godmode/db/db_sanity.php:57
 msgid "Checking database consistency"
-msgstr "Se verifică consistenţa bazei de date"
+msgstr ""
 
 #: ../../godmode/db/db_sanity.php:81
 msgid "Check database consistency: Done"
@@ -19415,7 +19413,7 @@ msgstr ""
 
 #: ../../godmode/db/db_sanity.php:120
 msgid "Delete non-initialized modules now"
-msgstr "Ştergere imediată a modulelor neiniţializate"
+msgstr ""
 
 #: ../../godmode/setup/os.php:70
 msgid "Fail creating OS"
@@ -19459,7 +19457,7 @@ msgstr ""
 
 #: ../../godmode/setup/performance.php:83
 msgid "Last day"
-msgstr "Ultima zi"
+msgstr ""
 
 #: ../../godmode/setup/performance.php:85
 msgid "10 days"
@@ -19467,7 +19465,7 @@ msgstr ""
 
 #: ../../godmode/setup/performance.php:87
 msgid "2 weeks"
-msgstr "2 săptămâni"
+msgstr ""
 
 #: ../../godmode/setup/performance.php:90
 msgid "You can see this in SLA agent tab."
@@ -19558,27 +19556,27 @@ msgstr ""
 
 #: ../../godmode/setup/links.php:27
 msgid "Link management"
-msgstr "Administrare legături"
+msgstr ""
 
 #: ../../godmode/setup/links.php:39
 msgid "There was a problem creating link"
-msgstr "A apărut o problemă la crearea legăturii"
+msgstr ""
 
 #: ../../godmode/setup/links.php:56
 msgid "There was a problem modifying link"
-msgstr "A apărut o problemă la modificarea legăturii"
+msgstr ""
 
 #: ../../godmode/setup/links.php:67
 msgid "There was a problem deleting link"
-msgstr "A apărut o problemă la ștergerea legăturii"
+msgstr ""
 
 #: ../../godmode/setup/links.php:85 ../../godmode/setup/news.php:90
 msgid "Name error"
-msgstr "Eroare de nume"
+msgstr ""
 
 #: ../../godmode/setup/links.php:104 ../../godmode/setup/links.php:134
 msgid "Link name"
-msgstr "Nume legătură"
+msgstr ""
 
 #: ../../godmode/setup/links.php:130
 msgid "There isn't links"
@@ -19680,14 +19678,14 @@ msgstr ""
 
 #: ../../godmode/setup/news.php:28
 msgid "Site news management"
-msgstr "Administrare ştiri site"
+msgstr ""
 
 #: ../../godmode/setup/news.php:62
 #: ../../godmode/modules/manage_nc_groups.php:96
 #: ../../godmode/netflow/nf_edit_form.php:129
 #: ../../godmode/events/event_edit_filter.php:136
 msgid "Not updated. Error updating data"
-msgstr "Nu sa adus la zii.Eroare la aducerea la zii a datelor"
+msgstr ""
 
 #: ../../godmode/setup/news.php:138
 msgid "There are no defined news"
@@ -20047,7 +20045,7 @@ msgstr ""
 
 #: ../../godmode/modules/manage_network_components.php:488
 msgid "Max/Min"
-msgstr "Max/Min"
+msgstr ""
 
 #: ../../godmode/modules/manage_network_components.php:534
 msgid "There are no defined network components"
@@ -20055,7 +20053,7 @@ msgstr ""
 
 #: ../../godmode/modules/manage_network_components.php:540
 msgid "Create a new network component"
-msgstr "Crearea unei noi componente de reţea"
+msgstr ""
 
 #: ../../godmode/modules/manage_network_components.php:541
 msgid "Create a new plugin component"
@@ -20089,7 +20087,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components_form_wmi.php:166
 #: ../../godmode/agentes/module_manager_editor_wmi.php:70
 msgid "Field number"
-msgstr "Număr câmp"
+msgstr ""
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:42
 #: ../../godmode/modules/manage_network_components_form_wmi.php:174
@@ -20133,15 +20131,15 @@ msgstr ""
 
 #: ../../godmode/modules/module_list.php:28
 msgid "Defined modules"
-msgstr "Module definite"
+msgstr ""
 
 #: ../../godmode/modules/module_list.php:50
 msgid "Problem modifying module"
-msgstr "Probleme la modificarea modulului"
+msgstr ""
 
 #: ../../godmode/modules/module_list.php:52
 msgid "Module updated successfully"
-msgstr "Modulul a fost actualizat"
+msgstr ""
 
 #: ../../godmode/netflow/nf_item_list.php:39
 msgid "Report list"
@@ -20150,7 +20148,7 @@ msgstr ""
 #: ../../godmode/netflow/nf_item_list.php:44
 #: ../../godmode/netflow/nf_item_list.php:54
 msgid "Report items"
-msgstr "Articole raport"
+msgstr ""
 
 #: ../../godmode/netflow/nf_item_list.php:49
 msgid "Edit report"
@@ -20221,7 +20219,7 @@ msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:57
 msgid "Load"
-msgstr "Încărcare"
+msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:57
 msgid "Modules running on this server / Total modules of this type"
@@ -20250,7 +20248,7 @@ msgstr ""
 #: ../../godmode/servers/servers.build_table.php:98
 #: ../../godmode/servers/servers.build_table.php:103
 msgid "of"
-msgstr "din"
+msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:121
 msgid ""
@@ -20354,35 +20352,35 @@ msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:33
 msgid "Update Server"
-msgstr "Server de actualizare"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:57
 msgid "Pandora servers"
-msgstr "Servere Pandora"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:75
 msgid "Server deleted successfully"
-msgstr "Serverul a fost şters"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:78
 msgid "There was a problem deleting the server"
-msgstr "A apărut o problemă la ştergerea serverului"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:89
 msgid "Server updated successfully"
-msgstr "Serverul a fost actualizat cu succes"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:92
 msgid "There was a problem updating the server"
-msgstr "A apărut o problemă la actualizarea serverului"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:84
 msgid "Plugin creation"
-msgstr "Creare plugin"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:86
 msgid "Plugin update"
-msgstr "Actualizare plugin"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:113
 msgid "Plugin type"
@@ -20409,7 +20407,7 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:162
 msgid "Plugin command"
-msgstr "Comandă plugin"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:170
 msgid "Plug-in parameters"
@@ -20428,7 +20426,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_command.php:76
 #: ../../godmode/alerts/configure_alert_action.php:129
 msgid "Command"
-msgstr "Comanda"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:271
 msgid "Parameters macros"
@@ -20436,31 +20434,31 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:294
 msgid "Plugins registered in Pandora FMS"
-msgstr "Plugin-uri înregistrate în Pandora FMS"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:345
 msgid "Problem updating plugin"
-msgstr "Problemă la actualizarea plugin-ului"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:348
 msgid "Plugin updated successfully"
-msgstr "Extensie actualizată cu succes"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:400
 msgid "Problem creating plugin"
-msgstr "Problemă la crearea extensiei"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:404
 msgid "Plugin created successfully"
-msgstr "Plugin creat cu succes"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:414
 msgid "Problem deleting plugin"
-msgstr "Problemă la ştergerea plugin-ului"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:417
 msgid "Plugin deleted successfully"
-msgstr "Plugin-ul a fost şters"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:463
 msgid "All the modules that are using this plugin will be deleted"
@@ -20468,7 +20466,7 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:469
 msgid "There are no plugins in the system"
-msgstr "Nu există plugin-uri în sistem"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:519
 msgid ""
@@ -20553,7 +20551,7 @@ msgstr ""
 
 #: ../../godmode/users/user_list.php:119
 msgid "Users defined in Pandora"
-msgstr "Utilizatori definiţi în Pandora"
+msgstr ""
 
 #: ../../godmode/users/user_list.php:145 ../../godmode/users/user_list.php:148
 msgid "There was a problem deleting the user"
@@ -20590,7 +20588,7 @@ msgstr ""
 
 #: ../../godmode/users/user_list.php:324
 msgid "Create user"
-msgstr "Creare utilizator"
+msgstr ""
 
 #: ../../godmode/users/user_list.php:328
 #: ../../godmode/users/configure_user.php:134
@@ -20602,7 +20600,7 @@ msgstr ""
 #: ../../godmode/users/configure_profile.php:47
 #: ../../godmode/users/profile_list.php:51
 msgid "Profiles defined in Pandora"
-msgstr "Profile definite în Pandora"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:83
 msgid "Create profile"
@@ -20618,23 +20616,23 @@ msgstr ""
 
 #: ../../godmode/users/configure_profile.php:148
 msgid "View incidents"
-msgstr "Vizualizare incidente"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:150
 msgid "Edit incidents"
-msgstr "Editare incidente"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:152
 msgid "Manage incidents"
-msgstr "Administrare incidente"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:154
 msgid "View agents"
-msgstr "Vizualizare agenţi"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:156
 msgid "Edit agents"
-msgstr "Editare agenţi"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:158
 msgid "Disable agents"
@@ -20642,15 +20640,15 @@ msgstr ""
 
 #: ../../godmode/users/configure_profile.php:160
 msgid "Edit alerts"
-msgstr "Editare alarme"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:162 ../../godmode/menu.php:125
 msgid "Manage users"
-msgstr "Administrare utilizatori"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:164
 msgid "Manage Database"
-msgstr "Administrare Baza de Date"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:170
 msgid "Edit reports"
@@ -20658,7 +20656,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_profile.php:172
 msgid "Manage reports"
-msgstr "Administrare rapoarte"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:176
 msgid "Edit events"
@@ -20666,7 +20664,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_profile.php:180
 msgid "Pandora management"
-msgstr "Administrare Pandora"
+msgstr ""
 
 #: ../../godmode/users/configure_user.php:166
 msgid "User ID cannot be empty"
@@ -20768,19 +20766,19 @@ msgstr ""
 
 #: ../../godmode/users/profile_list.php:202
 msgid "System incidents reading"
-msgstr "Citire incidente de sistem"
+msgstr ""
 
 #: ../../godmode/users/profile_list.php:203
 msgid "System incidents writing"
-msgstr "Scriere incidente de sistem"
+msgstr ""
 
 #: ../../godmode/users/profile_list.php:204
 msgid "System incidents management"
-msgstr "Administrare incidente de sistem"
+msgstr ""
 
 #: ../../godmode/users/profile_list.php:205
 msgid "Agents reading"
-msgstr "Citire agenți"
+msgstr ""
 
 #: ../../godmode/users/profile_list.php:207
 msgid "Agents disable"
@@ -20792,15 +20790,15 @@ msgstr ""
 
 #: ../../godmode/users/profile_list.php:209
 msgid "Users management"
-msgstr "Administrare utilizatori"
+msgstr ""
 
 #: ../../godmode/users/profile_list.php:210
 msgid "Database management"
-msgstr "Administrare bază de date"
+msgstr ""
 
 #: ../../godmode/users/profile_list.php:211
 msgid "Alerts management"
-msgstr "Gestionare alarme"
+msgstr ""
 
 #: ../../godmode/users/profile_list.php:212
 msgid "Reports reading"
@@ -21042,7 +21040,7 @@ msgstr ""
 #: ../../godmode/gis_maps/index.php:68
 #: ../../godmode/reporting/map_builder.php:143
 msgid "Map name"
-msgstr "Numele hartii"
+msgstr ""
 
 #: ../../godmode/gis_maps/index.php:133
 msgid "Caution: Do you want delete the map?"
@@ -21079,7 +21077,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:475
 msgid "Create report"
-msgstr "Creare raport"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:145
 msgid "Items filter"
@@ -21187,20 +21185,20 @@ msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:202
 msgid "Graph builder"
-msgstr "Constructor de Grafice"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:222
 msgid "Graph stored successfully"
-msgstr "Graficul a fost salvat cu succes"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:222
 msgid "There was a problem storing Graph"
-msgstr "A apărut o problemă la salvarea graficului"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:225
 #: ../../godmode/agentes/configurar_agente.php:1055
 msgid "Module added successfully"
-msgstr "Modul adăugat cu succes"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:225
 msgid "There was a problem adding Module"
@@ -21288,7 +21286,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:470
 msgid "Not valid"
-msgstr "Invalid"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:868
 msgid "Target server"
@@ -21334,7 +21332,7 @@ msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:61
 msgid "Agents defined in Pandora"
-msgstr "Agenţi definiţi în Pandora"
+msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:86
 msgid "Success deleted agent."
@@ -21525,16 +21523,16 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:176
 #: ../../godmode/agentes/configurar_agente.php:576
 msgid "No agent name specified"
-msgstr "Nu a fost specificat numele agentului"
+msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:181
 #: ../../godmode/agentes/configurar_agente.php:581
 msgid "There is already an agent in the database with this name"
-msgstr "Există deja un agent cu acest nume în baza de date"
+msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:281 ../../godmode/menu.php:84
 msgid "Module templates"
-msgstr "Şabloane de module"
+msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:439
 msgid "SNMP explorer"
@@ -21595,7 +21593,7 @@ msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:939
 msgid "Module successfully updated"
-msgstr "Modul actualizat cu succes"
+msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:1029
 msgid ""
@@ -21690,7 +21688,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:157
 msgid "Not created. Error inserting data"
-msgstr "Nu a fost creat. Eroare la inserarea datelor"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:194
 msgid "Each planned downtime must have a different name"
@@ -21756,7 +21754,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:482
 msgid "Filter by group"
-msgstr "Filtrare după grup"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:488
 msgid "Available modules:"
@@ -21861,7 +21859,7 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:86
 msgid "Source module"
-msgstr "Modul sursă"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:114
 #: ../../godmode/agentes/module_manager_editor_prediction.php:136
@@ -21992,7 +21990,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:253
 #: ../../godmode/massive/massive_edit_agents.php:308
 msgid "Active"
-msgstr "Activ"
+msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:267
 #: ../../godmode/agentes/agent_manager.php:270
@@ -22036,11 +22034,11 @@ msgstr ""
 
 #: ../../godmode/menu.php:34
 msgid "Manage agents"
-msgstr "Administrare agenţi"
+msgstr ""
 
 #: ../../godmode/menu.php:43
 msgid "Scheduled downtime"
-msgstr "Oprire programată"
+msgstr ""
 
 #: ../../godmode/menu.php:44
 msgid "Manage custom fields"
@@ -22084,7 +22082,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:130
 msgid "Manage profiles"
-msgstr "Administrare profile"
+msgstr ""
 
 #: ../../godmode/menu.php:159
 msgid "Event filters"
@@ -22100,11 +22098,11 @@ msgstr ""
 
 #: ../../godmode/menu.php:172
 msgid "Manage servers"
-msgstr "Administrare servere"
+msgstr ""
 
 #: ../../godmode/menu.php:181
 msgid "Manage plugins"
-msgstr "Administrare plugin-uri"
+msgstr ""
 
 #: ../../godmode/menu.php:183
 msgid "Manage recon script"
@@ -22116,7 +22114,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:213
 msgid "Site news"
-msgstr "Ştiri site"
+msgstr ""
 
 #: ../../godmode/menu.php:218
 msgid "Diagnostic info"
@@ -22132,11 +22130,11 @@ msgstr ""
 
 #: ../../godmode/menu.php:241
 msgid "Database audit"
-msgstr "Audit baza de date"
+msgstr ""
 
 #: ../../godmode/menu.php:242
 msgid "Database event"
-msgstr "Eveniment baza de date"
+msgstr ""
 
 #: ../../godmode/groups/modu_group_list.php:54
 msgid "Module groups defined in Pandora"
@@ -22145,12 +22143,12 @@ msgstr ""
 #: ../../godmode/groups/modu_group_list.php:74
 #: ../../godmode/groups/group_list.php:157
 msgid "Group successfully created"
-msgstr "Grup creat cu succes"
+msgstr ""
 
 #: ../../godmode/groups/modu_group_list.php:77
 #: ../../godmode/groups/group_list.php:160
 msgid "There was a problem creating group"
-msgstr "A apărut o problemă la crearea grupului"
+msgstr ""
 
 #: ../../godmode/groups/modu_group_list.php:81
 #: ../../godmode/groups/modu_group_list.php:112
@@ -22165,22 +22163,22 @@ msgstr ""
 #: ../../godmode/groups/modu_group_list.php:105
 #: ../../godmode/groups/group_list.php:212
 msgid "Group successfully updated"
-msgstr "Grup actualizat cu succes"
+msgstr ""
 
 #: ../../godmode/groups/modu_group_list.php:108
 #: ../../godmode/groups/group_list.php:215
 msgid "There was a problem modifying group"
-msgstr "A apărut o problemă la modificarea grupului"
+msgstr ""
 
 #: ../../godmode/groups/modu_group_list.php:135
 #: ../../godmode/groups/group_list.php:244
 msgid "There was a problem deleting group"
-msgstr "A apărut o problemă la ştergerea grupului"
+msgstr ""
 
 #: ../../godmode/groups/modu_group_list.php:137
 #: ../../godmode/groups/group_list.php:241
 msgid "Group successfully deleted"
-msgstr "Grupul a fost şters"
+msgstr ""
 
 #: ../../godmode/groups/modu_group_list.php:201
 msgid "There are no defined module groups"
@@ -22196,7 +22194,7 @@ msgstr ""
 
 #: ../../godmode/groups/group_list.php:116
 msgid "Groups defined in Pandora"
-msgstr "Grupuri definitie în Pandora"
+msgstr ""
 
 #: ../../godmode/groups/group_list.php:164
 msgid "Each group must have a different name"
@@ -22217,16 +22215,16 @@ msgstr ""
 
 #: ../../godmode/groups/group_list.php:369
 msgid "There are no defined groups"
-msgstr "Nu sunt definite grupuri"
+msgstr ""
 
 #: ../../godmode/groups/group_list.php:374
 #: ../../godmode/groups/configure_group.php:90
 msgid "Create group"
-msgstr "Creare grup"
+msgstr ""
 
 #: ../../godmode/groups/configure_group.php:88
 msgid "Update group"
-msgstr "Actualizare grup"
+msgstr ""
 
 #: ../../godmode/groups/configure_group.php:133
 msgid "Propagate ACL"
@@ -22299,15 +22297,15 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:34
 #: ../../godmode/snmpconsole/snmp_alert.php:38
 msgid "Update alert"
-msgstr "Alarmă de actualizare"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:108
 msgid "There was a problem creating the alert"
-msgstr "A apărut o problemă la crearea alarmei"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:141
 msgid "There was a problem updating the alert"
-msgstr "A apărut o problemă la actualizarea alarmei"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:150
 msgid "Alert overview"
@@ -22315,7 +22313,7 @@ msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:229
 msgid "There was a problem deleting the alert"
-msgstr "A apărut o problemă la ştergerea alarmei"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:259
 #: ../../godmode/snmpconsole/snmp_alert.php:463
@@ -22357,7 +22355,7 @@ msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:383
 msgid "Other value"
-msgstr "Altă valoare"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:396
 #: ../../godmode/snmpconsole/snmp_alert.php:454
@@ -22366,7 +22364,7 @@ msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:442
 msgid "There are no SNMP alerts"
-msgstr "Nu sunt alarme SNMP"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:37
 msgid "SNMP Trap generator"
@@ -22653,7 +22651,7 @@ msgstr ""
 
 #: ../../godmode/massive/massive_enable_disable_alerts.php:165
 msgid "Disabled alerts"
-msgstr "Alarme dezactivate"
+msgstr ""
 
 #: ../../godmode/massive/massive_add_profiles.php:72
 msgid "Profiles added successfully"
@@ -23448,10 +23446,6 @@ msgid ""
 "of agents and modules running). To disable it, just delete extension or "
 "remove remote server address from Update Manager plugin setup."
 msgstr ""
-"Administratorul de actualizări transmite informaţii anonime referitoare la "
-"utilizarea Pandora FMS (numărul de agenţi şi module active). Pentru "
-"dezactivarea acestei operaţii, doar ştergeţi extensia sau adresa serverului "
-"de la distanţă din configuraţia modulului de administrare a actualizărilor."
 
 #: ../../extensions/update_manager/update_pandora.php:105
 #: ../../extensions/update_manager/main.php:126
@@ -23524,11 +23518,11 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.ajax.php:525
 msgid "Your system is up-to-date"
-msgstr "Sistemul dumneavoastră este actualizat"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.ajax.php:530
 msgid "Server authorization rejected"
-msgstr "Autorizarea serverului nu a fost acceptată"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.ajax.php:542
 msgid "Server unknow error"
@@ -23536,11 +23530,11 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.ajax.php:547
 msgid "Id"
-msgstr "ld"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.ajax.php:553
 msgid "There's a new update for Pandora FMS"
-msgstr "Există o versiune actualizată a Pandora FMS"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.php:77
 msgid "Unsuccesful store conf data in DB."
@@ -23606,15 +23600,15 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:811
 msgid "Development"
-msgstr "Dezvoltare"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:812
 msgid "Testing"
-msgstr "Testare"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:823
 msgid "Code / binary directory"
-msgstr "Cod/director binar"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:37
 #: ../../extensions/update_manager/settings.php:39
@@ -23622,15 +23616,15 @@ msgstr "Cod/director binar"
 #: ../../extensions/update_manager/main.php:45
 #: ../../extensions/update_manager.php:234
 msgid "Update manager"
-msgstr "Administrator actualizări"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:39
 msgid "Settings"
-msgstr "Setări"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:58
 msgid "Update manager settings updated"
-msgstr "Setările pentru administratorul de actualizări au fost actualizate"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:69
 msgid "Customer key"
@@ -23642,27 +23636,27 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:78
 msgid "Update server path"
-msgstr "Cale server de actualizare"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:81
 msgid "Update server port"
-msgstr "Port server de actualizare"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:84
 msgid "Proxy server"
-msgstr "Server proxy"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:87
 msgid "Proxy port"
-msgstr "Portul proxy-ului"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:90
 msgid "Proxy user"
-msgstr "Utilizator proxy"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:93
 msgid "Proxy password"
-msgstr "Parolă proxy"
+msgstr ""
 
 #: ../../extensions/update_manager/settings.php:102
 msgid "WGET, no interactive, external command, fast"
@@ -23946,7 +23940,7 @@ msgstr ""
 
 #: ../../extensions/update_manager.php:235
 msgid "Update manager settings"
-msgstr "Aduceti la zi mangerul de setari"
+msgstr ""
 
 #: ../../extras/pandora_diag.php:90
 msgid "Pandora FMS Diagnostic tool"
@@ -23960,394 +23954,17 @@ msgstr ""
 msgid "Data value"
 msgstr ""
 
-#~ msgid "Pandora FMS Web Console"
-#~ msgstr "Consola Web a Pandora FMS"
-
-#~ msgid "Authentication Error"
-#~ msgstr "Eroare de autentificare"
-
-#~ msgid "Pandora FMS Help System"
-#~ msgstr "Sistemul de asistenţă al Pandora FMS"
-
-#~ msgid "Autorefresh"
-#~ msgstr "Reîmprospătare automată"
-
-#~ msgid "General information"
-#~ msgstr "Informaţii generale"
-
-#~ msgid "day"
-#~ msgstr "zi"
-
-#~ msgid "WMI Query"
-#~ msgstr "Interogare WMI"
-
-#~ msgid "TCP port"
-#~ msgstr "Port TCP"
-
-#~ msgid "Overwrite local changes"
-#~ msgstr "Suprascriere modificări locale"
-
-#~ msgid "Last Month"
-#~ msgstr "Luna trecută"
-
-#~ msgid "Two Months"
-#~ msgstr "Două luni"
-
-#~ msgid "Six Months"
-#~ msgstr "Şase luni"
-
-#~ msgid "Redraw"
-#~ msgstr "Redesenare"
-
-#~ msgid "Add item to report"
-#~ msgstr "Adăugare obiect la raport"
-
-#~ msgid "Reporting successfully created"
-#~ msgstr "Raportarea a fost creată cu succes"
-
-#~ msgid "Store"
-#~ msgstr "Salvare"
-
-#~ msgid "There was a problem creating reporting"
-#~ msgstr "A apărut o problemă la crearea raportării"
-
-#~ msgid "Reporting type"
-#~ msgstr "Tip raportare"
-
-#~ msgid "week"
-#~ msgstr "săptămână"
-
-#~ msgid "month"
-#~ msgstr "lună"
-
-#~ msgid "Report builder"
-#~ msgstr "Generator de rapoarte"
-
-#~ msgid "General configuration"
-#~ msgstr "Configuratie Generală"
-
-#~ msgid "Link successfully created"
-#~ msgstr "Legătură creată cu succes"
-
-#~ msgid "Link successfully updated"
-#~ msgstr "Legătură actualizată cu succes"
-
-#~ msgid "Manage Incidents"
-#~ msgstr "Administrare incidente"
-
-#~ msgid "Manage Agents"
-#~ msgstr "Administrare agenţi"
-
-#~ msgid "Manage User Rights"
-#~ msgstr "Administrare Drepturi Utilizator"
-
-#~ msgid "There was a problem adding module"
-#~ msgstr "A apărut o problemă la adăugarea modulului"
-
-#~ msgid "There was a problem updating agent"
-#~ msgstr "A apărut o problemă la actualizarea agentului"
-
-#~ msgid "Agent successfully updated"
-#~ msgstr "Agent actualizat cu succes"
-
-#~ msgid "There was a problem updating module"
-#~ msgstr "A apărut o problemă la actualizarea modulului"
-
-#~ msgid "Module deleted successfully"
-#~ msgstr "Modulul a fost şters"
-
-#~ msgid "Available templates"
-#~ msgstr "Şabloane disponibile"
-
-#~ msgid "Modules successfully added "
-#~ msgstr "Modulele au fost adăugate cu succes "
-
-#~ msgid "Planned Downtime Form"
-#~ msgstr "Formular pentru oprire programată"
-
-#~ msgid "Available Agents"
-#~ msgstr "Agenţi disponibili"
-
-#~ msgid "Plugin parameters"
-#~ msgstr "Parametri plugin"
-
-#~ msgid "Update agent"
-#~ msgstr "Actualizare agent"
-
-#~ msgid "User successfully deleted"
-#~ msgstr "Utilizatorul a fost şters"
-
-#~ msgid "Delete agents"
-#~ msgstr "Ştergere agenţi"
-
-#~ msgid "Event report"
-#~ msgstr "Raport evenimente"
-
-#~ msgid "Wrong module type"
-#~ msgstr "Tip modul eronat"
-
-#~ msgid "View users"
-#~ msgstr "Vizualizare utilizatori"
-
-#~ msgid "Validated event"
-#~ msgstr "Eveniment validat"
-
-#~ msgid "Pandora Agents"
-#~ msgstr "Agenţi Pandora"
-
-#~ msgid "Thurdsday"
-#~ msgstr "Joi"
-
-#~ msgid "Data from agent "
-#~ msgstr "Date de la agentul "
-
-#~ msgid "from"
-#~ msgstr "de la"
-
-#~ msgid "No module has been selected"
-#~ msgstr "Nu a fost selectat nici un modul"
-
-#~ msgid "Download file"
-#~ msgstr "Descărcare fișier"
-
-#~ msgid "Begin date (*)"
-#~ msgstr "Data de început (*)"
-
-#~ msgid "End date (*)"
-#~ msgstr "Data de sfârşit (*)"
-
-#~ msgid "Event graph by group"
-#~ msgstr "Grafic evenimente după grup"
-
-#~ msgid "User activity statistics"
-#~ msgstr "Statistici activitate utilizator"
-
-#~ msgid "Logged Out"
-#~ msgstr "Deconectat"
-
-#~ msgid "There was a problem creating SLA"
-#~ msgstr "A apărut o problemă la crearea SLA"
-
-#~ msgid "SLA was successfully delete"
-#~ msgstr "SLA a fost şters"
-
-#~ msgid "There was a problem deleting SLA"
-#~ msgstr "A apărut o problemă la ştergerea SLA"
-
-#~ msgid "SLAs defined"
-#~ msgstr "SLA-uri definite"
-
-#~ msgid "Network Server"
-#~ msgstr "Server de reţea"
-
-#~ msgid "Data Server"
-#~ msgstr "Server de Date"
-
-#~ msgid "Network profile"
-#~ msgstr "Profil de reţea"
-
-#~ msgid "User option"
-#~ msgstr "Utilizator"
-
-#~ msgid "Password option"
-#~ msgstr "Parola"
-
-#~ msgid "DB Maintenance"
-#~ msgstr "Mentenanţă BD"
-
-#~ msgid "DB Information"
-#~ msgstr "Informaţii BD"
-
-#~ msgid "Total Agents"
-#~ msgstr "Nr. total agenţi"
-
-#~ msgid " to "
-#~ msgstr " până la "
-
-#~ msgid " from "
-#~ msgstr " de la "
-
-#~ msgid "Display of last data modules received by agent"
-#~ msgstr "Afişarea ultimelor module de date primite de agent"
-
-#~ msgid "Agent general information"
-#~ msgstr "Informaţii generale agent"
-
-#~ msgid "Agents down"
-#~ msgstr "Agenţi opriţi"
-
-#~ msgid "Network Map"
-#~ msgstr "Hartă reţea"
-
-#~ msgid "Configuration detail"
-#~ msgstr "Detalii configuraţie"
-
-#~ msgid "Agents in group"
-#~ msgstr "Agenţi în grup"
-
-#~ msgid "Times Fired"
-#~ msgstr "Nr. declanşări"
-
-#~ msgid "General group report"
-#~ msgstr "Raport general grup"
-
-#~ msgid "Alert successfully updated"
-#~ msgstr "Alarmă actualizată cu succes"
-
-#~ msgid ""
-#~ "This is the Web Management System for Pandora FMS. From here you can manage "
-#~ "its agents, alerts and incidents. Session is open while activity exists."
-#~ msgstr ""
-#~ "Acesta este Sistemul de Administrare pe Web a aplic. Pandora. De aici se pot "
-#~ "administra agenţii, alarmele şi incidentele. Sesiunea este deschisă atât "
-#~ "timp cât există activitate."
-
-#~ msgid "More info"
-#~ msgstr "MAi multe informatii"
-
-#~ msgid "Map builder"
-#~ msgstr "Constructor de harti"
-
-#~ msgid "preview"
-#~ msgstr "Previzualizare"
-
-#~ msgid "Drag an element here to delete from the map"
-#~ msgstr "Trageti un element aici pentru a fi sters din harta"
-
-#~ msgid "Map element editor"
-#~ msgstr "Editor de elemente al hartii"
-
-#~ msgid "Drag an element here to edit the properties"
-#~ msgstr "Aduceti un element aici pentru a i modifica proprietatile"
-
-#~ msgid "Graph builder module list"
-#~ msgstr "Lista de module al constructorului de grafice"
-
-#~ msgid "Combined image render"
-#~ msgstr "Redare da imagini combinata"
-
-#~ msgid "Factor"
-#~ msgstr "Factor"
-
-#~ msgid "Render now"
-#~ msgstr "Reda acum"
-
-#~ msgid "SLA was successfully created"
-#~ msgstr "SLA a fost creat cu succes"
-
-#~ msgid "SLA report construction"
-#~ msgstr "Raport constructie SLA"
-
-#~ msgid "SNMP server"
-#~ msgstr "Server SNMP"
-
 #~ msgid "Users defined"
-#~ msgstr "Utilizatori definiţi"
-
-#~ msgid "Your system version number is"
-#~ msgstr "Numărul de versiune al sistemului tău"
-
-#~ msgid ""
-#~ "Update Manager is one of the most advanced features of Pandora FMS 2.0 "
-#~ "Enterprise version, for more information visit <a "
-#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
-#~ msgstr ""
-#~ "Administratorul de actualizări este unul dintre cele mai avansate trăsături "
-#~ "ale versiunii Enterprise a PandoraFMS 2.0, pentru mai multe informaţii "
-#~ "vizitaţi <a href=\\\"http://pandorafms.com\\\">http://pandorafms.com</a>."
-
-#~ msgid "There's a new update for Pandora"
-#~ msgstr "Există o versiune actualizată a Pandora"
-
-#~ msgid "Successfully created export target"
-#~ msgstr "Destinaţia de export a fost creată"
-
-#~ msgid "export targets"
-#~ msgstr "destinaţii de export"
-
-#~ msgid "There are no export targets configured"
-#~ msgstr "Nu există destinaţii de export configurate"
-
-#~ msgid "Transfer Mode"
-#~ msgstr "Mod de transfer"
-
-#~ msgid "IP address option"
-#~ msgstr "Opţiune adresă IP"
-
-#~ msgid "Port option"
-#~ msgstr "Opţiune port"
-
-#~ msgid "Alert successfully deleted"
-#~ msgstr "Alarma a fost ştearsă"
-
-#~ msgid "Manage SNMP console"
-#~ msgstr "Administrare consolă SNMP"
-
-#~ msgid "Alert successfully created"
-#~ msgstr "Alarma a fost creată"
-
-#~ msgid "Alert trigger"
-#~ msgstr "Declanşator alarmă"
-
-#~ msgid "Alert type"
-#~ msgstr "Tip alarmă"
-
-#~ msgid "Create Incidents"
-#~ msgstr "Creare incidente"
-
-#~ msgid "Edit Alerts"
-#~ msgstr "Editare alarme"
-
-#~ msgid "System Events"
-#~ msgstr "Evenimente de sistem"
-
-#~ msgid "Database export results"
-#~ msgstr "Rezultatele exportului din baza de date"
-
-#~ msgid "Module is not set"
-#~ msgstr "Modulul nu este setat"
-
-#~ msgid "Field #1 (Alias, name)"
-#~ msgstr "Câmp #1 (Alias, nume)"
-
-#~ msgid "Field #3 (Full Text)"
-#~ msgstr "Câmpul #3 (Text complet)"
-
-#~ msgid "Field #2 (Single Line)"
-#~ msgstr "Câmpul #2 (un singur rând)"
-
-#~ msgid "Succesfully deleted export target"
-#~ msgstr "Destinația de export a fost ștearsă"
-
-#~ msgid "Custom graph name"
-#~ msgstr "Nume de grafic personalizat"
-
-#~ msgid "Error creating export target"
-#~ msgstr "Eroare la crearea destinației de export"
-
-#~ msgid "Link successfully deleted"
-#~ msgstr "Legătura a fost ștearsă"
-
-#~ msgid "Pandora users"
-#~ msgstr "Utilizatori ai Pandora"
-
-#~ msgid "Database Management"
-#~ msgstr "Administrare bază de date"
-
-#~ msgid "Standalone CSV ascii file"
-#~ msgstr "Fișier CSV (ascii) de sine stătător"
+#~ msgstr "Pengguna tertakrif"
 
 #~ msgid "Your IP"
-#~ msgstr "IP-ul dumneavoastră"
-
-#~ msgid "You are"
-#~ msgstr "Dumneavoastră sunteți"
+#~ msgstr "IP anda"
 
 #~ msgid "minute"
-#~ msgstr "minut"
+#~ msgstr "minit"
+
+#~ msgid "Autorefresh"
+#~ msgstr "Autorefresh"
 
 #~ msgid "hour"
-#~ msgstr "oră"
-
-#~ msgid "Updating"
-#~ msgstr "Se actualizează"
+#~ msgstr "jam"

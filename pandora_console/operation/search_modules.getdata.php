@@ -137,7 +137,7 @@ if ($searchModules) {
 	}
 	
 	$totalModules = db_get_value_sql("SELECT COUNT(t1.id_agente_modulo) AS count_modules " . $chunk_sql);
-
+	
 	if(!$only_count) {
 		$select = "SELECT *, t1.nombre AS module_name, t2.nombre AS agent_name ";
 		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 

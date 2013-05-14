@@ -1,3 +1,22 @@
+2013-05-14 Mark Holland <mark@mark-holland.me.uk>
+	
+	* src/pandroid/agent/PandroidAgentListener.java: Moved the 
+	loading	of the config values to an asynctask to force that updating 
+	the values and then contacting the server and creating the 
+	notification happens after all the config values have been loaded.
+
+	* src/pandroid/agent/Status.java: On resuming the app
+	the loading of the last values has been moved to an asynctask to force
+	updating the ui to wait for all the values to be loaded.
+
+	* src/pandroid/agent/*.java: Applied the Correct Indentation function
+	of eclipse to all code.
+
+	* res/layout/*.xml: Applied the Correct Indentation function
+	of eclipse to all code.
+
+	* Pandroid Agent v3.0_iso-8859-1.apk: Updated to latest version.
+
 2013-05-01 Mark Holland <mark@mark-holland.me.uk>
 	
 	* src/pandroid/agent/PandroidAgentListener.java: Changed gps module

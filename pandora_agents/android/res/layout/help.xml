@@ -14,25 +14,22 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="10dip"
     android:background="#000000"
->
+    android:orientation="vertical"
+    android:padding="10dip" >
 
-	<ScrollView
-	    android:id="@+id/scrollView1"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent" >
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
 
-		<TextView
-		    android:id="@+id/help_text"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content" />
-
-	</ScrollView>
+        <TextView
+            android:id="@+id/help_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 
 </LinearLayout>

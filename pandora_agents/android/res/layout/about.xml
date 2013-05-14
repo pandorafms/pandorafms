@@ -20,36 +20,36 @@
     android:orientation="vertical"
     android:padding="10dip" >
 
-	<ImageView
-	    android:id="@+id/img_logo_about"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_gravity="center"
-	    android:layout_weight="0"
-	    android:contentDescription="@string/about_desc"
-	    android:src="@drawable/pandorafms_logo" />
+    <ImageView
+        android:id="@+id/img_logo_about"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:contentDescription="@string/about_desc"
+        android:src="@drawable/pandorafms_logo" />
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/pandroid_agent_copyright"
-	/>
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/licensed_under_gpl_str"
-		android:gravity="center_horizontal"
-	/>
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/develop_team_str"
-		android:gravity="left"
-	/>
-	<TextView
-		android:id="@+id/url_pandora"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-	/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pandroid_agent_copyright" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/licensed_under_gpl_str" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="@string/develop_team_str" />
+
+    <TextView
+        android:id="@+id/url_pandora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal" />
+
 </LinearLayout>

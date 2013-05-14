@@ -135,6 +135,7 @@ switch ($searchTab) {
 	case 'main':
 		$only_count = true;
 		require_once('search_agents.getdata.php');
+		require_once('search_agents.php');
 		require_once('search_users.getdata.php');
 		require_once('search_alerts.getdata.php');
 		require_once('search_graphs.getdata.php');

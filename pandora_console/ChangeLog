@@ -1,3 +1,15 @@
+2013-05-14 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/constants.php: added constant "ITEMS_TO_SHOW_IN_MAIN_TAB".
+	
+	* operation/search_agents.getdata.php, operation/search_agents.php,
+	operation/search_modules.getdata.php, operation/search_main.php,
+	operation/search_results.php: improved the views of global search.
+	
+	* images/visual_console.png: update Carla's work.
+	
+	* images/visual_console_green.png: added a green version.
+
 2013-05-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

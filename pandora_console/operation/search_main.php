@@ -28,64 +28,49 @@ echo '<br><div style="margin:auto; width:90%; padding: 10px; background: #fff">'
 
 $anyfound = false;
 
+$table->id = 'summary';
+$table->width = '98%';
+
+$table->style = array ();
+$table->style[0] = 'font-weight: bold; text-align: center;';
+$table->style[1] = 'font-weight: bold; text-align: center;';
+$table->style[2] = 'font-weight: bold; text-align: center;';
+$table->style[3] = 'font-weight: bold; text-align: center;';
+$table->style[4] = 'font-weight: bold; text-align: center;';
+$table->style[5] = 'font-weight: bold; text-align: center;';
+$table->style[6] = 'font-weight: bold; text-align: center;';
+$table->style[7] = 'font-weight: bold; text-align: center;';
+$table->style[8] = 'font-weight: bold; text-align: center;';
+$table->style[9] = 'font-weight: bold; text-align: center;';
+$table->style[10] = 'font-weight: bold; text-align: center;';
+$table->style[11] = 'font-weight: bold; text-align: center;';
+
+$table->data[0][0] = html_print_image ("images/agent.png", true, array ("title" => __('Agents found')));
+$table->data[0][1] = "<a href='index.php?search_category=agents&keywords=".$keyword."&head_search_keywords=Search'>" .
+	sprintf(__("Found %s"), $totalAgents) . "</a>";
+$table->data[0][2] = html_print_image ("images/module.png", true, array ("title" => __('Modules found')));
+$table->data[0][3] = "<a href='index.php?search_category=modules&keywords=".$keyword."&head_search_keywords=Search'>" .
+	sprintf(__("Found %s"), $totalModules) . "</a>";
+$table->data[0][4] = html_print_image ("images/bell.png", true, array ("title" => __('Alerts found')));
+$table->data[0][5] = "<a href='index.php?search_category=alerts&keywords=".$keyword."&head_search_keywords=Search'>" .
+	sprintf(__("Found %s"), $totalAlerts) . "</a>";
+$table->data[0][6] = html_print_image ("images/input_user.png", true, array ("title" => __('Users found')));
+$table->data[0][7] = "<a href='index.php?search_category=users&keywords=".$keyword."&head_search_keywords=Search'>" .
+	sprintf(__("Found %s"), $totalUsers) . "</a>";
+$table->data[0][8] = html_print_image ("images/chart_curve.png", true, array ("title" => __('Graphs found')));
+$table->data[0][9] = "<a href='index.php?search_category=graphs&keywords=".$keyword."&head_search_keywords=Search'>" .
+	sprintf(__("Found %s"), $totalGraphs) . "</a>";
+$table->data[0][8] = html_print_image ("images/reporting.png", true, array ("title" => __('Reports found')));
+$table->data[0][9] = "<a href='index.php?search_category=reports&keywords=".$keyword."&head_search_keywords=Search'>" .
+	sprintf(__("Found %s"), $totalReports) . "</a>";
+$table->data[0][10] = html_print_image ("images/visual_console_green.png", true, array ("title" => __('Maps found')));
+$table->data[0][11] = "<a href='index.php?search_category=maps&keywords=".$keyword."&head_search_keywords=Search'>" .
+	sprintf(__("Found %s"), $totalMaps) . "</a>";
+
+html_print_table($table);
+
 if ($searchAgents && $totalAgents > 0) {
-	echo '<fieldset class="databox tactical_set">';
-	echo '<legend>' . __('Agents') . '</legend>';
-	echo sprintf(__("%d results found"), $totalAgents) . " <a href='index.php?search_category=agents&keywords=".$keyword."&head_search_keywords=Search'>" . html_print_image('images/zoom.png', true, array('title' => __('Show results'))) . "</a>";
-	echo '</fieldset>';
-	$anyfound = true;
-}
-
-if ($searchModules && $totalModules > 0) {
-	echo '<fieldset class="databox tactical_set">';
-	echo '<legend>' . __('Modules') . '</legend>';
-	echo sprintf(__("%d results found"), $totalModules) . " <a href='index.php?search_category=modules&keywords=".$keyword."&head_search_keywords=Search'>" . html_print_image('images/zoom.png', true, array('title' => __('Show results'))) . "</a>";
-	echo '</fieldset>';
-	$anyfound = true;
-}
-
-if ($searchAlerts && $totalAlerts > 0) {
-	echo '<fieldset class="databox tactical_set">';
-	echo '<legend>' . __('Alerts') . '</legend>';
-	echo sprintf(__("%d results found"), $totalAlerts) . " <a href='index.php?search_category=alerts&keywords=".$keyword."&head_search_keywords=Search'>" . html_print_image('images/zoom.png', true, array('title' => __('Show results'))) . "</a>";
-	echo '</fieldset>';
-	$anyfound = true;
-}
-
-if ($searchUsers && $totalUsers > 0) {
-	echo '<fieldset class="databox tactical_set">';
-	echo '<legend>' . __('Users') . '</legend>';
-	echo sprintf(__("%d results found"), $totalUsers) . " <a href='index.php?search_category=users&keywords=".$keyword."&head_search_keywords=Search'>" . html_print_image('images/zoom.png', true, array('title' => __('Show results'))) . "</a>";
-	echo '</fieldset>';
-	$anyfound = true;
-}
-
-if ($searchGraphs && $totalGraphs > 0) {
-	echo '<fieldset class="databox tactical_set">';
-	echo '<legend>' . __('Graphs') . '</legend>';
-	echo sprintf(__("%d results found"), $totalGraphs) . " <a href='index.php?search_category=graphs&keywords=".$keyword."&head_search_keywords=Search'>" . html_print_image('images/zoom.png', true, array('title' => __('Show results'))) . "</a>";
-	echo '</fieldset>';
-	$anyfound = true;
-}
-
-if ($searchReports && $totalReports > 0) {
-	echo '<fieldset class="databox tactical_set">';
-	echo '<legend>' . __('Reports') . '</legend>';
-	echo sprintf(__("%d results found"), $totalReports) . " <a href='index.php?search_category=reports&keywords=".$keyword."&head_search_keywords=Search'>" . html_print_image('images/zoom.png', true, array('title' => __('Show results'))) . "</a>";
-	echo '</fieldset>';
-	$anyfound = true;
-}
-
-if ($searchMaps && $totalMaps > 0) {
-	echo '<fieldset class="databox tactical_set">';
-	echo '<legend>' . __('Maps') . '</legend>';
-	echo sprintf(__("%d results found"), $totalMaps) . " <a href='index.php?search_category=maps&keywords=".$keyword."&head_search_keywords=Search'>" . html_print_image('images/zoom.png', true, array('title' => __('Show results'))) . "</a>";
-	echo '</fieldset>';
-	$anyfound = true;
-}
-
-if(!$anyfound) {
-	echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
+	echo $list_agents;
 }
 
 echo '</div>';

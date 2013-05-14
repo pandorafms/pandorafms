@@ -175,22 +175,24 @@ if ($searchAgents) {
 			break;
 	}
 	
-	if($only_count) {
-		$totalAgents = db_get_value_sql('SELECT COUNT(id_agente) AS agent_count ' . $sql);
+	$select = 
+		"SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
+	if ($only_count) {
+		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
+			" LIMIT " . ITEMS_TO_SHOW_IN_MAIN_TAB . " OFFSET 0";
 	}
 	else {
-		$select = 
-			"SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
 		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
 			" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
-		
-		$query = $select . $sql . $limit;
-		
-		$agents = db_process_sql($query);
-		
-		if($agents !== false) {
-			$totalAgents = db_get_value_sql('SELECT COUNT(id_agente) AS agent_count ' . $sql);
-		}
+	}
+	
+	$query = $select . $sql . $limit;
+	
+	$agents = db_process_sql($query);
+	
+	if ($agents !== false) {
+		$totalAgents = db_get_value_sql(
+			'SELECT COUNT(id_agente) AS agent_count ' . $sql);
 	}
 }
 ?>

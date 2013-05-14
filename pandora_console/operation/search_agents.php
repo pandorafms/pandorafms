@@ -19,13 +19,19 @@ global $config;
 enterprise_include_once('include/functions_policies.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 
+if ($only_count) {
+	ob_start();
+}
+
 // TODO: CLEAN extra_sql
 $extra_sql = '';
 
 $searchAgents = check_acl($config['id_user'], 0, "AR");
 
 if (!$agents || !$searchAgents) {
-	echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
+	if (!$only_count) {
+		echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
+	}
 }
 else {
 	$table->cellpadding = 4;
@@ -34,18 +40,26 @@ else {
 	$table->class = "databox";
 	
 		$table->head = array ();
-		$table->head[0] = __('Agent') . ' ' .
-			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
-			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
-		$table->head[1] = __('OS'). ' ' .
-			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
-			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
-		$table->head[2] = __('Interval'). ' ' .
-			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp)) . '</a>' .
-			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown)) . '</a>';
-		$table->head[3] = __('Group'). ' ' .
-			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
-			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
+		if ($only_count) {
+			$table->head[0] = __('Agent');
+			$table->head[1] = __('OS');
+			$table->head[2] = __('Interval');
+			$table->head[3] = __('Group');
+		}
+		else {
+			$table->head[0] = __('Agent') . ' ' .
+				'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
+				'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
+			$table->head[1] = __('OS') . ' ' .
+				'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
+				'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
+			$table->head[2] = __('Interval') . ' ' .
+				'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp)) . '</a>' .
+				'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown)) . '</a>';
+			$table->head[3] = __('Group') . ' ' .
+				'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
+				'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
+		}
 	$table->head[4] = __('Modules');
 	$table->head[5] = __('Status');
 	$table->head[6] = __('Alerts');
@@ -71,12 +85,12 @@ else {
 		$agent_info = reporting_get_agent_module_info ($agent["id_agente"]);
 		
 		$counts_info = array('total_count' => $agent_info["modules"],
-				'normal_count' => $agent_info["monitor_normal"],
-				'critical_count' => $agent_info["monitor_critical"],
-				'warning_count' => $agent_info["monitor_warning"],
-				'unknown_count' => $agent_info["monitor_unknown"],
-				'fired_count' => $agent_info["monitor_alertsfired"]);
-
+			'normal_count' => $agent_info["monitor_normal"],
+			'critical_count' => $agent_info["monitor_critical"],
+			'warning_count' => $agent_info["monitor_warning"],
+			'unknown_count' => $agent_info["monitor_unknown"],
+			'fired_count' => $agent_info["monitor_alertsfired"]);
+		
 		$modulesCell = reporting_tiny_stats($counts_info, true);
 		
 		if ($agent['disabled']) {
@@ -114,9 +128,17 @@ else {
 	}
 	
 	echo "<br />";
-	ui_pagination ($totalAgents);
+	if (!$only_count) {
+		ui_pagination ($totalAgents);
+	}
 	html_print_table ($table);
 	unset($table);
-	ui_pagination ($totalAgents);
+	if (!$only_count) {
+		ui_pagination ($totalAgents);
+	}
+}
+
+if ($only_count) {
+	$list_agents = ob_get_clean();
 }
 ?>

@@ -1,3 +1,10 @@
+2013-05-14 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/alerts/alert_commands.php: fixed the ajax of
+	"get_alert_command".
+	
+	Fixes: #2214
+
 2013-05-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/config_process.php,

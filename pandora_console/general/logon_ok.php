@@ -34,6 +34,7 @@ ui_print_page_header (__('Welcome to Pandora FMS Web Console'));
 // Site news !
 // ---------------------------------------------------------------------------
 
+echo "<table><tr><td>";
 echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">';
 
 switch ($config["dbtype"]) {
@@ -158,9 +159,10 @@ foreach ($cells as $key => $row) {
 
 echo '</tbody></table>';
 echo "</div>";
-echo '<div id="activity" style="width:87%;">';
-echo "<br /><br />";
 
+echo "</td></tr><tr><td>";
+
+echo '<div id="activity" style="width:87%;">';
 // Show last activity from this user
 echo "<h4>" . __('This is your last activity in Pandora FMS console') . "</h4>";
 
@@ -230,4 +232,6 @@ echo "<div style='width:100%; overflow-x:auto;'>";
 html_print_table ($table);
 echo "</div>";
 echo "</div>"; // activity
+
+echo "</td></tr></table>";
 ?>

@@ -1,3 +1,9 @@
+2013-05-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	general/logon_ok.php: fix a layout error
+	in mail pandora screen
+
 2013-05-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor.php: By default start SNMP

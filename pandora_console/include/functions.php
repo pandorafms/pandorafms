@@ -1222,8 +1222,6 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 		$full_oid = explode ('=', $line);
 		if (isset ($full_oid[1])) {
 			$snmpwalk[$full_oid[0]] = $full_oid[1];
-		} else {
-			$snmpwalk[$full_oid[0]] = '';
 		}
 	}
 

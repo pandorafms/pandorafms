@@ -95,7 +95,7 @@ if (is_ajax ()) {
 
 		$snmpwalk = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 					$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-					$snmp3_privacy_method, $snmp3_privacy_pass, 1, "", $snmp_port);
+					$snmp3_privacy_method, $snmp3_privacy_pass, 1, ".", $snmp_port);
 
 		if ($snmpwalk === false) {
 			echo json_encode ($snmpwalk);

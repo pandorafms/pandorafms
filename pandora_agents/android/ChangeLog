@@ -1,5 +1,9 @@
 2013-05-15 Mark Holland <mark@mark-holland.me.uk>
 
+	* Pandroid Agent v3.0_iso-8859-1.apk: Updated to latest version.
+
+2013-05-15 Mark Holland <mark@mark-holland.me.uk>
+
     * src/pandroid/agent/PandroidAgentListener.java: Possibly fixed
     notification disappearing, agent running > 24 hours and notification
     still present.

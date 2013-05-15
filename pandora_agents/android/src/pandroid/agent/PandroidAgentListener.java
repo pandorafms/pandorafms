@@ -189,6 +189,13 @@ public class PandroidAgentListener extends Service {
 		@Override
 		protected void onPostExecute(Void unused)
 		{
+			
+//			SharedPreferences agentPreferences = getApplicationContext().getSharedPreferences(
+//					getApplicationContext().getString(R.string.const_string_preferences),
+//					Activity.MODE_PRIVATE);
+//			
+//			String NotificationCheck = agentPreferences.getString("NotificationCheck", "enabled");
+			
 
 			updateValues();
 			contact();
@@ -205,7 +212,7 @@ public class PandroidAgentListener extends Service {
 				notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
 
-				if(Core.NotificationCheck == "enabled"){
+				if(Core.NotificationCheck.equals("enabled")){
 					CancelNotification(getApplicationContext(),42);
 					notificationManager.notify(42, notification);
 				}

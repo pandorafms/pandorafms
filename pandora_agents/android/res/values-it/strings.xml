@@ -142,6 +142,7 @@
 	<string name="HelloSignalReport">"Report Ciao segnale"</string>
 	<string name="BatteryLevelReport">"Livello segnala batteria"</string>
 	<string name="RoamingReport">"Segnalare se il roaming"</string>
+    <string name="InventoryReport">Rapporto inventario delle applicazioni installate</string>
 	
 	
 	<string name="notification_title">Pandroid</string>

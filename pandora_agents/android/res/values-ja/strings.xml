@@ -140,6 +140,7 @@
 	<string name="HelloSignalReport">"Helloシグナルをレポート"</string>
 	<string name="BatteryLevelReport">"バッテリー残量をレポート"</string>
 	<string name="RoamingReport">"ローミング中かどうかをレポート"</string>
+    <string name="InventoryReport">インストールされているアプリのレポート目録</string>
 	
 	<string name="notification_title">Pandroid</string>
 	<string name="notification_message">エージェント実行中</string>

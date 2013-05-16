@@ -142,7 +142,8 @@
 	<string name="HelloSignalReport">"Relatório Olá sinal"</string>
 	<string name="BatteryLevelReport">"Relatório de nível da bateria"</string>
 	<string name="RoamingReport">"Relatar se de roaming"</string>
-	
+    <string name="InventoryReport">Relatório de inventário de aplicativos instalados</string>
+
 	<string name="notification_title">Pandroid</string>
 	<string name="notification_message">Agente está em execução</string>
 	<string name="ticker_text">Ligar…</string>

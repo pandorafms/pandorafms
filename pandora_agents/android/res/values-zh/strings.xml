@@ -141,6 +141,7 @@
 	<string name="HelloSignalReport">"报告hello信号"</string>
 	<string name="BatteryLevelReport">"报告电池电量"</string>
 	<string name="RoamingReport">"报告如果漫游"</string>
+    <string name="InventoryReport">报告库存安装的应用程序</string>
 	
 	<string name="notification_title">Pandroid</string>
 	<string name="notification_message">代理正在运行</string>

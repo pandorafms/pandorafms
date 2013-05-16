@@ -865,8 +865,6 @@ switch ($action) {
 						break;
 				}
 				
-				db_process_sql_begin();
-				
 				switch ($config["dbtype"]) {
 					case "mysql":
 						$resultOperationDB = db_process_sql_update('treport_content',
@@ -896,15 +894,6 @@ switch ($action) {
 							$resultOperationDB = db_process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem), 'AND', false);
 							break;
 					}
-					if ($resultOperationDB !== false) {
-						db_process_sql_commit();
-					}
-					else {
-						db_process_sql_rollback();
-					}
-				}
-				else {
-					db_process_sql_rollback();
 				}
 				break;
 		}

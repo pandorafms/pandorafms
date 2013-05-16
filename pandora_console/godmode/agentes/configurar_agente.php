@@ -919,7 +919,6 @@ if ($delete_module) { // DELETE agent module !
 	
 	//Init transaction
 	$error = 0;
-	db_process_sql_begin ();
 	
 	// First delete from tagente_modulo -> if not successful, increment
 	// error. NOTICE that we don't delete all data here, just marking for deletion
@@ -940,14 +939,14 @@ if ($delete_module) { // DELETE agent module !
 	$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_borrar_modulo));	
 	if ($result === false)
 		$error++;
-
+	
 	if (alerts_delete_alert_agent_module($id_borrar_modulo) === false)
 		$error++;
 	
 	$result = db_process_delete_temp('ttag_module', 'id_agente_modulo', $id_borrar_modulo);	
 	if ($result === false)
 		$error++;
-
+	
 	// Trick to detect if we are deleting a synthetic module (avg or arithmetic)
 	// If result is empty then module doesn't have this type of submodules
 	$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_borrar_modulo));
@@ -973,22 +972,20 @@ if ($delete_module) { // DELETE agent module !
 				$result = enterprise_hook('modules_delete_synthetic_operations', array($id_target_module, $id_borrar_modulo, $update_orders));
 			
 				if ($result === false)
-					$error++;				
+					$error++;
 				$count_components++;
 				$last_target_module = $id_target_module;
 			}
 		}
 	}
-
+	
 	//Check for errors
 	if ($error != 0) {
-		db_process_sql_rollback ();
 		ui_print_error_message (__('There was a problem deleting the module'));
 	}
 	else {
-		db_process_sql_commit ();
 		ui_print_success_message (__('Module deleted succesfully'));
-
+		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
 			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
@@ -1043,8 +1040,6 @@ if ($updateGIS) {
 	$previusAgentGISData = db_get_row_sql("SELECT *
 		FROM tgis_data_status WHERE tagente_id_agente = " . $idAgente);
 	
-	db_process_sql_begin();
-	
 	db_process_sql_update('tagente', array('update_gis_data' => $updateGisData),
 		array('id_agente' => $idAgente));
 		
@@ -1086,7 +1081,6 @@ if ($updateGIS) {
 			"description" => "Insert by Pandora Console"
 		));
 	}
-	db_process_sql_commit();
 }
 
 // -----------------------------------

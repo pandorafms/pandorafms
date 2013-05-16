@@ -50,12 +50,10 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	$values['id_grupo'] = $id_group;
 	$values['intervalo'] = $interval;
 	$values['direccion'] = $ip_address;
-
-	db_process_sql_begin ();
+	
 	
 	$id_agent = db_process_sql_insert ('tagente', $values);
 	if ($id_agent === false) {
-		db_process_sql_rollback ();
 		return false;
 	}
 	
@@ -73,7 +71,6 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 			'max_warning' => 1));
 	
 	if ($id_agent_module === false) {
-		db_process_sql_rollback ();
 		return false;
 	}
 	
@@ -90,14 +87,11 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 				'last_execution_try' => 0));
 	
 	if ($result === false) {
-		db_process_sql_rollback ();
 		return false;
 	}
 	
-	db_process_sql_commit ();
-	
 	db_pandora_audit ("Agent management", "New agent '$name' created");
-
+	
 	return $id_agent;
 }
 
@@ -617,7 +611,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			break;
 	}
 	$error = false;
-
+	
 	$repeated_modules = array();
 	foreach ($destiny_id_agents as $id_destiny_agent) {
 		foreach ($target_modules as $id_agent_module) {
@@ -626,21 +620,21 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			$module = modules_get_agentmodule ($id_agent_module);
 			if ($module === false)
 				return false;
-				
+			
 			$modules = agents_get_modules ($id_destiny_agent, false,
 				array ('nombre' => $module['nombre'], 'disabled' => false));
-
+			
 			// Keep all modules repeated
 			if (! empty ($modules)) {
 				$modules_repeated = array_pop (array_keys ($modules));
 				$result = $modules_repeated;
-				$repeated_modules[] = $modules_repeated;		
+				$repeated_modules[] = $modules_repeated;
 			}
 			else {
-			
+				
 				$result = modules_copy_agent_module_to_agent ($id_agent_module,
 					$id_destiny_agent);
-
+				
 				if ($result === false) {
 					$error = true;
 					break;
@@ -706,7 +700,8 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 				db_process_sql_rollback();
 				break;
 		}
-	} else {
+	}
+	else {
 		ui_print_success_message(__('Successfully copied'));
 		switch ($config['dbtype']) {
 			case "mysql":
@@ -1735,34 +1730,30 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
  */
 function agents_delete_agent ($id_agents, $disableACL = false) {
 	global $config;
-
+	
 	$error = false;
-
+	
 	//Convert single values to an array
 	if (! is_array ($id_agents))
-	$id_agents = (array) $id_agents;
-
-	//Start transaction
-	db_process_sql_begin ();
-
+		$id_agents = (array) $id_agents;
+	
 	foreach ($id_agents as $id_agent) {
 		$id_agent = (int) $id_agent; //Cast as integer
 		if ($id_agent < 1)
 		continue;
-
+		
 		$agent_name = agents_get_name($id_agent, "");
-
+		
 		/* Check for deletion permissions */
 		$id_group = agents_get_agent_group ($id_agent);
 		if ((! check_acl ($config['id_user'], $id_group, "AW")) && !$disableACL) {
-			db_process_sql_rollback ();
 			return false;
 		}
-
+		
 		//A variable where we store that long subquery thing for
 		//modules
 		$where_modules = "ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agent.")";
-
+		
 		//IP address
 		$sql = sprintf ("SELECT id_ag
 			FROM taddress_agent, taddress
@@ -1770,68 +1761,68 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 				AND id_agent = %d",
 		$id_agent);
 		$addresses = db_get_all_rows_sql ($sql);
-
+		
 		if ($addresses === false) {
 			$addresses = array ();
 		}
 		foreach ($addresses as $address) {
 			db_process_delete_temp ("taddress_agent", "id_ag", $address["id_ag"]);
 		}
-
+		
 		// We cannot delete tagente_datos and tagente_datos_string here
 		// because it's a huge ammount of time. tagente_module has a special
 		// field to mark for delete each module of agent deleted and in
 		// daily maintance process, all data for that modules are deleted
-
+		
 		//Alert
 		db_process_delete_temp ("talert_compound", "id_agent", $id_agent);
 		db_process_delete_temp ("talert_template_modules", "id_agent_module", $where_modules);
-
+		
 		//Events (up/down monitors)
 		// Dont delete here, could be very time-exausting, let the daily script
 		// delete them after XXX days
 		// db_process_delete_temp ("tevento", "id_agente", $id_agent);
-
+		
 		//Graphs, layouts & reports
 		db_process_delete_temp ("tgraph_source", "id_agent_module", $where_modules);
 		db_process_delete_temp ("tlayout_data", "id_agente_modulo", $where_modules);
 		db_process_delete_temp ("treport_content", "id_agent_module", $where_modules);
-
+		
 		//Planned Downtime
 		db_process_delete_temp ("tplanned_downtime_agents", "id_agent", $id_agent);
-
+		
 		//The status of the module
 		db_process_delete_temp ("tagente_estado", "id_agente", $id_agent);
-
+		
 		//The actual modules, don't put anything based on
 		// DONT Delete this, just mark for deletion
 		// db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);
-
+		
 		db_process_sql_update ('tagente_modulo',
 		array ('delete_pending' => 1, 'disabled' => 1, 'nombre' => 'pendingdelete'),
 			'id_agente = '. $id_agent);
-
+		
 		// Access entries
 		// Dont delete here, this records are deleted in daily script
 		// db_process_delete_temp ("tagent_access", "id_agent", $id_agent);
-
+		
 		// Delete agent policies
 		enterprise_hook('policies_delete_agent', array($id_agent));
-
+		
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
 		// db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules);
-
+		
 		// Delete remote configuration
 		if (isset ($config["remote_config"])) {
 			$agent_md5 = md5 ($agent_name, FALSE);
-				
+			
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
 				// Agent remote configuration editor
 				$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
 				
 				$error = !@unlink ($file_name);
-
+				
 				if (!$error) {
 					$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
 					$error = !@unlink ($file_name);
@@ -1843,30 +1834,28 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 				}
 			}
 		}
-
+		
 		//And at long last, the agent
 		db_process_delete_temp ("tagente", "id_agente", $id_agent);
-
+		
 		db_pandora_audit( "Agent management",
 		"Deleted agent '$agent_name'");
-
-
+		
+		
 		/* Break the loop on error */
 		if ($error)
 			break;
 	}
-
+	
 	//Delete the agents from the networkmaps enterprise if exist
 	enterprise_include_once('/include/functions_networkmap_enterprise.php');
 	
 	enterprise_hook('networkmap_enterprise_delete_agent', $id_agents);
-		
+	
 	if ($error) {
-		db_process_sql_rollback ();
 		return false;
 	}
 	else {
-		db_process_sql_commit ();
 		return true;
 	}
 }

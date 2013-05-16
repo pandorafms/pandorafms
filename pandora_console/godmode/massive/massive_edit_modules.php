@@ -33,16 +33,16 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		ui_print_error_message(__('No modules selected'));
 		return false;
 	}
-
+	
 	if (!is_array($agents_select))
 		$agents_select = array($agents_select);
-
+	
 	/* List of fields which can be updated */
 	$fields = array ('min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'module_interval',
 		'disabled', 'post_process', 'unit', 'snmp_community', 'tcp_send', 'custom_string_1', 'plugin_parameter', 
 		'custom_string_2', 'custom_string_3', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
 	$values = array ();
-
+	
 	// Specific snmp reused fields
 	if (get_parameter ('tcp_send', '') == 3) {
 		$plugin_user_snmp = get_parameter ('plugin_user_snmp', '');
@@ -65,7 +65,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	if (strlen(get_parameter('history_data')) > 0) {
 		$values['history_data'] = get_parameter('history_data');
 	}
-
+	
 	// Whether to update module tag info
 	$update_tags = get_parameter('id_tag', false);
 	
@@ -73,7 +73,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	if (!is_numeric($module_name) or ($module_name != 0))
 		$filter_modules['nombre'] = $module_name;
-
+	
 	if (array_search(0, $agents_select) !== false) {
 		$modules = db_get_all_rows_filter ('tagente_modulo',
 			$filter_modules,

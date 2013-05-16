@@ -60,20 +60,13 @@ if ($delete_msg) {
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
-	db_process_sql_begin();
-	
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tmensajes',
 			array ('id_mensaje' => $id));
-	
+		
 		if ($result === false) {
-			db_process_sql_rollback();
 			break;
 		}
-	}
-	
-	if ($result !== false) {
-		db_process_sql_commit();
 	}
 	
 	ui_print_result_message ($result,
@@ -87,7 +80,8 @@ if ($show_sent) { //sent view
 		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.' '.__('sent message(s)').'.</p>';
 	}
 	$messages = messages_get_overview_sent ('', 'DESC');
-} else { //messages received
+}
+else { //messages received
 	$num_messages = messages_get_count ($config["id_user"]);
 	if ($num_messages > 0 && !is_ajax()) {
 		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.' '.__('unread message(s)').'.</p>';

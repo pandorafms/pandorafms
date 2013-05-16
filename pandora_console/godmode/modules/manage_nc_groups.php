@@ -93,27 +93,21 @@ if ($delete) {
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
-	db_process_sql_begin();
-	
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tnetwork_component_group',
 			array ('id_sg' => $id));
-
+		
 		$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));	
-	
+		
 		if (($result === false) or ($result1 === false)) {
-			db_process_sql_rollback();
 			break;
 		}
 	}
 	
-	if ($result !== false) {
-		db_process_sql_commit();
-	}
 	
 	if ($result !== false) $result = true;
 	else $result = false;
-		
+	
 	ui_print_result_message ($result,
 		__('Successfully multiple deleted'),
 		__('Not deleted. Error deleting multiple data'));

@@ -59,8 +59,6 @@ function process_manage_delete ($module_name, $id_agents) {
 		return false;
 	}
 	
-	db_process_sql_begin ();
-
 	$module_name = (array)$module_name;
 	
 	// We are selecting "any" agent for the selected modules
@@ -68,7 +66,7 @@ function process_manage_delete ($module_name, $id_agents) {
 		$id_agents = NULL;
 	
 	$selection_delete_mode = get_parameter('selection_mode', 'modules');	
-
+	
 	// Selection mode by Agents
 	if ($selection_delete_mode == 'agents') {
 		// We are selecting "any" module for the selecteds agents
@@ -76,29 +74,25 @@ function process_manage_delete ($module_name, $id_agents) {
 			$filter_for_module_deletion = false;
 		else
 			$filter_for_module_deletion = sprintf('nombre IN ("%s")', implode('","',$module_name));
-			
+		
 		$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
 		$filter_for_module_deletion, true);
-			
+		
 	}
 	else {
 		$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
 			sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
 	}
-
+	
 	$count_deleted_modules = count($modules);
 	
 	$success = modules_delete_agent_module ($modules);
 	if (! $success) {
 		ui_print_error_message(__('There was an error deleting the modules, the operation has been cancelled'));
-		db_process_sql_rollback ();
-		
 		return false;
 	}
 	else {
 		ui_print_success_message(__('Successfully deleted') . '&nbsp;(' . $count_deleted_modules . ')');
-		db_process_sql_commit ();
-		
 		return true;
 	}
 }

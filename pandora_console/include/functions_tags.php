@@ -235,20 +235,17 @@ function tags_delete_tag ($id_tag){
 	$result_module = db_process_delete_temp ('ttag_module', 'id_tag', $id_tag);
 	if ($result_module === false)
 		$errn++;
-
+	
 	$result_policy = db_process_delete_temp ('ttag_policy_module', 'id_tag', $id_tag);
 	if ($result_policy === false)
 		$errn++;
-		
-	if ($errn == 0){
-			db_process_sql_commit();
-			return true;
+	
+	if ($errn == 0) {
+		return true;
 	}
-	else{
-			db_process_sql_rollback();
-			return false;
+	else {
+		return false;
 	}
-
 }
 
 /**
@@ -273,7 +270,7 @@ function tags_insert_module_tag ($id_agent_module, $tags){
 	
 	$values = array();
 	
-	if($tags == false) {
+	if ($tags == false) {
 		$tags = array();
 	}
 	
@@ -286,17 +283,8 @@ function tags_insert_module_tag ($id_agent_module, $tags){
 		$values['id_agente_modulo'] = $id_agent_module;
 		$result_tag = db_process_sql_insert('ttag_module', $values);
 		if ($result_tag === false)
-			$errn++;		
+			$errn++;
 	}
-	
-/*	if ($errn > 0){
-		db_process_sql_rollback();
-		return false;
-	}
-	else{
-		db_process_sql_commit();
-		return true;
-	}*/
 }
 
 /**
@@ -310,8 +298,6 @@ function tags_insert_module_tag ($id_agent_module, $tags){
 function tags_insert_policy_module_tag ($id_agent_module, $tags){
 	$errn = 0;
 	
-	db_process_sql_begin();
-	
 	$values = array();
 	foreach ($tags as $tag){
 		//Protect against default insert
@@ -322,15 +308,13 @@ function tags_insert_policy_module_tag ($id_agent_module, $tags){
 		$values['id_policy_module'] = $id_agent_module;
 		$result_tag = db_process_sql_insert('ttag_policy_module', $values, false);
 		if ($result_tag === false)
-			$errn++;		
+			$errn++;
 	}
-
+	
 	if ($errn > 0){
-		db_process_sql_rollback();
 		return false;
 	}
 	else{
-		db_process_sql_commit();
 		return true;
 	}
 }

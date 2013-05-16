@@ -74,25 +74,18 @@ function messages_create_group ($usuario_origen, $dest_group, $subject, $mensaje
 	if (! array_key_exists ($usuario_origen, $users)) {
 		//Users don't exist in the system
 		return false;
-	} elseif (empty ($group_users)) {
+	}
+	elseif (empty ($group_users)) {
 		//There are no users in the group, so it hasn't failed although it hasn't done anything.
 		return true;
 	}
 	
-	//Start transaction so that if it fails somewhere along the way, we roll back
-	db_process_sql_begin ();
-	
 	foreach ($group_users as $user) {
 		$return = messages_create_message ($usuario_origen, get_user_id ($user), $subject, $mensaje);
 		if ($return === false) {
-			//Error sending message, rollback and return false
-			db_process_sql_rollback ();
 			return false;
 		}
 	}
-	
-	//We got here, so we can commit - if this function gets extended, make sure to do SQL above these lines
-	db_process_sql_commit ();
 	
 	return true;
 }

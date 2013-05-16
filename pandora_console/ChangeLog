@@ -1,3 +1,19 @@
+2013-05-16 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/massive/massive_delete_agents.php,
+	godmode/massive/massive_edit_modules.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/modules/manage_network_components.php,
+	godmode/modules/manage_nc_groups.php,
+	godmode/modules/manage_network_templates.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager.php, include/functions_agents.php,
+	include/functions_tags.php, include/functions_incidents.php,
+	include/functions_db.php, include/functions_messages.php,
+	operation/messages/message_list.php: erased deprecated SQL
+	transaction. 
+
 2013-05-14  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

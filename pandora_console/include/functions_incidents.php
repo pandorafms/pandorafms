@@ -237,9 +237,6 @@ function incidents_delete_incident ($id_incident) {
 	$attachments = array ();
 	$errors = 0;
 	
-	//Start transaction
-	db_process_sql_begin ();
-		
 	foreach ($ids as $id_inc) {
 		//Delete incident
 		$ret = db_process_sql_delete('tincidencia', array('id_incidencia' => $id_inc));
@@ -262,11 +259,8 @@ function incidents_delete_incident ($id_incident) {
 	}
 	
 	if ($errors > 0) {
-		//This will also rollback the audit log
-		db_process_sql_rollback ();
 		return false;
 	}
-	db_process_sql_commit ();
 	
 	return true;
 }
@@ -283,11 +277,6 @@ function incidents_delete_note ($id_note, $transact = true) {
 	$id_note = (array) safe_int ($id_note, 1); //cast as array
 	$errors = 0;
 	
-	//Start transaction
-	if ($transact == true){
-		db_process_sql_begin ();
-		db_process_sql_commit ();
-	}
 	
 	//Delete notes
 	foreach ($id_note as $id) {
@@ -296,16 +285,17 @@ function incidents_delete_note ($id_note, $transact = true) {
 			$errors++;
 		}
 	}
-
+	
 	if ($transact == true && $errors > 0) {
-		db_process_sql_rollback ();
 		return false;
-	} elseif ($transact == true) {
-		db_process_sql_commit ();
+	}
+	elseif ($transact == true) {
 		return true;
-	} elseif ($errors > 0) {
+	}
+	elseif ($errors > 0) {
 		return false;
-	} else {
+	}
+	else {
 		return true;
 	}
 }
@@ -324,10 +314,6 @@ function incidents_delete_attach ($id_attach, $transact = true) {
 	$id_attach = (array) safe_int ($id_attach, 1); //cast as array
 	$errors = 0;
 	
-	//Start transaction
-	if ($transact == true) {
-		db_process_sql_begin ();
-	}
 	
 	//Delete attachment
 	foreach ($id_attach as $id) {
@@ -341,11 +327,9 @@ function incidents_delete_attach ($id_attach, $transact = true) {
 	}
 	
 	if ($transact == true && $errors > 0) {
-		db_process_sql_rollback ();
 		return false;
 	}
 	elseif ($transact == true) {
-		db_process_sql_commit ();
 		return true;
 	}
 	elseif ($errors > 0) {

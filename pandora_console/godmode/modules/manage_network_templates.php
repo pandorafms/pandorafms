@@ -48,21 +48,14 @@ if ($delete_profile) { // if delete
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
-	db_process_sql_begin();
-	
 	foreach ($ids as $id) {
 		$result = network_profiles_delete_network_profile ($id);
 		
 		if ($result === false) {
-			db_process_sql_rollback();
 			break;
 		}
 	}
 	
-	if ($result !== false) {
-		db_process_sql_commit();
-	}
-		
 	ui_print_result_message ($result,
 		__('Successfully multiple deleted'),
 		__('Not deleted. Error deleting multiple data'));

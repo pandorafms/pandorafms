@@ -109,9 +109,7 @@ if ($multiple_delete) {
 		enterprise_include_once('include/functions_config_agents.php');
 		enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_agent_module_del), modules_get_agentmodule_name($id_agent_module_del)));
 		
-		//Init transaction
 		$error = 0;
-		db_process_sql_begin ();
 		
 		// First delete from tagente_modulo -> if not successful, increment
 		// error. NOTICE that we don't delete all data here, just marking for deletion
@@ -146,12 +144,12 @@ if ($multiple_delete) {
 		// If result is empty then module doesn't have this type of submodules
 		$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_agent_module_del));
 		$result_ops_synthetic = json_decode($ops_json);
-		if (!empty($result_ops_synthetic)){
+		if (!empty($result_ops_synthetic)) {
 			$result = enterprise_hook('modules_delete_synthetic_operations', array($id_agent_module_del));
 			if ($result === false)
 				$error++;
 		} // Trick to detect if we are deleting components of synthetics modules (avg or arithmetic)
-		else{
+		else {
 			$result_components = enterprise_hook('modules_get_synthetic_components', array($id_agent_module_del));
 			$count_components = 1;
 			if (!empty($result_components)){
@@ -176,10 +174,8 @@ if ($multiple_delete) {
 		
 		//Check for errors
 		if ($error != 0) {
-			db_process_sql_rollback ();
 		}
 		else {
-			db_process_sql_commit ();
 			$count_correct_delete_modules++;
 		}
 	}

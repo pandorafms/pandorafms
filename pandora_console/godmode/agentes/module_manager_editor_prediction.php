@@ -132,8 +132,11 @@ if($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
 		WHERE delete_pending = 0
-			AND history_data = 1 AND id_agente =  " . $id_agente_clean . " AND id_agente_modulo  <> " . $id_agente_modulo;
-	$data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true);
+			AND history_data = 1
+			AND id_agente =  " . $id_agente_clean . "
+			AND id_agente_modulo  <> " . $id_agente_modulo;
+	$data[1] .= html_print_select_from_sql($sql, 'prediction_module',
+		$prediction_module, false, __('Select Module'), 0, true);
 }
 else {
 	$data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
@@ -191,9 +194,10 @@ unset ($table_advanced->data[3]);
 
 ?>
 <script type="text/javascript">
-$(document).ready(function() {
-	<?php 
-		enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $is_netflow, $ops));
-	?>
-});
+	$(document).ready(function() {
+		<?php 
+			enterprise_hook('setup_services_synth',
+				array($is_service, $is_synthetic, $is_synthetic_avg, $is_netflow, $ops));
+		?>
+	});
 </script>

@@ -72,6 +72,7 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 		}
 	}
 	
+	
 	if ($numChars == 0) {
 		if ($return == true) {
 			return $text;
@@ -83,12 +84,15 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 	
 	$text = io_safe_output($text);
 	if (mb_strlen($text, "UTF-8") > ($numChars)) {
-		$half_length = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
+		// '/2' because [...] is in the middle of the word.
+		$half_length = intval(($numChars - 3) / 2);
 		
 		// Depending on the strange behavior of mb_strimwidth() itself,
-		// the 3rd parameter is not to be $numChars but the length of original text (just means 'large enough').
+		// the 3rd parameter is not to be $numChars but the length of
+		// original text (just means 'large enough').
 		$truncateText2 = mb_strimwidth($text,
-			(mb_strlen($text, "UTF-8") - $half_length), mb_strlen($text, "UTF-8"), "", "UTF-8" );
+			(mb_strlen($text, "UTF-8") - $half_length),
+			mb_strlen($text, "UTF-8"), "", "UTF-8" );
 		
 		$truncateText = mb_strimwidth($text, 0,
 			($numChars - $half_length), "", "UTF-8") . $suffix;
@@ -100,10 +104,11 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 				$truncateText = $truncateText;
 			}
 			else if ($style !== false) {
-				$truncateText = '<span style="' . $style . '" title="'.$text.'">'.$truncateText.'</span>';
+				$truncateText = '<span style="' . $style . '" title="' . $text . '">' .
+					$truncateText . '</span>';
 			}
 			else {
-				$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';
+				$truncateText = '<span title="' . $text . '">' . $truncateText . '</span>';
 			}
 		}
 		if ($showTextInAToopTip) {
@@ -111,7 +116,7 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 		}
 		else {
 			if ($style !== false) {
-				$truncateText = '<span style="' . $style . '">'.$truncateText.'</span>';
+				$truncateText = '<span style="' . $style . '">' . $truncateText . '</span>';
 			}
 		}
 	}

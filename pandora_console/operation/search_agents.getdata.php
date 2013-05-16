@@ -108,6 +108,8 @@ switch ($sortField) {
 		break;
 }
 
+$totalAgents = 0;
+
 $agents = false;
 if ($searchAgents) {
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);

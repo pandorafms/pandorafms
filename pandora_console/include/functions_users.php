@@ -49,7 +49,8 @@ function users_get_info ($order = "fullname", $info = "fullname") {
  * @return int sucess return
  */
 function users_disable ($user_id, $new_disabled_value) {
-	return db_process_sql_update('tusuario', array('disabled' => $new_disabled_value), array('id_user' => $user_id));
+	return db_process_sql_update('tusuario',
+		array('disabled' => $new_disabled_value), array('id_user' => $user_id));
 }
 
 /**
@@ -795,7 +796,7 @@ function users_check_users() {
 function users_can_manage_group_all($id_group = 0) {
 	global $config;
 	
-	if($id_group != 0) {
+	if ($id_group != 0) {
 		return true;
 	}
 	

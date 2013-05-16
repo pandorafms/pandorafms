@@ -183,6 +183,7 @@ public class PandroidAgentListener extends Service {
 		@Override
 		protected Void doInBackground(Void... params) {
 			Core.loadConf(getApplicationContext());
+            Core.loadLastValues(getApplicationContext());
 			return null;
 		}
 
@@ -466,7 +467,7 @@ public class PandroidAgentListener extends Service {
 			buffer += buildmoduleXML("freeRamMemory", "The percentage of available ram.", "generic_data",
 					formatPercent.format(freeMemory.doubleValue()));
 		}
-		buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
+		//buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
 		if (DeviceUpTimeReport.equals("enabled"))
 			buffer += buildmoduleXML("upTime","Total device uptime in seconds.", "generic_data", upTime);
 
@@ -485,7 +486,7 @@ public class PandroidAgentListener extends Service {
 			if (SignalStrengthReport.equals("enabled"))
 				buffer += buildmoduleXML("signalStrength","Signal strength (dB)", "generic_data_string", signalStrength);
 			if (ReceivedSMSReport.equals("enabled"))
-				buffer += buildmoduleXML("SMSRecieved","Number of SMS received", "generic_data", SMSReceived);
+				buffer += buildmoduleXML("SMSReceived","Number of SMS received", "generic_data", SMSReceived);
 			if (SentSMSReport.equals("enabled"))
 				buffer += buildmoduleXML("SMSSent","Number of SMS sent", "generic_data", SMSSent);
 			if (IncomingCallsReport.equals("enabled"))

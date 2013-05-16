@@ -46,8 +46,8 @@ $readonly = false;
 if (!$meta) {
 	if (isset($config['event_replication']) &&  
 		$config['event_replication'] == 1) {
-			
-		if($config['show_events_in_local'] == 0) {
+		
+		if ($config['show_events_in_local'] == 0) {
 			db_pandora_audit("ACL Violation",
 				"Trying to access event viewer. View disabled due event replication.");
 			ui_print_info_message('Event viewer is disabled due event replication. For more information, please contact with the administrator');

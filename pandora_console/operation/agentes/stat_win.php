@@ -281,7 +281,18 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		$data = array();
 		$data[0] = __('Show events');
-		$data[1] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);
+		$disabled = false;
+		if (isset($config['event_replication'])) {
+			if ($config['event_replication']) {
+				$disabled = true;
+			}
+		}
+		$data[1] = html_print_checkbox ("draw_events", 1,
+			(bool)$draw_events, true, $disabled);
+		if ($disabled) {
+			$data[1] .= ui_print_help_tip(
+				__('Show events is disabled because this Pandora node is set the event replication.'), true);
+		}
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		

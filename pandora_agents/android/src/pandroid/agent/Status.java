@@ -14,8 +14,6 @@
 
 package pandroid.agent;
 
-import java.util.Date;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import java.util.Date;
 
 
 public class Status  extends Activity {
@@ -61,6 +61,8 @@ public class Status  extends Activity {
 		updateLastContactInfo();
 
 	}
+
+   
 
 	public void onStart(){
 		super.onStart();
@@ -268,7 +270,7 @@ public class Status  extends Activity {
 			// phoneType
 			textView = (TextView)findViewById(R.id.phone_type_value);
 			textView.setText("");
-			if(Core.phoneType != null)
+            if(Core.phoneType != null)
 				textView.setText("" + Core.phoneType);
 
 			// signalStrength

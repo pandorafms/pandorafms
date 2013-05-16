@@ -927,7 +927,7 @@ function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength
 	if ($size == 0)
 		$size = 10;
 	
-	return html_print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, $disabled, '', '', $return);
+	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', '', $return);
 }
 
 /**

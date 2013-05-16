@@ -1,5 +1,19 @@
 2013-05-16 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/module_manager_editor_common.php: disabled
+	autocomplete for the field name to avoid javascript problems.
+	
+	Fixes: #2215
+	
+	* include/db/oracle.php, include/functions.php: improved the source
+	code style.
+	
+	* include/functions_html.php: fixed the lost parameter $alt for
+	the function html_print_input_text_extended from
+	html_print_input_text.
+
+2013-05-16 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_networkmap.php, include/functions_reporting.php,
 	include/functions_users.php: cleaned source code style.
 	

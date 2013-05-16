@@ -297,6 +297,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
+		
 		switch ($graph_type) {
 			case 'boolean':
 			case 'sparse':

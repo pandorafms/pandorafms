@@ -300,9 +300,11 @@ if (is_ajax ()) {
 			}
 			
 			$result = array();
-			foreach($nameModules as $nameModule) {
+			foreach ($nameModules as $nameModule) {
 				if (empty($serialized))
-					$result[io_safe_output($nameModule['nombre'])] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
+					$result[io_safe_output($nameModule['nombre'])] =
+						ui_print_truncate_text(
+							io_safe_output($nameModule['nombre']), 'module_medium', false, true);
 				else
 					$result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
 			}

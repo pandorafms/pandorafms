@@ -74,10 +74,12 @@ if (file_exists ('./include/languages/'.$user_language.'.mo')) {
 	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
 	$l10n->load_tables();
 }
-		
-// Not cool way of know if we are executing from metaconsole or normal console
-if (strpos($_SERVER['HTTP_REFERER'], ENTERPRISE_DIR . '/meta/') !== false)
-	define ('METACONSOLE', true);
+
+if (isset($_SERVER['HTTP_REFERER'])) {
+	// Not cool way of know if we are executing from metaconsole or normal console
+	if (strpos($_SERVER['HTTP_REFERER'], ENTERPRISE_DIR . '/meta/') !== false)
+		define ('METACONSOLE', true);
+}
 session_write_close ();
 
 if (file_exists ($page)) {

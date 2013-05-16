@@ -1332,7 +1332,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 			$config['fontpath'], $config['font_size'], "", 1, array(), array(), 0, 0, '', false, '', false);
 	}
 	
-	if($return) {
+	if ($return) {
 		return $out;
 	}
 	else {
@@ -2747,10 +2747,10 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$chart[$timestamp]['min'.$series_suffix] = 0;
 		}*/
 		
-		if(!empty($event_ids)) {
+		if (!empty($event_ids)) {
 			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
 		}
-		if(!empty($alert_ids)) {
+		if (!empty($alert_ids)) {
 			$chart_extra_data[count($chart)-1]['alerts'] = implode(',',$alert_ids);
 		}
 		

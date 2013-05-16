@@ -43,7 +43,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	}
 	
 	var show_legend = true;
-	if(legend_position == 'hidden') {
+	if (legend_position == 'hidden') {
 		show_legend = false;
 	}
 	

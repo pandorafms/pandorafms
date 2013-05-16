@@ -203,8 +203,8 @@ function list_files ($directory, $stringSearch, $searchHandler, $return = false)
 		}
 	}
 	if ($searchHandler == 1) {
-		while(false !== ($fileName = @readdir ($directoryHandler))) {
-			if(@substr_count ($fileName, $stringSearch) > 0) {
+		while (false !== ($fileName = @readdir ($directoryHandler))) {
+			if (@substr_count ($fileName, $stringSearch) > 0) {
 				$result[$fileName] = $fileName;
 			}
 		}
@@ -322,7 +322,7 @@ function human_time_comparation ($timestamp, $units = 'large') {
 	}
 	
 	$seconds = get_system_time () - $timestamp;
-
+	
 	// $seconds could be negative, because get_system_time() could return cached value
 	// (that might be the time a session begins at).
 	// So negative values are to be rounded off to 'NOW'.
@@ -366,7 +366,7 @@ function get_user_language ($id_user = null) {
 	
 	$quick_language = get_parameter('quick_language_change', 0);
 	
-	if($quick_language) {
+	if ($quick_language) {
 		$language = get_parameter('language', 0);
 		
 		if($language === 'default') {
@@ -378,7 +378,7 @@ function get_user_language ($id_user = null) {
 		}
 	}
 	
-	if($id_user === null && isset($config['id_user'])) {
+	if ($id_user === null && isset($config['id_user'])) {
 		$id_user = $config['id_user'];
 	}
 	
@@ -457,7 +457,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 		$years = floor($seconds / 31104000);
 		
-		if($years != 0) {
+		if ($years != 0) {
 			$seconds = $seconds - ($years * 31104000);
 			
 			$returnDate .= "$years $yearsString ";
@@ -465,7 +465,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 		$months = floor($seconds / 2592000);
 		
-		if($months != 0) {
+		if ($months != 0) {
 			$seconds = $seconds - ($months * 2592000);
 			
 			$returnDate .= "$months $monthsString ";
@@ -473,7 +473,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 		$days = floor($seconds / 86400);
 		
-		if($days != 0) {
+		if ($days != 0) {
 			$seconds = $seconds - ($days * 86400);
 			
 			$returnDate .= "$days $daysString ";
@@ -483,7 +483,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 		$hours = floor($seconds / 3600);
 		
-		if($hours != 0) {
+		if ($hours != 0) {
 			$seconds = $seconds - ($hours * 3600);
 			
 			$returnTime .= "$hours $hoursString ";
@@ -491,7 +491,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 		$mins = floor($seconds / 60);
 		
-		if($mins != 0) {
+		if ($mins != 0) {
 			$seconds = $seconds - ($mins * 60);
 			
 			if($hours == 0) {
@@ -502,7 +502,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 			}
 		}
 		
-		if($seconds != 0) {
+		if ($seconds != 0) {
 			if($hours == 0) {
 				$returnTime .= "$seconds $secondsString ";
 			}

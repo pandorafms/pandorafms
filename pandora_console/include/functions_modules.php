@@ -155,25 +155,25 @@ function modules_change_disabled($id_agent_module, $new_value = 1) {
 	
 	$id_agent_module_changed = array();
 	
-	foreach($id_agent_module as $id_module) {
+	foreach ($id_agent_module as $id_module) {
 		// If the module is already disabled/enabled ignore
 		$current_disabled = db_get_value('disabled', 'tagente_modulo', 'id_agente_modulo', $id_module);
-		if($current_disabled == $new_value) {
+		if ($current_disabled == $new_value) {
 			continue;
 		}
 		
 		$id_agent_changed[] = modules_get_agentmodule_agent($id_module); 
 		$id_agent_module_changed[] = $id_module;
 	}
-
-	if(empty($id_agent_module_changed)) {
+	
+	if (empty($id_agent_module_changed)) {
 		$result = false;
 	}
 	else {
 		$result = db_process_sql_update('tagente_modulo', array('disabled' => (int) $new_value), array('id_agente_modulo' => $id_agent_module_changed));
 	}
-
-	if($result) {
+	
+	if ($result) {
 		// Change the agent flag to update modules count
 		db_process_sql_update('tagente', array('update_module_count' => 1), array('id_agente' => $id_agent_changed));
 		return NOERR;
@@ -264,7 +264,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	}
 	
 	if (isset ($values['nombre'])) {
-		if(empty ($values['nombre'])) {
+		if (empty ($values['nombre'])) {
 			return ERR_INCOMPLETE;
 		}
 		
@@ -272,7 +272,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 		
 		$exists = (bool)db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $values['nombre'], 'id_agente' => $id_agent, 'id_agente_modulo' => "<>$id"));
 		
-		if($exists) {
+		if ($exists) {
 			return ERR_EXIST;
 		}
 	}
@@ -343,7 +343,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	
 	$exists = (bool)db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $name, 'id_agente' => (int)$id_agent));
 	
-	if($exists) {
+	if ($exists) {
 		return ERR_EXIST;
 	}
 	
@@ -421,7 +421,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	}
 	
 	// Update module status count if the module is not created disabled
-	if(!isset ($values['disabled']) || $values['disabled'] == 0) {
+	if (!isset ($values['disabled']) || $values['disabled'] == 0) {
 		if ($status == 0) {
 			db_process_sql ('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=' . (int)$id_agent);
 		}
@@ -1374,7 +1374,7 @@ function modules_get_modulegroups () {
  * @return string The modulegroup name
  */
 function modules_get_modulegroup_name ($modulegroup_id) {
-	if($modulegroup_id == 0)
+	if ($modulegroup_id == 0)
 		return false;
 	else
 		return (string) db_get_value ('name', 'tmodule_group', 'id_mg', (int) $modulegroup_id);
@@ -1449,14 +1449,21 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 function modules_agents_unknown ($module_name) {
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado = 3 AND tagente_modulo.nombre = '$module_name'");
-	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente.id_agente)
+		FROM tagente_estado, tagente, tagente_modulo
+		WHERE tagente.disabled = 0
+			AND tagente_estado.utimestamp != 0
+			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			AND tagente_modulo.disabled = 0
+			AND tagente_estado.id_agente = tagente.id_agente
+			AND tagente_estado.estado = 3
+			AND tagente_modulo.nombre = '$module_name'");
 }
 
 // Get ok agents by using the status code in modules.
 
 function modules_agents_ok ($module_name) {
-		
+	
 	//!!!Query explanation!!!
 	//An agent is OK if all its modules are OK
 	//The status values are: 0 OK; 1 Critical; 2 Warning; 3 Unkown
@@ -1465,14 +1472,23 @@ function modules_agents_ok ($module_name) {
 	//Then we count the agents of the group selected to know how many agents are in OK status
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT COUNT(max_estado) FROM (SELECT MAX(tagente_estado.estado) as max_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_modulo.nombre = '$module_name' GROUP BY tagente.id_agente HAVING max_estado = 0) AS S1");
-	
+	return db_get_sql ("SELECT COUNT(max_estado)
+		FROM (
+			SELECT MAX(tagente_estado.estado) as max_estado
+			FROM tagente_estado, tagente, tagente_modulo
+			WHERE tagente.disabled = 0
+				AND tagente_estado.utimestamp != 0
+				AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+				AND tagente_modulo.disabled = 0
+				AND tagente_estado.id_agente = tagente.id_agente
+				AND tagente_modulo.nombre = '$module_name'
+			GROUP BY tagente.id_agente HAVING max_estado = 0) AS S1");
 }
 
 // Get critical agents by using the status code in modules.
 
 function modules_agents_critical ($module_name) {
-		
+	
 	//!!!Query explanation!!!
 	//An agent is Warning when has at least one module in warning status and nothing more in critical status
 	//The status values are: 0 OK; 1 Critical; 2 Warning; 3 Unkown
@@ -1489,7 +1505,6 @@ function modules_agents_critical ($module_name) {
 						AND estado = 1 
 						AND tagente_estado.id_agente = tagente.id_agente 
 						AND tagente_modulo.nombre = '$module_name'");
-	
 }
 
 // Get warning agents by using the status code in modules.
@@ -1515,35 +1530,48 @@ function modules_agents_warning ($module_name) {
 								AND tagente_modulo.nombre = '$module_name' 
 								GROUP BY tagente.id_agente 
 								HAVING min_estado = 2) AS S1");
-	
 }
 
 // Get unknown agents by using the status code in modules
 
 function modules_group_agent_unknown ($module_group) {
-
-	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo WHERE tagente.id_agente=tagente_modulo.id_agente AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_module_group = $module_group");
+	
+	return db_get_sql ("SELECT COUNT(*)
+		FROM tagente, tagente_modulo
+		WHERE tagente.id_agente=tagente_modulo.id_agente
+			AND critical_count=0 AND warning_count=0
+			AND unknown_count>0 AND id_module_group = $module_group");
 }
 
 // Get ok agents by using the status code in modules.
 
 function modules_group_agent_ok ($module_group) {
 		
-	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo WHERE tagente.id_agente=tagente_modulo.id_agente AND normal_count=total_count AND id_module_group = $module_group");
+	return db_get_sql ("SELECT COUNT(*)
+		FROM tagente, tagente_modulo
+		WHERE tagente.id_agente=tagente_modulo.id_agente
+			AND normal_count = total_count
+			AND id_module_group = $module_group");
 }
 
 // Get critical agents by using the status code in modules.
 
 function modules_group_agent_critical ($module_group) {
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo WHERE tagente.id_agente=tagente_modulo.id_agente AND critical_count>0 AND id_module_group = $module_group");
+	return db_get_sql ("SELECT COUNT(*)
+		FROM tagente, tagente_modulo
+		WHERE tagente.id_agente=tagente_modulo.id_agente
+			AND critical_count > 0 AND id_module_group = $module_group");
 }
 
 // Get warning agents by using the status code in modules.
 
 function modules_group_agent_warning ($module_group) {
-
-	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo WHERE tagente.id_agente=tagente_modulo.id_agente AND critical_count=0 AND warning_count>0 AND id_module_group = $module_group");
+	
+	return db_get_sql ("SELECT COUNT(*)
+		FROM tagente, tagente_modulo
+		WHERE tagente.id_agente=tagente_modulo.id_agente
+			AND critical_count = 0 AND warning_count > 0
+			AND id_module_group = $module_group");
 }
-
 ?>

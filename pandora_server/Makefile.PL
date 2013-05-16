@@ -12,7 +12,6 @@ WriteMakefile(
 	PREREQ_PM 	=> {
 		NetAddr::IP => 0,
 		DBI => 0,
-		SNMP => 0,
 		threads::shared => 0,
 		IO::Socket => 0,
 		Socket6 => 0,

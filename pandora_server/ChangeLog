@@ -1,3 +1,9 @@
+2013-05-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server_installer,
+	  lib/PandoraFMS/NetworkServer.pm,
+	  Makefile.PL: Removed PERL's SNMP lib from the deps.
+
 2013-05-16  Sancho Lerena <slerena@artica.es>
 
 	* DEBIAN/control,

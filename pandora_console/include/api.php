@@ -49,7 +49,7 @@ $user_in_db = null;
 $no_login_msg = "";
 
 if (isInACL($ipOrigin)) {
-	if(empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {
+	if (empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {
 		$user_in_db = process_user_login($user, $password, true);
 		
 		if ($user_in_db !== false) {
@@ -78,7 +78,7 @@ if ($correctLogin) {
 		if ($op2 == 'extension') {
 			$extension_api_url = $config["homedir"]."/".EXTENSIONS_DIR."/$ext_name/$ext_name.api.php";
 			// The extension API file must exist and the extension must be enabled
-			if(file_exists($extension_api_url) && !in_array($ext_name,extensions_get_disabled_extensions())) {
+			if (file_exists($extension_api_url) && !in_array($ext_name,extensions_get_disabled_extensions())) {
 				include_once($extension_api_url);
 				$function_name = 'apiextension_'.$op.'_'.$ext_function;
 			}
@@ -107,7 +107,7 @@ if ($correctLogin) {
 else {
 	db_pandora_audit("API access Failed", $no_login_msg, $user, $ipOrigin);
 	sleep (15);
-
+	
 	//Protection on DoS attacks
 	echo 'auth error';
 }

@@ -73,9 +73,10 @@ function incidents_print_priority_img ($id_priority, $return = false) {
 	if ($return === false) {
 		echo $img;
 	}
+	
 	return $img;
 }
-	
+
 
 /**
  * Gets all the possible status for incidents in an array
@@ -122,6 +123,7 @@ function incidents_print_status_img ($id_status, $return = false) {
 	if ($return === false) {
 		echo $img;
 	}
+	
 	return $img;
 }
 
@@ -160,16 +162,17 @@ function incidents_process_chown ($id_incident, $owner = false) {
 		global $config;
 		$owner = $config["id_user"];
 	}
-		
+	
 	$id_incident = (array) safe_int ($id_incident, 1); //Make sure we have all positive int's
 	if (empty ($id_incident)) {
 		return false;
 	}
 	$id_incident = implode (",", $id_incident);
 	$sql = sprintf ("UPDATE tincidencia SET id_usuario = '%s' WHERE id_incidencia IN (%s)", $owner, $id_incident);
+	
 	return db_process_sql ($sql);
 }
-	
+
 
 /** 
  * Get the author of an incident.
@@ -182,6 +185,7 @@ function incidents_get_author ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
+	
 	return (string) db_get_value ('id_creator', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 
@@ -196,6 +200,7 @@ function incidents_get_owner ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
+	
 	return (string) db_get_value ('id_usuario', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 
@@ -210,9 +215,10 @@ function incidents_get_lastupdate ($id_incident) {
 	if ($id_incident < 1) {
 		return "";
 	}
+	
 	return (string) db_get_value ('id_lastupdate', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
-	
+
 
 /** 
  * Get the group id of an incident.
@@ -225,6 +231,7 @@ function incidents_get_group ($id_incident) {
 	if ($id_incident < 1) {
 		return 0;
 	}
+	
 	return (int) db_get_value ('id_grupo', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 
@@ -376,7 +383,7 @@ function incidents_get_attach ($id_incident) {
 	return $attach;
 }
 
-	
+
 /** 
  * Get user id of a note.
  * 
@@ -397,7 +404,7 @@ function incidents_get_notes_author ($id_note) {
  * @return variant The function result called in the API.
  */
 function incidents_call_api($url, $postparameters = false) {
-
+	
 	$curlObj = curl_init();
 	curl_setopt($curlObj, CURLOPT_URL, $url);
 	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
@@ -406,7 +413,7 @@ function incidents_call_api($url, $postparameters = false) {
 	}
 	$result = curl_exec($curlObj);
 	curl_close($curlObj);
-
+	
 	return $result;
 }
 
@@ -419,6 +426,7 @@ function incidents_call_api($url, $postparameters = false) {
  */
 function incidents_xml_to_array($xml) {
 	$xmlObj = simplexml_load_string($xml,'SimpleXMLElement',LIBXML_NOCDATA);
+	
 	return json_decode(json_encode($xmlObj), true);
 }
 

@@ -32,19 +32,19 @@ function cron_update_module_interval ($module_id, $cron) {
 
 // Get the number of seconds left to the next execution of the given cron entry.
 function cron_next_execution ($cron) {
-
+	
 	// Get day of the week and month from cron config
 	list ($minute, $hour, $mday, $month, $wday) = explode (" ", $cron);
-
+	
 	// Get current time
 	$cur_time = time();
-
+	
 	// Any day of the way
 	if ($wday == '*') {
 		$nex_time = cron_next_execution_date ($cron,  $cur_time);
 		return $nex_time - $cur_time;
 	}
-
+	
 	// A specific day of the week
 	$count = 0;
 	$nex_time = $cur_time;
@@ -52,6 +52,7 @@ function cron_next_execution ($cron) {
 		$nex_time = cron_next_execution_date ($cron, $nex_time);
 		$nex_time_wd = $nex_time;
 		list ($nex_mon, $nex_wday) = explode (" ", date ("m w", $nex_time_wd));
+		
 		do {
 			// Check the day of the week
 			if ($nex_wday == $wday) {
@@ -61,25 +62,28 @@ function cron_next_execution ($cron) {
 			// Move to the next day of the month
 			$nex_time_wd += 86400;
 			list ($nex_mon_wd, $nex_wday) = explode (" ", date ("m w", $nex_time_wd));
-		} while ($mday == '*' && $nex_mon_wd == $nex_mon);
+		}
+		while ($mday == '*' && $nex_mon_wd == $nex_mon);
+		
 		$count++;
-	} while ($count < 60);
-
+	}
+	while ($count < 60);
+	
 	// Something went wrong, default to 5 minutes
 	return 300;
 }
 
 // Get the next execution date for the given cron entry in seconds since epoch.
 function cron_next_execution_date ($cron, $cur_time = false) {
-
+	
 	// Get cron configuration
 	list ($min, $hour, $mday, $mon, $wday) = explode (" ", $cron);
-
+	
 	// Months start from 0
-	if($mon != '*') {
+	if ($mon != '*') {
 		$mon -= 1;
 	}
-
+	
 	// Get current time
 	if ($cur_time === false) {
 		$cur_time = time();
@@ -92,7 +96,7 @@ function cron_next_execution_date ($cron, $cur_time = false) {
 	$nex_mday = $mday;
 	$nex_mon = $mon;
 	$nex_year = $cur_year;
-
+	
 	// Replace wildcards
 	if ($min == '*') {
 		if ($hour != '*' || $mday != '*' || $wday != '*' || $mon != '*') {
@@ -121,7 +125,7 @@ function cron_next_execution_date ($cron, $cur_time = false) {
 	if ($mon == '*') {
 		$nex_mon = $cur_mon;
 	}
-
+	
 	// Find the next execution date
 	$count = 0;
 	do {
@@ -130,7 +134,7 @@ function cron_next_execution_date ($cron, $cur_time = false) {
 			return $next_time;
 		}
 		if ($min == '*' && $hour == '*' && $wday == '*' && $mday == '*' && $mon == '*') {
-	 		list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + 60));
+			list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + 60));
 		}
 		else if ($hour == '*' && $wday == '*' && $mday == '*' && $mon == '*') {
 	 		list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + 3600));
@@ -149,7 +153,8 @@ function cron_next_execution_date ($cron, $cur_time = false) {
 			$nex_year++;
 		}
 		$count++;
-	} while ($count < 86400);
+	}
+	while ($count < 86400);
 	
 	// Something went wrong, default to 5 minutes
 	return $cur_time + 300;

@@ -1,5 +1,12 @@
 2013-05-16 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_incidents.php, include/api.php,
+	include/functions.php, include/functions_modules.php,
+	include/graphs/flot/pandora.flot.js, include/functions_cron.php,
+	include/functions_graph.php: improved the source code style.
+
+2013-05-16 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/agentes/stat_win.php: disabled show events when the
 	pandora node is set replication events.
 	

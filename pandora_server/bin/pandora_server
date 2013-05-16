@@ -342,8 +342,10 @@ if ($Config{'daemon'} == 1) {
 # Load enterprise module
 if (enterprise_load (\%Config) == 0) {
 	print_message (\%Config, " [*] Pandora FMS Enterprise module not available.", 1);
+	logger (\%Config, " [*] Pandora FMS Enterprise module not available.", 1);
 } else {
 	print_message (\%Config, " [*] Pandora FMS Enterprise module loaded.", 1);
+	logger (\%Config, " [*] Pandora FMS Enterprise module loaded.", 1);
 
 	if($Config{'policy_manager'} == 1) {
 		# Start thread to patrol policy queue

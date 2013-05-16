@@ -89,12 +89,12 @@
 	<string name="phone_type_value"/>
 	<string name="signal_strength">Signal strength:</string>
 	<string name="signal_strength_value"/>
-	<string name="incoming_Calls">Incoming calls:</string>
-	<string name="incoming_Calls_value"/>
-	<string name="missed_Calls">Missed calls:</string>
-	<string name="missed_Calls_value"/>
-	<string name="outgoing_Calls">outgoing calls:</string>
-	<string name="outgoing_Calls_value"/>
+	<string name="incoming_calls">Incoming calls:</string>
+	<string name="incoming_calls_value"/>
+	<string name="missed_calls">Missed calls:</string>
+	<string name="missed_calls_value"/>
+	<string name="outgoing_calls">outgoing calls:</string>
+	<string name="outgoing_calls_value"/>
 	<string name="receive_bytes">Bytes received:</string>
 	<string name="receive_bytes_value"/>
 	<string name="transmit_bytes">Bytes transmitted:</string>
@@ -149,6 +149,7 @@
 	<string name="HelloSignalReport">Report Hello Signal</string>
 	<string name="BatteryLevelReport">Report battery level</string>
 	<string name="RoamingReport">Report if roaming</string>
+    <string name="InventoryReport">Report inventory of installed apps</string>
 	
 	
 	<string name="notification_title">Pandroid</string>

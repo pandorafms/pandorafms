@@ -142,6 +142,7 @@
 	<string name="HelloSignalReport">"Rapport Signal Bonjour"</string>
 	<string name="BatteryLevelReport">"Signaler niveau de la batterie"</string>
 	<string name="RoamingReport">"Signaler roaming"</string>
+    <string name="InventoryReport">Inventaire Rapport d\'applications installées</string>
 	
 	
 	<string name="notification_title">Pandroid</string>

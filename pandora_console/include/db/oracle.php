@@ -34,18 +34,18 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
 	if (! $connect_id) {
 		return false;
 	}
-
+	
 	// Set date and timestamp formats for this session
 	$datetime_tz_format = oci_parse($connect_id , 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
 	$datetime_format = oci_parse($connect_id , 'alter session set NLS_TIMESTAMP_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
 	$date_format = oci_parse($connect_id , 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
 	$decimal_separator = oci_parse($connect_id , 'alter session set NLS_NUMERIC_CHARACTERS =\',.\'');
-
+	
 	oci_execute($datetime_tz_format);
 	oci_execute($datetime_format);
 	oci_execute($date_format);
 	oci_execute($decimal_separator);
-
+	
 	oci_free_statement($datetime_tz_format);
 	oci_free_statement($datetime_format);
 	oci_free_statement($date_format);
@@ -67,18 +67,24 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
 function oracle_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
 
 	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s = %d) WHERE rownum < 2",
-				$field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT *
+			FROM (SELECT %s FROM %s WHERE %s = %d)
+			WHERE rownum < 2",
+			$field, $table, $field_search, $condition);
 	}
 	else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s = %f) WHERE rownum < 2",
-				$field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT *
+			FROM (SELECT %s FROM %s WHERE %s = %f)
+			WHERE rownum < 2",
+			$field, $table, $field_search, $condition);
 	}
 	else {
-		$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s = '%s') WHERE rownum < 2",
-				$field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT *
+			FROM (SELECT %s FROM %s WHERE %s = '%s')
+			WHERE rownum < 2",
+			$field, $table, $field_search, $condition);
 	}
-
+	
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
 	if ($result === false)
@@ -86,7 +92,7 @@ function oracle_db_get_value ($field, $table, $field_search = 1, $condition = 1,
 	
 	if ($field[0] == '`')
 		$field = str_replace ('`', '', $field);
-		
+	
 	if (!isset($result[0][$field])) {
 		return reset($result[0]);
 	}
@@ -132,7 +138,7 @@ function oracle_db_get_row ($table, $field_search, $condition, $fields = false) 
 			$fields, $table, $field_search, $condition);
 	}
 	$result = db_get_all_rows_sql ($sql);
-		
+	
 	if ($result === false) 
 		return false;
 	
@@ -143,11 +149,11 @@ function oracle_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = 
 	global $config;
 	
 	$history = array ();
-
+	
 	if ($dbconnection === false) {
 		$dbconnection = $config['dbconnection'];
 	}
-		
+	
 	// To disable globally SQL cache depending on global variable.
 	// Used in several critical places like Metaconsole trans-server queries
 	if (isset($config["dbcache"]))
@@ -175,14 +181,14 @@ function oracle_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = 
 	if ($return === false) {
 		$return = array ();
 	}
-
+	
 	// Append result to the history DB data
 	if (! empty ($return)) {
 		foreach ($return as $row) {
 			array_push ($history, $row);
 		}
 	}
-
+	
 	if (! empty ($history))
 		return $history;
 	//Return false, check with === or !==
@@ -355,12 +361,17 @@ function oracle_db_get_all_rows_in_table($table, $order_field = "", $order = 'AS
 	if ($order_field != "") {
 		
 		// Clob fields are not allowed in ORDER BY statements, they need cast to varchar2 datatype
-		$type = db_get_value_filter ('data_type', 'user_tab_columns', array ('table_name' => strtoupper($table), 'column_name' => strtoupper($order_field)), 'AND');
+		$type = db_get_value_filter ('data_type', 'user_tab_columns',
+			array ('table_name' => strtoupper($table), 'column_name' => strtoupper($order_field)), 'AND');
 		if ($type == 'CLOB') {
-			return db_get_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY dbms_lob.substr(' . $order_field . ',4000,1) ' . $order);
+			return db_get_all_rows_sql ('SELECT *
+				FROM ' . $table . '
+				ORDER BY dbms_lob.substr(' . $order_field . ',4000,1) ' . $order);
 		}
 		else {
-			return db_get_all_rows_sql ('SELECT * FROM ' . $table . ' ORDER BY ' . $order_field . ' ' . $order);
+			return db_get_all_rows_sql ('SELECT *
+				FROM ' . $table . '
+				ORDER BY ' . $order_field . ' ' . $order);
 		}
 	}
 	else {
@@ -405,7 +416,7 @@ function oracle_db_process_sql_insert($table, $values, $autocommit = true) {
 		else if (is_float ($value) || is_double ($value)) {
 			$values_str .= sprintf("%f", $value);
 		}
-		else if (substr($value,0,1) == '#'){
+		else if (substr($value,0,1) == '#') {
 			$values_str .= sprintf("%s", substr($value,1));
 		}
 		else {
@@ -434,7 +445,7 @@ function oracle_db_process_sql_insert($table, $values, $autocommit = true) {
  * @return string String cleaned.
  */
 function oracle_escape_string_sql($string) {
-  return str_replace(array('"', "'", '\\'), array('\\"', '\\\'', '\\\\'), $string);
+	return str_replace(array('"', "'", '\\'), array('\\"', '\\\'', '\\\\'), $string);
 }
 
 /**
@@ -469,21 +480,21 @@ function oracle_escape_string_sql($string) {
 function oracle_db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	if (! is_array ($filter) || empty ($filter))
 		return false;
-
+	
 	/* Avoid limit and offset if given */
 	unset ($filter['limit']);
 	unset ($filter['offset']);
-
+	
 	$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s) WHERE rownum < 2",
 		$field, $table,
 		db_format_array_where_clause_sql ($filter, $where_join));
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if ($result === false)
 		return false;
-
+	
 	$fieldClean = str_replace('`', '', $field);
-
+	
 	return $result[0][$fieldClean];
 }
 
@@ -771,7 +782,7 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 		if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
 			$query .= $value;
-				
+			
 			if ($i < $max) {
 				$query .= ' '.$join.' ';
 			}
@@ -951,7 +962,7 @@ function oracle_db_get_all_rows_filter ($table, $filter = array(), $fields = fal
 		$fields = '*';
 	}
 	elseif (is_array($fields)) {
-		$fields =  implode(' , ', $fields) ;
+		$fields =  implode(' , ', $fields);
 	}
 	elseif (!is_string($fields)) {
 		return false;
@@ -1102,7 +1113,7 @@ function oracle_db_format_array_to_update_sql ($values) {
 				/* Don't round with quotes if it references a field */
 				$sql = sprintf ("%s = %s", $field, str_replace('`', '', $value));
 			else if (substr($value, 0,1) == '#'){
-				$sql = sprintf ("%s = %s", $field, substr($value,1));							
+				$sql = sprintf ("%s = %s", $field, substr($value,1));
 			}
 			else{
 				$sql = sprintf ("%s = '%s'", $field, $value);
@@ -1153,6 +1164,7 @@ function oracle_db_process_sql_update($table, $values, $where = false, $where_jo
 		}
 	}
 	$status = '';
+	
 	return db_process_sql ($query, "affected_rows", '', true, $status, $autocommit);
 }
 
@@ -1242,7 +1254,7 @@ function oracle_db_process_sql_delete_temp ($table, $where, $where_join = 'AND')
 function oracle_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 	global $config;
 	
-	if ($new == true){
+	if ($new == true) {
 		$result = oci_parse($config['dbconnection'], $sql);
 		oci_execute($result);
 	}
@@ -1250,7 +1262,7 @@ function oracle_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) 
 	
 	$result_temp = array();
 	if ($row) {
-		foreach ($row as $key => $value){
+		foreach ($row as $key => $value) {
 			$column_type = oci_field_type($result, $key);
 			// Support for Clob field larger than 4000bytes
 			if ($column_type == 'CLOB') {
@@ -1270,7 +1282,7 @@ function oracle_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) 
 		}
 	}
 	
-	if (!$row){
+	if (!$row) {
 		oci_free_statement($result);
 	}
 
@@ -1283,7 +1295,7 @@ function oracle_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) 
  */
 function oracle_db_process_sql_begin() {
 	global $config;
-
+	
 	$query = oci_parse($config['dbconnection'], 'SET TRANSACTION READ WRITE');
 	oci_execute($query);
 	oci_free_statement($query);
@@ -1294,7 +1306,7 @@ function oracle_db_process_sql_begin() {
  */
 function oracle_db_process_sql_commit() {
 	global $config;
-
+	
 	oci_commit($config['dbconnection']);
 }
 
@@ -1303,7 +1315,7 @@ function oracle_db_process_sql_commit() {
  */
 function oracle_db_process_sql_rollback() {
 	global $config;
-
+	
 	oci_rollback($config['dbconnection']);
 }
 
@@ -1365,13 +1377,14 @@ function oracle_get_system_time() {
  */
 function oracle_db_get_type_field_table($table, $field) {
 	global $config;
-
-	$query = oci_parse($config['dbconnection'], "SELECT * FROM " . $table . " WHERE rownum < 2");
-	oci_execute($query);	
-
+	
+	$query = oci_parse($config['dbconnection'],
+		"SELECT * FROM " . $table . " WHERE rownum < 2");
+	oci_execute($query);
+	
 	$type = oci_field_type($query, $field+1);
-	oci_free_statement($query);	
-
+	oci_free_statement($query);
+	
 	return $type;
 }
 
@@ -1385,30 +1398,30 @@ function oracle_db_get_type_field_table($table, $field) {
  * @return mixed Return an array/string of table fields or false if something goes wrong.
  */
 function oracle_list_all_field_table($table_name, $return_mode = 'array'){
-	if (empty($table_name)){
+	if (empty($table_name)) {
 		return false;
 	}
-
+	
 	$fields_info = db_get_all_rows_field_filter('user_tab_columns', 'table_name', strtoupper($table_name));
-	if (empty($fields_info)){
+	if (empty($fields_info)) {
 		return false;
 	}
 	$field_list = array();
-	foreach ($fields_info as $field){
-		if ($field['data_type'] == 'CLOB'){
+	foreach ($fields_info as $field) {
+		if ($field['data_type'] == 'CLOB') {
 			$new_field = 'dbms_lob.substr(' . $field['table_name'] . '.' . $field['column_name'] . ', 4000, 1) as ' . strtolower($field['column_name']);
-			$field_list[] = $new_field;  		
+			$field_list[] = $new_field;
 		}
-		else{
+		else {
 			$field_list[] = strtolower($field['table_name'] . '.' . $field['column_name']);	
 		}
 	}
 	// Return as comma separated string 
-	if ($return_mode == 'string'){
+	if ($return_mode == 'string') {
 		return implode(',', $field_list);
 	}
 	// Return as array
-	else{
+	else {
 		return $field_list;
 	}
 }
@@ -1422,16 +1435,16 @@ function oracle_list_all_field_table($table_name, $return_mode = 'array'){
  */
 function oracle_db_get_table_count($sql, $search_history_db = false) {
 	global $config;
-
+	
 	$history_count = 0;
 	$count = oracle_db_get_value_sql ($sql);
 	if ($count === false) {
 		$count = 0;
 	}
-
+	
 	// Search the history DB for matches
 	if ($search_history_db && $config['history_db_enabled'] == 1) {
-
+		
 		// Connect to the history DB
 		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
 			$config['history_db_connection'] = oracle_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
@@ -1443,10 +1456,9 @@ function oracle_db_get_table_count($sql, $search_history_db = false) {
 			}
 		}
 	}
-
+	
 	$count += $history_count;
-
+	
 	return $count;
 }
-
 ?>

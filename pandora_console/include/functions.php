@@ -1723,19 +1723,19 @@ function copy_dir($src, $dst) {
 *  Looks for two or more carriage returns.
 */
 
-function is_snapshot_data ($data){
-        
-        // TODO IDEA: In the future, we can set a variable in setup
-        // to define how many \n must have a snapshot to define it's 
-        // a snapshot. I think two or three is a good value anyway.
-
-        $temp = array();
-        $count = preg_match_all ("/\n/", $data, $temp);
-
-        if ($count > 2)
-                return 1;
-        else
-                return 0;
+function is_snapshot_data ($data) {
+	
+	// TODO IDEA: In the future, we can set a variable in setup
+	// to define how many \n must have a snapshot to define it's 
+	// a snapshot. I think two or three is a good value anyway.
+	
+	$temp = array();
+	$count = preg_match_all ("/\n/", $data, $temp);
+	
+	if ($count > 2)
+		return 1;
+	else
+		return 0;
 }
 
 /**

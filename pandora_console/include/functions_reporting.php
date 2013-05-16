@@ -1448,7 +1448,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			
 			// Add id of this group to create the clause
 			// If the group is quering previously, we ingore it
-			if(!in_array($group,$covered_groups)){
+			if (!in_array($group,$covered_groups)){
 				array_push($covered_groups, $group);
 				array_push($group_array, $group);
 			}
@@ -1475,7 +1475,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			}
 			*/
 			
-			if(!empty($group_array)) {
+			if (!empty($group_array)) {
 				// Get unknown agents by using the status code in modules
 				$data["agents_unknown"] += groups_agent_unknown ($group_array);
 				
@@ -5776,7 +5776,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$table->colspan[1][0] = 2;
 			$table->colspan[2][0] = 2;
-			if($description != '') {
+			if ($description != '') {
 				$data[0] = $description;
 				array_push ($table->data, $data);
 			}

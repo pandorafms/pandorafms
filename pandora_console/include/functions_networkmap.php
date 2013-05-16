@@ -919,7 +919,7 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
 	
 	$filter['id_networkmap'] = $id_networkmap;
 	
-	if($check_user) {
+	if ($check_user) {
 		//If hte user has admin flag don't filter by user	
 		$user_info = users_get_user_by_id($config['id_user']);
 		
@@ -945,12 +945,12 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
 function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
 	global $config;
 	
-	if($id_user == '') {
+	if ($id_user == '') {
 		$id_user = $config['id_user'];
 	}
 	
 	$type_cond = '';
-	if($type != '') {
+	if ($type != '') {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$type_cond = ' AND type = "'.$type.'"';
@@ -972,13 +972,13 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 			break;
 	}
 	
-	if($networkmaps_raw === false){
+	if ($networkmaps_raw === false){
 		return false;
 	}
-		
+	
 	$networkmaps = array();
-	foreach($networkmaps_raw as $key => $networkmapitem) {
-		if($optgrouped) {
+	foreach ($networkmaps_raw as $key => $networkmapitem) {
+		if ($optgrouped) {
 			$networkmaps[$networkmapitem['id_networkmap']] = 
 				array('name' => $networkmapitem['name'], 
 					'optgroup' => $networkmapitem['type']);
@@ -1071,13 +1071,13 @@ function networkmap_get_filter_types () {
 
 ?>
 <script language="javascript" type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
-	$("area[title!='<?php echo 'Pandora FMS'; ?>']").cluetip ({
-		arrows: true,
-		attribute: 'title',
-		cluetipClass: 'default'
+	/* <![CDATA[ */
+	$(document).ready (function () {
+		$("area[title!='<?php echo 'Pandora FMS'; ?>']").cluetip ({
+			arrows: true,
+			attribute: 'title',
+			cluetipClass: 'default'
+		});
 	});
-});
-/* ]]> */
+	/* ]]> */
 </script>

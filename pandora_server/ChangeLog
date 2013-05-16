@@ -1,3 +1,10 @@
+2013-05-16  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/control,
+	pandora_server.spec,
+	pandora_server.redhat.spec: Added Perl JSON dependency, removed net-snmp.
+	Upgraded version in some specs.
+
 2013-05-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Directly call snmptranslate, since

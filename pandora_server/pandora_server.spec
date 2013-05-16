@@ -25,7 +25,7 @@ Provides:           %{name}-%{version}
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-NetAddr-IP net-snmp net-tools perl-XML-Twig
 Requires:           nmap wmic sudo perl-HTML-Tree perl-XML-Simple
-Requires:           perl-IO-Socket-INET6 perl-Socket6 perl-SNMP snmp-mibs
+Requires:           perl-IO-Socket-INET6 perl-Socket6 snmp-mibs perl-JSON
 
 %description
 

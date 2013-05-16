@@ -6,5 +6,5 @@ Section: admin
 Installed-Size: 640
 Maintainer: Miguel de Dios <miguel.dedios@artica.es>
 Homepage: http://pandorafms.org/
-Depends: perl (>= 5.8), libdbi-perl, libdbd-mysql-perl, libtime-format-perl, libnetaddr-ip-perl, libtime-format-perl, libxml-simple-perl, libxml-twig-perl, libhtml-parser-perl, snmp, snmpd, traceroute, xprobe2, nmap, sudo, libwww-perl, libsocket6-perl, libio-socket-inet6-perl, libsnmp-perl, snmp-mibs-downloader
+Depends: perl (>= 5.8), libdbi-perl, libdbd-mysql-perl, libtime-format-perl, libnetaddr-ip-perl, libtime-format-perl, libxml-simple-perl, libxml-twig-perl, libhtml-parser-perl, snmp, snmpd, traceroute, xprobe2, nmap, sudo, libwww-perl, libsocket6-perl, libio-socket-inet6-perl, snmp-mibs-downloader, libjson-perl
 Description: Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to grab information. Pandora supports all standard OS (Linux, AIX, HP-UX, Solaris and Windows XP,2000/2003), and support multiple setups in HA enviroments. This is the server package. Server makes the remote checks and process information transfer by Pandora FMS agents to the server.

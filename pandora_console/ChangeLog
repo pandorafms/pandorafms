@@ -1,5 +1,11 @@
 2013-05-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_ui.php: added first version of function
+	"ui_print_empty_data" for to show when the page has not data as
+	list of agents or alerts or somethings.
+
+2013-05-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/events/events.php, operation/events/events_list.php,
 	operation/events/events.php: re-added and re-set the custom fields
 	by groups enterprise.

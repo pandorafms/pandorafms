@@ -39,12 +39,20 @@ $buttons['filter'] = array('active' => false,
 			html_print_image("images/filter_mc.png", true, array ("title" => __('Create filter'))) . '</a>');
 
 if (check_acl ($config["id_user"], 0, "PM")) {
-	$buttons['responses'] = array('active' => false, 	
+	$buttons['responses'] = array('active' => false,
 				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
 				html_print_image("images/event_responses.png", true, array ("title" => __('Event responses'))) . '</a>');
-	$buttons['fields'] = array('active' => false, 	
-				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">' .
+	
+	if (! defined ('METACONSOLE')) {
+		$buttons['fields'] = array('active' => false,
+				'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">' .
 				html_print_image("images/custom_columns.png", true, array ("title" => __('Custom fields'))) . '</a>');
+	}
+	else {
+		$buttons['fields'] = array('active' => false,
+				'text' => '<a href="index.php?sec=eventos&sec2=event/custom_events&amp;section=fields&amp;pure='.$config['pure'].'">' .
+				html_print_image("images/custom_columns.png", true, array ("title" => __('Custom fields'))) . '</a>');
+	}
 }
 
 switch ($section) {

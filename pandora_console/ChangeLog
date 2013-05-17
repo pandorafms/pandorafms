@@ -1,3 +1,9 @@
+2013-05-17 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/events/events.php, operation/events/events_list.php,
+	operation/events/events.php: re-added and re-set the custom fields
+	by groups enterprise.
+
 2013-05-16 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: disabled

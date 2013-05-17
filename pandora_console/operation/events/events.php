@@ -320,7 +320,7 @@ if ($config["pure"] == 0 || $meta) {
 	}
 	
 	// If the history event is not ebabled, dont show the history tab
-	if(!isset($config['metaconsole_events_history']) || $config['metaconsole_events_history'] != 1) {
+	if (!isset($config['metaconsole_events_history']) || $config['metaconsole_events_history'] != 1) {
 		unset($onheader['history']);
 	}
 	

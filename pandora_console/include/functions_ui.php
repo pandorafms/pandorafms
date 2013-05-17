@@ -326,6 +326,10 @@ function ui_print_info_message ($message, $attributes = '', $return = false, $ta
 	return ui_print_message ($message, 'info', $attributes, $return, $tag);
 }
 
+function ui_print_empty_data($message, $attributes = '', $return = false, $tag = 'h3') {
+	return ui_print_message ($message, 'info', $attributes, $return, $tag);
+}
+
 /** 
  * Evaluates a result using empty() and then prints an error or success message
  * 

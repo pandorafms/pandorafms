@@ -488,7 +488,7 @@ else {
 	$result = events_get_events_grouped($sql_post, $offset, $pagination, $meta, $history);
 }
 
-if (!empty($result)) {		
+if (!empty($result)) {
 	$graph = '<fieldset class="databox tactical_set" style="width:93%;">
 			<legend>' . 
 				__('Events generated -by module-') . 

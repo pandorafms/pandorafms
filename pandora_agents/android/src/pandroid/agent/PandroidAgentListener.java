@@ -363,7 +363,7 @@ public class PandroidAgentListener extends Service {
 	private String buildXML(){
 		String buffer = "";
 		String gpsData = "";
-		buffer += "<?xml version='1.0' encoding='iso-8859-1'?>\n";
+		buffer += "<?xml version='1.0' encoding='UTF-8'?>\n";
 
 		String latitude = getSharedData("PANDROID_DATA", "latitude", "181", "float");
 		String longitude = getSharedData("PANDROID_DATA", "longitude", "181", "float");

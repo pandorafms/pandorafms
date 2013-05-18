@@ -14,28 +14,23 @@
 
 package pandroid.agent;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import android.util.Log;
+
 
 class tentacle_client {
 
 	// Return 0 when success, -1 when error
-	public int tentacle_client(String args[]) { 
+	public int tentacle_client(String args[]) {
 
 		int port = 41121;
 		String send = null;
 		String serverResponse = null;
 		String address = "127.0.0.1";
-		String data = "";
+		byte[] data = null;
 		String parameter = "";
 		String filePath = null;
 		boolean verbose = false;
@@ -62,7 +57,7 @@ class tentacle_client {
 				// The solo params are checked otherwise
 				if(parameter.equals("-v")) {
 					verbose = true;
-				}			    	
+				}
 			}
 		}
 
@@ -80,12 +75,12 @@ class tentacle_client {
 			socketCliente.connect(new InetSocketAddress(address, port), 2000);
 
 		} catch (UnknownHostException e) {
-			getError("Host don't exists");
+			getError("Host doesn't exist");
 			return -1;
 		} catch (IOException e) {
 			getError("Could not connect: The host is down");
 			return -1;
-		}
+        }
 
 
 		DataOutputStream serverOutput = null;
@@ -104,26 +99,24 @@ class tentacle_client {
 			getError("Could not get Buffered reader");
 		}
 
-		try {
-			file = new File (filePath);
-			FileReader fr = new FileReader (file);
-			BufferedReader br = new BufferedReader(fr);
 
-			getInfo("Reading the file '" + file.getName() + "' content...\n", verbose);
-			// Reading the file
-			String line;
-			while((line=br.readLine())!=null)
-				data += line + '\n';
-
-			br.close();
-		} catch (IOException e) {
-			getError("Could not get the file");
-		}
+        file = new File(filePath);
+        int size = (int) file.length();
+        data = new byte[size];
+        try {
+             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+             buf.read(data, 0, data.length);
+             buf.close();
+        } catch (FileNotFoundException e) {
+             getError("File not found");
+        } catch (IOException e) {
+             getError("Could not read from file");
+        }
 
 		getInfo("*** Start of transference ***\n",verbose);
 		// Send the file name and length
 		try {
-			send = "SEND <" + file.getName() + "> SIZE " + Integer.toString(data.length()) + '\n';
+			send = "SEND <" + file.getName() + "> SIZE " + Integer.toString(data.length) + '\n';
 			getInfo("Client -> Server: " + send, verbose);
 			serverOutput.writeBytes(send);
 		} catch (IOException e) {
@@ -139,7 +132,7 @@ class tentacle_client {
 		if (serverResponse != null && serverResponse.equals("SEND OK")) {
 			try {
 				getInfo("Client -> Server: [file data]\n", verbose);
-				serverOutput.writeBytes(data);
+                serverOutput.write(data);
 
 			} catch (IOException e) {
 				getError("Could not write on server");

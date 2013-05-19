@@ -1,3 +1,9 @@
+2013-05-19  Sancho Lerena <slerena@artica.es>
+
+	* build_src.sh: UPdated, removed old stuff and updated (my) paths
+
+	* build_rpm.redhat.sh: New script for Centos/fedora/rhel RPM packaging.
+
 2012-06-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Merged from trunk. Update version in agent

@@ -563,7 +563,7 @@ function js_addPoint(layerName, pointName, lon, lat, id, type_string, statusAgen
 function js_addAgentPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string, statusAgent, idParent) {
 	var point = new OpenLayers.Geometry.Point(lon, lat)
 	.transform(map.displayProjection, map.getProjectionObject());
-
+	
 	var layer = map.getLayersByName(layerName);
 	layer = layer[0];
 	

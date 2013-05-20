@@ -1,3 +1,11 @@
+2013-05-20 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_gis.php, operation/gis_maps/render_view.php,
+	operation/agentes/gis_view.php: changed the code to set the agent
+	icon with the original size.
+	
+	MERGED FROM THE TRUNK
+
 2013-05-20  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions.php: Added default binary path for snmpwalk

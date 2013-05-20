@@ -175,11 +175,17 @@ if ($layers != false) {
 			
 			
 			$icon = gis_get_agent_icon_map($idAgent, true);
+			$icon_size = getimagesize($icon);
+			$icon_width = $icon_size[0];
+			$icon_height = $icon_size[1];
 			$status = agents_get_status($idAgent);
 			$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
-			gis_add_agent_point($layer['layer_name'], io_safe_output($agentName), $coords['stored_latitude'],
-				$coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info', $parent);
+			gis_add_agent_point($layer['layer_name'],
+				io_safe_output($agentName), $coords['stored_latitude'],
+				$coords['stored_longitude'], $icon, $icon_width,
+				$icon_height, $idAgent, $status, 'point_agent_info',
+				$parent);
 		}
 	}
 	gis_add_parent_lines();
@@ -204,15 +210,15 @@ if ($layers != false) {
 
 // Resize GIS map on fullscreen
 if ($config["pure"] != 0) {
-?>
-	<script type="text/javascript">
-		$().ready(function(){
-			
-			var new_height = $(document).height();
-			$("#map").css("height", new_height - 60);
-			
-		});
-	</script>
-<?php
+	?>
+		<script type="text/javascript">
+			$().ready(function(){
+				
+				var new_height = $(document).height();
+				$("#map").css("height", new_height - 60);
+				
+			});
+		</script>
+	<?php
 }
 ?>

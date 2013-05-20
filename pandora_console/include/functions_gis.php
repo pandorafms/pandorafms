@@ -363,20 +363,20 @@ function gis_add_agent_point($layerName, $pointName, $lat, $lon, $icon = null, $
 		$pointName = '';
 	?>
 	<script type="text/javascript">
-	$(document).ready (
-		function () {
-			<?php
-			if ($icon != null) {
-				//echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status);";
-				echo "js_addAgentPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status, $idParent);";
+		$(document).ready (
+			function () {
+				<?php
+				if ($icon != null) {
+					//echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status);";
+					echo "js_addAgentPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status, $idParent);";
+				}
+				else {
+					//echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status);";
+					echo "js_addAgentPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status, $idParent);";
+				} 
+				?>
 			}
-			else {
-				//echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status);";
-				echo "js_addAgentPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status, $idParent);";
-			} 
-			?>
-		}
-	);
+		);
 	</script>
 	<?php
 }
@@ -463,8 +463,10 @@ function gis_get_layers($idMap) {
 function gis_get_agent_icon_map($idAgent, $state = false, $status = null) {
 	global $config;
 	
-	$row = db_get_row_sql('SELECT id_grupo, icon_path
-		FROM tagente WHERE id_agente = ' . $idAgent);
+	$row = db_get_row_sql('
+		SELECT id_grupo, icon_path
+		FROM tagente
+		WHERE id_agente = ' . $idAgent);
 	
 	if (($row['icon_path'] === null) || (strlen($row['icon_path']) == 0)) {
 		if ($config['gis_default_icon'] != "") {
@@ -874,11 +876,13 @@ function gis_get_conection_conf($idConnection) {
  */
 function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $centerInAgent = true, $history_time = 86400) {
 	$defaultMap = db_get_all_rows_sql("
-		SELECT t1.*, t3.conection_name, t3.connection_type, t3.conection_data, t3.num_zoom_levels
+		SELECT t1.*, t3.conection_name, t3.connection_type,
+			t3.conection_data, t3.num_zoom_levels
 		FROM tgis_map AS t1, 
 			tgis_map_has_tgis_map_connection AS t2, 
 			tgis_map_connection AS t3
-		WHERE t1.default_map = 1 AND t2.tgis_map_id_tgis_map = t1.id_tgis_map
+		WHERE t1.default_map = 1
+			AND t2.tgis_map_id_tgis_map = t1.id_tgis_map
 			AND t2.default_map_connection = 1
 			AND t3.id_tmap_connection = t2.tgis_map_connection_id_tmap_connection");
 	
@@ -936,7 +940,7 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	
 	if ($gmap_layer === true) {
 		?>
-			<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
+		<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
 		<?php
 	}
 	
@@ -944,18 +948,28 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 		$defaultMap['initial_latitude'],
 		$defaultMap['initial_longitude'], $baselayers, $controls);
 		
-	gis_make_layer("layer_for_agent_".$agent_name);
+	gis_make_layer("layer_for_agent_" . $agent_name);
 	
 	$agent_icon = gis_get_agent_icon_map($agent_id, true);
+	$agent_icon_size = getimagesize($agent_icon);
+	$agent_icon_width = $agent_icon_size[0];
+	$agent_icon_height = $agent_icon_size[1];
 	$status = agents_get_status($agent_id);
 	
 	/* If show_history is true, show the path of the agent */
 	if ($show_history) {
-		$lastPosition = array('longitude' => $agentPositionLongitude, 'latitude' => $agentPositionLatitude);
-		gis_add_path("layer_for_agent_".$agent_name,$agent_id, $lastPosition, $history_time);
+		$lastPosition = array(
+			'longitude' => $agentPositionLongitude,
+			'latitude' => $agentPositionLatitude);
+		gis_add_path("layer_for_agent_" . $agent_name,
+			$agent_id, $lastPosition, $history_time);
 	}
 	
-	gis_add_agent_point("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, $status, 'point_agent_info');
+	
+	gis_add_agent_point("layer_for_agent_" . $agent_name,
+		$agent_name, $agentPositionLatitude, $agentPositionLongitude,
+		$agent_icon, $agent_icon_width, $agent_icon_height, $agent_id,
+		$status, 'point_agent_info');
 	
 	if ($centerInAgent) {
 		?>

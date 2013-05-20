@@ -72,7 +72,9 @@ gis_activate_ajax_refresh(null, $timestampLastOperation);
 gis_activate_select_control();
 
 if ($agentData === false) {
-	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
+	echo "<p>" .
+		__("There is no GIS data for this agent, so it's positioned in default position of map.") .
+		"</p>";
 }
 
 echo "<br />";
@@ -98,7 +100,9 @@ $countData = db_get_value_sql($sqlCount);
 
 
 /* Get the elements to present in this page */
-$sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_timestamp, description, number_of_packages, manual_placement
+$sql = sprintf ("
+	SELECT longitude, latitude, altitude, start_timestamp,
+		end_timestamp, description, number_of_packages, manual_placement
 	FROM tgis_data_history
 	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)  
 	ORDER BY end_timestamp DESC
@@ -107,7 +111,8 @@ $result = db_get_all_rows_sql ($sql, true);
 
 
 if ($result === false) {
-	echo "<div class='nf'>".__('This agent doesn\'t have any GIS data')."</div>";
+	echo "<div class='nf'>" .
+		__('This agent doesn\'t have any GIS data.') . "</div>";
 }
 else {
 	ui_pagination ($countData, false) ;

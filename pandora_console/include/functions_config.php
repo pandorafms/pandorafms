@@ -77,7 +77,7 @@ function config_update_config () {
 	
 	// Include functions_io to can call __() function
 	include_once($config['homedir'] . '/include/functions_io.php');
-
+	
 	/* If user is not even log it, don't try this */
 	if (! isset ($config['id_user'])) {
 		$config['error_config_update_config'] = array();

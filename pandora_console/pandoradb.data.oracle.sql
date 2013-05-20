@@ -1065,7 +1065,8 @@ END;;
 
 BEGIN
 LOCK TABLE tgis_map_connection IN EXCLUSIVE MODE;
-INSERT INTO tgis_map_connection VALUES (1,'OpenStreetMap','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
+INSERT INTO tgis_map_connection VALUES (1,'OpenStreetMap (MapQuest Open)','OSM','{\"type\":\"OSM\",\"url\":\"http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
+INSERT INTO tgis_map_connection VALUES (2,'OpenStreetMap (Standard)','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
 COMMIT;
 END;;
 

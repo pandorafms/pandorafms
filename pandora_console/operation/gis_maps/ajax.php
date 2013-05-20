@@ -119,8 +119,15 @@ switch ($opt) {
 			if (!$config['gis_label'])
 				$row['nombre'] = '';
 			
+			$icon = gis_get_agent_icon_map($row['tagente_id_agente'], true, $status);
+			$icon_size = getimagesize($icon);
+			$icon_width = $icon_size[0];
+			$icon_height = $icon_size[1];
+			
 			$agents[$row['tagente_id_agente']] = array(
-				'icon_path' => gis_get_agent_icon_map($row['tagente_id_agente'], true, $status),
+				'icon_path' => $icon,
+				'icon_width' => $icon_width,
+				'icon_height' => $icon_height,
 				'name' => $row['nombre'],
 				'status' => $status,
 				'stored_longitude' => $row['stored_longitude'],

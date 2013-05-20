@@ -251,7 +251,7 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 		var refreshAjaxIntervalSeconds = 60000;
 		var idIntervalAjax = null;
 		var oldRefreshAjaxIntervalSeconds = 60000;
-
+		
 		<?php
 		if ($layers === null) {
 			echo "var agentView = 1;";
@@ -260,20 +260,20 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 			echo "var agentView = 0;";
 		}
 		?>
-
+		
 		function refreshAjaxLayer(layer) {
 			var featureIdArray = Array();
 			
 			for (featureIndex = 0; featureIndex < layer.features.length; featureIndex++) {
 				feature = layer.features[featureIndex];
-
+				
 				if (feature.data.type != 'point_path_info') {
 					if (feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
 						featureIdArray.push(feature.data.id);
 					}
 				}
 			}
-
+			
 			if (featureIdArray.length > 0) {
 				jQuery.ajax ({
 				data: "page=operation/gis_maps/ajax&opt=get_new_positions&id_features=" + featureIdArray.toString()
@@ -285,7 +285,7 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 				success: function (data) {
 					if (data.correct) {
 						content = $.evalJSON(data.content);
-
+						
 						if (content != null) {
 							for (var idAgent in content) {
 								if (isInt(idAgent)) {
@@ -296,11 +296,18 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 									delete feature;
 									feature = null
 									status = parseInt(agentDataGIS['status']);
-										
-									js_addAgentPointExtent(layer.name, agentDataGIS['name'],
-									agentDataGIS['stored_longitude'], agentDataGIS['stored_latitude'],
-									agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info', status, agentDataGIS['id_parent']);
-
+									
+									js_addAgentPointExtent(layer.name,
+										agentDataGIS['name'],
+										agentDataGIS['stored_longitude'],
+										agentDataGIS['stored_latitude'],
+										agentDataGIS['icon_path'],
+										agentDataGIS['icon_width'],
+										agentDataGIS['icon_height'],
+										idAgent,
+										'point_agent_info', status,
+										agentDataGIS['id_parent']);
+									
 									//TODO: Optimize, search a new position to call for all agent in the layer and or optimice code into function.
 									js_refreshParentLines();
 								}
@@ -311,7 +318,7 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 				});
 			}
 		}
-	
+		
 		function clock_ajax_refresh() {
 			//console.log(new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds());
 			for (layerIndex = 0; layerIndex < map.getNumLayers(); layerIndex++) {
@@ -337,7 +344,7 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 			}
 			
 			last_time_of_data = Math.round(new Date().getTime() / 1000); //Unixtimestamp
-
+			
 			//Test if the user change the refresh time.
 			if (oldRefreshAjaxIntervalSeconds != refreshAjaxIntervalSeconds) {
 				clearInterval(idIntervalAjax);
@@ -345,7 +352,7 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 				oldRefreshAjaxIntervalSeconds = refreshAjaxIntervalSeconds;
 			}
 		}
-	
+		
 		$(document).ready (
 			function () {
 				idIntervalAjax = setInterval("clock_ajax_refresh()", refreshAjaxIntervalSeconds);
@@ -357,7 +364,7 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 
 function gis_add_agent_point($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
 	$height = 20, $point_id = '', $status = -1, $type_string = '', $idParent = 0) {
-		
+	
 	global $config;
 	if (!$config['gis_label'])
 		$pointName = '';
@@ -610,7 +617,7 @@ function gis_save_map_connection($mapConnection_name, $mapConnection_group,
 			$mapConnection_defaultAltitude, $mapConnection_centerLatitude,
 			$mapConnection_centerLongitude, $mapConnection_centerAltitude,
 			$mapConnectionData, $idConnectionMap = null) {
-
+	
 	if ($idConnectionMap !== null) {
 		$returnQuery = db_process_sql_update('tgis_map_connection',
 			array(

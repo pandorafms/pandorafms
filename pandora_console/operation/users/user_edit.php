@@ -85,6 +85,8 @@ else {
 	$url = 'index.php?sec=workspace&amp;sec2=operation/users/user_edit';
 }
 
+enterprise_hook('open_meta_frame');
+
 // Update user info
 if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info = array ();
@@ -388,6 +390,9 @@ if (!empty ($table->data)) {
 else {
 	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 
 }
+
+enterprise_hook('close_meta_frame');
+
 ?>
 
 <script language="javascript" type="text/javascript">

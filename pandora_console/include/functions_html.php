@@ -958,6 +958,13 @@ function html_print_input_image ($name, $src, $value, $style = '', $return = fal
 			$src = $skin_path;
 	}
 	
+	// If metaconsole is activated and image doesn't exists try to search on normal console
+	if (defined('METACONSOLE')) {
+		if (false === @file_get_contents($src, 0, null, 0, 1)) {
+			$src = '../../' . $src;
+		}
+	}
+	
 	// path to image 
 	$src = ui_get_full_url($src);
 	

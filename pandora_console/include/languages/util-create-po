@@ -1,0 +1,2 @@
+#!/bin/bash
+msginit -i index.pot -o $1.po 

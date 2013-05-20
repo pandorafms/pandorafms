@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 
 include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . '/include/functions_users.php');
-enterprise_include_once ('meta/include/functions_users_meta.php');
+enterprise_include_once ('meta/include/functions_agents_meta.php');
 
 // Init vars
 $icon = "";
@@ -79,7 +79,7 @@ if ($id_group) {
 // Header
 if (defined('METACONSOLE')) {
 
-	user_meta_print_header();
+	agents_meta_print_header();
 	$sec = 'advanced';
 	
 }
@@ -93,6 +93,8 @@ else {
 	$sec = 'gagente';
 
 }
+
+enterprise_hook('open_meta_frame');
 
 $table->width = '98%';
 $table->data = array ();
@@ -165,6 +167,9 @@ else {
 }
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
+
 ?>
 <script language="javascript" type="text/javascript">
 function icon_changed () {

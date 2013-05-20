@@ -39,6 +39,8 @@ else {
 	$sec = 'gmodules';
 }
 
+enterprise_hook('open_meta_frame');
+
 $create = (bool) get_parameter ('create');
 $update = (bool) get_parameter ('update');
 $delete = (bool) get_parameter ('delete');
@@ -238,6 +240,9 @@ html_print_input_hidden ('new', 1);
 html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
+
 ?>
 <script type="text/javascript">
 	function check_all_checkboxes() {

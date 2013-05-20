@@ -65,6 +65,8 @@ if ((!$copy_action) && (!$delete_action) && (!$update_action)) {
 	}
 }
 
+enterprise_hook('open_meta_frame');
+
 if ($copy_action) {
 	$id = get_parameter ('id');
 
@@ -389,4 +391,7 @@ html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 html_print_input_hidden ('create_alert', 1);
 echo '</form>';
 echo '</div>';
+
+enterprise_hook('close_meta_frame');
+
 ?>

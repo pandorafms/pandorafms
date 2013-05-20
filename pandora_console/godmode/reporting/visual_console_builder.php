@@ -50,6 +50,7 @@ $activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements'
 
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
 
+
 //Save/Update data in DB
 $statusProcessInDB = null;
 switch ($activeTab) {
@@ -95,24 +96,19 @@ switch ($activeTab) {
 						break;
 					
 					case 'save':
-						if (!defined('METACONSOLE')) {
-							if ($values['name'] != "" && $values['background'])
-								$idVisualConsole = db_process_sql_insert('tlayout', $values);
-							else
-								$idVisualConsole = false;
-							
-							if ($idVisualConsole !== false) {
-								db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
-								$action = 'edit';
-								$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully created.').'</h3>');
-							}
-							else {
-								db_pandora_audit( "Visual console builder", "Fail try to create visual console");
-								$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be created.').'</h3>');
-							}
+						if ($values['name'] != "" && $values['background'])
+							$idVisualConsole = db_process_sql_insert('tlayout', $values);
+						else
+							$idVisualConsole = false;
+						
+						if ($idVisualConsole !== false) {
+							db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
+							$action = 'edit';
+							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully created.').'</h3>');
 						}
 						else {
-							
+							db_pandora_audit( "Visual console builder", "Fail try to create visual console");
+							$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be created.').'</h3>');
 						}
 						break;
 				}

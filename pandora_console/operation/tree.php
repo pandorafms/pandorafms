@@ -585,6 +585,9 @@ if (! defined ('METACONSOLE')) {
 else {
 	echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$activeTab.'&pure='.$pure.'">';
 }
+
+enterprise_hook('open_meta_frame');
+
 echo "<b>" . __('Agent status') . "</b>";
 
 $search_free = get_parameter('search_free', '');
@@ -615,6 +618,9 @@ echo "<div id='module_details_window'></div>";
 ui_require_javascript_file('pandora_modules');
 
 treeview_printTree($activeTab);
+
+enterprise_hook('close_meta_frame');
+
 ?>
 
 <script language="javascript" type="text/javascript">

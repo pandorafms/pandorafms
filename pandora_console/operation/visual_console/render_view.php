@@ -25,13 +25,14 @@ if (!defined('METACONSOLE'))
 else
 	$id_layout = (int) get_parameter ('id_visualmap');
 
+if ($id_layout) {
+	$default_action = 'edit';
+}
+else {
+	$default_action = 'new';
+}
+	
 if (!defined('METACONSOLE')) {
-	if ($id_layout) {
-		$default_action = 'edit';
-	}
-	else {
-		$default_action = 'new';
-	}
 	$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), $default_action);
 }
 else {

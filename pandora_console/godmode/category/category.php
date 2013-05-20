@@ -50,6 +50,8 @@ else {
 	ui_print_page_header (__('Categories configuration'), "images/gm_modules.png", false, "", true, $buttons);
 }
 
+enterprise_hook('open_meta_frame');
+
 // Two actions can performed in this page: search and delete categories
 
 // Delete action: This will delete a category
@@ -129,5 +131,7 @@ else {
 	// No categories available or selected
 	echo "<div class='nf'>".__('No categories found')."</div>";
 }
+
+enterprise_hook('close_meta_frame');
 
 ?>

@@ -123,6 +123,8 @@ else {
 	
 }
 
+enterprise_hook('open_meta_frame');
+
 $disable_user = get_parameter ("disable_user", false);
 
 if (isset ($_GET["user_del"])) { //delete user
@@ -381,4 +383,7 @@ else {
 	echo '<i>'.__('The current authentication scheme doesn\'t support creating users from Pandora FMS').'</i>';
 }
 echo '</div>';
+
+enterprise_hook('close_meta_frame');
+
 ?>

@@ -128,6 +128,8 @@ if (defined('METACONSOLE'))
 else
 	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/gm_alerts.png", false, "alert_command", true);
 
+enterprise_hook('open_meta_frame');
+
 $update_command = (bool) get_parameter ('update_command');
 $create_command = (bool) get_parameter ('create_command');
 $delete_command = (bool) get_parameter ('delete_command');
@@ -308,4 +310,7 @@ html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 html_print_input_hidden ('create_alert', 1);
 echo '</form>';
 echo '</div>';
+
+enterprise_hook('close_meta_frame');
+
 ?>

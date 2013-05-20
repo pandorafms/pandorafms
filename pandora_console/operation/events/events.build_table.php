@@ -18,7 +18,9 @@ $table->width = '98%';
 $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->class = "databox";
+if(!isset($table->class)) {
+	$table->class = "databox";
+}
 $table->head = array ();
 $table->data = array ();
 

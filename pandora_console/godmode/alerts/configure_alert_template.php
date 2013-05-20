@@ -106,6 +106,7 @@ else {
 	}
 }
 
+enterprise_hook('open_meta_frame');
 
 if ($duplicate_template) {
 	$source_id = (int) get_parameter ('source_id');
@@ -705,6 +706,8 @@ else {
 }
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file ('pandora_alerts');
 ui_require_jquery_file ("ui-timepicker-addon");

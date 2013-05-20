@@ -22,7 +22,7 @@ check_login();
 require_once($config['homedir'] . "/include/functions_groups.php");
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_users.php');
-enterprise_include_once ('meta/include/functions_users_meta.php');
+enterprise_include_once ('meta/include/functions_agents_meta.php');
 
 if (is_ajax ()) {
 	if (! check_acl($config['id_user'], 0, "AR")) {
@@ -107,7 +107,7 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 // Header
 if (defined('METACONSOLE')) {
 	
-	user_meta_print_header();
+	agents_meta_print_header();
 	$sec = 'advanced';
 	
 }
@@ -117,6 +117,8 @@ else {
 	$sec = 'gagente';
 
 }
+
+enterprise_hook('open_meta_frame');
 
 $create_group = (bool) get_parameter ('create_group');
 $update_group = (bool) get_parameter ('update_group');
@@ -426,6 +428,8 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
 
 ?>
 

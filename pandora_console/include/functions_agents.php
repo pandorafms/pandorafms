@@ -95,21 +95,6 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	// Create address for this agent in taddress
 	agents_add_address ($id_agent, $ip_address);
 	
-	// Create special module agent_keepalive
-	$values_modules = array(
-		'id_tipo_modulo' => 100,
-		'descripcion' => __('Agent keepalive monitor'),
-		'id_modulo' => 1,
-		'min_warning' => 0,
-		'max_warning' => 1);
-	
-	$id_agent_module = modules_create_agent_module($id_agent,
-		'agent_keepalive', $values_modules);
-	
-	if ($id_agent_module === false) {
-		return false;
-	}
-	
 	db_pandora_audit ("Agent management", "New agent '$name' created");
 	
 	return $id_agent;

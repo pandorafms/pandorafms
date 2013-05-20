@@ -56,6 +56,8 @@ else {
 	$sec = 'advanced';
 }
 
+enterprise_hook('open_meta_frame');
+
 $delete_profile = (bool) get_parameter ('delete_profile');
 $create_profile = (bool) get_parameter ('create_profile');
 $update_profile = (bool) get_parameter ('update_profile');
@@ -265,4 +267,7 @@ html_print_submit_button (__('Create'), "crt", false, 'class="sub next"');
 echo "</div>";
 echo '</form>';
 unset ($table);
+
+enterprise_hook('close_meta_frame');
+
 ?>

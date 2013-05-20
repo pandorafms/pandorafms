@@ -1127,13 +1127,18 @@ tr.disabled_row_user * {
 	width: 173px;
 }
 .suc, .error, .help {
-	padding: 4px 1px 6px 30px;
+	padding: 4px 1px 6px 50px;
+	height: 40px;
 }
 .suc {
 	color: #5a8629;
 	background: url(../../images/suc.png) no-repeat 1px;
 }
+.info {
+	color: #006F9D;
+}
 .error {
+	color: #FF4040;
 	background: url(../../images/err.png) no-repeat;
 }
 .help {
@@ -1141,6 +1146,7 @@ tr.disabled_row_user * {
 }
 .red, .redb, .redi, .error {
 	color: #c00;
+http://localhost/pandora_blackout/index.php?sec=gpolicies&sec2=enterprise/godmode/policies/policies&tab=agents&id=3
 }
 
 .sep {
@@ -2302,32 +2308,41 @@ tr.group_view_data, .group_view_data {
 
 /* classes for event priorities. Sits now in functions.php */
 .datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a {
-	background-color: #52A000;
+	background-color: #6EB432;
 	color: #fff;
 }
 .datos_red, .datos_redf9, .datos_red a, .datos_redf9 a{
-	background-color: #FF3E41;
+	background-color: #FF4040;
 	color: #fff !important;
 }
 
 .datos_yellow, .datos_yellowf9  {
-	background-color: #F5E535;
+	background-color: #F2D400;
 	color: #111;
 }
+
 a.datos_blue, .datos_bluef9, .datos_blue {
-	background-color: #77E2F2;
+	background-color: #4CA8E0;
 	color: #111;
 }
+
 .datos_grey, .datos_greyf9 {
-	background-color: #E4E4E4;
+	background-color: #999999;
 }
+
 .datos_pink, .datos_pinkf9 {
-	background-color: #FF92E9;
+	background-color: #F099A2;
 }
+
 .datos_brown, .datos_brownf9 {
-	background-color: #c97a4a;
+	background-color: #A67C52;
 }
-td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
+
+.datos_orange, .datos_orangef9 {
+	background-color: #F7931E;
+}
+
+td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9, td.datos_pinkf9, td.datos_brownf9 ,td.datos_orangef9 {
 	padding: 5px 5px 5px 5px;
 }
 

@@ -56,10 +56,10 @@ visual_map_editor_print_hack_translate_strings();
 visual_map_editor_print_item_palette($visualConsole['id'], $background);
 
 if (!defined('METACONSOLE')) {
-	echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll;">';
+	echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll; margin: 0 auto;">';
 }
 else {
-	echo '<div id="frame_view" style="width: 700px; height: 500px; overflow: scroll;">';
+	echo '<div id="frame_view" style="width: 919px; height: 500px; overflow: scroll; margin: 0 auto;">';
 }
 echo '<div id="background" class="" style="
 	margin: 0px auto;border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';

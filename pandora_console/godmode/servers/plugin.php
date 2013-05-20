@@ -86,7 +86,9 @@ if (($create != "") OR ($view != "")) {
 			ui_print_page_header (__('Plugin update'), "images/gm_servers.png", false, "plugin_definition", true);
 		}
 	}
-	
+
+	enterprise_hook('open_meta_frame');
+
 	if ($create == "") {
 		$plugin_id = get_parameter ("view","");
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id&pure=" . $config['pure'] . "'>";
@@ -129,6 +131,7 @@ if (($create != "") OR ($view != "")) {
 	$table->data['plugin_desc'] = $data;
 	
 	echo '<br>';
+	echo '<table class="databox" style="margin: 0 auto;"><tr><td>';
 	
 	echo '<fieldset style="width:96%"><legend>'.__('General').'</legend>';
 	html_print_table($table);
@@ -284,6 +287,10 @@ if (($create != "") OR ($view != "")) {
 			__('Update') . "'>";
 	}
 	echo '</form></table>';
+	
+	echo '</td></tr></table>';
+	
+	enterprise_hook('close_meta_frame');
 }
 else {
 	if(defined('METACONSOLE')) {
@@ -294,6 +301,8 @@ else {
 		ui_print_page_header (__('Plugins registered in Pandora FMS'), "images/gm_servers.png", false, "", true);
 	}
 	
+	enterprise_hook('open_meta_frame');
+
 	// Update plugin
 	if (isset($_GET["update_plugin"])) { // if modified any parameter
 		$plugin_id = get_parameter ("update_plugin", 0);
@@ -474,6 +483,8 @@ else {
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1&pure=" . $config['pure'] . "'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
 	echo "</td></tr></table>";
+	
+	enterprise_hook('close_meta_frame');
 }
 
 ui_require_javascript_file('pandora_modules');

@@ -1,4 +1,10 @@
 2013-05-20  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_snmp_browser.php: Added default binary path for
+	snmptranslate in *BSD. The path can also be defined specific one by
+	using config['snmptranslate'].
+
+2013-05-20  Junichi Satoh  <junichi@rworks.jp>
 	
 	* ChangeLog: Updated the changelog, I forgot.
 

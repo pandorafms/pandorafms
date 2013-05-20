@@ -42,6 +42,8 @@ else {
 	$sec = 'gmodules';
 }
 
+enterprise_hook('open_meta_frame');
+
 $type = (int) get_parameter ('type');
 $name = (string) get_parameter ('name');
 $description = (string) get_parameter ('description');
@@ -548,7 +550,10 @@ html_print_select (array (2 => __('Create a new network component'),
 	'id_component_type', '', '', '', '', '');
 html_print_submit_button (__('Create'), 'crt', false, 'class="sub next" style="margin-left: 5px;"');
 echo '</div>';
-echo '</form>'
+echo '</form>';
+
+enterprise_hook('close_meta_frame');
+
 ?>
 <script type="text/javascript">
 function check_all_checkboxes() {

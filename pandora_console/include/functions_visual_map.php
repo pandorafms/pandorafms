@@ -904,7 +904,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	}
 	
 	if (defined('METACONSOLE')) {
-		echo "<div style='width: 750px; overflow:auto;'>";
+		echo "<div style='width: 920px; overflow:auto; margin: 0 auto;'>";
 	}
 	
 	echo '<div id="layout_map"

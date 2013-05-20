@@ -1,0 +1,8 @@
+#!/bin/bash
+mkdir po
+cp *.po* po
+tar -cvzf po.tar po
+rm -r po
+
+echo Tarball 'po.tar' has been generated
+

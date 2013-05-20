@@ -149,6 +149,8 @@ $id_name = get_parameter('id_name', '');
 
 echo "<br>";
 
+enterprise_hook('open_meta_frame');
+
 // Trick to catch if any filter button has been pushed (don't collapse filter)
 // or the filter was open before click or autorefresh is in use (collapse filter)
 $update_pressed = get_parameter_post('update', '');
@@ -430,7 +432,7 @@ $table->rowclass[] = '';
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
 $data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
-$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a>&nbsp;';
+$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a><br>';
 if (empty($id_name)) {
 	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('No filter loaded') . '</span>]';
 }
@@ -526,6 +528,8 @@ $allow_action = true;
 $allow_pagination = true;
 
 require('events.build_table.php');
+
+enterprise_hook('close_meta_frame');
 
 unset($table);
 

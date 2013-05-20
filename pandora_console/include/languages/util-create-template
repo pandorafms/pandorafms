@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo Reading php files...
+find ../.. -type "f" | grep -v .svn | grep -v .bzr | grep .php  > temp666
+
+echo Creating template "index.pot"
+xgettext -f temp666 -L PHP -o index.pot --from-code=iso-8859-1 --keyword=__
+
+echo Deleting temporary files
+rm temp666
+
+

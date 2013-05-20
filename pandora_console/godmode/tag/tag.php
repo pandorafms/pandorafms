@@ -82,6 +82,8 @@ else {
 	
 }
 
+enterprise_hook('open_meta_frame');
+
 // Two actions can performed in this page: search and delete tags
 
 // Delete action: This will delete a tag
@@ -204,6 +206,8 @@ if (!empty($result)) {
 	
 	html_print_table ($table);
 }
+
+enterprise_hook('close_meta_frame');
 
 ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');

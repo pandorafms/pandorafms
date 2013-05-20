@@ -49,7 +49,7 @@ switch ($action) {
 		}
 		else {
 			//echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
-			echo "<form action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&action=visualmap' method='post' >";
+			echo "<form action='index.php?sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&id_visualmap=" . $idVisualConsole . "&action=visualmap' method='post' >";
 			html_print_input_hidden('action2', 'update');
 		}
 		break;

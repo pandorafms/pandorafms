@@ -88,6 +88,8 @@ else {
 		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);
 }
 
+enterprise_hook('open_meta_frame');
+
 $name = '';
 $id_command = '';
 $group = 0; //All group is 0
@@ -166,6 +168,8 @@ else {
 }
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file ('pandora_alerts');
 ?>

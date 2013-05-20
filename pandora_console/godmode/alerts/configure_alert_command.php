@@ -60,6 +60,8 @@ else
 	ui_print_page_header (__('Alerts') . ' &raquo; ' .
 		__('Configure alert command'), "images/gm_alerts.png", false, "", true);
 
+enterprise_hook('open_meta_frame');
+
 $table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
@@ -129,4 +131,7 @@ else {
 }
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
+
 ?>

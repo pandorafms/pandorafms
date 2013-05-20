@@ -1,0 +1,7 @@
+#!/bin/bash
+for fichero in $(ls *.po | sed 's/\..*//g')
+do
+   echo "Compiling $fichero.mo from $fichero.po"
+
+   msgfmt $fichero.po -o $fichero.mo
+done

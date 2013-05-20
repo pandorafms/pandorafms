@@ -268,6 +268,8 @@ switch ($action) {
 		else
 			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons);
 		
+		enterprise_hook('open_meta_frame');
+		
 		if ($action == 'delete_report') {
 			$result = reports_delete_report ($idReport);
 			if ($result !== false)
@@ -476,6 +478,9 @@ switch ($action) {
 			echo "</div>";
 			echo "</form>";
 		}
+		
+		enterprise_hook('close_meta_frame');
+
 		return;
 		break;
 	case 'new':
@@ -1378,8 +1383,11 @@ switch ($action) {
 			else
 				ui_print_page_header (__('Reporting') . $subsection, "images/op_reporting.png", false, "", false, $buttons);
 			
+			enterprise_hook('open_meta_frame');
 			reporting_enterprise_select_main_tab($action);
+			enterprise_hook('close_meta_frame');
 		}
+		
 		return;
 		break;
 }
@@ -1437,6 +1445,8 @@ if ($enterpriseEnable and defined('METACONSOLE')) {
 else
 	ui_print_page_header(__('Reporting') . $textReportName, "images/op_reporting.png", false, "reporting_" . $activeTab . "_tab", false, $buttons);
 
+enterprise_hook('open_meta_frame');
+
 if ($resultOperationDB !== null) {
 	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action'));
 }
@@ -1455,4 +1465,6 @@ switch ($activeTab) {
 		reporting_enterprise_select_tab($activeTab);
 		break;
 }
+
+enterprise_hook('close_meta_frame');
 ?>

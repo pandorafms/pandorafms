@@ -1,0 +1,90 @@
+The following shell bash scripts has been created to update the laguages files of Pandora FMS
+
+- util-create-template
+- util-update-po
+- util-compile-mo
+- util-generate-tarball
+- util-all
+- util-bzr-update
+- util-create-po
+
+==============================================================================
+==============================================================================
+
+util-create-template
+--------------------
+
+This script creates a template called 'pandora-fms.pot' with all the strings into the function __(). First read all the php files of the project, then detect the functions __() and then create the template file. 
+
+*This script doesnt needs parameters
+
+==============================================================================
+
+util-update-po
+--------------
+
+This script updates all the po files in the folder merging their current strings with the new strings from the template 'pandora-fms.pot'
+
+*This script doesnt needs parameters
+
+==============================================================================
+
+util-compile-mo
+---------------
+
+This script compiles all the po files in the folder into mo files. es.po to es.mo, pt.po to pt.mo, etc.
+
+*This script doesnt needs parameters
+
+==============================================================================
+
+util-generate-tarball
+---------------------
+
+This script generates a tarball called 'po.tar' with a folder with all the po files and the template file. This tarball contains files like
+
+po/pandora-fms.pot
+po/es.po
+po/fr.po
+po/pt.po
+...
+
+*This script doesnt needs parameters
+
+==============================================================================
+
+util-all
+--------
+
+This script run the scripts 'util-create-template', 'util-update-po', 'util-compile-mo' and 'util-generate-tarball' in this order.
+
+*This script doesnt needs parameters
+
+==============================================================================
+
+util-bzr-update
+--------
+
+This script make a commit of the template index.pot in the baazar repository. This commit will add to the launchpad import queue the template to update the strings.
+
+*This script doesnt needs parameters
+
+==============================================================================
+
+util-create-po
+--------
+
+This script creates a new po file from the template index.pot
+
+*This script needs one parameter: 
+
+i.e.: 
+
+util-create-po en_GB
+
+This command creates the file en_GB.po
+
+==============================================================================
+==============================================================================
+
+ATTENTION: Is important that all the scripts must be into include/languages folder

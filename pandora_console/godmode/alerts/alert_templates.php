@@ -130,6 +130,9 @@ if (!$delete_template) {
 		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
 	}
 }
+
+enterprise_hook('open_meta_frame');
+
 if ($update_template) {
 	$id = (int) get_parameter ('id');
 	
@@ -329,4 +332,7 @@ html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 html_print_input_hidden ('create_alert', 1);
 echo '</form>';
 echo '</div>';
+
+enterprise_hook('close_meta_frame');
+
 ?>

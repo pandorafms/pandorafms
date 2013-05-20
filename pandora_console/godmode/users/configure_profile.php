@@ -54,6 +54,8 @@ else {
 	
 }
 
+enterprise_hook('open_meta_frame');
+
 $new_profile = (bool) get_parameter ('new_profile');
 $id_profile = (int) get_parameter ('id');
 
@@ -196,4 +198,7 @@ if ($id_profile || $new_profile) {
 	}
 	echo "</div></form>";
 }
+
+enterprise_hook('close_meta_frame');
+
 ?>

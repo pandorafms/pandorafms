@@ -1,0 +1,2 @@
+#!/bin/bash
+bzr commit index.pot

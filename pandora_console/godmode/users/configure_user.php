@@ -89,6 +89,8 @@ else {
 	$sec = 'gusuarios';
 }
 
+enterprise_hook('open_meta_frame');
+
 if ($config['user_can_update_info']) {
 	$view_mode = false;
 }
@@ -640,6 +642,9 @@ array_push ($table->data, $data);
 
 html_print_table ($table);
 unset ($table);
+
+enterprise_hook('close_meta_frame');
+
 ?>
 
 <script type="text/javascript">

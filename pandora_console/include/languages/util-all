@@ -1,0 +1,15 @@
+#!/bin/bash
+echo CREATING TEMPLATE...
+sleep 1
+./util-create-template
+echo UPDATING PO FILES FROM TEMPLATE...
+sleep 1
+./util-update-po
+echo COMPILING MO FILES FROM PO FILES
+sleep 1
+./util-compile-mo
+echo DELETING TEMPORARY FILES
+sleep 1
+rm *po~
+echo GENERATING TARBALL FILE
+./util-generate-tarball

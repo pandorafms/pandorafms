@@ -133,7 +133,9 @@ sub generate_xml_files ($$$$$$) {
 			my $ag_altitude = $altitude_base + (rand ($position_radius) - $position_radius/2)/100;
 			
 			# XML header
-			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+			my @localtime = localtime ($utimestamp);
+			my $wday = $localtime[6];
+			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", @localtime);
 			my $xml_data = "<?xml version='$xml_version' encoding='$encoding'?>\n";
 			my $sign = int rand(2);
 			$ag_timezone_offset += ($sign*(-1)+(1-$sign)) * int rand($ag_timezone_offset_range);
@@ -148,6 +150,8 @@ sub generate_xml_files ($$$$$$) {
 				my $module_type = get_conf_token ($module, 'module_type', 'generic_data');
 				my $module_description = get_conf_token ($module, 'module_description', '');
 				my $module_unit = get_conf_token ($module, 'module_unit', '');
+				my $attenuation = get_conf_token ($module, 'module_attenuation', '0');
+				my @attenuation_wdays = get_conf_token_array ($module, 'module_attenuation_wdays', ' ');
 				
 				#my $module_min = get_conf_token ($module, 'module_min', '0');
 				#my $module_max = get_conf_token ($module, 'module_max', '255');
@@ -209,7 +213,12 @@ sub generate_xml_files ($$$$$$) {
 							$module_time_wave_length, $module_time_offset);
 					}
 				}
-				
+
+				# Data attenuation
+				if ($attenuation != 0 && ($#attenuation_wdays < 0 || $wday ~~ @attenuation_wdays)) {
+					$rnd_data *= $attenuation;
+				}
+
 				# Save previous data
 				$module->{'module_data'} = $rnd_data;
 				$xml_data .= "\t\t<data>$rnd_data</data>\n";
@@ -342,6 +351,19 @@ sub get_conf_token ($$$) {
 	
 	return $def_value unless ref ($hash_ref) and defined ($hash_ref->{$token});
 	return $hash_ref->{$token};
+}
+
+################################################################################
+# Returns the value of a configuration token.
+################################################################################
+sub get_conf_token_array ($$$) {
+	my ($hash_ref, $token, $separator) = @_;
+	
+	my @tokens = ();
+	return @tokens unless ref ($hash_ref) and defined ($hash_ref->{$token});
+	
+	@tokens = split($separator, $hash_ref->{$token});
+	return @tokens;
 }
 
 ################################################################################

@@ -1,3 +1,9 @@
+2013-05-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_xml_stress.conf,
+	  util/pandora_xml_stress.pl: Merged from trunk. Added support for
+	  data attenuation on certain days.
+
 2013-05-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server_installer,

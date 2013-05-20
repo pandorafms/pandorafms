@@ -908,8 +908,7 @@ switch($tab) {
 		break;
 }
 
-ui_print_page_header(__('Agent') . '&nbsp;-&nbsp;' .
-	agents_get_name($id_agente) .
+ui_print_page_header(agents_get_name($id_agente) .
 	$header_description, $icon, false, "", false, $onheader);
 
 

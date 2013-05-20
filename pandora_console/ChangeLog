@@ -1,5 +1,15 @@
 2013-05-20 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/ajax/skins.ajax.php, include/functions_gis.php,
+	include/javascript/openlayers.pandora.js,
+	operation/gis_maps/public_console.php, operation/gis_maps/ajax.php,
+	operation/gis_maps/render_view.php,
+	operation/visual_console/public_console.php,
+	operation/visual_console/render_view.php: added the public console
+	for GIS.
+
+2013-05-20 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/gis_maps/ajax.php,
 	include/javascript/openlayers.pandora.js, include/functions_gis.php:
 	lost changes to set the size of agent icons.

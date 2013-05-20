@@ -98,6 +98,14 @@ else {
 if (check_acl ($config["id_user"], $map['group_id'], "IW")) {
 	$buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$buttons['setup']['godmode'] = 1;
+	
+	
+	$hash = md5($config["dbpass"] . $idMap . $config["id_user"]);
+	
+	$buttons['public_link']['text'] = '<a href="' .
+		ui_get_full_url('operation/gis_maps/public_console.php?hash=' .$hash .
+			'&map_id=' . $idMap . '&id_user=' . $config["id_user"]) . '" target="_blank">'.
+		html_print_image ("images/camera_mc.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
 }
 
 $buttonsString = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' .

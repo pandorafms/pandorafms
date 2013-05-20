@@ -73,7 +73,7 @@ if (!isset($config['pure']))
 // Render map
 $options = array();
 echo '<div style="width: 95%; background: white; margin: 20px auto 20px auto; box-shadow: 10px 10px 5px #000;">';
-echo "<h1>". $layout_name. "</h1>";
+echo "<h1>" . $layout_name . "</h1>";
 
 visual_map_print_visual_map ($id_layout, true, true, null, null, '../../');
 
@@ -101,7 +101,7 @@ $table->data[0][1] = html_print_select ($values, 'refr', $config["vc_refr"], '',
 $table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
 $table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
 
-if ($vc_refr){
+if ($vc_refr) {
 	$config["vc_refr"] = 0;
 }
 

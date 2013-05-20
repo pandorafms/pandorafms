@@ -15,15 +15,13 @@
 // Login check
 global $config;
 
-check_login ();
-
 $get_image_path = get_parameter('get_image_path', 0);
 
 /* skins image checks */
-if ($get_image_path){
+if ($get_image_path) {
 	$img_src = get_parameter("img_src");
 	$only_src = get_parameter("only_src", 0);
-
+	
 	return html_print_image($img_src, false, '', $only_src);
 }
 

@@ -1201,17 +1201,33 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 		$base_oid = escapeshellarg ($base_oid);
 	}
 		
+	if ($config['snmpwalk'] == '') {
+		switch (PHP_OS) {
+			case "FreeBSD":
+				$snmpwalk_bin = '/usr/local/bin/snmpwalk';
+				break;
+			case "NetBSD":
+				$snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
+				break;
+			default:
+				$snmpwalk_bin = 'snmpwalk';
+				break;
+		}
+	}
+	else {
+		$snmpwalk_bin = $config['snmpwalk'];
+	}
 	$output = array();
 	$rc = 0;
 	switch ($snmp_version) {
 		case '3':
-			exec ('snmpwalk -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2>/dev/null', $output, $rc);
+			exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2>/dev/null', $output, $rc);
 			break;
 		case '2':
 		case '2c':
 		case '1':
 		default:
-			exec ('snmpwalk -m ALL -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2>/dev/null', $output, $rc);	
+			exec ($snmpwalk_bin . ' -m ALL -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2>/dev/null', $output, $rc);	
 			break;
 	}
 

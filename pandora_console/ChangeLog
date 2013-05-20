@@ -1,3 +1,9 @@
+2013-05-20  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions.php: Added default binary path for snmpwalk
+	in *BSD. The path can also be defined specific one by using
+	config['snmpwalk'].
+
 2013-05-16 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/massive/massive_delete_agents.php,

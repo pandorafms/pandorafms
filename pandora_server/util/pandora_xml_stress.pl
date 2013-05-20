@@ -117,6 +117,9 @@ sub generate_xml_files ($$$$$$) {
 	
 	my %modules_src_pointers = init_src_pointers($modules);
 	
+	# Previous data for incremental modules
+	my %prev_rnd_data;
+	
 	# Generate data files
 	my $utimestamp = $utimestamp_from;
 	while ($utimestamp <= $utimestamp_to) {
@@ -154,6 +157,7 @@ sub generate_xml_files ($$$$$$) {
 				my $module_type = get_conf_token ($module, 'module_type', 'generic_data');
 				my $module_description = get_conf_token ($module, 'module_description', '');
 				my $module_unit = get_conf_token ($module, 'module_unit', '');
+				my $module_incremental = get_conf_token ($module, 'module_incremental', '0');
 				my $attenuation = get_conf_token ($module, 'module_attenuation', '0');
 				my @attenuation_wdays = get_conf_token_array ($module, 'module_attenuation_wdays', ' ');
 				
@@ -242,8 +246,16 @@ sub generate_xml_files ($$$$$$) {
 				}
 				
 				# Data attenuation
-				if ($attenuation != 0 && ($#attenuation_wdays < 0 || $wday ~~ @attenuation_wdays)) {
+				if ($attenuation != 0 && ($#attenuation_wdays < 0 || grep{$_ eq $wday} @attenuation_wdays)) {
 					$rnd_data *= $attenuation;
+				}
+				
+				# Incremental module
+				if ($module_incremental == 1) {
+					if (defined ($prev_rnd_data{$module_name})) {
+						$rnd_data += $prev_rnd_data{$module_name};
+					}
+					$prev_rnd_data{$module_name} = $rnd_data;
 				}
 				
 				# Save previous data

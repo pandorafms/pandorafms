@@ -153,7 +153,7 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 				break;
 			case "NetBSD":
 				$snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
-				braek;
+				break;
 			default:
 				$snmpwalk_bin = 'snmpwalk';
 				break;
@@ -251,7 +251,7 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
 				break;
 			case "NetBSD":
 				$snmpget_bin = '/usr/pkg/bin/snmpget';
-				braek;
+				break;
 			default:
 				$snmpget_bin = 'snmpget';
 				break;

@@ -277,7 +277,23 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
 		$oid_data['numeric_oid'] = $oid;
 		
 		// Translate the OID
-		exec ("snmptranslate -Td " .  escapeshellarg($oid), $translate_output);
+		if ($config['snmptranslate'] == '') {
+			switch (PHP_OS) {
+				case "FreeBSD":
+					$snmptranslate_bin = '/usr/local/bin/snmptranslate';
+					break;
+				case "NetBSD":
+					$snmptranslate_bin = '/usr/pkg/bin/snmptranslate';
+					break;
+				default:
+					$snmptranslate_bin = 'snmptranslate';
+					break;
+			}
+		}
+		else {
+			$snmptranslate_bin = $config['snmptranslate'];
+		}
+		exec ($snmptranslate_bin . " -Td " .  escapeshellarg($oid), $translate_output);
 		foreach ($translate_output as $line) {
 			if (preg_match ('/SYNTAX\s+(.*)/', $line, $matches) == 1) {
 				$oid_data['syntax'] = $matches[1];

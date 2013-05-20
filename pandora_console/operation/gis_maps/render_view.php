@@ -123,9 +123,11 @@ $status = array(
 	'ok' => __('Ok'),
 	'default' => __('Other'));
 
-$buttons[]['text'] = '&nbsp;' . __('Show agents by state: ') . html_print_select($status, 'show_status', 'all', 'changeShowStatus(this.value);', '', 0, true, false, false) . "&nbsp;";
+$buttons[]['text'] = '&nbsp;' . __('Show agents by state: ') .
+	html_print_select($status, 'show_status', 'all', 'changeShowStatus(this.value);', '', 0, true, false, false) . "&nbsp;";
 
-ui_print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "images/op_gis.png", false, "", false, $buttons);
+ui_print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'],
+	"images/op_gis.png", false, "", false, $buttons);
 
 if ($config["pure"] == 0) {
 	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";
@@ -172,11 +174,17 @@ if ($layers != false) {
 			
 			
 			$icon = gis_get_agent_icon_map($idAgent, true);
+			$icon_size = getimagesize($icon);
+			$icon_width = $icon_size[0];
+			$icon_height = $icon_size[1];
 			$status = agents_get_status($idAgent);
 			$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
-			gis_add_agent_point($layer['layer_name'], io_safe_output($agentName), $coords['stored_latitude'],
-				$coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info', $parent);
+			gis_add_agent_point($layer['layer_name'],
+				io_safe_output($agentName), $coords['stored_latitude'],
+				$coords['stored_longitude'], $icon, $icon_width,
+				$icon_height, $idAgent, $status, 'point_agent_info',
+				$parent);
 		}
 	}
 	gis_add_parent_lines();

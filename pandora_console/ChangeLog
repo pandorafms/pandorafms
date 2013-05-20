@@ -1,3 +1,9 @@
+2013-05-20  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_snmp_browser.php: Added default binary path for
+	snmpget and snmpwalk in *BSD. The paths can also be defined specific
+	ones by using config['snmpget'] and config['snmpwalk'].
+
 2013-05-17 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_ui.php: added first version of function

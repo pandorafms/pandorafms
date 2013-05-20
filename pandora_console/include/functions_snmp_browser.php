@@ -146,8 +146,24 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 	}
 	
 	// Call snmpwalk
+	if ($config['snmpwalk'] == '') {
+		switch (PHP_OS) {
+			case "FreeBSD":
+				$snmpwalk_bin = '/usr/local/bin/snmpwalk';
+				break;
+			case "NetBSD":
+				$snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
+				braek;
+			default:
+				$snmpwalk_bin = 'snmpwalk';
+				break;
+		}
+	}
+	else {
+		$snmpwalk_bin = $config['snmpwalk'];
+	}
 	$oid_tree = array('__LEAVES__' => array());
-	exec ('snmpwalk -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v 1 ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid), $output, $rc);
+	exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v 1 ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid), $output, $rc);
 	
 	//if ($rc != 0) {
 	//	return __('No data');
@@ -228,7 +244,23 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
 	}
 	
 	$oid_data['oid'] = $target_oid;
-	exec ('snmpget -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -On -v1 -c ' .  escapeshellarg($community) . " " . escapeshellarg($target_ip) . ' ' . escapeshellarg($target_oid), $output, $rc);
+	if ($config['snmpget'] == '') {
+		switch (PHP_OS) {
+			case "FreeBSD":
+				$snmpget_bin = '/usr/local/bin/snmpget';
+				break;
+			case "NetBSD":
+				$snmpget_bin = '/usr/pkg/bin/snmpget';
+				braek;
+			default:
+				$snmpget_bin = 'snmpget';
+				break;
+		}
+        }
+	else {
+		$snmpget_bin = $config['snmpget'];
+	}
+	exec ($snmpget_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -On -v1 -c ' .  escapeshellarg($community) . " " . escapeshellarg($target_ip) . ' ' . escapeshellarg($target_oid), $output, $rc);
 	if ($rc != 0) {
 		return $oid_data;
 	}

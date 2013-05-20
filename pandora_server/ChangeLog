@@ -1,3 +1,9 @@
+2013-05-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_xml_stress.pl,
+	  util/pandora_xml_stress.conf: Added support for data attenuation on
+	  certain days.
+
 2013-05-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_server: Added information about the loading of the

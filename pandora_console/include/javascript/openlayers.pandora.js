@@ -120,14 +120,13 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 	
 	
 	var option = {
-			controls: controlsList,
-			projection: new OpenLayers.Projection("EPSG:900913"),
-			displayProjection: new OpenLayers.Projection("EPSG:4326"),
-			units: "m",
-			numZoomLevels: 18,
-			maxResolution: 156543.0339,
-			maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34)
-		};
+		controls: controlsList,
+		projection: new OpenLayers.Projection("EPSG:900913"),
+		displayProjection: new OpenLayers.Projection("EPSG:4326"),
+		units: "m",
+		numZoomLevels: 18,
+		maxResolution: 156543.0339,
+		maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34)};
 	
 	map = new OpenLayers.Map(id_div, option);
 	
@@ -142,7 +141,8 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 					baseLayer = new OpenLayers.Layer.OSM(
 						objBaseLayers[baselayerIndex]['name'], 
 						objBaseLayers[baselayerIndex]['url'],
-						{numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels'],
+						{
+							numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels'],
 							'sphericalMercator': true
 						}
 					);
@@ -202,7 +202,8 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 							objBaseLayers[baselayerIndex]['bb_top']
 						),
 						new OpenLayers.Size(objBaseLayers[baselayerIndex]['image_width'], objBaseLayers[baselayerIndex]['image_height']),
-						{projection: new OpenLayers.Projection("EPSG:4326"),
+						{
+							projection: new OpenLayers.Projection("EPSG:4326"),
 							numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels']
 						}
 					);
@@ -566,7 +567,7 @@ function js_addPoint(layerName, pointName, lon, lat, id, type_string, statusAgen
 function js_addAgentPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string, statusAgent, idParent) {
 	var point = new OpenLayers.Geometry.Point(lon, lat)
 	.transform(map.displayProjection, map.getProjectionObject());
-
+	
 	var layer = map.getLayersByName(layerName);
 	layer = layer[0];
 	

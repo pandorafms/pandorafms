@@ -1,5 +1,13 @@
 2013-05-20 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/gis_maps/ajax.php,
+	include/javascript/openlayers.pandora.js, include/functions_gis.php:
+	lost changes to set the size of agent icons.
+	
+	MERGED FROM THE TRUNK
+
+2013-05-20 Miguel de Dios <miguel.dedios@artica.es>
+
 	* pandoradb.data.postgreSQL.sql, pandoradb.data.oracle.sql,
 	pandoradb_data.sql: set by default the tiles for the openstreetmap
 	layer in pretty "MapQuest Open" but there is old (ugly) tiles

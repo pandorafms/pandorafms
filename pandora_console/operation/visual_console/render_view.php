@@ -86,7 +86,7 @@ $options['consoles_list']['text'] = '<a href="index.php?sec=reporting&sec2=godmo
 if (check_acl ($config["id_user"], $id_group, "RW")) {
 	$url_base = 'index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&action=';
 	
-	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
+	$hash = md5($config["dbpass"] . $id_layout. $config["id_user"]);
 	
 	$options['public_link']['text'] = '<a href="' . ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]) . '" target="_blank">'.
 		html_print_image ("images/camera_mc.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';

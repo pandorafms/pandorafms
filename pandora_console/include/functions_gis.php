@@ -128,12 +128,20 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 	echo "</script>";
 }
 
-function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
+function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null, $public_console = 0, $id_map = 0) {
+	global $config;
+	
 	if ($dot == null) {
 		$dot['url'] = 'images/dot_green.png';
 		$dot['width'] = 20; //11;
 		$dot['height'] = 20; //11;
 	}
+	
+	$hash = '';
+	if ($public_console) {
+		$hash = md5($config["dbpass"] . $id_map. $config["id_user"]);
+	}
+	
 	$visible = (bool)$visible;
 	?>
 	<script type="text/javascript">
@@ -153,13 +161,13 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
 			var layer = new OpenLayers.Layer.Vector(
 			'<?php echo $name; ?>', {styleMap: style}
 			);
-
+			
 			layer.data = {};
 			layer.data.id = '<?php echo $idLayer; ?>';
-
+			
 		 	layer.setVisibility(<?php echo $visible; ?>);
 					map.addLayer(layer);
-
+			
 			layer.events.on({
 		 		"featureselected": function(e) {
 					if (e.feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
@@ -173,18 +181,18 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
 						parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
 						parameter.push ({name: "get_image_path", value: "1"});
 						parameter.push ({name: "img_src", value: "images/spinner.gif"});
-
+						
 						jQuery.ajax ({
 							type: 'POST',
-							url: action="ajax.php",
+							url: "<?php echo ui_get_full_url('ajax.php', false, false, false, false); ?>",
 							data: parameter,
 							async: false,
 							timeout: 10000,
 							success: function (data) {
 								img_src = data;
 							}
-						});						
-
+						});
+						
 						popup = new OpenLayers.Popup.FramedCloud('cloud00',
 								long_lat,
 								null,
@@ -196,10 +204,15 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
 						map.addPopup(popup);
 						
 						jQuery.ajax ({
-							data: "page=operation/gis_maps/ajax&opt="+featureData.type+"&id=" + featureData.id,
+							data: "page=operation/gis_maps/ajax"
+								+ "&opt=" + featureData.type
+								+ "&id=" + featureData.id
+								+ "&hash=<?php echo $hash; ?>"
+								+ "&id_user=<?php echo $config["id_user"]; ?>"
+								+ "&map_id=<?php echo $id_map; ?>",
 							type: "GET",
 							dataType: 'json',
-							url: "ajax.php",
+							url: "<?php echo ui_get_full_url('ajax.php', false, false, false, false); ?>",
 							timeout: 10000,
 							success: function (data) {
 								if (data.correct) {
@@ -241,8 +254,16 @@ function gis_activate_select_control($layers=null) {
  * 
  * @return None
  */
-function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
-	if ($lastTimeOfData === null) $lastTimeOfData = time();
+function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null, $public_console = 0, $id_map = 0) {
+	global $config;
+	
+	if ($lastTimeOfData === null)
+		$lastTimeOfData = time();
+	
+	$hash = '';
+	if ($public_console) {
+		$hash = md5($config["dbpass"] . $id_map. $config["id_user"]);
+	}
 	
 	ui_require_jquery_file ('json');
 	?>
@@ -276,8 +297,15 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 			
 			if (featureIdArray.length > 0) {
 				jQuery.ajax ({
-				data: "page=operation/gis_maps/ajax&opt=get_new_positions&id_features=" + featureIdArray.toString()
-					+ "&last_time_of_data=" + last_time_of_data + "&layer_id=" + layer.data.id + "&agent_view=" + agentView,
+				data: "page=operation/gis_maps/ajax"
+					+ "&opt=get_new_positions"
+					+ "&id_features=" + featureIdArray.toString()
+					+ "&last_time_of_data=" + last_time_of_data
+					+ "&layer_id=" + layer.data.id
+					+ "&agent_view=" + agentView
+					+ "&hash=<?php echo $hash; ?>"
+					+ "&id_user=<?php echo $config["id_user"]; ?>"
+					+ "&map_id=<?php echo $id_map; ?>",
 				type: "GET",
 				dataType: 'json',
 				url: "ajax.php",
@@ -375,7 +403,9 @@ function gis_add_agent_point($layerName, $pointName, $lat, $lon, $icon = null, $
 				<?php
 				if ($icon != null) {
 					//echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status);";
-					echo "js_addAgentPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status, $idParent);";
+					echo "js_addAgentPointExtent('$layerName',
+						'$pointName', $lon, $lat, '$icon', $width,
+						$height, $point_id, '$type_string', $status, $idParent);";
 				}
 				else {
 					//echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status);";

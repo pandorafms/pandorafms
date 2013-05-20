@@ -14,16 +14,37 @@
 // GNU General Public License for more details.
 
 // Load global vars
-require_once ("include/config.php");
+if (file_exists(getcwd() . '/include/config.php')) {
+	require_once ("include/config.php");
+}
+else {
+	require_once ("../../include/config.php");
+}
 
-check_login ();
+$hash = (string)get_parameter('hash', '');
+if (!empty($hash)) {
+	//It is a ajax call from PUBLIC_CONSOLE
+	
+	$idMap = (int) get_parameter ('map_id');
+	$id_user = get_parameter ('id_user', '');
+	
+	$myhash = md5($config["dbpass"] . $idMap . $id_user);
+	
+	// Check input hash
+	if ($myhash == $hash) {
+		$config['id_user'] = $id_user;
+	}
+}
+else {
+	check_login ();
+}
 
 global $config;
 
-require_once ('include/functions_gis.php');
-require_once ('include/functions_ui.php');
-require_once ('include/functions_agents.php');
-require_once ('include/functions_groups.php');
+require_once ($config['homedir'] . '/include/functions_gis.php');
+require_once ($config['homedir'] . '/include/functions_ui.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
 
 $opt = get_parameter('opt');
 
@@ -48,6 +69,8 @@ switch ($opt) {
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
 		
+		$idAgentsWithGIS = array();
+		
 		if ($agentView == 0) {
 			$flagGroupAll = db_get_all_rows_sql('SELECT tgrupo_id_grupo
 				FROM tgis_map_layer
@@ -61,15 +84,24 @@ switch ($opt) {
 				$idAgentsWithGISTemp = db_get_all_rows_sql('SELECT id_agente
 					FROM tagente
 					WHERE id_grupo IN
-						(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')
+						(SELECT tgrupo_id_grupo
+							FROM tgis_map_layer
+							WHERE id_tmap_layer = ' . $layerId . ')
 						OR id_agente IN
-						(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
+						(SELECT tagente_id_agente
+							FROM tgis_map_layer_has_tagente
+							WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
 			}
 			else {
 				//All groups, all agents
-				$idAgentsWithGISTemp = db_get_all_rows_sql('SELECT tagente_id_agente AS id_agente
+				$idAgentsWithGISTemp = db_get_all_rows_sql('SELECT
+						tagente_id_agente AS id_agente
 					FROM tgis_data_status
 					WHERE tagente_id_agente');
+			}
+			
+			if (empty($idAgentsWithGISTemp)) {
+				$idAgentsWithGISTemp = array();
 			}
 			
 			foreach ($idAgentsWithGISTemp as $idAgent) {
@@ -83,28 +115,58 @@ switch ($opt) {
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
-						IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
-						IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-					FROM tagente AS t1
-					LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
-						WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+				if (empty($idAgentsWithGIS)) {
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+							IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+							IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+						FROM tagente AS t1
+						LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+							WHERE 1 = 0');
+				}
+				else {
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+							IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+							IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+						FROM tagente AS t1
+						LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+							WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+				}
 				break;
 			case "postgresql":
-				$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
-						COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
-						COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-					FROM tagente AS t1
-					LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
-						WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+				if (empty($idAgentsWithGIS)) {
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+						FROM tagente AS t1
+						LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+							WHERE 1 = 0');
+				}
+				else {
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+						FROM tagente AS t1
+						LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+							WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+				}
 				break;
 			case "oracle":
-				$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
-						COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
-						COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-					FROM tagente t1
-					LEFT JOIN tgis_data_status t2 ON t1.id_agente = t2.tagente_id_agente
-						WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+				if (empty($idAgentsWithGIS)) {
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+						FROM tagente t1
+						LEFT JOIN tgis_data_status t2 ON t1.id_agente = t2.tagente_id_agente
+							WHERE 1 = 0');
+				}
+				else {
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+						FROM tagente t1
+						LEFT JOIN tgis_data_status t2 ON t1.id_agente = t2.tagente_id_agente
+							WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
+				}
 				break;
 		}
 		
@@ -173,11 +235,13 @@ switch ($opt) {
 		{
 			$returnJSON['content'] .= __('Position (Lat, Long, Alt)') . ': (' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';
 		}
-		$agent_ip_address = agents_get_address ($id_agente);
+		$agent_ip_address = agents_get_address ($id);
 		if ($agent_ip_address || $agent_ip_address != '') {
-			$returnJSON['content'] .= __('IP Address').': '.agents_get_address ($id_agente).'<br />';
+			$returnJSON['content'] .= __('IP Address') . ': '.
+				agents_get_address ($id).'<br />';
 		}
-		$returnJSON['content'] .= __('OS').': ' . ui_print_os_icon($row['id_os'], true, true);
+		$returnJSON['content'] .= __('OS').': ' .
+			ui_print_os_icon($row['id_os'], true, true);
 		
 		$osversion_offset = strlen($row["os_version"]);
 		if ($osversion_offset > 15) {
@@ -186,12 +250,15 @@ switch ($opt) {
 		else {
 			$osversion_offset = 0;
 		}
-		$returnJSON['content'] .= '&nbsp;( <i><span title="'.$row["os_version"].'">'.substr($row["os_version"],$osversion_offset,15).'</span></i>)<br />';
+		$returnJSON['content'] .= '&nbsp;( <i><span title="' . $row["os_version"] . '">' .
+			substr($row["os_version"],$osversion_offset,15).'</span></i>)<br />';
 		$agent_description = $row['comentarios'];
 		if ($agent_description || $agent_description != '') {
 			$returnJSON['content'] .= __('Description').': '.$agent_description.'<br />';
 		}
-		$returnJSON['content'] .= __('Group').': ' . ui_print_group_icon ($row["id_grupo"], true).'&nbsp;(<strong>'.groups_get_name ($row["id_grupo"]).'</strong>)<br />';
+		$returnJSON['content'] .= __('Group').': ' .
+			ui_print_group_icon ($row["id_grupo"], true) .
+			'&nbsp;(<strong>'.groups_get_name ($row["id_grupo"]).'</strong>)<br />';
 		$returnJSON['content'] .= __('Agent Version').': '.$row["agent_version"].'<br />';
 		$returnJSON['content'] .= __('Last contact') . ": ";
 		if ($row["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") {

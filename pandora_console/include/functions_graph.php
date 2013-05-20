@@ -1419,7 +1419,7 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	}
 	
 	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
 	
 	if ($return) {
 		return $out;

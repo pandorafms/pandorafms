@@ -449,8 +449,7 @@ if ($id_agente) {
 			break;
 	}
 	
-	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' .
-		agents_get_name ($id_agente) .
+	ui_print_page_header (agents_get_name ($id_agente) .
 		' ' . $tab_description, "images/setup.png", false, $help_header , true, $onheader);
 }
 else {

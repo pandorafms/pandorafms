@@ -517,7 +517,7 @@ $(document).ready(function() {
 	
 	update_preview();
 	
-	$('.command_component').live( 'keyup', function() {
+	$('.command_component').keyup(function() {
 		update_preview();
 	});
 

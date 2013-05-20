@@ -91,18 +91,19 @@ if (count($agents) > 0) {
 	$groups_get_groups_with_agent = groups_get_groups_with_agent($config['id_user'], "AR", true, true);
 	ui_pagination(count($groups_get_groups_with_agent));
 	
-	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="groupsview" border="0" width="98%">';
+	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="databox" border="0" width="98%">';
 	echo "<tr>";
-	echo "<th width='25%' class='first opacity_cell'>" . __("Group") . "</th>";
-	echo "<th style='min-width:26px;'></th>";
-	echo "<th width='10%' class='opacity_cell'>" . __("Agents") . "</th>";
+	echo "<th style='width: 26px;'>" . __("Force") . "</th>";
+	echo "<th style='width: 26px;'>" . __("Status") . "</th>";
+	echo "<th width='25%'>" . __("Group") . "</th>";
+	echo "<th width='10%'>" . __("Agents") . "</th>";
 	echo "<th width='10%'>" . __("Agent unknown") . "</th>";
-	echo "<th width='10%' class='opacity_cell'>" . __("Unknown") . "</th>";
+	echo "<th width='10%'>" . __("Unknown") . "</th>";
 	echo "<th width='10%'>" . __("Not Init") . "</th>";
-	echo "<th width='10%' class='opacity_cell'>" . __("Normal") . "</th>";
+	echo "<th width='10%'>" . __("Normal") . "</th>";
 	echo "<th width='10%'>" . __("Warning") . "</th>";
-	echo "<th width='10%' class='opacity_cell'>" . __("Critical") . "</th>";
-	echo "<th width='10%' class='last' style='min-width: 100px'>" . __("Alert fired") . "</th>";
+	echo "<th width='10%'>" . __("Critical") . "</th>";
+	echo "<th width='10%' style='min-width: 100px'>" . __("Alert fired") . "</th>";
 	
 	$printed_groups = array();
 	

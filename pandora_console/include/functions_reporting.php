@@ -1034,29 +1034,29 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	$table_mbs = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical'), 'width' => '22px'));
+	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical')));
 	$tdata[1] = $data["monitor_critical"] <= 0 ? '-' : $data["monitor_critical"];
 	$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning'), 'width' => '22px'));
+	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning')));
 	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
 	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal'), 'width' => '22px'));
+	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal')));
 	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
 	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown'), 'width' => '22px'));
+	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown')));
 	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
 	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init'), 'width' => '22px'));
+	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init')));
 	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
 	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
 	
@@ -1154,11 +1154,11 @@ function reporting_get_stats_alerts($data) {
 	$table_al = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts')));
 	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
 	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts'), 'width' => '20px'));
+	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts')));
 	$tdata[3] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
 	$tdata[3] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[3] . '</a>';
 	$table_al->rowclass[] = '';
@@ -1189,7 +1189,7 @@ function reporting_get_stats_users($data) {
 	$table_us = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/user_green.png', true, array('title' => __('Defined users'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/user_green.png', true, array('title' => __('Defined users')));
 	$tdata[1] = count (get_users ());
 	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["defined_users"] . '">' . $tdata[1] . '</a>';
 	
@@ -1232,11 +1232,11 @@ function reporting_get_stats_agents_monitors($data) {
 	$table_am = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents'), 'width' => '22px'));
+	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents')));
 	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
 	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module.png', true, array('title' => __('Monitor checks'), 'width' => '22px'));
+	$tdata[2] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')));
 	$tdata[3] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
 	$tdata[3] = '<a style="color: black;" class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
 	$table_am->rowclass[] = '';
@@ -6757,7 +6757,7 @@ function reporting_get_count_events_validated ($filter, $period = 0,
  * 
  * @return string html formatted tiny stats of modules/alerts of an agent
  */
-function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent') {
+function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $separator = ':') {
 	$out = '';
 	
 	// Depend the type of object, the stats will refer agents, modules...
@@ -6829,17 +6829,17 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent') {
 		$total_count = 0;
 	}
 	
-	$out .= '<b>' . '<span id="total_count_' . $uniq_id . '" class="forced_title">' . $total_count . '</span>';
+	$out .= '<b>' . '<span id="total_count_' . $uniq_id . '" class="forced_title" style="font-size: 7pt">' . $total_count . '</span>';
 	if (isset($fired_count) && $fired_count > 0)
-		$out .= ' : <span class="orange forced_title" id="fired_count_' . $uniq_id . '">' . $fired_count . '</span>';
+		$out .= ' ' . $separator . ' <span class="orange forced_title" id="fired_count_' . $uniq_id . '" style="font-size: 7pt">' . $fired_count . '</span>';
 	if (isset($critical_count) && $critical_count > 0)
-		$out .= ' : <span class="red forced_title" id="critical_count_' . $uniq_id . '">' . $critical_count . '</span>';
+		$out .= ' ' . $separator . ' <span class="red forced_title" id="critical_count_' . $uniq_id . '" style="font-size: 7pt">' . $critical_count . '</span>';
 	if (isset($warning_count) && $warning_count > 0)
-		$out .= ' : <span class="yellow forced_title" id="warning_count_' . $uniq_id . '">' . $warning_count . '</span>';
+		$out .= ' ' . $separator . ' <span class="yellow forced_title" id="warning_count_' . $uniq_id . '" style="font-size: 7pt">' . $warning_count . '</span>';
 	if (isset($unknown_count) && $unknown_count > 0)
-		$out .= ' : <span class="grey forced_title" id="unknown_count_' . $uniq_id . '">' . $unknown_count . '</span>';
+		$out .= ' ' . $separator . ' <span class="grey forced_title" id="unknown_count_' . $uniq_id . '" style="font-size: 7pt">' . $unknown_count . '</span>';
 	if (isset($normal_count) && $normal_count > 0)
-		$out .= ' : <span class="green forced_title" id="normal_count_' . $uniq_id . '">' . $normal_count . '</span>';
+		$out .= ' ' . $separator . ' <span class="green forced_title" id="normal_count_' . $uniq_id . '" style="font-size: 7pt">' . $normal_count . '</span>';
 	
 	$out .= '</b>';
 	

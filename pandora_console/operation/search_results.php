@@ -105,7 +105,7 @@ else {
 
 if ($searchMaps) {
 	$maps_tab = array('text' => "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/op_network.png", true, array ("title" => __('Maps'))) . "</a>", 'active' => $searchTab == "maps");
+		. html_print_image ("images/visual_console.png", true, array ("title" => __('Maps'))) . "</a>", 'active' => $searchTab == "maps");
 }
 else {
 	$maps_tab = '';

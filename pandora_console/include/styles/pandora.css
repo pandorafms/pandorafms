@@ -1509,6 +1509,7 @@ span.rmess, span.nrmess {
 	border-radius: 4px;
 	padding: 8px 8px 8px 8px;
 }
+
 table.databox {
 	background-color: #f9faf9;
 	border-spacing: 2px;
@@ -1522,6 +1523,10 @@ table.databox {
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
 	border: 0px solid #fff;
+}
+
+.databox th {
+	padding: 10px 7px;
 }
 
 .tabletitle {
@@ -2270,7 +2275,7 @@ tr.group_view_warn, .group_view_warn, tr.group_view_warn.a, a.group_view_warn, t
 }
 
 a.group_view_warn {
-	color: #111;
+	color: #111 !important;
 }
 
 tr.group_view_alrm, .group_view_alrm {
@@ -2282,29 +2287,8 @@ tr.group_view_unk, .group_view_unk {
 }
 
 tr.group_view_data, .group_view_data {
-	color: #111;
+	color: #fff !important;
 }
-
-.group_view_data_unk {
-	color: #303030;
-}
-
-.group_view_data_ok{
-	color: #00C000;
-}
-
-.group_view_data_crit {
-	color: #5C0000;
-}
-
-.group_view_data_alrm {
-	color: #5C1D00;
-}
-
-.group_view_data_warn {
-	color: #5C5900;
-}
-
 
 /* classes for event priorities. Sits now in functions.php */
 .datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a {

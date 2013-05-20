@@ -831,43 +831,54 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	// Calculate entire row color
 	if ($data["monitor_alerts_fired"] > 0) {
 		$group_class = 'group_view_alrm';
+		$status_image = ui_print_status_image ('agent_alertsfired_ball.png', "", true);
 	}
 	elseif ($data["monitor_critical"] > 0) {
 		$group_class = 'group_view_crit';
+		$status_image = ui_print_status_image ('agent_critical_ball.png', "", true);
 	}
 	elseif ($data["monitor_warning"] > 0) {
 		$group_class = 'group_view_warn';
+		$status_image = ui_print_status_image ('agent_warning_ball.png', "", true);
 	}
 	elseif (($data["monitor_unknown"] > 0) ||  ($data["agents_unknown"] > 0)) {
 		$group_class = 'group_view_unk';
+		$status_image = ui_print_status_image ('agent_no_monitors_ball.png', "", true);
 	}
 	elseif ($data["monitor_ok"] > 0)  {
 		$group_class = 'group_view_ok';
+		$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
 	}
 	else {
 		$group_class = 'group_view_normal';
+		$status_image = ui_print_status_image ('agent_no_data_ball.png', "", true);
 	}
 	
 	ob_start();
 	
 	echo "<tr style='height: 35px;'>";
 	
-	// Group name
-	echo "<td class='group_view_data first $group_class opacity_cell' style='font-weight: bold; font-size: 12px;'>&nbsp;&nbsp;";
-	echo $group['prefix'] . ui_print_group_icon ($id_group, true, "groups_small", 'font-size: 7.5pt');
-	echo "&nbsp;<a class='group_view_data' href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
-	echo ui_print_truncate_text($group['name']);
-	echo "</a>";
-	echo "</td>";
-	echo "<td class='group_view_data' style='text-align: center; vertica-align: middle; background-color: #d3d3d3;'>";
+	// Force
+	echo "<td class='group_view_data' style='text-align: center; vertica-align: middle;'>";
 	if (check_acl ($config['id_user'], $id_group, "AW")) {
 		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' .
 			html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
 	}
 	echo "</td>";
 	
+	// Status
+	echo "<td style='text-align:center;'>" . $status_image . "</td>";
+	
+	// Group name
+	echo "<td class='' style='font-weight: bold; font-size: 12px;'>&nbsp;&nbsp;";
+	echo $group['prefix'] . ui_print_group_icon ($id_group, true, "groups_small", 'font-size: 7.5pt');
+	echo "&nbsp;<a class='' href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
+	echo ui_print_truncate_text($group['name']);
+	echo "</a>";
+	echo "</td>";
+	
 	// Total agents
-	echo "<td class='group_view_data $group_class opacity_cell' class='group_view_data' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+	echo "<td class='group_view_data $group_class' class='group_view_data' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 	if ($data["total_agents"] > 0)
 		echo "<a class='group_view_data' style='font-weight: bold; font-size: 18px; text-align: center;' 
 			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
@@ -895,8 +906,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	// Agents unknown
 	if ($data["agents_unknown"] > 0) {
-		echo "<td class='group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
-		echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;' 
+		echo "<td class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+		echo "<a class='group_view_data group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;' 
 			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group&status=3'>";
 		echo $data["agents_unknown"];
 		echo "</a>";
@@ -908,22 +919,22 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	// Monitors Unknown
 	if ($data["monitor_unknown"] > 0) {
-		echo "<td class='group_view_data_unk $group_class opacity_cell' style='font-weight: bold; font-size: 18px; text-align: center;'>";
-		echo "<a style='font-weight: bold; font-size: 18px; color: #666; text-align: center;'
+		echo "<td class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+		echo "<a class='group_view_data' style='font-weight: bold; font-size: 18px; color: #666; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=3'>";
 		echo $data["monitor_unknown"];
 		echo "</a>";
 		echo "</td>";
 	}
 	else {
-		echo "<td class='$group_class opacity_cell'></td>";
+		echo "<td class='$group_class'></td>";
 	}
 	
 	
 	// Monitors Not Init
 	if ($data["monitor_not_init"] > 0) {
-		echo "<td class='group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
-		echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
+		echo "<td class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+		echo "<a class='group_view_data group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=5'>";
 		echo $data["monitor_not_init"];
 		echo "</a>";
@@ -935,9 +946,9 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	
 	// Monitors OK
-	echo "<td class='group_view_data_ok $group_class opacity_cell' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+	echo "<td class='group_view_data group_view_data_ok $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 	if ($data["monitor_ok"] > 0) {
-		echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=0'>";
+		echo "<a class='group_view_data group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=0'>";
 		echo $data["monitor_ok"];
 		echo "</a>";
 	}
@@ -948,8 +959,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	// Monitors Warning
 	if ($data["monitor_warning"] > 0) {
-		echo "<td class='group_view_data_warn $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
-		echo "<a class='group_view_data_warn' class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
+		echo "<td class='group_view_data group_view_data_warn $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+		echo "<a class='group_view_data group_view_data_warn' class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=1'>";
 		echo $data["monitor_warning"];
 		echo "</a>";
@@ -961,27 +972,27 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	// Monitors Critical
 	if ($data["monitor_critical"] > 0) {
-		echo "<td class='group_view_data_crit $group_class opacity_cell' style='font-weight: bold; font-size: 18px; text-align: center;'>";
-		echo "<a class='group_view_data_crit' style='font-weight: bold; font-size: 18px; text-align: center;'
+		echo "<td class='group_view_data group_view_data_crit $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+		echo "<a class='group_view_data group_view_data_crit' style='font-weight: bold; font-size: 18px; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=2'>";
 		echo $data["monitor_critical"];
 		echo "</a>";
 		echo "</td>";
 	}
 	else {
-		echo "<td class='$group_class opacity_cell'></td>";
+		echo "<td class='$group_class'></td>";
 	}
 	// Alerts fired
 	if ($data["monitor_alerts_fired"] > 0) {
-		echo "<td class='group_view_data_alrm $group_class last' style='font-weight: bold; font-size: 18px;  text-align: center;'>";
-		echo "<a class='group_view_data_alrm' style='font-weight: bold; font-size: 18px; text-align: center;'
+		echo "<td class='group_view_data group_view_data_alrm $group_class' style='font-weight: bold; font-size: 18px;  text-align: center;'>";
+		echo "<a class='group_view_data group_view_data_alrm' style='font-weight: bold; font-size: 18px; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/alerts_status&ag_group=$id_group&filter=fired'>";
 		echo $data["monitor_alerts_fired"];
 		echo "</a>";
 		echo "</td>";
 	}
 	else {
-		echo "<td class='last $group_class'></td>";
+		echo "<td class='$group_class'></td>";
 	}
 	
 	echo "</tr>";

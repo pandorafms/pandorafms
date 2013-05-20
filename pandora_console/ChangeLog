@@ -1,3 +1,97 @@
+2013-05-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/functions_groups.php
+	include/functions_graph.php
+	include/functions_reporting.php
+	operation/search_results.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/ver_agente.php
+	operation/agentes/group_view.php
+	operation/servers/recon_view.php
+	images/min.png
+	images/max.png
+	images/agent.png
+	images/cross_undo.png
+	images/policies_brick.png
+	images/agent_warning.png
+	images/rosette.png
+	images/darrowright.png
+	images/god5.png
+	images/module_critical.png
+	images/filter.png
+	images/help.png
+	images/darrowup.png
+	images/wrench_orange.png
+	images/chart_curve.png
+	images/control_stop_col.png
+	images/history_database.png
+	images/zoom_cross.png
+	images/agent_critical.png
+	images/god6.png
+	images/policies_cog.png
+	images/heart.png
+	images/percentile_item.png
+	images/module_warning.png
+	images/policies_error.png
+	images/agent_ok.png
+	images/os_icons/network_small.png
+	images/os_icons/network.png
+	images/god7.png
+	images/heart_col.png
+	images/clock2.png
+	images/div.png
+	images/policies_error_db.png
+	images/agent_notinit.png
+	images/application_not_writable.png
+	images/delete.png
+	images/god8.png
+	images/module.png
+	images/applications.png
+	images/cross.png
+	images/camera.png
+	images/sub.png
+	images/tag_red.png
+	images/module_notinit.png
+	images/god1.png
+	images/god9.png
+	images/version.png
+	images/chart_curve_threshold.png
+	images/mul.png
+	images/god2.png
+	images/policies_not_brick.png
+	images/control_pause_col.png
+	images/history.png
+	images/pdf.png
+	images/god3.png
+	images/chart_bar.png
+	images/module_ok.png
+	images/status_sets/faces/module_alertsfired_ball.png
+	images/status_sets/faces/agent_alertsfired.png
+	images/status_sets/faces/agent_alertsfired_ball.png
+	images/status_sets/color_text/module_alertsfired_ball.png
+	images/status_sets/color_text/agent_alertsfired.png
+	images/status_sets/color_text/agent_agentsfired_ball.png
+	images/status_sets/default/module_alertsfired_ball.png
+	images/status_sets/default/agent_alertsfired.png
+	images/status_sets/default/agent_alertsfired_ball.png
+	images/error_red.png
+	images/wrench.png
+	images/control_play_col.png
+	images/sum.png
+	images/avg.png
+	images/info.png
+	images/god4.png
+	images/module_unknown.png
+	images/darrowleft.png
+	images/plus.png
+	images/information.png
+	images/darrowdown.png
+	images/chart_curve_overview.png
+	godmode/agentes/configurar_agente.php
+	godmode/servers/plugin.php: Improved visual graphics
+	included agent layout, icons and group view
+
 2013-05-20 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/ajax/skins.ajax.php, include/functions_gis.php,

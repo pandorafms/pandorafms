@@ -1,5 +1,12 @@
 2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_modules.php: fixed false error when update the
+	modules and try to enabled or disabled yet disabled or enabled.
+	
+	Fixes: #2225
+
+2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/search_main.php, operation/search_agents.getdata.php:
 	changed the source code, now it uses the page size to show the
 	agents in first page, fixed the list of icons, now show graphs and

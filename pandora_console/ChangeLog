@@ -1,5 +1,10 @@
 2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php, include/functions.php: improved
+	the source code style.
+
+2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_modules.php: fixed false error when update the
 	modules and try to enabled or disabled yet disabled or enabled.
 	

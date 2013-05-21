@@ -1437,9 +1437,9 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			//Show empty groups only if they have children with agents
 			//$group_array = array();
 			
-			foreach($children as $sub) {
+			foreach ($children as $sub) {
 				// If the group is quering previously, we ingore it
-				if(!in_array($sub['id_grupo'],$covered_groups)){
+				if (!in_array($sub['id_grupo'],$covered_groups)){
 					array_push($covered_groups, $sub['id_grupo']);
 					array_push($group_array, $sub['id_grupo']);
 				}
@@ -1468,8 +1468,8 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			$tags_restricted_groups = array_keys($group_restricted_data);
 			
 			$no_tags_restricted_groups = $group_array;
-			foreach($no_tags_restricted_groups as $k => $v) {
-				if(in_array($v, $tags_restricted_groups)) {
+			foreach ($no_tags_restricted_groups as $k => $v) {
+				if (in_array($v, $tags_restricted_groups)) {
 					unset($no_tags_restricted_groups[$k]);
 				}
 			}
@@ -2771,7 +2771,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 		return $return;
 	} 
 	
-	if($filter != ''){
+	if ($filter != '') {
 		$filter = 'AND ';
 	}
 	
@@ -2915,9 +2915,9 @@ function reporting_header_content($mini, $content, $report, &$table, $title = fa
 	if ($period !== false && $content['period'] > 0) {
 		$data[] = $sizh . $period . $sizhfin;
 	}
-	else if($content['period'] == 0) {
+	else if ($content['period'] == 0) {
 		$es = json_decode($content['external_source'], true);
-		if($es['date'] == 0) {
+		if ($es['date'] == 0) {
 			$date = __('Last data');
 		}
 		else {
@@ -3845,7 +3845,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// Do a security check on SQL coming from the user
 			$sql = check_sql ($sql);
 			
-			if($sql != '') {
+			if ($sql != '') {
 				$result = db_get_all_rows_sql($sql);
 				if ($result === false) {
 					$result = array();
@@ -4323,7 +4323,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// Get events of the last 8 hours
 			$events = events_get_group_events ($content['id_group'], 28800, $report['datetime']);
 			
-			if($events === false) {
+			if ($events === false) {
 				$events = array();
 			}
 			
@@ -5605,7 +5605,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$filter_groups = array ('offset' => (int) $offset,
 				'limit' => (int) $config['block_size']);
 				
-			if($id_group > 0) {
+			if ($id_group > 0) {
 				$filter_groups['id_grupo'] = $id_group;
 			}
 			
@@ -5626,10 +5626,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$nmodules = 0;
 			foreach ($modules_by_name as $module) {
 				$nmodules++;
-				// Don't use pagination
-				/*if($nmodules > $block) { //Will show only the (block) first modules
-					continue;
-				}*/
 				
 				$file_name = string2image(ui_print_truncate_text($module['name'], 'module_small', false, true, false, '...'), false, false, 6, 270, '#90B165', 'FFF', 4, 0);
 				$table_data .= '<th width="22px">' . html_print_image($file_name, true, array('title' => $module['name']))."</th>";
@@ -5721,7 +5717,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 					}
 					
-					if(!$match) {
+					if (!$match) {
 						$table_data .= "<td style='background-color: #DDD;'></td>";
 					}
 				}
@@ -5811,7 +5807,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[1][0] = 2;
 			
-			if($description != '') {
+			if ($description != '') {
 				$data[0] = $description;
 				array_push ($table->data, $data);
 			}
@@ -5822,7 +5818,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			break;
 		case 'agent_configuration':
-
+			
 			reporting_header_content($mini, $content, $report, $table, __('Agent configuration: ').$agent_name);
 			
 			$agent_name = agents_get_name ($content['id_agent']);
@@ -5845,7 +5841,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[1][5] = 2;
 			array_push ($table->data, $data);
 			unset($data);
-						
+			
 			$sql = "SELECT * FROM tagente WHERE id_agente=".$content['id_agent'];
 			$agent_data = db_get_row_sql($sql);
 			
@@ -5928,23 +5924,26 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data[7] = db_get_value('intervalo', 'tagente', 'id_agente', $content['id_agent']);
 				else
 					$data[7] = $data_module['module_interval'];
-					
-					
+				
+				
 				$data[8] = $data_module['unit'];
 				
 				$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $id_agent_module);
 				modules_get_status($id_agent_module, $module_status['estado'], $module_status['datos'], $status, $title);
 				$data[9] = ui_print_status_image($status, $title, true);
 				
-				$sql_tag = "SELECT name FROM ttag WHERE id_tag IN (
-								SELECT id_tag FROM ttag_module
-								WHERE id_agente_modulo=$id_agent_module)";
+				$sql_tag = "SELECT name
+					FROM ttag
+					WHERE id_tag IN (
+						SELECT id_tag
+						FROM ttag_module
+						WHERE id_agente_modulo = $id_agent_module)";
 				$tags = db_get_all_rows_sql($sql_tag);
 				if ($tags === false)
 					$tags = '';
 				else
 					$tags = implode (",", $tags);
-					
+				
 				$data[10] = $tags;
 				array_push ($table->data, $data);
 			}
@@ -5958,7 +5957,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$agents_list = db_get_all_rows_sql($sql);
 			if ($agents_list === false)
 				$agents_list = array();
-				
+			
 			$table->colspan[0][1] = 10;
 			
 			$i = 1;
@@ -5996,7 +5995,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data[5] = __('Enabled');
 				else
 					$data[5] = __('Disabled');
-
+				
 				$table->colspan[$i][3] = 2;
 				$table->colspan[$i][4] = 4;
 				$table->colspan[$i][5] = 2;
@@ -6088,9 +6087,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					modules_get_status($id_agent_module, $module_status['estado'], $module_status['datos'], $status, $title);
 					$data[9] = ui_print_status_image($status, $title, true);
 					
-					$sql_tag = "SELECT name FROM ttag WHERE id_tag IN (
-									SELECT id_tag FROM ttag_module
-									WHERE id_agente_modulo=$id_agent_module)";
+					$sql_tag = "SELECT name
+						FROM ttag
+						WHERE id_tag IN (
+							SELECT id_tag
+							FROM ttag_module
+							WHERE id_agente_modulo = $id_agent_module)";
 					$tags = db_get_all_rows_sql($sql_tag);
 					if ($tags === false)
 						$tags = '';
@@ -6126,7 +6128,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$start_date = $end_date - $period;
 			
 			// Get item filters
-			$filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . (int)$content['text'] . "'", false, true);
+			$filter = db_get_row_sql("SELECT *
+				FROM tnetflow_filter
+				WHERE id_sg = '" . (int)$content['text'] . "'", false, true);
 			if ($description == '') {
 				$description = $filter['id_name'];
 			}

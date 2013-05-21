@@ -1172,3 +1172,37 @@ body .ui-tooltip {
 	filter: Alpha(Opacity=30);
 	border-radius: 8px;
 }
+
+/*CUSTOMS*/
+#ui-datepicker-div {
+	border-color: #B1B1B1;
+	background: #ffffff;
+}
+
+.ui-widget-header {
+	background: #B1B1B1 !important;
+	color: #ffffff !important;
+}
+
+
+.ui_tpicker_hour,
+.ui_tpicker_minute,
+.ui_tpicker_second,
+.ui-slider-handle {
+	border: 1px solid #AAAAAA !important;
+}
+
+.ui-timepicker-div dd {
+	margin: 0px 15px 0px 15px ;
+}
+
+.ui-datepicker-buttonpane button {
+	border-color: #B1B1B1 !important;
+}
+
+.ui-datepicker-buttonpane .ui-datepicker-current {
+	margin-left: 0.2em !important;
+}
+
+.ui-icon {
+}

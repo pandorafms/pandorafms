@@ -181,16 +181,23 @@ if ($searchAgents) {
 		"SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
 	if ($only_count) {
 		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
-			" LIMIT " . ITEMS_TO_SHOW_IN_MAIN_TAB . " OFFSET 0";
+			" LIMIT " . $config["block_size"] . " OFFSET 0";
 	}
 	else {
 		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
-			" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+			" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter('offset',0);
 	}
 	
 	$query = $select . $sql . $limit;
 	
 	$agents = db_process_sql($query);
+	if (empty($agents))
+		$agents = array();
+	
+	$count_agents_main = 0;
+	if ($only_count) {
+		$count_agents_main = count($agents);
+	}
 	
 	if ($agents !== false) {
 		$totalAgents = db_get_value_sql(

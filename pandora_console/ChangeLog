@@ -1,5 +1,18 @@
 2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/search_main.php, operation/search_agents.getdata.php:
+	changed the source code, now it uses the page size to show the
+	agents in first page, fixed the list of icons, now show graphs and
+	set in correct english this icons. And added a footpage in the list
+	of agents to show if it is all or not.
+	
+	Fixes: #2227
+	
+	* include/constants.php: erased constants to count agents to show
+	in the search.
+
+2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/agentes/gis_view.php: fixed the title of agent in the
 	list of positions.
 

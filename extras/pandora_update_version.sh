@@ -26,7 +26,12 @@ SPEC_FILES="$CODE_HOME/pandora_console/pandora_console.spec \
 $CODE_HOME/pandora_agents/unix/pandora_agent.spec \
 $CODE_HOME/pandora_server/pandora_server.spec \
 $CODE_HOME_ENT/pandora/branches/4.0/pandora_console/enterprise/pandora_console_enterprise.spec \
-$CODE_HOME_ENT/pandora/branches/4.0/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec"
+$CODE_HOME_ENT/pandora/branches/4.0/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec \
+$CODE_HOME/pandora_console/pandora_console.redhat.spec \
+$CODE_HOME/pandora_agents/unix/pandora_agent.redhat.spec \
+$CODE_HOME/pandora_server/pandora_server.redhat.spec \
+$CODE_HOME_ENT/pandora/branches/4.0/pandora_console/enterprise/pandora_console_enterprise.redhat.spec \
+$CODE_HOME_ENT/pandora/branches/4.0/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.redhat.spec"
 DEBIAN_FILES="$CODE_HOME/pandora_console/DEBIAN \
 $CODE_HOME/pandora_server/DEBIAN \
 $CODE_HOME/pandora_agents/unix/DEBIAN \

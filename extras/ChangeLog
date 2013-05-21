@@ -1,5 +1,9 @@
 2013-05-21  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_update_version.sh: Added RedHat specs.
+
+2013-05-21  Ramon Novoa  <rnovoa@artica.es>
+
 	* build_src.sh: Fixed the enterprise path.
 
 2013-05-21  Ramon Novoa  <rnovoa@artica.es>

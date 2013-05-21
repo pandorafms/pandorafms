@@ -326,7 +326,7 @@ function human_time_comparation ($timestamp, $units = 'large') {
 	// $seconds could be negative, because get_system_time() could return cached value
 	// (that might be the time a session begins at).
 	// So negative values are to be rounded off to 'NOW'.
-	if( $seconds < 0 ) {
+	if ( $seconds < 0 ) {
 		$seconds = 0;
 	}
 	
@@ -369,11 +369,11 @@ function get_user_language ($id_user = null) {
 	if ($quick_language) {
 		$language = get_parameter('language', 0);
 		
-		if($language === 'default') {
+		if ($language === 'default') {
 			return $config['language'];
 		}
 		
-		if($language !== 0) {
+		if ($language !== 0) {
 			return $language;
 		}
 	}
@@ -382,7 +382,7 @@ function get_user_language ($id_user = null) {
 		$id_user = $config['id_user'];
 	}
 	
-	if($id_user !== null) {
+	if ($id_user !== null) {
 		$userinfo = get_user_info ($id_user);
 		if ($userinfo['language'] != 'default'){
 			return $userinfo['language'];
@@ -494,34 +494,37 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		if ($mins != 0) {
 			$seconds = $seconds - ($mins * 60);
 			
-			if($hours == 0) {
+			if ($hours == 0) {
 				$returnTime .= "$mins $minutesString ";
 			}
 			else {
-				$returnTime = sprintf("%02d",$hours).':'.sprintf("%02d",$mins);
+				$returnTime = sprintf("%02d",$hours) . ':' .
+					sprintf("%02d",$mins);
 			}
 		}
 		
 		if ($seconds != 0) {
-			if($hours == 0) {
+			if ($hours == 0) {
 				$returnTime .= "$seconds $secondsString ";
 			}
 			else {
-				$returnTime = sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$seconds);
+				$returnTime = sprintf("%02d",$hours) . ':' .
+					sprintf("%02d",$mins) . ':' .
+					sprintf("%02d",$seconds);
 			}
 		}
 		
 		$return = ' ';
 		
-		if($returnDate != '') {
+		if ($returnDate != '') {
 			$return = $returnDate;
 		}
 		
-		if($returnTime != '') {
+		if ($returnTime != '') {
 			$return .= $returnTime;
 		}
 		
-		if($return == ' ') {
+		if ($return == ' ') {
 			return $nowString; 
 		}
 		else {
@@ -634,7 +637,7 @@ function get_parameter_checkbox ($name, $default = '') {
 	$sent = get_parameter($name.'_sent', 0);
 	
 	// If is not sent, return the default
-	if(!$sent) {
+	if (!$sent) {
 		return $default;
 	}
 	
@@ -1156,7 +1159,7 @@ function is_ajax () {
  * @return bool true if a result code is an error or false otherwise
  */
 function is_error($code) {
-	if($code !== true AND ($code <= ERR_GENERIC || $code === false)) {
+	if ($code !== true AND ($code <= ERR_GENERIC || $code === false)) {
 		return true;
 	}
 	else {
@@ -1520,7 +1523,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				AND (tusuario_perfil.id_grupo IN (%s)
 				OR tusuario_perfil.id_grupo = 0)", $id_user, implode(', ', $parents_id));
 	}
-
+	
 	$rowdup = db_get_all_rows_sql ($query);
 	
 	if (empty ($rowdup))
@@ -1530,7 +1533,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	$acl_column = get_acl_column($access);
 	foreach ($rowdup as $row) {
 		// For each profile for this pair of group and user do...
-		if(isset($row[$acl_column])) {
+		if (isset($row[$acl_column])) {
 			$result += $row[$acl_column];
 		}
 	}

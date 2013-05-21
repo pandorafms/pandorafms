@@ -3,7 +3,7 @@ AllowLanguageSelection
 {Yes}
 
 AppName
-{Pandora FMS Windows Agent v4.1}
+{Pandora FMS Windows Agent v4.1RC1}
 
 ApplicationID
 {17E3D2CF-CA02-406B-8A80-9D31C17BD08F}
@@ -186,7 +186,7 @@ UpgradeApplicationID
 {}
 
 Version
-{130519}
+{130521}
 
 ViewReadme
 {Yes}
@@ -2375,7 +2375,7 @@ Windows,BuildSeparateArchives
 {No}
 
 Windows,Executable
-{<%AppName%>-<%Version%>-Setup<%Ext%>}
+{<%AppName%>-Setup<%Ext%>}
 
 Windows,FileDescription
 {<%AppName%> <%Version%> Setup}

@@ -1,5 +1,9 @@
 2013-05-21  Ramon Novoa  <rnovoa@artica.es>
 
+	* build_src.sh: Fixed the enterprise path.
+
+2013-05-21  Ramon Novoa  <rnovoa@artica.es>
+
 	* build_src.sh: Reverted a couple of variables.
 
 2013-05-19  Sancho Lerena <slerena@artica.es>

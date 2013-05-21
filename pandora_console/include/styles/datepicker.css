@@ -1,4 +1,4 @@
-/* Main Flora Style Sheet for jQuery UI ui-datepicker */
+/* Main Flora Style Sheet for jQuery UI ui-datepicker 
 #ui-datepicker-div, .ui-datepicker-inline {
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 14px;
@@ -186,6 +186,8 @@ img.ui-datepicker-trigger {
 .ui-datepicker-new-row {
 	clear: left;
 }
+*/
+/*
 .ui-datepicker-cover {
 	display: none;
 	display/**/: block;
@@ -197,3 +199,4 @@ img.ui-datepicker-trigger {
 	width: 193px;
 	height: 200px;
 }
+*/

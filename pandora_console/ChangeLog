@@ -1,5 +1,11 @@
 2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/styles/datepicker.css,
+	include/styles/jquery-ui-1.10.0.custom.css: change the style to
+	show better the datepicker and timepicker.
+
+2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php, include/functions.php: improved
 	the source code style.
 

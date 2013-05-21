@@ -37,6 +37,7 @@ $agent_name = agents_get_name($agentId);
 $agentData = gis_get_data_last_position_agent($id_agente);
 
 //Avoid the agents with characters that fails the div.
+$agent_name_original = $agent_name;
 $agent_name = md5($agent_name);
 
 $url = '';
@@ -124,7 +125,7 @@ else {
 	$table->head = array(__("Longitude"), __("Latitude"), __("Altitude"), __("From"), __("To"), __("Description"), '# '.__("of Packages"), __("Manual placement"));
 	$table->class = 'position_data_table';
 	$table->id = $agent_name.'_position_data_table';
-	$table->title = $agent_name." ". __("positional data");
+	$table->title = $agent_name_original . " " . __("positional data");
 	$table->titlestyle = "background-color:#799E48;";
 	html_print_table($table); unset($table);
 	

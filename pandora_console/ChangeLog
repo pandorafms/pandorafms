@@ -1,3 +1,8 @@
+2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/agentes/gis_view.php: fixed the title of agent in the
+	list of positions.
+
 2013-05-20  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

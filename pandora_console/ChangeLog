@@ -1,3 +1,9 @@
+2013-05-22 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* pandoradb.sql: (workaround to avoid mysql's warning
+	'Specified key was too long; max key length is 767 bytes'
+	(warning code=1071).
+
 2013-05-21 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/styles/datepicker.css,

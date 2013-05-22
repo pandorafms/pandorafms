@@ -1,3 +1,9 @@
+2013-05-22  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent.spec,
+        pandora_agent.redhat.spec: Improved management of existant
+	.conf files (for package auto upgrade).
+
 2013-03-11  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_agent: Fixed bug that the send_buffered_xml_files

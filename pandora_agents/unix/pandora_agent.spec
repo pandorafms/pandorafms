@@ -52,11 +52,6 @@ cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_R
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/pandora_agent.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/tentacle_client.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
-# Checking old config file (if exists)
-if [ -f /etc/pandora/pandora_agent.conf ] ; then
-	mv /etc/pandora/pandora_agent.conf /etc/pandora/pandora_agent.conf.backup
-fi
-
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent.conf $RPM_BUILD_ROOT/usr/share/pandora_agent/pandora_agent.conf.rpmnew
 
 if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec ] ; then
@@ -77,14 +72,11 @@ if [ ! -d /etc/pandora ] ; then
 	mkdir -p /etc/pandora
 fi
 
-if [ ! -f /usr/share/pandora_agent/pandora_agent.conf ] ; then
-	cp /usr/share/pandora_agent/pandora_agent.conf.rpmnew /usr/share/pandora_agent/pandora_agent.conf
-fi
-
-if [ ! -f /etc/pandora/pandora_agent.conf ] ; then
-	ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
+# Checking old config file (if exists)
+if [ -e /etc/pandora/pandora_agent.conf ] ; then
+        echo "Current configuration file exist."
 else
-	ln -s /usr/share/pandora_agent/pandora_agent.conf.rpmnew /etc/pandora/pandora_agent.conf.rpmnew
+        cp /usr/share/pandora_agent/pandora_agent.conf.rpmnew /etc/pandora/pandora_agent.conf
 fi
 
 if [ ! -e /etc/pandora/plugins ]; then

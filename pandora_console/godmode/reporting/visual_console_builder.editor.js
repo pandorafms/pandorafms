@@ -108,7 +108,7 @@ function cancelAction() {
 	 }
 }
 
-function updateAction() { 
+function updateAction() {
 	var values = {};
 	
 	values = readFields();
@@ -1137,6 +1137,7 @@ function updateDB(type, idElement , values, event) {
 				switch (type) {
 					case 'module_graph':
 						$("#image_" + idElement).attr("src", getModuleGraph(idElement));
+						break;
 					case 'static_graph':
 						if (event != 'dragstop') {
 							var element_status= null;

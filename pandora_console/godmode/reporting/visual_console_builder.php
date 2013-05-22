@@ -42,6 +42,7 @@ switch ($activeTab) {
 				$background = '';
 				$visualConsoleName = '';
 				break;
+			
 			case 'update':
 			case 'save':
 				$idGroup = get_parameter('id_group');
@@ -50,10 +51,10 @@ switch ($activeTab) {
 				
 				$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
 				
-				// If the background is changed the size is reseted 			
+				// If the background is changed the size is reseted
 				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				$background_now = $visualConsole['background'];
-				if($background_now != $background && $background) {
+				if ($background_now != $background && $background) {
 					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
 					$values['width'] = $sizeBackground[0];
 					$values['height'] = $sizeBackground[1];
@@ -62,7 +63,7 @@ switch ($activeTab) {
 				switch ($action) {
 					case 'update':
 						$result = false;
-						if($values['name'] != "" && $values['background'])
+						if ($values['name'] != "" && $values['background'])
 							$result = db_process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
 						if ($result !== false && $values['background']) {
 							$action = 'edit';
@@ -72,9 +73,9 @@ switch ($activeTab) {
 							$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be update.').'</h3>');
 						}
 						break;
+					
 					case 'save':
-						
-						if($values['name'] != "" && $values['background'])
+						if ($values['name'] != "" && $values['background'])
 							$idVisualConsole = db_process_sql_insert('tlayout', $values);
 						else
 							$idVisualConsole = false;
@@ -90,6 +91,7 @@ switch ($activeTab) {
 				}
 				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				break;
+			
 			case 'edit':
 				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				$visualConsoleName = $visualConsole['name'];
@@ -98,6 +100,7 @@ switch ($activeTab) {
 				break;
 		}
 		break;
+	
 	case 'list_elements':
 		switch ($action) {
 			case 'update':
@@ -107,17 +110,22 @@ switch ($activeTab) {
 				$width = get_parameter('width');
 				$height = get_parameter('height');
 				
-				if($width == 0 && $height == 0) {
-					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
+				if ($width == 0 && $height == 0) {
+					$sizeBackground = getimagesize(
+						$config['homedir'] . '/images/console/background/' . $background);
 					$width = $sizeBackground[0];
 					$height = $sizeBackground[1];
 				}
 				
-				db_process_sql_update('tlayout', array('background' => $background,
-					'width' => $width, 'height' => $height), array('id' => $idVisualConsole));
+				db_process_sql_update('tlayout',
+					array('background' => $background,
+						'width' => $width,
+						'height' => $height),
+					array('id' => $idVisualConsole));
 				
 				//Update elements in visual map
-				$idsElements = db_get_all_rows_filter('tlayout_data', array('id_layout' => $idVisualConsole), array('id'));
+				$idsElements = db_get_all_rows_filter('tlayout_data',
+					array('id_layout' => $idVisualConsole), array('id'));
 				
 				if ($idsElements === false){
 					$idsElements = array();
@@ -188,6 +196,11 @@ switch ($activeTab) {
 				
 				$message = '';
 				
+				if (($width == 0) && ($height == 0) && ($type == MODULE_GRAPH)) {
+					$width = 300;
+					$height = 180;
+				}
+				
 				// One item per agent
 				if ($item_per_agent == 1) {
 					$id_agents_result = array();
@@ -197,14 +210,19 @@ switch ($activeTab) {
 					$message .= visual_map_process_wizard_add_agents($id_agents_result,
 						$image, $idVisualConsole, $range, $width, $height,
 						$period, $process_value, $percentileitem_width,
-						$max_value, $type_percentile, $value_show, $label_type, $type);	
+						$max_value, $type_percentile, $value_show, $label_type, $type);
 						
-					$statusProcessInDB = array('flag' => true, 'message' => $message);						
+					$statusProcessInDB = array('flag' => true, 'message' => $message);
 					
-				} else {
+				}
+				else {
 					// One item per module
 					if (empty($name_modules)) {
-						$statusProcessInDB = array('flag' => true, 'message' => ui_print_error_message (__('No modules selected'), '', true));
+						$statusProcessInDB = array(
+							'flag' => true,
+							'message' => ui_print_error_message (__('No modules selected'),
+							'',
+							true));
 					}
 					else {
 						//Any module
@@ -296,7 +314,7 @@ if ($action == 'new' || $idVisualConsole === false){
 	$action = 'new';
 	$visualConsoleName = "";
 }
-	
+
 $buttons[$activeTab]['active'] = true;
  
 ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/reporting_edit.png", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);

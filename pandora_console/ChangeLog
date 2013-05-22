@@ -1,3 +1,13 @@
+2013-05-22 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js: fixed the
+	update the module graph item.
+	
+	Fixes: #2234
+	
+	* godmode/reporting/visual_console_builder.php: fixed lost height
+	and width of item when add several module graphs.
+
 2013-05-22  Sergio Martin <sergio.martin@artica.es>
 
 	* images/gis_map/icons/star.default.png

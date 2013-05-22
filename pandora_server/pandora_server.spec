@@ -80,8 +80,8 @@ cp -aRf util/tentacle_serverd $RPM_BUILD_ROOT/etc/init.d/
 cp -aRf man/man1/pandora_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf man/man1/tentacle_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
-rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
-rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
+rm -Rf $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
+rm -Rf $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 
 %clean
 rm -fr $RPM_BUILD_ROOT
@@ -91,11 +91,7 @@ if [ "`id pandora | grep uid | wc -l`" = 0 ]
 then
 	/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 fi
-
-if [ -e "/etc/pandora/pandora_server.conf" ]
-then
-	cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
-fi
+exit 0
 
 %post
 chkconfig pandora_server on 
@@ -109,17 +105,20 @@ if [ ! -d /etc/pandora ] ; then
    mkdir -p /etc/pandora
 fi
 
-if [ ! -e /etc/pandora/pandora_server.conf ] ; then
-   ln -s /usr/share/pandora_server/conf/pandora_server.conf /etc/pandora/
-   echo "Pandora FMS Server configuration is /etc/pandora/pandora_server.conf"
-   echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
-   echo "The manual can be reached at: man pandora or man pandora_server"
-   echo "Pandora FMS Documentation is in: http://pandorafms.org"
-   echo " "
+if [ ! -e "/etc/pandora/pandora_server.conf" ]
+then
+        echo "Creating a new version of Pandora FMS Server config file at /etc/pandora/pandora_server.conf"
+        cat /etc/pandora/pandora_server.conf.new > /etc/pandora/pandora_server.conf
+else
+        # Do a copy of current .conf, just in case.
+        echo "An existing version of pandora_server.conf is found."
+        cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
 fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
+
+exit 0
 
 %preun
 
@@ -145,7 +144,7 @@ rm -Rf /etc/init.d/pandora_server
 rm -Rf %{prefix}pandora_server
 rm -Rf /var/log/pandora
 rm -Rf /usr/lib/perl5/PandoraFMS/
-rm -Rf /etc/pandora/pandora_server.conf
+rm -Rf /etc/pandora/pandora_server.conf*
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
 rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server

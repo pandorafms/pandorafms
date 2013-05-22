@@ -76,7 +76,7 @@ rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 
 install -m 0644 util/pandora_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
-install -m 0640 conf/pandora_server.conf $RPM_BUILD_ROOT%{_sysconfdir}/pandora/
+install -m 0640 conf/pandora_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/pandora/pandora_server.conf.new
 
 cat <<EOF > $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/pandora_db
 #!/bin/bash
@@ -90,11 +90,6 @@ rm -fr $RPM_BUILD_ROOT
 %pre
 getent passwd pandora >/dev/null || \
     /usr/sbin/useradd -d %{prefix}/pandora_server -s /sbin/nologin -M -g 0 pandora
-
-if [ -e "/etc/pandora/pandora_server.conf" ]
-then
-	cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
-fi
 
 exit 0
 
@@ -111,6 +106,18 @@ if [ "$1" = 1 ]; then
    echo "The manual can be reached at: man pandora or man pandora_server"
    echo "Pandora FMS Documentation is in: http://pandorafms.org"
    echo " "
+fi
+
+# This will avoid pandora_server.conf overwritting on UPGRADES.
+
+if [ ! -e "/etc/pandora/pandora_server.conf" ]
+then
+        echo "Creating a new version of Pandora FMS Server config file at /etc/pandora/pandora_server.conf"
+        cat /etc/pandora/pandora_server.conf.new > /etc/pandora/pandora_server.conf
+else
+        # Do a copy of current .conf, just in case.
+        echo "An existing version of pandora_server.conf is found."
+        cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
 fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
@@ -151,8 +158,10 @@ exit 0
 %{_bindir}/tentacle_server
 %dir %{_localstatedir}/log/pandora
 %dir %{_sysconfdir}/pandora
-%config(noreplace) %{_sysconfdir}/pandora/pandora_server.conf
 %dir %{_localstatedir}/spool/pandora
+
+%defattr(600,root,root)
+/etc/pandora/pandora_server.conf.new
 
 %defattr(770,pandora,apache)
 %{_localstatedir}/spool/pandora/data_in

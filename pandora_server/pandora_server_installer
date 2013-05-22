@@ -297,8 +297,8 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 			echo cp NetBSD/pandora_server.conf $PANDORA_CFG_DIR
 			cp NetBSD/pandora_server.conf $PANDORA_CFG_DIR     
 		else
-			echo cp conf/pandora_server.conf $PANDORA_CFG_DIR
-			cp conf/pandora_server.conf $PANDORA_CFG_DIR
+			echo cp conf/pandora_server.conf.new $PANDORA_CFG_DIR
+			cp conf/pandora_server.conf.new $PANDORA_CFG_DIR
 		fi
 		chmod 770 $PANDORA_CFG_FILE
 
@@ -549,6 +549,7 @@ uninstall () {
 
 	rm -Rf $PANDORA_LOG 2> /dev/null 
 	rm -Rf $PANDORA_CFG_FILE 2> /dev/null
+	rm -Rf "$PANDORA_CFG_FILE.new" 2> /dev/null
 	rm -Rf $PANDORA_SERVER 2> /dev/null 
 	rm -Rf /usr/bin/pandora_server 2> /dev/null
 	rm -Rf /usr/bin/pandora_exec 2> /dev/null

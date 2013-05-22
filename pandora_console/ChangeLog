@@ -1,3 +1,31 @@
+2013-05-22  Sergio Martin <sergio.martin@artica.es>
+
+	* images/gis_map/icons/star.default.png
+	images/gis_map/icons/cross.warning.png
+	images/gis_map/icons/star.bad.png
+	images/gis_map/icons/cross.ok.png
+	images/gis_map/icons/marker.default.png
+	images/gis_map/icons/square_marker.warning.png
+	images/gis_map/icons/circle.warning.png
+	images/gis_map/icons/marker.bad.png
+	images/gis_map/icons/square_marker.ok.png
+	images/gis_map/icons/circle.ok.png
+	images/gis_map/icons/triangle.warning.png
+	images/gis_map/icons/cross.default.png
+	images/gis_map/icons/star.warning.png
+	images/gis_map/icons/triangle.ok.png
+	images/gis_map/icons/cross.bad.png
+	images/gis_map/icons/star.ok.png
+	images/gis_map/icons/square_marker.default.png
+	images/gis_map/icons/circle.default.png
+	images/gis_map/icons/marker.warning.png
+	images/gis_map/icons/square_marker.bad.png
+	images/gis_map/icons/circle.bad.png
+	images/gis_map/icons/triangle.default.png
+	images/gis_map/icons/marker.ok.png
+	images/gis_map/icons/triangle.bad.png: Change the gis
+	images for new ones
+
 2013-05-20 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/gis_maps/ajax.php,

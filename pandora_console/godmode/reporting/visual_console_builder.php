@@ -235,6 +235,11 @@ switch ($activeTab) {
 				
 				$message = '';
 				
+				if (($width == 0) && ($height == 0) && ($type == MODULE_GRAPH)) {
+					$width = 300;
+					$height = 180;
+				}
+				
 				// One item per agent
 				if ($item_per_agent == 1) {
 					$id_agents_result = array();

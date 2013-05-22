@@ -1,3 +1,13 @@
+2013-05-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server.spec,
+	  pandora_server.redhat.spec,
+	  DEBIAN/postinst,
+	  DEBIAN/conffiles,
+	  DEBIAN/make_deb_package.sh,
+	  conf/pandora_server.conf.new,
+	  pandora_server_installer: Merged Sancho's changes from 4.0 branch.
+
 2013-05-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_xml_stress.pl: Added support for strictly incremental

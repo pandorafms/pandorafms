@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`update_module_count` tinyint(1) NOT NULL default '0',
 	`update_alert_count` tinyint(1) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
-	KEY `nombre` (`nombre`),
+	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
 	KEY `disabled` (`disabled`),
 	KEY `id_grupo` (`id_grupo`)

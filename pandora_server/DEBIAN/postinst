@@ -72,13 +72,13 @@ echo "Creating setup directory in /etc/pandora"
 mkdir /etc/pandora 2> /dev/null
 
 #Check if exist old conf file
-count_lines_conf=`cat /etc/pandora/pandora_server.conf | wc -l`
-
-if [ $count_lines_conf -eq 0 ]
+if [ ! -e /etc/pandora/pandora_server.conf ]
 then
-	rm /etc/pandora/pandora_server.conf
-	ln -s /usr/share/pandora_server/conf/pandora_server.conf /etc/pandora/
-	chmod 770 /etc/pandora/pandora_server.conf
+	cp /usr/share/pandora_server/conf/pandora_server.conf.new /etc/pandora/pandora_server.conf
+	chmod 600 /etc/pandora/pandora_server.conf
+else
+	cp /usr/share/pandora_server/conf/pandora_server.conf.new /etc/pandora/pandora_server.conf.new
+	echo "Skipping creation of pandora_server.conf: there is already one."
 fi
 
 echo "Linking startup script to /etc/rc2.d"
@@ -92,10 +92,10 @@ if [ -d /etc/cron.hourly ]
 then
 	echo "Create the Cron script to run hourly Pandora DB tool"
 	echo "#!/bin/bash" > /etc/cron.hourly/pandora_db	
-	echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_db	
+	echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.hourly/pandora_db	
 	chmod 750 /etc/cron.hourly/pandora_db
 else
-	echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
+	echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (hourly) on your master server:"
 	echo "   perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 fi
 

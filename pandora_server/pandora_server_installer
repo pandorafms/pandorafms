@@ -264,8 +264,8 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 			echo cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
                 	cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
 		else
-			echo cp conf/pandora_server.conf $PANDORA_CFG_DIR
-			cp conf/pandora_server.conf $PANDORA_CFG_DIR
+			echo cp conf/pandora_server.conf.new $PANDORA_CFG_DIR/pandora_server.conf
+			cp conf/pandora_server.conf.new $PANDORA_CFG_DIR/pandora_server.conf
 		fi
 		chmod 770 $PANDORA_CFG_FILE
 

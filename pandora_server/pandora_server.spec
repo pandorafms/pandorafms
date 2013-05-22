@@ -28,16 +28,7 @@ Requires:           nmap wmic sudo perl-HTML-Tree perl-XML-Simple
 Requires:           perl-IO-Socket-INET6 perl-Socket6 snmp-mibs perl-JSON
 
 %description
-
-Pandora FMS is a monitoring Open Source software. It watches your systems and applications, and allows you to know the status of any element of those systems. 
-
-Pandora FMS could detect a network interface down, a defacement in your website, a memory leak in one of your server application, or the movement of any value of the NASDAQ new technology market. Pandora FMS could send out SMS message when your systems fails... or when Google's value drop below US348.60? 
-
-Pandora FMS runs on any operating system, with specific agents for each platform, gathering data and sending it to a server, it has specific agents for GNU/Linux, AIX, Solaris, HP-UX, BSD/IPSO, and Windows 2000, XP and 2003. 
-
-Pandora FMS can also monitor any kind of TCP/IP service, without the need to install agents, and monitor network systems such as load balancers, routers, switches, operating systems, applications, or simply printers if you need. Pandora FMS also supports SNMP for collecting data and for receiving traps. 
-
-A few examples of common resources monitored by Pandora FMS could be processor load, disk and memory usage, running processes, log files, environmental factors such as temperature, or application values like strings contained in web pages or any possible way to collect data in an automatic way.
+Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to get information. Pandora FMS supports all standard OS (Linux, AIX, HP-UX, BSD, Solaris and Windows), and support multiple setups in HA enviroments. Pandora FMS server is the core component to process all information and requires a database to work.
 
 
 %prep
@@ -79,8 +70,8 @@ cp -aRf util/tentacle_serverd $RPM_BUILD_ROOT/etc/init.d/
 cp -aRf man/man1/pandora_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf man/man1/tentacle_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
-rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
-rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
+rm -Rf $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
+rm -Rf $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 
 %clean
 rm -fr $RPM_BUILD_ROOT
@@ -90,35 +81,40 @@ if [ "`id pandora | grep uid | wc -l`" = 0 ]
 then
 	/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 fi
-
-if [ -e "/etc/pandora/pandora_server.conf" ]
-then
-	cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
-fi
+exit 0
 
 %post
-chkconfig pandora_server on 
-chkconfig tentacle_serverd on 
+# Initial installation
+if [ "$1" = 1 ]; then
 
-echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.hourly/pandora_db
-chmod 750 /etc/cron.hourly/pandora_db
-cp -aRf /usr/share/pandora_server/util/pandora_logrotate /etc/logrotate.d/pandora
+	chkconfig pandora_server on 
+	chkconfig tentacle_serverd on 
 
-if [ ! -d /etc/pandora ] ; then
-   mkdir -p /etc/pandora
+	echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
+   	echo "The manual can be reached at: man pandora or man pandora_server"
+   	echo "Pandora FMS Documentation is in: http://pandorafms.com"
+   	echo " "
+
+	echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.hourly/pandora_db
+	chmod 750 /etc/cron.hourly/pandora_db
+	cp -aRf /usr/share/pandora_server/util/pandora_logrotate /etc/logrotate.d/pandora
+
+	echo "Don't forget to start Tentacle Server daemon if you want to receive data using tentacle"
 fi
 
-if [ ! -e /etc/pandora/pandora_server.conf ] ; then
-   ln -s /usr/share/pandora_server/conf/pandora_server.conf /etc/pandora/
-   echo "Pandora FMS Server configuration is /etc/pandora/pandora_server.conf"
-   echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
-   echo "The manual can be reached at: man pandora or man pandora_server"
-   echo "Pandora FMS Documentation is in: http://pandorafms.org"
-   echo " "
+# This will avoid pandora_server.conf overwritting on UPGRADES.
+
+if [ ! -e "/etc/pandora/pandora_server.conf" ]
+then
+        echo "Creating a new version of Pandora FMS Server config file at /etc/pandora/pandora_server.conf"
+        cat /etc/pandora/pandora_server.conf.new > /etc/pandora/pandora_server.conf
+else
+        # Do a copy of current .conf, just in case.
+        echo "An existing version of pandora_server.conf is found."
+        cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
 fi
 
-echo "Don't forget to start Tentacle Server daemon if you want to receive"
-echo "data using tentacle"
+exit 0
 
 %preun
 
@@ -144,7 +140,7 @@ rm -Rf /etc/init.d/pandora_server
 rm -Rf %{prefix}pandora_server
 rm -Rf /var/log/pandora
 rm -Rf /usr/lib/perl5/PandoraFMS/
-rm -Rf /etc/pandora/pandora_server.conf
+rm -Rf /etc/pandora/pandora_server.conf*
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
 rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server

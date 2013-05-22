@@ -1,3 +1,18 @@
+2013-05-22  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/postinst: Modifications for manage the upgrade on
+	existing .conf files.
+	
+	* DEBIAN/conffiles: Removed.
+
+	* conf/pandora_server.conf.new: Renamed to avoid problems on target
+	installation.
+
+        * pandora_server_installer,
+	pandora_server.spec,
+	pandora_server.redhat.spec: Modifications for manage the upgrade on    
+        existing .conf files.
+
 2013-05-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_xml_stress.pl: Merged from trunk. Added support for

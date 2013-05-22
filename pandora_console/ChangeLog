@@ -1,3 +1,15 @@
+2013-05-22 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js: fixed the
+	update the module graph item.
+	
+	Fixes: #2234
+	
+	* godmode/reporting/visual_console_builder.php: fixed lost height
+	and width of item when add several module graphs.
+	
+	MERGED FROM THE BRANCH 4
+
 2013-05-22 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* pandoradb.sql: (workaround to avoid mysql's warning

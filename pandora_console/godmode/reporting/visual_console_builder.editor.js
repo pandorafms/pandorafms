@@ -1233,6 +1233,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 	switch (type) {
 		case 'module_graph':
 			$("#image_" + idElement).attr("src", getModuleGraph(idElement));
+			break;
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
 				&& (event != 'dragstop')) {

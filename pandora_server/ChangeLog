@@ -1,3 +1,8 @@
+2013-05-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/make_deb_package.sh: Removed a touch that left a newly
+	  installed server with an empty configuration file.
+
 2013-05-22  Sancho Lerena <slerena@artica.es>
 
 	* DEBIAN/postinst: Modifications for manage the upgrade on

@@ -386,9 +386,7 @@ switch ($moduletype) {
 	/* WARNING: type 7 is reserved on enterprise */
 	default:
 		if (enterprise_include ('godmode/agentes/module_manager_editor.php') === ENTERPRISE_NOT_HOOK) {
-			echo '<h3 class="error">';
-			echo sprintf(__('DEBUG: Invalid module type specified in %s:%s'), __FILE__, __LINE__);
-			echo '</h3>';
+			ui_print_error_message(sprintf(__('DEBUG: Invalid module type specified in %s:%s'), __FILE__, __LINE__));
 			echo __('Most likely you have recently upgraded from an earlier version of Pandora and either <br />
 				1) forgot to use the database converter<br />
 				2) used a bad version of the database converter (see Bugreport #2124706 for the solution)<br />
@@ -407,6 +405,7 @@ if ($config['enterprise_installed'] && $id_agent_module) {
 
 echo '<h3 id="message" class="error invisible"></h3>';
 
+// TODO: Change to the ui_print_error system
 echo '<form method="post" id="module_form">';
 html_print_table ($table_simple);
 

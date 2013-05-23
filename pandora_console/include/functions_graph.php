@@ -1418,6 +1418,10 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 		$colors[] = COL_NOTINIT;
 	}
 	
+	if (array_sum($data) == 0) {
+		$data = array();
+	}
+	
 	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
 	
@@ -3884,7 +3888,7 @@ function graph_nodata_image($width = 300, $height = 110, $type = 'area') {
 	$image_div = '<div class="nodata_container" style="background-image: url(\'' . $image . '\');">' .
 		$text_div . '</div>';
 	
-	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px;">' .
+	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; border: 1px dotted #ddd; background-color: white;">' .
 		$image_div . '</div>';
 	
 	return $div;

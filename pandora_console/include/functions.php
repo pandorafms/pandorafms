@@ -145,7 +145,7 @@ function safe_url_extraclean ($string, $default_string = '') {
 function no_permission () {
 	require ("config.php");
 	
-	echo "<h3 class='error'>".__('You don\'t have access')."</h3>";
+	ui_print_error_message(__('You don\'t have access'));
 	echo html_print_image('images/noaccess.png', true, array("alt" => 'No access', "width" => '120')) . "<br /><br />";
 	echo "<table width=550>";
 	echo "<tr><td>";
@@ -166,7 +166,7 @@ function no_permission () {
 function unmanaged_error ($error = "") {
 	require_once ("config.php");
 	
-	echo "<h3 class='error'>".__('Unmanaged error')."</h3>";
+	ui_print_error_message(__('Unmanaged error'));
 	echo html_print_image('images/error.png', true, array("alt" => 'error')) . "<br /><br />";
 	echo "<table width=550>";
 	echo "<tr><td>";

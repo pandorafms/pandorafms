@@ -88,7 +88,7 @@ if ($id_profile || $new_profile) {
 		$profile = db_get_row ('tperfil', 'id_perfil', $id_profile);
 		
 		if ($profile === false) {
-			echo '<h3 class="error">'.__('There was a problem loading profile').'</h3></table>';
+			ui_print_error_message(__('There was a problem loading profile')) . '</table>';
 			echo '</div>';
 			echo '<div style="clear:both">&nbsp;</div>';
 			echo '</div>';

@@ -126,9 +126,10 @@ elseif ($action == "insert") {
 	$id_inc = db_process_sql ($sql, "insert_id");
 	
 	if ($id_inc === false) {
-		echo '<h3 class="error">'.__('Error creating incident').'</h3>';
+		ui_print_error_message(__('Error creating incident'));
 	}
 	else {
+		ui_print_success_message(__('Incident created'));
 		db_pandora_audit("Incident created", "User ".$config["id_user"]." created incident #".$id_inc);
 	}
 }

@@ -100,9 +100,7 @@ $label = base64_decode(get_parameter('label', ''));
 		// Get input parameters
 		$label = get_parameter ("label","");
 		if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
-			echo "<h3 class='error'>" .
-				__('There was a problem locating the source of the graph') .
-				"</h3>";
+			ui_print_error_message(__('There was a problem locating the source of the graph'));
 			exit;
 		}
 		
@@ -159,9 +157,9 @@ $label = base64_decode(get_parameter('label', ''));
 		// log4x doesnt support flash yet
 		//
 		if ($config['flash_charts'] == 1)
-			echo '<div style="margin-left: 70px">';
+			echo '<div style="margin-left: 70px; padding-top: 10px;">';
 		else
-			echo '<div style="margin-left: 50px">';
+			echo '<div style="margin-left: 50px; padding-top: 10px;">';
 		switch ($graph_type) {
 			case 'boolean':
 				echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
@@ -207,12 +205,12 @@ $label = base64_decode(get_parameter('label', ''));
 		///////////////////////////
 		$params = array();
 		// TOP TEXT
-		$params['top_text'] = "<b>" . __('Pandora FMS Graph configuration menu') . "</b>";
-		$params['top_text'] .= "<br /><br />";
-		$params['top_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
+		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold;'>" . html_print_image('images/config_mc.png', true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+		$params['body_text'] = "<div class='menu_sidebar_outer'>";
+		$params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		
 		// MENU
-		$params['body_text'] = '<form method="get" action="stat_win.php">';
+		$params['body_text'] .= '<form method="get" action="stat_win.php">';
 		$params['body_text'] .= html_print_input_hidden ("id", $id, true);
 		$params['body_text'] .= html_print_input_hidden ("label", $label);
 		
@@ -340,7 +338,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$table->width = '100%';
 		$table->cellspacing = 2;
 		$table->cellpadding = 2;
-		$table->class = 'databox_frame';
+		$table->class = 'databox';
 		
 		$data = array();
 		$data[0] = html_print_div(array('content' => $form_table, 'style' => 'overflow: auto; height: 220px'), true);
@@ -354,6 +352,7 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		$params['body_text'] .= html_print_table($table, true);
 		$params['body_text'] .= '</form>';
+		$params['body_text'] .= '</div>'; // outer
 		
 		// ICONS
 		$params['icon_closed'] = '/images/graphmenu_arrow_hide.png';

@@ -36,15 +36,15 @@ $action = get_parameter('action');
 switch ($action) {
 	case 'save_edit_map_connection':
 		if(!$errorfill)
-			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
+			ui_print_success_message(__('Successfully updated'));
 		else
-			echo '<h3 class="error">'.__('Could not be updated').'</h3>';
+			ui_print_error_message(__('Could not be updated'));
 		break;
 	case 'save_map_connection':
 		if(!$errorfill)
-			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
+			ui_print_success_message(__('Successfully created'));
 		else
-			echo '<h3 class="error">'.__('Could not be created').'</h3>';
+			ui_print_error_message(__('Could not be created'));
 		break;
 	case 'delete_connection':
 		$idConnectionMap = get_parameter('id_connection_map');
@@ -52,9 +52,9 @@ switch ($action) {
 		$result = gis_delete_map_connection($idConnectionMap);
 		
 		if($result === false)
-			echo '<h3 class="error">'.__('Could not be deleted').'</h3>';
+			ui_print_error_message(__('Could not be deleted'));
 		else
-			echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+			ui_print_success_message(__('Successfully deleted'));
 		break;
 }
 

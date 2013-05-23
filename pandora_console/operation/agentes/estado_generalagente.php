@@ -33,7 +33,7 @@ $id_agente = get_parameter_get ("id_agente", -1);
 $agent = db_get_row ("tagente", "id_agente", $id_agente);
 
 if ($agent === false) {
-	echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
+	ui_print_error_message(__('There was a problem loading agent'));
 	return;
 }
 
@@ -81,7 +81,8 @@ $data[2] = $agent_name;
 $table_agent->colspan[count($table_agent->data)][2] = 3;
 
 $status_img = agents_detail_view_status_img ($agent["critical_count"],
-	$agent["warning_count"], $agent["unknown_count"]);
+	$agent["warning_count"], $agent["unknown_count"], $agent["total_count"], 
+	$agent["notinit_count"]);
 $data[5] = $status_img;
 
 $table_agent->data[] = $data;
@@ -93,18 +94,18 @@ $data = array();
 //$data[0] = reporting_tiny_stats ($agent, true, 'agent', '<div style="height: 5px;"></div>');
 //$table_agent->rowspan[count($table_agent->data)][0] = 6;
 
-$data[0] = '<div style="margin: 0 auto; width: 140px;">';
-$data[0] .= graph_agent_status ($id_agente, 140, 120, true);
-$data[0] .= reporting_tiny_stats ($agent, true);
+$data[0] = '<div style="margin: 0 auto 6px auto; width: 150px;">';
+$data[0] .= graph_agent_status ($id_agente, 150, 120, true);
+$data[0] .= '<br>' . reporting_tiny_stats ($agent, true);
 $data[0] .= '</div>';
 $table_agent->rowspan[count($table_agent->data)][0] = 6;
 $table_agent->colspan[count($table_agent->data)][0] = 2;
+$table_agent->cellstyle[count($table_agent->data)][0] = 'width: 150px; text-align:center; padding: 0px; vertical-align: top;';
 
-$data[2] = ui_print_os_icon ($agent["id_os"], false, true, true, false, false, false);
+
+$data[2] = ui_print_os_icon ($agent["id_os"], false, true, true, false, false, false, array('title' => __('OS') . ': ' . get_os_name ($agent["id_os"])));
 $table_agent->cellstyle[count($table_agent->data)][2] = 'width: 16px; text-align:center; padding: 0px; vertical-align: top;';
-//$data[3] = get_os_name ((int) $agent["id_os"]);
-//$data[3] .= ui_print_help_tip($agent["os_version"], true);
-$data[3] = $agent["os_version"];
+$data[3] = empty($agent["os_version"]) ? get_os_name ((int) $agent["id_os"]) : $agent["os_version"];
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 
 $table_agent->data[] = $data;
@@ -134,7 +135,7 @@ $data = array();
 $data[2] = html_print_image('images/version.png', true, array('title' => __('Agent Version')));
 $table_agent->cellstyle[count($table_agent->data)][2] = 'width: 16px; text-align:center; padding: 0px; vertical-align: top;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
-$data[3] .= $agent["agent_version"];
+$data[3] .= empty($agent["agent_version"]) ? '<i>' . __('N/A') . '</i>' : $agent["agent_version"];
 $data[3] .= '</span>';
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 $table_agent->data[] = $data;
@@ -296,7 +297,7 @@ foreach ($fields as $field) {
 
 $table = null;
 $table->id = 'agent_details';
-$table->width = '99%';
+$table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';

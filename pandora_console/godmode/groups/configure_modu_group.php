@@ -44,7 +44,7 @@ if ($id_group) {
 		$name = $group["name"];
 	}
 	else {
-		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
+		ui_print_error_message(__('There was a problem loading group'));
 		echo "</table>";
 		echo '</div>';
 		echo '<div style="clear:both">&nbsp;</div>';

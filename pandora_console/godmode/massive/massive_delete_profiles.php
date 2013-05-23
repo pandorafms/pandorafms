@@ -58,7 +58,7 @@ if ($delete_profiles) {
 			foreach ($groups_id as $group) {
 				foreach ($users_id as $id_up) {
 					 if ($id_up == 0) {
-						echo '<h3 class="error">'.__('Not deleted. You must select an existing user').'</h3>';
+						ui_print_error_message(__('Not deleted. You must select an existing user'));
 						$result="";
 					}
 					else {
@@ -135,6 +135,7 @@ echo '</form>';
 
 unset ($table);
 
+// TODO: Change to iu_print_error system
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 ui_require_jquery_file ('form');

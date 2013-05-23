@@ -127,7 +127,7 @@ if (defined('METACONSOLE')) {
 }
 else {
 	html_print_input_hidden('metaconsole', 0);
-	ui_print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/op_reporting.png", false, '', false, $options);
+	ui_print_page_header ($layout_name, "images/visual_console.png", false, '', false, $options);
 }
 
 visual_map_print_visual_map ($id_layout);

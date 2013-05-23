@@ -87,7 +87,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 			$timestamp = $result["timestamp"];
 		}
 		else {
-			echo "<h3 class='error'>".__('Name error')."</h3>";
+			ui_print_error_message(__('Name error'));
 		}
 	}
 	else { // form_add

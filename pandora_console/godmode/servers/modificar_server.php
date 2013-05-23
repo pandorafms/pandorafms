@@ -86,10 +86,10 @@ else {
 		$result = db_process_sql_delete('tserver', array('id_server' => $id_server));
 		
 		if ($result !== false) {
-			 echo '<h3 class="suc">'.__('Server deleted successfully').'</h3>';
+			 ui_print_success_message(__('Server deleted successfully'));
 		}
 		else { 
-			echo '<h3 class="error">'.__('There was a problem deleting the server').'</h3>';
+			ui_print_error_message(__('There was a problem deleting the server'));
 		}
 	}
 	elseif (isset($_GET["update"])) {
@@ -100,10 +100,10 @@ else {
 		$values = array('ip_address' => $address, 'description' => $description);
 		$result = db_process_sql_update('tserver', $values, array('id_server' => $id_server));
 		if ($result !== false) {
-			echo '<h3 class="suc">'.__('Server updated successfully').'</h3>';
+			ui_print_success_message(__('Server updated successfully'));
 		}
 		else { 
-			echo '<h3 class="error">'.__('There was a problem updating the server').'</h3>';
+			ui_print_error_message(__('There was a problem updating the server'));
 		}
 	}
 	

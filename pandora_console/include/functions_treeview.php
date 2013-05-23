@@ -44,7 +44,7 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	$module = db_get_row_filter ("tagente_modulo", $filter);
 
 	if ($module === false) {
-		echo ui_print_error_message(__('There was a problem loading module'));
+		ui_print_error_message(__('There was a problem loading module'));
 		return;
 	}
 	
@@ -137,7 +137,7 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 	$agent_id = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	
 	if ($module_alerts === false) {
-		echo '<h3 class="error">'.__('There was a problem loading alerts').'</h3>';
+		ui_print_error_message(__('There was a problem loading alerts'));
 		return;
 	}
 	
@@ -205,7 +205,7 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	$agent = db_get_row ("tagente", "id_agente", $id_agente);
 	
 	if ($agent === false) {
-		echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
+		ui_print_error_message(__('There was a problem loading agent'));
 		return;
 	}
 	
@@ -413,7 +413,7 @@ function treeview_printTree($type) {
 	}
 	
 	if ($list === false) {
-		echo '<h3 class="error">'.__('There aren\'t agents in this agrupation').'</h3>';
+		ui_print_error_message(__('There aren\'t agents in this agrupation'));
 		echo '</td></tr>';
 		echo '</table>';
 	}

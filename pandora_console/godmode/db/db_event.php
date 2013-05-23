@@ -35,10 +35,10 @@ if (isset ($_POST["date_purge"])){
 	$deleted = db_process_sql_delete('tevento', array('utimestamp' => '< ' . $from_date));
 	
 	if ($deleted !== false) {
-		echo '<h3 class="suc">'.__('Successfully deleted old events').'</h3>';
+		ui_print_success_message(__('Successfully deleted old events'));
 	}
 	else {
-		echo '<h3 class="error">'.__('Error deleting old events').'</h3>';
+		ui_print_error_message(__('Error deleting old events'));
 	}
 }
 # End of get parameters block

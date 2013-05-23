@@ -3,14 +3,14 @@
 
 .ui-dialog {
     background: none repeat scroll 0 0 #3f3f3f !important; 
-    border: 1px solid #DDDDDD !important;
+    border: 1px solid #3f3f3f !important;
     color: #333333 !important;
     padding: 0.2em !important;
     overflow: hidden !important;
         		
-	-moz-border-radius: 4px !important;
-	-webkit-border-radius: 4px !important;
-	border-radius: 4px !important;
+	-moz-border-radius: 6px !important;
+	-webkit-border-radius: 6px !important;
+	border-radius: 6px !important;
 	
 	-moz-box-shadow: 0px 5px 5px #010E1B !important;
 	-webkit-box-shadow: 0px 5px 5px #010E1B !important;
@@ -57,12 +57,12 @@
 }
 
 .ui-dialog .ui-dialog-titlebar-close {
-	width: 16px !important;
-	height: 16px !important;
+	width: 23px !important;
+	height: 23px !important;
 	background: url(images/dialog-titlebar-close.png) no-repeat !important;
 	position: absolute !important;
-	top: 2px;
-	right: 5px !important;
+	top: 6px;
+	right: 3px !important;
 	cursor: pointer !important;
 }
 

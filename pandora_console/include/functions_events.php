@@ -925,7 +925,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			}
 			
 			// Timestamp
-			$data[5] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 7px'));
+			$data[5] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 8px'));
 			
 			$class = get_priority_class ($event["criticity"]);
 			$cell_classes[3] = $cell_classes[4] = $cell_classes[5] = $class;
@@ -941,7 +941,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		if ($agent_id != 0) {
 			$out .= '</td><td style="width: 200px; vertical-align: top;">';
 			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
+			$out .= '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Events -by module-') . 
 					'</legend>' . 
@@ -951,12 +951,12 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		else {
 			$out .= '</td><td style="width: 200px; vertical-align: top;">';
 			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
+			$out .= '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Event graph') . 
 					'</legend>' . 
 					grafico_eventos_total("", 180, 60) . '</fieldset>';
-			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
+			$out .= '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Event graph by agent') . 
 					'</legend>' . 

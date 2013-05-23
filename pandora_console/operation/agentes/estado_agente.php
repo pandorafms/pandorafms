@@ -149,25 +149,26 @@ if (isset($result_delete)) {
 		ui_print_error_message(__("There was an error message deleting the agent"));
 }
 
+echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%" style="font-weight: bold; margin-bottom: 10px;">';
+
 echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
 
-echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
-echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
+echo '<tr><td style="white-space:nowrap;">';
+
+echo __('Group') . '&nbsp;';
 
 $groups = users_get_groups ();
 html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:150px');
 
 echo '</td><td style="white-space:nowrap;">';
 
-echo ui_print_help_tip (__("Group recursion"), true);
-
+echo __("Recursion") . '&nbsp;';
 html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
 
 echo '</td><td style="white-space:nowrap;">';
 
-echo __('Free text for search').' (*): ';
-
-html_print_input_text ("search", $search, '', 8);
+echo __('Search') . '&nbsp;';
+html_print_input_text ("search", $search, '', 12);
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -179,8 +180,7 @@ $fields[3] = __('Unknown');
 $fields[4] = __('Not normal'); 
 $fields[5] = __('Not init');
 
-echo '</td><td style="white-space:nowrap;">'.__('Agent status').': ';
-
+echo __('Status') . '&nbsp;';
 html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), -1, false, false, true, '', false, 'width: 90px;');
 
 echo '</td><td style="white-space:nowrap;">';
@@ -189,14 +189,14 @@ html_print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub 
 
 echo '</td><td style="width:5%;">&nbsp;</form></td>';
 
-echo '<td>';
+echo '</tr></table>';
+
+echo '<div style="text-align: right; float: right;">';
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 	html_print_input_hidden ('new_agent', 1);
 	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 echo "</form>";
-echo '</td>';
-
-echo '</tr></table>';
+echo '</div>';
 
 if ($search != "") {
 	$filter = array ("string" => '%' . $search . '%');
@@ -432,7 +432,8 @@ foreach ($agents as $agent) {
 	$alert_img = agents_tree_view_alert_img ($agent["fired_count"]);
 	
 	$status_img = agents_tree_view_status_img ($agent["critical_count"],
-		$agent["warning_count"], $agent["unknown_count"]);
+		$agent["warning_count"], $agent["unknown_count"], $agent["total_count"], 
+		$agent["notinit_count"]);
 		
 	$data = array ();
 	

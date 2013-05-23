@@ -156,19 +156,19 @@ if ($create_group) {
 		
 			$result = db_process_sql_insert('tgrupo', $values);
 			if ($result) {
-				echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
+				ui_print_success_message(__('Group successfully created')); 
 			}
 			else {
-				echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";
+				ui_print_error_message(__('There was a problem creating group'));
 			}
 		}
 		else {
-			echo "<h3 class='error'>".__('Each group must have a different name')."</h3>";
+			ui_print_error_message(__('Each group must have a different name'));
 		}
 	}
 	else {
 		//$result = false;
-		echo "<h3 class='error'>".__('Group must have a name')."</h3>";
+		ui_print_error_message(__('Group must have a name'));
 	}
 }
 
@@ -211,10 +211,10 @@ if ($update_group) {
 	}
 	
 	if ($result !== false) {
-		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
+		ui_print_success_message(__('Group successfully updated'));
 	}
 	else {
-		echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";
+		ui_print_error_message(__('There was a problem modifying group'));
 	}
 }
 
@@ -235,15 +235,14 @@ if ($delete_group) {
 		$result = db_process_sql_delete('tgrupo', array('id_grupo' => $id_group));
 	}
 	else {
-		echo "<h3 class='error'>" .
-			sprintf(__('The group is not empty. It is use in %s.'), implode(', ', $usedGroup['tables'])) . "</h3>";
+		ui_print_error_message(sprintf(__('The group is not empty. It is use in %s.'), implode(', ', $usedGroup['tables'])));
 	}
 	
 	if ($result && (!$usedGroup['return'])) {
-		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
+		ui_print_success_message(__('Group successfully deleted'));
 	} 
 	else {
-		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>";
+		ui_print_error_message(__('There was a problem deleting group'));
 	}
 }
 db_clean_cache();

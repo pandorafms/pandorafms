@@ -351,10 +351,10 @@ else {
 			$result = db_process_sql_update('tplugin', $values, array('id' => $plugin_id));
 		
 		if (! $result) {
-			echo "<h3 class='error'>".__('Problem updating plugin')."</h3>";
+			ui_print_error_message(__('Problem updating plugin'));
 		}
 		else {
-			echo "<h3 class='suc'>".__('Plugin updated successfully')."</h3>";
+			ui_print_success_message(__('Plugin updated successfully'));
 		}
 	}
 	
@@ -405,12 +405,10 @@ else {
 			$result = db_process_sql_insert('tplugin', $values);
 		
 		if (! $result) {
-			echo "<h3 class='error'>" .
-				__('Problem creating plugin') . "</h3>";
+			ui_print_error_message(__('Problem creating plugin'));
 		}
 		else {
-			echo "<h3 class='suc'>" .
-				__('Plugin created successfully') . "</h3>";
+			ui_print_success_message(__('Plugin created successfully'));
 		}
 	}
 	
@@ -420,10 +418,10 @@ else {
 		$result = db_process_sql_delete('tplugin', array('id' => $plugin_id));
 			
 		if (! $result) {
-			echo "<h3 class='error'>".__('Problem deleting plugin')."</h3>";
+			ui_print_error_message(__('Problem deleting plugin'));
 		}
 		else {
-			echo "<h3 class='suc'>".__('Plugin deleted successfully')."</h3>";
+			ui_print_success_message(__('Plugin deleted successfully'));
 		}
 		if ($plugin_id != 0) {
 			// Delete all the modules with this plugin

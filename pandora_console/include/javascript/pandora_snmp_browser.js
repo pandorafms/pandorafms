@@ -156,6 +156,7 @@ function snmpGet (oid) {
 		timeout: 60000,
 		success: function (data) {
 			$("#snmp_data").html(data);
+			forced_title_callback();
 		}
 	});
 	

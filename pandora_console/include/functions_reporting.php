@@ -990,7 +990,7 @@ function reporting_get_stats_servers($tiny = true) {
 		$table_srv->data[] = $tdata;
 	}
 	
-	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+	$output = '<fieldset class="databox tactical_set">
 				<legend>' . 
 					__('Server performance') . 
 				'</legend>' . 
@@ -1073,7 +1073,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$table_mbs->data[] = $tdata;
 	}
 	
-	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+	$output = '<fieldset class="databox tactical_set">
 				<legend>' . 
 					__('Monitors by status') . 
 				'</legend>' . 
@@ -1119,7 +1119,7 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 		$table_sum->rowclass[] = '';
 		$table_sum->data[] = $tdata;
 	
-	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+	$output = '<fieldset class="databox tactical_set">
 				<legend>' . 
 					__('Summary') . 
 				'</legend>' . 
@@ -1156,7 +1156,7 @@ function reporting_get_stats_alerts($data) {
 	$tdata = array();
 	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts')));
 	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
-	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
+	$tdata[1] = '<a class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
 	
 	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts')));
 	$tdata[3] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
@@ -1164,7 +1164,7 @@ function reporting_get_stats_alerts($data) {
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
-	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+	$output = '<fieldset class="databox tactical_set">
 				<legend>' . 
 					__('Defined and fired alerts') . 
 				'</legend>' . 
@@ -1191,13 +1191,13 @@ function reporting_get_stats_users($data) {
 	$tdata = array();
 	$tdata[0] = html_print_image('images/user_green.png', true, array('title' => __('Defined users')));
 	$tdata[1] = count (get_users ());
-	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["defined_users"] . '">' . $tdata[1] . '</a>';
+	$tdata[1] = '<a class="big_data" href="' . $urls["defined_users"] . '">' . $tdata[1] . '</a>';
 	
 	$tdata[2] = $tdata[3] = '&nbsp;';
 	$table_us->rowclass[] = '';
 	$table_us->data[] = $tdata;
 	
-	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+	$output = '<fieldset class="databox tactical_set">
 				<legend>' . 
 					__('Users') . 
 				'</legend>' . 
@@ -1234,15 +1234,15 @@ function reporting_get_stats_agents_monitors($data) {
 	$tdata = array();
 	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents')));
 	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
-	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
+	$tdata[1] = '<a class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
 	
 	$tdata[2] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')));
 	$tdata[3] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
-	$tdata[3] = '<a style="color: black;" class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
+	$tdata[3] = '<a class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
 	$table_am->rowclass[] = '';
 	$table_am->data[] = $tdata;
 	
-	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+	$output = '<fieldset class="databox tactical_set">
 				<legend>' . 
 					__('Total agents and monitors') . 
 				'</legend>' . 
@@ -1266,7 +1266,7 @@ function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html
 	}
 	
 	if ($html) {
-		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+		$tdata[0] = '<fieldset class="databox tactical_set">
 						<legend>' . 
 							__('Server health') . ui_print_help_tip (sprintf(__('%d Downed servers'), $servers["down"]), true) . 
 						'</legend>' . 
@@ -1274,7 +1274,7 @@ function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html
 		$table_ind->rowclass[] = '';
 		$table_ind->data[] = $tdata;
 		
-		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+		$tdata[0] = '<fieldset class="databox tactical_set">
 						<legend>' . 
 							__('Monitor health') . ui_print_help_tip (sprintf(__('%d Not Normal monitors'), $data["monitor_not_normal"]), true) . 
 						'</legend>' . 
@@ -1282,7 +1282,7 @@ function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html
 		$table_ind->rowclass[] = '';
 		$table_ind->data[] = $tdata;
 		
-		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+		$tdata[0] = '<fieldset class="databox tactical_set">
 						<legend>' . 
 							__('Module sanity') . ui_print_help_tip (sprintf(__('%d Not inited monitors'), $data["monitor_not_init"]), true) .
 						'</legend>' . 
@@ -1290,7 +1290,7 @@ function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html
 		$table_ind->rowclass[] = '';
 		$table_ind->data[] = $tdata;
 		
-		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+		$tdata[0] = '<fieldset class="databox tactical_set">
 						<legend>' . 
 							__('Alert level') . ui_print_help_tip (sprintf(__('%d Fired alerts'), $data["monitor_alerts_fired"]), true) . 
 						'</legend>' . 

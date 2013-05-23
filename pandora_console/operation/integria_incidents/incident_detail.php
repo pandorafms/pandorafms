@@ -140,7 +140,7 @@ if (isset ($_GET["id"])) {
 			$result = copy ($_FILES['userfile']['tmp_name'], $nombre_archivo);
 		}
 		else {
-			echo '<h3 class="error">'.__('File could not be saved due to database error').'</h3>';
+			ui_print_error_message(__('File could not be saved due to database error'));
 			$result = false;
 		}
 

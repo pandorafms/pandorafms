@@ -108,8 +108,7 @@ else {
 
 if ($alert_validate) {
 	if (check_acl ($config["id_user"], $id_group, "AW") == 0) {
-		echo '<h3 class="error">' .
-			__('Insufficient permissions to validate alerts') . '</h3>';
+		ui_print_error_message(__('Insufficient permissions to validate alerts'));
 	}
 	else {
 		validateAlert();

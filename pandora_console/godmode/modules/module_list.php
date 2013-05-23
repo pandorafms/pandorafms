@@ -47,9 +47,9 @@ if ($update_module) {
 	$result = db_process_sql_update('ttipo_modulo', $values, array('id_tipo' => $id_type));
 	
 	if (! $result)
-		echo "<h3 class='error'>".__('Problem modifying module')."</h3>";
+		ui_print_error_message(__('Problem modifying module'));
 	else
-		echo "<h3 class='suc'>".__('Module updated successfully')."</h3>";
+		ui_print_success_message(__('Module updated successfully'));
 }
 
 

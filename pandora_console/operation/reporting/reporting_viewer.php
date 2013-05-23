@@ -243,7 +243,7 @@ $(document).ready (function () {
 <?php
 
 if ($datetime === false || $datetime == -1) {
-	echo '<h3 class="error">' . __('Invalid date selected') . '</h3>';
+	ui_print_error_message(__('Invalid date selected'));
 	return;
 }
 

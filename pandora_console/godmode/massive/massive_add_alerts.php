@@ -46,12 +46,12 @@ if (is_ajax ()) {
 
 function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 	if (empty ($id_agents) || $id_agents[0] == 0) {
-		echo '<h3 class="error">'.__('No agents selected').'</h3>';
+		ui_print_error_message(__('No agents selected'));
 		return false;
 	}
 	
 	if (empty ($id_alert_template)) {
-		echo '<h3 class="error">'.__('No alert selected').'</h3>';
+		ui_print_error_message(__('No alert selected'));
 		return false;
 	}
 	
@@ -155,6 +155,7 @@ html_print_submit_button (__('Add'), 'go', false, 'class="sub add"');
 echo '</div>';
 echo '</form>';
 
+// TODO: Change to iu_print_error system
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 //Hack to translate text "none" in PHP to javascript

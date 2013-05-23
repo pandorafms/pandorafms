@@ -36,9 +36,9 @@ if (isset($_POST["create"])) { // If create
 		$result = db_process_sql_insert("tlink", array('name' => $name, 'link' => $link));
 	
 	if (! $result)
-		echo "<h3 class='error'>".__('There was a problem creating link')."</h3>";
+		ui_print_error_message(__('There was a problem creating link'));
 	else {
-		echo "<h3 class='suc'>".__('Successfully created')."</h3>"; 
+		ui_print_success_message(__('Successfully created')); 
 		$id_link = $result;
 	}
 }
@@ -53,9 +53,9 @@ if (isset($_POST["update"])) { // if update
 		$result = db_process_sql_update("tlink", array('name' => $name, 'link' => $link), array('id_link' => $id_link));
 	
 	if (! $result)
-		echo "<h3 class='error'>".__('There was a problem modifying link')."</h3>";
+		ui_print_error_message(__('There was a problem modifying link'));
 	else
-		echo "<h3 class='suc'>".__('Successfully updated')."</h3>";
+		ui_print_success_message(__('Successfully updated'));
 }
 
 if (isset($_GET["borrar"])) { // if delete
@@ -64,9 +64,9 @@ if (isset($_GET["borrar"])) { // if delete
 	$result = db_process_sql_delete("tlink", array("id_link" => $id_link));
 	
 	if (! $result)
-		echo "<h3 class='error'>".__('There was a problem deleting link')."</h3>";
+		ui_print_error_message(__('There was a problem deleting link'));
 	else
-		echo "<h3 class='suc'>".__('Successfully deleted')."</h3>"; 
+		ui_print_success_message(__('Successfully deleted')); 
 
 }
 
@@ -82,7 +82,9 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))) {
 				$nombre = $row["name"];
 				$link = $row["link"];
 			}
-			else echo "<h3 class='error'>".__('Name error')."</h3>";
+			else {
+				ui_print_error_message(__('Name error'));
+			}
 	}
 	else { // form_add
 		$creation_mode =1;

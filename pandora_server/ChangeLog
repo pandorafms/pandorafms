@@ -1,3 +1,9 @@
+2013-05-23  Sancho Lerena <slerena@artica.es>
+	
+	* util/pandora_logrotate: Fixed several problems due rotation.
+	Now there is no need to restart any process, much safer.
+	Added correct paths for pandora console log on centos and debian.
+
 2013-05-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/make_deb_package.sh: Removed a touch that left a newly

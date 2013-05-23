@@ -1684,6 +1684,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		 on body load, where id_div is the id of the div which holds the map */
 		echo '<script type="text/javascript">/* <![CDATA[ */'."\n";
 		
+		if ($resizedMap) {
+			echo 'var resize_map = 1;'."\n";
+		}
+		else {
+			echo 'var resize_map = 0;'."\n";
+		}
+		
 		echo 'var lines = Array ();'."\n";
 		
 		foreach ($lines as $line) {

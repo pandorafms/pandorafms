@@ -1,3 +1,11 @@
+2013-05-23 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/graphs.php,
+	godmode/reporting/reporting_builder.item_editor.php: fixed ACL for
+	the custom graphs.
+	
+	Fixes: #2233
+
 2013-05-22 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js: fixed the

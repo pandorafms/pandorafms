@@ -43,7 +43,7 @@ if ($delete_graph) {
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
-			
+		
 		$result = db_process_sql_delete("tgraph", array('id_graph' =>$id));
 		
 		if ($result)
@@ -109,8 +109,8 @@ if (! empty ($graphs)) {
 	}
 	html_print_table ($table);
 }
-else { 	 
-	echo "<div class='nf'>".__('There are no defined reportings')."</div>"; 	 
+else {
+	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 }
 
 if (check_acl ($config['id_user'], 0, "AW")) {

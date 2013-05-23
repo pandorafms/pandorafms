@@ -13,6 +13,8 @@
 // GNU General Public License for more details.
 global $config;
 
+require_once ('include/functions_custom_graphs.php');
+
 // Login check
 check_login ();
 
@@ -647,16 +649,14 @@ html_print_input_hidden('id_item', $idItem);
 					html_print_select($graphs, 'id_custom_graph', $value_selected, 'change_custom_graph();', __('None'), 0);
 				}
 				else {
-					switch ($config["dbtype"]) {
-						case "mysql":
-							$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = "'.$config["id_user"].'")';
-							break;
-						case "postgresql":
-						case "oracle":
-							$query_sql = 'SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = \''.$config["id_user"].'\')';
-							break;
+					$list_custom_graphs = custom_graphs_get_user ($config['id_user'], false, true, "IR");
+					
+					$graphs = array();
+					foreach ($list_custom_graphs as $custom_graph) {
+						$graphs[$custom_graph['id_graph']] = $custom_graph['name'];
 					}
-					html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, 'change_custom_graph();', __('None'), 0);
+					html_print_select($graphs, 'id_custom_graph',
+						$idCustomGraph, 'change_custom_graph();', __('None'), 0);
 				}
 				
 				$style_button_create_custom_graph = 'style="display: none;"';

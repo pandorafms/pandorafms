@@ -1,3 +1,15 @@
+2013-05-23 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/agentes/alerts_status.functions.php,
+	operation/search_users.php,
+	godmode/servers/manage_recontask_form.php,
+	godmode/massive/massive_copy_modules.php,
+	godmode/massive/massive_operations.php,
+	include/functions_visual_map_editor.php: replaced the deprecated
+	code to show the help tip in the page of the bug and others.
+	
+	Fixes: #2237
+
 2013-05-22 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js: fixed the

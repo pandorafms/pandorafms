@@ -206,8 +206,7 @@ echo '</td><td>';
 html_print_select($options, 'option', $option, 'this.form.submit()', '',
 	0, false, false, false);
 if($option == 'edit_agents' || $option == 'edit_modules') 
-	echo '<a href="#" class="tip">&nbsp;<span>' .
-		__("The blank fields will not be updated") . '</span></a>';
+	ui_print_help_tip(__("The blank fields will not be updated"));
 echo '</td></tr></table>';
 echo '</form>';
 echo "<br />";

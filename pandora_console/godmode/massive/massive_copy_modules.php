@@ -81,10 +81,6 @@ $table->data[0][4] .= '</span>';
 $table->data[0][5] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
-//$table->data[0][5] = html_print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 25, 100, false, '',
-//	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-//	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
-
 echo '<form action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=copy_modules" id="manage_config_form" method="post">';
 
 echo '<fieldset id="fieldset_source">';

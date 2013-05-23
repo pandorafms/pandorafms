@@ -42,7 +42,8 @@ if (is_ajax ()) {
 	return;
 }
 
-if (isset ($_GET["update"]) or (isset($_GET["crt"]))) { // Edit mode
+// Edit mode
+if (isset ($_GET["update"]) or (isset($_GET["crt"]))) {
 	
 	$update_recon = true;
 	if (isset ($_GET["crt"])) {
@@ -53,7 +54,7 @@ if (isset ($_GET["update"]) or (isset($_GET["crt"]))) { // Edit mode
 			$id_rt = get_parameter("upd");
 		}
 	}
-
+	
 	if ($update_recon) {
 		if (!isset($id_rt)) {
 			$id_rt = (int) get_parameter_get ("update");
@@ -146,15 +147,18 @@ $table->rowclass[14]="recon_script";
 $table->rowclass[15]="recon_script";
 $table->rowclass[16]="recon_script";
 // Name
-$table->data[0][0] = "<b>".__('Task name')."</b>";
+$table->data[0][0] = "<b>" . __('Task name') . "</b>";
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 0, true);
 
 // Recon server
-$table->data[1][0] = "<b>".__('Recon server').'<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>';
+$table->data[1][0] = "<b>" . __('Recon server') .
+	ui_print_help_tip(
+		__('You must select a Recon Server for the Task, otherwise the Recon Task will never run'), true);
 
 $table->data[1][1] = html_print_select_from_sql ('SELECT id_server, name
 	FROM tserver
-	WHERE server_type = 3 ORDER BY name', "id_recon_server", $id_recon_server, '', '', '', true);
+	WHERE server_type = 3
+	ORDER BY name', "id_recon_server", $id_recon_server, '', '', '', true);
 
 
 $fields['network_sweep'] = __("Network sweep");
@@ -196,7 +200,8 @@ $table->data[7][1] = html_print_select_from_sql ('SELECT id_os, name FROM tconfi
 // Recon ports
 $table->data[8][0] = "<b>".__('Ports');
 $table->data[8][1] =  html_print_input_text ('recon_ports', $recon_ports, '', 25, 0, true);
-$table->data[8][1] .= '<a href="#" class="tip">&nbsp;<span>'.__('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank').'</span></a>';
+$table->data[8][1] .= ui_print_help_tip(
+	__('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank'), true);
 
 // Group
 $table->data[9][0] = "<b>".__('Group');

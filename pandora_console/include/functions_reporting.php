@@ -4483,17 +4483,25 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						
 						switch ($row['operation']) {
 							case 'sum':
-									$data_res[$key] = reporting_get_agentmodule_data_sum ($row['id_agent_module'], $content['period'], $report["datetime"]);
-									break;
+								$data_res[$key] =
+									reporting_get_agentmodule_data_sum(
+										$row['id_agent_module'], $content['period'], $report["datetime"]);
+								break;
 							case 'max':
-									$data_res[$key] = reporting_get_agentmodule_data_max ($row['id_agent_module'], $content['period']);
-									break;
+								$data_res[$key] =
+									reporting_get_agentmodule_data_max(
+										$row['id_agent_module'], $content['period']);
+								break;
 							case 'min':
-									$data_res[$key] = reporting_get_agentmodule_data_min ($row['id_agent_module'], $content['period']);
-									break;
+								$data_res[$key] =
+									reporting_get_agentmodule_data_min(
+										$row['id_agent_module'], $content['period']);
+								break;
 							case 'avg':
 							default:
-								$data_res[$key] = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
+								$data_res[$key] =
+									reporting_get_agentmodule_data_average(
+										$row['id_agent_module'], $content['period']);
 								break;
 						}
 						
@@ -4535,7 +4543,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 						
 						
-						$i=0;
+						$i = 0;
 						foreach ($data_res as $d) {
 							$data = array();
 							$data[0] = $agent_name[$i];
@@ -4553,7 +4561,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 									break;
 								case 'avg':
 								default:
-									$op = __('Average');
+									$op = __('Rate');
 									break;
 							}
 							$data[2] = $op;
@@ -5201,34 +5209,47 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->style[1] = 'text-align: right';
 			
-			$title_exeption = __('Exception');
 			switch ($exception_condition) {
 				case REPORT_EXCEPTION_CONDITION_EVERYTHING:
-					$title_exeption .= ' - '.__('Everything');
+					$title_exeption = __('Exception - Everything');
 					break;
 				case REPORT_EXCEPTION_CONDITION_GE:
-					$title_exeption .= ' - '.__('Modules over or equal to').' '.$exception_condition_value;
+					$title_exeption =
+						sprintf(__('Exception - Modules over or equal to %s'),
+						$exception_condition_value);
 					break;
 				case REPORT_EXCEPTION_CONDITION_LE:
-					$title_exeption .= ' - '.__('Modules under or equal to').' '.$exception_condition_value;
+					$title_exeption =
+						sprintf(__('Exception - Modules under or equal to %s'),
+						$exception_condition_value);
 					break;
 				case REPORT_EXCEPTION_CONDITION_L:
-					$title_exeption .= ' - '.__('Modules under').' '.$exception_condition_value;
+					$title_exeption =
+						sprintf(__('Exception - Modules under %s'),
+						$exception_condition_value);
 					break;
 				case REPORT_EXCEPTION_CONDITION_G:
-					$title_exeption .= ' - '.__('Modules over').' '.$exception_condition_value;
+					$title_exeption =
+						sprintf(__('Exception - Modules over %s'),
+						$exception_condition_value);
 					break;
 				case REPORT_EXCEPTION_CONDITION_E:
-					$title_exeption .= ' - '.__('Equal to').' '.$exception_condition_value;
+					$title_exeption =
+						sprintf(__('Exception - Equal to'),
+						$exception_condition_value);
 					break;
 				case REPORT_EXCEPTION_CONDITION_NE:
-					$title_exeption .= ' - '.__('Not equal to').' '.$exception_condition_value;
+					$title_exeption =
+						sprintf(__('Exception - Not equal to %s'),
+						$exception_condition_value);
 					break;
 				case REPORT_EXCEPTION_CONDITION_OK:
-					$title_exeption .= ' - '.__('Modules at normal status');
+					$title_exeption =
+						__('Exception - Modules at normal status');
 					break;
 				case REPORT_EXCEPTION_CONDITION_NOT_OK:
-					$title_exeption .= ' - '.__('Modules at critical or warning status');
+					$title_exeption =
+						__('Exception - Modules at critical or warning status');
 					break;
 			}
 			
@@ -5242,7 +5263,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data_desc);
 			}
 			//Get all the related data
-			$sql = sprintf("SELECT id_agent_module, server_name, operation
+			$sql = sprintf("
+				SELECT id_agent_module, server_name, operation
 				FROM treport_content_item
 				WHERE id_report_content = %d", $content['id_rc']);
 			
@@ -5284,13 +5306,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				switch ($exceptions[$i]['operation']) {
 					case 'avg':
-						$min = reporting_get_agentmodule_data_average ($exceptions[$i]['id_agent_module'], $content['period']);
+						$min = reporting_get_agentmodule_data_average($exceptions[$i]['id_agent_module'], $content['period']);
 						break;
 					case 'max':
-						$min = reporting_get_agentmodule_data_max ($exceptions[$i]['id_agent_module'], $content['period']);
+						$min = reporting_get_agentmodule_data_max($exceptions[$i]['id_agent_module'], $content['period']);
 						break;
 					case 'min':
-						$min = reporting_get_agentmodule_data_min ($exceptions[$i]['id_agent_module'], $content['period']);
+						$min = reporting_get_agentmodule_data_min($exceptions[$i]['id_agent_module'], $content['period']);
 						break;
 				}
 				$i++;
@@ -5318,7 +5340,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$ag_name = modules_get_agentmodule_agent_name ($exc ['id_agent_module']);
 				$mod_name = modules_get_agentmodule_name ($exc ['id_agent_module']);
-				$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $exc ['id_agent_module']);
+				$unit = db_get_value('unit', 'tagente_modulo',
+					'id_agente_modulo', $exc['id_agent_module']);
 				
 				switch ($exc['operation']) {
 					case 'avg':
@@ -5389,7 +5412,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$agent_name[] = $ag_name;
 					$module_name[] = $mod_name;
 					$units[] = $unit;
-					$operation[] = $exc['operation'];
+					if ($exc['operation'] == 'avg') {
+						$operation[] = "rate";
+					}
+					else {
+						$operation[] = $exc['operation'];
+					}
 				}
 				//Restore dbconnection
 				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
@@ -5458,7 +5486,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				if ($order_uptodown == 1 || $order_uptodown == 2) {
-					$j=0;
+					$j = 0;
 					$data_pie_graph = array();
 					$data_hbar = array();
 					foreach ($data_exceptions as $dex) {
@@ -5476,13 +5504,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 				else if ($order_uptodown == 0 || $order_uptodown == 3) {
-					$j=0;
+					$j = 0;
 					$data_pie_graph = array();
 					$data_hbar = array();
 					foreach ($agent_name as $an) {
 						$data_hbar[$an]['g'] = $data_exceptions[$j];
 						$data_pie_graph[$an] = $data_exceptions[$j];
-						if  ($show_graph == 0 || $show_graph == 1) {
+						if ($show_graph == 0 || $show_graph == 1) {
 							$data = array();
 							$data[0] = $an;
 							$data[1] = $module_name[$j];
@@ -5512,7 +5540,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 				//Display bars graph
 				$table->colspan[4][0] = 3;
-				$height = count($data_pie_graph)*20+35;
+				$height = count($data_pie_graph) * 20 + 35;
 				$data = array();
 				
 				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);

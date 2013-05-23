@@ -696,7 +696,7 @@ function netflow_get_command ($filter) {
 
 	// Netflow data path
 	if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
-		$command .= ' -R '.$config['netflow_path'];
+		$command .= ' -R. -M '.$config['netflow_path'];
 	}
 	
 	// Filter options

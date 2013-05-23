@@ -1,5 +1,14 @@
 2013-05-23 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/reporting/reporting_builder.item_editor.php: fixed ACL for
+	the custom graphs.
+	
+	Fixes: #2233
+
+MERGED FROM THE BRANCH 4
+
+2013-05-23 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/agentes/alerts_status.functions.php,
 	operation/search_users.php,
 	godmode/servers/manage_recontask_form.php,

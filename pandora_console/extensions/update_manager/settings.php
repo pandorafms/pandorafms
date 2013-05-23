@@ -55,7 +55,7 @@ if ($update_settings) {
 		update_pandora_update_conf();
 	}
 	
-	echo "<h3 class=suc>" . __('Update manager settings updated') . "</h3>";
+	ui_print_success_message(__('Update manager settings updated'));
 }
 
 $settings = null;

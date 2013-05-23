@@ -39,12 +39,12 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 		$max = get_parameter_post ("max", 0);
 		$min = get_parameter_post ("min", 0);
 		if ($max == $min) {
-			echo '<h3 class="error">'.__('Error').': '.__('Maximum is equal to minimum').'</h3>';
+			ui_print_error_message(__('Error').': '.__('Maximum is equal to minimum'));
 			return;
 		}
 		$origen_modulo = get_parameter_post ("origen_modulo", array ());
 		if (empty ($origen_modulo)) {
-			echo '<h3 class="error">'.__('Error').': '.__('No modules have been selected').'</h3>';
+			ui_print_success_message(__('Error').': '.__('No modules have been selected'));
 			return;
 		}
 
@@ -58,7 +58,9 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 			db_process_sql ($sql);
 		} 
 	} //if copy modules or alerts
-	echo '<br /><br /><h3 class="suc">'.__('Filtering completed').'</h3>';
+	
+	echo '<br /><br />';
+	ui_print_success_message(__('Filtering completed'));
 }
 echo '<form method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_refine&operacion=1">';
 echo "<table width='98%' border='0' cellspacing='4' cellpadding='4' class='databox'>";

@@ -388,13 +388,16 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = 
 		$i++;
 	}
 	
-	$output = '<a href="javascript:" onClick="hideOIDData();">';
-	$output .= html_print_image ("images/cancel.png", true, array ("title" => __('Close'), "style" => 'vertical-align: middle;'), false);
-	$output .= '</a>';
+	$closer = '<a href="javascript:" onClick="hideOIDData();">';
+	$closer .= html_print_image ("images/blade.png", true, array ("title" => __('Close'), "style" => 'vertical-align: middle;'), false);
+	$closer .= '</a>';
 	
+	$table->head[0] = $closer;
+	$table->head[1] = __('OID Information');
+		
 	// Add a span for custom actions
 	if ($custom_action != '') {
-		$output .= '<span id="snmp_custom_action">' . $custom_action . '</span>';
+		$output .= '<span id="snmp_custom_action">' . $closer . $custom_action . '</span>';
 	}
 	
 	$output .= html_print_table($table, true);
@@ -424,22 +427,31 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table->size = array ();
 	$table->data = array ();
 	
-	// String search_string
-	$table->data[0][0] = '<strong>'.__('Target IP').'</strong>';
-	$table->data[0][1] = html_print_input_text ('target_ip', '', '', 25, 0, true);
-	$table->data[0][2] = '<strong>'.__('Community').'</strong>';
-	$table->data[0][3] = html_print_input_text ('community', '', '', 25, 0, true);
-	$table->data[0][4] = '<a href="javascript:">' . html_print_image ("images/fullscreen.png", true, array ('title' => __('Expand the tree') . ' (' . __('can be slow') . ')', 'style' => 'vertical-align: middle;', 'onclick' => 'expandAll();')) . '</a>';
-	$table->data[0][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/normalscreen.png", true, array ('title' => __('Collapse the tree'), 'style' => 'vertical-align: middle;', 'onclick' => 'collapseAll();')) . '</a>';
-	$table->data[1][0] = '<strong>'.__('Starting OID').'</strong>';
-	$table->data[1][1] = html_print_input_text ('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
-	$table->data[1][2] = '<strong>'.__('Search text').'</strong>';
-	$table->data[1][3] = html_print_input_text ('search_text', '', '', 25, 0, true);
-	$table->data[1][4] = '<a href="javascript:">' . html_print_image ("images/zoom.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();')) . '</a>';
-	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_first.png", true, array ('title' => __('First match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchFirstMatch();')) . '</a>';
-	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();')) . '</a>';
-	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_next.png", true, array ('title' => __('Next match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchNextMatch();')) . '</a>';
-	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_last.png", true, array ('title' => __('Last match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchLastMatch();')) . '</a>';
+	$table->data[0][0] = '<strong>'.__('Target IP').'</strong><br>';
+	$table->data[0][0] .= html_print_input_text ('target_ip', '', '', 25, 0, true);
+	$table->data[0][1] = '<strong>'.__('Community').'</strong><br>';
+	$table->data[0][1] .= html_print_input_text ('community', '', '', 25, 0, true);
+	$table->data[0][2] = '<strong>'.__('Starting OID').'</strong><br>';
+	$table->data[0][2] .= html_print_input_text ('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
+	$table->data[0][3] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search"', true);
+	$table->cellstyle[0][3] = 'vertical-align: bottom;';
+	
+	// Search tools
+	$table2->width = '100%';
+	$table2->size = array ();
+	$table2->data = array ();
+	
+	$table2->data[0][0] = html_print_input_text ('search_text', '', '', 25, 0, true);
+	$table2->data[0][0] .= '<a href="javascript:">' . html_print_image ("images/zoom.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();')) . '</a>';
+	$table2->data[0][1] = '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_first.png", true, array ('title' => __('First match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchFirstMatch();')) . '</a>';
+	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();')) . '</a>';
+	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_next.png", true, array ('title' => __('Next match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchNextMatch();')) . '</a>';
+	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_last.png", true, array ('title' => __('Last match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchLastMatch();')) . '</a>';
+	$table2->cellstyle[0][1] = 'text-align:center;';
+	
+	$table2->data[0][2] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/expand.png", true, array ('title' => __('Expand the tree') . ' (' . __('can be slow') . ')', 'style' => 'vertical-align: middle;', 'onclick' => 'expandAll();')) . '</a>';
+	$table2->data[0][2] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/collapse.png", true, array ('title' => __('Collapse the tree'), 'style' => 'vertical-align: middle;', 'onclick' => 'collapseAll();')) . '</a>';
+	$table2->cellstyle[0][2] = 'text-align:center;';
 	
 	// This extra div that can be handled by jquery's dialog
 	$output =  '<div id="snmp_browser_container" style="display:' . $display . '">';
@@ -447,8 +459,11 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$output .=   '<div style="width: 100%">';
 	$output .=   html_print_table($table, true);
 	$output .=   '</div>';
+	$output .=   '<div style="width: 100%; padding-top: 10px;">';
+	$output .=   ui_toggle(html_print_table($table2, true), __('Search options'), '', true, true);
+	$output .=   '</div>';
 	$output .=   '<div>';
-	$output .=   html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub upd"', true);
+	$output .=   '';
 	$output .=   '</div>';
 	
 	// SNMP tree container
@@ -461,9 +476,9 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$output .=   html_print_input_hidden ('search_matches_translation', __("Search matches"), true);
 	
 	$output .=     '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
-	$output .=     '<div id="spinner" style="position: absolute; top:0; left:0px; display:none;">' . html_print_image ("images/spinner.gif", true) . '</div>';
-	$output .=     '<div id="snmp_browser" style="height: 100%; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; "></div>';
-	$output .=     '<div id="snmp_data" style="display: none; width: 40%; position: absolute; top:0; right:20px"></div>';
+	$output .=     '<div id="spinner" style="position: absolute; top:0; left:0px; display:none; padding: 5px;">' . html_print_image ("images/spinner.gif", true) . '</div>';
+	$output .=     '<div id="snmp_browser" style="height: 100%; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; padding: 5px;"></div>';
+	$output .=     '<div id="snmp_data" style="margin: 5px;"></div>';
 	$output .=   '</div>';
 	$output .= '</div>';
 	$output .= '</div>';

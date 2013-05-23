@@ -171,7 +171,7 @@ function html_print_side_layer ($params) {
 
 	$top = '<div id="side_top_text" style="width: 100%";">' . $params['top_text'] . '</div>';
 	
-	$button = '<div id="show_menu" style="vertical-align: middle; position: relative; border:1px solid #FFF; width: ' . $params['icon_width'] . 'px;  margin: auto; height: ' . $params['icon_height'] . 'px;">';
+	$button = '<div id="show_menu" style="vertical-align: middle; position: relative; width: ' . $params['icon_width'] . 'px;  padding-right: 17px; text-align: right; height: ' . $params['icon_height'] . 'px;">';
 	$button .= html_print_image($params['position'] == 'left' ? $params['icon_open'] : $params['icon_closed'], true, array('id' => 'graph_menu_arrow'));
 	$button .= '</div>';
 	
@@ -636,18 +636,18 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 	ob_start();
 	
 	echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
-		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'), 'style' => 'width: 18px;')).'</a>';
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'), 'style' => 'width: 18px;')).'</a>';
 	echo '</div>';
 	
 	echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
-		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'), 'style' => 'width: 18px;')).'</a>';
 		html_print_input_text ($uniq_name . '_text', $selected, '', $size);
 	
 		html_print_input_hidden ($name, $selected, false, $uniq_name);
 		html_print_select ($units, $uniq_name . '_units', 1, "" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'), 'style' => 'width: 18px;')).'</a>';
 	echo '</div>';
 	echo "<script type='text/javascript'>
 		$(document).ready (function () {

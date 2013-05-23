@@ -49,7 +49,7 @@ function ssh_gateway () {
 	
 	if (($HOST == "") OR ($USER == "")) {
 		if ($COMMIT == 1) {
-			echo "<h3 class=error>".__("You need to specify a user and a host address")."</h3>";
+			ui_print_error_message(__("You need to specify a user and a host address"));
 		}
 		
 		echo "<form method=post>";

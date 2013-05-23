@@ -58,7 +58,7 @@ $viewtab['active'] = false;
 $onheader = array('view' => $viewtab);
 
 // Header
-ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "images/agent_mc.png", false, "", true, $onheader);
+ui_print_page_header (__('Agents defined in Pandora'), "images/agent_mc.png", false, "", true, $onheader);
 
 // Perform actions
 $agent_to_delete = (int)get_parameter('borrar_agente');
@@ -124,6 +124,8 @@ if ($disable_agent) {
 		__('Successfully disabled'), __('Could not be disabled'));
 }
 
+echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%' style='font-weight: bold; margin-bottom: 10px;'><tr>";
+
 // Show group selector
 if (isset($_POST["ag_group"])) {
 	$ag_group = get_parameter_post ("ag_group");
@@ -135,9 +137,9 @@ else {
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%'><tr>";
-echo "<td valign='top'>".__('Group')."</td>";
-echo "<td valign='top'>";
+echo "<td>";
+
+echo __('Group') . '&nbsp;';
 $own_info = get_user_info($config['id_user']);
 if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "PM"))
 	$return_all_group = false;
@@ -150,28 +152,28 @@ echo "<td valign='top'>
 <input name='uptbutton' type='submit' class='sub upd' value='".__('Show')."'>
 </noscript>
 </td>
-<td valign='top'>";
-echo __('Group recursion') . ': ';
+<td>";
+echo __('Recursion') . '&nbsp;';
 html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
 
-echo "</td></form><td valign='top'>";
-echo __('Free text for search (*)');
-echo "</td><td>";
+echo "</td></form><td>";
+echo __('Search') . '&nbsp;';
+html_print_input_text ("search", $search, '', 12);
 
 // Show group selector
 echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&refr=60&ag_group_refresh=$ag_group&recursion=$recursion'>";
-echo "<input type=text name='search' size='15' value='$search' >";
-echo "</td><td valign='top'>";
+echo "</td><td>";
 echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
 echo "</form>";
 echo "<td>";
+echo "</tr></table>";
 
+echo '<div style="text-align: right; float: right;">';
 echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 	html_print_input_hidden ('new_agent', 1);
 	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 echo "</form>";
-
-echo "</td></tr></table>";
+echo "</div>";
 
 $selected = 'border: 1px solid black;';
 $selectNameUp = '';
@@ -393,7 +395,6 @@ if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
 
 // Prepare pagination
 ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort", $offset);
-echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
 	

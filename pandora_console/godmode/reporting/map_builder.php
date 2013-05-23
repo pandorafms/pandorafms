@@ -36,12 +36,12 @@ if ($delete_layout) {
 	$result = db_process_sql_delete ('tlayout', array ('id' => $id_layout));
 	if ($result) {
 		db_pandora_audit( "Visual console builder", "Delete visual console #$id_layout");
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		ui_print_success_message(__('Successfully deleted'));
 		db_clean_cache();
 	}
 	else {
 		db_pandora_audit( "Visual console builder", "Fail try to delete visual console #$id_layout");
-		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
+		ui_print_error_message(__('Not deleted. Error deleting data'));
 	}
 	$id_layout = 0;
 }
@@ -118,21 +118,21 @@ if ($copy_layout) {
 				}
 				
 				
-				echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
+				ui_print_success_message(__('Successfully copied'));
 				db_clean_cache();
 			}
 			else {
-				echo '<h3 class="error">'.__('Not copied. Error copying data').'</h3>';
+				ui_print_error_message(__('Not copied. Error copying data'));
 			}
 		}
 		else{
 			// If the array is empty the copy is completed
-			echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
+			ui_print_success_message(__('Successfully copied'));
 			db_clean_cache();
 		}
 	}
 	else {
-		echo '<h3 class="error">'.__('Not copied. Error copying data').'</h3>';
+		ui_print_error_message(__('Not copied. Error copying data'));
 	}
 	
 }

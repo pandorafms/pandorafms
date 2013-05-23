@@ -40,10 +40,10 @@ if (isset ($_GET["delete"])) {
 	$result = db_process_sql_delete('trecon_task', array('id_rt' => $id));
 	
 	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Successfully deleted recon task').'</h3>';
+		ui_print_success_message(__('Successfully deleted recon task'));
 	}
 	else {
-		echo '<h3 class="error">'.__('Error deleting recon task').'</h3>';
+		ui_print_error_message(__('Error deleting recon task'));
 	}
 }
 else if(isset($_GET["disabled"])) {
@@ -53,14 +53,14 @@ else if(isset($_GET["disabled"])) {
 	$result = db_process_sql_update('trecon_task', array('disabled' => $disabled), array('id_rt' => $id));
 	
 	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Successfully updated recon task').'</h3>';
+		ui_print_success_message(__('Successfully updated recon task'));
 		// If the action is enabled, we force recon_task to be queued asap
 		if($disabled == 0) {
 			servers_force_recon_task($id);
 		}
 	}
 	else {
-		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
+		ui_print_error_message(__('Error updating recon task'));
 	}
 }
 
@@ -143,10 +143,10 @@ if (isset($_GET["update"])) {
 		$result = false;
 	
 	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Successfully updated recon task').'</h3>';
+		ui_print_success_message(__('Successfully updated recon task'));
 	}
 	else {
-		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
+		ui_print_error_message(__('Error updating recon task'));
 		echo $reason;
 	}
 }
@@ -198,10 +198,10 @@ if (isset($_GET["create"])) {
 		$result = false;
 		
 	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Successfully created recon task').'</h3>';
+		ui_print_success_message(__('Successfully created recon task'));
 	}
 	else {
-		echo '<h3 class="error">'.__('Error creating recon task').'</h3>';
+		ui_print_error_message(__('Error creating recon task'));
 		echo $reason;
 	}
 }

@@ -258,7 +258,7 @@ $modules = db_get_all_rows_sql ($sql . $limit);
 if (empty ($modules)) {
 	$modules = array ();
 }
-$table->width = "100%";
+$table->width = "98%";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = "databox";

@@ -237,7 +237,7 @@ if ($get_module_detail) {
 	}
 
 	if (empty ($table->data)) {
-		echo '<h3 class="error">'.__('No available data to show').'</h3>';
+		ui_print_error_message(__('No available data to show'));
 	}
 	else {
 		ui_pagination($count, false, $offset);

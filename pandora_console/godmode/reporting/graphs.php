@@ -76,19 +76,19 @@ if ($delete_graph) {
 		$result = db_process_sql_delete("tgraph_source", array('id_graph' =>$id));
 		
 		if ($result)
-			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
+			$result = ui_print_success_message(__('Successfully deleted'));
 		else
-			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
+			$result = ui_print_error_message(__('Not deleted. Error deleting data'));
 		
 		$result = db_process_sql_delete("tgraph", array('id_graph' =>$id));
 		
 		if ($result) {
 			db_pandora_audit("Report management", "Delete graph #$id");
-			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
+			$result = ui_print_success_message(__('Successfully deleted'));
 		}
 		else {
 			db_pandora_audit("Report management", "Fail try to delete graph #$id");
-			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
+			$result = ui_print_error_message(__('Not deleted. Error deleting data'));
 		}
 		
 		echo $result;

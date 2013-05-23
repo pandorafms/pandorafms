@@ -87,11 +87,11 @@ switch ($activeTab) {
 						if ($result !== false && $values['background']) {
 							db_pandora_audit( "Visual console builder", "Update visual console #$idVisualConsole");
 							$action = 'edit';
-							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully update.').'</h3>');
+							$statusProcessInDB = array('flag' => true, 'message' => ui_print_success_message(__('Successfully update.'), '', true));
 						}
 						else {
 							db_pandora_audit( "Visual console builder", "Fail update visual console #$idVisualConsole");
-							$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be update.').'</h3>');
+							$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__('Could not be update.'), '', true));
 						}
 						break;
 					
@@ -104,11 +104,11 @@ switch ($activeTab) {
 						if ($idVisualConsole !== false) {
 							db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
 							$action = 'edit';
-							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully created.').'</h3>');
+							$statusProcessInDB = array('flag' => true, 'message' => ui_print_success_message(__('Successfully created.'), '', true));
 						}
 						else {
 							db_pandora_audit( "Visual console builder", "Fail try to create visual console");
-							$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be created.').'</h3>');
+							$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__('Could not be created.'), '', true));
 						}
 						break;
 				}
@@ -199,7 +199,7 @@ switch ($activeTab) {
 				$id_element = get_parameter('id_element');
 				$result = db_process_sql_delete('tlayout_data', array('id' => $id_element));
 				if ($result !== false) {
-					$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully delete.').'</h3>');
+					$statusProcessInDB = array('flag' => true, 'message' => ui_print_success_message(__('Successfully delete.'), '', true));
 				}
 				break;
 		}
@@ -441,7 +441,7 @@ if ($action == 'new' || $idVisualConsole === false) {
 $buttons[$activeTab]['active'] = true;
  
 if (!defined('METACONSOLE')) {
-	ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/op_reporting.png", false, "visual_console_editor_" . $activeTab . "_tab", false, $buttons);
+	ui_print_page_header($visualConsoleName, "images/visual_console.png", false, "visual_console_editor_" . $activeTab . "_tab", false, $buttons);
 }
 
 //The source code for PAINT THE PAGE

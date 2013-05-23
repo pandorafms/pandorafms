@@ -25,7 +25,7 @@ check_login ();
 $id_agente = get_parameter_get ("id_agente", -1);
 
 if ($id_agente === -1) {
-	echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
+	ui_print_error_message(__('There was a problem loading agent'));
 	return;
 }
 

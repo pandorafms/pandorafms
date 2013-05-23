@@ -128,10 +128,10 @@ if ($save != '' && check_acl ($config["id_user"], 0, "AW")) {
 	$filter_id = db_process_sql_insert ('tnetflow_filter', $filter);
 	if ($filter_id === false) {
 		$filter_id = 0;
-		echo '<h3 class="error">'.__ ('Error creating filter').'</h3>';
+		ui_print_error_message(__ ('Error creating filter'));
 	}
 	else {
-		echo '<h3 class="suc">'.__ ('Filter created successfully').'</h3>';
+		ui_print_success_message(__ ('Filter created successfully'));
 	}
 }
 // Update current filter

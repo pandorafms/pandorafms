@@ -126,10 +126,10 @@ else {
 		if ($reconscript_name != '' && $reconscript_script != '')
 			$result = db_process_sql ($sql_update);
 		if (! $result) {
-			echo "<h3 class='error'>" . __('Problem updating') . "</h3>";
+			ui_print_error_message(__('Problem updating'));
 		}
 		else {
-			echo "<h3 class='suc'>" . __('Updated successfully') . "</h3>";
+			ui_print_success_message(__('Updated successfully'));
 		}
 	}
 	
@@ -147,10 +147,10 @@ else {
 		if ($values['name'] != '' && $values['script'] != '')
 			$result = db_process_sql_insert('trecon_script', $values);
 		if (! $result) {
-			echo "<h3 class='error'>" . __('Problem creating') . "</h3>";
+			ui_print_error_message(__('Problem creating'));
 		}
 		else {
-			echo "<h3 class='suc'>" . __('Created successfully') . "</h3>";
+			ui_print_success_message(__('Created successfully'));
 		}
 	}
 	
@@ -161,10 +161,10 @@ else {
 			array('id_recon_script' => $reconscript_id));
 		
 		if (! $result) {
-			echo "<h3 class='error'>" . __('Problem deleting reconscript') . "</h3>";
+			ui_print_error_message(__('Problem deleting reconscript'));
 		}
 		else {
-			echo "<h3 class='suc'>" . __('reconscript deleted successfully') . "</h3>";
+			ui_print_success_message(__('reconscript deleted successfully'));
 		}
 		if ($reconscript_id != 0){
 			$result = db_process_sql_delete('trecon_task',

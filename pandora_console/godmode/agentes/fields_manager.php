@@ -41,14 +41,14 @@ $display_on_front = (int) get_parameter ('display_on_front', 0);
 if ($create_field) {
 	/*Check if name field is empty*/
 	if ($name == ""){
-		echo "<h3 class='error'>".__('The name must not be empty')."</h3>";
+		ui_print_error_message(__('The name must not be empty'));
 	}
 	else if ($name == db_get_value ('name', 'tagent_custom_fields', 'name', $name)) {
-		echo "<h3 class='error'>".__('The name must be unique')."</h3>";
+		ui_print_error_message(__('The name must be unique'));
 	}
 	else {
 		$result = db_process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_on_front));
-		echo "<h3 class='suc'>".__('Field successfully created')."</h3>";
+		ui_print_success_message(__('Field successfully created'));
 	}
 }
 
@@ -65,10 +65,10 @@ if ($update_field) {
 	}
 	
 	if ($result !== false) {
-		echo "<h3 class='suc'>".__('Field successfully updated')."</h3>";
+		ui_print_success_message(__('Field successfully updated'));
 	}
 	else {
-		echo "<h3 class='error'>".__('There was a problem modifying field')."</h3>";
+		ui_print_error_message(__('There was a problem modifying field'));
 	}
 }
 
@@ -77,9 +77,9 @@ if ($delete_field) {
 	$result = db_process_sql_delete('tagent_custom_fields', array('id_field' => $id_field));
 	
 	if (!$result)
-		echo "<h3 class='error'>".__('There was a problem deleting field')."</h3>"; 
+		ui_print_error_message(__('There was a problem deleting field')); 
 	else
-		echo "<h3 class='suc'>".__('Field successfully deleted')."</h3>";	 
+		ui_print_success_message(__('Field successfully deleted'));	 
 }
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');

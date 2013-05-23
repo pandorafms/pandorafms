@@ -31,16 +31,16 @@ if ($delete_graph) {
 		$res = db_process_sql_delete('tgraph_source', array('id_graph' => $id_graph));
 		
 		if ($res)
-			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
+			$result = ui_print_success_message(__('Successfully deleted'), '', true);
 		else
-			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
+			$result = ui_print_error_message(__('Not deleted. Error deleting data'), '', true);
 		
 		$res = db_process_sql_delete('tgraph', array('id_graph' => $id_graph));
 		
 		if ($res)
-			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
+			$result = ui_print_success_message(__('Successfully deleted'), '', true);
 		else
-			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
+			$result = ui_print_error_message(__('Not deleted. Error deleting data'), '', true);
 		echo $result;
 	}
 	else {
@@ -218,8 +218,7 @@ if ($view_graph) {
 	$report["datetime"] = $datetime;
 	
 	if ($datetime === false || $datetime == -1) {
-		echo '<h3 class="error">' . __('Invalid date selected') .
-			'</h3>';
+		ui_print_error_message(__('Invalid date selected'));
 		return;
 	}
 	return;

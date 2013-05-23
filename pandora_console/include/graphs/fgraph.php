@@ -248,7 +248,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if (empty($chart_data)) {
-		return graph_nodata_image();
+		return graph_nodata_image($width, $height);
 		return '<img src="' . $no_data_image . '" />';
 	}
 	
@@ -455,6 +455,10 @@ function pie2d_graph($flash_chart, $chart_data, $width, $height,
 function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
 	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
+	
+	if(empty($chart_data)) {
+		return graph_nodata_image($width, $height, 'pie');
+	}
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	

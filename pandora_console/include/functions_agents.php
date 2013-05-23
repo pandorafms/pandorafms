@@ -454,12 +454,12 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	global $config;
 	
 	if (empty ($source_id_agent)) {
-		echo '<h3 class="error">'.__('No source agent to copy').'</h3>';
+		ui_print_error_message(__('No source agent to copy'));
 		return false;
 	}
 	
 	if (empty ($destiny_id_agents)) {
-		echo '<h3 class="error">'.__('No destiny agent(s) to copy').'</h3>';
+		ui_print_error_message(__('No destiny agent(s) to copy'));
 		return false;
 	}
 	
@@ -1996,7 +1996,11 @@ function agents_tree_view_alert_img ($alert_fired) {
 
 //Returns the status image to display tree view
 
-function agents_tree_view_status_img ($critical, $warning, $unknown) {
+function agents_tree_view_status_img ($critical, $warning, $unknown, $total, $notinit) {
+	if ($total == 0 || $total == $notinit) {
+		return ui_print_status_image (STATUS_AGENT_NO_MONITORS,
+			__('No Monitors'), true);
+	}
 	if ($critical > 0) {
 		return ui_print_status_image (STATUS_AGENT_CRITICAL,
 			__('At least one module in CRITICAL status'), true);
@@ -2016,8 +2020,12 @@ function agents_tree_view_status_img ($critical, $warning, $unknown) {
 
 //Returns the status image to display agent detail view
 
-function agents_detail_view_status_img ($critical, $warning, $unknown) {
-	if ($critical > 0) {
+function agents_detail_view_status_img ($critical, $warning, $unknown, $total, $notinit) {
+	if ($total == 0 || $total == $notinit) {
+		return ui_print_status_image (STATUS_AGENT_NOT_INIT,
+			__('No Monitors'), true, false, 'images');
+	}
+	else if ($critical > 0) {
 		return ui_print_status_image (STATUS_AGENT_CRITICAL,
 			__('At least one module in CRITICAL status'), true, false, 'images');
 	}

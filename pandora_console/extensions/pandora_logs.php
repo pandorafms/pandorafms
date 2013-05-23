@@ -29,8 +29,7 @@ function view_logfile ($file_name) {
 	
 	
 	if (!file_exists($file_name)) {
-		echo "<h2 class='error'>".__("Cannot find file"). "(".$file_name;
-		echo ")</h2>";
+		ui_print_error_message(__("Cannot find file") . "(" . $file_name . ")");
 	}
 	else {
 		$file_size = filesize($file_name);

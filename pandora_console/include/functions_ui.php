@@ -279,6 +279,8 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 		return $output;
 	else
 		echo $output;
+		
+	return '';
 }
 
 /** 
@@ -590,7 +592,9 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative);
 		}
 		else {
-			$options['title'] = $os_name;
+			if(!isset($options['title'])) {
+				$options['title'] = $os_name;
+			}
 			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, false, $relative);
 		}
 	}
@@ -1828,7 +1832,7 @@ function ui_print_status_image ($type, $title = "", $return = false, $options = 
  * 
  */
 
-function ui_toggle($code, $name, $title = '', $hidde_default = true, $return = false) {
+function ui_toggle($code, $name, $title = '', $hidden_default = true, $return = false) {
 	$hack_metaconsole = '';
 	if (defined('METACONSOLE'))
 		$hack_metaconsole = '../../';
@@ -1837,26 +1841,22 @@ function ui_toggle($code, $name, $title = '', $hidde_default = true, $return = f
 	$uniqid = uniqid('');
 	
 	// Options
-	if ($hidde_default) {
+	if ($hidden_default) {
 		$style = 'display:none';
-		$toggle_a = "$('#tgl_div_".$uniqid."').show();";
-		$toggle_b = "$('#tgl_div_".$uniqid."').hide();";
-		$image_a = html_print_image($hack_metaconsole . "images/go.png", true, false, true);
-		$image_b = html_print_image($hack_metaconsole . "images/down.png", true, false, true);
-		$original = $hack_metaconsole . "images/down.png";
-	}
-	else {
-		$style = '';
-		$toggle_a = "$('#tgl_div_".$uniqid."').hide();";
-		$toggle_b = "$('#tgl_div_".$uniqid."').show();";
 		$image_a = html_print_image($hack_metaconsole . "images/down.png", true, false, true);
 		$image_b = html_print_image($hack_metaconsole . "images/go.png", true, false, true);
 		$original = $hack_metaconsole . "images/go.png";
 	}
+	else {
+		$style = '';
+		$image_a = html_print_image($hack_metaconsole . "images/down.png", true, false, true);
+		$image_b = html_print_image($hack_metaconsole . "images/go.png", true, false, true);
+		$original = $hack_metaconsole . "images/down.png";
+	}
 	
 	// Link to toggle
 	$output = '';
-	$output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a>';
+	$output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">' . html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)) . '&nbsp;&nbsp;<b>'.$name.'</b></a>';
 	$output .= '<br /><br />';
 	
 	// Code into a div
@@ -1866,18 +1866,18 @@ function ui_toggle($code, $name, $title = '', $hidde_default = true, $return = f
 	
 	// JQuery Toggle
 	$output .= '<script type="text/javascript">' . "\n";
-	$output .= "	var hide_tgl_ctrl_" . $uniqid . " = " . (int)$hidde_default . ";\n";
+	$output .= "	var hide_tgl_ctrl_" . $uniqid . " = " . (int)$hidden_default . ";\n";
 	$output .= '	/* <![CDATA[ */' . "\n";
 	$output .= "	$(document).ready (function () {\n";
 	$output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
 	$output .= "			if (hide_tgl_ctrl_" . $uniqid . ") {\n";
 	$output .= "				hide_tgl_ctrl_" . $uniqid . " = 0;\n";
-	$output .= "				" . $toggle_a . ";\n";
+	$output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
 	$output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
 	$output .= "			}\n";
 	$output .= "			else {\n";
 	$output .= "				hide_tgl_ctrl_" . $uniqid . " = 1;\n";
-	$output .= "				" . $toggle_b . ";\n";
+	$output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
 	$output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
 	$output .= "			}\n";
 	$output .= "		});\n";

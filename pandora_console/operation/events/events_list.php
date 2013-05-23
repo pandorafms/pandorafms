@@ -161,21 +161,17 @@ if ($update_pressed || $open_filter) {
 }
 
 $table = html_get_predefined_table('transparent', 2);
+$table->styleTable = 'width: 23px; float: right; background: #ECECEC;';
 $table->width = '98%';
 $table->style[0] = 'text-align:left;';
 $table->style[1] = 'text-align:right;';
 
-//Link to toggle filter
-if ($open_filter) {
-	$table->data[0][0] = '<a href="#" id="tgl_event_control"><b>' . __('Event control filter') . '</b>&nbsp;'.html_print_image ("images/go.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a>';
-}
-else {
-	$table->data[0][0] = '<a href="#" id="tgl_event_control"><b>' . __('Event control filter') . '</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a>';
-}
-
 $table->data[0][1] = '<a id="events_graph_link" href="javascript:show_events_graph_dialog()">' . html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a>';
+$table->cellstyle[0][1] = 'background: #ECECEC;';
 
 html_print_table($table);
+
+unset($table);
 
 $filters = events_get_event_filter_select();
 
@@ -283,103 +279,72 @@ $remove_with_tag_disabled = empty($tag_with_temp);
 $add_without_tag_disabled = empty($tags_select_without);
 $remove_without_tag_disabled = empty($tag_without_temp);
 
-$tabletags = html_get_predefined_table('transparent', 2);
-$tabletags->id = 'filter_events_tags';
-$tabletags->width = '100%';
-$tabletags->cellspacing = 4;
-$tabletags->cellpadding = 4;
-$tabletags->class = 'noshadow';
-$tabletags->styleTable = 'border: 0px;';
+$tabletags_with = html_get_predefined_table('transparent', 2);
+$tabletags_with->id = 'filter_events_tags_with';
+$tabletags_with->width = '100%';
+$tabletags_with->cellspacing = 4;
+$tabletags_with->cellpadding = 4;
+$tabletags_with->class = 'noshadow';
+$tabletags_with->styleTable = 'border: 0px;';
 
 $data = array();
-$data[0] = __('Events with following tags') . '<br>';
-$data[0] .= html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-	true, false, true, '', false, 'width: 120px;') . '<br>';
-$data[1] = __('Events without following tags') . '<br>';
-$data[1] .= html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
-	true, false, true, '', false, 'width: 120px;') . '<br>';
-$tabletags->data[] = $data;
-$tabletags->rowclass[] = '';
+$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
+	true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
+$data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')));
+$data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
+$data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
+$data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
+	0, true, true, true, '', false, "width: 120px; height: 70px;");
+$tabletags_with->data[] = $data;
+$tabletags_with->rowclass[] = '';
+
+
+
+$tabletags_without = html_get_predefined_table('transparent', 2);
+$tabletags_without->id = 'filter_events_tags_without';
+$tabletags_without->width = '100%';
+$tabletags_without->cellspacing = 4;
+$tabletags_without->cellpadding = 4;
+$tabletags_without->class = 'noshadow';
+$tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
-$data[0] = html_print_button(__('Add'), 'add_with', $add_with_tag_disabled,
-	'', 'class="add sub"', true);
-$data[0] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
-$data[0] .= html_print_button(__('Remove'), 'remove_with', $remove_with_tag_disabled,
-	'', 'class="delete sub"', true);
-
-$data[1] = html_print_button(__('Add'), 'add_without', $add_without_tag_disabled,
-	'', 'class="add sub"', true);
+$data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
+	true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
+$data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
-$data[1] .= html_print_button(__('Remove'), 'remove_without', $remove_without_tag_disabled,
-	'', 'class="delete sub"', true);
-$tabletags->data[] = $data;
-$tabletags->rowclass[] = '';
+$data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
+$data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
+	0, true, true, true, '', false, "width: 120px; height: 70px;");
+$tabletags_without->data[] = $data;
+$tabletags_without->rowclass[] = '';
 
-$data = array();
-$data[0] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 120px; height: 50px;") . '<br>';
-$data[1] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 120px; height: 50px;") . '<br>';
-$tabletags->data[] = $data;
-$tabletags->rowclass[] = '';
+
 // END OF TAGS
 
-//Start div
-echo '<div id="event_control" style="display:none">';
-
+// EVENTS FILTER
 // Table for filter controls
-echo '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. (int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
+$events_filter = '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. (int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 
 // Hidden field with the loaded filter name
-html_print_input_hidden('id_name', $id_name);
+$events_filter .= html_print_input_hidden('id_name', $id_name, true);
 
 // Hidden open filter flag
 // If autoupdate is in use collapse filter
 if ($open_filter) {
-	html_print_input_hidden('open_filter', 'true');
+	$events_filter .= html_print_input_hidden('open_filter', 'true', true);
 } 
 else{
-	html_print_input_hidden('open_filter', 'false');
+	$events_filter .= html_print_input_hidden('open_filter', 'false', true);
 }
 
-$table->id = 'events_filter_form';
-$table->width = '99%';
-$table->cellspacing = 4;
-$table->cellpadding = 4;
-$table->class = 'databox';
-$table->styleTable = 'font-weight: bold; color: #555;';
-$table->data = array();
-
-$data = array();
-$data[0] = __('Group') . '<br>';
-$data[0] .= html_print_select_groups($config["id_user"], "ER", true,
-	'id_group', $id_group, '', '', 0, true, false, false, 'w130');
-$data[1] = __('Event type') . '<br>';
-$types = get_event_types ();
-// Expand standard array to add not_normal (not exist in the array, used only for searches)
-$types["not_normal"] = __("Not normal");
-$data[1] .= html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
-$data[2] = __('Severity') . '<br>';
-$data[2] .= html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true, false, false);
-$data[3] = '<fieldset class="databox" style="width:95%;"><legend>' . __('Tags') . '</legend>' . html_print_table($tabletags, true) . '</fieldset>';
-$table->colspan[count($table->data)][3] = 2;
-$table->rowspan[count($table->data)][3] = 4;
-$table->data[] = $data;
-$table->rowclass[] = '';
-
-$data = array();
-$data[0] = __('Event status') . '<br>';
-$fields = events_get_all_status();
-$data[0] .= html_print_select ($fields, 'status', $status, '', '', '', true);
-$data[1] = __('Max. hours old') . '<br>';
-$data[1] .= html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
-$data[2] = __("Repeated") . '<br>';
-$repeated_sel[0] = __("All events");
-$repeated_sel[1] = __("Group events");
-$data[2] .= html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', 0, true);
-$table->data[] = $data;
-$table->rowclass[] = '';
+$table_advanced->id = 'events_filter_form_advanced';
+$table_advanced->width = '99%';
+$table_advanced->cellspacing = 4;
+$table_advanced->cellpadding = 4;
+$table_advanced->class = 'transparent';
+$table_advanced->styleTable = 'font-weight: bold; color: #555;';
+$table_advanced->data = array();
 
 $data = array();
 $data[0] = __('Free search') . '<br>';
@@ -401,12 +366,9 @@ else {
 }
 
 $data[1] .= ui_print_agent_autocomplete_input($params);
-$data[2] = __('User ack.') . '<br>';
-$users = users_get_info ();
-$data[2] .= html_print_select($users, "id_user_ack", $id_user_ack, '',
-	__('Any'), 0, true);
-$table->data[] = $data;
-$table->rowclass[] = '';
+$table_advanced->data[] = $data;
+$table_advanced->rowclass[] = '';
+
 
 $data = array();
 $data[0] = __("Alert events") . '<br>';
@@ -418,7 +380,63 @@ $lpagination[100] = 100;
 $lpagination[200] = 200;
 $lpagination[500] = 500;
 $data[1] .= html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"], true);
-$data[2] = '';
+$table_advanced->data[] = $data;
+$table_advanced->rowclass[] = '';
+
+$data = array();
+$data[0] = __('User ack.') . '<br>';
+$users = users_get_info ();
+$data[0] .= html_print_select($users, "id_user_ack", $id_user_ack, '',
+	__('Any'), 0, true);
+$data[1] = '';
+$table_advanced->data[] = $data;
+$table_advanced->rowclass[] = '';
+
+$data = array();
+$data[0] = '<fieldset class="databox" style="width: 310px;"><legend>' . __('Events with following tags') . '</legend>' . html_print_table($tabletags_with, true) . '</fieldset>';
+$data[1] = '<fieldset class="databox" style="width: 310px;"><legend>' . __('Events without following tags') . '</legend>' . html_print_table($tabletags_without, true) . '</fieldset>';
+$table_advanced->data[] = $data;
+$table_advanced->rowclass[] = '';
+
+$table->id = 'events_filter_form';
+$table->width = '99%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = 'databox';
+$table->styleTable = 'font-weight: bold; color: #555;';
+$table->data = array();
+
+$data = array();
+$data[0] = __('Group') . '<br>';
+$data[0] .= html_print_select_groups($config["id_user"], "ER", true,
+	'id_group', $id_group, '', '', 0, true, false, false, 'w130');
+$data[1] = __('Event type') . '<br>';
+$types = get_event_types ();
+// Expand standard array to add not_normal (not exist in the array, used only for searches)
+$types["not_normal"] = __("Not normal");
+$data[1] .= html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
+$data[2] = __('Severity') . '<br>';
+$data[2] .= html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true, false, false);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+$data = array();
+$data[0] = __('Event status') . '<br>';
+$fields = events_get_all_status();
+$data[0] .= html_print_select ($fields, 'status', $status, '', '', '', true);
+$data[1] = __('Max. hours old') . '<br>';
+$data[1] .= html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
+$data[2] = __("Repeated") . '<br>';
+$repeated_sel[0] = __("All events");
+$repeated_sel[1] = __("Group events");
+$data[2] .= html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', 0, true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+$data = array();
+$data[0] = ui_toggle(html_print_table($table_advanced, true), __('Advanced options'), '', true, true);
+$table->colspan[count($table->data)][0] = 3;
+$table->cellstyle[count($table->data)][0] = 'padding-top: 15px;';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -447,13 +465,13 @@ $table->rowstyle[count($table->data)] = 'text-align:right;';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
-html_print_table($table);
+$events_filter .= html_print_table($table, true);
 
 unset($table);
 
-echo "</form>"; //This is the filter div
+$events_filter .= "</form>"; //This is the filter div
 
-echo "</div>";
+ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
 
 $event_table = events_get_events_table($meta, $history);
 
@@ -932,49 +950,60 @@ function click_button_add_tag(what_button) {
 		id_select_destiny = "#tag_with_temp";
 		id_button_remove = "#button-remove_with";
 		id_button_add = "#button-add_with";
-		
-		select_destiny_empty = select_with_tag_empty;
 	}
 	else { //without
 		id_select_origin = "#select_without";
 		id_select_destiny = "#tag_without_temp";
 		id_button_remove = "#button-remove_without";
 		id_button_add = "#button-add_without";
-		
-		select_destiny_empty = select_without_tag_empty;
 	}
 	
-	without_val = $(id_select_origin).val();
-	without_text = $(id_select_origin + " option:selected").text();
-	
-	if (select_destiny_empty) {
-		$(id_select_destiny).empty();
-		
+	$(id_select_origin + " option:selected").each(function() {
 		if (what_button == 'with') {
-			select_with_tag_empty = false;
+			select_destiny_empty = select_with_tag_empty;
 		}
 		else { //without
-			select_without_tag_empty = false;
+			select_destiny_empty = select_without_tag_empty;
 		}
-	}
-	
-	$(id_select_destiny).append($("<option value='" + without_val + "'>" + without_text + "</option>"));
-	$(id_select_origin + " option:selected").remove();
-	$(id_button_remove).removeAttr('disabled');
-	
-	if ($(id_select_origin + " option").length == 0) {
-		$(id_select_origin).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
-		$(id_button_add).attr('disabled', 'true');
 		
-		if (what_button == 'with') {
-			origin_select_with_tag_empty = true;
+		console.log($(this).val());
+
+		without_val = $(this).val();
+		if(without_val == null) {
+			next;
 		}
-		else { //without
-			origin_select_without_tag_empty = true;
+		without_text = $(this).text();
+				
+		if (select_destiny_empty) {
+			$(id_select_destiny).empty();
+			
+			if (what_button == 'with') {
+				select_with_tag_empty = false;
+			}
+			else { //without
+				select_without_tag_empty = false;
+			}
 		}
-	}
+		
+		$(id_select_destiny).append($("<option value='" + without_val + "'>" + without_text + "</option>"));
+		$(id_select_origin + " option:selected").remove();
+		$(id_button_remove).removeAttr('disabled');
+		
+		if ($(id_select_origin + " option").length == 0) {
+			$(id_select_origin).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+			$(id_button_add).attr('disabled', 'true');
+			
+			if (what_button == 'with') {
+				origin_select_with_tag_empty = true;
+			}
+			else { //without
+				origin_select_without_tag_empty = true;
+			}
+		}
+			
+		replace_hidden_tags(what_button);
+	});
 	
-	replace_hidden_tags(what_button);
 }
 
 function replace_hidden_tags(what_button) {
@@ -1101,7 +1130,7 @@ function show_events_graph_dialog() {
 					opacity: 0.5,
 					background: "black"
 				},
-				width: 400,
+				width: 450,
 				height: 360
 			})
 			.show ();

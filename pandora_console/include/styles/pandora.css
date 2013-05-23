@@ -24,6 +24,7 @@ Description: The default Pandora FMS theme layout
 * {
 	font-family: verdana, sans-serif;
 	font-size: 8pt;
+	color: #3F3F3F;
 }
 svg * {
 	font-size: 11pt;
@@ -106,11 +107,11 @@ h4 {
 	padding-bottom: 0px;
 	padding-top: 5px;
 	font-size: 13px;
-	color: #000;
+	color: #3F3F3F;
 	text-transform: none;
 }
 a {
-	color: #000;
+	color: #3F3F3F;
 	text-decoration: none;
 }
 a:hover {
@@ -1126,21 +1127,19 @@ tr.disabled_row_user * {
 	text-align: center;
 	width: 173px;
 }
-.suc, .error, .help {
-	padding: 4px 1px 6px 50px;
-	height: 40px;
-}
-.suc {
+
+.suc * {
 	color: #5a8629;
-	background: url(../../images/suc.png) no-repeat 1px;
 }
-.info {
+
+.info *{
 	color: #006F9D;
 }
-.error {
+
+.error *{
 	color: #FF4040;
-	background: url(../../images/err.png) no-repeat;
 }
+
 .help {
 	background: url(../../images/help.png) no-repeat;
 }
@@ -1307,7 +1306,7 @@ div.title_line {
 
 #menu_tab li.tab_operation.nomn_high a, #menu_tab a.tab_operation.nomn_high,
 #menu_tab li.tab_operation a:hover, #menu_tab a.tab_operation:hover {
-	background: #00AA00;
+	background: #3F3F3F;
 }
 
 
@@ -1384,7 +1383,7 @@ div.title_line {
 
 #menu_tab_left ul.mn li.view {
 	background: #6db431 url('../../images/tab_green_bg.png');
-	width: 470px;
+	max-width: 450px;
 	min-width: 300px;
 	padding: 2px 5px 0px;
 	
@@ -1400,7 +1399,7 @@ div.title_line {
 
 #menu_tab_left ul.mn li.nomn {
 	background: #ababab url('../../images/tab_grey_bg.png');
-	width: 470px;
+	width: 380px;
 	min-width: 300px;
 	padding: 1px 5px;
 	
@@ -1412,6 +1411,11 @@ div.title_line {
 	-webkit-border-top-left-radius: 5px;
 	border-top-left-radius: 5px;
 	margin-left: 0px;
+}
+
+#menu_tab_left ul.mn li.view img.bottom {
+	width: 24px;
+	height: 24px;
 }
 
 #menu_tab_frame *, #menu_tab_frame_view *{
@@ -1526,7 +1530,12 @@ table.databox {
 }
 
 .databox th {
-	padding: 10px 7px;
+	padding: 8px 7px;
+	color: #fff;
+}
+
+.databox th * {
+	color: #fff;
 }
 
 .tabletitle {
@@ -1535,11 +1544,11 @@ table.databox {
 
 .tactical_set legend{
 	text-align:left; 
-	color: #666;
+	color: #3F3F3F;
 }
 
 .tactical_set{
-	background: #f3f4f3;
+	background: #ECECEC;
 	border: 0px;
 	margin-top: -4px;
 }
@@ -1880,12 +1889,16 @@ fieldset legend {
 	font-weight:bold;
 	#color:#3f4e2f;
 	line-height: 20px;
-	color:#666;
+	color: #3F3F3F;
 	#top:-2em;
 }
 
 fieldset .databox {
 	border: 0px solid;
+}
+
+fieldset.databox {
+	padding: 14px !important;
 }
 
 fieldset legend span,
@@ -2017,7 +2030,7 @@ div.warn {
 .menu li, .menu li.selected, .menu li.not_selected {
 	display: block;
 	min-height: 33px;
-	border-bottom: 1px solid #555;
+	border-bottom: 1px solid #424242;
 	vertical-align: middle;
 }
 
@@ -2050,7 +2063,7 @@ div#main {
 	/*AUTOHIDDEN MENU*/
 	/*margin-left: 40px;*/
 	margin-right: 20px;
-	background: #f1f1f1;
+	background: #ECECEC;
 	min-width: 720px;
 }
 div#head {
@@ -2070,9 +2083,13 @@ div#steps_clean {
 	display:none;
 }
 
-#main>div, #main>table, #main>fieldset, #main>form {
-	margin-left: 8px;
+#main>div, #main>table, #main>fieldset, #main>form, #main>a, #main>h4 {
+	margin-left: 10px;
 	margin-right: 8px;
+}
+
+#main>form {
+	#width: 100%;
 }
 
 #menu_tab_frame, #menu_tab_frame_view {
@@ -2200,7 +2217,7 @@ div.cellUnknown {
 	width: 100%; 
 	height: 100%;
 	background: #babdb6;
-	color: #000;
+	color: #3F3F3F;
 }
 
 div.cellNotInit {
@@ -2231,10 +2248,10 @@ div.cellBig {
 
 .info_box {
 	background: #FFF;
-	margin: 10px auto !important;
+	margin-top: 10px !important;
 	padding: 0px 5px 5px 10px;
 	border: 3px solid #D1D1D1;
-	width: 85% !important;
+	width: 98% !important;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
@@ -2346,12 +2363,12 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 }
 
 ul.operation li a:hover  {
-	font-weight: bold;
+	#font-weight: bold;
 }
 
 ul.operation ul.submenu li a:hover {
 	background: #222 url('../../images/menu_op_mark.png') repeat-y right;
-	font-weight: bold;
+	#font-weight: bold;
 }
 
 ul.operation ul.submenu li.selected>a {
@@ -2360,12 +2377,12 @@ ul.operation ul.submenu li.selected>a {
 }
 
 ul.godmode li a:hover  {
-	font-weight: bold;
+	#font-weight: bold;
 }
 
 ul.godmode ul.submenu li a:hover {
 	background: #222 url('../../images/menu_gm_mark.png') repeat-y right;
-	font-weight: bold;
+	#font-weight: bold;
 }
 
 ul.godmode ul.submenu li.selected>a {
@@ -2373,7 +2390,7 @@ ul.godmode ul.submenu li.selected>a {
 }
 
 li.links a:hover  {
-	font-weight: bold;
+	#font-weight: bold;
 }
 
 .is_submenu2 li {
@@ -2437,7 +2454,7 @@ span#plugin_description {
 /*SIDEBAR*/
 .menu_sidebar {
 	color:#111;
-	background:#cccacb url('../../images/login_background.png') right center no-repeat;
+	background: #3f3f3f;
 
 	margin-left: 10px;
 	padding-left: 0px;
@@ -2462,25 +2479,36 @@ span#plugin_description {
 }
 
 .menu_sidebar_radius_left {
-	-moz-border-top-left-radius: 10px;
-	-webkit-border-top-left-radius: 10px;
-	border-top-left-radius: 10px;
+	-moz-border-top-left-radius: 8px;
+	-webkit-border-top-left-radius: 8px;
+	border-top-left-radius: 8px;
 	
-	-moz-border-bottom-left-radius: 10px;
-	-webkit-border-bottom-left-radius: 10px;
-	border-bottom-left-radius: 10px;
+	-moz-border-bottom-left-radius: 8px;
+	-webkit-border-bottom-left-radius: 8px;
+	border-bottom-left-radius: 8px;
 	
 	border-right:0px solid #000;
 }
 
 .menu_sidebar_radius_right {
-	-moz-border-top-right-radius: 10px;
-	-webkit-border-top-right-radius: 10px;
-	border-top-right-radius: 10px;
+	-moz-border-top-right-radius: 8px;
+	-webkit-border-top-right-radius: 8px;
+	border-top-right-radius: 8px;
 			
-	-moz-border-bottom-right-radius: 10px;
-	-webkit-border-bottom-right-radius: 10px;
-	border-bottom-right-radius: 10px;		
+	-moz-border-bottom-right-radius: 8px;
+	-webkit-border-bottom-right-radius: 8px;
+	border-bottom-right-radius: 8px;		
+}
+
+.menu_sidebar_outer {
+	margin-left: 3px;
+	background: #ECECEC; 
+	width: 100%; 
+	text-align: center; 
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	padding: 8px;
 }
 
 /*Groupsview*/
@@ -2534,14 +2562,16 @@ input.search_input {
 	padding: 0px; 
 	padding-left:5px; 
 	margin: 0; 
-	width: 100%; 
+	width: 80%; 
 	height: 19px; 
 	margin-bottom: 5px; 
 	margin-left: 2px;
+	padding-right: 25px;
+	color: #999;
 }
 
 td input, td select {
-	margin-top: 4px;
+	margin-top: 8px !important;
 }
 
 a>img, td>img, td>input, td>span {
@@ -2598,3 +2628,15 @@ DIV.nodata_container {
 	margin: auto auto; 
 	display: table;
 }
+
+#snmp_data {
+	width: 40%; 
+	position: absolute; 
+	top:0; 
+	right:20px;
+	
+	#background-color: #fff;
+	#padding: 10px;
+}
+
+

@@ -184,10 +184,10 @@ function pluginreg_extension_main () {
 		
 		db_process_sql_insert('tnetwork_component', $values);
 		
-		echo "<h3 class=suc>".__("Module plugin registered"). " : ". $ini_array[$label]["name"] ."</h2>";
+		ui_print_success_message(__("Module plugin registered"). " : ". $ini_array[$label]["name"]);
 	}
 	
-	echo "<h2 class=suc>".__("Plugin"). " ". $ini_array["plugin_definition"]["name"] . " ". __("Registered successfully")."</h2>";
+	ui_print_success_message(__("Plugin"). " ". $ini_array["plugin_definition"]["name"] . " ". __("Registered successfully"));
 	unlink ($config["attachment_store"] . "/plugin_definition.ini");
 
 }

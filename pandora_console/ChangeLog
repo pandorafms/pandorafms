@@ -1,3 +1,154 @@
+2013-05-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/styles/pandora_minimal.css
+	include/styles/dialog.css
+	include/styles/menu.css
+	include/styles/jquery-ui-1.10.0.custom.css
+	include/functions_events.php
+	operation/events/events_list.php
+	include/functions_snmp_browser.php
+	include/styles/pandora.css: A lot of graphic
+	changes including events form and snmp browser
+	layout
+
+	* include/ajax/module.php
+	include/functions_ui.php
+	include/functions.php
+	include/functions_agents.php
+	include/functions_graph.php
+	include/graphs/functions_gd.php
+	include/graphs/fgraph.php
+	include/functions_reporting.php
+	include/functions_filemanager.php
+	include/javascript/pandora_snmp_browser.js
+	include/functions_treeview.php
+	include/constants.php
+	index.php
+	extensions/net_tools.php
+	extensions/pandora_logs.php
+	extensions/ssh_gateway.php
+	extensions/update_manager/settings.php
+	extensions/plugin_registration.php
+	operation/incidents/incident.php
+	operation/incidents/incident_detail.php
+	operation/visual_console/render_view.php
+	operation/users/user_edit.php
+	operation/reporting/reporting_viewer.php
+	operation/reporting/graph_viewer.php
+	operation/agentes/datos_agente.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/custom_fields.php
+	operation/agentes/estado_agente.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/agent_fields.php
+	operation/agentes/stat_win.php
+	operation/servers/recon_view.php
+	operation/integria_incidents/incident_detail.php
+	operation/netflow/nf_live_view.php
+	godmode/groups/configure_group.php
+	godmode/groups/configure_modu_group.php
+	godmode/groups/group_list.php
+	godmode/db/db_refine.php
+	godmode/db/db_event.php
+	godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/fields_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/agentes/module_manager_editor.php
+	godmode/servers/recon_script.php
+	godmode/servers/plugin.php
+	godmode/servers/manage_recontask.php
+	godmode/servers/modificar_server.php
+	godmode/setup/news.php
+	godmode/setup/links.php
+	godmode/setup/gis.php
+	godmode/users/configure_profile.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_delete_profiles.php
+	godmode/modules/module_list.php
+	godmode/reporting/visual_console_builder.php
+	godmode/reporting/map_builder.php
+	godmode/reporting/graphs.php
+	godmode/tag/tag.php
+	godmode/tag/edit_tag.php: Changing the old way of 
+	print errors to encapsulated UI function to unify 
+	styles
+
+	* images/status_sets/color_text/agent_no_monitors.png
+	images/status_sets/color_text/agent_no_monitors_ball.png
+	images/status_sets/color_text/agent_down_ball.png
+	images/status_sets/color_text/agent_down.png
+	images/status_sets/default/agent_no_monitors.png
+	images/status_sets/default/agent_no_monitors_ball.png
+	images/status_sets/default/agent_down_ball.png
+	images/status_sets/default/agent_down.png: Modify some
+	status set images
+
+	* images/gis_map/icons/star.default.png
+	images/gis_map/icons/cross.warning.png
+	images/gis_map/icons/star.bad.png
+	images/gis_map/icons/cross.ok.png
+	images/gis_map/icons/marker.default.png
+	images/gis_map/icons/square_marker.warning.png
+	images/gis_map/icons/circle.warning.png
+	images/gis_map/icons/marker.bad.png
+	images/gis_map/icons/square_marker.ok.png
+	images/gis_map/icons/circle.ok.png
+	images/gis_map/icons/triangle.warning.png
+	images/gis_map/icons/cross.default.png
+	images/gis_map/icons/star.warning.png
+	images/gis_map/icons/triangle.ok.png
+	images/gis_map/icons/cross.bad.png
+	images/gis_map/icons/star.ok.png
+	images/gis_map/icons/square_marker.default.png
+	images/gis_map/icons/circle.default.png
+	images/gis_map/icons/marker.warning.png
+	images/gis_map/icons/square_marker.bad.png
+	images/gis_map/icons/circle.bad.png
+	images/gis_map/icons/triangle.default.png
+	images/gis_map/icons/marker.ok.png
+	images/gis_map/icons/triangle.bad.png: Change whole the 
+	gis icons by new ones
+
+	* images/os_icons/so_win.png
+	images/os_icons/so_linux.png
+	images/os_icons/so_mac.png
+	images/os_icons/so_cisco.png
+	images/os_icons/so_vmware.png
+	images/os_icons/so_bsd.png
+	images/os_icons/android.png
+	images/os_icons/so_aix.png
+	images/os_icons/so_other.png
+	images/os_icons/so_hpux.png
+	images/os_icons/network.png
+	images/os_icons/embedded.png: Reduce the operating 
+	system icons size
+
+	* images/vnc.png
+	images/op_inventory.png
+	images/refresh_mc.png
+	images/heart.png
+	images/service.png
+	images/go.png
+	images/graphmenu_arrow_hide.png
+	images/submenu_tree_first.png
+	images/config_mc.png
+	images/cross_double.png
+	images/wand.png
+	images/expand.png
+	images/submenu_tree_middle.png
+	images/visual_console.png
+	images/down.png
+	images/chart_curve_threshold.png
+	images/people_1.png
+	images/cancel.png
+	images/graphmenu_arrow.png
+	images/people_2.png
+	images/collapse.png
+	images/camera_mc.png: Improve a lot of
+	icons
+
 2013-05-23 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.item_editor.php,

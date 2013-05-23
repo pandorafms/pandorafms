@@ -459,7 +459,9 @@ else {
 					extensions_call_main_function (basename ($page));
 			}
 		} 
-		else echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';
+		else {
+			ui_print_error_message(__('Sorry! I can\'t find the page!'));
+		}
 	} 
 	else {
 		//home screen chosen by the user

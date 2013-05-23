@@ -312,7 +312,7 @@ if ($create_dir) {
 	$testHash = md5($directory . $config['dbpass']);
 	
 	if ($hash != $testHash) {
-		 echo "<h4 class=error>".__('Security error.')."</h4>";
+		 ui_print_error_message(__('Security error.'));
 	}
 	else {
 		$dirname = (string) get_parameter ('dirname');
@@ -673,7 +673,7 @@ function filemanager_box_upload_file_complex($real_directory, $relative_director
 	$table->data = array ();
 	
 	if (! filemanager_is_writable_dir ($real_directory)) {
-		echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
+		ui_print_error_message(__('Current directory is not writable by HTTP Server'));
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
@@ -711,7 +711,7 @@ function filemanager_box_upload_file_explorer($real_directory, $relative_directo
 	$table->data = array ();
 	
 	if (! filemanager_is_writable_dir ($real_directory)) {
-		echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
+		ui_print_error_message(__('Current directory is not writable by HTTP Server'));
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
@@ -747,7 +747,7 @@ function filemanager_box_upload_zip_explorer($real_directory, $relative_director
 	$table->data = array ();
 	
 	if (! filemanager_is_writable_dir ($real_directory)) {
-		echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
+		ui_print_error_message(__('Current directory is not writable by HTTP Server'));
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
@@ -783,7 +783,7 @@ function filemanager_box_create_text_explorer($real_directory, $relative_directo
 	$table->data = array ();
 	
 	if (! filemanager_is_writable_dir ($real_directory)) {
-		echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
+		ui_print_error_message(__('Current directory is not writable by HTTP Server'));
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';

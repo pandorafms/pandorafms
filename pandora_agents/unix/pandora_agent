@@ -165,9 +165,6 @@ my %Conf = %DefaultConf;
 # Modules
 my @Modules;
 
-# Plugins
-my @Plugins;
-
 # Logfile file handle
 my $LogFileFH;
 
@@ -330,56 +327,20 @@ sub log_message ($$;$) {
 ################################################################################
 sub parse_conf_modules($) {
 	my ($param) = @_;
-	my $module;
+
+	# Mark the start of a module definition
+	my $module_begin = 0;
+	
+	# Skeleton for modules
+	my $module = {};
 	
 	foreach my $line (@{$param}) {
 		
 		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
 		# Module definition
 		if ($line =~ /^\s*module_begin\s*$/) {
-			$module = {
-				'name' => '',
-				'type' => 'generic_data',
-				'description' => '',
-				'func' => 0,
-				'params' => '',
-				'interval' => 1,
-				'timeout' => 0,
-				'counter' => 0,
-				'max' => undef,
-				'min' => undef,
-				'post_process' => undef,
-			    'min_critical' => undef,
-			    'max_critical' => undef,
-			    'min_warning' => undef,
-			    'max_warning' => undef,
-			    'disabled' => undef,
-			    'min_ff_event' => undef,
-				'save' => '',
-				'conditions' => [],
-				'cron' => '',
-				'cron_utimestamp' => 0,
-				'cron_interval' => -1,
-				'precondition' => [],
-				'is_intensive' => 0,
-				'intensive_conditions' => [],
-				'intensive_match' => 0,
-				'timestamp' => 0,
-				'unit' => undef,
-				'module_group' => undef,
-				'custom_id' => undef,
-				'str_warning' => undef,
-				'str_critical' => undef,
-				'critical_instructions' => undef,
-				'warning_instructions' => undef,
-				'unknown_instructions' => undef,
-				'tags' => undef,
-				'critical_inverse' => undef,
-				'warning_inverse' => undef,
-				'quiet' => undef,
-				'module_ff_interval' => undef,
-				'macros' => {},
-			};
+			$module_begin = 1;
+			init_module ($module);
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
 			$module->{'name'} = $1;
 		} elsif ($line =~ /^\s*module_description\s+(.+)$/) {
@@ -485,7 +446,11 @@ sub parse_conf_modules($) {
 		} elsif ($line =~ /^\s*module_cron_interval\s+(\d+).*$/) {
 			$module->{'cron_interval'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
-			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
+			
+			$module_begin = 0;
+			
+			# Check for invalid modules
+			next unless (($module->{'name'} ne '' && $module->{'func'} != 0) || $module->{'func'} == \&exec_plugin);
 
 			# Set the intensive interval
 			if ($module->{'is_intensive'} == 1) {				
@@ -497,50 +462,38 @@ sub parse_conf_modules($) {
 			# Make the module run the first time
 			$module->{'counter'} = $module->{'intensive_interval'};
 			
-			# Replace macros		
-			foreach my $token (keys (%{$module})) {
+			# Replace macros
+			replace_macros ($module);
 
-				# No need to skip macros for now, since it's a hash ref and only array refs
-				# are searched for macros.
-				#if ($token eq 'macros') {
-				#	next;
-				#}
-
-				# No defined value for conf token
-				if (! defined ($module->{$token})) {
-					next;
-				}
-						
-				# Simple configuration token
-				if(ref($module->{$token}) eq ''){
-					while (my ($macro, $subst) = each (%{$module->{'macros'}})) {
-						eval {
-							$module->{$token} =~ s/$macro/$subst/g;
-						};
-					}
-				}
-				# Hash array
-				elsif (ref($module->{$token}) eq 'ARRAY'){
-					for (my $i = 0; $i <= $#{$module->{$token}}; $i++) {
-						
-						# Array of configuration tokens
-						foreach my $key (keys (%{$module->{$token}->[$i]})) {
-							
-							# Each configuration token is a hash
-							while (my ($macro, $subst) = each (%{$module->{'macros'}})) {
-								eval {
-									$module->{$token}->[$i]->{$key} =~ s/$macro/$subst/g;
-								}
-							}
-						}
-					}
-				}
-			}
-	
-			push (@Modules, $module);
+			push (@Modules, {%{$module}});
 		# Plugin
 		} elsif ($line =~ /^\s*module_plugin\s+(.+)$/) {
-			push (@Plugins, $1);
+
+			# Single line plugin definition
+			if ($module_begin == 0) {
+
+				# Set default values for the module configuration
+				init_module ($module);
+				
+				# Configure the plugin
+				$module->{'func'} = \&exec_plugin;
+				$module->{'params'} = $1;
+	
+				# Set the intensive interval
+				if ($module->{'is_intensive'} == 1) {				
+					$module->{'intensive_interval'} = $module->{'interval'};
+				} else {
+					$module->{'intensive_interval'} = $module->{'interval'} * ($Conf{'interval'} / $Conf{'intensive_interval'});
+				}
+			
+				# Make the module run the first time
+				$module->{'counter'} = $module->{'intensive_interval'};
+							
+				push (@Modules, {%{$module}});
+			} else {
+				$module->{'func'} = \&exec_plugin;
+				$module->{'params'} = $1;
+			}
 		# Module proc command redefinition		
 		} elsif ($line =~ /^\s*module_proc_cmd\s+(.+)$/) {
 			PROC_CMDS->{$OS} = $1;
@@ -936,7 +889,6 @@ sub check_remote_config () {
 
 	# Empty modules, plugins and collections
 	@Modules = ();
-	@Plugins = ();
 	%Collections = ();
 	%Conf = %DefaultConf;
 
@@ -1816,7 +1768,13 @@ sub udp_server ($$) {
 sub exec_plugin ($) {
 	my $plugin = shift;
 
-	my $output = `$plugin 2>$DevNull`;
+	my $command = $plugin->{'params'};
+
+	# Empty plugin	
+	return if ($command eq '');
+
+	# Execute the plugin
+	my $output = `$command 2>$DevNull`;
 
 	# Do not save the output if there was an error
 	if ($? != 0) {
@@ -1860,6 +1818,102 @@ sub temporal_freedisk () {
 
 	# Convert to bytes
 	return 1024 * int ($temporal_freedisk);
+}
+
+################################################################################
+# Replace module macros.
+################################################################################
+sub replace_macros ($) {
+	my $module = shift;
+
+	# Replace macros		
+	foreach my $token (keys (%{$module})) {
+
+		# No need to skip macros for now, since it's a hash ref and only array refs
+		# are searched for macros.
+		#if ($token eq 'macros') {
+		#	next;
+		#}
+
+		# No defined value for conf token
+		if (! defined ($module->{$token})) {
+			next;
+		}
+				
+		# Simple configuration token
+		if(ref($module->{$token}) eq ''){
+			while (my ($macro, $subst) = each (%{$module->{'macros'}})) {
+				eval {
+					$module->{$token} =~ s/$macro/$subst/g;
+				};
+			}
+		}
+		# Hash array
+		elsif (ref($module->{$token}) eq 'ARRAY'){
+			for (my $i = 0; $i <= $#{$module->{$token}}; $i++) {
+				
+				# Array of configuration tokens
+				foreach my $key (keys (%{$module->{$token}->[$i]})) {
+					
+					# Each configuration token is a hash
+					while (my ($macro, $subst) = each (%{$module->{'macros'}})) {
+						eval {
+							$module->{$token}->[$i]->{$key} =~ s/$macro/$subst/g;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+################################################################################
+# Initialize a module with default values.
+################################################################################
+sub init_module ($) {
+	my $module = shift;
+	
+	$module->{'name'} = '';
+	$module->{'type'} = 'generic_data';
+	$module->{'description'} = '';
+	$module->{'func'} = 0;
+	$module->{'params'} = '';
+	$module->{'interval'} = 1;
+	$module->{'timeout'} = 0;
+	$module->{'counter'} = 0;
+	$module->{'max'} = undef;
+	$module->{'min'} = undef;
+	$module->{'post_process'} = undef;
+	$module->{'min_critical'} = undef;
+	$module->{'max_critical'} = undef;
+	$module->{'min_warning'} = undef;
+	$module->{'max_warning'} = undef;
+	$module->{'disabled'} = undef;
+	$module->{'min_ff_event'} = undef;
+	$module->{'save'} = '';
+	$module->{'conditions'} = [];
+	$module->{'cron'} = '';
+	$module->{'cron_utimestamp'} = 0;
+	$module->{'cron_interval'} = -1;
+	$module->{'precondition'} = [];
+	$module->{'is_intensive'} = 0;
+	$module->{'intensive_conditions'} = [];
+	$module->{'intensive_match'} = 0;
+	$module->{'timestamp'} = 0;
+	$module->{'unit'} = undef;
+	$module->{'module_group'} = undef;
+	$module->{'custom_id'} = undef;
+	$module->{'str_warning'} = undef;
+	$module->{'str_critical'} = undef;
+	$module->{'critical_instructions'} = undef;
+	$module->{'warning_instructions'} = undef;
+	$module->{'unknown_instructions'} = undef;
+	$module->{'tags'} = undef;
+	$module->{'critical_inverse'} = undef;
+	$module->{'warning_inverse'} = undef;
+	$module->{'quiet'} = undef;
+	$module->{'module_ff_interval'} = undef;
+	$module->{'macros'} = {};
 }
 
 ################################################################################
@@ -2009,7 +2063,6 @@ while (1) {
 				
 			# Read configuration file
 			@Modules = ();
-			@Plugins = ();
 			%Collections = ();
 			%Conf = %DefaultConf;
 			read_config ();
@@ -2072,10 +2125,13 @@ while (1) {
 	# Execute modules
 	foreach my $module (@Modules) {
 
+		# Is it a plugin?
+		my $exec_func = ($module->{'func'} == \&exec_plugin) ? \&exec_plugin : \&exec_module;
+
 		# Execute the module in a separate thread
 		if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
 			$ThreadSem->down ();
-			my $thr = threads->create (\&exec_module, $module);
+			my $thr = threads->create ($exec_func, $module);
 			if (! defined ($thr)) {
 				$ThreadSem->up ();
 			} else {
@@ -2083,27 +2139,7 @@ while (1) {
 			}
 		# Execute the module
 		} else {
-			exec_module ($module);
-		}
-	}
-
-	# Execute plugins
-	if ($Conf{'timestamp'} + $Conf{'interval'} <= time ()) {
-		foreach my $plugin (@Plugins) {
-	
-			# Execute the plugin in a separate thread
-			if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
-				$ThreadSem->down ();
-				my $thr = threads->create (\&exec_plugin, $plugin);
-				if (! defined ($thr)) {
-					$ThreadSem->up ();
-				} else {
-					$thr->detach();
-				}
-			# Execute the plugin
-			} else {
-				exec_plugin ($plugin);
-			}
+			$exec_func->($module);
 		}
 	}
 

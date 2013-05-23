@@ -3,21 +3,27 @@
 /var/log/pandora/pandora_server.error {
 	weekly
 	missingok
-	size 128144
+	size 300000
 	rotate 3
-	maxage 15
+	maxage 90
 	compress
 	notifempty
-	create 644 root root
-	sharedscripts
-	postrotate
-	/etc/init.d/pandora_server restart
-	endscript
+        copytruncate
 }
 
-# Only for SUSE / DEBIAN / UBUNTU 
+# DEBIAN / UBUNTU 
+/var/www/pandora_console/pandora_console.log {
+	weekly
+        missingok
+        size 100000
+        rotate 3
+        maxage 15
+        compress
+        notifempty
+        create 644 www-data www-data
+}
 
-/var/www/pandora_console 
+# OpenSUSE, SLES
 /srv/www/htdocs/pandora_console/pandora_console.log {
 	weekly
 	missingok
@@ -29,17 +35,24 @@
 	create 644 wwwrun www
 }
 
+# Centos, Redhat, Fedora
+/var/www/html/pandora_console/pandora_console.log {
+        weekly
+        missingok
+        size 100000
+        rotate 3
+        maxage 15
+        compress
+        notifempty
+        create 644 apache root
+}
+
 /var/log/pandora/pandora_snmptrap.log {
 	weekly
 	missingok
 	size 500000
 	rotate 1
-	maxage 365
+	maxage 30
 	notifempty
-	create 664 root root
-        postrotate
-	rm /var/log/pandora/pandora_snmptrap.log.index 2> /dev/null
-        /etc/init.d/pandora_server restart
-        endscript
-
+	copytruncate
 }

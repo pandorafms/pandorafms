@@ -905,7 +905,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				// Draw image
 				if ($resizedMap)
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-' . $layout_data['id'] . '" class="layout-data">';
 				else
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
 				
@@ -958,7 +958,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				}
 				
 				$img = "images/console/icons/".$layout_data["image"];
-
+				
 				switch ($status) {
 					case 1:
 						//Critical (BAD)
@@ -966,11 +966,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						break;
 					case 4:
 						//Critical (ALERT)
-						$img = "4".$img."_bad.png";
+						$img = "4" . $img . "_bad.png";
 						break;
 					case 10:
 						//Warning (with ALERT)
-						$img = "4".$img."_warning.png";
+						$img = "4" . $img . "_warning.png";
 						break;
 					case 0:
 						//Normal (OK)
@@ -987,7 +987,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						// Default is Grey (Other)
 						break;
 				}
-
+				
 				$borderStyle = '';
 				if(substr($img,0,1) == '4') {
 					$img_style['border'] ='2px solid #ffa300;';
@@ -1054,7 +1054,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 					if ($layout_data['label_color'][0] == '#') {
 						echo "<br />";
-						echo $layout_data['label'];	
+						echo $layout_data['label'];
 					}
 					if ($endTagA) echo "</a>";
 					echo "</div>";
@@ -1341,14 +1341,14 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 					
 					if ($endTagA) echo '</a>';
-						
+					
 					echo '</div>';
 					break;
 				case 1;
 					// ****************************************************************
 					// Single module graph
 					// ****************************************************************
-					// SINGLE GRAPH (type = 1)			
+					// SINGLE GRAPH (type = 1)
 					
 					if ($resizedMap) {
 						$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
@@ -1436,6 +1436,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		 draw_lines (lines, id_div);
 		 on body load, where id_div is the id of the div which holds the map */
 		echo '<script type="text/javascript">/* <![CDATA[ */'."\n";
+		
+		if ($resizedMap) {
+			echo 'var resize_map = 1;'."\n";
+		}
+		else {
+			echo 'var resize_map = 0;'."\n";
+		}
 		
 		echo 'var lines = Array ();'."\n";
 		

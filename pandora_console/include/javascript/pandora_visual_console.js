@@ -17,30 +17,66 @@
  */
 function draw_line (line, id_div) {
 	div = document.getElementById (id_div);
+	
 	brush = new jsGraphics (div);
 	brush.setStroke (1);
 	brush.setColor (line['color']);
 	
+	have_node_begin_img = $('#'+line['node_begin'] + " img").length;
+	have_node_end_img = $('#'+line['node_end'] + " img").length;
+	
 	if (line['x1']) {
 		x1 = line['x'];
-	} else {
-		x1 = parseInt ($('#'+line['node_begin']).css ('margin-left')) + ($('#'+line['node_begin']).width() / 2);
 	}
+	else {
+		if (resize_map && have_node_begin_img) {
+			width = parseInt($('#'+line['node_begin'] + " img").css('width'));
+		}
+		else {
+			width = $('#'+line['node_begin']).width();
+		}
+		x1 = parseInt($('#'+line['node_begin']).css ('margin-left')) + (width / 2);
+	}
+	
 	if (line['y1']) {
 		y1 = line['y1'];
-	} else {
-		y1 = parseInt ($('#'+line['node_begin']).css ('margin-top')) + ($('#'+line['node_begin']).height() / 2);
 	}
+	else {
+		if (resize_map && have_node_begin_img) {
+			height = parseInt($('#'+line['node_begin'] + " img").css('height'));
+		}
+		else {
+			height = $('#'+line['node_begin']).height();
+		}
+		y1 = parseInt($('#'+line['node_begin']).css ('margin-top')) + (height / 2);
+	}
+	
 	if (line['x2']) {
 		x2 = line['x2'];
-	} else {
-		x2 = parseInt ($('#'+line['node_end']).css ('margin-left')) + ($('#'+line['node_end']).width() / 2);
 	}
+	else {
+		if (resize_map && have_node_end_img) {
+			width = parseInt($('#'+line['node_end'] + " img").css('width'));
+		}
+		else {
+			width = $('#'+line['node_end']).width();
+		}
+		x2 = parseInt($('#'+line['node_end']).css ('margin-left')) + (width / 2);
+	}
+	
 	if (line['y2']) {
 		y2 = line['y2'];
-	} else {
-		y2 = parseInt ($('#'+line['node_end']).css ('margin-top')) + ($('#'+line['node_end']).height() / 2);
 	}
+	else {
+		if (resize_map && have_node_end_img) {
+			height = parseInt($('#'+line['node_end'] + " img").css('height'));
+		}
+		else {
+			height = $('#'+line['node_end']).height();
+		}
+		y2 = parseInt($('#'+line['node_end']).css ('margin-top')) + (height / 2);
+	}
+	
 	brush.drawLine (x1, y1, x2, y2);
 	brush.paint ();
 }

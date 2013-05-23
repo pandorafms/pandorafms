@@ -68,20 +68,20 @@ else {
 			array ("alt" => __('User'),
 				"title" => __('Standard User'))).'&nbsp;';
 		}
-		$profileCell .= '<a href="#" class="tip"><span>';
+		
 		$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user['id_user']);
 		if ($result !== false) {
 			foreach ($result as $row) {
-				$profileCell .= profile_get_name ($row["id_perfil"]);
-				$profileCell .= " / ";
-				$profileCell .= groups_get_name ($row["id_grupo"]);
-				$profileCell .= "<br />";
+				$text_tip .= profile_get_name ($row["id_perfil"]);
+				$text_tip .= " / ";
+				$text_tip .= groups_get_name ($row["id_grupo"]);
+				$text_tip .= "<br />";
 			}
 		}
 		else {
-			$profileCell .= __('The user doesn\'t have any assigned profile/group');
+			$text_tip .= __('The user doesn\'t have any assigned profile/group');
 		}
-		$profileCell .= "</span></a>";
+		$profileCell .= ui_print_help_tip($text_tip, true);
 		
 		array_push($table->data, array(
 			$userIDCell,

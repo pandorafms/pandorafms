@@ -284,9 +284,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['size_row']['items'] = array('background',
 				'static_graph', 'icon datos');
 			$form_items_advance['size_row']['html'] = '<td align="left">' .
-				__('Size') . '<a href="#" class="tip">&nbsp;<span>' .
-				__("For use the original image file size, set 0 width and 0 height.") .
-				'</span></a>' . '</td>
+				__('Size') .
+				ui_print_help_tip (
+					__("For use the original image file size, set 0 width and 0 height."), true) .
+				'</td>
 				<td align="left">' . html_print_input_text('width', 0, '', 3, 5, true) .
 				' X ' .
 				html_print_input_text('height', 0, '', 3, 5, true) .

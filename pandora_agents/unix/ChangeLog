@@ -1,3 +1,7 @@
+2013-05-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Merged plugins with modules to add macro support.
+
 2013-05-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Syntactic fix. Fixes bug #2173.

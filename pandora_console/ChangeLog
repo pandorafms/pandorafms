@@ -1,3 +1,12 @@
+2013-05-24 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php: cleaned source code style.
+	
+	* include/graphs/pChart/pPie.class.php: fixed the border color of
+	piechart (merged from the trunk).
+	
+	Fixes: #2230
+
 2013-05-23 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/javascript/pandora_visual_console.js,

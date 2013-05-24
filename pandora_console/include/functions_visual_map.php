@@ -231,6 +231,7 @@ function visual_map_print_item($layoutData) {
 				$img = visual_map_get_image_status_element($layoutData);
 				$imgSizes = getimagesize($img);
 			}
+			
 			if (($width != 0) && ($height != 0)) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
@@ -1447,7 +1448,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		echo 'var lines = Array ();'."\n";
 		
 		foreach ($lines as $line) {
-			echo 'lines.push (eval ('.json_encode ($line).'));'."\n";
+			echo 'lines.push (eval (' . json_encode ($line) . '));' . "\n";
 		}
 		echo '/* ]]> */</script>';
 	}

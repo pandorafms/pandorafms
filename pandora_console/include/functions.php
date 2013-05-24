@@ -1235,7 +1235,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 	foreach ($output as $line) {
 		
 		// Separate the OID from the value
-		$full_oid = explode ('=', $line);
+		$full_oid = explode (' = ', $line);
 		if (isset ($full_oid[1])) {
 			$snmpwalk[$full_oid[0]] = $full_oid[1];
 		}

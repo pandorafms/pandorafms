@@ -1,3 +1,11 @@
+2013-05-24  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions.php
+	extensions/snmp_explorer.php: Fixed errors in
+	snmp browser adapting output of new snmp way
+	of retrieve data and avoiding interfaces without
+	name
+
 2013-05-24 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_visual_map.php: cleaned source code style.

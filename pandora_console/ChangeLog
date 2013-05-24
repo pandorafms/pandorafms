@@ -1,3 +1,20 @@
+2013-05-24  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	extensions/update_manager/settings.php
+	extensions/update_manager/main.php
+	godmode/agentes/module_manager.php: Fixed 
+	various visual issues like update manager icons
+	or width of left tab in godmode sections
+
+	* godmode/agentes/module_manager_editor_plugin.php: 
+	Fixed tips of plugins help fields
+
+	* extensions/snmp_explorer.php: avoid interfaces
+	without name in snmp explorer
+
+	* operation/agentes/bulbs.php: Remove old file
+
 2013-05-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions.php: Cleaned junk characters.

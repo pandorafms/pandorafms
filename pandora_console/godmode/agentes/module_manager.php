@@ -95,8 +95,9 @@ global $policy_page;
 if (!isset($policy_page))
 	$policy_page = false;
 
+$show_creation = false;
+
 if (($policy_page) || (isset($agent))) {
-	$show_creation = false;
 	if ($policy_page) {
 		$show_creation = true;
 	}
@@ -114,17 +115,18 @@ if (($policy_page) || (isset($agent))) {
 		echo '<td class="datos">';
 		echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
 		echo '</td>';
-		echo '<td class="datos" style="text-align:center;">';
-		echo "<strong>";
-		echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
-		echo "</strong>";
-		echo '</td>';
 		echo '</tr>';
 		echo "</form>";
 	}
 }
 
 echo "</table>";
+
+echo '<div style="text-align: right; width: 98%;">';
+echo "<strong>";
+echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
+echo "</strong>";
+echo '</div>';
 
 if (! isset ($id_agente))
 	return;

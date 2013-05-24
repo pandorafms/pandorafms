@@ -71,7 +71,8 @@ function snmp_explorer() {
 			$keydata = explode('::',$key);
 			$keydata2 = explode('.',$keydata[1]);
 			
-			if (!isset($keydata2[1])) {
+			// Avoid results without index and interfaces without name
+			if (!isset($keydata2[1]) || !isset($data[1])) {
 				continue;
 			}
 			

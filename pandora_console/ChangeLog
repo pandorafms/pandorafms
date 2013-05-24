@@ -1,5 +1,9 @@
 2013-05-24  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions.php: Cleaned junk characters.
+
+2013-05-24  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions.php: Merged from 4.0 branch. Removed calls
 	  to PHP's SNMP functions.
 

@@ -33,7 +33,7 @@ $buttons = array(
 	'admin' => array(
 	'active' => false,
 	'text' => '<a href="index.php?sec=extensions&sec2=extensions/update_manager">' . 
-		html_print_image ("images/eye.png",
+		html_print_image ("images/operation.png",
 			true, array ("title" => __('Update manager'))) .'</a>'));
 
 ui_print_page_header (__('Update manager').' - '. __('Settings'),

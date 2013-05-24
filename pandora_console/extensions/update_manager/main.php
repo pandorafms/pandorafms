@@ -39,7 +39,7 @@ function main_view() {
 		'admin' => array(
 		'active' => false,
 		'text' => '<a href="index.php?sec=gextensions&sec2=extensions/update_manager">' . 
-			html_print_image ("images/god7.png",
+			html_print_image ("images/setup.png",
 				true, array ("title" => __('Update manager'))) .'</a>'));
 	
 	ui_print_page_header (__('Update manager'), "images/extensions.png",

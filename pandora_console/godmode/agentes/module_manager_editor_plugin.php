@@ -102,6 +102,7 @@ function changePluginSelect() {
 		},
 		function (data, status) {
 			$("#plugin_description").html(data);
+			forced_title_callback();
 		}
 	);
 	

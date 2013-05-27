@@ -1,3 +1,8 @@
+2013-05-27 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/search_main.php: change again the label of the bottom
+	of list of agents.
+
 2013-05-27  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: Fixed

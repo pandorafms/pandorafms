@@ -1,3 +1,8 @@
+2013-05-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql: Updated data types to allow 64bit integers to be
+	  stored in tagente_datos and tagente_datos_inc.
+
 2013-05-24  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

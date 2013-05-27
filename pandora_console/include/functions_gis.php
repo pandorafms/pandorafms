@@ -153,13 +153,13 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
 			var layer = new OpenLayers.Layer.Vector(
 			'<?php echo $name; ?>', {styleMap: style}
 			);
-
+			
 			layer.data = {};
 			layer.data.id = '<?php echo $idLayer; ?>';
-
+			
 		 	layer.setVisibility(<?php echo $visible; ?>);
 					map.addLayer(layer);
-
+			
 			layer.events.on({
 		 		"featureselected": function(e) {
 					if (e.feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
@@ -173,7 +173,7 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
 						parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
 						parameter.push ({name: "get_image_path", value: "1"});
 						parameter.push ({name: "img_src", value: "images/spinner.gif"});
-
+						
 						jQuery.ajax ({
 							type: 'POST',
 							url: action="ajax.php",
@@ -183,8 +183,8 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
 							success: function (data) {
 								img_src = data;
 							}
-						});						
-
+						});
+						
 						popup = new OpenLayers.Popup.FramedCloud('cloud00',
 								long_lat,
 								null,
@@ -242,7 +242,8 @@ function gis_activate_select_control($layers=null) {
  * @return None
  */
 function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
-	if ($lastTimeOfData === null) $lastTimeOfData = time();
+	if ($lastTimeOfData === null)
+		$lastTimeOfData = time();
 	
 	ui_require_jquery_file ('json');
 	?>
@@ -375,7 +376,9 @@ function gis_add_agent_point($layerName, $pointName, $lat, $lon, $icon = null, $
 				<?php
 				if ($icon != null) {
 					//echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status);";
-					echo "js_addAgentPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status, $idParent);";
+					echo "js_addAgentPointExtent('$layerName',
+						'$pointName', $lon, $lat, '$icon', $width,
+						$height, $point_id, '$type_string', $status, $idParent);";
 				}
 				else {
 					//echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status);";
@@ -408,9 +411,9 @@ function gis_get_agents_layer($idLayer, $fields = null) {
 	$agents = db_get_all_rows_sql('SELECT ' . $select . '
 		FROM tagente
 		WHERE id_agente IN (
-				SELECT tagente_id_agente
-				FROM tgis_map_layer_has_tagente
-				WHERE tgis_map_layer_id_tmap_layer = ' . $idLayer . ');');
+			SELECT tagente_id_agente
+			FROM tgis_map_layer_has_tagente
+			WHERE tgis_map_layer_id_tmap_layer = ' . $idLayer . ');');
 	
 	if ($agents !== false) {
 		foreach ($agents as $index => $agent) {
@@ -1272,5 +1275,83 @@ function gis_add_layer_list($layer_list) {
 	}
 	
 	return $returnVar;
+}
+
+function gis_calculate_distance($lat_start, $lon_start, $lat_end, $lon_end) {
+	//Use 3958.9=miles, 6371.0=Km;
+	$earthRadius = 6371;
+	
+	$distance = 0;
+	$azimuth = 0;
+	$beta = 0;
+	$cosBeta = 0;
+	$cosAzimuth = 0;
+	
+	$lat_start = deg2rad($lat_start);
+	$lon_start = deg2rad($lon_start);
+	$lat_end = deg2rad($lat_end);
+	$lon_end = deg2rad($lon_end);
+	
+	if (abs($lat_start) < 90.0) {
+		$cosBeta = (sin($lat_start) * sin($lat_end)) +
+			((cos ($lat_start) * cos ($lat_end)) * cos ($lon_end - $lon_start));
+		
+		if ($cosBeta >= 1.0) {
+			return 0.0;
+		}
+		
+		/*
+		Antipodes  (return miles, 0 degrees)
+		*/
+		if ($cosBeta <= -1.0) {
+			return floor($earthRadius * pi() * 100.0) / 100.0;
+		}
+		
+		$beta = acos($cosBeta);
+		$distance = $beta * $earthRadius;
+		$cosAzimuth = (sin($lat_end) - sin($lat_start) * cos($beta)) /
+			(cos($lat_start) * sin($beta));
+		
+		if ($cosAzimuth >= 1.0) {
+			$azimuth = 0.0;
+		}
+		elseif ($cosAzimuth <= -1.0) {
+			$azimuth = 180.0;
+		}
+		else {
+			$azimuth = rad2deg(acos($cosAzimuth));
+		}
+		
+		if (sin($lon_end - $lon_start) < 0.0) {
+			$azimuth = 360.0 - $azimuth;
+		}
+		
+		return floor($distance * 100.0) / 100.0;
+	}
+	
+	//If P1 Is North Or South Pole, Then Azimuth Is Undefined
+	if (gis_sgn($lat_start) == gis_sgn ($lat_end)) {
+		$distance = $earthRadius * (pi() / 2 - abs($lat_end));
+	}
+	else {
+		$distance = $earthRadius * (pi() / 2 + abs($lat_end));
+	}
+	
+	return floor($distance * 100.0) / 100.0;
+}
+
+function gis_sgn($number)
+{
+	if ($number == 0) {
+		return 0;
+	}
+	else {
+		if ($number < 0) {
+			return -1;
+		}
+		else {
+			return 1;
+		}
+	}
 }
 ?>

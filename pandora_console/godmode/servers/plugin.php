@@ -117,6 +117,7 @@ if (($create != "") OR ($view != "")) {
 	$fields[1]= __("Nagios");
 	$data[1] = html_print_select ($fields, "form_plugin_type", $form_plugin_type, '', '', 0, true);
 	$table->data['plugin_type'] = $data;
+	$table->colspan['plugin_type'][1] = 3;
 
 	$data[0] = __('Max. timeout').ui_print_help_tip (__('This value only will be applied if is minor than the server general configuration plugin timeout').'. <br><br>'.__('If you set a 0 seconds timeout, the server plugin timeout will be used'), true);
 	$data[1] = html_print_extended_select_for_time ('form_max_timeout', $form_max_timeout, '', '', '0', false, true);
@@ -131,7 +132,7 @@ if (($create != "") OR ($view != "")) {
 	$table->data['plugin_desc'] = $data;
 	
 	echo '<br>';
-	echo '<table class="databox" style="margin: 0 auto;"><tr><td>';
+	echo '<table class="databox" style="margin: 0 auto; width: 98%;"><tr><td>';
 	
 	echo '<fieldset style="width:96%"><legend>'.__('General').'</legend>';
 	html_print_table($table);
@@ -243,7 +244,8 @@ if (($create != "") OR ($view != "")) {
 
 		$datam = array ();
 		$datam[0] = __('Help')."<span style='font-weight: normal'> ($macro_name)</span><br><br><br>";
-		$datam[1] = html_print_input_text_extended ($macro_help_name, $macro_help_value, 'text-'.$macro_help_name, '', 100, 255, $locked, '', "class='command_advanced_conf'", true);
+		$datam[1] = html_print_textarea ($macro_help_name, 6, 100, $macro_help_value, 'class="command_advanced_conf" style="width: 97%;"' . $locked ? ' disabled' : '', true);
+		
 		if($locked) {
 			$datam[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
 		}
@@ -263,7 +265,7 @@ if (($create != "") OR ($view != "")) {
 		if($i <= 2) {
 			$delete_macro_style = 'display:none;';
 		}
-		$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/cancel.png',true).'</a></div>';
+		$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/delete.png',true).'</a></div>';
 		
 		$table->colspan['plugin_action'][0] = 2;
 		$table->rowstyle['plugin_action'] = 'text-align:center';

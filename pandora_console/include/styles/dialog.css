@@ -22,9 +22,8 @@
 }
 
 .ui-dialog .ui-dialog-titlebar {
-	background-color: #f3f3f3;
-	height: 14px !important;
-	#_height: 16px !important;
+	background-color: #ECECEC;
+	height: 24px !important;
 	padding: 0.3em 1em !important;
 	position:relative;
 	margin: 0px auto 0 auto !important;
@@ -113,7 +112,7 @@
 }
 
 .ui-tabs-panel {
-	background: #F3F3F3 !important;
+	background: #ECECEC !important;
 	-moz-border-radius: 8px !important;
 	-webkit-border-radius: 8px !important;
 	border-radius: 8px !important;	
@@ -135,7 +134,7 @@
 
 .ui-state-default {
 	background: #fff !important;
-	border: 2px solid #f3f3f3 !important;
+	border: 2px solid #ECECEC !important;
 	-moz-border-top-left-radius: 10px !important;
 	-webkit-top-left-border-radius: 10px !important;
 	border-top-left-radius: 10px !important;	
@@ -145,7 +144,7 @@
 	margin-left: 2px !important;	
 }
 .ui-state-active {
-	background: #f3f3f3 !important;
+	background: #ECECEC !important;
 }
 
 .ui-dialog-content {

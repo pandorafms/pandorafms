@@ -181,7 +181,7 @@ $table->id = 'user_form';
 $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
-$table->class = '';
+$table->class = 'vertical_fields';
 $table->style[2] = 'width: 175px;';
 
 $data = array();
@@ -212,7 +212,7 @@ $data = array();
 $data[0] = __('E-mail');
 $data[0] .= '<br>' . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true);
 $data[1] = __('Phone number');
-$data[1] .= html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true);
+$data[1] .= '<br>' . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true);
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;

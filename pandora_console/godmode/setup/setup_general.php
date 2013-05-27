@@ -161,8 +161,8 @@ if ($config["integria_enabled"]) {
 }
 
 $table->data[19][0] = __('Enable Netflow');
-$table->data[19][1] = __('Yes').'&nbsp;'.html_print_radio_button ('activate_netflow', 1, '', $config["activate_netflow"], true).'&nbsp;&nbsp;';
-$table->data[19][1] .= __('No').'&nbsp;'.html_print_radio_button ('activate_netflow', 0, '', $config["activate_netflow"], true);
+$table->data[19][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_netflow', 1, '', $config["activate_netflow"], true).'&nbsp;&nbsp;';
+$table->data[19][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_netflow', 0, '', $config["activate_netflow"], true);
 
 $zone_name = array('Africa' => __('Africa'), 'America' => __('America'), 'Antarctica' => __('Antarctica'), 'Arctic' => __('Arctic'), 'Asia' => __('Asia'), 'Atlantic' => __('Atlantic'), 'Australia' => __('Australia'), 'Europe' => __('Europe'), 'Indian' => __('Indian'), 'Pacific' => __('Pacific'), 'UTC' => __('UTC'));
 

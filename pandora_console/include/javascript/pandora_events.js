@@ -46,7 +46,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 						opacity: 0.5,
 						background: "black"
 					},
-					width: 620,
+					width: 700,
 					height: 500
 				})
 				.show ();

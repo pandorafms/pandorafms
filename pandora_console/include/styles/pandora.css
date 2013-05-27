@@ -362,7 +362,7 @@ div#login_in, #login_f {
 	padding: 3px;
 	border-radius: 11px;
 	width: 250px !important;
-	margin: 50px auto;
+	margin: 100px auto;
 	background: transparent;
 }
 div#error_login {
@@ -427,12 +427,6 @@ input.login {
 	width: 135px;
 	height: 18px;
 	font-weight: bold;
-}
-/* FF hack for login inputs */
-@-moz-document url-prefix() {
-	input.login{
-		margin: -2px 0 8px 20px !important;
-	}
 }
 
 input.login_user {
@@ -2069,7 +2063,7 @@ div#main {
 div#head {
 	width: auto;
 	height: auto;
-	background-color: #000;
+	background-color: #333;
 	background-image: url(../../images/header_blackout.png);
 	height: 47px;
 	min-width: 882px;
@@ -2308,39 +2302,43 @@ tr.group_view_data, .group_view_data {
 }
 
 /* classes for event priorities. Sits now in functions.php */
-.datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a {
+.datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a, .datos_green * {
 	background-color: #6EB432;
 	color: #fff;
 }
-.datos_red, .datos_redf9, .datos_red a, .datos_redf9 a{
+.datos_red, .datos_redf9, .datos_red a, .datos_redf9 a, .datos_red *{
 	background-color: #FF4040;
 	color: #fff !important;
 }
 
-.datos_yellow, .datos_yellowf9  {
+.datos_yellow, .datos_yellowf9, .datos_yellow *  {
 	background-color: #F2D400;
 	color: #111;
 }
 
-a.datos_blue, .datos_bluef9, .datos_blue {
+a.datos_blue, .datos_bluef9, .datos_blue, .datos_blue * {
 	background-color: #4CA8E0;
 	color: #111;
 }
 
-.datos_grey, .datos_greyf9 {
+.datos_grey, .datos_greyf9, .datos_grey * {
 	background-color: #999999;
+	color: #111;
 }
 
-.datos_pink, .datos_pinkf9 {
+.datos_pink, .datos_pinkf9, .datos_pink * {
 	background-color: #F099A2;
+	color: #111;
 }
 
-.datos_brown, .datos_brownf9 {
+.datos_brown, .datos_brownf9, .datos_brown * {
 	background-color: #A67C52;
+	color: #fff;
 }
 
-.datos_orange, .datos_orangef9 {
+.datos_orange, .datos_orangef9, .datos_orange * {
 	background-color: #F7931E;
+	color: #111;
 }
 
 td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9, td.datos_pinkf9, td.datos_brownf9 ,td.datos_orangef9 {
@@ -2570,7 +2568,7 @@ input.search_input {
 	color: #999;
 }
 
-td input, td select {
+.vertical_fields td input, .vertical_fields td select {
 	margin-top: 8px !important;
 }
 

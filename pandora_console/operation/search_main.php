@@ -79,7 +79,9 @@ if ($searchAgents && $totalAgents > 0) {
 			"</a>";
 	}
 	else {
-		echo __('Show all agents.');
+		echo "<a href='index.php?search_category=modules&keywords=".$keyword."&head_search_keywords=Search'>" .
+			__('The search result only this list agents.') .
+			"</a>";
 	}
 }
 

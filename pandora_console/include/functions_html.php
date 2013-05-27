@@ -1354,7 +1354,7 @@ function html_print_table (&$table, $return = false) {
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 	
 	if (!empty($table->width)) {
-		$output .= '<table style="' . $styleTable . '" width="'.$table->width.'"'.$table->tablealign;
+		$output .= '<table style="width:' . $table->width . ';' . $styleTable . '"'.$table->tablealign;
 	}
 	else {
 		$output .= '<table style="' . $styleTable . '"'.$table->tablealign;

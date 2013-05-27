@@ -565,7 +565,8 @@ function new_macro(prefix) {
 
 function add_macro_field(macro, row_model_id) {
 	var macro_desc = macro['desc'];
-	var macro_help = macro['help'];
+	// Change the carriage returns by html returns <br> in help
+	var macro_help = macro['help'].replace(/&#x0d;/g,"<br>");
 	var macro_macro = macro['macro'];
 	var macro_value = macro['value'];
 	
@@ -597,6 +598,15 @@ function add_macro_field(macro, row_model_id) {
 		var field_desc = $('#'+row_id).children().eq(0).html();
 		field_desc = field_desc.replace('macro_desc',macro_desc);
 		field_desc = field_desc.replace('macro_help',macro_help);
+		
+		// Get the cloned forced title id and replace for a uniq id
+		regex = /forced_title_(\w+)/;
+		var forced_title_id = field_desc.match(regex)[1];
+		var uniq_id = 'id' + (new Date()).getTime();
+
+		field_desc = field_desc.replace(forced_title_id, uniq_id);
+		field_desc = field_desc.replace(forced_title_id, uniq_id);
+		
 		$('#'+row_id).children().eq(0).html(field_desc);
 	}
 	

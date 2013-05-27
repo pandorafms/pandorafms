@@ -129,7 +129,7 @@ $table_simple->colspan[6][1] = 3;
 
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text_extended ('name',
-	io_safe_output($name), 'text-'.$name, '', 45, 100, $disabledBecauseInPolicy, '', 'autocomplete="off"', true);
+	io_safe_output($name), 'text-name', '', 45, 100, $disabledBecauseInPolicy, '', 'autocomplete="off"', true);
 //$table_simple->data[0][1] = html_print_input_text ('name',
 //	io_safe_output($name), '', 45, 100, true, $disabledBecauseInPolicy);
 

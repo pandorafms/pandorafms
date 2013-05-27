@@ -102,10 +102,10 @@ function changePluginSelect() {
 		},
 		function (data, status) {
 			$("#plugin_description").html(data);
-			forced_title_callback();
 		}
 	);
 	
 	load_plugin_macros_fields('simple-macro');
+	forced_title_callback();
 }
 </script>

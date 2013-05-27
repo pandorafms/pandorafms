@@ -205,7 +205,7 @@ $label = base64_decode(get_parameter('label', ''));
 		///////////////////////////
 		$params = array();
 		// TOP TEXT
-		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold;'>" . html_print_image('images/config_mc.png', true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/config_mc.png', true, array('width' => '16px')) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
 		$params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		
@@ -235,7 +235,9 @@ $label = base64_decode(get_parameter('label', ''));
 		$table->id = 'stat_win_form_div';
 		$table->style[0] = 'text-align:left; padding: 7px;';
 		$table->style[1] = 'text-align:left;';
-		$table->size[0] = '50%';
+		//$table->size[0] = '50%';
+		$table->styleTable = 'border-spacing: 4px;';
+		$table->class = 'alternate';
 
 		$data = array();
 		$data[0] = __('Refresh time');
@@ -346,7 +348,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$table->rowclass[] = '';
 		
 		$data = array();
-		$data[0] = '<div style="width:100%; text-align:right;">' . html_print_submit_button (__('Reload'), "submit", false, 'class="sub next"', true) . "</div>";
+		$data[0] = '<div style="width:100%; text-align:right;">' . html_print_submit_button (__('Reload'), "submit", false, 'class="sub upd"', true) . "</div>";
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		

@@ -1,3 +1,34 @@
+2013-05-27  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Fixed
+	creation of data modules for bug #2240
+
+	* godmode/servers/plugin.php
+	include/javascript/pandora_modules.js
+	godmode/agentes/module_manager_editor_plugin.php: Fixed
+	the tips of the macros help and change the input of macro
+	help from input to a textarea
+
+	* include/functions_html.php
+	include/styles/dialog.css
+	include/styles/menu.css
+	include/styles/jquery-ui-1.10.0.custom.css
+	include/styles/pandora.css
+	include/javascript/pandora_events.js
+	operation/users/user_edit.php
+	operation/agentes/stat_win.php
+	images/event_responses.png
+	images/filter_mc.png
+	images/sort_down.png
+	images/tick.png
+	images/pandora.ico
+	images/tick_off.png
+	images/pandora.ico.gif
+	images/star.png
+	images/sort_up.png
+	godmode/setup/setup_general.php: A lot of visual
+	improvements
+
 2013-05-27 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/search_main.php: change the label to show when the list

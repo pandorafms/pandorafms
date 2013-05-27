@@ -62,7 +62,6 @@ sub pandora_purgedb ($$) {
 	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
 
 	# Delete old numeric data
-	print "[PURGE] Deleting old data... \n";
 	pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
 
     # Delete extended session data
@@ -126,13 +125,11 @@ sub pandora_purgedb ($$) {
 	}
 
     # String data deletion
-    print "[PURGE] Deleting old string data... \n";
     if (!defined($conf->{'_string_purge'})){
         $conf->{'_string_purge'} = 7;
     }
 	$ulimit_access_timestamp = time() - 86400;
 	$ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
-	print "[PURGE] Deleting old string data... \n";
 	pandora_delete_old_module_data ($dbh, 'tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
 
     # Delete event data
@@ -249,16 +246,19 @@ sub pandora_purgedb ($$) {
 	if (defined ($first_mark)) {
 		$total_time = $ulimit_access_timestamp - $first_mark;
 		$purge_steps = int( $total_time / $BIG_OPERATION_STEP);
-	
-		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
-			db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark);
-			print "[PURGE] Agent access deletion progress %$ax .. \r";
-			# Do a nanosleep here for 0,01 sec
-			usleep (10000);
+		if ($purge_steps > 0) {
+			for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
+				db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark);
+				print "[PURGE] Agent access deletion progress %$ax .. \r";
+				# Do a nanosleep here for 0,01 sec
+				usleep (10000);
+			}
+		    print "\n";
+		} else {
+			print "[PURGE] Agent access already purged\n";
 		}
-	    print "\n";
 	} else {
-		print "[PURGE] No data in tagente_access\n";
+		print "[PURGE] No agent access data\n";
 	}
 	
 	#Purge the reports
@@ -362,13 +362,11 @@ sub pandora_compactdb ($$) {
 	my %count_hash;
 	my %id_agent_hash;
 	my %value_hash;
-
+	
 	return if ($conf->{'_days_compact'} == 0 || $conf->{'_step_compact'} < 1);
-
-	# Compact interval length in seconds
-	# $conf->{'_step_compact'} varies between 1 (36 samples/day) and
-	# 20 (1.8 samples/day)
-	my $step = $conf->{'_step_compact'} * 2400;
+	
+	# Convert compact interval length from hours to seconds
+	my $step = $conf->{'_step_compact'} * 3600;
 
 	# The oldest timestamp will be the lower limit
 	my $limit_utime = get_db_value ($dbh, 'SELECT min(utimestamp) as min FROM tagente_datos');
@@ -376,18 +374,32 @@ sub pandora_compactdb ($$) {
 
 	# Calculate the start date
 	my $start_utime = time() - $conf->{'_days_compact'} * 24 * 60 * 60;
+	my $last_compact = $start_utime;
 	my $stop_utime;
 
-	print "[COMPACT] Compacting data until " . strftime ("%Y-%m-%d %H:%M:%S", localtime($start_utime)) ."\n";
+	# Do not compact the same data twice!
+	if (defined ($conf->{'_last_compact'}) && $conf->{'_last_compact'} > $limit_utime) {
+		$limit_utime  = $conf->{'_last_compact'};
+	}
+	
+	if ($start_utime <= $limit_utime) {
+		print "[COMPACT] Data already compacted.\n";
+		return;
+	}
+	
+	print "[COMPACT] Compacting data from " . strftime ("%Y-%m-%d %H:%M:%S", localtime($limit_utime)) . " to " . strftime ("%Y-%m-%d %H:%M:%S", localtime($start_utime));
 
 	# Prepare the query to retrieve data from an interval
 	while (1) {
 
+			# Mark the progress
+			print ".";
+			
 			# Calculate the stop date for the interval
 			$stop_utime = $start_utime - $step;
 
 			# Out of limits
-			return if ($start_utime < $limit_utime);
+			last if ($start_utime < $limit_utime);
 
 			my @data = get_db_rows ($dbh, 'SELECT * FROM tagente_datos WHERE utimestamp < ? AND utimestamp >= ?', $start_utime, $stop_utime);
 			# No data, move to the next interval
@@ -427,6 +439,14 @@ sub pandora_compactdb ($$) {
 			usleep (1000); # Very small usleep, just to don't burn the DB
 			# Move to the next interval
 			$start_utime = $stop_utime;
+	}
+	print "\n";
+
+	# Mark the last compact date
+	if (defined ($conf->{'_last_compact'})) {
+		db_do ($dbh, 'UPDATE tconfig SET value=? WHERE token=?', $last_compact, 'last_compact');
+	} else {
+		db_do ($dbh, 'INSERT INTO tconfig (value, token) VALUES (?, ?)', $last_compact, 'last_compact');
 	}
 }
 
@@ -503,6 +523,7 @@ sub pandora_load_config ($) {
 
 	$conf->{'_days_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_purge'");
 	$conf->{'_days_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_compact'");
+	$conf->{'_last_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'last_compact'");
 	$conf->{'_step_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'step_compact'");
 	$conf->{'_history_db_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_enabled'");
 	$conf->{'_history_db_host'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_host'");
@@ -702,14 +723,13 @@ sub pandora_delete_old_module_data {
 			# Let's split the intervals in $SMALL_OPERATION_STEP deletes each
 			$purge_count = get_db_value ($dbh, "SELECT COUNT(id_agente_modulo) FROM $table WHERE utimestamp < $mark1 AND utimestamp > $mark2");
 			while ($purge_count > 0){
-				print ".";
 				db_do ($dbh, "DELETE FROM $table WHERE utimestamp < $mark1 AND utimestamp > $mark2 LIMIT $SMALL_OPERATION_STEP");
 				# Do a nanosleep here for 0,001 sec
-                        	usleep (10000);
+				usleep (10000);
 				$purge_count = $purge_count - $SMALL_OPERATION_STEP;
 			}
 			
-			print "\n[PURGE] Data deletion Progress (".$ax."%) ";
+			print "[PURGE] Deleting old data from $table... ".$ax."%\r";
 		}
 		print "\n";
 	} else {
@@ -749,7 +769,7 @@ sub pandoradb_main ($$$) {
 	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
 	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
 
-	print "\nEnding at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
+	print "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
 }
 
 # Init

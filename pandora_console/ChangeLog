@@ -1,5 +1,10 @@
 2013-05-27 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/search_main.php: change the label to show when the list
+	of agents don't need pagination.
+
+2013-05-27 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: added function "gis_calculate_distance"
 	to calculate the distance between to points, and return in the
 	international metric system, kilometers.

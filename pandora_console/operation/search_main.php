@@ -72,17 +72,10 @@ html_print_table($table);
 if ($searchAgents && $totalAgents > 0) {
 	echo $list_agents;
 	
-	if ($count_agents_main < $totalAgents) {
-		echo "<a href='index.php?search_category=modules&keywords=".$keyword."&head_search_keywords=Search'>" .
-			sprintf(__('Show %s of %s. View all matches'),
-				$count_agents_main, $totalAgents) .
-			"</a>";
-	}
-	else {
-		echo "<a href='index.php?search_category=modules&keywords=".$keyword."&head_search_keywords=Search'>" .
-			__('The search result only this list agents.') .
-			"</a>";
-	}
+	echo "<a href='index.php?search_category=agents&keywords=".$keyword."&head_search_keywords=Search'>" .
+		sprintf(__('Show %s of %s. View all matches'),
+			$count_agents_main, $totalAgents) .
+		"</a>";
 }
 
 echo '</div>';

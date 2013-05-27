@@ -1,3 +1,12 @@
+2013-05-27 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: added function "gis_calculate_distance"
+	to calculate the distance between to points, and return in the
+	international metric system, kilometers.
+	
+	* operation/agentes/gis_view.php: added column with the show the
+	distance with the previous point.
+
 2013-05-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql: Updated data types to allow 64bit integers to be

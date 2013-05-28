@@ -1,3 +1,7 @@
+2013-05-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/setup/performance.php: Added a new help it.
+
 2013-05-28 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/config_process.php: set the timezone in init values for

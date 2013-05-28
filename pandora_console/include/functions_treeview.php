@@ -95,23 +95,23 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	$group_name = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);	
 	$agent_name = db_get_value('nombre', 'tagente', 'id_agente', $module['id_agente']);	
 	
-	// Actions table
-/*
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
-	echo '<tr>';
-	echo '<td><form id="module_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '&tab=data' . $url_hash . '">';
-		html_print_submit_button (__('Go to modules detail'), 'upd_button', false, 'class="sub search"');
-	echo '</form></td></tr>';
+	if (can_user_access_node ()) {
+		// Actions table
+		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
+		echo '<tr>';
+		echo '<td><form id="module_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '&tab=data' . $url_hash . '">';
+			html_print_submit_button (__('Go to modules detail'), 'upd_button', false, 'class="sub search"');
+		echo '</form></td></tr>';
 
-	echo '</table>';
-*/
+		echo '</table>';
+	}
 
-//id_module and id_agent hidden
-echo '<div id="ids" style="display:none;">';
-	html_print_input_text('id_module', $id_module);
-	html_print_input_text('id_agent', $module['id_agente']);
-	html_print_input_text('server_name', $server_name);
-echo '</div>';
+	//id_module and id_agent hidden
+	echo '<div id="ids" style="display:none;">';
+		html_print_input_text('id_module', $id_module);
+		html_print_input_text('id_agent', $module['id_agente']);
+		html_print_input_text('server_name', $server_name);
+	echo '</div>';
 	
 	return;
 }
@@ -142,8 +142,8 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 	}
 	
 	echo '<div id="id_div3" width="450px">';
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:70%">';
-	echo '<tr><td colspan=3 class="datos"><center><img src="images/bell.png"> '.$module_name.'</center></td></tr>';
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:90%">';
+	echo '<tr><td colspan=3 class="datos"><center>' . html_print_image('images/bell.png', true) . ' ' . $module_name . '</center></td></tr>';
 	
 	echo '<tr><th class="datos"><b>'.__('Template').'</b></th>';
 	echo '<th class="datos"><b>'.__('Actions').'</b></th>';
@@ -171,13 +171,15 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 	}
 	echo '</table>';
 	
-	// Actions table
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
-	echo '<tr>';
-	echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $agent_id . $url_hash . '&tab=alert" target="_blank">';
-		html_print_submit_button (__('Go to alerts detail'), 'upd_button', false, 'class="sub search"');
-	echo '</form></td></tr>';
-	echo '</table>';
+	if(can_user_access_node ()) {
+		// Actions table
+		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:90%; text-align: center;">';
+		echo '<tr>';
+		echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $agent_id . $url_hash . '&tab=alert" target="_blank">';
+			html_print_submit_button (__('Go to alerts detail'), 'upd_button', false, 'class="sub search"');
+		echo '</form></td></tr>';
+		echo '</table>';
+	}
 }
 
 function treeview_printTable($id_agente, $server_data = array()) {
@@ -223,7 +225,7 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	}
 	
 	echo '<div id="id_div3" width="450px">';
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:70%">';
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:90%">';
 	//Agent name
 	echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 	if ($agent['disabled']) {
@@ -357,17 +359,14 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	
 	echo '</div>';
 	
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
-	
-	// If user has access to normal console
-/*
-	echo '<tr>';	
-	echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.$url_hash.'">';
-			html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub search"');
-	echo '</form></td></tr>';
-*/
-	
-	echo '</table>';
+	if (can_user_access_node ()) {
+		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
+		echo '<tr>';	
+		echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.$url_hash.'">';
+				html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub search"');
+		echo '</form></td></tr>';
+		echo '</table>';
+	}
 	
 	return;
 }

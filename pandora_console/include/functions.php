@@ -1794,4 +1794,18 @@ function is_array_empty($InputVariable)
 	
 	return $Result;
 }
+
+// Return 0 if the user hasnt access to node/detail 1 otherwise
+function can_user_access_node () {
+	global $config;
+
+	$userinfo = get_user_info ($config['id_user']);
+	
+	if (defined('METACONSOLE')) {	
+		return $userinfo["is_admin"] == 1 ? 1 : $userinfo["metaconsole_access_node"];
+	}
+	else {
+		return $userinfo["is_admin"];
+	}
+}
 ?>

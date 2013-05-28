@@ -1,3 +1,22 @@
+2013-05-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php
+	include/functions.php
+	include/functions_treeview.php
+	operation/tree.php: Some aesthetic improvements on
+	treeview, fixed some bugs and added control of the 
+	access to the agents/modules/alerts details by the
+	user configuration flag
+
+	* images/page_white_text.png
+	images/page_white.png
+	images/pdf.png: Some icon changes
+
+	* godmode/alerts/alert_list.list.php
+	operation/agentes/alerts_status.php
+	operation/agentes/alerts_status.functions.php: Prepared the 
+	alerts view to be added to metaconsole
+
 2013-05-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/setup/performance.php: Added a new help it.

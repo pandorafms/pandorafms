@@ -663,7 +663,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	global $config;
 	
 	$actionText = "";
-	require_once ("include/functions_alerts.php");
+	require_once ($config['homedir'] . "/include/functions_alerts.php");
 	$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 	$id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
 	
@@ -718,16 +718,18 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	
 	$data = array ();
 	
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-		if ($policyInfo === false)
-			$data[$index['policy']] = '';
-		else {
-			$img = 'images/policies.png';
-			
-			$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
-				html_print_image($img,true, array('title' => $policyInfo['name'])) .
-				'</a>';
+	if (!defined('METACONSOLE')) {
+		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+			$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
+			if ($policyInfo === false)
+				$data[$index['policy']] = '';
+			else {
+				$img = 'images/policies.png';
+				
+				$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
+					html_print_image($img,true, array('title' => $policyInfo['name'])) .
+					'</a>';
+			}
 		}
 	}
 	
@@ -737,37 +739,50 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		$data[$index['standby']] = html_print_image ('images/bell_pause.png', true, array('title' => __('Standby on')));
 	} 
 	
-	// Force alert execution
-	$data[$index['force_execution']] = '';
-	if ($alert["force_execution"] == 0) {
-		$data[$index['force_execution']] =
-			'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
-	} 
-	else {
-		$data[$index['force_execution']] =
-			'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
+	if (!defined('METACONSOLE')) {
+		// Force alert execution
+		$data[$index['force_execution']] = '';
+		if ($alert["force_execution"] == 0) {
+			$data[$index['force_execution']] =
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
+		} 
+		else {
+			$data[$index['force_execution']] =
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
+		}
 	}
-	
+
 	$data[$index['agent_name']] = $disabledHtmlStart;
 	if ($agent == 0) {
 		$data[$index['module_name']] .=
-			ui_print_truncate_text(modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+			ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	} 
 	else {
-		if ($agent_style !== false) {
-			$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled . " $agent_style");
+		if (defined('METACONSOLE')) {
+			$data[$index['agent_name']] .= $alert['agent_name'];
 		}
 		else {
-			$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);		
+			if ($agent_style !== false) {
+				$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled . " $agent_style");
+			}
+			else {
+				$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);		
+			}
 		}
 		$data[$index['module_name']] =
-			ui_print_truncate_text (modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+			ui_print_truncate_text (isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}
+	
 	$data[$index['agent_name']] .= $disabledHtmlEnd;
 	
 	$data[$index['description']] = '';
 	
-	$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
+	if (defined('METACONSOLE')) {
+		$data[$index['template']] .= '<a class="template_details" href="' . ui_get_full_url('/', false, false, false) . '/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template=' . $template['id'] . '&server_name=' . $alert['server_name'] . '">';
+	}
+	else {
+		$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template=' . $template['id'] . '">';
+	}
 	$data[$index['template']] .= html_print_image ('images/zoom.png', true);
 	$data[$index['template']] .= '</a> ';
 	$actionDefault = db_get_value_sql("SELECT id_alert_action
@@ -818,11 +833,13 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	
 	$data[$index['status']] = ui_print_status_image($status, $title, true);
 	
-	if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
-		$data[$index['validate']] = '';
-		
-		
-		$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
+	if (!defined('METACONSOLE')) {
+		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
+			$data[$index['validate']] = '';
+			
+			
+			$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
+		}
 	}
 	
 	return $data;

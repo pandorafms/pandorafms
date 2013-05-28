@@ -183,10 +183,12 @@ if (is_ajax ())
 				$agent_info["monitor_warning"] = $row["warning_count"];
 				$agent_info["monitor_unknown"] = $row["unknown_count"];
 				$agent_info["monitor_normal"] = $row["normal_count"];
+				$agent_info["monitor_notinit"] = $row["notinit_count"];
 				$agent_info["modules"] = $row["total_count"];
 				
 				$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-				$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"], $agent_info["monitor_warning"], $agent_info["monitor_unknown"]);
+				$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"], $agent_info["monitor_warning"], $agent_info["monitor_unknown"].
+																		$agent_info["modules"], $agent_info["monitor_notinit"]);
 				
 				// Filter by status (only in policy view)
 				if ($type == 'policies') {
@@ -459,14 +461,14 @@ if (is_ajax ())
 					$data = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($row["datos"]),0,12)."</span>";
 				
 				echo "</span><span style='margin-left: 20px;'>";
+					if ($row['utimestamp'] != '') {
+						ui_print_help_tip ($row["timestamp"], '', 'images/clock2.png');
+						echo "&nbsp;";
+					}
 					echo $data;
 					if ($row['unit'] != '') {
 						echo "&nbsp;";
 						echo '('.$row['unit'].')';
-					}
-					if ($row['utimestamp'] != '') {
-						echo "&nbsp;";
-						ui_print_help_tip ($row["timestamp"], '', 'images/clock2.png');
 					}
 				echo "</span></li>";
 			}
@@ -776,6 +778,7 @@ enterprise_hook('close_meta_frame');
 			data: "page=<?php echo $_GET['sec2']; ?>&printTable=1&id_agente=" + id_agent + "&server_name=" + server_name,
 			success: function(data) {
 				$('#cont').html(data);
+				forced_title_callback();
 			}
 		});
 		
@@ -789,6 +792,7 @@ enterprise_hook('close_meta_frame');
 			data: "page=<?php echo $_GET['sec2']; ?>&printAlertsTable=1&id_module=" + id_module + "&server_name=" + server_name,
 			success: function(data) {
 				$('#cont').html(data);
+				forced_title_callback();
 			}
 		});
 	}
@@ -800,6 +804,7 @@ enterprise_hook('close_meta_frame');
 			data: "page=<?php echo $_GET['sec2']; ?>&printModuleTable=1&id_module=" + id_module + "&server_name=" + server_name,
 			success: function(data) {
 				$('#cont').html(data);
+				forced_title_callback();
 			}
 		});
 	}
@@ -831,7 +836,7 @@ enterprise_hook('close_meta_frame');
 					})
 					.show ();
 					refresh_pagination_callback (module_id, id_agent, server_name);
-					
+					forced_title_callback();
 			}
 		});
 	}

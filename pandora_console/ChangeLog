@@ -1,3 +1,8 @@
+2013-05-28 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/config_process.php: set the timezone in init values for
+	PHP because for example it is used in the library for report PDF.
+
 2013-05-27 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: added function "gis_calculate_distance"

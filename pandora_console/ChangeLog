@@ -1,3 +1,8 @@
+2013-05-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_module_interval_factor.php: Added a new help
+	file.
+
 2013-05-27 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/search_main.php: change again the label of the bottom

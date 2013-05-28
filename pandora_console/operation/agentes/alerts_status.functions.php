@@ -35,7 +35,7 @@ function validateAlert() {
 }
 
 function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $return = false) {
-	$table->width = '90%';
+	$table->width = '100%';
 	$table->data = array ();
 	$table->style = array ();
 	
@@ -64,7 +64,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->data[1][1] = html_print_input_text('free_search', $free_search, '', 20, 40, true);
 	$table->data[1][2] = __('Standby');
 	$table->data[1][3] = html_print_select ($alert_standby, "filter_standby", $filter_standby, '', '', '', true);
-	$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub search"', true);
+	$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
 	
 	$data = '<form method="post" action="'.$url.'">';
 	$data .= html_print_table ($table, true);

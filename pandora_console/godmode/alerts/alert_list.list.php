@@ -314,7 +314,7 @@ else {
 	$url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente=' . $id_agente;
 }
 	
-$table->class = 'alert_list';
+$table->class = 'alert_list databox';
 $table->width = '98%';
 $table->size = array ();
 

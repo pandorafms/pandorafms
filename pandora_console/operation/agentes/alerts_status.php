@@ -32,9 +32,9 @@ if (is_ajax()) {
 	return;
 }
 
-require_once ("include/functions_agents.php");
-require_once ('operation/agentes/alerts_status.functions.php');
-require_once ('include/functions_users.php');
+require_once ($config['homedir'] . "/include/functions_agents.php");
+require_once ($config['homedir'] . '/operation/agentes/alerts_status.functions.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
@@ -63,6 +63,7 @@ $url = 'index.php?sec=' . $sec . '&sec2=' . $sec2 . '&refr=' . $refr .
 if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) {
 	forceExecution($id_group);
 }
+
 
 $idAgent = get_parameter_get('id_agente', 0);
 
@@ -103,7 +104,12 @@ else {
 	
 	$print_agent = true;
 	
-	ui_print_page_header (__('Alert detail'), "images/op_alerts.png", false, "alert_validation");
+	if (!defined('METACONSOLE')) {
+		ui_print_page_header (__('Alert detail'), "images/op_alerts.png", false, "alert_validation");
+	}
+	else {
+		ui_meta_print_header(__("Alerts view"));
+	}
 }
 
 if ($alert_validate) {
@@ -114,6 +120,8 @@ if ($alert_validate) {
 		validateAlert();
 	}
 }
+
+enterprise_hook('open_meta_frame');
 
 if ($free_search != '') {
 	switch ($config["dbtype"]) {
@@ -256,8 +264,16 @@ else {
 	$filter_alert['disabled'] = $filter;
 }
 
-$alerts['alerts_simple'] = agents_get_alerts_simple ($agents,
-	$filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
+if (defined('METACONSOLE')) {
+	require_once ($config['homedir'] . '/enterprise/meta/include/functions_alerts_meta.php');
+	
+	$alerts['alerts_simple'] = alerts_meta_get_alerts ($agents,
+		$filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
+}
+else {
+	$alerts['alerts_simple'] = agents_get_alerts_simple ($agents,
+		$filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
+}
 
 $countAlertsSimple = agents_get_alerts_simple ($agents, $filter_alert,
 	false, $whereAlertSimple, false, false, $idGroup, true);
@@ -268,6 +284,7 @@ if ($tab != null) {
 
 // Filter form
 if ($print_agent) {
+	echo '<br>';
 	ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, true),__('Alert control filter'), __('Toggle filter(s)'));
 }
 
@@ -280,89 +297,140 @@ $table->align = array ();
 
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	if ($print_agent) {
-		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+		if (!defined('METACONSOLE')) {
+			$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+		}
+		
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
-		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[3] = __('Agent') . ' ' .
-			'<a href="' . $url . '&sort_field=agent&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
-		$table->head[4] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" =>$selectModuleUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
-		$table->head[5] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" =>$selectTemplateUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		
+		if (!defined('METACONSOLE')) {
+			$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		}
+		
+		$table->head[3] = __('Agent');
+		$table->head[4] = __('Module');
+		$table->head[5] = __('Template');
 		$table->head[6] = __('Action');
 		$table->head[7] = __('Last fired');
 		$table->head[8] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
-			$table->head[9] = __('Validate');
+		if (!defined('METACONSOLE')) {
+			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
+				$table->head[9] = __('Validate');
+				$table->align[9] = 'center';
+			}
 		}
+		
 		$table->align[8] = 'center';
-		$table->align[9] = 'center';
+		
+		// Sort buttons are only for normal console
+		if (!defined('METACONSOLE')) {
+			$table->head[3] .= ' ' .
+				'<a href="' . $url . '&sort_field=agent&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
+			$table->head[4] .= ' ' .
+				'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" =>$selectModuleUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+			$table->head[5] .= ' ' .
+				'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" =>$selectTemplateUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		}
 	}
 	else {
+		if (!defined('METACONSOLE')) {
+			$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+		}
 		
-		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
-		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[3] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
-		$table->head[4] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		
+		if (!defined('METACONSOLE')) {
+			$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		}
+		
+		$table->head[3] = __('Module');
+		$table->head[4] = __('Template');
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
-			$table->head[8] = __('Validate');
+		if (!defined('METACONSOLE')) {
+			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
+				$table->head[8] = __('Validate');
+				$table->align[8] = 'center';
+			}
 		}
 		$table->align[7] = 'center';
-		$table->align[8] = 'center';
+		
+		// Sort buttons are only for normal console
+		if (!defined('METACONSOLE')) {
+			$table->head[3] .= ' ' .
+				'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+			$table->head[4] .= ' ' .
+				'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		}
 	}
 }
 else
 {
 	if ($print_agent) {
-		
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
-		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[2] = __('Agent') . ' ' .
-			'<a href="' . $url . '&sort_field=agent&sort=up">'. html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
-		$table->head[3] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
-		$table->head[4] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		if (!defined('METACONSOLE')) {
+			$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		}
+		$table->head[2] = __('Agent');
+		$table->head[3] = __('Module');
+		$table->head[4] = __('Template');
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
-			$table->head[8] = __('Validate');
+		if (!defined('METACONSOLE')) {
+			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
+				$table->head[8] = __('Validate');
+				$table->align[8] = 'center';
+			}
 		}
 		$table->align[7] = 'center';
-		$table->align[8] = 'center';
+		
+		// Sort buttons are only for normal console
+		if (!defined('METACONSOLE')) {
+			$table->head[2] .= ' ' .
+				'<a href="' . $url . '&sort_field=agent&sort=up">'. html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
+			$table->head[3] .= ' ' .
+				'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+			$table->head[4] .= ' ' .
+				'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		}
 	}
 	else {
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
-		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[2] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
-		$table->head[3] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		if (!defined('METACONSOLE')) {
+			$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		}
+		$table->head[2] = __('Module');
+		$table->head[3] = __('Template');
 		$table->head[4] = __('Action');
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
-			$table->head[7] = __('Validate');
+		if (!defined('METACONSOLE')) {
+			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
+				$table->head[7] = __('Validate');
+				$table->align[7] = 'center';
+			}
 		}
 		$table->align[6] = 'center';
-		$table->align[7] = 'center';
+		
+		// Sort buttons are only for normal console
+		if (!defined('METACONSOLE')) {
+			$table->head[2] .= ' ' .
+				'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+			$table->head[3] .= ' ' .
+				'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+		}
 	}
 }
 
@@ -386,11 +454,13 @@ if (!empty ($table->data)) {
 	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
 	html_print_table ($table);
 	
-	if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "AM")) {
-		if (count($alerts['alerts_simple']) > 0) {
-			echo '<div class="action-buttons" style="width: '.$table->width.';">';
-			html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
-			echo '</div>';
+	if (!defined('METACONSOLE')) {
+		if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "AM")) {
+			if (count($alerts['alerts_simple']) > 0) {
+				echo '<div class="action-buttons" style="width: '.$table->width.';">';
+				html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
+				echo '</div>';
+			}
 		}
 	}
 	
@@ -399,6 +469,9 @@ if (!empty ($table->data)) {
 else {
 	echo '<div class="nf">'.__('No alerts found').'</div>';
 }
+
+enterprise_hook('close_meta_frame');
+
 
 ui_require_css_file('cluetip');
 ui_require_jquery_file('cluetip');

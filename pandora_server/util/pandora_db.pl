@@ -151,7 +151,6 @@ sub pandora_purgedb ($$) {
 			print "[PURGE] Moving old not validated events to history table (More than " . $conf->{'_event_purge'} . " days)... \n";
 
 			my @events = get_db_rows ($dbh, 'SELECT * FROM tmetaconsole_event WHERE estado = 0 AND utimestamp < ?', $event_limit);
-
 			foreach my $event (@events) {
 				db_process_insert($dbh, 'id_evento', 'tmetaconsole_event_history', $event);
 			}
@@ -160,24 +159,22 @@ sub pandora_purgedb ($$) {
 		$events_table = 'tmetaconsole_event';
 	}
 	
-	print "[PURGE] Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days)... \n";
+	print "[PURGE] Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days)";
 
 	# Delete with buffer to avoid problems with performance
-	my $buffer = 1000;
-	
 	my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
-
 	while(1) {
-		db_do($dbh, "DELETE FROM $events_table WHERE utimestamp < ? LIMIT ?", $event_limit, $buffer);
+		db_do($dbh, "DELETE FROM $events_table WHERE utimestamp < ? LIMIT ?", $event_limit, $BIG_OPERATION_STEP);
 
-		if($events_to_delete <= $buffer) {
+		if($events_to_delete <= $BIG_OPERATION_STEP) {
 			last;
 		}
 		else {
-			$events_to_delete = $events_to_delete - $buffer;
+			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
 		}
+		print ".";
 	}
-		
+	print "\n";
 
     # Delete audit data
     if (!defined($conf->{'_audit_purge'})){

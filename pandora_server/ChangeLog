@@ -1,3 +1,7 @@
+2013-05-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Use $BIG_OPERATION_STEP for event deletion.
+
 2013-05-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Several fixes. Save the last compact date

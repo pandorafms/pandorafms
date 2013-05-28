@@ -1,3 +1,10 @@
+2013-05-28 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/config_process.php: set the timezone in init values for
+	PHP because for example it is used in the library for report PDF.
+	
+	MERGED FROM THE BRANCH PANDORA_4
+
 2013-05-28  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_module_interval_factor.php: Added a new help

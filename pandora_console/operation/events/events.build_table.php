@@ -55,11 +55,13 @@ if (in_array('id_evento', $show_fields)) {
 if (in_array('evento', $show_fields)) {
 	$table->head[$i] = __('Event Name');
 	$table->align[$i] = 'left';
+	$table->style[$i] = 'max-width: 350px; word-break: break-all;';
 	$i++;
 }
 if (in_array('id_agente', $show_fields)) {
 	$table->head[$i] = __('Agent name');
 	$table->align[$i] = 'center';
+	$table->style[$i] = 'max-width: 350px; word-break: break-all;';
 	$i++;
 }
 if (in_array('timestamp', $show_fields)) {

@@ -68,17 +68,22 @@ if ($agent['disabled']) {
 	$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
 }
 else if ($agent['quiet']) {
-	$agent_name = "<em>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
+	$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
 }
 else {
 	$agent_name = $agent_name;
 }
 
 $data[0] = ui_print_group_icon ($agent["id_grupo"], true);
-$table_agent->cellstyle[count($table_agent->data)][0] = 'width: 16px; text-align:center; padding: 0px; vertical-align: top;';
+$table_agent->cellstyle[count($table_agent->data)][0] =
+	'width: 16px; text-align:center; padding: 0px;';
 
 $data[2] = $agent_name;
 $table_agent->colspan[count($table_agent->data)][2] = 3;
+
+$table_agent->cellstyle[count($table_agent->data)][2] =
+	'width: 100px; word-break: break-all;';
+
 
 $status_img = agents_detail_view_status_img ($agent["critical_count"],
 	$agent["warning_count"], $agent["unknown_count"], $agent["total_count"], 
@@ -104,7 +109,8 @@ $table_agent->cellstyle[count($table_agent->data)][0] = 'width: 150px; text-alig
 
 
 $data[2] = ui_print_os_icon ($agent["id_os"], false, true, true, false, false, false, array('title' => __('OS') . ': ' . get_os_name ($agent["id_os"])));
-$table_agent->cellstyle[count($table_agent->data)][2] = 'width: 16px; text-align:center; padding: 0px; vertical-align: top;';
+$table_agent->cellstyle[count($table_agent->data)][2] =
+	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
 $data[3] = empty($agent["os_version"]) ? get_os_name ((int) $agent["id_os"]) : $agent["os_version"];
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 
@@ -119,10 +125,11 @@ foreach ($addresses as $k => $add) {
 	}
 }
 
-if(!empty($address)) {
+if (!empty($address)) {
 	$data = array();
 	$data[2] = html_print_image('images/world.png', true, array('title' => __('IP address')));
-	$table_agent->cellstyle[count($table_agent->data)][2] = 'width: 16px; text-align:center; padding: 0px; vertical-align: top;';
+	$table_agent->cellstyle[count($table_agent->data)][2] =
+		'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
 	$data[3] = '<span style="vertical-align:top; display: inline-block;">';
 	$data[3] .= empty($address) ? '<em>' . __('N/A') . '</em>' : $address;
 	$data[3] .= '</span>';
@@ -133,7 +140,8 @@ if(!empty($address)) {
 
 $data = array();
 $data[2] = html_print_image('images/version.png', true, array('title' => __('Agent Version')));
-$table_agent->cellstyle[count($table_agent->data)][2] = 'width: 16px; text-align:center; padding: 0px; vertical-align: top;';
+$table_agent->cellstyle[count($table_agent->data)][2] =
+	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
 $data[3] .= empty($agent["agent_version"]) ? '<i>' . __('N/A') . '</i>' : $agent["agent_version"];
 $data[3] .= '</span>';
@@ -143,7 +151,8 @@ $table_agent->rowclass[] = '';
 
 $data = array();
 $data[2] = html_print_image('images/default_list.png', true, array('title' => __('Description')));
-$table_agent->cellstyle[count($table_agent->data)][2] = 'width: 16px; text-align:center; padding: 0px; vertical-align: top;';
+$table_agent->cellstyle[count($table_agent->data)][2] =
+	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
 $data[3] .= empty($agent["comentarios"]) ? '<em>' . __('N/A') . '</em>' : $agent["comentarios"];
 $data[3] .= '</span>';

@@ -1,3 +1,9 @@
+2013-05-29  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php: Change TTL of the graph items
+	in visual console from 2 to 1 to avoid create infinite files in
+	/tmp. TTL=2 is only for PDF renderization
+
 2013-05-28 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/config_process.php: set the timezone in init values for

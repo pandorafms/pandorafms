@@ -1396,7 +1396,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					// resulting fault image links :(
 					echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
 						false, $layout_data['width'], $layout_data['height'],
-						'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url, 2);
+						'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url, 1);
 					
 					echo "</a>";
 					echo "</div>";

@@ -1,3 +1,7 @@
+2013-05-29  Dario Rodriguez <dario@artica.es>
+
+	* pandoradb_data.sql: Added new plugins on instalation.
+
 2013-05-29  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php: Change TTL of the graph items

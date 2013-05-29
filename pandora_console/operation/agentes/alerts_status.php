@@ -90,6 +90,13 @@ if ($idAgent != 0) {
 	$idGroup = false;
 	
 	$print_agent = false;
+	
+	$tab = get_parameter ("tab", "main");
+	
+	if ($tab == 'main') {
+		echo "<h4 style='padding-top:0px !important;'>" .
+			__('Full list of alerts') . "</h4>";
+	}
 } 
 else {
 	if (!check_acl ($config["id_user"], 0, "AR")) {
@@ -98,7 +105,10 @@ else {
 		return;
 	}
 	
-	$agents = array_keys(agents_get_group_agents(array_keys(users_get_groups($config["id_user"], 'AR', false))));
+	$agents = array_keys(
+		agents_get_group_agents(
+			array_keys(
+				users_get_groups($config["id_user"], 'AR', false))));
 	
 	$idGroup = $id_group;
 	

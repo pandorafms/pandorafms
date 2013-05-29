@@ -158,11 +158,16 @@ $tags_sql = tags_get_acl_tags($config['id_user'],
 $status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
 $status_text_monitor = get_parameter('status_text_monitor', '');
 $filter_monitors = (bool)get_parameter('filter_monitors', false);
+$monitors_change_filter = (bool)get_parameter('monitors_change_filter', false);
 
 $status_filter_sql = '1 = 1';
-if ($status_filter_monitor != -1) {
+if ($status_filter_monitor == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
+	$status_filter_sql = " tagente_estado.estado <> 0";
+}
+elseif ($status_filter_monitor != -1) {
 	$status_filter_sql = 'tagente_estado.estado = ' . $status_filter_monitor;
 }
+
 $status_text_monitor_sql = '%';
 if (!empty($status_text_monitor)) {
 	$status_text_monitor_sql .= $status_text_monitor . '%';
@@ -252,7 +257,13 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$limit = " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+if ($monitors_change_filter) {
+	$limit = " LIMIT " . $config['block_size'] . " OFFSET 0";
+}
+else {
+	$limit = " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+}
+
 
 $modules = db_get_all_rows_sql ($sql . $limit);
 if (empty ($modules)) {
@@ -267,10 +278,10 @@ $table->data = array ();
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
-$table->head[0] = "<span title='" . __('Force execution') . "'>".__('F.')."</span>";
+$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-	$table->head[1] = "<span title='" . __('Policy') . "'>".__('P.')."</span>";
+	$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 }
 
 $table->head[2] = __('Type') . ' ' .
@@ -292,7 +303,7 @@ $table->head[9] = __('Last contact') . ' ' .
 	'<a href="' . $url . '&sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
 	'<a href="' . $url . '&sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
-$table->align = array("left","left","center","left","left","center");
+$table->align = array("left", "left", "center", "left", "left", "center");
 
 $last_modulegroup = 0;
 $rowIndex = 0;
@@ -569,7 +580,7 @@ foreach ($modules as $module) {
 echo "<h4 style='padding-top:0px !important;'>" .
 	__('Full list of monitors') . "</h4>";
 
-print_form_filter_monitors($status_filter_monitor, $status_text_monitor);
+print_form_filter_monitors($id_agente, $status_filter_monitor, $status_text_monitor);
 if (empty ($table->data)) {
 	if ($filter_monitors) {
 		echo '<div class="nf">' . __('Any monitors aren\'t with this filter.') . '</div>';
@@ -579,9 +590,17 @@ if (empty ($table->data)) {
 	}
 }
 else {
-	ui_pagination ($count_modules);
+	$url = "index.php?" .
+		"sec=estado&" .
+		"sec2=operation/agentes/ver_agente&" .
+		"id_agente=" . $id_agente . "&" .
+		"refr=&filter_monitors=1&" .
+		"status_filter_monitor=" . $status_filter_monitor . "&" .
+		"status_text_monitor=" . $status_text_monitor;
+	
+	ui_pagination ($count_modules, $url);
 	html_print_table ($table);
-	ui_pagination ($count_modules);
+	ui_pagination ($count_modules, $url);
 }
 
 unset ($table);
@@ -604,18 +623,20 @@ ui_require_jquery_file ('cluetip');
 /* ]]> */
 </script>
 <?php
-function print_form_filter_monitors($status_filter_monitor = -1,
+function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	$status_text_monitor = '') {
 	
-	$form_text = '<form action="" method="post">';
+	$form_text = '<form action="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agent . '" method="post">';
 	
 	$table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
+	$table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
 	$table->data[0][0] .= __('Status:');
 	$status_list = array(
 		-1 => __('All'),
 		AGENT_MODULE_STATUS_CRITICAL_BAD => __('Critical'),
 		AGENT_MODULE_STATUS_CRITICAL_ALERT => __('Alert'),
 		AGENT_MODULE_STATUS_NORMAL => __('Normal'),
+		AGENT_MODULE_STATUS_NOT_NORMAL => __('Not Normal'),
 		AGENT_MODULE_STATUS_WARNING => __('Warning'),
 		AGENT_MODULE_STATUS_UNKNOW => __('Unknow'));
 	$table->data[0][1] = html_print_select ($status_list,

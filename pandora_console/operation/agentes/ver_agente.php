@@ -47,7 +47,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
 		
-		if($id_group > 0) {
+		if ($id_group > 0) {
 			$groups = array($id_group);
 			if ($recursion) {
 				$groups = array_merge($groups, groups_get_id_recursive($id_group, true));
@@ -79,8 +79,10 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json_for_multiple_agents_id) {
 		$idAgents = get_parameter('id_agent');
 		
-		$modules = db_get_all_rows_sql('SELECT nombre, id_agente_modulo
-			FROM tagente_modulo WHERE id_agente IN (' . implode(',', $idAgents) . ')');
+		$modules = db_get_all_rows_sql('
+			SELECT nombre, id_agente_modulo
+			FROM tagente_modulo
+			WHERE id_agente IN (' . implode(',', $idAgents) . ')');
 		
 		$return = array();
 		foreach ($modules as $module) {

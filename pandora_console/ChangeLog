@@ -1,5 +1,14 @@
 2013-05-29 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/events/events.build_table.php,
+	operation/agentes/estado_generalagente.php,
+	include/functions_events.php: fixed the views with huge large names
+	for agents or and modules.
+	
+	Fixes: #2242
+
+2013-05-29 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_snmp_browser.php: fixed PHP warning with to
 	access out the table array.
 

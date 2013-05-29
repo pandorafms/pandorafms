@@ -785,7 +785,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$agent_condition = '';
 	}
 	else {
-		$agent_condition = "id_agente = $agent_id AND";
+		$agent_condition = " id_agente = $agent_id AND ";
 	}
 	
 	if ($filter == '') {
@@ -795,17 +795,23 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-				$sql = sprintf ("SELECT * FROM tevento WHERE %s %s ORDER BY timestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
+				$sql = sprintf ("SELECT *
+					FROM tevento
+					WHERE %s %s
+					ORDER BY timestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
 			break;
 		case "oracle":
-				$sql = sprintf ("SELECT * FROM tevento WHERE %s %s AND rownum <= %d ORDER BY timestamp DESC", $agent_condition, $filter, $limit);
+				$sql = sprintf ("SELECT *
+					FROM tevento
+					WHERE %s %s AND rownum <= %d
+					ORDER BY timestamp DESC", $agent_condition, $filter, $limit);
 			break;
 	}
 	
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false) {
-		echo '<div class="nf">'.__('No events').'</div>';
+		echo '<div class="nf">' . __('No events') . '</div>';
 	}
 	else {
 		$table->id = 'latest_events_table';
@@ -823,7 +829,10 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->data = array ();
 		$table->align = array ();
 		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px; background: #E8E8E8;';
-		$table->style[4] = 'width:120px';
+		if ($agent_id == 0) {
+			$table->style[3] = 'width:120px; word-break: break-all;';
+		}
+		$table->style[4] = 'width:120px; word-break: break-all;';
 		
 		$table->head[0] = "<span title='" . __('Validated') . "'>" . __('V.') . "</span>";
 		$table->align[0] = 'center';
@@ -837,7 +846,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		
 		$table->head[3] = __('Event name');
 		
-		if($agent_id == 0) {
+		if ($agent_id == 0) {
 			$table->head[4] = __('Agent name');
 		}
 		

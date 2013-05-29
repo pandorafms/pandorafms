@@ -1,5 +1,9 @@
 2013-05-29  Dario Rodriguez <dario@artica.es>
 
+	* pandoradb_data.sql: Added new network_components.
+
+2013-05-29  Dario Rodriguez <dario@artica.es>
+
 	* pandoradb_data.sql: Fixed an error on plugin's name.
 
 2013-05-29  Dario Rodriguez <dario@artica.es>

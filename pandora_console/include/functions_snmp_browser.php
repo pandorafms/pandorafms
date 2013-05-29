@@ -338,7 +338,7 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
  * @return string The OID data.
  */
 function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = false) {
-
+	
 	// OID information table
 	$table->width = '100%';
 	$table->size = array ();
@@ -442,14 +442,22 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table2->data = array ();
 	
 	$table2->data[0][0] = html_print_input_text ('search_text', '', '', 25, 0, true);
-	$table2->data[0][0] .= '<a href="javascript:">' . html_print_image ("images/zoom.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();')) . '</a>';
-	$table2->data[0][1] = '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_first.png", true, array ('title' => __('First match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchFirstMatch();')) . '</a>';
-	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();')) . '</a>';
-	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_next.png", true, array ('title' => __('Next match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchNextMatch();')) . '</a>';
-	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_last.png", true, array ('title' => __('Last match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchLastMatch();')) . '</a>';
+	$table2->data[0][0] .= '<a href="javascript:">' .
+		html_print_image ("images/zoom.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();')) . '</a>';
+	$table2->data[0][1] = '&nbsp;' . '<a href="javascript:">' .
+		html_print_image ("images/go_first.png", true, array ('title' => __('First match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchFirstMatch();')) . '</a>';
+	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' .
+		html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();')) . '</a>';
+	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' .
+		html_print_image ("images/go_next.png", true, array ('title' => __('Next match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchNextMatch();')) . '</a>';
+	$table2->data[0][1] .= '&nbsp;' . '<a href="javascript:">' .
+		html_print_image ("images/go_last.png", true, array ('title' => __('Last match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchLastMatch();')) . '</a>';
 	$table2->cellstyle[0][1] = 'text-align:center;';
 	
-	$table2->data[0][2] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/expand.png", true, array ('title' => __('Expand the tree') . ' (' . __('can be slow') . ')', 'style' => 'vertical-align: middle;', 'onclick' => 'expandAll();')) . '</a>';
+	$table2->data[0][2] = '&nbsp;' . '<a href="javascript:">' .
+		html_print_image("images/expand.png", true,
+			array('title' => __('Expand the tree (can be slow)'),
+				'style' => 'vertical-align: middle;', 'onclick' => 'expandAll();')) . '</a>';
 	$table2->data[0][2] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/collapse.png", true, array ('title' => __('Collapse the tree'), 'style' => 'vertical-align: middle;', 'onclick' => 'collapseAll();')) . '</a>';
 	$table2->cellstyle[0][2] = 'text-align:center;';
 	

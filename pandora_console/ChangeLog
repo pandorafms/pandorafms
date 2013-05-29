@@ -1,5 +1,10 @@
 2013-05-29 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_snmp_browser.php: fixed PHP warning with to
+	access out the table array.
+
+2013-05-29 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/agentes/ver_agente.php: cleaned source code style.
 	
 	* operation/agentes/alerts_status.php: added the text for the main

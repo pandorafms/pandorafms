@@ -1,3 +1,26 @@
+2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* .classpath, .settings, .settings/org.eclipse.jdt.core.prefs:
+	added garbage files necesaries for eclipse.
+	
+	* AndroidManifest.xml: update the version.
+	
+	* bin/AndroidManifest.xml: erased temp file from project compilation
+	in eclipse.
+	
+	* proguard.cfg: fixed the file and change the deprecated
+	instructions.
+	
+	* src/pandroid/agent/PandroidAgentListener.java: added the code for
+	to magical change to open source version.
+	
+	* src/pandroid/agent/PandroidAgentTentacle.java,
+	src/pandroid/agent/PandroidAgent.java: improved the source code
+	style.
+	
+	* res/values/strings.xml, res/values-en/strings.xml,
+	res/values-es/strings.xml: updated the texts.
+
 2013-05-28  Junichi Satoh  <junichi@rworks.jp>
 
 	* res/values-ja/strings.xml: Fixed a translation.

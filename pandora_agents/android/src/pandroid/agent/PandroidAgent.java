@@ -16,12 +16,9 @@ package pandroid.agent;
 
 import java.io.File;
 
-import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;

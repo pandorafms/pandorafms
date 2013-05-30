@@ -122,7 +122,7 @@
 	<string name="mobileWebURL">Mobile server URL:</string>
 	<string name="go_to_web">View Mobile site</string>
 	
-	<string name="bufferSize">XML Buffer Size(KB)</string>
+	<string name="bufferSize">XML Buffer Size (KB) (Enterprise Only)</string>
 	
 	<string name="enter">enter</string>
 	<string name="back">back</string>

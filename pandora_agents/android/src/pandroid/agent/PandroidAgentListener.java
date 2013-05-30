@@ -40,11 +40,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.database.Cursor;
 import android.location.Criteria;
 import android.location.Location;
@@ -77,7 +72,7 @@ public class PandroidAgentListener extends Service {
 	//boolean showLastXML = true;
 
 
-	private LocationManager locmgr = null;
+	//private LocationManager locmgr = null;
 
 
 	@Override
@@ -188,8 +183,7 @@ public class PandroidAgentListener extends Service {
 		}
 
 		@Override
-		protected void onPostExecute(Void unused)
-		{
+		protected void onPostExecute(Void unused) {
 			
 //			SharedPreferences agentPreferences = getApplicationContext().getSharedPreferences(
 //					getApplicationContext().getString(R.string.const_string_preferences),
@@ -213,16 +207,17 @@ public class PandroidAgentListener extends Service {
 				notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
 
-				if(Core.NotificationCheck.equals("enabled")){
+				if (Core.NotificationCheck.equals("enabled")) {
 					CancelNotification(getApplicationContext(),42);
 					notificationManager.notify(42, notification);
 				}
-				else{
+				else {
 					CancelNotification(getApplicationContext(),42);
 				}
 
 
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				Log.e("notification", e.toString());
 			}
 
@@ -230,7 +225,7 @@ public class PandroidAgentListener extends Service {
 	}// end onPostExecute
 
 
-	private void contact(){
+	private void contact() {
 
 
 		Toast toast = Toast.makeText(getApplicationContext(),
@@ -250,12 +245,21 @@ public class PandroidAgentListener extends Service {
 
 		try {
 			xml = new buildXMLTask().execute().get();
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			xmlBuilt = false;
-		} catch (ExecutionException e) {
+		}
+		catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 			xmlBuilt = false;
+		}
+		
+		if (xmlBuilt) {
+			//TODO
+		}
+		else {
+			//TODO
 		}
 
 		new contactTask().execute(xml);
@@ -265,11 +269,11 @@ public class PandroidAgentListener extends Service {
 	}//end contact
 
 
-	private class contactTask extends AsyncTask<String, Void, Integer>{
+	private class contactTask extends AsyncTask<String, Void, Integer> {
 		String destFileName = "";	
 
 		@Override 
-		protected void onPreExecute(){
+		protected void onPreExecute() {
 
 		}
 
@@ -283,7 +287,7 @@ public class PandroidAgentListener extends Service {
 
 			boolean contact = true;
 			int i = 1;
-			while(getApplicationContext().fileList().length > 1 && contact) {
+			while (getApplicationContext().fileList().length > 1 && contact) {
 
 				destFileName = buffer[i];
 
@@ -299,7 +303,7 @@ public class PandroidAgentListener extends Service {
 
 				tentacleRet = new tentacle_client().tentacle_client(tentacleData);
 
-				if(tentacleRet == 0) {
+				if (tentacleRet == 0) {
 					putSharedData("PANDROID_DATA", "contactError", "0", "integer");
 					// Deleting the file after send it
 					// move to only delete if sent successfully
@@ -310,7 +314,7 @@ public class PandroidAgentListener extends Service {
 					Core.updateConf(getApplicationContext());
 
 				}
-				if(tentacleRet == -1){
+				if (tentacleRet == -1) {
 					//file not deleted
 					putSharedData("PANDROID_DATA", "contactError", "1", "integer");
 					contact = false;
@@ -341,16 +345,22 @@ public class PandroidAgentListener extends Service {
 			long bufferSize = 0;
 			String[] buffer = getApplicationContext().fileList();
 
-			for(int i = 1; i<buffer.length;i++){
+			for (int i = 1; i<buffer.length; i++) {
 				File file = new File("/data/data/pandroid.agent/files/" + buffer[i]);
 				bufferSize += file.length();
+				
+				//-----INIT---- HACK TO ENTERPRISE
+				file.delete();
+				bufferSize = 0;
+				//-----END----- HACK TO ENTERPRISE
 			}
-
+			
 			//Check if size of buffer is less than a value
-			if((bufferSize/1024) < Core.bufferSize){
+			if ((bufferSize / 1024) < Core.bufferSize) {
 				writeFile(destFileName, lastXML);
 				putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
-			}else{
+			}
+			else{
 				//buffer full
 			}
 			putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
@@ -360,7 +370,7 @@ public class PandroidAgentListener extends Service {
 		}
 	}
 
-	private String buildXML(){
+	private String buildXML() {
 		String buffer = "";
 		String gpsData = "";
 		buffer += "<?xml version='1.0' encoding='UTF-8'?>\n";
@@ -399,7 +409,7 @@ public class PandroidAgentListener extends Service {
 		String totalRamKb = getSharedData("PANDROID_DATA", "totalRamKb", "0", "long");
 		String upTime = getSharedData("PANDROID_DATA", "upTime", ""+Core.defaultUpTime, "long");
 		String helloSignal = getSharedData("PANDROID_DATA", "helloSignal", ""+Core.defaultHelloSignal, "integer");
-
+		
 		String SimID = getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
 		String networkOperator  = getSharedData("PANDROID_DATA", "networkOperator", Core.defaultNetworkOperator, "string");
 		String networkType = getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
@@ -413,7 +423,7 @@ public class PandroidAgentListener extends Service {
 		String receiveBytes = getSharedData("PANDROID_DATA", "receiveBytes", ""+Core.defaultReceiveBytes, "long");
 		String transmitBytes = getSharedData("PANDROID_DATA", "transmitBytes", ""+Core.defaultTransmitBytes, "long");
 		String roaming = getSharedData("PANDROID_DATA", "roaming", ""+Core.defaultRoaming, "integer");
-
+		
 		String simIDReport = getSharedData("PANDROID_DATA", "simIDReport", Core.defaultSimIDReport, "string");
 		String DeviceUpTimeReport = getSharedData("PANDROID_DATA", "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport, "string");
 		String NetworkOperatorReport = getSharedData("PANDROID_DATA", "NetworkOperatorReport", Core.defaultNetworkOperatorReport, "string");
@@ -432,7 +442,7 @@ public class PandroidAgentListener extends Service {
 		String RoamingReport = getSharedData("PANDROID_DATA", "RoamingReport", Core.defaultRoamingReport, "string");
 		String InventoryReport = getSharedData("PANDROID_DATA", "InventoryReport", Core.defaultInventoryReport, "string");
 
-		if(InventoryReport.equals("enabled"))
+		if (InventoryReport.equals("enabled"))
 		{
 			buffer += buildInventoryXML();
 		}
@@ -536,7 +546,8 @@ public class PandroidAgentListener extends Service {
 			/* ensure that everything is really written out and close */
 			osw.flush();
 			osw.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 
 		}
 
@@ -801,7 +812,7 @@ public class PandroidAgentListener extends Service {
 			if ((task.length() != 0) && (taskHumanName.length() != 0)) {
 				ActivityManager activityManager = (ActivityManager)getApplication().getSystemService(ACTIVITY_SERVICE);
 				List<RunningAppProcessInfo> runningAppProcessInfos = activityManager.getRunningAppProcesses();
-				PackageManager pm = getApplication().getPackageManager();
+				//PackageManager pm = getApplication().getPackageManager();
 				RunningAppProcessInfo runningAppProcessInfo;
 
 				for (int i = 0; i < runningAppProcessInfos.size(); i++) {
@@ -889,54 +900,54 @@ public class PandroidAgentListener extends Service {
 
 		switch (nT)
 		{
-		case 0:
-			networkType = "Unknown";
-			break;
-		case 1:
-			networkType = "GPRS";
-			break;
-		case 2:
-			networkType = "EDGE";
-			break;
-		case 3:
-			networkType = "UMTS";
-			break;
-		case 4:
-			networkType = "CDMA";
-			break;
-		case 5:
-			networkType = "EVDO rev. 0";
-			break;
-		case 6:
-			networkType = "EVDO rev. A";
-			break;
-		case 7:
-			networkType = "1xRTT";
-			break;
-		case 8:
-			networkType = "HSDPA";
-			break;
-		case 9:
-			networkType = "HSUPA";
-			break;
-		case 10:
-			networkType = "HSPA";
-			break;
-		case 11:
-			networkType = "iDen";
-			break;
-		case 12:
-			networkType = "EVDO rev. B";
-			break;
-		case 13:
-			networkType = "LTE";
-			break;
-		case 14:
-			networkType = "eHRPD";
-			break;      
-		case 15:
-			networkType = "HSPA+";
-			break;          
+			case 0:
+				networkType = "Unknown";
+				break;
+			case 1:
+				networkType = "GPRS";
+				break;
+			case 2:
+				networkType = "EDGE";
+				break;
+			case 3:
+				networkType = "UMTS";
+				break;
+			case 4:
+				networkType = "CDMA";
+				break;
+			case 5:
+				networkType = "EVDO rev. 0";
+				break;
+			case 6:
+				networkType = "EVDO rev. A";
+				break;
+			case 7:
+				networkType = "1xRTT";
+				break;
+			case 8:
+				networkType = "HSDPA";
+				break;
+			case 9:
+				networkType = "HSUPA";
+				break;
+			case 10:
+				networkType = "HSPA";
+				break;
+			case 11:
+				networkType = "iDen";
+				break;
+			case 12:
+				networkType = "EVDO rev. B";
+				break;
+			case 13:
+				networkType = "LTE";
+				break;
+			case 14:
+				networkType = "eHRPD";
+				break;      
+			case 15:
+				networkType = "HSPA+";
+				break;          
 		}
 		if(networkType != null)
 			putSharedData("PANDROID_DATA", "networkType", networkType, "string");

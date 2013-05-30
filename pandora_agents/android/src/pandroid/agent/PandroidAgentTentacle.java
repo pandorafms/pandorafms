@@ -61,7 +61,7 @@ class tentacle_client {
 			}
 		}
 
-		if(filePath == null) {
+		if  (filePath == null) {
 			getError("Incorrect parameters. File path is necessary.");
 		}
 
@@ -74,10 +74,12 @@ class tentacle_client {
 		try {
 			socketCliente.connect(new InetSocketAddress(address, port), 2000);
 
-		} catch (UnknownHostException e) {
+		}
+		catch (UnknownHostException e) {
 			getError("Host doesn't exist");
 			return -1;
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			getError("Could not connect: The host is down");
 			return -1;
         }
@@ -87,7 +89,8 @@ class tentacle_client {
 
 		try {
 			serverOutput = new DataOutputStream(socketCliente.getOutputStream());
-		} catch (IOException e1) {
+		}
+		catch (IOException e1) {
 			getError("Could not get Data output stream");
 		}
 
@@ -95,7 +98,8 @@ class tentacle_client {
 
 		try {
 			serverInput = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
-		} catch (IOException e1) {
+		}
+		catch (IOException e1) {
 			getError("Could not get Buffered reader");
 		}
 
@@ -107,9 +111,11 @@ class tentacle_client {
              BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
              buf.read(data, 0, data.length);
              buf.close();
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
              getError("File not found");
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
              getError("Could not read from file");
         }
 

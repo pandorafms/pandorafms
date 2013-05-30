@@ -17,6 +17,8 @@
 include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_tags.php");
 enterprise_include_once ('meta/include/functions_events_meta.php');
+enterprise_include_once ('meta/include/functions_agents_meta.php');
+enterprise_include_once ('meta/include/functions_modules_meta.php');
 
 
 
@@ -1870,7 +1872,14 @@ function events_page_details ($event, $server = "") {
 	}
 	
 	if ($event["id_agente"] != 0) {
-		$agent = db_get_row('tagente','id_agente',$event["id_agente"]);
+		if (!empty($server)) { 
+			$agent = agents_meta_get_agent(array('id_agent' => $event["id_agente"], 
+												'id_server' => $server['id'], 
+												'server_name' => $server['server_name']));
+		}
+		else {
+			$agent = db_get_row('tagente','id_agente',$event["id_agente"]);
+		}
 	}
 	else {
 		$agent = array();
@@ -1884,7 +1893,12 @@ function events_page_details ($event, $server = "") {
 	if (!empty($agent)) {
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
-		$data[1] = ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, $serverstring, $hashstring);
+		if (can_user_access_node ()) {
+			$data[1] = ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, $serverstring, $hashstring, $agent['nombre']);
+		}
+		else {
+			$data[1] = ui_print_truncate_text($agent['nombre'], 'agent_medium', true, true, true);
+		}
 		$table_details->data[] = $data;
 		
 		$data = array();
@@ -1914,7 +1928,12 @@ function events_page_details ($event, $server = "") {
 	}
 	
 	if ($event["id_agentmodule"] != 0) {
-		$module = db_get_row_filter('tagente_modulo',array('id_agente_modulo' => $event["id_agentmodule"], 'delete_pending' => 0));
+		if (!empty($server)) { 
+			$module = meta_modules_get_agentmodule ($event["id_agentmodule"], $server['id']);
+		}
+		else {
+			$module = db_get_row_filter('tagente_modulo',array('id_agente_modulo' => $event["id_agentmodule"], 'delete_pending' => 0));
+		}
 	}
 	else {
 		$module = array();
@@ -1929,9 +1948,14 @@ function events_page_details ($event, $server = "") {
 		// Module name
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
-		$data[1] = '<a href="' . $serverstring . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data'.$hashstring.'"><b>';
-		$data[1] .= $module['nombre'];
-		$data[1] .= '</b></a>';
+		if (can_user_access_node ()) {
+			$data[1] = '<b><a href="' . $serverstring . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data'.$hashstring.'">';
+			$data[1] .= $module['nombre'];
+			$data[1] .= '</b></a>';
+		}
+		else {
+			$data[1] = $module['nombre'];
+		}
 		$table_details->data[] = $data;
 		
 		// Module group

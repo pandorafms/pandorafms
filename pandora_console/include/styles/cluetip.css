@@ -33,29 +33,31 @@
 -------------------------------------- */
 
 .cluetip-default {
-	background-color: #F5F5DC;
+	background-color: #FFF;
 	text-align: left;
 }
 .cluetip-default #cluetip-outer {
 	position: relative;
 	margin: 0;
-	background-color: #F5F5DC;
+	background-color: #FFF;
 }
 .cluetip-default h3 {
 	margin: 0 0 5px;
 	padding: 8px 10px 4px;
 	font-size: 1.1em;
 	font-weight: bold;
-	background-color: #E6E9CD;
+	background-color: #B1B1B1;
+	color: #fff;
 }
 .cluetip-default h3#cluetip-title {
 	display: none;
 	height: 0px;
 	margin: 0;
 	padding: 0;
+	color: #FFF;
 }
 .cluetip-default #cluetip-title a {
-	color: #d9d9c2;
+	color: #FFF;
 	font-size: 0.95em;
 }	
 .cluetip-default #cluetip-inner {

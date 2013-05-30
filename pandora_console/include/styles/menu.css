@@ -136,7 +136,7 @@
 
 .menu .menu_icon, .menu li.links {
 	background-color: #daedae;
-	background-position: 4px center;
+	background-position: 4px 4px;
 	background-repeat: no-repeat;
 }
 

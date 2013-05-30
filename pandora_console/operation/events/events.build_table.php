@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 
-$table->width = '98%';
+$table->width = '100%';
 $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
@@ -39,7 +39,7 @@ $table->align[$i] = 'center';
 $i++;
 if (in_array('server_name', $show_fields)) {
 	$table->head[$i] = __('Server');
-	$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
 	$i++;
 }
 if (in_array('estado', $show_fields)) {
@@ -60,7 +60,7 @@ if (in_array('evento', $show_fields)) {
 }
 if (in_array('id_agente', $show_fields)) {
 	$table->head[$i] = __('Agent name');
-	$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
 	$table->style[$i] = 'max-width: 350px; word-break: break-all;';
 	$i++;
 }
@@ -191,6 +191,7 @@ foreach ($result as $event) {
 	$i = 0;
 	
 	$data[$i] = "#".$event["id_evento"];
+	$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3; color: #111 !important;';
 
 	// Pass grouped values in hidden fields to use it from modal window
 	if ($group_rep) {
@@ -245,10 +246,9 @@ foreach ($result as $event) {
 	if (in_array('estado',$show_fields)) {
 		$data[$i] = html_print_image ($img_st, true, 
 			array ("class" => "image_status",
-				"width" => 16,
-				"height" => 16,
 				"title" => $title_st,
 				"id" => 'status_img_'.$event["id_evento"]));
+		$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
 		$i++;
 	}
 	if (in_array('id_evento',$show_fields)) {
@@ -303,9 +303,13 @@ foreach ($result as $event) {
 		if ($event["id_agente"] > 0) {
 			// Agent name
 			if ($meta) {
-				$data[$i] = '<b><a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
-				$data[$i] .= $event["agent_name"];
-				$data[$i] .= "</a></b>";
+				$agent_link = '<a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
+				if (can_user_access_node ()) {
+					$data[$i] = '<b>' . $agent_link . $event["agent_name"] . '</a></b>';
+				}
+				else {
+					$data[$i] = $event["agent_name"];
+				}
 			}
 			else {
 				$data[$i] .= ui_print_agent_name ($event["id_agente"], true);
@@ -377,9 +381,13 @@ foreach ($result as $event) {
 	
 	if (in_array('id_agentmodule',$show_fields)) {
 		if ($meta) {
-			$data[$i] = '<b><a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
-			$data[$i] .= $event["module_name"];
-			$data[$i] .= "</a></b>";
+			$module_link = '<a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
+			if (can_user_access_node ()) {
+				$data[$i] = '<b>' . $module_link . $event["module_name"] . '</a></b>';
+			}
+			else {
+				$data[$i] = $event["module_name"];
+			}
 		}
 		else {
 			$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">'
@@ -514,6 +522,9 @@ foreach ($result as $event) {
 		$data[$i] .= html_print_image ("images/eye.png", true,
 			array ("title" => __('Show more')));	
 		$data[$i] .= '</a>';
+		
+		$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
+
 		$i++;
 		
 		if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
@@ -528,6 +539,8 @@ foreach ($result as $event) {
 		else if (isset($table->header[$i]) || true) {
 			$data[$i] = '';
 		}
+				
+		$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
 	}
 	
 	array_push ($table->data, $data);

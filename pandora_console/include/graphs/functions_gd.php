@@ -162,7 +162,7 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 // ***************************************************************************
 function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1, $fontsize=10, $value_text = '', $colorRGB = '') {
 	if($out_of_lim_str === false) {
-		$out_of_lim_str = "Out of limits";
+		$out_of_lim_str = __("Out of limits");
 	}
 	
 	if($out_of_lim_image === false) {
@@ -273,7 +273,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fontsize, $value_text, $color) {
 		global $config;
 		global $REMOTE_ADDR;
-		
+
 		// Round corners defined in global setup
 		if ($config["round_corner"] != 0) {
 			$radius = ($height > 18) ? 8 : 0;
@@ -367,7 +367,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 				
 				if ($rating > 50)
 					if ($rating > 100)
-						ImageTTFText($image, $fontsize, 0, ($width/4), ($height/2)+($height/5), $back, $font, $out_of_lim_str);
+						ImageTTFText($image, $fontsize + 2, 0, ($width/4), ($height/2)+($height/5), $back, $font, $out_of_lim_str);
 					else
 						ImageTTFText($image, $fontsize, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $font, $value_text);
 				else
@@ -430,7 +430,8 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, $fontsize, $value_text, $color);
 			break;
 		case 1:
-			if ($progress > 100 || $progress < 0) {
+			/*
+			if (($progress > 100 || $progress < 0) && false) {
 				// HACK: This report a static image... will increase render in about 200% :-) useful for
 				// high number of realtime statusbar images creation (in main all agents view, for example
 				$imgPng = imageCreateFromPng($out_of_lim_image);
@@ -441,6 +442,10 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 			else {
 				drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6,  $value_text, $color);
 			}
+			*/
+			
+			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6,  $value_text, $color);
+
 			break;
 		case 2:
 			if ($progress > 100 || $progress < 0) {

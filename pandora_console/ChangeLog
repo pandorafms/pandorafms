@@ -1,3 +1,27 @@
+2013-05-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/menu.css
+	include/styles/cluetip.css
+	include/styles/pandora.css
+	include/functions.php
+	include/functions_events.php
+	include/graphs/functions_gd.php
+	include/functions_networkmap.php
+	include/javascript/jquery.cluetip.js
+	images/outof.png: Visual improvements
+
+	* include/functions_treeview.php
+	extensions/module_groups.php
+	operation/tree.php
+	operation/events/events.build_table.php
+	operation/events/events_list.php
+	operation/agentes/status_monitor.php : Add to the shared 
+	views between normal and meta controls to access remote nodes
+	for certain users
+
+	* include/functions_visual_map.php
+	include/functions_ui.php: Little bugfixes and improvements
+
 2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/agentes/networkmap.php: fixed the string of button to

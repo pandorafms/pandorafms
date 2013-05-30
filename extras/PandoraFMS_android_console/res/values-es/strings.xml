@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	
+    <string name="const_string_preferences">PANDROID_CONSOLE_PREFERENCES</string>
 	<string name="app_name">Pandora FMS Android Console</string>
 	<string name="options_label_str">Opciones</string>
 	<string name="help_label_str">Ayuda</string>
@@ -8,14 +9,15 @@
 	<string name="exit_label_str">Salir</string>
 	<string name="pandorafms_logo_description">Logo PandoraFMS</string>
 	<string name="dont_show_again">No mostrar más</string>
-	<string name="pandroid_info_txt">Need a large string for to fill this space with pretty things and rainbows.</string>
-	<string name="pandroid_info_long_txt">Need a large string for to fill this space with pretty things and rainbows.</string>
-	<string name="pandroid_options_txt">Need a large string for to fill this space with pretty things and rainbows.</string>
+	<string name="pandroid_info_txt">Configura estos parametros para acceder a tu instalación de PandoraFMS.</string>
+	<string name="pandroid_info_long_txt">Esta aplicación permite que tu veas toda la información de PandoraFMS en tu móvil.</string>
 	<string name="url_option">URL:</string>
 	<string name="user_option">Usuario:</string>
 	<string name="password_option">Contraseña:</string>
 	<string name="save_button_str">Guardar</string>
 	<string name="update_button_str">Actualizar</string>
 	<string name="cancel_button_str">Cancelar</string>
+	<string name="connection_str">Conectando&#8230;</string>
+	<string name="loading_desc">Conectando&#8230;</string>
 	
 </resources>

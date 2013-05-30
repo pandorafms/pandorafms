@@ -1,0 +1,24 @@
+2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* AndroidManifest.xml: added icon for application.
+	
+	* src/pandorafms/pandorafmsandroidconsole/Help.java,
+	src/pandorafms/pandorafmsandroidconsole/Options.java,
+	src/pandorafms/pandorafmsandroidconsole/PandoraWebView.java: fixed
+	java warnings.
+	
+	* res/values-ja/strings.xml, res/values/strings.xml,
+	res/values-es/strings.xml: translate strings to english and
+	spanish.
+	
+	* res/drawable-ldpi/icon_logo_pandorafms.png: added icon.
+	
+	* res/layout/help.xml, res/layout/options.xml: change layout.
+	
+	* bin/*, gen/*: erased the binary temp files from eclipse.
+
+2013-02-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* PandoraFMS_android_console/*: added first version of PandoraFMS
+	android console (it is a custom browser standaralone for the
+	Pandora Web Console Mobile).

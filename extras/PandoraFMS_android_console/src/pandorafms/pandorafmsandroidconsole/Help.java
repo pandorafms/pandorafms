@@ -25,12 +25,9 @@ GNU General Public License for more details.
 package pandorafms.pandorafmsandroidconsole;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.view.View;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class Help extends Activity {
@@ -41,7 +38,7 @@ public class Help extends Activity {
 		
 		TextView text = (TextView) findViewById(R.id.url_pandora);
 		text.setText(Html
-				.fromHtml("<a href='http://pandorafms.org/'>PandoraFMS.org</a>"));
+				.fromHtml("<a href='http://pandorafms.com/'>pandorafms.com</a>"));
 		text.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 }

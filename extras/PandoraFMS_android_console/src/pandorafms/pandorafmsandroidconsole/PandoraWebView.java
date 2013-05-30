@@ -34,12 +34,10 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.SslErrorHandler;
-import android.widget.Toast;
 import android.net.http.SslError;
 
 public class PandoraWebView extends Activity {

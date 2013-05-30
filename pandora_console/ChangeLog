@@ -1,3 +1,10 @@
+2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/groups/group_list.php, include/functions_groups.php: fixed
+	the link of to delete the group, now it have the correctly id_group.
+	
+	Fixes: #2253
+
 2013-05-29 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/events/events.build_table.php,

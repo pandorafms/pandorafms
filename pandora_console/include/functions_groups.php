@@ -33,10 +33,12 @@ function groups_check_used($idGroup) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$numRows = db_get_num_rows('SELECT * FROM tagente WHERE id_grupo = ' . $idGroup . ';');
+			$numRows = db_get_num_rows('SELECT *
+				FROM tagente WHERE id_grupo = ' . $idGroup . ';');
 			break;
 		case "oracle":
-			$numRows = db_get_num_rows('SELECT * FROM tagente WHERE id_grupo = ' . $idGroup);
+			$numRows = db_get_num_rows('SELECT *
+				FROM tagente WHERE id_grupo = ' . $idGroup);
 			break;
 	}
 	if ($numRows > 0) {
@@ -47,10 +49,12 @@ function groups_check_used($idGroup) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$numRows = db_get_num_rows('SELECT * FROM talert_actions WHERE id_group = ' . $idGroup . ';');
+			$numRows = db_get_num_rows('SELECT *
+				FROM talert_actions WHERE id_group = ' . $idGroup . ';');
 			break;
 		case "oracle":
-			$numRows = db_get_num_rows('SELECT * FROM talert_actions WHERE id_group = ' . $idGroup);
+			$numRows = db_get_num_rows('SELECT *
+				FROM talert_actions WHERE id_group = ' . $idGroup);
 			break;
 	}
 	

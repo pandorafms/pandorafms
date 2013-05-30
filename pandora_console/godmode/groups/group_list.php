@@ -225,17 +225,21 @@ if ($delete_group) {
 	$usedGroup = groups_check_used($id_group);
 	
 	if (!$usedGroup['return']) {
+		$group = db_get_row_filter('tgrupo',
+			array('id_grupo' => $id_group));
 		
-		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
+		db_process_sql_update('tgrupo',
+			array('parent' => $group['parent']), array('parent' => $id_group));
 		
-		db_process_sql_update('tgrupo', array('parent' => $group['parent']), array('parent' => $id_group));
+		$result = db_process_sql_delete('tgroup_stat',
+			array('id_group' => $id_group));
 		
-		$result = db_process_sql_delete('tgroup_stat', array('id_group' => $id_group));
-		
-		$result = db_process_sql_delete('tgrupo', array('id_grupo' => $id_group));
+		$result = db_process_sql_delete('tgrupo',
+			array('id_grupo' => $id_group));
 	}
 	else {
-		ui_print_error_message(sprintf(__('The group is not empty. It is use in %s.'), implode(', ', $usedGroup['tables'])));
+		ui_print_error_message(
+			sprintf(__('The group is not empty. It is use in %s.'), implode(', ', $usedGroup['tables'])));
 	}
 	
 	if ($result && (!$usedGroup['return'])) {
@@ -403,10 +407,13 @@ if (!empty($groups)) {
 			$data[5] = '';
 		}
 		else {
-			$data[5] = '<a href="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'&pure='.$pure.'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+			$data[5] = '<a href="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&id_group=' . $group['id_grupo'] . '&pure='.$pure.'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
 			//Check if there is only a group to unable delete it
 			if ((count($groups) > 3) || (count($groups) <= 3 && $group['parent'] != 0)) {
-				$data[5] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+				$data[5] .= '&nbsp;&nbsp;' .
+					'<a href="index.php?sec=' . $sec . '&' .
+						'sec2=godmode/groups/group_list&' .
+						'id_group=' . $group['id_grupo'] . '&delete_group=1&pure=' . $pure . '" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 			}
 		}
 		

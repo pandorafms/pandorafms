@@ -1,5 +1,12 @@
 2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/agentes/networkmap.php: fixed the string of button to
+	refresh the networkmap.
+	
+	Fixes: #2254
+
+2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/groups/group_list.php, include/functions_groups.php: fixed
 	the link of to delete the group, now it have the correctly id_group.
 	

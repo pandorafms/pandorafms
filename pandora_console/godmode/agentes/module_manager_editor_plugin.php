@@ -32,7 +32,8 @@ define ('ID_NETWORK_COMPONENT_TYPE', 4);
 if (empty ($update_module_id)) {
 	/* Function in module_manager_editor_common.php */
 	add_component_selection (ID_NETWORK_COMPONENT_TYPE);
-} else {
+}
+else {
 	/* TODO: Print network component if available */
 }
 
@@ -40,15 +41,19 @@ $extra_title = __('Plugin server module');
 
 $data = array ();
 $data[0] = __('Plugin');
-$data[1] = html_print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
+$data[1] = html_print_select_from_sql ('
+	SELECT id, name
+	FROM tplugin
+	ORDER BY name',
 	'id_plugin', $id_plugin, 'changePluginSelect();', __('None'), 0, true, false, false, $disabledBecauseInPolicy);
 $table_simple->colspan['plugin_1'][2] = 2;
 
-if (!empty($id_plugin)){
+if (!empty($id_plugin)) {
 	$preload = db_get_sql ("SELECT description FROM tplugin WHERE id = $id_plugin");
 	$preload = io_safe_output ($preload);
 	$preload = str_replace ("\n", "<br>", $preload);
-} else {
+}
+else {
 	$preload = "";
 }
 
@@ -59,6 +64,9 @@ push_table_simple ($data, 'plugin_1');
 $data = array ();
 $data[0] = __('Target IP');
 $data[1] = html_print_input_text ('ip_target', $ip_target, '', 50, 60, true);
+if ($new_module) {
+	$data[1] .= ui_print_help_tip(__('Add the default IP of agent.'), true);
+}
 $data[2] = __('Port');
 $data[3] = html_print_input_text ('tcp_port', $tcp_port, '', 30, 20, true);
 

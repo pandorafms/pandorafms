@@ -1,3 +1,11 @@
+2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_plugin.php: fixed the show
+	ever the default IP agent when edit a module with empty ip.
+	
+	Fixes: #2249
+
 2013-05-29  Dario Rodriguez <dario@artica.es>
 
 	* pandoradb_data.sql: Added new network_components.

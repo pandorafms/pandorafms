@@ -119,6 +119,7 @@ require_once ("include/functions_exportserver.php");
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . "/include/functions_agents.php");
 
+$new_module = false;
 // Using network component to fill some fields
 if ($id_agent_module) {
 	$module = modules_get_agentmodule ($id_agent_module);
@@ -139,26 +140,23 @@ if ($id_agent_module) {
 	$tcp_rcv = $module['tcp_rcv'];
 	$snmp_community = $module['snmp_community'];
 	$snmp_oid = $module['snmp_oid'];
-
+	
 	// New support for snmp v3
 	$snmp_version = $module['tcp_send'];
 	$snmp3_auth_user = $module["plugin_user"];
 	$snmp3_auth_pass = $module["plugin_pass"];
-
+	
 	// Auth method could be MD5 or SHA
 	$snmp3_auth_method = $module["plugin_parameter"];
-
+	
 	// Privacy method could be DES or AES
 	$snmp3_privacy_method = $module["custom_string_1"];
 	$snmp3_privacy_pass = $module["custom_string_2"];
-
+	
 	// Security level Could be noAuthNoPriv | authNoPriv | authPriv
 	$snmp3_security_level = $module["custom_string_3"];
 	
 	$ip_target = $module['ip_target'];
-	if (empty ($ip_target)) {
-		$ip_target = agents_get_address ($id_agente);
-	}
 	$disabled = $module['disabled'];
 	$id_export = $module['id_export'];
 	$plugin_user = $module['plugin_user'];
@@ -183,6 +181,7 @@ if ($id_agent_module) {
 }
 else {
 	if (!isset ($moduletype)) {
+		$new_module = true;
 		$moduletype = (string) get_parameter ('moduletype');
 		
 		// Clean up specific network modules fields
@@ -223,7 +222,7 @@ else {
 		$max_critical = 0;
 		$str_critical = '';
 		$ff_event = 0;
-
+		
 		// New support for snmp v3
 		$snmp_version = 1;
 		$snmp3_auth_user = "";

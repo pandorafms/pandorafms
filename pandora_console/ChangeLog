@@ -1,5 +1,14 @@
 2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/agentes/networkmap.php: fixed the string of button to
+	refresh the networkmap.
+	
+	Fixes: #2254
+	
+	MERGED FROM THE TRUNK
+
+2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/module_manager_editor.php,
 	godmode/agentes/module_manager_editor_plugin.php: fixed the show
 	ever the default IP agent when edit a module with empty ip.

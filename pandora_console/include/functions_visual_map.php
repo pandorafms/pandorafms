@@ -961,17 +961,17 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			switch ($status_parent) {
 				default:
 				case VISUAL_MAP_STATUS_UNKNOW:
-					$line["color"] = "#ccc"; // Gray
+					$line["color"] = COL_UNKNOWN; // Gray
 					break;
 				case VISUAL_MAP_STATUS_WARNING:
-					$line["color"] = "#20f6f6"; // Yellow
+					$line["color"] = COL_WARNING; // Yellow
 					break;
 				case VISUAL_MAP_STATUS_NORMAL:
-					$line["color"] = "#00ff00"; // Green
+					$line["color"] = COL_NORMAL; // Green
 					break;
 				case VISUAL_MAP_STATUS_CRITICAL_ALERT:
 				case VISUAL_MAP_STATUS_CRITICAL_BAD:
-					$line["color"] = "#ff0000"; // Red
+					$line["color"] = COL_CRITICAL; // Red
 					break;
 			}
 			array_push ($lines, $line);
@@ -988,24 +988,24 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		switch ($status) {
 			case VISUAL_MAP_STATUS_CRITICAL_BAD:
 				//Critical (BAD)
-				$colorStatus = "#ff0000";
+				$colorStatus = COL_CRITICAL;
 				break;
 			case VISUAL_MAP_STATUS_CRITICAL_ALERT:
 				//Critical (ALERT)
-				$colorStatus = "#ff8800";
+				$colorStatus = COL_ALERTFIRED;
 				break;
 			case VISUAL_MAP_STATUS_NORMAL:
 				//Normal (OK)
-				$colorStatus = "#00ff00";
+				$colorStatus = COL_NORMAL;
 				break;
 			case VISUAL_MAP_STATUS_WARNING:
 				//Warning
-				$colorStatus = "#ffff00";
+				$colorStatus = COL_WARNING;
 				break;
 			case VISUAL_MAP_STATUS_UNKNOW:
 			default:
 				//Unknown
-				$colorStatus = "#5A5AFF";
+				$colorStatus = COL_UNKNOWN;
 				// Default is Grey (Other)
 				break;
 		}
@@ -1660,7 +1660,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				// resulting fault image links :(
 				echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
 					false, $layout_data['width'], $layout_data['height'],
-					'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url, 2);
+					'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url, 1);
 				
 				//Restore db connection
 				if ($layout_data['id_metaconsole'] != 0) {

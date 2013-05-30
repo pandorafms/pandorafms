@@ -339,7 +339,7 @@ else{
 }
 
 $table_advanced->id = 'events_filter_form_advanced';
-$table_advanced->width = '99%';
+$table_advanced->width = '98%';
 $table_advanced->cellspacing = 4;
 $table_advanced->cellpadding = 4;
 $table_advanced->class = 'transparent';
@@ -399,7 +399,7 @@ $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
 $table->id = 'events_filter_form';
-$table->width = '99%';
+$table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';

@@ -55,9 +55,10 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 		return;
 	}
 	
-	echo '<div id="id_div3" width="100%">';
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%">';
-	//Agent name
+	echo '<div id="id_div3" width="450px">';
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox alternate" style="width:90%; min-width: 300px;">';
+	
+	//Module name
 	echo '<tr><td class="datos"><b>'.__('Module name').'</b></td>';
 	
 	if ($module["disabled"])
@@ -67,7 +68,29 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	
 	echo '<td class="datos"><b>'.$cellName.'</b></td>';
 	
-	// Parent
+	// Interval
+	echo '<tr><td class="datos"><b>' . __('Interval') . '</b></td>';
+	echo '<td class="datos" colspan="2">' . human_time_description_raw (modules_get_interval($module['id_agente_modulo']), true) . '</td></tr>';
+	
+	// Warning Min/Max
+	echo '<tr><td class="datos"><b>' . __('Warning status') . '</b></td>';
+	if (modules_is_string_type($module['id_tipo_modulo'])) {
+		echo '<td class="datos" colspan="2">' . __('Str.') . ': ' . $module['str_warning'] . '</td></tr>';
+	}
+	else {
+		echo '<td class="datos" colspan="2">' . __('Min.') . ': ' . $module['min_warning'] . '<br>' . __('Max.') . ': ' . $module['max_warning'] . '</td></tr>';
+	}
+	
+	// Critical Min/Max
+	echo '<tr><td class="datos"><b>' . __('Critical status') . '</b></td>';
+	if (modules_is_string_type($module['id_tipo_modulo'])) {
+		echo '<td class="datos" colspan="2">' . __('Str.') . ': ' . $module['str_warning'] . '</td></tr>';
+	}
+	else {
+		echo '<td class="datos" colspan="2">' . __('Min.') . ': ' . $module['min_critical'] . '<br>' . __('Max.') . ': ' . $module['max_critical'] . '</td></tr>';
+	}
+	
+	// Module group
 	echo '<tr><td class="datos2"><b>'.__('Module group').'</b></td>';
 	echo '<td class="datos2" colspan="2">';
 	$module_group = modules_get_modulegroup_name($module['id_module_group']);
@@ -78,32 +101,79 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 		echo __("$module_group");
 	echo '</td></tr>';
 	
-	echo '<tr><td class="datos2"><b>'.__('Module type').'</b></td>';
-	echo '<td class="datos2" colspan="2">';
-	echo servers_show_type ($module['id_modulo']);
-	echo '</td></tr>';
-	
-	// Group icon
+	// Description
 	echo '<tr><td class="datos"><b>'.__('Description').'</b></td>';
-	echo '<td class="datos" colspan="2">'. ui_print_truncate_text ($module['descripcion'], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]') .'</td></tr>';
+	echo '<td class="datos" colspan="2">'. ui_print_truncate_text ($module['descripcion'], 'description', true, true, true, '[&hellip;]') .'</td></tr>';
 	
+	// Tags
+	$tags = tags_get_module_tags($module['id_agente_modulo']);
+	
+	if(empty($tags)) {
+		$tags = array();
+	}
+	
+	foreach($tags as $k => $v) {
+		$tag_name = tags_get_name($v);
+		if(empty($tag_name)) {
+			unset($tags[$k]);
+		}
+		else {
+			$tags[$k] = $tag_name;
+		}
+	}
+	
+	if(empty($tags)) {
+		$tags = '<i>' . __('N/A') . '</i>';
+	}
+	else {
+		$tags = implode(', ' , $tags);
+	}
+
+	echo '<tr><td class="datos"><b>'.__('Tags').'</b></td>';
+	echo '<td class="datos" colspan="2">' . $tags . '</td></tr>';
+					
+	// Data
+	$last_data = db_get_row_filter ('tagente_estado', array('id_agente_modulo' => $module['id_agente_modulo'], 'order' => array('field' => 'id_agente_estado', 'order' => 'DESC')));
+	if (is_numeric($last_data["datos"]))
+		$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+	else
+		$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+	
+	echo '<tr><td class="datos"><b>'.__('Last data').'</b></td>';
+	echo '<td class="datos" colspan="2">';
+		
+	if (!empty($last_data['utimestamp'])) {
+		echo $data;
+			
+		if ($module['unit'] != '') {
+			echo "&nbsp;";
+			echo '('.$module['unit'].')';
+		}
+	
+		echo "&nbsp;";
+		html_print_image('images/clock2.png', false, array('title' => $last_data["timestamp"], 'width' => '18px'));
+	}
+	else {
+		echo '<i>' . __('No data') . '</i>';
+	}
+	
+	echo '</td></tr>';
+						
 	//End of table
 	echo '</table></div>';
-	echo "<br>";
 	
 	$id_group = agents_get_agent_group($module['id_agente']);
 	$group_name = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);	
 	$agent_name = db_get_value('nombre', 'tagente', 'id_agente', $module['id_agente']);	
 	
-	if (can_user_access_node ()) {
+	if (can_user_access_node () && check_acl ($config["id_user"], $id_group, 'AW')) {
 		// Actions table
-		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
-		echo '<tr>';
-		echo '<td><form id="module_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '&tab=data' . $url_hash . '">';
-			html_print_submit_button (__('Go to modules detail'), 'upd_button', false, 'class="sub search"');
-		echo '</form></td></tr>';
+		echo '<div style="width:90%; text-align: right; min-width: 300px;">';
+		echo '<form id="module_detail" method="post" action="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $module['id_agente'] . '&tab=module&edit_module=1&id_agent_module=' . $module['id_agente_modulo'] . $url_hash . '">';
+			html_print_submit_button (__('Go to module edition'), 'upd_button', false, 'class="sub config"');
+		echo '</form>';
 
-		echo '</table>';
+		echo '</div>';
 	}
 
 	//id_module and id_agent hidden
@@ -135,18 +205,19 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 	$module_alerts = alerts_get_alerts_agent_module($id_module);
 	$module_name = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	$agent_id = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
-	
+	$id_group = agents_get_agent_group($agent_id);
+
 	if ($module_alerts === false) {
 		ui_print_error_message(__('There was a problem loading alerts'));
 		return;
 	}
 	
 	echo '<div id="id_div3" width="450px">';
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:90%">';
-	echo '<tr><td colspan=3 class="datos"><center>' . html_print_image('images/bell.png', true) . ' ' . $module_name . '</center></td></tr>';
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox alternate" style="width:90%; min-width: 300px;">';
+	echo '<tr><th colspan=2 class="datos"><center>' . $module_name . '</center></th></tr>';
 	
-	echo '<tr><th class="datos"><b>'.__('Template').'</b></th>';
-	echo '<th class="datos"><b>'.__('Actions').'</b></th>';
+	echo '<tr><th class="datos" style="background: #B3B3B3;"><b>'.__('Template').'</b></th>';
+	echo '<th class="datos" style="background: #B3B3B3;"><b>'.__('Actions').'</b></th>';
 	
 	foreach($module_alerts as $module_alert) {
 		//Template name
@@ -171,14 +242,13 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 	}
 	echo '</table>';
 	
-	if(can_user_access_node ()) {
+	if(can_user_access_node () && check_acl ($config["id_user"], $id_group, 'LW')) {
 		// Actions table
-		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:90%; text-align: center;">';
-		echo '<tr>';
-		echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $agent_id . $url_hash . '&tab=alert" target="_blank">';
-			html_print_submit_button (__('Go to alerts detail'), 'upd_button', false, 'class="sub search"');
-		echo '</form></td></tr>';
-		echo '</table>';
+		echo '<div style="width:90%; text-align: right; min-width: 300px;">';
+		echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name=' . $module_name . '&id_agente=' . $agent_id . $url_hash . '" target="_blank">';
+			html_print_submit_button (__('Go to alerts edition'), 'upd_button', false, 'class="sub search"');
+		echo '</form>';
+		echo '</div>';
 	}
 }
 
@@ -225,7 +295,7 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	}
 	
 	echo '<div id="id_div3" width="450px">';
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:90%">';
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox alternate" style="width:90%; min-width: 300px;">';
 	//Agent name
 	echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 	if ($agent['disabled']) {
@@ -262,43 +332,13 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	echo '<td class="datos" colspan="2">'.human_time_description_raw ($agent["intervalo"]).'</td></tr>';
 	
 	// Comments
-	echo '<tr><td class="datos2"><b>'.__('Description').'</b></td>';
-	echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
+	echo '<tr><td class="datos2"><b>' . __('Description') . '</b></td>';
+	echo '<td class="datos2" colspan="2">' . $agent["comentarios"] . '</td></tr>';
 	
-	// Agent version
-	echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
-	echo '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
-	
-	// Position Information
-	if ($config['activate_gis']) {
-		$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
-		
-		echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
-		echo '<td class="datos2" colspan="2">';
-		
-		if ($dataPositionAgent === false) {
-			echo __('There is no GIS data.');
-		}
-		else {
-			echo '<a href="' . $console_url . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
-			if ($dataPositionAgent['description'] != "")
-				echo $dataPositionAgent['description'];
-			else
-				echo $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
-			echo "</a>";
-		}
-		
-		echo '</td></tr>';
-	}
-	
-	// If the url description is setted
-	if ($agent['url_address'] != '') {
-		echo '<tr><td class="datos"><b>'.__('Url address').'</b></td>';	
-		echo '<td class="datos2" colspan="2"><a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a></td></tr>';
-	}
 	
 	// Last contact
-	echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
+	echo '<tr><td class="datos2"><b>' . __('Last contact') . " / " . __('Remote') . '</b></td><td class="datos2 f9" colspan="2">';
+	
 	ui_print_timestamp ($agent["ultimo_contacto"]);
 	
 	echo " / ";
@@ -307,20 +347,68 @@ function treeview_printTable($id_agente, $server_data = array()) {
 		echo __('Never');
 	}
 	else {
-		echo $agent["ultimo_contacto_remoto"];
+		ui_print_timestamp ($agent["ultimo_contacto_remoto"]);
 	}
 	echo '</td></tr>';
 	
-	// Timezone Offset
-	if ($agent['timezone_offset'] != 0) {
-		echo '<tr><td class="datos2"><b>'.__('Timezone Offset'). '</b></td>';
-		echo '<td class="datos2" colspan="2">'.$agent["timezone_offset"].'</td></tr>';
-	}
 	// Next contact (agent)
 	$progress = agents_get_next_contact($id_agente);
 	
 	echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
-	echo '<td class="datos f9" colspan="2">' . progress_bar($progress, 200, 20) . '</td></tr>';
+	echo '<td class="datos f9" colspan="2">' . progress_bar($progress, 150, 20) . '</td></tr>';
+	
+	//End of table
+	echo '</table></div>';
+	
+	if (can_user_access_node () && check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
+		echo '<div style="width:90%; text-align: right; min-width: 300px;">';
+		echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
+				html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"');
+		echo '</form>';
+		echo '</div>';
+	}
+	
+	// Advanced data
+	$advanced = '<div id="id_div3" width="450px">';
+	$advanced .= '<table cellspacing="4" cellpadding="4" border="0" class="databox alternate" style="width:90%;">';
+	
+	// Agent version
+	$advanced .= '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
+	$advanced .= '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
+	
+	// Position Information
+	if ($config['activate_gis']) {
+		$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
+		
+		$advanced .= '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
+		$advanced .= '<td class="datos2" colspan="2">';
+		
+		if ($dataPositionAgent === false) {
+			$advanced .= __('There is no GIS data.');
+		}
+		else {
+			$advanced .= '<a href="' . $console_url . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
+			if ($dataPositionAgent['description'] != "")
+				$advanced .= $dataPositionAgent['description'];
+			else
+				$advanced .= $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
+			$advanced .= "</a>";
+		}
+		
+		$advanced .= '</td></tr>';
+	}
+	
+	// If the url description is setted
+	if ($agent['url_address'] != '') {
+		$advanced .= '<tr><td class="datos"><b>'.__('Url address').'</b></td>';	
+		$advanced .= '<td class="datos2" colspan="2"><a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a></td></tr>';
+	}
+	
+	// Timezone Offset
+	if ($agent['timezone_offset'] != 0) {
+		$advanced .= '<tr><td class="datos2"><b>'.__('Timezone Offset'). '</b></td>';
+		$advanced .= '<td class="datos2" colspan="2">'.$agent["timezone_offset"].'</td></tr>';
+	}
 	
 	// Custom fields
 	$fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));
@@ -329,44 +417,39 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	}
 	if ($fields) {
 		foreach ($fields as $field) {
-			echo '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
+			$advanced .= '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
 			$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 			if ($custom_value === false || $custom_value == '') {
 				$custom_value = '<i>-'.__('empty').'-</i>';
 			}
-			echo '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
+			$advanced .= '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
 		}
 	}
 	
-	//End of table
-	echo '</table></div>';
+	//End of table advanced
+	$advanced .= '</table></div><br>';
+	
+	ui_toggle($advanced, __('Advanced information'));
 	
 	// Blank space below title, DONT remove this, this
 	// Breaks the layout when Flash charts are enabled :-o
-	echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
-		
-		//Floating div
-		echo '<div id="agent_access" width:35%; padding-top:11px;">';
-	
+	//echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
+			
 	if ($config["agentaccess"]) {
-		echo '<b>'.__('Agent access rate (24h)').'</b><br />';
+		$access_graph = '<div style="width: 290px; margin-left: 30px;">';
+		$access_graph .= graphic_agentaccess($id_agente, 290, 110, 86400, true);
+		$access_graph .= '</div><br>';
+				
+		ui_toggle($access_graph, __('Agent access rate (24h)'));
+	}
+	
+	$events_graph = '<div style="width: 290px; height: 15px; margin-left: 30px; position: static;">';
+	$events_graph .= graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
+	$events_graph .= '</div><br><br>';
+	
+	ui_toggle($events_graph, __('Events (24h)'));
 		
-		graphic_agentaccess($id_agente, 280, 110, 86400);
-	}
-	
 	echo '<br>';
-	graph_graphic_agentevents ($id_agente, 290, 15, 86400, '');
-	
-	echo '</div>';
-	
-	if (can_user_access_node ()) {
-		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
-		echo '<tr>';	
-		echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.$url_hash.'">';
-				html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub search"');
-		echo '</form></td></tr>';
-		echo '</table>';
-	}
 	
 	return;
 }
@@ -375,7 +458,7 @@ function treeview_printTree($type) {
 	global $config;
 	
 	echo '<table class="databox" style="width:98%">';
-	echo '<tr><td style="width:60%" valign="top">';
+	echo '<tr><td style="width:50%" valign="top">';
 	
 	if (! defined ('METACONSOLE')) {
 		$list = treeview_getData ($type);
@@ -890,7 +973,7 @@ function treeview_getData ($type) {
 				$id = $item['id_grupo'];
 				$list[$key]['_id_'] = $id;
 				$list[$key]['_name_'] = $item['nombre'];
-				$list[$key]['_iconImg_'] = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
+				$list[$key]['_iconImg_'] = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle;'));
 				$list[$key]['_num_ok_'] = groups_agent_ok($id);
 				$list[$key]['_num_critical_'] = groups_agent_critical($id);
 				$list[$key]['_num_warning_'] = groups_agent_warning($id);
@@ -932,7 +1015,7 @@ function treeview_getData ($type) {
 				$id = db_get_value('id_tag', 'ttag', 'name', $item['name']);
 				$list[$key]['_id_'] = $id;
 				$list[$key]['_name_'] = $item['name'];
-				$list[$key]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
+				$list[$key]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle;'));
 				$list[$key]['_num_ok_'] = tags_agent_ok($id);
 				$list[$key]['_num_critical_'] = tags_agent_critical($id);
 				$list[$key]['_num_warning_'] = tags_agent_warning($id);

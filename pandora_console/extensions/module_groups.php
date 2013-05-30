@@ -332,6 +332,6 @@ function mainModuleGroups() {
 	<?php
 }
  
-extensions_add_operation_menu_option(__("Modules groups"), 'estado', 'module_groups/brick.png', "v1r1");
+extensions_add_operation_menu_option(__("Module groups"), 'estado', 'module_groups/brick.png', "v1r1");
 extensions_add_main_function('mainModuleGroups');
 ?>

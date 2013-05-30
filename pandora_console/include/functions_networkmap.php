@@ -521,6 +521,23 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 
 	$status = agents_get_status_from_counts($agent);
 	
+	if (defined('METACONSOLE')) {
+		$server_data = db_get_row('tmetaconsole_setup', 'id', $agent['id_server']);
+	}
+	
+	if(empty($server_data)) {
+		$server_name = '';
+		$server_id = '';
+		$url_hash = '';
+		$console_url = '';
+	}
+	else {
+		$server_name = $server_data['server_name'];
+		$server_id = $server_data['id'];
+		$console_url = $server_data['server_url'] . '/';
+		$url_hash = metaconsole_get_servers_url_hash($server_data);
+	}
+	
 	// Set node status
 	switch ($status) {
 		case 0: 
@@ -564,8 +581,13 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		}
 		
 		if (defined("METACONSOLE")) {
-			$url = ui_meta_get_url_console_child($id_server,
-				"estado", "operation/agentes/ver_agente&id_agente=" . $agent['id_agente']);
+			if (can_user_access_node ()) {
+				$url = ui_meta_get_url_console_child($id_server,
+					"estado", "operation/agentes/ver_agente&id_agente=" . $agent['id_agente']);
+			}
+			else {
+				$url = '';
+			}
 			$url_tooltip = '../../ajax.php?' .
 				'page=operation/agentes/ver_agente&' .
 				'get_agent_status_tooltip=1&' .
@@ -584,7 +606,21 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		 tooltip="' . $url_tooltip . '"];' . "\n";
 	}
 	else {
-		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];' . "\n";
+		$ajax_prefix = '';
+		$meta_params = '';
+		
+		if (defined('METACONSOLE')) {
+			$ajax_prefix = '../../';
+			$meta_params = '&metaconsole=1&id_server=' . $id_server;
+		}
+
+		if (can_user_access_node ()) {
+			$url_node_link = ', URL="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $agent['id_agente'] . $url_hash . '"';
+		}
+		else {
+			$url_node_link = '';
+		}
+		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize=' . $font_size . ', shape="doublecircle"' . $url_node_link . ', style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="' . $ajax_prefix . 'ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent=' . $agent['id_agente'] . $meta_params . '"];' . "\n";
 	}
 	
 	return $node;

@@ -62,7 +62,7 @@ echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agente
 
 enterprise_hook('open_meta_frame');
 
-echo '<table cellspacing="4" cellpadding="4" width="98%" class="databox">
+echo '<table cellspacing="4" cellpadding="4" width="100%" class="databox">
 	<tr>';
 
 // Get Groups and profiles from user
@@ -902,10 +902,16 @@ foreach ($result as $row) {
 		}
 	}
 	
+	// TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
 	if (defined('METACONSOLE')) {
-		$data[1] = '<strong><a href="'. $row["server_url"] .'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='. $row["id_agent"] . '&amp;loginhash=auto&amp;loginhash_data=' . $row["hashdata"] . '&amp;loginhash_user=' . $row["user"] . '">'; 
-		$data[1] .= ui_print_truncate_text($row["agent_name"], 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
-		$data[1] .= '</a></strong>';
+		$agent_link = '<a href="'. $row["server_url"] .'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='. $row["id_agent"] . '&amp;loginhash=auto&amp;loginhash_data=' . $row["hashdata"] . '&amp;loginhash_user=' . $row["user"] . '">'; 
+		$agent_name = ui_print_truncate_text($row["agent_name"], 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+		if (can_user_access_node ()) {
+			$data[1] = $agent_link . '<b>' . $agent_name . '</b></a>';
+		}
+		else {
+			$data[1] = $agent_name;
+		}
 	}
 	else {
 		$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agent"].'">';

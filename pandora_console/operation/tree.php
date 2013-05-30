@@ -447,7 +447,7 @@ if (is_ajax ())
 					echo " ";
 				}
 				
-				echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadModuleTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\")'>";
+				echo "<a style='vertical-align: middle;' onfocus='JavaScript: this.blur()' href='javascript: loadModuleTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\")'>";
 				echo io_safe_output($row['nombre']);
 				echo "</a>";
 				if ($row['quiet']) {
@@ -455,6 +455,7 @@ if (is_ajax ())
 					html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 				}
 				
+				/*
 				if (is_numeric($row["datos"]))
 					$data = format_numeric($row["datos"]);
 				else
@@ -470,6 +471,7 @@ if (is_ajax ())
 						echo "&nbsp;";
 						echo '('.$row['unit'].')';
 					}
+					* */
 				echo "</span></li>";
 			}
 			echo "</ul>\n";

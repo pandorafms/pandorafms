@@ -621,11 +621,18 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
  * @param string Style of name in css.
  * @param string server url to concatenate at the begin of the link
  * @param string extra parameters to concatenate in the link
+ * @param string name of the agent to avoid the query in some cases
  * 
  * @return string HTML with agent name and link
  */
-function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false, $server_url = '', $extra_params = '') {
-	$agent_name = (string) agents_get_name ($id_agent);
+function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false, $server_url = '', $extra_params = '', $known_agent_name = false) {
+	if($known_agent_name === false) {
+		$agent_name = (string) agents_get_name ($id_agent);
+	}
+	else {
+		$agent_name = $known_agent_name;
+	}
+	
 	$agent_name_full = $agent_name;
 	if ($cutname) {
 		$agent_name = ui_print_truncate_text($agent_name, $cutoff, true, true, true, '[&hellip;]', $style);
@@ -659,8 +666,21 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_mediu
  * @return array A formatted array with proper html for use in $table->data (6 columns)
  */
 function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = false) {
-	
 	global $config;
+	
+	if(!isset($alert['server_data'])) {
+		$server_name = '';
+		$server_id = '';
+		$url_hash = '';
+		$console_url = '';
+	}
+	else {
+		$server_data = $alert['server_data'];
+		$server_name = $server_data['server_name'];
+		$server_id = $server_data['id'];
+		$console_url = $server_data['server_url'] . '/';
+		$url_hash = metaconsole_get_servers_url_hash($server_data);
+	}
 	
 	$actionText = "";
 	require_once ($config['homedir'] . "/include/functions_alerts.php");
@@ -759,16 +779,21 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	} 
 	else {
 		if (defined('METACONSOLE')) {
-			$data[$index['agent_name']] .= $alert['agent_name'];
+			$agent_name = $alert['agent_name'];
+			$id_agent = $alert['id_agent'];
 		}
 		else {
-			if ($agent_style !== false) {
-				$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled . " $agent_style");
-			}
-			else {
-				$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);		
-			}
+			$agent_name = false;
+			$id_agent = modules_get_agentmodule_agent ($alert["id_agent_module"]);
 		}
+		
+		if ($agent_style !== false) {
+			$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled . " $agent_style", false, $console_url, $url_hash, $agent_name);
+		}
+		else {
+			$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);		
+		}
+		
 		$data[$index['module_name']] =
 			ui_print_truncate_text (isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}
@@ -778,7 +803,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	$data[$index['description']] = '';
 	
 	if (defined('METACONSOLE')) {
-		$data[$index['template']] .= '<a class="template_details" href="' . ui_get_full_url('/', false, false, false) . '/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template=' . $template['id'] . '&server_name=' . $alert['server_name'] . '">';
+		$data[$index['template']] .= '<a class="template_details" href="' . ui_get_full_url('/', false, false, false) . '/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template=' . $template['id'] . '&server_name=' . $alert['server_data']['server_name'] . '">';
 	}
 	else {
 		$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template=' . $template['id'] . '">';

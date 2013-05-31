@@ -1,3 +1,7 @@
+2013-05-31  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php: Minor visual fix
+
 2013-05-31 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/graphs/functions_pchart.php: avoid to characters and

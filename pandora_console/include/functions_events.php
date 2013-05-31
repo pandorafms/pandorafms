@@ -881,8 +881,6 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			
 			$data[0] = html_print_image ($img, true, 
 				array ("class" => "image_status",
-					"width" => 16,
-					"height" => 16,
 					"title" => $title));
 			
 			switch ($event["criticity"]) {

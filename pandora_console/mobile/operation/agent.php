@@ -130,7 +130,8 @@ class Agent {
 				
 				
 				$modules = new Modules();
-				$filters = array('id_agent' => $this->id, 'all_modules' => true, 'status' => -1);
+				$filters = array('id_agent' => $this->id,
+					'all_modules' => true, 'status' => -1);
 				$modules->setFilters($filters);
 				$modules->disabledColumns(array('agent'));
 				$ui->contentBeginCollapsible(__('Modules'));

@@ -1,3 +1,12 @@
+2013-05-31 Miguel de Dios <miguel.dedios@artica.es>
+
+	* mobile/include/style/main.css: fixed the list of modules in the
+	main agent view.
+	
+	* mobile/operation/agent.php: improved the source code style.
+	
+	* mobile/operation/agents.php: fixed the PHP warnings.
+
 2013-05-31  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php: Minor visual fix

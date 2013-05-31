@@ -255,8 +255,10 @@ class Agents {
 			$row[3] = $row[__('Group')] = ui_print_group_icon ($agent["id_grupo"], true);
 			$row[4] = $row[__('Interval')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('I.') . ' </span>' .
 				'<span style="vertical-align: 0%;">' . human_time_description_raw($agent["intervalo"]) . '</span>';
-			$row[5] = $row[__('Status')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">' . __('S.') . ' </span>' . agents_tree_view_status_img ($agent["critical_count"],
-				$agent["warning_count"], $agent["unknown_count"]);
+			$row[5] = $row[__('Status')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">' . __('S.') . ' </span>' .
+				agents_tree_view_status_img ($agent["critical_count"],
+					$agent["warning_count"], $agent["unknown_count"],
+					$agent["total_count"], $agent["notinit_count"]);
 			$row[6] = $row[__('Alerts')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('A.') . ' </span>' . agents_tree_view_alert_img ($agent["fired_count"]);
 			
 			$row[7] = $row[__('Modules')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('M.') . ' </span>' .

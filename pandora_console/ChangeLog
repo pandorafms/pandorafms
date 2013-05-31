@@ -1,3 +1,8 @@
+2013-05-31 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/graphs/functions_pchart.php: avoid to characters and
+	other shit that corrupts the image file.
+
 2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/agentes/networkmap.php: fixed the string of button to

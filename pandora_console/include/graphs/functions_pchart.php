@@ -1,5 +1,7 @@
 <?php
 
+ob_start(); //HACK TO EAT ANYTHING THAT CORRUPS THE IMAGE FILE
+
 // Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
@@ -267,6 +269,8 @@ foreach ($colors as $i => $color) {
 		$rgb_color[$i]['alpha'] = $color['alpha'];
 	}
 }*/
+
+ob_get_clean(); //HACK TO EAT ANYTHING THAT CORRUPS THE IMAGE FILE
 
 switch($graph_type) {
 	case 'pie3d':

@@ -414,14 +414,17 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		
 		$table->head[0] = "<span title='" . __('Validated') . "'>" . __('V.') . "</span>";
 		$table->align[0] = 'center';
+		$table->style[0] = 'background: #e3e3e3;';
 		
 		$table->head[1] = "<span title='" . __('Severity') . "'>" . __('S.') . "</span>";
 		$table->align[1] = 'center';
-		
+		$table->style[1] = 'background: #e3e3e3;';
+
 		$table->head[2] = __('Type');
 		$table->headclass[2] = "datos3 f9";
 		$table->align[2] = "center";
-		
+		$table->style[2] = 'background: #e3e3e3;';
+
 		$table->head[3] = __('Event name');
 		
 		$table->head[4] = __('Agent name');
@@ -542,7 +545,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/error.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "alert_manual_validation":
@@ -551,7 +554,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/eye.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "going_up_warning":
@@ -560,7 +563,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/b_yellow.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "going_down_critical":
@@ -570,7 +573,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/b_red.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "going_up_normal":
@@ -580,7 +583,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/b_green.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "going_down_warning":
@@ -589,7 +592,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/b_yellow.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "alert_fired":
@@ -598,7 +601,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else { 
 				$output .= html_print_image ("images/bell.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "system":
@@ -607,7 +610,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/cog.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "recon_host_detected":
@@ -616,7 +619,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/network.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "new_agent":
@@ -625,7 +628,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/wand.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 		case "unknown": 
@@ -635,7 +638,7 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 			}
 			else {
 				$output .= html_print_image ("images/err.png", true,
-					array ("title" => events_print_type_description($type, true)));
+					array ("title" => events_print_type_description($type, true), "width" => "16px"));
 			}
 			break;
 	}

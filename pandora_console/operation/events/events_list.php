@@ -511,6 +511,7 @@ $table->data = array ();
 
 $table->head[0] = __('Status');
 $table->align[0] = 'center';
+$table->style[0] = 'background: #e3e3e3;';
 
 $table->head[1] = __('Event name');
 
@@ -523,10 +524,12 @@ $table->align[3] = 'center';
 $table->head[4] = __('Action');
 $table->align[4] = 'center';
 $table->size[4] = '80px';
+$table->style[4] = 'background: #e3e3e3;';
 
 if (check_acl ($config["id_user"], 0, "IW") == 1) {
 	$table->head[5] = html_print_checkbox ("allbox", "1", false, true);
 	$table->align[5] = 'center';
+	$table->style[5] = 'background: #e3e3e3;';
 }
 
 $idx = 0;

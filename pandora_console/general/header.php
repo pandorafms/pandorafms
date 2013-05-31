@@ -31,7 +31,7 @@ config_check();
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 5px;" border="0">
 	<tr>
-		<td rowspan="2">
+		<td rowspan="2" style="padding-right: 30px;">
 			<a href="index.php?sec=main">
 				<?php
 				if (!defined ('PANDORA_ENTERPRISE')){
@@ -190,7 +190,7 @@ config_check();
 				else echo "value='" . $config['search_keywords'] . "'";
 				?>
 				onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
-				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
+				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 87%; height: 19px; margin-bottom: 5px; margin-left: 2px; padding-right: 18px;" />
 			<!-- onClick="javascript: document.quicksearch.submit()" -->
 			<input type='hidden' name='head_search_keywords' value='abc' />
 			<?php

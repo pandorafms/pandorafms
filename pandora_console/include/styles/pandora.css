@@ -701,6 +701,7 @@ div.title_line {
 #menu_tab .mn li {
 	float: right;
 	position: relative;
+	color: #fff;
 }
 #menu_tab li a, #menu_tab a {
 	background: #d4ddc6;
@@ -858,10 +859,23 @@ span.rmess, span.nrmess {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
+	border-spacing: 3px;
 }
 .databox {
 	background-color: #f4f5f4;
+	margin-bottom: 12px;
 }
+
+.databox th {
+	height: 25px;
+	font-size: 8pt;
+}
+
+.databox td, .databox th {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
 /* Style for login form */
 .databox_login {
 	#margin-top: 100px !important;
@@ -1363,6 +1377,7 @@ div#steps_clean {
 	width: 100%;
 	padding-right: 28px;
 	margin-left: -8px;
+	margin-bottom: 10px;
 }
 div#events_list {
 	float: left;
@@ -1584,11 +1599,11 @@ tr.group_view_data, .group_view_data {
 
 
 /* classes for event priorities. Sits now in functions.php */
-.datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a {
+.datos_green, .datos_greenf9 {
 	background-color: #52A000;
 	color: #fff;
 }
-.datos_red, .datos_redf9, .datos_red a, .datos_redf9 a{
+.datos_red, .datos_redf9{
 	background-color: #FF3E41;
 	color: #fff !important;
 }

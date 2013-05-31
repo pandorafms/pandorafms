@@ -74,7 +74,7 @@ echo '</div>';
 // ---------------------------------------------------------------------------
 // Site stats (global!)
 // ---------------------------------------------------------------------------
-echo '<div style="width:30%; float:left; padding-left: 30px;" id="rightcolumn">';
+echo '<div style="width:40%; float:left; padding-left: 30px;" id="rightcolumn">';
 $data = reporting_get_group_stats ();
 
 $table->class = "databox";
@@ -87,12 +87,17 @@ $table->width = "100%";
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
 $table->data[1][0] = 
 	progress_bar($data["monitor_health"], 280, 20, $data["monitor_health"].'% '.__('of monitors up'), 0);
+$table->rowstyle[1] = 'text-align: center;';
+
 $table->data[2][0] = '<b>'.__('Module sanity').'</b>';
 $table->data[3][0] =
 	progress_bar($data["module_sanity"], 280, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0);
+$table->rowstyle[3] = 'text-align: center;';
+
 $table->data[4][0] = '<b>'.__('Alert level').'</b>';
 $table->data[5][0] =
 	progress_bar($data["alert_level"], 280, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
+$table->rowstyle[5] = 'text-align: center;';
 
 html_print_table ($table);
 unset ($table);
@@ -162,7 +167,7 @@ echo "</div>";
 
 echo "</td></tr><tr><td>";
 
-echo '<div id="activity" style="width:87%;">';
+echo '<div id="activity" style="width:100%;">';
 // Show last activity from this user
 echo "<h4>" . __('This is your last activity in Pandora FMS console') . "</h4>";
 

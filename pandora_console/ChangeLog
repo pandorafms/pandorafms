@@ -1,3 +1,19 @@
+2013-05-31  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php
+	include/styles/menu.css
+	include/styles/pandora.css
+	operation/agentes/tactical.php
+	operation/events/events_list.php
+	images/pandora.ico.gif
+	images/pandora_header_logo_enterprise.png
+	images/snmp.png
+	images/pandora_header_logo.png
+	images/pandora.ico
+	general/logon_ok.php
+	general/header.php: First group of visual 
+	improvements for Pandora FMS 4.1
+
 2013-05-31 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/graphs/functions_pchart.php: avoid to characters and

@@ -81,6 +81,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('integria_inventory', '0'),
 ('integria_url', ''),
 ('update_manager_installed', 1),
+('flash_charts', 0),
 ('num_files_attachment', 100);
 
 UNLOCK TABLES;

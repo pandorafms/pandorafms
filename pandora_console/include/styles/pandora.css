@@ -30,17 +30,17 @@ svg * {
 	}
 body {
 	text-align: center;
-	background-color: #fafafa; 
+	background-color: #ffffff; 
 	margin: 0 auto;
 }
 
 div#page {
-	background: #fafafa;
+	background: #fff;
 	background-image: none;
 }
 
 div#main {
-	background: #fafafa;
+	background: #fff;
 	background-image: none;
 }
 

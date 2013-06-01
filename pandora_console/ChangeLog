@@ -1,5 +1,7 @@
 2013-06-01  Sancho Lerena <slerena@artica.es>
 
+	* include/styles/pandora.css: Set white (#fff) as new default page background
+
 	* pandoradb_data.sql: by default don't use flash charts.
 
 2013-05-31  Sergio Martin <sergio.martin@artica.es>

@@ -1,6 +1,17 @@
 2013-06-03  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css
+	include/functions_groups.php
+	operation/events/events_list.php
+	operation/agentes/group_view.php
+	mobile/operation/agent.php
+	mobile/operation/agents.php
+	mobile/include/style/main.css
+	general/logon_ok.php: Few visual fixes
+
+2013-06-03  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
 	index.php: Fix footer layout merged from 4.1
 
 2013-05-31 Miguel de Dios <miguel.dedios@artica.es>

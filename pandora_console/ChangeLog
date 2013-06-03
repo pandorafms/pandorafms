@@ -1,3 +1,8 @@
+2013-06-03  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	index.php: Fix footer layout merged from 4.1
+
 2013-05-31 Miguel de Dios <miguel.dedios@artica.es>
 
 	* mobile/include/style/main.css: fixed the list of modules in the

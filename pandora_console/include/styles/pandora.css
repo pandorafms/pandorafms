@@ -238,8 +238,9 @@ div#main_help a.footer {
 	color: #999;
 }
 
-a.footer{
+a.footer, a.footer span{
 	font-size: 9px;
+	color: white;
 }
 
 div#main_help div.databox hr{
@@ -275,7 +276,7 @@ div#foot {
 	padding-top: 8px;
 	padding-bottom: 5px;
 	text-align: center;
-	background: #111;
+	background: #333333;
 	width: 960px;
 	height: 38px;
 	clear: both;

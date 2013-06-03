@@ -509,11 +509,7 @@ else {
 }
 
 if (!empty($result)) {
-	$graph = '<fieldset class="databox tactical_set" style="width:93%;">
-			<legend>' . 
-				__('Events generated -by module-') . 
-			'</legend>' . 
-			grafico_eventos_grupo(350, 148, rawurlencode ($sql_post), $meta, $history) . '</fieldset>';
+	$graph = '<div style="width: 350px; margin: 0 auto;">' . grafico_eventos_grupo(350, 148, rawurlencode ($sql_post), $meta, $history) . '</div>';
 	html_print_div(array('id' => 'events_graph', 'hidden' => true, 'content' => $graph));
 }
 
@@ -1125,13 +1121,14 @@ function show_events_graph_dialog() {
 			.dialog ({
 				resizable: true,
 				draggable: true,
+				title: '<?php echo __('Events generated -by agent-'); ?>',
 				modal: true,
 				overlay: {
 					opacity: 0.5,
 					background: "black"
 				},
 				width: 450,
-				height: 360
+				height: 380
 			})
 			.show ();
 }

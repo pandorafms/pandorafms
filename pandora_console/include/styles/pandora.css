@@ -1288,6 +1288,7 @@ div.title_line {
 	background: #ababab url('../../images/tab_grey_bg.png');
 	padding-left: 3px;
 	padding-right: 3px;
+	min-height: 23px;
 }
 
 #menu_tab li.tab_godmode.nomn_high a, #menu_tab a.tab_godmode.nomn_high,
@@ -1300,6 +1301,7 @@ div.title_line {
 	background: #6ba532 url('../../images/tab_green_bg.png');
 	padding-left: 3px;
 	padding-right: 3px;
+	min-height: 23px;
 }
 
 #menu_tab li.tab_operation.nomn_high a, #menu_tab a.tab_operation.nomn_high,

@@ -201,39 +201,38 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	"&amp;filter_only_alert=" . $filter_only_alert .
 	"&amp;offset=" . $offset;
 
-echo "<br>";
 //Link to toggle filter
-echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
+echo '<a href="#" id="tgl_event_control">' . html_print_image ("images/go.png", true, array ("title" => __('Toggle filter(s)'), 'class' => 'events_toggle_image')) . html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'), 'style' => 'display: none;', 'class' => 'events_toggle_image')) . '&nbsp;<b>'.__('Event control filter').'</b></a><br><br>';
 
 //Start div
 echo '<div id="event_control" style="display:none">';
 
 // Table for filter controls
 echo '<form method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'&amp;section=list">';
-echo '<table style="float:left;" width="550" cellpadding="4" cellspacing="4" class="databox"><tr>';
+echo '<table style="float:left; font-weight: bold;" width="98%" cellpadding="4" cellspacing="4" class="databox"><tr>';
 
 // Group combo
-echo "<td>".__('Group')."</td><td>";
+echo "<td>".__('Group')."<br>";
 html_print_select_groups($config["id_user"], "IR", true, 'ev_group', $ev_group, '', '', 0, false, false, false, 'w130');
 echo "</td>";
 
 // Event type
-echo "<td>".__('Event type')."</td><td>";
+echo "<td>".__('Event type')."<br>";
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
 $types["not_normal"] = __("Not normal");
 html_print_select ($types, 'event_type', $event_type, '', __('All'), '');
 
 
-echo "</td></tr><tr>";
+echo "</td>";
 
 // Severity
-echo "<td>".__('Severity')."</td><td>";
+echo "<td>".__('Severity')."<br>";
 html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', false, false, false);
 echo '</td>';
 
 // Status
-echo "<td>".__('Event status')."</td><td>";
+echo "<td>".__('Event status')."<br>";
 $fields = array ();
 $fields[-1] = __('All event');
 $fields[0] = __('Only new');
@@ -247,15 +246,13 @@ html_print_select ($fields, 'status', $status, '', '', '');
 echo "</td></tr><tr>";
 
 // Free search
-echo "<td>" . __('Free search') . "</td>";
-echo "<td>";
+echo "<td>" . __('Free search') . "<br>";
 html_print_input_text ('search', io_safe_output($search), '', 15);
 echo '</td>';
 
 //Agent search
 $src_code = html_print_image('images/lightning.png', true, false, true);
-echo "<td>" . __('Agent search') . "</td>";
-echo '<td>';
+echo "<td>" . __('Agent search') . "<br>";
 html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(' . $src_code . ') no-repeat right;')) .
 	'<a href="#" class="tip">&nbsp;<span>' .
@@ -263,54 +260,52 @@ html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 
 echo '</td>';
 
 
-
-
-echo "</tr>";
-
 // User selectable block size
-echo '<tr><td>';
+echo '<td>';
 echo __('Block size for pagination');
-echo '</td>';
+echo '<br>';
 $lpagination[25] = 25;
 $lpagination[50] = 50;
 $lpagination[100] = 100;
 $lpagination[200] = 200;
 $lpagination[500] = 500;
 
-echo "<td>";
 html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"]);
 echo "</td>";
 
-echo "<td>" . __('Max. hours old') . "</td>";
-echo "<td>";
+echo "<td>" . __('Max. hours old') . "<br>";
 html_print_input_text ('event_view_hr', $event_view_hr, '', 5);
 echo "</td>";
 
 
 echo "</tr><tr>";
-echo "<td>" . __('User ack.') . "</td>";
-echo "<td>";
+echo "<td>" . __('User ack.') . "<br>";
 $users = users_get_info ();
 html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
 echo "</td>";
 
 echo "<td>";
 echo __("Repeated");
-echo "</td><td>";
+echo "<br>";
 
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
 html_print_select ($repeated_sel, "group_rep", $group_rep, '');
+echo "</td>";
+
+echo "<td>";
+echo __("Alert events") . "<br>";
+
+html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '');
+
 echo "</td></tr>";
 
 
 
 
-
-
 echo "<tr>";
-echo "<td colspan='2'>" . __('Events with following tags') . "</td>";
-echo "<td colspan='2'>" . __('Events without following tags') . "</td>";
+echo "<td colspan='2'><br>" . __('Events with following tags') . "</td>";
+echo "<td colspan='2'><br>" . __('Events without following tags') . "</td>";
 echo "</tr>";
 
 echo "<tr>";
@@ -381,28 +376,11 @@ echo "</tr>";
 
 
 
-
-
-
-echo "<tr>";
-
-echo "<td>";
-echo __("Alert events") . "</td><td>";
-
-html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '');
-
-echo "</td></tr>";
-
-
-
 echo '<tr><td colspan="4" style="text-align:right">';
 //The buttons
 html_print_submit_button (__('Update'), '', false, 'class="sub upd"');
 
 echo "</td></tr></table></form>"; //This is the filter div
-echo '<div style="width:220px; float:left;">';
-echo grafico_eventos_grupo(350, 248, rawurlencode ($sql_post));
-echo '</div>';
 echo '<div id="steps_clean">&nbsp;</div>';
 echo '</div>';
 
@@ -500,7 +478,11 @@ $total_events = (int) db_get_sql ($sql);
 if (empty ($result)) {
 	$result = array ();
 }
-
+else {
+	echo '<div style="width:220px;">';
+	ui_toggle(grafico_eventos_grupo(350, 248, rawurlencode ($sql_post)), __('Graph'));
+	echo '</div>';
+}
 $table->width = '100%';
 $table->id = "eventtable";
 $table->cellpadding = 4;

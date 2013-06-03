@@ -657,19 +657,19 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($compare === 'separated') {
 		// Color commented not to restrict serie colors
 		return area_graph($flash_chart, $chart, $width, $height, $color ,$legend,
-			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$long_index, $homeurl . "images/image_problem.opaque.png", "", $unit, $homeurl,
 			$config['homedir'] .  "/images/logo_vertical_water.png",
 			$config['fontpath'], $config['font_size'], $unit, $ttl).
 			'<br>'.
 			area_graph($flash_chart, $chart_prev, $width, $height, $color_prev ,$legend_prev,
-			$long_index_prev, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$long_index_prev, $homeurl . "images/image_problem.opaque.png", "", $unit, $homeurl,
 			$config['homedir'] .  "/images/logo_vertical_water.png",
 			$config['fontpath'], $config['font_size'], $unit, $ttl);
 	}
 	else {
 		// Color commented not to restrict serie colors
 		return area_graph($flash_chart, $chart, $width, $height, $color ,$legend,
-			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$long_index, $homeurl . "images/image_problem.opaque.png", "", $unit, $homeurl,
 			$config['homedir'] .  "/images/logo_vertical_water.png",
 			$config['fontpath'], $config['font_size'], $unit, $ttl);
 	}
@@ -1105,7 +1105,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		case GRAPH_AREA:
 			$color = null; 
 			return area_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
+				$color, $module_name_list, $long_index, $homeurl . "images/image_problem.opaque.png",
 				"", "", $homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
 				$config['fontpath'], $fixed_font_size, "", $ttl); 
 			break;
@@ -1113,14 +1113,14 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		case GRAPH_STACKED_AREA: 
 			$color = null;
 			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
+				$color, $module_name_list, $long_index, $homeurl . "images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
 				$config['fontpath'], $fixed_font_size, "", $ttl, $homeurl);
 			break;
 		case GRAPH_LINE:  
 			$color = null;
 			return line_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, $homeurl."images/image_problem.opaque.png",
+				$color, $module_name_list, $long_index, $homeurl . "images/image_problem.opaque.png",
 				"", "", $config['homedir'] .  "/images/logo_vertical_water.png",
 				$config['fontpath'], $fixed_font_size, "", $ttl, $homeurl); 
 			break;
@@ -2507,18 +2507,18 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 
 	if ($compare === 'separated') {
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$long_index, $homeurl . "images/image_problem.opaque.png", "", $unit, $homeurl,
 			 $config['homedir'] .  "/images/logo_vertical_water.png",
 			 $config['fontpath'], $config['font_size'], $unit).
 			 '<br>'.
 			 area_graph($flash_chart, $chart_prev, $width, $height, $color_prev, $legend_prev,
-			$long_index_prev, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$long_index_prev, $homeurl . "images/image_problem.opaque.png", "", $unit, $homeurl,
 			 $config['homedir'] .  "/images/logo_vertical_water.png",
 			 $config['fontpath'], $config['font_size'], $unit);
 	}
 	else {
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$long_index, $homeurl . "images/image_problem.opaque.png", "", $unit, $homeurl,
 			 $config['homedir'] .  "/images/logo_vertical_water.png",
 			 $config['fontpath'], $config['font_size'], $unit);
 	}
@@ -2628,7 +2628,7 @@ echo"<h4>Gráfica de área</h4>";
 	}
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color, $aggs,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		$long_index, $homeurl . "images/image_problem.opaque.png", "", "", $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size'], "");
 }
@@ -2694,7 +2694,7 @@ function grafico_netflow_total_area ($data, $period,$width, $height , $title, $u
 	$color = array();
 
 	return area_graph($flash_chart, $chart, $width, $height, $color, $leyend,
-		$long_index, "images/image_problem.opaque.png", "", "", $homeurl,
+		$long_index, $homeurl . "images/image_problem.opaque.png", "", "", $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size'], "");
 }
@@ -2966,7 +2966,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	*/
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color,
-		$legend, $long_index,  "images/image_problem.opaque.png", "", "",   
+		$legend, $long_index,  $homeurl . "images/image_problem.opaque.png", "", "",   
 		$homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size'], $unit, $ttl);
 }

@@ -81,10 +81,10 @@ $counter = 1;
 $agents = agents_get_group_agents(array_keys($groups));
 
 if (count($agents) > 0) {
-	echo '<table cellpadding="0" style="margin-top:10px" cellspacing="0" border="0" width="98%">';
+	echo '<table cellpadding="0" class="databox" style="margin-top:10px" cellspacing="0" border="0" width="98%">';
 	echo "<tr>";
+	echo "<th><span title='" . __('Force execution') . "'>" . __('F.') . "</span></th>";
 	echo "<th width='25%'>".__("Group")."</th>";
-	echo "<th>";
 	echo "<th width='10%'>".__("Agents")."</th>";
 	echo "<th width='10%'>".__("Agent unknown")."</th>";
 	echo "<th width='10%'>".__("Unknown")."</th>";

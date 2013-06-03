@@ -655,18 +655,20 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 		echo "<tr class='group_view_normal' style='height: 35px;'>";
 	}
 	
+	// Force
+	echo "<td class='group_view_data'  style='text-align: center; vertica-align: middle; background: #e3e3e3;'>";
+	if (check_acl ($config['id_user'], $id_group, "AW")) {
+		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' .
+			html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
+	}
+	echo "</td>";
+	
 	// Group name
-	echo "<td class='group_view_data' style='font-weight: bold; font-size: 12px;'>&nbsp;&nbsp;";
+	echo "<td class='group_view_data' style='font-weight: bold; font-size: 12px; background: #e3e3e3;'>&nbsp;&nbsp;";
 	echo $group['prefix'] . ui_print_group_icon ($id_group, true, "groups_small", 'font-size: 7.5pt');
 	echo "&nbsp;<a class='group_view_data' href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
 	echo ui_print_truncate_text($group['name']);
 	echo "</a>";
-	echo "</td>";
-	echo "<td class='group_view_data'  style='text-align: center; vertica-align: middle;'>";
-	if (check_acl ($config['id_user'], $id_group, "AW")) {
-		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' .
-			html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
-	}
 	echo "</td>";
 	
 	// Total agents
@@ -787,7 +789,6 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 
 
 	echo "</tr>";
-	echo "<tr style='height: 5px;'><td colspan=10> </td></tr>";
 	
 	foreach($group['childs'] as $child) {
 		groups_get_group_row($child, $group_all, $group_all[$child], $printed_groups);

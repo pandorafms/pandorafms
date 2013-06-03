@@ -687,7 +687,7 @@ div.title_line {
 /*	float:left; */
 	margin-left:-8px;
 	min-height:31px;
-	padding-right:28px;
+	padding-right:18px;
 	width:100%;
 	margin-top: -5px;
 }
@@ -1363,7 +1363,7 @@ div#main {
 	padding-top: 0px;
 	padding-bottom: 20px;
 	margin-left: 175px;
-	margin-right: 20px;
+	margin-right: 10px;
 }
 div#head {
 	width: auto;

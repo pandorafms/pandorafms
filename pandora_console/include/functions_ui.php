@@ -1753,20 +1753,20 @@ if($hidde_default) {
 	$style = 'display:none';
 	$toggle_a = "$('#tgl_div_".$uniqid."').show();";
 	$toggle_b = "$('#tgl_div_".$uniqid."').hide();";
-	$image_a = html_print_image("images/go.png", true, false, true);
-	$image_b = html_print_image("images/down.png", true, false, true);
-	$original = "images/down.png";
+	$image_a = html_print_image("images/down.png", true, false, true);
+	$image_b = html_print_image("images/go.png", true, false, true);
+	$original = "images/go.png";
 }else {
 	$style = '';
 	$toggle_a = "$('#tgl_div_".$uniqid."').hide();";
 	$toggle_b = "$('#tgl_div_".$uniqid."').show();";
-	$image_a = html_print_image("images/down.png", true, false, true);
-	$image_b = html_print_image("images/go.png", true, false, true);
-	$original = "images/go.png";
+	$image_a = html_print_image("images/go.png", true, false, true);
+	$image_b = html_print_image("images/down.png", true, false, true);
+	$original = "images/down.png";
 }
 
 // Link to toggle
-echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
+echo '<a href="#" id="tgl_ctrl_'.$uniqid.'">' . html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)) . '&nbsp;<b>'.$name.'</b></a><br /><br />';
 
 // Code into a div
 echo "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";

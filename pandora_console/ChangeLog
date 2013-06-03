@@ -1,5 +1,20 @@
 2013-06-03  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_graph.php
+	include/styles/pandora.css
+	include/functions_groups.php
+	include/functions_ui.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_agente.php
+	operation/agentes/group_view.php
+	operation/events/events_list.php
+	operation/events/events.php
+	general/header.php
+	godmode/agentes/modificar_agente.php: Few visual improvements
+	including header layout and some forms as events or agent views
+
+2013-06-03  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css
 	index.php: Improve the tabs visual style and 
 	fix the footer floating problem

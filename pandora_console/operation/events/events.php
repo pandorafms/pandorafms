@@ -433,6 +433,7 @@ ui_require_jquery_file ('autocomplete');
 		});
 		
 		$("#tgl_event_control").click (function () {
+			$(".events_toggle_image").toggle ();
 			$("#event_control").toggle ();
 			return false;
 		});

@@ -31,7 +31,7 @@ config_check();
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 5px;" border="0">
 	<tr>
-		<td rowspan="2" style="padding-right: 30px;">
+		<td rowspan="2" style="padding-right: 30px; width: 25%;">
 			<a href="index.php?sec=main">
 				<?php
 				if (!defined ('PANDORA_ENTERPRISE')){
@@ -42,7 +42,45 @@ config_check();
 				?>
 			</a>
 		</td>
-		<td width="20%">
+		
+		<!-- Autorefresh -->
+		<td style="padding-left: 30px; width: 25%;">
+			<?php
+			// Autorefresh
+			if (!isset($_GET['refr'])) {
+				$_GET['refr'] = null;
+			}
+			
+			$ignored_params = array ('agent_config' => false, 'code' => false);
+			if ($_GET['refr']) {
+				$ignored_params['refr'] = 0;
+				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
+				echo ' (<span id="refrcounter">'.date ("i:s", $_GET['refr']).'</span>)';
+				echo '</a>';
+			}
+			else {
+				$ignored_params['refr'] = '';
+				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
+				$values = array (
+					'5' => '5 '.__('seconds'),
+					'10' => '10 '.__('seconds'),
+					'15' => '15 '.__('seconds'),
+					'30' => '30 '.__('seconds'),
+					'60' => '1 '.__('minute'),
+					'120' => '2 '.__('minutes'),
+					'300' => '5 '.__('minutes'),
+					'900' => '15 '.__('minutes'),
+					'1800' => '30 '.__('minutes'),
+					'3600' => '1 '.__('hour'));
+				echo '<span id="combo_refr" style="display: none">';
+				html_print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
+				unset ($values);
+				echo '</span>';
+			}
+		echo "</td>";
+		?>
+		<!-- User icons -->
+		<td style="width: 25%; text-align: center;">
 			<?php 
 				if (is_user_admin ($config["id_user"]) == 1)
 					html_print_image("images/user_suit.png" , false, array("class" => 'bot', "alt" => 'user'));
@@ -92,9 +130,14 @@ config_check();
 			html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
 			echo '</a>';
 			
+			// Events link
+			echo "&nbsp;";
+			echo "&nbsp;";
+			if ($config["metaconsole"] == 0) {
+				echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . html_print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot', "title" => __('Events'))) .'</a>';
+			}
+			
 			// Main help icon
-			echo "&nbsp;";
-			echo "&nbsp;";
 			echo ui_print_help_icon ("main_help", true);
 			if ($config['metaconsole'] == 1) {
 				echo "&nbsp;";
@@ -102,9 +145,23 @@ config_check();
 				html_print_image("images/application_double.png", false, array("alt" => __('Metaconsole activated'), "class" => 'bot', "title" => __('You are using metaconsole')));
 			}
 			
-			echo '</td>';
-		echo '<td width="20%">';
-			
+			echo '</td>';		
+		?>
+		</td>
+
+		<td style="text-align: right; padding-right: 35px; width: 25%;" rowspan='2'>
+		<?php
+			echo "<a href='index.php?sec=main'>";
+			if (isset($config["custom_logo"]))
+				echo html_print_image("images/custom_logo/" . $config["custom_logo"], true,array("height" => '60', "width" => '139', "alt" => 'Logo'));
+			echo "</a>";
+		?>
+		</td>
+	</tr>
+	<tr>
+		<!-- System diagnostic -->
+		<td style="padding-left: 30px; width: 25%;">
+		<?php
 			if ($config["metaconsole"] == 0){
 				echo '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				
@@ -126,54 +183,11 @@ config_check();
 				unset ($servers); // Since this is the header, we don't like to trickle down variables.
 				echo '</a>';
 			}
-		
 		?>
 		</td>
-		<td width="20%">
-			<?php
-			// Autorefresh
-			if (!isset($_GET['refr'])) {
-				$_GET['refr'] = null;
-			}
-			
-			$ignored_params = array ('agent_config' => false, 'code' => false);
-			if ($_GET['refr']) {
-				$ignored_params['refr'] = 0;
-				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
-				echo ' (<span id="refrcounter">'.date ("i:s", $_GET['refr']).'</span>)';
-				echo '</a>';
-			}
-			else {
-				$ignored_params['refr'] = '';
-				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
-				$values = array (
-					'5' => '5 '.__('seconds'),
-					'10' => '10 '.__('seconds'),
-					'15' => '15 '.__('seconds'),
-					'30' => '30 '.__('seconds'),
-					'60' => '1 '.__('minute'),
-					'120' => '2 '.__('minutes'),
-					'300' => '5 '.__('minutes'),
-					'900' => '15 '.__('minutes'),
-					'1800' => '30 '.__('minutes'),
-					'3600' => '1 '.__('hour'));
-				echo '<span id="combo_refr" style="display: none">';
-				html_print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
-				unset ($values);
-				echo '</span>';
-			}
-		echo "</td>";
-		echo "<td width='20%' rowspan='2'>";
-		echo "<a href='index.php?sec=main'>";
-		if (isset($config["custom_logo"]))
-			echo html_print_image("images/custom_logo/" . $config["custom_logo"], true,array("height" => '60', "width" => '139', "alt" => 'Logo'));
-		echo "</a>";
-		?>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">
 		
+		<!-- Search input -->
+		<td style="text-align: center;">	
 		<?php
 		if ($config["metaconsole"] == 0) {
 		?>
@@ -190,7 +204,7 @@ config_check();
 				else echo "value='" . $config['search_keywords'] . "'";
 				?>
 				onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
-				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 87%; height: 19px; margin-bottom: 5px; margin-left: 2px; padding-right: 18px;" />
+				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 170px; height: 19px; margin-bottom: 5px; margin-left: 2px; padding-right: 18px;" />
 			<!-- onClick="javascript: document.quicksearch.submit()" -->
 			<input type='hidden' name='head_search_keywords' value='abc' />
 			<?php
@@ -198,13 +212,6 @@ config_check();
 			?>
 		</form>
 		<?php
-		}
-		?>
-		</td>
-		<td>
-		<?php
-		if ($config["metaconsole"] == 0) {
-			echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . html_print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
 		}
 		?>
 		</td>

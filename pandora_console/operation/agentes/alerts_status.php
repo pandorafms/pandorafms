@@ -356,7 +356,7 @@ else
 	}
 }
 
-$table->title = __('Single alerts');
+$table->title = __('Alerts');
 $table->titlestyle = "background-color:#799E48;";
 
 $table->data = array ();

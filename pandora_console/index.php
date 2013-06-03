@@ -455,10 +455,11 @@ else {
 
 
 if ($config["pure"] == 0) {
+	echo '</div>'; //container div
+	echo '<div style="clear:both"></div>';
 	echo '<div id="foot">';
 	require ("general/footer.php");
 	echo '</div>';
-	echo '</div>'; //container div
 }
 while (@ob_end_flush ());
 
@@ -468,3 +469,20 @@ echo '</html>';
 $run_time = format_numeric (microtime (true) - $config['start_time'], 3);
 echo "\n<!-- Page generated in $run_time seconds -->\n";
 ?>
+
+<script type="text/javascript" language="javascript">
+//Initial load of page
+$(document).ready(sizeContent);
+
+//Every resize of window
+$(window).resize(sizeContent);
+
+//Dynamically assign height
+function sizeContent() {
+	var footposition_bottom = $('#foot').position().top + $("#foot").height();
+
+	if(footposition_bottom < $(window).height()) {		
+		$('#container').css('height', $(window).height() - $("#foot").height() - 15 + 'px');
+	}
+}
+</script>

@@ -1,3 +1,9 @@
+2013-06-03  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	index.php: Improve the tabs visual style and 
+	fix the footer floating problem
+
 2013-06-01  Sancho Lerena <slerena@artica.es>
 
 	* include/styles/pandora.css: Set white (#fff) as new default page background

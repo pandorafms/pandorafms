@@ -114,6 +114,7 @@ function profile_delete_user_profile ($id_user, $id_profile) {
 	$where = array(
 		'id_usuario' => $id_user,
 		'id_up' => $id_profile);
+	
 	return (bool)db_process_sql_delete('tusuario_perfil', $where);
 }
 

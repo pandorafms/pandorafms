@@ -39,46 +39,19 @@ if (defined('METACONSOLE'))
 else
 	$sec = 'galertas';
 
-if ($al_action !== false){
-	// If user tries to edit an action with group=ALL
-	if ($al_action['id_group'] == 0){
-		// then must have "PM" access privileges
-		if (! check_acl ($config['id_user'], 0, "PM")) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access Alert Management");
-			require ("general/noaccess.php");
-			exit;
-		}
-		else {
-			// Header
-			if (defined('METACONSOLE'))
-				alerts_meta_print_header();
-			else
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);
-		}
-	} // If user tries to edit an action of others groups
-	else {
+if ($al_action !== false) {
 		$own_info = get_user_info ($config['id_user']);
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
 		else
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 		$is_in_group = in_array($al_action['id_group'], $own_groups);
-		// Then action group have to be in his own groups
-		if ($is_in_group) {
-			// Header
-			if (defined('METACONSOLE'))
-				alerts_meta_print_header();
-			else
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);		
-		}
-		else {
-			db_pandora_audit("ACL Violation",
-			"Trying to access Alert Management");
-			require ("general/noaccess.php");
-			exit;
-		}
-	}
+		
+		// Header
+		if (defined('METACONSOLE'))
+			alerts_meta_print_header();
+		else
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);
 }
 else {
 	// Header
@@ -129,19 +102,20 @@ else
 $table->data[1][1] = html_print_select_groups(false, "LW", $display_all_group, 'group', $group, '', '', 0, true);
 
 $table->data[2][0] = __('Command');
-$table->data[2][1] = html_print_select_from_sql ('SELECT id, name FROM talert_commands',
+$table->data[2][1] = html_print_select_from_sql ('SELECT id, name
+	FROM talert_commands',
 	'id_command', $id_command, '', __('None'), 0, true);
 $table->data[2][1] .= ' ';
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$table->data[2][1] .= html_print_image ('images/add.png', true);
-	$table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
+	$table->data[2][1] .= '<a href="index.php?sec=' . $sec . '&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
 	$table->data[2][1] .= __('Create Command');
 	$table->data[2][1] .= '</a>';
 }
 $table->data[2][1] .= '<div id="command_description" style=""></div>';
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
-$table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true);
+$table->data[3][1] .= ' ' . __('seconds') . ui_print_help_icon ('action_threshold', true);
 $table->data[4][0] = __('Command preview');
 $table->data[4][1] = html_print_textarea ('command_preview', 10, 30, '',
 	'disabled="disabled"', true);
@@ -153,14 +127,19 @@ for ($i = 1; $i <= 10; $i++) {
 	$table->data['field'.$i][1] .= html_print_input_hidden('field'.$i.'_value', isset($action['field'.$i]) ? $action['field'.$i] : '', true);
 }
 
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
+echo '<form method="post" action="index.php?sec=' . $sec . '&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
 	html_print_input_hidden ('id', $id);
-	html_print_input_hidden ('update_action', 1);
-	html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
+	if ($al_action['id_group'] == 0) {
+		// then must have "PM" access privileges
+		if (check_acl ($config['id_user'], 0, "PM")) {
+			html_print_input_hidden ('update_action', 1);
+			html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
+		}
+	}
 }
 else {
 	html_print_input_hidden ('create_action', 1);

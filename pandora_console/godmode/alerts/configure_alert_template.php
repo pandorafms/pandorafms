@@ -51,26 +51,19 @@ else {
 
 if ($a_template !== false) {
 	// If user tries to duplicate/edit a template with group=ALL
-	if ($a_template['id_group'] == 0){
-		// then must have "PM" access privileges
-		if (! check_acl ($config['id_user'], 0, "PM")) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access Alert Management");
-			require ("general/noaccess.php");
-			exit;
+	if ($a_template['id_group'] == 0) {
+		// Header
+		if (defined('METACONSOLE')) {
+			alerts_meta_print_header();
 		}
 		else {
-			// Header
-			if (defined('METACONSOLE')) {
-				alerts_meta_print_header();
-			}
-			else {
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "conf_alert_template", true);
-			}
+			ui_print_page_header (__('Alerts') .
+				' &raquo; ' . __('Configure alert template'), "",
+				false, "conf_alert_template", true);
 		}
-		 
-	} // If user tries to duplicate/edit a template of others groups
+	}
 	else {
+		// If user tries to duplicate/edit a template of others groups
 		$own_info = get_user_info ($config['id_user']);
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
@@ -150,13 +143,13 @@ function print_alert_template_steps ($step, $id) {
 	
 	if ($id) {
 		echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&pure='.$pure.'">';
-		echo __('Step').' 1 &raquo; ';
-		echo '<span>'.__('Conditions').'</span>';
+		echo __('Step') . ' 1 &raquo; ';
+		echo '<span>' . __('Conditions') . '</span>';
 		echo '</a>';
 	}
 	else {
-		echo __('Step').' 1 &raquo; ';
-		echo '<span>'.__('Conditions').'</span>';
+		echo __('Step') . ' 1 &raquo; ';
+		echo '<span>' . __('Conditions') . '</span>';
 	}
 	echo '</li>';
 	
@@ -332,6 +325,7 @@ define ('LAST_STEP', 3);
 
 $step = (int) get_parameter ('step', 1);
 
+$create_alert = (bool) get_parameter ('create_alert');
 $create_template = (bool) get_parameter ('create_template');
 $update_template = (bool) get_parameter ('update_template');
 
@@ -353,13 +347,13 @@ $sunday = true;
 $special_day = false;
 $default_action = 0;
 $fields = array();
-for($i=1;$i<=10;$i++) {
+for ($i = 1; $i <= 10; $i++) {
 	$fields[$i] = '';
 }
 $priority = 1;
 $min_alerts = 0;
 $max_alerts = 1;
-$threshold = 86400;
+$threshold = SECONDS_1DAY;
 $recovery_notify = false;
 $field2_recovery = '';
 $field3_recovery = '';
@@ -389,7 +383,7 @@ if ($create_template) {
 		'priority' => $priority,
 		'wizard_level' => $wizard_level);
 	
-	if($config['dbtype'] == "oracle") {
+	if ($config['dbtype'] == "oracle") {
 		$values['field3'] = ' ';
 		$values['field3_recovery'] = ' ';
 	}
@@ -454,13 +448,13 @@ if ($id && ! $create_template) {
 	$min_alerts = $template['min_alerts'];
 	$threshold = $template['time_threshold'];
 	$fields = array();
-	for($i=1;$i<=10;$i++) {
+	for ($i = 1; $i <= 10; $i++) {
 		$fields[$i] = $template['field'.$i];
 	}
 	$recovery_notify = $template['recovery_notify'];
 	
 	$fields_recovery = array();
-	for($i=2;$i<=10;$i++) {
+	for ($i = 2; $i <= 10; $i++) {
 		$fields_recovery[$i] = $template['field'.$i.'_recovery'];
 	}
 
@@ -526,18 +520,18 @@ if ($step == 2) {
 	
 	$table->colspan['fields_switch'][0] = 4;
 	$table->data['fields_switch'][0] = '<a href="javascript:toggle_fields();">'.__('Advanced fields management').' '.html_print_image('images/down.png',true).'</a>';
-
-	for($i=1;$i<=10;$i++) {
-		if(isset($template[$name])) {
+	
+	for ($i = 1; $i <= 10; $i++) {
+		if (isset($template[$name])) {
 			$value = $template[$name];
 		}
 		else {
 			$value = '';
 		}
-			
+		
 		$table->colspan['field'.$i][1] = 3;
 		$table->rowclass['field'.$i] = 'row_field';
-
+		
 		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true);
 		$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
 	}
@@ -547,10 +541,16 @@ if ($step == 2) {
 	switch ($config['dbtype']){
 		case "mysql":
 		case "postgresql":
-			$sql_query = sprintf('SELECT id, name FROM talert_actions WHERE id_group IN (%s) ORDER BY name', $usr_groups);
+			$sql_query = sprintf('SELECT id, name
+				FROM talert_actions
+				WHERE id_group IN (%s)
+				ORDER BY name', $usr_groups);
 			break;
 		case "oracle":
-			$sql_query = sprintf('SELECT id, dbms_lob.substr(name,4000,1) as nombre FROM talert_actions WHERE id_group IN (%s) ORDER BY dbms_lob.substr(name,4000,1)', $usr_groups);
+			$sql_query = sprintf('SELECT id, dbms_lob.substr(name,4000,1) as nombre
+				FROM talert_actions
+				WHERE id_group IN (%s)
+				ORDER BY dbms_lob.substr(name,4000,1)', $usr_groups);
 			break;
 	}
 	$table->data[4][1] = html_print_select_from_sql ($sql_query,
@@ -617,6 +617,7 @@ else {
 	$table->data[0][0] = __('Name');
 	$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
 	
+	
 	$table->data[0][1] .= "&nbsp;&nbsp;". __("Group");
 	$groups = users_get_groups ();
 	$own_info = get_user_info($config['id_user']);
@@ -625,7 +626,9 @@ else {
 		$display_all_group = true;
 	else
 		$display_all_group = false;
-	$table->data[0][1] .= "&nbsp;".html_print_select_groups(false, "AR", $display_all_group, 'id_group', $id_group, '', '', 0, true);
+	$table->data[0][1] .= "&nbsp;" .
+		html_print_select_groups(false, "AR", $display_all_group, 'id_group', $id_group, '', '', 0, true);
+	
 	
 	$table->data[1][0] = __('Description');
 	$table->data[1][1] =  html_print_textarea ('description', 10, 30,
@@ -634,11 +637,12 @@ else {
 	$table->data[2][0] = __('Priority');
 	$table->data[2][1] = html_print_select (get_priorities (), 'priority',
 		$priority, '', 0, 0, true, false, false);
-		
+	
 	if(defined('METACONSOLE')) {
 		$table->data[3][0] = __('Wizard level');
-		$wizard_levels = array('basic' => __('Basic'),
-								'advanced' => __('Advanced')								);
+		$wizard_levels = array(
+			'basic' => __('Basic'),
+			'advanced' => __('Advanced'));
 		$table->data[3][1] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);
 	}
 	else {
@@ -671,7 +675,7 @@ else {
 	//Min first, then max, that's more logical
 	$table->data['min'][0] = __('Min.');
 	$table->data['min'][1] = html_print_input_text ('min', $min, '', 5, 255, true);
-
+	
 	$table->data['max'][0] = __('Max.');
 	$table->data['max'][1] = html_print_input_text ('max', $max, '', 5, 255, true);
 	
@@ -688,7 +692,7 @@ else {
 }
 html_print_table ($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 if ($id) {
 	html_print_input_hidden ('id', $id);
 	html_print_input_hidden ('update_template', 1);
@@ -697,13 +701,26 @@ else {
 	html_print_input_hidden ('create_template', 1);
 }
 
-if ($step >= LAST_STEP) {
-	html_print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
+$disabled = false;
+if (!$create_alert && !$create_template) {
+	if ($a_template['id_group'] == 0) {
+		// then must have "PM" access privileges
+		if (! check_acl ($config['id_user'], 0, "PM")) {
+			$disabled = true;
+		}
+	}
 }
-else {
-	html_print_input_hidden ('step', $step + 1);
-	html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
+
+if (!$disabled) {
+	if ($step >= LAST_STEP) {
+		html_print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
+	}
+	else {
+		html_print_input_hidden ('step', $step + 1);
+		html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
+	}
 }
+
 echo '</div>';
 echo '</form>';
 
@@ -792,7 +809,7 @@ function toggle_fields() {
 }
 
 //toggle_fields();
-	
+
 $(document).ready (function () {
 <?php
 if ($step == 1) {

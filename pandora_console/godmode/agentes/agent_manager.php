@@ -264,10 +264,10 @@ if (!$new_agent) {
 		$table->data[3][1] .= '</a>'.ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
 	}
 	else
-		$table->data[3][1] = '<em>'.__('Not available').'</em>';
+		$table->data[3][1] = '<em>' . __('Not available') . '</em>';
 }
 else
-	$table->data[3][1] = '<em>'.__('Not available').'</em>';
+	$table->data[3][1] = '<em>' . __('Not available') . '</em>';
 
 $listIcons = gis_get_array_list_icons();
 

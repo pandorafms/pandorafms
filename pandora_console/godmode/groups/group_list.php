@@ -97,7 +97,7 @@ if (is_ajax ()) {
 	return;
 }
 
-if (! check_acl($config['id_user'], 0, "PM")) {
+if (! check_acl($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
@@ -126,7 +126,7 @@ $delete_group = (bool) get_parameter ('delete_group');
 $pure = get_parameter('pure', 0);
 
 /* Create group */
-if ($create_group) {
+if (($create_group) && (check_acl($config['id_user'], 0, "PM"))) {
 	$name = (string) get_parameter ('name');
 	$icon = (string) get_parameter ('icon');
 	$id_parent = (int) get_parameter ('id_parent');
@@ -219,7 +219,7 @@ if ($update_group) {
 }
 
 /* Delete group */
-if ($delete_group) {
+if (($delete_group) && (check_acl($config['id_user'], 0, "PM"))) {
 	$id_group = (int) get_parameter ('id_group');
 	
 	$usedGroup = groups_check_used($id_group);
@@ -253,12 +253,14 @@ db_clean_cache();
 $groups = users_get_groups_tree ($config['id_user'], "AR", true);
 $table->width = '98%';
 
-echo '<br />';
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
-echo '</div>';
-echo '</form>';
+if (check_acl($config['id_user'], 0, "PM")) {
+	echo '<br />';
+	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
+	echo '</div>';
+	echo '</form>';
+}
 
 if (!empty($groups)) {
 	$table->head = array ();
@@ -429,11 +431,13 @@ else {
 	echo "<div class='nf'>".__('There are no defined groups')."</div>";
 }
 
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
-echo '</div>';
-echo '</form>';
+if (check_acl($config['id_user'], 0, "PM")) {
+	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
+	echo '</div>';
+	echo '</form>';
+}
 
 enterprise_hook('close_meta_frame');
 

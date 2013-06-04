@@ -94,7 +94,7 @@ if (count($agents) > 0) {
 	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="databox" border="0" width="98%">';
 	echo "<tr>";
 	echo "<th style='width: 26px;'>" . __("Force") . "</th>";
-	echo "<th style='width: 26px;'>" . __("Status") . "</th>";
+	//echo "<th style='width: 26px;'>" . __("Status") . "</th>";
 	echo "<th width='30%'>" . __("Group") . "</th>";
 	echo "<th width='10%'>" . __("Agents") . "</th>";
 	echo "<th width='10%'>" . __("Agent unknown") . "</th>";

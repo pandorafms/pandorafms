@@ -664,9 +664,9 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	echo "</td>";
 	
 	// Group name
-	echo "<td class='group_view_data' style='font-weight: bold; font-size: 12px; background: #e3e3e3;'>&nbsp;&nbsp;";
-	echo $group['prefix'] . ui_print_group_icon ($id_group, true, "groups_small", 'font-size: 7.5pt');
-	echo "&nbsp;<a class='group_view_data' href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
+	echo "<td class='group_view_data' style='font-weight: bold; font-size: 12px; background: #e3e3e3;'>";
+	echo $group['prefix'];
+	echo "<a class='group_view_data' href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
 	echo ui_print_truncate_text($group['name']);
 	echo "</a>";
 	echo "</td>";

@@ -1,3 +1,14 @@
+2013-06-04 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/massive/massive_delete_alerts.php: fixed the delete
+	alerts with same module.
+	
+	Fixes: #2272
+	
+	* include/functions_agents.php: erased unused function.
+	
+	MERGED FROM THE BRANCH PANDORA_4
+
 2013-06-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

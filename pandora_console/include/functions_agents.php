@@ -169,9 +169,9 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$subQuery .= $where_tags;
 	}
 	else if ($id_agent === false) {
-		if ($allModules) 
+		if ($allModules)
 			$disabled = '';
-		else 
+		else
 			$disabled = 'WHERE disabled = 0';
 			
 		$subQuery = 'SELECT id_agente_modulo
@@ -643,120 +643,6 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
 		return round ($difference / (($max * 2) / 100));
 	else
 		return false;
-}
-
-/**
- * Get all the modules common in various agents that have associated alerts. If an empty list is passed it will select all
- *
- * @param mixed Agent id to get modules. It can also be an array of agent id's.
- * @param mixed Array, comma delimited list or singular value of rows to
- * select. If nothing is specified, nombre will be selected. A special
- * character "*" will select all the values.
- * @param mixed Aditional filters to the modules. It can be an indexed array
- * (keys would be the field name and value the expected value, and would be
- * joined with an AND operator) or a string, including any SQL clause (without
- * the WHERE keyword).
- * @param bool Wheter to return the modules indexed by the id_agente_modulo or
- * not. Default is indexed.
- * Example:
- <code>
- Both are similars:
- $modules = agents_get_modules ($id_agent, false, array ('disabled' => 0));
- $modules = agents_get_modules ($id_agent, false, 'disabled = 0');
-
- Both are similars:
- $modules = agents_get_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
- $modules = agents_get_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
- </code>
- *
- * @return array An array with all modules in the agent.
- * If multiple rows are selected, they will be in an array
- */
-function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
-	$id_agent = safe_int ($id_agent, 1);
-	
-	$where = '';
-	
-	if (! empty ($filter)) {
-		$where .= ' AND ';
-		if (is_array ($filter)) {
-			$fields = array ();
-			foreach ($filter as $field => $value) {
-				array_push ($fields, $field.'="'.$value.'"');
-			}
-			$where .= implode (' AND ', $fields);
-		}
-		else {
-			$where .= $filter;
-		}
-	}
-	
-	if (! empty ($id_agent)) {
-		// Get module_name-template repetitions over agents selected
-		// Group by if there is more than one agent
-		$group_by = '';
-		if (count((array)$id_agent) > 1)
-			$group_by = 'having count(*) > 1'; 
-			
-		$sql = sprintf ('SELECT t1.nombre, t2.id_alert_template, count(*) 
-		FROM tagente_modulo t1, talert_template_modules t2 
-		WHERE t2.id_agent_module = t1.id_agente_modulo 
-			AND delete_pending = 0 
-			AND id_agente IN (%s) %s group by nombre, id_alert_template %s'
-			, implode (",", (array) $id_agent)
-			, $where
-			,$group_by);
-		
-		$result_tmp = db_get_all_rows_sql ($sql);
-		
-		$result = array();
-		if ($result_tmp != false) {
-			
-			foreach ($result_tmp as $module_template) {
-				
-				$sql_modules = sprintf ('
-					SELECT t1.id_agente_modulo
-					FROM tagente_modulo t1, talert_template_modules t2 
-					WHERE t1.id_agente_modulo = t2.id_agent_module 
-						AND delete_pending = 0 
-						AND t1.nombre = \'%s\' AND t2.id_alert_template = %s',
-					$module_template['nombre'], $module_template['id_alert_template']);
-				
-				$id_modules_template = db_get_all_rows_sql ($sql_modules);
-				
-				if ($id_modules_template !=  false) 
-					foreach ($id_modules_template as $id_module_template)
-						$result[] = $id_module_template;
-				
-			}
-			
-		}
-	}
-	else {
-		
-		$sql = sprintf ('SELECT DISTINCT(t1.id_agente_modulo)
-			FROM tagente_modulo t1, talert_template_modules t2
-			%s
-			ORDER BY nombre',
-			$where);
-		$result = db_get_all_rows_sql ($sql);
-	
-	}
-	
-	if (empty ($result)) {
-		return array ();
-	}
-	
-	if (! $indexed)
-		return $result;
-	
-	$modules = array ();
-	foreach ($result as $module) {
-		if ($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
-			$modules[$module['id_agente_modulo']] = $module['id_agente_modulo'];
-		}
-	}
-	return $modules;
 }
 
 /**

@@ -1,5 +1,14 @@
 2013-06-04 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/massive/massive_delete_alerts.php: fixed the delete
+	alerts with same module.
+	
+	Fixes: #2272
+	
+	* include/functions_agents.php: erased unused function.
+
+2013-06-04 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/agentes/ver_agente.php,
 	godmode/alerts/alert_list.builder.php,
 	godmode/alerts/alert_list.php, include/functions_agents.php: cleaned

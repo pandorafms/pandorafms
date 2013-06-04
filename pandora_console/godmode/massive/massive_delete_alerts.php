@@ -43,11 +43,11 @@ if (is_ajax ()) {
 		else {
 			$groups = array($id_group);
 		}
-
+		
 		$agents_alerts = array();
 		foreach( $groups as $group ) {
 			$agents_alerts_one_group = alerts_get_agents_with_alert_template ($id_alert_template, $group,
-					false, array ('tagente.nombre', 'tagente.id_agente'));
+				false, array ('tagente.nombre', 'tagente.id_agente'));
 			if (is_array($agents_alerts_one_group)) {
 				$agents_alerts = array_merge($agents_alerts, $agents_alerts_one_group);
 			}
@@ -71,30 +71,47 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	}
 	
 	$module_selection_mode =  get_parameter('modules_selection_mode');
-		
-	foreach($module_names as $module){
-		foreach($id_agents as $id_agent) {
-			 $module_id = modules_get_agentmodule_id($module, $id_agent);
-			 $modules_id[] = $module_id['id_agente_modulo'];
+	
+	foreach ($module_names as $module) {
+		foreach ($id_agents as $id_agent) {
+			$module_id = modules_get_agentmodule_id($module, $id_agent);
+			$modules_id[] = $module_id['id_agente_modulo'];
 		}
 	}
-
-	// If is selected "ANY" option then we need the module selection mode: common or all modules
+	
+	// If is selected "ANY" option then we need the module selection
+	// mode: common or all modules
 	if (count($module_names) == 1 && $module_names[0] == '0') {
-
-		if ($module_selection_mode == 'common')
-				$modules_id = agents_common_modules_with_alerts ($id_agents, false, true);
+		if ($module_selection_mode == 'common') {
+			$sql = 'SELECT t1.id_agente_modulo
+				FROM tagente_modulo AS t1
+				WHERE t1.id_agente_modulo IN (
+						SELECT t2.id_agent_module
+						FROM talert_template_modules AS t2
+						WHERE
+							t2.id_alert_template = ' . $id_alert_template . ')
+					AND t1.id_agente IN (' . implode(',', $id_agents) . ');';
+			$modules = db_get_all_rows_sql($sql);
+			
+			if (empty($modules)) {
+				$modules = array();
+			}
+			$modules_id = array();
+			foreach ($modules as $module) {
+				$modules_id[$module['id_agente_modulo']] = $module['id_agente_modulo'];
+			}
+		}
 		else {
 			// For agents selected
 			$modules_id = array();
-
+			
 			foreach ($id_agents as $id_agent) {
 				$current_modules_agent = agents_get_modules($id_agent, 'id_agente_modulo', array ('disabled' => 0));
-
 				if ($current_modules_agent != false) {
 					// And their modules
 					foreach ($current_modules_agent as $current_module) {
 						$module_alerts = alerts_get_alerts_agent_module($current_module);
+						
 						if ($module_alerts !=  false) {
 							// And for all alert in modules
 							foreach ($module_alerts as $module_alert) {
@@ -108,23 +125,23 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 			}
 		}
 	}
-
+	
 	$conttotal = 0;
 	$contsuccess = 0;
-	foreach($modules_id as $module){
+	foreach ($modules_id as $module) {
 		$success = alerts_delete_alert_agent_module (false,
-		array ('id_agent_module' => $module,
-			'id_alert_template' => $id_alert_template));		
-
-		if($success)
+			array ('id_agent_module' => $module,
+				'id_alert_template' => $id_alert_template));
+		
+		if ($success)
 			$contsuccess ++;
 		$conttotal ++;
 	}
 	
 	ui_print_result_message ($contsuccess > 0,
-	__('Successfully deleted')."(".$contsuccess."/".$conttotal.")",
-	__('Could not be deleted'));
-
+		__('Successfully deleted')."(".$contsuccess."/".$conttotal.")",
+		__('Could not be deleted'));
+	
 	
 	return (bool)($contsuccess > 0);
 }
@@ -208,14 +225,13 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 
 ui_require_jquery_file ('form');
 ui_require_jquery_file ('pandora.controls');
-	
 ?>
 
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
 	$("#id_agents").change(agent_changed_by_multiple_agents_with_alerts);
-
+	
 	$("#id_alert_template").change (function () {
 		if (this.value != 0) {
 			$("#id_agents").enable ();
@@ -249,14 +265,14 @@ $(document).ready (function () {
 			"json"
 		);
 	});
-
+	
 	$("#checkbox-recursion").click(function (){
 		$("#id_group").trigger("change");
 	});
 	
 	$("#modules_selection_mode").change (function() {
 		$("#id_agents").trigger('change');
-	});	
+	});
 });
 /* ]]> */
 </script>

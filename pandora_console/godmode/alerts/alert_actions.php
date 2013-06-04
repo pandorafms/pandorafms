@@ -225,7 +225,7 @@ if ($update_action) {
 	$info_fields = '';
 	$values = array();
 	
-	for($i=1;$i<=10;$i++) {
+	for ($i = 1; $i <= 10; $i++) {
 		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
 		$info_fields .= ' Field1: ' . $values['field'.$i];
 	}
@@ -369,16 +369,23 @@ foreach ($actions as $action) {
 	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.
 		$action['name'].'</a>';
 	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;';
-	$data[2] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'&pure='.$pure.'"
-		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
-		html_print_image("images/copy.png", true) . '</a>';
-	$data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'&pure='.$pure.'"
-		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-		html_print_image("images/cross.png", true) . '</a>';
+	$hack_id_group_all = $action["id_group"];
+	if ($hack_id_group_all == 0) {
+		//To avoid check all groups instead the pseudo-group all
+		$hack_id_group_all = -1;
+	}
+	if (check_acl($config['id_user'], $hack_id_group_all, "LM")) {
+		$data[2] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'&pure='.$pure.'"
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
+			html_print_image("images/copy.png", true) . '</a>';
+		$data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'&pure='.$pure.'"
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
+			html_print_image("images/cross.png", true) . '</a>';
+	}
 	
 	array_push ($table->data, $data);
 }
-if (isset($data)){
+if (isset($data)) {
 	html_print_table ($table);
 }
 else {

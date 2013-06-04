@@ -137,7 +137,7 @@ if ($update_template) {
 	$id = (int) get_parameter ('id');
 	
 	$recovery_notify = (bool) get_parameter ('recovery_notify');
-
+	
 	$fields_recovery = array();
 	for($i=2;$i<=10;$i++) {
 		$fields_recovery['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i);
@@ -247,7 +247,7 @@ $table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
-echo '<form method="post" action="'.$url.'">';
+echo '<form method="post" action="' . $url . '">';
 html_print_table ($table);
 echo '</form>';
 
@@ -304,17 +304,27 @@ foreach ($templates as $template) {
 	$data[1] = ui_print_group_icon ($template["id_group"], true);
 	$data[3] = alerts_get_alert_templates_type_name ($template['type']);
 	
-	$data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
-	$data[4] .= html_print_input_hidden ('duplicate_template', 1, true);
-	$data[4] .= html_print_input_hidden ('source_id', $template['id'], true);
-	$data[4] .= html_print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
-	$data[4] .= '</form> ';
-	
-	$data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-	$data[4] .= html_print_input_hidden ('delete_template', 1, true);
-	$data[4] .= html_print_input_hidden ('id', $template['id'], true);
-	$data[4] .= html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
-	$data[4] .= '</form> ';
+	$hack_id_group_all = $template["id_group"];
+	if ($hack_id_group_all == 0) {
+		//To avoid check all groups instead the pseudo-group all
+		$hack_id_group_all = -1;
+	}
+	if (check_acl($config['id_user'], $hack_id_group_all, "LM")) {
+		$data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
+		$data[4] .= html_print_input_hidden ('duplicate_template', 1, true);
+		$data[4] .= html_print_input_hidden ('source_id', $template['id'], true);
+		$data[4] .= html_print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
+		$data[4] .= '</form> ';
+		
+		$data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+		$data[4] .= html_print_input_hidden ('delete_template', 1, true);
+		$data[4] .= html_print_input_hidden ('id', $template['id'], true);
+		$data[4] .= html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
+		$data[4] .= '</form> ';
+	}
+	else {
+		$data[4] = '';
+	}
 	
 	array_push ($table->data, $data);
 }
@@ -324,7 +334,8 @@ if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('No alert templates defined')."</div>";
+	echo "<div class='nf'>" . __('No alert templates defined') .
+		"</div>";
 }
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';

@@ -1110,16 +1110,18 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	if ($id_agent === null) {
 		//Extract the agents of group user.
 		$groups = users_get_groups(false, 'AR', false);
-		if(empty($groups)) {
+		if (empty($groups)) {
 			return array();
 		}
 		
 		$id_groups = array_keys($groups);
 		
-		$sql = "SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
+		$sql = "SELECT id_agente
+			FROM tagente
+			WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
 		$id_agent = db_get_all_rows_sql($sql);
 		
-		if($id_agent == false) {
+		if ($id_agent == false) {
 			$id_agent = array();
 		}
 		
@@ -1136,12 +1138,12 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
 	
-	if(empty($userGroups)) {
+	if (empty($userGroups)) {
 		return array();
 	}
 	
 	$id_userGroups = array_keys($userGroups);
-
+	
 	$where = "(
 			1 = (
 				SELECT is_admin
@@ -1186,9 +1188,9 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 						$operatorDistin = true;
 					}
 				}
-
+				
 				if ($value[0] == '%') {
-					switch ($config['dbtype']){
+					switch ($config['dbtype']) {
 						case "mysql":
 						case "postgresql":
 							array_push ($fields, $field.' LIKE "'.$value.'"');
@@ -1300,14 +1302,14 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 	
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if (empty ($result)) {
 		return array ();
 	}
-
+	
 	if (! $indexed)
 		return $result;
-
+	
 	$modules = array ();
 	foreach ($result as $module) {
 		if ($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {

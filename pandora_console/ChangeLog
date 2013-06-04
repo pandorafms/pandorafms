@@ -1,3 +1,13 @@
+2013-06-04 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/agentes/ver_agente.php,
+	godmode/alerts/alert_list.builder.php,
+	godmode/alerts/alert_list.php, include/functions_agents.php: cleaned
+	source code style.
+	
+	* godmode/agentes/agent_manager.php: fixed the item server and show
+	when the agent has not a server setted.
+
 2013-06-04  Sancho Lerena <slerena@artica.es>
 
 	* functions_groups.php, 

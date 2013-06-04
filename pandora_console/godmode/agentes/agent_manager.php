@@ -213,8 +213,12 @@ $none = '';
 if ($server_name == '' && $id_agente)
 	$none = __('None');
 $table->data[6][0] = __('Server');
+if ($new_agent) {
+	//Set first server by default.
+	$server_name = reset(array_keys(servers_get_names()));
+}
 $table->data[6][1] = html_print_select (servers_get_names (),
-	'server_name', $server_name, '', $none, 0, true);
+	'server_name', $server_name, '', __('None'), 0, true);
 
 // Description
 $table->data[7][0] = __('Description');
@@ -236,14 +240,19 @@ $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Learn mode / Normal mode
-$table->data[1][0] = __('Module definition').ui_print_help_icon("module_definition", true);
-$table->data[1][1] = __('Learning mode').' '.html_print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][0] = __('Module definition') .
+	ui_print_help_icon("module_definition", true);
+$table->data[1][1] = __('Learning mode') . ' ' .
+	html_print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Normal mode') . ' ' .
+	html_print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
-$table->data[2][1] = __('Disabled').' '.html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Active').' '.html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] = __('Disabled') . ' ' .
+	html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] .= __('Active') . ' ' .
+	html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
 $table->data[3][0] = __('Remote configuration');
@@ -254,14 +263,15 @@ if (!$new_agent) {
 		// Delete remote configuration
 		$table->data[3][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
 		$table->data[3][1] .= html_print_image ("images/cross.png", true, array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';
-		$table->data[3][1] .= '</a>'.ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
+		$table->data[3][1] .= '</a>' .
+			ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
 	}
 	else
-		$table->data[3][1] = '<em>'.__('Not available').'</em>';		
+		$table->data[3][1] = '<em>' . __('Not available') . '</em>';
 }
 else
-	$table->data[3][1] = '<em>'.__('Not available').'</em>';
-	
+	$table->data[3][1] = '<em>' . __('Not available') . '</em>';
+
 $listIcons = gis_get_array_list_icons();
 
 $arraySelectIcon = array();
@@ -269,7 +279,7 @@ foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 $table->data[4][0] = __('Agent icon') . ui_print_help_tip(__('Agent icon for GIS Maps.'), true);
-if($icon_path == '') {
+if ($icon_path == '') {
 	$display_icons = 'none';
 	// Hack to show no icon. Use any given image to fix not found image errors
 	$path_without = "images/spinner.png";
@@ -288,17 +298,16 @@ else {
 }
 
 $table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-
 	'&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
-
 	'&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) .
-
 	'&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');
-	$table->data[5][1] = __('Disabled').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[5][1] .= __('Enabled').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] = __('Disabled') . ' ' .
+		html_print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] .= __('Enabled') . ' ' .
+		html_print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
@@ -314,15 +323,15 @@ $table->data = array ();
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
-if($fields === false) $fields = array();
+if ($fields === false) $fields = array();
 
 foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
-		
+	
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
-	if($custom_value === false) {
+	if ($custom_value === false) {
 		$custom_value = '';
 	}
 	
@@ -331,16 +340,17 @@ foreach ($fields as $field) {
 	array_push ($table->data, $data);
 }
 
-if(!empty($fields)) {
+if (!empty($fields)) {
 	ui_toggle(html_print_table ($table, true), __('Custom fields'));
 }
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 if ($id_agente) {
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 	html_print_input_hidden ('update_agent', 1);
 	html_print_input_hidden ('id_agente', $id_agente);
-} else {
+}
+else {
 	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	html_print_input_hidden ('create_agent', 1);
 }
@@ -357,7 +367,7 @@ ui_require_jquery_file ('autocomplete');
 //Use this function for change 3 icons when change the selectbox
 function changeIcons() {
 	icon = $("#icon_path :selected").val();
-
+	
 	$("#icon_without_status").attr("src", "images/spinner.png");
 	$("#icon_default").attr("src", "images/spinner.png");
 	$("#icon_ok").attr("src", "images/spinner.png");

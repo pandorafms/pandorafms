@@ -75,7 +75,7 @@ if ($create_alert) {
 	}
 	else {
 		$id = alerts_create_alert_agent_module ($id_agent_module, $id_alert_template);
-
+		
 		$alert_template_name = db_get_value ("name", "talert_templates","id", $id_alert_template);
 		$module_name = db_get_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 		$agent_name = agents_get_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
@@ -89,7 +89,7 @@ if ($create_alert) {
 			db_pandora_audit("Alert management",
 				"Fail Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 		}
-
+		
 		$messageAction = ui_print_result_message ($id, __('Successfully created'), __('Could not be created'), '', true);
 		if ($id !== false) {
 			$action_select = get_parameter('action_select');
@@ -115,7 +115,7 @@ if ($delete_alert) {
 	$alert_template_name = db_get_value ("name", "talert_templates","id", $id_alert_template);
 	$module_name = db_get_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 	$agent_name = agents_get_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
-
+	
 	$result = alerts_delete_alert_agent_module ($id_alert_agent_module);
 	
 	if ($result) {
@@ -258,15 +258,20 @@ else {
 				html_print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
 	
 	$buttons[$tab]['active'] = true;
-
+	
 	if ($tab == 'list') {
-		ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
-	} else {
-		ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+		ui_print_page_header(__('Alerts') .
+			' &raquo; ' . __('Manage alerts') . ' &raquo; ' .
+			__('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+	}
+	else {
+		ui_print_page_header(__('Alerts') .
+			' &raquo; ' . __('Manage alerts') . ' &raquo; ' .
+			__('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
 	}
 	
 	echo $messageAction;
-
+	
 	switch ($tab) {
 		case 'list':
 			if ($group == 0) {
@@ -278,7 +283,7 @@ else {
 			$agents = agents_get_group_agents (array_keys ($groups), false, "none");
 			
 			require_once('godmode/alerts/alert_list.list.php');
-
+			
 			return;
 			break;
 		case 'builder':

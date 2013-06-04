@@ -52,15 +52,18 @@ if (! $id_agente) {
 	
 	$table->data['agent'][0] = __('Agent');
 	$src_code = html_print_image('images/lightning.png', true, false, true);
-	$table->data['agent'][1] = html_print_input_text_extended ('id_agent', '', 'text_id_agent', '', 30, 100, false, '',
-	array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
-	. ui_print_help_tip(__('Type at least two characters to search'), true);
+	$table->data['agent'][1] = html_print_input_text_extended(
+		'id_agent', '', 'text_id_agent', '', 30, 100, false, '',
+		array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true) .
+		ui_print_help_tip(__('Type at least two characters to search'), true);
 }
 
 $table->data[0][0] = __('Module');
 $modules = array ();
-if ($id_agente)
-	$modules = agents_get_modules ($id_agente, false, array("delete_pending" => 0));
+if ($id_agente) {
+	$modules = agents_get_modules ($id_agente, false,
+		array("delete_pending" => 0));
+}
 
 $table->data[0][1] = html_print_select ($modules, 'id_agent_module', 0, true,
 	__('Select'), 0, true, false, true, '', ($id_agente == 0));
@@ -73,12 +76,12 @@ $table->data[1][0] = __('Template');
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$templates = alerts_get_alert_templates (false, array ('id', 'name'));
-else{
+else {
 	$usr_groups = users_get_groups($config['id_user'], 'LW', true);
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($usr_groups));
 	$templates = alerts_get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));
-}	
+}
 
 $table->data[1][1] = html_print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true);
@@ -111,11 +114,12 @@ foreach ($actions as $action) {
 
 $table->data[2][1] = '<div class="actions_container">';
 
-$table->data[2][1] = html_print_select($action_name,'action_select','','','','',true, false, false);
+$table->data[2][1] = html_print_select($action_name, 'action_select',
+	'', '', '', '', true, false, false);
 $table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
 $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
-$table->data[2][1] .= ' '.__('to').' ';
+$table->data[2][1] .= ' ' . __('to') . ' ';
 $table->data[2][1] .= html_print_input_text ('fires_max', '', '', 4, 10, true);
 $table->data[2][1] .= ui_print_help_icon ("alert-matches", true);
 $table->data[2][1] .= '</span>';
@@ -148,7 +152,7 @@ ui_require_jquery_file ('autocomplete');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-
+	
 	$("#text_id_agent").autocomplete(
 		"ajax.php",
 		{
@@ -172,8 +176,8 @@ $(document).ready (function () {
 			delay: 200
 		}
 	);
-
-
+	
+	
 	$("#text_id_agent").result (
 			function () {
 				selectAgent = true;
@@ -204,7 +208,7 @@ $(document).ready (function () {
 						}
 					});
 				});
-		
+				
 				
 			}
 		);
@@ -237,17 +241,17 @@ $(document).ready (function () {
 			}).click (function () {
 				return false;
 			});
-
+			
 		$("#action_loading").show ();
 	});
-
+	
 	$("#action_select").change(function () {
 			if ($("#action_select").attr ("value") != '0') {
 				$('#advanced_action').show();
 			}
 			else {
 				$('#advanced_action').hide();
-			} 	
+			}
 		}
 	);
 	
@@ -263,9 +267,11 @@ $(document).ready (function () {
 			function (data, status) {
 				if (data === false) {
 					$("#value", $value).append ("<em><?php echo __('Unknown') ?></em>");
-				} else if (data == "") {
+				}
+				else if (data == "") {
 					$("#value", $value).append ("<em><?php echo __('Empty') ?></em>");
-				} else {
+				}
+				else {
 					$("#value", $value).append (data);
 				}
 				$loading.hide ();

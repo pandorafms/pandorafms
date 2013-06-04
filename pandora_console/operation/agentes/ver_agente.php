@@ -291,14 +291,16 @@ if (is_ajax ()) {
 		else {
 			/* Get all agents if no agent was given */
 			if ($id_agent == 0)
-				$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));
+				$id_agent = array_keys(
+					agents_get_group_agents(
+						array_keys(users_get_groups ()), $search, "none"));
 			
 			$agent_modules = agents_get_modules ($id_agent,
 				($fields != '' ? explode (',', $fields) : "*"),
 				($filter != '' ? $filter : false), $indexed);
 		}
 		
-		foreach($agent_modules as $key => $module) {
+		foreach ($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
 		

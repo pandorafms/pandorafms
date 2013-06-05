@@ -1,5 +1,13 @@
 2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/snmpconsole/snmp_view.php: fixed the pagination.
+	
+	Fixes: #2255
+	
+	MERGED FROM THE TRUNK
+
+2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/agent_manager.php, godmode/menu.php,
 	godmode/alerts/configure_alert_template.php,
 	godmode/alerts/configure_alert_action.php,

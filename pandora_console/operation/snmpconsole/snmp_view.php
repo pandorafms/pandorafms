@@ -58,7 +58,7 @@ ui_print_page_header (__("SNMP Console"), "images/computer_error.png", false, ""
 // OPERATIONS
 
 // Delete SNMP Trap entry Event (only incident management access).
-if (isset ($_GET["delete"])){
+if (isset ($_GET["delete"])) {
 	$id_trap = (int) get_parameter_get ("delete", 0);
 	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
 		
@@ -123,17 +123,28 @@ if (isset ($_POST["updatebt"])) {
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$pagination);
+		$sql = sprintf ("
+			SELECT *
+			FROM ttrap
+			ORDER BY timestamp DESC
+			LIMIT %d,%d",$offset,$pagination);
 		break;
 	case "postgresql":
-		$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d OFFSET %d", $pagination, $offset);
+		$sql = sprintf ("
+			SELECT *
+			FROM ttrap
+			ORDER BY timestamp DESC
+			LIMIT %d OFFSET %d", $pagination, $offset);
 		break;
 	case "oracle":
 		$set = array();
 		$set['limit'] = $pagination;
 		$set['offset'] = $offset;
-		$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC");
-		$sql = oracle_recode_query ($sql, $set);		
+		$sql = sprintf ("
+			SELECT *
+			FROM ttrap
+			ORDER BY timestamp DESC");
+		$sql = oracle_recode_query ($sql, $set);
 		break;
 }
 $traps = db_get_all_rows_sql ($sql);
@@ -142,7 +153,7 @@ $all_traps = db_get_all_rows_sql ("SELECT * FROM ttrap");
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {
-		unset($traps[$i]['rnum']);		
+		unset($traps[$i]['rnum']);
 	}
 }
 
@@ -175,13 +186,24 @@ foreach ($all_traps as $trap) {
 //Make query to extract traps of DB.
 switch ($config["dbtype"]) {
 	case "mysql":
-		$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d,%d";
+		$sql = "
+			SELECT *
+			FROM ttrap %s
+			ORDER BY timestamp DESC
+			LIMIT %d,%d";
 		break;
 	case "postgresql":
-		$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d OFFSET %d";
+		$sql = "
+			SELECT *
+			FROM ttrap %s
+			ORDER BY timestamp DESC
+			LIMIT %d OFFSET %d";
 		break;
 	case "oracle":
-		$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC"; 
+		$sql = "
+			SELECT *
+			FROM ttrap %s
+			ORDER BY timestamp DESC"; 
 		break;
 }
 $whereSubquery = 'WHERE 1=1';
@@ -289,7 +311,7 @@ switch ($config["dbtype"]) {
 		$set = array();
 		$set['limit'] = $pagination;
 		$set['offset'] = $offset;
-		$sql = oracle_recode_query ($sql, $set);		
+		$sql = oracle_recode_query ($sql, $set);
 		break;
 }
 
@@ -297,7 +319,7 @@ $traps = db_get_all_rows_sql($sql);
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {
-		unset($traps[$i]['rnum']);		
+		unset($traps[$i]['rnum']);
 	}
 }
 
@@ -353,12 +375,25 @@ ui_toggle($filter, __('Toggle filter(s)'));
 unset ($table);
 
 // Prepare index for pagination
-$trapcount = db_get_sql ("SELECT COUNT(id_trap) FROM ttrap " . $whereSubquery);
+$trapcount = db_get_sql ("
+	SELECT COUNT(id_trap)
+	FROM ttrap " .
+	$whereSubquery);
 
-$urlPagination = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=" . $filter_agent
-	. "&filter_oid=" . $filter_oid . "&filter_severity=" . $filter_severity
-	. "&filter_fired=" . $filter_fired . "&filter_status=" . $filter_status
-	. "&search_string=" . $search_string . "&pagination=".$pagination."&offset=".$offset."&refr=".$config["refr"]."&pure=".$config["pure"];
+$urlPagination = "index.php?" .
+	"sec=estado&" .
+	"sec2=operation/snmpconsole/snmp_view&" .
+	"filter_agent=" . $filter_agent . "&" .
+	"filter_oid=" . $filter_oid . "&" .
+	"filter_severity=" . $filter_severity . "&" .
+	"filter_fired=" . $filter_fired . "&" .
+	"filter_status=" . $filter_status . "&" .
+	"search_string=" . $search_string . "&" .
+	"pagination=" . $pagination . "&" .
+	"offset=" . $offset . "&" .
+	"refr=" . $config["refr"] . "&" .
+	"pure=" . $config["pure"] . "&" .
+	"search_string=" . $search_string;
 ui_pagination ($trapcount, $urlPagination, $offset, $pagination);
 
 echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pagination='.$pagination.'&offset='.$offset.'">';
@@ -419,7 +454,7 @@ if ($traps !== false) {
 		$data = array ();
 		if (empty($trap["description"])){
 			$trap["description"]="";
-		}		
+		}
 		$severity = enterprise_hook ('get_severity', array ($trap));
 		if ($severity === ENTERPRISE_NOT_HOOK) {
 			$severity = $trap["alerted"] == 1 ? $trap["priority"] : 1;
@@ -428,18 +463,20 @@ if ($traps !== false) {
 		//Status
 		if ($trap["status"] == 0) {
 			$data[0] = html_print_image("images/pixel_red.png", true, array("title" => __('Not validated'), "width" => "20", "height" => "20"));
-		} else {
+		}
+		else {
 			$data[0] = html_print_image("images/pixel_green.png", true, array("title" => __('Validated'), "width" => "20", "height" => "20"));
 		}
-	
+		
 		// Agent matching source address
 		$agent = agents_get_agent_with_ip ($trap['source']);
 		if ($agent === false) {
 			if (! check_acl ($config["id_user"], 0, "AR")) {
 				continue;
 			}
-			$data[1] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';	
-		} else {
+			$data[1] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';
+		}
+		else {
 			if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 				continue;
 			}
@@ -519,13 +556,13 @@ if ($traps !== false) {
 		$string = '<table style="border:solid 1px #D3D3D3;" width="90%" class="toggle">
 			<tr><td align="left" valign="top" width="15%" ><b>' . __('Custom data:') . '</b></td><td align="left" >' . $trap['oid_custom'] . '</td></tr>'
 			 . '<tr><td align="left" valign="top">' . '<b>' . __('OID:') . '</td><td align="left"> ' . $trap['oid'] . '</td></tr>';
-
-        if ($trap["description"] != ""){
-            $string .= '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>';
-        }
-
-        $string .=  '</table>';
-
+		
+		if ($trap["description"] != "") {
+			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>';
+		}
+		
+		$string .=  '</table>';
+		
 		$data = array($string); //$data = array($trap['description']);
 		$idx++;
 		$table->rowclass[$idx] = 'trap_info_' . $trap['id_trap'];
@@ -540,8 +577,9 @@ if ($traps !== false) {
 // No matching traps
 if ($idx == 0) {
 	echo '<div class="nf">'.__('No matching traps found').'</div>';
-} else {
-	html_print_table ($table);	
+}
+else {
+	html_print_table ($table);
 }
 
 unset ($table);
@@ -596,17 +634,18 @@ function CheckAll() {
 	}
 }
 
-function toggleDiv (divid){
-	if (document.getElementById(divid).style.display == 'none'){
+function toggleDiv (divid) {
+	if (document.getElementById(divid).style.display == 'none') {
 		document.getElementById(divid).style.display = 'block';
-	} else {
+	}
+	else {
 		document.getElementById(divid).style.display = 'none';
 	}
 }
 
 function toggleVisibleExtendedInfo(id_trap) {
 	display = $('.trap_info_' + id_trap).css('display');
-
+	
 	if (display != 'none') {
 		$('.trap_info_' + id_trap).css('display', 'none');
 	}

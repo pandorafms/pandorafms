@@ -243,14 +243,19 @@ $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Learn mode / Normal mode
-$table->data[1][0] = __('Module definition').ui_print_help_icon("module_definition", true);
-$table->data[1][1] = __('Learning mode').' '.html_print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][0] = __('Module definition') .
+	ui_print_help_icon("module_definition", true);
+$table->data[1][1] = __('Learning mode') . ' ' .
+	html_print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Normal mode') . ' ' .
+	html_print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
-$table->data[2][1] = __('Disabled').' '.html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Active').' '.html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] = __('Disabled') . ' ' .
+	html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] .= __('Active') . ' ' .
+	html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
 $table->data[3][0] = __('Remote configuration');
@@ -261,7 +266,8 @@ if (!$new_agent) {
 		// Delete remote configuration
 		$table->data[3][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
 		$table->data[3][1] .= html_print_image ("images/cross.png", true, array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';
-		$table->data[3][1] .= '</a>'.ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
+		$table->data[3][1] .= '</a>' .
+			ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
 	}
 	else
 		$table->data[3][1] = '<em>' . __('Not available') . '</em>';
@@ -354,7 +360,7 @@ if (!empty($fields)) {
 	ui_toggle(html_print_table ($table, true), __('Custom fields'));
 }
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 if ($id_agente) {
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 	html_print_input_hidden ('update_agent', 1);

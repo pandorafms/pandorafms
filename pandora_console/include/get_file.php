@@ -23,7 +23,7 @@ global $config;
 
 $auth_method = db_get_value('value', 'tconfig', 'token', 'auth');
 
-include("auth/" . $auth_method . ".php");
+require_once("auth/" . $auth_method . ".php");
 
 session_write_close ();
 

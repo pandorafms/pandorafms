@@ -1,5 +1,15 @@
 2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/constants.php, include/functions_agents.php,
+	operation/agentes/estado_agente.php: fixed the filter of the list
+	of agents.
+	
+	Fixes: #2269
+	
+	MERGED FROM THE TRUNK
+
+2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/get_file.php: cleaned source code style.
 
 2013-06-05 Miguel de Dios <miguel.dedios@artica.es>

@@ -21,14 +21,20 @@
 /* Enterprise hook constant */
 define ('ENTERPRISE_NOT_HOOK', -1);
 
+
+
 /* Events state constants */
 define ('EVENT_NEW', 0);
 define ('EVENT_VALIDATE', 1);
 define ('EVENT_PROCESS', 2);
 
+
+
 /* Agents disabled status */
 define ('AGENT_ENABLED',0);
 define ('AGENT_DISABLED',1);
+
+
 
 /* Error report codes */
 define ('NOERR',11111);
@@ -72,6 +78,8 @@ define('SEPARATOR_ROW', chr(10)); //chr(10) = '\n'
 define('SEPARATOR_COLUMN_CSV', "#");
 define('SEPARATOR_ROW_CSV', "@\n");
 
+
+
 /* Backup paths */
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -80,7 +88,7 @@ switch ($config["dbtype"]) {
 		define ('BACKUP_FULLPATH', $config['homedir'] . '/' . BACKUP_DIR);
 		break;
 	case "oracle":
-		define ('BACKUP_DIR', 'DATA_PUMP_DIR');	
+		define ('BACKUP_DIR', 'DATA_PUMP_DIR');
 		define ('BACKUP_FULLPATH', 'DATA_PUMP_DIR');
 		break;
 }
@@ -107,6 +115,16 @@ define('AGENT_MODULE_STATUS_NOT_NORMAL', 6);
 define('AGENT_MODULE_STATUS_WARNING', 2);
 define('AGENT_MODULE_STATUS_UNKNOW', 3);
 define('AGENT_MODULE_STATUS_NOT_INIT', 5);
+
+/* Agent module status */
+define('AGENT_STATUS_ALL', -1);
+define('AGENT_STATUS_CRITICAL', 1);
+define('AGENT_STATUS_NORMAL', 0);
+define('AGENT_STATUS_NOT_INIT', 5);
+define('AGENT_STATUS_NOT_NORMAL', 6);
+define('AGENT_STATUS_UNKNOW', 3);
+define('AGENT_STATUS_WARNING', 2);
+
 
 /* Color constants */
 define('COL_CRITICAL','#FF0000');

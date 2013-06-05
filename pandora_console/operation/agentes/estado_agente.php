@@ -46,7 +46,7 @@ if (is_ajax ()) {
 		$usr_groups = users_get_groups($config['id_user'], 'LW', true);
 		
 		$filter_groups = '';
-		$filter_groups = implode(',', array_keys($usr_groups));		
+		$filter_groups = implode(',', array_keys($usr_groups));
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -199,16 +199,16 @@ html_print_input_text ("search", $search, '', 8);
 echo '</td><td style="white-space:nowrap;">';
 
 $fields = array ();
-$fields[0] = __('Normal'); 
-$fields[1] = __('Warning');
-$fields[2] = __('Critical');
-$fields[3] = __('Unknown');
-$fields[4] = __('Not normal'); 
-$fields[5] = __('Not init');
+$fields[AGENT_STATUS_NORMAL] = __('Normal'); 
+$fields[AGENT_STATUS_WARNING] = __('Warning');
+$fields[AGENT_STATUS_CRITICAL] = __('Critical');
+$fields[AGENT_STATUS_UNKNOW] = __('Unknown');
+$fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 echo '</td><td style="white-space:nowrap;">'.__('Agent status').': ';
 
-html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), -1, false, false, true, '', false, 'width: 90px;');
+html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -225,7 +225,7 @@ echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/con
 echo "</form>";
 echo '</div>';
 
-if ($search != ""){
+if ($search != "") {
 	$filter = array ("string" => '%' . $search . '%');
 }
 else {
@@ -253,11 +253,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'nombre COLLATE utf8_general_ci',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'nombre COLLATE utf8_general_ci',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -265,11 +267,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectOsUp = $selected;
-				$order = array('field' => 'id_os', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'id_os',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectOsDown = $selected;
-				$order = array('field' => 'id_os', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'id_os',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -277,11 +281,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectIntervalUp = $selected;
-				$order = array('field' => 'intervalo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'intervalo',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectIntervalDown = $selected;
-				$order = array('field' => 'intervalo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'intervalo',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -289,11 +295,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectGroupUp = $selected;
-				$order = array('field' => 'id_grupo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'id_grupo',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectGroupDown = $selected;
-				$order = array('field' => 'id_grupo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'id_grupo',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -301,11 +309,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectLastContactUp = $selected;
-				$order = array('field' => 'ultimo_contacto', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'ultimo_contacto',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 			case 'down':
 				$selectLastContactDown = $selected;
-				$order = array('field' => 'ultimo_contacto', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'ultimo_contacto',
+					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 		}
 		break;
@@ -320,16 +330,18 @@ switch ($sortField) {
 		$selectGroupDown = '';
 		$selectLastContactUp = '';
 		$selectLastContactDown = '';
-		$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+		$order = array('field' => 'nombre COLLATE utf8_general_ci',
+			'field2' => 'nombre COLLATE utf8_general_ci',
+			'order' => 'ASC');
 		break;
 }
 
 $search_sql = '';
-if ($search != ""){
+if ($search != "") {
 	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
 }
 
-// Show only selected groups	
+// Show only selected groups
 if ($group_id > 0) {
 	$groups = array($group_id);
 	if ($recursion) {
@@ -361,7 +373,7 @@ $agents = agents_get_agents(array (
 	'search' => $search_sql,
 	'offset' => (int) get_parameter ('offset'),
 	'limit' => (int) $config['block_size']  ),
-
+	
 	array ('id_agente',
 		'id_grupo',
 		'id_os',
@@ -390,20 +402,20 @@ $table->head[0] = __('Agent'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 $table->head[1] = __('Description');
 $table->head[2] = __('OS'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown, "alt" => "down")) . '</a>';
 $table->head[3] = __('Interval'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
 $table->head[4] = __('Group'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp, "alt" => "up")) . '</a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp, "alt" => "up")) . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown, "alt" => "down")) . '</a>';
 $table->head[5] = __('Modules');
 $table->head[6] = __('Status');
 $table->head[7] = __('Alerts');
 $table->head[8] = __('Last contact'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array ();
 
@@ -471,23 +483,10 @@ foreach ($agents as $agent) {
 	}
 	$data[0] .= '</div>';
 	
-	/*if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
-		$data[0] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
-		$data[0] .= html_print_image ("images/setup.png", true, array ("border" => 0, "width" => 16));
-		$data[0] .= '</a>&nbsp;';
-	}*/
-	
 	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
 	
 	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
 	
-	//The interval we are thinking that it must be the agent interval in this
-	//cell and it'snt the interval of modules.
-//	if ($agent_info["interval"] > $agent["intervalo"]) {
-//		$data[2] = '<span class="green">'.$agent_info["interval"].'</span>';
-//	} else {
-//		$data[2] = $agent["intervalo"];
-//	}
 	$data[3] = human_time_description_raw($agent["intervalo"]);
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
@@ -557,22 +556,12 @@ else {
 
 <script type="text/javascript">
 $(document).ready (function () {
-		
+	
 	$("table#table1 tr").hover (function () {
 			$(".actions", this).css ("visibility", "");
 		},
 		function () {
 			$(".actions", this).css ("visibility", "hidden");
-	});		
-		
-	$("#group_id").click (
-	function () {
-		$(this).css ("width", "auto"); 
 	});
-			
-	$("#group_id").blur (function () {
-		$(this).css ("width", "180px"); 
-	});
-		
 });
 </script>

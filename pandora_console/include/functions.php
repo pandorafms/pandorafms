@@ -611,7 +611,7 @@ function get_parameterBetweenListValues ($name, $values, $default) {
 	
 	if (isset($_GET[$name]))
 		$parameter = get_parameter_get ($name, $default);
-		
+	
 	foreach($values as $value) {
 		if ($value == $parameter) {
 			return $value;

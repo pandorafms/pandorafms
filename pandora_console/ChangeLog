@@ -1,5 +1,13 @@
 2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions.php: cleaned source code style.
+	
+	* include/get_file.php: fixed the include the auth.
+	
+	Fixes: #2274
+
+2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/snmpconsole/snmp_view.php: fixed the pagination.
 	
 	Fixes: #2255

@@ -188,7 +188,7 @@ if ($update_group) {
 	$other = (string) get_parameter ('other');
 	
 	/*Check if name field is empty*/
-	if( $name != "") {
+	if ( $name != "") {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",

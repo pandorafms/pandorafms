@@ -29,7 +29,7 @@ if (is_ajax ()) {
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	$get_group_json = (bool) get_parameter ('get_group_json');
 	$get_group_agents = (bool) get_parameter ('get_group_agents');
 	
@@ -68,33 +68,35 @@ if (is_ajax ()) {
 		$recursion = (int) get_parameter ('recursion', 0);
 		// Ids of agents to be include in the SQL clause as id_agent IN ()
 		$filter_agents_json = (string) get_parameter ('filter_agents_json', '');
-				
+		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;
 		}
-
-		if($filter_agents_json != '') {
+		
+		if ($filter_agents_json != '') {
 			$filter['id_agente'] = json_decode(io_safe_output($filter_agents_json), true);
 		}
-
+		
 		$filter['disabled'] = $disabled;
 		
-		if($search != '') {
+		if ($search != '') {
 			$filter['string'] = $search;
 		}
-			
+		
+		
 		$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
+		
 		echo json_encode ($agents);
 		return;
 	}
-
+	
 	return;
 }
 
-if (! check_acl($config['id_user'], 0, "PM")) {
+if (! check_acl($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
@@ -109,7 +111,7 @@ $update_group = (bool) get_parameter ('update_group');
 $delete_group = (bool) get_parameter ('delete_group');
 
 /* Create group */
-if ($create_group) {
+if (($create_group) && (check_acl($config['id_user'], 0, "PM"))) {
 	$name = (string) get_parameter ('name');
 	$icon = (string) get_parameter ('icon');
 	$id_parent = (int) get_parameter ('id_parent');
@@ -121,7 +123,7 @@ $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
 	
 	/*Check if name field is empty*/
 	if ($name != "") {
-		if (!$check){
+		if (!$check) {
 			$values = array(
 				'nombre' => $name,
 				'icon' => substr ($icon, 0, -4),
@@ -134,17 +136,19 @@ $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
 			$result = db_process_sql_insert('tgrupo', $values);
 			if ($result) {
 				echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
-			} else {
+			}
+			else {
 				echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";
 			}
-		} else {
+		}
+		else {
 			echo "<h3 class='error'>".__('Each group must have a different name')."</h3>";
 		}
-	} else {
+	}
+	else {
 		//$result = false;
 		echo "<h3 class='error'>".__('Group must have a name')."</h3>";
 	}
-
 }
 
 /* Update group */
@@ -159,38 +163,40 @@ if ($update_group) {
 	$skin = (string) get_parameter ('skin');
 
 	/*Check if name field is empty*/
-	if( $name != "") {	
+	if ( $name != "") {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
-						icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d
-						WHERE id_grupo = %d',
-						$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d
+					WHERE id_grupo = %d',
+					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
 				break;
 			case "postgresql":
 			case "oracle":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = \'%s\',
-						icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d
-						WHERE id_grupo = %d',
-						$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+					icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d
+					WHERE id_grupo = %d',
+					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
 				break;
-		}		
+		}
 		$result = db_process_sql ($sql);
-	} else {
+	}
+	else {
 		$result = false;
 	}
 	
 	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
-	} else {
+	}
+	else {
 		echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";
 	}
 }
 
 /* Delete group */
-if ($delete_group) {
+if (($delete_group) && (check_acl($config['id_user'], 0, "PM"))) {
 	$id_group = (int) get_parameter ('id_group');
-
+	
 	$usedGroup = groups_check_used($id_group);
 	
 	if (!$usedGroup['return']) {
@@ -214,13 +220,12 @@ if ($delete_group) {
 	else {
 		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>";
 	}
-		 
 }
 db_clean_cache();
 $groups = users_get_groups_tree ($config['id_user'], "AR", true); 
 $table->width = '98%';
 
-if(!empty($groups)) {
+if (!empty($groups)) {
 	$table->head = array ();
 	$table->head[0] = __('Name');
 	$table->head[1] = __('ID');
@@ -231,9 +236,9 @@ if(!empty($groups)) {
 	$table->align[2] = 'center';
 	$table->align[4] = 'center';
 	$table->data = array ();
-
+	
 	$iterator = 0;
-
+	
 	foreach ($groups as $id_group => $group) {
 		if ($group['deep'] == 0) {
 			$table->rowstyle[$iterator] = '';
@@ -308,7 +313,7 @@ if(!empty($groups)) {
 				$symbol . '</span> '. ui_print_truncate_text($group['nombre']) . '</a></strong>';
 		}
 		else {
-			$data[0] = '<strong>'.$tabulation . ' ' . ui_print_truncate_text($group['nombre']) . '</strong>';
+			$data[0] = '<strong>' . $tabulation . ' ' . ui_print_truncate_text($group['nombre']) . '</strong>';
 		}
 		$data[1] = $group['id_grupo'];
 		$data[2] = ui_print_group_icon($group['id_grupo'], true);
@@ -334,11 +339,13 @@ else {
 	echo "<div class='nf'>".__('There are no defined groups')."</div>";
 }
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
-echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';
-html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
-echo '</div>';
-echo '</form>';
+if (check_acl($config['id_user'], 0, "PM")) {
+	echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
+	echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';
+	html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
+	echo '</div>';
+	echo '</form>';
+}
 
 ?>
 

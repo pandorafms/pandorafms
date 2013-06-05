@@ -35,24 +35,22 @@ $id = (int) get_parameter ('id');
 if ($duplicate_template) {
 	$source_id = (int) get_parameter ('source_id');
 	$a_template = alerts_get_alert_template($source_id);
-}else{
+}
+else {
 	$a_template = alerts_get_alert_template($id);
 }
 
-if ($a_template !== false){
+if ($a_template !== false) {
 	// If user tries to duplicate/edit a template with group=ALL
-	if ($a_template['id_group'] == 0){
-		// then must have "PM" access privileges
-		if (! check_acl ($config['id_user'], 0, "PM")) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access Alert Management");
-			require ("general/noaccess.php");
-			exit;
-		}else
-			// Header
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+	if ($a_template['id_group'] == 0) {
+		// Header
+		ui_print_page_header (__('Alerts') .
+			' &raquo; ' . __('Configure alert template'), "",
+			false, "", true);
+
 	// If user tries to duplicate/edit a template of others groups 
-	}else{
+	}
+	else {
 		$own_info = get_user_info ($config['id_user']);
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
@@ -60,20 +58,23 @@ if ($a_template !== false){
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 		$is_in_group = in_array($a_template['id_group'], $own_groups);
 		// Then template group have to be in his own groups
-		if ($is_in_group)
+		if ($is_in_group) {
 			// Header
 			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
-		else{
+		}
+		else {
 			db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 			require ("general/noaccess.php");
 			exit;
-		}	
-	}		
+		}
+	}
 // This prevents to duplicate the header in case duplicate/edit_template action is performed
-}else
+}
+else {
 	// Header
 	ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+}
 
 
 if ($duplicate_template) {
@@ -107,13 +108,13 @@ function print_alert_template_steps ($step, $id) {
 	
 	if ($id) {
 		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'">';
-		echo __('Step').' 1 &raquo; ';
-		echo '<span>'.__('Conditions').'</span>';
+		echo __('Step') . ' 1 &raquo; ';
+		echo '<span>' . __('Conditions') . '</span>';
 		echo '</a>';
 	}
 	else {
-		echo __('Step').' 1 &raquo; ';
-		echo '<span>'.__('Conditions').'</span>';
+		echo __('Step') . ' 1 &raquo; ';
+		echo '<span>' . __('Conditions') . '</span>';
 	}
 	echo '</li>';
 	
@@ -162,7 +163,7 @@ function print_alert_template_steps ($step, $id) {
 
 function update_template ($step) {
 	global $config;
-
+	
 	$id = (int) get_parameter ('id');
 	
 	if (empty ($id))
@@ -179,17 +180,17 @@ function update_template ($step) {
 		$priority = (int) get_parameter ('priority');
 		$id_group = get_parameter ("id_group");
 		$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
-
+		
 		$values = array ('name' => $name,
-				'type' => $type,
-				'description' => $description,
-				'value' => $value,
-				'max_value' => $max,
-				'min_value' => $min,
-				'id_group' => $id_group,
-				'matches_value' => $matches,
-				'priority' => $priority);
-
+			'type' => $type,
+			'description' => $description,
+			'value' => $value,
+			'max_value' => $max,
+			'min_value' => $min,
+			'id_group' => $id_group,
+			'matches_value' => $matches,
+			'priority' => $priority);
+		
 		$result = alerts_update_alert_template ($id,$values);
 	}
 	elseif ($step == 2) {
@@ -207,6 +208,7 @@ function update_template ($step) {
 		$threshold = (int) get_parameter ('threshold');
 		$max_alerts = (int) get_parameter ('max_alerts');
 		$min_alerts = (int) get_parameter ('min_alerts');
+		
 		$field1 = (string) get_parameter ('field1');
 		$field2 = (string) get_parameter ('field2');
 		$field3 = (string) get_parameter ('field3');
@@ -254,14 +256,15 @@ function update_template ($step) {
 					'min_alerts' => $min_alerts
 					);
 				break;
-		}	
+		}
+		
 		$result = alerts_update_alert_template ($id, $values);
 	}
 	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
 		$field2_recovery = (string) get_parameter ('field2_recovery');
 		$field3_recovery = (string) get_parameter ('field3_recovery');
-
+		
 		$values = array ('recovery_notify' => $recovery_notify,
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery);
@@ -287,6 +290,7 @@ define ('LAST_STEP', 3);
 
 $step = (int) get_parameter ('step', 1);
 
+$create_alert = (bool) get_parameter ('create_alert');
 $create_template = (bool) get_parameter ('create_template');
 $update_template = (bool) get_parameter ('update_template');
 
@@ -329,8 +333,8 @@ if ($create_template) {
 	$matches = (bool) get_parameter ('matches_value');
 	$priority = (int) get_parameter ('priority');
 	$id_group = get_parameter ("id_group");
-        $name_check = db_get_value ('name', 'talert_templates', 'name', $name);
-
+	$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
+	
 	switch ($config['dbtype']){
 		case "mysql":
 		case "postgresql":
@@ -354,12 +358,13 @@ if ($create_template) {
 					'field3_recovery' => ' ');
 			break;
 	}
+	
 	if (!$name_check) {
 		$result = alerts_create_alert_template ($name, $type, $values);
 	}
 	else {
 		$result = '';
-	}	
+	}
 	if ($result) {
 		db_pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
 	}
@@ -490,16 +495,23 @@ if ($step == 2) {
 	switch ($config['dbtype']){
 		case "mysql":
 		case "postgresql":
-			$sql_query = sprintf('SELECT id, name FROM talert_actions WHERE id_group IN (%s) ORDER BY name', $usr_groups);
+			$sql_query = sprintf('SELECT id, name
+				FROM talert_actions
+				WHERE id_group IN (%s)
+				ORDER BY name', $usr_groups);
 			break;
 		case "oracle":
-			$sql_query = sprintf('SELECT id, dbms_lob.substr(name,4000,1) as nombre FROM talert_actions WHERE id_group IN (%s) ORDER BY dbms_lob.substr(name,4000,1)', $usr_groups);
+			$sql_query = sprintf('SELECT id, dbms_lob.substr(name,4000,1) as nombre
+				FROM talert_actions
+				WHERE id_group IN (%s)
+				ORDER BY dbms_lob.substr(name,4000,1)', $usr_groups);
 			break;
 	}
 	$table->data[4][1] = html_print_select_from_sql ($sql_query,
 		'default_action', $default_action, '', __('None'), 0,
 		true, false, false).ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
-} else if ($step == 3) {
+}
+else if ($step == 3) {
 	/* Alert recover */
 	if (! $recovery_notify) {
 		$table->rowstyle = array ();
@@ -519,7 +531,8 @@ if ($step == 2) {
 	$table->data['field3'][0] = __('Field 3');
 	$table->data['field3'][1] = html_print_textarea ('field3_recovery', 10, 30,
 		$field3_recovery, '', true);
-} else {
+}
+else {
 	/* Step 1 by default */
 	$table->size = array ();
 	$table->size[0] = '20%';
@@ -531,39 +544,42 @@ if ($step == 2) {
 	
 	$show_matches = false;
 	switch ($type) {
-	case "equal":
-	case "not_equal":
-	case "regex":
-		$show_matches = true;
-		$table->rowstyle['value'] = '';
-		break;
-	case "max_min":
-		$show_matches = true;
-	case "max":
-		$table->rowstyle['max'] = '';
-		if ($type == 'max')
+		case "equal":
+		case "not_equal":
+		case "regex":
+			$show_matches = true;
+			$table->rowstyle['value'] = '';
 			break;
-	case "min":
-		$table->rowstyle['min'] = '';
-		break;
-	case "onchange":
-		$show_matches = true;
-		break;
+		case "max_min":
+			$show_matches = true;
+		case "max":
+			$table->rowstyle['max'] = '';
+			if ($type == 'max')
+				break;
+		case "min":
+			$table->rowstyle['min'] = '';
+			break;
+		case "onchange":
+			$show_matches = true;
+			break;
 	}
-
+	
 	$table->data[0][0] = __('Name');
 	$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
-
+	
+	
 	$table->data[0][1] .= "&nbsp;&nbsp;". __("Group");
 	$groups = users_get_groups ();
 	$own_info = get_user_info($config['id_user']);
 	// Only display group "All" if user is administrator or has "PM" privileges
 	if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 		$display_all_group = true;
-	else	
+	else
 		$display_all_group = false;
-	$table->data[0][1] .= "&nbsp;".html_print_select_groups(false, "AR", $display_all_group, 'id_group', $id_group, '', '', 0, true);
-
+	$table->data[0][1] .= "&nbsp;" .
+		html_print_select_groups(false, "AR", $display_all_group, 'id_group', $id_group, '', '', 0, true);
+	
+	
 	$table->data[1][0] = __('Description');
 	$table->data[1][1] =  html_print_textarea ('description', 10, 30,
 		$description, '', true);
@@ -580,7 +596,7 @@ if ($step == 2) {
 	$table->data[3][1] .= html_print_label (__('Trigger when matches the value'),
 		'checkbox-matches_value', true);
 	$table->data[3][1] .= '</span>';
-
+	
 	$table->data['value'][0] = __('Value');
 	$table->data['value'][1] = html_print_input_text ('value', $value, '',
 		35, 255, true);
@@ -594,11 +610,11 @@ if ($step == 2) {
 			'id' => 'regex_bad',
 			'title' => __('The regular expression is not valid')));
 	$table->data['value'][1] .= '</span>';
-
+	
 	//Min first, then max, that's more logical
 	$table->data['min'][0] = __('Min.');
 	$table->data['min'][1] = html_print_input_text ('min', $min, '', 5, 255, true);
-
+	
 	$table->data['max'][0] = __('Max.');
 	$table->data['max'][1] = html_print_input_text ('max', $max, '', 5, 255, true);
 	
@@ -609,25 +625,41 @@ if ($step == 2) {
 /* If it's the last step it will redirect to template lists */
 if ($step >= LAST_STEP) {
 	echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_templates">';
-} else {
+}
+else {
 	echo '<form method="post">';
 }
 html_print_table ($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 if ($id) {
 	html_print_input_hidden ('id', $id);
 	html_print_input_hidden ('update_template', 1);
-} else {
+}
+else {
 	html_print_input_hidden ('create_template', 1);
 }
 
-if ($step >= LAST_STEP) {
-	html_print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
-} else {
-	html_print_input_hidden ('step', $step + 1);
-	html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
+$disabled = false;
+if (!$create_alert && !$create_template) {
+	if ($a_template['id_group'] == 0) {
+		// then must have "PM" access privileges
+		if (! check_acl ($config['id_user'], 0, "PM")) {
+			$disabled = true;
+		}
+	}
 }
+
+if (!$disabled) {
+	if ($step >= LAST_STEP) {
+		html_print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
+	}
+	else {
+		html_print_input_hidden ('step', $step + 1);
+		html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
+	}
+}
+
 echo '</div>';
 echo '</form>';
 
@@ -635,6 +667,7 @@ ui_require_jquery_file ('ui.core');
 ui_require_jquery_file ('timeentry');
 ui_require_javascript_file ('pandora_alerts');
 ?>
+
 <script type="text/javascript">
 /* <![CDATA[ */
 var matches = "<?php echo __('The alert would fire when the value matches <span id=\"value\"></span>');?>";
@@ -673,7 +706,8 @@ function render_example () {
 	vmax = parseInt ($("input#text-max").attr ("value"));
 	if (isNaN (vmax) || vmax == "") {
 		$("span#max").empty ().append ("0");
-	} else {
+	}
+	else {
 		$("span#max").empty ().append (vmax);
 	}
 	
@@ -681,7 +715,8 @@ function render_example () {
 	vmin = parseInt ($("input#text-min").attr ("value"));
 	if (isNaN (vmin) || vmin == "") {
 		$("span#min").empty ().append ("0");
-	} else {
+	}
+	else {
 		$("span#min").empty ().append (vmin);
 	}
 	
@@ -689,13 +724,16 @@ function render_example () {
 	vvalue = $("input#text-value").attr ("value");
 	if (vvalue == "") {
 		$("span#value").empty ().append ("<em><?php echo __('Empty');?></em>");
-	} else {
+	}
+	else {
 		$("span#value").empty ().append (vvalue);
 	}
 }
 
 $(document).ready (function () {
-<?php if ($step == 1): ?>
+<?php
+if ($step == 1) {
+?>
 	$("input#text-value").keyup (render_example);
 	$("input#text-max").keyup (render_example);
 	$("input#text-min").keyup (render_example);
@@ -769,7 +807,7 @@ $(document).ready (function () {
 		case "onchange":
 			$("#template-value, #template-max, #template-min").hide ();
 			$("#template-example, span#matches_value").show ();
-
+			
 			/* Show example */
 			if ($("#checkbox-matches_value")[0].checked)
 				$("span#example").empty ().append (onchange);
@@ -797,19 +835,24 @@ $(document).ready (function () {
 		if (type == "regex") {
 			if (enabled) {
 				$("span#example").empty ().append (matches);
-			} else {
+			}
+			else {
 				$("span#example").empty ().append (matches_not);
 			}
-		} else if (type == "max_min") {
+		}
+		else if (type == "max_min") {
 			if (enabled) {
 				$("span#example").empty ().append (between);
-			} else {
+			}
+			else {
 				$("span#example").empty ().append (between_not);
 			}
-		} else if (type == "onchange") {
+		}
+		else if (type == "onchange") {
 			if (enabled) {
 				$("span#example").empty ().append (onchange);
-			} else {
+			}
+			else {
 				$("span#example").empty ().append (onchange_not);
 			}
 		} 
@@ -817,7 +860,10 @@ $(document).ready (function () {
 	});
 	
 	$("#text-value").keyup (check_regex);
-<?php elseif ($step == 2): ?>
+<?php
+}
+elseif ($step == 2) {
+?>
 	$("#text-time_from, #text-time_to").timeEntry ({
 		spinnerImage: 'images/time-entry.png',
 		spinnerSize: [20, 20, 0]
@@ -829,20 +875,27 @@ $(document).ready (function () {
 			$("#text-other_threshold").attr ("value", "");
 			$("#template-threshold-other_label").show ();
 			$("#template-threshold-other_input").show ();
-		} else {
+		}
+		else {
 			$("#template-threshold-other_label").hide ();
 			$("#template-threshold-other_input").hide ();
 		}
 	});
-<?php elseif ($step == 3): ?>
+<?php
+}
+elseif ($step == 3) {
+?>
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {
 			$("#template-field2, #template-field3").show ();
-		} else {
+		}
+		else {
 			$("#template-field2, #template-field3").hide ();
 		}
 	});
-<?php endif; ?>
+<?php
+}
+?>
 })
 /* ]]> */
 </script>

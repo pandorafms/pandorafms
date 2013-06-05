@@ -137,20 +137,24 @@ if ($update_template) {
 if ($delete_template) {
 	$id = get_parameter ('id');
 	$al_template = alerts_get_alert_template($id);
-
+	
 	if ($al_template !== false){
 		// If user tries to delete a template with group=ALL then must have "PM" access privileges
-		if ($al_template['id_group'] == 0){
+		if ($al_template['id_group'] == 0) {
 			if (! check_acl ($config['id_user'], 0, "PM")) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
-			}else
+			}
+			else {
 				// Header
-				ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+				ui_print_page_header(
+					__('Alerts') . " &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+			}
 		// If user tries to delete a template of others groups
-		}else{
+		}
+		else{
 			$own_info = get_user_info ($config['id_user']);
 			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
@@ -161,17 +165,19 @@ if ($delete_template) {
 			if ($is_in_group)
 				// Header
 				ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
-			else{
+			else {
 				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
 			}
-		}	
-	}else
+		}
+	}
+	else {
 		// Header
 		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
-
+	}
+	
 	$result = alerts_delete_alert_template ($id);
 	
 	if ($result) {
@@ -209,7 +215,7 @@ $table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
-echo '<form method="post" action="'.$url.'">';
+echo '<form method="post" action="' . $url . '">';
 html_print_table ($table);
 echo '</form>';
 
@@ -259,31 +265,42 @@ foreach ($templates as $template) {
 	
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.
 		$template['name'].'</a>';
-
+	
 	$data[1] = ui_print_group_icon ($template["id_group"], true);
 	$data[3] = alerts_get_alert_templates_type_name ($template['type']);
-
-	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
-	$data[4] .= html_print_input_hidden ('duplicate_template', 1, true);
-	$data[4] .= html_print_input_hidden ('source_id', $template['id'], true);
-	$data[4] .= html_print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
-	$data[4] .= '</form> ';
 	
-	$data[4] .= '&nbsp;&nbsp;<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-	$data[4] .= html_print_input_hidden ('delete_template', 1, true);
-	$data[4] .= html_print_input_hidden ('id', $template['id'], true);
-	$data[4] .= html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
-	$data[4] .= '</form> ';
+	$hack_id_group_all = $template["id_group"];
+	if ($hack_id_group_all == 0) {
+		//To avoid check all groups instead the pseudo-group all
+		$hack_id_group_all = -1;
+	}
+	if (check_acl($config['id_user'], $hack_id_group_all, "LM")) {
+		$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
+		$data[4] .= html_print_input_hidden ('duplicate_template', 1, true);
+		$data[4] .= html_print_input_hidden ('source_id', $template['id'], true);
+		$data[4] .= html_print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
+		$data[4] .= '</form> ';
+		
+		$data[4] .= '&nbsp;&nbsp;<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+		$data[4] .= html_print_input_hidden ('delete_template', 1, true);
+		$data[4] .= html_print_input_hidden ('id', $template['id'], true);
+		$data[4] .= html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
+		$data[4] .= '</form> ';
+	}
+	else {
+		$data[4] = '';
+	}
 	
 	array_push ($table->data, $data);
 }
 
 ui_pagination ($total_templates, $url);
-if (isset($data)){
+if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('No alert templates defined')."</div>";
+	echo "<div class='nf'>" . __('No alert templates defined') .
+		"</div>";
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';

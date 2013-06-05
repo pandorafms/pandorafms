@@ -18,7 +18,7 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation", "Trying to access Group Management2");
 	require ("general/noaccess.php");
 	return;
@@ -53,13 +53,13 @@ if ($id_group) {
 	else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
 		echo "</table>";
-		echo '</div>';                          
-                echo '<div style="clear:both">&nbsp;</div>';
-                echo '</div>';
-                echo '<div id="foot">';
-                require ("general/footer.php");
-                echo '</div>';
-                echo '</div>';
+		echo '</div>';
+		echo '<div style="clear:both">&nbsp;</div>';
+		echo '</div>';
+		echo '<div id="foot">';
+		require ("general/footer.php");
+		echo '</div>';
+		echo '</div>';
 		exit;
 	}
 }
@@ -89,6 +89,7 @@ $table->data[1][1] .= ' <span id="icon_preview">';
 if ($icon) {
 	$table->data[1][1] .= html_print_image("images/groups_small/".$icon, true); 
 }
+
 $table->data[1][1] .= '</span>';
 
 $table->data[2][0] = __('Parent');

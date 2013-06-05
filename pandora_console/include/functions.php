@@ -132,7 +132,7 @@ function safe_url_extraclean ($string, $default_string = '') {
 	if (preg_match ('/[^a-zA-Z0-9_\/\.\-]|(\/\/)|(\.\.)/', $string)) {
 		return $default_string;
 	}
-
+	
 	return $string;
 }
 
@@ -150,6 +150,7 @@ function no_permission () {
 	echo "</table>";
 	echo "<tr><td><td><td><td>";
 	include "general/footer.php";
+	
 	exit;
 }
 
@@ -171,6 +172,7 @@ function unmanaged_error ($error = "") {
 	echo "</table>";
 	echo "<tr><td><td><td><td>";
 	include "general/footer.php";
+	
 	exit;
 }
 
@@ -197,15 +199,16 @@ function list_files ($directory, $stringSearch, $searchHandler, $return = false)
 		}
 	}
 	if ($searchHandler == 1) {
-		while(false !== ($fileName = @readdir ($directoryHandler))) {
-			if(@substr_count ($fileName, $stringSearch) > 0) {
+		while (false !== ($fileName = @readdir ($directoryHandler))) {
+			if (@substr_count ($fileName, $stringSearch) > 0) {
 				$result[$fileName] = $fileName;
 			}
 		}
 	}
 	if (($errorHandler == true) && (@count ($result) === 0)) {
 		echo ("<pre>\nerror: no filetype \"$fileExtension\" found!\n</pre>\n");
-	} else {
+	}
+	else {
 		asort ($result);
 		if ($return === false) {
 			echo ("<pre>\n");
@@ -243,6 +246,7 @@ function format_numeric ($number, $decimals = 1) {
 	/* If has decimals */
 	if (fmod ($number, 1) > 0)
 		return number_format ($number, $decimals, $dec_point, $thousands_sep);
+	
 	return number_format ($number, 0, $dec_point, $thousands_sep);
 }
 
@@ -314,14 +318,14 @@ function human_time_comparation ($timestamp, $units = 'large') {
 	}
 	
 	$seconds = get_system_time () - $timestamp;
-
+	
 	// $seconds could be negative, because get_system_time() could return cached value
 	// (that might be the time a session begins at).
 	// So negative values are to be rounded off to 'NOW'.
-	if( $seconds < 0 ) {
+	if ( $seconds < 0 ) {
 		$seconds = 0;
 	}
-
+	
 	return human_time_description_raw($seconds, false, $units);
 }
 
@@ -355,26 +359,26 @@ function get_system_time () {
  */
 function get_user_language ($id_user = null) {
 	global $config;
-
+	
 	$quick_language = get_parameter('quick_language_change', 0);
-
-	if($quick_language) {
+	
+	if ($quick_language) {
 		$language = get_parameter('language', 0);
 		
-		if($language === 'default') {
+		if ($language === 'default') {
 			return $config['language'];
 		}
-
-		if($language !== 0) {
+		
+		if ($language !== 0) {
 			return $language;
 		}
 	}
 	
-	if($id_user === null && isset($config['id_user'])) {
+	if ($id_user === null && isset($config['id_user'])) {
 		$id_user = $config['id_user'];
 	}
 	
-	if($id_user !== null) {
+	if ($id_user !== null) {
 		$userinfo = get_user_info ($id_user);
 		if ($userinfo['language'] != 'default'){
 			return $userinfo['language'];
@@ -390,10 +394,10 @@ function get_user_language ($id_user = null) {
 function set_user_language() {
 	global $config;
 	global $l10n;
-
+	
 	$l10n = NULL;
 	$user_language = get_user_language ();
-
+	
 	if (file_exists ('./include/languages/'.$user_language.'.mo')) {
 		$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
 		$l10n->load_tables();
@@ -432,7 +436,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 			$nowString = __('N');
 			break;
 	}
-
+	
 	if (empty ($seconds)) {
 		return $nowString; 
 		// slerena 25/03/09
@@ -445,7 +449,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 		$years = floor($seconds / 31104000);
 		
-		if($years != 0) {
+		if ($years != 0) {
 			$seconds = $seconds - ($years * 31104000);
 			
 			$returnDate .= "$years $yearsString ";
@@ -453,25 +457,25 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 		$months = floor($seconds / 2592000);
 		
-		if($months != 0) {
+		if ($months != 0) {
 			$seconds = $seconds - ($months * 2592000);
 			
 			$returnDate .= "$months $monthsString ";
 		}
-
+		
 		$days = floor($seconds / 86400);
 		
-		if($days != 0) {
+		if ($days != 0) {
 			$seconds = $seconds - ($days * 86400);
 			
 			$returnDate .= "$days $daysString ";
 		}
 		
 		$returnTime = '';
-
+		
 		$hours = floor($seconds / 3600);
 		
-		if($hours != 0) {
+		if ($hours != 0) {
 			$seconds = $seconds - ($hours * 3600);
 			
 			$returnTime .= "$hours $hoursString ";
@@ -479,37 +483,40 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 		$mins = floor($seconds / 60);
 		
-		if($mins != 0) {
+		if ($mins != 0) {
 			$seconds = $seconds - ($mins * 60);
 			
-			if($hours == 0) {
+			if ($hours == 0) {
 				$returnTime .= "$mins $minutesString ";
 			}
 			else {
-				$returnTime = sprintf("%02d",$hours).':'.sprintf("%02d",$mins);
+				$returnTime = sprintf("%02d",$hours) . ':' .
+					sprintf("%02d",$mins);
 			}
 		}
 		
-		if($seconds != 0) {
-			if($hours == 0) {
+		if ($seconds != 0) {
+			if ($hours == 0) {
 				$returnTime .= "$seconds $secondsString ";
 			}
 			else {
-				$returnTime = sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$seconds);
+				$returnTime = sprintf("%02d",$hours) . ':' .
+					sprintf("%02d",$mins) . ':' .
+					sprintf("%02d",$seconds);
 			}
 		}
 		
 		$return = ' ';
 		
-		if($returnDate != '') {
+		if ($returnDate != '') {
 			$return = $returnDate;
 		}
 		
-		if($returnTime != '') {
+		if ($returnTime != '') {
 			$return .= $returnTime;
 		}
 		
-		if($return == ' ') {
+		if ($return == ' ') {
 			return $nowString; 
 		}
 		else {
@@ -602,7 +609,7 @@ function get_parameterBetweenListValues ($name, $values, $default) {
 			return $value;
 		}
 	}
-
+	
 	return $default;
 }
 
@@ -621,10 +628,10 @@ function get_parameter ($name, $default = '') {
 	// POST has precedence
 	if (isset($_POST[$name]))
 		return get_parameter_post ($name, $default);
-
+	
 	if (isset($_GET[$name]))
 		return get_parameter_get ($name, $default);
-
+	
 	return $default;
 }
 
@@ -639,7 +646,7 @@ function get_parameter ($name, $default = '') {
 function get_parameter_get ($name, $default = "") {
 	if ((isset ($_GET[$name])) && ($_GET[$name] != ""))
 		return io_safe_input ($_GET[$name]);
-
+	
 	return $default;
 }
 
@@ -654,7 +661,7 @@ function get_parameter_get ($name, $default = "") {
 function get_parameter_post ($name, $default = "") {
 	if ((isset ($_POST[$name])) && ($_POST[$name] != ""))
 		return io_safe_input ($_POST[$name]);
-
+	
 	return $default;
 }
 
@@ -667,23 +674,25 @@ function get_parameter_post ($name, $default = "") {
  */
 function get_alert_priority ($priority = 0) {
 	global $config;
+	
 	switch ($priority) {
-	case 0: 
-		return __('Maintenance');
-		break;
-	case 1:
-		return __('Informational');
-		break;
-	case 2:
-		return __('Normal');
-		break;
-	case 3:
-		return __('Warning');
-		break;
-	case 4:
-		return __('Critical');
-		break;
+		case 0: 
+			return __('Maintenance');
+			break;
+		case 1:
+			return __('Informational');
+			break;
+		case 2:
+			return __('Normal');
+			break;
+		case 3:
+			return __('Warning');
+			break;
+		case 4:
+			return __('Critical');
+			break;
 	}
+	
 	return '';
 }
 
@@ -697,12 +706,13 @@ function get_alert_priority ($priority = 0) {
 function get_alert_days ($row) {
 	global $config;
 	$days_output = "";
-
+	
 	$check = $row["monday"] + $row["tuesday"] + $row["wednesday"] + $row["thursday"] + $row["friday"] + $row["saturday"] + $row["sunday"];
 	
 	if ($check == 7) {
 		return __('All');
-	} elseif ($check == 0) {
+	}
+	elseif ($check == 0) {
 		return __('None');
 	} 
 	
@@ -721,7 +731,7 @@ function get_alert_days ($row) {
 	if ($row["sunday"] != 0)
 		$days_output .= __('Sun');
 	
-	if ($check > 1) {	
+	if ($check > 1) {
 		return str_replace (" ",", ",$days_output);
 	}
 	
@@ -736,19 +746,21 @@ function get_alert_days ($row) {
  * @return string A string with the concatenated values
  */
 function get_alert_times ($row2) {
-	if ($row2["time_from"]){
+	if ($row2["time_from"]) {
 		$time_from_table = $row2["time_from"];
-	} else {
+	}
+	else {
 		$time_from_table = __('N/A');
 	}
-	if ($row2["time_to"]){
+	if ($row2["time_to"]) {
 		$time_to_table = $row2["time_to"];
-	} else {
+	}
+	else {
 		$time_to_table = __('N/A');
 	}
 	if ($time_to_table == $time_from_table)
 		return __('N/A');
-		
+	
 	return substr ($time_from_table, 0, 5)." - ".substr ($time_to_table, 0, 5);
 }
 
@@ -951,8 +963,10 @@ function enterprise_hook ($function_name, $parameters = false) {
 	if (function_exists ($function_name)) {
 		if (!is_array ($parameters))
 			return call_user_func ($function_name);
+		
 		return call_user_func_array ($function_name, $parameters);
 	}
+	
 	return ENTERPRISE_NOT_HOOK;
 }
 
@@ -961,17 +975,22 @@ function enterprise_hook ($function_name, $parameters = false) {
  */
 function enterprise_include ($filename) {
 	global $config;
+	
 	// Load enterprise extensions
-	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
+	$filepath = realpath ($config["homedir"] . '/' . ENTERPRISE_DIR . '/' . $filename);
+	
 	if ($filepath === false)
 		return ENTERPRISE_NOT_HOOK;
-	if (strncmp ($config["homedir"], $filepath, strlen ($config["homedir"])) != 0){
+	
+	if (strncmp ($config["homedir"], $filepath, strlen ($config["homedir"])) != 0) {
 		return ENTERPRISE_NOT_HOOK;
 	}
+	
 	if (file_exists ($filepath)) {
 		include ($filepath);
 		return true;
 	}
+	
 	return ENTERPRISE_NOT_HOOK;
 }
 
@@ -1044,7 +1063,7 @@ if (!function_exists ("mb_strtoupper")) {
  */
 function safe_sql_string($string) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_safe_sql_string($string);
@@ -1077,7 +1096,7 @@ function is_ajax () {
  * @return bool true if a result code is an error or false otherwise
  */
 function is_error($code) {
-	if($code !== true AND ($code <= ERR_GENERIC || $code === false)) {
+	if ($code !== true AND ($code <= ERR_GENERIC || $code === false)) {
 		return true;
 	}
 	else {
@@ -1131,8 +1150,8 @@ function index_array ($array, $index = 'id', $value = 'name') {
  * @return string Graph type, as used in stat_win.php (Graphs launcher)
  */
 
-function return_graphtype ($id_module_type){
-	switch($id_module_type){
+function return_graphtype ($id_module_type) {
+	switch ($id_module_type) {
 		case 3:
 		case 10:
 		case 17:
@@ -1186,9 +1205,9 @@ function array_key_to_offset($array, $key) {
  * @return array SNMP result.
  */
 function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_auth_user = '',
-				$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
-				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "", $snmp_port = '') {
-					
+	$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
+	$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "", $snmp_port = '') {
+	
 	// Note: quick_print is ignored
 	
 	// Fix for snmp port
@@ -1277,9 +1296,9 @@ function string2image($string, $width, $height, $fontsize = 3,
 	$padding_left = 4, $padding_top = 1, $home_url = '') {
 	
 	global $config;
-
+	
 	$string = str_replace('#','',$string);
-
+	
 	//Set the size of image from the size of text
 	if ($width === false) {
 		$size = calculateTextBox($fontsize, 0, $config['fontpath'], $string);
@@ -1328,7 +1347,7 @@ function string2image($string, $width, $height, $fontsize = 3,
 
 function check_sql ($sql) {
 	// We remove "*" to avoid things like SELECT * FROM tusuario
-
+	
 	//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
 	
 	if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
@@ -1428,7 +1447,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	if ($id_group != 0) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
 		$parents = groups_get_parents($group['parent'], true);
-
+		
 		foreach ($parents as $parent) {
 			$parents_id[] = $parent['id_grupo'];
 		}
@@ -1462,12 +1481,12 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				AND (tusuario_perfil.id_grupo IN (%s)
 				OR tusuario_perfil.id_grupo = 0)", $id_user, implode(', ', $parents_id));
 	}
-
+	
 	$rowdup = db_get_all_rows_sql ($query);
 	
 	if (empty ($rowdup))
 		return 0;
-
+	
 	$result = 0;
 	foreach ($rowdup as $row) {
 		// For each profile for this pair of group and user do...
@@ -1508,7 +1527,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	if ($result >= 1) {
 		return 1;
 	}
-
+	
 	return 0;
 }
 
@@ -1572,7 +1591,7 @@ function copy_dir($src, $dst) {
 		return false;
 	
 	@mkdir($dst); 
-	while(false !== ( $file = readdir($dir)) ) {
+	while (false !== ( $file = readdir($dir)) ) {
 		if (( $file != '.' ) && ( $file != '..' )) {
 			if ( is_dir($src . '/' . $file) ) {
 				copy_dir($src . '/' . $file,$dst . '/' . $file); 

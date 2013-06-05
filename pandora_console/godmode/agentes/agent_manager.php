@@ -14,7 +14,6 @@
 // GNU General Public License for more details.
 
 if (is_ajax ()) {
-
 	global $config;
 
 	$search_parents = (bool) get_parameter ('search_parents');
@@ -27,7 +26,7 @@ if (is_ajax ()) {
 		
 		$filter = array ();
 		
-		switch ($config['dbtype']){
+		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
@@ -47,44 +46,44 @@ if (is_ajax ()) {
 		}
 		
 		return;
- 	}
- 	
+	}
+	
 	$get_modules_json_for_multiple_snmp = (bool) get_parameter("get_modules_json_for_multiple_snmp", 0);
 	if ($get_modules_json_for_multiple_snmp) {
 		require_once ('include/graphs/functions_utils.php');
-
+		
 		$idSNMP = get_parameter('id_snmp');
 		
 		$id_snmp_serialize = get_parameter('id_snmp_serialize');
 		$snmp = unserialize_in_temp($id_snmp_serialize, false);
-
+		
 		$oid_snmp = array();
 		$out = false;
-		foreach($idSNMP as $id) {
-			foreach($snmp[$id] as $key => $value){
+		foreach ($idSNMP as $id) {
+			foreach ($snmp[$id] as $key => $value){
 				
-				// Check if it has "ifXXXX" syntax and skip it 
+				// Check if it has "ifXXXX" syntax and skip it
 				if (! preg_match  ( "/if/", $key)) {
 					continue;
 				}
-
+				
 				$oid_snmp[$value['oid']] = $key;
 			}
-
-			if($out === false){
+			
+			if ($out === false) {
 				$out = $oid_snmp;
 			}
 			else{
 				$out = array_intersect($out,$oid_snmp);
 			}
-
+			
 			$oid_snmp = array();
 		}
-
+		
 		echo json_encode($out);
 	}
-	    
- 	return;
+	
+	return;
 }
 // Load global vars
 enterprise_include ('godmode/agentes/agent_manager.php');
@@ -92,7 +91,7 @@ enterprise_include ('godmode/agentes/agent_manager.php');
 require_once ('include/functions_servers.php');
 require_once ('include/functions_gis.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
-require_once ($config['homedir'].'/include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
 
 ui_require_javascript_file('openlayers.pandora');
 
@@ -114,9 +113,11 @@ echo '<div style="height: 5px">&nbsp;</div>';
 if (!$new_agent) {
 	// Agent remote configuration editor
 	$agent_md5 = md5 ($nombre_agente, false);
-	$filename['md5'] = $config["remote_config"]."/md5/".$agent_md5.".md5";
-	$filename['conf'] = $config["remote_config"]."/conf/".$agent_md5.".conf";
-} 
+	$filename['md5'] = $config["remote_config"] . "/md5/" .
+		$agent_md5 . ".md5";
+	$filename['conf'] = $config["remote_config"] . "/conf/" .
+		$agent_md5 . ".conf";
+}
 
 $disk_conf = (bool) get_parameter ('disk_conf');
 
@@ -144,13 +145,12 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
-$table->data[0][0] = __('Agent name') . 
+$table->data[0][0] = __('Agent name') .
 	ui_print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
-$table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 50, 100,true); 
+$table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 50, 100,true);
 
 if ($id_agente) {
-
-    $table->data[0][1] .= "&nbsp;<b>".__("ID")."</b>&nbsp; $id_agente &nbsp;";
+	$table->data[0][1] .= "&nbsp;<b>".__("ID")."</b>&nbsp; $id_agente &nbsp;";
 	$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
 	$table->data[0][1] .= html_print_image ("images/lupa.png", true, array ("border" => 0, "title" => __('Agent detail')));
 	$table->data[0][1] .= '</a>';
@@ -167,7 +167,7 @@ if (!$new_agent) {
 
 // Delete link from here
 if (!$new_agent) {
-$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('" . __('Are you sure?') . "')) return false;\"  title='".__("Delete agent")."' href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
+	$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('" . __('Are you sure?') . "')) return false;\"  title='".__("Delete agent")."' href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
 }
 
 $table->data[1][0] = __('IP Address');
@@ -177,9 +177,9 @@ if ($id_agente) {
 	$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
 	
 	$ip_all = agents_get_addresses ($id_agente);
-		
+	
 	$table->data[1][1] .= html_print_select ($ip_all, "address_list", $direccion_agente, '', '', 0, true);
-	$table->data[1][1] .= "&nbsp;". html_print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
+	$table->data[1][1] .= "&nbsp;". html_print_checkbox ("delete_ip", 1, false, true).__('Delete selected');
 }
 
 $groups = users_get_groups ($config["id_user"], "AR",false);
@@ -297,15 +297,20 @@ else {
 	$path_warning = $path . $icon_path . ".warning.png";
 }
 
-$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
-	'&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) .
-	'&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
+$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path",
+	$icon_path, "changeIcons();", __('None'), '', true) .
+	'&nbsp;' . html_print_image($path_ok, true,
+		array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
+	'&nbsp;' . html_print_image($path_bad, true,
+		array("id" => "icon_bad", "style" => "display:".$display_icons.";")) .
+	'&nbsp;' . html_print_image($path_warning, true,
+		array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');
 	$table->data[5][1] = __('Disabled') . ' ' .
-		html_print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+		html_print_radio_button_extended ("update_gis_data", 1, '',
+			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 	$table->data[5][1] .= __('Enabled') . ' ' .
 		html_print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
@@ -363,7 +368,7 @@ ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
-	
+
 //Use this function for change 3 icons when change the selectbox
 function changeIcons() {
 	icon = $("#icon_path :selected").val();

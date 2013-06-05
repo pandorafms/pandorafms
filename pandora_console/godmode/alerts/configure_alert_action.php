@@ -32,41 +32,21 @@ $id = (int) get_parameter ('id');
 
 $al_action = alerts_get_alert_action ($id);
 
-if ($al_action !== false){
-	// If user tries to edit an action with group=ALL
-	if ($al_action['id_group'] == 0){
-		// then must have "PM" access privileges
-		if (! check_acl ($config['id_user'], 0, "PM")) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access Alert Management");
-			require ("general/noaccess.php");
-			exit;
-		}else
-			// Header
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
-	// If user tries to edit an action of others groups
-	}else{
+if ($al_action !== false) {
 		$own_info = get_user_info ($config['id_user']);
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
 		else
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 		$is_in_group = in_array($al_action['id_group'], $own_groups);
-		// Then action group have to be in his own groups
-		if ($is_in_group)
-			// Header
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
-		else{
-			db_pandora_audit("ACL Violation",
-			"Trying to access Alert Management");
-			require ("general/noaccess.php");
-			exit;
-		}	
-	}
-}else
+		
+		// Header
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+}
+else {
 	// Header
 	ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);	
-
+}
 $name = '';
 $id_command = '';
 $field1 = '';
@@ -102,15 +82,16 @@ $own_info = get_user_info ($config['id_user']);
 // Only display group "All" if user is administrator or has "PM" privileges
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
-else	
+else
 	$display_all_group = false;
 $table->data[1][1] = html_print_select_groups(false, "LW", $display_all_group, 'group', $group, '', '', 0, true);
 
 $table->data[2][0] = __('Command');
-$table->data[2][1] = html_print_select_from_sql ('SELECT id, name FROM talert_commands',
+$table->data[2][1] = html_print_select_from_sql ('SELECT id, name
+	FROM talert_commands',
 	'id_command', $id_command, '', __('None'), 0, true);
 $table->data[2][1] .= ' ';
-if (check_acl ($config['id_user'], 0, "PM")){
+if (check_acl ($config['id_user'], 0, "PM")) {
 	$table->data[2][1] .= html_print_image ('images/add.png', true);
 	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command">';
 	$table->data[2][1] .= __('Create Command');
@@ -118,7 +99,7 @@ if (check_acl ($config['id_user'], 0, "PM")){
 }
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
-$table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true);
+$table->data[3][1] .= ' ' . __('seconds') . ui_print_help_icon ('action_threshold', true);
 $table->data[4][0] = __('Field 1');
 $table->data[4][1] = html_print_input_text ('field1', $field1, '', 35, 255, true) . ui_print_help_icon ('alert_macros', true);
 
@@ -137,9 +118,15 @@ html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
 	html_print_input_hidden ('id', $id);
-	html_print_input_hidden ('update_action', 1);
-	html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
-} else {
+	if ($al_action['id_group'] == 0) {
+		// then must have "PM" access privileges
+		if (check_acl ($config['id_user'], 0, "PM")) {
+			html_print_input_hidden ('update_action', 1);
+			html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
+		}
+	}
+}
+else {
 	html_print_input_hidden ('create_action', 1);
 	html_print_submit_button (__('Create'), 'create', false, 'class="sub wand"');
 }
@@ -151,13 +138,19 @@ ui_require_javascript_file ('pandora_alerts');
 
 <script type="text/javascript">
 $(document).ready (function () {
-<?php if ($id_command) : ?>
-	original_command = "<?php $command = alerts_get_alert_command_command ($id_command);
-								$command = io_safe_output($command);
-								echo addslashes($command);
-		?>";
-	render_command_preview ();
-<?php endif; ?>
+	<?php
+	if ($id_command) {
+	?>
+		original_command = "<?php
+			$command = alerts_get_alert_command_command ($id_command);
+			$command = io_safe_output($command);
+			echo addslashes($command);
+			?>";
+		render_command_preview ();
+	<?php
+	}
+	?>
+	
 	$("#id_command").change (function () {
 		values = Array ();
 		values.push ({name: "page",
@@ -180,4 +173,5 @@ $(document).ready (function () {
 	$("#text-field2").keyup (render_command_preview);
 	$("#textarea_field3").keyup (render_command_preview);
 });
+
 </script>

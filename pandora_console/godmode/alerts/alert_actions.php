@@ -64,11 +64,14 @@ if ($copy_action) {
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
-			}else
+			}
+			else {
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+			}
 		// If user tries to copy an action of others groups
-		}else{
+		}
+		else{
 			$own_info = get_user_info ($config['id_user']);
 			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
@@ -76,21 +79,22 @@ if ($copy_action) {
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 			$is_in_group = in_array($al_action['id_group'], $own_groups);
 			// Then action group have to be in his own groups
-			if ($is_in_group)
+			if ($is_in_group) {
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-			else{
+			}
+			else {
 				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
 			}
-		}		
-	}else
+		}
+	}
+	else {
 		// Header
 		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-
-	
+	}
 	$result = alerts_clone_alert_action ($id);
 	
 	if ($result) {
@@ -130,7 +134,7 @@ if ($create_action) {
 			' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
 			' Action threshold: ' . $action_threshold;
 	}
-		
+	
 	if ($result) {
 		db_pandora_audit("Command management", "Create alert action " . $result, false, false, $info);
 	}
@@ -145,25 +149,29 @@ if ($create_action) {
 
 if ($update_action) {
 	$id = (string) get_parameter ('id');
-
+	
 	$al_action = alerts_get_alert_action ($id);
-
-	if ($al_action !== false){
-		if ($al_action['id_group'] == 0){
+	
+	if ($al_action !== false) {
+		if ($al_action['id_group'] == 0) {
 			if (! check_acl ($config['id_user'], 0, "PM")) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
-			}else
+			}
+			else {
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+			}
 		}
-	}else
+	}
+	else {
 		// Header
 		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-
-
+	}
+	
+	
 	$name = (string) get_parameter ('name');
 	$id_alert_command = (int) get_parameter ('id_command');
 	$field1 = (string) get_parameter ('field1');
@@ -171,7 +179,7 @@ if ($update_action) {
 	$field3 = (string) get_parameter ('field3');
 	$group = get_parameter ('group');
 	$action_threshold = (int) get_parameter ('action_threshold');
-
+	
 	$values = array ();
 	$values['name'] = $name;
 	$values['id_alert_command'] = $id_alert_command;
@@ -180,18 +188,18 @@ if ($update_action) {
 	$values['field3'] = $field3;
 	$values['id_group'] = $group;
 	$values['action_threshold'] = $action_threshold;
-
+	
 	if (!$name) {
 		$result = '';
 	}
 	else {
 		$result = alerts_update_alert_action ($id, $values);
-	
+		
 		$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
 			' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
 			' Action threshold: ' . $action_threshold;
 	}
-
+	
 	if ($result) {
 		db_pandora_audit("Command management", "Update alert action " . $id, false, false, json_encode($values));
 	}
@@ -206,24 +214,26 @@ if ($update_action) {
 
 if ($delete_action) {
 	$id = get_parameter ('id');
-
+	
 	$al_action = alerts_get_alert_action ($id);
-
-	if ($al_action !== false){
+	
+	if ($al_action !== false) {
 		// If user tries to delete an action with group=ALL
-		if ($al_action['id_group'] == 0){
+		if ($al_action['id_group'] == 0) {
 			// then must have "PM" access privileges
 			if (! check_acl ($config['id_user'], 0, "PM")) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
-			}else
+			}
+			else {
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+			}
 		// If user tries to delete an action of others groups
 		}
-		else{
+		else {
 			$own_info = get_user_info ($config['id_user']);
 			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
@@ -231,22 +241,23 @@ if ($delete_action) {
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 			$is_in_group = in_array($al_action['id_group'], $own_groups);
 			// Then action group have to be in his own groups
-			if ($is_in_group)
+			if ($is_in_group) {
 				// Header
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-			else{
+			}
+			else {
 				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 				require ("general/noaccess.php");
 				exit;
 			}
-		}	
+		}
 	}
 	else
 		// Header
 		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-
-
+	
+	
 	$result = alerts_delete_alert_action ($id);
 	
 	if ($result) {
@@ -281,7 +292,7 @@ $table->align[3] = 'center';
 
 $filter = array();
 if (!is_user_admin($config['id_user']))
-        $filter['id_group'] = array_keys(users_get_groups(false, "LM"));
+	$filter['id_group'] = array_keys(users_get_groups(false, "LM"));
 
 $actions = db_get_all_rows_filter ('talert_actions', $filter);
 if ($actions === false)
@@ -302,16 +313,23 @@ foreach ($actions as $action) {
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'">'.
 		$action['name'].'</a>';
 	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;';
-	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'"
-		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
-		html_print_image("images/copy.png", true) . '</a>';
-	$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
-		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-		html_print_image("images/cross.png", true) . '</a>';
+	$hack_id_group_all = $action["id_group"];
+	if ($hack_id_group_all == 0) {
+		//To avoid check all groups instead the pseudo-group all
+		$hack_id_group_all = -1;
+	}
+	if (check_acl($config['id_user'], $hack_id_group_all, "LM")) {
+		$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'"
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
+			html_print_image("images/copy.png", true) . '</a>';
+		$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
+			html_print_image("images/cross.png", true) . '</a>';
+	}
 	
 	array_push ($table->data, $data);
 }
-if (isset($data)){
+if (isset($data)) {
 	html_print_table ($table);
 }
 else {

@@ -36,8 +36,11 @@ if (check_acl ($config['id_user'], 0, "AW") and $config['metaconsole'] == 0) {
 		
 	$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
 	
+	if (check_acl ($config["id_user"], 0, "AW")) {
+			$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
+	}
+
 	if (check_acl ($config["id_user"], 0, "PM")) {
-		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
 		$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
 		$sub["godmode/agentes/planned_downtime"]["text"] = __('Scheduled downtime');
 		$sub["godmode/agentes/fields_manager"]["text"] = __('Manage custom fields');
@@ -51,7 +54,7 @@ if (check_acl ($config['id_user'], 0, "AW") and $config['metaconsole'] == 0) {
 	$menu_godmode["gmassive"]["text"] = __('Massive operations');
 	$menu_godmode["gmassive"]["sec2"] = "godmode/massive/massive_operations";
 	$menu_godmode["gmassive"]["id"] = "god-massive";
-		
+	
 	$sub = array ();
 	$sub["godmode/massive/massive_operations&amp;tab=massive_agents"]["text"] = __('Agents operations');
 	$sub["godmode/massive/massive_operations&amp;tab=massive_modules"]["text"] = __('Modules operations');
@@ -145,7 +148,7 @@ if (check_acl ($config['id_user'], 0, "AW") and $config['metaconsole'] == 0) {
 	$menu_godmode["gservers"]["text"] = __('Manage servers');
 	$menu_godmode["gservers"]["sec2"] = "godmode/servers/modificar_server";
 	$menu_godmode["gservers"]["id"] = "god-servers";
-
+	
 	$sub = array ();
 	$sub["godmode/servers/manage_recontask"]["text"] = __('Manage recontask');
 	
@@ -170,18 +173,19 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["glog"]["text"] = __('System audit log');
 	$menu_godmode["glog"]["sec2"] = "godmode/admin_access_logs";
 	$menu_godmode["glog"]["id"] = "god-audit";
-		
+	
 	// Setup
 	$menu_godmode["gsetup"]["text"] = __('Setup');
 	$menu_godmode["gsetup"]["sec2"] = "godmode/setup/setup";
 	$menu_godmode["gsetup"]["id"] = "god-setup";
-
+	
 	$sub = array ();
 
 	$sub["godmode/setup/setup_auth"]["text"] = __('Authentication');
 	$sub["godmode/setup/performance"]["text"] = __('Performance');
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
+	
 	if ($config['activate_gis'])
 		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
 	$sub["godmode/setup/links"]["text"] = __('Links');
@@ -191,7 +195,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	enterprise_hook ('enterprise_acl_submenu');
 	enterprise_hook ('skins_submenu');
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
-
+	
 	$menu_godmode["gsetup"]["sub"] = $sub;
 }
 
@@ -207,7 +211,7 @@ if (check_acl ($config['id_user'], 0, "DM") and $config['metaconsole'] == 0) {
 	$sub["godmode/db/db_audit"]["text"] = __('Database audit');
 	$sub["godmode/db/db_event"]["text"] = __('Database event');
 	$sub["godmode/db/db_sanity"]["text"] = __('Database sanity');
-
+	
 	$menu_godmode["gdbman"]["sub"] = $sub;
 }
 
@@ -216,7 +220,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 		$menu_godmode["gextensions"]["text"] = __('Extensions');
 		$menu_godmode["gextensions"]["sec2"] = "godmode/extensions";
 		$menu_godmode["gextensions"]["id"] = "god-extensions";
-	
+		
 		$sub = array ();
 		foreach ($config['extensions'] as $extension) {
 			//If no godmode_menu is a operation extension
@@ -232,23 +236,23 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			}
 			
 			//Check if was displayed inside other menu
-			if ($extension['godmode_menu']["fatherId"] == '') {	
+			if ($extension['godmode_menu']["fatherId"] == '') {
 				$sub[$extmenu["sec2"]]["text"] = $extmenu["name"];
 				$sub[$extmenu["sec2"]]["refr"] = 0;
-			} else {
-						
+			}
+			else {
 				if (array_key_exists('fatherId',$extmenu)) {
 					// Check that extension father ID exists previously on the menu (only if metaconsole is activated)
 					if (strlen($extmenu['fatherId']) > 0 and (($config['metaconsole'] == 0) or (array_key_exists($extension_menu['fatherId'], $menu_godmode)))) {
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
-						if ($extmenu["name"] != 'DB interface'){
-							if (!empty($config['refr'])){
+						if ($extmenu["name"] != 'DB interface') {
+							if (!empty($config['refr'])) {
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
 							}
-							else{
+							else {
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 60;
 							}
-						}	
+						}
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
@@ -259,10 +263,11 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 				}
 			}
 		}
-	
+		
 		$menu_godmode["gextensions"]["sub"] = $sub;
 	}
 }
+
 
 if(!$config['pure']) {
 	menu_print_menu ($menu_godmode);

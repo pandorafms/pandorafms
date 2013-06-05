@@ -1,3 +1,17 @@
+2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/agentes/agent_manager.php, godmode/menu.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/alert_actions.php, godmode/groups/group_list.php,
+	godmode/groups/configure_group.php, include/functions.php,
+	include/functions_profile.php: fixed the ACLs.
+	
+	Fixes: #2256
+	
+	MERGED FROM THE TRUNK
+
 2013-06-04 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/massive/massive_delete_alerts.php: fixed the delete

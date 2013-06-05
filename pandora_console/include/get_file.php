@@ -28,7 +28,9 @@ check_login ();
 $styleError = "background:url(\"../images/err.png\") no-repeat scroll 0 0 transparent; padding:4px 1px 6px 30px; color:#CC0000;";
 
 $file = get_parameter('file', null);
+
 $file = base64_decode($file);
+
 $chunks = explode('/', $file); 
 $nameFile = end($chunks);
 
@@ -37,13 +39,17 @@ $hash = get_parameter('hash', null);
 $testHash = md5($file . $config['dbpass']);
 
 if ($hash != $testHash) {
-	echo "<h3 style='" . $styleError . "'>".__('Security error. Please contact the administrator.')."</h3>";
+	echo "<h3 style='" . $styleError . "'>" .
+		__('Security error. Please contact the administrator.') .
+		"</h3>";
 }
 else if (!empty($file) && !empty($hash)) {
 	$file = $_SERVER['DOCUMENT_ROOT'] . $file;
-
-	if (!file_exists($file)){
-		echo "<h3 style='" . $styleError . "'>".__("File is missing in disk storage. Please contact the administrator.")."</h3>";
+	
+	if (!file_exists($file)) {
+		echo "<h3 style='" . $styleError . "'>" .
+			__("File is missing in disk storage. Please contact the administrator.") .
+			"</h3>";
 	}
 	else {
 		header('Content-type: aplication/octet-stream;');

@@ -1,5 +1,9 @@
 2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/get_file.php: cleaned source code style.
+
+2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/snmpconsole/snmp_view.php: fixed the pagination.
 	
 	Fixes: #2255

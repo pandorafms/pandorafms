@@ -173,15 +173,15 @@ html_print_input_text ("search", $search, '', 12);
 echo '</td><td style="white-space:nowrap;">';
 
 $fields = array ();
-$fields[0] = __('Normal'); 
-$fields[2] = __('Warning');
-$fields[1] = __('Critical');
-$fields[3] = __('Unknown');
-$fields[4] = __('Not normal'); 
-$fields[5] = __('Not init');
+$fields[AGENT_STATUS_NORMAL] = __('Normal'); 
+$fields[AGENT_STATUS_WARNING] = __('Warning');
+$fields[AGENT_STATUS_CRITICAL] = __('Critical');
+$fields[AGENT_STATUS_UNKNOW] = __('Unknown');
+$fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 echo __('Status') . '&nbsp;';
-html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), -1, false, false, true, '', false, 'width: 90px;');
+html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -516,15 +516,6 @@ $(document).ready (function () {
 		},
 		function () {
 			$(".actions", this).css ("visibility", "hidden");
-	});
-	
-	$("#group_id").click (
-	function () {
-		$(this).css ("width", "auto"); 
-	});
-	
-	$("#group_id").blur (function () {
-		$(this).css ("width", "180px"); 
 	});
 });
 </script>

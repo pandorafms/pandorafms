@@ -144,7 +144,14 @@ define('AGENT_MODULE_STATUS_WARNING', 2);
 define('AGENT_MODULE_STATUS_UNKNOW', 3);
 define('AGENT_MODULE_STATUS_NOT_INIT', 5);
 
-
+/* Agent module status */
+define('AGENT_STATUS_ALL', -1);
+define('AGENT_STATUS_CRITICAL', 1);
+define('AGENT_STATUS_NORMAL', 0);
+define('AGENT_STATUS_NOT_INIT', 5);
+define('AGENT_STATUS_NOT_NORMAL', 6);
+define('AGENT_STATUS_UNKNOW', 3);
+define('AGENT_STATUS_WARNING', 2);
 
 /* Visual maps contants */
 //The items kind

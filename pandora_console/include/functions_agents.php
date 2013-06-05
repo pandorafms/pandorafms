@@ -268,27 +268,27 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	$status_sql = ' 1 = 1';
 	if (isset($filter['status'])) {
 		switch ($filter['status']) {
-			case AGENT_MODULE_STATUS_NORMAL:
+			case AGENT_STATUS_NORMAL:
 				$status_sql =
 					"normal_count = total_count";
 				break;
-			case AGENT_MODULE_STATUS_WARNING:
+			case AGENT_STATUS_WARNING:
 				$status_sql =
 					"critical_count = 0 AND warning_count > 0";
 				break;
-			case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			case AGENT_STATUS_CRITICAL:
 				$status_sql =
 					"critical_count > 0";
 				break;
-			case AGENT_MODULE_STATUS_UNKNOW:
+			case AGENT_STATUS_UNKNOW:
 				$status_sql =
 					"critical_count = 0 AND warning_count = 0
 						AND unknown_count > 0";
 				break;
-			case AGENT_MODULE_STATUS_NO_DATA:
+			case AGENT_STATUS_NOT_NORMAL:
 				$status_sql = "normal_count <> total_count";
 				break;
-			case AGENT_MODULE_STATUS_NOT_INIT:
+			case AGENT_STATUS_NOT_INIT:
 				$status_sql = "notinit_count = total_count";
 				break;
 		}
@@ -515,6 +515,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	$repeated_modules = array();
 	foreach ($destiny_id_agents as $id_destiny_agent) {
 		foreach ($target_modules as $id_agent_module) {
+			
 			// Check the module name exists in target
 			$module = modules_get_agentmodule ($id_agent_module);
 			if ($module === false)
@@ -530,6 +531,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 				$repeated_modules[] = $modules_repeated;
 			}
 			else {
+				
 				$result = modules_copy_agent_module_to_agent ($id_agent_module,
 					$id_destiny_agent);
 				
@@ -1568,7 +1570,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 	
 	//Convert single values to an array
 	if (! is_array ($id_agents))
-	$id_agents = (array) $id_agents;
+		$id_agents = (array) $id_agents;
 	
 	foreach ($id_agents as $id_agent) {
 		$id_agent = (int) $id_agent; //Cast as integer

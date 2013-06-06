@@ -1,5 +1,17 @@
 2013-06-06  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_config.php: Replaced netflow and
+	visual console flags updation in setup by a new customize
+	sections values
+
+	* include/config_process.php: Added specific metaconsole
+	autorefresh whitelisted sections
+
+	* extensions/snmp_explorer.php: Change wrong 
+	snmp branch in interfaces explorer
+
+2013-06-06  Sergio Martin <sergio.martin@artica.es>
+
 	* include/ajax/events.php: Fix the info of the
 	user that validate a event in the event info that
 	is showed when click on a event on interactive graphs

@@ -126,8 +126,11 @@ sub data_consumer ($$) {
 
 	# Is it a recon script?
 	if (defined ($task->{'id_recon_script'}) && ($task->{'id_recon_script'} != 0)) {
+		logger($pa_config, 'Executing recon script ' . safe_output($task->{'name'}) . '.', 10);
 		exec_recon_script ($pa_config, $dbh, $task);
 		return;
+	} else {
+		logger($pa_config, 'Starting recon task for net ' . $task->{'subnet'} . '.', 10);
 	}
 
 	# Call nmap
@@ -176,6 +179,20 @@ sub data_consumer ($$) {
 			next if ($agent->{'modo'} != 1);
 		}
 
+		# Get the parent host
+		my $parent_id = 0;
+		if ($task->{'parent_detection'} == 1) {
+			$parent_id = get_host_parent ($pa_config, $addr, $dbh, $task->{'id_group'}, $task->{'parent_recursion'}, $task->{'resolve_names'}, $task->{'os_detect'});
+		}
+
+		# If the agent already exists update parent and continue
+		if ($agent_id > 0) {
+			if ($parent_id > 0) {
+				db_do ($dbh, 'UPDATE tagente SET id_parent = ? WHERE id_agente = ?', $parent_id, $agent_id );
+			}
+			next;
+		}
+
 		# Filter by TCP port
 		if ((defined ($task->{'recon_ports'})) && ($task->{'recon_ports'} ne "")) {
 			next unless (tcp_scan ($pa_config, $addr, $task->{'recon_ports'}) > 0);
@@ -187,36 +204,7 @@ sub data_consumer ($$) {
 			$id_os = guess_os ($pa_config, $addr);
 			next if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os);
 		}
-
-		# Get the parent host
-		my $parent_id = 0;
-		if ($task->{'parent_detection'} == 1) {
-			$parent_id = get_host_parent ($pa_config, $addr, $dbh, $task->{'id_group'}, $task->{'parent_recursion'}, $task->{'resolve_names'}, $task->{'os_detect'});
-		}
-
-		# Add the new address if it does not exist
-		my $addr_id = get_addr_id ($dbh, $addr);
-		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
-		if ($addr_id <= 0) {
-			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
-			next;
-		}
-
-		# Assign the new address to the agent
-		my $agent_addr_id = get_agent_addr_id ($dbh, $addr_id, $agent_id);
-		if ($agent_addr_id <= 0) {
-			db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-		                  VALUES (?, ?)', $addr_id, $agent_id);
-		}
-
-		# If the agent already exists update parent and continue
-		if ($agent_id > 0) {
-			if ($parent_id > 0) {
-				db_do ($dbh, 'UPDATE tagente SET id_parent = ? WHERE id_agente = ?', $parent_id, $agent_id );
-			}
-			next;
-		}
-
+		
         # GIS Code -----------------------------
 
 		# If GIS is activated try to geolocate the ip address of the agent 
@@ -280,6 +268,21 @@ sub data_consumer ($$) {
 			next;
 		}
 
+		# Add the new address if it does not exist
+		my $addr_id = get_addr_id ($dbh, $addr);
+		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
+		if ($addr_id <= 0) {
+			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
+			next;
+		}
+
+		# Assign the new address to the agent
+		my $agent_addr_id = get_agent_addr_id ($dbh, $addr_id, $agent_id);
+		if ($agent_addr_id <= 0) {
+			db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+		                  VALUES (?, ?)', $addr_id, $agent_id);
+		}
+
 		# Create network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
 
@@ -299,6 +302,8 @@ sub data_consumer ($$) {
 		$text .= "\n\nThis is the list of IP addresses found: \n\n$added_hosts";
 		pandora_create_incident ($pa_config, $dbh, "[RECON] New hosts detected", $text, 0, 0, 'Pandora FMS Recon Server', $task->{'id_group'});
 	}
+
+	logger($pa_config, "Finished recon task for net " . $task->{'subnet'} . ".", 10);
 
 	# Mark recon task as done
 	update_recon_task ($dbh, $task_id, -1);
@@ -479,15 +484,17 @@ sub exec_recon_script ($$$) {
 	my $script = get_db_single_row ($dbh, 'SELECT * FROM trecon_script WHERE id_recon_script = ?', $task->{'id_recon_script'});
 	return -1 unless defined ($script);
 	
-	logger($pa_config, 'Executing recon script ' . safe_output($script->{'name'}), 10);
-	
 	my $command = safe_output($script->{'script'});
 	my $field1 = safe_output($task->{'field1'}); 
 	my $field2 = safe_output($task->{'field2'});
 	my $field3 = safe_output($task->{'field3'}); 
 	my $field4 = safe_output($task->{'field4'});
 	
-	`$command $task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $field1 $field2 $field3 $field4`;
+	if (-x $command) {
+		`$command $task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $field1 $field2 $field3 $field4`;
+	} else {
+		logger ($pa_config, "Cannot execute recon task command $command.");
+	}
 	
 	# Notify this recon task is ended
 	update_recon_task ($dbh, $task->{'id_rt'}, -1);

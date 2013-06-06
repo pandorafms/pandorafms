@@ -1,3 +1,11 @@
+2013-06-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/DataServer.pm: Removed redundant log messages.
+
+	* lib/PandoraFMS/ReconServer.pm: Create agents before trying to assign
+	  addresses. Small fixes.
+
 2013-05-29  Dario Rodriguez <dario@artica.es>
 
 	* util/plugin/wmi_remote.pl,

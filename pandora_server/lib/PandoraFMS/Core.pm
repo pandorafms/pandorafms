@@ -1460,7 +1460,6 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 		save_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $timestamp,$position_description) ;
 	}
 
-	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
 	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
 	return $agent_id;
 }

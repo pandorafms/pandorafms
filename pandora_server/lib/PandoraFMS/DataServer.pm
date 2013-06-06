@@ -270,10 +270,9 @@ sub process_xml_data ($$$$$) {
 	}
 	else {
 		if ($timezone_offset != 0) {
-		# Modify the timestamp with the timezone_offset
-		logger($pa_config, "Unmodified timestamp = $timestamp", 5);
+			# Modify the timestamp with the timezone_offset
+			logger($pa_config, "Unmodified timestamp = $timestamp", 5);
 			$timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/;
-			logger($pa_config, "Unmodified timestamp = $1/$2/$3 $4:$5:$6", 5);
 			my $utimestamp = ($timezone_offset * 3600); 
 			eval {
 				$utimestamp += timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900);
@@ -282,8 +281,8 @@ sub process_xml_data ($$$$$) {
 				logger($pa_config,"WARNING: Invalid timestamp ($@) using server timestamp.", 4);
 				$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
 			}	
-		logger($pa_config, "Seconds timestamp = $timestamp modified timestamp in seconds $utimestamp with timezone_offset = $timezone_offset", 5);
-	$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+			logger($pa_config, "Seconds timestamp = $timestamp modified timestamp in seconds $utimestamp with timezone_offset = $timezone_offset", 5);
+			$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 		}
 		logger($pa_config, "Modified timestamp = $timestamp with timezone_offset = $timezone_offset", 5);
 	}

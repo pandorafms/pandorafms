@@ -55,8 +55,16 @@ $extra_title = __('Network server module');
 $data = array ();
 $data[0] = __('Target IP');
 $data[1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60, true);
-$data[2] = __('Port');
-$data[3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 20, true, $disabledBecauseInPolicy);
+
+// In ICMP modules, port is not configurable
+if ($id_module_type >= 6 && $id_module_type <= 7) {
+	$data[2] = '';
+	$data[3] = '';
+}
+else {
+	$data[2] = __('Port');
+	$data[3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 20, true, $disabledBecauseInPolicy);
+}
 
 push_table_simple ($data, 'target_ip');
 
@@ -118,23 +126,18 @@ push_table_simple ($data, 'tcp_send');
 
 $data[0] = __('TCP receive');
 $data[1] = html_print_textarea ('tcp_rcv', 2, 65, $tcp_rcv, $disabledTextBecauseInPolicy, true);
-$table_advanced->colspan['tcp_receive'][1] = 3;
+$table_simple->colspan['tcp_receive'][1] = 3;
 
 push_table_simple ($data, 'tcp_receive');
 
-if ($id_module_type >= 15 && $id_module_type <= 18) {
-	/* SNMP */
-	$table_advanced->rowstyle['tcp_send'] = 'display: none';
-	$table_advanced->rowstyle['tcp_receive'] = 'display: none';
+if ($id_module_type < 8 || $id_module_type > 11) {
+	/* NOT TCP */
+	$table_simple->rowstyle['tcp_send'] = 'display: none;';
+	$table_simple->rowstyle['tcp_receive'] = 'display: none;';
 }
-elseif ($id_module_type >= 8 && $id_module_type <= 11) {
-	/* TCP or ICMP */
-	$table_simple->rowstyle['snmp_1'] = 'display: none';
-	$table_simple->rowstyle['snmp_2'] = 'display: none';
-}
-elseif (empty ($update_module_id)) {
-	$table_advanced->rowstyle['tcp_send'] = 'display: none';
-	$table_advanced->rowstyle['tcp_receive'] = 'display: none';
+
+if ($id_module_type < 15 || $id_module_type > 18) {
+	/* NOT SNMP */
 	$table_simple->rowstyle['snmp_1'] = 'display: none';
 	$table_simple->rowstyle['snmp_2'] = 'display: none';
 }

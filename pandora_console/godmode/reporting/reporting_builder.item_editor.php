@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 global $config;
 
-require_once ('include/functions_custom_graphs.php');
+require_once ($config['homedir'] . '/include/functions_custom_graphs.php');
 
 // Login check
 check_login ();

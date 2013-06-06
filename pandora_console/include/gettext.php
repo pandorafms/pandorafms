@@ -128,9 +128,9 @@ class gettext_reader {
     $magic = $this->readint();
     
     if ($enabled64Bits) {
-	    if ($magic == ($MAGIC1 & 0xFFFFFFFF)) {
+	    if ($magic == ($MAGIC1 & 0xFFFFFFFF) || $magic == $MAGIC1) {
 	        $this->BYTEORDER = 0;
-	    } elseif ($magic == ($MAGIC2 & 0xFFFFFFFF)) {
+	    } elseif ($magic == ($MAGIC2 & 0xFFFFFFFF) || $magic == $MAGIC2) {
 	      $this->BYTEORDER = 1;
 	    } else {
 	      $this->error = 1; // not MO file

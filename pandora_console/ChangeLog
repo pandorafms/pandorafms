@@ -1,3 +1,30 @@
+2013-06-06  Sergio Martin <sergio.martin@artica.es>
+
+	* include/ajax/events.php: Fix the info of the
+	user that validate a event in the event info that
+	is showed when click on a event on interactive graphs
+
+	* include/gettext.php: Add a hack to fix the languages change
+	on certain machines, like TSOL one.
+
+	* operation/events/events.build_table.php: Add a "access node"
+	control to column server name
+
+	* operation/agentes/status_monitor.php
+	* general/header.php: Add disable possibility in autorefresh combo
+
+	* godmode/agentes/module_manager_editor_network.php: Fix show/hide fields
+	in the module editor. TCP and SNMP fields were moved from advanced to main
+	options and javascript was broken
+
+	* godmode/events/event_edit_filter.php
+	godmode/events/custom_events.php
+	godmode/events/event_filter.php: Fix some ACLs problems in events
+	filter editor
+
+	* godmode/reporting/reporting_builder.item_editor.php: Add an absolute
+	path in a library inclusion to fix metaconsole bug
+
 2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/constants.php, include/functions_agents.php,

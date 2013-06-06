@@ -222,6 +222,15 @@ $config['autorefresh_white_list'] = array(
 	'operation/agentes/networkmap',
 	'enterprise/operation/services/services',
 	'operation/events/events');
+	
+// Specific metaconsole autorefresh white list sections
+if (defined('METACONSOLE')) {
+	$config['autorefresh_white_list'][] = 'monitoring/tactical';
+	$config['autorefresh_white_list'][] = 'monitoring/group_view';
+	$config['autorefresh_white_list'][] = 'operation/tree';
+	$config['autorefresh_white_list'][] = 'screens/screens';
+}
+
 //======================================================================
 
 

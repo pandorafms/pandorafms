@@ -973,16 +973,20 @@ function config_process_config () {
 	}
 	
 	if(defined('METACONSOLE')) {
-		if (!isset ($config['show_vc'])) {
-			config_update_value('show_vc', 1);
+		// Customizable sections (Metaconsole)
+		enterprise_include_once ('include/functions_enterprise.php');
+		$customizable_sections = enterprise_hook('enterprise_get_customizable_sections');
+
+		if($customizable_sections != ENTERPRISE_NOT_HOOK) {
+			foreach($customizable_sections as $k => $v) {
+				if (!isset ($config[$k])) {
+					config_update_value($k, $v['default']);
+				}
+			}
 		}
 		
 		if (!isset ($config['meta_num_elements'])) {
 			config_update_value('meta_num_elements', 100);
-		}
-		
-		if (!isset ($config['enable_metaconsole_netflow'])) {
-			config_update_value('enable_metaconsole_netflow', 0);
 		}
 	}
 	

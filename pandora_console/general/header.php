@@ -113,6 +113,7 @@ config_check();
 					
 					$ignored_params['refr'] = '';
 					$values = array (
+						'0' => __('Disable'),
 						'5' => __('5 seconds'),
 						'10' => __('10 seconds'),
 						'15' => __('15 seconds'),

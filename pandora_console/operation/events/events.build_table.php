@@ -235,7 +235,12 @@ foreach ($result as $event) {
 	
 	if (in_array('server_name',$show_fields)) {
 		if ($meta) {
-			$data[$i] = "<a href='" . $event["server_url"] . "/index.php?sec=estado&sec2=operation/agentes/group_view" . $event['server_url_hash'] . "'>" . $event["server_name"] . "</a>";
+			if (can_user_access_node ()) {
+				$data[$i] = "<a href='" . $event["server_url"] . "/index.php?sec=estado&sec2=operation/agentes/group_view" . $event['server_url_hash'] . "'>" . $event["server_name"] . "</a>";
+			}
+			else {
+				$data[$i] = $event["server_name"];
+			}
 		}
 		else {
 			$data[$i] = db_get_value('name','tserver');

@@ -1,3 +1,8 @@
+2013-06-06  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/snmp_explorer.ph: fixed wrong snmp branch on
+	snmp interfaces explorer. Merged from trunk
+
 2013-06-05 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/constants.php, include/functions_agents.php,

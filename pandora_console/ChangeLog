@@ -1,3 +1,8 @@
+2013-06-07 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.php: fixed the link of the
+	image in the first page into the PDF reports.
+
 2013-06-07  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/servers/plugin.php: Fixed disabled textarea

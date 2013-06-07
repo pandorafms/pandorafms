@@ -244,7 +244,8 @@ if (($create != "") OR ($view != "")) {
 
 		$datam = array ();
 		$datam[0] = __('Help')."<span style='font-weight: normal'> ($macro_name)</span><br><br><br>";
-		$datam[1] = html_print_textarea ($macro_help_name, 6, 100, $macro_help_value, 'class="command_advanced_conf" style="width: 97%;"' . $locked ? ' disabled' : '', true);
+		$tadisabled = $locked === true ? ' disabled' : '';
+		$datam[1] = html_print_textarea ($macro_help_name, 6, 100, $macro_help_value, 'class="command_advanced_conf" style="width: 97%;"' . $tadisabled, true);
 		
 		if($locked) {
 			$datam[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));

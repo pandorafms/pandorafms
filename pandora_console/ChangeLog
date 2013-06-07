@@ -1,3 +1,8 @@
+2013-06-07  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/servers/plugin.php: Fixed disabled textarea
+	of macros help in plugin form
+
 2013-06-07 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager.php,

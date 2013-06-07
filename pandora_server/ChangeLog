@@ -1,3 +1,8 @@
+2013-06-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server_installer: Merged from 4.0 branch. Remove PERL libs
+	  when uninstalling.
+
 2013-06-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm,

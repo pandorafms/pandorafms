@@ -426,6 +426,9 @@ uninstall_freebsd () {
 	PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
 	TMP_CRONTAB=/tmp/crontab.tmp
 
+	echo "Removing PERL libs"
+	rm -rf /usr/lib/perl5/PandoraFMS/
+
 	echo "Removing Pandora Servers"
 	rm -Rf $PANDORA_SPOOL/data_in/
 
@@ -458,6 +461,10 @@ uninstall () {
 			echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
 		fi
 	fi
+
+	echo "Removing PERL libs"
+	rm -rf /usr/lib/perl5/PandoraFMS/
+
 	echo "Removing Pandora Servers"
 	if [ -d $PANDORA_SPOOL/data_out ]; then
 		rm -Rf $PANDORA_SPOOL/data_in

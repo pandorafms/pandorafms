@@ -399,7 +399,7 @@ if ($id_agente) {
 			$onheader = $onheader + array($id => $extension_tab);
 		}
 	}
-
+	
 	$help_header = '';
 	// This add information to the header 
 	switch ($tab) {
@@ -1177,7 +1177,7 @@ if ($delete_module) { // DELETE agent module !
 	else {
 		$result_components = enterprise_hook('modules_get_synthetic_components', array($id_borrar_modulo));
 		$count_components = 1;
-		if (!empty($result_components)){
+		if (!empty($result_components)) {
 			// Get number of components pending to delete to know when it's needed to update orders 
 			$num_components = count($result_components);
 			$last_target_module = 0;
@@ -1248,7 +1248,7 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 
 // MODULE ENABLE/DISABLE
 // =====================
-if($enable_module) {
+if ($enable_module) {
 	$result = modules_change_disabled($enable_module, 0);
 	
 	if ($result === NOERR) {
@@ -1262,7 +1262,7 @@ if($enable_module) {
 		__('Successfully enabled'), __('Could not be enabled'));
 }
 
-if($disable_module) {
+if ($disable_module) {
 	$result = modules_change_disabled($disable_module, 1);
 	
 	if ($result === NOERR) {
@@ -1286,8 +1286,10 @@ if ($updateGIS) {
 	$lastAltitude = get_parameter("altitude");
 	$idAgente = get_parameter("id_agente");
 	
-	$previusAgentGISData = db_get_row_sql("SELECT *
-		FROM tgis_data_status WHERE tagente_id_agente = " . $idAgente);
+	$previusAgentGISData = db_get_row_sql("
+		SELECT *
+		FROM tgis_data_status
+		WHERE tagente_id_agente = " . $idAgente);
 	
 	db_process_sql_update('tagente', array('update_gis_data' => $updateGisData),
 		array('id_agente' => $idAgente));

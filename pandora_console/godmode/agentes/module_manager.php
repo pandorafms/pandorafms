@@ -169,60 +169,65 @@ if ($multiple_delete) {
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 				AND tagente_modulo.id_agente_modulo=' . (int)$id_agent_module_del);
 		if (db_process_sql("UPDATE tagente_modulo
-			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false) {
+			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1
+			WHERE id_agente_modulo = " . $id_agent_module_del, "affected_rows", '', true, $status, false) === false) {
 			$error++;
 		}
 		else {
 			// Update module status count
 			if ($module !== false) {
-				if ($module['estado'] == 0) {
+				if ($module['estado'] == AGENT_MODULE_STATUS_NORMAL) {
 					db_process_sql ('UPDATE tagente
-						SET normal_count=normal_count-1
+						SET normal_count = normal_count - 1
 						WHERE id_agente=' . $module['id_agente']);
 				}
-				else if ($module['estado'] == 1) {
+				else if ($module['estado'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
 					db_process_sql ('UPDATE tagente
-						SET critical_count=critical_count-1
+						SET critical_count = critical_count - 1
 						WHERE id_agente=' . $module['id_agente']);
 				}
-				else if ($module['estado'] == 2) {
+				else if ($module['estado'] == AGENT_MODULE_STATUS_WARNING) {
 					db_process_sql ('UPDATE tagente
-						SET warning_count=warning_count-1
+						SET warning_count = warning_count - 1
 						WHERE id_agente=' . $module['id_agente']);
 				}
-				else if ($module['estado'] == 3) {
+				else if ($module['estado'] == AGENT_MODULE_STATUS_UNKNOW) {
 					db_process_sql ('UPDATE tagente
-						SET unknown_count=unknown_count-1
-						WHERE id_agente=' . $module['id_agente']);
+						SET unknown_count = unknown_count - 1
+						WHERE id_agente =' . $module['id_agente']);
 				}
-				else if ($module['estado'] == 4) {
+				else if ($module['estado'] == AGENT_MODULE_STATUS_NO_DATA) {
 					db_process_sql ('UPDATE tagente
-						SET notinit_count=notinit_count-1
-						WHERE id_agente=' . $module['id_agente']);
+						SET notinit_count = notinit_count - 1
+						WHERE id_agente = ' . $module['id_agente']);
 				}
 				
 				db_process_sql ('UPDATE tagente
-					SET total_count=total_count-1
-					WHERE id_agente=' . $module['id_agente']);
+					SET total_count = total_count - 1
+					WHERE id_agente = ' . $module['id_agente']);
 			}
 		}
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
-				$result = db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
+				$result = db_process_sql_delete('tagente_estado',
+					array('id_agente_modulo' => $id_agent_module_del)); 
 				if ($result === false)
 					$error++;
 				
-				$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
+				$result = db_process_sql_delete('tagente_datos_inc',
+					array('id_agente_modulo' => $id_agent_module_del));
 				if ($result === false)
 					$error++;
 				break;
 			case "oracle":
-				$result = db_process_delete_temp('tagente_estado', 'id_agente_modulo', $id_agent_module_del);
+				$result = db_process_delete_temp('tagente_estado',
+					'id_agente_modulo', $id_agent_module_del);
 				if ($result === false)
 					$error++;
-				$result = db_process_delete_temp('tagente_datos_inc', 'id_agente_modulo', $id_agent_module_del);		
+				$result = db_process_delete_temp('tagente_datos_inc',
+					'id_agente_modulo', $id_agent_module_del);		
 				if ($result === false)
 					$error++;
 				break;
@@ -232,7 +237,7 @@ if ($multiple_delete) {
 		// If result is empty then module doesn't have this type of submodules
 		$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_agent_module_del));
 		$result_ops_synthetic = json_decode($ops_json);
-		if (!empty($result_ops_synthetic)){
+		if (!empty($result_ops_synthetic)) {
 			$result = enterprise_hook('modules_delete_synthetic_operations', array($id_agent_module_del));
 			if ($result === false)
 				$error++;
@@ -240,11 +245,11 @@ if ($multiple_delete) {
 		else {
 			$result_components = enterprise_hook('modules_get_synthetic_components', array($id_agent_module_del));
 			$count_components = 1;
-			if (!empty($result_components)){
+			if (!empty($result_components)) {
 				// Get number of components pending to delete to know when it's needed to update orders 
 				$num_components = count($result_components);
 				$last_target_module = 0;
-				foreach ($result_components as $id_target_module){
+				foreach ($result_components as $id_target_module) {
 					// Detects change of component or last component to update orders
 					if (($count_components == $num_components) or ($last_target_module != $id_target_module))
 						$update_orders = true;
@@ -398,7 +403,7 @@ if (!empty($order)) {
 }
 $first = true;
 foreach ($order as $ord) {
-	if($first) {
+	if ($first) {
 		$first = false;
 	}
 	else {
@@ -412,11 +417,27 @@ foreach ($order as $ord) {
 $limit = (int) $config["block_size"];
 $offset = (int) get_parameter ('offset');
 
-$params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo',
-	'descripcion', 'nombre', 'max', 'min', 'module_interval',
-	'id_modulo', 'id_module_group', 'disabled','max_warning',
-	'min_warning', 'str_warning', 'max_critical', 'min_critical',
-	'str_critical', 'quiet', 'critical_inverse', 'warning_inverse'));
+$params = implode(',',
+	array(
+		'id_agente_modulo',
+		'id_tipo_modulo',
+		'descripcion',
+		'nombre',
+		'max',
+		'min',
+		'module_interval',
+		'id_modulo',
+		'id_module_group',
+		'disabled',
+		'max_warning',
+		'min_warning',
+		'str_warning',
+		'max_critical',
+		'min_critical',
+		'str_critical',
+		'quiet',
+		'critical_inverse',
+		'warning_inverse'));
 
 $where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);
 
@@ -466,7 +487,15 @@ if ($modules === false) {
 }
 
 // Prepare pagination
-ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente,'sort_field' => $sortField, 'sort' => $sort, 'id_agent_module' => false, 'edit_module' => false, 'search_string' => urlencode($search_string)), true, false));
+$url = "?" .
+	"sec=gagente&" .
+	"tab=module&" .
+	"sec2=godmode/agentes/configurar_agente&" .
+	"id_agente=" . $id_agente . "&" .
+	"sort_field=" . $sortField ."&" .
+	"&sort=" . $sort . "&" .
+	"search_string=" . urlencode($search_string);
+ui_pagination($total_modules, $url);
 
 $table->width = '98%';
 $table->head = array ();
@@ -566,7 +595,7 @@ foreach ($modules as $module) {
 		$data[0] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}
 	
-	if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 		$data[0] .= '</a>';
 	}
 	
@@ -622,12 +651,13 @@ foreach ($modules as $module) {
 	
 	// This module is initialized ? (has real data)
 	if ($status == STATUS_MODULE_NO_DATA)
-		$data[2] .= html_print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
+		$data[2] .= html_print_image('images/error.png', true,
+			array ('title' => __('Non initialized module')));
 	
 	// Module type (by data type)
 	$data[3] = '';
 	if ($type) {
-		$data[3] = ui_print_moduletype_icon ($type, true);
+		$data[3] = ui_print_moduletype_icon($type, true);
 	}
 	
 	// Module interval
@@ -643,20 +673,25 @@ foreach ($modules as $module) {
 	$data[6] = ui_print_status_image($status, $title, true);
 	
 	// MAX / MIN values
-	$data[7] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]); 
+	$data[7] = ui_print_module_warn_value ($module["max_warning"],
+		$module["min_warning"], $module["str_warning"],
+		$module["max_critical"], $module["min_critical"],
+		$module["str_critical"]); 
 	
 	if ($module['disabled']) {
 		$data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&enable_module=".$module['id_agente_modulo']."'>".
-			html_print_image('images/lightbulb_off.png', true, array('alt' => __('Enable module'), 'title' => __('Enable module'))) ."</a>";
+			html_print_image('images/lightbulb_off.png', true,
+			array('alt' => __('Enable module'), 'title' => __('Enable module'))) ."</a>";
 	}
 	else {
 		$data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&disable_module=".$module['id_agente_modulo']."'>".
-			html_print_image('images/lightbulb.png', true, array('alt' => __('Disable module'), 'title' => __('Disable module'))) ."</a>";
+			html_print_image('images/lightbulb.png', true,
+			array('alt' => __('Disable module'), 'title' => __('Disable module'))) ."</a>";
 	}
 	
 	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 		$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			onClick="if (!confirm(\' ' . __('Are you sure?') . '\')) return false;">';
 		$data[8] .= html_print_image ('images/copy.png', true,
 			array ('title' => __('Duplicate')));
 		$data[8] .= '</a> ';
@@ -666,13 +701,13 @@ foreach ($modules as $module) {
 			if ($numericModules[$type] === true) {
 				$data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 				$data[8] .= html_print_image ('images/chart_curve.png', true,
-					array ('title' => __('Normalize')));
+					array('title' => __('Normalize')));
 				$data[8] .= '</a>';
 			}
 		}
 		else {
 			$data[8] .= "&nbsp;" . html_print_image ('images/chart_curve.disabled.png', true,
-				array ('title' => __('Normalize (Disabled)')));
+				array('title' => __('Normalize (Disabled)')));
 		}
 		
 		//create network component action
@@ -705,14 +740,13 @@ foreach ($modules as $module) {
 
 if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 	echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
-		onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
-
+		onsubmit="if (! confirm (\'' . __('Are you sure?') . '\')) return false">';
 }
 
 html_print_table ($table);
 
 if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 	html_print_input_hidden ('multiple_delete', 1);
 	html_print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub delete"');
 	echo '</div>';

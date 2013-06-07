@@ -231,10 +231,9 @@ sub get_agent_from_addr ($$) {
 sub get_agent_from_name ($$) {
 	my ($dbh, $name) = @_;
 	
-	return 0 if (! defined ($name) || $name eq '');
+	return undef if (! defined ($name) || $name eq '');
 	
-	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', $name);
-	return $agent;
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', $name);
 }
 
 ##########################################################################
@@ -3031,7 +3030,7 @@ sub get_module_status ($$$) {
 			
 		# Critical
 		if ($critical_min ne $critical_max) {
-			# [critical_min, critical_max]
+			# [critical_min, critical_max)
 			if ($module->{'critical_inverse'} == 0) {
 				return 1 if ($data >= $critical_min && $data < $critical_max);
 				return 1 if ($data >= $critical_min && $critical_max < $critical_min);
@@ -3039,12 +3038,13 @@ sub get_module_status ($$$) {
 			# (-inf, critical_min), (critical_max, +inf)
 			else {
 				return 1 if ($data < $critical_min || $data > $critical_max);
+				return 1 if ($data <= $critical_max && $critical_max < $critical_min);
 			}
 		}
 	
 		# Warning
 		if ($warning_min ne $warning_max) {
-			# [warning_min, warning_max]
+			# [warning_min, warning_max)
 			if ($module->{'warning_inverse'} == 0) {
 				return 2 if ($data >= $warning_min && $data < $warning_max);
 				return 2 if ($data >= $warning_min && $warning_max < $warning_min);
@@ -3052,6 +3052,7 @@ sub get_module_status ($$$) {
 			# (-inf, warning_min), (warning_max, +inf)
 			else {
 				return 2 if ($data < $warning_min || $data > $warning_max);
+				return 2 if ($data <= $warning_max && $warning_max < $warning_min);
 			}
 		}
 	}

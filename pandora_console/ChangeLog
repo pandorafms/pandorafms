@@ -1,3 +1,8 @@
+2013-06-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_graph.php: Changed some translations from 'Data'
+	  to 'Avg' when data is averaged.
+
 2013-06-07  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/menu.php: Fixed CSV and RSS links

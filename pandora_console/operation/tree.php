@@ -625,6 +625,8 @@ treeview_printTree($activeTab);
 
 enterprise_hook('close_meta_frame');
 
+ui_require_jquery_file ("ui-timepicker-addon");
+
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -813,13 +815,22 @@ enterprise_hook('close_meta_frame');
 	
 	// Show the modal window of an module
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+		var extra_parameters = '';
 		if (period == -1) {
 			period = $('#period').val();
+			var selection_mode = $('input[name=selection_mode]:checked').val();
+			var date_from = $('#text-date_from').val();
+			var time_from = $('#text-time_from').val();
+			var date_to = $('#text-date_to').val();
+			var time_to = $('#text-time_to').val();
+			
+			extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
 		}
+		
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
+			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period + extra_parameters,
 			dataType: "html",
 			success: function(data) {
 				$("#module_details_window").hide ()
@@ -833,15 +844,34 @@ enterprise_hook('close_meta_frame');
 							opacity: 0.5,
 							background: "black"
 						},
-						width: 620,
+						width: 650,
 						height: 500
 					})
 					.show ();
 					refresh_pagination_callback (module_id, id_agent, server_name);
+					datetime_picker_callback();
 					forced_title_callback();
 			}
 		});
 	}
+	
+	function datetime_picker_callback() {
+		$("#text-time_from, #text-time_to").timepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'});
+			
+		$("#text-date_from, #text-date_to").datepicker ();
+		
+		$.datepicker.regional["<?php echo $config['language']; ?>"];
+	}
+	datetime_picker_callback();
 	
 	function refresh_pagination_callback (module_id, id_agent, server_name) {
 		$(".pagination").click( function() {		

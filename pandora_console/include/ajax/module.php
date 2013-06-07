@@ -67,7 +67,13 @@ if ($get_module_detail) {
 		$conexion = mysql_connect ($server['dbhost'], $server['dbuser'], $server['dbpass']);
 		$select_db = mysql_select_db ($server['dbname'], $conexion);
 	}
-
+	
+	$selection_mode = get_parameter('selection_mode', 'fromnow');
+	$date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
+	$time_from = (string) get_parameter ('time_from', date ('h:iA'));
+	$date_to = (string) get_parameter ('date_to', date ('Y-m-j'));
+	$time_to = (string) get_parameter ('time_to', date ('h:iA'));
+	
 	$formtable->width = '98%';
 	$formtable->class = "databox";
 	$formtable->data = array ();
@@ -88,10 +94,26 @@ if ($get_module_detail) {
 		SECONDS_2YEARS =>__('2 years'),
 		SECONDS_3YEARS =>__('3 years'));
 	
-	$formtable->data[0][0] = __('Select period:');
+	$formtable->data[0][0] = html_print_radio_button_extended ("selection_mode", 'fromnow', '', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Choose a time from now");
 	$formtable->data[0][1] = html_print_select ($periods, 'period', $period, '', '', 0, true, false, false);
-	$formtable->data[0][2] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name . "\", 0, -1)'>". html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+	$formtable->data[0][2] = '';
+	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name . "\", 0, -1)'>". html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+	$formtable->rowspan[0][3] = 2;
+	$formtable->cellstyle[0][3] = 'vertical-align: middle;';
 	
+	$formtable->data[1][0] = html_print_radio_button_extended ("selection_mode", 'range','', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Specify time range");
+	$formtable->data[1][1] = __('Timestamp from:');
+
+	$formtable->data[1][2] = html_print_input_text ('date_from', $date_from, '', 10, 10, true);
+	$formtable->data[1][2] .= html_print_input_text ('time_from', $time_from, '', 9, 7, true);
+
+	$formtable->data[1][1] .= '<br />';
+	$formtable->data[1][1] .= __('Timestamp to:');
+
+	$formtable->data[1][2] .= '<br />';
+	$formtable->data[1][2] .= html_print_input_text ('date_to', $date_to, '', 10, 10, true);
+	$formtable->data[1][2] .= html_print_input_text ('time_to', $time_to, '', 9, 7, true);
+
 	html_print_table($formtable);
 	
 	$moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($module_id));
@@ -101,11 +123,19 @@ if ($get_module_detail) {
 	
 	$columns = array ();
 	
+	$datetime_from = strtotime ($date_from.' '.$time_from);
+	$datetime_to = strtotime ($date_to.' '.$time_to);
+	
 	if ($moduletype_name == "log4x") {
 		$table->width = "100%";
 		
-		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
-		
+		if ($selection_mode == "fromnow") {
+			$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+		}
+		else {
+			$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
+		}
+	
 		$columns = array(
 			"Timestamp" => array("utimestamp", "modules_format_timestamp", "align" => "center" ),
 			"Sev" => array("severity", "modules_format_data", "align" => "center", "width" => "70px"),
@@ -115,7 +145,13 @@ if ($get_module_detail) {
 	}
 	else if (preg_match ("/string/", $moduletype_name)) {
 
-		$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+		if ($selection_mode == "fromnow") {
+			$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+		}
+		else {
+			$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
+		}
+		
 		$columns = array(
 			"Timestamp" => array("utimestamp", 			"modules_format_timestamp", 		"align" => "left"),
 			"Data" => array("datos", 				"modules_format_data", 				"align" => "left"),
@@ -123,8 +159,12 @@ if ($get_module_detail) {
 		);
 	}
 	else {
-
-		$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+		if ($selection_mode == "fromnow") {
+			$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+		}
+		else {
+			$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
+		}	
 		
 		$columns = array(
 			"Timestamp" => array("utimestamp", 			"modules_format_timestamp", 	"align" => "left"),

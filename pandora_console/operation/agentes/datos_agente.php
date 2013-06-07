@@ -191,14 +191,14 @@ $formtable->data[1][0] = html_print_radio_button_extended ("selection_mode", 'ra
 $formtable->data[1][1] = __('Timestamp from:');
 
 $formtable->data[1][2] = html_print_input_text ('date_from', $date_from, '', 10, 10, true);
-$formtable->data[1][2] .= html_print_input_text ('time_from', $time_from, '', 7, 7, true);
+$formtable->data[1][2] .= html_print_input_text ('time_from', $time_from, '', 9, 7, true);
 
 $formtable->data[1][1] .= '<br />';
 $formtable->data[1][1] .= __('Timestamp to:');
 
 $formtable->data[1][2] .= '<br />';
 $formtable->data[1][2] .= html_print_input_text ('date_to', $date_to, '', 10, 10, true);
-$formtable->data[1][2] .= html_print_input_text ('time_to', $time_to, '', 7, 7, true);
+$formtable->data[1][2] .= html_print_input_text ('time_to', $time_to, '', 9, 7, true);
 
 if (preg_match ("/string/", $moduletype_name) || $moduletype_name == "log4x") {
 	$formtable->data[2][0] = __('Free text for search');

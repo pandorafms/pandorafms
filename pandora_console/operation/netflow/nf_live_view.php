@@ -337,7 +337,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "</tr>";
 	echo "<tr>";
 	
-	echo "<td>" . '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true, ui_get_full_url(false, false, false, false)) . "</td>";
+	echo "<td>" . '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true) . "</td>";
 	$aggregate_list = array();
 	$aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
 	echo "<td colspan='2'>" . html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false) . "</td>";

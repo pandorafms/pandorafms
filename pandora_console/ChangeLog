@@ -1,3 +1,14 @@
+2013-06-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/ajax/module.php
+	include/javascript/jquery.ui.datepicker.js
+	operation/tree.php
+	operation/agentes/datos_agente.php: Added range filter 
+	to raw data view in tree view
+
+	* operation/netflow/nf_live_view.php: Fix help popup
+	in metaconsole view
+
 2013-06-06  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php: Replaced netflow and

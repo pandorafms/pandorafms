@@ -1,3 +1,7 @@
+2013-06-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/DEBIAN/make_deb_package.sh: Create the agent's temp dir.
+
 2013-04-12  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* modules/pandora_module_exec.cc: Fixed possible resource leaks,

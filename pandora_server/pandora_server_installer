@@ -278,14 +278,14 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 		
 		echo "Creating setup directory in $PANDORA_CFG_DIR"
 		mkdir $PANDORA_CFG_DIR 2> /dev/null
-		if [ -e $PANDORA_CFG_FILE ]
-		then
-			OLDFILENAMETMP=`date +"%Y-%m-%d"`
-			echo "Old installation detected, backing up pandora_server.conf.$ODFILENAMETMP"
-			mv $PANDORA_CFG_FILE $PANDORA_CFG_FILE.$OLDFILENAMETMP
-		fi
 		if [ "$DISTRO" = "FreeBSD" ]
 		then
+			if [ -e $PANDORA_CFG_FILE ]
+			then
+				OLDFILENAMETMP=`date +"%Y-%m-%d"`
+				echo "Old installation detected, backing up pandora_server.conf.$ODFILENAMETMP"
+				mv $PANDORA_CFG_FILE $PANDORA_CFG_FILE.$OLDFILENAMETMP
+			fi
 			echo cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
                 	cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
 		elif [ "$DISTRO" = "NetBSD" ]
@@ -294,11 +294,23 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 			then
 				mkdir -p $PANDORA_CFG_DIR
 			fi
+			if [ -e $PANDORA_CFG_FILE ]
+			then
+				OLDFILENAMETMP=`date +"%Y-%m-%d"`
+				echo "Old installation detected, backing up pandora_server.conf.$ODFILENAMETMP"
+				mv $PANDORA_CFG_FILE $PANDORA_CFG_FILE.$OLDFILENAMETMP
+			fi
 			echo cp NetBSD/pandora_server.conf $PANDORA_CFG_DIR
 			cp NetBSD/pandora_server.conf $PANDORA_CFG_DIR     
 		else
-			echo cp conf/pandora_server.conf.new $PANDORA_CFG_DIR
-			cp conf/pandora_server.conf.new $PANDORA_CFG_DIR
+			if [ -f "$PANDORA_CFG_FILE" ]
+			then
+				echo cp conf/pandora_server.conf.new $PANDORA_CFG_DIR
+				cp conf/pandora_server.conf.new $PANDORA_CFG_DIR
+			else
+			echo cp conf/pandora_server.conf.new $PANDORA_CFG_FILE
+				cp conf/pandora_server.conf.new $PANDORA_CFG_FILE
+			fi
 		fi
 		chmod 770 $PANDORA_CFG_FILE
 
@@ -500,6 +512,9 @@ uninstall_bsd () {
 		TMP_CRONTAB=/tmp/crontab.tmp
         fi
 
+	echo "Removing PERL libs"
+	rm -rf /usr/lib/perl5/PandoraFMS/
+
 	echo "Removing Pandora Servers"
 	rm -Rf $PANDORA_SPOOL/data_in/
 
@@ -532,6 +547,10 @@ uninstall () {
 			echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
 		fi
 	fi
+
+	echo "Removing PERL libs"
+	rm -rf /usr/lib/perl5/PandoraFMS/
+
 	echo "Removing Pandora Servers"
 	if [ -d $PANDORA_SPOOL/data_out ]; then
 		rm -Rf $PANDORA_SPOOL/data_in

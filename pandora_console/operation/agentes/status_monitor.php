@@ -15,7 +15,6 @@
 // GNU General Public License for more details.
 
 
-
 // Load global vars
 global $config;
 
@@ -163,11 +162,15 @@ if ($tag_filter !== 0) {
 	}
 }
 
-if (defined('METACONSOLE')) {
+if (defined('METACONSOLE') && $ag_group !== 0) {
 	$ag_group = groups_get_id($ag_group);
 }
 
 $sql_conditions_tags = tags_get_acl_tags($config['id_user'], $ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+
+if(is_numeric($sql_conditions_tags)) {
+	$sql_conditions_tags = ' AND 1 = 0';
+}
 
 // Two modes of filter. All the filters and only ACLs filter
 $sql_conditions_all = $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_tags;
@@ -322,7 +325,7 @@ if (!defined('METACONSOLE')) {
 		<td valign="middle">' . __('Group') . '</td>
 		<td valign="middle">' . 
 			html_print_select_groups(false, "AR", true, "ag_group",
-				$ag_group, '', '', '0', true, false, false, 'w130',
+				$ag_group, '',  __('All'), '0', true, false, false, 'w130',
 				false, 'width:150px;') . '
 		</td>';
 }
@@ -331,7 +334,7 @@ else {
 		<td valign="middle">' . __('Group') . '</td>
 		<td valign="middle">' .
 			html_print_select($groups_select, "ag_group",
-				io_safe_output($ag_group), '', '', '0', true, false, false, 'w130',
+				io_safe_output($ag_group), '', __('All'), '0', true, false, false, 'w130',
 				false, 'width:150px;') . '
 		</td>';
 }

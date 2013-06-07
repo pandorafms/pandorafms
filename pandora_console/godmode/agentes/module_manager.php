@@ -33,10 +33,18 @@ echo "<tr><td class='datos' style='width:50%'>";
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
 
-$network_available = db_get_sql ("SELECT count(*) from tserver where server_type = 1"); //POSTGRESQL AND ORACLE COMPATIBLE
-$wmi_available = db_get_sql ("SELECT count(*) from tserver where server_type = 6"); //POSTGRESQL AND ORACLE COMPATIBLE
-$plugin_available = db_get_sql ("SELECT count(*) from tserver where server_type = 4"); //POSTGRESQL AND ORACLE COMPATIBLE
-$prediction_available = db_get_sql ("SELECT count(*) from tserver where server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
+$network_available = db_get_sql ("SELECT count(*)
+	FROM tserver
+	WHERE server_type = 1"); //POSTGRESQL AND ORACLE COMPATIBLE
+$wmi_available = db_get_sql ("SELECT count(*)
+	FROM tserver
+	WHERE server_type = 6"); //POSTGRESQL AND ORACLE COMPATIBLE
+$plugin_available = db_get_sql ("SELECT count(*)
+	FROM tserver
+	WHERE server_type = 4"); //POSTGRESQL AND ORACLE COMPATIBLE
+$prediction_available = db_get_sql ("SELECT count(*)
+	FROM tserver
+	WHERE server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
 
 // Development mode to use all servers
 if ($develop_bypass) {
@@ -72,7 +80,7 @@ echo '<input align="right" name="updbutton" type="submit" class="sub next" value
 echo '</td>';
 echo '<td class="datos" style="text-align:center;">';
 echo "<strong>";
-	echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
+echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
 echo "</strong>";
 echo '</td>';
 echo '</tr>';
@@ -116,25 +124,30 @@ if ($multiple_delete) {
 		// and delete some simple data.
 		$status = '';
 		if (db_process_sql("UPDATE tagente_modulo
-			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false)
+			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1
+			WHERE id_agente_modulo = " . $id_agent_module_del, "affected_rows", '', true, $status, false) === false) {
 			$error++;
-		
+		}
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
-				$result = db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
+				$result = db_process_sql_delete('tagente_estado',
+					array('id_agente_modulo' => $id_agent_module_del)); 
 				if ($result === false)
 					$error++;
 				
-				$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
+				$result = db_process_sql_delete('tagente_datos_inc',
+					array('id_agente_modulo' => $id_agent_module_del));
 				if ($result === false)
 					$error++;
 				break;
 			case "oracle":
-				$result = db_process_delete_temp('tagente_estado', 'id_agente_modulo', $id_agent_module_del);
+				$result = db_process_delete_temp('tagente_estado',
+					'id_agente_modulo', $id_agent_module_del);
 				if ($result === false)
 					$error++;
-				$result = db_process_delete_temp('tagente_datos_inc', 'id_agente_modulo', $id_agent_module_del);		
+				$result = db_process_delete_temp('tagente_datos_inc',
+					'id_agente_modulo', $id_agent_module_del);		
 				if ($result === false)
 					$error++;
 				break;
@@ -152,11 +165,11 @@ if ($multiple_delete) {
 		else {
 			$result_components = enterprise_hook('modules_get_synthetic_components', array($id_agent_module_del));
 			$count_components = 1;
-			if (!empty($result_components)){
+			if (!empty($result_components)) {
 				// Get number of components pending to delete to know when it's needed to update orders 
 				$num_components = count($result_components);
 				$last_target_module = 0;
-				foreach ($result_components as $id_target_module){
+				foreach ($result_components as $id_target_module) {
 					// Detects change of component or last component to update orders
 					if (($count_components == $num_components) or ($last_target_module != $id_target_module))
 						$update_orders = true;
@@ -225,7 +238,7 @@ switch ($sortField) {
 				$selectNameUp = $selected;
 				switch ($config["dbtype"]) {
 					case "mysql":
-					case "postgresql":				
+					case "postgresql":
 						$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 						break;
 					case "oracle":
@@ -240,10 +253,10 @@ switch ($sortField) {
 					case "postgresql":
 						$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
 						break;
-					case "oracle":	
+					case "oracle":
 						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'DESC');
 						break;
-				}		
+				}
 				break;
 		}
 		break;
@@ -308,12 +321,12 @@ switch ($sortField) {
 $extra_sql = '';
 	
 // Build the order sql
-if(!empty($order)) {
+if (!empty($order)) {
 	$order_sql = ' ORDER BY ';
 }
 $first = true;
-foreach($order as $ord) {
-	if($first) {
+foreach ($order as $ord) {
+	if ($first) {
 		$first = false;
 	}
 	else {
@@ -327,12 +340,26 @@ foreach($order as $ord) {
 $limit = (int) $config["block_size"];
 $offset = (int) get_parameter ('offset');
 
-$params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
-		'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
-		'disabled','max_warning', 'min_warning', 'str_warning',
-		'max_critical', 'min_critical', 'str_critical'));
-		
-$where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);		
+$params = implode(',',
+	array(
+		'id_agente_modulo',
+		'id_tipo_modulo',
+		'descripcion',
+		'nombre',
+		'max',
+		'min',
+		'module_interval',
+		'id_modulo',
+		'id_module_group',
+		'disabled',
+		'max_warning',
+		'min_warning',
+		'str_warning',
+		'max_critical',
+		'min_critical',
+		'str_critical'));
+
+$where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);
 switch ($config["dbtype"]) {
 	case "postgresql":
 		$limit_sql = " LIMIT $limit OFFSET $offset ";
@@ -340,34 +367,47 @@ switch ($config["dbtype"]) {
 		if(!isset($limit_sql)) {
 			$limit_sql = " LIMIT $offset, $limit ";
 		}
-		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s) %s %s", 
-					$params, $extra_sql, $where, $order_sql, $limit_sql);
-
+		$sql = sprintf("SELECT %s
+			FROM tagente_modulo
+			WHERE %s (%s) %s %s", 
+			$params, $extra_sql, $where, $order_sql, $limit_sql);
+		
 		$modules = db_get_all_rows_sql($sql);
 		break;
-	case "oracle":	
+	case "oracle":
 		$set = array();
 		$set['limit'] = $limit;
-		$set['offset'] = $offset;	
-		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s) %s", 
-					$params, $extra_sql, $where, $order_sql);
+		$set['offset'] = $offset;
+		$sql = sprintf("SELECT %s
+			FROM tagente_modulo
+			WHERE %s (%s) %s", 
+			$params, $extra_sql, $where, $order_sql);
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;
 }
-	
-$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo WHERE %s (%s)", $extra_sql, $where);
+
+$sql_total_modules = sprintf("SELECT count(*)
+	FROM tagente_modulo
+	WHERE %s (%s)", $extra_sql, $where);
 
 $total_modules = db_get_value_sql($sql_total_modules);
 
-$total_modules = isset ($total_modules) ? $total_modules : 0;	
+$total_modules = isset ($total_modules) ? $total_modules : 0;
 
 if ($modules === false) {
-	echo "<div class='nf'>".__('No available data to show')."</div>";
+	echo "<div class='nf'>" . __('No available data to show') . "</div>";
 	return;
 }
 
 // Prepare pagination
-ui_pagination ($total_modules, ui_get_url_refresh (array ('id_agente' => $id_agente,'sort_field' => $sortField, 'sort' => $sort, 'id_agent_module' => false, 'edit_module' => false), true, false));
+$url = "?" .
+	"sec=gagente&" .
+	"tab=module&" .
+	"sec2=godmode/agentes/configurar_agente&" .
+	"id_agente=" . $id_agente . "&" .
+	"sort_field=" . $sortField ."&" .
+	"&sort=" . $sort;
+ui_pagination($total_modules, $url);
 
 $table->width = '98%';
 $table->head = array ();
@@ -451,11 +491,13 @@ foreach ($modules as $module) {
 	}
 	
 	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
-	if ($module["disabled"])
+	if ($module["disabled"]) {
 		$data[0] .= '<em class="disabled_module">' .
 			ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';
-	else
+	}
+	else {
 		$data[0] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+	}
 	$data[0] .= '</a>';
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -490,7 +532,7 @@ foreach ($modules as $module) {
 					$title = __('(Unlinked) ') . $policyInfo['name_policy'];
 				}
 			}
-				
+			
 			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
 				html_print_image($img,true, array('title' => $title)) .
 				'</a>';
@@ -502,19 +544,20 @@ foreach ($modules as $module) {
 	if ($module['id_modulo'] > 0) {
 		$data[2] = servers_show_type ($module['id_modulo']);
 	}
-
+	
 	$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
 	
 	modules_get_status($module['id_agente_modulo'], $module_status['estado'], $module_status['datos'], $status, $title);
 	
 	// This module is initialized ? (has real data)
 	if ($status == STATUS_MODULE_NO_DATA)
-		$data[2] .= html_print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
+		$data[2] .= html_print_image('images/error.png', true,
+			array ('title' => __('Non initialized module')));
 	
 	// Module type (by data type)
 	$data[3] = '';
 	if ($type) {
-		$data[3] = ui_print_moduletype_icon ($type, true);
+		$data[3] = ui_print_moduletype_icon($type, true);
 	}
 	
 	// Module interval
@@ -530,7 +573,10 @@ foreach ($modules as $module) {
 	$data[6] = ui_print_status_image($status, $title, true);
 	
 	// MAX / MIN values
-	$data[7] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]); 
+	$data[7] = ui_print_module_warn_value ($module["max_warning"],
+		$module["min_warning"], $module["str_warning"],
+		$module["max_critical"], $module["min_critical"],
+		$module["str_critical"]); 
 	
 	// Delete module
 	$data[8] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
@@ -546,12 +592,11 @@ foreach ($modules as $module) {
 	$data[8] .= '</a> ';
 	
 	// Make a data normalization
-	
 	if (isset($numericModules[$type])) {
 		if ($numericModules[$type] === true) {
 			$data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			$data[8] .= html_print_image ('images/chart_curve.png', true,
-				array ('title' => __('Normalize')));
+				array('title' => __('Normalize')));
 			$data[8] .= '</a>';
 		}
 	}

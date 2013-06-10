@@ -55,7 +55,7 @@ if (in_array('id_evento', $show_fields)) {
 if (in_array('evento', $show_fields)) {
 	$table->head[$i] = __('Event Name');
 	$table->align[$i] = 'left';
-	$table->style[$i] = 'max-width: 350px; word-break: break-all;';
+	$table->style[$i] = 'min-width: 200px; max-width: 350px; word-break: break-all;';
 	$i++;
 }
 if (in_array('id_agente', $show_fields)) {
@@ -87,6 +87,7 @@ if (in_array('id_grupo', $show_fields)) {
 if (in_array('event_type', $show_fields)) {
 	$table->head[$i] = __('Event type');
 	$table->align[$i] = 'center';
+	$table->style[$i] = 'min-width: 85px;';
 	$i++;
 }
 if (in_array('id_agentmodule', $show_fields)) {
@@ -565,10 +566,12 @@ if (!empty ($table->data)) {
 		echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 	}
 	
+	echo '<div style="width: 98%; overflow-x: auto;">';
 	html_print_table ($table);
+	echo '</div>';
 	
 	if ($allow_action) {
-		echo '<div style="width:'.$table->width.';" class="action-buttons">';
+		echo '<div style="width: 98%;" class="action-buttons">';
 		if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 			html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
 		}

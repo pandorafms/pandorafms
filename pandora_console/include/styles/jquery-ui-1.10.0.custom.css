@@ -1189,6 +1189,13 @@ body .ui-tooltip {
 	color: #ffffff !important;
 }
 
+.ui-datepicker-calendar th {
+	background-color: #3F3F3F;
+}
+
+.ui-dialog .ui-widget-header {
+	background-color: transparent !important;
+}
 
 .ui_tpicker_hour,
 .ui_tpicker_minute,

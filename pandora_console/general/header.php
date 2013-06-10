@@ -124,17 +124,24 @@ config_check();
 						(string)SECONDS_15MINUTES => __('15 minutes'),
 						(string)SECONDS_30MINUTES => __('30 minutes'),
 						(string)SECONDS_1HOUR => __('1 hour'));
-					$autorefresh_additional = '<span id="combo_refr" style="display: none; padding-right: 9px;">';
+					$autorefresh_additional = '<span id="combo_refr" style="display: none;">';
 					$autorefresh_additional .= html_print_select ($values, 'ref', '', '', __('Select'), '0', true, false, false);
 					$autorefresh_additional .= '</span>';
 					unset ($values);
 					
 					$autorefresh_link_open_img = '<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
-					$autorefresh_link_open_txt = '<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+					
+					if ($_GET['refr']) {
+						$autorefresh_link_open_txt = '<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+					}
+					else {
+						$autorefresh_link_open_txt = '<a>';
+					}
+					
 					$autorefresh_link_close = '</a>';
 				}
 				else {
-					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot autorefresh_disabled', "alt" => 'lightning', 'title' => __('Disabled autorefresh')));
+					$autorefresh_img = html_print_image("images/header_refresh_disabled.png", true, array("class" => 'bot autorefresh_disabled', "alt" => 'lightning', 'title' => __('Disabled autorefresh')));
 					
 					$ignored_params['refr'] = false;
 					

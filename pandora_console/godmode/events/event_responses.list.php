@@ -25,7 +25,7 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
-echo '<br><br><div style="width:90%;text-align:right;">';
+echo '<br><br><div style="width:99%;text-align:right;">';
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
 html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
 echo '</form>';
@@ -46,7 +46,7 @@ if(empty($event_responses)) {
 	return;
 }
 
-$table->width = '90%';
+$table->width = '99%';
 
 $table->size = array();
 $table->size[0] = '200px';

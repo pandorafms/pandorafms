@@ -1,3 +1,29 @@
+2013-06-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/jquery-ui-1.10.0.custom.css
+	include/styles/pandora.css
+	include/ajax/events.php
+	include/functions_graph.php
+	include/functions_events.php
+	include/functions_networkmap.php
+	include/functions_netflow.php
+	operation/tree.php
+	operation/events/events.build_table.php
+	operation/reporting/reporting_viewer.php
+	operation/agentes/status_monitor.php
+	operation/agentes/stat_win.php
+	operation/netflow/nf_live_view.php
+	images/header_refresh_disabled.png
+	images/image_problem_data.png
+	images/input_pdf.png
+	images/input_delete.png
+	general/header.php
+	godmode/users/user_list.php
+	godmode/events/event_edit_filter.php
+	godmode/events/event_responses.list.php
+	godmode/events/events.php: Fix a lot of aesthetic issues and other
+	little fixes
+
 2013-06-10 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_ui.php: fixed the reload the widget autocomplete

@@ -933,7 +933,7 @@ foreach ($result as $row) {
 		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
 	}
 	if ($row["tags"] != "") {
-		$data[3] .= ui_print_help_tip ($row["tags"], true, '/images/tip.png');
+		$data[3] .= html_print_image('/images/tag_red.png', true, array('title' => $row["tags"], 'style' => 'width: 20px; margin-left: 3px;'));
 	}
 	
 /*

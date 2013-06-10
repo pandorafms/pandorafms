@@ -559,12 +559,35 @@ else {
 	
 	$img_style = array ("class" => "top", "width" => 16);
 	$activeTab = get_parameter('tab','group');
+	
+	// Check if the loaded tab is allowed or not
+	$allowed_tabs = array('group');
+	
+	if ($config['enable_tags_tree']) {
+		$allowed_tabs[] = 'tag';
+	}
+
+	if (!in_array($activeTab, $allowed_tabs)) {
+		db_pandora_audit("HACK Attempt",
+		"Trying to access to not allowed tab on tree view");
+		include ("general/noaccess.php");
+		exit;
+	}
+	// End of tab check
+
 	$group_tab = array('text' => "<a href='index.php?sec=monitoring&sec2=operation/tree&refr=0&tab=group&pure=$pure'>"
 		. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>",
 		'active' => $activeTab == "group");
-	$tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag&pure=$pure'>"
-				. html_print_image ("images/tag.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
-	$subsections = array('group' => $group_tab, 'tag' => $tags_tab);
+	
+	$subsections['group'] = $group_tab; 
+
+	if($config['enable_tags_tree']) {
+		$tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag&pure=$pure'>"
+					. html_print_image ("images/tag.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
+	
+		$subsections['tag'] = $tags_tab;
+	}
+	
 	switch ($activeTab) {
 		case 'group':
 			$subsection = __('Groups');

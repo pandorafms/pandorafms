@@ -1092,7 +1092,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 	}
 	
 	if ($output == 'HTML' || $output == 'PDF') {
-		return fs_error_image();
+		return graph_nodata_image(300, 110, 'data');
 	}
 }
 

@@ -22,7 +22,6 @@ if (! check_acl ($config["id_user"], 0, "EW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access events filter editor");
 	require ("general/noaccess.php");
-	
 	return;
 }
 

@@ -1042,14 +1042,15 @@ td input[type=checkbox]
   display: table-cell;   
 }
 
-td.datos3 {
-	background-color: #d4ddc6;
+td.datos3, td.datos3 * {
+	background-color: #b1b1b1;
+	color: white !important;
 }
 
 td.datos4 {
 	/*Add !important because in php the function html_print_table write style in cell and this is style head.*/
 	text-align: center !important;
-	background-color: #d4ddc6;
+	background-color: #b1b1b1;
 }
 
 td.datos_id {
@@ -2017,6 +2018,18 @@ div#pandora_logo_header {
 	cursor: not-allowed !important;
 }
 
+a.autorefresh {
+	padding-right: 8px;
+}
+
+#refrcounter {
+	color: white;
+}
+
+#combo_refr select {
+	margin-right: 8px;
+}
+
 .disabled_module {
 	color: #aaa;
 }
@@ -2326,12 +2339,12 @@ tr.group_view_unk, .group_view_unk {
 
 a.datos_blue, .datos_bluef9, .datos_blue, .datos_blue * {
 	background-color: #4CA8E0;
-	color: #111;
+	color: #fff !important;
 }
 
 .datos_grey, .datos_greyf9, .datos_grey * {
 	background-color: #999999;
-	color: #111;
+	color: #fff;
 }
 
 .datos_pink, .datos_pinkf9, .datos_pink * {

@@ -1497,6 +1497,12 @@ function events_check_event_filter_group ($id_filter) {
 	$own_info = get_user_info ($config['id_user']);
 	// Get group list that user has access
 	$groups_user = users_get_groups ($config['id_user'], "EW", $own_info['is_admin'], true);
+	
+	// Permissions in any group allow to edit "All group" filters
+	if($id_group == 0 && !empty($groups_user)) {
+		return true;
+	}
+	
 	$groups_id = array();
 	$has_permission = false;
 	

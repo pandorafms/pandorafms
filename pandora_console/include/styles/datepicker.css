@@ -199,4 +199,8 @@ img.ui-datepicker-trigger {
 	width: 193px;
 	height: 200px;
 }
+
+.ui-datepicker-title * {
+	color: white;
+}
 */

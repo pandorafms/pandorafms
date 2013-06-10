@@ -160,11 +160,11 @@ $table->data[0][1] .= '</div>';
 
 $table->data[1][1] = '<div style="float:left;padding-top:3px;">' . __('From') . ': </div>';
 $table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
-$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 7, 7, true). ' ';
+$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 10, 7, true). ' ';
 $table->data[1][2] = '<div style="float:left;padding-top:3px;display:'.$display_item.'" id="string_items">' . __('Items period before') . ':</div>';
 $table->data[1][2] .= '<div style="float:left;padding-top:3px;display:'.$display_to.'" id="string_to">' . __('to') . ':</div>';
 $table->data[1][2] .= html_print_input_text ('date', $date, '', 12, 10, true). ' ';
-$table->data[1][2] .= html_print_input_text ('time', $time, '', 7, 7, true). ' ';
+$table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true). ' ';
 $table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
 
 echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'">';
@@ -200,7 +200,7 @@ $(document).ready (function () {
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
-	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo $config['language']; ?>"]);
+	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 	$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 	
 	

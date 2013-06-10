@@ -160,23 +160,17 @@ if (isset($config['netflow_disable_custom_lvfilters'])) {
 }
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
-	
-	if (defined ('METACONSOLE')) {
-		echo "<table class='databox' width='800'>";
-	}
-	else {
-		echo "<table class='databox' width='90%'>";
-	}
+	echo "<table class='databox' width='99%'>";
+
 	echo "<tr>";
 	
 	echo "<td>" .
 		'<b>' . __('Date') . '</b>' .
 		"</td>";
 	echo "<td>" .
-		html_print_input_text ('date', $date, false, 10, 10, true) .
+		html_print_input_text ('date', $date, false, 13, 10, true) .
 		html_print_image ("images/calendar_view_day.png", true,
-			array("alt" => "calendar",
-				"onclick" => "scwShow(scwID('text-date'),this);")) .
+			array("alt" => "calendar")) .
 		html_print_input_text ('time', $time, false, 10, 5, true) .
 		"</td>";
 	
@@ -382,6 +376,8 @@ if ($draw != '') {
 		$interval_length, $chart_type, $filter,
 		$max_aggregates, $connection_name);
 }
+
+ui_require_jquery_file ("ui-timepicker-addon");
 ?>
 
 <script type="text/javascript">
@@ -555,4 +551,19 @@ if ($draw != '') {
 			}
 		});
 	});
+	
+	$("#text-time").timepicker({
+		showSecond: true,
+		timeFormat: 'hh:mm:ss',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'});
+		
+	$("#text-date").datepicker ();
+	
+	$.datepicker.regional["<?php echo get_user_language(); ?>"];
 </script>

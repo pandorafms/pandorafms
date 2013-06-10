@@ -1,3 +1,17 @@
+2013-06-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/datepicker.css
+	include/styles/jquery-ui-1.10.0.custom.css
+	include/styles/pandora.css
+	operation/tree.php
+	operation/reporting/reporting_viewer.php
+	operation/reporting/graph_viewer.php
+	operation/agentes/datos_agente.php
+	operation/netflow/nf_live_view.php
+	godmode/agentes/planned_downtime.editor.php: Change the 
+	datepicker of netflow view to datepicker used on the
+	rest of Pandora. Fixed styles and regional language calls
+
 2013-06-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_graph.php: Changed some translations from 'Data'

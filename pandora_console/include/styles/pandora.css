@@ -2135,7 +2135,7 @@ div#logo_text3 {
 
 /* Calendar background */
 table.scw {
-	background-color:  #daedae;
+	background-color:  #3f3f3f;
 }
 
 /* Week number heading */
@@ -2163,7 +2163,7 @@ tfoot.scwFoot {
 }
 
 .scwFoot :hover{
-        color: #FFA500 !important;
+        color: #3F3F3F !important;
 }
 
 /* Cells divs to set individual styles with the table objects */

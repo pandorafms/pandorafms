@@ -51,7 +51,7 @@ if ($get_event_name) {
 		return;
 	}
 	
-	echo io_safe_output($name);
+	ui_print_truncate_text(io_safe_output($name), 75, false, false, false, '...');
 	
 	return;
 }

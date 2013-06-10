@@ -86,6 +86,8 @@ switch ($section) {
 
 include_once($config["homedir"] . '/include/functions_events.php');
 
+open_meta_frame();
+
 switch($section) {
 	case 'edit_filter':
 		require_once($config["homedir"] . '/godmode/events/event_edit_filter.php');
@@ -100,5 +102,7 @@ switch($section) {
 		require_once($config["homedir"] . '/godmode/events/event_responses.php');
 		break;
 }
+
+close_meta_frame();
 
 ?>

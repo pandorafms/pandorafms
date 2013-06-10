@@ -159,6 +159,8 @@ if (isset($config['netflow_disable_custom_lvfilters'])) {
 	$netflow_disable_custom_lvfilters = $config['netflow_disable_custom_lvfilters'];
 }
 
+open_meta_frame();
+
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
 	echo "<table class='databox' width='99%'>";
 
@@ -347,7 +349,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "<br />";
 	
 	if (defined ('METACONSOLE')) {
-		echo "<table class='databox' width='800' style='border: 0px;'><tr><td>";
+		echo "<table class='databox' width='99%' style='border: 0px;'><tr><td>";
 	}
 	
 	
@@ -376,6 +378,8 @@ if ($draw != '') {
 		$interval_length, $chart_type, $filter,
 		$max_aggregates, $connection_name);
 }
+
+close_meta_frame();
 
 ui_require_jquery_file ("ui-timepicker-addon");
 ?>

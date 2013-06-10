@@ -73,6 +73,7 @@ $label = base64_decode(get_parameter('label', ''));
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<script type='text/javaScript' src='../../include/javascript/calendar.js'></script>
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery-1.7.1.js'></script>
 		<script type='text/javascript'>
 			<!--
@@ -367,6 +368,9 @@ $label = base64_decode(get_parameter('label', ''));
 		$params['position'] = 'left';
 		
 		html_print_side_layer($params);
+		
+		// Hidden div to forced title
+		html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true));
 		?>
 		
 	</body>
@@ -410,4 +414,6 @@ $label = base64_decode(get_parameter('label', ''));
 	<?php
 	}
 	?>
+	
+	forced_title_callback();
 </script>

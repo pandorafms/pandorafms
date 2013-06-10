@@ -960,7 +960,7 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
 		$user_info = users_get_user_by_id($config['id_user']);
 		
 		if (!$user_info['is_admin']) {
-			$filter['id_user'] = $config['id_user'];
+			//$filter['id_user'] = $config['id_user'];
 		}
 	}
 	

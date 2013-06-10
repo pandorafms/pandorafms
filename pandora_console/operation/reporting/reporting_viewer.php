@@ -167,7 +167,7 @@ $table->data[1][2] .= html_print_input_text ('date', $date, '', 12, 10, true). '
 $table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true). ' ';
 $table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
 
-echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'">';
+echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'" style="margin-right: 0px;">';
 html_print_table ($table);
 html_print_input_hidden ('id_report', $id_report);
 echo '</form>';
@@ -255,8 +255,8 @@ if ($datetime === false || $datetime == -1) {
 
 $table->size = array ();
 $table->style = array ();
-$table->width = '99%';
-$table->class = 'databox report_table';
+$table->width = '98%';
+$table->class = 'databox';
 $table->rowclass = array ();
 $table->rowclass[0] = 'datos3';
 

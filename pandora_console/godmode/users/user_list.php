@@ -212,7 +212,7 @@ elseif ($disable_user !== false) { //disable_user
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = '98%';
+$table->width = '99%';
 $table->class = "databox";
 $table->head = array ();
 $table->data = array ();
@@ -237,7 +237,13 @@ $table->head[6] = '<span title="Operations">' . __('Op.') . '</span>';
 $table->align[2] = "right";
 $table->align[3] = "center";
 $table->size[2] = '150px';
-$table->size[6] = '85px';
+
+if (defined('METACONSOLE')) {
+	$table->size[6] = '110px';
+}
+else {
+	$table->size[6] = '85px';
+}
 
 $table->valign[0] = 'top';
 $table->valign[1] = 'top';

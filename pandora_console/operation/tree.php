@@ -869,7 +869,7 @@ ui_require_jquery_file ("ui-timepicker-addon");
 			
 		$("#text-date_from, #text-date_to").datepicker ();
 		
-		$.datepicker.regional["<?php echo $config['language']; ?>"];
+		$.datepicker.regional["<?php echo get_user_language(); ?>"];
 	}
 	datetime_picker_callback();
 	

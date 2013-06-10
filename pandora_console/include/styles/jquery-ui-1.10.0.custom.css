@@ -273,6 +273,12 @@ button.ui-button::-moz-focus-inner {
 	font-size: 1em;
 	margin: 1px 0;
 }
+.ui-datepicker .ui-datepicker-title *, .ui-datepicker th * {
+	color: white;
+}
+.ui-datepicker .ui-datepicker-title select, .ui-datepicker .ui-datepicker-title option {
+	color: #111 !important;
+}
 .ui-datepicker select.ui-datepicker-month-year {
 	width: 100%;
 }
@@ -1179,7 +1185,7 @@ body .ui-tooltip {
 }
 
 .ui-widget-header {
-	background: #B1B1B1;
+	background: #B1B1B1 !important;
 	color: #ffffff !important;
 }
 
@@ -1193,6 +1199,9 @@ body .ui-tooltip {
 
 .ui-timepicker-div dd {
 	margin: 0px 15px 0px 15px ;
+}
+.ui-timepicker-div .ui-datepicker-title {
+	color: white;
 }
 
 .ui-datepicker-buttonpane button {

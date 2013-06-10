@@ -208,7 +208,7 @@ if ($view_graph) {
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
-		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo $config['language']; ?>"]);
+		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 		$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 	});
 	</script>

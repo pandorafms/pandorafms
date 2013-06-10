@@ -929,7 +929,7 @@ ui_require_jquery_file ("ui-timepicker-addon");
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
 		$("#text-once_date_from, #text-once_date_to").datepicker ();
-		$.datepicker.regional["<?php echo $config['language']; ?>"];
+		$.datepicker.regional["<?php echo get_user_language(); ?>"];
 		
 		
 		$("#filter_group").click (

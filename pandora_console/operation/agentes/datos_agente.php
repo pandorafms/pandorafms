@@ -310,7 +310,7 @@ $(document).ready (function () {
 		currentText: '<?php echo __('Now');?>',
 		closeText: '<?php echo __('Close');?>'});
 	$("#text-date_from, #text-date_to").datepicker ();
-	$.datepicker.regional["<?php echo $config['language']; ?>"];
+	$.datepicker.regional["<?php echo get_user_language(); ?>"];
 });
 </script>
 

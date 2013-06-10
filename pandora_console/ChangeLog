@@ -1,3 +1,10 @@
+2013-06-10 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_html.php, include/functions_reporting.php,
+	include/graphs/functions_utils.php, include/graphs/fgraph.php,
+	include/graphs/functions_pchart.php: fixed the graphs in the
+	reports.
+
 2013-06-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/datepicker.css

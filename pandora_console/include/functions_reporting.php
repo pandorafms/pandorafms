@@ -3471,7 +3471,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25, ui_get_full_url(false) . '/', 1, $sla_data_arrays[$k], false);
+						$content['time_to'], 650, 25, ui_get_full_url(false, false, false, false), 1, $sla_data_arrays[$k], false);
 					
 					array_push ($tableslice->data, $dataslice);
 				}
@@ -3494,7 +3494,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data_pie_graph = json_encode ($data_graph);
 			if ($show_graphs && !empty($slas)) {
 				$data[0] = pie3d_graph(false, $data_graph,
-					500, 150, __("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
+					500, 150, __("other"),
+					ui_get_full_url(false, false, false, false),
+					$config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']);
 				
 				
@@ -3540,7 +3542,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			//RUNNING
 			
 			// Put description at the end of the module (if exists)
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];

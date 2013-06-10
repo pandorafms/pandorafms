@@ -435,7 +435,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 }
 
 function pie3d_graph($flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir="", $water_mark = "", $font = '',
+	$others_str = "other", $homedir = "", $water_mark = "", $font = '',
 	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
 	
 	return pie_graph('3d', $flash_chart, $chart_data, $width, $height,
@@ -456,7 +456,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
 	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
 	
-	if(empty($chart_data)) {
+	if (empty($chart_data)) {
 		return graph_nodata_image($width, $height, 'pie');
 	}
 	

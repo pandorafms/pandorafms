@@ -77,33 +77,33 @@ if (isset($graph['color'])) {
 if (isset($graph['legend'])) {
 	$legend = $graph['legend'];
 }
-if(isset($graph['xaxisname'])) { 
+if (isset($graph['xaxisname'])) { 
 	$xaxisname = $graph['xaxisname'];
 }
-if(isset($graph['yaxisname'])) { 
+if (isset($graph['yaxisname'])) { 
 	$yaxisname = $graph['yaxisname'];
 }
-if(isset($graph['round_corner'])) { 
+if (isset($graph['round_corner'])) { 
 	$round_corner = $graph['round_corner'];
 }
-if(isset($graph['font'])) {
+if (isset($graph['font'])) {
 	if (!empty($graph['font'])) {
 		$font = $graph['font'];
 	}
 }
-if(isset($graph['font_size'])) {
+if (isset($graph['font_size'])) {
 	if (!empty($graph['font_size'])) {
 		$font_size = $graph['font_size'];
 	}
 }
-if(isset($graph['antialiasing'])) { 
+if (isset($graph['antialiasing'])) { 
 	$antialiasing = $graph['antialiasing'];
 }
 $force_height = true;
-if(isset($graph['force_height'])) { 
+if (isset($graph['force_height'])) { 
 	$force_height = $graph['force_height'];
 }
-if(isset($graph['period'])) { 
+if (isset($graph['period'])) { 
 	$period = $graph['period'];
 }
 
@@ -114,7 +114,7 @@ if (!$force_height) {
 }
 
 $water_mark = '';
-if(isset($graph['water_mark'])) { 
+if (isset($graph['water_mark'])) { 
 	//"/var/www/pandora_console/images/logo_vertical_water.png";
 	$water_mark = $graph['water_mark'];
 }
@@ -151,8 +151,8 @@ $c = 1;
 switch($graph_type) {
 	case 'hbar':
 	case 'vbar':
-		foreach($data as $i => $values) {
-			foreach($values as $name => $val) {
+		foreach ($data as $i => $values) {
+			foreach ($values as $name => $val) {
 				$data_values[$name][] = $val;
 			}
 			
@@ -168,13 +168,13 @@ switch($graph_type) {
 		$fine_colors = array();
 		
 		// If is set fine colors we store it or set default
-		if(isset($colors[reset(array_keys($data_values))]['fine'])) {
+		if (isset($colors[reset(array_keys($data_values))]['fine'])) {
 			$fine = $colors[reset(array_keys($data_values))]['fine'];
-			if($fine === true) {
+			if ($fine === true) {
 				$fine = $default_fine_colors;
 			}
 			
-			foreach($fine as $i => $fine_color) {
+			foreach ($fine as $i => $fine_color) {
 				$rgb_fine = html_html2rgb($fine_color);
 				$fine_colors[$i]['R'] = $rgb_fine[0];
 				$fine_colors[$i]['G'] = $rgb_fine[1];
@@ -192,7 +192,7 @@ switch($graph_type) {
 	case 'line':
 	case 'threshold':
 	case 'scatter':
-		foreach($data as $i => $d) {
+		foreach ($data as $i => $d) {
 			$data_values[] = $d;
 			
 			
@@ -409,8 +409,8 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	/* Create the pPie object */ 
 	$PieChart = new pPie($myPicture,$MyData);
 	
-	foreach($data_values as $key => $value) {
-		if(isset($colors[$key])) {
+	foreach ($data_values as $key => $value) {
+		if (isset($colors[$key])) {
 			$PieChart->setSliceColor($key, hex_2_rgb($colors[$key]));
 		}
 	}
@@ -430,13 +430,14 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	$max_chars = graph_get_max_index($legend_values);
 	$legend_with_aprox = 32 + (7 * $max_chars);
 	
-	if($legend_position != 'hidden') {
+	if ($legend_position != 'hidden') {
 		$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
 	}
 	
 	/* Enable shadow computing */ 
-	$myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
-		
+	$myPicture->setShadow(TRUE,
+		array("X" => 3, "Y" => 3, "R" => 0, "G" => 0, "B" => 0, "Alpha" => 10));
+	
 	/* Render the picture */
 	$myPicture->stroke();
 }

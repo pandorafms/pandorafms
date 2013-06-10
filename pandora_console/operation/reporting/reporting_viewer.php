@@ -183,6 +183,8 @@ echo '</div>';
  */
 
 ui_require_jquery_file ("ui-timepicker-addon");
+ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -200,22 +202,30 @@ $(document).ready (function () {
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
+	
 	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
-	$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
+	
+	$("#text-date").datepicker({
+		changeMonth: true,
+		changeYear: true,
+		showAnim: "slideDown"});
 	
 	
 	$('[id^=text-time_init]').timepicker({
-			showSecond: true,
-			timeFormat: 'hh:mm:ss',
-			timeOnlyTitle: '<?php echo __('Choose time');?>',
-			timeText: '<?php echo __('Time');?>',
-			hourText: '<?php echo __('Hour');?>',
-			minuteText: '<?php echo __('Minute');?>',
-			secondText: '<?php echo __('Second');?>',
-			currentText: '<?php echo __('Now');?>',
-			closeText: '<?php echo __('Close');?>'});
+		showSecond: true,
+		timeFormat: 'hh:mm:ss',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'});
 	
-	$('[id^=text-date_init]').datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
+	$('[id^=text-date_init]').datepicker ({
+		changeMonth: true,
+		changeYear: true,
+		showAnim: "slideDown"});
 	
 	
 	$("*", "#controls_table-0").css("display", ""); //Re-show the first row of form.

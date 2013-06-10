@@ -185,6 +185,8 @@ function mainInsertData() {
 	
 	ui_require_css_file ('datepicker');
 	ui_require_jquery_file ("ui-timepicker-addon");
+	ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 ?>
 <script type="text/javascript">
 	/* <![CDATA[ */
@@ -203,6 +205,7 @@ function mainInsertData() {
 		
 		$("#text-date").datepicker ();
 		
+		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 	});
 	
 	function custom_select_function(agent_name) {

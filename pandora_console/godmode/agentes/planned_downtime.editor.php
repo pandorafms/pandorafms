@@ -659,6 +659,8 @@ echo __("All modules");
 echo "</div>";
 
 ui_require_jquery_file ("ui-timepicker-addon");
+ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -929,7 +931,8 @@ ui_require_jquery_file ("ui-timepicker-addon");
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
 		$("#text-once_date_from, #text-once_date_to").datepicker ();
-		$.datepicker.regional["<?php echo get_user_language(); ?>"];
+		
+		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 		
 		
 		$("#filter_group").click (

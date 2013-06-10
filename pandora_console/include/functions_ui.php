@@ -2867,6 +2867,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 						' . $javascript_function_action_into_source_js_call . '
 					}
 					
+					//==== CACHE CODE ==================================
 					//Check the cache
 					var found = false;
 					if (term in cache_' . $input_name . ') {
@@ -2897,16 +2898,22 @@ function ui_print_agent_autocomplete_input($parameters) {
 								}
 							});
 							
-							if (found)
+							if (found) {
 								break;
+							}
 						}
 						*/
 					}
+					//==================================================
+					
 					
 					if (found) {
 						//Set icon
 						$("#' . $input_id . '")
 							.css("background","url(\"' . $icon_image . '\") right center no-repeat");
+						
+						select_item_click = 0;
+						
 						return;
 					}
 					
@@ -2929,6 +2936,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 									.css("background",
 										"url(\"' . $icon_image . '\") right center no-repeat");
 								
+								select_item_click = 0;
+								
 								return;
 							}
 						});
@@ -2936,6 +2945,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 					return;
 				},
 				//---END source-----------------------------------------
+				
+				
 				select: function( event, ui ) {
 					var agent_name = ui.item.name;
 					var agent_id = ui.item.id;
@@ -2987,6 +2998,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 					if (' . ((int)!empty($javascript_function_action_after_select_js_call)) . ') {
 						' . $javascript_function_action_after_select_js_call . '
 					}
+					
+					select_item_click = 1;
 					
 					return false;
 				}
@@ -3098,6 +3111,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			if (' . ((int)$check_only_empty_javascript_on_blur_function) . ') {
 				return
+			}
+			
+			
+			if (select_item_click) {
+				return;
 			}
 			
 			//Set loading
@@ -3232,6 +3250,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 			$html .= '<script type="text/javascript">
 				/* <![CDATA[ */';
 		}
+		
+		$html .= 'var select_item_click = 0;' . "\n";
 		
 		$html .= $javascript_function_change;
 		if ($javascript_is_function_select) {

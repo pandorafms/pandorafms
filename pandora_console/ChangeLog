@@ -1,5 +1,10 @@
 2013-06-10 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_ui.php: fixed the reload the widget autocomplete
+	when select a item from the list instead from writing all name.
+
+2013-06-10 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_html.php, include/functions_reporting.php,
 	include/graphs/functions_utils.php, include/graphs/fgraph.php,
 	include/graphs/functions_pchart.php: fixed the graphs in the

@@ -1078,6 +1078,9 @@ echo '</form>';
 
 ui_require_jquery_file ("ui-timepicker-addon");
 ui_require_javascript_file('pandora');
+ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
+
 if ($enterpriseEnable) {
 	reporting_enterprise_text_box();
 }

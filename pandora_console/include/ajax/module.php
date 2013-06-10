@@ -19,8 +19,11 @@ global $config;
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 require_once ($config['homedir'] . '/enterprise/include/functions_metaconsole.php');
+
 ui_require_jquery_file ("ui-timepicker-addon");
-	
+ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
+
 $search_modules = get_parameter('search_modules');
 
 if ($search_modules) {

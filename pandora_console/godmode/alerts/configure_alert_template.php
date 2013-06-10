@@ -728,6 +728,8 @@ enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file ('pandora_alerts');
 ui_require_jquery_file ("ui-timepicker-addon");
+ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 ?>
 
 <script type="text/javascript">

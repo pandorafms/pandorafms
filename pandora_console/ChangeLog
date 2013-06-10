@@ -1,3 +1,21 @@
+2013-06-10 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/javascript/jquery.ui-timepicker-addon.js: updated the
+	datepicker for to avoid some found bugs.
+	
+	* include/javascript/i18n: added translations for the datepicker.
+	
+	* godmode/alerts/configure_alert_template.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	godmode/agentes/planned_downtime.editor.php,
+	include/ajax/module.php, include/functions_ui.php,
+	operation/tree.php, operation/agentes/status_monitor.php,
+	operation/agentes/datos_agente.php,
+	operation/reporting/reporting_viewer.php,
+	operation/reporting/graph_viewer.php, extensions/insert_data.php:
+	changed the code for to use the user/system language in the
+	datepicker.
+
 2013-06-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/jquery-ui-1.10.0.custom.css

@@ -193,6 +193,8 @@ if ($view_graph) {
 	work if the date is not correct because php is returning. */
 	
 	ui_require_jquery_file ("ui-timepicker-addon");
+	ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 	?>
 	<script language="javascript" type="text/javascript">
 	
@@ -208,7 +210,9 @@ if ($view_graph) {
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
+		
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+		
 		$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 	});
 	</script>

@@ -649,6 +649,8 @@ treeview_printTree($activeTab);
 enterprise_hook('close_meta_frame');
 
 ui_require_jquery_file ("ui-timepicker-addon");
+ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 
 ?>
 
@@ -892,18 +894,18 @@ ui_require_jquery_file ("ui-timepicker-addon");
 			
 		$("#text-date_from, #text-date_to").datepicker ();
 		
-		$.datepicker.regional["<?php echo get_user_language(); ?>"];
+		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 	}
 	datetime_picker_callback();
 	
 	function refresh_pagination_callback (module_id, id_agent, server_name) {
-		$(".pagination").click( function() {		
+		$(".pagination").click( function() {
 			var classes = $(this).attr('class');
 			classes = classes.split(' ');
 			var offset_class = classes[1];
 			offset_class = offset_class.split('_');
 			var offset = offset_class[1];
-		
+			
 			var period = $('#period').val();
 			
 			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);

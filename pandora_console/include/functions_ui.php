@@ -1064,7 +1064,7 @@ function ui_require_css_file ($name, $path = 'include/styles/') {
 function ui_require_javascript_file ($name, $path = 'include/javascript/') {
 	global $config;
 	
-	$filename = $path.$name.'.js';
+	$filename = $path . $name . '.js';
 	
 	if (! isset ($config['js']))
 		$config['js'] = array ();
@@ -1073,7 +1073,7 @@ function ui_require_javascript_file ($name, $path = 'include/javascript/') {
 		return true;
 	
 	/* We checks two paths because it may fails on enterprise */
-	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
+	if (! file_exists ($filename) && ! file_exists ($config['homedir'] . '/' . $filename))
 		return false;
 	
 	if (defined('METACONSOLE')) {

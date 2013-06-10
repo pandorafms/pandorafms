@@ -294,6 +294,8 @@ else {
 }
 
 ui_require_jquery_file ("ui-timepicker-addon");
+ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -309,8 +311,10 @@ $(document).ready (function () {
 		secondText: '<?php echo __('Second');?>',
 		currentText: '<?php echo __('Now');?>',
 		closeText: '<?php echo __('Close');?>'});
-	$("#text-date_from, #text-date_to").datepicker ();
-	$.datepicker.regional["<?php echo get_user_language(); ?>"];
+	
+	$("#text-date_from, #text-date_to").datepicker();
+	
+	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 });
 </script>
 

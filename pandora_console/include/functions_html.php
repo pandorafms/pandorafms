@@ -1655,11 +1655,6 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 			$src = '../../' . $src;
 		}
 	}
-	else {
-		if (!$relative) {
-			$src = ui_get_full_url($src);
-		}
-	}
 	
 	// Only return src field of image
 	if ($return_src) {

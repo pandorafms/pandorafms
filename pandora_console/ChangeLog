@@ -1,5 +1,10 @@
 2013-06-11 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_html.php: revert completly the
+	"html_print_image".
+
+2013-06-11 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_html.php: revert my own changes in
 	"html_print_image", the code didn't run fine.
 	

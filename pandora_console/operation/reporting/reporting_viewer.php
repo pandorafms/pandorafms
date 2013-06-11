@@ -64,13 +64,13 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time&pure=$pure";
 
 $options['main']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
-			html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
+	html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
 
 $options['list_items']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
-			html_print_image("images/list.png", true, array ("title" => __('List items'))) .'</a>';
+	html_print_image("images/list.png", true, array ("title" => __('List items'))) .'</a>';
 
 $options['item_editor']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $id_report . '&pure='.$pure.'">' . 
-			html_print_image("images/pen.png", true, array ("title" => __('Item editor'))) .'</a>';
+	html_print_image("images/pen.png", true, array ("title" => __('Item editor'))) .'</a>';
 
 if (enterprise_installed()) {
 	$options = reporting_enterprise_add_Tabs($options, $id_report);
@@ -80,7 +80,7 @@ $options['view'] = array('active' => true,
 	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $id_report . '&pure='.$pure.'">' . 
 		html_print_image("images/operation.png", true, array ("title" => __('View report'))) .'</a>');
 
-if(!defined('METACONSOLE')) {
+if (!defined('METACONSOLE')) {
 	if ($config["pure"] == 0) {
 		$options['screen']['text'] = "<a href='$url&pure=1&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
 			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))

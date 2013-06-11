@@ -281,7 +281,7 @@ function update_template ($step) {
 		}
 		
 		// Different datetimes format for oracle
-		switch ($config['dbtype']){
+		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
 				$values['time_from'] = $time_from;
@@ -499,10 +499,12 @@ if ($step == 2) {
 	$table->data[0][2] = __('Use special days list');
 	$table->data[0][3] = html_print_checkbox ('special_day', 1, $special_day, true);
 	
-	$table->data[1][0] = __('Time from');
+	$table->data[1][0] = __('Time from') . ' ' .
+		ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
 	$table->data[1][1] = html_print_input_text ('time_from', $time_from, '', 7, 7,
 		true);
-	$table->data[1][2] = __('Time to');
+	$table->data[1][2] = __('Time to') . ' ' .
+		ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
 	$table->data[1][3] = html_print_input_text ('time_to', $time_to, '', 7, 7,
 		true);
 	
@@ -554,8 +556,9 @@ if ($step == 2) {
 			break;
 	}
 	$table->data[4][1] = html_print_select_from_sql ($sql_query,
-		'default_action', $default_action, '', __('None'), 0,
-		true, false, false).ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
+			'default_action', $default_action, '', __('None'), 0,
+			true, false, false) .
+		ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
 }
 else if ($step == 3) {
 	/* Alert recover */

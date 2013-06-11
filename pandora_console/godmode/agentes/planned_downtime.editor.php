@@ -330,14 +330,22 @@ $table->data[5][1] = "
 	<div id='once_time' style='display: none;'>
 		<table>
 			<tr>
-				<td>" . __('From:') . "</td>
+				<td>" .
+					__('From:') .
+					ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
+					ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
+					"</td>
 				<td>".
 				html_print_input_text ('once_date_from', $once_date_from, '', 10, 10, true) .
 				html_print_input_text ('once_time_from', $once_time_from, '', 7, 7, true) . 
 				"</td>
 			</tr>
 			<tr>
-				<td>" . __('To:') . "</td>
+				<td>" .
+					__('To:') .
+					ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
+					ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
+					"</td>
 				<td>".
 				html_print_input_text ('once_date_to', $once_date_to, '', 10, 10, true) .
 				html_print_input_text ('once_time_to', $once_time_to, '', 7, 7, true) . 

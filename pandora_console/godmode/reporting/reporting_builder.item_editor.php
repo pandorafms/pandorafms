@@ -78,8 +78,8 @@ $thursday = true;
 $friday = true;
 $saturday = true;
 $sunday = true;
-$time_from = '00:00';
-$time_to = '23:59';
+$time_from = '00:00:00';
+$time_to = '23:59:00';
 $show_graph = 0;
 $sla_sorted_by = 0;
 $id_agents = '';
@@ -1344,7 +1344,7 @@ $(document).ready (function () {
 	
 	$("#text-time_to, #text-time_from").timepicker({
 		showSecond: true,
-		timeFormat: 'hh:mm:ss',
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 		timeOnlyTitle: '<?php echo __('Choose time');?>',
 		timeText: '<?php echo __('Time');?>',
 		hourText: '<?php echo __('Hour');?>',

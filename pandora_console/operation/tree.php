@@ -887,7 +887,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	function datetime_picker_callback() {
 		$("#text-time_from, #text-time_to").timepicker({
 			showSecond: true,
-			timeFormat: 'hh:mm:ss',
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 			timeOnlyTitle: '<?php echo __('Choose time');?>',
 			timeText: '<?php echo __('Time');?>',
 			hourText: '<?php echo __('Hour');?>',
@@ -896,7 +896,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
 			
-		$("#text-date_from, #text-date_to").datepicker ();
+		$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 		
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 	}

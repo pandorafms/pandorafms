@@ -1,5 +1,18 @@
 2013-06-11 Miguel de Dios <miguel.dedios@artica.es>
 
+	* extensions/insert_data.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	godmode/agentes/planned_downtime.editor.php,
+	include/ajax/module.php, include/constants.php, operation/tree.php,
+	operation/netflow/nf_live_view.php,
+	operation/reporting/reporting_viewer.php,
+	operation/reporting/graph_viewer.php,
+	operation/agentes/datos_agente.php: fixed the date and time format
+	and set a help tip to say the Pandora's format.
+
+2013-06-11 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_html.php: revert completly the
 	"html_print_image".
 

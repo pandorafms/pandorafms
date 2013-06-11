@@ -22,6 +22,11 @@
 define ('ENTERPRISE_NOT_HOOK', -1);
 
 
+/**/
+define('DATE_FORMAT', 'Y/m/d');
+define('DATE_FORMAT_JS', 'yy/mm/d');
+define('TIME_FORMAT', 'H:i:s');
+define('TIME_FORMAT_JS', 'HH:mm:ss');
 
 /* Events state constants */
 define ('EVENT_NEW', 0);

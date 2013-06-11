@@ -46,14 +46,14 @@ $id_agent = get_parameter ("id_agent");
 $id_group = (int) get_parameter ("id_group", 0);
 $name = (string) get_parameter ('name', '');
 $description = (string) get_parameter ('description', '');
-$once_date_from = (string) get_parameter ('once_date_from', date ('Y-m-j'));
-$once_time_from = (string) get_parameter ('once_time_from', date ('h:iA'));
-$once_date_to = (string) get_parameter ('once_date_to', date ('Y-m-j'));
-$once_time_to = (string) get_parameter ('once_time_to', date ('h:iA'));
+$once_date_from = (string) get_parameter ('once_date_from', date(DATE_FORMAT));
+$once_time_from = (string) get_parameter ('once_time_from', date(TIME_FORMAT));
+$once_date_to = (string) get_parameter ('once_date_to', date(DATE_FORMAT));
+$once_time_to = (string) get_parameter ('once_time_to', date(TIME_FORMAT));
 $periodically_day_from = (int) get_parameter ('periodically_day_from', 1);
 $periodically_day_to = (int) get_parameter ('periodically_day_to', 31);
-$periodically_time_from = (string) get_parameter ('periodically_time_from', date ('h:iA'));
-$periodically_time_to = (string) get_parameter ('periodically_time_to', date ('h:iA'));
+$periodically_time_from = (string) get_parameter ('periodically_time_from', date(TIME_FORMAT));
+$periodically_time_to = (string) get_parameter ('periodically_time_to', date(TIME_FORMAT));
 
 $first_create = (int) get_parameter ('first_create', 0);
 
@@ -88,8 +88,9 @@ if ($insert_downtime_agent == 1) {
 	$agents = (array)get_parameter("id_agents", array());
 	$module_names = (array)get_parameter("module", array());
 	$all_modules = false;
-	if (empty($module_names))
+	if (empty($module_names)) {
 		$all_modules = true;
+	}
 	else {
 		//It is empty.
 		if ($module_names[0] == "0")
@@ -258,17 +259,20 @@ if ($id_downtime > 0) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ("SELECT *
-				FROM `tplanned_downtime` WHERE `id` = %d",
+				FROM `tplanned_downtime`
+				WHERE `id` = %d",
 				$id_downtime);
 			break;
 		case "postgresql":
 			$sql = sprintf ("SELECT *
-				FROM \"tplanned_downtime\" WHERE \"id\" = %d",
+				FROM \"tplanned_downtime\"
+				WHERE \"id\" = %d",
 				$id_downtime);
 			break;
 		case "oracle":
 			$sql = sprintf ("SELECT *
-				FROM tplanned_downtime WHERE id = %d",
+				FROM tplanned_downtime
+				WHERE id = %d",
 				$id_downtime);
 			break;
 	}
@@ -276,10 +280,10 @@ if ($id_downtime > 0) {
 	$result = db_get_row_sql ($sql);
 	$name = $result["name"];
 	$description = $result["description"];
-	$once_date_from = strftime ('%Y-%m-%d', $result["date_from"]);
-	$once_date_to = strftime ('%Y-%m-%d', $result["date_to"]);
-	$once_time_from = strftime ('%I:%M%p', $result["date_from"]);
-	$once_time_to = strftime ('%I:%M%p', $result["date_to"]);
+	$once_date_from = date(DATE_FORMAT, $result["date_from"]);
+	$once_date_to = date(DATE_FORMAT, $result["date_to"]);
+	$once_time_from = date(TIME_FORMAT, $result["date_from"]);
+	$once_time_to = date(TIME_FORMAT, $result["date_to"]);
 	$monday = $result['monday'];
 	$tuesday = $result['tuesday'];
 	$wednesday = $result['wednesday'];
@@ -347,9 +351,10 @@ $table->data[5][1] = "
 				<td>" . __('Type Periodicity:') . "</td>
 				<td>".
 					html_print_select(array(
-						'weekly' => __('Weekly'),
-						'monthly' => __('Monthly')),
-					'type_periodicity', $type_periodicity, 'change_type_periodicity();', '', 0, true) .
+							'weekly' => __('Weekly'),
+							'monthly' => __('Monthly')),
+						'type_periodicity', $type_periodicity,
+						'change_type_periodicity();', '', 0, true) .
 				"</td>
 			</tr>
 			<tr>
@@ -511,7 +516,8 @@ if ($id_downtime > 0) {
 	
 	$downtimes = db_get_all_rows_sql ($sql);
 	if ($downtimes === false) {
-		echo '<div class="nf">'. __('There are no scheduled downtimes').'</div>';
+		echo '<div class="nf">' .
+			__('There are no scheduled downtimes') . '</div>';
 	}
 	else {
 		$table->id = 'list';
@@ -535,9 +541,9 @@ if ($id_downtime > 0) {
 			
 			$data[1] = db_get_sql ("SELECT nombre
 				FROM tgrupo
-				WHERE id_grupo = ". $downtime["id_grupo"]);
+				WHERE id_grupo = " . $downtime["id_grupo"]);
 			
-			$data[2] = ui_print_os_icon ($downtime["id_os"], true, true);
+			$data[2] = ui_print_os_icon($downtime["id_os"], true, true);
 			
 			$data[3] = $downtime["ultimo_contacto"];
 			
@@ -567,9 +573,10 @@ if ($id_downtime > 0) {
 			$data[5] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor'.
 				'&amp;id_agent=' . $downtime["id_agente"] . 
 				'&amp;delete_downtime_agent=1' .
-				'&amp;id_downtime_agent='.$downtime["id"] .
-				'&amp;id_downtime='.$id_downtime.'">' .
-				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . "</a>";
+				'&amp;id_downtime_agent=' . $downtime["id"] .
+				'&amp;id_downtime=' . $id_downtime . '">' .
+				html_print_image("images/cross.png", true,
+					array("border" => '0', "alt" => __('Delete'))) . "</a>";
 			
 			$table->data['agent_' . $downtime["id_agente"]] = $data;
 		}
@@ -922,7 +929,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		
 		$("#text-periodically_time_from, #text-periodically_time_to, #text-once_time_from, #text-once_time_to").timepicker({
 			showSecond: true,
-			timeFormat: 'hh:mm:ss',
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 			timeOnlyTitle: '<?php echo __('Choose time');?>',
 			timeText: '<?php echo __('Time');?>',
 			hourText: '<?php echo __('Hour');?>',
@@ -930,7 +937,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
-		$("#text-once_date_from, #text-once_date_to").datepicker ();
+		$("#text-once_date_from, #text-once_date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 		
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 		

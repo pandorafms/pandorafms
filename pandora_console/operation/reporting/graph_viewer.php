@@ -53,10 +53,10 @@ if ($delete_graph) {
 if ($view_graph) {
 	$sql="SELECT * FROM tgraph_source WHERE id_graph = $id_graph";
 	$sources = db_get_all_rows_sql($sql);
-
+	
 	$sql="SELECT * FROM tgraph WHERE id_graph = $id_graph";
 	$graph = db_get_row_sql($sql);
-
+	
 	$id_user = $graph["id_user"];
 	$private = $graph["private"];
 	$width = $graph["width"];
@@ -79,12 +79,12 @@ if ($view_graph) {
 				break;
 		}
 	}
-
+	
 	// Get different date to search the report.
-	$date = (string) get_parameter ('date', date ('Y-m-j'));
-	$time = (string) get_parameter ('time', date ('h:iA'));
-	$unixdate = strtotime ($date.' '.$time);
-
+	$date = (string) get_parameter ('date', date(DATE_FORMAT));
+	$time = (string) get_parameter ('time', date(TIME_FORMAT));
+	$unixdate = strtotime ($date . ' ' . $time);
+	
 	$period = (int) get_parameter ('period');
 	if (! $period)
 		$period = $graph["period"];
@@ -97,7 +97,7 @@ if ($view_graph) {
 		$stacked = $graph["stacked"];
 	
 	$name = $graph["name"];
-	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)){
+	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)) {
 		db_pandora_audit("ACL Violation","Trying to access to a custom graph not allowed");
 		include ("general/noaccess.php");
 		exit;
@@ -119,9 +119,10 @@ if ($view_graph) {
 	}
 	
 	$options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=' . $id_graph . '">' . 
-					html_print_image("images/operation.png", true, array ("title" => __('View graph'))) .'</a>';
+		html_print_image("images/operation.png", true,
+			array ("title" => __('View graph'))) .'</a>';
 	$options['view']['active'] = true;
-			
+	
 	if ($config["pure"] == 0) {
 		$options['screen']['text'] = "<a href='$url&pure=1'>"
 			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
@@ -137,7 +138,9 @@ if ($view_graph) {
 	}
 	
 	// Header
-	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom graphs')." - ".$graph['name'], "images/chart.png", false, "", false, $options);
+	ui_print_page_header (__('Reporting') . " &raquo;  " .
+		__('Custom graphs') . " - " . $graph['name'],
+		"images/chart.png", false, "", false, $options);
 	
 	echo "<table class='databox_frame' cellpadding='0' cellspacing='0' width='98%'>";
 	echo "<tr><td>";
@@ -148,7 +151,7 @@ if ($view_graph) {
 	echo "<table class='databox_frame' cellpadding='4' cellspacing='4' style='width: 98%'>";
 	echo "<tr>";
 	echo "<td>";
-	echo "<b>".__('Date')."</b>"." ";
+	echo "<b>" . __('Date') . "</b>" . " ";
 	echo "</td>";
 	echo "<td>";
 	echo html_print_input_text ('date', $date, '', 12, 10, true). ' ';
@@ -157,7 +160,7 @@ if ($view_graph) {
 	echo html_print_input_text ('time', $time, '', 7, 7, true). ' ';
 	echo "</td>";
 	echo "<td class='datos'>";
-	echo "<b>".__('Time range')."</b>";
+	echo "<b>" . __('Time range') . "</b>";
 	echo "</td>";
 	echo "<td class='datos'>";
 	
@@ -202,7 +205,7 @@ if ($view_graph) {
 		$("#loading").slideUp ();
 		$("#text-time").timepicker({
 			showSecond: true,
-			timeFormat: 'hh:mm:ss',
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 			timeOnlyTitle: '<?php echo __('Choose time');?>',
 			timeText: '<?php echo __('Time');?>',
 			hourText: '<?php echo __('Hour');?>',
@@ -213,7 +216,11 @@ if ($view_graph) {
 		
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 		
-		$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
+		$("#text-date").datepicker({
+			dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+			changeMonth: true,
+			changeYear: true,
+			showAnim: "slideDown"});
 	});
 	</script>
 	

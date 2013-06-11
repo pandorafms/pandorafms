@@ -335,8 +335,8 @@ $type = '';
 $value = '';
 $max = '';
 $min = '';
-$time_from = '12:00';
-$time_to = '12:00';
+$time_from = '12:00:00';
+$time_to = '12:00:00';
 $monday = true;
 $tuesday = true;
 $wednesday = true;
@@ -948,7 +948,7 @@ elseif ($step == 2) {
 ?>
 	$('#text-time_from, #text-time_to').timepicker({
 		showSecond: true,
-		timeFormat: 'hh:mm:ss',
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 		timeOnlyTitle: '<?php echo __('Choose time');?>',
 		timeText: '<?php echo __('Time');?>',
 		hourText: '<?php echo __('Hour');?>',

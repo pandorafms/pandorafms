@@ -46,16 +46,16 @@ enterprise_include("include/functions_reporting.php");
 $pure = get_parameter('pure',0);
 
 // Get different date to search the report.
-$date = (string) get_parameter ('date', date ('Y-m-j'));
-$time = (string) get_parameter ('time', date ('h:iA'));
+$date = (string) get_parameter ('date', date(DATE_FORMAT));
+$time = (string) get_parameter ('time', date(TIME_FORMAT));
 
-$datetime = strtotime ($date.' '.$time);
+$datetime = strtotime ($date . ' ' . $time);
 $report["datetime"] = $datetime;
 
 // Calculations in order to modify init date of the report
-$date_init_less = strtotime(date ('Y-m-j')) - 86400;
-$date_init = get_parameter('date_init', date ('Y-m-j', $date_init_less));
-$time_init = get_parameter('time_init', date ('h:iA', $date_init_less));
+$date_init_less = strtotime(date('Y-m-j')) - 86400;
+$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
 $datetime_init = strtotime ($date_init.' '.$time_init);
 $enable_init_date = get_parameter('enable_init_date', 0);
 
@@ -194,7 +194,7 @@ $(document).ready (function () {
 	$("#loading").slideUp ();
 	$("#text-time").timepicker({
 			showSecond: true,
-			timeFormat: 'hh:mm:ss',
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 			timeOnlyTitle: '<?php echo __('Choose time');?>',
 			timeText: '<?php echo __('Time');?>',
 			hourText: '<?php echo __('Hour');?>',
@@ -206,6 +206,7 @@ $(document).ready (function () {
 	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 	
 	$("#text-date").datepicker({
+		dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
 		changeMonth: true,
 		changeYear: true,
 		showAnim: "slideDown"});
@@ -213,7 +214,7 @@ $(document).ready (function () {
 	
 	$('[id^=text-time_init]').timepicker({
 		showSecond: true,
-		timeFormat: 'hh:mm:ss',
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 		timeOnlyTitle: '<?php echo __('Choose time');?>',
 		timeText: '<?php echo __('Time');?>',
 		hourText: '<?php echo __('Hour');?>',
@@ -223,6 +224,7 @@ $(document).ready (function () {
 		closeText: '<?php echo __('Close');?>'});
 	
 	$('[id^=text-date_init]').datepicker ({
+		dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
 		changeMonth: true,
 		changeYear: true,
 		showAnim: "slideDown"});

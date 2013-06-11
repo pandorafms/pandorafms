@@ -621,11 +621,21 @@ html_print_input_hidden('id_item', $idItem);
 						</td>
 					</tr>
 					<tr>
-						<td><?php echo __('Time from');?></td>
+						<td>
+							<?php
+							echo __('Time from') .
+							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
+							?>
+						</td>
 						<td colspan="6"><?php html_print_input_text ('time_from', $time_from, '', 7, 7);?></td>
 					</tr>
 					<tr>
-						<td><?php echo __('Time to');?></td>
+						<td>
+							<?php
+							echo __('Time to') .
+							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
+							?>
+						</td>
 						<td colspan="6"><?php html_print_input_text ('time_to', $time_to, '', 7, 7);?></td>
 					</tr>
 				</table>
@@ -697,43 +707,6 @@ html_print_input_hidden('id_item', $idItem);
 					$params['input_name'] = 'agent_text';
 				}
 				ui_print_agent_autocomplete_input($params);
-				//////////////////
-				/*
-				$params = array();
-				$params['show_helptip'] = false;
-				$params['input_name'] = 'agent';
-				// Input id is only used in metaconsole events
-				if ($meta) {
-					$params['input_id'] = 'agent_autocomplete';
-				}
-				$params['value'] = $agent_name;
-				
-				$params['javascript_is_function_select'] = true;
-				$params['selectbox_id'] = 'id_agent_module';
-				$params['add_none_module'] = false;
-				$params['use_hidden_input_idagent'] = true;
-				$params['hidden_input_idagent_id'] = 'hidden-id_agent';
-				if ($meta) {
-					$params['use_input_server'] = true;
-					$params['input_server_id'] = 'hidden-server_name';
-					//It is a page in the new metaconsole.
-					$params['metaconsole_enabled'] = true;
-				}
-				
-				//ui_print_agent_autocomplete_input($params);
-				
-				// Print a specific control to metaconsole events
-				if ($meta) {
-					$params['input_id'] = 'agent_autocomplete_events';
-					$params['javascript_page'] = 'include/ajax/agent';  //'enterprise/meta/include/ajax/events.ajax';
-					$params['javascript_is_function_select'] = false;
-					//$params['use_hidden_input_idagent'] = false;
-					$params['use_input_server'] = false;
-					$params['input_name'] = 'agent_text';
-					
-					ui_print_agent_autocomplete_input($params);
-				}
-				*/
 				?>
 			</td>
 		</tr>
@@ -741,8 +714,10 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Module'); ?></td>
 			<td style="max-width: 180px">
 				<?php
-				if($idAgent) {
-					$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  " . $idAgent . " AND  delete_pending = 0";
+				if ($idAgent) {
+					$sql = "SELECT id_agente_modulo, nombre
+						FROM tagente_modulo
+						WHERE id_agente =  " . $idAgent . " AND  delete_pending = 0";
 					
 					if ($meta) {
 						$connection = metaconsole_get_connection($server_name);

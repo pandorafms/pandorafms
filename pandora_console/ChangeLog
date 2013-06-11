@@ -1,5 +1,14 @@
 2013-06-11 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/alerts/configure_alert_template.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	godmode/agentes/planned_downtime.editor.php,
+	operation/reporting/reporting_viewer.php,
+	operation/netflow/nf_live_view.php: added lost help tips for the
+	formats time and date.
+
+2013-06-11 Miguel de Dios <miguel.dedios@artica.es>
+
 	* extensions/insert_data.php,
 	godmode/alerts/configure_alert_template.php,
 	godmode/reporting/reporting_builder.item_editor.php,

@@ -39,7 +39,7 @@ function createXMLData($agent, $agentModule, $time, $data) {
 		io_safe_output($agent['agent_version']), $time,
 		io_safe_output($agent['nombre']), $agent['timezone_offset'],
 		io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
-		
+	
 	if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['nombre']) . '.' . strtotime($time) . '.data', $xml)) {
 		return false;
 	}
@@ -52,7 +52,7 @@ function mainInsertData() {
 	global $config;
 	
 	ui_print_page_header (__("Insert data"), "images/extensions.png", false, "", true, "");
-
+	
 	if (! check_acl ($config['id_user'], 0, "AW") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
@@ -63,8 +63,8 @@ function mainInsertData() {
 	$id_agent = (string)get_parameter('id_agent', '');
 	$id_agent_module = (int)get_parameter('id_agent_module', '');
 	$data = (string)get_parameter('data');
-	$date = (string) get_parameter ('date', date ('Y-m-d'));
-	$time = (string) get_parameter ('time', date ('h:00A'));
+	$date = (string) get_parameter('date', date(DATE_FORMAT));
+	$time = (string) get_parameter('time', date(TIME_FORMAT));
 	if (isset($_FILES['csv'])) {
 		if ($_FILES['csv']['error'] != 4) {
 			$csv = $_FILES['csv'];
@@ -87,7 +87,7 @@ function mainInsertData() {
 			$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
 			
 			$date2 = str_replace('-', '/', $date);
-			$time2 = DATE("H:i", strtotime($time));
+			$time2 = DATE(TIME_FORMAT, strtotime($time));
 			
 			$date_xml = $date2 . ' ' . $time2 . ':00';
 			
@@ -194,7 +194,7 @@ function mainInsertData() {
 		
 		$('#text-time').timepicker({
 			showSecond: true,
-			timeFormat: 'hh:mm:ss',
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 			timeOnlyTitle: '<?php echo __('Choose time');?>',
 			timeText: '<?php echo __('Time');?>',
 			hourText: '<?php echo __('Hour');?>',
@@ -203,7 +203,7 @@ function mainInsertData() {
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
 		
-		$("#text-date").datepicker ();
+		$("#text-date").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 		
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 	});

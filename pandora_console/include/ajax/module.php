@@ -58,7 +58,7 @@ if ($get_plugin_macros) {
 $get_module_detail = get_parameter ('get_module_detail', 0);
 
 if ($get_module_detail) {
-
+	
 	$module_id = get_parameter ('id_module');
 	$period = get_parameter ("period", 86400);
 	$group = agents_get_agentmodule_group ($module_id);
@@ -81,7 +81,7 @@ if ($get_module_detail) {
 	$formtable->class = "databox";
 	$formtable->data = array ();
 	$formtable->size = array ();
-
+	
 	$periods = array(SECONDS_5MINUTES =>__('5 minutes'),
 		SECONDS_30MINUTES =>__('30 minutes'),
 		SECONDS_1HOUR =>__('1 hour'),
@@ -106,17 +106,17 @@ if ($get_module_detail) {
 	
 	$formtable->data[1][0] = html_print_radio_button_extended ("selection_mode", 'range','', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Specify time range");
 	$formtable->data[1][1] = __('Timestamp from:');
-
+	
 	$formtable->data[1][2] = html_print_input_text ('date_from', $date_from, '', 10, 10, true);
 	$formtable->data[1][2] .= html_print_input_text ('time_from', $time_from, '', 9, 7, true);
-
+	
 	$formtable->data[1][1] .= '<br />';
 	$formtable->data[1][1] .= __('Timestamp to:');
-
+	
 	$formtable->data[1][2] .= '<br />';
 	$formtable->data[1][2] .= html_print_input_text ('date_to', $date_to, '', 10, 10, true);
 	$formtable->data[1][2] .= html_print_input_text ('time_to', $time_to, '', 9, 7, true);
-
+	
 	html_print_table($formtable);
 	
 	$moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($module_id));
@@ -133,10 +133,15 @@ if ($get_module_detail) {
 		$table->width = "100%";
 		
 		if ($selection_mode == "fromnow") {
-			$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+			$sql_body = sprintf ("FROM tagente_datos_log4x
+				WHERE id_agente_modulo = %d AND utimestamp > %d
+				ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 		}
 		else {
-			$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
+			$sql_body = sprintf ("FROM tagente_datos_log4x
+				WHERE id_agente_modulo = %d AND utimestamp >= %d
+					AND utimestamp <= %d
+				ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
 		}
 	
 		$columns = array(
@@ -147,43 +152,72 @@ if ($get_module_detail) {
 		);
 	}
 	else if (preg_match ("/string/", $moduletype_name)) {
-
+		
 		if ($selection_mode == "fromnow") {
-			$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+			$sql_body = sprintf (" FROM tagente_datos_string
+				WHERE id_agente_modulo = %d AND utimestamp > %d
+				ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 		}
 		else {
-			$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
+			$sql_body = sprintf (" FROM tagente_datos_string
+				WHERE id_agente_modulo = %d AND utimestamp >= %d
+					AND utimestamp <= %d
+				ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
 		}
 		
 		$columns = array(
-			"Timestamp" => array("utimestamp", 			"modules_format_timestamp", 		"align" => "left"),
-			"Data" => array("datos", 				"modules_format_data", 				"align" => "left"),
-			"Time" => array("utimestamp", 			"modules_format_time", 				"align" => "center")
+			"Timestamp" => array(
+				"utimestamp",
+				"modules_format_timestamp",
+				"align" => "left"),
+			"Data" => array(
+				"datos",
+				"modules_format_data",
+				"align" => "left"),
+			"Time" => array(
+				"utimestamp",
+				"modules_format_time",
+				"align" => "center")
 		);
 	}
 	else {
 		if ($selection_mode == "fromnow") {
-			$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+			$sql_body = sprintf (" FROM tagente_datos
+				WHERE id_agente_modulo = %d
+					AND utimestamp > %d
+				ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 		}
 		else {
-			$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
-		}	
+			$sql_body = sprintf (" FROM tagente_datos
+				WHERE id_agente_modulo = %d
+					AND utimestamp >= %d AND utimestamp <= %d
+				ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
+		}
 		
 		$columns = array(
-			"Timestamp" => array("utimestamp", 			"modules_format_timestamp", 	"align" => "left"),
-			"Data" => array("datos", 				"modules_format_data", 			"align" => "left"),
-			"Time" => array("utimestamp", 			"modules_format_time", 			"align" => "center")
+			"Timestamp" => array(
+				"utimestamp",
+				"modules_format_timestamp",
+				"align" => "left"),
+			"Data" => array(
+				"datos",
+				"modules_format_data",
+				"align" => "left"),
+			"Time" => array(
+				"utimestamp",
+				"modules_format_time",
+				"align" => "center")
 		);
 	}
-
+	
 	$sql_body = io_safe_output($sql_body);
 	// Clean all codification characters
-
+	
 	$sql = "SELECT * " . $sql_body;
 	$sql_count = "SELECT count(*) " . $sql_body;
-
+	
 	$count = db_get_value_sql ($sql_count, $conexion);
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql .= " LIMIT " . $offset . "," . $block_size;
@@ -198,13 +232,13 @@ if ($get_module_detail) {
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
-
+	
 	$result = db_get_all_rows_sql ($sql, false, true, $conexion);
-
+	
 	if ($result === false) {
 		$result = array ();
 	}
-
+	
 	if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 		for ($i=0; $i < count($result); $i++) {
 			unset($result[$i]['rnum']);
@@ -213,7 +247,7 @@ if ($get_module_detail) {
 	
 	$table->width = '98%';
 	$table->data = array();
-
+	
 	$index = 0;
 	foreach($columns as $col => $attr) {
 		$table->head[$index] = $col;
@@ -226,10 +260,10 @@ if ($get_module_detail) {
 		
 		$index++;
 	}
-
+	
 	$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
 		'nombre', 'web_content_string');
-
+	
 	foreach ($result as $row) {
 		$data = array ();
 		
@@ -238,9 +272,9 @@ if ($get_module_detail) {
 			array('id_agente_modulo' => $row['id_agente_modulo'],
 				'id_tipo_modulo' => $id_type_web_content_string));
 		
-		foreach($columns as $col => $attr) {
+		foreach ($columns as $col => $attr) {
 			if ($attr[1] != "modules_format_data") {
-				$data[] = $attr[1] ($row[$attr[0]]);		
+				$data[] = $attr[1] ($row[$attr[0]]);
 			
 			}
 			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
@@ -254,19 +288,19 @@ if ($get_module_detail) {
 				// Because this *SHIT* of print_table monster, I cannot format properly this cells
 				// so, eat this, motherfucker :))
 				
-				$datos = "<span style='font-family: mono,monospace;'>".$datos."</span>";
+				$datos = "<span style='font-family: mono,monospace;'>" . $datos . "</span>";
 				
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
-				$data[$attr[1]] = $datos;						
+				$data[$attr[1]] = $datos;
 			}
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web
 				//without HTML entities
 				
-				$data[$attr[1]] = io_safe_input($row[$attr[0]]);		
+				$data[$attr[1]] = io_safe_input($row[$attr[0]]);
 			}
 			else {
-				// Just a string of alphanumerical data... just do print							
+				// Just a string of alphanumerical data... just do print
 				//Fixed the data from Selenium Plugin
 				if ($row[$attr[0]] != strip_tags($row[$attr[0]]))
 					$data[$attr[1]] = io_safe_input($row[$attr[0]]);
@@ -274,11 +308,12 @@ if ($get_module_detail) {
 					$data[$attr[1]] = $row[$attr[0]];
 			}
 		}
-					
+		
 		array_push ($table->data, $data);
-		if (count($table->data) > 200) break;
+		if (count($table->data) > 200)
+			break;
 	}
-
+	
 	if (empty ($table->data)) {
 		ui_print_error_message(__('No available data to show'));
 	}
@@ -286,8 +321,7 @@ if ($get_module_detail) {
 		ui_pagination($count, false, $offset);
 		html_print_table($table);
 	}
-		return;
-	}
-
-
+	
+	return;
+}
 ?>

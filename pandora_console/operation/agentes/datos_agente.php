@@ -41,10 +41,10 @@ else {
 }
 
 $selection_mode = get_parameter('selection_mode', 'fromnow');
-$date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
-$time_from = (string) get_parameter ('time_from', date ('h:iA'));
-$date_to = (string) get_parameter ('date_to', date ('Y-m-j'));
-$time_to = (string) get_parameter ('time_to', date ('h:iA'));
+$date_from = (string) get_parameter ('date_from', date(DATE_FORMAT));
+$time_from = (string) get_parameter ('time_from', date(TIME_FORMAT));
+$date_to = (string) get_parameter ('date_to', date(DATE_FORMAT));
+$time_to = (string) get_parameter ('time_to', date(TIME_FORMAT));
 
 if (! check_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 	db_pandora_audit("ACL Violation",
@@ -303,7 +303,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 $(document).ready (function () {
 	$("#text-time_from, #text-time_to").timepicker({
 		showSecond: true,
-		timeFormat: 'hh:mm:ss',
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 		timeOnlyTitle: '<?php echo __('Choose time');?>',
 		timeText: '<?php echo __('Time');?>',
 		hourText: '<?php echo __('Hour');?>',
@@ -312,7 +312,7 @@ $(document).ready (function () {
 		currentText: '<?php echo __('Now');?>',
 		closeText: '<?php echo __('Close');?>'});
 	
-	$("#text-date_from, #text-date_to").datepicker();
+	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 	
 	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 });

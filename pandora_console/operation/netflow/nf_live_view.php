@@ -86,8 +86,8 @@ $chart_type = get_parameter('chart_type', 'netflow_area');
 $max_aggregates = (int) get_parameter('max_aggregates', 0);
 $period = (int) get_parameter('period', '86400');
 $update_date = (int) get_parameter('update_date', 0);
-$date = get_parameter_post ('date', date ("Y/m/d", get_system_time ()));
-$time = get_parameter_post ('time', date ("H:i:s", get_system_time ()));
+$date = get_parameter_post ('date', date (DATE_FORMAT, get_system_time ()));
+$time = get_parameter_post ('time', date (TIME_FORMAT, get_system_time ()));
 $connection_name = get_parameter('connection_name', '');
 $interval_length = (int) get_parameter('interval_length', 300);
 
@@ -558,7 +558,7 @@ ui_require_jquery_file ("ui-timepicker-addon");
 	
 	$("#text-time").timepicker({
 		showSecond: true,
-		timeFormat: 'hh:mm:ss',
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
 		timeOnlyTitle: '<?php echo __('Choose time');?>',
 		timeText: '<?php echo __('Time');?>',
 		hourText: '<?php echo __('Hour');?>',
@@ -567,7 +567,7 @@ ui_require_jquery_file ("ui-timepicker-addon");
 		currentText: '<?php echo __('Now');?>',
 		closeText: '<?php echo __('Close');?>'});
 		
-	$("#text-date").datepicker ();
+	$("#text-date").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 	
 	$.datepicker.regional["<?php echo get_user_language(); ?>"];
 </script>

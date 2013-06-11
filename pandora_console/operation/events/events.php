@@ -205,7 +205,7 @@ $tag_without = json_decode($tag_without_json_clean, true);
 if (empty($tag_without)) $tag_without = array();
 $tag_without = array_diff($tag_without, array(0 => 0));	
 
-$search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
+$search = get_parameter ("search");
 
 users_get_groups ($config["id_user"], "IR");
 

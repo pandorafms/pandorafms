@@ -247,7 +247,7 @@ echo "</td></tr><tr>";
 
 // Free search
 echo "<td>" . __('Free search') . "<br>";
-html_print_input_text ('search', io_safe_output($search), '', 15);
+html_print_input_text ('search', $search, '', 15);
 echo '</td>';
 
 //Agent search

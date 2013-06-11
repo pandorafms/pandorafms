@@ -13,8 +13,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-$table->width = '100%';
+if(!isset($table->width)) {
+	$table->width = '100%';
+}
 $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
@@ -566,7 +567,7 @@ if (!empty ($table->data)) {
 		echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 	}
 	
-	echo '<div style="width: 98%; overflow-x: auto;">';
+	echo '<div style="width: ' . $table->width . '; overflow-x: auto;">';
 	html_print_table ($table);
 	echo '</div>';
 	

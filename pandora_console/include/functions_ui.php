@@ -787,11 +787,16 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 			$id_agent = modules_get_agentmodule_agent ($alert["id_agent_module"]);
 		}
 		
-		if ($agent_style !== false) {
-			$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled . " $agent_style", false, $console_url, $url_hash, $agent_name);
+		if (defined('METACONSOLE') && !can_user_access_node ()) {
+			$data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
 		}
 		else {
-			$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);		
+			if ($agent_style !== false) {
+				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled . " $agent_style", false, $console_url, $url_hash, $agent_name);
+			}
+			else {
+				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);		
+			}
 		}
 		
 		$data[$index['module_name']] =

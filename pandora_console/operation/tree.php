@@ -605,6 +605,8 @@ else {
 	ui_meta_print_header(__("Tree view"), $subsection, $subsections);
 }
 
+enterprise_hook('open_meta_frame');
+
 if(tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
 }
@@ -616,8 +618,6 @@ if (! defined ('METACONSOLE')) {
 else {
 	echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$activeTab.'&pure='.$pure.'">';
 }
-
-enterprise_hook('open_meta_frame');
 
 echo "<b>" . __('Agent status') . "</b>";
 

@@ -348,7 +348,7 @@ $table_advanced->data = array();
 
 $data = array();
 $data[0] = __('Free search') . '<br>';
-$data[0] .= html_print_input_text ('search', io_safe_output($search), '', 25, 255, true);
+$data[0] .= html_print_input_text ('search', $search, '', 25, 255, true);
 $data[1] = __('Agent search') . '<br>';
 $params = array();
 $params['show_helptip'] = true;

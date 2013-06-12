@@ -4184,16 +4184,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			foreach ($result as $row) {
 				$date = date ($config["date_format"], $row['utimestamp']);
 				$serialized = $row['datos'];
-				
-				$rowsUnserialize = (array)$serialized;
-				if (!empty($content['line_separator'])) {
-					$rowsUnserialize = explode($line_separator,
-						$serialized);
+				if (empty($content['line_separator']) ||
+					empty($serialized)) {
+						$rowsUnserialize = array($row['datos']);
 				}
-				
+				else {
+					$rowsUnserialize = explode($content['line_separator'], $serialized);
+				}
 				foreach ($rowsUnserialize as $rowUnser) {
-					$columnsUnserialize = (array)$rowUnser;
-					if (!empty($content['column_separator'])) {
+					if (empty($content['column_separator'])) {
+						$columnsUnserialize = array($rowUnser);
+					}
+					else {
 						$columnsUnserialize = explode($content['column_separator'], $rowUnser);
 					}
 					

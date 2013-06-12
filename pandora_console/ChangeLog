@@ -1,5 +1,13 @@
 2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: fixed the empty serialize vars.
+	
+	Fixes: #2276
+
+	MERGED FROM THE BRANCH PANDORA_4.0
+
+2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/tree.php: improved the source code style.
 	
 	* include/functions_networkmap.php: remove the link in metaconsole

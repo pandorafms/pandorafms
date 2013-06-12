@@ -1,5 +1,12 @@
 2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
 
+	* extensions/insert_data.php: fixed the label of notice about the
+	directory data_in.
+	
+	Fixes: #2271
+
+2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_graph.php: fixed when have empty label.
 	
 	Fixes: #2260

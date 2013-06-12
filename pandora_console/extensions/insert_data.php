@@ -39,7 +39,7 @@ function createXMLData($agent, $agentModule, $time, $data) {
 		io_safe_output($agent['agent_version']), $time,
 		io_safe_output($agent['nombre']), $agent['timezone_offset'],
 		io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
-		
+	
 	if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['nombre']) . '.' . strtotime($time) . '.data', $xml)) {
 		return false;
 	}
@@ -52,7 +52,7 @@ function mainInsertData() {
 	global $config;
 	
 	ui_print_page_header (__("Insert data"), "images/extensions.png", false, "", true, "");
-
+	
 	if (! check_acl ($config['id_user'], 0, "AW") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
@@ -100,7 +100,7 @@ function mainInsertData() {
 					
 					$result = createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
 					
-					if($result) {
+					if ($result) {
 						$done++;
 					}
 					else {
@@ -110,8 +110,8 @@ function mainInsertData() {
 			}
 			else {
 				$result = createXMLData($agent, $agentModule, $date_xml, $data);
-
-				if($result) {
+				
+				if ($result) {
 					$done++;
 				}
 				else {
@@ -120,16 +120,16 @@ function mainInsertData() {
 			}
 		}
 		
-		if($errors > 0) {
+		if ($errors > 0) {
 			$msg = sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
-			if($errors > 1) {
+			if ($errors > 1) {
 				$msg .= " ($errors)";
 			}
 			ui_print_error_message($msg);
 		}
-		if($done > 0){
+		if ($done > 0) {
 			$msg = sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
-			if($done > 1) {
+			if ($done > 1) {
 				$msg .= " ($done)";
 			}
 			ui_print_success_message($msg);
@@ -137,7 +137,8 @@ function mainInsertData() {
 	}
 	
 	echo '<div class="notify">';
-	echo __("Please check that the directory \"/var/spool/pandora/data_in\" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s.");
+	echo sprintf(__("Please check that the directory \"%s\" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s."),
+		$config['remote_config']);
 	echo '</div>';
 	
 	$table = null;
@@ -185,7 +186,7 @@ function mainInsertData() {
 <script type="text/javascript">
 	/* <![CDATA[ */
 	$(document).ready (function () {
-	
+		
 		$("#text_id_agent").autocomplete(
 			"ajax.php",
 			{
@@ -218,7 +219,7 @@ function mainInsertData() {
 		$("#text-date").datepicker ();
 		
 	});
-
+	
 	$("#text_id_agent").result (
 		function () {
 			selectAgent = true;

@@ -38,7 +38,13 @@ function pluginreg_extension_main () {
 		echo "<tr><td class='datos'><input type='file' name='plugin_upload' />";
 		echo "<td class='datos'><input type='submit' class='sub next' value='".__('Upload')."' />";
 		echo "</form></table>";
-		
+	
+
+		echo '<table class="databox" id="table1" width="98%" border="0" cellpadding="4" cellspacing="4">';
+                echo "<tr><td class='datos'>";
+		echo __("If you want to register manually the plugin, you can upload it using file manager."). "&nbsp;". "<a href='index.php?sec=gsetup&sec2=godmode/setup/file_manager&directory=attachment/plugin'>". "<b>".__("Use file manager to upload plugin executable file."). "</b></a> ".__("Plugin files will be uploaded to console in '/attachment/plugin' directory.");
+		echo "</td></tr></table>";
+	
 		return;
 	}
 	

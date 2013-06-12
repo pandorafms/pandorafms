@@ -2311,15 +2311,21 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 	$count = 0;
 	foreach ($data_result as $data_item) {
 		$count++;
+		$value = 0;
+		if (!empty($data_item["value"])) {
+			$value = $data_item["value"];
+		}
+		$label = __('Data');
+		if (!empty($data_item["label"])) {
+			$label = $data_item["label"];
+		}
 		switch ($type) {
 			case 'sql_graph_vbar': // vertical bar
-				$data[$data_item["label"]]['g'] = $data_item["value"];
-				break;
 			case 'sql_graph_hbar': // horizontal bar
-				$data[$data_item["label"]]['g'] = $data_item["value"];
+				$data[$label]['g'] = $value;
 				break;
 			case 'sql_graph_pie': // Pie
-				$data[$data_item["label"]] = $data_item["value"];
+				$data[$label] = $value;
 				break;
 		}
 	}

@@ -1,3 +1,10 @@
+2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/tree.php: improved the source code style.
+	
+	* include/functions_networkmap.php: remove the link in metaconsole
+	node and set the color.
+
 2013-06-12 Mario Pulido <mario.pulido@artica.es>
 
         * pandoradb.data.postgreSQL.sql,

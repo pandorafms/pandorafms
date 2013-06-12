@@ -1,3 +1,12 @@
+2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* pandora_server.spec: cleaned source code style.
+	
+	* pandora_server.redhat.spec: added the directories of collections
+	and remote configuration into the list of chmod perms.
+	
+	Fixes: #2290
+
 2013-06-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server_installer: Merged from 4.0 branch. Remove PERL libs

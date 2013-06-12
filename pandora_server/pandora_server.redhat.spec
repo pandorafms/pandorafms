@@ -162,5 +162,9 @@ exit 0
 /etc/pandora/pandora_server.conf.new
 
 %defattr(770,pandora,apache)
+%{_localstatedir}/spool/pandora
 %{_localstatedir}/spool/pandora/data_in
+%{_localstatedir}/spool/pandora/spool/pandora/data_in/md5
+%{_localstatedir}/spool/pandora/spool/pandora/data_in/collections
+%{_localstatedir}/spool/pandora/spool/pandora/data_in/conf
 

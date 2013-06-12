@@ -86,19 +86,19 @@ exit 0
 %post
 # Initial installation
 if [ "$1" = 1 ]; then
-
+	
 	chkconfig pandora_server on 
 	chkconfig tentacle_serverd on 
-
+	
 	echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
-   	echo "The manual can be reached at: man pandora or man pandora_server"
-   	echo "Pandora FMS Documentation is in: http://pandorafms.com"
-   	echo " "
-
+	echo "The manual can be reached at: man pandora or man pandora_server"
+	echo "Pandora FMS Documentation is in: http://pandorafms.com"
+	echo " "
+	
 	echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.hourly/pandora_db
 	chmod 750 /etc/cron.hourly/pandora_db
 	cp -aRf /usr/share/pandora_server/util/pandora_logrotate /etc/logrotate.d/pandora
-
+	
 	echo "Don't forget to start Tentacle Server daemon if you want to receive data using tentacle"
 fi
 

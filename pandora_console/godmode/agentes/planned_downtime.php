@@ -58,8 +58,8 @@ $only_alerts = (bool) get_parameter ('only_alerts', 0);
 ui_print_page_header (__("Planned Downtime") . ui_print_help_icon ('planned_downtime', true), "images/god1.png", false, "", true, "");
 
 // STOP DOWNTIME
-if ($stop_downtime == 1){
-	$sql = "SELECT * FROM tplanned_downtime where id=$id_downtime";
+if ($stop_downtime == 1) {
+	$sql = "SELECT * FROM tplanned_downtime where id = $id_downtime";
 	$result = db_get_row_sql($sql);
 	$name = $result['name'];
 	$description = $result['description'];
@@ -70,7 +70,7 @@ if ($stop_downtime == 1){
 	$date_stop = date ("Y-m-j",get_system_time ());
 	$time_stop = date ("h:iA",get_system_time ());
 	$date_time_stop = strtotime ($date_stop.' '.$time_stop);
-
+	
 	$values = array(
 		'name' => $name,
 		'description' => $description,
@@ -80,16 +80,16 @@ if ($stop_downtime == 1){
 		'id_group' => $id_group,
 		'only_alerts' => $only_alerts
 		);
-
+	
 	$result = db_process_sql_update('tplanned_downtime', $values, array ('id' => $id_downtime));
 }
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
-if ($insert_downtime_agent == 1){
+if ($insert_downtime_agent == 1) {
 	$agents = $_POST["id_agent"];
-	for ($a=0;$a <count($agents); $a++){
+	for ($a=0;$a <count($agents); $a++) {
 		$id_agente_dt = $agents[$a];
-
+		
 		$values = array(
 			'id_downtime' => $id_downtime,
 			'id_agent' => $id_agente_dt);
@@ -98,19 +98,19 @@ if ($insert_downtime_agent == 1){
 }
 
 // DELETE A DOWNTIME_AGENT ASSOCIATION
-if ($delete_downtime_agent == 1){
-
+if ($delete_downtime_agent == 1) {
+	
 	$id_da = get_parameter ("id_downtime_agent");
-
+	
 	$result = db_process_sql_delete('tplanned_downtime_agents', array('id' => $id_da));
 }
 
 // DELETE WHOLE DOWNTIME!
 if ($delete_downtime) {
 	$result = db_process_sql_delete('tplanned_downtime', array('id' => $id_downtime));
-
+	
 	$result2 = db_process_sql_delete('tplanned_downtime_agents', array('id' => $id_downtime));
-
+	
 	if (($result === false) OR ($result2 === false)){
 		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
 	}
@@ -120,17 +120,17 @@ if ($delete_downtime) {
 }
 
 // UPDATE OR CREATE A DOWNTIME (MAIN DATA, NOT AGENT ASSOCIATION)
-
+$result = false;
 if ($create_downtime || $update_downtime) {
 	$description = (string) get_parameter ('description');
 	$name = (string) get_parameter ('name');
 	$check = db_get_value ('name', 'tplanned_downtime', 'name', $name);
-
+	
 	$datetime_from = strtotime ($date_from.' '.$time_from);
 	$datetime_to = strtotime ($date_to.' '.$time_to);
-
+	
 	if ($datetime_from > $datetime_to) {
-		echo '<h3 class="error">'.__('Not created. Error inserting data').': START &gt; END</h3>';
+		echo '<h3 class="error">' . __('Not created. Error inserting data').': START &gt; END</h3>';
 	}
 	else {
 		$sql = '';
@@ -145,6 +145,7 @@ if ($create_downtime || $update_downtime) {
 						'id_group' => $id_group,
 						'only_alerts' => (int)$only_alerts);
 					$result = db_process_sql_insert('tplanned_downtime', $values);
+					$id_downtime = $result;
 				}
 				else {
 					echo "<h3 class='error'>".__('Each planned downtime must have a different name')."</h3>";
@@ -169,7 +170,7 @@ if ($create_downtime || $update_downtime) {
 				echo '<h3 class="error">'.__('Planned downtime must have a name').'</h3>';
 			}
 		}
-
+		
 		if ($result === false) {
 			if($create_downtime) {
 				echo '<h3 class="error">'.__('Could not be created').'</h3>';
@@ -179,7 +180,7 @@ if ($create_downtime || $update_downtime) {
 			}
 		}
 		else {
-			if($create_downtime && $name && !$check) {
+			if ($create_downtime && $name && !$check) {
 				echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 			}
 			else if ($update_downtime && $name) {
@@ -193,7 +194,8 @@ if ($create_downtime || $update_downtime) {
 ////////////////////////////////
 // Show create / update form
 ////////////////////////////////
-if (($first_create != 0) OR ($first_update != 0)){
+if (($first_create != 0) OR ($first_update != 0) ||
+	($create_downtime && $result)) {
 	// Have any data to show ?
 	if ($id_downtime > 0) {
 		switch ($config["dbtype"]) {
@@ -213,7 +215,7 @@ if (($first_create != 0) OR ($first_update != 0)){
 					$id_downtime);
 				break;
 		}
-
+		
 		$result = db_get_row_sql ($sql);
 		$name = $result["name"];
 		$description = $result["description"];
@@ -222,11 +224,11 @@ if (($first_create != 0) OR ($first_update != 0)){
 		$time_from = strftime ('%I:%M%p', $result["date_from"]);
 		$time_to = strftime ('%I:%M%p', $result["date_to"]);
 		$only_alerts = $result["only_alerts"];
-
+		
 		if ($id_group == 0)
 			$id_group = $result['id_group'];
 	}
-
+	
 	$table->class = 'databox_color';
 	$table->width = '98%';
 	$table->data = array ();
@@ -248,7 +250,7 @@ if (($first_create != 0) OR ($first_update != 0)){
 	$table->data[6][1] = html_print_checkbox('only_alerts', 1, $only_alerts, true);
 	echo '<form method="POST" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 
-	if ($id_downtime > 0){
+	if ($id_downtime > 0) {
 		echo "<table width=100% border=0 cellpadding=4 >";
 		echo "<tr><td width=75% valign='top'>";
 	}

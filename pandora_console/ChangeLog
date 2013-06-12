@@ -1,5 +1,11 @@
 2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_graph.php: fixed when have empty label.
+	
+	Fixes: #2260
+
+2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: fixed the empty serialize vars.
 	
 	Fixes: #2276

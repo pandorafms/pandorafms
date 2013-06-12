@@ -43,38 +43,40 @@ function get_graph_statistics ($chart_array) {
 	$stats = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
 	
 	foreach ($chart_array as $item) {
-			
-			//Sum all values later divide by the number of elements
-			$stats['avg'] = $stats['avg'] + $item;
-			
-			//Get minimum
-			if ($stats['min'] == null) {
-				$stats['min'] = $item;
-			} else if ($item < $stats['min']) {
-					$stats['min'] = $item;
-			}
-			
-			//Get maximum
-			if ($stats['max'] == null) {
-					$stats['max'] = $item;
-			} else if ($item > $stats['max']) {
-					$stats['max'] = $item;
-			}
-			
-			$count++;
-			
-			//Get last data
-			if ($count == $size) {
-				$stats['last'] = $item;
-			}
-}
-
+		
+		//Sum all values later divide by the number of elements
+		$stats['avg'] = $stats['avg'] + $item;
+		
+		//Get minimum
+		if ($stats['min'] == null) {
+			$stats['min'] = $item;
+		}
+		else if ($item < $stats['min']) {
+			$stats['min'] = $item;
+		}
+		
+		//Get maximum
+		if ($stats['max'] == null) {
+			$stats['max'] = $item;
+		}
+		else if ($item > $stats['max']) {
+			$stats['max'] = $item;
+		}
+		
+		$count++;
+		
+		//Get last data
+		if ($count == $size) {
+			$stats['last'] = $item;
+		}
+	}
+	
 	//End the calculus for average
 	if ($count > 0) {
-
-			$stats['avg'] = $stats['avg'] / $count;
+		
+		$stats['avg'] = $stats['avg'] / $count;
 	}
-
+	
 	//Format stat data to display properly
 	$stats['last'] = round($stats['last'], 2);
 	$stats['avg'] = round($stats['avg'], 2);
@@ -85,7 +87,7 @@ function get_graph_statistics ($chart_array) {
 }
 
 function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
-
+	
 	/// IMPORTANT!
 	///
 	/// The calculus for AVG, MIN and MAX values are in this function
@@ -93,16 +95,16 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 	/// because it must be done based on graph array data not using reporting 
 	
 	$stats = array ();
-
+	
 	$count = 0;
-
+	
 	$size = sizeof($chart_array);
-
+	
 	//Initialize stats array
 	$stats['sum'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
 	$stats['min'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-    $stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-
+	$stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+	
 	foreach ($chart_array as $item) {
 		if($series_suffix != '') {
 			$item['sum'] = $item['sum'.$series_suffix];
@@ -114,7 +116,7 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 		if (isset($item['sum']) && $item['sum']) {
 			//Sum all values later divide by the number of elements
 			$stats['sum']['avg'] = $stats['sum']['avg'] + $item['sum'];
-
+			
 			//Get minimum
 			if ($stats['sum']['min'] == null) {
 				$stats['sum']['min'] = $item['sum'];
@@ -122,82 +124,82 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 			else if ($item['sum'] < $stats['sum']['min']) {
 				$stats['sum']['min'] = $item['sum'];
 			}
-
+			
 			//Get maximum
 			if ($stats['sum']['max'] == null) {
-					$stats['sum']['max'] = $item['sum'];
+				$stats['sum']['max'] = $item['sum'];
 			}
 			else if ($item['sum'] > $stats['sum']['max']) {
-					$stats['sum']['max'] = $item['sum'];
+				$stats['sum']['max'] = $item['sum'];
 			}
-
+			
 		}
 		
 		//Get stats for min graph
 		if (isset($item['min']) && $item['min']) {
 			//Sum all values later divide by the number of elements
 			$stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
-
+			
 			//Get minimum
 			if ($stats['min']['min'] == null) {
-					$stats['min']['min'] = $item['min'];
+				$stats['min']['min'] = $item['min'];
 			}
 			else if ($item['min'] < $stats['min']['min']) {
-					$stats['min']['min'] = $item['min'];
+				$stats['min']['min'] = $item['min'];
 			}
-
+			
 			//Get maximum
 			if ($stats['min']['max'] == null) {
-					$stats['min']['max'] = $item['min'];
+				$stats['min']['max'] = $item['min'];
 			}
 			else if ($item['min'] > $stats['min']['max']) {
-					$stats['min']['max'] = $item['min'];
+				$stats['min']['max'] = $item['min'];
 			}
-
+		
 		}
-	
+		
 		//Get stats for max graph
 		if (isset($item['max']) && $item['max']) {
 			//Sum all values later divide by the number of elements
 			$stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
-
+			
 			//Get minimum
 			if ($stats['max']['min'] == null) {
-					$stats['max']['min'] = $item['max'];
+				$stats['max']['min'] = $item['max'];
 			}
 			else if ($item['max'] < $stats['max']['min']) {
-					$stats['max']['min'] = $item['max'];
+				$stats['max']['min'] = $item['max'];
 			}
-	
+			
 			//Get maximum
 			if ($stats['max']['max'] == null) {
-					$stats['max']['max'] = $item['max'];
+				$stats['max']['max'] = $item['max'];
 			}
 			else if ($item['max'] > $stats['max']['max']) {
-					$stats['max']['max'] = $item['max'];
+				$stats['max']['max'] = $item['max'];
 			}
 		}
-        
-
+		
+		
 		//Count elements
 		$count++;
-
+		
 		//Get last data
 		if ($count == $size) {
 			if (isset($item['sum']) && $item['sum']) {
 				$stats['sum']['last'] = $item['sum'];
 			}
-
+			
 			if (isset($item['min']) && $item['min']) {
 				$stats['min']['last'] = $item['min'];
 			}
-
+			
 			if (isset($item['max']) && $item['max']) {
 				$stats['max']['last'] = $item['max'];
 			}
 		}
 	}
-
+	
 	//End the calculus for average
 	if ($count > 0) {
 		
@@ -205,23 +207,23 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 		$stats['min']['avg'] = $stats['min']['avg'] / $count;
 		$stats['max']['avg'] = $stats['max']['avg'] / $count;
 	}
-
+	
 	//Format stat data to display properly
 	$stats['sum']['last'] = round($stats['sum']['last'], 2);
 	$stats['sum']['avg'] = round($stats['sum']['avg'], 2);
-    $stats['sum']['min'] = round($stats['sum']['min'], 2);
-    $stats['sum']['max'] = round($stats['sum']['max'], 2);
-
+	$stats['sum']['min'] = round($stats['sum']['min'], 2);
+	$stats['sum']['max'] = round($stats['sum']['max'], 2);
+	
 	$stats['min']['last'] = round($stats['min']['last'], 2);
-    $stats['min']['avg'] = round($stats['min']['avg'], 2);
-    $stats['min']['min'] = round($stats['min']['min'], 2);
-    $stats['min']['max'] = round($stats['min']['max'], 2);
-
+	$stats['min']['avg'] = round($stats['min']['avg'], 2);
+	$stats['min']['min'] = round($stats['min']['min'], 2);
+	$stats['min']['max'] = round($stats['min']['max'], 2);
+	
 	$stats['max']['last'] = round($stats['max']['last'], 2);
-    $stats['max']['avg'] = round($stats['max']['avg'], 2);
-    $stats['max']['min'] = round($stats['max']['min'], 2);
-    $stats['max']['max'] = round($stats['max']['max'], 2);
-
+	$stats['max']['avg'] = round($stats['max']['avg'], 2);
+	$stats['max']['min'] = round($stats['max']['min'], 2);
+	$stats['max']['max'] = round($stats['max']['max'], 2);
+	
 	return $stats;
 }
 
@@ -1970,15 +1972,21 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 	$count = 0;
 	foreach ($data_result as $data_item) {
 		$count++;
+		$value = 0;
+		if (!empty($data_item["value"])) {
+			$value = $data_item["value"];
+		}
+		$label = __('Data');
+		if (!empty($data_item["label"])) {
+			$label = $data_item["label"];
+		}
 		switch ($type) {
 			case 'sql_graph_vbar': // vertical bar
-				$data[$data_item["label"]]['g'] = $data_item["value"];
-				break;
 			case 'sql_graph_hbar': // horizontal bar
-				$data[$data_item["label"]]['g'] = $data_item["value"];
+				$data[$label]['g'] = $value;
 				break;
 			case 'sql_graph_pie': // Pie
-				$data[$data_item["label"]] = $data_item["value"];
+				$data[$label] = $value;
 				break;
 		}
 	}

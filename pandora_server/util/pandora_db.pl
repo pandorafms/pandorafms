@@ -23,8 +23,8 @@ use warnings;
 use Time::Local;		# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
-use File::Path qw (rmtree);
-use Time::HiRes qw/usleep/;
+use File::Path qw(rmtree);
+use Time::HiRes qw(usleep);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -45,6 +45,22 @@ my $SMALL_OPERATION_STEP = 1000; # Each long operations has a LIMIT of SMALL_OPE
 $| = 1;
 
 ###############################################################################
+# Print the given message with a preceding timestamp.
+###############################################################################
+sub log_message ($$;$) {
+	my ($source, $message, $eol) = @_;
+	
+	# Set a default end of line
+	$eol = "\n" unless defined ($eol);
+	
+	if ($source eq '') {
+		print $message;
+	} else {
+		print strftime("%H:%M:%S", localtime()) . ' [' . $source . '] ' . $message . $eol;
+	}
+}
+
+###############################################################################
 # Delete old data from the database.
 ###############################################################################
 sub pandora_purgedb ($$) {
@@ -57,7 +73,6 @@ sub pandora_purgedb ($$) {
  	# Calculate limit for deletion, today - $conf->{'_days_purge'}
 
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-
 	my $ulimit_access_timestamp = time() - 86400;
 	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
 
@@ -67,8 +82,7 @@ sub pandora_purgedb ($$) {
     # Delete extended session data
     if (enterprise_load (\%conf) != 0) {
         db_do ($dbh, "DELETE FROM tsesion_extended WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion );");
-        print "[PURGE] Deleting old extended session data. \n";
-
+        log_message ('PURGE', 'Deleting old extended session data.');
     }
 
     # Delete inventory data, only if enterprise is enabled
@@ -80,7 +94,7 @@ sub pandora_purgedb ($$) {
 
     if (enterprise_load (\%conf) != 0) {
 
-        print "[PURGE] Deleting old inventory data... \n";
+        log_message ('PURGE', 'Deleting old inventory data.');
 
 	    # This could be very timing consuming, so make 
         # this operation in $BIG_OPERATION_STEP 
@@ -91,16 +105,19 @@ sub pandora_purgedb ($$) {
 	    if (defined ($first_mark)) {
 		    $total_time = $ulimit_timestamp - $first_mark;
 		    $purge_steps = int($total_time / $BIG_OPERATION_STEP);
-	
-		    for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-			    db_do ($dbh, "DELETE FROM tagente_datos_inventory WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-			    print "[PURGE] Inventory data deletion Progress %$ax .. \r";
-			    # Do a nanosleep here for 0,01 sec
-				usleep (10000);
-		    }
-	        print "\n";
+		    if ($purge_steps > 0) {
+			    for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++) {
+				    db_do ($dbh, "DELETE FROM tagente_datos_inventory WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
+				    log_message ('PURGE', "Inventory data deletion Progress %$ax\r");
+				    # Do a nanosleep here for 0,01 sec
+					usleep (10000);
+			    }
+		        log_message ('', "\n");
+			} else {
+				log_message ('PURGE', 'No data to purge in tagente_datos_inventory.');
+			}
 	    } else {
-		    print "[PURGE] No data in tagente_datos_inventory\n";
+		    log_message ('PURGE', 'No data in tagente_datos_inventory.');
 	    }
     }
 
@@ -112,16 +129,19 @@ sub pandora_purgedb ($$) {
 	if (defined ($first_mark)) {
 		$total_time = $ulimit_timestamp - $first_mark;
 		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-
-		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-			db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-			print "[PURGE] Log4x data deletion progress %$ax .. \r";
-			# Do a nanosleep here for 0,01 sec
-			usleep (10000);
+		if ($purge_steps > 0) {
+			for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+				db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
+				log_message ('PURGE', "Log4x data deletion progress %$ax\r");
+				# Do a nanosleep here for 0,01 sec
+				usleep (10000);
+			}
+			log_message ('', "\n");
+		} else {
+			log_message ('PURGE', 'No data to purge in tagente_datos_log4x.');
 		}
-		print "\n";
 	} else {
-		print "[PURGE] No data in tagente_datos_log4x\n";
+		log_message ('PURGE', 'No data in tagente_datos_log4x.');
 	}
 
     # String data deletion
@@ -138,7 +158,6 @@ sub pandora_purgedb ($$) {
     }
 
     my $event_limit = time() - 86400 * $conf->{'_event_purge'};
-    
     my $events_table = 'tevento';
     
 	# If is installed enterprise version and enabled metaconsole, 
@@ -148,7 +167,7 @@ sub pandora_purgedb ($$) {
 	
 		# If events history is enabled, save the new events (not validated or in process) to history database
 		if(defined($conf->{'_metaconsole_events_history'}) && $conf->{'_metaconsole_events_history'} eq '1') {
-			print "[PURGE] Moving old not validated events to history table (More than " . $conf->{'_event_purge'} . " days)... \n";
+			log_message ('PURGE', "Moving old not validated events to history table (More than " . $conf->{'_event_purge'} . " days).");
 
 			my @events = get_db_rows ($dbh, 'SELECT * FROM tmetaconsole_event WHERE estado = 0 AND utimestamp < ?', $event_limit);
 			foreach my $event (@events) {
@@ -159,85 +178,70 @@ sub pandora_purgedb ($$) {
 		$events_table = 'tmetaconsole_event';
 	}
 	
-	print "[PURGE] Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days)";
+	log_message ('PURGE', "Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days).", '');
 
 	# Delete with buffer to avoid problems with performance
 	my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
-	while(1) {
+	while($events_to_delete > 0) {
 		db_do($dbh, "DELETE FROM $events_table WHERE utimestamp < ? LIMIT ?", $event_limit, $BIG_OPERATION_STEP);
-
-		if($events_to_delete <= $BIG_OPERATION_STEP) {
-			last;
-		}
-		else {
-			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
-		}
-		print ".";
+		$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
+		
+		# Mark the progress
+		log_message ('', ".");
+		
+		# Do not overload the MySQL server
+		usleep (10000);
 	}
-	print "\n";
+	log_message ('', "\n");
 
     # Delete audit data
-    if (!defined($conf->{'_audit_purge'})){
-        $conf->{'_audit_purge'}= 7;
-    }
-	print "[PURGE] Deleting old audit data (More than " . $conf->{'_audit_purge'} . " days)... \n";
+    $conf->{'_audit_purge'}= 7 if (!defined($conf->{'_audit_purge'}));
+	log_message ('PURGE', "Deleting old audit data (More than " . $conf->{'_audit_purge'} . " days).");
 
     my $audit_limit = time() - 86400 * $conf->{'_audit_purge'};
 	db_do($dbh, "DELETE FROM tsesion WHERE utimestamp < $audit_limit");
 
-
     # Delete SNMP trap data
-    if (!defined($conf->{'_trap_purge'})){
-        $conf->{'_trap_purge'}= 7;
-    }
-	
-    my $trap_limit = time() - 86400 * $conf->{'_trap_purge'};
-    $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($trap_limit));
-    print "[PURGE] Deleting old SNMP traps data (More than " . $conf->{'_trap_purge'} . " days)... \n";
+    $conf->{'_trap_purge'}= 7 if (!defined($conf->{'_trap_purge'}));
+    log_message ('PURGE', "Deleting old SNMP traps data (More than " . $conf->{'_trap_purge'} . " days).");
+
+    my $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_trap_purge'}));
 	db_do($dbh, "DELETE FROM ttrap WHERE timestamp < '$trap_limit'");
 	
     # Delete policy queue data
 	enterprise_hook("pandora_purge_policy_queue", [$dbh, $conf]);
 
     # Delete GIS  data
-    if (!defined($conf->{'_gis_purge'})){
-        $conf->{'_gis_purge'}= 15;
-    }
+    $conf->{'_gis_purge'}= 15 if (!defined($conf->{'_gis_purge'}));
+    log_message ('PURGE', "Deleting old GID data (More than " . $conf->{'_gis_purge'} . " days).");
 
-    my $gis_limit = time() - 86400 * $conf->{'_gis_purge'};
-    $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($gis_limit));
-    print "[PURGE] Deleting old GID data (More than " . $conf->{'_gis_purge'} . " days)... \n";
+    my $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_gis_purge'}));
 	db_do($dbh, "DELETE FROM tgis_data_history WHERE end_timestamp < '$gis_limit'");
 
     # Delete pending modules
-	print "[PURGE] Delete pending deleted modules (data table)...\n";
+	log_message ('PURGE', "Deleting pending delete modules (data table).", '');
 	my @deleted_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1');
-
 	foreach my $module (@deleted_modules) {
         
         my $buffer = 1000;
         my $id_module = $module->{'id_agente_modulo'};
         
-		print " + Deleting data for module " . $id_module . "\n";
+		log_message ('', ".");
 		
 		while(1) {
-			my $nstate = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_estado WHERE id_agente_modulo=?', $id_module);
+			my $nstate = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_estado WHERE id_agente_modulo=?', $id_module);			
+			last if($nstate == 0);
 			
-			if($nstate == 0) {
-				last;
-			}
-			
-			if($nstate > 0) {
-				db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
-			}
+			db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
 		}
 	}
+	log_message ('', "\n");
 
-	print "[PURGE] Delete pending deleted modules (status, module table)...\n";
+	log_message ('PURGE', "Deleting pending delete modules (status, module table).");
 	db_do ($dbh, "DELETE FROM tagente_estado WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
 	db_do ($dbh, "DELETE FROM tagente_modulo WHERE delete_pending = 1");
 
-	print "[PURGE] Deleting old access data (More than 24hr) \n";
+	log_message ('PURGE', "Deleting old access data (More than 24hr)");
 
 	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagent_access ORDER BY utimestamp ASC LIMIT 1');
 	if (defined ($first_mark)) {
@@ -246,45 +250,45 @@ sub pandora_purgedb ($$) {
 		if ($purge_steps > 0) {
 			for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
 				db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark);
-				print "[PURGE] Agent access deletion progress %$ax .. \r";
+				log_message ('PURGE', "Agent access deletion progress %$ax", "\r");
 				# Do a nanosleep here for 0,01 sec
 				usleep (10000);
 			}
-		    print "\n";
+		    log_message ('', "\n");
 		} else {
-			print "[PURGE] Agent access already purged\n";
+			log_message ('PURGE', "No agent access data to purge.");
 		}
 	} else {
-		print "[PURGE] No agent access data\n";
+		log_message ('PURGE', "No agent access data.");
 	}
 	
-	#Purge the reports
-	print "[PURGE] Delete contents in report that have some deleted modules...\n";
+	# Purge the reports
+	log_message ('PURGE', "Delete contents in report that have some deleted modules.");
 	db_do ($dbh, "DELETE FROM treport_content WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
 	db_do ($dbh, "DELETE FROM treport_content_item WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
 	db_do ($dbh, "DELETE FROM treport_content_sla_combined WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
 	
-	print "[PURGE] Delete contents in report that have some deleted agents...\n";
+	log_message ('PURGE', "Delete contents in report that have some deleted agents.");
 	db_do ($dbh, "DELETE FROM treport_content WHERE id_agent NOT IN (SELECT id_agente FROM tagente) AND id_agent != 0;");
 	
-	print "[PURGE] Delete empty contents in report (like SLA or Exception)...\n";
+	log_message ('PURGE', "Delete empty contents in report (like SLA or Exception).");
 	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'exception' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
 	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
 	
 	# Delete old netflow data
-	print "[PURGE] Deleting old netflow data...\n";
-	if (! -d $conf->{'_netflow_path'}) {
-		print "[!] Netflow data directory does not exist, skipping...\n";
+	log_message ('PURGE', "Deleting old netflow data.");
+	if (! defined ($conf->{'_netflow_path'}) || ! -d $conf->{'_netflow_path'}) {
+		log_message ('!', "Netflow data directory does not exist, skipping.");
 	} elsif (! -x $conf->{'_netflow_nfexpire'}) {
-		print "[!] Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping...\n";
+		log_message ('!', "Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping.");
 	} else {
 		`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -e "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
 	}
 
 	# Delete old log data
-	print "[PURGE] Deleting old log data...\n";
-	if (! -d $conf->{'_log_dir'}) {
-		print "[!] Log data directory does not exist, skipping...\n";
+	log_message ('PURGE', "Deleting old log data.");
+	if (! defined ($conf->{'_log_dir'}) || ! -d $conf->{'_log_dir'}) {
+		log_message ('!', "Log data directory does not exist, skipping.");
 	} elsif ($conf->{'_log_max_lifetime'} != 0) {
 
 		# Calculate the limit date
@@ -380,24 +384,24 @@ sub pandora_compactdb ($$) {
 	}
 	
 	if ($start_utime <= $limit_utime) {
-		print "[COMPACT] Data already compacted.\n";
+		log_message ('COMPACT', "Data already compacted.");
 		return;
 	}
 	
-	print "[COMPACT] Compacting data from " . strftime ("%Y-%m-%d %H:%M:%S", localtime($limit_utime)) . " to " . strftime ("%Y-%m-%d %H:%M:%S", localtime($start_utime));
+	log_message ('COMPACT', "Compacting data from " . strftime ("%Y-%m-%d %H:%M:%S", localtime($limit_utime)) . " to " . strftime ("%Y-%m-%d %H:%M:%S", localtime($start_utime)) . '.', '');
 
 	# Prepare the query to retrieve data from an interval
 	while (1) {
 
-			# Mark the progress
-			print ".";
-			
 			# Calculate the stop date for the interval
 			$stop_utime = $start_utime - $step;
 
 			# Out of limits
 			last if ($start_utime < $limit_utime);
 
+			# Mark the progress
+			log_message ('', ".");
+			
 			my @data = get_db_rows ($dbh, 'SELECT * FROM tagente_datos WHERE utimestamp < ? AND utimestamp >= ?', $start_utime, $stop_utime);
 			# No data, move to the next interval
 			if ($#data == 0) {
@@ -437,7 +441,7 @@ sub pandora_compactdb ($$) {
 			# Move to the next interval
 			$start_utime = $stop_utime;
 	}
-	print "\n";
+	log_message ('', "\n");
 
 	# Mark the last compact date
 	if (defined ($conf->{'_last_compact'})) {
@@ -453,9 +457,9 @@ sub pandora_compactdb ($$) {
 sub pandora_init ($) {
 	my $conf = shift;
 
-	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2009 Artica ST\n";
-	print "This program is Free Software, licensed under the terms of GPL License v2\n";
-	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
+	log_message ('', "\nPandora FMS DB Tool $version Copyright (c) 2004-2009 Artica ST\n");
+	log_message ('', "This program is Free Software, licensed under the terms of GPL License v2\n");
+	log_message ('', "You can download latest versions and documentation at http://www.pandorafms.org\n\n");
 
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
@@ -543,7 +547,7 @@ sub pandora_load_config ($) {
    	
 	db_disconnect ($dbh);
 
-	printf "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") ... \n\n";
+	log_message ('', "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") . \n\n");
 }
 
 
@@ -554,24 +558,24 @@ sub pandora_load_config ($) {
 sub pandora_checkdb_integrity {
 	my $dbh = shift;
 
-    print "[INTEGRITY] Cleaning up group stats \n";
+    log_message ('INTEGRITY', "Cleaning up group stats.");
 
     # Delete all records on tgroup_stats
     db_do ($dbh, 'DELETE FROM tgroup_stat');
 
 	
     #print "[INTEGRITY] Deleting non-used IP addresses \n";
-    # DISABLED - Takes too much time and benefits of this are unclear....
+    # DISABLED - Takes too much time and benefits of this are unclear..
     # Delete all non-used IP addresses from taddress
     #db_do ($dbh, 'DELETE FROM taddress WHERE id_a NOT IN (SELECT id_a FROM taddress_agent)');
 
-    print "[INTEGRITY] Deleting orphan alerts \n";
+    log_message ('INTEGRITY', "Deleting orphan alerts.");
 
     # Delete alerts assigned to inexistant modules
     db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
 
-    print "[INTEGRITY] Deleting orphan modules \n";
-
+    log_message ('INTEGRITY', "Deleting orphan modules.");
+    
     # Delete orphan modules in tagente_modulo
     db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente NOT IN (SELECT id_agente FROM tagente)');
 
@@ -593,7 +597,7 @@ sub pandora_checkdb_consistency {
 
 	# 1. Check for modules that do not have tagente_estado but have tagente_module
 
-	print "[CHECKDB] Deleting non-init data... \n";
+	log_message ('CHECKDB', "Deleting non-init data.");
 	my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo,id_agente FROM tagente_estado WHERE estado = 4');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
@@ -620,8 +624,8 @@ sub pandora_checkdb_consistency {
 		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
 	}
 
-	print "[CHECKDB] Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days)... \n";
-	if ($conf{'_days_delete_unknown'} > 0) {
+	log_message ('CHECKDB', "Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days).");
+	if (defined ($conf{'_days_delete_unknown'}) && $conf{'_days_delete_unknown'} > 0) {
 		my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND estado = 3 AND utimestamp < UNIX_TIMESTAMP() - ?', 86400 * $conf{'_days_delete_unknown'});
 		foreach my $module (@modules) {
 			my $id_agente_modulo = $module->{'id_agente_modulo'};
@@ -640,7 +644,7 @@ sub pandora_checkdb_consistency {
 			usleep (100000);
 		}
 	}
-	print "[CHECKDB] Checking database consistency (Missing status)... \n";
+	log_message ('CHECKDB', "Checking database consistency (Missing status).");
 
 	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo');
 	foreach my $module (@modules) {
@@ -652,10 +656,10 @@ sub pandora_checkdb_consistency {
 		next if (defined ($count) && $count > 0);
 
 		db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente_modulo, 0, '1970-01-01 00:00:00', 1, $id_agente, '1970-01-01 00:00:00', 0, 0, 0, 0);
-		print "[CHECKDB] Inserting module $id_agente_modulo in state table \n";
+		log_message ('CHECKDB', "Inserting module $id_agente_modulo in state table.");
 	}
 
-	print "[CHECKDB] Checking database consistency (Missing module)... \n";
+	log_message ('CHECKDB', "Checking database consistency (Missing module).");
 	# 2. Check for modules in tagente_estado that do not have tagente_modulo, if there is any, delete it
 
 	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_estado');
@@ -671,7 +675,7 @@ sub pandora_checkdb_consistency {
 		# Do a nanosleep here for 0,001 sec
 		usleep (100000);
 
-		print "[CHECKDB] Deleting non-existing module $id_agente_modulo in state table \n";
+		log_message ('CHECKDB', "Deleting non-existing module $id_agente_modulo in state table.");
 	}
 }
 
@@ -679,9 +683,9 @@ sub pandora_checkdb_consistency {
 # Print a help screen and exit.
 ##############################################################################
 sub help_screen{
-	print "Usage: $0 <path to pandora_server.conf> [options]\n\n";
-	print "\t\t-p   Only purge and consistency check, skip compact.\n";
-	print "\t\t-f   Force execution event if another instance of $0 is running.\n\n";
+	log_message ('', "Usage: $0 <path to pandora_server.conf> [options]\n\n");
+	log_message ('', "\t\t-p   Only purge and consistency check, skip compact.\n");
+	log_message ('', "\t\t-f   Force execution event if another instance of $0 is running.\n\n");
 	exit -1;
 }
 
@@ -711,26 +715,29 @@ sub pandora_delete_old_module_data {
 	if (defined ($first_mark)) {
 		$total_time = $ulimit_timestamp - $first_mark;
 		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-			
-		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+		if ($purge_steps > 0) {
+			for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+	
+				$mark1 = $first_mark + ($purge_steps * $ax);
+				$mark2 = $first_mark + ($purge_steps * ($ax -1));	
 
-			$mark1 = $first_mark + ($purge_steps * $ax);
-			$mark2 = $first_mark + ($purge_steps * ($ax -1));	
-		
-			# Let's split the intervals in $SMALL_OPERATION_STEP deletes each
-			$purge_count = get_db_value ($dbh, "SELECT COUNT(id_agente_modulo) FROM $table WHERE utimestamp < $mark1 AND utimestamp > $mark2");
-			while ($purge_count > 0){
-				db_do ($dbh, "DELETE FROM $table WHERE utimestamp < $mark1 AND utimestamp > $mark2 LIMIT $SMALL_OPERATION_STEP");
-				# Do a nanosleep here for 0,001 sec
-				usleep (10000);
-				$purge_count = $purge_count - $SMALL_OPERATION_STEP;
+				# Let's split the intervals in $SMALL_OPERATION_STEP deletes each
+				$purge_count = get_db_value ($dbh, "SELECT COUNT(id_agente_modulo) FROM $table WHERE utimestamp < $mark1 AND utimestamp >= $mark2");
+				while ($purge_count > 0){
+					db_do ($dbh, "DELETE FROM $table WHERE utimestamp < $mark1 AND utimestamp >= $mark2 LIMIT $SMALL_OPERATION_STEP");
+					# Do a nanosleep here for 0,001 sec
+					usleep (10000);
+					$purge_count = $purge_count - $SMALL_OPERATION_STEP;
+				}
+				
+				log_message ('PURGE', "Deleting old data from $table. $ax%", "\r");
 			}
-			
-			print "[PURGE] Deleting old data from $table... ".$ax."%\r";
+			log_message ('', "\n");
+		} else {
+			log_message ('PURGE', "No data to purge in $table.");
 		}
-		print "\n";
 	} else {
-		print "[PURGE] No data in $table\n";
+		log_message ('PURGE', "No data in $table.");
 	}
 }
 
@@ -740,7 +747,7 @@ sub pandora_delete_old_module_data {
 sub pandoradb_main ($$$) {
 	my ($conf, $dbh, $history_dbh) = @_;
 
-	print "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
+	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 
 	# Purge
 	pandora_purgedb ($conf, $dbh);
@@ -766,7 +773,7 @@ sub pandoradb_main ($$$) {
 	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
 	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
 
-	print "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
+	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }
 
 # Init
@@ -777,9 +784,9 @@ pandora_load_config (\%conf);
 
 # Load enterprise module
 if (enterprise_load (\%conf) == 0) {
-	print " [*] Pandora FMS Enterprise module not available.\n\n";
+	log_message ('', " [*] Pandora FMS Enterprise module not available.\n\n");
 } else {
-	print " [*] Pandora FMS Enterprise module loaded.\n\n";
+	log_message ('', " [*] Pandora FMS Enterprise module loaded.\n\n");
 }
 
 # Connect to the DB
@@ -790,7 +797,7 @@ my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $
 # Get a lock
 my $lock = db_get_lock ($dbh, 'pandora_db');
 if ($lock == 0 && $conf{'_force'} == 0) { 
-	print " [*] Another instance of pandora_db seems to be running.\n\n";
+	log_message ('', " [*] Another instance of pandora_db seems to be running.\n\n");
 	exit 1;
 }
 

@@ -1,3 +1,9 @@
+2013-06-12 Mario Pulido <mario.pulido@artica.es>
+	
+	* pandoradb.data.postgreSQL.sql,
+	pandoradb.data.oracle.sql,
+        pandoradb_data.sql: Repair windows bug in "Restart Agent" action
+
 2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/planned_downtime.php: make more easy the creation

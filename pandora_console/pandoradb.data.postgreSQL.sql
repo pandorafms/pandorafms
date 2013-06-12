@@ -1011,7 +1011,7 @@ INSERT INTO "talert_commands" VALUES (10,'Remote&#x20;agent&#x20;control','/usr/
 SELECT setval('talert_commands_id_seq', (SELECT (SELECT MAX(id) FROM talert_commands)));
 
 INSERT INTO "talert_actions" VALUES (1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','',0,0);
-INSERT INTO "talert_actions" VALUES (2,'Restart&#x20;agent',10,'REFRESH AGENT','','',0,0);
+INSERT INTO "talert_actions" VALUES (2,'Restart&#x20;agent',10,'REFRESH AGENT *','','',0,0);
 INSERT INTO "talert_actions" VALUES (3,'Pandora&#x20;FMS&#x20;Event',3,'Pandora FMS Event created by module _module_','','',0,0);
 SELECT setval('talert_actions_id_seq', (SELECT (SELECT MAX(id) FROM talert_actions)));
 

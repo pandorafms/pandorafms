@@ -109,6 +109,7 @@ if (is_ajax ())
 	 * 1 1 - hide 2 branch
 	*/
 	$lessBranchs = get_parameter('less_branchs');
+	
 	switch ($type) {
 		case 'group':
 		case 'os':

@@ -773,11 +773,13 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 			'action=get_networkmap_summary&' .
 			'stats='.$stats_json . '&' .
 			'metaconsole=1';
-		$url = 'index.php';
+		$url = '';
+		$color = "#052938";
 	}
 	else {
 		$url_tooltip = 'ajax.php?page=include/ajax/networkmap.ajax&action=get_networkmap_summary&stats='.$stats_json.'", URL="index.php?sec=estado&sec2=operation/agentes/group_view';
 		$url = 'index.php?sec=estado&sec2=operation/agentes/group_view';
+		$color = "#373737";
 	}
 	
 	$img_tag = html_print_image($img_src, true, false, false, true);
@@ -789,7 +791,7 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 		$label = '';
 	}
 	
-	$node = '0 [ color="#364D1F", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
+	$node = '0 [ color="' . $color . '", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
 		shape="ellipse", tooltip="' . $url_tooltip . '", URL="' . $url . '" ];';
 	
 	return $node;

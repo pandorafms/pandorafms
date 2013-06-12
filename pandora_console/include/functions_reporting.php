@@ -3752,6 +3752,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if ($content['header_definition'] != '') {
 				$table2->head = explode('|', $content['header_definition']);
 			}
+			else {
+				$table2->head[] = __('Data');
+			}
 			array_unshift($table2->head, __('Date'));
 			
 			$datelimit = $report["datetime"] - $content['period'];
@@ -3777,10 +3780,22 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table2->data = array();
 			foreach ($result as $row) {
 				$date = date ($config["date_format"], $row['utimestamp']);
-				$serialized = $row['datos']; 
-				$rowsUnserialize = explode($content['line_separator'], $serialized);
+				$serialized = $row['datos'];
+				if (empty($content['line_separator']) ||
+					empty($serialized)) {
+						$rowsUnserialize = array($row['datos']);
+				}
+				else {
+					$rowsUnserialize = explode($content['line_separator'], $serialized);
+				}
 				foreach ($rowsUnserialize as $rowUnser) {
-					$columnsUnserialize = explode($content['column_separator'], $rowUnser);
+					if (empty($content['column_separator'])) {
+						$columnsUnserialize = array($rowUnser);
+					}
+					else {
+						$columnsUnserialize = explode($content['column_separator'], $rowUnser);
+					}
+					
 					array_unshift($columnsUnserialize, $date);
 					array_push($table2->data, $columnsUnserialize);
 				} 

@@ -1088,7 +1088,7 @@ END;;
 -- example alert template
 BEGIN
 LOCK TABLE talert_commands IN EXCLUSIVE MODE;
-INSERT INTO talert_commands VALUES (10,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/udp_client.pl _address_ 41122 &quot;_field1_&quot;','This command is used to send commands to the Pandora FMS agents with the UDP server enabled. The UDP server is used to order agents (Windows and UNIX) to &quot;refresh&quot; the agent execution: that means, to force the agent to execute and send data to s',0);
+INSERT INTO talert_commands VALUES (10,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl _address_ 41122 &quot;_field1_&quot;','This command is used to send commands to the Pandora FMS agents with the UDP server enabled. The UDP server is used to order agents (Windows and UNIX) to &quot;refresh&quot; the agent execution: that means, to force the agent to execute and send data to s',0);
 COMMIT;
 END;;
 

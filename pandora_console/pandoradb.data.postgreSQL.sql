@@ -1007,7 +1007,7 @@ INSERT INTO "tgis_map_layer" VALUES (1,'Group All',1,0,1,0);
 SELECT setval('tgis_map_layer_id_tmap_layer_seq', (SELECT (SELECT MAX(id_tmap_layer) FROM tgis_map_layer)));
 
 -- example alert template
-INSERT INTO "talert_commands" VALUES (10,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/udp_client.pl _address_ 41122 &quot;_field1_&quot;','This command is used to send commands to the Pandora FMS agents with the UDP server enabled. The UDP server is used to order agents (Windows and UNIX) to &quot;refresh&quot; the agent execution: that means, to force the agent to execute and send data to s',0);
+INSERT INTO "talert_commands" VALUES (10,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl _address_ 41122 &quot;_field1_&quot;','This command is used to send commands to the Pandora FMS agents with the UDP server enabled. The UDP server is used to order agents (Windows and UNIX) to &quot;refresh&quot; the agent execution: that means, to force the agent to execute and send data to s',0);
 SELECT setval('talert_commands_id_seq', (SELECT (SELECT MAX(id) FROM talert_commands)));
 
 INSERT INTO "talert_actions" VALUES (1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','',0,0);

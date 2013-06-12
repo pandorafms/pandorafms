@@ -1,3 +1,9 @@
+2013-06-12 Mario Pulido <mario.pulido@artica.es>
+	
+	* pandoradb.data.postgreSQL.sql,
+	pandoradb.data.oracle.sql,
+        pandoradb_data.sql: Change path in command alert.
+
 2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/tree.php: fixed to show flash graph in the tree.

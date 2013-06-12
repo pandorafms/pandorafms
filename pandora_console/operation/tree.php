@@ -27,20 +27,20 @@ if (is_ajax ())
 	
 	function printTable($id_agente) {
 		global $config;
-
+		
 		require_once ("include/functions_agents.php");
 		require_once ($config["homedir"] . '/include/functions_graph.php');
 		include_graphs_dependencies();
 		require_once ($config['homedir'] . '/include/functions_groups.php');
 		require_once ($config['homedir'] . '/include/functions_gis.php');
-
+		
 		$agent = db_get_row ("tagente", "id_agente", $id_agente);
-
+		
 		if ($agent === false) {
 			echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
 			return;
 		}
-
+		
 		$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
 
 		if($is_extra === ENTERPRISE_NOT_HOOK) {
@@ -165,41 +165,42 @@ if (is_ajax ())
 			}
 			echo '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
 		}
-
+		
 		//End of table
 		echo '</table></div>';
 		
 		// Blank space below title, DONT remove this, this
 		// Breaks the layout when Flash charts are enabled :-o
 		echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
+		
+		//Floating div
+		echo '<div id="agent_access" width:35%; padding-top:11px;">';
+		
+		if ($config["agentaccess"]) {
+			echo '<b>' . __('Agent access rate (24h)') . '</b><br />';
 			
-			//Floating div
-			echo '<div id="agent_access" width:35%; padding-top:11px;">';
-
-		if ($config["agentaccess"]){
-			echo '<b>'.__('Agent access rate (24h)').'</b><br />';
-
 			graphic_agentaccess($id_agente, 280, 110, 86400);
 		}
-
-		echo '<br>';
-		echo graphic_agentevents ($id_agente, 290, 60, 86400, '');
+		if ($config["global_flash_charts"]) {
+			echo '<br>';
+			echo graphic_agentevents ($id_agente, 290, 60, 86400, '');
+		}
 		
 		echo '</div>';
-			
+		
 		echo '<form id="agent_detail" method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
 			echo '<div class="action-buttons" style="width: '.$table->width.'">';
 				html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub upd"');
 			echo '</div>';
 		echo '</form>';
-			
+		
 		return;
-}
+	}
 	
 	require_once ('include/functions_reporting.php');
 	require_once ('include/functions_users.php');
 	require_once ('include/functions_servers.php');
-
+	
 	global $config;
 	
 	$enterpriseEnable = false;
@@ -214,7 +215,7 @@ if (is_ajax ())
 	$statusSel = get_parameter('status');
 	$search_free = get_parameter('search_free', '');
 	$printTable = get_parameter('printTable', 0);
-		
+	
 	if ($printTable) {
 		$id_agente = get_parameter('id_agente');
 		printTable($id_agente);
@@ -226,7 +227,7 @@ if (is_ajax ())
 	 * 0 1 - hide the 2º branch
 	 * 1 0 - hide the 1º branch
 	 * 1 1 - hide 2 branch
- */
+	*/
 	$lessBranchs = get_parameter('less_branchs');
 	
 	switch ($type) {
@@ -257,91 +258,91 @@ if (is_ajax ())
 				
 				//Extract all rows of data for each type
 				switch ($type) {
-					case 'group':			
-					
+					case 'group':
+						
 						//Skip agents which only have not init modules
-
+						
 						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
-										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";					
-
+							tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";					
+						
 						$sql = agents_get_agents(array (
-						'id_grupo' => $id,
-						'disabled' => 0,
-						'status' => $statusSel,
-						'search' => $search_sql),
-
-						array ('*'),
-						'AR',
-						array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
-						true);	
+							'id_grupo' => $id,
+							'disabled' => 0,
+							'status' => $statusSel,
+							'search' => $search_sql),
+							
+							array ('*'),
+							'AR',
+							array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
+							true);
 						
 						break;
 					case 'os':
-					
+						
 						//Skip agents which only have not init modules
-
+						
 						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
-										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
-					
-					
-						$sql = agents_get_agents(array (
-						'id_os' => $id,
-						'disabled' => 0,
-						'status' => $statusSel,
-						'search' => $search_sql),
-
-						array ('*'),
-						'AR',
-						array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
-						true);	
-											
-						break;
-					case 'module_group':
-					
-						//Skip agents which only have not init modules
-
-						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM tagente_estado 
-																WHERE id_agente_modulo IN 
-																(SELECT id_agente_modulo FROM tagente_modulo 
-																WHERE id_module_group = $id) 
-																GROUP BY id_agente HAVING SUM(utimestamp) = 0)";	
+							tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+						
 						
 						$sql = agents_get_agents(array (
-						'disabled' => 0,
-						'status' => $statusSel,
-						'search' => $search_sql),
-
-						array ('*'),
-						'AR',
-						false,
-						true);	
+							'id_os' => $id,
+							'disabled' => 0,
+							'status' => $statusSel,
+							'search' => $search_sql),
+							
+							array ('*'),
+							'AR',
+							array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
+							true);
+						
+						break;
+					case 'module_group':
+						
+						//Skip agents which only have not init modules
+						
+						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM tagente_estado 
+							WHERE id_agente_modulo IN 
+							(SELECT id_agente_modulo FROM tagente_modulo 
+							WHERE id_module_group = $id) 
+							GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+						
+						$sql = agents_get_agents(array (
+							'disabled' => 0,
+							'status' => $statusSel,
+							'search' => $search_sql),
+							
+							array ('*'),
+							'AR',
+							false,
+							true);
 						
 						// Skip agents without modules
 						$sql .= ' AND id_agente IN
-									(SELECT tagente.id_agente
-									FROM tagente, tagente_modulo 
-									WHERE tagente.id_agente = tagente_modulo.id_agente
-									AND id_module_group = ' . $id . ' AND tagente.disabled = 0 
-									AND tagente_modulo.disabled = 0
-									group by tagente.id_agente
-									having COUNT(*) > 0)';
-
+							(SELECT tagente.id_agente
+							FROM tagente, tagente_modulo 
+							WHERE tagente.id_agente = tagente_modulo.id_agente
+							AND id_module_group = ' . $id . ' AND tagente.disabled = 0 
+							AND tagente_modulo.disabled = 0
+							group by tagente.id_agente
+							having COUNT(*) > 0)';
+						
 						$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
-			
+						
 						break;
 					case 'policies':
 						
 						$sql = agents_get_agents(array (
-						'disabled' => 0,
-						'search' => $search_sql),
-
-						array ('*'),
-						'AR',
-						false,
-						true);	
-
+							'disabled' => 0,
+							'search' => $search_sql),
+							
+							array ('*'),
+							'AR',
+							false,
+							true);
+						
 						if ($id != 0) {
-
+							
 							// Skip agents without modules
 							$sql .= ' AND tagente.id_agente IN
 										(SELECT tagente.id_agente
@@ -355,7 +356,7 @@ if (is_ajax ())
 										AND tagente_modulo.id_policy_module != 0
 										AND tpolicy_modules.id_policy = ' . $id . '
 										group by tagente.id_agente
-										having COUNT(*) > 0)';						
+										having COUNT(*) > 0)';
 							
 						}
 						else if ($statusSel == 0) {
@@ -367,11 +368,11 @@ if (is_ajax ())
 																	FROM tagente_estado)";
 																	
 																	
-
+						
 						}
-
+						
 						$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
-
+						
 						break;
 					case 'module':
 						//Replace separator token "articapandora_32_pandoraartica_" for " "
@@ -382,17 +383,17 @@ if (is_ajax ())
 						
 						$name = io_safe_input($name);
 						
-					
+						
 						$sql = agents_get_agents(array (
-						'disabled' => 0,
-						'status' => $statusSel,
-						'search' => $search_sql),
-
-						array ('*'),
-						'AR',
-						false,
-						true);		
-
+							'disabled' => 0,
+							'status' => $statusSel,
+							'search' => $search_sql),
+							
+							array ('*'),
+							'AR',
+							false,
+							true);
+						
 						$sql .= sprintf('AND  id_agente IN (
 									SELECT id_agente
 									FROM tagente_modulo
@@ -400,7 +401,7 @@ if (is_ajax ())
 								)
 								', $name);
 						$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';						
-
+						
 						break;
 				}
 				
@@ -423,7 +424,7 @@ if (is_ajax ())
 			$new = true;
 			$count = 0;
 			echo "<ul style='margin: 0; padding: 0;'>\n";
-
+			
 			while($row = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 				$new = false;
 				$count++;
@@ -447,15 +448,15 @@ if (is_ajax ())
 						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 						break;
 					case 'policies':
-					
+						
 						$filter = "tagente_modulo.id_policy_module = 0";
 						
 						if ($id) {
 							$filter = "tagente_modulo.id_policy_module = " . $id . " ";
 						}
-
+						
 						$filter .=  " AND tagente_modulo.disabled = 0 ";
-					
+						
 						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], $filter);
 						
 						$agent_info["monitor_critical"] = agents_monitor_critical ($row["id_agente"], $filter);
@@ -468,7 +469,7 @@ if (is_ajax ())
 						$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
 																				$agent_info["monitor_warning"],
 																				$agent_info["monitor_unknown"]);
-												
+						
 						//Count all modules
 						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 						break;
@@ -485,7 +486,7 @@ if (is_ajax ())
 						$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
 																				$agent_info["monitor_warning"],
 																				$agent_info["monitor_unknown"]);
-												
+						
 						//Count all modules
 						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 						
@@ -498,16 +499,16 @@ if (is_ajax ())
 								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
 								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
 								$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
-						
+								
 								$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-						
+								
 								$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
 																				$agent_info["monitor_warning"],
 																				$agent_info["monitor_unknown"]);
-												
+								
 								//Count all modules
 								$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
-						
+								
 								break;
 							case "postgresql":
 							case "oracle":
@@ -517,20 +518,20 @@ if (is_ajax ())
 								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
 								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
 								$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
-						
+								
 								$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-						
+								
 								$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
 																				$agent_info["monitor_warning"],
 																				$agent_info["monitor_unknown"]);
-												
+								
 								//Count all modules
 								$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 								break;
 						}
 						break;
 				}
-
+				
 				// Filter by status (only in policy view)
 				if ($type == 'policies') {
 					
@@ -549,9 +550,9 @@ if (is_ajax ())
 					else if ($statusSel == UNKNOWN) {
 						if (strpos($agent_info["status_img"], 'down') === false)
 							continue;
-					}	
+					}
 				}
-
+				
 				$less = $lessBranchs;
 				if ($count != $countRows)
 					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "2"));
@@ -566,8 +567,8 @@ if (is_ajax ())
 				if ($lessBranchs == 1)
 					html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 				else
-					html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-
+					html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+				
 				echo $img;
 				echo "</a>";
 				echo " ";
@@ -581,9 +582,9 @@ if (is_ajax ())
 				echo "<a onfocus='JavaScript: this.blur()'
 					href='javascript: loadTable(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\")'>";
 				echo " ";
-					
+				
 				echo $row["nombre"];
-
+				
 				echo " (";
 				echo '<b>';
 				echo $agent_info["modules"];
@@ -607,11 +608,11 @@ if (is_ajax ())
 				echo "</a>";
 				echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div" . $id . "_agent_" . $type . "_" . $row["id_agente"] . "'></div>";
 				echo "</li>";
-			}	
-
+			}
+			
 			echo "</ul>\n";
 			break;
-
+		
 		//also aknolegment as second subtree/branch
 		case 'agent_group': 
 		case 'agent_module_group':  
@@ -680,20 +681,20 @@ if (is_ajax ())
 				echo "<li style='margin: 0; padding: 0;'>";
 				switch ($lessBranchs) {
 					case 0:
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 1:
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 2:
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 3:
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 				}
 				echo "<i>" . __("Empty") . "</i>";
@@ -709,23 +710,23 @@ if (is_ajax ())
 				$new = false;
 				$count++;
 				echo "<li style='margin: 0; padding: 0;'><span style='min-width: 300px; display: inline-block;'>";
-
+				
 				switch ($lessBranchs) {
 					case 0:
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 1:
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 2:
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 3:
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 				}
 				
@@ -735,7 +736,9 @@ if (is_ajax ())
 					html_print_image ("operation/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "2" ));
 				
 				// This line checks for (non-initialized) asyncronous modules
-				if ($row["estado"] == 0 AND $row["utimestamp"] == 0 AND ($row["id_tipo_modulo"] >= 21 AND $row["id_tipo_modulo"] <= 23)){
+				if ($row["estado"] == 0 AND $row["utimestamp"] == 0
+					AND ($row["id_tipo_modulo"] >= 21
+					AND $row["id_tipo_modulo"] <= 23)) {
 					$status = STATUS_MODULE_NO_DATA;
 					$title = __('UNKNOWN');
 				} // Else checks module status
@@ -798,10 +801,8 @@ if (is_ajax ())
 			echo "</ul>\n";
 			break;
 	}
-
 	
 	return;
-
 }
 
 
@@ -1304,28 +1305,29 @@ if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT
 	$enterpriseEnable = true;
 }
 
-/////////	INI MENU AND TABS /////////////
+///////// INI MENU AND TABS /////////////
 $img_style = array ("class" => "top", "width" => 16);
 $activeTab = get_parameter('sort_by','group');
 
 $os_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=os'>"
-			. html_print_image ("images/computer.png", true, array ("title" => __('OS'))) . "</a>", 'active' => $activeTab == "os");
+	. html_print_image ("images/computer.png", true, array ("title" => __('OS'))) . "</a>", 'active' => $activeTab == "os");
 
 $group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=group'>"
-			. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 'active' => $activeTab == "group");
+	. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 'active' => $activeTab == "group");
 
 $module_group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=module_group'>"
-			. html_print_image ("images/agents_group.png", true, array ("title" => __('Module groups'))) . "</a>", 'active' => $activeTab == "module_group");
+	. html_print_image ("images/agents_group.png", true, array ("title" => __('Module groups'))) . "</a>", 'active' => $activeTab == "module_group");
 
 if ($enterpriseEnable) {
 	$policies_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=policies'>"
-				. html_print_image ("images/policies.png", true, array ("title" => __('Policies'))) . "</a>", 'active' => $activeTab == "policies");
-} else {
+		. html_print_image ("images/policies.png", true, array ("title" => __('Policies'))) . "</a>", 'active' => $activeTab == "policies");
+}
+else {
 	$policies_tab = '';
 }
 
 $module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by=module'>"
-			. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
+	. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
 
 $onheader = array('os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
 
@@ -1375,7 +1377,7 @@ echo "</form>";
 echo "<div class='pepito' id='a'></div>";
 echo "<div class='pepito' id='b'></div>";
 echo "<div class='pepito' id='c'></div>";
-/////////	END MENU AND TABS /////////////
+///////// END MENU AND TABS /////////////
 printTree_($activeTab);
 
 ?>
@@ -1384,140 +1386,140 @@ printTree_($activeTab);
 	
 	var status = $('#status').val();
 	var search_free = $('#text-search_free').val();
-		/**
-		 * loadSubTree asincronous load ajax the agents or modules (pass type, id to search and binary structure of branch),
-		 * change the [+] or [-] image (with same more or less div id) of tree and anime (for show or hide)
-		 * the div with id "div[id_father]_[type]_[div_id]"
-		 *
-		 * type string use in js and ajax php
-		 * div_id int use in js and ajax php
-		 * less_branchs int use in ajax php as binary structure 0b00, 0b01, 0b10 and 0b11
-		 * id_father int use in js and ajax php, its useful when you have a two subtrees with same agent for diferent each one
-		 */
-		 function loadSubTree(type, div_id, less_branchs, id_father) {
-			hiddenDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv');
-			loadDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv');
-			pos = parseInt($('#tree_image'+id_father+'_'+type+'_'+div_id).attr('pos_tree'));	
-			
-			//If has yet ajax request running
-			if (loadDiv == 2)
-				return;
-			
-			if (loadDiv == 0) {
-				
-				//Put an spinner to simulate loading process
-				$('#tree_div'+id_father+'_'+type+'_'+div_id).html("<img style='padding-top:10px;padding-bottom:10px;padding-left:20px;' src=images/spinner.gif>");
-				$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
-				
-				$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 2);
-				$.ajax({
-					type: "POST",
-					url: "ajax.php",
-					data: "page=<?php echo $_GET['sec2']; ?>&ajax_treeview=1&type=" + 
-						type + "&id=" + div_id + "&less_branchs=" + less_branchs + "&id_father=" + id_father + "&status=" + status + "&search_free=" + search_free,
-					success: function(msg){
-						if (msg.length != 0) {
-							$('#tree_div'+id_father+'_'+type+'_'+div_id).hide();
-							$('#tree_div'+id_father+'_'+type+'_'+div_id).html(msg);
-							$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
-							
-							//change image of tree [+] to [-]
-							switch (pos) {
-								case 0:
-									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_expanded.png');
-									break;
-								case 1:
-									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_expanded.png');
-									break;
-								case 2:
-									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/expanded.png');
-									break;
-								case 3:
-									$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_expanded.png');
-									break;
-							}
-							$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddendiv',0);
-							$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 1);
-						}
-					}
-				});
-			}
-			else {
-				if (hiddenDiv == 0) {
-					$('#tree_div'+id_father+'_'+type+'_'+div_id).hide('normal');
-					$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv',1);
-					
-					//change image of tree [-] to [+]
-					switch (pos) {
-						case 0:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_closed.png');
-							break;
-						case 1:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_closed.png');
-							break;
-						case 2:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/closed.png');
-							break;
-						case 3:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_closed.png');
-							break;
-					}
-				}
-				else {
-					//change image of tree [+] to [-]
-					switch (pos) {
-						case 0:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_expanded.png');
-							break;
-						case 1:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_expanded.png');
-							break;
-						case 2:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/expanded.png');
-							break;
-						case 3:
-							$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_expanded.png');
-							break;
-					}
-					
-					$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
-					$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv',0);
-				}	
-			}
-		}
-			
-		function changeStatus(newStatus) {
-			status = newStatus;
-			
-			//reset all subtree
-			$(".tree_view").each(
-				function(i) {
-					$(this).attr('loadDiv', 0);
-					$(this).attr('hiddenDiv',1);
-					$(this).hide();
-				}
-			);
-			
-			//clean all subtree
-			$(".tree_view").each(
-				function(i) {
-					$(this).html('');
-				}
-			);
-		}
+	
+	/**
+	 * loadSubTree asincronous load ajax the agents or modules (pass type, id to search and binary structure of branch),
+	 * change the [+] or [-] image (with same more or less div id) of tree and anime (for show or hide)
+	 * the div with id "div[id_father]_[type]_[div_id]"
+	 *
+	 * type string use in js and ajax php
+	 * div_id int use in js and ajax php
+	 * less_branchs int use in ajax php as binary structure 0b00, 0b01, 0b10 and 0b11
+	 * id_father int use in js and ajax php, its useful when you have a two subtrees with same agent for diferent each one
+	 */
+	function loadSubTree(type, div_id, less_branchs, id_father) {
+		hiddenDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv');
+		loadDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv');
+		pos = parseInt($('#tree_image'+id_father+'_'+type+'_'+div_id).attr('pos_tree'));	
 		
-		function loadTable(type, div_id, less_branchs, id_father) {
-			id_agent = div_id;				
+		//If has yet ajax request running
+		if (loadDiv == 2)
+			return;
+		
+		if (loadDiv == 0) {
+			
+			//Put an spinner to simulate loading process
+			$('#tree_div'+id_father+'_'+type+'_'+div_id).html("<img style='padding-top:10px;padding-bottom:10px;padding-left:20px;' src=images/spinner.gif>");
+			$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
+			
+			$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 2);
 			$.ajax({
 				type: "POST",
 				url: "ajax.php",
-				data: "page=<?php echo $_GET['sec2']; ?>&printTable=1&id_agente=" + 
-				id_agent, success: function(data){
-					$('#cont').html(data);	
+				data: "page=<?php echo $_GET['sec2']; ?>&ajax_treeview=1&type=" + 
+					type + "&id=" + div_id + "&less_branchs=" + less_branchs + "&id_father=" + id_father + "&status=" + status + "&search_free=" + search_free,
+				success: function(msg){
+					if (msg.length != 0) {
+						$('#tree_div'+id_father+'_'+type+'_'+div_id).hide();
+						$('#tree_div'+id_father+'_'+type+'_'+div_id).html(msg);
+						$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
+						
+						//change image of tree [+] to [-]
+						switch (pos) {
+							case 0:
+								$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_expanded.png');
+								break;
+							case 1:
+								$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_expanded.png');
+								break;
+							case 2:
+								$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/expanded.png');
+								break;
+							case 3:
+								$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_expanded.png');
+								break;
+						}
+						$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddendiv',0);
+						$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 1);
+					}
 				}
 			});
-			
-			loadSubTree(type, div_id, less_branchs, id_father);		
+		}
+		else {
+			if (hiddenDiv == 0) {
+				$('#tree_div'+id_father+'_'+type+'_'+div_id).hide('normal');
+				$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv',1);
+				
+				//change image of tree [-] to [+]
+				switch (pos) {
+					case 0:
+						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_closed.png');
+						break;
+					case 1:
+						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_closed.png');
+						break;
+					case 2:
+						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/closed.png');
+						break;
+					case 3:
+						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_closed.png');
+						break;
+				}
+			}
+			else {
+				//change image of tree [+] to [-]
+				switch (pos) {
+					case 0:
+						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/first_expanded.png');
+						break;
+					case 1:
+						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/one_expanded.png');
+						break;
+					case 2:
+						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/expanded.png');
+						break;
+					case 3:
+						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src','operation/tree/last_expanded.png');
+						break;
+				}
+				
+				$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
+				$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv',0);
+			}
+		}
+	}
+	
+	function changeStatus(newStatus) {
+		status = newStatus;
+		
+		//reset all subtree
+		$(".tree_view").each(
+			function(i) {
+				$(this).attr('loadDiv', 0);
+				$(this).attr('hiddenDiv',1);
+				$(this).hide();
+			}
+		);
+		
+		//clean all subtree
+		$(".tree_view").each(
+			function(i) {
+				$(this).html('');
+			}
+		);
+	}
+		
+	function loadTable(type, div_id, less_branchs, id_father) {
+		id_agent = div_id;				
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			data: "page=<?php echo $_GET['sec2']; ?>&printTable=1&id_agente=" + 
+			id_agent, success: function(data){
+				$('#cont').html(data);	
+			}
+		});
+		
+		loadSubTree(type, div_id, less_branchs, id_father);
 	}
 </script>
-

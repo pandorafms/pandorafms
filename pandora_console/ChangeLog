@@ -1,3 +1,9 @@
+2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/tree.php: fixed to show flash graph in the tree.
+	
+	Fixes: #2257
+
 2013-06-11 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/events/events_list.php, operation/events/events.php:

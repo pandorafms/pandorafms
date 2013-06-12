@@ -38,9 +38,9 @@ my $XMLFiles :shared = 0;
 
 my $LogLock :shared;
 
-################################################################################
+########################################################################
 # Load the configuration file.
-################################################################################
+########################################################################
 sub load_config ($\%\@) {
 	my ($conf_file, $conf, $modules) = @_;
 	
@@ -525,19 +525,20 @@ sub log_message ($$) {
 
 
 
-################################################################################
+########################################################################
 # INI MD5 FUNCTIONS
-################################################################################
+########################################################################
 
 # Used to calculate the MD5 checksum of a string
 use constant MOD232 => 2**32;
 
-###############################################################################
-# MD5 leftrotate function. See http://en.wikipedia.org/wiki/MD5#Pseudocode.
-###############################################################################
+########################################################################
+# MD5 leftrotate function.
+# See http://en.wikipedia.org/wiki/MD5#Pseudocode.
+########################################################################
 sub leftrotate ($$) {
 	my ($x, $c) = @_;
-
+	
 	return (0xFFFFFFFF & ($x << $c)) | ($x >> (32 - $c));
 }
 
@@ -625,21 +626,21 @@ sub md5 ($) {
 				$f = $c ^ ($b | (0xFFFFFFFF & (~ $d)));
 				$g = (7 * $y) % 16;
 			}
-
+			
 			my $temp = $d;
 			$d = $c;
 			$c = $b;
 			$b = ($b + leftrotate (($a + $f + $K[$y] + $w[$g]) % MOD232, $R[$y])) % MOD232;
 			$a = $temp;
 		}
-
+		
 		# Add this chunk's hash to result so far
 		$h0 = ($h0 + $a) % MOD232;
 		$h1 = ($h1 + $b) % MOD232;
 		$h2 = ($h2 + $c) % MOD232;
 		$h3 = ($h3 + $d) % MOD232;
 	}
-
+	
 	# Digest := h0 append h1 append h2 append h3 #(expressed as little-endian)
 	return unpack ("H*", pack ("V", $h0)) . unpack ("H*", pack ("V", $h1)) . unpack ("H*", pack ("V", $h2)) . unpack ("H*", pack ("V", $h3));
 }
@@ -875,15 +876,15 @@ sub parse_local_conf($$) {
 			# A module definition
 			if ($line =~ m/module_begin/) {
 				my %module;
-
+				
 				# A comment
 				next if ($line =~ m/^#/);
-
+				
 				while (my $line = <CONF_FILE>) {
-
+					
 					# A comment
 					next if ($line =~ m/^#/);
-
+					
 					last if ($line =~ m/module_end/);
 					 
 					# Unknown line

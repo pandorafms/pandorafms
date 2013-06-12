@@ -1,3 +1,10 @@
+2013-06-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Message logging abstraction layer and several
+	  improvements.
+
+	* lib/PandoraFMS/DB.pm: Removed debugging code.
+
 2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* util/pandora_xml_stress.pl: cleaned source code style.

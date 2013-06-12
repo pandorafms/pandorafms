@@ -137,7 +137,8 @@ function mainInsertData() {
 	}
 	
 	echo '<div class="notify">';
-	echo __("Please check that the directory \"/var/spool/pandora/data_in\" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s.");
+	echo sprintf(__("Please check that the directory \"%s\" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s."),
+		$config['remote_config']);
 	echo '</div>';
 	
 	$table = null;

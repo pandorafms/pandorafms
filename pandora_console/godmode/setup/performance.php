@@ -75,7 +75,7 @@ $table_other->data = array ();
 $table_other->size[0] = '70%';
 $table_other->size[1] = '30%';
 
-$table_other->data[1][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
+$table_other->data[1][0] = __('Compact interpolation in hours (1 Fine-20 bad)') . ui_print_help_tip(__('Data will be compacted in intervals of the specified length.'), true);
 $table_other->data[1][1] = html_print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
 $intervals = array ();

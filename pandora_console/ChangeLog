@@ -1,3 +1,7 @@
+2013-06-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/setup/performance.php: Added a help tip to explain the 'compact interpolation'.
+
 2013-06-12 Mario Pulido <mario.pulido@artica.es>
 	
 	* pandoradb.data.postgreSQL.sql,

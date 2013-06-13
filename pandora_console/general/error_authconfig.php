@@ -40,20 +40,23 @@
 	<h1 id="log">Problem with Pandora FMS database</h1>
 	<br>
 	<div style="width: 440px; margin: 0 auto auto;">
-		<table cellpadding="4" cellspacing="1" width="440">
-		<tr><td align="left">
-			<a href="index.php"><img src="images/pandora_login.png" border="0" height="100px" alt="Pandora FMS"></a>
-		</td><td valign="bottom">
-			Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
-			Probably your database, hostname, user or password values are incorrect or 
-			the database server is not running.</i><br /><br /><span style='line-height: 18px' class="error">
-				<b>DB ERROR:</b>
-				<?php
-				echo db_get_last_error();
-				?></span>
-			</div>	
-			<div class="msg">
-			If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>
+		<table cellpadding="4" cellspacing="1" width="440" class="table_error">
+		<tr><td align="center">
+			<a href="index.php"><img src="images/pandora_login.png" border="0" alt="Pandora FMS"></a>
+		</td></tr><tr>
+		<td valign="bottom">
+			<div style="overflow-y: auto; overflow-x: visible; height: 120px; width: 300px; margin: 0 auto; padding-right: 20px;">
+				Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
+				Probably your database, hostname, user or password values are incorrect or 
+				the database server is not running.</i><br /><br /><span style='line-height: 18px' class="error">
+					<b>DB ERROR:</b>
+					<?php
+					echo db_get_last_error();
+					?></span>
+					<div class="msg">
+					If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>
+					</div>
+				</div>	
 			</div>
 		</td></tr>
 		</table>

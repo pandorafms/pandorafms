@@ -17,12 +17,12 @@
 ?>
 <img src="images/login_background.jpg" id="login_body">
 <div class="databox_logout" id="login">
-	<br>
-	<h1 id="log"><?php echo __('Logged out'); ?></h1>
-	<br>
-	<div style="width: 400px; margin: 0 auto auto;">
-		<table cellpadding="4" cellspacing="1" width="400">
-		<tr><td align="left">
+	<div style="width: 400px; margin: 80px auto 0 120px;">
+		<table cellpadding="4" cellspacing="1" width="400" class="table_error">
+		<tr><td align="center">
+			<h1 id="log"><?php echo __('Logged out'); ?></h1>
+		</td></tr>
+		<tr><td align="center">
 			<?php
 				echo '<a href="index.php">';
 				if (defined ('PANDORA_ENTERPRISE')){
@@ -35,7 +35,7 @@
 				//html_print_image ("images/pandora_login.png", false, array ("alt" => "logo", "border" => 0));
 				//echo '</a> '.$pandora_version;
 			?>
-		</td><td valign="bottom">
+		</td></tr><tr><td valign="bottom">
 			<?php echo __('Your session is over. Please close your browser window to close this Pandora session.').'<br /><br />'; ?>
 		</td></tr>
 		</table>

@@ -34,23 +34,29 @@
 
 
 <img src="images/login_background.jpg" id="login_body">
-<div class="databox_logout" id="login">
+<div class="databox_error" id="login">
 	<br>
 	<h1 id="log">No configuration file found</h1>
 	<br>
 	<div style="width: 440px; margin: 0 auto auto;">
 		<table cellpadding="4" cellspacing="1" width="440">
-		<tr><td align="left">
-			<a href="index.php"><img src= <?php echo '"images/pandora_login.png"' ?> border="0" height="100px" alt="Pandora FMS"></a>
-		</td><td valign="bottom">
-			<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-			permissions and HTTP server cannot read it. Please read documentation to fix this problem.
-			<div class="msg">
-			You may try to run the <b><?php 
-											if (file_exists('install.php'))
-												echo '<a href="install.php">installation wizard</a>';
-											else
-												echo 'installation wizard'; ?></b> to create one.
+		<tr><td align="center">
+			<a href="index.php"><img src= <?php echo '"images/pandora_login.png"' ?> border="0" alt="Pandora FMS"></a>
+		</td></tr><tr>
+		<td valign="bottom">
+			<div style="overflow-y: auto; overflow-x: visible; height: 120px; width: 300px; margin: 0 auto; padding-right: 20px;">
+				Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
+				permissions and HTTP server cannot read it. Please read documentation to fix this problem.
+				<div class="msg">
+				You may try to run the <b>
+				<?php 
+					if (file_exists('install.php'))
+						echo '<a href="install.php">installation wizard</a>';
+					else
+						echo 'installation wizard'; 
+				?>
+				</b> to create one.
+				</div>
 			</div>
 		</td></tr>
 		</table>

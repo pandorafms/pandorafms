@@ -33,17 +33,20 @@
 <body>
 
 <img src="images/login_background.jpg" id="login_body">
-<div class="databox_logout" id="login">
+<div class="databox_error" id="login">
 	<br>
 	<h1 id="log">Installer active</h1>
 	<br>
 	<div style="width: 440px; margin: 0 auto auto;">
-		<table cellpadding="4" cellspacing="1" width="440">
-		<tr><td align="left">
-			<a href="index.php"><img src="images/pandora_login.png" border="0" height="100px" alt="Pandora FMS"></a>
-		</td><td valign="bottom">
-			For security reasons, normal operation is not possible until you delete installer file.
-			Please delete the <i>./install.php</i> file before running Pandora FMS Console.
+		<table cellpadding="4" cellspacing="1" width="440" class="table_error">
+		<tr><td align="center">
+			<a href="index.php"><img src="images/pandora_login.png" border="0" alt="Pandora FMS"></a>
+		</td></tr><tr>
+		<td valign="bottom">
+			<div style="overflow-y: auto; overflow-x: visible; height: 120px; width: 300px; margin: 0 auto; padding-right: 20px;">
+				For security reasons, normal operation is not possible until you delete installer file.
+				Please delete the <i>./install.php</i> file before running Pandora FMS Console.
+			</div>
 		</td></tr>
 		</table>
 	</div>

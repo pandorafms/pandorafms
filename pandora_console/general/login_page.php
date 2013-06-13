@@ -59,14 +59,17 @@ if (!empty ($page) && !empty ($sec)) {
 	}
 }
 
-echo '<br />'.html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).
-   '<br>
-		<br />'.html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login"', true, true).
-   '<br>';
-	echo '<div style="float: right; margin-top: -70px; margin-right: 25px">';
-	html_print_input_image ("Login", "images/login_botton.png", 'Login');
-	echo '</div>';
-
+echo '<table class="login_table">';
+echo '<tr><td style="text-align: center; width: 90px;">' . html_print_image('images/login_user.png', true) . '</td>' .
+	'<td>'.html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).
+	'</td></tr>' .
+	'<tr><td style="text-align: center; width: 90px;">' . html_print_image('images/login_password.png', true) . '</td>' . 
+	'<td>'.html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login"', true, true).
+	'</td></tr><tr><td colspan=2>';
+	html_print_submit_button (__('Login'), "Login"); 
+	echo '</td></tr>' .
+	'<tr><td colspan=2 style="text-align: center; color: #666; font-size: xx-small;">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</td></tr></table>';
+echo '</div>';
 echo '</form>
 	</div>
 </div>';
@@ -77,7 +80,6 @@ if (defined('PANDORA_ENTERPRISE'))
 else
 	echo html_print_image('images/bottom_logo.png', true, array ("alt" => "logo", "border" => 0));
 echo '</div>';
-echo '<div id="ver_num">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 
 
 if (isset ($login_failed)) {

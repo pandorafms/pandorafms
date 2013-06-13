@@ -164,6 +164,28 @@ h1#log_f {
 	border-bottom: 1px solid #c00;
 	padding-bottom: 3px;
 }
+
+table.login_table {
+	width: 250px; 
+	margin: 0 auto; 
+	text-align: right;
+	margin-top: 0px;
+	padding-right: 0px;
+}
+
+table.login_table td {
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+#submit-Login {
+	padding-right: 25px;
+	padding-left: 10px;
+	background: #6e6e6e url(../../images/login_button_arrow.png) no-repeat 97% 3px !important;
+	color: #FFF;
+	height: 23px;
+}
+
 div#login {
 	margin: 0 auto;
 	padding-top: 63px;
@@ -175,7 +197,7 @@ div#login {
 	font-size: 12px !important; 
 }
 div#login_in, #login_f {
-	margin: 0 auto 0 140px;
+	margin: 80px auto 0 120px;
 	width: 400px;
 }
 div#error_login {
@@ -294,8 +316,7 @@ div#foot {
 
 #bottom_logo {
 	bottom: 0; 
-	height: 70px; 
-	margin: 0 auto 0 44%; 
+	margin: 0 auto 15px 44%; 
 	overflow: hidden; 
 	position: fixed;	
 }
@@ -331,10 +352,13 @@ input.datos_readonly {
 }
 input.login {
 	border: 0px none;
-	background-color: #ebebeb !important;
-	margin: 0px 0 8px 20px;
-	width: 135px;
-	height: 18px;
+	margin: 0px 0 0px 0px;
+	width: 175px;
+	height: 14px;
+	color: #fff;
+	background: #6e6e6e !important;
+	padding-left: 8px;
+	padding-right: 8px;
 }
 
 /* FF hack for login inputs */
@@ -893,7 +917,7 @@ span.rmess, span.nrmess {
 	#margin-left: 0px;
 	border: none !important; 
 	background-color: #fafafa;
-	background: url(../../images/splash_pandora.png) no-repeat; 
+	background: url(../../images/splash_pandora.png) center no-repeat; 
 }
 /* Style for login form */
 .databox_logout {
@@ -901,7 +925,7 @@ span.rmess, span.nrmess {
 	height: 400px;
 	border: none !important; 
 	background-color: #fafafa;
-	background: url(../../images/splash_logout.png) no-repeat; 
+	background: url(../../images/splash_logout.png) center no-repeat; 
 }
 
 .databox_error {
@@ -909,7 +933,16 @@ span.rmess, span.nrmess {
 	height: 400px;
 	border: none !important; 
 	background-color: #fafafa;
-	background: url(../../images/splash_error.png) no-repeat; 
+	background: url(../../images/splash_error.png) center no-repeat; 
+}
+
+.table_error {
+	padding-left: 50px; 
+	padding-right: 30px;
+}
+
+.databox_error h1 {
+	padding: 20px 150px 0px 170px;
 }
 
 .databox_color {

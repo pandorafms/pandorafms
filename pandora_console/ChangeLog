@@ -1,3 +1,27 @@
+2013-06-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	images/splash_pandora.png
+	images/bottom_logo_enterprise.png
+	images/login_password.png
+	images/bottom_logo.png
+	images/login_button_arrow.png
+	images/login_user.png
+	images/pandora_login.png
+	images/login_background.jpg
+	images/splash_error.png
+	images/pandora_login_enterprise.png
+	images/splash_logout.png
+	general/error_emptyconfig.php
+	general/error_perms.php
+	general/error_authconfig.php
+	general/login_page.php
+	general/error_noconfig.php
+	general/logoff.php
+	general/error_install.php
+	general/error_dbconfig.php: Changed the Login style to new style.
+	Including logout and error screens
+
 2013-06-13 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_snmp.php: changed the PHP function to execute

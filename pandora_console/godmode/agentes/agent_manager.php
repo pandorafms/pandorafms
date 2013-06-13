@@ -215,6 +215,10 @@ $table->data[5][1] .= ui_print_os_icon ($id_os, false, true);
 $table->data[5][1] .= '</span>';
 
 // Network server
+$servers = servers_get_names();
+if (!array_key_exists($server_name, $servers)) {
+	$server_Name = 0; //Set the agent have not server.
+}
 $table->data[6][0] = __('Server');
 if ($new_agent) {
 	//Set first server by default.

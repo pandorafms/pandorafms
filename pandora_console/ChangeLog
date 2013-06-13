@@ -1,3 +1,10 @@
+2013-06-13 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/agentes/agent_manager.php: fixed the show server as none
+	when this server is not exist.
+	
+	Fixes: #2264
+
 2013-06-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* extensions/insert_data.php: fixed the label of notice about the

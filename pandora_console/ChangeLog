@@ -1,3 +1,11 @@
+2013-06-13 Mario Pulido <mario.pulido@artica.es>
+	
+	* images/help/actions.png,
+        godmode/alerts/configure_alert_action.php,
+        include/help/en/help_alert_config.php,
+        include/help/es/help_alert_config.php: Add help in alert action.
+
+
 2013-06-13 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/agent_manager.php: fixed the show server as none

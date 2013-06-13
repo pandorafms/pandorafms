@@ -51,14 +51,14 @@ if ($al_action !== false) {
 		if (defined('METACONSOLE'))
 			alerts_meta_print_header();
 		else
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "alert_config", true);
 }
 else {
 	// Header
 	if (defined('METACONSOLE'))
 		alerts_meta_print_header();
 	else
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "alert_config", true);
 }
 
 enterprise_hook('open_meta_frame');

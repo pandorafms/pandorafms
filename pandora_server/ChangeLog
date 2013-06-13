@@ -1,3 +1,7 @@
+2013-06-13  SAncho Lerena <alerena@artica.es>
+
+        * pandora_server.redhat.spec: Fixed some path permissions.
+
 2013-06-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Message logging abstraction layer and several

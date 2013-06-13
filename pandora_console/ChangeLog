@@ -1,5 +1,12 @@
 2013-06-13 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: fixed the color of summatory
+	with the black theme.
+	
+	Fixes: #2286
+
+2013-06-13 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/agent_manager.php: fixed the show server as none
 	when this server is not exist.
 	

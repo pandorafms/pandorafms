@@ -3283,7 +3283,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$value = format_for_graph($value, 2) . " " . $unit;
 			}
 			
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif;">'.$value.'</p>';
 			array_push ($table->data, $data);
 			
 			break;

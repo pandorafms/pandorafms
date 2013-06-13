@@ -185,51 +185,53 @@ html_print_div(array('hidden' => true,
 html_print_div(array('hidden' => true,
 	'id' => 'load_filter_text', 'content' => __('Load filter')));
 
-// Save filter div for dialog
-echo '<div id="save_filter_layer" style="display: none">';
-$table->id = 'save_filter_form';
-$table->width = '98%';
-$table->cellspacing = 4;
-$table->cellpadding = 4;
-$table->class = 'databox';
-$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-$table->style[0] = 'width: 50%; width:50%;';
+if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM") ) {
+	// Save filter div for dialog
+	echo '<div id="save_filter_layer" style="display: none">';
+	$table->id = 'save_filter_form';
+	$table->width = '98%';
+	$table->cellspacing = 4;
+	$table->cellpadding = 4;
+	$table->class = 'databox';
+	$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+	$table->style[0] = 'width: 50%; width:50%;';
 
-$data = array();
-$table->rowid[0] = 'update_save_selector';
-$data[0] = html_print_radio_button('filter_mode', 'new', '', true, true) . __('New filter') . '<br><br>';
-$data[1] = html_print_radio_button('filter_mode', 'update', '', false, true) . __('Update filter') . '<br><br>';
-$table->data[] = $data;
-$table->rowclass[] = '';
+	$data = array();
+	$table->rowid[0] = 'update_save_selector';
+	$data[0] = html_print_radio_button('filter_mode', 'new', '', true, true) . __('New filter') . '<br><br>';
+	$data[1] = html_print_radio_button('filter_mode', 'update', '', false, true) . __('Update filter') . '<br><br>';
+	$table->data[] = $data;
+	$table->rowclass[] = '';
 
-$data = array();
-$table->rowid[1] = 'save_filter_row1';
-$data[0] = __('Filter name') . '<br>';
-$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
-$data[1] = __('Filter group') . '<br>';
-$data[1] .= html_print_select_groups($config["id_user"], "ER", true, 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
-$table->data[] = $data;
-$table->rowclass[] = '';
+	$data = array();
+	$table->rowid[1] = 'save_filter_row1';
+	$data[0] = __('Filter name') . '<br>';
+	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
+	$data[1] = __('Filter group') . '<br>';
+	$data[1] .= html_print_select_groups($config["id_user"], "ER", true, 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
+	$table->data[] = $data;
+	$table->rowclass[] = '';
 
-$data = array();
-$table->rowid[2] = 'save_filter_row2';
-$data[0] = html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"', true);
-$table->colspan[2][0] = 2;
-$table->cellstyle[2][0] = 'text-align:right;';
-$table->data[] = $data;
-$table->rowclass[] = '';
+	$data = array();
+	$table->rowid[2] = 'save_filter_row2';
+	$data[0] = html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"', true);
+	$table->colspan[2][0] = 2;
+	$table->cellstyle[2][0] = 'text-align:right;';
+	$table->data[] = $data;
+	$table->rowclass[] = '';
 
-$data = array();
-$table->rowid[3] = 'update_filter_row1';
-$data[0] = __("Overwrite filter") . '<br>';
-$data[0] .= html_print_select ($filters, "overwrite_filter", '', '', '', 0, true);
-$data[1] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
-$table->data[] = $data;
-$table->rowclass[] = '';
+	$data = array();
+	$table->rowid[3] = 'update_filter_row1';
+	$data[0] = __("Overwrite filter") . '<br>';
+	$data[0] .= html_print_select ($filters, "overwrite_filter", '', '', '', 0, true);
+	$data[1] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+	$table->data[] = $data;
+	$table->rowclass[] = '';
 
-html_print_table($table);
-unset($table);
-echo '</div>';
+	html_print_table($table);
+	unset($table);
+	echo '</div>';
+}
 
 // Load filter div for dialog
 echo '<div id="load_filter_layer" style="display: none">';
@@ -449,7 +451,9 @@ $table->rowclass[] = '';
 
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
-$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
+if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM") ) {
+	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
+}
 $data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a><br>';
 if (empty($id_name)) {
 	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('No filter loaded') . '</span>]';

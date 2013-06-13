@@ -322,8 +322,8 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 				resizable: true,
 				draggable: true,
 				modal: true,
-				height: 150,
-				width: 350,
+				height: 200,
+				width: 400,
 				overlay: {
 					opacity: 0.5,
 					background: "black"}

@@ -284,7 +284,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$data[0] = __('Show events');
 		$disabled = false;
 		if (isset($config['event_replication'])) {
-			if ($config['event_replication']) {
+			if ($config['event_replication'] && !$config['show_events_in_local']) {
 				$disabled = true;
 			}
 		}

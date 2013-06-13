@@ -142,7 +142,7 @@ if ($i != 0 && $allow_action) {
 	$table->align[$i] = 'center';
 	$table->size[$i] = '80px';
 	$i++;
-	if (check_acl ($config["id_user"], 0, "EW") == 1) {
+	if (check_acl ($config["id_user"], 0, "EW") == 1 && !$readonly) {
 		$table->head[$i] = html_print_checkbox ("all_validate_box", "1", false, true);
 		$table->align[$i] = 'center';
 	}
@@ -534,19 +534,21 @@ foreach ($result as $event) {
 
 		$i++;
 		
-		if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
-			//Checkbox
-			// Class 'candeleted' must be the fist class to be parsed from javascript. Dont change
-			$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="candeleted chk_val"', true);
+		if(!$readonly) {
+			if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
+				//Checkbox
+				// Class 'candeleted' must be the fist class to be parsed from javascript. Dont change
+				$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="candeleted chk_val"', true);
+			}
+			else if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1) {
+				//Checkbox
+				$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="chk_val"', true);
+			}
+			else if (isset($table->header[$i]) || true) {
+				$data[$i] = '';
+			}
 		}
-		else if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1) {
-			//Checkbox
-			$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="chk_val"', true);
-		}
-		else if (isset($table->header[$i]) || true) {
-			$data[$i] = '';
-		}
-				
+			
 		$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
 	}
 	

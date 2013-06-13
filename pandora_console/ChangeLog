@@ -1,3 +1,19 @@
+2013-06-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php: Fix layout issue
+
+	* operation/events/events.build_table.php: Hide checkbox column
+	in read only view
+
+	* operation/events/events_list.php: Hide save filter button
+	when user has only ER ACLs permission
+
+	* general/login_page.php: Fix width and height of the 
+	login error modal win
+
+	* operation/agentes/stat_win.php: Enable the show events
+	filter in replication mode when show local events is enabled
+
 2013-06-13 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_snmp.php: changed the PHP function to execute

@@ -1,3 +1,7 @@
+2013-06-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Disabled locks (5.0 feature).
+
 2013-06-13  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.redhat.spec: Fixed bad paths on perm syntax.

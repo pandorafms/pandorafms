@@ -1,5 +1,15 @@
 2013-06-13 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_snmp.php: changed the PHP function to execute
+	command and now get the error string or return true if it runs fine.
+	
+	* godmode/snmpconsole/snmp_trap_generator.php: show the error when
+	fail to call snmptrap, and show error when occurs.
+	
+	Fixes: #2270
+
+2013-06-13 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: fixed the color of summatory
 	with the black theme.
 	

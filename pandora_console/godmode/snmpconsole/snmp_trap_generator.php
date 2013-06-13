@@ -36,18 +36,25 @@ $generate_trap = (bool) get_parameter ("generate_trap", 0);
 
 ui_print_page_header (__("SNMP Trap generator"), "images/computer_error.png", false, "", false);
 
-if($generate_trap) {
+if ($generate_trap) {
 	$result = true;
-	if($snmp_host_address != '' && $snmp_community != '' && $snmp_oid != '' && $snmp_agent != '' && $snmp_value != '' && $snmp_type != -1) {
-		snmp_generate_trap($snmp_host_address, $snmp_community, $snmp_oid, $snmp_agent, $snmp_value, $snmp_type);
+	$error = '';
+	if ($snmp_host_address != '' && $snmp_community != '' && $snmp_oid != '' && $snmp_agent != '' && $snmp_value != '' && $snmp_type != -1) {
+		$result = snmp_generate_trap($snmp_host_address, $snmp_community, $snmp_oid, $snmp_agent, $snmp_value, $snmp_type);
+		
+		if ($result !== true) {
+			$error = $result;
+			$result = false;
+		}
 	}
 	else {
+		$error = __('Empty parameters');
 		$result = false;
 	}
 	
 	ui_print_result_message ($result,
-	__('Successfully generated'),
-	__('Could not be generated'));
+		__('Successfully generated'),
+		sprintf(__('Could not be generated: %s'), $error));
 }
 
 $traps_generator = '<form method="POST" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_trap_generator">';

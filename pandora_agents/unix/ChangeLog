@@ -1,3 +1,7 @@
+2013-06-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Quote the XML data file name before trying to send it.
+
 2013-05-22  Sancho Lerena <slerena@artica.es>
 
 	* pandora_agent.spec,

@@ -641,9 +641,9 @@ sub send_file {
 	my $output;
 
 	if ($Conf{'transfer_mode'} eq 'tentacle') {
- 		$output = `tentacle_client -v -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >$DevNull`;
+ 		$output = `tentacle_client -v -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} "$file" 2>&1 >$DevNull`;
 	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
- 		$output = `scp -P $Conf{'server_port'} $file pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >$DevNull`;
+ 		$output = `scp -P $Conf{'server_port'} "$file" pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >$DevNull`;
 	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
 		my $base = basename ($file);
 		my $dir = dirname ($file);
@@ -657,7 +657,7 @@ sub send_file {
 		quit
 		FEOF1`
 	} elsif ($Conf{'transfer_mode'} eq 'local') {
-		$output = `cp $file $Conf{'server_path'}/ 2>&1 >$DevNull`;
+		$output = `cp "$file" "$Conf{'server_path'}/" 2>&1 >$DevNull`;
 	}
 
 	# Get the errorlevel

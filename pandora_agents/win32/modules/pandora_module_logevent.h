@@ -54,7 +54,7 @@ namespace Pandora_Modules {
         void closeLogEvent ();
         int getLogEvents (list<string> &event_list, unsigned char discard);
         void timestampToSystemtime (string timestamp, SYSTEMTIME *system_time);
-        void getEventDescription (PEVENTLOGRECORD pevlr, char *message);
+        void getEventDescription (PEVENTLOGRECORD pevlr, char *message, DWORD flags);
         int filterEvent (PEVENTLOGRECORD pevlr, string description);
 
 	public:

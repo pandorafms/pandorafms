@@ -1,5 +1,10 @@
 2013-06-14  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb_data.sql: Change the version of the 
+	welcome message
+
+2013-06-14  Sergio Martin <sergio.martin@artica.es>
+
 	* include/languages/cs.po
 	include/languages/et.mo
 	include/languages/pt_BR.po

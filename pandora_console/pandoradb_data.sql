@@ -272,7 +272,7 @@ INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0
 -- Dumping data for table `tnews`
 --
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 4.0.3!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 4.1!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
 (2,'admin','New Pandora FMS Agent Features','Feel free to test our new features for both Windows and Linux agents: Proxy and Broker modes.',NOW());
 
 INSERT INTO tmodule VALUES (1,'Agent&#x20;module');

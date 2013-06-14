@@ -1,3 +1,8 @@
+2013-06-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl,
+	  lib/PandoraFMS/DB.pm: Backported the lock feature from 5.0.
+
 2013-06-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Disabled locks (5.0 feature).

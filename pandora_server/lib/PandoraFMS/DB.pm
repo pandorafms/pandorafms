@@ -34,9 +34,11 @@ our @EXPORT = qw(
 		db_connect
 		db_disconnect
 		db_do
+		db_get_lock
 		db_insert
 		db_process_insert
 		db_process_update
+		db_release_lock
 		db_reserved_word
 		db_string
 		db_text
@@ -650,6 +652,37 @@ sub db_concat ($$) {
 	return " concat(" . $element1 . ", ' '," . $element2 . ") " if ($RDBMS eq 'mysql');
 	return " " . $element1 . " || ' ' || " . $element2 . " " if ($RDBMS eq 'oracle' or $RDBMS eq 'postgresql');
 	
+}
+
+########################################################################
+## Try to obtain the given lock.
+########################################################################
+sub db_get_lock($$;$) {
+	my ($dbh, $lock_name, $lock_timeout) = @_;
+	
+	# Set a default lock timeout of 1 second
+	$lock_timeout = 1 if (! defined ($lock_timeout));
+	
+	# Attempt to get the lock!
+	my $sth = $dbh->prepare('SELECT GET_LOCK(?, ?)');
+	$sth->execute($lock_name, $lock_timeout);
+	my ($lock) = $sth->fetchrow;
+
+	# Something went wrong
+	return 0 if (! defined ($lock));
+	
+	return $lock;
+}
+
+########################################################################
+## Release the given lock.
+########################################################################
+sub db_release_lock($$) {
+	my ($dbh, $lock_name) = @_;
+	
+	my $sth = $dbh->prepare('SELECT RELEASE_LOCK(?)');
+	$sth->execute($lock_name);
+	my ($lock) = $sth->fetchrow;
 }
 
 # End of function declaration

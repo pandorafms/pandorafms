@@ -1,3 +1,10 @@
+2013-06-14 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/plugin_registration.php: fixed the url of module
+	library and now show ever the form to upload more plugins.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
 2013-06-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_ui.php: Fix layout issue

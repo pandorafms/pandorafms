@@ -1,3 +1,8 @@
+2013-06-14 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/plugin_registration.php: fixed the url of module
+	library and now show ever the form to upload more plugins.
+
 2013-06-14  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql: Change the version of the 

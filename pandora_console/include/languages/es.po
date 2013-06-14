@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-24 18:23+0200\n"
-"PO-Revision-Date: 2013-04-29 09:32+0000\n"
+"PO-Revision-Date: 2013-06-13 12:00+0000\n"
 "Last-Translator: Inches <victoria.molina@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-05-14 09:37+0000\n"
-"X-Generator: Launchpad (build 16617)\n"
+"X-Launchpad-Export-Date: 2013-06-14 08:09+0000\n"
+"X-Generator: Launchpad (build 16667)\n"
 "Language: \n"
 
 #: ../../include/graphs/functions_fsgraph.php:785
@@ -10184,7 +10184,7 @@ msgstr "Validación fallida"
 
 #: ../../mobile/operation/events.php:453
 msgid "ERROR: Event detail"
-msgstr "ERROS: Detalles del evento"
+msgstr "ERROR: Detalles del evento"
 
 #: ../../mobile/operation/events.php:455
 msgid "Error connecting to DB pandora."
@@ -11719,7 +11719,7 @@ msgstr "No se proporcionó ningún nombre de módulo"
 #: ../../godmode/agentes/module_manager_editor.php:399
 #: ../../enterprise/godmode/policies/policy_modules.php:654
 msgid "No target IP provided"
-msgstr "No se proporcionó ninguna IP de desino"
+msgstr "No se proporcionó ninguna IP de destino"
 
 #: ../../godmode/agentes/module_manager_editor.php:400
 #: ../../enterprise/godmode/policies/policy_modules.php:655

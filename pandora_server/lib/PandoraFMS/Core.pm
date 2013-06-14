@@ -893,6 +893,14 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Field 8 (comments);
 		my $comment = $field8;
 		
+		if($comment ne '') {
+			# Get datetime for the comment of the event
+			my $datetime = strftime( "%F, %H:%M:%S %p", localtime(time));
+
+			# This format is necessary for the ugly parser of event comments. Will be changed in the future to json
+			$comment = "<b>-- Added comment by an alert [" . $datetime . "] --</b><br><div>" . $comment . "</div>";
+		}
+		
 		pandora_event ($pa_config, $event_text, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($fullagent) ? $fullagent->{'id_agente'} : 0), $priority, 0, 0, $event_type, 0, $dbh, $source, '', $comment, $id_extra, $tags);
 	# Validate event (field1: agent name; field2: module name)
 	} elsif ($clean_name eq "Validate Event") {
@@ -3490,7 +3498,7 @@ sub pandora_process_event_replication ($) {
 	
 	# Get the metaconsole DB connection
 	my $dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
-
+	
 	if($dbh_metaconsole eq '') {
 		logger($pa_config, "Metaconsole DB connection error. Event replication thread will be aborted.", 1);
 		return;

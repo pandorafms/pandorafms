@@ -1,3 +1,9 @@
+2013-06-14  Sancho Lerena <slerena@artica.es>
+
+	*  extras/pandoradb_migrate_v4.0_to_v4.1.sql: Migration script for 4.1
+	(This is really optional, the section of code which uses this new
+	fields detects if exists, and if not, manage the execution properly).
+
 2013-06-14 Miguel de Dios <miguel.dedios@artica.es>
 
 	* extensions/plugin_registration.php: fixed the url of module

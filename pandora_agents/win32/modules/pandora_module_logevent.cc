@@ -245,10 +245,14 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 		// Process read events
 		while (read > 0) {           
 	    
-			// Retrieve the event description
-			getEventDescription (pevlr, description);
+			// Retrieve the event description (LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE)
+			getEventDescription (pevlr, description, 0x20 | 0x02);
 			if (description[0] == '\0') {
-				strcpy (description, "N/A");
+				// Retrieve the event description (DONT_RESOLVE_DLL_REFERENCES)
+				getEventDescription (pevlr, description, DONT_RESOLVE_DLL_REFERENCES);
+				if (description[0] == '\0') {
+					strcpy (description, "N/A");
+				}
 			}
 
 			// Filter the event
@@ -349,7 +353,7 @@ Pandora_Module_Logevent::timestampToSystemtime (string timestamp, SYSTEMTIME *sy
  * @return 0 if the description could be retrieved, -1 otherwise.
  */
 void
-Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *message) {
+Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *message, DWORD flags) {
     int i, j, len, offset;
     LPBYTE data = 0;
     HMODULE module = 0;
@@ -412,7 +416,7 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
 
     while (1) {
         // Load the DLL
-        module = LoadLibraryEx (dll_start, 0, 0x20 | 2);
+        module = LoadLibraryEx (dll_start, 0, flags);
         if(module == NULL) {
             pandoraDebug("LoadLibraryEx error %d. Exe file path %s.", GetLastError(), exe_file_path);
         } else {

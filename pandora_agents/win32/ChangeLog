@@ -1,3 +1,9 @@
+2013-06-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_logevent.cc,
+	  modules/pandora_module_logevent.h: Improved the reading of log event
+	  descriptions.
+
 2013-04-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Merged from trunk. Open the XML data file

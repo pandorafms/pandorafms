@@ -1,5 +1,14 @@
 2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/agentes/networkmap.php: fixed to create networkmaps
+	with the same name (for example users with diferent groups ACL).
+	
+	Fixes: #2285
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
+2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/alerts/configure_alert_action.php,
 	godmode/alerts/alert_commands.php: fixed the duplicated the rows
 	and did'nt hide the macros field rows.

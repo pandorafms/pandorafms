@@ -104,7 +104,7 @@ if (is_ajax ()) {
 			}
 			else {
 				$fields_rows[$i] =
-					'<tr id="table1-field' . $i . '" class="datos">
+					'<tr id="table_macros-field' . $i . '" class="datos">
 						<td style="font-weight:bold;width:20%" class="datos">
 							' . $fdesc . '
 						</td>

@@ -1,5 +1,13 @@
 2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/alerts/configure_alert_action.php,
+	godmode/alerts/alert_commands.php: fixed the duplicated the rows
+	and did'nt hide the macros field rows.
+	
+	Fixes: #2294
+
+2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions.php: fixed in the function "get_snmpwalk" the
 	lost global $config var.
 	

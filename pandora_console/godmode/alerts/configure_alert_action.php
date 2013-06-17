@@ -40,18 +40,18 @@ else
 	$sec = 'galertas';
 
 if ($al_action !== false) {
-		$own_info = get_user_info ($config['id_user']);
-		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-			$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
-		else
-			$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
-		$is_in_group = in_array($al_action['id_group'], $own_groups);
-		
-		// Header
-		if (defined('METACONSOLE'))
-			alerts_meta_print_header();
-		else
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "alert_config", true);
+	$own_info = get_user_info ($config['id_user']);
+	if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+		$own_groups = array_keys(users_get_groups($config['id_user'], "LM"));
+	else
+		$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
+	$is_in_group = in_array($al_action['id_group'], $own_groups);
+	
+	// Header
+	if (defined('METACONSOLE'))
+		alerts_meta_print_header();
+	else
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "alert_config", true);
 }
 else {
 	// Header
@@ -173,12 +173,16 @@ $(document).ready (function () {
 	
 	$("#id_command").change (function () {
 		values = Array ();
-		values.push ({name: "page",
+		values.push({
+			name: "page",
 			value: "godmode/alerts/alert_commands"});
-		values.push ({name: "get_alert_command",
+		values.push({
+			name: "get_alert_command",
 			value: "1"});
-		values.push ({name: "id",
+		values.push({
+			name: "id",
 			value: this.value});
+		
 		jQuery.get (<?php echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'"; ?>,
 			values,
 			function (data, status) {
@@ -186,26 +190,38 @@ $(document).ready (function () {
 				render_command_preview (original_command);
 				command_description = js_html_entity_decode (data["description"]);
 				render_command_description(command_description);
-				for (i=1; i<=10; i++) {
+				
+				
+				for (i = 1; i <= 10; i++) {
 					var old_value = '';
+					var field_row = data["fields_rows"][i];
+					
 					// Only keep the value if is provided from hidden (first time)
-					if ($("[name=field"+i+"_value]").attr('id') == "hidden-field" + i + "_value") {
-						old_value = $("[name=field"+i+"_value]").val();
+					if (($("[name=field" + i + "_value]").attr('id'))
+						== ("hidden-field" + i + "_value")) {
+						old_value = $("[name=field" + i + "_value]").val();
 					}
 					
 					// If the row is empty, hide de row
-					if(data["fields_rows"][i] == '') {
-						$('#table_macros-field'+i).hide();
+					if (field_row == '') {
+						$('#table_macros-field' + i).hide();
 					}
 					else {
-						$('#table_macros-field'+i).replaceWith(data["fields_rows"][i]);
-						$("[name=field"+i+"_value]").val(old_value);
+						$('#table_macros-field' + i).replaceWith(field_row);
+						$("[name=field" + i + "_value]").val(old_value);
+						
+						
 						// Add help hint only in first field
-						if(i == 1) {
-							var td_content = $('#table_macros-field'+i).find('td').eq(0);
-							td_content.html(td_content.html() + $('#help_alert_macros_hint').html());
+						if (i == 1) {
+							var td_content = $('#table_macros-field' + i)
+								.find('td').eq(0);
+							
+							$(td_content)
+								.html(
+									$(td_content).html() + $('#help_alert_macros_hint').html());
 						}
-						$('#table_macros-field').show();
+						
+						$('#table_macros-field' + i).show();
 					}
 				}
 				

@@ -1,3 +1,10 @@
+2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions.php: fixed in the function "get_snmpwalk" the
+	lost global $config var.
+	
+	Fixes: #2295
+
 2013-06-14 Miguel de Dios <miguel.dedios@artica.es>
 
 	* extensions/plugin_registration.php: fixed the url of module

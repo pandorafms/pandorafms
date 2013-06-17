@@ -1,5 +1,12 @@
 2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* extensions/net_tools.php: applied patch of the developer
+	"Carlos Cesario".
+	
+	Fixes: #2261
+
+2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions.php: fixed in the function "get_snmpwalk" the
 	lost global $config var.
 	

@@ -26,10 +26,10 @@ if(!empty($address) || empty($id_agente)) {
 function whereis_the_command ($command) {
 	
 	ob_start();
-	system('whereis '. $command);
+	system('which '. $command);
 	$output = ob_get_clean();
-	$result = explode(':', $output);
 	$result = trim($result[1]);
+	$result = trim($output);
 	
 	if ( empty($result)) {
 		return NULL;

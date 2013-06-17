@@ -46,7 +46,7 @@ if ($a_template !== false) {
 		// Header
 		ui_print_page_header (__('Alerts') .
 			' &raquo; ' . __('Configure alert template'), "",
-			false, "", true);
+			false, "conf_alert_template", true);
 
 	// If user tries to duplicate/edit a template of others groups 
 	}

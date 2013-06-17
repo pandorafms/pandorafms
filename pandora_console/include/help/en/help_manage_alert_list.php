@@ -14,8 +14,9 @@ When a new alert is created the following fields must be filled in:
 </p>
 
 <ul>
-	<li>Agent name: The name of the agent associated with the alert.</li>
-	<li>Module: Alert get module value and test if it is "out of range". In afirmative case it will raise an event (seding e-mail, etc.).</li>
-	<li>Template: Alerts width all parameters defined. They are used to do the administrator management easier.</li>
-	<li>Action: Allows to choose between all the alerts that have been configured. The selected action will be added to the action that is defined in the template.</li>
+	<li><b>Agent name:</b> The name of the agent associated with the alert.</li>
+	<li><b>Module:</b> Alert get module value and test if it is "out of range". In afirmative case it will raise an event (seding e-mail, etc.).</li>
+	<li><b>Template:</b> Alerts width all parameters defined. They are used to do the administrator management easier.</li>
+	<li><b>Action:</b> Allows to choose between all the alerts that have been configured. The selected action will be added to the action that is defined in the template.</li>
+	<li><b>Threshold:</b> Defines the time interval in which it is guaranteed that an alert is not going to be fired more times than the number fixed in Maximum number of alerts. 
 </ul>

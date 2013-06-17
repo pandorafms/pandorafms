@@ -37,7 +37,7 @@ enterprise_include_once ('godmode/setup/setup.php');
 
 
 // Header
-ui_print_page_header (__('Performance  configuration'), "", false, "", true);
+ui_print_page_header (__('Performance  configuration'), "", false, "performance", true);
 
 $table->width = '98%';
 $table->data = array ();

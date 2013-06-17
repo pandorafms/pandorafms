@@ -14,8 +14,10 @@ Cuando una alerta es creada los siguiente campos deben de rellenarse:
 </p>
 
 <ul>
-	<li>Agent name: El nombre del agente asociado a la alarma.</li>
-	<li>Module: La alerta recogerá el valor del módulo y comprobará si está "fuera de rango". En caso afirmativo creará un evento (sending, e-mail, etc.).</li>
-	<li>Template: Alertas con todos los parámetros predefinidos. Son usadas para hacer más sencilla la gestión de las alertas porel administrador.</li>
-	<li>Action: Permite elegir entre todas las alertas que están configuradas. La acción seleccionada será añadida a la acción definida por el template.</li>
+	<li><b>Agent name:</b> El nombre del agente asociado a la alarma.</li>
+	<li><b>Module:</b> La alerta recogerá el valor del módulo y comprobará si está "fuera de rango". En caso afirmativo creará un evento (sending, e-mail, etc.).</li>
+	<li><b>Template:</b> Alertas con todos los parámetros predefinidos. Son usadas para hacer más sencilla la gestión de las alertas porel administrador.</li>
+	<li><b>Action:</b> Permite elegir entre todas las alertas que están configuradas. La acción seleccionada será añadida a la acción definida por el template.</li>
+	<li><b>Threshold:</b> Define el intervalo de tiempo en el que se garantiza que una alerta no va a ser disparada más veces que el número fijado en el número máximo de alertas.
+	
 </ul>

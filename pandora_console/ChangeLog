@@ -1,3 +1,12 @@
+2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions.php: fixed in the function "get_snmpwalk" the
+	lost global $config var.
+	
+	Fixes: #2295
+	
+	MERGED FROM THE TRUNK
+
 2013-06-14  Sancho Lerena <slerena@artica.es>
 
 	*  extras/pandoradb_migrate_v4.0_to_v4.1.sql: Migration script for 4.1

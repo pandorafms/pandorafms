@@ -603,7 +603,7 @@ function get_parameterBetweenListValues ($name, $values, $default) {
 	
 	if (isset($_GET[$name]))
 		$parameter = get_parameter_get ($name, $default);
-		
+	
 	foreach($values as $value) {
 		if ($value == $parameter) {
 			return $value;
@@ -1208,10 +1208,12 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 	$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
 	$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "", $snmp_port = '') {
 	
+	global $config;
+	
 	// Note: quick_print is ignored
 	
 	// Fix for snmp port
-	if (!empty($snmp_port)){
+	if (!empty($snmp_port)) {
 		$ip_target = $ip_target.':'.$snmp_port;
 	}
 	
@@ -1219,8 +1221,8 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 	if ($base_oid != "") {
 		$base_oid = escapeshellarg ($base_oid);
 	}
-		
-	if ($config['snmpwalk'] == '') {
+	
+	if (empty($config['snmpwalk'])) {
 		switch (PHP_OS) {
 			case "FreeBSD":
 				$snmpwalk_bin = '/usr/local/bin/snmpwalk';
@@ -1249,7 +1251,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 			exec ($snmpwalk_bin . ' -m ALL -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2>/dev/null', $output, $rc);	
 			break;
 	}
-
+	
 	// Parse the output of snmpwalk
 	foreach ($output as $line) {
 		
@@ -1259,7 +1261,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 			$snmpwalk[$full_oid[0]] = $full_oid[1];
 		}
 	}
-
+	
 	return $snmpwalk;
 }
 

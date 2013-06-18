@@ -262,27 +262,29 @@ if ($search_string != '') {
 if ($free_search_string != '') {
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$whereSubquery .= ' AND (source LIKE "%' . $free_search_string . '%" OR
-									oid LIKE "%' . $free_search_string . '%" OR
-									oid_custom LIKE "%' . $free_search_string . '%" OR
-									type_custom LIKE "%' . $free_search_string . '%" OR
-									value LIKE "%' . $free_search_string . '%" OR
-									value_custom LIKE "%' . $free_search_string . '%" OR
-									id_usuario LIKE "%' . $free_search_string . '%" OR
-									text LIKE "%' . $free_search_string . '%" OR
-									description LIKE "%' . $free_search_string . '%")';
+			$whereSubquery .= '
+				AND (source LIKE "%' . $free_search_string . '%" OR
+				oid LIKE "%' . $free_search_string . '%" OR
+				oid_custom LIKE "%' . $free_search_string . '%" OR
+				type_custom LIKE "%' . $free_search_string . '%" OR
+				value LIKE "%' . $free_search_string . '%" OR
+				value_custom LIKE "%' . $free_search_string . '%" OR
+				id_usuario LIKE "%' . $free_search_string . '%" OR
+				text LIKE "%' . $free_search_string . '%" OR
+				description LIKE "%' . $free_search_string . '%")';
 			break;
 		case "postgresql":
 		case "oracle":
-			$whereSubquery .= ' AND (source LIKE \'%' . $free_search_string . '%\' OR
-									oid LIKE \'%' . $free_search_string . '%\' OR
-									oid_custom LIKE \'%' . $free_search_string . '%\' OR
-									type_custom LIKE \'%' . $free_search_string . '%\' OR
-									value LIKE \'%' . $free_search_string . '%\' OR
-									value_custom LIKE \'%' . $free_search_string . '%\' OR
-									id_usuario LIKE \'%' . $free_search_string . '%\' OR
-									text LIKE \'%' . $free_search_string . '%\' OR
-									description LIKE \'%' . $free_search_string . '%\')';
+			$whereSubquery .= '
+				AND (source LIKE \'%' . $free_search_string . '%\' OR
+				oid LIKE \'%' . $free_search_string . '%\' OR
+				oid_custom LIKE \'%' . $free_search_string . '%\' OR
+				type_custom LIKE \'%' . $free_search_string . '%\' OR
+				value LIKE \'%' . $free_search_string . '%\' OR
+				value_custom LIKE \'%' . $free_search_string . '%\' OR
+				id_usuario LIKE \'%' . $free_search_string . '%\' OR
+				text LIKE \'%' . $free_search_string . '%\' OR
+				description LIKE \'%' . $free_search_string . '%\')';
 			break;
 	}
 }
@@ -393,8 +395,8 @@ $trapcount = db_get_sql ("
 	FROM ttrap " .
 	$whereSubquery);
 
-$urlPagination = "index.php?" .
-	"sec=estado&" .
+$url_snmp = "index.php?" .
+	"sec=snmpconsole&" .
 	"sec2=operation/snmpconsole/snmp_view&" .
 	"filter_agent=" . $filter_agent . "&" .
 	"filter_oid=" . $filter_oid . "&" .
@@ -402,14 +404,15 @@ $urlPagination = "index.php?" .
 	"filter_fired=" . $filter_fired . "&" .
 	"filter_status=" . $filter_status . "&" .
 	"search_string=" . $search_string . "&" .
-	"pagination=" . $pagination . "&" .
-	"offset=" . $offset . "&" .
 	"refr=" . ((int)get_parameter('refr', 0)) . "&" .
 	"pure=" . $config["pure"] . "&" .
 	"search_string=" . $search_string;
+
+$urlPagination = $url_snmp . "&pagination=" . $pagination . "&offset=" . $offset;
+
 ui_pagination ($trapcount, $urlPagination, $offset, $pagination);
 
-echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pagination='.$pagination.'&offset='.$offset.'">';
+echo '<form name="eventtable" method="POST" action="' . $url_snmp . '">';
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
@@ -554,10 +557,10 @@ if ($traps !== false) {
 		$data[8] = "";
 		
 		if (empty ($trap["status"]) && check_acl ($config["id_user"], 0, "IW")) {
-			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a> ';
+			$data[8] .= '<a href="' . $url_snmp . '&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a> ';
 		}
 		if (check_acl ($config["id_user"], 0, "IM")) {
-			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
+			$data[8] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
 		}
 		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
 		
@@ -567,11 +570,20 @@ if ($traps !== false) {
 		
 		//Hiden file for description
 		$string = '<table style="border:solid 1px #D3D3D3;" width="90%" class="toggle">
-			<tr><td align="left" valign="top" width="15%" ><b>' . __('Custom data:') . '</b></td><td align="left" >' . $trap['oid_custom'] . '</td></tr>'
-			 . '<tr><td align="left" valign="top">' . '<b>' . __('OID:') . '</td><td align="left"> ' . $trap['oid'] . '</td></tr>';
+			<tr>
+				<td align="left" valign="top" width="15%" ><b>' . __('Custom data:') . '</b></td>
+				<td align="left" >' . $trap['oid_custom'] . '</td>
+			</tr>
+			<tr>
+				<td align="left" valign="top">' . '<b>' . __('OID:') . '</td>
+				<td align="left"> ' . $trap['oid'] . '</td>
+			</tr>';
 		
 		if ($trap["description"] != "") {
-			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>';
+			$string .= '<tr>
+					<td align="left" valign="top">' . '<b>' . __('Description:') . '</td>
+					<td align="left">' . $trap['description'] . '</td>
+				</tr>';
 		}
 		
 		if ($trap["type"] != "") {
@@ -618,7 +630,7 @@ if ($traps !== false) {
 
 // No matching traps
 if ($idx == 0) {
-	echo '<div class="nf">'.__('No matching traps found').'</div>';
+	echo '<div class="nf">' . __('No matching traps found') . '</div>';
 }
 else {
 	html_print_table ($table);
@@ -667,33 +679,33 @@ echo '<div style="clear:both;">&nbsp;</div>';
 ?>
 
 <script language="JavaScript" type="text/javascript">
-<!--
-function CheckAll() {
-	for (var i = 0; i < document.eventtable.elements.length; i++) {
-		var e = document.eventtable.elements[i];
-		if (e.type == 'checkbox' && e.name != 'allbox')
-			e.checked = !e.checked;
+	<!--
+	function CheckAll() {
+		for (var i = 0; i < document.eventtable.elements.length; i++) {
+			var e = document.eventtable.elements[i];
+			if (e.type == 'checkbox' && e.name != 'allbox')
+				e.checked = !e.checked;
+		}
 	}
-}
-
-function toggleDiv (divid) {
-	if (document.getElementById(divid).style.display == 'none') {
-		document.getElementById(divid).style.display = 'block';
-	}
-	else {
-		document.getElementById(divid).style.display = 'none';
-	}
-}
-
-function toggleVisibleExtendedInfo(id_trap) {
-	display = $('.trap_info_' + id_trap).css('display');
 	
-	if (display != 'none') {
-		$('.trap_info_' + id_trap).css('display', 'none');
+	function toggleDiv (divid) {
+		if (document.getElementById(divid).style.display == 'none') {
+			document.getElementById(divid).style.display = 'block';
+		}
+		else {
+			document.getElementById(divid).style.display = 'none';
+		}
 	}
-	else {
-		$('.trap_info_' + id_trap).css('display', '');
+	
+	function toggleVisibleExtendedInfo(id_trap) {
+		display = $('.trap_info_' + id_trap).css('display');
+		
+		if (display != 'none') {
+			$('.trap_info_' + id_trap).css('display', 'none');
+		}
+		else {
+			$('.trap_info_' + id_trap).css('display', '');
+		}
 	}
-}
-//-->
+	//-->
 </script>

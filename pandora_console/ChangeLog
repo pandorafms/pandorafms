@@ -1,5 +1,11 @@
 2013-06-18 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/incidents/incident.php,
+	operation/incidents/incident_detail.php: fixed to set the SYSTEM as
+	user for the incident.
+
+2013-06-18 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/snmpconsole/snmp_view.php: fixed the urls and forms to
 	set the filters.
 

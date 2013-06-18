@@ -89,10 +89,12 @@ elseif ($action == "update") {
 	$grupo = get_parameter ("grupo_form", 1);
 	$usuario = get_parameter ("usuario_form", $config["id_user"]);
 	
-	$sql = sprintf ("UPDATE tincidencia SET titulo = '%s', origen = '%s', estado = %d, id_grupo = %d, id_usuario = '%s', prioridad = %d, descripcion = '%s', id_lastupdate = '%s' WHERE id_incidencia = %d", 
-					$titulo, $origen, $estado, $grupo, $usuario, $prioridad, $descripcion, $config["id_user"], $id_inc);
+	$sql = sprintf ("UPDATE tincidencia
+		SET titulo = '%s', origen = '%s', estado = %d, id_grupo = %d, id_usuario = '%s', prioridad = %d, descripcion = '%s', id_lastupdate = '%s'
+		WHERE id_incidencia = %d", 
+		$titulo, $origen, $estado, $grupo, $usuario, $prioridad, $descripcion, $config["id_user"], $id_inc);
 	$result = db_process_sql ($sql);
-
+	
 	if ($result !== false) {
 		db_pandora_audit("Incident updated","User ".$config['id_user']." updated incident #".$id_inc);
 	}
@@ -111,7 +113,7 @@ elseif ($action == "insert") {
 		require ("general/noaccess.php");
 		exit;
 	}
-
+	
 	// Read input variables
 	$titulo = get_parameter ("titulo");
 	$titulo = io_safe_input(strip_tags(io_safe_output($titulo)));
@@ -120,15 +122,20 @@ elseif ($action == "insert") {
 	$prioridad = get_parameter ("prioridad_form");
 	$id_creator = $config['id_user'];
 	$estado = get_parameter ("estado_form");
-	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator) VALUES 
-					(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"]);
+	$usuario = get_parameter ("usuario_form", "");
+	
+	$sql = sprintf ("INSERT INTO tincidencia
+			(inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator)
+		VALUES 
+			(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
+			$titulo, $descripcion, $usuario, $origen, $estado, $prioridad, $grupo, $config["id_user"]);
 	$id_inc = db_process_sql ($sql, "insert_id");
-
+	
 	if ($id_inc === false) {
-		echo '<h3 class="error">'.__('Error creating incident').'</h3>';		
+		echo '<h3 class="error">' . __('Error creating incident') . '</h3>';
 	}
 	else {
-		db_pandora_audit("Incident created", "User ".$config["id_user"]." created incident #".$id_inc);
+		db_pandora_audit("Incident created", "User " . $config["id_user"] . " created incident #" . $id_inc);
 	}
 }
 
@@ -220,7 +227,7 @@ html_print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javas
 
 echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 
-html_print_input_text ('texto', $texto, '', 45);	
+html_print_input_text ('texto', $texto, '', 45);
 echo '&nbsp;';
 html_print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;', false, array ("alt" => __('Search'))); 
 
@@ -233,9 +240,9 @@ if ($count < 1) {
 else {
 	// TOTAL incidents
 	$url = "index.php?sec=workspace&amp;sec2=operation/incidents/incident";
-
+	
 	$estado = -1;
-
+	
 	// add form filter values for group, priority, state, and search fields: user and text
 	if ($grupo != -1)
 		$url .= "&amp;grupo=".$grupo;
@@ -247,9 +254,9 @@ else {
 		$url .= "&amp;usuario=".$usuario;
 	if ($texto != '')
 		$url .= "&amp;texto=".$texto;
-
+	
 	// Show pagination
-	ui_pagination ($count + $offset, $url, $offset, 15, false);	//($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.
+	ui_pagination ($count + $offset, $url, $offset, 15, false); //($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.
 	echo '<br />';
 	
 	// Show headers
@@ -261,7 +268,7 @@ else {
 	$table->data = array ();
 	$table->size = array ();
 	$table->align = array ();
-
+	
 	$table->head[0] = __('ID');
 	$table->head[1] = __('Status');
 	$table->head[2] = __('Incident');
@@ -291,7 +298,7 @@ else {
 		$iterator++;
 		
 		$data = array();
-
+		
 		$data[0] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
 		$attach = incidents_get_attach ($row["id_incidencia"]);
 		
@@ -305,11 +312,17 @@ else {
 		$data[4] = ui_print_group_icon ($row["id_grupo"], true);
 		$data[5] = ui_print_timestamp ($row["actualizacion"], true);
 		$data[6] = $row["origen"];
-		$data[7] = ui_print_username ($row["id_usuario"], true);
+		if (empty($row["id_usuario"])) {
+			$data[7] = 'SYSTEM';
+		}
+		else {
+			$data[7] = ui_print_username ($row["id_usuario"], true);
+		}
 		
 		if (check_acl ($config["id_user"], $row["id_grupo"], "IM") || $config["id_user"] == $row["id_usuario"] || $config["id_user"] == $row["id_creator"]) {
 			$data[8] = html_print_checkbox ("id_inc[]", $row["id_incidencia"], false, true);
-		} else {
+		}
+		else {
 			$data[8] = '';
 		}
 		
@@ -323,7 +336,7 @@ else {
 	if (check_acl ($config["id_user"], 0, "IW")) {
 		html_print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete"');
 	}
-
+	
 	if (check_acl ($config["id_user"], 0, "IM")) {
 		html_print_submit_button (__('Become owner'), 'own_btn', false, 'class="sub upd"');
 	}
@@ -331,7 +344,9 @@ else {
 	echo '</form>';
 	unset ($table);
 }
-	echo '<br><br>';
+
+echo '<br><br>';
+
 if (check_acl ($config["id_user"], 0, "IW")) {
 	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
 	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';

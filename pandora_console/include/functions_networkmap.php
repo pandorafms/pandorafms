@@ -280,42 +280,43 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 				$node_count ++;
 				$agent_module = modules_get_agentmodule($key);
 				$alerts_module = db_get_sql('SELECT count(*) as num
-					FROM talert_template_modules WHERE id_agent_module = '.$key);
+					FROM talert_template_modules
+					WHERE id_agent_module = '.$key);
 				
-				if($alerts_module == 0 && $modwithalerts){
+				if ($alerts_module == 0 && $modwithalerts) {
 					continue;
 				}
 				
-				if($agent_module['id_module_group'] != $module_group && $module_group != 0){
+				if ($agent_module['id_module_group'] != $module_group && $module_group != 0) {
 					continue;
 				}
 				
-				if($hidepolicymodules && $config['enterprise_installed']){
+				if ($hidepolicymodules && $config['enterprise_installed']) {
 					enterprise_include_once('include/functions_policies.php');
 					if(policies_is_module_in_policy($key)) {
 						continue;
 					}
 				}
-									
+				
 				// Save node parent information to define edges later
 				$parents[$node_count] = $agent_module['parent'] = $agent['id_node'];
-					
+				
 				$agent_module['id_node'] = $node_count;
-
+				
 				$agent_module['type'] = 'module';
 				// Add node
 				$nodes[$node_count] = $agent_module;
 			}
 		}
 	}
-
+	
 	if (empty ($nodes)) {
 		return false;
 	}
 	
 	// Create void statistics array
-	$stats = array();	
-
+	$stats = array();
+	
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
 		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
@@ -348,12 +349,12 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 			$orphans[$node] = 1;
 		}
 	}
-
+	
 	// Create a central node if orphan nodes exist
 	if (count ($orphans)) {
 		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
 	}
-
+	
 	// Define edges for orphan nodes
 	foreach (array_keys($orphans) as $node) {
 		$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
@@ -367,14 +368,14 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 
 // Returns an edge definition
 function networkmap_create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, $sec2 = 'operation/agentes/networkmap', $tab = 'topology', $id_networkmap = 0) {
-
+	
 	// edgeURL allows node navigation
 	$edge = $head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false,
 	edgeURL="index.php?sec=estado&sec2='.$sec2.'&tab='.$tab.'&recenter_networkmap=1&center='.$head.
 	'&layout='.$layout.'&nooverlap=' .$nooverlap.'&pure='.$pure.
 	'&zoom='.$zoom.'&ranksep='.$ranksep.'&simple='.$simple.'&regen=1'.
 	'&font_size='.$font_size.'&group='.$group.'&id_networkmap='.$id_networkmap.'"];';
-
+	
 	return $edge;
 }
 
@@ -385,19 +386,19 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 	// Set node status
 	switch($status) {
 		case 0: 
-				$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
-				$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = '#FF1D1D'; // Critical monitor
 			break;
 		case 2:
-				$status_color = '#FFE308'; // Warning monitor
+			$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFA300'; // Alert fired
+			$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
-				$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = '#BBBBBB'; // Unknown monitor
 			break;
 	}
 	
@@ -420,9 +421,9 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 		}
 		
 		$node = $group['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>'.$img_node.'</TD></TR>
-		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
-		 shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'",
-		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
+			<TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
+			shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'",
+			tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
 	}
 	else {
 		$node = $group['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
@@ -439,19 +440,19 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	// Set node status
 	switch($status) {
 		case 0: 
-				$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
-				$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = '#FF1D1D'; // Critical monitor
 			break;
 		case 2:
-				$status_color = '#FFE308'; // Warning monitor
+			$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFA300'; // Alert fired
+			$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
-				$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = '#BBBBBB'; // Unknown monitor
 			break;
 	}
 	
@@ -474,9 +475,9 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		}
 		
 		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
-		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
-		 shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
-		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
+			<TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
+			shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
+			tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	}
 	else {
 		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
@@ -488,26 +489,26 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 // Returns a module node definition
 function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 	$status = modules_get_agentmodule_status($module['id_agente_modulo']);
-				
+	
 	// Set node status
 	switch($status) {
 		case 0: 
-				$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
-				$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = '#FF1D1D'; // Critical monitor
 			break;
 		case 2:
-				$status_color = '#FFE308'; // Warning monitor
+			$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFA300'; // Alert fired
+			$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
-				$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = '#BBBBBB'; // Unknown monitor
 			break;
 	}
-
+	
 	
 	if ($simple == 0){
 		$node = $module['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false). '</TD></TR>
@@ -534,7 +535,7 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	
 	$node = '0 [ color="#364D1F", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
 		shape="ellipse", tooltip="ajax.php?page=include/ajax/networkmap.ajax&action=get_networkmap_summary&stats='.$stats_json.'", URL="index.php?sec=estado&sec2=operation/agentes/group_view" ];';
-
+	
 	return $node;
 }
 
@@ -565,7 +566,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $fo
 	$size_y = 5.4;
 	$size = '';
 	
-			
+	
 	if ($layout == 'radial') {
 		$overlap = 'true';
 	}
@@ -575,7 +576,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $fo
 			$overlap = 'scalexy';
 		}
 	}
-
+	
 	if ($zoom > 0) {
 		$size_x *= $zoom;
 		$size_y *= $zoom;
@@ -592,7 +593,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $fo
 	$head .= "ratio=fill;";
 	$head .= "root=0;";
 	$head .= "size=\"$size\";";
-
+	
 	return $head;
 }
 
@@ -604,18 +605,18 @@ function networkmap_close_graph () {
 // Returns the filter used to achieve the desired layout
 function networkmap_get_filter ($layout) {
 	switch($layout) {
-	case 'flat':
-		return 'dot';
-	case 'radial':
-		return 'twopi';
-	case 'circular':
-		return 'circo';
-	case 'spring1':
-		return 'neato';
-	case 'spring2':
-		return 'fdp';
-	default:
-		return 'twopi';
+		case 'flat':
+			return 'dot';
+		case 'radial':
+			return 'twopi';
+		case 'circular':
+			return 'circo';
+		case 'spring1':
+			return 'neato';
+		case 'spring2':
+			return 'fdp';
+		default:
+			return 'twopi';
 	}
 }
 
@@ -683,20 +684,20 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
 		return false;
 	if (! is_array ($filter))
 		$filter = array ();
-		
+	
 	$filter['id_networkmap'] = $id_networkmap;
 	
-	if($check_user) {
+	if ($check_user) {
 		//If hte user has admin flag don't filter by user	
 		$user_info = users_get_user_by_id($config['id_user']);
-
+		
 		if (!$user_info['is_admin']) {
 			$filter['id_user'] = $config['id_user'];
 		}
 	}
 	
 	$networkmap = db_get_row_filter ('tnetwork_map', $filter, $fields);
-		
+	
 	return $networkmap;
 }
 
@@ -712,12 +713,12 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
 function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
 	global $config;
 	
-	if($id_user == '') {
+	if ($id_user == '') {
 		$id_user = $config['id_user'];
 	}
 	
 	$type_cond = '';
-	if($type != '') {
+	if ($type != '') {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$type_cond = ' AND type = "'.$type.'"';
@@ -739,13 +740,13 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 			break;
 	}
 	
-	if($networkmaps_raw === false){
+	if ($networkmaps_raw === false){
 		return false;
 	}
-		
+	
 	$networkmaps = array();
-	foreach($networkmaps_raw as $key => $networkmapitem) {
-		if($optgrouped) {
+	foreach ($networkmaps_raw as $key => $networkmapitem) {
+		if ($optgrouped) {
 			$networkmaps[$networkmapitem['id_networkmap']] = 
 				array('name' => $networkmapitem['name'], 
 					'optgroup' => $networkmapitem['type']);
@@ -799,18 +800,18 @@ function networkmap_update_networkmap ($id_networkmap, $values) {
  */
 function networkmap_get_types () {
 	$networkmap_types = array();
-
+	
 	$is_enterprise = enterprise_include_once('include/functions_policies.php');
-
+	
 	$networkmap_types['topology'] = __('Create a new topology map');
 	$networkmap_types['groups'] = __('Create a new group map');
-
+	
 	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_types');
 	
 		$networkmap_types = array_merge($networkmap_types, $enterprise_types);
 	}
-
+	
 	return $networkmap_types;
 }
 
@@ -821,18 +822,18 @@ function networkmap_get_types () {
  */
 function networkmap_get_filter_types () {
 	$networkmap_types = array();
-
+	
 	$is_enterprise = enterprise_include_once('include/functions_policies.php');
-
+	
 	$networkmap_types['topology'] = __('Topology');
 	$networkmap_types['groups'] = __('Group');
-
+	
 	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_filter_types');
-	
+		
 		$networkmap_types = array_merge($networkmap_types, $enterprise_types);
 	}
-
+	
 	return $networkmap_types;
 }
 

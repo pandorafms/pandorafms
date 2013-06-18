@@ -1,3 +1,17 @@
+2013-06-18 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/snmpconsole/snmp_view.php: fixed the urls and forms to
+	set the filters.
+
+2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_networkmap.php: cleaned source code style.
+	
+	* operation/agentes/networkmap.php: fixed to create networkmaps
+	with the same name (for example users with diferent groups ACL).
+	
+	Fixes: #2285
+
 2013-06-17 Mario Pulido <mario.pulido@artica.es>
 
         * images/help/historyddbb.png, 

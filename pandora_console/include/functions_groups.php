@@ -357,7 +357,7 @@ function groups_is_all_group($idGroups) {
 			break;
 		}
 	}
-
+	
 	return $returnVar;
 }
 
@@ -603,22 +603,26 @@ function groups_get_users ($id_group, $filter = false) {
 	
 	$filter['id_grupo'] = $id_group;
 	
-	$resulta = array();
-	$resulta = db_get_all_rows_filter ("tusuario_perfil", $filter);
+	$result_a = array();
+	if (!is_array($id_group) && !empty($id_group)) {
+		$result_a = db_get_all_rows_filter ("tusuario_perfil", $filter);
+	}
 	
-	// The users of the group All (0) will be also returned
-	$filter['id_grupo'] = 0;
-	$resultb = array();
-	$resultb = db_get_all_rows_filter ("tusuario_perfil", $filter);
+	$result_b = array();
+	if ($return_user_all) {
+		// The users of the group All (0) will be also returned
+		$filter['id_grupo'] = 0;
+		$result_b = db_get_all_rows_filter ("tusuario_perfil", $filter);
+	}
 	
-	if ($resulta == false && $resultb == false)
+	if ($result_a == false && $result_b == false)
 		$result = false;
-	elseif ($resulta == false)
-		$result = $resultb;
-	elseif ($resultb == false)
-		$result = $resulta;
+	elseif ($result_a == false)
+		$result = $result_b;
+	elseif ($result_b == false)
+		$result = $result_a;
 	else
-		$result = array_merge($resulta,$resultb);
+		$result = array_merge($result_a, $result_b);
 	
 	if ($result === false)
 		return array ();
@@ -1353,7 +1357,7 @@ function groups_total_agents ($group_array, $disabled = false) {
 		return 0;
 		
 	}
-	else if (!is_array ($group_array)){
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
 	
@@ -1393,5 +1397,4 @@ function groups_agent_disabled ($group_array) {
 	
 	return db_get_sql ($sql);
 }
-
 ?>

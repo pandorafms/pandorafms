@@ -26,7 +26,7 @@ $menu_operation = array ();
 $menu_operation['class'] = 'operation';
 
 // Agent read, Server read
-if (check_acl ($config['id_user'], 0, "AR")) {	
+if (check_acl ($config['id_user'], 0, "AR")) {
 	//View agents
 	$menu_operation["estado"]["text"] = __('Monitoring');
 	$menu_operation["estado"]["sec2"] = "operation/agentes/tactical";
@@ -283,6 +283,7 @@ $sub["operation/users/user_edit"]["refr"] = 0;
 $sub["operation/users/webchat"]["text"] = __('WebChat');
 $sub["operation/users/webchat"]["refr"] = 0;
 
+
 //Incidents
 if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$temp_sec2 = $sec2; 
@@ -306,17 +307,15 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$sec2 = $temp_sec2;
 }
 
-if (check_acl ($config['id_user'], 0, "AR")) {
-	
-	// Messages
-	$sub["operation/messages/message_list"]["text"] = __('Messages');
-	$sub["operation/messages/message_list"]["refr"] = 0;
-	
-	$sub2 = array ();
-	$sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
-	
-	$sub["operation/messages/message_list"]["sub2"] = $sub2;
-}
+
+// Messages
+$sub["operation/messages/message_list"]["text"] = __('Messages');
+$sub["operation/messages/message_list"]["refr"] = 0;
+
+$sub2 = array ();
+$sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
+
+$sub["operation/messages/message_list"]["sub2"] = $sub2;
 
 $menu_operation["workspace"]["sub"] = $sub;
 

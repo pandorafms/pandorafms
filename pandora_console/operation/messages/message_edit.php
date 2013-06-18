@@ -37,11 +37,11 @@ $buttons['message_list'] = array('active' => false,
 $buttons['sent_messages'] = array('active' => false,
 		'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list&amp;show_sent=1">' .
 		html_print_image("images/email_outbox.png", true, array ("title" => __('Sent messages'))) .'</a>');
-			
+
 $buttons['create_message'] = array('active' => true,
 		'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_edit">' .
 		html_print_image("images/new_message.png", true, array ("title" => __('Create message'))) .'</a>');
-		
+
 // Header
 ui_print_page_header (__('Messages'), "images/email_mc.png", false, "", false, $buttons);
 
@@ -129,6 +129,7 @@ if (($new_msg) && (!empty ($dst_user)) && (!$reply)) {
 	if (!$user_name) {
 		$user_name = $dst_user;
 	}
+	
 	ui_print_result_message ($return,
 		__('Message successfully sent to user %s', $user_name),
 		__('Error sending message to user %s', $user_name));
@@ -163,11 +164,30 @@ else {
 
 $table->data[1][0] = __('Destination');
 
-$users_full = groups_get_users (array_keys(users_get_groups()));
+$is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
+
+if ($is_admin) {
+	$users_full = db_get_all_rows_filter('tusuario', array(), array('id_user', 'fullname'));
+}
+else {
+	$users_full = groups_get_users (array_keys(users_get_groups()), false, false);
+}
+
 $users = array();
 foreach ($users_full as $user_id => $user_info) {
 	$users[$user_info['id_user']] = $user_info['fullname'];
 }
+
+//Check if the user to reply is in the list, if not add reply user
+if ($reply) {
+	if (!array_key_exists($dst_user, $users)) {
+		//Add the user to reply
+		$user_reply = db_get_row('tusuario', 'id_user', $dst_user);
+		$users[$user_reply['id_user']] = $user_reply['fullname'];
+	}
+}
+
+
 
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_groups = true;

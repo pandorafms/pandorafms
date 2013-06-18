@@ -1,3 +1,10 @@
+2013-06-18 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/snmpconsole/snmp_view.php: fixed the urls and forms to
+	set the filters.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
 2013-06-17 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/agentes/networkmap.php: fixed to create networkmaps

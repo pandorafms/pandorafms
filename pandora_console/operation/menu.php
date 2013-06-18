@@ -178,17 +178,17 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	if ($config['metaconsole'] == 0) {
 		$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
 		
-		$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
+		$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');
 		//Set godomode path
 		$sub["godmode/reporting/graphs"]["subsecs"] = array(
 			"operation/reporting/graph_viewer",
 			"godmode/reporting/graph_builder");
-																
+		
 		$sub["operation/agentes/exportdata"]["text"] = __('Export data');
 		$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");
-															
+		
 		enterprise_hook ('dashboard_menu');
-		enterprise_hook ('reporting_godmenu');	
+		enterprise_hook ('reporting_godmenu');
 	}
 	
 	$menu_operation["reporting"]["sub"] = $sub;
@@ -213,7 +213,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$own_groups = array_keys(users_get_groups($config['id_user'], "IR"));
 		else
-			$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));		
+			$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));
 		
 		foreach ($gisMaps as $gisMap) {
 			$is_in_group = in_array($gisMap['group_id'], $own_groups);
@@ -298,6 +298,7 @@ $sub["operation/users/user_edit"]["refr"] = 0;
 $sub["operation/users/webchat"]["text"] = __('WebChat');
 $sub["operation/users/webchat"]["refr"] = 0;
 
+
 //Incidents
 if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$temp_sec2 = $sec2; 
@@ -321,17 +322,15 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$sec2 = $temp_sec2;
 }
 
-if (check_acl ($config['id_user'], 0, "AR")) {
-	
-	// Messages
-	$sub["operation/messages/message_list"]["text"] = __('Messages');
-	$sub["operation/messages/message_list"]["refr"] = 0;	
-	
-	$sub2 = array ();
-	$sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
-	
-	$sub["operation/messages/message_list"]["sub2"] = $sub2;
-}
+
+// Messages
+$sub["operation/messages/message_list"]["text"] = __('Messages');
+$sub["operation/messages/message_list"]["refr"] = 0;
+
+$sub2 = array ();
+$sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
+
+$sub["operation/messages/message_list"]["sub2"] = $sub2;
 
 $menu_operation["workspace"]["sub"] = $sub;
 
@@ -381,6 +380,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 
 // Save operation menu array to use in operation/extensions.php view
 $operation_menu_array = $menu_operation;
+
+
 
 if(!$config['pure']) {
 	menu_print_menu ($menu_operation, true);

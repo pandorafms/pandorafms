@@ -1,5 +1,16 @@
 2013-06-18 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/menu.php: showed the message entry in workspace menu for
+	all users.
+	
+	* include/functions_groups.php: added filters into the function
+	"groups_get_users" for to avoid to get user without perms.
+	
+	* operation/messages/message_edit.php: fixed the ACL for to
+	destination users.
+
+2013-06-18 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/incidents/incident.php,
 	operation/incidents/incident_detail.php: fixed to set the SYSTEM as
 	user for the incident.

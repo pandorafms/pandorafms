@@ -90,7 +90,9 @@ elseif ($action == "update") {
 	$usuario = get_parameter ("usuario_form", $config["id_user"]);
 	$id_agent = get_parameter ("id_agent");
 	
-	$sql = sprintf ("UPDATE tincidencia SET titulo = '%s', origen = '%s', estado = %d, id_grupo = %d, id_usuario = '%s', prioridad = %d, descripcion = '%s', id_lastupdate = '%s', id_agent = %d WHERE id_incidencia = %d", 
+	$sql = sprintf ("UPDATE tincidencia
+		SET titulo = '%s', origen = '%s', estado = %d, id_grupo = %d, id_usuario = '%s', prioridad = %d, descripcion = '%s', id_lastupdate = '%s', id_agent = %d
+		WHERE id_incidencia = %d", 
 		$titulo, $origen, $estado, $grupo, $usuario, $prioridad, $descripcion, $config["id_user"], $id_agent, $id_inc);
 	$result = db_process_sql ($sql);
 	
@@ -101,6 +103,7 @@ elseif ($action == "update") {
 	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
+	
 }
 elseif ($action == "insert") {
 	//Create incident
@@ -120,9 +123,14 @@ elseif ($action == "insert") {
 	$prioridad = get_parameter ("prioridad_form");
 	$id_creator = $config['id_user'];
 	$estado = get_parameter ("estado_form");
-	$id_agent = get_parameter ("id_agent"); 
-	$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator, id_agent, id_agente_modulo) VALUES 
-		(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', %d, 0)", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"], $id_agent);
+	$usuario = get_parameter ("usuario_form", "");
+	$id_agent = get_parameter ("id_agent");
+	
+	$sql = sprintf ("INSERT INTO tincidencia
+			(inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator, id_agent, id_agente_modulo)
+		VALUES 
+			(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', %d, 0)",
+			$titulo, $descripcion, $usuario, $origen, $estado, $prioridad, $grupo, $config["id_user"], $id_agent);
 	$id_inc = db_process_sql ($sql, "insert_id");
 	
 	if ($id_inc === false) {
@@ -130,7 +138,7 @@ elseif ($action == "insert") {
 	}
 	else {
 		ui_print_success_message(__('Incident created'));
-		db_pandora_audit("Incident created", "User ".$config["id_user"]." created incident #".$id_inc);
+		db_pandora_audit("Incident created", "User " . $config["id_user"] . " created incident #" . $id_inc);
 	}
 }
 
@@ -339,7 +347,12 @@ else {
 		$data[4] = ui_print_group_icon ($row["id_grupo"], true);
 		$data[5] = ui_print_timestamp ($row["actualizacion"], true);
 		$data[6] = $row["origen"];
-		$data[7] = ui_print_username ($row["id_usuario"], true);
+		if (empty($row["id_usuario"])) {
+			$data[7] = 'SYSTEM';
+		}
+		else {
+			$data[7] = ui_print_username ($row["id_usuario"], true);
+		}
 		
 		if (check_acl ($config["id_user"], $row["id_grupo"], "IM") || $config["id_user"] == $row["id_usuario"] || $config["id_user"] == $row["id_creator"]) {
 			$data[8] = html_print_checkbox ("id_inc[]", $row["id_incidencia"], false, true);

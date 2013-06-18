@@ -22,7 +22,7 @@ require_once ("include/functions_events.php"); //To get events group information
 check_login ();
 
 if (! check_acl ($config["id_user"], 0, "IR")) {
- 	// Doesn't have access to this page
+	// Doesn't have access to this page
 	db_pandora_audit("ACL Violation", "Trying to access incident details");
 	require ("general/noaccess.php");
 	exit;
@@ -56,7 +56,8 @@ if (isset ($_GET["id"])) {
 	if (isset ($_GET["insertar_nota"])) {
 		$nota = get_parameter ("nota");
 		
-		$sql = sprintf ("INSERT INTO tnota (id_usuario, id_incident, nota) VALUES ('%s', %d, '%s')",$config["id_user"],$id_inc, $nota);
+		$sql = sprintf ("INSERT INTO tnota (id_usuario, id_incident, nota)
+			VALUES ('%s', %d, '%s')", $config["id_user"], $id_inc, $nota);
 		$id_nota = db_process_sql ($sql, "insert_id");
 		
 		if ($id_nota !== false) {
@@ -91,14 +92,19 @@ if (isset ($_GET["id"])) {
 		($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
 		$file_id = (int) get_parameter ("delete_file", 0);
 		$filename = db_get_value ("filename", "tattachment", "id_attachment", $file_id);
-		$sql = sprintf ("DELETE FROM tattachment WHERE id_attachment = %d",$file_id);
+		$sql = sprintf ("
+			DELETE
+			FROM tattachment
+			WHERE id_attachment = %d",$file_id);
 		$result = db_process_sql ($sql);
 		
 		if (!empty ($result)) {
-			if (file_exists($config['homedir'] . '/attachment/pand'.$row["id_attachment"].'_'.$row["filename"]. ".zip"))
-				unlink ($config["attachment_store"]."/pand".$file_id."_".io_safe_output($filename). ".zip");
+			if (file_exists($config['homedir'] . '/attachment/pand' . $row["id_attachment"].'_'.$row["filename"]. ".zip"))
+				unlink ($config["attachment_store"] .
+					"/pand" . $file_id . "_" . io_safe_output($filename) . ".zip");
 			else
-				unlink ($config["attachment_store"]."/pand".$file_id."_".io_safe_output($filename));
+				unlink ($config["attachment_store"] .
+					"/pand" . $file_id . "_" . io_safe_output($filename));
 			
 			
 			incidents_process_touch ($id_inc);

@@ -1,3 +1,38 @@
+2013-06-18 Mario Pulido <mario.pulido@artica.es>
+
+	*images/help/alert01.png,
+	images/help/alert02.png,
+	images/help/alert03.png,
+	images/help/alert04.png,
+	images/help/alert05.png,
+	images/help/alert06.png,
+	images/help/alert07.png,
+	images/help/alert08.png,
+	images/help/alert09.png,
+	images/help/event01.png,
+	images/help/event02.png,
+	images/help/event03.png,
+	images/help/event04.png,
+	images/help/alert10.png,
+	images/help/alert11.png,
+	images/help/alert12.png,
+	images/help/alert13.png,
+	images/help/alert14.png,
+	images/help/alert15.png,
+	images/help/alert16.png,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/alerts/configure_alert_command.php,
+	godmode/alerts/alert_actions.php,
+	godmode/alerts/alert_commands.php,
+	godmode/alerts/alert_list.php,
+	godmode/alerts/configure_alert_template.php,
+	include/help/en/help_event_alert.php,
+	include/help/en/help_alerts_config.php,
+	include/help/es/help_alerts_config.php,
+	include/help/es/help_event_alert.php,
+	include/help/ja/help_event_alert.php: Added helps
+
 2013-06-18 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/menu.php: showed the message entry in workspace menu for

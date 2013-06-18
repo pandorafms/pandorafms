@@ -41,11 +41,11 @@ if ($al_action !== false) {
 		$is_in_group = in_array($al_action['id_group'], $own_groups);
 		
 		// Header
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "alerts_config", true);
 }
 else {
 	// Header
-	ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);	
+	ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "alerts_config", true);	
 }
 $name = '';
 $id_command = '';
@@ -100,13 +100,13 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
 $table->data[3][1] .= ' ' . __('seconds') . ui_print_help_icon ('action_threshold', true);
-$table->data[4][0] = __('Field 1');
-$table->data[4][1] = html_print_input_text ('field1', $field1, '', 35, 255, true) . ui_print_help_icon ('alert_macros', true);
+$table->data[4][0] = __('Field 1').' '. ui_print_help_icon ('alert_macros', true);
+$table->data[4][1] = html_print_input_text ('field1', $field1, '', 35, 255, true) ;
 
-$table->data[5][0] = __('Field 2');
+$table->data[5][0] = __('Field 2').' '. ui_print_help_icon ('alert_macros', true);
 $table->data[5][1] = html_print_input_text ('field2', $field2, '', 80, 255, true);
 
-$table->data[6][0] = __('Field 3');
+$table->data[6][0] = __('Field 3').' '. ui_print_help_icon ('alert_macros', true);
 $table->data[6][1] = html_print_textarea ('field3', 10, 30, $field3, '', true);
 
 $table->data[7][0] = __('Command preview');

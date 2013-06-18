@@ -40,7 +40,7 @@ if ($id) {
 
 // Header
 ui_print_page_header (__('Alerts') . ' &raquo; ' .
-	__('Configure alert command'), "images/god2.png", false, "", true);
+	__('Configure alert command'), "images/god2.png", false, "alerts_config", true);
 
 $table->width = '98%';
 $table->style = array ();

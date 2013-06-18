@@ -262,7 +262,7 @@ else {
 	if ($tab == 'list') {
 		ui_print_page_header(__('Alerts') .
 			' &raquo; ' . __('Manage alerts') . ' &raquo; ' .
-			__('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+			__('List'), "images/god2.png", false, "alerts_config", true, $buttons);
 	}
 	else {
 		ui_print_page_header(__('Alerts') .

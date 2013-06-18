@@ -48,7 +48,7 @@ $copy_action = (bool) get_parameter ('copy_action');
 
 if ((!$copy_action) && (!$delete_action) && (!$update_action))
 	// Header
-	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alerts_config", true);
 
 if ($copy_action) {
 	$id = get_parameter ('id');

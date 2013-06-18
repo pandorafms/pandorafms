@@ -114,7 +114,7 @@ $delete_template = (bool) get_parameter ('delete_template');
 // This prevents to duplicate the header in case delete_templete action is performed
 if (!$delete_template) 
 // Header
-ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alerts_config", true);
 
 if ($update_template) {
 	$id = (int) get_parameter ('id');

@@ -524,11 +524,11 @@ else if ($step == 3) {
 		'recovery_notify', $recovery_notify, '', '', '', true, false,
 		false);
 	
-	$table->data['field2'][0] = __('Field 2');
+	$table->data['field2'][0] = __('Field 2').''. ui_print_help_icon ('alert_macros', true);
 	$table->data['field2'][1] = html_print_input_text ('field2_recovery',
 		$field2_recovery, '', 35, 255, true);
 	
-	$table->data['field3'][0] = __('Field 3');
+	$table->data['field3'][0] = __('Field 3').''. ui_print_help_icon ('alert_macros', true) ;
 	$table->data['field3'][1] = html_print_textarea ('field3_recovery', 10, 30,
 		$field3_recovery, '', true);
 }

@@ -198,6 +198,10 @@ mta_address localhost
 #           probably you need to change it to avoid problems with your antispam
 #mta_from Pandora FMS <pandora@mydomain.com>
 
+# Set 1 if want eMail deliver alert in separate mail  (default). 
+# Set 0 if want eMail deliver shared mail by all destination.
+mail_in_separate 1
+
 # xprobe2: Optional package to detect OS types using advanced TCP/IP 
 # fingerprinting tecniques, much more accurates than stadard nmap.
 # If not provided, nmap is used insted xprobe2

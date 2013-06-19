@@ -788,10 +788,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	} elsif ($action->{'name'} eq "eMail") {
 		$field2 = subst_alert_macros ($field2, \%macros);
 		$field3 = subst_alert_macros ($field3, \%macros);
-		foreach my $address (split (',', $field1)) {
-			# Remove blanks
-			$address =~ s/ +//g;
-			pandora_sendmail ($pa_config, $address, $field2, $field3);
+		if ($pa_config->{"mail_in_separate"} != 0){
+			foreach my $address (split (',', $field1)) {
+				# Remove blanks
+				$address =~ s/ +//g;
+				pandora_sendmail ($pa_config, $address, $field2, $field3);
+			}
+		}
+		else {
+			pandora_sendmail ($pa_config, $field1, $field2, $field3);
 		}
 
 	# Internal event

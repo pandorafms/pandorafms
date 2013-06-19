@@ -255,6 +255,8 @@ sub pandora_load_config {
 	$pa_config->{"mta_pass"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0 (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
 	$pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0 
+	$pa_config->{"mail_in_separate"} = 1; # 1: eMail deliver alert mail in separate mails.
+					      # 0: eMail deliver 1 mail with all destination.
 
 	# nmap for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"nmap"} = "/usr/bin/nmap";
@@ -397,6 +399,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mta_from\s(.*)/i) { 
 			$pa_config->{'mta_from'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^mail_in_separate\s([0-9]*)/i) { 
+			$pa_config->{'mail_in_separate'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
 			$pa_config->{'snmp_logfile'}= clean_blank($1); 

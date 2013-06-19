@@ -1,3 +1,14 @@
+2013-06-19 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/Config.pm,
+	lib/PandoraFMS/Core.pm,
+	conf/pandora_server.conf.new,
+	FreeBSD/pandora_server.conf: added eMail option that make
+	alerts shared by all destinations (delivering in separate
+	mail is default as in the prior versions).
+
+	Merged from trunk.
+
 2013-06-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl,

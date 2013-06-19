@@ -127,7 +127,7 @@ if (!$delete_template) {
 		alerts_meta_print_header ();
 	}
 	else {
-		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
+		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alerts_config", true);
 	}
 }
 
@@ -172,7 +172,7 @@ if ($delete_template) {
 				else {
 					ui_print_page_header(
 						__('Alerts') . " &raquo; " .  __('Alert templates'),
-						"images/gm_alerts.png", false, "alert_template",
+						"images/gm_alerts.png", false, "alerts_config",
 						true);
 				}
 			}
@@ -190,7 +190,7 @@ if ($delete_template) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
+					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alerts_config", true);
 				}
 			}
 			else {
@@ -206,7 +206,7 @@ if ($delete_template) {
 			alerts_meta_print_header ();
 		}
 		else {
-			ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
+			ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alerts_config", true);
 		}
 	}
 	

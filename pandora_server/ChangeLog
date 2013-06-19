@@ -1,3 +1,11 @@
+2013-06-19 Miguel de Dios <miguel.dedios@artica.es>
+
+	* util/pandora_xml_stress.pl: fixed the send across tentacle, now
+	when it can not send the file almost the log have a error entry.
+	And added local send method.
+	
+	* util/pandora_xml_stress.conf: added confs for local send method.
+
 2013-06-14  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed comments addition in the

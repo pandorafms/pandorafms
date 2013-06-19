@@ -272,12 +272,13 @@ sub generate_xml_files ($$$$$$) {
 			
 			# Save the XML data file
 			# The temporal dir is normaly the /var/spool/pandora/data_in
-			my $xml_file = $temporal . '/' . $agent_name . '_' . $utimestamp . '.data';
-			open (FILE, ">", $xml_file) || die ("[error] Could not write to '$xml_file': $!.\n\n");
+			my $xml_fullpath_file = $temporal . '/' . $agent_name . '_' . $utimestamp . '.data';
+			my $xml_file = $agent_name . '_' . $utimestamp . '.data';
+			open (FILE, ">", $xml_fullpath_file) || die ("[error] Could not write to '$xml_fullpath_file': $!.\n\n");
 			print FILE $xml_data;
 			close (FILE);
 			
-			copy_xml_file ($conf, $xml_file);
+			copy_xml_file ($conf, $xml_fullpath_file, $xml_file);
 			$XMLFiles++;
 		}
 		
@@ -445,16 +446,29 @@ sub update_src_pointers ($) {
 # Returns the value of a configuration token.
 ################################################################################
 sub copy_xml_file ($$) {
-	my ($conf, $file) = @_;
+	my ($conf, $fullpath_file, $file) = @_;
 	
 	my $server_ip = get_conf_token ($conf, 'server_ip', '');
-	return if ($server_ip eq '');
+	my $local_copy = get_conf_token($conf, 'local_copy', 0);
 	
-	my $server_port = get_conf_token ($conf, 'server_port', '41121');
-	my $tentacle_opts = get_conf_token ($conf, 'tentacle_opts', '');
+	if ($local_copy) {
+		my $local_dir = get_conf_token($conf, 'local_dir', '/var/spool/pandora/data_in');
+		
+		move("$fullpath_file", "$local_dir/$file");
+	}
+	else {
+		return if ($server_ip eq '');
+		
+		my $server_port = get_conf_token ($conf, 'server_port', '41121');
+		my $tentacle_opts = get_conf_token ($conf, 'tentacle_opts', '');
+		
+		# Send the file and delete it
+		`tentacle_client -a $server_ip -p $server_port $tentacle_opts "$fullpath_file" > /dev/null 2>&1`;
+		if ($? != 0) {
+			log_message ($conf, "\tERROR:\tTry to send XML file (" . $file . ") with tentacle\n");
+		}
+	}
 	
-	# Send the file and delete it
-	`tentacle_client -a $server_ip -p $server_port $tentacle_opts "$file" > /dev/null 2>&1`;
 	unlink ($file);
 
 }
@@ -567,39 +581,39 @@ sub md5_init () {
 ###############################################################################
 sub md5 ($) {
 	my $str = shift;
-
+	
 	# Note: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating
-
+	
 	# Initialize variables
 	my $h0 = 0x67452301;
 	my $h1 = 0xEFCDAB89;
 	my $h2 = 0x98BADCFE;
 	my $h3 = 0x10325476;
-
+	
 	# Pre-processing
 	my $msg = unpack ("B*", pack ("A*", $str));
 	my $bit_len = length ($msg);
-
+	
 	# Append "1" bit to message
 	$msg .= '1';
-
+	
 	# Append "0" bits until message length in bits ≡ 448 (mod 512)
 	$msg .= '0' while ((length ($msg) % 512) != 448);
-
+	
 	# Append bit /* bit, not byte */ length of unpadded message as 64-bit little-endian integer to message
 	$msg .= unpack ("B64", pack ("VV", $bit_len));
-
+	
 	# Process the message in successive 512-bit chunks
 	for (my $i = 0; $i < length ($msg); $i += 512) {
-
+		
 		my @w;
 		my $chunk = substr ($msg, $i, 512);
-
+		
 		# Break chunk into sixteen 32-bit little-endian words w[i], 0 <= i <= 15
 		for (my $j = 0; $j < length ($chunk); $j += 32) {
 			push (@w, unpack ("V", pack ("B32", substr ($chunk, $j, 32))));
 		}
-
+		
 		# Initialize hash value for this chunk
 		my $a = $h0;
 		my $b = $h1;
@@ -607,7 +621,7 @@ sub md5 ($) {
 		my $d = $h3;
 		my $f;
 		my $g;
-
+		
 		# Main loop
 		for (my $y = 0; $y < 64; $y++) {
 			if ($y <= 15) {

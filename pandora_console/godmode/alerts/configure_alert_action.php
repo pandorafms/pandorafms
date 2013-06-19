@@ -78,7 +78,7 @@ if ($id) {
 }
 
 // Hidden div with help hint to fill with javascript
-html_print_div(array('id' => 'help_alert_macros_hint', 'content' => ui_print_help_icon ('alert_macros', true, ui_get_full_url(false, false, false, false)), 'hidden' => true));
+html_print_div(array('id' => 'help_alert_macros_hint', 'content' => ui_print_help_icon ('alert_macros', true), 'hidden' => true));
 
 $table->id = 'table_macros';
 $table->width = '98%';

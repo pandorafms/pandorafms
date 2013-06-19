@@ -59,7 +59,7 @@ if ($a_template !== false) {
 		else {
 			ui_print_page_header (__('Alerts') .
 				' &raquo; ' . __('Configure alert template'), "",
-				false, "conf_alert_template", true);
+				false, "alerts_config", true);
 		}
 	}
 	else {
@@ -77,7 +77,7 @@ if ($a_template !== false) {
 				alerts_meta_print_header();
 			}
 			else {
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "images/gm_alerts.png", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "images/gm_alerts.png", false, "conf_alert_template", true);
 			}
 		}
 		else {
@@ -95,7 +95,7 @@ else {
 		alerts_meta_print_header();
 	}
 	else {
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "images/gm_alerts.png", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "images/gm_alerts.png", false, "conf_alert_template", true);
 	}
 }
 
@@ -581,7 +581,7 @@ else if ($step == 3) {
 		false);
 	
 	for($i=2;$i<=10;$i++) {
-	$table->data['field'.$i][0] = sprintf(__('Field %s'), $i);
+	$table->data['field'.$i][0] = sprintf(__('Field %s'), $i). ui_print_help_icon ('alert_macros', true);
 	$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields_recovery[$i]) ? $fields_recovery[$i] : '', 'style="min-height:40px" class="fields"', true);
 	}
 }

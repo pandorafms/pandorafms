@@ -61,7 +61,7 @@ if ((!$copy_action) && (!$delete_action) && (!$update_action)) {
 		alerts_meta_print_header ();
 	}
 	else {	
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alerts_config", true);
 	}
 }
 
@@ -88,7 +88,7 @@ if ($copy_action) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alerts_config", true);
 				}
 			}
 		} // If user tries to copy an action of others groups
@@ -106,7 +106,7 @@ if ($copy_action) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alerts_config", true);
 				}
 			}
 			else {
@@ -123,7 +123,7 @@ if ($copy_action) {
 			alerts_meta_print_header ();
 		}
 		else {
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alerts_config", true);
 		}
 	}
 	$result = alerts_clone_alert_action ($id);
@@ -201,7 +201,7 @@ if ($update_action) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alerts_config", true);
 				}
 			}
 		}
@@ -212,7 +212,7 @@ if ($update_action) {
 			alerts_meta_print_header ();
 		}
 		else {
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alerts_config", true);
 		}
 	}
 	

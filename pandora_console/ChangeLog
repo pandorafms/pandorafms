@@ -1,3 +1,9 @@
+2013-06-19 Mario Pulido <mario.pulido@artica.es>
+
+	* include/help/ja/help_module_definition.php
+        include/help/en/help_module_definition.php,
+        include/help/es/help_module_definition.php: Changes in help
+
 2013-06-18 Mario Pulido <mario.pulido@artica.es>
 
 	*images/help/alert01.png,

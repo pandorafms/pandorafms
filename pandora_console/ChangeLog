@@ -1,3 +1,11 @@
+2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/graphs/pChart/pPie.class.php, include/graphs/fgraph.php:
+	fixed the htmlentities in the pie chart legend, the border was
+	fixed for older commits.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
 2013-06-20  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_alerts_config.php: Added a new help.

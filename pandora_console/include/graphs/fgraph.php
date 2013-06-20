@@ -465,6 +465,13 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	// This library allows only 8 colors
 	$max_values = 8;
 	
+	//Remove the html_entities
+	$temp = array();
+	foreach ($chart_data as $key => $value) {
+		$temp[io_safe_output($key)] = $value;
+	}
+	$chart_data = $temp;
+	
 	if (count($chart_data) > $max_values) {
 		$chart_data_trunc = array();
 		$n = 1;

@@ -382,9 +382,6 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	 /* Create the pChart object */
 	 $myPicture = new pImage($width,$height,$MyData,TRUE);
 	
-	 if (count($data_values) > 3)
-		$font_size--;
-		 
 	 /* Set the default font properties */ 
 	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
 

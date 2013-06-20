@@ -1,5 +1,10 @@
 2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/events/events.php, operation/netflow/nf_live_view.php:
+	fixed the hook to call a enterprise function.
+
+2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/graphs/pChart/pPie.class.php, include/graphs/fgraph.php:
 	fixed the htmlentities in the pie chart legend, the border was
 	fixed for older commits.

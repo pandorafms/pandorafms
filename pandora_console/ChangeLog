@@ -1,5 +1,10 @@
 2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/graphs/fgraph.php, include/graphs/functions_pchart.php:
+	merged the changes from the branch 4.
+
+2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/modificar_agente.php: fixed the filter of the
 	list of agents. The branch 4 runs fine.
 

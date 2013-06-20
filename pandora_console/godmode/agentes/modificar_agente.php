@@ -48,13 +48,13 @@ $tab = 'view';
 
 /* Setup tab */
 $viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">' 
-		. html_print_image ("images/operation.png", true, array ("title" =>__('View')))
-		. '</a>';
-		
+	. html_print_image ("images/operation.png", true, array ("title" =>__('View')))
+	. '</a>';
+
 $viewtab['operation'] = true;
-		
+
 $viewtab['active'] = false;
-	
+
 $onheader = array('view' => $viewtab);
 
 // Header
@@ -124,18 +124,10 @@ if ($disable_agent) {
 		__('Successfully disabled'), __('Could not be disabled'));
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%' style='font-weight: bold; margin-bottom: 10px;'><tr>";
-
-// Show group selector
-if (isset($_POST["ag_group"])) {
-	$ag_group = get_parameter_post ("ag_group");
-	echo "<form method='post'
-	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group_refresh=".$ag_group."'>";
-}
-else {
-	echo "<form method='post'
+echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%' style='font-weight: bold; margin-bottom: 10px;'>
+	<tr>";
+echo "<form method='post'
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
-}
 
 echo "<td>";
 
@@ -147,21 +139,14 @@ else
 	$return_all_group = true;
 html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false, 'width:100px;');
 
-echo "<td valign='top'>
-<noscript>
-<input name='uptbutton' type='submit' class='sub upd' value='".__('Show')."'>
-</noscript>
-</td>
-<td>";
+echo "<td>";
 echo __('Recursion') . '&nbsp;';
 html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
 
-echo "</td></form><td>";
+echo "</td><td>";
 echo __('Search') . '&nbsp;';
 html_print_input_text ("search", $search, '', 12);
 
-// Show group selector
-echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&refr=60&ag_group_refresh=$ag_group&recursion=$recursion'>";
 echo "</td><td>";
 echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
 echo "</form>";

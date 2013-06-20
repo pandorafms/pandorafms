@@ -86,7 +86,7 @@ switch ($section) {
 
 include_once($config["homedir"] . '/include/functions_events.php');
 
-open_meta_frame();
+enterprise_hook('open_meta_frame');
 
 switch($section) {
 	case 'edit_filter':
@@ -103,6 +103,5 @@ switch($section) {
 		break;
 }
 
-close_meta_frame();
-
+enterprise_hook('close_meta_frame');
 ?>

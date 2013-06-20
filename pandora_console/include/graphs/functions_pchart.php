@@ -241,7 +241,7 @@ if (empty($colors)) {
 	$colors = array();
 }
 
-foreach($colors as $i => $color) {
+foreach ($colors as $i => $color) {
 	$rgb['border'] = html_html2rgb($color['border']);
 	$rgb_color[$i]['border']['R'] = $rgb['border'][0];
 	$rgb_color[$i]['border']['G'] = $rgb['border'][1];
@@ -392,7 +392,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	$myPicture = new pImage($width,$height,$MyData,TRUE);
 	
 	/* Set the default font properties */ 
-	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));	
+	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
 	
 	$water_mark_height = 0;
 	$water_mark_width = 0;
@@ -428,9 +428,11 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	/* Write down the legend next to the 2nd chart*/
 		//Calculate the bottom margin from the size of string in each index
 	$max_chars = graph_get_max_index($legend_values);
-	$legend_with_aprox = 32 + (7 * $max_chars);
 	
 	if ($legend_position != 'hidden') {
+		// This is a hardcore adjustment to match most of the graphs, please don't alter
+		$legend_with_aprox = 32 + (4.5 * $max_chars);
+		
 		$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
 	}
 	
@@ -613,6 +615,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false,
 	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size) {
+	
 	/* CAT:Vertical Charts */
 	if (!is_array($legend) || empty($legend)) {
 		unset($legend);
@@ -757,12 +760,19 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	
 	$chart_size = ($digits_left * $font_size) + 20;
 	
+	$max_data = max(max($data));
+	
+	$default_chart_size = 40;
+	$rest_chars = strlen($max_data) - 6;
+	$default_chart_size += $rest_chars * 5;
+	
+	
 	/* Area depends on yaxisname */
 	if ($yaxisname != '') {
-		$chart_size += 40;
+		$chart_size += $default_chart_size;
 	}
 	else {
-		$chart_size = 40;
+		$chart_size = $default_chart_size;
 	}
 	
 	if (isset($size['Height'])) {

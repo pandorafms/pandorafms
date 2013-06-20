@@ -270,6 +270,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
+		
 		return "<img src='" . ui_get_full_url (false, false, false, false) . "include/graphs/functions_pchart.php?static_graph=1&graph_type=area&ttl=".$ttl."&id_graph=" . $id_graph . "'>";
 	}
 }
@@ -463,7 +464,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	// This library allows only 8 colors
-	$max_values = 8;
+	$max_values = 5;
 	
 	//Remove the html_entities
 	$temp = array();

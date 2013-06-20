@@ -778,9 +778,15 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	/*Get minimun value to draw axis properly*/
 	$min_data = min(min($data));
 	
+	$ManualScale = array();
 	$mode = SCALE_MODE_START0;
 	if ($min_data < 0) {
 		$mode = SCALE_MODE_FLOATING;
+	}
+	
+	if ($max_data < 0) {
+		$ManualScale = array(0 => array("Min" => $min_data, "Max" => 0));
+		$mode = SCALE_MODE_MANUAL;
 	}
 	
 	/* Draw the scale */
@@ -789,7 +795,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		"GridB"=>200,
 		"DrawSubTicks"=>TRUE,
 		"CycleBackground"=>TRUE, 
-		"Mode" => $mode, 
+		"Mode" => $mode,
+		"ManualScale" => $ManualScale,
 		"LabelRotation" => 40, 
 		"XMargin" => 0, 
 		"MinDivHeight" => 20,

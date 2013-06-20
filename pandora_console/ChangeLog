@@ -1,5 +1,12 @@
 2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/graphs/functions_pchart.php: fixed the graphs with all
+	values in negative Y axis. Now it shows correct.
+	
+	Fixes: #2302
+
+2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/modificar_agente.php,
 	include/functions_networkmap.php: improved the source code style.
 	

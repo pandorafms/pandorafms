@@ -1,5 +1,14 @@
 2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/graphs/functions_pchart.php: fixed the graphs with all
+	values in negative Y axis. Now it shows correct.
+	
+	Fixes: #2302
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
+2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/graphs/fgraph.php, include/graphs/functions_pchart.php:
 	merged the changes from the branch 4.
 

@@ -468,7 +468,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
 	$font_size = '', $ttl = 1) {
 	// This library allows only 8 colors
-	$max_values = 8;
+	$max_values = 5;
 	
 	//Remove the html_entities
 	$temp = array();

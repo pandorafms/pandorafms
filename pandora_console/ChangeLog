@@ -1,3 +1,8 @@
+2013-06-20  Sancho lerena <slerena@artica.es>
+
+	* include/graphs/functions_pchart.php,
+	include/graphs/fgraph.php: Fixed some usability problems with static graphs.
+
 2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_graph.php, include/graphs/pChart/pPie.class.php,

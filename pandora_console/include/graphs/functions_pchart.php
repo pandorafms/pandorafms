@@ -381,7 +381,10 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	 
 	 /* Create the pChart object */
 	 $myPicture = new pImage($width,$height,$MyData,TRUE);
-	 
+	
+	 if (count($data_values) > 3)
+		$font_size--;
+		 
 	 /* Set the default font properties */ 
 	 $myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
 
@@ -415,7 +418,9 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	 /* Write down the legend next to the 2nd chart*/
 		//Calculate the bottom margin from the size of string in each index
 	$max_chars = graph_get_max_index($legend_values);
-	$legend_with_aprox = 32 + (7 * $max_chars);
+
+	// This is a hardcore adjustment to match most of the graphs, please don't alter
+	$legend_with_aprox = 32 + (4.5 * $max_chars);
 
 	 $PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
  

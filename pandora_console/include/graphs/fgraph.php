@@ -449,27 +449,39 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 }
 
 function pie3d_graph($flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '', $ttl = 1) {
+	$others_str = "other", $homedir = "", $water_mark = "", $font = '',
+	$font_size = '', $ttl = 1) {
+	
 	return pie_graph('3d', $flash_chart, $chart_data, $width, $height,
 		$others_str, $homedir, $water_mark, $font, $font_size, $ttl);
 }
 
 function pie2d_graph($flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '', $ttl = 1) {
+	$others_str = "other", $homedir="", $water_mark = "", $font = '',
+	$font_size = '', $ttl = 1) {
+	
 	return pie_graph('2d', $flash_chart, $chart_data, $width, $height,
 		$others_str, $homedir, $water_mark, $font, $font_size, $ttl);
 }
 
 function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '', $ttl = 1) {
+	$others_str = "other", $homedir="", $water_mark = "", $font = '',
+	$font_size = '', $ttl = 1) {
 	// This library allows only 8 colors
 	$max_values = 8;
 	
-	if(count($chart_data) > $max_values) {
+	//Remove the html_entities
+	$temp = array();
+	foreach ($chart_data as $key => $value) {
+		$temp[io_safe_output($key)] = $value;
+	}
+	$chart_data = $temp;
+	
+	if (count($chart_data) > $max_values) {
 		$chart_data_trunc = array();
 		$n = 1;
-		foreach($chart_data as $key => $value) {
-			if($n < $max_values) {
+		foreach ($chart_data as $key => $value) {
+			if ($n < $max_values) {
 				$chart_data_trunc[$key] = $value;
 			}
 			else {
@@ -504,13 +516,13 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		switch($graph_type) {
+		switch ($graph_type) {
 			case "2d":
-					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
+				return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 			case "3d":
-					//return "<img width='" . ($width / 2) . "' height='" . ($height / 2) . "' src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
-					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
+				//return "<img width='" . ($width / 2) . "' height='" . ($height / 2) . "' src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
+				return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 		}
 	}

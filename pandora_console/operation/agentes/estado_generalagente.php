@@ -57,31 +57,31 @@ echo '<div style="height: 10px">&nbsp;</div>';
 	//Floating div
 	echo '<div id="agent_access" style="float:right; width:320px; padding-top:10px;">';
 
-if ($config["agentaccess"]){
-	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
-
+if ($config["agentaccess"]) {
+	echo '<b>' . __('Agent access rate (24h)') . '</b><br />';
+	
 	graphic_agentaccess($id_agente, 280, 100, 86400);
 }
 
 echo '<div style="height:25px">&nbsp;</div>';
-echo '<b>'.__('Events generated -by module-').'</b><br />';
+echo '<b>' . __('Events generated -by module-') . '</b><br />';
 echo graph_event_module (290, 120, $id_agente);
 if ($config['flash_charts']) {
-	echo graphic_agentevents ($id_agente, 290, 60, 86400);
+	echo graphic_agentevents($id_agente, 290, 60, 86400);
 }
 echo '</div>';
-	
+
 echo '<div width="450px">';
 echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:53%">';
 //Agent name
-echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
+echo '<tr><td class="datos"><b>' . __('Agent name') . '</b></td>';
 if ($agent['disabled']) {
 	$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, 500, "upper", true) . ui_print_help_tip(__('Disabled'), true) . "</em>";
 }
 else {
 	$cellName = ui_print_agent_name ($agent["id_agente"], true, 500, "upper", true);
 }
-echo '<td class="datos"><b>'.$cellName.'</b></td>';
+echo '<td class="datos"><b>' . $cellName . '</b></td>';
 echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
 echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a></td></tr>';
 
@@ -92,8 +92,8 @@ $ips = array();
 $addresses = agents_get_addresses ($id_agente);
 $address = agents_get_address($id_agente);
 
-foreach($addresses as $k => $add) {
-	if($add == $address) {
+foreach ($addresses as $k => $add) {
+	if ($add == $address) {
 		unset($addresses[$k]);
 	}
 }
@@ -148,7 +148,7 @@ echo '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
 if ($config['activate_gis']) {
 	$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
 	
-	echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
+	echo '<tr><td class="datos2"><b>' . __('Position (Long, Lat)') . '</b></td>';
 	echo '<td class="datos2" colspan="2">';
 	
 	if ($dataPositionAgent === false) {
@@ -173,15 +173,16 @@ echo " / ";
 
 if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") { 
 	echo __('Never');
-} else {
+}
+else {
 	echo $agent["ultimo_contacto_remoto"];
 }
 echo '</td></tr>';
 
 // Timezone Offset
 if ($agent['timezone_offset'] != 0) {
-	echo '<tr><td class="datos2"><b>'.__('Timezone Offset'). '</b></td>';
-	echo '<td class="datos2" colspan="2">'.$agent["timezone_offset"].'</td></tr>';
+	echo '<tr><td class="datos2"><b>' . __('Timezone Offset') . '</b></td>';
+	echo '<td class="datos2" colspan="2">' . $agent["timezone_offset"] . '</td></tr>';
 }
 // Next contact (agent)
 $progress = agents_get_next_contact($id_agente);
@@ -194,14 +195,15 @@ $fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front
 if ($fields === false) {
 	$fields = array ();
 }
-if ($fields)
-foreach($fields as $field) {
-	echo '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
-	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
-	if($custom_value === false || $custom_value == '') {
-		$custom_value = '<i>-'.__('empty').'-</i>';
+if ($fields) {
+	foreach ($fields as $field) {
+		echo '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
+		$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+		if($custom_value === false || $custom_value == '') {
+			$custom_value = '<i>-'.__('empty').'-</i>';
+		}
+		echo '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
 	}
-	echo '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
 }
 
 //End of table

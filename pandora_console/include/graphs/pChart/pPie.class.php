@@ -512,54 +512,64 @@
        for($j=0;$j<count($Plots);$j=$j+2) { $Top[] = $Plots[$j]; $Top[] = $Plots[$j+1]- $SliceHeight; }
        $this->pChartObject->drawPolygon($Top,$Settings);
       }
-
-
-     /* Second pass to smooth the angles */
-     if ( $SecondPass )
-      {
-       $Step = 360 / (2 * PI * $Radius);
-       $Offset = 360; $ID = 0;
-       foreach($Values as $Key => $Value)
-        {
-         $FirstPoint = TRUE;
-         if ( $Shadow )
-          $Settings = array("R"=>$this->pChartObject->ShadowR,"G"=>$this->pChartObject->ShadowG,"B"=>$this->pChartObject->ShadowB,"Alpha"=>$this->pChartObject->Shadowa);
-         else
-          {
-           if ( $Border )
-            { $Settings = array("R"=>$Palette[$ID]["R"]+30,"G"=>$Palette[$ID]["G"]+30,"B"=>$Palette[$ID]["B"]+30,"Alpha"=>$Palette[$ID]["Alpha"]); }
-           else
-            $Settings = array("R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"],"Alpha"=>$Palette[$ID]["Alpha"]);
-          }
-
-         $EndAngle = $Offset-($Value*$ScaleFactor); if ( $EndAngle < 0 ) { $EndAngle = 0; }
-
-         if ($DataGapAngle == 0)
-          { $X0 = $X; $Y0 = $Y- $SliceHeight; }
-         else
-          {
-           $Angle = ($EndAngle - $Offset)/2 + $Offset;
-           $X0 = cos(($Angle-90)*PI/180) * $DataGapRadius + $X;
-           $Y0 = sin(($Angle-90)*PI/180) * $DataGapRadius*$SkewFactor + $Y - $SliceHeight;
-          }
-         $Plots[] = $X0; $Plots[] = $Y0;
-
-         for($i=$Offset;$i>=$EndAngle;$i=$i-$Step)
-          {
-           $Xc = cos(($i-90)*PI/180) * $Radius + $X;
-           $Yc = sin(($i-90)*PI/180) * $Radius*$SkewFactor + $Y - $SliceHeight;
-
-           if ( $FirstPoint ) { $this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings); } { $FirstPoint = FALSE; }
-  
-           $this->pChartObject->drawAntialiasPixel($Xc,$Yc,$Settings);
-           if ($i < 270 && $i > 90 ) { $this->pChartObject->drawAntialiasPixel($Xc,$Yc+$SliceHeight,$Settings); }
-          }
-         $this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings);
-
-         $Offset = $i - $DataGapAngle; $ID--;
-        }
-      }
-
+		
+		
+		/* Second pass to smooth the angles */
+		if ( $SecondPass )
+		{
+			$Step = 360 / (2 * PI * $Radius);
+			$Offset = 360; $ID = 0;
+			foreach($Values as $Key => $Value)
+			{
+				$FirstPoint = TRUE;
+				if ( $Shadow )
+					$Settings = array("R"=>$this->pChartObject->ShadowR,"G"=>$this->pChartObject->ShadowG,"B"=>$this->pChartObject->ShadowB,"Alpha"=>$this->pChartObject->Shadowa);
+				else
+				{
+					if ( $Border )
+					{
+						$Settings = array(
+							"R" => $Palette[$ID]["R"] + 30,
+							"G" => $Palette[$ID]["G"] + 30,
+							"B" => $Palette[$ID]["B"] + 30,
+							"Alpha" => $Palette[$ID]["Alpha"]);
+					}
+					else
+						$Settings = array("R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"],"Alpha"=>$Palette[$ID]["Alpha"]);
+				}
+				
+				$EndAngle = $Offset-($Value*$ScaleFactor); if ( $EndAngle < 0 ) { $EndAngle = 0; }
+				
+				if ($DataGapAngle == 0)
+				{ $X0 = $X; $Y0 = $Y- $SliceHeight; }
+				else
+				{
+					$Angle = ($EndAngle - $Offset)/2 + $Offset;
+					$X0 = cos(($Angle-90)*PI/180) * $DataGapRadius + $X;
+					$Y0 = sin(($Angle-90)*PI/180) * $DataGapRadius*$SkewFactor + $Y - $SliceHeight;
+				}
+				$Plots[] = $X0; $Plots[] = $Y0;
+				
+				for ($i=$Offset;$i>=$EndAngle;$i=$i-$Step)
+				{
+					$Xc = cos(($i-90)*PI/180) * $Radius + $X;
+					$Yc = sin(($i-90)*PI/180) * $Radius*$SkewFactor + $Y - $SliceHeight;
+					
+					if ( $FirstPoint )
+					{ $this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings); }
+					else
+					{ $FirstPoint = FALSE; }
+					
+					$this->pChartObject->drawAntialiasPixel($Xc,$Yc,$Settings);
+					if ($i < 270 && $i > 90 )
+					{ $this->pChartObject->drawAntialiasPixel($Xc,$Yc+$SliceHeight,$Settings); }
+				}
+				$this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings);
+				
+				$Offset = $i - $DataGapAngle; $ID++;
+			}
+		}
+		
      if ( $WriteValues != NULL )
       {
        $Step = 360 / (2 * PI * $Radius);

@@ -1251,7 +1251,9 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	}
 	
 	/* System events */
-	$sql = "SELECT COUNT(*) FROM tevento WHERE id_agentmodule = 0 AND id_agente = $id_agent";
+	$sql = "SELECT COUNT(*)
+		FROM tevento
+		WHERE id_agentmodule = 0 AND id_agente = $id_agent";
 	$value = db_get_sql ($sql);
 	if ($value > 0) {
 		$data[__('System').' ('.$value.')'] = $value;
@@ -2036,7 +2038,7 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	if ($config['flash_charts']) {
 		include_flash_chart_script();
 	}
-
+	
 	$data = array ();
 	
 	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
@@ -2077,7 +2079,7 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 		}
 		
 	}
-
+	
 	if (! $graphic_type) {
 		return fs_agent_event_chart ($data, $width, $height, $resolution / 750);
 	}
@@ -2105,11 +2107,11 @@ function clean_flash_string_legend ($string) {
 // Returns a Pandora FMS agent event chart
 function fs_agent_event_chart ($data, $width, $height, $step = 1) {
 	global $config;
-
+	
 	if (sizeof ($data) == 0) {
 		return fs_error_image ();
 	}
-
+	
 	// Generate the XML
 	$chart = new FusionCharts('Area2D', $width, $height);
 	

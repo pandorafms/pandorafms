@@ -1,3 +1,12 @@
+2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_graph.php, include/graphs/pChart/pPie.class.php,
+	include/graphs/fgraph.php: fixed the pie charts borders (again) and
+	fixed the html entities in the pie charts legends.
+	
+	* operation/agentes/estado_generalagente.php: improved the source
+	code style.
+
 2013-06-20  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_alerts_config.php: Added a new help.

@@ -1,3 +1,13 @@
+2013-06-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/winevt.h: Added to repository. Headers for Wevtapi.dll.
+
+	* modules/pandora_module_logevent.h,
+	  modules/pandora_module_logevent.cc,
+	  pandora_strutils.cc,
+	  pandora_strutils.h: Merged from trunk. Added support for the new XML
+	  based eventing model introduced in Windows Vista.
+
 2013-06-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_logevent.cc,

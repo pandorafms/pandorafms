@@ -19,14 +19,28 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <string>
 #include <time.h>
 
 #include "pandora_module_logevent.h"
 #include "../windows/pandora_wmi.h"
 #include "../pandora_windows_service.h"
+#include "pandora_module_logevent.h"
+#include "pandora_strutils.h"
 
 using namespace Pandora;
 using namespace Pandora_Modules;
+using namespace Pandora_Strutils;
+
+// Pointers to Wevtapi.dll functions
+static HINSTANCE WINEVENT = NULL;
+static EvtQueryT EvtQueryF = NULL;
+static EvtNextT EvtNextF = NULL;
+static EvtCreateRenderContextT EvtCreateRenderContextF = NULL;
+static EvtRenderT EvtRenderF = NULL;
+static EvtCloseT EvtCloseF = NULL;
+static EvtFormatMessageT EvtFormatMessageF = NULL;
+static EvtOpenPublisherMetadataT EvtOpenPublisherMetadataF = NULL;
 
 /** 
  * Creates a Pandora_Module_Logevent object.
@@ -72,6 +86,67 @@ Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, st
 	this->log_event = NULL;
 	this->first_run = 1;
 	this->setKind (module_logevent_str);
+
+    // Load Wevtapi.dll and some functions   	
+	if (WINEVENT == NULL) {
+        WINEVENT = LoadLibrary("Wevtapi.dll");
+      	if (WINEVENT == NULL) {
+			
+			// Log to the bedug log, since this is not an error
+            pandoraDebug ("Error loading library Wevtapi.dll");
+            return;
+        }
+
+		EvtQueryF = (EvtQueryT) GetProcAddress (WINEVENT, "EvtQuery");
+		if (EvtQueryF == NULL) {
+			pandoraLog ("Error loading function EvtQuery from Wevtapi.dll");
+			FreeLibrary (WINEVENT);
+			WINEVENT = NULL;
+			return;
+		}
+		EvtNextF = (EvtNextT) GetProcAddress (WINEVENT, "EvtNext");
+		if (EvtNextF == NULL) {
+			pandoraLog ("Error loading function EvtNext from Wevtapi.dll");
+			FreeLibrary (WINEVENT);
+			WINEVENT = NULL;
+			return;
+		}
+		EvtCreateRenderContextF = (EvtCreateRenderContextT) GetProcAddress (WINEVENT, "EvtCreateRenderContext");
+		if (EvtCreateRenderContextF == NULL) {
+			pandoraLog ("Error loading function EvtCreateRenderContext from Wevtapi.dll");
+			FreeLibrary (WINEVENT);
+			WINEVENT = NULL;
+			return;
+		}
+		EvtRenderF = (EvtRenderT) GetProcAddress (WINEVENT, "EvtRender");
+		if (EvtRenderF == NULL) {
+			pandoraLog ("Error loading function EvtRender from Wevtapi.dll");
+			FreeLibrary (WINEVENT);
+			WINEVENT = NULL;
+			return;
+		}
+		EvtCloseF = (EvtCloseT) GetProcAddress (WINEVENT, "EvtClose");
+		if (EvtCloseF == NULL) {
+			pandoraLog ("Error loading function EvtClose from Wevtapi.dll");
+			FreeLibrary (WINEVENT);
+			WINEVENT = NULL;
+			return;
+		}
+		EvtFormatMessageF = (EvtFormatMessageT) GetProcAddress (WINEVENT, "EvtFormatMessage");
+		if (EvtFormatMessageF == NULL) {
+			pandoraLog ("Error loading function EvtFormatMessage from Wevtapi.dll");
+			FreeLibrary (WINEVENT);
+			WINEVENT = NULL;
+			return;
+		}
+		EvtOpenPublisherMetadataF = (EvtOpenPublisherMetadataT) GetProcAddress (WINEVENT, "EvtOpenPublisherMetadata");
+		if (EvtOpenPublisherMetadataF == NULL) {
+			pandoraLog ("Error loading function EvtOpenPublisherMetadata from Wevtapi.dll");
+			FreeLibrary (WINEVENT);
+			WINEVENT = NULL;
+			return;
+		}
+    }
 }
 
 void
@@ -163,7 +238,7 @@ Pandora_Module_Logevent::closeLogEvent () {
  */
 int
 Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char discard) {
-	char description[BUFFER_SIZE], timestamp[TIMESTAMP_LEN + 1];
+	char message[BUFFER_SIZE], timestamp[TIMESTAMP_LEN + 1];
 	struct tm *time_info = NULL;
 	time_t epoch;
 	string event;
@@ -173,7 +248,14 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 	LPCTSTR source_name;
 	bool rc = false;
 	DWORD last_error;
-
+	UINT offset;
+	TCHAR lp_name[_MAX_PATH + 1];
+	DWORD cch_name = _MAX_PATH + 1;
+	TCHAR lp_referenced_domain_name[_MAX_PATH + 1];
+	DWORD cch_referenced_domain_name = _MAX_PATH + 1;
+	SID_NAME_USE pe_use;
+	string description;
+	
 	if (this->log_event == NULL) {
 	    return -1;
 	}
@@ -238,12 +320,19 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 		while (read > 0) {           
 	    
 			// Retrieve the event description (LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE)
-			getEventDescription (pevlr, description, 0x20 | 0x02);
-			if (description[0] == '\0') {
-				// Retrieve the event description (DONT_RESOLVE_DLL_REFERENCES)
-				getEventDescription (pevlr, description, DONT_RESOLVE_DLL_REFERENCES);
-				if (description[0] == '\0') {
-					strcpy (description, "N/A");
+			description = getEventDescriptionXPATH (pevlr);
+			if (description == "") {				
+				getEventDescription (pevlr, message, 0x20 | 0x02);
+				if (message[0] == '\0') {
+					// Retrieve the event description (DONT_RESOLVE_DLL_REFERENCES)
+					getEventDescription (pevlr, message, DONT_RESOLVE_DLL_REFERENCES);
+					if (message[0] == '\0') {
+						description = "N/A";
+					} else {
+						description = message;
+					}
+				} else {
+					description = message;
 				}
 			}
 
@@ -295,7 +384,6 @@ Pandora_Module_Logevent::timestampToSystemtime (string timestamp, SYSTEMTIME *sy
  *
  * @param event Event log record.
  * @param message Buffer to store the description (at least _MAX_PATH + 1).
- * @return 0 if the description could be retrieved, -1 otherwise.
  */
 void
 Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *message, DWORD flags) {
@@ -347,8 +435,8 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
                }
            }
         }
-	strcpy(strings[i], (TCHAR *)pevlr + offset);
-	offset += len + 1;
+		strcpy(strings[i], (TCHAR *)pevlr + offset);
+		offset += len + 1;
     }
 
     // Move to the first DLL
@@ -376,11 +464,11 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
 
     	// Move to the next DLL
 	dll_start = dll_end + sizeof (TCHAR);
-    	dll_end = strchr (dll_start, ';');
-    	if (dll_end != NULL) {
+		dll_end = strchr (dll_start, ';');
+		if (dll_end != NULL) {
 			*dll_end = '\0';
 		}
-    }
+	}
 
     // Clean up 
     for (i = 0; i < pevlr->NumStrings; i++) {
@@ -391,6 +479,170 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
     free ((void *)strings);
     FreeLibrary(module);
     RegCloseKey(hk);
+}
+
+/**
+ * Retrieves the description of the given event via XPATH.
+ *
+ * @param event Event log record.
+ * @param message Buffer to store the description (at least _MAX_PATH + 1).
+ */
+string
+Pandora_Module_Logevent::getEventDescriptionXPATH (PEVENTLOGRECORD pevlr) {
+	DWORD status = ERROR_SUCCESS;
+	EVT_HANDLE hResults = NULL;
+	wstring pwsQuery;
+	wstring pwsPath;
+	EVT_HANDLE hEvents[1];
+	DWORD dwReturned = 0;
+	LPWSTR ppValues[] = {L"Event/System/Provider/@Name"};
+	DWORD count = sizeof(ppValues)/sizeof(LPWSTR);
+	EVT_HANDLE hContext = NULL;
+	PEVT_VARIANT pRenderedValues = NULL;
+	DWORD dwBufferSize = 0;
+	DWORD dwBufferUsed = 0;
+	DWORD dwPropertyCount = 0;
+	LPWSTR pwsMessage = NULL;
+	EVT_HANDLE hProviderMetadata = NULL;
+    string query, path, description;
+	
+	// Wevtapi.dll not available
+	if (WINEVENT == NULL) {
+		return description;
+	}
+	
+	// Build the XPATH query
+	query = "Event/System[EventID=" + inttostr(pevlr->EventID & EVENT_ID_MASK) + "]";
+	pwsQuery = strAnsiToUnicode (query.c_str());		
+	pwsPath = strAnsiToUnicode (this->source.c_str());
+	
+	// Query for the event
+	hResults = EvtQueryF (NULL, pwsPath.c_str(), pwsQuery.c_str(), EvtQueryChannelPath | EvtQueryReverseDirection);
+    if (hResults == NULL) {
+		pandoraDebug ("EvtQuery error: %d", GetLastError());
+		return description;
+	}
+	
+	// Event not found
+	if (! EvtNextF(hResults, 1, hEvents, INFINITE, 0, &dwReturned)) {
+		pandoraDebug ("EvtNext error: %d", GetLastError());
+		EvtCloseF(hResults);
+		return description;
+	}
+
+	// Extract data from the event
+	hContext = EvtCreateRenderContextF(count, (LPCWSTR*)ppValues, EvtRenderContextValues);
+    if (NULL == hContext) {
+		pandoraDebug ("EvtCreateRenderContext error: %d", GetLastError());
+		EvtCloseF(hEvents[0]);
+		EvtCloseF(hResults);
+		return description;
+	}
+	
+	if (! EvtRenderF(hContext, hEvents[0], EvtRenderEventValues, dwBufferSize, pRenderedValues, &dwBufferUsed, &dwPropertyCount)) {
+		if ((status = GetLastError()) == ERROR_INSUFFICIENT_BUFFER) {
+			dwBufferSize = dwBufferUsed;
+			pRenderedValues = (PEVT_VARIANT)malloc(dwBufferSize);
+			if (pRenderedValues) {
+				EvtRenderF(hContext, hEvents[0], EvtRenderEventValues, dwBufferSize, pRenderedValues, &dwBufferUsed, &dwPropertyCount);
+			}
+			else {
+				pandoraDebug ("EvtRender error: %d", status);
+				EvtCloseF(hContext);
+				EvtCloseF(hEvents[0]);
+				EvtCloseF(hResults);
+				return description;
+			}
+		}
+
+		if (ERROR_SUCCESS != (status = GetLastError())) {
+			pandoraDebug ("EvtRender error: %d", status);
+			EvtCloseF(hContext);
+			EvtCloseF(hEvents[0]);
+			EvtCloseF(hResults);
+			return description;
+		}
+	}
+
+	// Get the handle to the provider's metadata that contains the message strings
+    hProviderMetadata = EvtOpenPublisherMetadataF(NULL, pRenderedValues[0].StringVal, NULL, 0, 0);
+    if (hProviderMetadata == NULL) {
+		pandoraDebug ("EvtOpenPublisherMetadata error: %d", GetLastError());
+		free(pRenderedValues);
+		EvtCloseF(hContext);
+		EvtCloseF(hEvents[0]);
+		EvtCloseF(hResults);
+		return description;
+	}
+
+	// Read the event message
+	pwsMessage = GetMessageString(hProviderMetadata, hEvents[0], EvtFormatMessageEvent);
+    if (pwsMessage == NULL) {
+		free(pRenderedValues);
+		EvtCloseF(hProviderMetadata);
+		EvtCloseF(hContext);
+		EvtCloseF(hEvents[0]);
+		EvtCloseF(hResults);
+		return description;
+	}
+
+	// Save the event message
+	description = strUnicodeToAnsi (pwsMessage);
+	
+	// Cleanup
+	free(pRenderedValues);
+	EvtCloseF(hProviderMetadata);
+	EvtCloseF(hContext);
+	EvtCloseF(hEvents[0]);
+	EvtCloseF(hResults);
+	return description;
+}
+
+// Gets the specified message string from the event. If the event does not
+// contain the specified message, the function returns NULL.
+// See http://msdn.microsoft.com/en-us/library/windows/desktop/dd996923(v=vs.85).aspx
+LPWSTR
+Pandora_Module_Logevent::GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_FORMAT_MESSAGE_FLAGS FormatId) {
+	LPWSTR pBuffer = NULL;
+	DWORD dwBufferSize = 0;
+	DWORD dwBufferUsed = 0;
+	DWORD status = 0;
+
+	if (!EvtFormatMessageF(hMetadata, hEvent, 0, 0, NULL, FormatId, dwBufferSize, pBuffer, &dwBufferUsed)) {
+		status = GetLastError();
+		if (ERROR_INSUFFICIENT_BUFFER == status) {
+			// An event can contain one or more keywords. The function returns keywords
+			// as a list of keyword strings. To process the list, you need to know the
+			// size of the buffer, so you know when you have read the last string, or you
+			// can terminate the list of strings with a second null terminator character 
+			// as this example does.
+			if ((EvtFormatMessageKeyword == FormatId)) {
+				pBuffer[dwBufferSize-1] = L'\0';
+			}
+			else {
+				dwBufferSize = dwBufferUsed;
+			}
+			pBuffer = (LPWSTR)malloc(dwBufferSize * sizeof(WCHAR));
+
+			if (pBuffer) {
+				EvtFormatMessageF(hMetadata, hEvent, 0, 0, NULL, FormatId, dwBufferSize, pBuffer, &dwBufferUsed);
+
+				// Add the second null terminator character.
+				if ((EvtFormatMessageKeyword == FormatId)) {
+					pBuffer[dwBufferUsed-1] = L'\0';
+				}
+			}
+			else {
+				return NULL;
+			}
+		}
+		else {
+			pandoraDebug ("EvtFormatMessage error: %d", status);
+			return NULL;
+		}
+	}
+
+	return pBuffer;
 }
 
 /**
@@ -405,7 +657,7 @@ Pandora_Module_Logevent::filterEvent (PEVENTLOGRECORD pevlr, string description)
     LPCSTR source_name;
 
     // Event ID filter
-    if (this->id > 0 && this->id != (pevlr->EventID & 0x3FFFFFFF)) {
+    if (this->id > 0 && this->id != (pevlr->EventID & EVENT_ID_MASK)) {
         return -1;
     }
 

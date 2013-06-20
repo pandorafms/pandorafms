@@ -1,5 +1,10 @@
 2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/modificar_agente.php: fixed the filter of the
+	list of agents. The branch 4 runs fine.
+
+2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/events/events.php, operation/netflow/nf_live_view.php:
 	fixed the hook to call a enterprise function.
 

@@ -1,3 +1,7 @@
+2013-06-20  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_alerts_config.php: Added a new help.
+
 2013-06-19 Mario Pulido <mario.pulido@artica.es>
 
 	* include/help/ja/help_module_definition.php

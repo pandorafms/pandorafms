@@ -86,12 +86,12 @@ ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined i
 if (isset($result)) {
 	ui_print_result_message($result, __('Success deleted agent.'), __('Could not be deleted.'));
 	if (isset ($config["remote_config"])) {
-			$agent_md5 = md5 (agents_get_name($id_agente, ""), FALSE);
-				
-			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5") ||
-				file_exists ($config["remote_config"]."/conf/".$agent_md5.".conf")) {
-				ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
-			}
+		$agent_md5 = md5 (agents_get_name($id_agente, ""), FALSE);
+		
+		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5") ||
+			file_exists ($config["remote_config"]."/conf/".$agent_md5.".conf")) {
+			ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
+		}
 	}
 }
 

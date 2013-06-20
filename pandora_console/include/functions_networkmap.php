@@ -325,17 +325,20 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 			unset ($nodes[$node_id]);
 			continue;
 		}
-		switch($node['type']){
+		switch ($node['type']) {
 			case 'group':
-				$graph .= networkmap_create_group_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_group_node ($node , $simple, $font_size) .
+					"\n\t\t";
 				$stats['groups'][] = $node['id_grupo'];
 				break;
 			case 'agent':
-				$graph .= networkmap_create_agent_node ($node , $simple, $font_size, true, true)."\n\t\t";
+				$graph .= networkmap_create_agent_node ($node , $simple, $font_size, true, true) .
+					"\n\t\t";
 				$stats['agents'][] = $node['id_agente'];
 				break;
 			case 'module':
-				$graph .= networkmap_create_module_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_module_node ($node , $simple, $font_size) .
+					"\n\t\t";
 				$stats['modules'][] = $node['id_agente_modulo'];
 				break;
 		}

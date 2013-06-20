@@ -63,32 +63,61 @@ Pandora_Strutils::trim (const string str) {
  * 
  * @return String converted into ANSI code
  */
-LPSTR
+string
 Pandora_Strutils::strUnicodeToAnsi (LPCWSTR s) {
+	string output;
+	
 	if (s == NULL)
 		return NULL;
 	
 	int cw = lstrlenW (s);
 	if (cw == 0) {
-		CHAR *psz = new CHAR[1];
-		*psz='\0';
-		return psz;
+		return output;
 	}
 
 	int cc = WideCharToMultiByte (CP_ACP,0, s, cw, NULL, 0, NULL, NULL);
-	if (cc==0)
-		return NULL;
+	if (cc==0) {
+		return output;
+	}
 
 	CHAR *psz = new CHAR[cc+1];
 	cc = WideCharToMultiByte (CP_ACP, 0, s, cw, psz, cc, NULL, NULL);
-
 	if (cc == 0) {
 		delete[] psz;
-		return NULL;
+		return output;
 	}
 	psz[cc]='\0';
+	output = psz;
+	delete[] psz;
+
+	return output;
+}
+
+
+/** 
+ * Convert an ANSI string to a unicode string. Do not forget to
+ * delete the returned string!
+ * 
+ * @param s String to convert
+ * 
+ * @return String converted to Unicode
+ */
+wstring
+Pandora_Strutils::strAnsiToUnicode (LPCSTR s) {
+	LPWSTR output;
+	wstring w_output;
 	
-	return psz;
+	int lenW = MultiByteToWideChar(CP_ACP, 0, s, -1, NULL, 0);
+	if (lenW <= 0) {
+		return NULL;
+	}
+	output = new wchar_t[lenW];
+	MultiByteToWideChar(CP_ACP, 0, s, -1, output, lenW);
+	
+	w_output = output;
+	delete[] output;
+	
+	return w_output;
 }
 
 /** 

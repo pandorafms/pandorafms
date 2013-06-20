@@ -24,12 +24,26 @@
 
 #include "pandora_module.h"
 #include "boost/regex.h"
+#include "../windows/winevt.h"
 
 // Log event read buffer size
 #define	BUFFER_SIZE 1024
 
 // Length of a timestamp string YYYY-MM-DD HH:MM:SS
 #define	TIMESTAMP_LEN 19
+
+// The EventID property equals the InstanceId with the top two bits masked off.
+// See: http://msdn.microsoft.com/en-us/library/system.diagnostics.eventlogentry.eventid.aspx
+#define EVENT_ID_MASK 0x3FFFFFFF
+
+// Types for pointers to Wevtapi.dll functions
+typedef EVT_HANDLE WINAPI (*EvtQueryT) (EVT_HANDLE Session, LPCWSTR Path, LPCWSTR Query, DWORD Flags);
+typedef WINBOOL WINAPI (*EvtNextT) (EVT_HANDLE ResultSet, DWORD EventArraySize, EVT_HANDLE* EventArray, DWORD Timeout, DWORD Flags, PDWORD Returned);
+typedef EVT_HANDLE WINAPI (*EvtCreateRenderContextT) (DWORD ValuePathsCount, LPCWSTR *ValuePaths, DWORD Flags);
+typedef WINBOOL WINAPI (*EvtRenderT) (EVT_HANDLE Context, EVT_HANDLE Fragment, DWORD Flags, DWORD BufferSize, PVOID Buffer, PDWORD BufferUsed, PDWORD PropertyCount);
+typedef WINBOOL WINAPI (*EvtCloseT) (EVT_HANDLE Object);
+typedef WINBOOL WINAPI (*EvtFormatMessageT) (EVT_HANDLE PublisherMetadata, EVT_HANDLE Event, DWORD MessageId, DWORD ValueCount, PEVT_VARIANT Values, DWORD Flags, DWORD BufferSize, LPWSTR Buffer, PDWORD BufferUsed);
+typedef EVT_HANDLE WINAPI (*EvtOpenPublisherMetadataT) (EVT_HANDLE Session, LPCWSTR PublisherIdentity, LPCWSTR LogFilePath, LCID Locale, DWORD Flags);
 
 namespace Pandora_Modules {
     
@@ -55,7 +69,9 @@ namespace Pandora_Modules {
         int getLogEvents (list<string> &event_list, unsigned char discard);
         void timestampToSystemtime (string timestamp, SYSTEMTIME *system_time);
         void getEventDescription (PEVENTLOGRECORD pevlr, char *message, DWORD flags);
+		string getEventDescriptionXPATH (PEVENTLOGRECORD pevlr);
         int filterEvent (PEVENTLOGRECORD pevlr, string description);
+		LPWSTR GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_FORMAT_MESSAGE_FLAGS FormatId);
 
 	public:
 		Pandora_Module_Logevent (string name, string source, string type, string id, string pattern, string application);

@@ -1,3 +1,8 @@
+2013-06-20 Mario Pulido <mario.pulido@artica.es>
+
+	*include/help/es/help_module_tokens.php
+        include/help/en/help_module_tokens.php:Added new help
+
 2013-06-20 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/graphs/functions_pchart.php: fixed the graphs with all

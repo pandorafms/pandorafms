@@ -351,10 +351,10 @@ sub get_host_parent {
 		my $host_addr = $hop->ipaddr ();
 		
 		# Check if the host exists
-		my $agent_id = get_agent_from_addr ($dbh, $host_addr);
-		if (defined ($agent_id)) {
+		my $agent = get_agent_from_addr ($dbh, $host_addr);
+		if (defined ($agent)) {
 			# Move to the next host
-			$parent_id = $agent_id;
+			$parent_id = $agent->{'id_agente'};
 			next;
 		}
 		
@@ -383,7 +383,7 @@ sub get_host_parent {
 		}
 	
 		# Create the host
-		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $host_name, $host_addr, $group, $parent_id, $id_os, '', 300, $dbh);
+		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $host_name, $host_addr, $group, $parent_id, $id_os, '', 300, $dbh);
 		$agent_id = 0 unless defined ($parent_id);
 		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
 			          VALUES (?, ?)', $addr_id, $agent_id);

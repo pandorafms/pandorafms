@@ -1,6 +1,13 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js,
+	include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php: fixed the color of
+	lines in the editor.
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js,
 	godmode/reporting/visual_console_builder.editor.php: merged changes
 	from the trunk for make more easy pass the changes between versions.
 

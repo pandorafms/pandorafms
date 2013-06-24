@@ -149,6 +149,7 @@ function visual_map_print_item($layoutData) {
 				}
 				$imgSizes = getimagesize($img);
 			}
+			
 			if (($width != 0) && ($height != 0)) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
@@ -164,15 +165,20 @@ function visual_map_print_item($layoutData) {
 			echo $text;
 			echo "</div>";
 			break;
+		
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
-			$module_value = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
+			$module_value = db_get_sql ('SELECT datos
+				FROM tagente_estado
+				WHERE id_agente_modulo = ' . $id_module);
 			$value_text = false;
 			if ($layoutData['image'] == 'percent') {
 				$value_text = false;
 			}
 			elseif ($layoutData['image'] == 'value') {
-				$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
+				$unit_text = db_get_sql ('SELECT unit
+					FROM tagente_modulo
+					WHERE id_agente_modulo = ' . $id_module);
 				$unit_text = trim(io_safe_output($unit_text));
 				
 				$value_text = format_for_graph($module_value, 2);
@@ -201,6 +207,7 @@ function visual_map_print_item($layoutData) {
 			echo '</div>';
 			
 			break;
+		
 		case MODULE_GRAPH:
 			$img = grafico_modulo_sparse($id_module, $period, 0, $width,
 				$height, '', null, false, 1, false, 0, '', 0, 0, true, true);
@@ -255,9 +262,11 @@ function visual_map_print_item($layoutData) {
 	
 	//Add the line between elements.
 	if ($layoutData['parent_item'] != 0) {
+		$parent = db_get_row_filter('tlayout_data', array('id' => $layoutData['parent_item']));
+		
 		echo '<script type="text/javascript">';
 		echo '$(document).ready (function() {
-			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($layoutData) . '"});
+			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '"});
 		});';
 		echo '</script>';
 	}
@@ -611,7 +620,9 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 		
 		switch ($label_type) {
 			case 'agent':
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
+				$agent_label = ui_print_truncate_text(
+					agents_get_name($id_agent),
+					'agent_small', false, true, false, '…', false);
 				$label = $agent_label;
 				break;
 			case 'none':
@@ -619,6 +630,7 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 				break;
 		}
 		$label = io_safe_input($label);
+		
 		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
@@ -797,7 +809,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	}
 	
 	echo '<div id="layout_map"
-		style="z-index: 0; position:relative; width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
+		style="z-index: 0;
+			position:relative;
+			width:'.$mapWidth.'px;
+			height:'.$mapHeight.'px;">';
 	echo "<img src='" . $backgroundImage . "' width='100%' height='100%' />";
 	$layout_datas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	$lines = array ();
@@ -816,7 +831,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			
 			if($delete_pending_module == 1 || $disabled_module == 1)
 				continue;
-				
+			
 			if ($layout_data["parent_item"] != 0){
 				$id_agent_module_parent = db_get_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
 				$id_agent_parent = db_get_value ("id_agent", "tlayout_data", "id", $layout_data["parent_item"]);
@@ -914,6 +929,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					$id_agent = 0;
 				
 				if ($show_links) {
+					
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
 						
 						//Extract id service if it is a prediction module.
@@ -958,7 +974,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					$img_style["height"] = $layout_data["height"];
 				}
 				
-				$img = "images/console/icons/".$layout_data["image"];
+				$img = "images/console/icons/" . $layout_data["image"];
 				
 				switch ($status) {
 					case 1:
@@ -991,7 +1007,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$borderStyle = '';
 				if (substr($img,0,1) == '4') {
-					$img_style['border'] ='2px solid #ffa300;';
+					$img_style['border'] = '2px solid #ffa300;';
 					$img = substr_replace($img, '', 0,1);
 				}
 				
@@ -1023,7 +1039,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				// Print label if valid label_color (only testing for starting with #) otherwise print nothing
 				if ($layout_data['label_color'][0] == '#') {
 					echo "<br />";
-					echo $layout_data['label'];	
+					echo $layout_data['label'];
 				}
 				echo "</div>";
 			}
@@ -1095,7 +1111,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					
 					if (!empty ($layout_data["width"])) {
 						$img_style["width"] = $layout_data["width"];
-					} 
+					}
 					if (!empty ($layout_data["height"])) {
 						$img_style["height"] = $layout_data["height"];
 					}
@@ -1173,7 +1189,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						}
 					}
 					
-					echo '<strong>'.$layout_data['label']. ' ';
+					echo '<strong>' . $layout_data['label']. ' ';
 					//TODO: change interface to add a period parameter, now is set to 1 day
 					switch ($layout_data['type']) {
 						case 2:
@@ -1354,10 +1370,14 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					// SINGLE GRAPH (type = 1)
 					
 					if ($resizedMap) {
-						$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
-						$layout_data['height'] = ((integer)($proportion * $layout_data['height']));
-						$layout_data['pos_x'] = ((integer)($proportion * $layout_data['pos_x']));
-						$layout_data['pos_y'] = ((integer)($proportion * $layout_data['pos_y']));
+						$layout_data['width'] =
+							((integer)($proportion * $layout_data['width']));
+						$layout_data['height'] =
+							((integer)($proportion * $layout_data['height']));
+						$layout_data['pos_x'] =
+							((integer)($proportion * $layout_data['pos_x']));
+						$layout_data['pos_y'] =
+							((integer)($proportion * $layout_data['pos_y']));
 					}
 					
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
@@ -1493,14 +1513,14 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	else
 		$groups = users_get_groups ($id_user, 'IR', true);
 	
-	if(!empty($groups)) {
+	if (!empty($groups)) {
 		if ($where != '') {
 			$where .= ' AND ';
 		}
 		$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
 	}
 	
-	if($where == '') {
+	if ($where == '') {
 		$where = array();
 	}
 	

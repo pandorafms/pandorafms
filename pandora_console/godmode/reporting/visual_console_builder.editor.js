@@ -771,7 +771,7 @@ function getPercentileBar(id_data, values) {
 				unit_text = data['unit_text'];
 			}
 			
-			colorRGB = da	ta['colorRGB'];
+			colorRGB = data['colorRGB'];
 		}
 	});
 	

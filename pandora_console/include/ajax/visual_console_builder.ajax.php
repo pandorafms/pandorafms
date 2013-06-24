@@ -79,7 +79,7 @@ switch ($action) {
 			$period, false, $width, $height, '', null, false, 1, false, 0, '', 0, 0,
 			true, true);
 		
-		preg_match("/src=['\"](.*)['\"]/", $img, $matches);
+		preg_match("/src=[\'\"](.*)[\'\"]/", $img, $matches);
 		$url = $matches[1];
 		
 		echo $url;
@@ -112,7 +112,9 @@ switch ($action) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
 			default:
-				$returnValue = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+				$returnValue = db_get_sql ('SELECT datos
+					FROM tagente_estado
+					WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 				
 				//html_debug_print($value_show);
 				//html_debug_print($layoutData);
@@ -214,9 +216,10 @@ switch ($action) {
 	
 	case 'get_color_line':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+		$parent = db_get_row_filter('tlayout_data', array('id' => $layoutData['parent_item']));
 		
 		$return = array();
-		$return['color_line'] = visual_map_get_color_line_status($layoutData);
+		$return['color_line'] = visual_map_get_color_line_status($parent);
 		echo json_encode($return);
 		break;
 	
@@ -430,6 +433,7 @@ switch ($action) {
 		$values['label'] = $label;
 		$values['pos_x'] = $left;
 		$values['pos_y'] = $top;
+		
 		if ($agent != '')
 			$values['id_agent'] = agents_get_agent_id($agent);
 		else

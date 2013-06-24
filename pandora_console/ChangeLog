@@ -1,6 +1,11 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js: fixed the
+	resize map that made lost the icons. In the trunk yet was fixed.
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js: fixed the
 	moving the lines when the item is a graph.
 
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>

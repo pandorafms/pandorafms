@@ -1179,7 +1179,7 @@ function updateDB(type, idElement , values, event) {
 			{
 				switch (type) {
 					case 'static_graph':
-						if (event != 'dragstop') {
+						if ((event != 'dragstop') && (event != 'resizestop')) {
 							var element_status= null;
 							var parameter = Array();
 							parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});

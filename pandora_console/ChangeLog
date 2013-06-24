@@ -1,5 +1,10 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_visual_map.php: fixed the links of module
+	graphs into public visualmap.
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/reporting/visual_console_builder.editor.js,
 	include/functions_visual_map.php,
 	operation/agentes/status_monitor.php: fixed the links to the items

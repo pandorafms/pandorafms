@@ -1420,15 +1420,15 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							
 							if ($id_service != 0) { 
 								//Link to an service page
-								echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+								echo '<a href="'.$config['homeurl'].'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 									$id_service . '&offset=0">';
 							}
 							else {
-								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
+								echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
 							}
 						}
 						else {
-							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
+							echo '<a href="'.$config['homeurl'].'/index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}
 					}
 					

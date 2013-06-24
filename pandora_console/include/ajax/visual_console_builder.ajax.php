@@ -272,9 +272,10 @@ switch ($action) {
 	
 	case 'get_color_line':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+		$parent = db_get_row_filter('tlayout_data', array('id' => $layoutData['parent_item']));
 		
 		$return = array();
-		$return['color_line'] = visual_map_get_color_line_status($layoutData);
+		$return['color_line'] = visual_map_get_color_line_status($parent);
 		echo json_encode($return);
 		break;
 	

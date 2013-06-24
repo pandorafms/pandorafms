@@ -268,9 +268,11 @@ function visual_map_print_item($layoutData) {
 	
 	//Add the line between elements.
 	if ($layoutData['parent_item'] != 0) {
+		$parent = db_get_row_filter('tlayout_data', array('id' => $layoutData['parent_item']));
+		
 		echo '<script type="text/javascript">';
 		echo '$(document).ready (function() {
-			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($layoutData) . '"});
+			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '"});
 		});';
 		echo '</script>';
 	}
@@ -1077,6 +1079,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						echo '<a href="#">';
 					}
 				}
+				
 				$img_style = array ();
 				$img_style["title"] = $layout_data["label"];
 				
@@ -1087,17 +1090,17 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					$img_style["height"] = $layout_data["height"];
 				}
 				
-				$img =  "images/console/icons/" . $layout_data["image"];
+				$img = "images/console/icons/" . $layout_data["image"];
 				
 				switch ($status) {
 					case VISUAL_MAP_STATUS_CRITICAL_BAD:
 						$img .= "_bad.png";
 						break;
 					case VISUAL_MAP_STATUS_CRITICAL_ALERT:
-						$img = "4".$img."_bad.png";
+						$img = "4" . $img . "_bad.png";
 						break;
 					case VISUAL_MAP_STATUS_WARNING_ALERT:
-						$img = "4".$img."_warning.png";
+						$img = "4" . $img . "_warning.png";
 						break;
 					case VISUAL_MAP_STATUS_NORMAL:
 						$img .= "_ok.png";
@@ -1755,6 +1758,7 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	
 	return $retval;
 }
+
 
 /** 
  * Get the status of a layout.

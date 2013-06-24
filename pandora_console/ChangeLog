@@ -1,5 +1,12 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php: changed the
+	code to show the list of parent in the select, now this selectbox
+	doesn't show the same item.
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/javascript/pandora_visual_console.js: fixed lost global
 	var when resize the map.
 	

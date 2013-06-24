@@ -54,7 +54,7 @@ foreach ($all_images as $image_file) {
 	if (strpos ($image_file, "_ok"))
 		continue;
 	if (strpos ($image_file, "_warning"))
-		continue;	
+		continue;
 	$image_file = substr ($image_file, 0, strlen ($image_file) - 4);
 	$images_list[$image_file] = $image_file;
 }
@@ -138,9 +138,9 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo '<span>' . __('Process') . '</span>';?></td>
 			<td><?php html_print_select (
 				array (PROCESS_VALUE_MIN => __('Min value'), 
-				PROCESS_VALUE_MAX => __('Max value'),
-				PROCESS_VALUE_AVG => __('Avg value')), 'process_value', '', '', __('None'), PROCESS_VALUE_NONE);?></td>
-		</tr>	
+					PROCESS_VALUE_MAX => __('Max value'),
+					PROCESS_VALUE_AVG => __('Avg value')), 'process_value', '', '', __('None'), PROCESS_VALUE_NONE);?></td>
+		</tr>
 		<tr id="background_row_1" class="background datos">
 			<td><?php echo __('Background');?></td>
 			<td><?php html_print_select($backgrounds_list, 'background_image', $background, '', 'None', '');?></td>
@@ -210,18 +210,18 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 		<tr id="button_update_row" class="datos">
 			<td colspan="2" style="text-align: right;">
-			<?php
-			html_print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
-			html_print_button(__('Update'), 'update_button', false, 'updateAction();', 'class="sub upd"');
-			?>
+				<?php
+				html_print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
+				html_print_button(__('Update'), 'update_button', false, 'updateAction();', 'class="sub upd"');
+				?>
 			</td>
 		</tr>
 		<tr id="button_create_row" class="datos">
 			<td colspan="2" style="text-align: right;">
-			<?php
-			html_print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
-			html_print_button(__('Create'), 'create_button', false, 'createAction();', 'class="sub wand"');
-			?>
+				<?php
+				html_print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
+				html_print_button(__('Create'), 'create_button', false, 'createAction();', 'class="sub wand"');
+				?>
 			</td>
 		</tr>
 		<tr id="advance_options_link" class="datos">
@@ -258,7 +258,8 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td>
 				<?php
 				$parents = visual_map_get_items_parents($visualConsole['id']);
-				html_print_select($parents, 'parent', '', '', __('None'), 0);
+				html_print_input_hidden('parents_load', base64_encode(json_encode($parents)));
+				html_print_select(array(), 'parent', '', '', __('None'), 0);
 				?>
 			</td>
 		</tr>
@@ -266,7 +267,9 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Map linked');?></td>
 			<td>
 				<?php
-				html_print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole, 'map_linked', '', '', 'None', '0');
+				html_print_select_from_sql ('SELECT id, name
+					FROM tlayout
+					WHERE id != ' . $idVisualConsole, 'map_linked', '', '', 'None', '0');
 				?>
 			</td>
 		</tr>
@@ -288,14 +291,16 @@ echo "<img id='background_img' src='images/console/background/" . $background . 
 
 foreach ($layoutDatas as $layoutData) {
 	// Pending delete and disable modules must be ignored
-	$delete_pending_module = db_get_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
-	$disabled_module = db_get_value ("disabled", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
+	$delete_pending_module = db_get_value ("delete_pending",
+		"tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
+	$disabled_module = db_get_value ("disabled",
+		"tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
 	
-	if($delete_pending_module == 1 || $disabled_module == 1)
+	if ($delete_pending_module == 1 || $disabled_module == 1)
 		continue;
 	
 	visual_map_print_item($layoutData);
-	html_print_input_hidden('status_'.$layoutData['id'], visual_map_get_status_element($layoutData));
+	html_print_input_hidden('status_' . $layoutData['id'], visual_map_get_status_element($layoutData));
 }
 
 echo '</div>';

@@ -16,7 +16,8 @@ var openPropertiesPanel = false;
 var idItem = 0;
 var selectedItem = null;
 var lines = Array();
-var toolbuttonActive = null
+var toolbuttonActive = null;
+var parents = {};
 
 function showAdvanceOptions(close) {
 	if ($("#advance_options").css('display') == 'none') {
@@ -34,6 +35,10 @@ function showAdvanceOptions(close) {
 // Main function, execute in event documentReady
 function initJavascript() {
 	$(".label_color").attachColorPicker();
+	
+	//Get the list of posible parents
+	parents = Base64.decode($("input[name='parents_load']").val());
+	parents = eval("(" + parents + ")");
 	
 	eventsBackground();
 	eventsItems();
@@ -391,6 +396,21 @@ function actionClick() {
 	
 }
 
+function fill_parent_select(id_item) {
+	//Populate the parent widget
+	$("#parent option")
+		.filter(function() { if ($(this).attr('value') != 0) return true; })
+		.remove();
+	jQuery.each(parents, function(key, value) {
+		if (id_item == key) {
+			return; //continue
+		}
+		
+		$("#parent").append($('<option value="' + key + '">' +
+			value + '</option>'));
+	});
+}
+
 function loadFieldsFromDB(item) {
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -408,6 +428,8 @@ function loadFieldsFromDB(item) {
 		success: function (data)
 			{
 				var moduleId = 0;
+				
+				fill_parent_select(idItem);
 				
 				jQuery.each(data, function(key, val) {
 					if (key == 'background') $("#background_image").val(val);
@@ -487,7 +509,7 @@ function loadFieldsFromDB(item) {
 					}
 				});
 			}
-		});	
+		});
 }
 
 function setOriginalSizeBackground() {
@@ -643,6 +665,8 @@ function cleanFields() {
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("#preview").empty();
+	
+	fill_parent_select();
 	
 	var anyText = $("#any_text").html(); //Trick for catch the translate text.
 	$("#module").empty().append($('<option value="0" selected="selected">' + anyText + '</option></select>'));
@@ -1047,7 +1071,8 @@ function createItem(type, values, id_data) {
 }
 
 function addItemSelectParents(id_data, text) {
-	$("#parent").append($('<option value="' + id_data + '" selected="selected">' + text + '</option></select>'));
+	parents[id_data] = text;
+	//$("#parent").append($('<option value="' + id_data + '" selected="selected">' + text + '</option></select>'));
 }
 
 function insertDB(type, values) {

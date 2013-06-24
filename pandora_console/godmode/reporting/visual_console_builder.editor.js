@@ -1258,10 +1258,11 @@ function updateDB(type, idElement , values, event) {
 							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
 						}
 						$("#" + idElement).css('color', values['label_color']);
-						found = false;
 						
-						end_foreach = false;
+						
 						//Update the lines
+						end_foreach = false;
+						found = false;
 						jQuery.each(lines, function(i, line) {
 							if (end_foreach) {
 								return;

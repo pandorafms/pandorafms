@@ -829,7 +829,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			$delete_pending_module = db_get_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layout_data["id_agente_modulo"]);
 			$disabled_module = db_get_value ("disabled", "tagente_modulo", "id_agente_modulo", $layout_data["id_agente_modulo"]);
 			
-			if($delete_pending_module == 1 || $disabled_module == 1)
+			if ($delete_pending_module == 1 || $disabled_module == 1)
 				continue;
 			
 			if ($layout_data["parent_item"] != 0){
@@ -947,6 +947,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							echo '<a href="'.$config['homeurl'].'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 								$id_service . '&offset=0">';
 						}
+						else if ($layout_data['id_agente_modulo'] != 0) {
+							// Link to an module
+							echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
+						}
 						else {
 							// Link to an agent
 							echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
@@ -1062,7 +1066,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							// Link to an agent
 							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
 							$endTagA = true;
-						} 
+						}
+						else if (($layout_data['id_agente_modulo'] != 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
+							// Link to an module
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
+							$endTagA = true;
+						}
 						elseif ($layout_data['id_layout_linked'] > 0) {
 							// Link to a map
 							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
@@ -1093,7 +1102,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							// Link to an agent
 							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
 							$endTagA = true;
-						} 
+						}
+						else if (($layout_data['id_agente_modulo'] != 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
+							// Link to an module
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
+							$endTagA = true;
+						}
 						elseif ($layout_data['id_layout_linked'] > 0) {
 							// Link to a map
 							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
@@ -1313,6 +1327,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 									$id_service . '&offset=0">';
 								$endTagA = true;
 							}
+							else if ($layout_data['id_agente_modulo'] != 0) {
+								// Link to an module
+								echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
+							}
 							else {
 								// Link to an agent
 								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
@@ -1406,7 +1424,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 									$id_service . '&offset=0">';
 							}
 							else {
-								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
+								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
 							}
 						}
 						else {

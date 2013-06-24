@@ -205,7 +205,7 @@ function updateAction() {
 				success: function (data) {
 					$("#image_" + idItem).attr('src', data);
 				}
-			});	
+			});
 			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
@@ -435,6 +435,7 @@ function loadFieldsFromDB(item) {
 					if (key == 'background') $("#background_image").val(val);
 					if (key == 'width') $("input[name=width]").val(val);
 					if (key == 'height') $("input[name=height]").val(val);
+					
 					if (key == 'label') $("input[name=label]").val(val);
 					if (key == 'image') {
 						//Load image preview
@@ -455,7 +456,8 @@ function loadFieldsFromDB(item) {
 						moduleId = val;
 						$("select[name=module]").val(val);
 					}
-					if (key == 'process_value') $("select[name=process_value]").val(val);
+					if (key == 'process_value')
+						$("select[name=process_value]").val(val);
 					if (key == 'period') {
 						var anySelected = false;
 						var periodId = $('#hidden-period').attr('class');
@@ -600,7 +602,7 @@ function hiddenFields(item) {
 	$("#module_row."  + item).css('display', '');
 	
 	$("#process_value_row").css('display', 'none');
-	$("#process_value_row."  + item).css('display', '');	
+	$("#process_value_row."  + item).css('display', '');
 	
 	$("#background_row_1").css('display', 'none');
 	$("#background_row_1."  + item).css('display', '');
@@ -769,7 +771,7 @@ function getPercentileBar(id_data, values) {
 				unit_text = data['unit_text'];
 			}
 			
-			colorRGB = data['colorRGB'];
+			colorRGB = da	ta['colorRGB'];
 		}
 	});
 	
@@ -923,15 +925,18 @@ function visual_map_get_color_line_status(id) {
 }
 
 function createItem(type, values, id_data) {
+	var sizeStyle = '';
+	var imageSize = '';
+	
 	switch (type) {
 		case 'static_graph':
 			if ((values['width'] == 0) && (values['height'] == 0)) {
-				var sizeStyle = '';
-				var imageSize = '';
+				sizeStyle = '';
+				imageSize = '';
 			}
 			else {
-				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
-				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
+				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
+				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
 			
 			var element_status= null;
@@ -969,7 +974,11 @@ function createItem(type, values, id_data) {
 				}
 			});
 			
-			var item = $('<div id="' + id_data + '" class="item static_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			var item = $('<div id="' + id_data
+				+ '" class="item static_graph" '
+				+ 'style="left: 0px; top: 0px; color: ' + values['label_color']
+				+ '; text-align: center; position: absolute; '
+				+ sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 				'</div><input id="hidden-status_' + id_data + '" type="hidden" value="' + element_status + '" name="status_' + id_data + '">'
@@ -996,8 +1005,8 @@ function createItem(type, values, id_data) {
 			}
 			break;
 		case 'module_graph':
-			var sizeStyle = '';
-			var imageSize = '';
+			sizeStyle = '';
+			imageSize = '';
 			
 			var item = $('<div id="' + id_data + '" class="item module_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
@@ -1006,8 +1015,8 @@ function createItem(type, values, id_data) {
 			);
 			break;
 		case 'simple_value':
-			var sizeStyle = '';
-			var imageSize = '';
+			sizeStyle = '';
+			imageSize = '';
 			
 			var item = $('<div id="' + id_data + '" class="item simple_value" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' +
@@ -1023,12 +1032,12 @@ function createItem(type, values, id_data) {
 			break;
 		case 'icon':
 			if ((values['width'] == 0) && (values['height'] == 0)) {
-				var sizeStyle = '';
-				var imageSize = '';
+				sizeStyle = '';
+				imageSize = '';
 			}
 			else {
-				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
-				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
+				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
+				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
 			
 			var img_src= null;
@@ -1061,9 +1070,9 @@ function createItem(type, values, id_data) {
 	
 	if (values['parent'] != 0) {
 		var line = {"id": id_data,
-				"node_begin":  values['parent'],
-				"node_end": id_data,
-				"color": visual_map_get_color_line_status(id_data) };
+			"node_begin":  values['parent'],
+			"node_end": id_data,
+			"color": visual_map_get_color_line_status(id_data) };
 		lines.push(line);
 		
 		refresh_lines(lines, 'background');
@@ -1299,12 +1308,16 @@ function deleteDB(idElement) {
 				if (data['correct']) {
 					$("#parent > option[value=" + idElement + "]").remove();
 					
+					
+					
 					jQuery.each(lines, function(i, line) {
 						if ((line['id'] == idElement) || (line['node_begin'] == idElement)) {
 							lines.splice(i);
 						}
 					});
 					refresh_lines(lines, 'background');
+					
+					
 					
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);
@@ -1652,6 +1665,6 @@ function showPreviewIcon(icon) {
 			success: function (data) {
 				$("#preview").append(data);
 			}
-		});	
+		});
 	}
 }

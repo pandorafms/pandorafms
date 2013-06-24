@@ -80,7 +80,8 @@ $background = $visualConsole['background'];
 $widthBackground = $visualConsole['width'];
 $heightBackground = $visualConsole['height'];
 
-$layoutDatas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
+$layoutDatas = db_get_all_rows_field_filter ('tlayout_data',
+	'id_layout', $idVisualConsole);
 if ($layoutDatas === false)
 	$layoutDatas = array();
 

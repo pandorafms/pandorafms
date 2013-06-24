@@ -1,5 +1,13 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_visual_map.php,
+	operation/agentes/status_monitor.php: fixed the links to the items
+	that represents modules.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/reporting/visual_console_builder.editor.js: fixed the
 	removed the relantionship between items.
 	

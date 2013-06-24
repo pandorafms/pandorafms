@@ -47,16 +47,24 @@ else {
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
-$ag_group = get_parameter ('ag_group', 0);
+$ag_group = (int) get_parameter ('ag_group', 0);
 $offset = (int) get_parameter ('offset', 0);
 $status = (int) get_parameter ('status', 4);
-$modulegroup = get_parameter ('modulegroup', -1);
-$tag_filter = get_parameter('tag_filter', 0);
+$modulegroup = (int) get_parameter ('modulegroup', -1);
+$tag_filter = (int) get_parameter('tag_filter', 0);
 $refr = get_parameter('refr', 0);
 // Sort functionality
 
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
+
+//When the previous page was a visualmap and show only one module
+$id_module = (int)get_parameter('id_module', 0);
+if ($id_module) {
+	$status = -1;
+	$ag_modulename = modules_get_agentmodule_name($id_module);
+	$ag_freestring = modules_get_agentmodule_agent_name($id_module);
+}
 
 echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . $sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . '">';
 

@@ -228,9 +228,12 @@ function updateAction() {
 }
 
 function readFields() {
+	
 	var values = {};
 	
-	values['label'] = $("input[name=label]").val(); 
+	values['label'] = $("input[name=label]").val();
+	
+	
 	values['image'] = $("select[name=image]").val();
 	values['left'] = $("input[name=left]").val(); 
 	values['top'] = $("input[name=top]").val(); 
@@ -419,6 +422,7 @@ function loadFieldsFromDB(item) {
 	parameter.push ({name: "type", value: item});
 	parameter.push ({name: "id_element", value: idItem});
 	
+	
 	jQuery.ajax({
 		async: false,
 		url: "ajax.php",
@@ -509,7 +513,9 @@ function loadFieldsFromDB(item) {
 								.attr("checked", "checked");
 						}
 					}
+					
 				});
+				
 			}
 		});
 }
@@ -583,11 +589,13 @@ function hiddenFields(item) {
 	$(".title_panel_span").css('display', 'none');
 	$("#title_panel_span_"  + item).css('display', 'inline'); 
 	
+	
 	$("#label_row").css('display', 'none');
 	$("#label_row."  + item).css('display', '');
 	
 	$("#image_row").css('display', 'none');
 	$("#image_row."  + item).css('display', '');
+	
 	
 	$("#preview_row").css('display', 'none');
 	$("#preview_row."  + item).css('display', '');
@@ -645,6 +653,7 @@ function hiddenFields(item) {
 	
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row."  + item).css('display', '');
+	
 }
 
 function cleanFields() {
@@ -1169,9 +1178,6 @@ function updateDB(type, idElement , values, event) {
 		success: function (data)
 			{
 				switch (type) {
-					case 'module_graph':
-						$("#image_" + idElement).attr("src", getModuleGraph(idElement));
-						break;
 					case 'static_graph':
 						if (event != 'dragstop') {
 							var element_status= null;
@@ -1236,6 +1242,11 @@ function updateDB(type, idElement , values, event) {
 					case 'simple_value':
 					case 'label':
 					case 'icon':
+					case 'module_graph':
+						
+						if (type == 'module_graph')
+							$("#image_" + idElement).attr("src", getModuleGraph(idElement));
+						
 						if ((typeof(values['mov_left']) != 'undefined') &&
 								(typeof(values['mov_top']) != 'undefined')) {
 							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');

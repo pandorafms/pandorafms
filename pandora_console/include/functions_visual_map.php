@@ -1049,6 +1049,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 								echo '<a href="'.$config['homeurl'].'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 									$id_service . '&offset=0">';
 							}
+							else if ($layout_data['id_agente_modulo'] != 0) {
+								// Link to an module
+								echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
+							}
 							else {
 								if (empty($layout_data['id_metaconsole'])) {
 									$url = $config['homeurl'] . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $layout_data['id_agent'];
@@ -1514,6 +1518,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 									$id_service . '&offset=0">';
 								$endTagA = true;
 							}
+							
+							else if ($layout_data['id_agente_modulo'] != 0) {
+								// Link to an module
+								echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
+							}
 							else {
 								// Link to an agent
 								if (empty($layout_data['id_metaconsole'])) {
@@ -1622,10 +1631,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							}
 							else {
 								if (empty($layout_data['id_metaconsole'])) {
-									$url = $config['homeurl'] . 
-										'index.php?' .
-										'sec=estado&amp;'.
-										'sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data';
+									echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
 								}
 								else {
 									$url = ui_meta_get_url_console_child(

@@ -64,27 +64,38 @@ $value_show = get_parameter('value_show', 'percent');
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
 
+
 switch ($action) {
 	case 'get_font':
 		$return = array();
 		$return['font'] = $config['fontpath'];
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'get_image_sparse':
 		$img = grafico_modulo_sparse($id_agent_module,
 			$period, false, $width, $height, '', null, false, 1, false, 0, '', 0, 0,
 			true, true);
 		
-		preg_match("/src='(.*)'/", $img, $matches);
+		preg_match("/src=['\"](.*)['\"]/", $img, $matches);
 		$url = $matches[1];
 		
 		echo $url;
 		break;
+	
+	
+	
 	case 'get_layout_data':
-		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+		$layoutData = db_get_row_filter('tlayout_data',
+			array('id' => $id_element));
 		
 		echo json_encode($layoutData);
 		break;
+	
+	
+	
 	case 'get_module_value':
 		$unit_text = false;
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
@@ -97,6 +108,7 @@ switch ($action) {
 				$returnValue = visual_map_get_simple_value($type,
 					$layoutData['id_agente_modulo'], $period);
 				break;
+			
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
 			default:
@@ -110,7 +122,9 @@ switch ($action) {
 					if ($value_show == 'value') {
 						$returnValue = format_for_graph($returnValue, 2);
 						
-						$unit_text_db = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+						$unit_text_db = db_get_sql ('SELECT unit
+							FROM tagente_modulo
+							WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 						$unit_text_db = trim(io_safe_output($unit_text_db));
 						
 						if ($value_show == 'value') {
@@ -125,6 +139,7 @@ switch ($action) {
 					}
 				}
 				break;
+				
 		}
 		
 		// Linked to other layout ?? - Only if not module defined
@@ -194,6 +209,9 @@ switch ($action) {
 		
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'get_color_line':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
@@ -201,6 +219,9 @@ switch ($action) {
 		$return['color_line'] = visual_map_get_color_line_status($layoutData);
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'get_image':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
@@ -208,6 +229,9 @@ switch ($action) {
 		$return['image'] = visual_map_get_image_status_element($layoutData);
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'update':
 	case 'move':
 		$values = array();
@@ -314,9 +338,13 @@ switch ($action) {
 				}
 				
 				$result = db_process_sql_update('tlayout_data', $values, array('id' => $id_element));
+				echo (int)$result;
 				break;
 		}
 		break;
+	
+	
+	
 	case 'load':
 		switch ($type) {
 			case 'background':
@@ -363,13 +391,15 @@ switch ($action) {
 							$elementFields['type_percentile'] = 'bubble';
 						}
 						break;
+					
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
 						break;
+					
 				}
 				//Support for max, min and svg process on simple value items
-				if ($type == 'simple_value'){
+				if ($type == 'simple_value') {
 					switch ($elementFields['type']) {
 						case SIMPLE_VALUE:
 							$elementFields['process_value'] = 0;
@@ -385,11 +415,15 @@ switch ($action) {
 							break;
 					}
 				}
+				
 				$elementFields['label'] = io_safe_output($elementFields['label']);
 				echo json_encode($elementFields);
 				break;
 		}
 		break;
+	
+	
+	
 	case 'insert':
 		$values = array();
 		$values['id_layout'] = $id_visual_console;
@@ -461,6 +495,9 @@ switch ($action) {
 		}
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'delete':
 		if (db_process_sql_delete('tlayout_data', array('id' => $id_element, 'id_layout' => $id_visual_console)) === false) {
 			$return['correct'] = 0;

@@ -1259,28 +1259,40 @@ function updateDB(type, idElement , values, event) {
 						}
 						$("#" + idElement).css('color', values['label_color']);
 						found = false;
+						
+						end_foreach = false;
+						//Update the lines
 						jQuery.each(lines, function(i, line) {
+							if (end_foreach) {
+								return;
+							}
+							
 							if (lines[i]['id'] == idElement) {
 								found = true;
 								if (values['parent'] == 0) {
+									//Erased the line
 									lines.splice(i);
+									end_foreach = true;
 								}
 								else {
 									if ((typeof(values['mov_left']) == 'undefined') &&
 										(typeof(values['mov_top']) == 'undefined') && 
 										(typeof(values['absolute_left']) == 'undefined') &&
 										(typeof(values['absolute_top']) == 'undefined')) {
+										
 										lines[i]['node_begin'] = values['parent'];
 									}
 								}
 							}
 						});
 						
-						if (!found) {
-							var line = {"id": idElement,
-									"node_begin":  values['parent'],
-									"node_end": idElement,
-									"color": visual_map_get_color_line_status(idElement) };
+						if ((!found) && (values['parent'] != 0)) {
+							var line = {
+								"id": idElement,
+								"node_begin":  values['parent'],
+								"node_end": idElement,
+								"color": visual_map_get_color_line_status(idElement)
+							};
 							lines.push(line);
 						}
 						

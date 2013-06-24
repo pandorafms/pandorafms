@@ -1,3 +1,13 @@
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php,
+	include/functions_visual_map_editor.php: changed the code to show
+	the list of parent in the select, now this selectbox doesn't show
+	the same item.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
 2013-06-20 Mario Pulido <mario.pulido@artica.es>
 
 	*include/help/es/help_module_tokens.php

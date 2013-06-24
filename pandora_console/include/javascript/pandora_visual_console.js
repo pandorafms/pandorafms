@@ -18,6 +18,10 @@
 function draw_line (line, id_div) {
 	div = document.getElementById (id_div);
 	
+	if (typeof(resize_map) == 'undefined') {
+		resize_map = 0;
+	}
+	
 	brush = new jsGraphics (div);
 	brush.setStroke (1);
 	brush.setColor (line['color']);

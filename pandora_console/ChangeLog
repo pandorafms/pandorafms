@@ -1,5 +1,12 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/javascript/pandora_visual_console.js: fixed lost global
+	var when resize the map.
+	
+	* include/functions_visual_map.php: improved the source code style.
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/ajax/visual_console_builder.ajax.php: fixed to drag and
 	drop the graph without data (The trunk yet was fixed).
 

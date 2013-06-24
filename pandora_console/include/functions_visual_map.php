@@ -990,7 +990,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				}
 				
 				$borderStyle = '';
-				if(substr($img,0,1) == '4') {
+				if (substr($img,0,1) == '4') {
 					$img_style['border'] ='2px solid #ffa300;';
 					$img = substr_replace($img, '', 0,1);
 				}
@@ -1136,7 +1136,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					// ****************************************************************
 					// SIMPLE DATA VALUE (type = 2)
 					// ****************************************************************
-					$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
+					$unit_text = db_get_sql ('SELECT unit
+						FROM tagente_modulo
+						WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
 					$unit_text = trim(io_safe_output($unit_text));
 					
 					if ($resizedMap)

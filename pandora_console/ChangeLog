@@ -1,6 +1,13 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js: fixed the
+	removed the relantionship between items.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js: fixed the
 	moving the lines when the item is a graph.
 	
 	MERGED FROM THE BRANCH PANDORA_4.0

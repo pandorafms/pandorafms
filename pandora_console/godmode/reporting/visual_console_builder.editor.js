@@ -1343,12 +1343,21 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				$("#" + idElement).css('left', '0px').css('left', left + 'px');
 			}
 			$("#" + idElement).css('color', values['label_color']);
+			
+			//Update the lines
+			end_foreach = false;
 			found = false;
 			jQuery.each(lines, function(i, line) {
+				if (end_foreach) {
+					return;
+				}
+				
 				if (lines[i]['node_begin'] == idElement) {
 					found = true;
 					if (values['parent'] == 0) {
+						//Erased the line
 						lines.splice(i);
+						end_foreach = true;
 					}
 					else {
 						if ((typeof(values['mov_left']) == 'undefined') &&

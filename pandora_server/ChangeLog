@@ -1,3 +1,8 @@
+2013-06-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Fixed a call to get_agent_from_addr
+	  that prevented parents from being properly detected.
+
 2013-06-19 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/Config.pm,

@@ -302,6 +302,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['parent_row']['html'] = '<td align="left">' .
 				__('Parent') . '</td>
 				<td align="left">' .
+				html_print_input_hidden('parents_load', base64_encode(json_encode($parents)), true) .
 				html_print_select($parents, 'parent', '', '', __('None'), 0, true) .
 				'</td>';
 			

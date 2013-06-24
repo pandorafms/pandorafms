@@ -72,14 +72,16 @@ echo "<div id='background_grid'
 //Print the layout datas from the DB.
 foreach ($layoutDatas as $layoutData) {
 	// Pending delete and disable modules must be ignored
-	$delete_pending_module = db_get_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
-	$disabled_module = db_get_value ("disabled", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
+	$delete_pending_module = db_get_value ("delete_pending",
+		"tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
+	$disabled_module = db_get_value ("disabled",
+		"tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
 	
 	if ($delete_pending_module == 1 || $disabled_module == 1)
 		continue;
 	
 	visual_map_print_item($layoutData);
-	html_print_input_hidden('status_'.$layoutData['id'], visual_map_get_status_element($layoutData));
+	html_print_input_hidden('status_' . $layoutData['id'], visual_map_get_status_element($layoutData));
 }
 
 echo "<img style='position: absolute; top: 0px; left: 0px;' id='background_img' src='" . $metaconsole_hack . "images/console/background/" . $background . "' width='100%' height='100%' />";

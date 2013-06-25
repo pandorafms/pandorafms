@@ -21,8 +21,10 @@ require ('include/functions_visual_map.php');
 check_login ();
 
 $id_layout = (int) get_parameter ('id');
+
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
 $vc_refr = false;
+
 
 // Get input parameter for layout id
 if (! $id_layout) {
@@ -87,11 +89,11 @@ visual_map_print_visual_map ($id_layout);
 $values = array ();
 $values[5] = human_time_description_raw (5);
 $values[30] = human_time_description_raw (30);
-$values[60] = human_time_description_raw (60);
-$values[120] = human_time_description_raw (120);
-$values[300] = human_time_description_raw (300);
-$values[600] = human_time_description_raw (600);
-$values[1800] = human_time_description_raw (1800);
+$values[SECONDS_1MINUTE] = human_time_description_raw(SECONDS_1MINUTE);
+$values[SECONDS_2MINUTES] = human_time_description_raw(SECONDS_2MINUTES);
+$values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
+$values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
+$values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
 $table->width = '90%';
 $table->data = array ();
@@ -108,8 +110,8 @@ $table->data[0][1] = html_print_select ($values, 'refr', $config["vc_refr"], '',
 $table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
 $table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
 
-if ($vc_refr){
-	$config["vc_refr"] = 0;	
+if ($vc_refr) {
+	$config["vc_refr"] = 0;
 }
 
 echo '<div style="height:30px">&nbsp;</div>';
@@ -121,6 +123,7 @@ if ($config['pure'] && $config["refr"] != 0) {
 echo '<div style="height:30px">&nbsp;</div>';
 
 echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view">';
+
 html_print_input_hidden ('pure', $config["pure"]);
 html_print_input_hidden ('id', $id_layout);
 html_print_table ($table);
@@ -145,12 +148,18 @@ $(document).ready (function () {
 		?>
 		t = new Date();
 		t.setTime (t.getTime() + <?php echo $config["refr"] * 1000; ?>);
-		$("#countdown").countdown({until: t, format: 'MS', description: '<?php echo __('Until refresh'); ?>'});
+		$("#countdown").countdown({
+			until: t,
+			format: 'MS',
+			description: '<?php echo __('Until refresh'); ?>'
+			});
 		
 		<?php
 	}
 	?>
-	draw_lines (lines, 'layout_map');
+	if (typeof(lines) != 'undefined') {
+		draw_lines (lines, 'layout_map');
+	}
 });
 /* ]]> */
 </script>

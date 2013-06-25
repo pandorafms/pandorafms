@@ -1,3 +1,8 @@
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/constants.php, operation/visual_console/render_view.php:
+	fixed the javascript draw lines when there is any error in the map.
+
 2013-06-25  Sancho Lerena <slerena@artica.es>
 	
 	* extensions/vnc_view.php: Now you can define the display number.

@@ -28,7 +28,7 @@ if (check_acl ($config['id_user'], 0, "AW") and $config['metaconsole'] == 0) {
 	$menu_godmode["gagente"]["text"] = __('Manage monitoring');
 	$menu_godmode["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu_godmode["gagente"]["id"] = "god-agents";
-		
+	
 	$sub = array ();
 	$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
 	$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
@@ -39,7 +39,7 @@ if (check_acl ($config['id_user'], 0, "AW") and $config['metaconsole'] == 0) {
 	if (check_acl ($config["id_user"], 0, "AW")) {
 			$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
 	}
-
+	
 	if (check_acl ($config["id_user"], 0, "PM")) {
 		$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
 		$sub["godmode/agentes/planned_downtime"]["text"] = __('Scheduled downtime');
@@ -143,7 +143,8 @@ if (check_acl ($config['id_user'], 0, "IW") and $config['metaconsole'] == 0) {
 	}
 }
 if (check_acl ($config['id_user'], 0, "AW") and $config['metaconsole'] == 0) {
-
+	
+	
 	// Servers
 	$menu_godmode["gservers"]["text"] = __('Manage servers');
 	$menu_godmode["gservers"]["sec2"] = "godmode/servers/modificar_server";
@@ -180,7 +181,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gsetup"]["id"] = "god-setup";
 	
 	$sub = array ();
-
+	
 	$sub["godmode/setup/setup_auth"]["text"] = __('Authentication');
 	$sub["godmode/setup/performance"]["text"] = __('Performance');
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
@@ -250,7 +251,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
 							}
 							else {
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 60;
+								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
 							}
 						}
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];

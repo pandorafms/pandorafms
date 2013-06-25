@@ -1,5 +1,15 @@
 2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/menu.php: fixed the default value for refresh in the
+	extensions.
+	
+	Fixes: #2310
+	
+	* include/functions_extensions.php, extensions/insert_data.php:
+	cleaned source code style.
+
+2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/users/user_edit.php: fixed the "home page" for user,
 	now it does show ugly 0 and show correct the dashboard.
 

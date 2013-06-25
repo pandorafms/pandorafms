@@ -147,6 +147,7 @@ function mainInsertData() {
 	$table->style[0] = 'font-weight: bolder;';
 	
 	$table->data = array();
+	
 	$table->data[0][0] = __('Agent');
 	$src_code = html_print_image('images/lightning.png', true, false, true);
 	$table->data[0][1] = html_print_input_text_extended ('id_agent', $id_agent, 'text_id_agent', '', 30, 100, false, '',
@@ -210,7 +211,7 @@ function mainInsertData() {
 				delay: 200
 			}
 		);
-
+		
 		$("#text-time").timeEntry ({
 			spinnerImage: 'images/time-entry.png',
 			spinnerSize: [20, 20, 0]
@@ -245,13 +246,13 @@ function mainInsertData() {
 						});
 						$('#id_agent_module').enable();
 						$('#id_agent_module').fadeIn ('normal');
-
+						
 						$('#submit-submit').enable();
 						$('#submit-submit').fadeIn ('normal');
 					}
 				});
 			});
-	
+			
 			
 		}
 	);

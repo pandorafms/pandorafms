@@ -285,7 +285,7 @@ function extensions_load_extensions ($extensions) {
 	
 	foreach ($extensions as $extension) {
 		$extension_file = $extension['file'];
-		require_once (realpath ($extension['dir']."/".$extension_file));
+		require_once (realpath ($extension['dir'] . "/" . $extension_file));
 	}
 }
 
@@ -300,16 +300,20 @@ function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = 
 	global $config;
 	global $extension_file;
 	
-	/* $config['extension_file'] is set in extensions_load_extensions(), since that function must
-	   be called before any function the extension call, we are sure it will 
-	   be set. */
+	/*
+	$config['extension_file'] is set in extensions_load_extensions(),
+	since that function must be called before any function the extension
+	call, we are sure it will be set.
+	*/
 	$option_menu['name'] = $name;
-
+	
 	$extension = &$config['extensions'][$extension_file];
-	$option_menu['sec2'] = $extension['dir'].'/'.mb_substr ($extension_file, 0, -4);
+	
+	$option_menu['sec2'] = $extension['dir'] . '/' . mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;
 	$option_menu['icon'] = $icon;
 	$option_menu['version'] = $version;
+	
 	$extension['operation_menu'] = $option_menu;
 }
 
@@ -325,13 +329,14 @@ function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $ico
 	global $config;
 	global $extension_file;
 	
-	/* $config['extension_file'] is set in extensions_load_extensions(), since that function must
-	   be called before any function the extension call, we are sure it will 
-	   be set. */
+	/*
+	$config['extension_file'] is set in extensions_load_extensions(),
+	since that function must be called before any function the extension
+	call, we are sure it will be set. */
 	$option_menu['acl'] = $acl;
 	$option_menu['name'] = $name;
 	$extension = &$config['extensions'][$extension_file];
-	$option_menu['sec2'] = $extension['dir'].'/'.mb_substr ($extension_file, 0, -4);
+	$option_menu['sec2'] = $extension['dir'] . '/' . mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;
 	$option_menu['icon'] = $icon;
 	$option_menu['version'] = $version;
@@ -377,7 +382,7 @@ function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFuncti
 	$extension['extension_ope_tab']['name'] = $tabName;
 	$extension['extension_ope_tab']['icon'] = $tabIcon;
 	$extension['extension_ope_tab']['function'] = $tabFunction;
-        $extension['extension_ope_tab']['version'] = $version;
+	$extension['extension_ope_tab']['version'] = $version;
 }
 
 /**

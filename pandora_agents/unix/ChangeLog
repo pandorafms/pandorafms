@@ -1,3 +1,8 @@
+2013-06-25  Sancho Lerena <slerena@artica.es>
+
+	* Linux/pandora_agent.conf: new defaul values (inventory enabled,
+	remote config enabled).
+
 2013-06-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Merged from 4.0 branch. Quote the XML data file name

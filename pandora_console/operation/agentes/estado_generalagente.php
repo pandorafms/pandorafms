@@ -110,15 +110,8 @@ echo '</td></tr>';
 echo '<tr><td class="datos"><b>'.__('OS').'</b></td>';
 echo '<td class="datos" colspan="2">' . ui_print_os_icon ($agent["id_os"], true, true);
 
-// Want to print last 15 characters of OS version, or start from 0 if smaller
-$osversion_offset = strlen($agent["os_version"]);
-if ($osversion_offset > 15)
-	$osversion_offset = $osversion_offset - 15;
-else
-	$osversion_offset = 0;
 
-
-echo '&nbsp;<i><span title="'.$agent["os_version"].'">'.substr($agent["os_version"],$osversion_offset,15).' </span></i></td></tr>';
+echo '&nbsp;<i>'.$agent["os_version"].'</i></td></tr>';
 
 // Parent
 echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';

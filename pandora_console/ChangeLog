@@ -1,3 +1,10 @@
+2013-06-25  Sancho Lerena <slerena@artica.es>
+	
+	* extensions/vnc_view.php: Now you can define the display number.
+
+	* operation/agentes/Estado_general_agente.php:: OS version string 
+	is fully shown.
+
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/constants.php, include/functions_visual_map.php,

@@ -1,3 +1,9 @@
+2013-06-25  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_agent.conf: removed old references to ODBC feature
+	not supported anymore. New defaults (inventory, remote config and
+	IP detection now by default).
+
 2013-06-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: Merged from trunk. When concatenating IP

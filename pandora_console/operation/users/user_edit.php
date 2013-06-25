@@ -93,9 +93,11 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 		$upd_info["data_section"] = '';
 	}
 	else if ($section == 'Dashboard') {
+		$dashboard = get_parameter('dashboard');
 		$upd_info["data_section"] = $dashboard;
 	}
 	else if ($section == 'Visual console') {
+		$dashboard = get_parameter('visual_console');
 		$upd_info["data_section"] = $visual_console;
 	}
 	
@@ -138,7 +140,8 @@ echo '<form name="user_mod" method="post" action="index.php?sec=workspace&amp;se
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
 
-echo '<tr><td class="datos">'.__('User ID').'</td>';
+echo '<tr>';
+echo '<td class="datos">'.__('User ID').'</td>';
 echo '<td class="datos">';
 echo "<b>$id</b>";
 echo "</td>";
@@ -152,38 +155,69 @@ else {
 	echo html_print_image('images/people_2.png', true); 
 }
 
-echo '</td></tr><tr><td class="datos2">'.__('Full (display) name').'</td><td class="datos2">';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td class="datos2">' . __('Full (display) name') . '</td><td class="datos2">';
 html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 35, 100, $view_mode, '', 'class="input"');
+echo '</td>';
+echo '</tr>';
 
 // Not used anymore. In 3.0 database schema continues storing it, but will be removed in the future, or we will 'reuse'
 // the database fields for anything more useful.
 
 if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
-		echo '</td></tr><tr><td class="datos">'.__('New Password').'</td><td class="datos">';
+		echo '<tr>';
+		echo '<td class="datos">' . __('New Password') . '</td>';
+		echo '<td class="datos">';
 		html_print_input_text_extended ("password_new", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
-		echo '</td></tr><tr><td class="datos">'.__('Password confirmation').'</td><td class="datos">';
+		echo '</td>';
+		echo '</tr>';
+		
+		echo '<tr>';
+		echo '<td class="datos">' . __('Password confirmation') . '</td>';
+		echo '<td class="datos">';
 		html_print_input_text_extended ("password_conf", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
+		echo '</td>';
+		echo '</tr>';
 	}
 	else {
 		echo '<i>'.__('You can not change your password from Pandora FMS under the current authentication scheme').'</i>';
 	}
 }
 
-echo '</td></tr><tr><td class="datos2">'.__('E-mail').'</td><td class="datos2">';
+echo '<tr>';
+echo '<td class="datos2">' . __('E-mail') . '</td>';
+echo '<td class="datos2">';
 html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"');
+echo '</td>';
+echo '</tr>';
 
-echo '</td></tr><tr><td class="datos">'.__('Phone number').'</td><td class="datos">';
+echo '<tr>';
+echo '<td class="datos">' . __('Phone number') . '</td>';
+echo '<td class="datos">';
 html_print_input_text_extended ("phone", $user_info["phone"], '', '', '10', '30', $view_mode, '', 'class="input"');
+echo '</td>';
+echo '</tr>';
 
-echo '</td></tr><tr><td class="datos">'.__('Language').'</td><td class="datos2">';
+echo '<tr>';
+echo '<td class="datos">' . __('Language') . '</td>';
+echo '<td class="datos2">';
 echo html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $user_info["language"], '', __('Default'), 'default', true);
+echo '</td>';
+echo '</tr>';
 
-echo '</td></tr><tr><td class="datos2">'.__('Comments').'</td><td class="datos">';
+echo '<tr>';
+echo '<td class="datos2">' . __('Comments') . '</td>';
+echo '<td class="datos">';
 html_print_textarea ("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''));
 html_print_input_hidden('quick_language_change', 1);
-
+echo '</td>';
+echo '</tr>';
+   
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
@@ -198,15 +232,29 @@ if (count($usr_groups) > 1) {
 	
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		echo '</td></tr><tr><td class="datos">' . __('Skin') . '</td><td class="datos2">';
+		echo '<tr>';
+		echo '<td class="datos">' . __('Skin') . '</td>';
+		echo '<td class="datos2">';
 		echo skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+		echo '</td>';
+		echo '</tr>';
 	}
 }
 
-echo '</td></tr><tr><td class="datos">'.__('Flash charts').'</td><td class="datos2">';
+
+echo '<tr>';
+echo '<td class="datos">' . __('Flash charts') . '</td>';
+echo '<td class="datos2">';
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 echo html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
-echo '</td></tr><tr><td class="datos">'.__('Block size for pagination'). ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true) . '</td><td class="datos2">';
+echo '</td>';
+echo '</tr>';
+
+
+echo '<tr>';
+echo '<td class="datos">' . __('Block size for pagination') .
+	ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true) . '</td>';
+echo '<td class="datos2">';
 if ($user_info["block_size"] == 0) {
 	$block_size = $config["global_block_size"];
 }
@@ -217,18 +265,30 @@ else {
 echo html_print_input_text ('block_size', $block_size, '', 5, 5, true);
 echo html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
 echo __('Default').' ('.$config["global_block_size"].')';
+echo '</td>';
+echo '</tr>';
 
 
 // This only will be running on 4.1 or higher.
 if (isset($user_info['section'])) {
 	
-	echo '</td></tr><tr><td class="datos">' . __('Home screen') . ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true) .'</td><td class="datos2">';
-	$values = array ('Default' =>__('Default'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
-	'Group view'=>__('Group view'), 'Tactical view'=>__('Tactical view'), 'Alert detail' => __('Alert detail'), 'Other'=>__('Other'));
+	echo '<tr>';
+	echo '<td class="datos">' . __('Home screen') .
+		ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true) .'</td>';
+	echo '<td class="datos2">';
+	$values = array (
+		'Default' => __('Default'),
+		'Visual console' => __('Visual console'),
+		'Event list' => __('Event list'),
+		'Group view' => __('Group view'),
+		'Tactical view' => __('Tactical view'),
+		'Alert detail' => __('Alert detail'),
+		'Other'=>__('Other'));
 	
 	if ($is_enterprise) {
-		array_push($values, array('Dashboard' => __('Dashboard')));
+		$values['Dashboard'] = __('Dashboard');
 	}
+	
 	echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
 	echo "&nbsp;&nbsp;";
 	
@@ -239,7 +299,7 @@ if (isset($user_info['section'])) {
 			$dashboards = array('None'=>'None');
 		}
 		else {
-			foreach ($dashboards as $key=>$dashboard) {
+			foreach ($dashboards as $key => $dashboard) {
 				$dashboards_aux[$dashboard['name']] = $dashboard['name'];
 			}
 		}
@@ -258,9 +318,11 @@ if (isset($user_info['section'])) {
 	}
 	echo html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
 	echo html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
+	echo '</td>';
+	echo '</tr>';
 }
 
-echo '</td></tr></table>';
+echo '</table>';
 
 echo '<div style="width:90%; text-align:right;">';
 if (!$config["user_can_update_info"]) {

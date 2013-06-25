@@ -1,5 +1,10 @@
 2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/users/user_edit.php: fixed the "home page" for user,
+	now it does show ugly 0 and show correct the dashboard.
+
+2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/users/user_edit.php: merge the code for made more
 	easy the merges from the trunk.
 

@@ -1,5 +1,10 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_visual_map.php: added more changes for to make
+	more easy the merges from the branch.
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php: fixed the links of module
 	graphs into public visualmap.
 	

@@ -70,6 +70,7 @@ function visual_map_print_item($layoutData) {
 	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
 	
 	$status = visual_map_get_status_element($layoutData);
+	
 	switch ($status) {
 		case VISUAL_MAP_STATUS_CRITICAL_BAD:
 			//Critical (BAD)
@@ -548,6 +549,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 				break;
 		}
 		
+		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
 			'pos_x' => $pos_x,
@@ -883,6 +885,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	
 	$layout = db_get_row ('tlayout', 'id', $id_layout);
 	
+	if (empty($layout)) {
+		ui_print_error_message(__('Cannot load the visualmap'));
+		return;
+	}
+	
 	$resizedMap = false;
 	$proportion = 1;
 	if (!is_null($width)) {
@@ -951,6 +958,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		// Get parent status (Could be an agent, module, map,
 		// others doesnt have parent info)
 		// *************************************************************
+		
+		
 		if ($layout_data["parent_item"] != 0) {
 			$layout_data_parent = db_get_row_filter('tlayout_data',
 				array('id' => $layout_data["parent_item"]));
@@ -1212,7 +1221,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				if (!empty ($layout_data["width"])) {
 					$img_style["width"] = $layout_data["width"];
-				} 
+				}
 				if (!empty ($layout_data["height"])) {
 					$img_style["height"] = $layout_data["height"];
 				}
@@ -1300,8 +1309,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 								$id_service . '&offset=0">';
 							$endTagA = true;
 						}
+						
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {
+						
 						// Link to a map
 						if (empty($layout_data['id_metaconsole'])) {
 							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
@@ -1453,6 +1464,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				break;
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+				
+				
 				if ($resizedMap)
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				else
@@ -1518,7 +1531,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 									$id_service . '&offset=0">';
 								$endTagA = true;
 							}
-							
 							else if ($layout_data['id_agente_modulo'] != 0) {
 								// Link to an module
 								echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
@@ -1711,11 +1723,17 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	echo "</div>";
 	
 	
+	
 	if (defined('METACONSOLE')) {
 		echo "</div>";
 	}
+	
 }
+//End function
 
+
+
+//Start function
 /**
  * Get a list with the layouts for a user.
  *

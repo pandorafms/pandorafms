@@ -935,11 +935,10 @@ getIPs(VARIANT *ip_array){
        }
        int num_ips  = V_ARRAY(ip_array)->rgsabound[0].cElements;
        for (i = 0;i < num_ips;i++) { 
-	   	   if ((i > 0) && (i < num_ips - 1 ))
-	   	   {
-		   	  	 ret += " , ";
-	   	   }
            if (V_VT(&pvArray[i]) == VT_BSTR) { 
+	   	     if (i > 0) {
+		   	   ret += " , ";
+	   	     }
              LPSTR szStringA;                     
              ret +=  Pandora_Strutils::strUnicodeToAnsi( V_BSTR(&pvArray[i]));             
            } 

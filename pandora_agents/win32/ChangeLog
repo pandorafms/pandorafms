@@ -1,3 +1,8 @@
+2013-06-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc: Merged from trunk. When concatenating IP
+	  addresses, do not output a comma unless the IP can be parsed.
+
 2013-06-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/winevt.h: Added to repository. Headers for Wevtapi.dll.

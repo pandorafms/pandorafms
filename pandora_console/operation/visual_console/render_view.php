@@ -197,7 +197,7 @@ $(document).ready (function () {
 	
 	<?php
 	if ($config["pure"] && ((int)get_parameter('refr', 0)) > 0) {
-	?>
+		?>
 		t = new Date();
 		t.setTime (t.getTime() + <?php echo ((int)get_parameter('refr', 0)) * 1000; ?>);
 		$("#countdown").countdown({
@@ -205,10 +205,13 @@ $(document).ready (function () {
 			format: 'MS',
 			description: '<?php echo __('Until refresh'); ?>'
 			});
-	<?php
+		
+		<?php
 	}
 	?>
-	draw_lines (lines, 'layout_map');
+	if (typeof(lines) != 'undefined') {
+		draw_lines (lines, 'layout_map');
+	}
 });
 /* ]]> */
 </script>

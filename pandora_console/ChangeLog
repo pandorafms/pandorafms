@@ -1,5 +1,10 @@
 2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/users/user_edit.php: merge the code for made more
+	easy the merges from the branch.
+
+2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
+
 	* extensions/vnc_view.php: added the changes from the branch of
 	pandora_4 made for Sancho.
 	

@@ -25,7 +25,7 @@ include_once ($config['homedir'] . '/include/functions_groups.php');
 include_once ($config['homedir'] . '/include/functions_visual_map.php');
 
 $meta = false;
-if(enterprise_installed() && defined("METACONSOLE")) {
+if (enterprise_installed() && defined("METACONSOLE")) {
 	$meta = true;
 }
 
@@ -102,7 +102,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
 	$default_block_size = get_parameter ("default_block_size", 0);
-	if($default_block_size) {
+	if ($default_block_size) {
 		$upd_info["block_size"] = 0;
 	}
 	
@@ -116,6 +116,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 	
 	$section = io_safe_output($upd_info["section"]);
+	
 	if (($section == 'Event list') || ($section == 'Group view') || ($section == 'Alert detail') || ($section == 'Tactical view') || ($section == 'Default')) {
 		$upd_info["data_section"] = '';
 	}
@@ -126,7 +127,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 		$upd_info["data_section"] = $visual_console;
 	}
 	
-	if ( !empty ($password_new)) {
+	if (!empty ($password_new)) {
 		if ($config["user_can_update_password"] && $password_confirm == $password_new) {
 			if ((!$is_admin || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
 				$pass_ok = login_validate_pass($password_new, $id, true);
@@ -259,6 +260,7 @@ $data[1] .= '<br>' . html_print_select($values, 'flash_charts', $user_info["flas
 $data[2] = __('Language');
 $data[2] .= '<br>' . html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $user_info["language"], '', __('Default'), 'default', true);
+
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
@@ -351,7 +353,7 @@ if ($result === false) {
 foreach ($result as $profile) {
 	$data[0] = '<b>'.profile_get_name ($profile["id_perfil"]).'</b>';
 	$data[1] = ui_print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'"></a>';
-		
+	
 	$tags_ids = explode(',',$profile["tags"]);
 	$tags = tags_get_tags($tags_ids);
 		
@@ -379,18 +381,20 @@ $(document).ready (function () {
 	});
 	
 	function check_default_block_size() {
-		if($("#checkbox-default_block_size").is(':checked')) {
+		if ($("#checkbox-default_block_size").is(':checked')) {
 			$("#text-block_size").attr('disabled', true);
 		}
 		else {
 			$("#text-block_size").removeAttr('disabled');
 		}
 	}
+	
 	show_data_section();
 });
 
 function show_data_section () {
-	section=$("#section").val();
+	section = $("#section").val();
+	
 	switch (section) {
 		case <?php echo "'" . __('Dashboard') . "'"; ?>:
 			$("#text-data_section").css("display", "none");

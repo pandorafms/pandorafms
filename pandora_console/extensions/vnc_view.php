@@ -34,7 +34,7 @@ $id_agente = get_parameter ("id_agente");
 // This extension is usefull only if the agent has associated IP
 $address = agents_get_address($id_agente);
 
-if(!empty($address) || empty($id_agente)) {
+if (!empty($address) || empty($id_agente)) {
 	extensions_add_opemode_tab_agent('vnc_view', __('VNC view'), 'images/vnc.png', 'vnc_view', "v1r1");
 }
 ?>

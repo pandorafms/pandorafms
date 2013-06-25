@@ -1,4 +1,8 @@
-2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/vnc_view.php: improved the source code style.
+
+2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/constants.php, operation/visual_console/render_view.php:
 	fixed the javascript draw lines when there is any error in the map.
@@ -10,7 +14,7 @@
 	* operation/agentes/Estado_general_agente.php:: OS version string 
 	is fully shown.
 
-2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/constants.php, include/functions_visual_map.php,
 	operation/visual_console/render_view.php: fixed when try to access

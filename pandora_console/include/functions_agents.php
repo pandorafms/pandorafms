@@ -152,6 +152,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	}
 	
 	if (($id_agent !== false) && ($idGroup !== false)) {
+		
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -161,6 +162,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo WHERE delete_pending = 0';
 		}
+		
 	}
 	else if ($id_agent === false) {
 		if ($allModules)
@@ -219,7 +221,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		return $alerts[0]['count'];
 	}
 	else {
-		return $alerts;	
+		return $alerts;
 	}
 }
 
@@ -1183,6 +1185,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	
 	//$where .= " AND id_policy_module = 0 ";
 	
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -1452,23 +1455,35 @@ function agents_delete_address ($id_agent, $ip_address) {
 	
 	$sql = sprintf ("SELECT id_ag
 		FROM taddress_agent, taddress
-		WHERE taddress_agent.id_a = taddress.id_a AND ip = '%s'
-		AND id_agent = %d", $ip_address, $id_agent);
+		WHERE taddress_agent.id_a = taddress.id_a
+			AND ip = '%s'
+			AND id_agent = %d", $ip_address, $id_agent);
 	$id_ag = db_get_sql ($sql);
 	if ($id_ag !== false) {
 		db_process_sql_delete('taddress_agent', array('id_ag' => $id_ag));
 	}
+	
 	$agent_name = agents_get_name($id_agent, "");
 	db_pandora_audit("Agent management",
 		"Deleted IP $ip_address from agent '$agent_name'");
 	
 	// Need to change main address?
-	if (agents_get_address ($id_agent) == $ip_address) {
+	if (agents_get_address($id_agent) == $ip_address) {
 		$new_ips = agents_get_addresses ($id_agent);
+		if (empty($new_ips)) {
+			$new_ip = '';
+		}
+		else {
+			$new_ip = reset($new_ips);
+		}
+		
 		// Change main address in agent to first one in the list
 		
-		db_process_sql_update('tagente', array('direccion' => current ($new_ips)),
+		db_process_sql_update('tagente',
+			array('direccion' => $new_ip),
 			array('id_agente' => $id_agent));
+		
+		return $new_ip;
 	}
 }
 

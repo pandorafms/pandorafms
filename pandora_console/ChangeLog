@@ -1,5 +1,11 @@
 2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/configurar_agente.php,
+	include/functions_agents.php: fixed the operations with the ip or
+	ips adress of agent.
+
+2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/menu.php: fixed the default value for refresh in the
 	extensions.
 	

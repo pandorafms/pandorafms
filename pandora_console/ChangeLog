@@ -1,5 +1,10 @@
 2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/users/user_edit.php: merge the code for made more
+	easy the merges from the trunk.
+
+2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
+
 	* extensions/vnc_view.php: improved the source code style.
 
 2013-06-25 Miguel de Dios <miguel.dedios@artica.es>

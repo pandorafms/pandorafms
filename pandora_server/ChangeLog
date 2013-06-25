@@ -1,3 +1,10 @@
+2013-06-25  Sancho Lerena <slerena@artica.es>
+
+	* conf/pandora_server.conf.new: better values for server
+
+	* util/agent_names.txt: Added default file for being used
+	with pandora_xmlstress.conf
+
 2013-06-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Fixed a call to get_agent_from_addr

@@ -110,7 +110,7 @@ predictionserver 0
 
 # wmiserver : 1 or 0. Set to 1 to activate WMI server with this setup
 # DISABLED BY DEFAULT
-wmiserver 0
+wmiserver 1
 
 # Network timeout (in seconds) for timeout in network connections for Network agents
 
@@ -126,7 +126,7 @@ server_threshold 5
 
 # Network threads: Do not set too high (~40). Each threads make a network module check.
 
-network_threads 4
+network_threads 2
 
 # icmp_checks x : defines number of pings for each icmp_proc module type. at least one of 
 # that ping should be 1 to report 1
@@ -167,11 +167,11 @@ wmi_timeout 10
 
 # wmi_threads: Specify number of WMI server threads for processing WMI remote calls
 
-wmi_threads 2
+wmi_threads 1
 
 # recon_threads. Each thread will scan a different scantask.
 
-recon_threads 2
+recon_threads 1
 
 # dataserver_threads: Number of threads for data server (XML processing threads)
 
@@ -196,7 +196,7 @@ mta_address localhost
 
 # mta_from Email address that sends the mail, by default is pandora@localhost 
 #           probably you need to change it to avoid problems with your antispam
-#mta_from Pandora FMS <pandora@mydomain.com>
+#mta_from pandora@mydomain.com
 
 # Set 1 if want eMail deliver alert in separate mail  (default). 
 # Set 0 if want eMail deliver shared mail by all destination.
@@ -280,8 +280,8 @@ max_queue_files 500
 # by geolocating the IP.
 #recon_location_scatter_radius 1000
 
-# Pandora Server self-monitoring (embedded agent) (by default disabled)
-#self_monitoring 1
+# Pandora Server self-monitoring (embedded agent)
+self_monitoring 1
 
 # Update parent from the agent xml
 #update_parent 1

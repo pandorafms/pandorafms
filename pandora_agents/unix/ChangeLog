@@ -1,3 +1,8 @@
+2013-06-25  Sancho Lerena <slerena@artica.es>
+
+        * Linux/pandora_agent.conf: new defaul values (inventory enabled,
+        remote config enabled).
+
 2013-06-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Quote the XML data file name before trying to send it.

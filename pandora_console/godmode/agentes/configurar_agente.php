@@ -297,7 +297,7 @@ if ($id_agente) {
 	if ($inventorytab == -1)
 		$inventorytab = "";
 	
-	 
+	
 	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($id_agente));
 	
 	if ($has_remote_conf === true) {
@@ -377,6 +377,7 @@ if ($id_agente) {
 			'alert' => $alerttab);
 	}
 	
+	//Extensions tabs
 	foreach ($config['extensions'] as $extension) {
 		if (isset($extension['extension_god_tab']) && check_acl ($config["id_user"], $group, "AW", $id_agente)) {
 			$image = $extension['extension_god_tab']['icon'];
@@ -526,13 +527,19 @@ if ($update_agent) { // if modified some agent paramenter
 	$direccion_agente = trim(io_safe_output($direccion_agente));
 	$direccion_agente = io_safe_input($direccion_agente);
 	$address_list = (string) get_parameter_post ("address_list", '');
-	if ($address_list != $direccion_agente && $direccion_agente == agents_get_address ($id_agente) && $address_list != agents_get_address ($id_agente)) {
+	
+	if ($address_list != $direccion_agente &&
+		$direccion_agente == agents_get_address ($id_agente) &&
+		$address_list != agents_get_address ($id_agente)) {
+		
 		//If we selected another IP in the drop down list to be 'primary': 
 		// a) field is not the same as selectbox
 		// b) field has not changed from current IP
 		// c) selectbox is not the current IP
-		if ($address_list != 0)
+		
+		if (!empty($address_list)) {
 			$direccion_agente = $address_list;
+		}
 	}
 	$grupo = (int) get_parameter_post ("grupo", 0);
 	$intervalo = (int) get_parameter_post ("intervalo", SECONDS_5MINUTES);
@@ -567,7 +574,7 @@ if ($update_agent) { // if modified some agent paramenter
 		if ($old_value === false) {
 			// Create custom field if not exist
 			db_process_sql_insert ('tagent_custom_data',
-				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
+				array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
 		}
 		else {
 			db_process_sql_update ('tagent_custom_data',
@@ -592,10 +599,12 @@ if ($update_agent) { // if modified some agent paramenter
 			agents_add_address ($id_agente, $direccion_agente);
 		}
 		
+		$action_delete_ip = (bool)get_parameter('delete_ip', false);
 		//If IP is set for deletion, delete first
-		if (isset ($_POST["delete_ip"])) {
+		if ($action_delete_ip) {
 			$delete_ip = get_parameter_post ("address_list");
-			agents_delete_address ($id_agente, $delete_ip);
+			
+			$direccion_agente = agents_delete_address($id_agente, $delete_ip);
 		}
 		
 		$result = db_process_sql_update ('tagente', 
@@ -635,6 +644,7 @@ if ($update_agent) { // if modified some agent paramenter
 			ui_print_success_message (__('Successfully updated'));
 			db_pandora_audit("Agent management",
 				"Updated agent $nombre_agente", false, false, $info);
+			
 		}
 	}
 }
@@ -800,6 +810,7 @@ if ($update_module || $create_module) {
 			$plugin_pass = (int) get_parameter ('plugin_pass');
 		else
 			$plugin_pass = (string) get_parameter ('plugin_pass');
+		
 		$plugin_parameter = (string) get_parameter ('plugin_parameter');
 	}
 	

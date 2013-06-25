@@ -95,6 +95,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	// Create address for this agent in taddress
 	agents_add_address ($id_agent, $ip_address);
 	
+	
 	db_pandora_audit ("Agent management", "New agent '$name' created");
 	
 	return $id_agent;
@@ -201,6 +202,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
+	
 	
 	$sql = sprintf ("SELECT %s
 		FROM talert_template_modules
@@ -914,6 +916,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	// user can read the agents.
 	// =================================================================
 	if ($id_agent === null) {
+		
 		$sql = "SELECT id_agente
 			FROM tagente
 			WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
@@ -936,6 +939,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	if (!is_array($id_agent)) {
 		$id_agent = safe_int ($id_agent, 1);
 	}
+	
 	
 	$where = "(
 			1 = (
@@ -1333,23 +1337,35 @@ function agents_delete_address ($id_agent, $ip_address) {
 	
 	$sql = sprintf ("SELECT id_ag
 		FROM taddress_agent, taddress
-		WHERE taddress_agent.id_a = taddress.id_a AND ip = '%s'
-		AND id_agent = %d", $ip_address, $id_agent);
+		WHERE taddress_agent.id_a = taddress.id_a
+			AND ip = '%s'
+			AND id_agent = %d", $ip_address, $id_agent);
 	$id_ag = db_get_sql ($sql);
 	if ($id_ag !== false) {
 		db_process_sql_delete('taddress_agent', array('id_ag' => $id_ag));
 	}
+	
 	$agent_name = agents_get_name($id_agent, "");
 	db_pandora_audit("Agent management",
 		"Deleted IP $ip_address from agent '$agent_name'");
 	
 	// Need to change main address?
-	if (agents_get_address ($id_agent) == $ip_address) {
+	if (agents_get_address($id_agent) == $ip_address) {
 		$new_ips = agents_get_addresses ($id_agent);
+		if (empty($new_ips)) {
+			$new_ip = '';
+		}
+		else {
+			$new_ip = reset($new_ips);
+		}
+		
 		// Change main address in agent to first one in the list
 		
-		db_process_sql_update('tagente', array('direccion' => current ($new_ips)),
+		db_process_sql_update('tagente',
+			array('direccion' => $new_ip),
 			array('id_agente' => $id_agent));
+		
+		return $new_ip;
 	}
 }
 
@@ -1680,6 +1696,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		if ($error)
 			break;
 	}
+	
 	
 	if ($error) {
 		return false;

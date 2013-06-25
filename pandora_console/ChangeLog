@@ -1,5 +1,12 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/visual_console/render_view.php: fixed the javascript
+	draw lines when there is any error in the map.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php: added more changes for to make
 	more easy the merges from the branch.
 

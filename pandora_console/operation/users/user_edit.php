@@ -102,7 +102,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
 	$default_block_size = get_parameter ("default_block_size", 0);
-	if ($default_block_size) {
+	if($default_block_size) {
 		$upd_info["block_size"] = 0;
 	}
 	
@@ -278,11 +278,54 @@ if (!$meta) {
 	$data = array();
 	$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
 	$data[0] .= '<br>' . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
-
+	
 	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
-	$values = array ('Default' =>__('Default'), 'Dashboard'=>__('Dashboard'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
-		'Group view'=>__('Group view'), 'Tactical view'=>__('Tactical view'), 'Alert detail' => __('Alert detail'), 'Other'=>__('Other'));
+	$values = array (
+		'Default' =>__('Default'),
+		'Dashboard'=>__('Dashboard'),
+		'Visual console'=>__('Visual console'),
+		'Event list'=>__('Event list'),
+		'Group view'=>__('Group view'),
+		'Tactical view'=>__('Tactical view'),
+		'Alert detail' => __('Alert detail'),
+		'Other'=>__('Other'));
+	if (enterprise_installed()) {
+		$values['Dashboard'] = __('Dashboard');
+	}
+	
 	$data[1] .= '<br>' . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
+	
+	echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
+	echo "&nbsp;&nbsp;";
+	
+	if (enterprise_installed()) {
+		$dashboards = get_user_dashboards ($config['id_user']);
+		$dashboards_aux = array();
+		if ($dashboards === false) {
+			$dashboards = array('None'=>'None');
+		}
+		else {
+			foreach ($dashboards as $key => $dashboard) {
+				$dashboards_aux[$dashboard['name']] = $dashboard['name'];
+			}
+		}
+		$data[1] .= html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
+	}
+	
+	$layouts = visual_map_get_user_layouts ($config['id_user'], true);
+	$layouts_aux = array();
+	if ($layouts === false) {
+		$layouts_aux = array('None'=>'None');
+	}
+	else {
+		foreach ($layouts as $layout) {
+			$layouts_aux[$layout] = $layout;
+		}
+	}
+	$data[1] .=  html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
+	$data[1] .=  html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
+	
+	
 	
 	// User only can change skins if has more than one group 
 	$data[2] = '';

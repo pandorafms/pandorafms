@@ -138,4 +138,34 @@ define('COL_MINOR','#FF92E9');
 define('COL_MAJOR','#C97A4A');
 define('COL_INFORMATIONAL','#E4E4E4');
 define('COL_MAINTENANCE','#3BA0FF');
+
+/* Visual maps contants */
+//The items kind
+define('STATIC_GRAPH', 0);
+define('PERCENTILE_BAR', 3);
+define('MODULE_GRAPH', 1);
+define('SIMPLE_VALUE', 2);
+define('LABEL', 4);
+define('ICON', 5);
+define('SIMPLE_VALUE_MAX', 6);
+define('SIMPLE_VALUE_MIN', 7);
+define('SIMPLE_VALUE_AVG', 8);
+define('PERCENTILE_BUBBLE', 9);
+define('SERVICE', 10); //Enterprise Item.
+//Some styles
+define('MIN_WIDTH',300);
+define('MIN_HEIGHT',120);
+define('MIN_WIDTH_CAPTION',420);
+//The process for simple value
+define('PROCESS_VALUE_NONE', 0);
+define('PROCESS_VALUE_MIN', 1);
+define('PROCESS_VALUE_MAX', 2);
+define('PROCESS_VALUE_AVG', 3);
+//Status
+define('VISUAL_MAP_STATUS_CRITICAL_BAD', 1);
+define('VISUAL_MAP_STATUS_CRITICAL_ALERT', 4);
+define('VISUAL_MAP_STATUS_NORMAL', 0);
+define('VISUAL_MAP_STATUS_WARNING', 2);
+define('VISUAL_MAP_STATUS_UNKNOW', 3);
+define('VISUAL_MAP_STATUS_WARNING_ALERT', 10);
 ?>

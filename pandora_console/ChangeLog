@@ -1,5 +1,13 @@
 2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/constants.php, include/functions_visual_map.php,
+	operation/visual_console/render_view.php: fixed when try to access
+	to deleted visualmap (for example in dashboard). And added more
+	changes and fixed from the trunk for to make more easy the
+	code transfusions.
+
+2013-06-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php: fixed the links of module
 	graphs into public visualmap.
 

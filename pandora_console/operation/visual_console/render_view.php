@@ -13,6 +13,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
 
 // Login check
 require ('include/functions_visual_map.php');
@@ -45,7 +46,7 @@ $background = $layout["background"];
 $bwidth = $layout["width"];
 $bheight = $layout["height"];
 
-$pure_url = "&pure=".$config["pure"];
+$pure_url = "&pure=" . $config["pure"];
 
 if (! check_acl ($config["id_user"], $id_group, "AR")) {
 	db_pandora_audit("ACL Violation", "Trying to access visual console without group access");
@@ -57,13 +58,13 @@ if (! check_acl ($config["id_user"], $id_group, "AR")) {
 $options = array();
 
 if (check_acl ($config["id_user"], $id_group, "AW")) {
-
-	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
-
+	
+	$hash = md5($config["dbpass"] . $id_layout. $config["id_user"]);
+	
 	$options['public_link']['text'] = '<a href="'.$config["homeurl"].'/operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"].'">'.
-	html_print_image ("images/camera.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
+		html_print_image ("images/camera.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
 	$options['public_link']['active'] = false;
-
+	
 	$options['setup']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=editor&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$options['setup']['active'] = false;
 }
@@ -98,9 +99,9 @@ $table->style = array ();
 $table->style[2] = 'text-align: center';
 $table->data[0][0] = __('Autorefresh time');
 
-if (empty($config["vc_refr"])){
+if (empty($config["vc_refr"])) {
 	$vc_refr = true;
-	$config["vc_refr"] = $refr;	
+	$config["vc_refr"] = $refr;
 }
 
 $table->data[0][1] = html_print_select ($values, 'refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
@@ -135,16 +136,20 @@ ui_require_javascript_file ('pandora_visual_console');
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	$("#refr").change(function () {	
+	$("#refr").change(function () {
 		$("#hidden-vc_refr").val($("#refr option:selected").val());
-	});		
+	});
 	
-<?php if ($config["pure"] && $config["refr"] > 0): ?>
-	t = new Date();
-	t.setTime (t.getTime() + <?php echo $config["refr"] * 1000; ?>);
-	$("#countdown").countdown({until: t, format: 'MS', description: '<?php echo __('Until refresh'); ?>'});
-	
-<?php endif; ?>
+	<?php
+	if ($config["pure"] && $config["refr"] > 0) {
+		?>
+		t = new Date();
+		t.setTime (t.getTime() + <?php echo $config["refr"] * 1000; ?>);
+		$("#countdown").countdown({until: t, format: 'MS', description: '<?php echo __('Until refresh'); ?>'});
+		
+		<?php
+	}
+	?>
 	draw_lines (lines, 'layout_map');
 });
 /* ]]> */

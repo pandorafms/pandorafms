@@ -1,3 +1,8 @@
+2013-06-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_console.spec,
+	  pandora_console.redhat.spec: Fixed directory permissions.
+
 2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/configurar_agente.php,

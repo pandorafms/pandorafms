@@ -153,6 +153,13 @@ ALTER TABLE `tgrupo` ADD COLUMN `other` text;
 ALTER TABLE `talert_snmp` ADD COLUMN (`_snmp_f1_` text, `_snmp_f2_` text, `_snmp_f3_` text,
 	`_snmp_f4_` text, `_snmp_f5_` text, `_snmp_f6_` text, `trap_type` int(11) NOT NULL default '-1',
 	`single_value` varchar(255) DEFAULT '');
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field4` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field5` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field6` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text NOT NULL;
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_modulo`

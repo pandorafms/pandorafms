@@ -1,3 +1,10 @@
+2013-06-26 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: added the new
+	columns in the table "talert_snmp".
+
 2013-06-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_console.spec,

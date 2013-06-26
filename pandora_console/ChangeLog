@@ -1,3 +1,7 @@
+2013-06-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions.php: Merged from trunk. Fixed a warning.
+
 2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/configurar_agente.php,

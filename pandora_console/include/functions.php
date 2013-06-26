@@ -1253,6 +1253,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 	}
 	
 	// Parse the output of snmpwalk
+	$snmpwalk = array();
 	foreach ($output as $line) {
 		
 		// Separate the OID from the value

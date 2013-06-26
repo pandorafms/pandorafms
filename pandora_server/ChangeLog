@@ -1,3 +1,8 @@
+2013-06-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server.redhat.spec,
+	  pandora_server.spec: Fixed directory permissions.
+
 2013-06-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Merged from 4.0 branch. Fixed a call

@@ -119,7 +119,7 @@ exit 0
 /usr/bin/pandora_agent
 /usr/bin/pandora_agent_exec
 
-%defattr(770,pandora,root)
+%defattr(-,pandora,root,770)
 /var/log/pandora/
 
 %defattr(755,pandora,root)

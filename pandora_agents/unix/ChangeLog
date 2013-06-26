@@ -1,3 +1,8 @@
+2013-06-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent.redhat.spec,
+	  pandora_agent.spec: Fixed directory permissions
+
 2013-06-26 Miguel de Dios <miguel.dedios@artica.es>
 
 	* Linux/pandora_agent.conf: restored the remote_config as disabled

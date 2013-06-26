@@ -160,19 +160,19 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 /usr/bin/pandora_server
 /usr/bin/tentacle_server
 
-%defattr(755,pandora,root)
+%defattr(755,pandora,root,755)
 /usr/lib/perl5/PandoraFMS/
 %{prefix}/pandora_server
 /var/log/pandora
 
-%defattr(770,pandora,www)
+%defattr(-,pandora,www,770)
 /var/spool/pandora
 /var/spool/pandora/data_in
 /var/spool/pandora/data_in/md5
 /var/spool/pandora/data_in/collections
 /var/spool/pandora/data_in/conf
 
-%defattr(750,pandora,root)
+%defattr(-,pandora,root,750)
 /etc/pandora
 
 %defattr(644,pandora,root)

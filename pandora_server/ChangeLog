@@ -1,3 +1,9 @@
+2013-06-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server.redhat.spec,
+	  pandora_server.spec: Merged from 4.0 branch. Fixed directory
+	  permissions.
+
 2013-06-26  Sancho Lerena <slerena@artica.es>
 
 	* util/plugin/pandora_loadgen.pl,

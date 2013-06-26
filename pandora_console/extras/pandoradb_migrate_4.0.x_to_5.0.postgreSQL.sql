@@ -178,6 +178,13 @@ ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f5_" text DEFAULT '';
 ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f6_" text DEFAULT '';
 ALTER TABLE "talert_snmp" ADD COLUMN "trap_type" INTEGER NOT NULL DEFAULT '-1';
 ALTER TABLE "talert_snmp" ADD COLUMN "single_value" varchar(255) DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field4" text NOT NULL default '';
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field5" text NOT NULL default '';
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field6" text NOT NULL default '';
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field7" text NOT NULL default '';
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field8" text NOT NULL default '';
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field9" text NOT NULL default '';
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field10" text NOT NULL default '';
 
 -- -----------------------------------------------------
 -- Table "tagente_modulo"

@@ -186,6 +186,13 @@ ALTER TABLE talert_snmp ADD (_snmp_f5_ CLOB default '');
 ALTER TABLE talert_snmp ADD (_snmp_f6_ CLOB default '');
 ALTER TABLE talert_snmp ADD (trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL);
 ALTER TABLE talert_snmp ADD (single_value VARCHAR2(255) DEFAULT '');
+ALTER TABLE talert_snmp ADD (al_field4 CLOB default '');
+ALTER TABLE talert_snmp ADD (al_field5 CLOB default '');
+ALTER TABLE talert_snmp ADD (al_field6 CLOB default '');
+ALTER TABLE talert_snmp ADD (al_field7 CLOB default '');
+ALTER TABLE talert_snmp ADD (al_field8 CLOB default '');
+ALTER TABLE talert_snmp ADD (al_field9 CLOB default '');
+ALTER TABLE talert_snmp ADD (al_field10 CLOB default '');
 
 -- ---------------------------------------------------------------------
 -- Table tevent_filter
@@ -484,7 +491,6 @@ ALTER TABLE talert_snmp ADD COLUMN (al_field10 CLOB NOT NULL default '');
 ALTER TABLE tusuario ADD COLUMN (metaconsole_agents_manager NUMBER(10, 0) default 0 NOT NULL);
 ALTER TABLE tusuario ADD COLUMN (metaconsole_assigned_server NUMBER(10, 0) default 0 NOT NULL);
 ALTER TABLE tusuario ADD COLUMN (metaconsole_access_node NUMBER(10, 0) default 0 NOT NULL);
-
 
 -- ---------------------------------------------------------------------
 -- ---------------------------------------------------------------------

@@ -1,3 +1,8 @@
+2013-06-26 Miguel de Dios <miguel.dedios@artica.es>
+
+	* bin/pandora_agent.conf: restored the remote_config as disabled for
+	to avoid problems.
+
 2013-06-25  Sancho Lerena <slerena@artica.es>
 
 	* bin/pandora_agent.conf: removed old references to ODBC feature

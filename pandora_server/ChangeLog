@@ -1,3 +1,9 @@
+2013-06-26  Sancho Lerena <slerena@artica.es>
+
+	* util/plugin/pandora_loadgen.pl,
+        util/plugin/ssh_pandoraplugin.sh: Fixed small problems with
+	plugins provided as sample.
+
 2013-06-25  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf.new: better values for server

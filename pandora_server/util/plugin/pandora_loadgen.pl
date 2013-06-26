@@ -21,7 +21,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my $max = 10;
+my $max = 100;
 my $min = 0;
 my $alphanumeric = 0;
 
@@ -58,12 +58,7 @@ sub pandora_random {
 # Main code -------------------------------------------------------------
 # -----------------------------------------------------------------------
 
-if ($#ARGV == -1){
-	help();
-}
-
 GetOptions(
-        "" => sub { help() },
         "h" => sub { help() },
         "help" => sub { help() },
         "string+" => \$alphanumeric,

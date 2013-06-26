@@ -61,4 +61,5 @@ while getopts ":hp:t:c:u:" optname
 done
 
 
-ssh -p $PORT $USER@$HOST $COMMAND
+ssh -p $PORT $USER@$HOST $COMMAND 2> /dev/null
+

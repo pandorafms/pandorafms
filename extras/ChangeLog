@@ -1,5 +1,10 @@
 2013-06-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_update_version.sh: Updated the server conf file to point
+	  to pandora_server.conf.new.
+
+2013-06-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* build_rpm.redhat.sh: More path fixes.
 
 2013-06-27  Ramon Novoa  <rnovoa@artica.es>

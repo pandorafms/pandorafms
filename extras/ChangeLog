@@ -1,3 +1,7 @@
+2013-06-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_rpm.redhat.sh: Fixed some paths.
+
 2013-05-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Added RedHat specs.

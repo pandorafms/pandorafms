@@ -1,7 +1,7 @@
 #!/bin/bash
-CODEHOME=/usr/src/pandora_4_open/
-CODEHOME_ENT=/usr/src/artica_code/pandora/branches/4.0/
-RPMHOME=/root/rpmbuild
+CODEHOME=~/code/pandora/branches/pandora_4.0
+CODEHOME_ENT=~/code/artica/code
+RPMHOME=/usr/src/packages
 
 if [ ! -d $RPMHOME/RPMS ]; then
 	mkdir -p $RPMHOME/RPMS || exit 1

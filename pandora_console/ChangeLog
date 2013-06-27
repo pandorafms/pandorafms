@@ -1,4 +1,4 @@
-2013-06-25 Miguel de Dios <miguel.dedios@artica.es>
+2013-06-27 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/servers/plugin.php, godmode/setup/file_manager.php,
 	include/functions_filemanager.php: added the filemanager to server

@@ -151,6 +151,7 @@ if ($upload_file) {
 		$filesize = $_FILES['file']['size'];
 		$real_directory = (string) get_parameter('real_directory');
 		$directory = (string) get_parameter ('directory');
+		$umask = (string)get_parameter('umask', '');
 		
 		$hash = get_parameter('hash', '');
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
@@ -172,6 +173,10 @@ if ($upload_file) {
 				$config['filemanager']['message'] = ui_print_error_message(__('Upload error'), '', true);
 			}
 			else {
+				if ($umask !== '') {
+					chmod($nombre_archivo, $umask);
+				}
+				
 				$config['filemanager']['correct_upload_file'] = 1;
 				$config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
 				
@@ -208,6 +213,7 @@ if ($create_text_file) {
 		$real_directory = io_safe_output($real_directory);
 		$directory = (string) get_parameter ('directory');
 		$directory = io_safe_output($directory);
+		$umask = (string)get_parameter('umask', '');
 		
 		$hash = get_parameter('hash', '');
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
@@ -228,6 +234,10 @@ if ($create_text_file) {
 				$config['filemanager']['message'] = ui_print_error_message(__('Error creating file'), '', true);
 			}
 			else {
+				if ($umask !== '') {
+					chmod($nombre_archivo, $umask);
+				}
+				
 				$config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
 				$config['filemanager']['correct_upload_file'] = 1;
 			}
@@ -403,12 +413,10 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
 	{
 		while (false !== ($entry = readdir($handle))) {
 			if (($entry != ".") && ($entry != "..")) {
-				if (is_dir($dir . $entry))
-				{
+				if (is_dir($dir . $entry)) {
 					$return = array_merge($return, filemanager_read_recursive_dir($dir . $entry . '/', $relative_path . $entry . '/' ));
 				}
-				else
-				{
+				else {
 					$return[] = array('relative' => $relative_path . $entry, 'absolute' => $dir . $entry);
 				}
 			}
@@ -427,8 +435,11 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
  * @param string $url The url to set in the forms and some links in the explorer.
  * @param string $father The directory father don't navigate bottom this.
  * @param boolean $editor The flag to set the edition of text files.
+ * @param string $url_file The url to put in the files instead the default. By default empty string and use the url of filemanager.
+ * @param boolean $download_button The flag to show download button, by default false.
+ * @param string $umask The umask as hex values to set the new files or updload.
  */
-function filemanager_file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false) {
+function filemanager_file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false, $url_file = '', $download_button = false, $umask = '') {
 	global $config;
 	
 	$hack_metaconsole = '';
@@ -437,34 +448,33 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	
 	?>
 	<script type="text/javascript">
-	function show_form_create_folder() {
-		$("#table2-1").css('display', '');
+		function show_form_create_folder() {
+			$("#table2-1").css('display', '');
+			
+			$("#main_buttons").css("display", "none");
+			$("#create_folder").css("display", "");
+		}
 		
-		$("#main_buttons").css("display", "none");
-		$("#create_folder").css("display", "");
-	}
+		function show_upload_file() {
+			$("#table2-1").css('display', '');
+			
+			$("#main_buttons").css("display", "none");
+			$("#upload_file").css("display", "");
+		}
 	
-	function show_upload_file() {
-		$("#table2-1").css('display', '');
+		function show_create_text_file() {
+			$("#table2-1").css('display', '');
 		
-		$("#main_buttons").css("display", "none");
-		$("#upload_file").css("display", "");
-	}
+			$("#main_buttons").css("display", "none");
+			$("#create_text_file").css("display", "");
+		}
 	
-	function show_create_text_file() {
-		$("#table2-1").css('display', '');
-		
-		$("#main_buttons").css("display", "none");
-		$("#create_text_file").css("display", "");
-	}
-	
-	function show_main_buttons_folder() {
-		//$("#main_buttons").css("display", "");
-		$("#table2-1").css('display', 'none');
-		$("#create_folder").css("display", "none");
-		$("#upload_file").css("display", "none");
-		$("#create_text_file").css("display", "none");
-	}
+		function show_main_buttons_folder() {
+			$("#table2-1").css('display', 'none');
+			$("#create_folder").css("display", "none");
+			$("#upload_file").css("display", "none");
+			$("#create_text_file").css("display", "none");
+		}
 	</script>
 	<?php
 	
@@ -537,6 +547,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] .= '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
 		$table->data[1][1] .= ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] .= html_print_input_file ('file', true, false);
+		$table->data[1][1] .= html_print_input_hidden('umask', $umask, true);
 		$table->data[1][1] .= html_print_checkbox('decompress', 1, false, true);
 		$table->data[1][1] .= __('Decompress');
 		$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;';
@@ -557,8 +568,9 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] .= html_print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][1] .= html_print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
+		$table->data[1][1] .= html_print_input_hidden('umask', $umask, true);
 		$table->data[1][1] .= html_print_input_hidden ('create_text_file', 1, true);
-		$table->data[1][1] .= '</form>';	
+		$table->data[1][1] .= '</form>';
 		$table->data[1][1] .= '</div>';
 		
 		$table->colspan[1][1] =5;
@@ -589,6 +601,12 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		
 		if ($fileinfo['is_dir']) {
 			$data[1] = '<a href="' . $url . '&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2=' . md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']) . '">'.$fileinfo['name'].'</a>';
+		}
+		else if (!empty($url_file)) {
+			//Set the custom url file
+			$url_file_clean = str_replace('[FILE_FULLPATH]', $fileinfo['realpath'], $url_file);
+			
+			$data[1] = '<a href="' . $url_file_clean . '">' . $fileinfo['name'] . '</a>';
 		}
 		else {
 			$hash = md5($relative_path . $config['dbpass']);
@@ -631,8 +649,14 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 				}
 			}
 		}
+		if ((!$fileinfo['is_dir']) && ($download_button)) {
+			$hash = md5($fileinfo['url'] . $config['dbpass']);
+			$data[4] .= '<a href="include/get_file.php?file='.base64_encode($fileinfo['url']).'&hash=' . $hash . '" style="vertical-align: 25%;">';
+			$data[4] .= html_print_image('images/file.png', true);
+			$data[4] .= '</a>';
+		}
 		$data[4] .= '</span>';
-	
+		
 		array_push ($table->data, $data);
 	}
 	
@@ -641,13 +665,13 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			echo "<div style='text-align: right; width: " . $table->width . ";'>";
 			echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
 			echo html_print_image('images/mimetypes/directory.png', true, array("title" => __('Create directory'))); 
-			echo "</a> ";
+			echo "</a>";
 			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px; margin-bottom: 5px;'>";
 			echo html_print_image('images/mimetypes/text.png', true, array("title" => __('Create text')));
-			echo "</a> ";
+			echo "</a>";
 			echo "<a href='javascript: show_upload_file();'>";
 			echo html_print_image('images/mimetypes/unknown.png', true, array("title" => __('Upload file/s'))); 
-			echo "</a> ";
+			echo "</a>";
 			echo "</div>";
 		}
 		else {

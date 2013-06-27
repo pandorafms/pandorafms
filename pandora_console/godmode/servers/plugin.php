@@ -29,6 +29,8 @@ if (is_ajax ()) {
 // Load global vars
 global $config;
 
+require_once ("include/functions_filemanager.php");
+
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "LM")) {
@@ -42,6 +44,8 @@ enterprise_include_once ('meta/include/functions_components_meta.php');
 
 $view = get_parameter ("view", "");
 $create = get_parameter ("create", "");
+$filemanager = (bool)get_parameter("filemanager", false);
+$plugin_command = get_parameter('plugin_command', '');
 
 if ($view != "") {
 	$form_id = $view;
@@ -50,26 +54,89 @@ if ($view != "") {
 	$form_description = $plugin["description"];
 	$form_max_timeout = $plugin ["max_timeout"];
 	$form_max_retries = $plugin ["max_retries"];
-	$form_execute = $plugin ["execute"];
+	if (empty($plugin_command))
+		$form_execute = $plugin ["execute"];
+	else
+		$form_execute = $plugin_command;
 	$form_plugin_type = $plugin ["plugin_type"];
 	$macros = $plugin ["macros"];
 	$parameters = $plugin ["parameters"];
 }
 
 if ($create != "") {
+	$form_id = 0;
 	$form_name = "";
 	$form_description = "";
 	$form_max_timeout = 15;
 	$form_max_retries = 1;
-	$form_execute = "";
+	$form_execute = $plugin_command;
 	$form_plugin_type = 0;
 	$form_parameters = "";
 	$macros = "";
 	$parameters = "";
 }
+//END LOAD VALUES
+
+// =====================================================================
+// INIT FILEMANAGER
+// =====================================================================
+if ($filemanager) {
+	
+	$id_plugin = (int)get_parameter('id_plugin', 0);
+	
+	
+	/* Add custom directories here */
+	$fallback_directory = "attachment/plugin";
+	
+	$directory = (string) get_parameter ('directory', $fallback_directory);
+	
+	// A miminal security check to avoid directory traversal
+	if (preg_match ("/\.\./", $directory))
+		$directory = $fallback_directory;
+	if (preg_match ("/^\//", $directory))
+		$directory = $fallback_directory;
+	if (preg_match ("/^manager/", $directory))
+		$directory = $fallback_directory;
+	
+	$banned_directories['include'] = true;
+	$banned_directories['godmode'] = true;
+	$banned_directories['operation'] = true;
+	$banned_directories['reporting'] = true;
+	$banned_directories['general'] = true;
+	$banned_directories[ENTERPRISE_DIR] = true;
+	
+	if (isset ($banned_directories[$directory]))
+		$directory = $fallback_directory;
+	
+	$real_directory = realpath ($config['homedir'] . '/' . $directory);
+	
+	echo '<h4>' . __('Index of %s', $directory) . '</h4>';
+	
+	$chunck_url = '&view=' . $id_plugin;
+	if ($id_plugin == 0) {
+		$chunck_url = '&create=1';
+	}
+	
+	filemanager_file_explorer($real_directory,
+		$directory,
+		'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin=' . $id_plugin,
+		$fallback_directory,
+		false,
+		false,
+		'index.php?sec=gservers&sec2=godmode/servers/plugin' . $chunck_url . '&plugin_command=[FILE_FULLPATH]&id_plugin=' . $id_plugin,
+		true,
+		0775);
+	
+	
+	return;
+}
+
+// =====================================================================
+// END FILEMANAGER
+// =====================================================================
 
 // SHOW THE FORM
-// =================================================================
+// =====================================================================
 
 $sec = 'gservers';
 
@@ -168,6 +235,9 @@ if (($create != "") OR ($view != "")) {
 	if ($locked) {
 		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
 	}
+	$data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin=' . $form_id . '" style="vertical-align: bottom;">';
+	$data[1] .= html_print_image('images/file.png', true);
+	$data[1] .= '</a>';
 	$table->data['plugin_command'] = $data;
 	
 	$data = array();
@@ -305,7 +375,7 @@ else {
 	}
 	
 	enterprise_hook('open_meta_frame');
-
+	
 	// Update plugin
 	if (isset($_GET["update_plugin"])) { // if modified any parameter
 		$plugin_id = get_parameter ("update_plugin", 0);
@@ -419,7 +489,7 @@ else {
 		$plugin_id = get_parameter ("kill_plugin", 0);
 		
 		$result = db_process_sql_delete('tplugin', array('id' => $plugin_id));
-			
+		
 		if (! $result) {
 			ui_print_error_message(__('Problem deleting plugin'));
 		}
@@ -441,14 +511,14 @@ else {
 	
 	if ($rows !== false) {
 		echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox">';
-		echo "<th>".__('Name')."</th>";
-		echo "<th>".__('Type')."</th>";
-		echo "<th>".__('Command')."</th>";
+		echo "<th>" . __('Name') . "</th>";
+		echo "<th>" . __('Type') . "</th>";
+		echo "<th>" . __('Command') . "</th>";
 		echo "<th style='width:70px;'>" . '<span title="Operations">' . __('Op.') . '</span>' . "</th>";
 		$color = 0;
 		
 		foreach ($rows as $row) {
-			if ($color == 1){
+			if ($color == 1) {
 				$tdcolor = "datos";
 				$color = 0;
 			}

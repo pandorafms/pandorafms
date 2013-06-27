@@ -57,12 +57,11 @@ $banned_directories[ENTERPRISE_DIR] = true;
 if (isset ($banned_directories[$directory]))
 	$directory = $fallback_directory;
 
-// Current directory
-$available_directories[$directory] = $directory;
-
 $real_directory = realpath ($config['homedir'] . '/' . $directory);
 
 echo '<h4>' . __('Index of %s', $directory) . '</h4>';
 
-filemanager_file_explorer($real_directory, $directory, 'index.php?sec=gsetup&sec2=godmode/setup/file_manager');
+filemanager_file_explorer($real_directory,
+	$directory,
+	'index.php?sec=gsetup&sec2=godmode/setup/file_manager');
 ?>

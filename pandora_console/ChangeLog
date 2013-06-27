@@ -1,5 +1,9 @@
 2013-06-27 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/search_agents.php: added the search by ip agent.
+
+2013-06-27 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/reporting/visual_console_builder.constans.php: erased old
 	constants.
 

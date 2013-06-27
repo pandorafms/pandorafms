@@ -144,6 +144,7 @@ if ($searchAgents) {
 					)
 					AND (
 						t1.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
+						t1.direccion COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
 						t2.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%'
 					)
 			";
@@ -176,6 +177,7 @@ if ($searchAgents) {
 					)
 					AND (
 						t1.nombre LIKE '%%" . $stringSearchSQL . "%%' OR
+						t1.direccion LIKE '%%" . $stringSearchSQL . "%%' OR
 						t2.nombre LIKE '%%" . $stringSearchSQL . "%%'
 					)
 			";

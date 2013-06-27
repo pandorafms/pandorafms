@@ -19,10 +19,10 @@ rpmbuild -ba $CODEHOME/pandora_server/pandora_server.redhat.spec || exit 1
 rpmbuild -ba $CODEHOME/pandora_agents/unix/pandora_agent.redhat.spec || exit 1
 
 # Enterprise console
-rpmbuild -ba $CODEHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.spec || exit 1
+rpmbuild -ba $CODEHOME_ENT/pandora/branches/4.0/pandora_console/enterprise/pandora_console_enterprise.redhat.spec || exit 1
 
 # Enterprise server
-rpmbuild -ba $CODEHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec || exit 1
+rpmbuild -ba $CODEHOME_ENT/pandora/branches/4.0/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.redhat.spec || exit 1
 
 exit 0
 

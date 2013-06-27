@@ -1,5 +1,10 @@
 2013-06-27 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/reporting/visual_console_builder.constans.php: erased old
+	constants.
+
+2013-06-27 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/servers/plugin.php, godmode/setup/file_manager.php,
 	include/functions_filemanager.php: added the filemanager to server
 	plugin, and of course change the code for to make this feature.

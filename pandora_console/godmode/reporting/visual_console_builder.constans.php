@@ -13,19 +13,4 @@
 // GNU General Public License for more details.
 
 //constants
-define('STATIC_GRAPH', 0);
-define('PERCENTILE_BAR', 3);
-define('MODULE_GRAPH', 1);
-define('SIMPLE_VALUE', 2);
-define('LABEL', 4);
-define('ICON', 5);
-define('SIMPLE_VALUE_MAX', 6);
-define('SIMPLE_VALUE_MIN', 7);
-define('SIMPLE_VALUE_AVG', 8);
-define('PERCENTILE_BUBBLE', 9);
-
-define('PROCESS_VALUE_NONE', 0);
-define('PROCESS_VALUE_MIN', 1);
-define('PROCESS_VALUE_MAX', 2);
-define('PROCESS_VALUE_AVG', 3);
 ?>

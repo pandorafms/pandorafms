@@ -1,5 +1,9 @@
 2013-06-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* build_rpm.sh: Removed the keygen.
+
+2013-06-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_update_version.sh: Updated the server conf file to point
 	  to pandora_server.conf.new.
 

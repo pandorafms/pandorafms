@@ -1,3 +1,8 @@
+2013-06-27  Junichi Satoh <junichi@rworks.jp>
+
+	* FreeBSD/pandora_server.conf: Synchronized with the generic
+	configuration file, conf/pandora_server.conf.new.
+
 2013-06-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server.redhat.spec,

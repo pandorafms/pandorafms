@@ -26,10 +26,6 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 
 require_once ("include/functions_filemanager.php");
 
-//$delete_file = (bool) get_parameter ('delete_file');
-//$upload_file = (bool) get_parameter ('upload_file');
-//$create_dir = (bool) get_parameter ('create_dir');
-
 // Header
 ui_print_page_header (__('File manager'), "", false, "", true);
 
@@ -38,46 +34,7 @@ if (isset($config['filemanager']['message'])) {
 	$config['filemanager']['message'] = null;
 }
 
-//// Upload file
-//if ($upload_file) {
-//	if (isset ($_FILES['file']) && $_FILES['file']['name'] != "") {
-//		$filename = $_FILES['file']['name'];
-//		$filesize = $_FILES['file']['size'];
-//		$directory = (string) get_parameter ('directory');
-//		
-//		// Copy file to directory and change name
-//		$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
-//		if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
-//			echo "<h3 class=error>".__('attach_error')."</h3>";
-//		} else {
-//			// Delete temporal file
-//			unlink ($_FILES['file']['tmp_name']);
-//		}
-//		
-//	}
-//}
-
-//if ($delete_file) {
-//	$filename = (string) get_parameter ('filename');
-//	echo "<h3>".__('Deleting')." ".$filename."</h3>";
-//	if (is_dir ($filename)) {		
-//		rmdir ($filename);
-//	} else {
-//		unlink ($filename);
-//	}
-//}
-
-
 $directory = (string) get_parameter ('directory', "/");
-
-//// CREATE DIR
-//if ($create_dir) {
-//	$dirname = (string) get_parameter ('dirname');
-//	if ($dirname) {
-//		@mkdir ($directory.'/'.$dirname);
-//		echo '<h3>'.__('Created directory %s', $dirname).'</h3>';
-//	}
-//}
 
 // A miminal security check to avoid directory traversal
 if (preg_match ("/\.\./", $directory))
@@ -100,15 +57,11 @@ $banned_directories[ENTERPRISE_DIR] = true;
 if (isset ($banned_directories[$directory]))
 	$directory = $fallback_directory;
 
-// Current directory
-$available_directories[$directory] = $directory;
+$real_directory = realpath ($config['homedir'] . '/' . $directory);
 
-$real_directory = realpath ($config['homedir'].'/'.$directory);
+echo '<h4>' . __('Index of %s', $directory) . '</h4>';
 
-//filemanager_box_upload_file_explorer($real_directory, $directory);
-
-
-echo '<h4>'.__('Index of %s', $directory).'</h4>';
-
-filemanager_file_explorer($real_directory, $directory, 'index.php?sec=gsetup&sec2=godmode/setup/file_manager');
+filemanager_file_explorer($real_directory,
+	$directory,
+	'index.php?sec=gsetup&sec2=godmode/setup/file_manager');
 ?>

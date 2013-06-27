@@ -90,16 +90,18 @@ if (!function_exists ('mime_content_type')) {
 			'odt' => 'application/vnd.oasis.opendocument.text',
 			'ods' => 'application/vnd.oasis.opendocument.spreadsheet'
 		);
-
+		
 		$ext = strtolower (array_pop (explode ('.', $filename)));
 		if (array_key_exists ($ext, $mime_types)) {
 			return $mime_types[$ext];
-		} elseif (function_exists ('finfo_open')) {
+		}
+		elseif (function_exists ('finfo_open')) {
 			$finfo = finfo_open (FILEINFO_MIME);
 			$mimetype = finfo_file ($finfo, $filename);
 			finfo_close ($finfo);
 			return $mimetype;
-		} else {
+		}
+		else {
 			$temp = exec ("file ".$filename);
 			if (isset($temp) && $temp != '')
 				return $temp;
@@ -149,6 +151,7 @@ if ($upload_file) {
 		$filesize = $_FILES['file']['size'];
 		$real_directory = (string) get_parameter('real_directory');
 		$directory = (string) get_parameter ('directory');
+		$umask = (string)get_parameter('umask', '');
 		
 		$hash = get_parameter('hash', '');
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
@@ -162,20 +165,25 @@ if ($upload_file) {
 				$nombre_archivo = $real_directory .'/'. $filename;
 			}
 			else {
-				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
+				$nombre_archivo = $config['homedir'] . '/' .
+					$directory . '/' . $filename;
 			}
 			
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
 				$config['filemanager']['message'] = ui_print_error_message(__('Upload error'), '', true);
 			}
 			else {
+				if ($umask !== '') {
+					chmod($nombre_archivo, $umask);
+				}
+				
 				$config['filemanager']['correct_upload_file'] = 1;
 				$config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
 				
 				// Delete temporal file
 				unlink ($_FILES['file']['tmp_name']);
 			}
-		}		
+		}
 	}
 }
 
@@ -200,11 +208,12 @@ if ($create_text_file) {
 	$filename = io_safe_output(get_parameter('name_file'));
 	
 	if ($filename != "") {
-
+		
 		$real_directory = (string) get_parameter('real_directory');
 		$real_directory = io_safe_output($real_directory);
 		$directory = (string) get_parameter ('directory');
 		$directory = io_safe_output($directory);
+		$umask = (string)get_parameter('umask', '');
 		
 		$hash = get_parameter('hash', '');
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
@@ -214,15 +223,21 @@ if ($create_text_file) {
 		}
 		else {
 			if ($directory == '') {
-				$nombre_archivo = $real_directory .'/'. $filename;
+				$nombre_archivo = $real_directory . '/' . $filename;
 			}
 			else {
-				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
+				$nombre_archivo = $config['homedir'] . '/' .
+					$directory . '/' . $filename;
 			}
+			
 			if (! @touch($nombre_archivo)) {
 				$config['filemanager']['message'] = ui_print_error_message(__('Error creating file'), '', true);
 			}
 			else {
+				if ($umask !== '') {
+					chmod($nombre_archivo, $umask);
+				}
+				
 				$config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
 				$config['filemanager']['correct_upload_file'] = 1;
 			}
@@ -312,8 +327,9 @@ if ($create_dir) {
 	else {
 		$dirname = (string) get_parameter ('dirname');
 		$dirname = io_safe_output($dirname);
+		
 		if ($dirname != '') {
-			@mkdir ($directory.'/'.$dirname);
+			@mkdir ($directory . '/' . $dirname);
 			$config['filemanager']['message'] = ui_print_success_message(__('Directory created'), '', true);
 			
 			$config['filemanager']['correct_create_dir'] = 1;
@@ -343,6 +359,7 @@ if ($delete_file) {
 	}
 	else {
 		$config['filemanager']['message'] = ui_print_success_message(__('Deleted'), '', true);
+		
 		if (is_dir ($filename)) {
 			rmdir ($filename);
 			$config['filemanager']['delete'] = 1;
@@ -359,22 +376,17 @@ if ($delete_file) {
  * 
  * @param string $dir The dir to deletete
  */
-function filemanager_delete_directory($dir)
-{
-	if ($handle = opendir($dir))
-	{
+function filemanager_delete_directory($dir) {
+	if ($handle = opendir($dir)) {
 		while (false !== ($file = readdir($handle))) {
 			if (($file != ".") && ($file != "..")) {
-	
-				if (is_dir($dir . $file))
-				{
-					if (!rmdir($dir . $file))
-					{
+				
+				if (is_dir($dir . $file)) {
+					if (!rmdir($dir . $file)) {
 						filemanager_delete_directory($dir . $file . '/');
 					}
 				}
-				else
-				{
+				else {
 					unlink($dir . $file);
 				}
 			}
@@ -400,12 +412,10 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
 	{
 		while (false !== ($entry = readdir($handle))) {
 			if (($entry != ".") && ($entry != "..")) {
-				if (is_dir($dir . $entry))
-				{
+				if (is_dir($dir . $entry)) {
 					$return = array_merge($return, filemanager_read_recursive_dir($dir . $entry . '/', $relative_path . $entry . '/' ));
 				}
-				else
-				{
+				else {
 					$return[] = array('relative' => $relative_path . $entry, 'absolute' => $dir . $entry);
 				}
 			}
@@ -424,40 +434,42 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
  * @param string $url The url to set in the forms and some links in the explorer.
  * @param string $father The directory father don't navigate bottom this.
  * @param boolean $editor The flag to set the edition of text files.
+ * @param string $url_file The url to put in the files instead the default. By default empty string and use the url of filemanager.
+ * @param boolean $download_button The flag to show download button, by default false.
+ * @param string $umask The umask as hex values to set the new files or updload.
  */
-function filemanager_file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false) {
+function filemanager_file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false, $url_file = '', $download_button = false, $umask = '') {
 	global $config;
 	
 	?>
 	<script type="text/javascript">
-	function show_form_create_folder() {
-		$("#table1-1").css('display', '');
+		function show_form_create_folder() {
+			$("#table1-1").css('display', '');
+			
+			$("#main_buttons").css("display", "none");
+			$("#create_folder").css("display", "");
+		}
 		
-		$("#main_buttons").css("display", "none");
-		$("#create_folder").css("display", "");
-	}
-
-	function show_upload_file() {
-		$("#table1-1").css('display', '');
+		function show_upload_file() {
+			$("#table1-1").css('display', '');
+			
+			$("#main_buttons").css("display", "none");
+			$("#upload_file").css("display", "");
+		}
 		
-		$("#main_buttons").css("display", "none");
-		$("#upload_file").css("display", "");
-	}
-
-	function show_create_text_file() {
-		$("#table1-1").css('display', '');
+		function show_create_text_file() {
+			$("#table1-1").css('display', '');
+			
+			$("#main_buttons").css("display", "none");
+			$("#create_text_file").css("display", "");
+		}
 		
-		$("#main_buttons").css("display", "none");
-		$("#create_text_file").css("display", "");
-	}
-
-	function show_main_buttons_folder() {
-		//$("#main_buttons").css("display", "");
-		$("#table1-1").css('display', 'none');
-		$("#create_folder").css("display", "none");
-		$("#upload_file").css("display", "none");
-		$("#create_text_file").css("display", "none");
-	}
+		function show_main_buttons_folder() {
+			$("#table1-1").css('display', 'none');
+			$("#create_folder").css("display", "none");
+			$("#upload_file").css("display", "none");
+			$("#create_text_file").css("display", "none");
+		}
 	</script>
 	<?php
 	
@@ -498,6 +510,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$prev_dir_str .= "/";
 	}
 	
+	
 	if (($prev_dir_str != '') && ($father != $relative_directory)) {
 		$table->data[0][0] = html_print_image ('images/go_previous.png', true);
 		$table->data[0][1] = '<a href="' . $url . '&directory='.$prev_dir_str.'&hash2=' . md5($prev_dir_str.$config['dbpass']) . '">';
@@ -511,11 +524,6 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->rowstyle[1] = 'display: none;';
 		$table->data[1][0] = '';
 		$table->data[1][1] = '';
-//		$table->data[1][1] -= '<div id="main_buttons">';
-//		$table->data[1][1] .= html_print_button(__('Create folder'), 'folder', false, 'show_form_create_folder();', "class='sub'", true);
-//		$table->data[1][1] .= html_print_button(__('Upload file/s'), 'up_files', false, 'show_upload_file();', "class='sub'", true);
-//		$table->data[1][1] .= html_print_button(__('Create text file'), 'create_file', false, 'show_create_text_file();', "class='sub'", true);
-//		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="create_folder" style="display: none;">';
 		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub' style='float: left;'", true);
@@ -534,6 +542,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] .= '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
 		$table->data[1][1] .= ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] .= html_print_input_file ('file', true, false);
+		$table->data[1][1] .= html_print_input_hidden('umask', $umask, true);
 		$table->data[1][1] .= html_print_checkbox('decompress', 1, false, true);
 		$table->data[1][1] .= __('Decompress');
 		$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;';
@@ -543,7 +552,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= html_print_input_hidden('hash2', md5($relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= html_print_input_hidden ('upload_file_or_zip', 1, true);
-		$table->data[1][1] .= '</form>';	
+		$table->data[1][1] .= '</form>';
 		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="create_text_file" style="display: none;">';
@@ -554,8 +563,9 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] .= html_print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][1] .= html_print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
+		$table->data[1][1] .= html_print_input_hidden('umask', $umask, true);
 		$table->data[1][1] .= html_print_input_hidden ('create_text_file', 1, true);
-		$table->data[1][1] .= '</form>';	
+		$table->data[1][1] .= '</form>';
 		$table->data[1][1] .= '</div>';
 		
 		$table->colspan[1][1] =5;
@@ -585,6 +595,12 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		if ($fileinfo['is_dir']) {
 			$data[1] = '<a href="' . $url . '&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2=' . md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']) . '">'.$fileinfo['name'].'</a>';
 		}
+		else if (!empty($url_file)) {
+			//Set the custom url file
+			$url_file_clean = str_replace('[FILE_FULLPATH]', $fileinfo['realpath'], $url_file);
+			
+			$data[1] = '<a href="' . $url_file_clean . '">' . $fileinfo['name'] . '</a>';
+		}
 		else {
 			$hash = md5($fileinfo['url'] . $config['dbpass']);
 			$data[1] = '<a href="include/get_file.php?file='.base64_encode($fileinfo['url']).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
@@ -609,13 +625,13 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$data[4] .= html_print_input_hidden ('filename', $fileinfo['realpath'], true);
 			$data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'] . $config['dbpass']), true);
 			$data[4] .= html_print_input_hidden ('delete_file', 1, true);
-
+			
 			$relative_dir = str_replace($config['homedir'], '', dirname($fileinfo['realpath']));
 			if ($relative_dir[0] == '/') {
 				$relative_dir = substr($relative_dir, 1);
 			}
 			$hash2 = md5($relative_dir . $config['dbpass']);
-
+			
 			$data[4] .= html_print_input_hidden ('directory', $relative_dir, true);
 			$data[4] .= html_print_input_hidden ('hash2', $hash2, true);
 			$data[4] .= '</form>';
@@ -626,8 +642,14 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 				}
 			}
 		}
+		if ((!$fileinfo['is_dir']) && ($download_button)) {
+			$hash = md5($fileinfo['url'] . $config['dbpass']);
+			$data[4] .= '<a href="include/get_file.php?file='.base64_encode($fileinfo['url']).'&hash=' . $hash . '" style="vertical-align: 25%;">';
+			$data[4] .= html_print_image('images/file.png', true);
+			$data[4] .= '</a>';
+		}
 		$data[4] .= '</span>';
-	
+		
 		array_push ($table->data, $data);
 	}
 	
@@ -668,11 +690,12 @@ function filemanager_box_upload_file_complex($real_directory, $relative_director
 	$table->data = array ();
 	
 	if (! filemanager_is_writable_dir ($real_directory)) {
-		echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
+		echo "<h3 class='error'>" . __('Current directory is not writable by HTTP Server') . "</h3>";
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
-	} else {
+	}
+	else {
 		$table->data[1][0] = __('Upload') . ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] = html_print_input_file ('file', true, false);
 		$table->data[1][2] = html_print_radio_button('zip_or_file', 'zip', __('Multiple files zipped'), false, true);
@@ -687,7 +710,7 @@ function filemanager_box_upload_file_complex($real_directory, $relative_director
 	
 	echo '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
 	html_print_table ($table);
-	echo '</form>';	
+	echo '</form>';
 }
 
 /**
@@ -705,11 +728,12 @@ function filemanager_box_upload_file_explorer($real_directory, $relative_directo
 	$table->data = array ();
 	
 	if (! filemanager_is_writable_dir ($real_directory)) {
-		echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
+		echo "<h3 class='error'>" . __('Current directory is not writable by HTTP Server') . "</h3>";
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
-	} else {
+	}
+	else {
 		$table->data[1][0] = __('Upload file');
 		$table->data[1][1] = html_print_input_file ('file', true, false);
 		$table->data[1][2] = html_print_submit_button (__('Go'), 'go', false,
@@ -740,11 +764,12 @@ function filemanager_box_upload_zip_explorer($real_directory, $relative_director
 	$table->data = array ();
 	
 	if (! filemanager_is_writable_dir ($real_directory)) {
-		echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
+		echo "<h3 class='error'>" . __('Current directory is not writable by HTTP Server') . "</h3>";
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
-	} else {
+	}
+	else {
 		$table->data[1][0] = __('Upload zip file: ') . ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] = html_print_input_file ('file', true, false);
 		$table->data[1][2] = html_print_submit_button (__('Go'), 'go', false,
@@ -775,11 +800,12 @@ function filemanager_box_create_text_explorer($real_directory, $relative_directo
 	$table->data = array ();
 	
 	if (! filemanager_is_writable_dir ($real_directory)) {
-		echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
+		echo "<h3 class='error'>" . __('Current directory is not writable by HTTP Server') . "</h3>";
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
-	} else {
+	}
+	else {
 		$table->data[1][0] = __('Create text file: ');
 		$table->data[1][1] = html_print_input_text('name_file', '', '', 30, 50, true);
 		$table->data[1][2] = html_print_submit_button (__('Create'), 'create', false,
@@ -854,7 +880,7 @@ function filemanager_is_writable_dir ($dirpath, $force = false) {
 	if (filemanager_is_writable_dir (realpath ($dirpath.'/..')))
 		return true;
 	else if (! $force)
-			return is_writable ($dirpath);
+		return is_writable ($dirpath);
 	
 	return (is_writable ($dirpath) || @chmod ($dirpath, 0755));
 }
@@ -891,11 +917,14 @@ function filemanager_get_file_info ($filepath) {
 		$info['mime'] = MIME_DIR;
 		$info['is_dir'] = true;
 		$info['size'] = 0;
-	} else if (strpos ($info['mime_extend'], 'image') !== false) {
+	}
+	else if (strpos ($info['mime_extend'], 'image') !== false) {
 		$info['mime'] = MIME_IMAGE;
-	} else if (in_array ($info['mime_extend'], $zip_mimes)) {
+	}
+	else if (in_array ($info['mime_extend'], $zip_mimes)) {
 		$info['mime'] = MIME_ZIP;
-	} else if (strpos ($info['mime_extend'], 'text') !== false) {
+	}
+	else if (strpos ($info['mime_extend'], 'text') !== false) {
 		$info['mime'] = MIME_TEXT;
 	}
 	
@@ -921,7 +950,8 @@ function filemanager_list_dir ($dirpath) {
 		$info = filemanager_get_file_info ($dirpath.'/'.$file);
 		if ($info['is_dir']) {
 			$dirs[$file] = $info;
-		} else {
+		}
+		else {
 			$files[$file] = $info;
 		}
 	}

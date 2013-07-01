@@ -1,3 +1,12 @@
+2013-07-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_src.sh,
+	  build_deb.sh,
+	  build_rpm.sh,
+	  build_rpm.redhat.sh,
+	  build_windows_agent.sh,
+	  pandora_update_version.sh: Use absolute paths.
+
 2013-06-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_rpm.sh: Removed the keygen.

@@ -20,8 +20,8 @@ else
 	BUILD=$3
 fi
 TEMP_FILE="/tmp/pandora_update_version.tmp"
-CODE_HOME=~/code/pandora/branches/pandora_4.0
-CODE_HOME_ENT=~/code/artica/code
+CODE_HOME=/root/code/pandora/branches/pandora_4.0
+CODE_HOME_ENT=/root/code/artica/code
 SPEC_FILES="$CODE_HOME/pandora_console/pandora_console.spec \
 $CODE_HOME/pandora_agents/unix/pandora_agent.spec \
 $CODE_HOME/pandora_server/pandora_server.spec \

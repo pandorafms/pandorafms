@@ -1,6 +1,6 @@
 #!/bin/bash
-CODEHOME=~/code/pandora/branches/pandora_4.0
-CODEHOME_ENT=~/code/artica/code
+CODEHOME=/root/code/pandora/branches/pandora_4.0
+CODEHOME_ENT=/root/code/artica/code
 RPMHOME=/usr/src/packages
 
 if [ ! -d $RPMHOME/RPMS ]; then

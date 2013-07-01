@@ -1,3 +1,10 @@
+2013-07-01  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql: Added to default actions 
+	some default values to avoid confusion in a clean installation
+
 2013-06-27 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/servers/plugin.php, godmode/setup/file_manager.php,

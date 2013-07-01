@@ -36,7 +36,7 @@ if ($develop_bypass != 1) {
 			exit;
 		}
 	}
-
+	
 	if (filesize("include/config.php") == 0) {
 		include ("install.php");
 		exit;

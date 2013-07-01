@@ -1,5 +1,10 @@
 2013-07-01  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Resolve numeric ids to strings before writing
+	  events to an external log file.
+
+2013-07-01  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Config.pm,
 	  lib/PandoraFMS/Core.pm,
 	  conf/pandora_server.conf.new: Added support for writing events to an

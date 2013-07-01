@@ -2518,21 +2518,20 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $critical_instructions, $warning_instructions, $unknown_instructions) = @_;
 	
+	my $agent = undef;
 	if ($id_agente != 0) {
-		my $agent = get_db_single_row ($dbh, 'SELECT *
-			FROM tagente WHERE id_agente = ?', $id_agente);
-		if ($agent->{'quiet'} == 1) {
+		$agent = get_db_single_row ($dbh, 'SELECT *	FROM tagente WHERE id_agente = ?', $id_agente);
+		if (defined ($agent) && $agent->{'quiet'} == 1) {
 			logger($pa_config, "Generate Event. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
-			
 			return;
 		}
 	}
+	
+	my $module = undef;
 	if ($id_agentmodule != 0) {
-		my $module = get_db_single_row ($dbh, 'SELECT *
-		FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agentmodule);
-		if ($module->{'quiet'} == 1) {
+		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agentmodule);
+		if (defined ($module) && $module->{'quiet'} == 1) {
 			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
-			
 			return;
 		}
 	}
@@ -2576,7 +2575,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	# Add a header when the event file is created
 	my $header = undef;
 	if (! -f $pa_config->{'event_file'}) {
-		$header = "id_agente,id_grupo,evento,timestamp,estado,utimestamp,event_type,id_agentmodule,id_alert_am,criticity,user_comment,tags,source,id_extra,id_usuario,critical_instructions,warning_instructions,unknown_instructions,ack_utimestamp";
+		$header = "agent_name,group_name,evento,timestamp,estado,utimestamp,event_type,module_name,alert_name,criticity,user_comment,tags,source,id_extra,id_usuario,critical_instructions,warning_instructions,unknown_instructions,ack_utimestamp";
 	}
 	
 	# Open the event file for writing
@@ -2584,13 +2583,25 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 		logger($pa_config, "Error opening event file " . $pa_config->{'event_file'} . ": $!", 10);
 		return;
 	}
-
+	
+	# Resolve ids
+	my $group_name = get_group_name ($dbh, $id_grupo);
+	$group_name = '' unless defined ($group_name);
+	my $agent_name = defined ($agent) ? safe_output ($agent->{'nombre'}) : '';
+	my $module_name = defined ($module) ? safe_output ($module->{'nombre'}) : '';
+	my $alert_name = get_db_value ($dbh, 'SELECT name FROM talert_templates, talert_template_modules WHERE talert_templates.id = talert_template_modules.id_alert_template AND talert_template_modules.id = ?', $id_alert_am);
+	if (defined ($alert_name)) {
+		$alert_name = safe_output ($alert_name);
+	} else {
+		$alert_name = '';
+	}
+	
 	# Get an exclusive lock on the file (LOCK_EX)
 	flock (EVENT_FILE, 2);
 	
 	# Write the event
 	print EVENT_FILE "$header\n" if (defined ($header));
-	print EVENT_FILE "$id_agente,$id_grupo," . safe_input ($evento) . ",$timestamp,$event_status,$utimestamp,$event_type,$id_agentmodule,$id_alert_am,$severity,$comment,$module_tags,$source,$id_extra,$user_name,$critical_instructions,$warning_instructions,$unknown_instructions,$ack_utimestamp\n";
+	print EVENT_FILE  "$agent_name,$group_name," . safe_output ($evento) . ",$timestamp,$event_status,$utimestamp,$event_type,$module_name,$alert_name,$severity,$comment,$module_tags,$source,$id_extra,$user_name,$critical_instructions,$warning_instructions,$unknown_instructions,$ack_utimestamp\n";
 	
 	close (EVENT_FILE);
 }

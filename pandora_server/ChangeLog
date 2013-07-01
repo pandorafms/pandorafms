@@ -1,3 +1,10 @@
+2013-07-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/Core.pm,
+	  conf/pandora_server.conf.new: Added support for writing events to an
+	  external log file.
+
 2013-06-26  Sancho Lerena <slerena@artica.es>
 
         * util/plugin/pandora_loadgen.pl,

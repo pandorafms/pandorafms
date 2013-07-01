@@ -2569,6 +2569,30 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	
 	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp);
+
+	# Do not write to the event file
+	return if ($pa_config->{'event_file'} eq '');
+
+	# Add a header when the event file is created
+	my $header = undef;
+	if (! -f $pa_config->{'event_file'}) {
+		$header = "id_agente,id_grupo,evento,timestamp,estado,utimestamp,event_type,id_agentmodule,id_alert_am,criticity,user_comment,tags,source,id_extra,id_usuario,critical_instructions,warning_instructions,unknown_instructions,ack_utimestamp";
+	}
+	
+	# Open the event file for writing
+	if (! open (EVENT_FILE, '>>' . $pa_config->{'event_file'})) {
+		logger($pa_config, "Error opening event file " . $pa_config->{'event_file'} . ": $!", 10);
+		return;
+	}
+
+	# Get an exclusive lock on the file (LOCK_EX)
+	flock (EVENT_FILE, 2);
+	
+	# Write the event
+	print EVENT_FILE "$header\n" if (defined ($header));
+	print EVENT_FILE "$id_agente,$id_grupo," . safe_input ($evento) . ",$timestamp,$event_status,$utimestamp,$event_type,$id_agentmodule,$id_alert_am,$severity,$comment,$module_tags,$source,$id_extra,$user_name,$critical_instructions,$warning_instructions,$unknown_instructions,$ack_utimestamp\n";
+	
+	close (EVENT_FILE);
 }
 
 ##########################################################################

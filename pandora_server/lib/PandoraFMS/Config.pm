@@ -300,7 +300,10 @@ sub pandora_load_config {
 
 	# Event auto-validation
 	$pa_config->{"event_auto_validation"} = 1; # 5.0
-	 
+
+	# Export events to a text file
+	$pa_config->{"event_file"} = ''; # 5.0
+
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -656,6 +659,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_auto_validation\s+([0-1])/i) {
 			$pa_config->{'event_auto_validation'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_file\s+(.*)/i) {
+			$pa_config->{'event_file'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

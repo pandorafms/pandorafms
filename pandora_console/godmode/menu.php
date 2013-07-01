@@ -89,6 +89,7 @@ if (check_acl ($config['id_user'], 0, "PM") and $config['metaconsole'] == 0) {
 	$sub["godmode/tag/tag"]["text"] = __('Manage tags');
 	$sub["godmode/tag/tag"]["subsecs"] = "godmode/tag/edit_tag";
 	
+	
 	$sub["godmode/modules/module_list"]["text"] = __('Module types');
 	
 	$menu_godmode["gmodules"]["sub"] = $sub;
@@ -133,10 +134,10 @@ if (check_acl ($config['id_user'], 0, "IW") and $config['metaconsole'] == 0) {
 	if ($config['activate_gis']) {
 		$menu_godmode["godgismaps"]["text"] = __('GIS Maps builder');
 		$menu_godmode["godgismaps"]["sec2"] = "godmode/gis_maps/index";
-		if (!empty($config['refr'])){
+		if (!empty($config['refr'])) {
 			$menu_godmode["godgismaps"]["refr"] = $config['refr'];
 		}
-		else{
+		else {
 			$menu_godmode["godgismaps"]["refr"] = 60;
 		}
 		$menu_godmode["godgismaps"]["id"] = "god-gismaps";
@@ -270,7 +271,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 }
 
 
-if(!$config['pure']) {
+if (!$config['pure']) {
 	menu_print_menu ($menu_godmode);
 }
 ?>

@@ -1,3 +1,7 @@
+2013-07-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_vars.sh: Use absolute paths.
+
 2013-02-22 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* PandoraFMS_android_console/*: added first version of PandoraFMS

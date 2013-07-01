@@ -246,7 +246,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
-		if ($graph_type != "boolean") {
+		if ($graph_type != "boolean" && $graph_type != "string") {
 			$data = array();
 			$data[0] = __('Avg. Only');
 			$data[1] = html_print_checkbox ("avg_only", 1, (bool) $avg_only, true, false, 'show_others()');

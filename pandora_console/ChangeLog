@@ -1,3 +1,10 @@
+2013-07-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	operation/agentes/stat_win.php: Fix string type graph colors
+	and data. Fix the "Avg only" option because is forced to "true".
+	Bug: 2284
+
 2013-07-01 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/menu.php, include/functions_menu.php: fixed the entry

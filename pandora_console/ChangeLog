@@ -1,3 +1,10 @@
+2013-07-01 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/menu.php, include/functions_menu.php: fixed the entry
+	gis map in ACL enterprise.
+	
+	* index.php: cleaned source code style.
+
 2013-07-01  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

@@ -109,7 +109,7 @@ function menu_print_menu (&$menu) {
 			$selected_submenu2 = false;
 			
 			//Look for submenus in level2!
-			if(isset($sub['sub2'])) {
+			if (isset($sub['sub2'])) {
 				$class .= 'has_submenu ';
 				
 				//This hacks avoid empty delimiter error when sec2 is not provided.
@@ -194,7 +194,7 @@ function menu_print_menu (&$menu) {
 				//This is an external link
 				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 				
-				if(isset($sub['sub2']) || $selected) {
+				if (isset($sub['sub2']) || $selected) {
 					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 				}
 			}
@@ -304,7 +304,7 @@ function menu_print_menu (&$menu) {
 					else {
 						$sub_tree_class = 'submenu_text submenu2_text_middle';
 					}
-				
+					
 					$submenu2_list .= '<li class="'.$class.'" style="font-weight: normal;">';
 					$submenu2_list .= '<a style="font-weight:normal;" href="'.$link.'"><div class="' . $sub_tree_class . '">'.$sub2["text"].'</div></a></li>';
 				}
@@ -320,7 +320,6 @@ function menu_print_menu (&$menu) {
 		}
 		
 		// Choose valid section (sec)
-		
 		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $main["sec2"])) == false){
 			continue;
 		} 
@@ -358,7 +357,7 @@ function menu_get_full_sec() {
 	global $menu_operation;
 	global $menu_godmode;
 	
-	if($menu_godmode == null || $menu_operation == null) {
+	if ($menu_godmode == null || $menu_operation == null) {
 		return array();
 	}
 	else {
@@ -443,6 +442,15 @@ function menu_add_extras(&$menu) {
 	}
 	
 	$menu = array_merge_recursive($menu, $menu_extra);
+	
+	//Remove the duplicate the text entries.
+	foreach ($menu as $k => $m) {
+		if (!empty($m['text'])) {
+			if (is_array($m['text'])) {
+				$menu[$k]['text'] = reset($m['text']);
+			}
+		}
+	}
 }
 
 /**
@@ -463,7 +471,7 @@ function menu_get_sec($with_categories = false) {
 			if (!$in_godmode && $k[0] == 'g') {
 				// Hack to dont confuse with gis activated because godmode 
 				// sec starts with g (like gismaps)
-				if($k != 'gismaps') {
+				if ($k != 'gismaps') {
 					$in_godmode = true;
 				}
 			}
@@ -511,7 +519,7 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
 	// Get the sec2 of the subsections
 	foreach ($menu[$sec]['sub'] as $k => $v) {
 		// Avoid special cases of standalone windows
-		if(preg_match('/^javascript:/',$k) || preg_match('/\.php/',$k)) {
+		if (preg_match('/^javascript:/',$k) || preg_match('/\.php/',$k)) {
 			continue;
 		}
 		

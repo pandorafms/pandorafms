@@ -65,12 +65,13 @@ if ($nooverlap) {
 	$filename_img .= "_nooverlap";
 	$filename_dot .= "_nooverlap";
 }
-$filename_map .= "_".$id_networkmap.".map";
-$filename_img .= "_".$id_networkmap.".png";
-$filename_dot .= "_".$id_networkmap.".dot";
+$filename_map .= "_" . $id_networkmap . ".map";
+$filename_img .= "_" . $id_networkmap . ".png";
+$filename_dot .= "_" . $id_networkmap . ".dot";
 
 if ($regen != 1 && file_exists ($filename_img) &&
 	filemtime ($filename_img) > get_system_time () - SECONDS_5MINUTES) {
+	
 	$result = true;
 }
 else {

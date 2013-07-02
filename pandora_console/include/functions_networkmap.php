@@ -14,6 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
+
 /**
  * @package Include
  * @subpackage Network_Map
@@ -42,9 +44,10 @@ function networkmap_is_descendant ($node, $ascendant, $parents) {
 }
 
 // Generate a dot graph definition for graphviz
-function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12,
-	$layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0,
-	$regen = 1, $pure = 0, $id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
+function networkmap_generate_dot ($pandora_name, $group = 0,
+	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
+	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
+	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false) {
 	
 	$parents = array();
@@ -111,8 +114,9 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 				$node_count ++;
 				$agent_module = modules_get_agentmodule($key);
 				
-				$alerts_module = db_get_sql('SELECT count(*) as num
-					FROM talert_template_modules WHERE id_agent_module = '.$key);
+				$alerts_module = db_get_sql('SELECT count(*) AS num
+					FROM talert_template_modules
+					WHERE id_agent_module = '.$key);
 				
 				// Save node parent information to define edges later
 				$parents[$node_count] = $agent_module['parent'] = $agent['id_node'];
@@ -128,7 +132,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 	}
 	
 	// Create void statistics array
-	$stats = array();	
+	$stats = array();
 	
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
@@ -495,7 +499,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 	
 	// Set node status
 	switch($status) {
-		case 0: 
+		case 0:
 			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
@@ -743,7 +747,7 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 			break;
 	}
 	
-	if ($networkmaps_raw === false){
+	if ($networkmaps_raw === false) {
 		return false;
 	}
 	

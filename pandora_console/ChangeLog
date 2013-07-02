@@ -1,3 +1,10 @@
+2013-07-02 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_networkmap.php,
+	operation/agentes/networkmap.topology.php,
+	operation/agentes/networkmap.groups.php,
+	operation/agentes/networkmap.php: improved the source code style.
+
 2013-07-01 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/menu.php, include/functions_menu.php: fixed the entry

@@ -44,7 +44,7 @@ if ($delete_networkmap) {
 	$message = ui_print_result_message ($result,
 		__('Network map deleted successfully'),
 		__('Could not delete network map'), '', true);
-		
+	
 	echo $message;
 	
 	$id_networkmap = 0;
@@ -252,6 +252,7 @@ if (!empty($name)) {
 ui_print_page_header (__('Network map') . " - " . $title,
 	"images/bricks.png", false, "network_map", false, $buttons);
 
+
 if ($delete_networkmap || $add_networkmap || $save_networkmap) {
 	echo $message;
 }
@@ -311,7 +312,10 @@ if ($activeTab == 'groups') {
 
 if ($activeTab == 'policies') {
 	$options_form .= '<td valign="top">' . __('Depth') . '<br />';
-	$depth_levels = array('all' => __('All'), 'agent' => __('Agents'), 'policy' => __('Policies'));
+	$depth_levels = array(
+		'all' => __('All'),
+		'agent' => __('Agents'),
+		'policy' => __('Policies'));
 	$options_form .= html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
 	$options_form .= '</td>';
 }
@@ -328,7 +332,7 @@ if (($activeTab == 'groups' || $activeTab == 'policies') &&
 	$options_form .= '<td valign="top">' . __('Only modules with alerts') . '<br />';
 	$options_form .= html_print_checkbox ('modwithalerts', '1', $modwithalerts, true);
 	$options_form .= '</td>';
-
+	
 	if ($activeTab == 'groups') {
 		if ($config['enterprise_installed']) {
 			$options_form .= '<td valign="top">' . __('Hide policy modules') . '<br />';
@@ -356,7 +360,7 @@ if ($pure == "1") {
 		'2.5' => 'x5',
 		'5' => 'x10',
 	);
-
+	
 	$options_form .= '<td valign="top">' . __('Zoom') . '<br />';
 	$options_form .= html_print_select ($zoom_array, 'zoom', $zoom, '', '', '', true, false, false, false);
 	$options_form .= '</td>';

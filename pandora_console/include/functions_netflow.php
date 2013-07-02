@@ -1165,7 +1165,7 @@ function netflow_xml_report ($id, $start_date, $end_date, $interval_length = 0) 
 		
 		echo "  </report_item>\n";
 	}
-	echo "</report>\n"; 
+	echo "</report>\n";
 }
 
 /**
@@ -1301,7 +1301,7 @@ function netflow_summary_xml ($data) {
 
 /**
  * Return a string describing the given unit.
- *
+ * 
  * @param string Netflow unit.
  */
 function netflow_format_unit ($unit) {
@@ -1325,7 +1325,7 @@ function netflow_format_unit ($unit) {
 
 /**
  * Return a string describing the given aggregate.
- *
+ * 
  * @param string Netflow aggregate.
  */
 function netflow_format_aggregate ($aggregate) {

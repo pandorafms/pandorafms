@@ -45,6 +45,7 @@ if ($delete_networkmap) {
 		__('Network map deleted successfully'),
 		__('Could not delete network map'), '', true);
 	
+	
 	$id_networkmap = 0;
 }
 
@@ -207,6 +208,7 @@ $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
 		html_print_image("images/op_network.png", true, array ("title" => __('Topology view'))) .'</a>');
 
+
 $combolist = '<form name="query_sel" method="post" action="index.php?sec=network&sec2=operation/agentes/networkmap">';
 
 $combolist .= html_print_select($networkmaps, 'id_networkmap', $id_networkmap, 'onchange:this.form.submit()', __('No selected'), 0, true, false, false, '', false, 'margin-top:4px; margin-left:3px; width:150px;');
@@ -324,6 +326,7 @@ if ($activeTab == 'policies') {
 	$table->data[0][] = __('Depth') . '&nbsp;' .
 		html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
 }
+
 $table->data[1][] = __('No Overlap') . '&nbsp;' .
 	html_print_checkbox ('nooverlap', '1', $nooverlap, true);
 
@@ -344,6 +347,7 @@ $table->data[1][] = __('Simple') . '&nbsp;' .
 
 $table->data[1][] = __('Regenerate') . '&nbsp;' .
 	html_print_checkbox ('regen', '1', $regen, true);
+
 if ($pure == "1") {
 	// Zoom
 	$zoom_array = array (
@@ -357,6 +361,7 @@ if ($pure == "1") {
 	
 	$table->data[1][] = __('Zoom') . '&nbsp;' .
 		html_print_select ($zoom_array, 'zoom', $zoom, '', '', '', true, false, false, false);
+	
 }
 
 if ($nooverlap == 1) {

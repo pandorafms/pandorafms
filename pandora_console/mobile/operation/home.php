@@ -76,6 +76,11 @@ class Home {
 					'text' => __('Modules'),
 					'href' => 'index.php?page=modules');
 			$ui->contentAddHtml($ui->createButton($options));
+			$options = array('icon' => 'star',
+					'pos' => 'right',
+					'text' => __('Networkmaps'),
+					'href' => 'index.php?page=networkmaps');
+			$ui->contentAddHtml($ui->createButton($options));
 		$ui->endContent();
 		$ui->showPage();
 		return;

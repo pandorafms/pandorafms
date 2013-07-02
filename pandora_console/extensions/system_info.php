@@ -167,7 +167,7 @@ function show_logfile($file_name, $numLines = 2000) {
 
 function logFilesLines($file_name, $numLines) {
 	global $config;
-
+	
 	if (!file_exists($file_name)){
 		return '';
 	} 
@@ -238,7 +238,7 @@ function show_array($title, $anchor, $array = array()) {
 
 function mainSystemInfo() {
 	global $config;
-
+	
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
@@ -324,9 +324,9 @@ function mainSystemInfo() {
 		@unlink($zipArchive);
 		
 		$url_zip = ui_get_full_url(false);
-
+		
 		$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('download here') . '</a>';
-
+		
 		if($log_info || $system_info || $pandora_diag) {
 			echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
 			echo '<b>' . __('Location:') . '</b> ' . $zipArchive . '<br />';
@@ -334,7 +334,7 @@ function mainSystemInfo() {
 		else {
 			echo __('No selected');
 		}
-    	
+		
 		$zip = new ZipArchive;
 		
 		if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {
@@ -488,7 +488,7 @@ function consoleMode() {
 				fclose($file);
 			}
 		}
-			
+		
 		if ($pandoraSystemInfo) {
 			$systemInfo = array();
 			getSystemInfo($systemInfo, true);
@@ -558,7 +558,7 @@ function consoleMode() {
 				fwrite($file, $output);
 				fclose($file);
 			}
-
+			
 			$file = fopen($tempDir . 'my.cnf', 'w');
 			if ($file !== false) {
 				ob_start();
@@ -567,7 +567,7 @@ function consoleMode() {
 				fwrite($file, $output);
 				fclose($file);
 			}
-
+			
 			$file = fopen($tempDir . 'pandora_server.conf', 'w');
 			if ($file !== false) {
 				ob_start();

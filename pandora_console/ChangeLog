@@ -1,5 +1,22 @@
 2013-07-02 Miguel de Dios <miguel.dedios@artica.es>
 
+	* extensions/system_info.php: clean source code style.
+	
+	* mobile/include/ui.class.php: fixed the selectbox for int values.
+	
+	* mobile/operation/home.php, mobile/index.php,
+	mobile/operation/networkmaps.php, mobile/operation/networkmap.php:
+	added networkmap.
+	
+	* include/functions_ui.php: added for get only the src of module
+	type.
+	
+	* include/functions_networkmap.php,
+	operation/agentes/networkmap.topology.php: add support for
+	networkmaps in mobile.
+
+2013-07-02 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_networkmap.php,
 	operation/agentes/networkmap.topology.php,
 	operation/agentes/networkmap.groups.php,

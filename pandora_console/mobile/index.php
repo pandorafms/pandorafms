@@ -34,6 +34,8 @@ require_once('operation/agents.php');
 require_once('operation/modules.php');
 require_once('operation/module_graph.php');
 require_once('operation/agent.php');
+require_once('operation/networkmaps.php');
+require_once('operation/networkmap.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 
 $system = System::getInstance();
@@ -141,6 +143,14 @@ switch ($action) {
 			case 'agent':
 				$agent = new Agent();
 				$agent->show();
+				break;
+			case 'networkmaps':
+				$networkmaps = new Networkmaps();
+				$networkmaps->show();
+				break;
+			case 'networkmap':
+				$networkmap = new Networkmap();
+				$networkmap->show();
 				break;
 		}
 		break;

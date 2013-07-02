@@ -520,7 +520,7 @@ class Ui {
 			
 			$selected = '';
 			if (isset($options['selected'])) {
-				if ($options['selected'] == $item_id) {
+				if ($options['selected'] === $item_id) {
 					$selected = "selected = 'selected'";
 				}
 			}

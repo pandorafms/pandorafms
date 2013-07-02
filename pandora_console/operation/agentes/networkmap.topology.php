@@ -78,6 +78,7 @@ else {
 	else {
 		fwrite ($fh, $graph);
 		$cmd = "$filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img." ".$filename_dot;
+		
 		$result = system ($cmd);
 		fclose ($fh);
 		//unlink ($filename_dot);

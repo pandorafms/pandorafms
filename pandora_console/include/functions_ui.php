@@ -1506,7 +1506,7 @@ function ui_debug ($var, $backtrace = true) {
  *
  * @return string An HTML string with the icon. Printed if return is false
  */
-function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = false, $options = true) {
+function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = false, $options = true, $src = false) {
 	global $config;
 	
 	$type = db_get_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
@@ -1519,14 +1519,18 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = 
 	if (! file_exists ($config['homedir'].'/'.$imagepath))
 		$imagepath = ENTERPRISE_DIR.'/'.$imagepath;
 	
-	if ($options){
+	if ($src) {
+		return $imagepath;
+	}
+	
+	if ($options) {
 		return html_print_image ($imagepath, $return,
 			array ("border" => 0,
 				"title" => $type["descripcion"]), false, $relative);
 	}
-	else{
-                return html_print_image ($imagepath, $return,
-                        false, false, $relative);
+	else {
+		return html_print_image ($imagepath, $return,
+				false, false, $relative);
 	}
 }
 

@@ -3359,8 +3359,8 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
  * @return string 0 when success, -1 when error, -2 if already exist
  */
 function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data, $thrash3) {
-	$new_configuration_data = base64_decode($configuration_data['data']);
-	
+	$new_configuration_data = io_safe_output(urldecode($configuration_data['data']));
+
 	// Check if exist a current module with the same name in the conf file
 	$old_configuration_data = config_agents_get_module_from_conf($id_agent, io_safe_output($module_name));
 	
@@ -3448,7 +3448,7 @@ function api_set_delete_module_in_conf($id_agent, $module_name, $thrash2, $thras
  * @return string 0 when success, 1 when no changes, -1 when error, -2 if doesnt exist
  */
 function api_set_update_module_in_conf($id_agent, $module_name, $configuration_data_serialized, $thrash3) {
-	$new_configuration_data = base64_decode($configuration_data_serialized['data']);
+	$new_configuration_data = io_safe_output(urldecode($configuration_data_serialized['data']));
 	
 	// Get current configuration
 	$old_configuration_data = config_agents_get_module_from_conf($id_agent, io_safe_output($module_name));

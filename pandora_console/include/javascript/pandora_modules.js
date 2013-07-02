@@ -125,7 +125,7 @@ function configure_modules_form () {
 					period_select_update('module_interval', data["module_interval"]);
 				}
 				
-				$("#id_module_group option[value="+data["id_module_group"]+"]").select (1);
+				$("#id_module_group").val (data["id_module_group"]);
 				
 				if (data["history_data"])
 					$("#checkbox-history_data").check ();
@@ -145,7 +145,7 @@ function configure_modules_form () {
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				if ($("#id_category").is("select")) {
-					$("#id_category option[value="+data["id_category"]+"]").select (1);
+					$("#id_category").val (data["id_category"]);
 				}
 				else {
 					$("#hidden-id_category").val(data["id_category"]);
@@ -282,10 +282,12 @@ function configure_modules_form () {
 				$("#text-snmp_community").attr ("value", js_html_entity_decode (data["snmp_community"]));
 				$("#text-snmp_oid").attr ("value", js_html_entity_decode (data["snmp_oid"])).show ();
 				$("#oid, img#edit_oid").hide ();
-				$("#id_module_group option[value="+data["id_module_group"]+"]").select (1);
+				$("#id_module_group").val (data["id_module_group"]);
 				$("#max_timeout").attr ("value", data["max_timeout"]);
 				$("#max_retries").attr ("value", data["max_retries"]);
-				$("#id_plugin option[value="+data["id_plugin"]+"]").select (1);
+				if (data["id_plugin"] != undefined) {
+					$("#id_plugin").val(data["id_plugin"]);
+				}
 				$("#id_plugin").trigger('change');
 				$("#text-plugin_user").attr ("value", js_html_entity_decode (data["plugin_user"]));
 				$("#password-plugin_pass").attr ("value", js_html_entity_decode (data["plugin_pass"]));
@@ -302,13 +304,13 @@ function configure_modules_form () {
 				$("#text-str_critical").attr ("value", data["str_critical"]);
 				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
 				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
-				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])
+				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"]);
 				$("#text-critical_inverse").attr ("value", (data["critical_inverse"] == 0) ? 0 : data["critical_inverse"]);
 				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				if ($("#id_category").is("select")) {
-					$("#id_category option[value="+data["id_category"]+"]").select (1);
+					$("#id_category").val (data["id_category"]);
 				}
 				else {
 					$("#hidden-id_category").val(data["id_category"]);
@@ -365,13 +367,13 @@ function configure_modules_form () {
 				}
 				
 				if (data["type"] >= 15 && data["type"] <= 18) {
-					$("#snmp_version option[value="+data["tcp_send"]+"]").select(1);
+					$("#snmp_version").val(data["tcp_send"]);
 					$("#text-snmp3_auth_user").val(data["plugin_user"]);
 					$("#text-snmp3_auth_pass").val(data["plugin_pass"]);
-					$("#snmp3_auth_method option[value="+data["plugin_parameter"]+"]").select(1);
-					$("#snmp3_privacy_method option[value="+data["custom_string_1"]+"]").select(1);
+					$("#snmp3_auth_method").val(data["plugin_parameter"]);
+					$("#snmp3_privacy_method").val(data["custom_string_1"]);
 					$("#text-snmp3_privacy_pass").val(data["custom_string_2"]);
-					$("#snmp3_security_level option[value="+data["custom_string_3"]+"]").select(1);
+					$("#snmp3_security_level").val(data["custom_string_3"]);
 					
 					if (data["tcp_send"] == "3") {
 						$("#simple-field_snmpv3_row1").attr("style", "");

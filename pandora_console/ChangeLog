@@ -1,3 +1,8 @@
+2013-07-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_modules.js: Fixed deprecated way
+	of activate a select option from jquery for bug #2299
+
 2013-07-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

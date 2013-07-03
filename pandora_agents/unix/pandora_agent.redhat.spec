@@ -86,7 +86,8 @@ if [ ! -e /etc/pandora/collections ]; then
 fi
 
 mkdir -p /var/spool/pandora/data_out
-chkconfig pandora_agent_daemon on
+/sbin/chkconfig --add pandora_agent_daemon
+/sbin/chkconfig pandora_agent_daemon on
 
 %preun
 
@@ -95,7 +96,7 @@ if [ "$1" = "1" ]; then
 	exit 0
 fi
 
-chkconfig --del pandora_agent_daemon 
+/sbin/chkconfig --del pandora_agent_daemon 
 /etc/init.d/pandora_agent_daemon stop
 rm /etc/init.d/pandora_agent_daemon
 /usr/sbin/userdel pandora

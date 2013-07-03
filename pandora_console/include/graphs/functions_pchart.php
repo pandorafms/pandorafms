@@ -393,6 +393,12 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	$water_mark_height = 0;
 	$water_mark_width = 0;
 	if (!empty($water_mark)) {
+		if (is_array($water_mark)) {
+			if (!empty($water_mark['file'])) {
+				$water_mark = $water_mark['file'];
+			}
+		}
+		
 		$size_water_mark = getimagesize($water_mark);
 		$water_mark_height = $size_water_mark[1];
 		$water_mark_width = $size_water_mark[0];
@@ -404,6 +410,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	
 	/* Create the pPie object */ 
 	$PieChart = new pPie($myPicture,$MyData);
+	
 	
 	/* Draw an AA pie chart */
 	switch($graph_type) {

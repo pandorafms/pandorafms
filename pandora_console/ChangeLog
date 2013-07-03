@@ -1,5 +1,13 @@
 2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/graphs/fgraph.php, mobile/operation/agent.php: change
+	the source code style to make more easy the merges with the trunk.
+	
+	* include/graphs/functions_pchart.php: fixed the water mark for
+	pie graph as image.
+
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
+
 	* mobile/operation/networkmap.php: fixed the scroll for browser
 	upper that microshit IE and equal as browser of Android 2.2.
 

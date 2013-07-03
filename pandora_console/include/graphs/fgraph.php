@@ -195,6 +195,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 	$legend = array(), $xaxisname = "", $yaxisname = "", $homedir="",
 	$water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $reduce_data_columns = false) {
 	
+	
 	if($flash_chart) {
 		// Url encode the legend to avoid eliminate weird symbols like %, &...
 		foreach($legend as $i => $v) {
@@ -234,6 +235,7 @@ function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
+	
 	
 	// ATTENTION: The min size is 130x150 
 	// It's not the same minsize for all graphs, but we are choosed a prudent minsize for all
@@ -284,6 +286,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
 	
+	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -321,6 +324,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
 	
+	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -336,6 +340,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index, $font_size);
 	}
 	else {
+		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
@@ -357,6 +362,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
+	
 	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
@@ -414,6 +420,8 @@ function polar_graph($flash_chart, $chart_data, $width, $height, $no_data_image,
 function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $force_height = true,
 	$homedir="", $water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $return = false) {
+	
+	
 	if($flash_chart) {
 		// Url encode the legend to avoid eliminate weird symbols like %, &...
 		foreach($legend as $i => $v) {
@@ -467,6 +475,8 @@ function pie2d_graph($flash_chart, $chart_data, $width, $height,
 function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
 	$font_size = '', $ttl = 1) {
+	
+	
 	// This library allows only 8 colors
 	$max_values = 5;
 	
@@ -506,6 +516,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 		}
 	}
 	else {
+		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;

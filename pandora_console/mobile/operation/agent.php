@@ -30,7 +30,7 @@ class Agent {
 		if (!empty($this->agent)) {
 			$this->agent = $this->agent[0];
 			
-		
+			
 			if ($system->checkACL('AR', $this->agent['id_grupo'])) {
 				$this->correct_acl = true;
 			}

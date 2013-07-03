@@ -1,3 +1,8 @@
+2013-07-03  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/snmpconsole/snmp_alert.php: Fixed malfunction of the
+	macros javascript in snmp alert editor
+
 2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 
 	* mobile/include/style/main.css: some fix for the module list

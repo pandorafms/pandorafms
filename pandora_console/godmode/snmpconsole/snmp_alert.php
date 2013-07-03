@@ -351,7 +351,7 @@ if (isset ($_GET["update_alert"])) {
 	html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
 	
 	for ($i=1; $i<=10; $i++) {
-		echo '<tr id="table1-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
+		echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
 		echo '<td class="datos">'.html_print_image('images/spinner.gif',true);
 		html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
 		echo '</td></tr>';
@@ -561,22 +561,22 @@ $(document).ready (function () {
 					
 					// If the row is empty, hide de row
 					if(data["fields_rows"][i] == '') {
-						$('#table1-field'+i).hide();
+						$('#table_macros-field'+i).hide();
 					}
 					else {
-						$('#table1-field'+i).replaceWith(data["fields_rows"][i]);
+						$('#table_macros-field'+i).replaceWith(data["fields_rows"][i]);
 						
 						// The row provided has a predefined class. We delete it
-						$('#table1-field'+i).removeAttr('class');
+						$('#table_macros-field'+i).removeAttr('class');
 						
 						// Add help hint only in first field
 						if(i == 1) {
-							var td_content = $('#table1-field'+i).find('td').eq(0);
+							var td_content = $('#table_macros-field'+i).find('td').eq(0);
 							td_content.html(td_content.html() + $('#help_snmp_alert_hint').html());
 						}
 						
 						$("[name=field"+i+"_value]").val(old_value);
-						$('#table1-field').show();
+						$('#table_macros-field').show();
 					}
 				}
 			},

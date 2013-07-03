@@ -538,7 +538,7 @@ table#list_events th {
 	color: #000000 !important;
 }
 
-@media screen and (max-width: 35em) {
+@media screen and (max-width: 320px) {
 	#list_Modules_Embedded .cell_1 .ui-table-cell-label,
 	#list_Modules_Embedded .cell_6 .ui-table-cell-label {
 		min-width: auto !important;

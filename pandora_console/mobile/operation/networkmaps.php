@@ -12,7 +12,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+ob_start();
 require_once ('../include/functions_networkmap.php');
+ob_get_clean(); //Fixed unused javascript code.
 
 class Networkmaps {
 	private $correct_acl = false;

@@ -1,5 +1,14 @@
 2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 
+	* mobile/include/style/main.css: some fix for the module list
+	when it is embedded in agent view, now it is show in Android but
+	I need work more for to show in the jobs fashion gadget.
+	
+	* mobile/operation/networkmaps.php: fixed to avoid
+	unused the javascript for mobile.
+
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/graphs/fgraph.php, mobile/operation/agent.php: change
 	the source code style to make more easy the merges with the trunk.
 	

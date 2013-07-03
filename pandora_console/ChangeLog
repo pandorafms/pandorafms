@@ -1,3 +1,9 @@
+2013-07-03  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/users/configure_user.php: improve the meta
+	setup screen hidding assigned server field when the
+	agent management is not checked
+
 2013-07-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php: Changed the way of encode

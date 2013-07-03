@@ -212,9 +212,9 @@ class Networkmap {
 					
 					return;
 				}
-				 $ui->contentAddHtml('<div style="overflow: scroll; width: 100%; text-align: center;">');
-				 $ui->contentAddHtml('<img src="' . $url_img . '" />');
-				 $ui->contentAddHtml('</div>');
+				$ui->contentAddHtml('<div style="width: auto; overflow-x: auto; text-align: center;">');
+				$ui->contentAddHtml('<img src="' . $url_img . '" />');
+				$ui->contentAddHtml('</div>');
 			}
 			else {
 				$ui->contentAddHtml('<p style="color: #ff0000;">' . __('Map could not be generated') . '</p>');

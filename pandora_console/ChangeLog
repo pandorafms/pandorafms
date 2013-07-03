@@ -1,5 +1,10 @@
 2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 
+	* mobile/operation/networkmap.php: fixed the scroll for browser
+	upper that microshit IE and equal as browser of Android 2.2.
+
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_ui.php: improved the source code style for to
 	make more easy the merges between the trunk.
 	

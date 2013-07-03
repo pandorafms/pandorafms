@@ -134,12 +134,8 @@ if (check_acl ($config['id_user'], 0, "IW") and $config['metaconsole'] == 0) {
 	if ($config['activate_gis']) {
 		$menu_godmode["godgismaps"]["text"] = __('GIS Maps builder');
 		$menu_godmode["godgismaps"]["sec2"] = "godmode/gis_maps/index";
-		if (!empty($config['refr'])) {
-			$menu_godmode["godgismaps"]["refr"] = $config['refr'];
-		}
-		else {
-			$menu_godmode["godgismaps"]["refr"] = 60;
-		}
+		$menu_godmode["godgismaps"]["refr"] = 0;
+		
 		$menu_godmode["godgismaps"]["id"] = "god-gismaps";
 	}
 }
@@ -248,12 +244,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 					if (strlen($extmenu['fatherId']) > 0 and (($config['metaconsole'] == 0) or (array_key_exists($extension_menu['fatherId'], $menu_godmode)))) {
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
 						if ($extmenu["name"] != 'DB interface') {
-							if (!empty($config['refr'])) {
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
-							}
-							else {
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
-							}
+							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
 						}
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';

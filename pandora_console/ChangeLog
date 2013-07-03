@@ -1,3 +1,9 @@
+2013-07-03  Sancho Lerena <slerena@artica.es>
+
+	* operation/menu.php
+        godmode/menu.php: removed some autorefresh initial values on listing 
+	menus.
+
 2013-07-02 Miguel de Dios <miguel.dedios@artica.es>
 
 	* extensions/system_info.php: clean source code style.

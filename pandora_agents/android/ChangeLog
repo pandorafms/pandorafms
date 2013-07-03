@@ -1,4 +1,9 @@
-2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* Pandroid Agent v3.0_iso-8859-1.apk, Pandroid Agent v3.0_UTF8.apk:
+	removed deprecated packages.
+
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* AndroidManifest.xml: fixed small warning.
 

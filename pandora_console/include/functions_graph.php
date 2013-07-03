@@ -452,7 +452,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 
 function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$width, $height , $title = '', $unit_name = null,
-	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '', 
+	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '',
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
 	$show_unknown = false) {
@@ -468,6 +468,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	global $critical_min;
 	global $graphic_type;
 	global $max_value;
+	
 	
 	$chart = array();
 	$color = array();
@@ -1213,6 +1214,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$flash_charts = false;
 	}
 	
+	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
@@ -1273,6 +1275,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return = false) {
 	global $config;
 	global $graphic_type;
+	
 	
 	$data = array ();
 	
@@ -1670,6 +1673,7 @@ function grafico_db_agentes_paquetes($width = 380, $height = 300) {
 	global $config;
 	global $graphic_type;
 	
+	
 	$data = array ();
 	$legend = array ();
 	
@@ -1701,6 +1705,7 @@ function grafico_db_agentes_paquetes($width = 380, $height = 300) {
 function graph_db_agentes_modulos($width, $height) {
 	global $config;
 	global $graphic_type;
+	
 	
 	$data = array ();
 	
@@ -2332,6 +2337,7 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 	
 	$flash_charts = $config['flash_charts'];
 	
+	
 	if ($only_image) {
 		$flash_charts = false;
 	}
@@ -2372,6 +2378,7 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false) {
 	global $config;
 	global $graphic_type;
+	
 	
 	$data = array ();
 	
@@ -2463,6 +2470,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 // Prints an error image
 function fs_error_image ($width = 300, $height = 110) {
 	global $config;
+	
 	return graph_nodata_image($width, $height, 'area');
 }
 
@@ -2868,12 +2876,13 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	global $long_index;
 	global $series_type;
 	global $chart_extra_data;
-
+	
 	if (empty($unit_name)) {
 		$unit = modules_get_unit($agent_module_id);
 	}
 	else
 		$unit = $unit_name;
+	
 	
 	$series_suffix_str = '';
 	if ($compare !== false) {
@@ -2963,6 +2972,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 		return;
 	}
 	
+	
 	if ($period <= SECONDS_6HOURS) {
 		$chart_time_format = 'H:i:s';
 	}
@@ -3001,6 +3011,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 		}
 	}
 	
+	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
@@ -3015,6 +3026,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
+	
 	
 	return area_graph($flash_chart, $chart, $width, $height, array (), $sources,
 		array (), "images/image_problem.opaque.png", "", $unit, $homeurl,
@@ -3156,6 +3168,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	global $config;
 	global $graphic_type;
 	global $max_value;
+	
 	
 	// Set variables
 	if ($date == 0)
@@ -3574,6 +3587,7 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 	
 	$adjust_time = SECONDS_1MINUTE;
 	
+
 	if ($periodo == SECONDS_1DAY)
 		$adjust_time = SECONDS_1HOUR;
 	elseif ($periodo == SECONDS_1WEEK)
@@ -3879,6 +3893,7 @@ function grafico_modulo_log4x_format_x_axis ( $number , $decimals=2, $dec_point=
 
 function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
 {
+	
 	switch ($number) {
 		case 6:
 			return "FATAL";
@@ -3902,6 +3917,7 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
 			return "";
 			break;
 	}
+	
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text = '') {

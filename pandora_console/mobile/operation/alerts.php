@@ -33,7 +33,7 @@ class Alerts {
 	function __construct() {
 		$this->alert_status_items = array(
 			'all_enabled' => __('All (Enabled)'),
-			'all' => __('All'), 
+			'all' => __('All'),
 			'fired' => __('Fired'),
 			'notfired' => __('Not fired'),
 			'disabled' => __('Disabled'));
@@ -136,7 +136,12 @@ class Alerts {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Alerts"));
+		$ui->createDefaultHeader(__("PandoraFMS: Alerts"),
+			$ui->createHeaderButton(
+					array('icon' => 'back',
+						'pos' => 'left',
+						'text' => __('Back'),
+						'href' => 'index.php')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$filter_title = sprintf(__('Filter Alerts by %s'),

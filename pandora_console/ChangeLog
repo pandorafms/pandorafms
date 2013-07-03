@@ -1,3 +1,16 @@
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
+
+	* mobile/operation/events.php, mobile/operation/module_graph.php,
+	mobile/operation/modules.php, mobile/operation/networkmaps.php,
+	mobile/operation/groups.php, mobile/operation/agents.php,
+	mobile/operation/tactical.php, mobile/operation/networkmap.php,
+	mobile/operation/alerts.php, mobile/operation/agent.php,
+	mobile/include/ui.class.php: added the back button in the head and
+	impoved the source code style to make more easy the merges with
+	the last branch.
+	
+	* include/functions_graph.php: fixed PHP notices.
+
 2013-07-03  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/snmpconsole/snmp_alert.php: Fixed malfunction of the

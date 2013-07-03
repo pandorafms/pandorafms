@@ -17,6 +17,7 @@ class ModuleGraph {
 	private $acl = "AR";
 	
 	private $id = 0;
+	private $id_agent = 0;
 	private $graph_type = "sparse";
 	private $period = SECONDS_1DAY;
 	private $draw_events = 0;
@@ -50,6 +51,7 @@ class ModuleGraph {
 		$system = System::getInstance();
 		
 		$this->id = (int)$system->getRequest('id', 0);
+		$this->id_agent = (int)$system->getRequest('id_agent', 0);
 		$this->module = modules_get_agentmodule($this->id);
 		$this->graph_type = return_graphtype($this->module["id_tipo_modulo"]);
 		
@@ -81,7 +83,7 @@ class ModuleGraph {
 		$this->height = (int)$system->getRequest('height', 0);
 		
 		//Sancho says "put the height to 1/2 for to make more beautyful"
-		$this->height = $this->height / 2;
+		//$this->height = $this->height / 2;
 		
 		$this->height -= 80; //Correct the height
 		
@@ -128,16 +130,27 @@ class ModuleGraph {
 					ob_start();
 					switch ($this->graph_type) {
 						case 'boolean':
-							$graph = grafico_modulo_boolean ($this->id,
-								$this->period, $this->draw_events,
-								$this->width, $this->height,
-								$label, $unit, $this->draw_alerts,
-								$this->avg_only, false, $date, false,
-								$urlImage, 'adapter_' . $this->graph_type,
-								$time_compare, $this->unknown_graph);
+							$graph = grafico_modulo_boolean (
+								$this->id,
+								$this->period,
+								$this->draw_events,
+								$this->width,
+								$this->height,
+								$label,
+								$unit,
+								$this->draw_alerts,
+								$this->avg_only,
+								false,
+								$date,
+								false,
+								$urlImage,
+								'adapter_' . $this->graph_type,
+								$time_compare,
+								$this->unknown_graph);
 							if ($this->draw_events) {
 								$graph .= '<br>';
-								$graph .= graphic_module_events($this->id,
+								$graph .= graphic_module_events(
+									$this->id,
 									$this->width, $this->height,
 									$this->period, $config['homeurl'],
 									$this->zoom,
@@ -145,13 +158,26 @@ class ModuleGraph {
 							}
 							break;
 						case 'sparse':
-							$graph = grafico_modulo_sparse ($this->id,
-								$this->period, $this->draw_events,
-								$this->width, $this->height,
-								$label, null, $this->draw_alerts,
-								$this->avg_only, false, $date, $unit,
-								$this->baseline, 0, true, false,
-								$urlImage, 1, false,
+							$graph = grafico_modulo_sparse(
+								$this->id,
+								$this->period,
+								$this->draw_events,
+								$this->width,
+								$this->height,
+								$label,
+								null,
+								$this->draw_alerts,
+								$this->avg_only,
+								false,
+								$date,
+								$unit,
+								$this->baseline,
+								0,
+								true,
+								false,
+								$urlImage,
+								1,
+								false,
 								'adapter_' . $this->graph_type,
 								$time_compare, $this->unknown_graph);
 							if ($this->draw_events) {
@@ -163,11 +189,20 @@ class ModuleGraph {
 							}
 							break;
 						case 'string':
-							$graph = grafico_modulo_string ($this->id,
-								$this->period, $this->draw_events,
-								$this->width, $this->height,
-								$label, null, $this->draw_alerts, 1,
-								false, $date, false, $urlImage,
+							$graph = grafico_modulo_string(
+								$this->id,
+								$this->period,
+								$this->draw_events,
+								$this->width,
+								$this->height,
+								$label,
+								null,
+								$this->draw_alerts,
+								1,
+								false,
+								$date,
+								false,
+								$urlImage,
 								'adapter_' . $this->graph_type);
 							if ($this->draw_events) {
 								$graph .= '<br>';
@@ -178,11 +213,18 @@ class ModuleGraph {
 							}
 							break;
 						case 'log4x':
-							$graph = grafico_modulo_log4x ($this->id,
-								$this->period, $this->draw_events,
-								$this->width, $this->height,
-								$label, $unit_name, $this->draw_alerts,
-								1, $pure, $date);
+							$graph = grafico_modulo_log4x(
+								$this->id,
+								$this->period,
+								$this->draw_events,
+								$this->width,
+								$this->height,
+								$label,
+								$unit_name,
+								$this->draw_alerts,
+								1,
+								$pure,
+								$date);
 							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,
@@ -291,7 +333,24 @@ class ModuleGraph {
 		
 		$ui->createPage();
 		
-		$ui->createDefaultHeader(sprintf(__("PandoraFMS: %s"), $this->module["nombre"]));
+		if ($this->id_agent) {
+			$ui->createDefaultHeader(
+				sprintf(__("PandoraFMS: %s"), $this->module["nombre"]),
+				$ui->createHeaderButton(
+						array('icon' => 'back',
+							'pos' => 'left',
+							'text' => __('Back'),
+							'href' => 'index.php?page=agent&id=' . $this->id_agent)));
+		}
+		else {
+			$ui->createDefaultHeader(
+				sprintf(__("PandoraFMS: %s"), $this->module["nombre"]),
+				$ui->createHeaderButton(
+						array('icon' => 'back',
+							'pos' => 'left',
+							'text' => __('Back'),
+							'href' => 'index.php?page=modules')));
+		}
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentAddHtml($ui->getInput(array(
@@ -359,6 +418,7 @@ class ModuleGraph {
 						'step' => 4
 						);
 					$ui->formAddSlider($options);
+					
 					
 					$options = array(
 						'name' => 'start_date',

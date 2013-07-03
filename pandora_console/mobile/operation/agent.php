@@ -30,7 +30,7 @@ class Agent {
 		if (!empty($this->agent)) {
 			$this->agent = $this->agent[0];
 			
-		
+			
 			if ($system->checkACL('AR', $this->agent['id_grupo'])) {
 				$this->correct_acl = true;
 			}
@@ -68,7 +68,13 @@ class Agent {
 		if ($this->id != 0) {
 			$agent_name = (string) agents_get_name ($this->id);
 			
-			$ui->createDefaultHeader(sprintf(__("PandoraFMS: %s"), $agent_name));
+			$ui->createDefaultHeader(
+				sprintf(__("PandoraFMS: %s"), $agent_name),
+				$ui->createHeaderButton(
+					array('icon' => 'back',
+						'pos' => 'left',
+						'text' => __('Back'),
+						'href' => 'index.php?page=agents')));
 		}
 		else {
 			$ui->createDefaultHeader(__("PandoraFMS: Agents"));
@@ -124,7 +130,8 @@ class Agent {
 					$graph_js = ob_get_clean();
 					$html = $graph_js . $html;
 					$html .= "<b>" . __('Events (24h)') . "</b><br />";
-					$html .= graph_graphic_agentevents ($this->id, 250, 15, 86400, '', true);
+					$html .= graph_graphic_agentevents(
+						$this->id, 250, 15, 86400, '', true);
 				$ui->contentGridAddCell($html);
 				$ui->contentEndGrid();
 				

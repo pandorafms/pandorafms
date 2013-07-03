@@ -483,7 +483,12 @@ class Events {
 		$ui->addDialog($options);
 		
 		
-		$ui->createDefaultHeader(__("PandoraFMS: Events"));
+		$ui->createDefaultHeader(__("PandoraFMS: Events"),
+				$ui->createHeaderButton(
+					array('icon' => 'back',
+						'pos' => 'left',
+						'text' => __('Back'),
+						'href' => 'index.php')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");
@@ -661,7 +666,7 @@ class Events {
 		}
 		
 		if ($this->id_agent > 0) {
-			$sql_post = " AND id_agente = " . $this->id_agent;
+			$sql_post .= " AND id_agente = " . $this->id_agent;
 		}
 		
 		// Skip system messages if user is not PM

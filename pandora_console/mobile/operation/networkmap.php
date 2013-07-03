@@ -80,8 +80,14 @@ class Networkmap {
 		$system = System::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(sprintf(__("PandoraFMS: Networkmap %s"),
-			$this->network_map['name']));
+		$ui->createDefaultHeader(
+			sprintf(__("PandoraFMS: Networkmap %s"),
+			$this->network_map['name']),
+			$ui->createHeaderButton(
+				array('icon' => 'back',
+					'pos' => 'left',
+					'text' => __('Back'),
+					'href' => 'index.php?page=networkmaps')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			

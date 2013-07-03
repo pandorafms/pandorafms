@@ -499,6 +499,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	else
 		$icon = "world";
 	
+	
 	$output = '';
 	
 	// Don't show link in metaconsole
@@ -575,7 +576,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 	if ($networkmap) {
 		$subfolter = 'networkmap';
 	}
-
+	
 	$icon = (string) db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
@@ -1738,7 +1739,7 @@ function ui_debug ($var, $backtrace = true) {
  *
  * @return string An HTML string with the icon. Printed if return is false
  */
-function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = false, $options = true) {
+function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = false, $options = true, $src = false) {
 	global $config;
 	
 	$type = db_get_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
@@ -1750,6 +1751,10 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = 
 	$imagepath = 'images/'.$type["icon"];
 	if (! file_exists ($config['homedir'].'/'.$imagepath))
 		$imagepath = ENTERPRISE_DIR.'/'.$imagepath;
+	
+	if ($src) {
+		return $imagepath;
+	}
 	
 	if ($options) {
 		return html_print_image ($imagepath, $return,

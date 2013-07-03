@@ -506,7 +506,7 @@ if($meta) {
 	$table->data['metaconsole_agents_manager'] = $data;
 		
 	$data = array();
-	$data[0] = __('Assigned node'). ui_print_help_tip(__('Server where the agents managed of this user will be placed'), true);
+	$data[0] = __('Assigned node'). ui_print_help_tip(__('Server where the agents created of this user will be placed'), true);
 	$servers = metaconsole_get_servers();
 	$servers_for_select = array();
 	foreach($servers as $server) {
@@ -663,7 +663,17 @@ $(document).ready (function () {
 		}
 	});
 	
+	$('#checkbox-metaconsole_agents_manager').change(function() {
+		if($('#checkbox-metaconsole_agents_manager').prop('checked')) {			
+			$('#user_configuration_table-metaconsole_assigned_server').show();
+		}
+		else {			
+			$('#user_configuration_table-metaconsole_assigned_server').hide();
+		}
+	});
+	
 	$('input:radio[name="is_admin"]').trigger('change');
+	$('#checkbox-metaconsole_agents_manager').trigger('change');
 });
 /* ]]> */
 </script>

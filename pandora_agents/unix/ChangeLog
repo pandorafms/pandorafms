@@ -1,3 +1,8 @@
+2013-07-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent.redhat.spec: Make absolute calls to chkconfig. Add the
+	  service before enabling it.
+
 2013-06-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent.redhat.spec,

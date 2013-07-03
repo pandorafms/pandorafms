@@ -2771,6 +2771,23 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 		}
 
+		# Assign default values to the _snmp_fx_ macros from variable bindings
+		my @custom_values = split ("\t", $trap_custom_oid);
+		for (my $i = 1; $i <= 6; $i++) {
+			my $macro_name = '_snmp_f' . $i . '_';
+			
+			last if (! defined ($custom_values[$i-1]));	
+			if ($custom_values[$i-1] =~ m/= \S+: (.*)/) {
+				my $value = $1;
+				
+				# Strip leading and trailing double quotes
+				$value =~ s/^"//;
+				$value =~ s/"$//;
+				
+				$macros{$macro_name} = $value;
+			}
+		}
+
 		# Evaluate _snmp_fx_ macros
 		for (my $i = 1; $i <= 6; $i++) {
 			my $macro_name = '_snmp_f' . $i . '_';

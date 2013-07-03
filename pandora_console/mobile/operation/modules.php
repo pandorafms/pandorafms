@@ -165,7 +165,12 @@ class Modules {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Modules"));
+		$ui->createDefaultHeader(__("PandoraFMS: Modules"),
+			$ui->createHeaderButton(
+				array('icon' => 'back',
+					'pos' => 'left',
+					'text' => __('Back'),
+					'href' => 'index.php')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$filter_title = sprintf(__('Filter Modules by %s'),

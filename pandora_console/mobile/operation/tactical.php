@@ -49,7 +49,12 @@ class Tactical {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Tactical"));
+		$ui->createDefaultHeader(__("PandoraFMS: Tactical"),
+				$ui->createHeaderButton(
+					array('icon' => 'back',
+						'pos' => 'left',
+						'text' => __('Back'),
+						'href' => 'index.php')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentBeginGrid('responsive');
@@ -57,36 +62,7 @@ class Tactical {
 				$data['mobile'] = true;
 				
 				$formatted_data = reporting_get_stats_indicators($data, 200, 10, false);
-				/*
-				$overview = '<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' .
-							$formatted_data['server_health']['title'] . 
-						'</legend>' . 
-						$formatted_data['server_health']['graph'] . 
-					'</fieldset>' .
-					
-					'<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' .
-							$formatted_data['monitor_health']['title'] . 
-						'</legend>' . 
-						$formatted_data['monitor_health']['graph'] . 
-					'</fieldset>' .
-					
-					'</fieldset>' .
-					'<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' .
-							$formatted_data['module_sanity']['title'] . 
-						'</legend>' . 
-						$formatted_data['module_sanity']['graph'] . 
-					'</fieldset>' .
-					'</fieldset>' .
-					'<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' .
-							$formatted_data['alert_level']['title'] . 
-						'</legend>' . 
-						$formatted_data['alert_level']['graph'] . 
-					'</fieldset>';
-				*/
+				
 				$overview = '<table>
 						<tr>
 							<td>' . $formatted_data['server_health']['title'] . '</td>

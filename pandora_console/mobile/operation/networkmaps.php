@@ -98,7 +98,12 @@ class Networkmaps {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Networkmaps"));
+		$ui->createDefaultHeader(__("PandoraFMS: Networkmaps"),
+			$ui->createHeaderButton(
+				array('icon' => 'back',
+					'pos' => 'left',
+					'text' => __('Back'),
+					'href' => 'index.php')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$filter_title = sprintf(__('Filter Networkmaps by %s'),

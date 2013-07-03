@@ -1,3 +1,24 @@
+2013-07-03  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_config.php
+	include/help/en/help_custom_logo.php
+	include/help/es/help_custom_logo.php
+	include/help/ja/help_custom_logo.php
+	images/custom_logo/sourceforge.jpg
+	images/custom_logo/pandora_logo_head.jpg
+	images/custom_logo/artica_logo.png
+	images/custom_logo/sourceforge.png
+	images/custom_logo/pandora_logo_head.png
+	images/custom_logo/none.jpg
+	images/pandora_header_logo_enterprise.png
+	images/pandora_header_logo.png
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	general/header.php: Change the old system of custom logo
+	to be used in the unique logo (left side) of Pandora FMS 5
+	Bug #2241
+
 2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 
 	* mobile/index.php, mobile/operation/networkmaps.php,

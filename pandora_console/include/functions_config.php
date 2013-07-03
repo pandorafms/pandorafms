@@ -745,7 +745,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config["custom_logo"])) {
-		config_update_value ('custom_logo', 'none.png');
+		config_update_value ('custom_logo', 'pandora_logo_head.png');
 	}
 	
 	if (!isset ($config['history_db_enabled'])) {

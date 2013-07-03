@@ -1128,3 +1128,8 @@ UPDATE tagente_estado SET last_known_status = last_status, last_status = 3 WHERE
 
 ALTER TABLE tagente_datos_inc DROP COLUMN id_adi;
 
+-- ---------------------------------------------------------------------
+-- Reset custom logo in tconfig table
+-- ---------------------------------------------------------------------
+
+UPDATE tconfig SET value = 'pandora_logo_head.png' WHERE token = 'custom_logo';

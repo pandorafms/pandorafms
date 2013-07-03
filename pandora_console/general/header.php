@@ -34,12 +34,19 @@ config_check();
 		<td style="width:90%;">
 			<a href="index.php?sec=main">
 				<?php
-				if (!defined ('PANDORA_ENTERPRISE')) {
-					echo html_print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
-				}
-				else {
-					echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
-				}
+					$custom_logo = 'images/custom_logo/' . $config['custom_logo'];
+					
+					if (!defined ('PANDORA_ENTERPRISE')) {
+						$logo_title = 'Pandora FMS Opensource';
+					}
+					else {
+						if (file_exists(ENTERPRISE_DIR . '/' . $custom_logo)) {
+							$custom_logo = ENTERPRISE_DIR . '/' . $custom_logo;
+						}
+						$logo_title = 'Pandora FMS Enterprise';
+					}
+				
+					echo html_print_image($custom_logo, true, array("alt" => $logo_title, "border" => '0'));
 				?>
 			</a>
 		</td>

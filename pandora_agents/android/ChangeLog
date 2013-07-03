@@ -1,5 +1,9 @@
 2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* AndroidManifest.xml: fixed small warning.
+
+2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* .classpath, .settings, .settings/org.eclipse.jdt.core.prefs:
 	added garbage files necesaries for eclipse.
 	

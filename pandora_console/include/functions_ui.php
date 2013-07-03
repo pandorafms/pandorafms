@@ -70,6 +70,7 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 		}
 	}
 	
+	
 	if ($numChars == 0) {
 		if ($return == true) {
 			return $text;
@@ -81,12 +82,15 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 	
 	$text = io_safe_output($text);
 	if (mb_strlen($text, "UTF-8") > ($numChars)) {
-		$half_length = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
+		// '/2' because [...] is in the middle of the word.
+		$half_length = intval(($numChars - 3) / 2);
 		
 		// Depending on the strange behavior of mb_strimwidth() itself,
-		// the 3rd parameter is not to be $numChars but the length of original text (just means 'large enough').
+		// the 3rd parameter is not to be $numChars but the length of
+		// original text (just means 'large enough').
 		$truncateText2 = mb_strimwidth($text,
-			(mb_strlen($text, "UTF-8") - $half_length), mb_strlen($text, "UTF-8"), "", "UTF-8" );
+			(mb_strlen($text, "UTF-8") - $half_length),
+			mb_strlen($text, "UTF-8"), "", "UTF-8" );
 		
 		$truncateText = mb_strimwidth($text, 0,
 			($numChars - $half_length), "", "UTF-8") . $suffix;
@@ -98,10 +102,11 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 				$truncateText = $truncateText;
 			}
 			else if ($style !== false) {
-				$truncateText = '<span style="' . $style . '" title="'.$text.'">'.$truncateText.'</span>';
+				$truncateText = '<span style="' . $style . '" title="' . $text . '">' .
+					$truncateText . '</span>';
 			}
 			else {
-				$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';
+				$truncateText = '<span title="' . $text . '">' . $truncateText . '</span>';
 			}
 		}
 		if ($showTextInAToopTip) {
@@ -235,6 +240,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 				$icon_image = 'images/suc.png';
 				break;
 		}
+		
 	}
 	
 	$id = 'info_box_' . uniqid();
@@ -273,7 +279,10 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	
 	if ($return)
 		return $output;
-	echo $output;
+	else
+		echo $output;
+		
+	return '';
 }
 
 /** 
@@ -468,22 +477,26 @@ function ui_print_username ($username, $return = false) {
  * @return string HTML code if return parameter is true.
  */
 function ui_print_group_icon ($id_group, $return = false, $path = "groups_small", $style='', $link = true) {
-	if($id_group > 0)
+	if ($id_group > 0)
 		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
 		$icon = "world";
 	
-	if($style == '')
+	if ($style == '')
 		$style = 'width: 16px; height: 16px;';
 	
 	$output = '';
+	
+	
 	if ($link) 
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
 	if (empty ($icon))
 		$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;-&nbsp</span>';
-	else
-		$output .= html_print_image("images/" . $path . "/" . $icon . ".png", true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)));
+	else {
+		$output .= html_print_image("images/" . $path . "/" . $icon . ".png",
+			true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)));
+	}
 	
 	if ($link) 
 		$output .= '</a>';
@@ -511,7 +524,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 	
 	if($style == '')
 		$style = 'width: 16px; height: 16px;';
-		
+	
 	$output = '';
 	if ($link) 
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
@@ -540,7 +553,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  * 
  * @return string HTML with icon of the OS
  */
-function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false, $relative = false) {
+function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false, $relative = false, $options = false) {
 	$subfolter = 'os_icons';
 	if ($networkmap) {
 		$subfolter = 'networkmap';
@@ -550,7 +563,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
 		if ($only_src) {
-			$output = html_print_image("images/".$subfolter."/unknown.png", false, false, true, $relative);
+			$output = html_print_image("images/" . $subfolter . "/unknown.png", false, false, true, $relative);
 		}
 		else {
 			return "-";
@@ -559,7 +572,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 	
 	if ($apply_skin) {
 		if ($only_src) {
-			$output = html_print_image("images/".$subfolter."/".$icon, true, false, true, $relative);
+			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, false, true, $relative);
 		}
 		else {
 			$output = html_print_image("images/".$subfolter."/".$icon, true, array("alt" => $os_name, "title" => $os_name), false, $relative);
@@ -567,10 +580,10 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 	}
 	else
 		//$output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
-		$output = "images/".$subfolter."/" . $icon;
+		$output = "images/" . $subfolter . "/" . $icon;
 	
 	if ($name === true) {
-		$output .= ' - '.$os_name;
+		$output .= ' - ' . $os_name;
 	}
 	
 	if (!$return)
@@ -1530,7 +1543,7 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = 
 	}
 	else {
 		return html_print_image ($imagepath, $return,
-				false, false, $relative);
+			false, false, $relative);
 	}
 }
 

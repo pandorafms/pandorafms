@@ -50,6 +50,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false) {
 	
+	
 	$parents = array();
 	$orphans = array();
 	
@@ -395,6 +396,9 @@ function networkmap_create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom
 
 // Returns a group node definition
 function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
+	global $config;
+	global $hack_networkmap_mobile;
+	
 	$status = groups_get_status ($group['id_grupo']);
 	
 	// Set node status
@@ -420,7 +424,15 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 	
 	if ($simple == 0) {
 		// Set node icon
-		if (file_exists (html_print_image("images/groups_small/" . $icon . ".png", true, false, true, true))) { 
+		if ($hack_networkmap_mobile) {
+			$img_node = $config['homedir'] . "/images/groups_small/" . $icon . ".png";
+			html_debug_print($img_node, true);
+			if (!file_exists($img_node)) {
+				$img_node = '-';
+			}
+			$img_node = '<img src="' . $img_node . '" />';
+		}
+		else if (file_exists (html_print_image("images/groups_small/" . $icon . ".png", true, false, true, true))) { 
 			$img_node = html_print_image("images/groups_small/" . $icon . ".png", true, false, false, true);
 		}
 		else {

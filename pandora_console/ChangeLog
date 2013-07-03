@@ -1,3 +1,11 @@
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_ui.php: improved the source code style for to
+	make more easy the merges between the trunk.
+	
+	* include/functions_networkmap.php: fixed the icon for node
+	group in the mobile version.
+
 2013-07-03  Sancho Lerena <slerena@artica.es>
 
 	* operation/menu.php

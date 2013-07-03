@@ -1,3 +1,11 @@
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
+
+	* mobile/index.php, mobile/operation/networkmaps.php,
+	mobile/operation/networkmap.php, mobile/operation/home.php,
+	mobile/include/ui.class.php, include/functions_networkmap.php,
+	include/functions_ui.php: uploaded the some changes and files
+	for to show networkmaps in the Pandora mobile.
+
 2013-07-03  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/users/configure_user.php: improve the meta
@@ -8,6 +16,25 @@
 
 	* include/functions_api.php: Changed the way of encode
 	data configuration in create/update config form API
+
+2013-07-02 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/system_info.php: clean source code style.
+	
+	* mobile/include/ui.class.php: fixed the selectbox for int values.
+	
+	* mobile/operation/home.php, mobile/index.php,
+	mobile/operation/networkmaps.php, mobile/operation/networkmap.php:
+	added networkmap.
+	
+	* include/functions_ui.php: added for get only the src of module
+	type.
+	
+	* include/functions_networkmap.php,
+	operation/agentes/networkmap.topology.php: add support for
+	networkmaps in mobile.
+	
+	MERGED FROM THE BRANCH 4.0
 
 2013-07-02 Miguel de Dios <miguel.dedios@artica.es>
 

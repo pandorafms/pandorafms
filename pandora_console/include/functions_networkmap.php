@@ -14,6 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
+
 /**
  * @package Include
  * @subpackage Network_Map
@@ -45,9 +47,9 @@ function networkmap_is_descendant ($node, $ascendant, $parents) {
 }
 
 // Generate a dot graph definition for graphviz
-function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
-	$font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1,
-	$ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
+function networkmap_generate_dot ($pandora_name, $group = 0,
+	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
+	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false, $text_filter = '') {
 	
@@ -271,6 +273,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 	
 	$groups_hiden = array();
 	foreach ($nodes_groups as $node_group) {
+		
 		$node_count++;
 		
 		// Save node parent information to define edges later
@@ -383,15 +386,18 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 		}
 		switch ($node['type']) {
 			case 'group':
-				$graph .= networkmap_create_group_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_group_node ($node , $simple, $font_size) .
+					"\n\t\t";
 				$stats['groups'][] = $node['id_grupo'];
 				break;
 			case 'agent':
-				$graph .= networkmap_create_agent_node ($node , $simple, $font_size, true, true)."\n\t\t";
+				$graph .= networkmap_create_agent_node ($node , $simple, $font_size, true, true) .
+					"\n\t\t";
 				$stats['agents'][] = $node['id_agente'];
 				break;
 			case 'module':
-				$graph .= networkmap_create_module_node ($node , $simple, $font_size)."\n\t\t";
+				$graph .= networkmap_create_module_node ($node , $simple, $font_size) .
+					"\n\t\t";
 				$stats['modules'][] = $node['id_agente_modulo'];
 				break;
 		}
@@ -445,42 +451,55 @@ function networkmap_create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom
 
 // Returns a group node definition
 function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
+	global $config;
+	global $hack_networkmap_mobile;
+	
 	$status = groups_get_status ($group['id_grupo']);
 	
 	// Set node status
-	switch($status) {
+	switch ($status) {
 		case 0: 
-				$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
-				$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = '#FF1D1D'; // Critical monitor
 			break;
 		case 2:
-				$status_color = '#FFE308'; // Warning monitor
+			$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFA300'; // Alert fired
+			$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
-				$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = '#BBBBBB'; // Unknown monitor
 			break;
 	}
+	
+	
 	
 	$icon = groups_get_icon($group['id_grupo']);
 	
 	if ($simple == 0) {
 		// Set node icon
-		if (file_exists (html_print_image("images/groups_small/" . $icon . ".png", true, false, true, true))) { 
+		if ($hack_networkmap_mobile) {
+			$img_node = $config['homedir'] . "/images/groups_small/" . $icon . ".png";
+			html_debug_print($img_node, true);
+			if (!file_exists($img_node)) {
+				$img_node = '-';
+			}
+			$img_node = '<img src="' . $img_node . '" />';
+		}
+		else if (file_exists (html_print_image("images/groups_small/" . $icon . ".png", true, false, true, true))) { 
 			$img_node = html_print_image("images/groups_small/" . $icon . ".png", true, false, false, true);
 		}
 		else {
 			$img_node = '-';
 		}
 		
-		if (strlen(groups_get_name($group['id_grupo'])) > 40){
+		if (strlen(groups_get_name($group['id_grupo'])) > 40) {
 			$name = substr(groups_get_name($group['id_grupo']), 0, 40) . '...';
 		}
-		else{
+		else {
 			$name = groups_get_name($group['id_grupo']);
 		}
 		
@@ -518,7 +537,8 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $me
 // Returns a node definition
 function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cut_names = true, $relative = false, $metaconsole = false, $id_server = null) {
 	global $config;
-
+	global $hack_networkmap_mobile;
+	
 	$status = agents_get_status_from_counts($agent);
 	
 	if (defined('METACONSOLE')) {
@@ -564,20 +584,28 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	}
 	
 	if ($simple == 0) {
-		// Set node icon
-		$img_node = ui_print_os_icon ($agent['id_os'], false, true, true, true, true, $relative);
-		$img_node = str_replace($config['homeurl'] . '/', '', $img_node);
-		$img_node = str_replace($config['homeurl'], '', $img_node);
-		
-		if (defined('METACONSOLE')) {
-			$img_node = str_replace('../../', '', $img_node);
-		}
-		
-		if ($relative) {
-			$img_node = html_print_image($img_node, true, false, false, true);
+		if ($hack_networkmap_mobile) {
+			$img_node = ui_print_os_icon($agent['id_os'], false, true, true, true, true, true);
+			
+			$img_node = $config['homedir'] . '/' . $img_node;
+			$img_node = '<img src="' . $img_node . '" />';
 		}
 		else {
-			$img_node = html_print_image($img_node, true, false, false, false);
+			// Set node icon
+			$img_node = ui_print_os_icon ($agent['id_os'], false, true, true, true, true, $relative);
+			$img_node = str_replace($config['homeurl'] . '/', '', $img_node);
+			$img_node = str_replace($config['homeurl'], '', $img_node);
+		
+			if (defined('METACONSOLE')) {
+				$img_node = str_replace('../../', '', $img_node);
+			}
+		
+			if ($relative) {
+				$img_node = html_print_image($img_node, true, false, false, true);
+			}
+			else {
+				$img_node = html_print_image($img_node, true, false, false, false);
+			}
 		}
 		
 		if (defined("METACONSOLE")) {
@@ -627,10 +655,13 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 }
 
 function networkmap_create_module_group_node ($module_group, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
+	global $config;
+	global $hack_networkmap_mobile;
+	
 	
 	// Set node status
 	switch ($module_group['status']) {
-		case 0: 
+		case 0:
 			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
@@ -666,6 +697,15 @@ function networkmap_create_module_group_node ($module_group, $simple = 0, $font_
 			tooltip="' . $url_tooltip . '"];';
 	}
 	else {
+		if ($hack_networkmap_mobile) {
+			$img_node = ui_print_moduletype_icon($module['id_tipo_modulo'], true, true, false, true);
+		
+			$img_node = $config['homedir'] . '/' . $img_node;
+			$img_node = '<img src="' . $img_node . '" />';
+		}
+		else {
+			$img_node = ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false);
+		}
 		if (defined("METACONSOLE")) {
 			$url = '';
 			$url_tooltip = '';
@@ -685,8 +725,10 @@ function networkmap_create_module_group_node ($module_group, $simple = 0, $font_
 
 // Returns a module node definition
 function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
+	global $config;
+	global $hack_networkmap_mobile;
 	
-	if(isset($module['status'])) {
+	if (isset($module['status'])) {
 		$status = $module['status'];
 	}
 	else {
@@ -696,7 +738,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 	
 	// Set node status
 	switch ($status) {
-		case 0: 
+		case 0:
 			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
@@ -711,6 +753,16 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 		default:
 			$status_color = '#BBBBBB'; // Unknown monitor
 			break;
+	}
+	
+	if ($hack_networkmap_mobile) {
+		$img_node = ui_print_moduletype_icon($module['id_tipo_modulo'], true, true, false, true);
+		
+		$img_node = $config['homedir'] . '/' . $img_node;
+		$img_node = '<img src="' . $img_node . '" />';
+	}
+	else {
+		$img_node = ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false);
 	}
 	
 	
@@ -733,7 +785,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 			'", fontsize='.$font_size.', style="filled", ' .
 			'fixedsize=true, width=0.30, height=0.30, ' .
 			'label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
-			ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false). '</TD></TR>
+			$img_node . '</TD></TR>
 			<TR><TD>' . io_safe_output($module['nombre']) . '</TD></TR></TABLE>>,
 			shape="circle", URL="' . $url . '",
 			tooltip="' . $url_tooltip . '"];';
@@ -762,6 +814,8 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 
 // Returns the definition of the central module
 function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $stats = array()) {
+	global $hack_networkmap_mobile;
+	global $config;
 	
 	$stats_json = base64_encode(json_encode($stats));
 	
@@ -782,9 +836,14 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 		$color = "#373737";
 	}
 	
-	$img_tag = html_print_image($img_src, true, false, false, true);
-	
-	$img = '<TR><TD>' . $img_tag . '</TD></TR>';
+	if ($hack_networkmap_mobile) {
+		$img = '<TR><TD>' .
+			"<img src='" . $config['homedir'] . '/' . "images/networkmap/pandora_node.png' />" .
+			'</TD></TR>';
+	}
+	else {
+		$img = '<TR><TD>' . html_print_image("images/networkmap/pandora_node.png", true, false, false, true) . '</TD></TR>';
+	}
 	$name = '<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR>';
 	$label = '<TABLE BORDER="0">'.$img.$name.'</TABLE>';
 	if ($simple == 1) {
@@ -1010,7 +1069,7 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 			break;
 	}
 	
-	if ($networkmaps_raw === false){
+	if ($networkmaps_raw === false) {
 		return false;
 	}
 	

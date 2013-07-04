@@ -1,4 +1,15 @@
 2013-07-04 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/include/style/images/*,
+	mobile/include/style/jquery.mobile-1.3.1.css,
+	mobile/include/javascript/jquery.js, 
+	mobile/include/javascript/jquery.mobile-1.3.1.js: added the
+	jquery mobile, and made some changes in the css.
+	
+	* mobile/include/style/main.css, mobile/operation/agents.php,
+	mobile/include/ui.class.php: some fixes.
+
+2013-07-04 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_graph.php: fixed include javascript in the
 	static image for boolean module graph.

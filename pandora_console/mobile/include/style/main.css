@@ -447,7 +447,7 @@ table#list_events th {
 	color: #000000 !important;
 }
 
-@media screen and (max-width: 35em) {
+@media screen and (max-width: 25em) {
 	#list_agents .cell_2 .ui-table-cell-label,
 	#list_agents .cell_3 .ui-table-cell-label,
 	#list_agents .cell_6 .ui-table-cell-label,
@@ -489,13 +489,28 @@ table#list_events th {
 	#list_agents .show_collapside {
 		display: inline !important;
 	}
+	
+	#list_agents .cell_1,
+	#list_agents .cell_2,
+	#list_agents .cell_3,
+	#list_agents .cell_4 {
+		display: none !important;
+	}
+	
+	#list_agents .cell_0 .ui-link {
+		font-size: 15px;
+	}
+	
+	#list_agents .cell_6 .show_collapside {
+		display: inline !important;
+	}
 }
 /*END-----------Agents styles-----------------------------------------*/
 
 
 
 /*INIT-----------Modules styles---------------------------------------*/
-@media screen and (max-width: 35em) {
+@media screen and (max-width: 25em) {
 	#list_Modules .cell_1 .ui-table-cell-label,
 	#list_Modules .cell_5 .ui-table-cell-label,
 	#list_Modules .cell_6 .ui-table-cell-label {
@@ -538,7 +553,7 @@ table#list_events th {
 	color: #000000 !important;
 }
 
-@media screen and (max-width: 35em) {
+@media screen and (max-width: 25em) {
 	#list_Modules_Embedded .cell_1 .ui-table-cell-label,
 	#list_Modules_Embedded .cell_4 .ui-table-cell-label {
 		min-width: auto !important;
@@ -662,7 +677,7 @@ ul.ui-listview li.ui-btn div.ui-btn-inner div.ui-btn-text {
 	border-bottom: 1px solid grey !important;
 }
 
-@media screen and (max-width: 35em) {
+@media screen and (max-width: 25em) {
 	.ui-table th, .ui-table td {
 		padding: 0px !important;
 	}

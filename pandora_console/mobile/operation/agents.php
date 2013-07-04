@@ -66,14 +66,14 @@ class Agents {
 						foreach ($listAgents['agents'] as $key => $agent) {
 							$agent[0] = '<b class="ui-table-cell-label">' . 
 								__('Agent') . '</b>' . $agent[0];
-							$agent[1] = '<b class="ui-table-cell-label">' . 
-								__('Description') . '</b>' . $agent[1];
+							//~ $agent[1] = '<b class="ui-table-cell-label">' . 
+								//~ __('Description') . '</b>' . $agent[1];
 							$agent[2] = '<b class="ui-table-cell-label">' . 
 								__('OS') . '</b>' . $agent[2];
 							$agent[3] = '<b class="ui-table-cell-label">' . 
 								__('Group') . '</b>' . $agent[3];
-							$agent[4] = '<b class="ui-table-cell-label">' . 
-								__('Interval') . '</b>' . $agent[4];
+							//~ $agent[4] = '<b class="ui-table-cell-label">' . 
+								//~ __('Interval') . '</b>' . $agent[4];
 							$agent[5] = '<b class="ui-table-cell-label">' . 
 								__('Modules') . '</b>' . $agent[5];
 							$agent[6] = '<b class="ui-table-cell-label">' . 
@@ -251,21 +251,30 @@ class Agents {
 		foreach ($agents_db as $agent) {
 			$row = array();
 			
-			$row[0] = $row[__('Agent')] = '<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . io_safe_output($agent['nombre']) . '</a>';
-			$row[1] = $row[__('Description')] = '<span class="small">' .
-				ui_print_truncate_text($agent["description"], 'description', false, true) .
-				'</span>';
+			
+			$img_status = agents_tree_view_status_img ($agent["critical_count"],
+				$agent["warning_count"], $agent["unknown_count"])
+			
+			
+			$row[0] = $row[__('Agent')] =
+				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . io_safe_output($agent['nombre']) . '</a>';
+			//~ $row[1] = $row[__('Description')] = '<span class="small">' .
+				//~ ui_print_truncate_text($agent["description"], 'description', false, true) .
+				//~ '</span>';
 			
 			$row[2] = $row[__('OS')] = ui_print_os_icon ($agent["id_os"], false, true);
 			$row[3] = $row[__('Group')] = ui_print_group_icon ($agent["id_grupo"], true);
-			$row[4] = $row[__('Interval')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('I.') . ' </span>' .
-				'<span style="vertical-align: 0%;">' . human_time_description_raw($agent["intervalo"]) . '</span>';
+			//~ $row[4] = $row[__('Interval')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('I.') . ' </span>' .
+				//~ '<span style="vertical-align: 0%;">' . human_time_description_raw($agent["intervalo"]) . '</span>';
 			
-			$row[5] = $row[__('Status')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">' . __('S.') . ' </span>' . agents_tree_view_status_img ($agent["critical_count"],
-				$agent["warning_count"], $agent["unknown_count"]);
+			
+			$row[5] = $row[__('Status')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">' . __('S.') . ' </span>' .
+				$img_status;
 			$row[6] = $row[__('Alerts')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('A.') . ' </span>' . agents_tree_view_alert_img ($agent["fired_count"]);
 			
-			$row[7] = $row[__('Modules')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('M.') . ' </span>' .
+			$row[7] = $row[__('Modules')] =
+				'<span class="show_collapside" style="display: none; vertical-align: top;">' . $img_status . '</span>' .
+				'<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('M.') . ' </span>' .
 				reporting_tiny_stats($agent, true);
 			
 			$last_time = strtotime ($agent["ultimo_contacto"]);
@@ -363,14 +372,14 @@ class Agents {
 													.append(\"<tr class=''>\" +
 														\"<th class='head_vertical'></th>\" +
 														\"<td class='cell_0'>\" + agent[0] + \"</td>\" +
-														\"<td class='cell_1'>\" + agent[1] + \"</td>\" +
-														\"<td class='cell_2'>\" + agent[2] + \"</td>\" +
-														\"<td class='cell_3'>\" + agent[3] + \"</td>\" +
-														\"<td class='cell_4'>\" + agent[4] + \"</td>\" +
-														\"<td class='cell_5'>\" + agent[5] + \"</td>\" +
-														\"<td class='cell_6'>\" + agent[6] + \"</td>\" +
-														\"<td class='cell_7'>\" + agent[7] + \"</td>\" +
-														\"<td class='cell_8'>\" + agent[8] + \"</td>\" +
+														// \"<td class='cell_1'>\" + agent[1] + \"</td>\" +
+														\"<td class='cell_1'>\" + agent[2] + \"</td>\" +
+														\"<td class='cell_2'>\" + agent[3] + \"</td>\" +
+														// \"<td class='cell_4'>\" + agent[4] + \"</td>\" +
+														\"<td class='cell_3'>\" + agent[5] + \"</td>\" +
+														\"<td class='cell_4'>\" + agent[6] + \"</td>\" +
+														\"<td class='cell_5'>\" + agent[7] + \"</td>\" +
+														\"<td class='cell_6'>\" + agent[8] + \"</td>\" +
 													\"</tr>\");
 												});
 											

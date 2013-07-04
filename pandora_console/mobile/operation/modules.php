@@ -435,7 +435,7 @@ class Modules {
 				
 				$row[4] = $row[__('Interval')] =
 					($module['module_interval'] == 0) ? human_time_description_raw($module['agent_interval']) : human_time_description_raw($module['module_interval']);
-					
+				
 				$row[4] = $row[__('Interval')] = '<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Interval.') . ' </span>' .
 					$row[__('Interval')] .
 					'</span>';
@@ -490,7 +490,8 @@ class Modules {
 				$row[7] = $row[__('Data')] = 
 					'<span style="white-space: nowrap;">' .
 					'<span style="display: none;" class="show_collapside">' . $row[__('Status')] . '&nbsp;&nbsp;</span>' .
-					'<a data-ajax="false" class="ui-link" href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '">' .
+					'<a data-ajax="false" class="ui-link" ' .
+						'href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '&id_agent=' . $this->id_agent . '">' .
 						'<span style="vertical-align: 30%;">' . html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) . '</span>' .
 					'&nbsp;' . $output . '</a>' . '</span>';
 				

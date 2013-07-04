@@ -2486,6 +2486,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	global $series_type;
 	global $chart_extra_data;
 	
+	
 	$chart = array();
 	$color = array();
 	$legend = array();

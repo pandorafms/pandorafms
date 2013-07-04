@@ -163,18 +163,22 @@ class Ui {
 		return $this->createButton($options);
 	}
 	
-	public function createDefaultHeader($title = false) {
+	public function createDefaultHeader($title = false, $left_button = false) {
 		if ($title === false) {
 			$title = __('Pandora FMS mobile');
 		}
 		
-		$this->createHeader(
-			$title,
-			$this->createHeaderButton(
+		if ($left_button === false) {
+			$left_button = $this->createHeaderButton(
 				array('icon' => 'back',
 					'pos' => 'left',
 					'text' => __('Logout'),
-					'href' => 'index.php?action=logout')),
+					'href' => 'index.php?action=logout'));
+		}
+		
+		$this->createHeader(
+			$title,
+			$left_button,
 			$this->createHeaderButton(
 				array('icon' => 'home',
 					'pos' => 'right',

@@ -68,7 +68,13 @@ class Agent {
 		if ($this->id != 0) {
 			$agent_name = (string) agents_get_name ($this->id);
 			
-			$ui->createDefaultHeader(sprintf(__("PandoraFMS: %s"), $agent_name));
+			$ui->createDefaultHeader(
+				sprintf(__("PandoraFMS: %s"), $agent_name),
+				$ui->createHeaderButton(
+					array('icon' => 'back',
+						'pos' => 'left',
+						'text' => __('Back'),
+						'href' => 'index.php?page=agents')));
 		}
 		else {
 			$ui->createDefaultHeader(__("PandoraFMS: Agents"));

@@ -210,7 +210,7 @@ class Events {
 								"width" => 12,
 								"height" => 12,
 								"title" => $event_criticity));
-						$event["criticity"] .= ' '.$event_criticity;
+						$event["criticity"] .= ' ' . $event_criticity;
 						
 						
 						if ($event['estado'] == 1) {
@@ -327,6 +327,7 @@ class Events {
 		else {
 			$this->default = false;
 		}
+		
 	}
 	
 	public function setFilters($filters) {
@@ -337,6 +338,7 @@ class Events {
 			$this->all_events = $filters['all_events'];
 		}
 	}
+	
 	
 	public function show() {
 		if (!$this->correct_acl) {
@@ -456,7 +458,12 @@ class Events {
 		$ui->addDialog($options);
 		
 		
-		$ui->createDefaultHeader(__("PandoraFMS: Events"));
+		$ui->createDefaultHeader(__("PandoraFMS: Events"),
+				$ui->createHeaderButton(
+					array('icon' => 'back',
+						'pos' => 'left',
+						'text' => __('Back'),
+						'href' => 'index.php')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");
@@ -472,6 +479,7 @@ class Events {
 						'value' => 'events'
 						);
 					$ui->formAddInput($options);*/
+					
 					
 					$system = System::getInstance();
 					$groups = users_get_groups_for_select(

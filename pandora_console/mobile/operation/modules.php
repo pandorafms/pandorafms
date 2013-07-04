@@ -133,6 +133,7 @@ class Modules {
 		else {
 			$this->default = false;
 		}
+		
 	}
 	
 	public function show() {
@@ -156,7 +157,12 @@ class Modules {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Modules"));
+		$ui->createDefaultHeader(__("PandoraFMS: Modules"),
+			$ui->createHeaderButton(
+				array('icon' => 'back',
+					'pos' => 'left',
+					'text' => __('Back'),
+					'href' => 'index.php')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$filter_title = sprintf(__('Filter Modules by %s'),
@@ -198,6 +204,7 @@ class Modules {
 						'selected' => $this->module_group
 						);
 					$ui->formAddSelectBox($options);
+					
 					
 					$options = array(
 						'name' => 'free_search',
@@ -250,6 +257,8 @@ class Modules {
 		}
 		
 		
+		
+		
 		$sql_conditions = " AND tagente_modulo.disabled = 0 AND tagente.disabled = 0";
 		
 		// Part SQL for the module_group
@@ -287,6 +296,7 @@ class Modules {
 			$sql_conditions .= " AND tagente_estado.utimestamp = 0
 				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";
 		}
+		
 		
 		$sql_conditions_all = $sql_conditions_base . $sql_conditions_agent . $sql_conditions .
 			$sql_conditions_group;
@@ -394,7 +404,7 @@ class Modules {
 				
 				$row[4] = $row[__('Interval')] =
 					($module['module_interval'] == 0) ? human_time_description_raw($module['agent_interval']) : human_time_description_raw($module['module_interval']);
-					
+				
 				$row[4] = $row[__('Interval')] = '<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Interval.') . ' </span>' .
 					$row[__('Interval')] .
 					'</span>';
@@ -449,7 +459,8 @@ class Modules {
 				$row[7] = $row[__('Data')] = 
 					'<span style="white-space: nowrap;">' .
 					'<span style="display: none;" class="show_collapside">' . $row[__('Status')] . '&nbsp;&nbsp;</span>' .
-					'<a data-ajax="false" class="ui-link" href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '">' .
+					'<a data-ajax="false" class="ui-link" ' .
+						'href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '&id_agent=' . $this->id_agent . '">' .
 						'<span style="vertical-align: 30%;">' . html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) . '</span>' .
 					'&nbsp;' . $output . '</a>' . '</span>';
 				

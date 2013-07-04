@@ -143,7 +143,12 @@ class Agents {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Agents"));
+		$ui->createDefaultHeader(__("PandoraFMS: Agents"),
+			$ui->createHeaderButton(
+				array('icon' => 'back',
+					'pos' => 'left',
+					'text' => __('Back'),
+					'href' => 'index.php')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$filter_title = sprintf(__('Filter Agents by %s'),

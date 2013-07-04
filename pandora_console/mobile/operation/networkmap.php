@@ -80,8 +80,14 @@ class Networkmap {
 		$system = System::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(sprintf(__("PandoraFMS: Networkmap %s"),
-			$this->network_map['name']));
+		$ui->createDefaultHeader(
+			sprintf(__("PandoraFMS: Networkmap %s"),
+			$this->network_map['name']),
+			$ui->createHeaderButton(
+				array('icon' => 'back',
+					'pos' => 'left',
+					'text' => __('Back'),
+					'href' => 'index.php?page=networkmaps')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			
@@ -197,9 +203,8 @@ class Networkmap {
 					fwrite ($fh, $graph);
 					$cmd = $filter . " -Tcmapx -o" . $filename_map." -Tpng -o".$filename_img." ".$filename_dot;
 					$result = system ($cmd);
-					html_debug_print($cmd, true);
 					fclose ($fh);
-					//unlink ($filename_dot);
+					unlink ($filename_dot);
 				}
 			}
 			

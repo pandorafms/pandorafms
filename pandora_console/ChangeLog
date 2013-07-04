@@ -1,3 +1,33 @@
+2013-07-04 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_graph.php: fixed include javascript in the
+	static image for boolean module graph.
+	
+	* mobile/operation/alerts.php, mobile/operation/agent.php,
+	mobile/operation/events.php,
+	mobile/operation/module_graph.php,
+	mobile/operation/modules.php,
+	mobile/operation/networkmaps.php,
+	mobile/operation/groups.php,
+	mobile/operation/agents.php,
+	mobile/operation/tactical.php,
+	mobile/operation/networkmap.php,
+	mobile/include/style/main.css,
+	mobile/include/ui.class.php: a lot of fixes in mobile.
+
+2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
+
+	* mobile/operation/events.php, mobile/operation/module_graph.php,
+	mobile/operation/modules.php, mobile/operation/networkmaps.php,
+	mobile/operation/groups.php, mobile/operation/agents.php,
+	mobile/operation/tactical.php, mobile/operation/networkmap.php,
+	mobile/operation/alerts.php, mobile/operation/agent.php,
+	mobile/include/ui.class.php: added the back button in the head and
+	impoved the source code style to make more easy the merges with
+	the trunk.
+	
+	* include/functions_graph.php: fixed PHP notices.
+
 2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 
 	* mobile/include/style/main.css: some fix for the module list

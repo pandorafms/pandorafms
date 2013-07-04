@@ -17,6 +17,7 @@ class ModuleGraph {
 	private $acl = "AR";
 	
 	private $id = 0;
+	private $id_agent = 0;
 	private $graph_type = "sparse";
 	private $period = SECONDS_1DAY;
 	private $draw_events = 0;
@@ -50,6 +51,7 @@ class ModuleGraph {
 		$system = System::getInstance();
 		
 		$this->id = (int)$system->getRequest('id', 0);
+		$this->id_agent = (int)$system->getRequest('id_agent', 0);
 		$this->module = modules_get_agentmodule($this->id);
 		$this->graph_type = return_graphtype($this->module["id_tipo_modulo"]);
 		
@@ -84,6 +86,11 @@ class ModuleGraph {
 		//$this->height = $this->height / 2;
 		
 		$this->height -= 80; //Correct the height
+		
+		//For to avoid fucking IPHONES when they are in horizontal.
+		if ($this->height < 140) {
+			$this->height = 140;
+		}
 		
 	}
 	
@@ -123,6 +130,7 @@ class ModuleGraph {
 					else if ($this->time_compare_overlapped) {
 						$time_compare = 'overlapped';
 					}
+					
 					
 					
 					ob_start();
@@ -298,7 +306,24 @@ class ModuleGraph {
 		
 		$ui->createPage();
 		
-		$ui->createDefaultHeader(sprintf(__("PandoraFMS: %s"), $this->module["nombre"]));
+		if ($this->id_agent) {
+			$ui->createDefaultHeader(
+				sprintf(__("PandoraFMS: %s"), $this->module["nombre"]),
+				$ui->createHeaderButton(
+						array('icon' => 'back',
+							'pos' => 'left',
+							'text' => __('Back'),
+							'href' => 'index.php?page=agent&id=' . $this->id_agent)));
+		}
+		else {
+			$ui->createDefaultHeader(
+				sprintf(__("PandoraFMS: %s"), $this->module["nombre"]),
+				$ui->createHeaderButton(
+						array('icon' => 'back',
+							'pos' => 'left',
+							'text' => __('Back'),
+							'href' => 'index.php?page=modules')));
+		}
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentAddHtml($ui->getInput(array(
@@ -367,20 +392,6 @@ class ModuleGraph {
 						);
 					$ui->formAddSlider($options);
 					
-					/*
-					$items = array('1' => __('x1'),
-						'2' => __('x2'),
-						'3' => __('x3'),
-						'4' => __('x4'));
-					$options = array(
-						'name' => 'zoom',
-						'title' => __('Zoom'),
-						'label' => __('Zoom'),
-						'items' => $items,
-						'selected' => $this->zoom
-						);
-					$ui->formAddSelectBox($options);
-					*/
 					
 					$options = array(
 						'name' => 'start_date',

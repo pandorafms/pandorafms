@@ -1,3 +1,12 @@
+2013-07-04 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_graph.php: fixed include javascript in the
+	static image for boolean module graph.
+	
+	* mobile/operation/module_graph.php,
+	mobile/operation/modules.php,
+	mobile/include/style/main.css: a lot of fixes in mobile.
+
 2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 
 	* mobile/operation/events.php, mobile/operation/module_graph.php,

@@ -87,6 +87,11 @@ class ModuleGraph {
 		
 		$this->height -= 80; //Correct the height
 		
+		//For to avoid fucking IPHONES when they are in horizontal.
+		if ($this->height < 140) {
+			$this->height = 140;
+		}
+		
 	}
 	
 	public function ajax($parameter2 = false) {
@@ -125,6 +130,7 @@ class ModuleGraph {
 					else if ($this->time_compare_overlapped) {
 						$time_compare = 'overlapped';
 					}
+					
 					
 					
 					ob_start();

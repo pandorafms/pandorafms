@@ -99,22 +99,13 @@ $table->data[2][0] = __('Actions');
 $groups_user = users_get_groups($config["id_user"]);
 if (!empty($groups_user)) {
 	$groups = implode(',', array_keys($groups_user));
-	$sql = "SELECT name FROM talert_actions WHERE id_group IN ($groups)";
+	$sql = "SELECT id, name FROM talert_actions WHERE id_group IN ($groups)";
 	$actions = db_get_all_rows_sql($sql);
-}
-
-$i=1;
-$action_name = array ('0' => __('None'));
-foreach ($actions as $action) {
-	foreach ($action as $key=>$name) {
-		$action_name[$i] = $name;
-		$i++;
-	}
 }
 
 $table->data[2][1] = '<div class="actions_container">';
 
-$table->data[2][1] = html_print_select($action_name, 'action_select',
+$table->data[2][1] = html_print_select (index_array ($actions, 'id', 'name'), 'action_select',
 	'', '', '', '', true, false, false);
 $table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
 $table->data[2][1] .= __('Number of alerts match from').' ';

@@ -1,3 +1,9 @@
+2013-07-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added macros _snmp_oid_ and _snmp_value_ to
+	  SNMP alerts. Changed the behaviour of _snmp_fx_ to act as filters
+	  and not as user defined macros.
+
 2013-07-05  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/PluginServer.pm: Fixed subst_alert_macros assignation

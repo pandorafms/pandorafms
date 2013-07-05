@@ -2759,6 +2759,8 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		
 		# Specific SNMP Trap alert macros for regexp selectors in trap info
 		my %macros;
+		$macros{'_snmp_oid_'} = $trap_oid_text;
+		$macros{'_snmp_value_'} = $trap_value;
 		
 		# Custom OID/value
 		# Decode first, this could be a complex regexp !
@@ -2788,24 +2790,40 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			}
 		}
 
-		# Evaluate _snmp_fx_ macros
+		# Evaluate _snmp_fx_ filters
+		my $filter_match = 1;
 		for (my $i = 1; $i <= 6; $i++) {
-			my $macro_name = '_snmp_f' . $i . '_';
-			my $macro_regexp = safe_output ($alert->{$macro_name});
-			
-			# Create an empty macro, unless the macro was already defined (_snmp_f1_, _snmp_f2_, _snmp_f3_)
-			$macros{$macro_name} = '' unless defined ($macros{$macro_name});
-			
-			# Not regexp defined
-			next if ($macro_regexp eq '');
-			
-			# No match
-			next if ($trap_custom_oid !~ $macro_regexp);
-			
-			# Match!
-			$macros{$macro_name} = $1 if defined ($1);
-		}
+			my $filter_name = '_snmp_f' . $i . '_';
+			my $filter_value = safe_output ($alert->{$filter_name});
 
+			# No filter for the current binding var
+			next if ($filter_value eq '');
+			
+			# The referenced binding var does not exist
+			if (! defined ($macros{$filter_name})) {
+				$filter_match = 0;
+				last;
+			}
+			
+			# Evaluate the filter
+			eval {
+				if ($macros{$filter_name} !~ m/$filter_value/) {
+					$filter_match = 0;
+				}
+			};
+			
+			# Probably an invalid regexp
+			if ($@) {
+				last;
+			}
+			
+			# The filter did not match
+			last if ($filter_match == 0);
+		}
+		
+		# A filter did not match
+		next if ($filter_match == 0);
+		
 		# Replace macros
 		$alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
 		$alert->{'al_field2'} = subst_alert_macros ($alert->{'al_field2'}, \%macros);

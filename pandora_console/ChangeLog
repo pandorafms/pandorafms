@@ -1,5 +1,14 @@
 2013-07-05 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_events.php: erased lost debug trace.
+	
+	* mobile/operation/events.php: some fixes in the pagination, and
+	now the events from the system show the name "system".
+	
+	MERGED FROM BRANCH 4.0
+
+2013-07-05 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/operation/agents.php, mobile/include/style/main.css: some
 	fixes.
 	

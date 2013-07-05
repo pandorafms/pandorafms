@@ -1237,8 +1237,6 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 		ORDER BY utimestamp ASC',
 		$datelimit, $date, implode (",", $id_group));
 	
-	//html_debug_print($sql);
-	
 	return db_get_all_row_by_steps_sql($begin, $result, $sql);
 }
 

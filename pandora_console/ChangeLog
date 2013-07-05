@@ -1,3 +1,8 @@
+2013-07-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/agents.php, mobile/include/style/main.css: some
+	fixes.
+
 2013-07-05 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* godmode/alerts/alert_list.builder.php: Small changes. Make

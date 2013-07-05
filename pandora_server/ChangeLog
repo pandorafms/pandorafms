@@ -1,3 +1,8 @@
+2013-07-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/PluginServer.pm: Added agent and module macros to
+	  plugins.
+
 2013-07-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Assign default values to the _snmp_fx_ macros

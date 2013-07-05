@@ -141,6 +141,10 @@ sub data_consumer ($$) {
 	my $plugin = get_db_single_row ($dbh, 'SELECT * FROM tplugin WHERE id = ?', $module->{'id_plugin'});
 	return unless defined $plugin;
 
+	# Retrieve agent data
+	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+	return unless defined $agent;
+
 	# Use the smallest timeout
 	my $timeout = ($plugin->{'max_timeout'} < $pa_config->{'plugin_timeout'}) ?
 				   $plugin->{'max_timeout'} : $pa_config->{'plugin_timeout'};
@@ -163,7 +167,7 @@ sub data_consumer ($$) {
 		$module->{'macros'} = "";
 	}
 
-	# Macros
+	# Plugin macros
 	eval {
 		if ($module->{'macros'} ne '') {
 			logger ($pa_config, "Decoding json macros from # $module_id plugin command '$command'", 10);
@@ -172,13 +176,32 @@ sub data_consumer ($$) {
 			if(ref($macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))
 				{
-					logger ($pa_config, "Replacing macro ".$macros{$macro_id}{'macro'}." by '".$macros{$macro_id}{'value'}."' in AM # $module_id ", 10);
 					$parameters =~ s/$macros{$macro_id}{'macro'}/$macros{$macro_id}{'value'}/g;
 				}
 			}
 		}
 	};
 	
+	# Agent and module macros
+	my %macros = (_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
+				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
+				_agentstatus_ => (defined ($agent)) ? get_agent_status ($pa_config, $dbh, $agent->{'id_agente'}) : '',
+				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
+				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
+				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
+				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
+				_modulestatus_ => (defined ($module)) ? get_agentmodule_status($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_moduletags_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
+				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
+				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
+				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
+				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
+				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
+				_email_tag_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+	);
+	subst_alert_macros ($parameters, \%macros);
+
 	# If something went wrong with macros, we log it
 	if ($@) {
 		logger ($pa_config, "Error reading macros from module # $module_id. Probably malformed json", 10);

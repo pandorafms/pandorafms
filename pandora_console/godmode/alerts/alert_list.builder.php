@@ -106,7 +106,7 @@ if (!empty($groups_user)) {
 $table->data[2][1] = '<div class="actions_container">';
 
 $table->data[2][1] = html_print_select (index_array ($actions, 'id', 'name'), 'action_select',
-	'', '', '', '', true, false, false);
+	'', '', '', '', true, false, true);
 $table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
 $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);

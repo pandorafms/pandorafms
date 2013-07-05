@@ -1,5 +1,11 @@
 2013-07-05 Hirofumi Kosaka <kosaka@rworks.jp>
 
+	* godmode/alerts/alert_list.builder.php: Small changes. Make
+	alert action list sorted (in the same order of extra action
+	list that appears at the defined alert list)
+
+2013-07-05 Hirofumi Kosaka <kosaka@rworks.jp>
+
 	* godmode/alerts/alert_list.builder.php: When creating new
 	alert, wrong action might be assigned to the alert (if you had
 	some deleted actions in the past).

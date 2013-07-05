@@ -99,8 +99,14 @@ class Events {
 						$row[] = '<b class="ui-table-cell-label">' . __('Timestamp') . '</b>' .
 							ui_print_timestamp ($event['timestamp_rep'], true);
 						
+						if ($event["id_agente"] == 0) {
+							$agent_name = __('System');
+						}
+						else {
+							$agent_name = ui_print_agent_name ($event["id_agente"], true);
+						}
 						$row[] = '<b class="ui-table-cell-label">' . __('Agent') . '</b>' .
-							ui_print_agent_name ($event["id_agente"], true);
+							$agent_name;
 						
 						$status =
 							html_print_image ("mobile/images/" .
@@ -298,6 +304,7 @@ class Events {
 			$this->status = 3;
 		}
 		else {
+			$this->status = (int)$this->status;
 			$this->default = false;
 		}
 		
@@ -589,7 +596,7 @@ class Events {
 		
 		if ($this->hours_old > 0) {
 			$unixtime = get_system_time () - ($this->hours_old * SECONDS_1HOUR);
-			$sql_post .= " AND (utimestamp > " . $unixtime . ")";
+			$sql_post .= " AND (utimestamp > " . $unixtime . " OR estado = 2)";
 		}
 		
 		if ($this->type != "") {
@@ -637,6 +644,7 @@ class Events {
 			$sql_post .= " AND id_grupo != 0";
 		}
 		//--------------------------------------------------------------
+		
 		
 		
 		$events_db = events_get_events_grouped($sql_post,

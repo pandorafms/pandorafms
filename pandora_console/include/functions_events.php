@@ -1147,51 +1147,78 @@ function events_get_all_status () {
 	return $fields;
 }
 
-function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
-	global $config; 
+function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $meta = false, $history = false, $total = false) {
+	global $config;
+	
+	//$meta and $history in Pandora4 never uses but it for to make more standar to pandora5 call.
+	//Because the last param is $total (and PHP is not Python).
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
-			$sql = "SELECT *, MAX(id_evento) AS id_evento,
-					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
-					GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
-					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-					MIN(utimestamp) AS timestamp_rep_min
-				FROM tevento
-				WHERE 1=1 ".$sql_post."
-				GROUP BY estado, evento, id_agentmodule
-				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+			if ($total) {
+				$sql = "SELECT COUNT(*) FROM (SELECT *
+					FROM tevento
+					WHERE 1=1 " . $sql_post . "
+					GROUP BY estado, evento, id_agentmodule) AS t";
+			}
+			else {
+				$sql = "SELECT *, MAX(id_evento) AS id_evento,
+						GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
+						GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
+						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+						MIN(utimestamp) AS timestamp_rep_min
+					FROM tevento
+					WHERE 1=1 ".$sql_post."
+					GROUP BY estado, evento, id_agentmodule
+					ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+			}
 			break;
 		case "postgresql":
-			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
-					array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
-					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-					MIN(utimestamp) AS timestamp_rep_min
-				FROM tevento
-				WHERE 1=1 ".$sql_post."
-				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
-				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
+			if ($total) {
+				$sql = "SELECT COUNT(*)
+					FROM tevento
+					WHERE 1=1 " . $sql_post . "
+					GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra";
+			}
+			else {
+				$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
+						array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
+						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+						MIN(utimestamp) AS timestamp_rep_min
+					FROM tevento
+					WHERE 1=1 ".$sql_post."
+					GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
+					ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
+			}
 			break;
 		case "oracle":
-			$set = array();
-			$set['limit'] = $pagination;
-			$set['offset'] = $offset;
-			// TODO: Remove duplicate user comments
-			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
-				FROM (SELECT * FROM tevento WHERE 1=1 ".$sql_post.") a, 
-				(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
-				id_agentmodule, COUNT(*) AS event_rep,
-				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
-				LISTAGG(id_evento, '') AS similar_ids,
-				MIN(utimestamp) AS timestamp_rep_min
-				FROM tevento 
-				WHERE 1=1 ".$sql_post." 
-				GROUP BY estado, to_char(evento), id_agentmodule) b 
-				WHERE a.id_evento=b.id_evento AND 
-				to_char(a.evento)=to_char(b.evento) 
-				AND a.id_agentmodule=b.id_agentmodule";
-			$sql = oracle_recode_query ($sql, $set);
+			if ($total) {
+				$sql = "SELECT COUNT(*)
+					FROM tevento
+					WHERE 1=1 " . $sql_post . " 
+					GROUP BY estado, to_char(evento), id_agentmodule) b ";
+			}
+			else {
+				$set = array();
+				$set['limit'] = $pagination;
+				$set['offset'] = $offset;
+				// TODO: Remove duplicate user comments
+				$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
+					FROM (SELECT * FROM tevento WHERE 1=1 ".$sql_post.") a, 
+					(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
+					id_agentmodule, COUNT(*) AS event_rep,
+					LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
+					LISTAGG(id_evento, '') AS similar_ids,
+					MIN(utimestamp) AS timestamp_rep_min
+					FROM tevento 
+					WHERE 1=1 ".$sql_post." 
+					GROUP BY estado, to_char(evento), id_agentmodule) b 
+					WHERE a.id_evento=b.id_evento AND 
+					to_char(a.evento)=to_char(b.evento) 
+					AND a.id_agentmodule=b.id_agentmodule";
+				$sql = oracle_recode_query ($sql, $set);
+			}
 			break;
 	}
 	

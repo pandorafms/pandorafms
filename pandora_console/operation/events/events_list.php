@@ -127,7 +127,7 @@ if ($severity != -1) {
 	switch($severity) {
 		case EVENT_CRIT_WARNING_OR_CRITICAL:
 			$sql_post .= " AND (criticity = " . EVENT_CRIT_WARNING . " OR 
-								criticity = " . EVENT_CRIT_CRITICAL . ")";
+				criticity = " . EVENT_CRIT_CRITICAL . ")";
 			break;
 		case EVENT_CRIT_NOT_NORMAL:
 			$sql_post .= " AND criticity != " . EVENT_CRIT_NORMAL;

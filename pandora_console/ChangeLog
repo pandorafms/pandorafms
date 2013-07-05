@@ -1,5 +1,16 @@
 2013-07-05 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_events.php: into the function
+	"events_get_events_grouped" fixed the get total of events as
+	pandora5.
+	
+	* operation/events/events_list.php: cleaned source code style.
+	
+	* mobile/operation/events.php: some fixes in the pagination, and
+	now the events from the system show the name "system".
+
+2013-07-05 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/operation/agents.php, mobile/include/style/main.css: some
 	fixes.
 

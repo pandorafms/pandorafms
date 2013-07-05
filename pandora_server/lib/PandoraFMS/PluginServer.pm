@@ -200,7 +200,7 @@ sub data_consumer ($$) {
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
 				_email_tag_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 	);
-	subst_alert_macros ($parameters, \%macros);
+	$parameters = subst_alert_macros ($parameters, \%macros);
 
 	# If something went wrong with macros, we log it
 	if ($@) {

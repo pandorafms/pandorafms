@@ -544,8 +544,18 @@ table#list_events th {
 		white-space: nowrap;
 	}
 	
-	#list_Modules .cell_2 {
+	#list_Modules .cell_2,
+	#list_Modules .cell_3 {
 		display: none !important;
+	}
+	
+	#list_Modules .cell_0 .show_collapside,
+	#list_Modules .cell_1 .show_collapside {
+		display: none !important;
+	}
+	
+	#list_Modules .cell_0 .ui-link {
+		font-size: 15px;
 	}
 }
 

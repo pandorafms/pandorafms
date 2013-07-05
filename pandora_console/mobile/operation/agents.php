@@ -234,7 +234,7 @@ class Agents {
 				'nombre',
 				'ultimo_contacto',
 				'intervalo',
-				'comentarios description', 
+				'comentarios description',
 				'quiet',
 				'normal_count',
 				'warning_count',
@@ -255,6 +255,8 @@ class Agents {
 			$img_status = agents_tree_view_status_img ($agent["critical_count"],
 				$agent["warning_count"], $agent["unknown_count"])
 			
+			$img_alert = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
+			
 			
 			$row[0] = $row[__('Agent')] =
 				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . io_safe_output($agent['nombre']) . '</a>';
@@ -270,10 +272,13 @@ class Agents {
 			
 			$row[5] = $row[__('Status')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">' . __('S.') . ' </span>' .
 				$img_status;
-			$row[6] = $row[__('Alerts')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('A.') . ' </span>' . agents_tree_view_alert_img ($agent["fired_count"]);
+			$row[6] = $row[__('Alerts')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('A.') . ' </span>' .
+				$img_alert;
 			
 			$row[7] = $row[__('Modules')] =
-				'<span class="show_collapside" style="display: none; vertical-align: top;">' . $img_status . '</span>' .
+				'<span class="show_collapside" style="display: none; vertical-align: top;">' .
+					$img_status . '</span>' . '&nbsp;' .
+					'<span class="show_collapside" style="display: none; vertical-align: middle;">' . $img_alert . '</span>' .
 				'<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('M.') . ' </span>' .
 				reporting_tiny_stats($agent, true);
 			

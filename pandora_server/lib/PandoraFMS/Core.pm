@@ -196,6 +196,7 @@ our @EXPORT = qw(
 	pandora_server_statistics
 	pandora_self_monitoring
 	pandora_process_policy_queue
+	subst_alert_macros
 	get_agent_from_addr
 	get_agent_from_name
 	@ServerTypes
@@ -2773,10 +2774,9 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 		# Assign default values to the _snmp_fx_ macros from variable bindings
 		my @custom_values = split ("\t", $trap_custom_oid);
-		for (my $i = 1; $i <= 6; $i++) {
+		for (my $i = 1; defined ($custom_values[$i-1]); $i++) {
 			my $macro_name = '_snmp_f' . $i . '_';
 			
-			last if (! defined ($custom_values[$i-1]));	
 			if ($custom_values[$i-1] =~ m/= \S+: (.*)/) {
 				my $value = $1;
 				

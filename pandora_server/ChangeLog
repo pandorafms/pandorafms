@@ -1,5 +1,10 @@
 2013-07-05  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Exported subst_alert_macros. Added support
+	  for an arbitrarily large number of _snmp_fx_ macros.
+
+2013-07-05  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/PluginServer.pm: Added agent and module macros to
 	  plugins.
 

@@ -25,8 +25,9 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
+
 // Header
-ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "network_component", true);
+ui_print_page_header (__('Module management') . ' &raquo; ' . __('Network component management'), "", false, "network_component", true);
 
 require_once ('include/functions_network_components.php');
 require_once ($config['homedir'].'/include/functions_component_groups.php');
@@ -47,19 +48,23 @@ $id_group = (int) get_parameter ('id_group');
 $plugin_user = (string) get_parameter ('plugin_user');
 $plugin_pass = (string) get_parameter ('plugin_pass');
 $plugin_parameter = (string) get_parameter ('plugin_parameter');
+
+
+
 $max_timeout = (int) get_parameter ('max_timeout');
 $id_modulo = (int) get_parameter ('id_component_type');
 $id_plugin = (int) get_parameter ('id_plugin');
-$min_warning = (int) get_parameter ('min_warning');
-$max_warning = (int) get_parameter ('max_warning');
+$min_warning = (float) get_parameter ('min_warning');
+$max_warning = (float) get_parameter ('max_warning');
 $str_warning = (string) get_parameter ('str_warning');
-$min_critical = (int) get_parameter ('min_critical');
-$max_critical = (int) get_parameter ('max_critical');
+$min_critical = (float) get_parameter ('min_critical');
+$max_critical = (float) get_parameter ('max_critical');
 $str_critical = (string) get_parameter ('str_critical');
 $ff_event = (int) get_parameter ('ff_event');
 $history_data = (bool) get_parameter ('history_data');
 $post_process = (float) get_parameter('post_process');
 $id = (int) get_parameter ('id');
+
 
 $snmp_version = (string) get_parameter('snmp_version');
 $snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
@@ -82,7 +87,8 @@ if ($duplicate_network_component) {
 	
 	$id = network_components_duplicate_network_component ($source_id);
 	ui_print_result_message ($id,
-		__('Successfully created from %s', network_components_get_name ($source_id)),
+		__('Successfully created from %s',
+			network_components_get_name ($source_id)),
 		__('Could not be created'));
 	
 	//List unset for jump the bug in the pagination (TODO) that the make another
@@ -94,10 +100,13 @@ if ($duplicate_network_component) {
 }
 
 if ($create_component) {
+	
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
-        $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name',
+		$name);
+	
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -107,10 +116,13 @@ if ($create_component) {
 		$custom_string_1 = $snmp3_privacy_method;
 		$custom_string_2 = $snmp3_privacy_pass;
 		$custom_string_3 = $snmp3_security_level;
-                $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+		$name_check = db_get_value ('name', 'tnetwork_component',
+			'name', $name);
 	}
-	if ($name && !$name_check) {
 	
+	
+	if ($name && !$name_check) {
+		
 		$id = network_components_create_network_component ($name, $type, $id_group, 
 			array ('description' => $description,
 				'module_interval' => $module_interval,
@@ -142,8 +154,9 @@ if ($create_component) {
 				'post_process' => $post_process));
 	}
 	else {
-	$id = '';
+		$id = '';
 	}
+	
 	if ($id === false || !$id) {
 		ui_print_error_message (__('Could not be created'));
 		include_once ('godmode/modules/manage_network_components_form.php');
@@ -159,7 +172,8 @@ if ($update_component) {
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
-        //$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+	
+	//$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -213,7 +227,7 @@ if ($update_component) {
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
-
+	
 	ui_print_success_message (__('Updated successfully'));
 	
 	$id = 0;
@@ -223,6 +237,7 @@ if ($delete_component) {
 	$id = (int) get_parameter ('id');
 	
 	$result = network_components_delete_network_component ($id);
+	
 	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -240,6 +255,7 @@ if ($multiple_delete) {
 			break;
 		}
 	}
+	
 	
 	ui_print_result_message ($result,
 		__('Successfully multiple deleted'),
@@ -308,8 +324,8 @@ if ($component_groups === false)
 	$component_groups = array();
 
 foreach ($component_groups as $component_group_key => $component_group_val) {
-	$num_components = db_get_num_rows('
-		SELECT id_nc
+	$num_components = db_get_num_rows(
+		'SELECT id_nc
 		FROM tnetwork_component 
 		WHERE id_group = ' . $component_group_key);
 	
@@ -318,16 +334,16 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
 	$num_components_childs = 0;
 	
 	if ($childs !== false) {
-	
+		
 		foreach ($childs as $child) {
 			
-			$num_components_childs += db_get_num_rows('
-				SELECT id 
+			$num_components_childs += db_get_num_rows(
+				'SELECT id 
 				FROM tlocal_component 
 				WHERE id_network_component_group = ' . $child['id_sg']);
-		
+			
 		}
-	
+		
 	}
 	
 	// Only show component groups with local components
@@ -409,7 +425,7 @@ foreach ($components as $component) {
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&search_id_group=0search_string='>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
@@ -419,27 +435,30 @@ if(isset($data)) {
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined network components')."</div>";
+	echo "<div class='nf'>" . __('There are no defined network components') . "</div>";
 }
 
 echo '<form method="post" action="'.$url.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.';margin-top: 5px;">';
 html_print_input_hidden ('new_component', 1);
-html_print_select (array (2 => __('Create a new network component'),
+html_print_select (array(
+	2 => __('Create a new network component'),
 	4 => __('Create a new plugin component'),
 	6 => __('Create a new WMI component')),
 	'id_component_type', '', '', '', '', '');
 html_print_submit_button (__('Create'), 'crt', false, 'class="sub next" style="margin-left: 5px;"');
 echo '</div>';
-echo '</form>'
+echo '</form>';
+
+
 ?>
 <script type="text/javascript">
-function check_all_checkboxes() {
-	if ($("input[name=all_delete]").attr('checked')) {
-		$(".check_delete").attr('checked', true);
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").attr('checked')) {
+			$(".check_delete").attr('checked', true);
+		}
+		else {
+			$(".check_delete").attr('checked', false);
+		}
 	}
-	else {
-		$(".check_delete").attr('checked', false);
-	}
-}
 </script>

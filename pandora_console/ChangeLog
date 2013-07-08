@@ -1,5 +1,12 @@
 2013-07-08 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/modules/manage_network_components.php: fixed the float
+	values for min and max critical and warning.
+	
+	Fixes: #2316
+
+2013-07-08 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/operation/modules.php, mobile/include/style/main.css:
 	yes another fixes.
 

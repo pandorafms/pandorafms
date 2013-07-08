@@ -17,6 +17,7 @@ class Alerts {
 	private $acl = "AR";
 	
 	private $default = true;
+	private $default_filters = array();
 	
 	private $free_search = '';
 	private $group = 0;
@@ -59,17 +60,25 @@ class Alerts {
 		$system = System::getInstance();
 		$user = User::getInstance();
 		
+		
+		$this->default_filters['standby'] = true;
+		$this->default_filters['group'] = true;
+		$this->default_filters['status'] = true;
+		$this->default_filters['free_search'] = true;
+		
 		$this->free_search = $system->getRequest('free_search', '');
 		if ($this->free_search != '') {
 			$this->default = false;
+			$this->default_filters['free_search'] = false;
 		}
 		
 		$this->status = $system->getRequest('status', __("Status"));
-		if ($this->status === __("Status")) {
+		if (($this->status === __("Status")) || ($this->status == 'all')) {
 			$this->status = 'all';
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['status'] = false;
 		}
 		
 		$this->group = $system->getRequest('group', __("Group"));
@@ -81,14 +90,16 @@ class Alerts {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['group'] = false;
 		}
 		
 		$this->standby = $system->getRequest('standby', __('Stand by'));
-		if ($this->standby === __('Stand by')) {
+		if (($this->standby === __('Stand by')) || ($this->standby == -1)) {
 			$this->standby = -1;
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['standby'] = false;
 		}
 	}
 	
@@ -291,12 +302,35 @@ class Alerts {
 			return __("(Default)");
 		}
 		else {
-			$status_text = $this->alert_status_items[$this->status];
-			$standby_text = $this->alert_standby_items[$this->standby];
-			$group_text = groups_get_name($this->group, true);
+			$filters_to_serialize = array();
 			
-			return sprintf(__('(Status: %s - Standby: %s - Group: %s - Free Search: %s)'),
-				$status_text, $standby_text, $group_text, $this->free_search);
+			if (!$this->default_filters['standby']) {
+				$filters_to_serialize[] = sprintf(__("Standby: %s"),
+					$this->alert_standby_items[$this->standby]);
+			}
+			if (!$this->default_filters['group']) {
+				$filters_to_serialize[] = sprintf(__("Group: %s"),
+					groups_get_name($this->group, true));
+			}
+			if (!$this->default_filters['status']) {
+				$filters_to_serialize[] = sprintf(__("Status: %s"),
+					$this->alert_status_items[$this->status]);
+			}
+			if (!$this->default_filters['free_search']) {
+				$filters_to_serialize[] = sprintf(__("Free Search: %s"),
+					$this->free_search);
+			}
+			
+			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
+			
+			return $string;
+			
+			//~ $status_text = $this->alert_status_items[$this->status];
+			//~ $standby_text = $this->alert_standby_items[$this->standby];
+			//~ $group_text = groups_get_name($this->group, true);
+			
+			//~ return sprintf(__('(Status: %s - Standby: %s - Group: %s - Free Search: %s)'),
+				//~ $status_text, $standby_text, $group_text, $this->free_search);
 		}
 	}
 }

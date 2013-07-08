@@ -17,6 +17,8 @@ class Agents {
 	private $acl = "AR";
 	
 	private $default = true;
+	private $default_filters = array();
+	
 	private $group = 0;
 	private $status = -1;
 	private $free_search = '';
@@ -97,9 +99,14 @@ class Agents {
 		$system = System::getInstance();
 		$user = User::getInstance();
 		
+		$this->default_filters['group'] = true;
+		$this->default_filters['status'] = true;
+		$this->default_filters['free_search'] = true;
+		
 		$this->free_search = $system->getRequest('free_search', '');
 		if ($this->free_search != '') {
 			$this->default = false;
+			$this->default_filters['free_search'] = false;
 		}
 		
 		$this->status = $system->getRequest('status', __("Status"));
@@ -108,6 +115,7 @@ class Agents {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['status'] = false;
 		}
 		
 		$this->group = (int)$system->getRequest('group', __("Group"));
@@ -119,6 +127,7 @@ class Agents {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['group'] = false;
 		}
 	}
 	
@@ -403,13 +412,30 @@ class Agents {
 			return __("(Default)");
 		}
 		else {
-			$status = $this->list_status[$this->status];
-			$group = groups_get_name($this->group, true);
+			$filters_to_serialize = array();
 			
+			if (!$this->default_filters['group']) {
+				$filters_to_serialize[] = sprintf(__("Group: %s"),
+					groups_get_name($this->group, true));
+			}
+			if (!$this->default_filters['status']) {
+				$filters_to_serialize[] = sprintf(__("Status: %s"),
+					$this->list_status[$this->status]);
+			}
+			if (!$this->default_filters['free_search']) {
+				$filters_to_serialize[] = sprintf(__("Free Search: %s"),
+					$this->free_search);
+			}
 			
-			$string = sprintf(
-				__("(Status: %s - Group: %s - Free Search: %s)"),
-				$status, $group, $this->free_search);
+			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
+			
+			//~ $status = $this->list_status[$this->status];
+			//~ $group = groups_get_name($this->group, true);
+			//~ 
+			//~ 
+			//~ $string = sprintf(
+				//~ __("(Status: %s - Group: %s - Free Search: %s)"),
+				//~ $status, $group, $this->free_search);
 			
 			return $string;
 		}

@@ -17,6 +17,8 @@ class Events {
 	private $acl = "IR";
 	
 	private $default = true;
+	private $default_filters = array();
+	
 	private $free_search = '';
 	private $hours_old = 8;
 	private $status = 3;
@@ -152,12 +154,19 @@ class Events {
 								'</a>';
 						}
 						
+						if ($event['id_agente'] > 0) {
+							$event['agent'] = "<a style='color: black;'" .
+								"href='index.php?page=agent&id=" . 
+								$event['id_agente'] . "'>" .								
+								agents_get_name($event['id_agente']) .
+								"</a>";
+						}
 						
 						$event['evento'] = io_safe_output($event['evento']);
 						
 						$event["timestamp"] = date($system->getConfig("date_format"), strtotime($event["timestamp"]));
-						if(empty($event["owner_user"])) {
-							$event["owner_user"] = '<i>'.__('N/A').'</i>';
+						if (empty($event["owner_user"])) {
+							$event["owner_user"] = '<i>' . __('N/A') . '</i>';
 						}
 						else {
 							$user_owner = db_get_value('fullname', 'tusuario', 'id_user', $event["owner_user"]);
@@ -173,15 +182,15 @@ class Events {
 							$group_rep = 0;
 						
 						if ($group_rep != 0) {
-							if($event["event_rep"] <= 1) {
-								$event["event_repeated"] = '<i>'.__('No').'</i>';
+							if ($event["event_rep"] <= 1) {
+								$event["event_repeated"] = '<i>' . __('No') . '</i>';
 							}
 							else {
 								$event["event_repeated"] = sprintf("%d Times",$event["event_rep"]);
 							}
 						}
 						else {
-							$event["event_repeated"] = '<i>'.__('No').'</i>';
+							$event["event_repeated"] = '<i>' . __('No') . '</i>';
 						}
 						
 						$event_criticity = get_priority_name ($event["criticity"]);
@@ -227,11 +236,11 @@ class Events {
 							$event["acknowledged_by"] = $user_ack;
 						}
 						else {
-							$event["acknowledged_by"] = '<i>'.__('N/A').'</i>';
+							$event["acknowledged_by"] = '<i>' . __('N/A') . '</i>';
 						}
 						
 						// Get Status
-						switch($event['estado']) {
+						switch ($event['estado']) {
 							case 0:
 								$img_st = "images/star.png";
 								$title_st = __('New event');
@@ -289,14 +298,23 @@ class Events {
 		$system = System::getInstance();
 		$user = User::getInstance();
 		
+		$this->default_filters['severity'] = true;
+		$this->default_filters['group'] = true;
+		$this->default_filters['type'] = true;
+		$this->default_filters['status'] = true;
+		$this->default_filters['free_search'] = true;
+		$this->default_filters['hours_old'] = true;
+		
 		$this->hours_old = $system->getRequest('hours_old', 8);
 		if ($this->hours_old != 8) {
 			$this->default = false;
+			$this->default_filters['hours_old'] = false;
 		}
 		
 		$this->free_search = $system->getRequest('free_search', '');
 		if ($this->free_search != '') {
 			$this->default = false;
+			$this->default_filters['free_search'] = false;
 		}
 		
 		$this->status = $system->getRequest('status', __("Status"));
@@ -306,6 +324,7 @@ class Events {
 		else {
 			$this->status = (int)$this->status;
 			$this->default = false;
+			$this->default_filters['status'] = false;
 		}
 		
 		$this->type = $system->getRequest('type', __("Type"));
@@ -314,6 +333,7 @@ class Events {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['type'] = false;
 		}
 		
 		$this->group = $system->getRequest('group', __("Group"));
@@ -325,6 +345,7 @@ class Events {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['group'] = false;
 		}
 		
 		$this->severity = $system->getRequest('severity', __("Severity"));
@@ -333,6 +354,7 @@ class Events {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['severity'] = false;
 		}
 		
 	}
@@ -424,6 +446,10 @@ class Events {
 					<tr class="event_module_graph">
 						<th><?php echo __('Module Graph');?></th>
 						<td class="cell_module_graph"></td>
+					</tr>
+					<tr class="event_agent">
+						<th><?php echo __('Agent');?></th>
+						<td class="cell_agent"></td>
 					</tr>
 					<tr class="event_tags">
 						<th><?php echo __('Tags');?></th>
@@ -820,9 +846,12 @@ class Events {
 									
 									//The link to module graph
 									$(\".event_module_graph\").hide();
+									$(\".event_agent\").hide();
 									if (event[\"id_agentmodule\"] != \"0\") {
 										$(\".event_module_graph\").show();
+										$(\".event_agent\").show();
 										$(\".cell_module_graph\").html(event[\"module_graph_link\"]);
+										$(\".cell_agent\").html(event[\"agent\"]);
 									}
 									
 									$(\"#event_id\").val(id_event);
@@ -986,21 +1015,54 @@ class Events {
 			return __("(Default)");
 		}
 		else {
-			$status = "";
-			if (!empty($this->status))
-				$status = events_get_status($this->status);
-			$type = "";
-			if (!empty($this->type))
-				$type = get_event_types($this->type);
-			$severity = "";
-			if ($this->severity != -1)
-				$severity = get_priorities($this->severity);
+			$filters_to_serialize = array();
 			
 			
-			$string = sprintf(
-				__("(Status: %s - Hours: %s - Type: %s - Severity: %s - Free Search: %s)"),
-				$status, $this->hours_old, $type, $severity,
-				$this->free_search);
+			if (!$this->default_filters['severity']) {
+				$filters_to_serialize[] = sprintf(__("Severity: %s"),
+					get_priorities($this->severity));
+			}
+			if (!$this->default_filters['group']) {
+				$groups = users_get_groups_for_select(
+					$system->getConfig('id_user'), "ER", true, true, false, 'id_grupo');
+				
+				$filters_to_serialize[] = sprintf(__("Group: %s"),
+					$groups[$this->group]);
+			}
+			if (!$this->default_filters['type']) {
+				$filters_to_serialize[] = sprintf(__("Type: %s"),
+					get_event_types($this->type));
+			}
+			if (!$this->default_filters['status']) {
+				$filters_to_serialize[] = sprintf(__("Status: %s"),
+					events_get_status($this->status));
+			}
+			if (!$this->default_filters['free_search']) {
+				$filters_to_serialize[] = sprintf(__("Free search: %s"),
+					$this->free_search);
+			}
+			if (!$this->default_filters['hours_old']) {
+				$filters_to_serialize[] = sprintf(__("Hours: %s"),
+					$this->hours_old);
+			}
+			
+			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
+			//~ 
+			//~ $status = "";
+			//~ if (!empty($this->status))
+				//~ $status = events_get_status($this->status);
+			//~ $type = "";
+			//~ if (!empty($this->type))
+				//~ $type = get_event_types($this->type);
+			//~ $severity = "";
+			//~ if ($this->severity != -1)
+				//~ $severity = get_priorities($this->severity);
+			//~ 
+			//~ 
+			//~ $string = sprintf(
+				//~ __("(Status: %s - Hours: %s - Type: %s - Severity: %s - Free Search: %s)"),
+				//~ $status, $this->hours_old, $type, $severity,
+				//~ $this->free_search);
 			
 			return $string;
 		}

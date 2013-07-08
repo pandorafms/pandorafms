@@ -524,8 +524,15 @@ class Ui {
 			
 			$selected = '';
 			if (isset($options['selected'])) {
-				if ($options['selected'] === $item_id) {
-					$selected = "selected = 'selected'";
+				if (is_numeric($options['selected'])) {
+					if (floatval($options['selected']) === floatval($item_id)) {
+						$selected = "selected = 'selected'";
+					}
+				}
+				else {
+					if ($options['selected'] === $item_id) {
+						$selected = "selected = 'selected'";
+					}
 				}
 			}
 			

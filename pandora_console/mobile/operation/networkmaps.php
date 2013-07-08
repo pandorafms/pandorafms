@@ -21,6 +21,8 @@ class Networkmaps {
 	private $acl = "AR";
 	
 	private $default = true;
+	private $default_filters = array();
+	
 	private $group = 0;
 	private $type = 0;
 	
@@ -57,6 +59,9 @@ class Networkmaps {
 		$system = System::getInstance();
 		$user = User::getInstance();
 		
+		$this->default_filters['group'] = true;
+		$this->default_filters['type'] = true;
+		
 		$this->group = (int)$system->getRequest('group', __("Group"));
 		if (!$user->isInGroup($this->acl, $this->group)) {
 			$this->group = 0;
@@ -66,14 +71,16 @@ class Networkmaps {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['group'] = false;
 		}
 		
 		$this->type = $system->getRequest('type', __("Type"));
-		if (($this->type === __("Type")) || ($this->type == 0)) {
-			$this->type = 0;
+		if (($this->type === __("Type")) || ($this->type === '0')) {
+			$this->type = '0';
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['type'] = false;
 		}
 	}
 	
@@ -192,15 +199,32 @@ class Networkmaps {
 			return __("(Default)");
 		}
 		else {
-			$networkmap_types = networkmap_get_filter_types();
-			$networkmap_types[0] = __('All');
-			$type = $networkmap_types[$this->type];
-			$group = groups_get_name($this->group, true);
+			$filters_to_serialize = array();
+			
+			if (!$this->default_filters['group']) {
+				$filters_to_serialize[] = sprintf(__("Group: %s"),
+					groups_get_name($this->group, true));
+			}
+			if (!$this->default_filters['type']) {
+				$networkmap_types = networkmap_get_filter_types();
+				$networkmap_types[0] = __('All');
+				
+				$filters_to_serialize[] = sprintf(__("Type: %s"),
+					$networkmap_types[$this->type]);
+			}
+			
+			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
 			
 			
-			$string = sprintf(
-				__("(Type: %s - Group: %s)"),
-				$type, $group);
+			//~ $networkmap_types = networkmap_get_filter_types();
+			//~ $networkmap_types[0] = __('All');
+			//~ $type = $networkmap_types[$this->type];
+			//~ $group = groups_get_name($this->group, true);
+			//~ 
+			//~ 
+			//~ $string = sprintf(
+				//~ __("(Type: %s - Group: %s)"),
+				//~ $type, $group);
 			
 			return $string;
 		}

@@ -17,6 +17,8 @@ class Modules {
 	private $acl = "AR";
 	
 	private $default = true;
+	private $default_filters = array();
+	
 	private $group = 0;
 	private $status = AGENT_MODULE_STATUS_NOT_NORMAL;
 	private $free_search = '';
@@ -102,9 +104,15 @@ class Modules {
 		$system = System::getInstance();
 		$user = User::getInstance();
 		
+		$this->default_filters['module_group'] = true;
+		$this->default_filters['group'] = true;
+		$this->default_filters['status'] = true;
+		$this->default_filters['free_search'] = true;
+		
 		$this->free_search = $system->getRequest('free_search', '');
 		if ($this->free_search != '') {
 			$this->default = false;
+			$this->default_filters['free_search'] = false;
 		}
 		
 		$this->status = $system->getRequest('status', __("Status"));
@@ -113,6 +121,7 @@ class Modules {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['status'] = false;
 		}
 		
 		$this->group = (int)$system->getRequest('group', __("Group"));
@@ -124,15 +133,18 @@ class Modules {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['group'] = false;
 		}
 		
 		$this->module_group = (int)$system->getRequest('module_group', __("Module group"));
-		if (($this->module_group === __("Module group")) || ($this->module_group == -1)
+		if (($this->module_group === __("Module group")) || ($this->module_group === -1)
 			|| ($this->module_group == 0)) {
 			$this->module_group = -1;
 		}
 		else {
 			$this->default = false;
+			$this->module_group = (int) $this->module_group;
+			$this->default_filters['module_group'] = false;
 		}
 		
 		$this->tag = (int)$system->getRequest('tag', __("Tag"));
@@ -197,6 +209,7 @@ class Modules {
 						'selected' => $this->status
 						);
 					$ui->formAddSelectBox($options);
+					
 					
 					$module_groups = db_get_all_rows_sql("SELECT *
 						FROM tmodule_group
@@ -618,18 +631,45 @@ class Modules {
 			return __("(Default)");
 		}
 		else {
-			$status = $this->list_status[$this->status];
 			
-			$group = groups_get_name($this->group, true);
+			$filters_to_serialize = array();
 			
-			$module_group = db_get_value('name',
-				'tmodule_group', 'id_mg', $this->module_group);
-			$module_group = io_safe_output($module_group);
-			$tag = tags_get_name($this->tag);
+			if (!$this->default_filters['group']) {
+				$filters_to_serialize[] = sprintf(__("Group: %s"),
+					groups_get_name($this->group, true));
+			}
+			if (!$this->default_filters['module_group']) {
+				$module_group = db_get_value('name',
+					'tmodule_group', 'id_mg', $this->module_group);
+				$module_group = io_safe_output($module_group);
+				
+				$filters_to_serialize[] = sprintf(__("Module group: %s"),
+					$module_group);
+			}
+			if (!$this->default_filters['status']) {
+				$filters_to_serialize[] = sprintf(__("Status: %s"),
+					$this->list_status[$this->status]);
+			}
+			if (!$this->default_filters['free_search']) {
+				$filters_to_serialize[] = sprintf(__("Free Search: %s"),
+					$this->free_search);
+			}
 			
-			$string = sprintf(
-				__("(Status: %s - Group: %s - Module group: %s - Tag: %s - Free Search: %s)"),
-				$status, $group, $module_group, $tag, $this->free_search);
+			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
+			
+			
+			
+			//~ $status = $this->list_status[$this->status];
+			//~ 
+			//~ $group = groups_get_name($this->group, true);
+			//~ 
+			//~ $module_group = db_get_value('name',
+				//~ 'tmodule_group', 'id_mg', $this->module_group);
+			//~ $module_group = io_safe_output($module_group);
+			//~ 
+			//~ $string = sprintf(
+				//~ __("(Status: %s - Group: %s - Module group: %s - Free Search: %s)"),
+				//~ $status, $group, $module_group, $this->free_search);
 			
 			return $string;
 		}

@@ -510,14 +510,26 @@ class Modules {
 			}
 		}
 		else {
-			$table = new Table();
-			$table->id = 'list_Modules';
-			$table->importFromHash($listModules['modules']);
 			if (!$return) {
+				$table = new Table();
+				$table->id = 'list_Modules';
+				$table->importFromHash($listModules['modules']);
+				
 				$ui->contentAddHtml($table->getHTML());
 			}
 			else {
+				foreach ($listModules['modules'] as $key => $module) {
+					$listModules['modules'][$key][__('Status')] .=
+						'<span style="display: none;" class="show_collapside">' .
+						$listModules['modules'][$key][__('Data')] . 
+						'</span>';
+				}
+				
+				$table = new Table();
 				$table->id = 'list_Modules_Embedded';
+				
+				$table->importFromHash($listModules['modules']);
+				
 				$html = $table->getHTML();
 				
 				return $html;

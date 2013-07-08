@@ -1,5 +1,10 @@
 2013-07-08 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/operation/modules.php, mobile/include/style/main.css:
+	yes another fixes.
+
+2013-07-08 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/operation/alerts.php, mobile/operation/events.php,
 	mobile/operation/modules.php, mobile/operation/networkmaps.php,
 	mobile/operation/agents.php, mobile/include/ui.class.php,

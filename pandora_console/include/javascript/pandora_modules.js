@@ -43,7 +43,7 @@ function configure_modules_form () {
 			function (data, status) {
 				if (data == false) {
 					$("#component_loading").hide ();
-					$("span#no_component").show ();
+					$("#no_component").show ();
 					return;
 				}
 				jQuery.each (data, function (i, val) {
@@ -58,7 +58,6 @@ function configure_modules_form () {
 			},
 			"json"
 		);
-		
 		}
 	);
 	
@@ -219,40 +218,8 @@ function configure_modules_form () {
 		);
 	});
 	
-	$("#network_component_group").change (function () {
-		var $select = $("#network_component").hide ();
-		$("#component").hide ();
-		if (this.value == 0)
-			return;
-		$("#component_loading").show ();
-		$(".error, #no_component").hide ();
-		$("option[value!=0]", $select).remove ();
-		jQuery.post ("ajax.php",
-			{"page" : "godmode/agentes/module_manager_editor",
-			"get_module_components" : 1,
-			"id_module_component_group" : this.value,
-			"id_module_component_type" : $("#hidden-id_module_component_type").attr ("value")
-			},
-			function (data, status) {
-				if (data == false) {
-					$("#component_loading").hide ();
-					$("span#no_component").show ();
-					return;
-				}
-				jQuery.each (data, function (i, val) {
-					option = $("<option></option>")
-						.attr ("value", val['id_nc'])
-						.append (val['name']);
-					$select.append (option);
-				});
-				$("#component_loading").hide ();
-				$select.show ();
-				$("#component").show ();
-			},
-			"json"
-		);
-	});
-	
+	network_component_group_change_event();
+
 	$("#network_component").change (function () {
 		if (this.value == 0)
 			return;
@@ -677,5 +644,41 @@ function show_module_detail_dialog(module_id, id_agente) {
 				})
 				.show ();
 		}
+	});
+}
+
+function network_component_group_change_event() {
+	$("#network_component_group").change (function () {
+		var $select = $("#network_component").hide ();
+		$("#component").hide ();
+		if (this.value == 0)
+			return;
+		$("#component_loading").show ();
+		$(".error, #no_component").hide ();
+		$("option[value!=0]", $select).remove ();
+		jQuery.post ("ajax.php",
+			{"page" : "godmode/agentes/module_manager_editor",
+			"get_module_components" : 1,
+			"id_module_component_group" : this.value,
+			"id_module_component_type" : $("#hidden-id_module_component_type").attr ("value")
+			},
+			function (data, status) {
+				if (data == false) {
+					$("#component_loading").hide ();
+					$("#no_component").show ();
+					return;
+				}
+				jQuery.each (data, function (i, val) {
+					option = $("<option></option>")
+						.attr ("value", val['id_nc'])
+						.append (val['name']);
+					$select.append (option);
+				});
+				$("#component_loading").hide ();
+				$select.show ();
+				$("#component").show ();
+			},
+			"json"
+		);
 	});
 }

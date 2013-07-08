@@ -1,3 +1,15 @@
+2013-07-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_modules.js
+	include/functions_wmi.php
+	extensions/snmp_explorer.php
+	godmode/agentes/agent_wizard.wmi_explorer.php
+	godmode/agentes/agent_wizard.snmp_interfaces_explorer.php
+	godmode/agentes/agent_wizard.php
+	godmode/agentes/configurar_agente.php: Replace the SNMP explorer by 
+	the Agent wizard with two initial sections. SNMP interfaces explorer
+	and WMI explorer
+
 2013-07-08 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/modules.php, mobile/include/style/main.css:

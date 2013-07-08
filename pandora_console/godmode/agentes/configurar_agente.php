@@ -339,6 +339,16 @@ if ($id_agente) {
 			$gistab['active'] = false;
 	}
 	
+	/* Agent wizard tab */
+	$agent_wizard['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&id_agente='.$id_agente.'">'
+		. html_print_image ("images/wand.png", true, array ( "title" => __('Agent wizard')))
+		. '</a>';
+	
+	if ($tab == "agent_wizard")
+		$agent_wizard['active'] = true;
+	else
+		$agent_wizard['active'] = false;
+	
 	$total_incidents = agents_get_count_incidents($id_agente);
 	
 	/* Incident tab */
@@ -363,7 +373,8 @@ if ($id_agente) {
 			'pluginstab' => $pluginstab,
 			'collection'=> $collectiontab,
 			'group' => $grouptab,
-			'gis' => $gistab);
+			'gis' => $gistab,
+			'agent_wizard' => $agent_wizard);
 			
 		// Only if the agent has incidents associated show incidents tab
 		if ($total_incidents) {
@@ -1393,6 +1404,9 @@ switch ($tab) {
 		if (!$found) {
 			ui_print_error_message (__('Invalid tab specified'));
 		}
+		break;
+	case "agent_wizard":
+		require("agent_wizard.php");
 		break;
 	default:
 		if (enterprise_hook ('switch_agent_tab', array ($tab))) {

@@ -1,5 +1,13 @@
 2013-07-09  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_graph.php: Fix the alerts status pie graph
+	to make it more usefull
+
+	* godmode/agentes/agent_wizard.snmp_interfaces_explorer.php: Comment
+	code
+
+2013-07-09  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css
 	images/wand_agent.png
 	images/wand_snmp.png

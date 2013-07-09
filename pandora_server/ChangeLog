@@ -1,3 +1,8 @@
+2013-07-09 Miguel de Dios <miguel.dedios@artica.es>
+
+	* lib/PandoraFMS/PredictionServer.pm, util/pandora_xml_stress.pl:
+	improved the source code style.
+
 2013-07-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added macros _snmp_oid_ and _snmp_value_ to

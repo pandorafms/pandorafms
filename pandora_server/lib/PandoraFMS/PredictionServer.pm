@@ -156,6 +156,7 @@ sub exec_prediction_module ($$$$) {
 	
 	# Service modules
 	if ($agent_module->{'prediction_module'} == 2) {
+		
 		if ($agent_module->{'custom_string_1'} eq 'SLA') {
 			logger ($pa_config, "Executing service module SLA " .
 				$agent_module->{'id_agente_modulo'} . " " .
@@ -170,6 +171,7 @@ sub exec_prediction_module ($$$$) {
 			enterprise_hook ('exec_service_module', [$pa_config, $agent_module, $server_id, $dbh]);
 			logger ($pa_config, "End execution", 5);
 		}
+		
 		return;
 	}
 	

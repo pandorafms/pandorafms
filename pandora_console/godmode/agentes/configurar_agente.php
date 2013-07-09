@@ -340,8 +340,8 @@ if ($id_agente) {
 	}
 	
 	/* Agent wizard tab */
-	$agent_wizard['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&id_agente='.$id_agente.'">'
-		. html_print_image ("images/wand.png", true, array ( "title" => __('Agent wizard')))
+	$agent_wizard['text'] = '<a href="javascript:" class="agent_wizard_tab">'
+		. html_print_image ("images/wand_agent.png", true, array ( "title" => __('Agent wizard')))
 		. '</a>';
 	
 	if ($tab == "agent_wizard")
@@ -1416,4 +1416,61 @@ switch ($tab) {
 		}
 		break;
 }
+
+// Hidden subtab layer
+echo '<div id="agent_wizard_subtabs">';
+echo '<ul class="mn subsubmenu" style="background: #555555;">';
+echo '<li class="nomn tab_godmode" style="text-align: center;">';
+echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente='.$id_agente.'">'
+		. html_print_image ("images/wand_interfaces.png", true, array ( "title" => __('SNMP Interfaces explorer')))
+		. '</a>';
+echo '<li>';
+echo '<li class="nomn tab_godmode" style="text-align: center;">';
+echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente='.$id_agente.'">'
+		. html_print_image ("images/wand_wmi.png", true, array ( "title" => __('WMI Explorer')))
+		. '</a>';
+echo '<li>';
+echo '</ul>';
+echo '</div>';
 ?>
+<script type="text/javascript">
+var wizard_tab_showed = 0;
+
+/* <![CDATA[ */
+$(document).ready (function () {
+	// Control the tab and subtab hover. When mouse leave one, 
+	// check if is hover the other before hide the subtab
+	$('.agent_wizard_tab').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
+	
+	$('#agent_wizard_subtabs').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
+});
+
+// Set the position and width of the subtab
+function agent_wizard_tab_setup() {		
+	$('#agent_wizard_subtabs').css('left', $('.agent_wizard_tab').offset().left)
+	$('#agent_wizard_subtabs').css('top', $('.agent_wizard_tab').offset().top + $('.agent_wizard_tab').height() + 4)
+	$('#agent_wizard_subtabs').css('width', $('.agent_wizard_tab').width() + 6)
+}
+agent_wizard_tab_setup();
+
+
+function agent_wizard_tab_show() {
+	wizard_tab_showed = wizard_tab_showed + 1;
+	
+	if(wizard_tab_showed == 1) {
+		$('#agent_wizard_subtabs').show("fast");
+	}
+}
+
+function agent_wizard_tab_hide() {
+	wizard_tab_showed = wizard_tab_showed - 1;
+
+	setTimeout(function() {
+		if(wizard_tab_showed <= 0) {
+			$('#agent_wizard_subtabs').hide("fast");
+		}
+	},500);
+}
+
+/* ]]> */
+</script>

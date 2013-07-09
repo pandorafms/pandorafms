@@ -1,3 +1,14 @@
+2013-07-09  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	images/wand_agent.png
+	images/wand_snmp.png
+	images/wand_wmi.png
+	images/wand_interfaces.png
+	godmode/agentes/agent_wizard.php
+	godmode/agentes/configurar_agente.php: Add new subtab to
+	agent wizard
+
 2013-07-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_modules.js

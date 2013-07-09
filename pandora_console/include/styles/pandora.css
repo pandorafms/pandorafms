@@ -2658,4 +2658,27 @@ DIV.nodata_container {
 	#padding: 10px;
 }
 
+/* Subtab styles */
 
+ul.subsubmenu {
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	-moz-border-bottom-right-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	
+	background: #555555;
+}
+
+div#agent_wizard_subtabs {
+	position: absolute;
+	margin-left: 0px;
+	display: none;
+	padding-bottom: 3px;
+	z-index: 1000;
+}
+
+.agent_wizard_tab:hover {
+	cursor: default;
+}

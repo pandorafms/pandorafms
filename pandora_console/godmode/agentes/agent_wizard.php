@@ -33,11 +33,13 @@ switch($wizard_section) {
 		break;
 }
 
+/*
 echo "<div style='text-align: right; width: 98%; padding-top: 10px; padding-bottom: 10px;'>";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente=$idAgent' style='" . $snmp_interfaces_explorer_style . "'>" . __('SNMP Interfaces explorer') . "</a>";
 echo " | ";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente=$idAgent' style='" . $wmi_explorer_style . "'>" . __('WMI explorer') . "</a>";
 echo "</div>";
+*/
 
 require("agent_wizard." . $wizard_section . ".php");
 

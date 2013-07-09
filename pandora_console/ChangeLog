@@ -1,3 +1,8 @@
+2013-07-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/snmpconsole/snmp_view.php: Do not retrieve all traps to
+	  get a list of sources.
+
 2013-07-08 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/modules/manage_network_components.php: fixed the float

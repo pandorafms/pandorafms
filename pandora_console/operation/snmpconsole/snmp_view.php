@@ -149,7 +149,7 @@ switch ($config["dbtype"]) {
 }
 $traps = db_get_all_rows_sql ($sql);
 // All traps 
-$all_traps = db_get_all_rows_sql ("SELECT * FROM ttrap");
+$all_traps = db_get_all_rows_sql ("SELECT DISTINCT source FROM ttrap");
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {

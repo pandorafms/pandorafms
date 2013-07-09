@@ -188,7 +188,7 @@ sub generate_xml_files ($$$$$$) {
 				$xml_data .= "\t\t<name>$module_name</name>\n";
 				$xml_data .= "\t\t<description>$module_description</description>\n";			
 				$xml_data .= "\t\t<type>$module_type</type>\n";
-
+				
 				if ($module_min_critical ne '') {
 					$xml_data .= "\t\t<min_critical>$module_min_critical</min_critical>\n";
 				}
@@ -389,7 +389,7 @@ sub generate_data_from_source ($$$) {
 		
 		$pointer = $pointers->{$module_name};
 		
-		$pointer = $pointer % ($#data_array+1);
+		$pointer = $pointer % ($#data_array + 1);
 		
 		$data = $data_array[$pointer];
 		

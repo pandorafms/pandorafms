@@ -1355,14 +1355,14 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 function graph_alert_status ($defined_alerts, $fired_alerts, $width = 300, $height = 200, $return = false) {
 	global $config;
 	
-	$data = array(__('Defined alerts') => $defined_alerts, __('Fired alerts') => $fired_alerts);
+	$data = array(__('Not fired alerts') => $defined_alerts - $fired_alerts, __('Fired alerts') => $fired_alerts);
 	$colors = array(COL_NORMAL, COL_ALERTFIRED);
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
 	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
-		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
 	
 	if ($return) {
 		return $out;

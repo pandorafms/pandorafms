@@ -263,17 +263,22 @@ sub pandora_purgedb ($$) {
 	}
 	
 	# Purge the reports
-	log_message ('PURGE', "Delete contents in report that have some deleted modules.");
-	db_do ($dbh, "DELETE FROM treport_content WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
-	db_do ($dbh, "DELETE FROM treport_content_item WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
-	db_do ($dbh, "DELETE FROM treport_content_sla_combined WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
-	
-	log_message ('PURGE', "Delete contents in report that have some deleted agents.");
-	db_do ($dbh, "DELETE FROM treport_content WHERE id_agent NOT IN (SELECT id_agente FROM tagente) AND id_agent != 0;");
-	
-	log_message ('PURGE', "Delete empty contents in report (like SLA or Exception).");
-	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'exception' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
-	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
+   	if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
+	    defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
+		log_message ('PURGE', "Metaconsole enabled, ignoring reports.");
+	} else {
+		log_message ('PURGE', "Delete contents in report that have some deleted modules.");
+		db_do ($dbh, "DELETE FROM treport_content WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
+		db_do ($dbh, "DELETE FROM treport_content_item WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
+		db_do ($dbh, "DELETE FROM treport_content_sla_combined WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
+		
+		log_message ('PURGE', "Delete contents in report that have some deleted agents.");
+		db_do ($dbh, "DELETE FROM treport_content WHERE id_agent NOT IN (SELECT id_agente FROM tagente) AND id_agent != 0;");
+		
+		log_message ('PURGE', "Delete empty contents in report (like SLA or Exception).");
+		db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'exception' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
+		db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
+	}
 	
 	# Delete old netflow data
 	log_message ('PURGE', "Deleting old netflow data.");

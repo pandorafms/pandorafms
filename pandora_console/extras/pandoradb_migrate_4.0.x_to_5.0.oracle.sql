@@ -184,6 +184,10 @@ ALTER TABLE talert_snmp ADD (_snmp_f3_ CLOB default '');
 ALTER TABLE talert_snmp ADD (_snmp_f4_ CLOB default ''); 
 ALTER TABLE talert_snmp ADD (_snmp_f5_ CLOB default ''); 
 ALTER TABLE talert_snmp ADD (_snmp_f6_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f7_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f8_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f9_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f10_ CLOB default '');
 ALTER TABLE talert_snmp ADD (trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL);
 ALTER TABLE talert_snmp ADD (single_value VARCHAR2(255) DEFAULT '');
 ALTER TABLE talert_snmp ADD (al_field4 CLOB default '');
@@ -192,6 +196,7 @@ ALTER TABLE talert_snmp ADD (al_field6 CLOB default '');
 ALTER TABLE talert_snmp ADD (al_field7 CLOB default '');
 ALTER TABLE talert_snmp ADD (al_field8 CLOB default '');
 ALTER TABLE talert_snmp ADD (al_field9 CLOB default '');
+ALTER TABLE talert_snmp ADD (al_field10 CLOB default '');
 ALTER TABLE talert_snmp ADD (al_field10 CLOB default '');
 
 -- ---------------------------------------------------------------------

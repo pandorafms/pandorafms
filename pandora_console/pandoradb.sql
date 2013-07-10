@@ -287,6 +287,10 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 	`_snmp_f4_` text, 
 	`_snmp_f5_` text, 
 	`_snmp_f6_` text,
+	`_snmp_f7_` text,
+	`_snmp_f8_` text,
+	`_snmp_f9_` text,
+	`_snmp_f10_` text,
 	`trap_type` int(11) NOT NULL default '-1',
 	`single_value` varchar(255) default '', 
 	PRIMARY KEY  (`id_as`)
@@ -862,7 +866,8 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
 	`severity` tinyint(4) unsigned NOT NULL default '2',
 	PRIMARY KEY  (`id_trap`),
 	INDEX timestamp (`timestamp`),
-	INDEX status (`status`)
+	INDEX status (`status`),
+	INDEX source (`source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------

@@ -64,6 +64,10 @@ else if (isset ($_GET["submit"])) {
 	$custom_oid_data_4 = (string) get_parameter ("custom_oid_data_4"); 
 	$custom_oid_data_5 = (string) get_parameter ("custom_oid_data_5"); 
 	$custom_oid_data_6 = (string) get_parameter ("custom_oid_data_6");
+	$custom_oid_data_7 = (string) get_parameter ("custom_oid_data_7");
+	$custom_oid_data_8 = (string) get_parameter ("custom_oid_data_8");
+	$custom_oid_data_9 = (string) get_parameter ("custom_oid_data_9");
+	$custom_oid_data_10 = (string) get_parameter ("custom_oid_data_10");
 	$trap_type = (int) get_parameter ("trap_type", -1);
 	$single_value = (string) get_parameter ("single_value"); 
 	
@@ -98,6 +102,10 @@ else if (isset ($_GET["submit"])) {
 			'_snmp_f4_' => $custom_oid_data_4,
 			'_snmp_f5_' => $custom_oid_data_5,
 			'_snmp_f6_' => $custom_oid_data_6,
+			'_snmp_f7_' => $custom_oid_data_7,
+			'_snmp_f8_' => $custom_oid_data_8,
+			'_snmp_f9_' => $custom_oid_data_9,
+			'_snmp_f10_' => $custom_oid_data_10,
 			'trap_type' => $trap_type,
 			'single_value' => $single_value);
 			
@@ -124,7 +132,8 @@ else if (isset ($_GET["submit"])) {
 			time_threshold = %d, max_alerts = %d, min_alerts = %d,
 			_snmp_f1_ = '%s', _snmp_f2_ = '%s', _snmp_f3_ = '%s',
 			_snmp_f4_ = '%s', _snmp_f5_ = '%s', _snmp_f6_ = '%s',
-			trap_type = %d, single_value = '%s' 
+			_snmp_f7_ = '%s', _snmp_f8_ = '%s', _snmp_f9_ = '%s',
+			_snmp_f10_ = '%s', trap_type = %d, single_value = '%s' 
 			WHERE id_as = %d",
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
 			$al_field4, $al_field5, $al_field6, $al_field7, $al_field8,
@@ -132,7 +141,8 @@ else if (isset ($_GET["submit"])) {
 			$description, $source_ip, $custom_value, $oid, $time_threshold,
 			$max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2,
 			$custom_oid_data_3, $custom_oid_data_4, $custom_oid_data_5,
-			$custom_oid_data_6, $trap_type, $single_value, $id_as);
+			$custom_oid_data_6, $custom_oid_data_7, $custom_oid_data_8,
+			$custom_oid_data_9, $custom_oid_data_10, $trap_type, $single_value, $id_as);
 		
 		$result = db_process_sql ($sql);
 		
@@ -181,6 +191,10 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$custom_oid_data_4 = $alert["_snmp_f4_"];
 	$custom_oid_data_5 = $alert["_snmp_f5_"];
 	$custom_oid_data_6 = $alert["_snmp_f6_"];
+	$custom_oid_data_7 = $alert["_snmp_f7_"];
+	$custom_oid_data_8 = $alert["_snmp_f8_"];
+	$custom_oid_data_9 = $alert["_snmp_f9_"];
+	$custom_oid_data_10 = $alert["_snmp_f10_"];
 	$trap_type = $alert["trap_type"];
 	$single_value = $alert["single_value"]; 
 }
@@ -212,6 +226,10 @@ elseif (isset ($_GET["update_alert"])) {
 	$custom_oid_data_4 = '';
 	$custom_oid_data_5 = '';
 	$custom_oid_data_6 = '';
+	$custom_oid_data_7 = '';
+	$custom_oid_data_8 = '';
+	$custom_oid_data_9 = '';
+	$custom_oid_data_10 = '';
 	$trap_type = -1;
 	$single_value = '';
 }
@@ -327,7 +345,31 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td><td class="datos">';
 	html_print_input_text ("custom_oid_data_6", $custom_oid_data_6, '', 60);
 	echo '</td></tr>';
-	
+
+	//  Custom OID/Data #7
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #7');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_7", $custom_oid_data_7, '', 60);
+	echo '</td></tr>';
+
+	//  Custom OID/Data #8
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #8');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_8", $custom_oid_data_8, '', 60);
+	echo '</td></tr>';
+
+	//  Custom OID/Data #9
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #9');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_9", $custom_oid_data_9, '', 60);
+	echo '</td></tr>';
+
+	//  Custom OID/Data #10
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #10');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_10", $custom_oid_data_10, '', 60);
+	echo '</td></tr>';
+
 	//Button
 	//echo '<tr><td></td><td align="right">';
 	

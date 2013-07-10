@@ -281,6 +281,10 @@ CREATE TABLE "talert_snmp" (
 	"_snmp_f4_" text DEFAULT '', 
 	"_snmp_f5_" text DEFAULT '', 
 	"_snmp_f6_" text DEFAULT '',
+	"_snmp_f7_" text DEFAULT '',
+	"_snmp_f8_" text DEFAULT '',
+	"_snmp_f9_" text DEFAULT '',
+	"_snmp_f10_" text DEFAULT '',
 	"trap_type" INTEGER NOT NULL DEFAULT '-1',
 	"single_value" varchar(255) DEFAULT ''
 );

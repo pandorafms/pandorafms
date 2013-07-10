@@ -151,7 +151,9 @@ ALTER TABLE `tgrupo` ADD COLUMN `other` text;
 -- Table `talert_snmp`
 -- ----------------------------------------------------------------------
 ALTER TABLE `talert_snmp` ADD COLUMN (`_snmp_f1_` text, `_snmp_f2_` text, `_snmp_f3_` text,
-	`_snmp_f4_` text, `_snmp_f5_` text, `_snmp_f6_` text, `trap_type` int(11) NOT NULL default '-1',
+	`_snmp_f4_` text, `_snmp_f5_` text, `_snmp_f6_` text,
+	`_snmp_f7_` text, `_snmp_f8_` text, `_snmp_f9_` text,
+	`_snmp_f10_` text, `trap_type` int(11) NOT NULL default '-1',
 	`single_value` varchar(255) DEFAULT '');
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field4` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field5` text NOT NULL;
@@ -160,6 +162,10 @@ ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f7_` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f8_` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f9_` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f10_` text NOT NULL;
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_modulo`
@@ -1107,6 +1113,8 @@ ALTER TABLE tevento ADD INDEX `idx_utimestamp` USING BTREE (`utimestamp`);
 
 ALTER TABLE tserver DROP INDEX keepalive;
 ALTER TABLE tserver DROP INDEX status;
+
+ALTER TABLE ttrap ADD INDEX `source` USING BTREE (`source`);
 
 -- ---------------------------------------------------------------------
 -- Adapt the talert commands to new macro system

@@ -150,7 +150,7 @@ switch ($config["dbtype"]) {
 }
 $traps = db_get_all_rows_sql ($sql);
 // All traps 
-$all_traps = db_get_all_rows_sql ("SELECT * FROM ttrap");
+$all_traps = db_get_all_rows_sql ("SELECT DISTINCT source FROM ttrap");
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {
@@ -364,10 +364,11 @@ $table->data[2][3] = html_print_select ($severities, 'filter_severity', $filter_
 
 // Status
 $table->data[3][0] = '<strong>'.__('Status').'</strong>';
-$status[-1] = __('All');
-$status[0] = __('Not validated');
-$status[1] = __('Validated');
-$table->data[3][1] = html_print_select ($status, 'filter_status', $filter_status, 'this.form.submit();', '', '', true);
+
+$status_array[-1] = __('All');
+$status_array[0] = __('Not validated');
+$status_array[1] = __('Validated');
+$table->data[3][1] = html_print_select ($status_array, 'filter_status', $filter_status, 'this.form.submit();', '', '', true);
 
 // Free search (search by all alphanumeric fields)
 $table->data[3][3] = '<strong>'.__('Free search').'</strong>' . ui_print_help_tip(__('Search by any alphanumeric field in the trap'), true);
@@ -572,7 +573,15 @@ if ($traps !== false) {
 		$string = '<table style="border:solid 1px #D3D3D3;" width="90%" class="toggle">
 			<tr>
 				<td align="left" valign="top" width="15%" ><b>' . __('Custom data:') . '</b></td>
-				<td align="left" >' . $trap['oid_custom'] . '</td>
+				<td align="left" >';
+				
+		// Print binding vars separately
+		$binding_vars = explode ("\t", $trap['oid_custom']);
+		foreach ($binding_vars as $var) {
+			$string .= $var . "<br/>";
+		}
+		
+		$string .= '</td>
 			</tr>
 			<tr>
 				<td align="left" valign="top">' . '<b>' . __('OID:') . '</td>

@@ -721,7 +721,20 @@ function modules_get_agent_modules_count ($id_agent = 0) {
  * @return string The name of the given type.
  */
 function modules_get_type_name ($id_type) {
-	return (string) db_get_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+	return (string) db_get_value ('nombre',
+		'ttipo_modulo', 'id_tipo', (int) $id_type);
+}
+
+/**
+ * Get the id of a module type
+ *
+ * @param int $id_type Type id
+ *
+ * @return string The name of the given type.
+ */
+function modules_get_type_id($name_type) {
+	return (int) db_get_value ('id_tipo',
+		'ttipo_modulo', 'nombre', $name_type);
 }
 
 /**
@@ -815,25 +828,27 @@ function modules_get_agentmodule_type ($id_agentmodule, $metaconsole = false, $i
  * @return string Module kind of the given agent module.
  */
 function modules_get_agentmodule_kind($id_agentmodule) {
-	$id_modulo = (int) db_get_value ('id_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+	$id_modulo = (int) db_get_value ('id_modulo',
+		'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 	
 	switch($id_modulo) {
-		case 1:
+		case MODULE_DATA:
 			return 'dataserver';
 			break;
-		case 2:
+		case MODULE_NETWORK:
+		case MODULE_SNMP:
 			return 'networkserver';
 			break;
-		case 4:
+		case MODULE_PLUGIN:
 			return 'pluginserver';
 			break;
-		case 5:
+		case MODULE_PREDICTION:
 			return 'predictionserver';
 			break;
-		case 6:
+		case MODULE_WMI:
 			return 'wmiserver';
 			break;
-		case 7:
+		case MODULE_WEB:
 			return 'webserver';
 			break;
 		default:
@@ -872,27 +887,33 @@ function modules_get_monitor_downs_in_period ($id_agent_module, $period, $date =
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
-				`event_type` = 'monitor_down' 
-				AND `id_agentmodule` = %d 
-				AND `utimestamp` > %d 
-				AND `utimestamp` <= %d",
+			$sql = sprintf ("SELECT COUNT(`id_agentmodule`)
+				FROM `tevento`
+				WHERE
+					`event_type` = 'monitor_down' 
+					AND `id_agentmodule` = %d 
+					AND `utimestamp` > %d 
+					AND `utimestamp` <= %d",
 				$id_agent_module, $datelimit, $date);
 			break;
 		case "postgresql":
-			$sql = sprintf ("SELECT COUNT(\"id_agentmodule\") FROM \"tevento\" WHERE
-				\"event_type\" = 'monitor_down' 
-				AND \"id_agentmodule\" = %d 
-				AND \"utimestamp\" > %d 
-				AND \"utimestamp\" <= %d",
+			$sql = sprintf ("SELECT COUNT(\"id_agentmodule\")
+				FROM \"tevento\"
+				WHERE
+					\"event_type\" = 'monitor_down' 
+					AND \"id_agentmodule\" = %d 
+					AND \"utimestamp\" > %d 
+					AND \"utimestamp\" <= %d",
 				$id_agent_module, $datelimit, $date);
 			break;
 		case "oracle":
-			$sql = sprintf ("SELECT COUNT(id_agentmodule) FROM tevento WHERE
-				event_type = 'monitor_down' 
-				AND id_agentmodule = %d 
-				AND utimestamp > %d 
-				AND utimestamp <= %d",
+			$sql = sprintf ("SELECT COUNT(id_agentmodule)
+				FROM tevento
+				WHERE
+					event_type = 'monitor_down' 
+					AND id_agentmodule = %d 
+					AND utimestamp > %d 
+					AND utimestamp <= %d",
 				$id_agent_module, $datelimit, $date);
 			break;
 	}
@@ -1091,7 +1112,7 @@ function modules_get_moduletypes ($type = "all", $rows = "nombre") {
 	$rows = (array) $rows; //Cast as array
 	$row_cnt = count ($rows);
 	if ($type == "remote") {
-		return array_merge (range (6,18), (array) 100);
+		return array_merge (range (6,18), (array)100);
 	}
 	elseif ($type == "agent") {
 		return array_merge (range (1,4), range (19,24));
@@ -1127,8 +1148,8 @@ function modules_get_moduletypes ($type = "all", $rows = "nombre") {
 function modules_get_interval ($id_agent_module) {
 	$interval = (int) db_get_value ('module_interval', 'tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
 	if ($interval > 0)
-	return $interval;
-
+		return $interval;
+	
 	$id_agent = modules_give_agent_id_from_module_id ($id_agent_module);
 	return (int) agents_get_interval ($id_agent);
 }
@@ -1286,7 +1307,7 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
 	
 	$interval = modules_get_interval ($id_agent_module);
 	$sql = sprintf ('SELECT *
-		FROM tagente_datos
+		FROM ' . $table . '
 		WHERE id_agente_modulo = %d 
 			AND utimestamp <= %d 
 			AND utimestamp >= %d
@@ -1359,15 +1380,15 @@ function modules_get_agentmodule_modulegroup ($id_module) {
 function modules_get_modulegroups () {
 	$result = db_get_all_fields_in_table ("tmodule_group");
 	$return = array ();
-
+	
 	if (empty ($result)) {
 		return $return;
 	}
-
+	
 	foreach ($result as $modulegroup) {
 		$return[$modulegroup["id_mg"]] = $modulegroup["name"];
 	}
-
+	
 	return $return;
 }
 
@@ -1399,23 +1420,23 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	
 	// This module is initialized ? (has real data)
 	//$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
-	if ($db_status == 4) {
+	if ($db_status == AGENT_MODULE_STATUS_NO_DATA) {
 		$status = STATUS_MODULE_NO_DATA;
 		$title = __('NOT INIT');
 	}
-	elseif ($db_status == 1) {
+	elseif ($db_status == AGENT_MODULE_STATUS_CRITICAL_BAD) {
 		$status = STATUS_MODULE_CRITICAL;
 		$title = __('CRITICAL');
 	}
-	elseif ($db_status == 2) {
+	elseif ($db_status == AGENT_MODULE_STATUS_WARNING) {
 		$status = STATUS_MODULE_WARNING;
 		$title = __('WARNING');
 	}
-	elseif ($db_status == 0) {
+	elseif ($db_status == AGENT_MODULE_STATUS_NORMAL) {
 		$status = STATUS_MODULE_OK;
 		$title = __('NORMAL');
 	}
-	elseif ($db_status == 3) {
+	elseif ($db_status == AGENT_MODULE_STATUS_UNKNOW) {
 		$status = STATUS_AGENT_DOWN;
 		$last_status =  modules_get_agentmodule_last_status($id_agent_module);
 		switch($last_status) {
@@ -1503,13 +1524,13 @@ function modules_agents_critical ($module_name) {
 	//TODO REVIEW ORACLE AND POSTGRES
 	
 	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) 
-						FROM tagente_estado, tagente, tagente_modulo 
-						WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
-						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-						AND tagente_modulo.disabled = 0 
-						AND estado = 1 
-						AND tagente_estado.id_agente = tagente.id_agente 
-						AND tagente_modulo.nombre = '$module_name'");
+		FROM tagente_estado, tagente, tagente_modulo 
+		WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
+			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+			AND tagente_modulo.disabled = 0 
+			AND estado = 1 
+			AND tagente_estado.id_agente = tagente.id_agente 
+			AND tagente_modulo.nombre = '$module_name'");
 }
 
 // Get warning agents by using the status code in modules.
@@ -1526,15 +1547,15 @@ function modules_agents_warning ($module_name) {
 	//TODO REVIEW ORACLE AND POSTGRES
 	
 	return db_get_sql ("SELECT COUNT(min_estado) 
-						FROM (SELECT MAX(tagente_estado.estado) as min_estado 
-								FROM tagente_estado, tagente, tagente_modulo 
-								WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
-								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-								AND tagente_modulo.disabled = 0 
-								AND tagente_estado.id_agente = tagente.id_agente 
-								AND tagente_modulo.nombre = '$module_name' 
-								GROUP BY tagente.id_agente 
-								HAVING min_estado = 2) AS S1");
+		FROM (SELECT MAX(tagente_estado.estado) as min_estado 
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
+				AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+				AND tagente_modulo.disabled = 0 
+				AND tagente_estado.id_agente = tagente.id_agente 
+				AND tagente_modulo.nombre = '$module_name' 
+			GROUP BY tagente.id_agente 
+				HAVING min_estado = 2) AS S1");
 }
 
 // Get unknown agents by using the status code in modules
@@ -1551,7 +1572,7 @@ function modules_group_agent_unknown ($module_group) {
 // Get ok agents by using the status code in modules.
 
 function modules_group_agent_ok ($module_group) {
-		
+	
 	return db_get_sql ("SELECT COUNT(*)
 		FROM tagente, tagente_modulo
 		WHERE tagente.id_agente=tagente_modulo.id_agente

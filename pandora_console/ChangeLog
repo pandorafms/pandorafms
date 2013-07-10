@@ -1,3 +1,11 @@
+2013-07-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/modules/manage_network_components.php: improved the source
+	code style.
+	
+	* include/functions_modules.php: added lost function
+	"modules_get_type_id".
+
 2013-07-09  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Fix the alerts status pie graph

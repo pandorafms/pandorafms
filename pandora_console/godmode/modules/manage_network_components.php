@@ -156,8 +156,8 @@ if ($create_component) {
 		$custom_string_1 = $snmp3_privacy_method;
 		$custom_string_2 = $snmp3_privacy_pass;
 		$custom_string_3 = $snmp3_security_level;
-			$name_check = db_get_value ('name', 'tnetwork_component',
-				'name', $name);
+		$name_check = db_get_value ('name', 'tnetwork_component',
+			'name', $name);
 	}
 	
 	
@@ -431,9 +431,9 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
 				'SELECT id 
 				FROM tlocal_component 
 				WHERE id_network_component_group = ' . $child['id_sg']);
-		
+			
 		}
-	
+		
 	}
 	
 	// Only show component groups with local components
@@ -500,7 +500,7 @@ foreach ($components as $component) {
 	$data[0] .= io_safe_output($component['name']);
 	$data[0] .= '</a>';
 	$data[1] = ui_print_moduletype_icon ($component['type'], true);
-	switch($component['id_modulo']) {
+	switch ($component['id_modulo']) {
 		case MODULE_NETWORK:
 			$data[1] .= html_print_image('images/network.png', true, array('title' => __('Network module')));
 			break;
@@ -538,13 +538,14 @@ if (isset($data)) {
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined network components')."</div>";
+	echo "<div class='nf'>" . __('There are no defined network components') . "</div>";
 }
 
 echo '<form method="post" action="'.$url.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden ('new_component', 1);
-html_print_select (array (2 => __('Create a new network component'),
+html_print_select (array(
+	2 => __('Create a new network component'),
 	4 => __('Create a new plugin component'),
 	6 => __('Create a new WMI component')),
 	'id_component_type', '', '', '', '', '');
@@ -556,12 +557,12 @@ enterprise_hook('close_meta_frame');
 
 ?>
 <script type="text/javascript">
-function check_all_checkboxes() {
-	if ($("input[name=all_delete]").attr('checked')) {
-		$(".check_delete").attr('checked', true);
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").attr('checked')) {
+			$(".check_delete").attr('checked', true);
+		}
+		else {
+			$(".check_delete").attr('checked', false);
+		}
 	}
-	else {
-		$(".check_delete").attr('checked', false);
-	}
-}
 </script>

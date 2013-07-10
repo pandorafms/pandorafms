@@ -1,5 +1,9 @@
 2013-07-10 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/operation/agents.php: fixed lost semicolon.
+
+2013-07-10 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/modules/manage_network_components.php: improved the source
 	code style.
 	

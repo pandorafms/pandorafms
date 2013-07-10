@@ -2792,7 +2792,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 		# Evaluate _snmp_fx_ filters
 		my $filter_match = 1;
-		for (my $i = 1; $i <= 6; $i++) {
+		for (my $i = 1; $i <= 10; $i++) {
 			my $filter_name = '_snmp_f' . $i . '_';
 			my $filter_value = safe_output ($alert->{$filter_name});
 

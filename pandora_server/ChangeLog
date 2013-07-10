@@ -1,5 +1,9 @@
 2013-07-10  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Added support to filter 10 binding vars.
+
+2013-07-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* util/pandora_db.pl: Ignore reports if the metaconsole is enabled, since
 	  agents are never local.
 

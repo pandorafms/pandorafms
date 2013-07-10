@@ -1833,7 +1833,7 @@ while (1) {
 		# Check if address is auto to get the local ip
 		if ($Conf{'address'} eq 'auto') {
 			# Tested on Ubuntu, debian, Suse, Solaris 10 and AIX 5.1
-			$address = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | head -1 | sed -e 's/addr\\://' | sed -e 's/inet\\://'`;
+			$address = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | awk -F':' '{ print \$2 }' | head -1`;
 			chomp($address);
 		}
 		else {

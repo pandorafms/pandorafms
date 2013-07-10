@@ -1,3 +1,16 @@
+2013-07-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  godmode/snmpconsole/snmp_alert.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  operation/snmpconsole/snmp_view.php: Added support to filter 10
+	  binding vars. Added binding var automatic translation and other
+	  small improvements.
+
 2013-07-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/agents.php: fixed lost semicolon.

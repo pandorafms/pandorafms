@@ -1,3 +1,8 @@
+2013-07-11 Mario Pulido <mario.pulido@artica.es>
+
+	* include/help/en/help_snmp_alert_field1.php,
+        include/help/es/help_snmp_alert_field1.php: Modified Help. Added Macros
+
 2013-07-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/configurar_agente.php: fixed overwrite the fields

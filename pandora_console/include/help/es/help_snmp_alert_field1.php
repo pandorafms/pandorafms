@@ -13,4 +13,10 @@ Para contruir un mensaje, podríamos usar la siguiente cadena en el "campo1":
 &nbsp;Alerta de Chasis: _snmp_f2_ en dispositivo _snmp_f1_
 <br><br>
 Puede usar esas macros en los campos FieldX (1-10) de cualquier alerta.
+<br><br>
+<b>_DATA_</b>: Trap entero <br>
+<b>_AGENT_</b>: Nombre del Agente <br>
+<b>_IP_</b>: Dirección IP<br>
+<b>_TIMESTAMP_</b>: Fecha trap<br>
+
 </p>

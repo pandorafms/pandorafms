@@ -100,7 +100,7 @@ class Agent {
 					$addresses = agents_get_addresses($this->id);
 					$address = agents_get_address($this->id);
 					foreach ($addresses as $k => $add) {
-						if($add == $address) {
+						if ($add == $address) {
 							unset($addresses[$k]);
 						}
 					}
@@ -131,7 +131,7 @@ class Agent {
 					$html = $graph_js . $html;
 					$html .= "<b>" . __('Events (24h)') . "</b><br />";
 					$html .= graph_graphic_agentevents(
-						$this->id, 250, 15, 86400, '', true);
+						$this->id, 250, 15, 86400, ui_get_full_url(false), true);
 				$ui->contentGridAddCell($html);
 				$ui->contentEndGrid();
 				

@@ -1,3 +1,8 @@
+2013-07-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Change Data by Avg on graphs legends
+	Ramon changed it few weeks ago, but I broke his job. Sorry
+
 2013-07-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/agents.php, mobile/operation/agent.php,

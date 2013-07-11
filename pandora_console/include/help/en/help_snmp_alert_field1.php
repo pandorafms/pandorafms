@@ -13,4 +13,9 @@ To build the message, we would use the following string in Field1.
 &nbsp;Chassis Alert: _snmp_f2_ in device _snmp_f1_
 <br><br>
 You can use these macros in FieldX (1-10) of any alert
+<br><br>
+<b>_DATA_</b>: Full trap<br>
+<b>_AGENT_</b>: Agent name<br>
+<b>_IP_</b>: IP Address<br>
+<b>_TIMESTAMP_</b>: Trap date<br> 
 </p>

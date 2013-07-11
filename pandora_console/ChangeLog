@@ -1,3 +1,13 @@
+2013-07-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_pchart.php
+	include/graphs/pChart/pPie.class.php
+	include/graphs/fgraph.php
+	include/graphs/functions_utils.php: Add support to colors
+	in pie graphs and fix important bug in static graphs library.
+	All of them to fix new console mobile pie graph in agent view
+
 2013-07-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: Do not retrieve all traps to

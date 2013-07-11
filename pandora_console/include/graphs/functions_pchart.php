@@ -46,6 +46,7 @@ $legend = null;
 $colors = null;
 $font_size = 8;
 $force_steps = true; 
+$legend_position = null;
 
 $graph_type = get_parameter('graph_type', '');
 
@@ -67,6 +68,9 @@ $data = $graph['data'];
 $width = $graph['width'];
 $height = $graph['height'];
 
+if (isset($graph['legend_position'])) {
+	$legend_position = $graph['legend_position'];
+}
 if (isset($graph['color'])) {
 	$colors = $graph['color'];
 }
@@ -277,7 +281,7 @@ switch($graph_type) {
 	case 'pie3d':
 	case 'pie2d':
 		pch_pie_graph($graph_type, array_values($data), array_keys($data),
-			$width, $height, $font, $water_mark, $font_size);
+			$width, $height, $font, $water_mark, $font_size, $legend_position, $colors);
 		break;
 	case 'slicebar':
 		pch_slicebar_graph($graph_type, $data, $period, $width, $height, $colors, $font, $round_corner, $font_size);
@@ -372,7 +376,7 @@ function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colo
 }
 
 function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
-	$height, $font, $water_mark, $font_size) {
+	$height, $font, $water_mark, $font_size, $legend_position, $colors) {
 	/* CAT:Pie charts */
 	
 	/* Create and populate the pData object */
@@ -411,6 +415,11 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	/* Create the pPie object */ 
 	$PieChart = new pPie($myPicture,$MyData);
 	
+	foreach ($data_values as $key => $value) {
+		if (isset($colors[$key])) {
+			$PieChart->setSliceColor($key, hex_2_rgb($colors[$key]));
+		}
+	}
 	
 	/* Draw an AA pie chart */
 	switch($graph_type) {
@@ -426,10 +435,12 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 		//Calculate the bottom margin from the size of string in each index
 	$max_chars = graph_get_max_index($legend_values);
 	
-	// This is a hardcore adjustment to match most of the graphs, please don't alter
-	$legend_with_aprox = 32 + (4.5 * $max_chars);
-	
-	$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
+	if ($legend_position != 'hidden') {
+		// This is a hardcore adjustment to match most of the graphs, please don't alter
+		$legend_with_aprox = 32 + (4.5 * $max_chars);
+		
+		$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
+	}
 	
 	/* Enable shadow computing */ 
 	$myPicture->setShadow(TRUE,

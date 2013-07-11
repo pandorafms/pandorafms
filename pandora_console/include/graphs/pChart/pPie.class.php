@@ -84,9 +84,12 @@
 
      /* Dump the real number of data to draw */
      $Values = "";
+     $PaletteAux = array(); // Fix to store only necesary colors
      foreach ($Data["Series"][$DataSerie]["Data"] as $Key => $Value)
-      { if ($Value != 0) { $Values[] = $Value; } }
-
+      { if ($Value != 0) { $Values[$Key] = $Value; $PaletteAux[] = $Palette[$Key]; } }
+	 
+	 $Palette = $PaletteAux;
+	 
      /* Compute the wasted angular space between series */
      if (count($Values)==1) { $WastedAngular = 0; } else { $WastedAngular = count($Values) * $DataGapAngle; }
 
@@ -292,9 +295,12 @@
 
      /* Dump the real number of data to draw */
      $Values = "";
+     $PaletteAux = array(); // Fix to store only necesary colors
      foreach ($Data["Series"][$DataSerie]["Data"] as $Key => $Value)
-      { if ($Value != 0) { $Values[$Key] = $Value; } }
-
+      { if ($Value != 0) { $Values[$Key] = $Value; $PaletteAux[] = $Palette[$Key]; } }
+	 
+	 $Palette = $PaletteAux;
+	 
      /* Compute the wasted angular space between series */
      if (count($Values)==1) { $WastedAngular = 0; } else { $WastedAngular = count($Values) * $DataGapAngle; }
 
@@ -306,17 +312,15 @@
 
      /* Draw the polygon pie elements */
      $Step   = 360 / (2 * PI * $Radius);
-     $Offset = 360; 
-	 // Commented due to fix bellow
-	 //$ID = count($Values)-1;
+     $Offset = 360;
+      
+	 $ID = count($Values)-1;
 
 	 // Commented due to fix bellow
      // $Values = array_reverse($Values);
      $Slice  = 0; $Slices = ""; $SliceColors = ""; $Visible = ""; $SliceAngle = "";
      foreach($Values as $Key => $Value)
       {
-	   // Fix: ID equal to the index of array
-	   $ID = $Key;	
   
        $Settings = array("R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"],"Alpha"=>$Palette[$ID]["Alpha"]);
        $SliceColors[$Slice] = $Settings;
@@ -518,7 +522,8 @@
 		if ( $SecondPass )
 		{
 			$Step = 360 / (2 * PI * $Radius);
-			$Offset = 360; $ID = 0;
+			$Offset = 360;
+			$ID = count($Values)-1;
 			foreach($Values as $Key => $Value)
 			{
 				$FirstPoint = TRUE;
@@ -566,7 +571,7 @@
 				}
 				$this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings);
 				
-				$Offset = $i - $DataGapAngle; $ID++;
+				$Offset = $i - $DataGapAngle; $ID--;
 			}
 		}
 		

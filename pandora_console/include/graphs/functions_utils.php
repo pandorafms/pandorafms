@@ -131,4 +131,151 @@ function graph_get_max_index($legend_values) {
 	
 	return $max_chars;
 }
+
+// Function to convert hue to RGB
+
+function hue_2_rgb($v1,$v2,$vh) {
+	if ($vh < 0) {
+		$vh += 1;
+	};
+	
+	if ($vh > 1) {
+		$vh -= 1;
+	};
+	
+	if ((6 * $vh) < 1) {
+		return ($v1 + ($v2 - $v1) * 6 * $vh);
+	};
+	
+	if ((2 * $vh) < 1) {
+		return ($v2);
+	};
+	
+	if ((3 * $vh) < 2) {
+		return ($v1 + ($v2 - $v1) * ((2 / 3 - $vh) * 6));
+	};
+	
+	return ($v1);
+};
+
+function hex_2_rgb($hexcode) {
+	$hexcode = str_replace('#', '', $hexcode);
+	
+	// $hexcode is the six digit hex colour code we want to convert
+	
+	$redhex  = substr($hexcode,0,2);
+	$greenhex = substr($hexcode,2,2);
+	$bluehex = substr($hexcode,4,2);
+	
+	// $var_r, $var_g and $var_b are the three decimal fractions to be input to our RGB-to-HSL conversion routine
+	
+	$var_r = hexdec($redhex);
+	$var_g = hexdec($greenhex);
+	$var_b = hexdec($bluehex);
+	
+	return array('R' => $var_r, 'G' => $var_g, 'B' => $var_b);
+}
+
+function get_complementary_rgb ($hexcode) {
+	$rgb = hex_2_rgb($hexcode);
+	
+	$var_r = $rgb['R'] / 255;
+	$var_g = $rgb['G'] / 255;
+	$var_b = $rgb['B'] / 255;
+	
+	//Now plug these values into the rgb2hsl routine. Below is my PHP version of EasyRGB.com's generic code for that conversion:
+	
+	// Input is $var_r, $var_g and $var_b from above
+	// Output is HSL equivalent as $h, $s and $l — these are again expressed as fractions of 1, like the input values
+	
+	$var_min = min($var_r,$var_g,$var_b);
+	$var_max = max($var_r,$var_g,$var_b);
+	$del_max = $var_max - $var_min;
+	
+	$l = ($var_max + $var_min) / 2;
+	
+	if ($del_max == 0) {
+		$h = 0;
+		$s = 0;
+	}
+	else {
+		if ($l < 0.5) {
+			$s = $del_max / ($var_max + $var_min);
+		}
+		else {
+			$s = $del_max / (2 - $var_max - $var_min);
+		};
+		
+		$del_r = ((($var_max - $var_r) / 6) + ($del_max / 2)) / $del_max;
+		$del_g = ((($var_max - $var_g) / 6) + ($del_max / 2)) / $del_max;
+		$del_b = ((($var_max - $var_b) / 6) + ($del_max / 2)) / $del_max;
+		
+		if ($var_r == $var_max) {
+			$h = $del_b - $del_g;
+		}
+		elseif ($var_g == $var_max) {
+			$h = (1 / 3) + $del_r - $del_b;
+		}
+		elseif ($var_b == $var_max) {
+			$h = (2 / 3) + $del_g - $del_r;
+		};
+		
+		if ($h < 0) {
+			$h += 1;
+		};
+		
+		if ($h > 1) {
+			$h -= 1;
+		};
+	};
+	
+	//So now we have the colour as an HSL value, in the variables $h, $s and $l. These three output variables are again held as fractions of 1 at this stage, rather than as degrees and percentages. So e.g., cyan (180° 100% 50%) would come out as $h = 0.5, $s = 1, and $l =  0.5.
+	
+	//Next find the value of the opposite Hue, i.e., the one that's 180°, or 0.5, away (I'm sure the mathematicians have a more elegant way of doing this, but):
+	
+	// Calculate the opposite hue, $h2
+	
+	$h2 = $h + 0.5;
+	
+	if ($h2 > 1) {
+		$h2 -= 1;
+	};
+	
+	//The HSL value of the complementary colour is now in $h2, $s, $l. So we're ready to convert this back to RGB (again, my PHP version of the EasyRGB.com formula). Note the input and output formats are different this time, see my comments at the top of the code:
+	
+	// Input is HSL value of complementary colour, held in $h2, $s, $l as fractions of 1
+	// Output is RGB in normal 255 255 255 format, held in $r, $g, $b
+	// Hue is converted using function hue_2_rgb, shown at the end of this code
+	
+	if ($s == 0) {
+		$r = $l * 255;
+		$g = $l * 255;
+		$b = $l * 255;
+	}
+	else {
+		if ($l < 0.5) {
+			$var_2 = $l * (1 + $s);
+		}
+		else {
+			$var_2 = ($l + $s) - ($s * $l);
+		};
+		$var_1 = 2 * $l - $var_2;
+		
+		$r = 255 * hue_2_rgb($var_1,$var_2,$h2 + (1 / 3));
+		$g = 255 * hue_2_rgb($var_1,$var_2,$h2);
+		$b = 255 * hue_2_rgb($var_1,$var_2,$h2 - (1 / 3));
+	};
+	
+	
+	
+	//And after that routine, we finally have $r, $g and $b in 255 255 255 (RGB) format, which we can convert to six digits of hex:
+	
+	$rhex = sprintf("%02X",round($r));
+	$ghex = sprintf("%02X",round($g));
+	$bhex = sprintf("%02X",round($b));
+	
+	$rgbhex = $rhex.$ghex.$bhex;
+	
+	return $rgbhex;
+}
 ?>

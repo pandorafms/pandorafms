@@ -565,7 +565,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
 	
 	$legend = array();
-	$legend['sum'.$series_suffix] = __('Data'). $series_suffix_str .': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
+	$legend['sum'.$series_suffix] = __('Avg'). $series_suffix_str .': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
 	if($show_events) {
 		$legend['event'.$series_suffix] = __('Events').
 		$series_suffix_str;
@@ -2464,7 +2464,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	if ($show_alerts) {
 		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
 	}
-	$legend['sum'.$series_suffix] = __('Data').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
+	$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
         $legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
         $legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
 	$legend['baseline'.$series_suffix] = __('Baseline').$series_suffix_str;
@@ -3005,7 +3005,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 
 	$legend = array();
 
-        $legend['sum'] = __('Data').': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
+        $legend['sum'] = __('Avg').': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
         $legend['max'] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
         $legend['min'] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
 
@@ -3406,14 +3406,14 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
-	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	$colors = array(COL_CRITICAL, COL_WARNING, COL_UNKNOWN, COL_NORMAL);
 	
 	if ($show_not_init) {
 		$colors[] = COL_NOTINIT;
 	}
 	
 	$out = pie2d_graph(false, $data, $width, $height, __("other"),
-		ui_get_full_url(false), $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+		ui_get_full_url(false), $water_mark, $config['fontpath'], $config['font_size'], 1, "right", $colors);
 	
 	if ($return) {
 		return $out;

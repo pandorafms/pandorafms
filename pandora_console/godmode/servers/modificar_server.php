@@ -17,6 +17,7 @@
 global $config;
 
 require_once ("include/functions_servers.php");
+require_once ("include/functions_graph.php");
 
 check_login();
 

@@ -294,10 +294,7 @@ if (!$meta) {
 	}
 	
 	$data[1] .= '<br>' . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
-	
-	echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
-	echo "&nbsp;&nbsp;";
-	
+		
 	if (enterprise_installed()) {
 		$dashboards = get_user_dashboards ($config['id_user']);
 		$dashboards_aux = array();

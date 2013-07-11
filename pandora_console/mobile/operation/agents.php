@@ -262,9 +262,9 @@ class Agents {
 			
 			
 			$img_status = agents_tree_view_status_img ($agent["critical_count"],
-				$agent["warning_count"], $agent["unknown_count"]);
+				$agent["warning_count"], $agent["unknown_count"], $agent['total_count'], $agent['notinit_count']);
 			
-			$img_alert = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
+			$img_alert = agents_tree_view_alert_img ($agent["fired_count"]);
 			
 			
 			$row[0] = $row[__('Agent')] =

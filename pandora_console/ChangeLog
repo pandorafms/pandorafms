@@ -1,3 +1,9 @@
+2013-07-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/agents.php, mobile/operation/agent.php,
+	include/functions_graph.php: fixed the show static graphs in
+	mobile.
+
 2013-07-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

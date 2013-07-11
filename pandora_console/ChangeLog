@@ -1,5 +1,17 @@
 2013-07-11  Sergio Martin <sergio.martin@artica.es>
 
+	* include/graphs/pChart/pPie.class.php: Fix the colors of the
+	legend when we want to have legend of data that not appears
+	in the pie. Merge from 4.1
+
+	* operation/users/user_edit.php: Fix repeated select control
+	for main page in workspace section
+
+	* godmode/servers/modificar_server.php: Fix crash in
+	servers view
+
+2013-07-11  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php: Change Data by Avg on graphs legends
 	Ramon changed it few weeks ago, but I broke his job. Sorry
 

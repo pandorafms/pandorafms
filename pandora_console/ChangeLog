@@ -1,3 +1,9 @@
+2013-07-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/configurar_agente.php: fixed overwrite the fields
+	custom_string_* and custom_integer_* of module when update and
+	these fields haven't a new value.
+
 2013-07-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/pChart/pPie.class.php: Fix the colors of the

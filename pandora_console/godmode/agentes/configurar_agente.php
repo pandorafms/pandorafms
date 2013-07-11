@@ -750,11 +750,25 @@ if ($update_module || $create_module) {
 	$old_configuration_data = (string) get_parameter ('old_configuration_data');
 	$new_configuration_data = '';
 	
-	$custom_string_1 = (string) get_parameter ('custom_string_1');
-	$custom_string_2 = (string) get_parameter ('custom_string_2');
-	$custom_string_3 = (string) get_parameter ('custom_string_3');
-	$custom_integer_1 = (int) get_parameter ('prediction_module');
-	$custom_integer_2 = (int) get_parameter ('custom_integer_2');
+	$custom_string_1_default = '';
+	$custom_string_2_default = '';
+	$custom_string_3_default = '';
+	$custom_integer_1_default = 0;
+	$custom_integer_2_default = 0;
+	if ($update_module) {
+		$module = modules_get_agentmodule ($id_agent_module);
+		
+		$custom_string_1_default = $module['custom_string_1'];
+		$custom_string_2_default = $module['custom_string_2'];
+		$custom_string_3_default = $module['custom_string_3'];
+		$custom_integer_1_default = $module['custom_integer_1'];
+		$custom_integer_2_default = $module['custom_integer_2'];
+	}
+	$custom_string_1 = (string) get_parameter ('custom_string_1', $custom_string_1_default);
+	$custom_string_2 = (string) get_parameter ('custom_string_2', $custom_string_2_default);
+	$custom_string_3 = (string) get_parameter ('custom_string_3', $custom_string_3_default);
+	$custom_integer_1 = (int) get_parameter ('prediction_module', $custom_integer_1_default);
+	$custom_integer_2 = (int) get_parameter ('custom_integer_2', $custom_integer_2_default);
 	
 	// Get macros
 	$macros = (string) get_parameter ('macros');

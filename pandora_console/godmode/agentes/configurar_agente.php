@@ -1474,10 +1474,9 @@ function agent_wizard_tab_setup() {
 	$('#agent_wizard_subtabs').css('top', $('.agent_wizard_tab').offset().top + $('.agent_wizard_tab').height() + 4)
 	$('#agent_wizard_subtabs').css('width', $('.agent_wizard_tab').width() + 6)
 }
-agent_wizard_tab_setup();
-
 
 function agent_wizard_tab_show() {
+	agent_wizard_tab_setup();
 	wizard_tab_showed = wizard_tab_showed + 1;
 	
 	if(wizard_tab_showed == 1) {
@@ -1494,6 +1493,10 @@ function agent_wizard_tab_hide() {
 		}
 	},500);
 }
+
+$(window).resize(function() {
+	agent_wizard_tab_setup();
+});
 
 /* ]]> */
 </script>

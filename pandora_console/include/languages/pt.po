@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: pandora-pt\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-22 18:49+0200\n"
-"PO-Revision-Date: 2013-04-27 07:24+0000\n"
+"PO-Revision-Date: 2013-05-16 03:00+0000\n"
 "Last-Translator: Maria Loureiro <Unknown>\n"
 "Language-Team: Portugues <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-05-14 08:58+0000\n"
-"X-Generator: Launchpad (build 16617)\n"
+"X-Launchpad-Export-Date: 2013-07-11 07:12+0000\n"
+"X-Generator: Launchpad (build 16696)\n"
 "Language: \n"
 
 #: ../../operation/search_main.php:33
@@ -500,7 +500,7 @@ msgstr "Resolução"
 
 #: ../../operation/netflow/nf_live_view.php:186
 msgid "The interval will be divided in chunks the length of the resolution."
-msgstr ""
+msgstr "O intervalo vai ser dividido em blocos do tamanho da resolução"
 
 #: ../../operation/netflow/nf_live_view.php:192
 #: ../../operation/agentes/ver_agente.php:551
@@ -6272,7 +6272,7 @@ msgstr "Navegador de SNMP"
 #: ../../operation/menu.php:344
 #: ../../operation/snmpconsole/snmp_mib_uploader.php:30
 msgid "MIB uploader"
-msgstr ""
+msgstr "MIB uploader"
 
 #: ../../operation/menu.php:345 ../../include/functions_menu.php:424
 msgid "SNMP alerts"
@@ -7802,19 +7802,19 @@ msgstr "x"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:188
 msgid "Method generation networkmap"
-msgstr ""
+msgstr "Mapa de rede da criação do método"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:191
 msgid "Refresh networkmap state"
-msgstr ""
+msgstr "Actualizar o estado do mapa de rede"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:193
 msgid "Resize the networkmap"
-msgstr ""
+msgstr "Redimensionar o mapa de rede"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:194
 msgid "This operation can't be undone, because it is on DB."
-msgstr ""
+msgstr "Esta operação não pode ser revertida porque está na BD"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:196
 #: ../../include/functions_visual_map_editor.php:154
@@ -7832,11 +7832,11 @@ msgstr "atualizar o mapa de rede"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:249
 msgid "Networkmap resized."
-msgstr ""
+msgstr "O mapa de rede foi redimensionado"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:256
 msgid "Error process map"
-msgstr ""
+msgstr "Mapa de processamento de erros"
 
 #: ../../enterprise/operation/agentes/policy_view.php:37
 msgid "This agent has no policy assigned"
@@ -7864,7 +7864,7 @@ msgstr "Política antiga"
 #: ../../enterprise/operation/agentes/policy_view.php:130
 #: ../../enterprise/operation/agentes/policy_view.php:137
 msgid "Toggle the collection table"
-msgstr ""
+msgstr "Alternar a tabela de catálogo"
 
 #: ../../enterprise/operation/agentes/policy_view.php:132
 #: ../../enterprise/operation/agentes/collection_view.php:60
@@ -7899,7 +7899,7 @@ msgstr "Desactualizado"
 #: ../../enterprise/operation/agentes/policy_view.php:192
 #: ../../enterprise/operation/agentes/policy_view.php:201
 msgid "Toggle the alert table"
-msgstr ""
+msgstr "Alternar a tabela de  alertas"
 
 #: ../../enterprise/operation/agentes/policy_view.php:202
 msgid "Show Alert"
@@ -7918,7 +7918,7 @@ msgstr "vezes"
 #: ../../enterprise/operation/agentes/policy_view.php:303
 #: ../../enterprise/operation/agentes/policy_view.php:312
 msgid "Toggle the module table"
-msgstr ""
+msgstr "Alternar a tabela de modulos"
 
 #: ../../enterprise/operation/agentes/policy_view.php:304
 msgid "Relationship"
@@ -8096,7 +8096,7 @@ msgstr "Eliminado"
 
 #: ../../enterprise/include/functions_reporting.php:30
 msgid "Wizard SLA"
-msgstr ""
+msgstr "SLA do Wizard"
 
 #: ../../enterprise/include/functions_reporting.php:33
 msgid "Global"
@@ -8109,11 +8109,11 @@ msgstr "Opções avançadas"
 #: ../../enterprise/include/functions_reporting.php:54
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:101
 msgid "List templates"
-msgstr ""
+msgstr "Listar os modelos"
 
 #: ../../enterprise/include/functions_reporting.php:60
 msgid "Templates wizard"
-msgstr ""
+msgstr "Wizard dos modelos"
 
 #: ../../enterprise/include/functions_reporting.php:76
 #: ../../enterprise/include/functions_reporting.php:2741
@@ -8129,12 +8129,12 @@ msgstr "Modelos"
 
 #: ../../enterprise/include/functions_reporting.php:80
 msgid "Templates Wizard"
-msgstr ""
+msgstr "Wizard dos modelos"
 
 #: ../../enterprise/include/functions_reporting.php:1189
 #, php-format
 msgid "Graph agents(%s) - %s"
-msgstr ""
+msgstr "Agentes de gráfico(%s) - %s"
 
 #: ../../enterprise/include/functions_reporting.php:1300
 #, php-format
@@ -8149,16 +8149,16 @@ msgstr "%s - %s"
 #: ../../enterprise/include/functions_reporting.php:2773
 #: ../../enterprise/include/functions_reporting.php:2823
 msgid "Template editor"
-msgstr ""
+msgstr "Editor de modelos"
 
 #: ../../enterprise/include/functions_reporting.php:2837
 msgid "Get PDF file"
-msgstr ""
+msgstr "Obter o ficheiro PDF"
 
 #: ../../enterprise/include/functions_license.php:109
 #: ../../enterprise/include/functions_license.php:117
 msgid "Invalid license, please check it."
-msgstr ""
+msgstr "A licensa não é válida, por favor verifique-a"
 
 #: ../../enterprise/include/functions_license.php:129
 #: ../../extensions/update_manager.php:59
@@ -8168,36 +8168,36 @@ msgstr "Expira Em"
 #: ../../enterprise/include/functions_license.php:131
 #: ../../extensions/update_manager.php:61
 msgid "Platform Limit"
-msgstr ""
+msgstr "Limite da plataforma"
 
 #: ../../enterprise/include/functions_license.php:133
 #: ../../extensions/update_manager.php:63
 msgid "Current Platform Count"
-msgstr ""
+msgstr "Contagem da plataforma actual"
 
 #: ../../enterprise/include/functions_license.php:136
 #: ../../extensions/update_manager.php:66
 msgid "License Mode"
-msgstr ""
+msgstr "Modo de licensa"
 
 #: ../../enterprise/include/functions_reporting_csv.php:156
 msgid "Generated"
-msgstr ""
+msgstr "Gerado"
 
 #: ../../enterprise/include/functions_reporting_csv.php:171
 msgid "Simple Graph"
-msgstr ""
+msgstr "Gráfico simples"
 
 #: ../../enterprise/include/functions_reporting_csv.php:203
 msgid "Projection Graph"
-msgstr ""
+msgstr "Gráfico de projecções"
 
 #: ../../enterprise/include/functions_reporting_csv.php:235
 #: ../../enterprise/include/functions_reporting_pdf.php:431
 #: ../../include/functions_reporting.php:3066
 #: ../../include/functions_reports.php:535
 msgid "Prediction date"
-msgstr ""
+msgstr "Data de previsão"
 
 #: ../../enterprise/include/functions_reporting_csv.php:323
 #: ../../enterprise/include/functions_reporting_csv.php:413
@@ -8265,7 +8265,7 @@ msgstr "Período"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:557
 #: ../../godmode/reporting/reporting_builder.item_editor.php:960
 msgid "Max"
-msgstr ""
+msgstr "Máx"
 
 #: ../../enterprise/include/functions_reporting_csv.php:324
 #: ../../enterprise/include/functions_reporting_pdf.php:1488
@@ -8298,11 +8298,11 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:559
 #: ../../godmode/reporting/reporting_builder.item_editor.php:962
 msgid "Min"
-msgstr ""
+msgstr "Mín"
 
 #: ../../enterprise/include/functions_reporting_csv.php:324
 msgid "% Limit"
-msgstr ""
+msgstr "% Limite"
 
 #: ../../enterprise/include/functions_reporting_csv.php:371
 #: ../../enterprise/include/functions_services.php:962
@@ -8338,31 +8338,31 @@ msgstr "Falhou"
 #: ../../enterprise/include/functions_reporting_csv.php:724
 #: ../../enterprise/include/functions_reporting_csv.php:755
 msgid "Report type"
-msgstr ""
+msgstr "Tipo de relatório"
 
 #: ../../enterprise/include/functions_reporting_csv.php:413
 msgid "% OK"
-msgstr ""
+msgstr "% OK"
 
 #: ../../enterprise/include/functions_reporting_csv.php:413
 msgid "% Wrong"
-msgstr ""
+msgstr "% Errado"
 
 #: ../../enterprise/include/functions_reporting_csv.php:414
 msgid "Monitor Report"
-msgstr ""
+msgstr "Relatório do monitor"
 
 #: ../../enterprise/include/functions_reporting_csv.php:445
 msgid "AVG. Value"
-msgstr ""
+msgstr "Valor AVG"
 
 #: ../../enterprise/include/functions_reporting_csv.php:476
 msgid "MAX Value"
-msgstr ""
+msgstr "Valor MAX"
 
 #: ../../enterprise/include/functions_reporting_csv.php:507
 msgid "MIN Value"
-msgstr ""
+msgstr "Valor MIN"
 
 #: ../../enterprise/include/functions_reporting_csv.php:538
 #: ../../include/functions_reporting.php:3631
@@ -8370,12 +8370,12 @@ msgstr ""
 #: ../../include/functions_reporting.php:4560
 #: ../../include/functions_reports.php:552
 msgid "Summatory"
-msgstr ""
+msgstr "Somatório"
 
 #: ../../enterprise/include/functions_reporting_csv.php:613
 #: ../../include/functions_reporting.php:3841
 msgid "Illegal query"
-msgstr ""
+msgstr "Pesquisa não autorizada"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 #: ../../enterprise/dashboard/widgets/tactical.php:154
@@ -8385,54 +8385,54 @@ msgstr "Total de agentes"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Uknown agents"
-msgstr ""
+msgstr "Agentes desconhecidos"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Total modules"
-msgstr ""
+msgstr "Modulos totais"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Normal modules"
-msgstr ""
+msgstr "Modulos normais"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Critical modules"
-msgstr ""
+msgstr "Modulos críticos"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Warning modules"
-msgstr ""
+msgstr "Modulos de aviso"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Unknown modules"
-msgstr ""
+msgstr "Modulos desconhecidos"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Not init modules"
-msgstr ""
+msgstr "Modulos not init"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 #: ../../include/functions_reporting.php:1131
 #: ../../include/functions_graph.php:1355
 msgid "Defined alerts"
-msgstr ""
+msgstr "Definir alertas"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 #: ../../include/functions_reporting.php:1135
 #: ../../include/functions_graph.php:1355
 msgid "Fired alerts"
-msgstr ""
+msgstr "Alertas disparados"
 
 #: ../../enterprise/include/functions_reporting_csv.php:724
 msgid "Last 8 hours events"
-msgstr ""
+msgstr "Eventos das últimas 8 horas"
 
 #: ../../enterprise/include/functions_reporting_csv.php:725
 #: ../../enterprise/include/functions_reporting_pdf.php:785
 #: ../../include/functions_reporting.php:4305
 #: ../../include/functions_reports.php:559
 msgid "Group report"
-msgstr ""
+msgstr "RElatório de groupo"
 
 #: ../../enterprise/include/functions_reporting_csv.php:774
 #: ../../enterprise/include/functions_reporting_pdf.php:855
@@ -8445,7 +8445,7 @@ msgstr ""
 #: ../../godmode/setup/setup.php:73 ../../godmode/setup/setup.php:107
 #: ../../godmode/servers/plugin.php:133
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: ../../enterprise/include/functions_reporting_csv.php:804
 #: ../../enterprise/include/functions_reporting_csv.php:925
@@ -8455,7 +8455,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:4942
 #: ../../include/functions_reporting.php:5227
 msgid "There are no Agent/Modules defined"
-msgstr ""
+msgstr "Não existem Agentes/Modulos definidos"
 
 #: ../../enterprise/include/functions_reporting_csv.php:888
 #: ../../enterprise/include/functions_reporting_pdf.php:1497
@@ -8470,7 +8470,7 @@ msgstr "Topo"
 #: ../../include/functions_reporting.php:5178
 #: ../../include/functions_reports.php:561
 msgid "Exception"
-msgstr ""
+msgstr "Excepção"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1017
 #: ../../enterprise/include/functions_reporting_pdf.php:1199
@@ -8479,7 +8479,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:5181
 #: ../../godmode/reporting/reporting_builder.item_editor.php:977
 msgid "Everything"
-msgstr ""
+msgstr "Tudo"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1020
 #: ../../enterprise/include/functions_reporting_pdf.php:1202
@@ -8487,21 +8487,21 @@ msgstr ""
 #: ../../include/functions_reporting.php:5184
 #: ../../include/functions_reporting.php:5385
 msgid "Modules over or equal to"
-msgstr ""
+msgstr "Modulos maiores ou iguais a"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1023
 #: ../../enterprise/include/functions_reporting_pdf.php:1205
 #: ../../enterprise/include/functions_reporting_pdf.php:1366
 #: ../../include/functions_reporting.php:5190
 msgid "Modules under"
-msgstr ""
+msgstr "Modulos mais pequenos"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1026
 #: ../../enterprise/include/functions_reporting_pdf.php:1208
 #: ../../enterprise/include/functions_reporting_pdf.php:1370
 #: ../../include/functions_reporting.php:5202
 msgid "Modules at normal status"
-msgstr ""
+msgstr "Modulos num estado normal"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1029
 #: ../../enterprise/include/functions_reporting_pdf.php:1211

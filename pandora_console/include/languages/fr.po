@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: pandora-fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-22 18:49+0200\n"
-"PO-Revision-Date: 2013-03-29 14:48+0000\n"
-"Last-Translator: joris <urferj@gmail.com>\n"
+"PO-Revision-Date: 2013-07-05 19:24+0000\n"
+"Last-Translator: Teromene <teromene@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-05-14 08:58+0000\n"
-"X-Generator: Launchpad (build 16617)\n"
+"X-Launchpad-Export-Date: 2013-07-11 07:13+0000\n"
+"X-Generator: Launchpad (build 16696)\n"
 "Language: fr\n"
 
 #: ../../operation/events/events.php:344 ../../operation/events/events.php:353
@@ -96,14 +96,14 @@ msgstr "Agents"
 #: ../../operation/search_main.php:82
 #, php-format
 msgid "%d results found"
-msgstr ""
+msgstr "%d résultats trouvés"
 
 #: ../../operation/search_main.php:34 ../../operation/search_main.php:42
 #: ../../operation/search_main.php:50 ../../operation/search_main.php:58
 #: ../../operation/search_main.php:66 ../../operation/search_main.php:74
 #: ../../operation/search_main.php:82
 msgid "Show results"
-msgstr ""
+msgstr "Montrer les résultats"
 
 #: ../../operation/search_main.php:41 ../../operation/agentes/graphs.php:63
 #: ../../operation/agentes/estado_agente.php:394
@@ -295,13 +295,13 @@ msgstr "Rafraîchir"
 #: ../../operation/visual_console/render_view.php:83
 #: ../../godmode/reporting/visual_console_builder.php:413
 msgid "Visual consoles list"
-msgstr ""
+msgstr "Liste des consoles Visuel"
 
 #: ../../operation/visual_console/render_view.php:91
 #: ../../enterprise/meta/screens/screens.visualmap.php:157
 #: ../../godmode/reporting/visual_console_builder.php:416
 msgid "Show link to public Visual Console"
-msgstr ""
+msgstr "Afficher lien aux public Console Visual"
 
 #: ../../operation/visual_console/render_view.php:95
 #: ../../operation/reporting/graph_viewer.php:114
@@ -310,7 +310,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:184
 #: ../../godmode/reporting/visual_console_builder.php:419
 msgid "Main data"
-msgstr ""
+msgstr "Principales données"
 
 #: ../../operation/visual_console/render_view.php:97
 #: ../../enterprise/meta/screens/screens.visualmap.php:126
@@ -392,7 +392,7 @@ msgstr "vue Netflow actuelle"
 #: ../../operation/netflow/nf_live_view.php:109
 #, php-format
 msgid "nfdump binary (%s) not found!"
-msgstr ""
+msgstr "nfdump binaire (% s) introuvable !"
 
 #: ../../operation/netflow/nf_live_view.php:114
 #: ../../operation/agentes/ver_agente.php:702
@@ -517,6 +517,7 @@ msgstr "Résolution"
 #: ../../operation/netflow/nf_live_view.php:186
 msgid "The interval will be divided in chunks the length of the resolution."
 msgstr ""
+"L'intervalle sera divisé en morceaux de la longueur de la résolution."
 
 #: ../../operation/netflow/nf_live_view.php:192
 #: ../../operation/agentes/ver_agente.php:551
@@ -987,11 +988,14 @@ msgid ""
 "Source port. A comma separated list of source ports. If we leave the field "
 "blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"
 msgstr ""
+"Port source. Liste séparée par des virgules des ports source. Si nous "
+"laissez le champ vide, affiche tous les ports. Filtre d'exemple par les "
+"ports 80 et 22 : <br>80,22"
 
 #: ../../operation/netflow/nf_live_view.php:340
 #: ../../godmode/netflow/nf_edit_form.php:211
 msgid "Aggregate by"
-msgstr ""
+msgstr "Regrouper par"
 
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../operation/users/user_edit.php:308
@@ -1183,7 +1187,7 @@ msgstr "Octets"
 
 #: ../../operation/netflow/nf_live_view.php:346
 msgid "Bytes per second"
-msgstr ""
+msgstr "Octets par seconde"
 
 #: ../../operation/netflow/nf_live_view.php:346
 #: ../../godmode/netflow/nf_edit_form.php:217
@@ -1841,6 +1845,8 @@ msgstr "Taille pour la pagination"
 #: ../../operation/users/user_edit.php:252
 msgid "If checkbox is clicked then block size global configuration is used"
 msgstr ""
+"Si vous cliquez sur case à cocher configuration globale de taille de bloc "
+"est utilisée"
 
 #: ../../operation/users/user_edit.php:253
 #: ../../enterprise/meta/advanced/metasetup.visual.php:123
@@ -1849,14 +1855,14 @@ msgstr ""
 #: ../../godmode/setup/setup_visuals.php:168
 #: ../../godmode/users/configure_user.php:458
 msgid "Interactive charts"
-msgstr ""
+msgstr "Graphiques interactifs"
 
 #: ../../operation/users/user_edit.php:253
 #: ../../enterprise/meta/advanced/metasetup.visual.php:123
 #: ../../godmode/setup/setup_visuals.php:168
 #: ../../godmode/users/configure_user.php:458
 msgid "Whether to use Javascript or static PNG graphs"
-msgstr ""
+msgstr "Si vous souhaitez utiliser Javascript ou statiques graphiques PNG"
 
 #: ../../operation/users/user_edit.php:254
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:129
@@ -2026,13 +2032,15 @@ msgstr "Non"
 
 #: ../../operation/users/user_edit.php:288
 msgid "Shortcut bar"
-msgstr ""
+msgstr "Barre de raccourcis"
 
 #: ../../operation/users/user_edit.php:288
 msgid ""
 "This will activate a shortcut bar with alerts, events, messages... "
 "information"
 msgstr ""
+"Cela activera un raccourci avec une barre d' alertes, événements, "
+"messages... informations"
 
 #: ../../operation/users/user_edit.php:289
 msgid "Home screen"
@@ -2044,6 +2052,9 @@ msgid ""
 "Example: Select 'Other' and type "
 "sec=estado&sec2=operation/agentes/estado_agente to show agent detail view"
 msgstr ""
+"L'utilisateur peut personnaliser la page d'accueil. Par défaut, affiche « "
+"Détail de l'Agent ». Exemple : Sélectionnez « Autre » et tapez sec = estado "
+"& S2 = opération/agentes/estado_agente pour afficher le détail de l'agent vue"
 
 #: ../../operation/users/user_edit.php:292
 #: ../../godmode/users/configure_user.php:452
@@ -3553,7 +3564,7 @@ msgstr "Changements d'inventaire"
 #: ../../operation/reporting/reporting_xml.php:1106
 #: ../../enterprise/include/functions_reporting_xml.php:1008
 msgid "Configuration report for agent "
-msgstr ""
+msgstr "Rapport de configuration pour l'agent "
 
 #: ../../operation/reporting/reporting_xml.php:1262
 #: ../../enterprise/include/functions_reporting_xml.php:1162
@@ -3583,7 +3594,7 @@ msgstr "Rapport"
 
 #: ../../operation/reporting/reporting_viewer.php:154
 msgid "Set initial date"
-msgstr ""
+msgstr "Date initiale fixée"
 
 #: ../../operation/reporting/reporting_viewer.php:161
 #: ../../operation/agentes/gis_view.php:119
@@ -3960,11 +3971,11 @@ msgstr ""
 #: ../../operation/agentes/stat_win.php:304
 #: ../../operation/agentes/stat_win.php:310
 msgid "Time compare"
-msgstr ""
+msgstr "Comparez le temps"
 
 #: ../../operation/agentes/stat_win.php:304
 msgid "Overlapped"
-msgstr ""
+msgstr "Se chevaucher"
 
 #: ../../operation/agentes/stat_win.php:310
 msgid "Separated"
@@ -3973,7 +3984,7 @@ msgstr ""
 #: ../../operation/agentes/stat_win.php:316
 #: ../../mobile/operation/module_graph.php:344
 msgid "Show unknown graph"
-msgstr ""
+msgstr "Afficher graphique inconnu"
 
 #: ../../operation/agentes/stat_win.php:339
 msgid "Reload"
@@ -4499,7 +4510,7 @@ msgstr "Police"
 #: ../../operation/agentes/networkmap.php:367
 #: ../../operation/agentes/estado_monitores.php:624
 msgid "Free text for search (*):"
-msgstr ""
+msgstr "Texte libre pour rechercher (*) :"
 
 #: ../../operation/agentes/networkmap.php:370
 msgid "Don't show subgroups:"
@@ -4507,7 +4518,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:371
 msgid "Only run with it is filter for any group"
-msgstr ""
+msgstr "Exécuter seul avec elle est filtre pour tout groupe"
 
 #: ../../operation/agentes/networkmap.php:380
 #: ../../enterprise/meta/advanced/policymanager.apply.php:214
@@ -4592,7 +4603,7 @@ msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:170
 msgid "Next contact"
-msgstr ""
+msgstr "Prochain contact"
 
 #: ../../operation/agentes/estado_generalagente.php:186
 msgid "Agent info"
@@ -4655,7 +4666,7 @@ msgstr "Actualisation des données"
 #: ../../operation/agentes/estado_generalagente.php:309
 #: ../../mobile/operation/agent.php:132
 msgid "Events (24h)"
-msgstr ""
+msgstr "Événements (24h)"
 
 #: ../../operation/agentes/estado_generalagente.php:320
 #: ../../include/functions_treeview.php:350
@@ -4716,7 +4727,7 @@ msgstr "Aucun agent n'a été désigné"
 #: ../../operation/agentes/status_monitor.php:45
 #: ../../enterprise/meta/general/main_header.php:124
 msgid "Monitor view"
-msgstr ""
+msgstr "Moniteur"
 
 #: ../../operation/agentes/status_monitor.php:332
 msgid "Monitor status"
@@ -5086,7 +5097,7 @@ msgstr "Agent supprimé avec succès"
 
 #: ../../operation/agentes/estado_agente.php:149
 msgid "There was an error message deleting the agent"
-msgstr ""
+msgstr "Il y avait un message d'erreur à la suppression de l'agent"
 
 #: ../../operation/agentes/estado_agente.php:162
 #: ../../godmode/agentes/modificar_agente.php:154
@@ -5309,7 +5320,7 @@ msgstr "Liste complète des moniteurs"
 
 #: ../../operation/agentes/estado_monitores.php:575
 msgid "Any monitors aren't with this filter."
-msgstr ""
+msgstr "Tous les moniteurs ne sont pas avec ce filtre."
 
 #: ../../operation/agentes/estado_monitores.php:578
 msgid "This agent doesn't have any active monitors."

@@ -1434,16 +1434,25 @@ switch ($tab) {
 // Hidden subtab layer
 echo '<div id="agent_wizard_subtabs">';
 echo '<ul class="mn subsubmenu" style="background: #555555;">';
+
+echo '<li class="nomn tab_godmode" style="text-align: center;">';
+echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'
+		. html_print_image ("images/wand_snmp.png", true, array ( "title" => __('SNMP Wizard')))
+		. '</a>';
+echo '<li>';
+
 echo '<li class="nomn tab_godmode" style="text-align: center;">';
 echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente='.$id_agente.'">'
-		. html_print_image ("images/wand_interfaces.png", true, array ( "title" => __('SNMP Interfaces explorer')))
+		. html_print_image ("images/wand_interfaces.png", true, array ( "title" => __('SNMP Interfaces wizard')))
 		. '</a>';
 echo '<li>';
+
 echo '<li class="nomn tab_godmode" style="text-align: center;">';
 echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente='.$id_agente.'">'
-		. html_print_image ("images/wand_wmi.png", true, array ( "title" => __('WMI Explorer')))
+		. html_print_image ("images/wand_wmi.png", true, array ( "title" => __('WMI Wizard')))
 		. '</a>';
 echo '<li>';
+
 echo '</ul>';
 echo '</div>';
 ?>

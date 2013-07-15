@@ -1,5 +1,10 @@
 2013-07-15  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/configurar_agente.php: Fixed javascript 
+	dinamic positioning of layers in subtab code
+
+2013-07-15  Sergio Martin <sergio.martin@artica.es>
+
 	* include/languages/cs.po
 	include/languages/et.mo
 	include/languages/pt_BR.po

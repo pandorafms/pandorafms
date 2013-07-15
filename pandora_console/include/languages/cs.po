@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: pandora-cs\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-22 18:49+0200\n"
-"PO-Revision-Date: 2013-04-23 21:07+0000\n"
+"PO-Revision-Date: 2013-06-21 21:02+0000\n"
 "Last-Translator: Zbyněk Schwarz <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-05-14 08:57+0000\n"
-"X-Generator: Launchpad (build 16617)\n"
+"X-Launchpad-Export-Date: 2013-07-11 07:15+0000\n"
+"X-Generator: Launchpad (build 16696)\n"
 "Language: cs\n"
 
 #: ../../include/functions_incidents.php:32
@@ -4705,7 +4705,7 @@ msgstr "Neexistují žádní určení agenti"
 #: ../../operation/agentes/status_monitor.php:45
 #: ../../enterprise/meta/general/main_header.php:124
 msgid "Monitor view"
-msgstr ""
+msgstr "Zobrazení monitorů"
 
 #: ../../operation/agentes/status_monitor.php:332
 msgid "Monitor status"
@@ -4762,11 +4762,11 @@ msgstr "Název modulu"
 
 #: ../../operation/agentes/status_monitor.php:392
 msgid "Only it is show tags in use."
-msgstr ""
+msgstr "Zobrazit pouze používané značky"
 
 #: ../../operation/agentes/status_monitor.php:401
 msgid "No tags"
-msgstr ""
+msgstr "Žádné značky"
 
 #: ../../operation/agentes/status_monitor.php:416
 #: ../../operation/agentes/estado_agente.php:188
@@ -5227,7 +5227,7 @@ msgstr "Celkem"
 
 #: ../../operation/agentes/snapshot_view.php:61
 msgid "Current data at"
-msgstr ""
+msgstr "Současná data v"
 
 #: ../../operation/agentes/status_events.php:27
 msgid "Latest events for this agent"
@@ -5288,7 +5288,7 @@ msgstr "Filtrovat podle názvu agenta, modulu, šablony nebo činnosti"
 #: ../../operation/agentes/estado_monitores.php:483
 #: ../../operation/search_modules.php:180
 msgid "Snapshot view"
-msgstr ""
+msgstr "Zobrazení snímků"
 
 #: ../../operation/agentes/estado_monitores.php:570
 msgid "Full list of monitors"
@@ -5296,15 +5296,15 @@ msgstr "Úplný seznam monitorů"
 
 #: ../../operation/agentes/estado_monitores.php:575
 msgid "Any monitors aren't with this filter."
-msgstr ""
+msgstr "Žádné monitory neodpovídají tomuto filtru."
 
 #: ../../operation/agentes/estado_monitores.php:578
 msgid "This agent doesn't have any active monitors."
-msgstr ""
+msgstr "Tento agent nemá žádné aktivní monitory"
 
 #: ../../operation/agentes/estado_monitores.php:613
 msgid "Status:"
-msgstr ""
+msgstr "Stav:"
 
 #: ../../operation/agentes/estado_monitores.php:617
 #: ../../operation/snmpconsole/snmp_view.php:321
@@ -5325,15 +5325,15 @@ msgstr "Výstraha"
 #: ../../enterprise/include/functions_services.php:711
 #: ../../mobile/operation/agents.php:35
 msgid "Unknow"
-msgstr ""
+msgstr "Neznámé"
 
 #: ../../operation/agentes/estado_monitores.php:629
 msgid "Reset"
-msgstr ""
+msgstr "Obnovit"
 
 #: ../../operation/agentes/estado_monitores.php:636
 msgid "Form filter"
-msgstr ""
+msgstr "Filtr formuláře"
 
 #: ../../operation/agentes/exportdata.php:36 ../../operation/menu.php:168
 msgid "Export data"
@@ -5397,7 +5397,7 @@ msgstr "Obdržena data od"
 
 #: ../../operation/agentes/datos_agente.php:174
 msgid "Main database"
-msgstr ""
+msgstr "Hlavní databáze"
 
 #: ../../operation/agentes/datos_agente.php:174
 #: ../../enterprise/include/functions_setup.php:33
@@ -5411,6 +5411,7 @@ msgid ""
 "Switch between the main database and the history database to retrieve module "
 "data"
 msgstr ""
+"Přepínat mezi hlavní databází a databází historie pro získání dat modulu"
 
 #: ../../operation/agentes/datos_agente.php:187
 msgid "Choose a time from now"
@@ -5484,7 +5485,7 @@ msgstr "moduly"
 
 #: ../../operation/tree.php:541
 msgid "tags"
-msgstr ""
+msgstr "značky"
 
 #: ../../operation/tree.php:547 ../../operation/tree.php:572
 #: ../../operation/menu.php:43
@@ -5501,7 +5502,7 @@ msgstr "Seřadit agenty podle "
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1200
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1404
 msgid "Tree View"
-msgstr ""
+msgstr "Stromové zobrazení"
 
 #: ../../operation/tree.php:601
 #: ../../enterprise/include/functions_networkmap_enterprise.php:273
@@ -5545,21 +5546,23 @@ msgstr "Správa incidentů"
 
 #: ../../operation/integria_incidents/incident.php:99
 msgid "Incident updated"
-msgstr ""
+msgstr "Incident aktualizován"
 
 #: ../../operation/integria_incidents/incident.php:102
 msgid ""
 "There was a problem updating the incident, please check if any field was "
 "modified and the values are correct."
 msgstr ""
+"Při aktualizaci incidentu nastal problém, prosím zkontrolujte pole, která "
+"byla změněna a správnost hodnot."
 
 #: ../../operation/integria_incidents/incident.php:126
 msgid "Incident created"
-msgstr ""
+msgstr "Incident vytvořen"
 
 #: ../../operation/integria_incidents/incident.php:129
 msgid "There was a problem creating incident"
-msgstr ""
+msgstr "Při vytváření incidentu nastal problém"
 
 #: ../../operation/integria_incidents/incident.php:142
 #: ../../operation/integria_incidents/incident_detail.php:111
@@ -5577,7 +5580,7 @@ msgstr "Soubor nahrán"
 
 #: ../../operation/integria_incidents/incident.php:159
 msgid "There was a problem uploading file"
-msgstr ""
+msgstr "Při nahrávání souboru nastal problém"
 
 #: ../../operation/integria_incidents/incident.php:165
 msgid "File is too big"
@@ -5597,27 +5600,27 @@ msgstr "Obecná chyba nahrání"
 
 #: ../../operation/integria_incidents/incident.php:193
 msgid "File deleted"
-msgstr ""
+msgstr "Soubor smazán"
 
 #: ../../operation/integria_incidents/incident.php:196
 msgid "You user doesn't have enough rights to delete this file"
-msgstr ""
+msgstr "Váš uživatel nemá dostatečná práva ke smazání tohoto souboru"
 
 #: ../../operation/integria_incidents/incident.php:211
 msgid "Incident deleted"
-msgstr ""
+msgstr "Incident smazán"
 
 #: ../../operation/integria_incidents/incident.php:214
 msgid "There was a problem deteling incident"
-msgstr ""
+msgstr "Při mazání incidentu nastal problém"
 
 #: ../../operation/integria_incidents/incident.php:238
 msgid "Workunit added"
-msgstr ""
+msgstr "Pracovní jednotka přidána"
 
 #: ../../operation/integria_incidents/incident.php:241
 msgid "There was a problem adding workunit"
-msgstr ""
+msgstr "Při přidávání pracovní jednotky nastal problém"
 
 #: ../../operation/integria_incidents/incident.php:342
 msgid ""
@@ -6242,7 +6245,7 @@ msgstr "Nová zpráva"
 
 #: ../../operation/menu.php:327
 msgid "Netflow Live View"
-msgstr ""
+msgstr "Živé zobrazení toku sítě"
 
 #: ../../operation/menu.php:336 ../../operation/events/events_rss.php:152
 msgid "SNMP"
@@ -6254,12 +6257,12 @@ msgstr "Konzole SNMP"
 
 #: ../../operation/menu.php:343
 msgid "SNMP browser"
-msgstr ""
+msgstr "Prohlížeč SNMP"
 
 #: ../../operation/menu.php:344
 #: ../../operation/snmpconsole/snmp_mib_uploader.php:30
 msgid "MIB uploader"
-msgstr ""
+msgstr "Nahrávač MIB"
 
 #: ../../operation/menu.php:345 ../../include/functions_menu.php:424
 msgid "SNMP alerts"
@@ -6280,12 +6283,12 @@ msgstr "Elementy"
 
 #: ../../operation/search_results.php:60 ../../mobile/operation/home.php:37
 msgid "Global search"
-msgstr ""
+msgstr "Globální hledání"
 
 #: ../../operation/messages/message_edit.php:35
 #: ../../operation/messages/message_list.php:32
 msgid "Received messages"
-msgstr ""
+msgstr "Obdržené zprávy"
 
 #: ../../operation/messages/message_edit.php:39
 #: ../../operation/messages/message_list.php:36
@@ -6534,7 +6537,7 @@ msgstr "Uživatel nemá přidělen žádný profil/skupiny"
 
 #: ../../operation/snmpconsole/snmp_browser.php:76
 msgid "SNMP Browser"
-msgstr ""
+msgstr "Prohlížeč SNMP"
 
 #: ../../operation/snmpconsole/snmp_view.php:57
 #: ../../godmode/snmpconsole/snmp_alert.php:30
@@ -6784,7 +6787,7 @@ msgstr "Událost"
 
 #: ../../operation/events/events.php:272
 msgid "History event list"
-msgstr ""
+msgstr "Seznam historie událostí"
 
 #: ../../operation/events/events.php:277
 msgid "RSS Events"
@@ -6810,7 +6813,7 @@ msgstr "Spravovat události"
 
 #: ../../operation/events/events.php:334
 msgid "History"
-msgstr ""
+msgstr "Historie"
 
 #: ../../operation/events/events.php:338 ../../include/functions_html.php:645
 #: ../../godmode/category/category.php:47
@@ -6998,7 +7001,7 @@ msgstr "Dodatečné ID"
 #: ../../godmode/events/custom_events.php:113
 #: ../../godmode/events/custom_events.php:163
 msgid "ACK Timestamp"
-msgstr ""
+msgstr "Časové razítko ACK"
 
 #: ../../operation/events/events.build_table.php:125
 #: ../../include/functions_events.php:1982
@@ -7007,7 +7010,7 @@ msgstr ""
 #: ../../godmode/events/custom_events.php:116
 #: ../../godmode/events/custom_events.php:164
 msgid "Instructions"
-msgstr ""
+msgstr "Pokyny"
 
 #: ../../operation/events/events.build_table.php:170
 #: ../../enterprise/include/functions_reporting_pdf.php:2553
@@ -7034,7 +7037,7 @@ msgstr "Smazat událost"
 
 #: ../../operation/events/events.build_table.php:546
 msgid "Validate selected"
-msgstr ""
+msgstr "Ověřit zvolené"
 
 #: ../../operation/events/events.build_table.php:549
 #: ../../godmode/agentes/agent_manager.php:187
@@ -7056,17 +7059,17 @@ msgstr "Filtr kontroly událostí"
 
 #: ../../operation/events/events_list.php:174
 msgid "Show events graph"
-msgstr ""
+msgstr "Zobrazit graf událostí"
 
 #: ../../operation/events/events_list.php:182
 #: ../../operation/events/events_list.php:435
 msgid "No filter loaded"
-msgstr ""
+msgstr "Žádné filtry nenačteny"
 
 #: ../../operation/events/events_list.php:184
 #: ../../operation/events/events_list.php:438
 msgid "Filter loaded"
-msgstr ""
+msgstr "Filtr načten"
 
 #: ../../operation/events/events_list.php:186
 #: ../../operation/events/events_list.php:218
@@ -7077,7 +7080,7 @@ msgstr "Uložit filtr"
 
 #: ../../operation/events/events_list.php:202
 msgid "New filter"
-msgstr ""
+msgstr "Nový filtr"
 
 #: ../../operation/events/events_list.php:203
 #: ../../operation/events/events_list.php:228
@@ -7110,17 +7113,17 @@ msgstr "Filtrovat akupinu"
 
 #: ../../operation/events/events_list.php:226
 msgid "Overwrite filter"
-msgstr ""
+msgstr "Přepsat filtr"
 
 #: ../../operation/events/events_list.php:293
 #: ../../godmode/events/event_edit_filter.php:267
 msgid "Events with following tags"
-msgstr ""
+msgstr "Události s následujícími značkami:"
 
 #: ../../operation/events/events_list.php:296
 #: ../../godmode/events/event_edit_filter.php:284
 msgid "Events without following tags"
-msgstr ""
+msgstr "Události bez následujících značek"
 
 #: ../../operation/events/events_list.php:306
 #: ../../operation/events/events_list.php:312
@@ -7238,7 +7241,7 @@ msgstr "Graf události podle uživatele"
 #: ../../operation/events/event_statistics.php:61
 #: ../../include/functions_events.php:929
 msgid "Event graph by agent"
-msgstr ""
+msgstr "Graf událostí podle gaenta"
 
 #: ../../operation/events/event_statistics.php:65
 #: ../../enterprise/include/functions_reporting_pdf.php:2484
@@ -7246,7 +7249,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:3755
 #: ../../include/functions_reporting.php:4000
 msgid "Amount events validated"
-msgstr ""
+msgstr "Množství ověřených událostí"
 
 #: ../../general/footer.php:30 ../../mobile/include/functions_web.php:81
 #: ../../mobile/include/ui.class.php:253
@@ -7260,15 +7263,15 @@ msgstr "Stránka vytvořená v"
 
 #: ../../general/login_page.php:35
 msgid "Go to Pandora FMS Website"
-msgstr ""
+msgstr "Přejít na internetovou stránku Pandora FMS"
 
 #: ../../general/login_page.php:39
 msgid "Go to Login"
-msgstr ""
+msgstr "Přejít na přihlášení"
 
 #: ../../general/login_page.php:104
 msgid "Log-in"
-msgstr ""
+msgstr "Přihlášení"
 
 #: ../../general/login_page.php:108
 msgid "Logged out"
@@ -7283,7 +7286,7 @@ msgstr ""
 
 #: ../../general/login_page.php:118
 msgid "View details"
-msgstr ""
+msgstr "Zobrazit podrobnosti"
 
 #: ../../general/login_page.php:127
 #: ../../enterprise/meta/general/login_page.php:82
@@ -7393,6 +7396,10 @@ msgid ""
 "learn more about Pandora FMS. Monitoring could be overwhelm, but take your "
 "time to learn how to use the power of Pandora!"
 msgstr ""
+"Pokud používáte Pandora FMS poprvé, předkládáme Vám pár odkazů, z kterých se "
+"můžete dozvědět více informací o Pandora FMS. Sledování může být "
+"vyčerpávající, ale najděte si čas, jak správně využít schopnosti aplikace "
+"Pandora!"
 
 #: ../../general/login_help_dialog.php:51
 #: ../../general/login_help_dialog.php:54
@@ -7440,19 +7447,19 @@ msgstr "Připraven"
 
 #: ../../general/header.php:108
 msgid "Configure autorefresh"
-msgstr ""
+msgstr "Nastavit automatické obnovení"
 
 #: ../../general/header.php:118
 msgid "15 seconds"
-msgstr ""
+msgstr "15 vteřin"
 
 #: ../../general/header.php:123
 msgid "15 minutes"
-msgstr ""
+msgstr "15 minut"
 
 #: ../../general/header.php:124 ../../include/ajax/module.php:77
 msgid "30 minutes"
-msgstr ""
+msgstr "30 minut"
 
 #: ../../general/header.php:127
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:86
@@ -7489,7 +7496,7 @@ msgstr "Vybrat"
 
 #: ../../general/header.php:132
 msgid "Disabled autorefresh"
-msgstr ""
+msgstr "Automatické obnovení zakázáno"
 
 #: ../../general/header.php:153
 msgid "System alerts detected - Please fix as soon as possible"
@@ -7502,7 +7509,7 @@ msgstr "Máte %d varování"
 
 #: ../../general/header.php:162
 msgid "There are not warnings"
-msgstr ""
+msgstr "Žádná varování"
 
 #: ../../general/header.php:172 ../../mobile/include/functions_web.php:33
 #: ../../mobile/include/ui.class.php:176
@@ -7511,7 +7518,7 @@ msgstr "Odhlásit"
 
 #: ../../general/header.php:188
 msgid "New chat message"
-msgstr ""
+msgstr "Nová zpráva v chatu"
 
 #: ../../general/header.php:198
 msgid "Message overview"
@@ -7599,7 +7606,7 @@ msgstr "Vítejte v internetové konzoli Pandora FMS"
 
 #: ../../general/logon_ok.php:57
 msgid "News board"
-msgstr ""
+msgstr "Deska novinek"
 
 #: ../../general/logon_ok.php:62
 msgid "ago"
@@ -7629,11 +7636,11 @@ msgstr "Přehled Pandory"
 #: ../../enterprise/operation/log/log_viewer.php:80
 #: ../../enterprise/operation/menu.php:82
 msgid "Log viewer"
-msgstr ""
+msgstr "Prohlížeč záznamů"
 
 #: ../../enterprise/operation/log/log_viewer.php:131
 msgid "Draw chart"
-msgstr ""
+msgstr "Nakreslit graf"
 
 #: ../../enterprise/operation/log/log_viewer.php:134
 #: ../../enterprise/include/functions_reporting_pdf.php:3457
@@ -7644,7 +7651,7 @@ msgstr "Počáteční datum"
 #: ../../enterprise/operation/log/log_viewer.php:146
 #: ../../godmode/modules/manage_network_templates.php:214
 msgid "Export to CSV"
-msgstr ""
+msgstr "Exportovat do CSV"
 
 #: ../../enterprise/operation/log/log_viewer.php:153
 #: ../../enterprise/operation/agentes/agent_inventory.php:208
@@ -8025,34 +8032,34 @@ msgstr "Činnosti"
 #: ../../enterprise/operation/services/services.list.php:173
 #: ../../enterprise/godmode/services/services.service.php:54
 msgid "Create Service"
-msgstr ""
+msgstr "Vytvořit službu"
 
 #: ../../enterprise/operation/services/services.service_map.php:39
 #: ../../enterprise/operation/services/services.service.php:37
 #: ../../enterprise/godmode/services/services.service.php:96
 #: ../../enterprise/godmode/services/services.service.php:121
 msgid "Not found"
-msgstr ""
+msgstr "Nenalezeno"
 
 #: ../../enterprise/operation/services/services.service_map.php:66
 #: ../../enterprise/operation/services/services.service.php:61
 msgid "View Service"
-msgstr ""
+msgstr "Zobrazit službu"
 
 #: ../../enterprise/operation/services/services.service_map.php:72
 #: ../../enterprise/operation/services/services.service_map.php:110
 #: ../../enterprise/operation/services/services.service_map.php:115
 #: ../../enterprise/operation/services/services.service.php:67
 msgid "Service map"
-msgstr ""
+msgstr "Mapa služeb"
 
 #: ../../enterprise/operation/services/services.service_map.php:76
 msgid "Service Map"
-msgstr ""
+msgstr "Mapa služeb"
 
 #: ../../enterprise/operation/services/services.service.php:154
 msgid "List of elements"
-msgstr ""
+msgstr "Seznam prvků"
 
 #: ../../enterprise/include/functions_inventory.php:48
 #: ../../enterprise/include/functions_inventory.php:373
@@ -8094,7 +8101,7 @@ msgstr "Vypsat šablony"
 
 #: ../../enterprise/include/functions_reporting.php:60
 msgid "Templates wizard"
-msgstr ""
+msgstr "Průvodce šablonami"
 
 #: ../../enterprise/include/functions_reporting.php:76
 #: ../../enterprise/include/functions_reporting.php:2741
@@ -8110,22 +8117,22 @@ msgstr "Šablony"
 
 #: ../../enterprise/include/functions_reporting.php:80
 msgid "Templates Wizard"
-msgstr ""
+msgstr "Průvodce šablonou"
 
 #: ../../enterprise/include/functions_reporting.php:1189
 #, php-format
 msgid "Graph agents(%s) - %s"
-msgstr ""
+msgstr "Agenti grafu(%s) - %s"
 
 #: ../../enterprise/include/functions_reporting.php:1300
 #, php-format
 msgid "%s - agents (%s) - %s"
-msgstr ""
+msgstr "%s - agenti (%s) - %s"
 
 #: ../../enterprise/include/functions_reporting.php:1560
 #, php-format
 msgid "%s - %s"
-msgstr ""
+msgstr "%s - %s"
 
 #: ../../enterprise/include/functions_reporting.php:2773
 #: ../../enterprise/include/functions_reporting.php:2823
@@ -8493,24 +8500,24 @@ msgstr "Moduly v kritickém nebo varovném stavu"
 #: ../../enterprise/include/functions_reporting_csv.php:1130
 #, php-format
 msgid "There are no Modules over or equal to %s"
-msgstr ""
+msgstr "Žádné moduly nejsou přes nebo se rovnají %s"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1133
 #, php-format
 msgid "There are no Modules under %s"
-msgstr ""
+msgstr "Žádné moduly nejsou pod %s"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1136
 msgid "There are no Modules at normal status"
-msgstr ""
+msgstr "Žádné moduly nejsou v normálním stavu"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1139
 msgid "There are no Modules at critial or warning status"
-msgstr ""
+msgstr "Žádné moduly nejsou v kritickém nebo varovném stavu"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1142
 msgid "There are no Modules under those conditions"
-msgstr ""
+msgstr "Žádné moduly nejsou v těchto podmínkách"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1195
 msgid "Serialized data "
@@ -8524,7 +8531,7 @@ msgstr "Nejsou žádná data."
 
 #: ../../enterprise/include/functions_services.php:23
 msgid "Service does not exist."
-msgstr ""
+msgstr "Služba neexistuje."
 
 #: ../../enterprise/include/functions_services.php:30
 msgid "Module store the service does not exist."
@@ -8581,7 +8588,7 @@ msgstr "Upozornění na váhu"
 
 #: ../../enterprise/include/functions_services.php:823
 msgid "Weight Unknown"
-msgstr ""
+msgstr "Váha neznámá"
 
 #: ../../enterprise/include/functions_services.php:824
 msgid "Weight Ok"
@@ -8606,7 +8613,7 @@ msgstr "Smazat prvek služby"
 
 #: ../../enterprise/include/functions_services.php:965
 msgid "FAIL"
-msgstr ""
+msgstr "CHYBA"
 
 #: ../../enterprise/include/functions_alert_event.php:920
 msgid "Module alert"
@@ -8800,7 +8807,7 @@ msgstr "Prùm"
 #: ../../include/functions_reporting.php:4032
 #: ../../include/functions_reports.php:587
 msgid "Alert report group"
-msgstr ""
+msgstr "Skupina hlášení o výstraze"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2056
 msgid "There are no alerts for this module."
@@ -8826,21 +8833,21 @@ msgstr "Žádné události ve skupině."
 #: ../../enterprise/include/functions_reporting_pdf.php:2396
 #: ../../include/functions_reporting.php:3931
 msgid "Events by agent"
-msgstr ""
+msgstr "Události podle agenta"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2436
 #: ../../enterprise/include/functions_reporting_pdf.php:2618
 #: ../../include/functions_reporting.php:3709
 #: ../../include/functions_reporting.php:3954
 msgid "Events validated by user"
-msgstr ""
+msgstr "Události ověřené uživatelem"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2460
 #: ../../enterprise/include/functions_reporting_pdf.php:2642
 #: ../../include/functions_reporting.php:3732
 #: ../../include/functions_reporting.php:3977
 msgid "Events by criticity"
-msgstr ""
+msgstr "Události podle vážnosti"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2529
 msgid "There are no Events."
@@ -8870,7 +8877,7 @@ msgstr "Kritičnost"
 #: ../../include/functions_reporting.php:2471
 #: ../../include/functions_reporting.php:2578
 msgid "Val. by"
-msgstr ""
+msgstr "Val. podle"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2829
 msgid "Info"
@@ -8937,11 +8944,11 @@ msgstr "Limit SLA"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3012
 msgid "Agent:"
-msgstr ""
+msgstr "Agent:"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3015
 msgid "Module:"
-msgstr ""
+msgstr "Modul:"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3167
 #: ../../include/functions_visual_map.php:1828
@@ -9005,7 +9012,7 @@ msgstr "Nastavení agenta"
 #: ../../include/functions_reporting.php:5811
 #: ../../include/functions_reporting.php:5952
 msgid "SO"
-msgstr ""
+msgstr "SO"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3614
 #: ../../enterprise/include/functions_reporting_pdf.php:3749
@@ -9022,7 +9029,7 @@ msgstr "IP"
 #: ../../enterprise/include/functions_reporting_pdf.php:3649
 #: ../../enterprise/include/functions_reporting_pdf.php:3788
 msgid "There are no modules."
-msgstr ""
+msgstr "Žádné moduly."
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3656
 #: ../../enterprise/include/functions_reporting_pdf.php:3795
@@ -9066,7 +9073,7 @@ msgstr "Jednotka"
 #: ../../enterprise/include/functions_reporting_pdf.php:3729
 #: ../../include/functions_reports.php:611
 msgid "Group configuration"
-msgstr ""
+msgstr "Nastavení skupiny"
 
 #: ../../enterprise/include/functions_login.php:22
 msgid "You must change password"
@@ -9213,7 +9220,7 @@ msgstr "Fronta"
 #: ../../enterprise/godmode/agentes/configurar_agente.php:49
 #: ../../godmode/agentes/configurar_agente.php:414
 msgid "Agent plugins"
-msgstr ""
+msgstr "Zásuvné moduly agenta"
 
 #: ../../enterprise/include/functions_policies.php:3292
 msgid "Create a new policy map"
@@ -9326,27 +9333,27 @@ msgstr "do vaší cílové databáze."
 #: ../../enterprise/include/functions_visual_map.php:287
 #: ../../enterprise/include/functions_visual_map.php:298
 msgid "Crit:"
-msgstr ""
+msgstr "Vážné:"
 
 #: ../../enterprise/include/functions_visual_map.php:168
 #: ../../enterprise/include/functions_visual_map.php:221
 #: ../../enterprise/include/functions_visual_map.php:289
 #: ../../enterprise/include/functions_visual_map.php:300
 msgid "Warn:"
-msgstr ""
+msgstr "Varování:"
 
 #: ../../enterprise/include/functions_visual_map.php:170
 #: ../../enterprise/include/functions_visual_map.php:223
 #: ../../enterprise/include/functions_visual_map.php:291
 msgid "Ok:"
-msgstr ""
+msgstr "Ok:"
 
 #: ../../enterprise/include/functions_visual_map.php:172
 #: ../../enterprise/include/functions_visual_map.php:225
 #: ../../enterprise/include/functions_visual_map.php:293
 #: ../../enterprise/include/functions_visual_map.php:302
 msgid "Value:"
-msgstr ""
+msgstr "Hodnota:"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:152
 msgid "Update config"
@@ -9470,11 +9477,11 @@ msgstr "Prázdný název"
 
 #: ../../enterprise/include/functions_local_components.php:68
 msgid "Empty configuration"
-msgstr ""
+msgstr "Prázdné nastavení"
 
 #: ../../enterprise/include/functions_local_components.php:72
 msgid "Empty OS"
-msgstr ""
+msgstr "Prázdné OS"
 
 #: ../../enterprise/include/functions_local_components.php:202
 #: ../../include/functions_alerts.php:904
@@ -9513,7 +9520,7 @@ msgstr "Heslo"
 #: ../../enterprise/include/functions_setup.php:37
 #: ../../enterprise/include/functions_setup.php:67
 msgid "Log collector"
-msgstr ""
+msgstr "Sběrač záznamu"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:42
 msgid "Error accesing to API"
@@ -9542,6 +9549,8 @@ msgid ""
 "\"Translate string\" extension is missed in the server. This extension is "
 "mandatory to be configured on metaconsole."
 msgstr ""
+"Rozšíření \"Translate string\" chybí na serveru. Toto rozšíření je povinné a "
+"musí být nastaveni v metakonzoli."
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:80
 msgid ""
@@ -9551,7 +9560,7 @@ msgstr ""
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:88
 msgid "Last event replication"
-msgstr ""
+msgstr "Poslední opakování události"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:98
 msgid "Events replication is not enabled"
@@ -9569,7 +9578,7 @@ msgstr ""
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:110
 msgid "Unknown error"
-msgstr ""
+msgstr "Neznámá chyba"
 
 #: ../../enterprise/include/functions_groups.php:47
 msgid "Metaconsole"
@@ -9578,7 +9587,7 @@ msgstr "Metakonzole"
 #: ../../enterprise/include/functions_log.php:277
 #: ../../enterprise/include/functions_log.php:290
 msgid "Lines"
-msgstr ""
+msgstr "Řádky"
 
 #: ../../enterprise/meta/general/login_page.php:115
 msgid ""
@@ -9614,29 +9623,29 @@ msgstr ""
 
 #: ../../enterprise/meta/general/main_header.php:121
 msgid "disabled"
-msgstr ""
+msgstr "zakázáno"
 
 #: ../../enterprise/meta/general/main_header.php:130
 msgid "Create new report"
-msgstr ""
+msgstr "Vytvořit nové hlášení"
 
 #: ../../enterprise/meta/general/main_header.php:132
 msgid "Report templates"
-msgstr ""
+msgstr "Šablony hlášení"
 
 #: ../../enterprise/meta/general/main_header.php:133
 #: ../../enterprise/meta/general/logon_ok.php:35
 #: ../../enterprise/meta/screens/screens.php:35
 #: ../../enterprise/meta/screens/screens.main.php:35
 msgid "Screens"
-msgstr ""
+msgstr "Obrazovky"
 
 #: ../../enterprise/meta/general/main_header.php:136
 #: ../../enterprise/meta/screens/screens.php:78
 #: ../../enterprise/meta/screens/screens.networkmap.php:51
 #: ../../enterprise/meta/screens/screens.networkmap.php:64
 msgid "Networkmap"
-msgstr ""
+msgstr "Mapa sítě"
 
 #: ../../enterprise/meta/general/main_header.php:142
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:32
@@ -9661,12 +9670,12 @@ msgstr "Filtry"
 #: ../../enterprise/meta/general/main_header.php:150
 #: ../../enterprise/meta/advanced/synchronizing.php:33
 msgid "Synchronizing"
-msgstr ""
+msgstr "Synchronizování"
 
 #: ../../enterprise/meta/general/main_header.php:151
 #: ../../enterprise/meta/advanced/propagation.php:33
 msgid "Propagation"
-msgstr ""
+msgstr "Rozšíření"
 
 #: ../../enterprise/meta/general/main_header.php:153
 #: ../../enterprise/meta/general/main_header.php:164
@@ -9695,27 +9704,27 @@ msgstr "Správa modulu"
 
 #: ../../enterprise/meta/general/main_header.php:155
 msgid "Alert management"
-msgstr ""
+msgstr "Správy výstrah"
 
 #: ../../enterprise/meta/general/main_header.php:156
 msgid "Tag management"
-msgstr ""
+msgstr "Správa značek"
 
 #: ../../enterprise/meta/general/main_header.php:157
 msgid "Policy management"
-msgstr ""
+msgstr "Správa zásad"
 
 #: ../../enterprise/meta/general/main_header.php:158
 msgid "Category management"
-msgstr ""
+msgstr "Správa kategorií"
 
 #: ../../enterprise/meta/general/main_header.php:160
 msgid "Metasetup"
-msgstr ""
+msgstr "Metanastavení"
 
 #: ../../enterprise/meta/general/logon_ok.php:36
 msgid "Network traffic"
-msgstr ""
+msgstr "Síťové přenosy"
 
 #: ../../enterprise/meta/general/logon_ok.php:37
 #: ../../include/functions_networkmap.php:1060
@@ -9739,20 +9748,20 @@ msgstr "Dokončit"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:73
 msgid "The alert you are trying to add is already in the list of alerts"
-msgstr ""
+msgstr "Výstraha, kterou se snažíte přidat, již je v seznamu výstrah"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:81
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:327
 msgid "Please, select a module"
-msgstr ""
+msgstr "Vyberte prosím modul"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:82
 msgid "Please, select an alert"
-msgstr ""
+msgstr "Prosím vyberte výstrahu"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:83
 msgid "Please, select an agent"
-msgstr ""
+msgstr "Prosím vyberte agenta"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:87
 #: ../../enterprise/meta/include/functions_wizard_meta.php:276
@@ -9763,7 +9772,7 @@ msgstr "Url"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:88
 msgid "String"
-msgstr ""
+msgstr "Řetězec"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:117
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:120
@@ -9772,7 +9781,7 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:152
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:131
 msgid "Can't connect to Pandora FMS instance"
-msgstr ""
+msgstr "Nelze se připojit k instanci Pandora FMS"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:71
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:101
@@ -9789,7 +9798,7 @@ msgstr "Nastavení"
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:102
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:82
 msgid "Advanced configuration"
-msgstr ""
+msgstr "Pokročilá nastavení"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:74
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:104
@@ -9798,7 +9807,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_wizard_meta.php:988
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1076
 msgid "Preview"
-msgstr ""
+msgstr "Náhled"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:91
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:40
@@ -9807,7 +9816,7 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:172
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:103
 msgid "Create module"
-msgstr ""
+msgstr "Vytvořit modul"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:94
 #: ../../enterprise/meta/monitoring/wizard/wizard.update_module.php:37
@@ -9815,7 +9824,7 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:106
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1405
 msgid "Edit module"
-msgstr ""
+msgstr "Upravit modul"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:171
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:198
@@ -9823,15 +9832,15 @@ msgstr ""
 #: ../../include/functions_graph.php:714
 #: ../../include/functions_graph.php:2855
 msgid "Previous"
-msgstr ""
+msgstr "Předchozí"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:188
 msgid "Please, set a name"
-msgstr ""
+msgstr "Prosím zadejte název"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:198
 msgid "Please, set an interval"
-msgstr ""
+msgstr "Porosím zadejte interval"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:132
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1375
@@ -9851,40 +9860,40 @@ msgstr "Monitor"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:134
 msgid "Web check"
-msgstr ""
+msgstr "Internetová kontrola"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:140
 msgid "Select template group"
-msgstr ""
+msgstr "Vyberte skupinu šablon"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:201
 msgid "Select template"
-msgstr ""
+msgstr "Vyberte šablonu"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:207
 msgid "Module description"
-msgstr ""
+msgstr "Popis modulu"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:221
 msgid "Step by step wizard"
-msgstr ""
+msgstr "Průvodce krok za krokem"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:227
 msgid "Click Create to continue"
-msgstr ""
+msgstr "Pro pokračování klikněte na Vytvořit"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:215
 msgid "Please, set a valid IP address"
-msgstr ""
+msgstr "Zadejte prosím platnou IP adresu"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:153
 msgid "Welcome to the Pandora FMS wizard."
-msgstr ""
+msgstr "Vítejte v průvodci Pandora FMS"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:154
 #: ../../enterprise/meta/screens/screens.main.php:74
 msgid "To start select an option from the left side."
-msgstr ""
+msgstr "Pro zahájení zvolte volbu nalevo"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:173
 #: ../../godmode/menu.php:76
@@ -9898,15 +9907,15 @@ msgstr "Správa modulů"
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:398
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:479
 msgid "Back"
-msgstr ""
+msgstr "Zpět"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:219
 msgid "Select the agent where the module will be created"
-msgstr ""
+msgstr "Vyberte agenta kde bude modul vytvořen"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:231
 msgid "Create Module"
-msgstr ""
+msgstr "Vytvořit modul"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:328
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:401
@@ -9923,40 +9932,40 @@ msgstr "Správa výstrah"
 
 #: ../../enterprise/meta/monitoring/group_view.php:31
 msgid "Group View"
-msgstr ""
+msgstr "Skupinové zobrazení"
 
 #: ../../enterprise/meta/monitoring/tactical.php:32
 msgid "Tactical View"
-msgstr ""
+msgstr "Taktické zobrazení"
 
 #: ../../enterprise/meta/monitoring/tactical.php:73
 msgid "Agent and monitor information"
-msgstr ""
+msgstr "Informace o monitoru a agentovi"
 
 #: ../../enterprise/meta/monitoring/tactical.php:130
 msgid "State of agents"
-msgstr ""
+msgstr "Stav agentů"
 
 #: ../../enterprise/meta/monitoring/tactical.php:188
 #: ../../enterprise/meta/monitoring/tactical.php:262
 msgid "State of modules"
-msgstr ""
+msgstr "Stav modulů"
 
 #: ../../enterprise/meta/monitoring/tactical.php:250
 msgid "State of Agents"
-msgstr ""
+msgstr "Stav agentů"
 
 #: ../../enterprise/meta/monitoring/tactical.php:283
 msgid "No servers"
-msgstr ""
+msgstr "Žádné servery"
 
 #: ../../enterprise/meta/monitoring/tactical.php:333
 msgid "Event information"
-msgstr ""
+msgstr "Informace o události"
 
 #: ../../enterprise/meta/monitoring/tactical.php:338
 msgid "More events"
-msgstr ""
+msgstr "Další události"
 
 #: ../../enterprise/meta/agentsearch.php:75
 msgid "Search results for"
@@ -9968,7 +9977,7 @@ msgstr "V této skupině nejsou zařazeni žádní agenti"
 
 #: ../../enterprise/meta/event/event_view.php:193
 msgid "Event View"
-msgstr ""
+msgstr "Zobrazení událostí"
 
 #: ../../enterprise/meta/event/event_view.php:197
 msgid "Event viewer"
@@ -10018,7 +10027,7 @@ msgstr "Značka"
 
 #: ../../enterprise/meta/event/event_view.php:547
 msgid "Delete filter"
-msgstr ""
+msgstr "Smazat filtr"
 
 #: ../../enterprise/meta/event/event_view.php:770
 #: ../../enterprise/meta/event/event_view.php:945
@@ -10091,11 +10100,11 @@ msgstr "Uživatelské jméno"
 
 #: ../../enterprise/meta/event/event_view.php:1282
 msgid "Error deleting filter"
-msgstr ""
+msgstr "Chyba při mazání filtru"
 
 #: ../../enterprise/meta/event/event_view.php:1286
 msgid "Filter deleted"
-msgstr ""
+msgstr "Filtr smazán"
 
 #: ../../enterprise/meta/event/event_view.php:1399
 msgid "Define name and group for the filter and click on Save filter again"
@@ -10111,7 +10120,7 @@ msgstr "Nelze nastavit pohotovostní režim výstrahy"
 #: ../../enterprise/meta/advanced/metasetup.setup.php:47
 #, php-format
 msgid "Could not be update: Error in %s"
-msgstr ""
+msgstr "Nelze aktualizovat_ Chyba v %s"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:53
 #: ../../enterprise/meta/advanced/metasetup.visual.php:53
@@ -10231,7 +10240,7 @@ msgstr "Porovnat předchozí heslo"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:135
 msgid "Passwords"
-msgstr ""
+msgstr "Hesla"
 
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:133
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:134
@@ -10256,26 +10265,26 @@ msgstr "Prosím vyhledejte jakýkoliv text."
 #: ../../enterprise/meta/advanced/synchronizing.php:58
 #: ../../enterprise/meta/advanced/synchronizing.php:76
 msgid "Users synchronization"
-msgstr ""
+msgstr "Synchronizace uživatelů"
 
 #: ../../enterprise/meta/advanced/synchronizing.php:62
 #: ../../enterprise/meta/advanced/synchronizing.php:79
 msgid "Groups synchronization"
-msgstr ""
+msgstr "Synchronizace skupin"
 
 #: ../../enterprise/meta/advanced/synchronizing.php:66
 #: ../../enterprise/meta/advanced/synchronizing.php:82
 msgid "Alerts synchronization"
-msgstr ""
+msgstr "Synchronizace výstrah"
 
 #: ../../enterprise/meta/advanced/synchronizing.php:70
 #: ../../enterprise/meta/advanced/synchronizing.php:85
 msgid "Tags synchronization"
-msgstr ""
+msgstr "Synchronizace značek"
 
 #: ../../enterprise/meta/advanced/policymanager.php:35
 msgid "Policy Manager"
-msgstr ""
+msgstr "Správa zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.php:64
 msgid "Apply policies"
@@ -10294,19 +10303,19 @@ msgstr "Použití zásad"
 #: ../../enterprise/meta/advanced/propagation.component.php:255
 #, php-format
 msgid "Error creating %s components groups "
-msgstr ""
+msgstr "Chyba při vytváření %s částí skupin "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:258
 #: ../../enterprise/meta/advanced/propagation.component.php:258
 #, php-format
 msgid "Created %s component groups"
-msgstr ""
+msgstr "Vytvořeno %s části skupin"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:263
 #: ../../enterprise/meta/advanced/propagation.component.php:263
 #, php-format
 msgid "Error creating/updating %s/%s local components "
-msgstr ""
+msgstr "Chyba při vytváření/aktualizaci %s/%s místních součástí "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:266
 #: ../../enterprise/meta/advanced/propagation.component.php:266
@@ -10318,13 +10327,13 @@ msgstr ""
 #: ../../enterprise/meta/advanced/propagation.component.php:271
 #, php-format
 msgid "Error creating/updating %s/%s network components "
-msgstr ""
+msgstr "Chyba při vytváření/aktualizaci %s/%s síťových součástí "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:274
 #: ../../enterprise/meta/advanced/propagation.component.php:274
 #, php-format
 msgid "Created/Updated %s/%s network components"
-msgstr ""
+msgstr "Vytvořeno/Aktualizováno %s/%s síťových součástí"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:280
 #: ../../enterprise/meta/advanced/propagation.component.php:280
@@ -10346,7 +10355,7 @@ msgstr "Chyba při připojování k %s"
 #: ../../enterprise/meta/advanced/synchronizing.group.php:153
 #: ../../enterprise/meta/advanced/synchronizing.user.php:507
 msgid "This metaconsole"
-msgstr ""
+msgstr "Tato metakonzole"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:304
 #: ../../enterprise/meta/advanced/propagation.component.php:304
@@ -10467,24 +10476,24 @@ msgstr "Použít zaoblené rohy"
 #: ../../enterprise/meta/advanced/metasetup.visual.php:127
 #: ../../enterprise/meta/include/functions_meta.php:333
 msgid "Show Visual Console"
-msgstr ""
+msgstr "Zobrazit vizuální konzoli"
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:127
 msgid "Switch to show or hide Visual Console."
-msgstr ""
+msgstr "Přepněte pro zobrazení nebo skrytí vizuální konzole"
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:131
 #: ../../enterprise/meta/include/functions_meta.php:343
 msgid "Metaconsole elements"
-msgstr ""
+msgstr "Prvky metakonzole"
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:131
 msgid "The number of elements retrieved for each instance in some views."
-msgstr ""
+msgstr "Počet prvků získaných pro každou instanci v některých zobrazeních."
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:138
 msgid "Visual"
-msgstr ""
+msgstr "Vizuální"
 
 #: ../../enterprise/meta/advanced/policymanager.queue.php:60
 #: ../../enterprise/godmode/policies/policy_queue.php:59
@@ -10541,12 +10550,12 @@ msgstr "Vyprázdnit frontu"
 #: ../../enterprise/meta/advanced/propagation.php:58
 #: ../../enterprise/meta/advanced/propagation.php:68
 msgid "Components propagation"
-msgstr ""
+msgstr "Rozšíření komponentů"
 
 #: ../../enterprise/meta/advanced/propagation.php:62
 #: ../../enterprise/meta/advanced/propagation.php:71
 msgid "Agents movement"
-msgstr ""
+msgstr "Pohyb agentů"
 
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:80
 #: ../../enterprise/meta/advanced/propagation.agent.php:80
@@ -10618,7 +10627,7 @@ msgstr "Filtr skupiny"
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:153
 #: ../../enterprise/meta/advanced/propagation.agent.php:153
 msgid "Add agents to destination server"
-msgstr ""
+msgstr "Přidat agenty do cílového serveru"
 
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:163
 #: ../../enterprise/meta/advanced/propagation.agent.php:163
@@ -10628,32 +10637,32 @@ msgstr "Přesunout"
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:286
 #, php-format
 msgid "Error creating/updating %s/%s comamnds"
-msgstr ""
+msgstr "Chyba při vytváření/aktualizaci %s/%s příkazů"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:289
 #, php-format
 msgid "Created/Updated %s/%s commands"
-msgstr ""
+msgstr "Vytvořeno/Aktualizováno %s/%s příkazů"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:294
 #, php-format
 msgid "Error creating/updating %s/%s actions"
-msgstr ""
+msgstr "Chyba při vytváření/aktualizaci %s/%s činností"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:297
 #, php-format
 msgid "Created/Updated %s/%s actions"
-msgstr ""
+msgstr "Vytvořeno/Aktualizováno %s/%s činností"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:302
 #, php-format
 msgid "Error creating/updating %s/%s templates"
-msgstr ""
+msgstr "Chyba při vytváření/aktualizaci %s/%s šablon"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:305
 #, php-format
 msgid "Created/Updated %s/%s templates"
-msgstr ""
+msgstr "Vytvořeno/Aktualizováno %s/%s šablon"
 
 #: ../../enterprise/meta/advanced/metasetup.performance.php:70
 #: ../../enterprise/meta/include/functions_meta.php:353
@@ -10665,7 +10674,7 @@ msgstr "Max. dní před smazáním událostí"
 #: ../../enterprise/meta/advanced/metasetup.performance.php:74
 #: ../../enterprise/meta/include/functions_meta.php:363
 msgid "Active events history"
-msgstr ""
+msgstr "Historie aktivních událostí"
 
 #: ../../enterprise/meta/advanced/metasetup.performance.php:79
 #: ../../enterprise/meta/include/functions_meta.php:373
@@ -10815,7 +10824,7 @@ msgstr "URL konzole"
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:205
 msgid ""
 "Complete path to Pandora console without last \"/\" character. Example "
-msgstr ""
+msgstr "Úplná cesta ke konzoli Pandora bez posledního znaku \"/\". Příklad "
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:207
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:183
@@ -10874,7 +10883,7 @@ msgstr "Kompatibilita"
 #: ../../enterprise/godmode/setup/setup.php:50
 #: ../../include/functions_config.php:194
 msgid "Events replication"
-msgstr ""
+msgstr "Opakování událostí"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:328
 msgid "There aren't server added to metaconsole"
@@ -10882,27 +10891,27 @@ msgstr "Do metakonzole nejsou přidány žádné servery"
 
 #: ../../enterprise/meta/advanced/metasetup.php:47
 msgid "Consoles Setup"
-msgstr ""
+msgstr "Nastavení konzolí"
 
 #: ../../enterprise/meta/advanced/metasetup.php:51
 #: ../../enterprise/meta/advanced/metasetup.php:82
 msgid "General setup"
-msgstr ""
+msgstr "Obecná nastavení"
 
 #: ../../enterprise/meta/advanced/metasetup.php:55
 #: ../../enterprise/meta/advanced/metasetup.php:85
 msgid "Passwords setup"
-msgstr ""
+msgstr "Nastavení hesel"
 
 #: ../../enterprise/meta/advanced/metasetup.php:59
 #: ../../enterprise/meta/advanced/metasetup.php:88
 msgid "Visual setup"
-msgstr ""
+msgstr "Vizuální nastavení"
 
 #: ../../enterprise/meta/advanced/metasetup.php:63
 #: ../../enterprise/meta/advanced/metasetup.php:91
 msgid "Performance setup"
-msgstr ""
+msgstr "Nastavení výkonu"
 
 #: ../../enterprise/meta/advanced/metasetup.php:67
 #: ../../enterprise/meta/advanced/metasetup.php:94
@@ -10913,81 +10922,81 @@ msgstr "Správce souborů"
 #: ../../enterprise/meta/advanced/metasetup.php:71
 #: ../../enterprise/meta/advanced/metasetup.php:97
 msgid "Strings translation"
-msgstr ""
+msgstr "Překlad řetězců"
 
 #: ../../enterprise/meta/advanced/metasetup.php:79
 msgid "Consoles setup"
-msgstr ""
+msgstr "Nastavení konzolí"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:122
 #, php-format
 msgid "Error creating/updating %s/%s tags"
-msgstr ""
+msgstr "Chyba při vytváření/aktualizaci %s/%s značek"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:125
 #, php-format
 msgid "Created/Updated %s/%s tags"
-msgstr ""
+msgstr "Vytovřeno/aktualizováno %s/%s značek"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:253
 #, php-format
 msgid "Error creating %s policies"
-msgstr ""
+msgstr "Chyba při vytváření %s zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:256
 #, php-format
 msgid "Created %s policies"
-msgstr ""
+msgstr "Vytvořeno %s zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:261
 #, php-format
 msgid "Error creating/updating %s/%s policy modules"
-msgstr ""
+msgstr "Chyba při vytváření/aktualizaci %s/%s modulů zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:264
 #, php-format
 msgid "Created/Updated %s/%s policy modules"
-msgstr ""
+msgstr "Vytvořeno/Aktualizováno %s/%s modulů zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:269
 #, php-format
 msgid "Error deleting %s policy modules"
-msgstr ""
+msgstr "Chyba při mazání %s modulů zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:272
 #, php-format
 msgid "Deleted %s policy modules"
-msgstr ""
+msgstr "Smazáno %s modulů zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:277
 #, php-format
 msgid "Error creating %s policy alerts"
-msgstr ""
+msgstr "Chyba při vytváření %s výstrah zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:280
 #, php-format
 msgid "Created %s policy alerts"
-msgstr ""
+msgstr "Vytvořeno %s výstrah zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:285
 #, php-format
 msgid "Error deleting %s policy alerts"
-msgstr ""
+msgstr "Chyba při mazání %s výstrah zásad"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:288
 #, php-format
 msgid "Deleted %s policy alerts"
-msgstr ""
+msgstr "Smazáno %s výstrah zásad"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:137
 #, php-format
 msgid "Error creating/updating %s/%s groups"
-msgstr ""
+msgstr "Chyba při vytváření/aktualizaci %s/%s skupin"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:140
 #, php-format
 msgid "Created/Updated %s/%s groups"
-msgstr ""
+msgstr "Vytvořeno/Aktualizováno %s/%s skupin"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:68
 #: ../../enterprise/meta/include/functions_meta.php:33
@@ -11054,57 +11063,57 @@ msgstr "Adresář kde jsou uložena dočasná data."
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Africa"
-msgstr ""
+msgstr "Afrika"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "America"
-msgstr ""
+msgstr "Amerika"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Antarctica"
-msgstr ""
+msgstr "Antarktida"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Arctic"
-msgstr ""
+msgstr "Arktida"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Asia"
-msgstr ""
+msgstr "Asie"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Atlantic"
-msgstr ""
+msgstr "Atlantické"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Australia"
-msgstr ""
+msgstr "Austrálie"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Europe"
-msgstr ""
+msgstr "Evropa"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Indian"
-msgstr ""
+msgstr "Indické"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Pacific"
-msgstr ""
+msgstr "Pacifické"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:120
 #: ../../enterprise/meta/include/functions_meta.php:93
@@ -11142,7 +11151,7 @@ msgstr "Informace o licenci"
 #: ../../include/functions_config.php:175
 #: ../../godmode/setup/setup_general.php:216
 msgid "Public URL"
-msgstr ""
+msgstr "Veřejná URL"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:140
 #: ../../godmode/setup/setup_general.php:217
@@ -11150,12 +11159,14 @@ msgid ""
 "Set this value when your PandoraFMS across inverse proxy or for example with "
 "mod_proxy of Apache."
 msgstr ""
+"Nastavte tuto hodnotu když PandoraFMS je za inverzním proxy, nebo například "
+"při použití mod_proxy z Apache."
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:143
 #: ../../include/functions_config.php:461
 #: ../../godmode/setup/setup_netflow.php:56
 msgid "Disable custom live view filters"
-msgstr ""
+msgstr "Zakázat vlastní živé filtry zobrazení"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:143
 #: ../../godmode/setup/setup_netflow.php:57
@@ -11163,6 +11174,8 @@ msgid ""
 "Disable the definition of custom filters in the live view. Only existing "
 "filters can be used."
 msgstr ""
+"Zakázat určení vlastních filtrů v živém zobrazení. Jsou použity pouze "
+"existující filtry."
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:151
 #: ../../enterprise/godmode/modules/configure_local_component.php:129
@@ -11170,7 +11183,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:474
 #: ../../godmode/alerts/configure_alert_template.php:639
 msgid "Basic"
-msgstr ""
+msgstr "Základní"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:194
 #, php-format
@@ -11199,6 +11212,8 @@ msgid ""
 "Error creating/updating the followings elements groups/profiles/user "
 "profiles (%d/%d/%d)"
 msgstr ""
+"Chyba při vytváření/aktualizaci následujících prvků "
+"skupin/profilů/uživatelských profilů (%d/%d/%d)"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:342
 #: ../../enterprise/meta/advanced/synchronizing.user.php:475
@@ -11207,6 +11222,8 @@ msgid ""
 "The followings elements groups/profiles/user profiles were created/updated "
 "sucessfully (%d/%d/%d)"
 msgstr ""
+"Následující prvky skupin/profilů/uživatelských profilů byly úspěšně "
+"vytvořeny/aktualizovány (%d/%d/%d)"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:530
 #: ../../enterprise/godmode/agentes/inventory_manager.php:168
@@ -11220,7 +11237,7 @@ msgstr "Režim profilu"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:545
 msgid "Profile synchronization mode."
-msgstr ""
+msgstr "Režim synchronizace profilu."
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:546
 msgid "New profile"
@@ -11260,15 +11277,15 @@ msgstr "Síťové komponenty"
 #: ../../enterprise/meta/include/functions_components_meta.php:60
 #: ../../enterprise/meta/include/functions_components_meta.php:75
 msgid "Plugin management"
-msgstr ""
+msgstr "Správa zásuvných modulů"
 
 #: ../../enterprise/meta/include/functions_components_meta.php:81
 msgid "Create plugin"
-msgstr ""
+msgstr "Vytvořit zásuvný modul"
 
 #: ../../enterprise/meta/include/functions_components_meta.php:84
 msgid "Edit plugin"
-msgstr ""
+msgstr "Upravit zásuvný modul"
 
 #: ../../enterprise/meta/include/functions_ui_meta.php:54
 #: ../../include/functions_ui.php:1146
@@ -11290,35 +11307,35 @@ msgstr "Příkazy"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:271
 msgid "Successful update the networkmap."
-msgstr ""
+msgstr "Úspěšná aktualizace síťové mapy."
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:272
 msgid "Unsuccessful update the networkmap."
-msgstr ""
+msgstr "Neúspěšná aktualizace  síťové mapy."
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:277
 msgid "Unnamed "
-msgstr ""
+msgstr "Nepojmenováno "
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:324
 msgid "Show detailed agent"
-msgstr ""
+msgstr "Zobrazit podrobnosti agenta"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:363
 msgid "Show modules"
-msgstr ""
+msgstr "Zobrazit moduly"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:363
 msgid "Only the network modules."
-msgstr ""
+msgstr "Pouze síťové moduly"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:373
 msgid "Show children Metaconsole"
-msgstr ""
+msgstr "Zobrazit podřazenou metakonzoli"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:404
 msgid "Show modulegroup"
-msgstr ""
+msgstr "Zobrazit skupinu modulu"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:411
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:73
@@ -11350,24 +11367,24 @@ msgstr "Uložit"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:443
 msgid "There is no group selected"
-msgstr ""
+msgstr "Není vybrána žádní skupina"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:638
 #, php-format
 msgid "Cannot connect to %s Pandora to generate networkmap."
-msgstr ""
+msgstr "Nelze se připojit k %s Pandora pro vytvoření síťové mapy."
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:229
 msgid "Latency"
-msgstr ""
+msgstr "Zpoždění"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:230
 msgid "Response"
-msgstr ""
+msgstr "Odpověď"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:232
 msgid "Check type"
-msgstr ""
+msgstr "Zkontrolovat typ"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:249
 #: ../../enterprise/meta/include/functions_wizard_meta.php:299
@@ -11377,21 +11394,21 @@ msgstr "Internetové kontroly"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:280
 msgid "String to check"
-msgstr ""
+msgstr "Řetězec ke kontrole"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:285
 msgid "Add check"
-msgstr ""
+msgstr "Přidat kontrolu"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:293
 msgid "Delete check"
-msgstr ""
+msgstr "Smazat kontrolu"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:398
 #: ../../enterprise/meta/include/functions_wizard_meta.php:487
 #: ../../enterprise/meta/include/functions_wizard_meta.php:668
 msgid "Various"
-msgstr ""
+msgstr "Různé"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:406
 #: ../../enterprise/meta/include/functions_wizard_meta.php:850
@@ -11402,13 +11419,13 @@ msgstr "Komunita SNMP"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:413
 #: ../../enterprise/meta/include/functions_wizard_meta.php:495
 msgid "Credentials"
-msgstr ""
+msgstr "Přihlašovací údaje"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:435
 #: ../../enterprise/meta/include/functions_wizard_meta.php:517
 #: ../../enterprise/meta/include/functions_wizard_meta.php:689
 msgid "Thresholds"
-msgstr ""
+msgstr "Prahy"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:523
 #: ../../enterprise/meta/include/functions_wizard_meta.php:974
@@ -11418,11 +11435,11 @@ msgstr "URL proxy serveru"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:528
 msgid "Web configuration"
-msgstr ""
+msgstr "Nastavení stránky"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:744
 msgid "Alerts in module"
-msgstr ""
+msgstr "Výstrahy v modulu"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:752
 #: ../../include/functions_reporting.php:1646
@@ -11431,7 +11448,7 @@ msgstr "Popis výstrahy"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:970
 msgid "Checks"
-msgstr ""
+msgstr "Kontroly"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1238
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1342
@@ -11448,14 +11465,14 @@ msgstr "Již existuje jiný modul se stejným názvem"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1493
 #, php-format
 msgid "Error adding module %s"
-msgstr ""
+msgstr "Chyba při přidávání modulu %s"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1260
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1362
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1503
 msgid ""
 "There was an error creating the alerts, the operation has been cancelled"
-msgstr ""
+msgstr "Při vytváření výstrahy došlo k chybě, operace byla přerušena"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1293
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1392
@@ -11476,21 +11493,21 @@ msgstr "Chyba při aktualizaci modulu %s"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1841
 msgid ""
 "There was an error updating the alerts, the operation has been cancelled"
-msgstr ""
+msgstr "Při aktualizaci výstrahy došlo k chybě, operace byla přerušena"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1632
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1727
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1864
 msgid "Successfully updated module."
-msgstr ""
+msgstr "Modul úspěšně aktualizován."
 
 #: ../../enterprise/meta/include/functions_meta.php:25
 msgid "No admin user"
-msgstr ""
+msgstr "Žádný správce"
 
 #: ../../enterprise/meta/include/functions_meta.php:123
 msgid "Netflow disable custom live view filters"
-msgstr ""
+msgstr "Zakázat vlastní filtry živého zobrazení toku sítě"
 
 #: ../../enterprise/meta/include/functions_users_meta.php:172
 #: ../../enterprise/meta/include/functions_users_meta.php:196
@@ -11508,11 +11525,11 @@ msgstr "Správa skupiny"
 
 #: ../../enterprise/meta/include/functions_users_meta.php:187
 msgid "User synchronization"
-msgstr ""
+msgstr "Synchornizace uživatele"
 
 #: ../../enterprise/meta/include/functions_users_meta.php:202
 msgid "Group synchronization"
-msgstr ""
+msgstr "Synchornizace skupiny"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:118
 #: ../../godmode/alerts/alert_templates.php:60
@@ -11637,7 +11654,7 @@ msgstr "Vykonat"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1197
 msgid "Create new module"
-msgstr ""
+msgstr "Vytvořit nový modul"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1244
 #: ../../godmode/groups/configure_modu_group.php:47
@@ -11664,11 +11681,11 @@ msgstr "Ikona"
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1335
 #: ../../include/functions_treeview.php:47
 msgid "There was a problem loading module"
-msgstr ""
+msgstr "Při načítání modulu nastal problém"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1398
 msgid "Go to module detail"
-msgstr ""
+msgstr "Přejít na podrobnosti modulu"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1411
 #: ../../godmode/agentes/module_manager_editor_common.php:137
@@ -11677,7 +11694,7 @@ msgstr "Smazat modul"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1416
 msgid "Create new alert"
-msgstr ""
+msgstr "Vytvořit novou výstrahu"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1457
 msgid "There was a problem loading alert"
@@ -11692,19 +11709,19 @@ msgstr "Název šablony"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1548
 msgid "Stand By"
-msgstr ""
+msgstr "Pohotovostní režim"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1574
 msgid "Go to Alert detail"
-msgstr ""
+msgstr "Přejít na podrobnosti výstrahy"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1580
 msgid "Delete alert"
-msgstr ""
+msgstr "Smazat výstrahu"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1624
 msgid "There was a problem loading tag"
-msgstr ""
+msgstr "Při načítání značky nastal problém"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1639
 #: ../../godmode/tag/tag.php:159
@@ -11713,7 +11730,7 @@ msgstr "Název značky"
 
 #: ../../enterprise/meta/screens/screens.visualmap.php:54
 msgid "Create visualmap"
-msgstr ""
+msgstr "Vytvořit vizuální mapu"
 
 #: ../../enterprise/meta/screens/screens.visualmap.php:95
 #: ../../godmode/reporting/visual_console_builder.php:107
@@ -11733,15 +11750,15 @@ msgstr "Editor"
 #: ../../enterprise/meta/screens/screens.visualmap.php:174
 #: ../../godmode/reporting/visual_console_builder.php:437
 msgid "New visual console"
-msgstr ""
+msgstr "Nová vizuální konzole"
 
 #: ../../enterprise/meta/screens/screens.visualmap.php:185
 msgid "Visualmap"
-msgstr ""
+msgstr "Vizuální mapa"
 
 #: ../../enterprise/meta/screens/screens.main.php:73
 msgid "Welcome to the Pandora FMS screens."
-msgstr ""
+msgstr "Vítejte v obrazovkách Pandora FMS"
 
 #: ../../enterprise/meta/index.php:305 ../../enterprise/meta/index.php:315
 #: ../../index.php:462
@@ -11754,7 +11771,7 @@ msgstr "Kopie nástěnky"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:41
 msgid "Not copyed. Error copying data. You must select a dashboard"
-msgstr ""
+msgstr "Nezkopírováno. Chyba při kopírování dat. Musíte zvolit nástěnku."
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:63
 #: ../../enterprise/dashboard/dashboard_replicate.php:83
@@ -11767,15 +11784,15 @@ msgstr "Úspěšně zkopírováno"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:108
 msgid "Source user's group"
-msgstr ""
+msgstr "Skupina zdrojového uživatele"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:132
 msgid "Destination user's group"
-msgstr ""
+msgstr "Skupina cílového uživatele"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:146
 msgid "Group Dashboards"
-msgstr ""
+msgstr "Seskupit nástěnky"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:165
 msgid "Replicate Dashboard"
@@ -12522,7 +12539,7 @@ msgstr " Bajtů"
 #: ../../enterprise/godmode/setup/setup.php:56
 #: ../../include/functions_config.php:197
 msgid "Replication interval"
-msgstr ""
+msgstr "Interval replikace"
 
 #: ../../enterprise/godmode/setup/setup.php:57
 msgid "Seconds"
@@ -12531,68 +12548,70 @@ msgstr "Sekundy"
 #: ../../enterprise/godmode/setup/setup.php:60
 #: ../../include/functions_config.php:199
 msgid "Replication DB host"
-msgstr ""
+msgstr "Hostitel replikované DB"
 
 #: ../../enterprise/godmode/setup/setup.php:64
 #: ../../include/functions_config.php:201
 msgid "Replication DB database"
-msgstr ""
+msgstr "Databáze replikované DB"
 
 #: ../../enterprise/godmode/setup/setup.php:68
 #: ../../include/functions_config.php:203
 msgid "Replication DB user"
-msgstr ""
+msgstr "Uživatel replikované DB"
 
 #: ../../enterprise/godmode/setup/setup.php:72
 #: ../../include/functions_config.php:205
 msgid "Replication DB password"
-msgstr ""
+msgstr "Heslo replikované DB"
 
 #: ../../enterprise/godmode/setup/setup.php:76
 #: ../../include/functions_config.php:207
 msgid "Replication DB port"
-msgstr ""
+msgstr "Port replikované DB"
 
 #: ../../enterprise/godmode/setup/setup.php:80
 #: ../../include/functions_config.php:209
 msgid "Replication mode"
-msgstr ""
+msgstr "Režim replikace"
 
 #: ../../enterprise/godmode/setup/setup.php:81
 msgid "Only validated events"
-msgstr ""
+msgstr "Pouze ověřené události"
 
 #: ../../enterprise/godmode/setup/setup.php:85
 #: ../../include/functions_config.php:218
 msgid "Inventory changes blacklist"
-msgstr ""
+msgstr "Černá listina změn inventáře"
 
 #: ../../enterprise/godmode/setup/setup.php:85
 msgid ""
 "The inventory modules included in the changes blacklist will not generate "
 "events when change."
 msgstr ""
+"Moduly inventáře uvedené na černé listině změn nebudou vytvářet události při "
+"změně."
 
 #: ../../enterprise/godmode/setup/setup.php:114
 msgid "Out of black list"
-msgstr ""
+msgstr "Mimo černou listinu"
 
 #: ../../enterprise/godmode/setup/setup.php:116
 msgid "In black list"
-msgstr ""
+msgstr "V černé listině"
 
 #: ../../enterprise/godmode/setup/setup.php:122
 msgid "Push selected modules into blacklist"
-msgstr ""
+msgstr "Odeslat zvolené moduly do černé listiny"
 
 #: ../../enterprise/godmode/setup/setup.php:124
 msgid "Pop selected modules out of blacklist"
-msgstr ""
+msgstr "Vyjmouot vybrané moduly z černé listiny"
 
 #: ../../enterprise/godmode/setup/setup.php:133
 #: ../../include/functions_config.php:214
 msgid "Activate Log Collector"
-msgstr ""
+msgstr "Aktivovat shromažďovatele záznamu"
 
 #: ../../enterprise/godmode/setup/setup.php:158
 msgid "Enterprise options"
@@ -12612,7 +12631,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/modules/local_components.php:87
 msgid "Local component management"
-msgstr ""
+msgstr "Správa místních součástí"
 
 #: ../../enterprise/godmode/modules/local_components.php:103
 #: ../../godmode/modules/manage_network_components.php:128
@@ -12679,7 +12698,7 @@ msgstr "Kopírovat"
 #: ../../godmode/modules/manage_network_components_form_common.php:56
 #: ../../godmode/alerts/configure_alert_template.php:638
 msgid "Wizard level"
-msgstr ""
+msgstr "Úroveň průvodce"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:169
 #: ../../include/functions_alerts.php:554
@@ -12739,7 +12758,7 @@ msgstr "Str."
 #: ../../godmode/massive/massive_edit_modules.php:307
 #: ../../godmode/massive/massive_edit_modules.php:344
 msgid "Inverse interval"
-msgstr ""
+msgstr "Interval inverze"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:182
 #: ../../include/functions_alerts.php:555
@@ -12777,42 +12796,42 @@ msgstr "Po procesu"
 #: ../../godmode/agentes/module_manager_editor_common.php:410
 #: ../../godmode/massive/massive_edit_modules.php:420
 msgid "Critical instructions"
-msgstr ""
+msgstr "Kritické pokyny"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:218
 #: ../../godmode/modules/manage_network_components_form_common.php:146
 #: ../../godmode/agentes/module_manager_editor_common.php:410
 #: ../../godmode/massive/massive_edit_modules.php:420
 msgid "Instructions when the status is critical"
-msgstr ""
+msgstr "Pokyny když je stav kritický"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:221
 #: ../../godmode/modules/manage_network_components_form_common.php:150
 #: ../../godmode/agentes/module_manager_editor_common.php:414
 #: ../../godmode/massive/massive_edit_modules.php:424
 msgid "Warning instructions"
-msgstr ""
+msgstr "Varovné pokyny"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:221
 #: ../../godmode/modules/manage_network_components_form_common.php:150
 #: ../../godmode/agentes/module_manager_editor_common.php:414
 #: ../../godmode/massive/massive_edit_modules.php:424
 msgid "Instructions when the status is warning"
-msgstr ""
+msgstr "Pokyny když je stav varovný"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:224
 #: ../../godmode/modules/manage_network_components_form_common.php:154
 #: ../../godmode/agentes/module_manager_editor_common.php:418
 #: ../../godmode/massive/massive_edit_modules.php:428
 msgid "Unknown instructions"
-msgstr ""
+msgstr "Pokyny při stavu neznámé"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:224
 #: ../../godmode/modules/manage_network_components_form_common.php:154
 #: ../../godmode/agentes/module_manager_editor_common.php:418
 #: ../../godmode/massive/massive_edit_modules.php:428
 msgid "Instructions when the status is unknown"
-msgstr ""
+msgstr "Pokyny když stav je neznámý"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:231
 #: ../../godmode/modules/manage_network_components_form_common.php:161
@@ -12846,12 +12865,12 @@ msgstr "Zvolené značky"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:274
 msgid "Macros"
-msgstr ""
+msgstr "Makra"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:310
 #: ../../godmode/servers/plugin.php:229
 msgid "Default value"
-msgstr ""
+msgstr "Výchozí hodnota"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:316
 #: ../../include/functions_ui.php:952 ../../godmode/servers/plugin.php:242
@@ -12861,12 +12880,12 @@ msgstr "Nápověda"
 #: ../../enterprise/godmode/modules/configure_local_component.php:326
 #: ../../godmode/servers/plugin.php:256
 msgid "Add macro"
-msgstr ""
+msgstr "Přidat makro"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:333
 #: ../../godmode/servers/plugin.php:263
 msgid "Delete macro"
-msgstr ""
+msgstr "Smazat makro"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:48
 #: ../../enterprise/godmode/agentes/inventory_manager.php:128
@@ -13315,20 +13334,21 @@ msgstr "Čas do"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1083
 msgid "Match by regular expression or selection"
-msgstr ""
+msgstr "Shoda podle regulárního výrazu nebo výběru"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1083
 msgid ""
 "You can select agents and modules by regular expression or direct selection"
 msgstr ""
+"Agenty a moduly můžete vybrat pomocí regulárního výrazu nebo přímým výběrem"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1086
 msgid "Reg expression"
-msgstr ""
+msgstr "Reg výraz"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1087
 msgid "Direct selection"
-msgstr ""
+msgstr "Přímý výběr"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1096
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1098
@@ -13342,6 +13362,8 @@ msgid ""
 "Case insensitive regular expression for agent name. For example: Network.* "
 "will match with the following agent names: network_agent1, NetworK CHECKS"
 msgstr ""
+"Regulární výraz názvu agenta bez citlivosti na velikost písmen. Například "
+"Network.* odpovídá následujícím názvům agentů: network_agent1, NetworK CHECKS"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1161
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1654
@@ -13353,6 +13375,11 @@ msgid ""
 "can use a regular expression. Example: .*usage.* will match: cpu_usage, vram "
 "usage in matchine 1."
 msgstr ""
+"Regulární výraz bez citlivosti na velikost písmen nebo název modulu. "
+"Například: Pokud použijete pole a \"Přesná shoda modulu\" je zapnuta, pak "
+"toto pole musí být vyplněno přesným řetězcem názvu modulu. Pokud ne, můžete "
+"použít regulární výraz. Příklad:  .*usage.* odpovídá: cpu_usage, vram usage "
+"in matchine 1."
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1171
 msgid "Module exact match"
@@ -13372,11 +13399,11 @@ msgstr "Dotaz SQL"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1211
 msgid "Also you can add agents from this list"
-msgstr ""
+msgstr "Agenty také můžete přidat z tohoto seznamu"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1250
 msgid "You can add modules from this list"
-msgstr ""
+msgstr "Z tohoto seznamu můžete přidat moduly"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1267
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:2389
@@ -13517,37 +13544,37 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1355
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1011
 msgid "Event filter"
-msgstr ""
+msgstr "Filtr událostí"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1358
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1014
 msgid "No Validated"
-msgstr ""
+msgstr "Neověřeno"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1370
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1027
 msgid "Event graphs"
-msgstr ""
+msgstr "Grafy událostí"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1373
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1030
 msgid "By agent"
-msgstr ""
+msgstr "Podle agenta"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1375
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1032
 msgid "By user validator"
-msgstr ""
+msgstr "Podle ověřovatele uživatele"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1377
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1034
 msgid "By criticity"
-msgstr ""
+msgstr "Podle vážnosti"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1379
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1036
 msgid "Validated vs unvalidated"
-msgstr ""
+msgstr "Ověřeno/neověřeno"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1385
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1042
@@ -13567,29 +13594,32 @@ msgstr "Zobrazit na šířku"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1401
 msgid "Modules to match"
-msgstr ""
+msgstr "Moduly ke shodě"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1403
 msgid "Select the modules to match when create a report for agents"
-msgstr ""
+msgstr "Vyberte moduly ke shodě při vytváření hlášení pro agenty"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1479
 msgid "Modules to match (Free text)"
-msgstr ""
+msgstr "Moduly ke shodě (Freetext)"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1481
 msgid "Free text to filter the modules of agents when apply this template."
-msgstr ""
+msgstr "Freetext k filtrování modulů agentů při použití této šablony."
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1494
 msgid "Create a graph for each agent"
-msgstr ""
+msgstr "Vytvořit graf pro každého agenta"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1496
 msgid ""
 "If it is checked, the regexp or name of modules match only each to each to "
 "agent, instead create a big graph with all modules from all agents."
 msgstr ""
+"Při zaškrtnutí bude regulární výraz nebo název modulů porovnáván pouze s "
+"jednotlivými agenty místo vytvoření velkého grafu se všemi moduly od všech "
+"agentů."
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1520
 #: ../../godmode/netflow/nf_item_list.php:258
@@ -13627,6 +13657,9 @@ msgid ""
 "Case insensitive regular expression for agent name. For example: Network* "
 "will match with the following agent names: network_agent1, NetworK CHECKS"
 msgstr ""
+"Regulární výrazy bez citlivosti na velikost písmen pro název agenta. "
+"Například: Network* odpovídá následujícím názvům agentů: network_agent1, "
+"NetworK CHECKS"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1673
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1784
@@ -13738,7 +13771,7 @@ msgstr "1 rok"
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:91
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:115
 msgid "Elements to apply"
-msgstr ""
+msgstr "Prvky k použití"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:142
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:121
@@ -13910,47 +13943,47 @@ msgstr "Krátký název"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:41
 msgid "Plug-in deleted succesfully"
-msgstr ""
+msgstr "Zásuvný modul úspěšně smazán"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:41
 msgid "Plug-in cannot be deleted"
-msgstr ""
+msgstr "Zásuvný modul nelze smazat"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:47
 #: ../../enterprise/godmode/policies/policy_plugins.php:43
 msgid "Plug-in added succesfully"
-msgstr ""
+msgstr "Zásuvný modul úspěšně přidán"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:47
 #: ../../enterprise/godmode/policies/policy_plugins.php:43
 msgid "Plug-in cannot be added"
-msgstr ""
+msgstr "Zásuvný modul nelze přidat"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:58
 msgid "Plug-in disabled succesfully"
-msgstr ""
+msgstr "Zásuvný modul úspěšně zakázán"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:58
 msgid "Plug-in cannot be disabled"
-msgstr ""
+msgstr "Zásuvný modul nelze zakázat"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:69
 msgid "Plug-in enabled succesfully"
-msgstr ""
+msgstr "Zásuvný modul úspěšně povolen"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:69
 msgid "Plug-in cannot be enabled"
-msgstr ""
+msgstr "Zásuvný modul nelze povolit"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:78
 #: ../../enterprise/godmode/policies/policy_plugins.php:52
 msgid "New plug-in"
-msgstr ""
+msgstr "Nový zásuvný modul"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:95
 #: ../../enterprise/godmode/policies/policy_plugins.php:68
 msgid "Plugins"
-msgstr ""
+msgstr "Zásuvné moduly"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:97
 #: ../../enterprise/godmode/agentes/plugins_manager.php:117
@@ -14044,7 +14077,7 @@ msgstr "Chyba při vynucování modulu inventáře"
 #: ../../enterprise/godmode/agentes/inventory_manager.php:178
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:198
 msgid "7 days"
-msgstr ""
+msgstr "7 dní"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:180
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:200
@@ -14232,7 +14265,7 @@ msgstr "Vytvořit nový modul internetového serveru"
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:40
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:41
 msgid "The changes on this field are linked with the configuration data."
-msgstr ""
+msgstr "Změny v tomto poli jsou propojeny s daty nastavení."
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:46
 msgid "Using local component"
@@ -14252,11 +14285,11 @@ msgstr "Komponenta nebyla nalezena"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:118
 msgid "Show configuration data"
-msgstr ""
+msgstr "Zobrazit data nastavení"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:128
 msgid "Hide configuration data"
-msgstr ""
+msgstr "Skrýt data nastavení"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:136
 msgid "Data configuration"
@@ -14264,48 +14297,52 @@ msgstr "Nastavení dat"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:141
 msgid "Load basic"
-msgstr ""
+msgstr "Načíst základní"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:141
 msgid "Load a basic structure on data configuration"
-msgstr ""
+msgstr "Načíst základní strukturu nastavení dat"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:144
 msgid "Check the correct structure of the data configuration"
-msgstr ""
+msgstr "Zkontrolovat správnost struktury nastavení dat"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:154
 msgid "First line must be \"module_begin\""
-msgstr ""
+msgstr "První řádek musí být \"module_begin\""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:155
 msgid "Data configuration is empty"
-msgstr ""
+msgstr "Nastavení dat je prázdné"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:156
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:160
 msgid "Last line must be \"module_end\""
-msgstr ""
+msgstr "Poslední řádek musí být \"module_end\""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:157
 msgid ""
 "Name is missed. Please add a line with \"module_name yourmodulename\" to "
 "data configuration"
 msgstr ""
+"Chybí název. Prosím přidejte řádek \"module_name názevvašehomodulu\" do "
+"nastavení dat"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:158
 msgid ""
 "Type is missed. Please add a line with \"module_type yourmoduletype\" to "
 "data configuration"
 msgstr ""
+"Typ chybí Prosím přidejte řádek \"module_type typvašehomodulu\" do nastavení "
+"dat"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:159
 msgid "Type is wrong. Please set a correct type"
-msgstr ""
+msgstr "Typ je špatný. Prosím nastavte správný typ"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:161
 msgid "Data configuration are built correctly"
-msgstr ""
+msgstr "Data nastavení jsou správně sestavena"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:29
 msgid "Web server module"
@@ -14397,7 +14434,7 @@ msgstr "Výstrahy událostí"
 
 #: ../../enterprise/godmode/menu.php:90
 msgid "Log Collector"
-msgstr ""
+msgstr "Sběratel záznamů"
 
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:47
 #: ../../enterprise/godmode/policies/policy_modules.php:251
@@ -14480,10 +14517,12 @@ msgid ""
 "Successfully added to delete pending plugins. Will be deleted in the next "
 "policy application."
 msgstr ""
+"Úspěšně přidáno do nevyřízených smazání zásuvných modulů. Bud smazáno při "
+"příštím použití zásad."
 
 #: ../../enterprise/godmode/policies/policy_plugins.php:31
 msgid "Cannot be added to delete pending plugins."
-msgstr ""
+msgstr "Nelze přidat do nevyřízených smazání zásuvných modulů."
 
 #: ../../enterprise/godmode/policies/policy_modules.php:22
 #: ../../enterprise/godmode/policies/policy_modules.php:755
@@ -14503,7 +14542,7 @@ msgstr "Moduly v zásadě"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:275
 msgid "Could not be added module(s). You must select a policy"
-msgstr ""
+msgstr "Nelze přidat modul(y). Musíte zvolit zásadu"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:423
 msgid "Could not be added module."
@@ -14533,7 +14572,7 @@ msgstr "Kopírovat moduly"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:704
 msgid "Copy selected modules to policy: "
-msgstr ""
+msgstr "Kopírovat zvolené moduly do zásady: "
 
 #: ../../enterprise/godmode/policies/policy_modules.php:738
 #: ../../godmode/agentes/module_manager_editor.php:457
@@ -14556,11 +14595,11 @@ msgstr "Proměnná"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:854
 msgid "Are you sure to copy modules into policy?\\n"
-msgstr ""
+msgstr "Opravdu chcete zkopírovat moduly do zásady?\\n"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:874
 msgid "Please select any module to copy"
-msgstr ""
+msgstr "Prosím zvolte moduly ke kopírování"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:101
 msgid "Operations successfully deleted from the queue"
@@ -14643,7 +14682,7 @@ msgstr "Smazat nevyřízené sbírky souborů"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:261
 msgid "Delete pending plugins"
-msgstr ""
+msgstr "Nevyřízená smazání zásuvných modulů"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:273
 msgid "Advices"
@@ -14998,39 +15037,40 @@ msgstr "Zásada agentů"
 
 #: ../../enterprise/godmode/policies/policy.php:53
 msgid "Plugins policy"
-msgstr ""
+msgstr "Zásada zásuvných modulů"
 
 #: ../../enterprise/godmode/services/services.elements.php:51
 #: ../../enterprise/godmode/services/services.service.php:126
 msgid ""
 "This values are by default because the service is auto calculate mode."
 msgstr ""
+"Tyto hodnoty jsou výchozí protože služb je v režimu automatického výpočtu."
 
 #: ../../enterprise/godmode/services/services.elements.php:76
 #: ../../enterprise/godmode/services/services.service.php:148
 msgid "Config Service"
-msgstr ""
+msgstr "Nastavit službu"
 
 #: ../../enterprise/godmode/services/services.elements.php:81
 #: ../../enterprise/godmode/services/services.service.php:153
 msgid "Config Elements"
-msgstr ""
+msgstr "Nastavit prvky"
 
 #: ../../enterprise/godmode/services/services.elements.php:85
 msgid "Edit service elements"
-msgstr ""
+msgstr "Upravit prvky služby"
 
 #: ../../enterprise/godmode/services/services.elements.php:99
 msgid "Error empty module"
-msgstr ""
+msgstr "Chyba při vyprazdňování modulů"
 
 #: ../../enterprise/godmode/services/services.elements.php:108
 msgid "Error empty agent"
-msgstr ""
+msgstr "Chyba při vyprazdňování agenta"
 
 #: ../../enterprise/godmode/services/services.elements.php:117
 msgid "Error empty service"
-msgstr ""
+msgstr "Chyba při vyprazdňování služby"
 
 #: ../../enterprise/godmode/services/services.elements.php:137
 msgid "Service element created successfully"
@@ -15058,11 +15098,11 @@ msgstr "Chyba při mazání prvku služby"
 
 #: ../../enterprise/godmode/services/services.elements.php:207
 msgid "Edit element service"
-msgstr ""
+msgstr "Upravit prvek služby"
 
 #: ../../enterprise/godmode/services/services.elements.php:210
 msgid "Create element service"
-msgstr ""
+msgstr "Vytvořit prvek služby"
 
 #: ../../enterprise/godmode/services/services.elements.php:260
 msgid "First select an agent"
@@ -15078,7 +15118,7 @@ msgstr "Váha upozornění"
 
 #: ../../enterprise/godmode/services/services.elements.php:288
 msgid "Unknown weight"
-msgstr ""
+msgstr "Neznámá váha"
 
 #: ../../enterprise/godmode/services/services.elements.php:293
 msgid "Ok weight"
@@ -15102,31 +15142,31 @@ msgstr "Chyba při aktualizaci služby"
 
 #: ../../enterprise/godmode/services/services.service.php:100
 msgid "New Service"
-msgstr ""
+msgstr "Nová služba"
 
 #: ../../enterprise/godmode/services/services.service.php:193
 msgid "Auto calculate"
-msgstr ""
+msgstr "Automatický výpočet"
 
 #: ../../enterprise/godmode/services/services.service.php:208
 msgid "Agent to store data"
-msgstr ""
+msgstr "Agent k uložení dat"
 
 #: ../../enterprise/godmode/services/services.service.php:228
 msgid "S.L.A. interval"
-msgstr ""
+msgstr "Interval S.L.A."
 
 #: ../../enterprise/godmode/services/services.service.php:233
 msgid "S.L.A. limit"
-msgstr ""
+msgstr "Limit S.L.A."
 
 #: ../../enterprise/godmode/services/services.service.php:235
 msgid "Please set limit between 0 to 100."
-msgstr ""
+msgstr "Limit prosím nastavte na hodnotu mezi 0 a 100."
 
 #: ../../enterprise/godmode/services/services.service.php:246
 msgid "Warning Service alert"
-msgstr ""
+msgstr "Výstraha varovné služby"
 
 #: ../../enterprise/godmode/services/services.service.php:251
 msgid "Critical Service alert"
@@ -16116,7 +16156,7 @@ msgstr ""
 
 #: ../../include/functions_events.php:1477
 msgid "Agent id"
-msgstr ""
+msgstr "ID agenta"
 
 #: ../../include/functions_events.php:1478
 #: ../../godmode/events/custom_events.php:65
@@ -16126,62 +16166,62 @@ msgstr "ID události"
 
 #: ../../include/functions_events.php:1554
 msgid "Change owner"
-msgstr ""
+msgstr "Změnit vlastníka"
 
 #: ../../include/functions_events.php:1584 ../../include/functions_xml.php:125
 msgid "New"
-msgstr ""
+msgstr "Nový"
 
 #: ../../include/functions_events.php:1584
 #: ../../include/functions_events.php:1590 ../../include/functions_xml.php:129
 msgid "In process"
-msgstr ""
+msgstr "Zpracovává se"
 
 #: ../../include/functions_events.php:1636
 msgid "Custom responses"
-msgstr ""
+msgstr "Vlastní odpovědi"
 
 #: ../../include/functions_events.php:1837
 msgid "Agent details"
-msgstr ""
+msgstr "Podrobnosti agenta"
 
 #: ../../include/functions_events.php:1869
 msgid "View custom fields"
-msgstr ""
+msgstr "Zobrazit vlastní pole"
 
 #: ../../include/functions_events.php:1881
 msgid "Module details"
-msgstr ""
+msgstr "Podrobnosti modulu"
 
 #: ../../include/functions_events.php:1899
 msgid "No assigned"
-msgstr ""
+msgstr "Nepřiděleno"
 
 #: ../../include/functions_events.php:1932
 msgid "Alert details"
-msgstr ""
+msgstr "Podrobnosti výstrahy"
 
 #: ../../include/functions_events.php:2073
 msgid "First event"
-msgstr ""
+msgstr "První událost"
 
 #: ../../include/functions_events.php:2073
 msgid "Last event"
-msgstr ""
+msgstr "Poslední událost"
 
 #: ../../include/functions_events.php:2149
 #: ../../mobile/operation/events.php:440
 msgid "Acknowledged by"
-msgstr ""
+msgstr "Uznáno"
 
 #: ../../include/functions_events.php:2235
 msgid "There are no comments"
-msgstr ""
+msgstr "Žádné komentáře"
 
 #: ../../include/functions_events.php:2320
 #: ../../include/functions_reporting.php:2625
 msgid "Pandora System"
-msgstr ""
+msgstr "Systém Pandora"
 
 #: ../../include/functions_reporting.php:882
 #: ../../include/functions_reporting.php:898
@@ -16192,7 +16232,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:957
 #: ../../include/functions_reporting.php:969
 msgid "Ratio"
-msgstr ""
+msgstr "Poměr"
 
 #: ../../include/functions_reporting.php:882
 #: ../../include/functions_reporting.php:898
@@ -16203,81 +16243,81 @@ msgstr ""
 #: ../../include/functions_reporting.php:957
 #: ../../include/functions_reporting.php:969
 msgid "Modules by second"
-msgstr ""
+msgstr "Moduly po vteřině"
 
 #: ../../include/functions_reporting.php:917
 msgid "Network modules"
-msgstr ""
+msgstr "Síťové moduly"
 
 #: ../../include/functions_reporting.php:929
 msgid "Plugin modules"
-msgstr ""
+msgstr "Zásuvné moduly"
 
 #: ../../include/functions_reporting.php:941
 msgid "Prediction modules"
-msgstr ""
+msgstr "Moduly předpovědi"
 
 #: ../../include/functions_reporting.php:953
 msgid "WMI modules"
-msgstr ""
+msgstr "Moduly WMI"
 
 #: ../../include/functions_reporting.php:965
 msgid "Web modules"
-msgstr ""
+msgstr "Internetové moduly"
 
 #: ../../include/functions_reporting.php:1022
 msgid "Monitor normal"
-msgstr ""
+msgstr "Monitor ve stavu normální"
 
 #: ../../include/functions_reporting.php:1026
 msgid "Monitor unknown"
-msgstr ""
+msgstr "Neznámý monitor"
 
 #: ../../include/functions_reporting.php:1033
 msgid "Monitor not init"
-msgstr ""
+msgstr "Nezavedený monitor"
 
 #: ../../include/functions_reporting.php:1052
 msgid "Monitors by status"
-msgstr ""
+msgstr "Monitory podle stavu"
 
 #: ../../include/functions_reporting.php:1070
 msgid "Module status"
-msgstr ""
+msgstr "Stav modulu"
 
 #: ../../include/functions_reporting.php:1143
 msgid "Defined and fired alerts"
-msgstr ""
+msgstr "Zadané a vyslané výstrahy"
 
 #: ../../include/functions_reporting.php:1166
 msgid "Defined users"
-msgstr ""
+msgstr "Zadaní uživatelé"
 
 #: ../../include/functions_reporting.php:1221
 msgid "Total agents and monitors"
-msgstr ""
+msgstr "Celkem agentů a monitorů"
 
 #: ../../include/functions_reporting.php:1245
 #, php-format
 msgid "%d Downed servers"
-msgstr ""
+msgstr "%d serverů mimo provoz"
 
 #: ../../include/functions_reporting.php:1253
 #, php-format
 msgid "%d Not Normal monitors"
-msgstr ""
+msgstr "%d nenormálních monitorů"
 
 #: ../../include/functions_reporting.php:1261
 #, php-format
 msgid "%d Not inited monitors"
-msgstr ""
+msgstr "%d nezavedených monitorů"
 
 #: ../../include/functions_reporting.php:1269
 #: ../../include/functions_reporting.php:6745
 #: ../../include/functions_reporting.php:6753
 #, php-format
 msgid "%d Fired alerts"
-msgstr ""
+msgstr "%d vyslaných výstrah"
 
 #: ../../include/functions_reporting.php:1647
 #: ../../include/functions_reporting.php:2229
@@ -16312,7 +16352,7 @@ msgstr "Monitory NE OK"
 #: ../../include/functions_reporting.php:2202
 #, php-format
 msgid "Agents in group: %s"
-msgstr ""
+msgstr "Agenti ve skupinách: %s"
 
 #: ../../include/functions_reporting.php:2295
 msgid "Last failure"
@@ -16320,7 +16360,7 @@ msgstr "Poslední selhání"
 
 #: ../../include/functions_reporting.php:2359
 msgid "N/A(*)"
-msgstr ""
+msgstr "N/A(*)"
 
 #: ../../include/functions_reporting.php:2391
 #: ../../include/functions_reporting.php:4351
@@ -16352,7 +16392,7 @@ msgstr "Max/Min hodnoty"
 #: ../../include/functions_reporting.php:3254
 #: ../../include/functions_reporting.php:3338
 msgid "Plannified downtime"
-msgstr ""
+msgstr "Plánovaná údržba"
 
 #: ../../include/functions_reporting.php:3842
 msgid ""
@@ -16390,12 +16430,12 @@ msgstr "Nedostatečná data"
 
 #: ../../include/functions_reporting.php:5187
 msgid "Modules under or equal to"
-msgstr ""
+msgstr "Moduly pod nebo rovně"
 
 #: ../../include/functions_reporting.php:5193
 #: ../../include/functions_reporting.php:5394
 msgid "Modules over"
-msgstr ""
+msgstr "Moduly přes"
 
 #: ../../include/functions_reporting.php:5196
 #: ../../include/functions_alerts.php:552
@@ -16409,23 +16449,23 @@ msgstr "Není rovno"
 
 #: ../../include/functions_reporting.php:5388
 msgid "Modules less or equal to"
-msgstr ""
+msgstr "Moduly menší nebo rovné"
 
 #: ../../include/functions_reporting.php:5391
 msgid "Modules less"
-msgstr ""
+msgstr "Moduly menší"
 
 #: ../../include/functions_reporting.php:5397
 msgid "Modules equal to"
-msgstr ""
+msgstr "Moduly rovné"
 
 #: ../../include/functions_reporting.php:5400
 msgid "Modules not equal to"
-msgstr ""
+msgstr "Moduly nerovnající se"
 
 #: ../../include/functions_reporting.php:5403
 msgid "Modules normal status"
-msgstr ""
+msgstr "Moduly v normálním stavu"
 
 #: ../../include/functions_reporting.php:5592
 #: ../../extensions/agents_modules.php:167
@@ -16434,66 +16474,66 @@ msgstr "Neexistují žádní agenti s moduly"
 
 #: ../../include/functions_reporting.php:5800
 msgid "Agent configuration: "
-msgstr ""
+msgstr "Nastavení agenta: "
 
 #: ../../include/functions_reporting.php:5849
 #: ../../include/functions_reporting.php:5995
 msgid " MODULES"
-msgstr ""
+msgstr " MODULŮ"
 
 #: ../../include/functions_reporting.php:5929
 msgid "Group configuration: "
-msgstr ""
+msgstr "Nastavení skupiny: "
 
 #: ../../include/functions_reporting.php:6740
 #, php-format
 msgid "%d Total modules"
-msgstr ""
+msgstr "%d modulů celkem"
 
 #: ../../include/functions_reporting.php:6741
 #, php-format
 msgid "%d Normal modules"
-msgstr ""
+msgstr "%d normálních modulů"
 
 #: ../../include/functions_reporting.php:6742
 #, php-format
 msgid "%d Critical modules"
-msgstr ""
+msgstr "%d modulů v kritickém stavu"
 
 #: ../../include/functions_reporting.php:6743
 #, php-format
 msgid "%d Warning modules"
-msgstr ""
+msgstr "%d modulů ve varovném stavu"
 
 #: ../../include/functions_reporting.php:6744
 #, php-format
 msgid "%d Unknown modules"
-msgstr ""
+msgstr "%d neznámých modulů"
 
 #: ../../include/functions_reporting.php:6748
 #, php-format
 msgid "%d Total agents"
-msgstr ""
+msgstr "%d agentů celkem"
 
 #: ../../include/functions_reporting.php:6749
 #, php-format
 msgid "%d Normal agents"
-msgstr ""
+msgstr "%d normálních agentů"
 
 #: ../../include/functions_reporting.php:6750
 #, php-format
 msgid "%d Critical agents"
-msgstr ""
+msgstr "%d agentů v kritickém stavu"
 
 #: ../../include/functions_reporting.php:6751
 #, php-format
 msgid "%d Warning agents"
-msgstr ""
+msgstr "%d agentů ve varovném stavu"
 
 #: ../../include/functions_reporting.php:6752
 #, php-format
 msgid "%d Unknown agents"
-msgstr ""
+msgstr "%d Neznámých agentů"
 
 #: ../../include/functions_db.php:74
 #, php-format
@@ -16622,12 +16662,12 @@ msgstr "vlastní"
 #: ../../include/functions.php:1669 ../../include/functions.php:1670
 #, php-format
 msgid "%s minutes"
-msgstr ""
+msgstr "%s minut"
 
 #: ../../include/functions.php:1672 ../../include/functions.php:1673
 #, php-format
 msgid "%s hours"
-msgstr ""
+msgstr "%s hodin"
 
 #: ../../include/functions.php:1675 ../../include/functions_netflow.php:888
 #: ../../include/ajax/module.php:82
@@ -16637,16 +16677,16 @@ msgstr "1 týden"
 #: ../../include/functions.php:1678 ../../include/functions.php:1679
 #, php-format
 msgid "%s months"
-msgstr ""
+msgstr "%s měsíců"
 
 #: ../../include/functions.php:1681 ../../include/functions.php:1682
 #, php-format
 msgid "%s years"
-msgstr ""
+msgstr "%s let"
 
 #: ../../include/functions.php:1685
 msgid "Default values will be used"
-msgstr ""
+msgstr "Budou použity výchozí hodnoty"
 
 #: ../../include/get_file.php:47
 msgid "Security error. Please contact the administrator."
@@ -16707,27 +16747,27 @@ msgstr "Podnikový server SNMP"
 
 #: ../../include/functions_netflow.php:356
 msgid "Total flows"
-msgstr ""
+msgstr "Celkem toků"
 
 #: ../../include/functions_netflow.php:358
 msgid "Total bytes"
-msgstr ""
+msgstr "Celkem bajtů"
 
 #: ../../include/functions_netflow.php:360
 msgid "Total packets"
-msgstr ""
+msgstr "Celkem paketů"
 
 #: ../../include/functions_netflow.php:362
 msgid "Average bits per second"
-msgstr ""
+msgstr "Průměr bitů za vteřinu"
 
 #: ../../include/functions_netflow.php:364
 msgid "Average packets per second"
-msgstr ""
+msgstr "Průměr paketů za vteřinu"
 
 #: ../../include/functions_netflow.php:366
 msgid "Average bytes per packet"
-msgstr ""
+msgstr "Prměrně bajtů za paket"
 
 #: ../../include/functions_netflow.php:828
 msgid "Area graph"
@@ -16735,7 +16775,7 @@ msgstr "Plošný graf"
 
 #: ../../include/functions_netflow.php:829
 msgid "Pie graph and Summary table"
-msgstr ""
+msgstr "Koláčový graf a souhrnná tabulka"
 
 #: ../../include/functions_netflow.php:830
 msgid "Statistics table"
@@ -16775,15 +16815,15 @@ msgstr "2 roky"
 
 #: ../../include/functions_netflow.php:874
 msgid "1 min"
-msgstr ""
+msgstr "1 min"
 
 #: ../../include/functions_netflow.php:875
 msgid "2 mins"
-msgstr ""
+msgstr "2 min"
 
 #: ../../include/functions_netflow.php:876
 msgid "5 mins"
-msgstr ""
+msgstr "5 min"
 
 #: ../../include/functions_netflow.php:921
 #: ../../include/functions_netflow.php:930
@@ -16792,47 +16832,47 @@ msgstr ""
 #: ../../include/functions_netflow.php:1041
 #: ../../include/functions_netflow.php:1074
 msgid "Aggregate"
-msgstr ""
+msgstr "Shrnout"
 
 #: ../../include/functions_netflow.php:1113
 msgid "Error generating report"
-msgstr ""
+msgstr "Chyba při vytváření hlášení"
 
 #: ../../include/functions_netflow.php:1310
 msgid "MB"
-msgstr ""
+msgstr "MB"
 
 #: ../../include/functions_netflow.php:1312
 msgid "MB/s"
-msgstr ""
+msgstr "MB/s"
 
 #: ../../include/functions_netflow.php:1314
 msgid "kB"
-msgstr ""
+msgstr "kB"
 
 #: ../../include/functions_netflow.php:1316
 msgid "kB/s"
-msgstr ""
+msgstr "kB/s"
 
 #: ../../include/functions_netflow.php:1320
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: ../../include/functions_netflow.php:1334
 msgid "Dst port"
-msgstr ""
+msgstr "Port DST"
 
 #: ../../include/functions_netflow.php:1336
 msgid "Dst IP"
-msgstr ""
+msgstr "Dst IP"
 
 #: ../../include/functions_netflow.php:1340
 msgid "Src IP"
-msgstr ""
+msgstr "Zdrojová IP"
 
 #: ../../include/functions_netflow.php:1342
 msgid "Src port"
-msgstr ""
+msgstr "Zdrojový port"
 
 #: ../../include/functions_alerts.php:549
 msgid "Max and min"
@@ -16952,7 +16992,7 @@ msgstr "Obrázek"
 
 #: ../../include/functions_visual_map_editor.php:102
 msgid "Enable link"
-msgstr ""
+msgstr "Povolit propojení"
 
 #: ../../include/functions_visual_map_editor.php:156
 #: ../../godmode/reporting/visual_console_builder.wizard.php:114
@@ -17192,7 +17232,7 @@ msgstr "Pruhový graf SQL"
 
 #: ../../include/functions_reports.php:513
 msgid "Automatic combined Graph"
-msgstr ""
+msgstr "Automaticky zkombinovaný graf"
 
 #: ../../include/functions_reports.php:518
 #: ../../include/functions_reports.php:520
@@ -17239,23 +17279,23 @@ msgstr "Skupina záznamu události"
 
 #: ../../include/functions_reports.php:613
 msgid "Netflow area chart"
-msgstr ""
+msgstr "Graf oblasti toku sítě"
 
 #: ../../include/functions_reports.php:615
 msgid "Netflow pie chart"
-msgstr ""
+msgstr "Koláčový graf toku sítě"
 
 #: ../../include/functions_reports.php:617
 msgid "Netflow data table"
-msgstr ""
+msgstr "Tabulka dat toku sítě"
 
 #: ../../include/functions_reports.php:619
 msgid "Netflow statistics table"
-msgstr ""
+msgstr "Tabulka statistik toku sítě"
 
 #: ../../include/functions_reports.php:621
 msgid "Netflow summary table"
-msgstr ""
+msgstr "Souhrnná tabulka toku sítě"
 
 #: ../../include/functions_graph.php:639
 msgid "Units. Value"
@@ -17324,11 +17364,11 @@ msgstr "Jednotky"
 
 #: ../../include/functions_graph.php:3070
 msgid "Avg."
-msgstr ""
+msgstr "Prům."
 
 #: ../../include/functions_graph.php:3862
 msgid "No data to show"
-msgstr ""
+msgstr "Žádná data k zobrazení"
 
 #: ../../include/functions_custom_graphs.php:101
 msgid "Empty graph"
@@ -17362,19 +17402,19 @@ msgstr ""
 
 #: ../../include/functions_treeview.php:140
 msgid "There was a problem loading alerts"
-msgstr ""
+msgstr "Při načítání výstrah nastal problém"
 
 #: ../../include/functions_treeview.php:178
 msgid "Go to alerts detail"
-msgstr ""
+msgstr "Přejít na podrobnosti výstrahy"
 
 #: ../../include/functions_treeview.php:416
 msgid "There aren't agents in this agrupation"
-msgstr ""
+msgstr "V tomto uskupení nejsou žádní agenti"
 
 #: ../../include/auth/mysql.php:471
 msgid "Your installation of PHP does not support LDAP"
-msgstr ""
+msgstr "Vaše instalace PHP nepodporuje LDAP"
 
 #: ../../include/functions_visual_map.php:435
 msgid "Agent successfully added to layout"
@@ -17414,11 +17454,11 @@ msgstr "týdnů"
 
 #: ../../include/functions_html.php:716
 msgid "Month day"
-msgstr ""
+msgstr "Měsíc den"
 
 #: ../../include/functions_html.php:718
 msgid "Week day"
-msgstr ""
+msgstr "Týden den"
 
 #: ../../include/functions_html.php:1910
 msgid "Type at least two characters to search the module."
@@ -17434,11 +17474,11 @@ msgstr "Vytvořit novou mapu skupiny"
 
 #: ../../include/functions_config.php:85
 msgid "Failed updated: User did not login."
-msgstr ""
+msgstr "Nelze aktualizovat: Uživatel nepřihlášen."
 
 #: ../../include/functions_config.php:93
 msgid "Failed updated: User is not admin."
-msgstr ""
+msgstr "Nelze aktualizovat: Uživatel není správce."
 
 #: ../../include/functions_config.php:122
 #: ../../godmode/setup/setup_general.php:53

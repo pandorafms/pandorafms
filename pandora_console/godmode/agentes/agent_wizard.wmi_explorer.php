@@ -109,7 +109,7 @@ if ($wmiexplore) {
 			$row_exploded = explode('|', $row);
 			
 			if (!in_array($row_exploded[$disks_name_field], $services)) {
-				$disk_string = sprintf(__('Free space on disk %s'), $row_exploded[$disks_name_field]);
+				$disk_string = sprintf(__('Free space on %s'), $row_exploded[$disks_name_field]);
 				$disks[$row_exploded[$disks_name_field]] = $disk_string;
 			}
 		}
@@ -242,23 +242,6 @@ if ($create_modules) {
 	if (!empty($error_message)) {
 		ui_print_error_message($error_message);
 	}
-}
-
-// Create the interface list for the interface
-$interfaces_list = array();
-foreach ($interfaces as $interface) {
-	// Get the interface name, removing " " characters and avoid "blank" interfaces
-	if (isset($interface['ifName']) && $interface['ifName']['value'] != "") {
-		$ifname = $interface['ifName']['value'];
-	}
-	else if (isset($interface['ifDescr']) && $interface['ifDescr']['value'] != "") {
-		$ifname = $interface['ifDescr']['value'];
-	}
-	else {
-		continue;
-	}
-	
-	$interfaces_list[$interface['ifIndex']['value']] = str_replace  ( "\""  , "" , $ifname);
 }
 
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';

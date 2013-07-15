@@ -31,6 +31,10 @@ switch($wizard_section) {
 		$snmp_interfaces_explorer_style = '';
 		$wmi_explorer_style = 'font-weight: bold;';
 		break;
+	case 'snmp_explorer':
+		$snmp_interfaces_explorer_style = '';
+		$wmi_explorer_style = 'font-weight: bold;';
+		break;
 }
 
 /*

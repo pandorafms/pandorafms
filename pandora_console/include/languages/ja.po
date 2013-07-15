@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-22 18:49+0200\n"
-"PO-Revision-Date: 2013-05-11 05:00+0000\n"
+"PO-Revision-Date: 2013-05-31 07:14+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-05-14 08:57+0000\n"
-"X-Generator: Launchpad (build 16617)\n"
+"X-Launchpad-Export-Date: 2013-07-11 07:14+0000\n"
+"X-Generator: Launchpad (build 16696)\n"
 
 #: ../../operation/search_main.php:33
 #: ../../operation/agentes/networkmap.php:318
@@ -5310,7 +5310,7 @@ msgstr "リセット"
 
 #: ../../operation/agentes/estado_monitores.php:636
 msgid "Form filter"
-msgstr ""
+msgstr "フォームフィルタ"
 
 #: ../../operation/agentes/exportdata.php:36 ../../operation/menu.php:168
 msgid "Export data"
@@ -6609,35 +6609,35 @@ msgstr "トラップタイプで検索"
 #: ../../operation/snmpconsole/snmp_view.php:550
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Cold start (0)"
-msgstr ""
+msgstr "Cold start (0)"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:553
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Warm start (1)"
-msgstr ""
+msgstr "Warm start (1)"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:556
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Link down (2)"
-msgstr ""
+msgstr "Link down (2)"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:559
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Link up (3)"
-msgstr ""
+msgstr "Link up (3)"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:562
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Authentication failure (4)"
-msgstr ""
+msgstr "Authentication failure (4)"
 
 #: ../../operation/snmpconsole/snmp_view.php:392
 #: ../../godmode/snmpconsole/snmp_alert.php:268
@@ -7460,7 +7460,7 @@ msgstr "選択"
 
 #: ../../general/header.php:132
 msgid "Disabled autorefresh"
-msgstr ""
+msgstr "自動更新無効"
 
 #: ../../general/header.php:153
 msgid "System alerts detected - Please fix as soon as possible"
@@ -7473,7 +7473,7 @@ msgstr "警告が %d 件あります。"
 
 #: ../../general/header.php:162
 msgid "There are not warnings"
-msgstr ""
+msgstr "警告はありません"
 
 #: ../../general/header.php:172 ../../mobile/include/functions_web.php:33
 #: ../../mobile/include/ui.class.php:176
@@ -7482,7 +7482,7 @@ msgstr "ログアウト"
 
 #: ../../general/header.php:188
 msgid "New chat message"
-msgstr ""
+msgstr "新しいチャットメッセージがあります"
 
 #: ../../general/header.php:198
 msgid "Message overview"
@@ -7544,12 +7544,12 @@ msgstr "障害イベント"
 
 #: ../../general/shortcut_bar.php:204 ../../general/shortcut_bar.php:224
 msgid "Incidents opened"
-msgstr ""
+msgstr "アクティブなインシデント"
 
 #: ../../general/shortcut_bar.php:234
 #: ../../godmode/users/configure_profile.php:168
 msgid "View reports"
-msgstr ""
+msgstr "レポート表示"
 
 #: ../../general/shortcut_bar.php:240
 msgid "Create new message"
@@ -7565,7 +7565,7 @@ msgstr "Pandora FMS の Web コンソールへようこそ"
 
 #: ../../general/logon_ok.php:57
 msgid "News board"
-msgstr ""
+msgstr "ニュース掲示板"
 
 #: ../../general/logon_ok.php:62
 msgid "ago"
@@ -7595,11 +7595,11 @@ msgstr "Pandora FMS 概要"
 #: ../../enterprise/operation/log/log_viewer.php:80
 #: ../../enterprise/operation/menu.php:82
 msgid "Log viewer"
-msgstr ""
+msgstr "ログビューワ"
 
 #: ../../enterprise/operation/log/log_viewer.php:131
 msgid "Draw chart"
-msgstr ""
+msgstr "グラフ描画"
 
 #: ../../enterprise/operation/log/log_viewer.php:134
 #: ../../enterprise/include/functions_reporting_pdf.php:3457
@@ -7991,7 +7991,7 @@ msgstr "アクション"
 #: ../../enterprise/operation/services/services.list.php:173
 #: ../../enterprise/godmode/services/services.service.php:54
 msgid "Create Service"
-msgstr ""
+msgstr "サービス作成"
 
 #: ../../enterprise/operation/services/services.service_map.php:39
 #: ../../enterprise/operation/services/services.service.php:37
@@ -8018,7 +8018,7 @@ msgstr "サービスマップ"
 
 #: ../../enterprise/operation/services/services.service.php:154
 msgid "List of elements"
-msgstr ""
+msgstr "エレメント一覧"
 
 #: ../../enterprise/include/functions_inventory.php:48
 #: ../../enterprise/include/functions_inventory.php:373
@@ -8081,12 +8081,12 @@ msgstr "テンプレートウィザード"
 #: ../../enterprise/include/functions_reporting.php:1189
 #, php-format
 msgid "Graph agents(%s) - %s"
-msgstr ""
+msgstr "エージェント(%s) グラフ - %s"
 
 #: ../../enterprise/include/functions_reporting.php:1300
 #, php-format
 msgid "%s - agents (%s) - %s"
-msgstr ""
+msgstr "%s - エージェント (%s) - %s"
 
 #: ../../enterprise/include/functions_reporting.php:1560
 #, php-format
@@ -8096,7 +8096,7 @@ msgstr "%s - %s"
 #: ../../enterprise/include/functions_reporting.php:2773
 #: ../../enterprise/include/functions_reporting.php:2823
 msgid "Template editor"
-msgstr ""
+msgstr "テンプレートエディタ"
 
 #: ../../enterprise/include/functions_reporting.php:2837
 msgid "Get PDF file"
@@ -8494,40 +8494,40 @@ msgstr "サービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:30
 msgid "Module store the service does not exist."
-msgstr ""
+msgstr "モジュールストアにサービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:35
 msgid "Module store SLA service does not exist."
-msgstr ""
+msgstr "モジュールストアに SLA サービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:41
 msgid "Agent store the service does not exist."
-msgstr ""
+msgstr "エージェントストアにサービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:47
 msgid "Agent store SLA service does not exist."
-msgstr ""
+msgstr "エージェントストアに SLA サービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:57
 msgid "Alert critical SLA service does not exist."
-msgstr ""
+msgstr "障害状態の SLA サービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:68
 msgid "Alert warning service does not exist."
-msgstr ""
+msgstr "警告状態のサービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:79
 msgid "Alert critical service does not exist."
-msgstr ""
+msgstr "障害状態のサービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:90
 msgid "Alert unknown service does not exist."
-msgstr ""
+msgstr "不明状態のサービスがありません。"
 
 #: ../../enterprise/include/functions_services.php:240
 #, php-format
 msgid "Module automatic create for the service %s"
-msgstr ""
+msgstr "サービス %s のモジュール自動作成"
 
 #: ../../enterprise/include/functions_services.php:701
 msgid "Critical (Alert)"
@@ -8547,7 +8547,7 @@ msgstr "警告ウエイト"
 
 #: ../../enterprise/include/functions_services.php:823
 msgid "Weight Unknown"
-msgstr ""
+msgstr "不明ウエイト"
 
 #: ../../enterprise/include/functions_services.php:824
 msgid "Weight Ok"
@@ -8971,7 +8971,7 @@ msgstr "エージェント設定"
 #: ../../include/functions_reporting.php:5811
 #: ../../include/functions_reporting.php:5952
 msgid "SO"
-msgstr ""
+msgstr "OS"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3614
 #: ../../enterprise/include/functions_reporting_pdf.php:3749
@@ -9052,7 +9052,7 @@ msgstr "変更"
 
 #: ../../enterprise/include/functions_login.php:104
 msgid "User has been blocked. Try again in "
-msgstr ""
+msgstr "ユーザをブロックしました。次の時間を置いて再度試してください: "
 
 #: ../../enterprise/include/functions_login.php:104
 msgid " minutes"
@@ -9064,7 +9064,7 @@ msgstr "パスワードは次のものと異なる必要があります: "
 
 #: ../../enterprise/include/functions_login.php:220
 msgid " previous changes."
-msgstr ""
+msgstr " 回前の変更"
 
 #: ../../enterprise/include/functions_login.php:234
 msgid "Password must be different"
@@ -9431,11 +9431,11 @@ msgstr "名前がありません"
 
 #: ../../enterprise/include/functions_local_components.php:68
 msgid "Empty configuration"
-msgstr ""
+msgstr "設定がされていません"
 
 #: ../../enterprise/include/functions_local_components.php:72
 msgid "Empty OS"
-msgstr ""
+msgstr "OS が設定されていません"
 
 #: ../../enterprise/include/functions_local_components.php:202
 #: ../../include/functions_alerts.php:904
@@ -9474,7 +9474,7 @@ msgstr "パスワード"
 #: ../../enterprise/include/functions_setup.php:37
 #: ../../enterprise/include/functions_setup.php:67
 msgid "Log collector"
-msgstr ""
+msgstr "ログコレクター"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:42
 msgid "Error accesing to API"
@@ -9508,7 +9508,7 @@ msgstr "\"Tｒａｎｓｌａｔｅ string\" 拡張がサーバにありませ�
 msgid ""
 "Server name doesnt match. Check the node server name and configure the same "
 "one on metasetup"
-msgstr ""
+msgstr "サーバ名が一致しません。ノードサーバ名を確認し、メタセットアップで同じものを設定してください。"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:88
 msgid "Last event replication"
@@ -9539,7 +9539,7 @@ msgstr "メタコンソール"
 #: ../../enterprise/include/functions_log.php:277
 #: ../../enterprise/include/functions_log.php:290
 msgid "Lines"
-msgstr ""
+msgstr "行"
 
 #: ../../enterprise/meta/general/login_page.php:115
 msgid ""
@@ -9574,7 +9574,7 @@ msgstr "ビジュアルコンソール"
 
 #: ../../enterprise/meta/general/main_header.php:121
 msgid "Without permissions"
-msgstr ""
+msgstr "パーミッション無し"
 
 #: ../../enterprise/meta/general/main_header.php:121
 msgid "disabled"
@@ -9630,7 +9630,7 @@ msgstr "同期中"
 #: ../../enterprise/meta/general/main_header.php:151
 #: ../../enterprise/meta/advanced/propagation.php:33
 msgid "Propagation"
-msgstr ""
+msgstr "伝播"
 
 #: ../../enterprise/meta/general/main_header.php:153
 #: ../../enterprise/meta/general/main_header.php:164
@@ -9675,7 +9675,7 @@ msgstr "カテゴリー管理"
 
 #: ../../enterprise/meta/general/main_header.php:160
 msgid "Metasetup"
-msgstr ""
+msgstr "メタセットアップ"
 
 #: ../../enterprise/meta/general/logon_ok.php:36
 msgid "Network traffic"
@@ -9787,7 +9787,7 @@ msgstr "モジュール編集"
 #: ../../include/functions_graph.php:714
 #: ../../include/functions_graph.php:2855
 msgid "Previous"
-msgstr ""
+msgstr "前へ"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:188
 msgid "Please, set a name"
@@ -9815,7 +9815,7 @@ msgstr "モニタ項目"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:134
 msgid "Web check"
-msgstr ""
+msgstr "Webチェック"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:140
 msgid "Select template group"
@@ -9831,7 +9831,7 @@ msgstr "モジュールの説明"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:221
 msgid "Step by step wizard"
-msgstr ""
+msgstr "段階的ウィザード"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:227
 msgid "Click Create to continue"
@@ -9848,7 +9848,7 @@ msgstr "Pandora FMS ウィザードへようこそ。"
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:154
 #: ../../enterprise/meta/screens/screens.main.php:74
 msgid "To start select an option from the left side."
-msgstr ""
+msgstr "オプション選択は左側から始めてください。"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:173
 #: ../../godmode/menu.php:76
@@ -9862,11 +9862,11 @@ msgstr "モジュール管理"
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:398
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:479
 msgid "Back"
-msgstr ""
+msgstr "戻る"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:219
 msgid "Select the agent where the module will be created"
-msgstr ""
+msgstr "モジュールを作成するエージェントを選択"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:231
 msgid "Create Module"
@@ -9920,7 +9920,7 @@ msgstr "イベント情報"
 
 #: ../../enterprise/meta/monitoring/tactical.php:338
 msgid "More events"
-msgstr ""
+msgstr "次のイベント"
 
 #: ../../enterprise/meta/agentsearch.php:75
 msgid "Search results for"
@@ -10103,7 +10103,7 @@ msgstr "パスワードの最小長さ"
 #: ../../enterprise/meta/advanced/metasetup.password.php:77
 #: ../../enterprise/godmode/setup/setup.php:191
 msgid " Caracters"
-msgstr ""
+msgstr " 文字"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:81
 #: ../../enterprise/meta/include/functions_meta.php:153
@@ -10239,7 +10239,7 @@ msgstr "タグ同期"
 
 #: ../../enterprise/meta/advanced/policymanager.php:35
 msgid "Policy Manager"
-msgstr ""
+msgstr "ポリシーマネージャ"
 
 #: ../../enterprise/meta/advanced/policymanager.php:64
 msgid "Apply policies"
@@ -10258,37 +10258,37 @@ msgstr "ポリシーの摘要"
 #: ../../enterprise/meta/advanced/propagation.component.php:255
 #, php-format
 msgid "Error creating %s components groups "
-msgstr ""
+msgstr "コンポーネントグループ %s の作成エラー "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:258
 #: ../../enterprise/meta/advanced/propagation.component.php:258
 #, php-format
 msgid "Created %s component groups"
-msgstr ""
+msgstr "コンポーネントグループ %s を作成しました"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:263
 #: ../../enterprise/meta/advanced/propagation.component.php:263
 #, php-format
 msgid "Error creating/updating %s/%s local components "
-msgstr ""
+msgstr "ローカルコンポーネント %s/%s の作成/更新エラー "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:266
 #: ../../enterprise/meta/advanced/propagation.component.php:266
 #, php-format
 msgid "Created/Updated %s/%s local components"
-msgstr ""
+msgstr "ローカルコンポーネント %s/%s を作成/更新しました"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:271
 #: ../../enterprise/meta/advanced/propagation.component.php:271
 #, php-format
 msgid "Error creating/updating %s/%s network components "
-msgstr ""
+msgstr "ネットワークコンポーネント %s/%s の作成/更新エラー "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:274
 #: ../../enterprise/meta/advanced/propagation.component.php:274
 #, php-format
 msgid "Created/Updated %s/%s network components"
-msgstr ""
+msgstr "ネットワークコンポーネント %s/%s を作成/更新しました"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:280
 #: ../../enterprise/meta/advanced/propagation.component.php:280
@@ -10505,7 +10505,7 @@ msgstr "キューが空"
 #: ../../enterprise/meta/advanced/propagation.php:58
 #: ../../enterprise/meta/advanced/propagation.php:68
 msgid "Components propagation"
-msgstr ""
+msgstr "コンポーネント伝播"
 
 #: ../../enterprise/meta/advanced/propagation.php:62
 #: ../../enterprise/meta/advanced/propagation.php:71
@@ -10590,32 +10590,32 @@ msgstr "移動"
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:286
 #, php-format
 msgid "Error creating/updating %s/%s comamnds"
-msgstr ""
+msgstr "コマンド %s/%s の作成/更新エラー"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:289
 #, php-format
 msgid "Created/Updated %s/%s commands"
-msgstr ""
+msgstr "コマンド %s/%s を作成/更新しました"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:294
 #, php-format
 msgid "Error creating/updating %s/%s actions"
-msgstr ""
+msgstr "アクション %s/%s の作成/更新エラー"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:297
 #, php-format
 msgid "Created/Updated %s/%s actions"
-msgstr ""
+msgstr "アクション %s/%s を作成/更新しました"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:302
 #, php-format
 msgid "Error creating/updating %s/%s templates"
-msgstr ""
+msgstr "テンプレート %s/%s の作成/更新エラー"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:305
 #, php-format
 msgid "Created/Updated %s/%s templates"
-msgstr ""
+msgstr "テンプレート %s/%s を作成/更新しました"
 
 #: ../../enterprise/meta/advanced/metasetup.performance.php:70
 #: ../../enterprise/meta/include/functions_meta.php:353
@@ -10627,7 +10627,7 @@ msgstr "イベントデータ保持日数"
 #: ../../enterprise/meta/advanced/metasetup.performance.php:74
 #: ../../enterprise/meta/include/functions_meta.php:363
 msgid "Active events history"
-msgstr ""
+msgstr "アクティブなイベント履歴"
 
 #: ../../enterprise/meta/advanced/metasetup.performance.php:79
 #: ../../enterprise/meta/include/functions_meta.php:373
@@ -10882,72 +10882,72 @@ msgstr "コンソール設定"
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:122
 #, php-format
 msgid "Error creating/updating %s/%s tags"
-msgstr ""
+msgstr "タグ %s/%s の作成/更新エラー"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:125
 #, php-format
 msgid "Created/Updated %s/%s tags"
-msgstr ""
+msgstr "タグ %s/%s を作成/更新しました"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:253
 #, php-format
 msgid "Error creating %s policies"
-msgstr ""
+msgstr "ポリシー %s の作成エラー"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:256
 #, php-format
 msgid "Created %s policies"
-msgstr ""
+msgstr "ポリシー %s を作成しました"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:261
 #, php-format
 msgid "Error creating/updating %s/%s policy modules"
-msgstr ""
+msgstr "ポリシーモジュール %s/%s の作成/更新エラー"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:264
 #, php-format
 msgid "Created/Updated %s/%s policy modules"
-msgstr ""
+msgstr "ポリシーモジュール %s/%s を作成/更新しました"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:269
 #, php-format
 msgid "Error deleting %s policy modules"
-msgstr ""
+msgstr "ポリシーモジュール %s の削除エラー"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:272
 #, php-format
 msgid "Deleted %s policy modules"
-msgstr ""
+msgstr "ポリシーモジュール %s を削除しました"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:277
 #, php-format
 msgid "Error creating %s policy alerts"
-msgstr ""
+msgstr "ポリシーアラート %s の作成エラー"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:280
 #, php-format
 msgid "Created %s policy alerts"
-msgstr ""
+msgstr "ポリシーアラート %s を作成しました"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:285
 #, php-format
 msgid "Error deleting %s policy alerts"
-msgstr ""
+msgstr "ポリシーアラート %s の削除エラー"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:288
 #, php-format
 msgid "Deleted %s policy alerts"
-msgstr ""
+msgstr "ポリシーアラート %s を削除しました"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:137
 #, php-format
 msgid "Error creating/updating %s/%s groups"
-msgstr ""
+msgstr "グループ %s/%s の作成/更新エラー"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:140
 #, php-format
 msgid "Created/Updated %s/%s groups"
-msgstr ""
+msgstr "グループ %s/%s を作成/更新しました"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:68
 #: ../../enterprise/meta/include/functions_meta.php:33
@@ -11256,7 +11256,7 @@ msgstr "ネットワークマップの更新に失敗しました。"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:277
 msgid "Unnamed "
-msgstr ""
+msgstr "名前なし "
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:324
 msgid "Show detailed agent"
@@ -11272,7 +11272,7 @@ msgstr "ネットワークモジュールのみ"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:373
 msgid "Show children Metaconsole"
-msgstr ""
+msgstr "子メタコンソール表示"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:404
 msgid "Show modulegroup"
@@ -11313,19 +11313,19 @@ msgstr "グループが選択されていません。"
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:638
 #, php-format
 msgid "Cannot connect to %s Pandora to generate networkmap."
-msgstr ""
+msgstr "ネットワークマップ生成で、Pandora サーバ %s に接続できません。"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:229
 msgid "Latency"
-msgstr ""
+msgstr "遅延"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:230
 msgid "Response"
-msgstr ""
+msgstr "応答"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:232
 msgid "Check type"
-msgstr ""
+msgstr "チェックのタイプ"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:249
 #: ../../enterprise/meta/include/functions_wizard_meta.php:299
@@ -11335,15 +11335,15 @@ msgstr "ウェブチェック"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:280
 msgid "String to check"
-msgstr ""
+msgstr "チェック文字列"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:285
 msgid "Add check"
-msgstr ""
+msgstr "チェックを追加"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:293
 msgid "Delete check"
-msgstr ""
+msgstr "チェックを削除"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:398
 #: ../../enterprise/meta/include/functions_wizard_meta.php:487
@@ -11360,7 +11360,7 @@ msgstr "SNMP コミュニティ"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:413
 #: ../../enterprise/meta/include/functions_wizard_meta.php:495
 msgid "Credentials"
-msgstr ""
+msgstr "認証"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:435
 #: ../../enterprise/meta/include/functions_wizard_meta.php:517
@@ -11376,11 +11376,11 @@ msgstr "プロキシURL"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:528
 msgid "Web configuration"
-msgstr ""
+msgstr "Web 設定"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:744
 msgid "Alerts in module"
-msgstr ""
+msgstr "モジュールのアラート"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:752
 #: ../../include/functions_reporting.php:1646
@@ -11389,7 +11389,7 @@ msgstr "アラートの説明"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:970
 msgid "Checks"
-msgstr ""
+msgstr "チェック"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1238
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1342
@@ -11406,7 +11406,7 @@ msgstr "同じ名前のモジュールが既に存在します"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1493
 #, php-format
 msgid "Error adding module %s"
-msgstr ""
+msgstr "モジュール %s の追加エラー"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1260
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1362
@@ -11444,11 +11444,11 @@ msgstr "モジュールを更新しました。"
 
 #: ../../enterprise/meta/include/functions_meta.php:25
 msgid "No admin user"
-msgstr ""
+msgstr "管理者ユーザではありません"
 
 #: ../../enterprise/meta/include/functions_meta.php:123
 msgid "Netflow disable custom live view filters"
-msgstr ""
+msgstr "Netflow のカスタムライブビューフィルターを無効化しました。"
 
 #: ../../enterprise/meta/include/functions_users_meta.php:172
 #: ../../enterprise/meta/include/functions_users_meta.php:196
@@ -11650,7 +11650,7 @@ msgstr "テンプレート名"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1548
 msgid "Stand By"
-msgstr ""
+msgstr "スタンバイ"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1574
 msgid "Go to Alert detail"
@@ -11699,7 +11699,7 @@ msgstr "ビジュアルマップ"
 
 #: ../../enterprise/meta/screens/screens.main.php:73
 msgid "Welcome to the Pandora FMS screens."
-msgstr ""
+msgstr "Pandora FMS スクリーンへようこそ"
 
 #: ../../enterprise/meta/index.php:305 ../../enterprise/meta/index.php:315
 #: ../../index.php:462
@@ -11725,15 +11725,15 @@ msgstr "コピーしました。"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:108
 msgid "Source user's group"
-msgstr ""
+msgstr "コピー元ユーザグループ"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:132
 msgid "Destination user's group"
-msgstr ""
+msgstr "コピー先ユーザグループ"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:146
 msgid "Group Dashboards"
-msgstr ""
+msgstr "グループダッシュボード"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:165
 msgid "Replicate Dashboard"
@@ -12541,7 +12541,7 @@ msgstr "選択したモジュールをブラックリストから削除します
 #: ../../enterprise/godmode/setup/setup.php:133
 #: ../../include/functions_config.php:214
 msgid "Activate Log Collector"
-msgstr ""
+msgstr "ログ収集の有効化"
 
 #: ../../enterprise/godmode/setup/setup.php:158
 msgid "Enterprise options"
@@ -12686,7 +12686,7 @@ msgstr "文字列"
 #: ../../godmode/massive/massive_edit_modules.php:307
 #: ../../godmode/massive/massive_edit_modules.php:344
 msgid "Inverse interval"
-msgstr ""
+msgstr "条件の反転"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:182
 #: ../../include/functions_alerts.php:555
@@ -12724,42 +12724,42 @@ msgstr "データ保存倍率"
 #: ../../godmode/agentes/module_manager_editor_common.php:410
 #: ../../godmode/massive/massive_edit_modules.php:420
 msgid "Critical instructions"
-msgstr ""
+msgstr "障害時手順"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:218
 #: ../../godmode/modules/manage_network_components_form_common.php:146
 #: ../../godmode/agentes/module_manager_editor_common.php:410
 #: ../../godmode/massive/massive_edit_modules.php:420
 msgid "Instructions when the status is critical"
-msgstr ""
+msgstr "障害状態になった場合の手順"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:221
 #: ../../godmode/modules/manage_network_components_form_common.php:150
 #: ../../godmode/agentes/module_manager_editor_common.php:414
 #: ../../godmode/massive/massive_edit_modules.php:424
 msgid "Warning instructions"
-msgstr ""
+msgstr "警告時手順"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:221
 #: ../../godmode/modules/manage_network_components_form_common.php:150
 #: ../../godmode/agentes/module_manager_editor_common.php:414
 #: ../../godmode/massive/massive_edit_modules.php:424
 msgid "Instructions when the status is warning"
-msgstr ""
+msgstr "警告状態になった場合の手順"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:224
 #: ../../godmode/modules/manage_network_components_form_common.php:154
 #: ../../godmode/agentes/module_manager_editor_common.php:418
 #: ../../godmode/massive/massive_edit_modules.php:428
 msgid "Unknown instructions"
-msgstr ""
+msgstr "不明時手順"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:224
 #: ../../godmode/modules/manage_network_components_form_common.php:154
 #: ../../godmode/agentes/module_manager_editor_common.php:418
 #: ../../godmode/massive/massive_edit_modules.php:428
 msgid "Instructions when the status is unknown"
-msgstr ""
+msgstr "不明状態になった場合の手順"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:231
 #: ../../godmode/modules/manage_network_components_form_common.php:161
@@ -13079,7 +13079,7 @@ msgstr "エージェントのフィルタ"
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:245
 #: ../../enterprise/godmode/reporting/graph_template_wizard.php:170
 msgid "Agents available"
-msgstr ""
+msgstr "存在するエージェント"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:245
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:251
@@ -13101,7 +13101,7 @@ msgstr "テンプレートにエージェントを追加"
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:314
 #: ../../enterprise/godmode/reporting/graph_template_wizard.php:205
 msgid "Undo agents to template"
-msgstr ""
+msgstr "エージェントのテンプレートへの適用の取り消し"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:331
 #: ../../enterprise/godmode/reporting/graph_template_wizard.php:225
@@ -13511,19 +13511,19 @@ msgstr "横向きで表示"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1401
 msgid "Modules to match"
-msgstr ""
+msgstr "マッチするモジュール"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1403
 msgid "Select the modules to match when create a report for agents"
-msgstr ""
+msgstr "エージェントのレポート作成時にマッチするモジュールを選択"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1479
 msgid "Modules to match (Free text)"
-msgstr ""
+msgstr "マッチするモジュール (任意の文字列)"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1481
 msgid "Free text to filter the modules of agents when apply this template."
-msgstr ""
+msgstr "このテンプレートを適用するときに、エージェントのモジュールをフィルタするための文字列。"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1494
 msgid "Create a graph for each agent"
@@ -13534,6 +13534,8 @@ msgid ""
 "If it is checked, the regexp or name of modules match only each to each to "
 "agent, instead create a big graph with all modules from all agents."
 msgstr ""
+"チェックすると、モジュールの正規表現または名前がそれぞれのエージェントでマッチします。チェックしないと全てのエージェントの全てのモジュールの大きなグラフが"
+"生成されます。"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1520
 #: ../../godmode/netflow/nf_item_list.php:258
@@ -14173,7 +14175,7 @@ msgstr "ウェブサーバモジュールの新規作成"
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:40
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:41
 msgid "The changes on this field are linked with the configuration data."
-msgstr ""
+msgstr "このフィールドの変更は、設定データにリンクしています。"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:46
 msgid "Using local component"
@@ -14232,17 +14234,17 @@ msgstr "最後の行は \"module_end\" でなければいけません"
 msgid ""
 "Name is missed. Please add a line with \"module_name yourmodulename\" to "
 "data configuration"
-msgstr ""
+msgstr "名前がありません。設定に \"module_name モジュール名\" の行を追加してください。"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:158
 msgid ""
 "Type is missed. Please add a line with \"module_type yourmoduletype\" to "
 "data configuration"
-msgstr ""
+msgstr "タイプがありません。設定に \"module_type モジュールタイプ\" の行を追加してください。"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:159
 msgid "Type is wrong. Please set a correct type"
-msgstr ""
+msgstr "タイプが不正です。正しいタイプを設定してください。"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:161
 msgid "Data configuration are built correctly"
@@ -14336,7 +14338,7 @@ msgstr "イベントアラート"
 
 #: ../../enterprise/godmode/menu.php:90
 msgid "Log Collector"
-msgstr ""
+msgstr "ログ収集"
 
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:47
 #: ../../enterprise/godmode/policies/policy_modules.php:251
@@ -14933,7 +14935,7 @@ msgstr "プラグインポリシー"
 #: ../../enterprise/godmode/services/services.service.php:126
 msgid ""
 "This values are by default because the service is auto calculate mode."
-msgstr ""
+msgstr "サービスが自動計算モードのため、この値はデフォルト値です。"
 
 #: ../../enterprise/godmode/services/services.elements.php:76
 #: ../../enterprise/godmode/services/services.service.php:148
@@ -15007,7 +15009,7 @@ msgstr "警告ウエイト"
 
 #: ../../enterprise/godmode/services/services.elements.php:288
 msgid "Unknown weight"
-msgstr ""
+msgstr "不明なウエイト"
 
 #: ../../enterprise/godmode/services/services.elements.php:293
 msgid "Ok weight"
@@ -15031,7 +15033,7 @@ msgstr "サービスの更新に失敗しました。"
 
 #: ../../enterprise/godmode/services/services.service.php:100
 msgid "New Service"
-msgstr ""
+msgstr "新規サービス"
 
 #: ../../enterprise/godmode/services/services.service.php:193
 msgid "Auto calculate"
@@ -15043,15 +15045,15 @@ msgstr ""
 
 #: ../../enterprise/godmode/services/services.service.php:228
 msgid "S.L.A. interval"
-msgstr ""
+msgstr "S.L.A. 間隔"
 
 #: ../../enterprise/godmode/services/services.service.php:233
 msgid "S.L.A. limit"
-msgstr ""
+msgstr "S.L.A. 制限"
 
 #: ../../enterprise/godmode/services/services.service.php:235
 msgid "Please set limit between 0 to 100."
-msgstr ""
+msgstr "制限は 0 と 100 の間で設定してください。"
 
 #: ../../enterprise/godmode/services/services.service.php:246
 msgid "Warning Service alert"
@@ -15840,11 +15842,11 @@ msgstr "2文字以上入力するとマッチするエージェント名が検�
 
 #: ../../include/functions_ui.php:3068
 msgid "Does not exist agent with this name."
-msgstr ""
+msgstr "この名前のエージェントがありません。"
 
 #: ../../include/functions_ui.php:3214
 msgid "Problem with Pandora FMS database"
-msgstr ""
+msgstr "Pandora FMS データベースで問題が発生しました"
 
 #: ../../include/functions_ui.php:3215
 msgid ""
@@ -15854,6 +15856,10 @@ msgid ""
 "incorrect or \n"
 "\t\t\tthe database server is not running."
 msgstr ""
+"データベースに接続できません。<b>include/config.php</b> "
+"ファイル内のデータベース設定を確認してください。<i><br/><br/>\n"
+"\t\t\tデータベース名、ホスト名、ユーザ名、パスワードが間違っているかまたは、\n"
+"\t\t\tデータベースサーバが動作していません。"
 
 #: ../../include/functions_ui.php:3219
 msgid "DB ERROR"
@@ -15884,6 +15890,12 @@ msgid ""
 "\t\t\tpermissions and HTTP server cannot read it. Please read documentation "
 "to fix this problem.</i>"
 msgstr ""
+"データベースから設定情報をロードできません。<b>include/config.php</b>ファイル内の\n"
+"データベース設定を確認してください。\n"
+"データベーススキーマは設定されていますが、データが無い可能性があります。データベースへのアクセス権限の問題か、スキーマが古い可能性があります。\n"
+"\t\t\t<br><br>または、Pandora FMS コンソールが <i>include/config.php</i> "
+"を見つけられないか、このファイルのパーミッションが不正で\n"
+"\t\t\tHTTP サーバが参照できません。問題の修正のためには、ドキュメントを確認してください。</i>"
 
 #: ../../include/functions_ui.php:3237
 msgid "No configuration file found"
@@ -15896,6 +15908,8 @@ msgid ""
 "\t\t\tpermissions and HTTP server cannot read it. Please read documentation "
 "to fix this problem."
 msgstr ""
+"Pandora FMS コンソールが、<i>include/config.php</i>を見つけられないか、このファイルのパーミッション\n"
+"\t\t\tが不正のため HTTP サーバプロセスからアクセスできません。問題解決にはドキュメントを確認してください。"
 
 #: ../../include/functions_ui.php:3249
 #, php-format
@@ -15904,7 +15918,7 @@ msgstr ""
 
 #: ../../include/functions_ui.php:3252
 msgid "Installer active"
-msgstr ""
+msgstr "インストーラが有効です"
 
 #: ../../include/functions_ui.php:3253
 msgid ""
@@ -15913,10 +15927,12 @@ msgid ""
 "\t\t\tPlease delete the <i>./install.php</i> file before running Pandora FMS "
 "Console."
 msgstr ""
+"セキュリティのため、インストーラファイルを削除しないと通常の動作をしません。\n"
+"\t\t\tPandora FMS コンソールを実行する前に、<i>./install.php</i>ファイルを削除してください。"
 
 #: ../../include/functions_ui.php:3257
 msgid "Bad permission for include/config.php"
-msgstr ""
+msgstr "include/config.php のパーミッションが不正です"
 
 #: ../../include/functions_ui.php:3258
 msgid ""
@@ -15929,6 +15945,10 @@ msgid ""
 "\t\t\tpermissions for <i>include/config.php</i> file. Please do it, it is "
 "for your security."
 msgstr ""
+"セキュリティのため、<i>config.php</i>のパーミッションは制限する必要があります。\"other\" ユーザは、\n"
+"\t\t\t読み書きできないようにし、owner (通常は www-data や http デーモンのユーザ)のみが\n"
+"\t\t\t書けるようにする必要があります。<i>include/config.php</i>のパーミッションを修正しないと\n"
+"\t\t\t通常の動作をしません。セキュリティのために調整をしてください。"
 
 #: ../../include/functions_events.php:784
 msgid "Latest events"
@@ -16047,7 +16067,7 @@ msgstr "イベント ID"
 
 #: ../../include/functions_events.php:1554
 msgid "Change owner"
-msgstr ""
+msgstr "所有者変更"
 
 #: ../../include/functions_events.php:1584 ../../include/functions_xml.php:125
 msgid "New"
@@ -16084,20 +16104,20 @@ msgstr "アラート詳細"
 
 #: ../../include/functions_events.php:2073
 msgid "First event"
-msgstr ""
+msgstr "最初のイベント"
 
 #: ../../include/functions_events.php:2073
 msgid "Last event"
-msgstr ""
+msgstr "最新のイベント"
 
 #: ../../include/functions_events.php:2149
 #: ../../mobile/operation/events.php:440
 msgid "Acknowledged by"
-msgstr ""
+msgstr "承諾者"
 
 #: ../../include/functions_events.php:2235
 msgid "There are no comments"
-msgstr ""
+msgstr "コメントがありません"
 
 #: ../../include/functions_events.php:2320
 #: ../../include/functions_reporting.php:2625
@@ -16113,7 +16133,7 @@ msgstr "Pandora System"
 #: ../../include/functions_reporting.php:957
 #: ../../include/functions_reporting.php:969
 msgid "Ratio"
-msgstr ""
+msgstr "比率"
 
 #: ../../include/functions_reporting.php:882
 #: ../../include/functions_reporting.php:898
@@ -16124,7 +16144,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:957
 #: ../../include/functions_reporting.php:969
 msgid "Modules by second"
-msgstr ""
+msgstr "秒間モジュール"
 
 #: ../../include/functions_reporting.php:917
 msgid "Network modules"
@@ -16172,7 +16192,7 @@ msgstr "定義済・発報アラート"
 
 #: ../../include/functions_reporting.php:1166
 msgid "Defined users"
-msgstr ""
+msgstr "定義済ユーザ"
 
 #: ../../include/functions_reporting.php:1221
 msgid "Total agents and monitors"
@@ -16241,7 +16261,7 @@ msgstr "最新の障害"
 
 #: ../../include/functions_reporting.php:2359
 msgid "N/A(*)"
-msgstr ""
+msgstr "N/A(*)"
 
 #: ../../include/functions_reporting.php:2391
 #: ../../include/functions_reporting.php:4351
@@ -16309,12 +16329,12 @@ msgstr "不十分なデータ"
 
 #: ../../include/functions_reporting.php:5187
 msgid "Modules under or equal to"
-msgstr ""
+msgstr "次の値より小さいか同じモジュール"
 
 #: ../../include/functions_reporting.php:5193
 #: ../../include/functions_reporting.php:5394
 msgid "Modules over"
-msgstr ""
+msgstr "次の値を超えるモジュール"
 
 #: ../../include/functions_reporting.php:5196
 #: ../../include/functions_alerts.php:552
@@ -16328,23 +16348,23 @@ msgstr "異なる値"
 
 #: ../../include/functions_reporting.php:5388
 msgid "Modules less or equal to"
-msgstr ""
+msgstr "次の値より小さいか同じモジュール"
 
 #: ../../include/functions_reporting.php:5391
 msgid "Modules less"
-msgstr ""
+msgstr "次の値より小さいモジュール"
 
 #: ../../include/functions_reporting.php:5397
 msgid "Modules equal to"
-msgstr ""
+msgstr "次の値と同じモジュール"
 
 #: ../../include/functions_reporting.php:5400
 msgid "Modules not equal to"
-msgstr ""
+msgstr "次の値と異なるモジュール"
 
 #: ../../include/functions_reporting.php:5403
 msgid "Modules normal status"
-msgstr ""
+msgstr "正常状態のモジュール"
 
 #: ../../include/functions_reporting.php:5592
 #: ../../extensions/agents_modules.php:167
@@ -16353,12 +16373,12 @@ msgstr "モジュールが定義されたエージェントがありません。
 
 #: ../../include/functions_reporting.php:5800
 msgid "Agent configuration: "
-msgstr ""
+msgstr "エージェント設定: "
 
 #: ../../include/functions_reporting.php:5849
 #: ../../include/functions_reporting.php:5995
 msgid " MODULES"
-msgstr ""
+msgstr " モジュール"
 
 #: ../../include/functions_reporting.php:5929
 msgid "Group configuration: "
@@ -16518,17 +16538,17 @@ msgstr "N"
 #: ../../include/functions.php:956 ../../include/functions_graph.php:2173
 #: ../../include/functions_graph.php:2174
 msgid "Minor"
-msgstr ""
+msgstr "マイナー"
 
 #: ../../include/functions.php:727 ../../include/functions.php:914
 #: ../../include/functions.php:959 ../../include/functions_graph.php:2181
 #: ../../include/functions_graph.php:2182
 msgid "Major"
-msgstr ""
+msgstr "メジャー"
 
 #: ../../include/functions.php:876
 msgid "Monitor Unknown"
-msgstr ""
+msgstr "不明状態"
 
 #: ../../include/functions.php:885
 msgid "Configuration change "
@@ -16626,39 +16646,39 @@ msgstr "エンタープライズSNMPサーバ"
 
 #: ../../include/functions_netflow.php:356
 msgid "Total flows"
-msgstr ""
+msgstr "合計フロー数"
 
 #: ../../include/functions_netflow.php:358
 msgid "Total bytes"
-msgstr ""
+msgstr "合計バイト数"
 
 #: ../../include/functions_netflow.php:360
 msgid "Total packets"
-msgstr ""
+msgstr "合計パケット数"
 
 #: ../../include/functions_netflow.php:362
 msgid "Average bits per second"
-msgstr ""
+msgstr "平均ビット/秒"
 
 #: ../../include/functions_netflow.php:364
 msgid "Average packets per second"
-msgstr ""
+msgstr "平均パケット/秒"
 
 #: ../../include/functions_netflow.php:366
 msgid "Average bytes per packet"
-msgstr ""
+msgstr "平均バイト/秒"
 
 #: ../../include/functions_netflow.php:828
 msgid "Area graph"
-msgstr ""
+msgstr "塗り潰しグラフ"
 
 #: ../../include/functions_netflow.php:829
 msgid "Pie graph and Summary table"
-msgstr ""
+msgstr "円グラフと一覧表"
 
 #: ../../include/functions_netflow.php:830
 msgid "Statistics table"
-msgstr ""
+msgstr "状態表"
 
 #: ../../include/functions_netflow.php:844
 #: ../../include/functions_netflow.php:877
@@ -16686,7 +16706,7 @@ msgstr "3ヵ月"
 
 #: ../../include/functions_netflow.php:860
 msgid "Last year"
-msgstr ""
+msgstr "1年"
 
 #: ../../include/functions_netflow.php:861 ../../include/ajax/module.php:88
 msgid "2 years"
@@ -16711,11 +16731,11 @@ msgstr "5 分"
 #: ../../include/functions_netflow.php:1041
 #: ../../include/functions_netflow.php:1074
 msgid "Aggregate"
-msgstr ""
+msgstr "集約"
 
 #: ../../include/functions_netflow.php:1113
 msgid "Error generating report"
-msgstr ""
+msgstr "レポート生成エラー"
 
 #: ../../include/functions_netflow.php:1310
 msgid "MB"
@@ -17115,7 +17135,7 @@ msgstr "SQL 横棒グラフ"
 
 #: ../../include/functions_reports.php:513
 msgid "Automatic combined Graph"
-msgstr ""
+msgstr "自動重ね合わせグラフ"
 
 #: ../../include/functions_reports.php:518
 #: ../../include/functions_reports.php:520
@@ -17162,23 +17182,23 @@ msgstr "イベントレポートグループ"
 
 #: ../../include/functions_reports.php:613
 msgid "Netflow area chart"
-msgstr ""
+msgstr "Netflow 塗り潰しグラフ"
 
 #: ../../include/functions_reports.php:615
 msgid "Netflow pie chart"
-msgstr ""
+msgstr "Netflow 円グラフ"
 
 #: ../../include/functions_reports.php:617
 msgid "Netflow data table"
-msgstr ""
+msgstr "Netflow データ表"
 
 #: ../../include/functions_reports.php:619
 msgid "Netflow statistics table"
-msgstr ""
+msgstr "Netflow 状態表"
 
 #: ../../include/functions_reports.php:621
 msgid "Netflow summary table"
-msgstr ""
+msgstr "Netflow サマリ"
 
 #: ../../include/functions_graph.php:639
 msgid "Units. Value"
@@ -17284,7 +17304,7 @@ msgstr "エージェントの設定コピーに失敗しました。コピーを
 
 #: ../../include/functions_treeview.php:140
 msgid "There was a problem loading alerts"
-msgstr ""
+msgstr "アラートのロードで問題が発生しました"
 
 #: ../../include/functions_treeview.php:178
 msgid "Go to alerts detail"
@@ -17320,7 +17340,7 @@ msgstr "状態を表すアイコン"
 
 #: ../../include/graphs/functions_flot.php:231
 msgid "Cancel zoom"
-msgstr ""
+msgstr "ズームを取り消し"
 
 #: ../../include/graphs/functions_flot.php:233
 msgid "Warning and Critical thresholds"
@@ -17328,7 +17348,7 @@ msgstr "警告と障害の閾値"
 
 #: ../../include/graphs/functions_flot.php:235
 msgid "Overview graph"
-msgstr ""
+msgstr "概要グラフ"
 
 #: ../../include/functions_html.php:609
 msgid "weeks"
@@ -17336,11 +17356,11 @@ msgstr "週"
 
 #: ../../include/functions_html.php:716
 msgid "Month day"
-msgstr ""
+msgstr "日"
 
 #: ../../include/functions_html.php:718
 msgid "Week day"
-msgstr ""
+msgstr "曜日"
 
 #: ../../include/functions_html.php:1910
 msgid "Type at least two characters to search the module."
@@ -17356,11 +17376,11 @@ msgstr "グループマップの新規作成"
 
 #: ../../include/functions_config.php:85
 msgid "Failed updated: User did not login."
-msgstr ""
+msgstr "更新失敗しました: ユーザがログインしていません。"
 
 #: ../../include/functions_config.php:93
 msgid "Failed updated: User is not admin."
-msgstr ""
+msgstr "更新に失敗: ユーザが管理者ではありません"
 
 #: ../../include/functions_config.php:122
 #: ../../godmode/setup/setup_general.php:53
@@ -17406,7 +17426,7 @@ msgstr "Integria URL"
 #: ../../include/functions_config.php:149
 #: ../../godmode/setup/setup_general.php:98
 msgid "Enable Netflow"
-msgstr ""
+msgstr "Netflow を利用する"
 
 #: ../../include/functions_config.php:156
 #: ../../godmode/setup/setup_general.php:193
@@ -17431,7 +17451,7 @@ msgstr "リファラーセキュリティ"
 #: ../../include/functions_config.php:179
 #: ../../godmode/setup/setup_general.php:228
 msgid "Event storm protection"
-msgstr ""
+msgstr "イベントストーム保護"
 
 #: ../../include/functions_config.php:181
 #: ../../godmode/setup/setup_general.php:237
@@ -17440,7 +17460,7 @@ msgstr "コマンドスナップショット"
 
 #: ../../include/functions_config.php:211
 msgid "Show events list in local console (read only)"
-msgstr ""
+msgstr "ローカルコンソールでのイベント一覧表示 (参照のみ)"
 
 #: ../../include/functions_config.php:252
 #: ../../godmode/setup/setup_auth.php:37
@@ -17602,52 +17622,52 @@ msgstr "GIS でのデフォルトアイコン"
 #: ../../include/functions_config.php:444
 #: ../../godmode/setup/setup_visuals.php:106
 msgid "Delete interval"
-msgstr ""
+msgstr "間隔値の削除"
 
 #: ../../include/functions_config.php:449
 #: ../../godmode/setup/setup_netflow.php:43
 msgid "Data storage path"
-msgstr ""
+msgstr "データ保存パス"
 
 #: ../../include/functions_config.php:451
 #: ../../godmode/setup/setup_netflow.php:46
 msgid "Daemon interval"
-msgstr ""
+msgstr "デーモンの間隔"
 
 #: ../../include/functions_config.php:453
 #: ../../godmode/setup/setup_netflow.php:48
 msgid "Daemon binary path"
-msgstr ""
+msgstr "デーモンバイナリパス"
 
 #: ../../include/functions_config.php:455
 #: ../../godmode/setup/setup_netflow.php:50
 msgid "Nfdump binary path"
-msgstr ""
+msgstr "nfdump バイナリパス"
 
 #: ../../include/functions_config.php:457
 #: ../../godmode/setup/setup_netflow.php:52
 msgid "Nfexpire binary path"
-msgstr ""
+msgstr "nfexpire バイナリパス"
 
 #: ../../include/functions_config.php:459
 #: ../../godmode/setup/setup_netflow.php:54
 msgid "Maximum chart resolution"
-msgstr ""
+msgstr "最大グラフ解像度"
 
 #: ../../include/functions_config.php:463
 #: ../../include/functions_config.php:467
 #: ../../godmode/setup/setup_netflow.php:60
 msgid "Netflow max lifetime"
-msgstr ""
+msgstr "Netflow 最大保存期間"
 
 #: ../../include/functions_config.php:469
 msgid "Log max lifetime"
-msgstr ""
+msgstr "ログ最大保存期間"
 
 #: ../../include/functions_config.php:501
 #, php-format
 msgid "Failed updated: the next values cannot update: %s"
-msgstr ""
+msgstr "更新失敗: 次の値が更新できません: %s"
 
 #: ../../include/functions_config.php:1096
 msgid "Default password for \"Admin\" user has not been changed."
@@ -17886,48 +17906,48 @@ msgstr "3 年"
 
 #: ../../include/ajax/module.php:91
 msgid "Select period:"
-msgstr ""
+msgstr "期間の選択:"
 
 #: ../../include/ajax/events.php:145
 #, php-format
 msgid "Executing command: %s"
-msgstr ""
+msgstr "コマンド実行中: %s"
 
 #: ../../include/ajax/events.php:152
 msgid "Execute again"
-msgstr ""
+msgstr "再実行"
 
 #: ../../include/ajax/events.php:285
 msgid "Agent fields"
-msgstr ""
+msgstr "エージェントフィールド"
 
 #: ../../include/ajax/events.php:289 ../../godmode/events/events.php:61
 msgid "Responses"
-msgstr ""
+msgstr "レスポンス"
 
 #: ../../include/ajax/events.php:349
 msgid "Error adding comment"
-msgstr ""
+msgstr "コメント追加エラー"
 
 #: ../../include/ajax/events.php:350
 msgid "Comment added successfully"
-msgstr ""
+msgstr "コメントを追加しました"
 
 #: ../../include/ajax/events.php:351
 msgid "Error changing event status"
-msgstr ""
+msgstr "イベントの状態変更エラー"
 
 #: ../../include/ajax/events.php:352
 msgid "Event status changed successfully"
-msgstr ""
+msgstr "イベントの状態を変更しました"
 
 #: ../../include/ajax/events.php:353
 msgid "Error changing event owner"
-msgstr ""
+msgstr "イベントの所有者変更エラー"
 
 #: ../../include/ajax/events.php:354
 msgid "Event owner changed successfully"
-msgstr ""
+msgstr "イベントの所有者を変更しました"
 
 #: ../../include/ajax/events.php:449
 msgid "Auto"
@@ -17935,23 +17955,23 @@ msgstr "自動"
 
 #: ../../include/functions_snmp_browser.php:145
 msgid "Target IP cannot be blank."
-msgstr ""
+msgstr "対象 IP は空にできません"
 
 #: ../../include/functions_snmp_browser.php:307
 msgid "Numeric OID"
-msgstr ""
+msgstr "数値 OID"
 
 #: ../../include/functions_snmp_browser.php:323
 msgid "Syntax"
-msgstr ""
+msgstr "書式"
 
 #: ../../include/functions_snmp_browser.php:328
 msgid "Display hint"
-msgstr ""
+msgstr "ヒント表示"
 
 #: ../../include/functions_snmp_browser.php:333
 msgid "Max access"
-msgstr ""
+msgstr "最大アクセス"
 
 #: ../../include/functions_snmp_browser.php:380
 #: ../../godmode/agentes/module_manager_editor_wmi.php:42
@@ -17967,15 +17987,15 @@ msgstr "コミュニティ"
 
 #: ../../include/functions_snmp_browser.php:384
 msgid "Expand the tree"
-msgstr ""
+msgstr "ツリーを展開"
 
 #: ../../include/functions_snmp_browser.php:384
 msgid "can be slow"
-msgstr ""
+msgstr "遅い"
 
 #: ../../include/functions_snmp_browser.php:385
 msgid "Collapse the tree"
-msgstr ""
+msgstr "ツリーを閉じる"
 
 #: ../../include/functions_snmp_browser.php:386
 msgid "Starting OID"
@@ -17987,28 +18007,28 @@ msgstr "検索文字列"
 
 #: ../../include/functions_snmp_browser.php:391
 msgid "First match"
-msgstr ""
+msgstr "最初の一致"
 
 #: ../../include/functions_snmp_browser.php:392
 msgid "Previous match"
-msgstr ""
+msgstr "前の一致"
 
 #: ../../include/functions_snmp_browser.php:393
 msgid "Next match"
-msgstr ""
+msgstr "次の一致"
 
 #: ../../include/functions_snmp_browser.php:394
 msgid "Last match"
-msgstr ""
+msgstr "最後の一致"
 
 #: ../../include/functions_snmp_browser.php:403
 msgid "Browse"
-msgstr ""
+msgstr "ブラウズ"
 
 #: ../../include/functions_snmp_browser.php:413
 #: ../../godmode/agentes/module_manager_editor_network.php:22
 msgid "Search matches"
-msgstr ""
+msgstr "検索一致"
 
 #: ../../include/functions_api.php:73
 msgid "No set or get or help operation."
@@ -18741,7 +18761,7 @@ msgstr "モジュールを無効にしました"
 
 #: ../../include/functions_api.php:5426
 msgid "Error disabling module"
-msgstr ""
+msgstr "モジュールの無効化エラー"
 
 #: ../../include/functions_api.php:5447
 msgid "Correct module enable"
@@ -18749,7 +18769,7 @@ msgstr "モジュールを有効にしました"
 
 #: ../../include/functions_api.php:5450
 msgid "Error enabling module"
-msgstr ""
+msgstr "モジュールの有効化エラー"
 
 #: ../../include/functions_groups.php:59
 msgid "Alert Actions"
@@ -18840,7 +18860,7 @@ msgstr "(デフォルト)"
 #, php-format
 msgid ""
 "(Status: %s - Group: %s - Module group: %s - Tag: %s - Free Search: %s)"
-msgstr ""
+msgstr "(状態: %s - グループ: %s - モジュールグループ: %s - タグ: %s - 検索: %s)"
 
 #: ../../mobile/operation/groups.php:66
 msgid "PandoraFMS: Groups"
@@ -18849,7 +18869,7 @@ msgstr "PandoraFMS: グループ"
 #: ../../mobile/operation/events.php:335 ../../mobile/operation/events.php:336
 #: ../../mobile/operation/events.php:513 ../../mobile/operation/events.php:514
 msgid "Preset Filters"
-msgstr ""
+msgstr "事前設定フィルター"
 
 #: ../../mobile/operation/events.php:401
 msgid "Event detail"
@@ -18883,7 +18903,7 @@ msgstr "%s によるイベントのフィルタ"
 #: ../../mobile/operation/events.php:1003
 #, php-format
 msgid "Filter: %s"
-msgstr ""
+msgstr "フィルター: %s"
 
 #: ../../mobile/operation/events.php:1018
 #, php-format
@@ -19553,7 +19573,7 @@ msgstr "エージェントのリモート設定保存ディレクトリ"
 
 #: ../../godmode/setup/setup_general.php:87
 msgid "Please be careful if you put a password put https access."
-msgstr ""
+msgstr "パスワードの設定には注意してください。httpsアクセスを使ってください。"
 
 #: ../../godmode/setup/setup_general.php:141
 msgid "URL and/or Integria password are incorrect"
@@ -19563,7 +19583,7 @@ msgstr "URL もしくは Integria のパスワードが不正です"
 msgid ""
 "Must have the same time zone as the system or database to avoid mismatches "
 "of time."
-msgstr ""
+msgstr "時間の不整合を避けるために、システムまたはデータベースのタイムゾーンと同じにする必要があります。"
 
 #: ../../godmode/setup/setup_general.php:195
 #: ../../godmode/setup/setup_general.php:200
@@ -19581,7 +19601,7 @@ msgstr "\"はい\" に設定すると、いくつかの重要なセクション�
 msgid ""
 "If set to yes no events or alerts will be generated, but agents will "
 "continue receiving data."
-msgstr ""
+msgstr "「はい」に設定するとイベントやアラートは生成されません。ただし、エージェントはデータ受信を続けます。"
 
 #: ../../godmode/setup/setup_general.php:238
 msgid "The string modules with several lines show as command output"
@@ -19645,29 +19665,30 @@ msgstr "画面設定"
 
 #: ../../godmode/setup/setup.php:136
 msgid "Correct update the setup options"
-msgstr ""
+msgstr "設定オプションを修正してください"
 
 #: ../../godmode/setup/setup_netflow.php:44
 msgid "Directory where netflow data will be stored."
-msgstr ""
+msgstr "netflow データが保存されるディレクトリ"
 
 #: ../../godmode/setup/setup_netflow.php:54
 msgid ""
 "Maximum number of points that a netflow area chart will display. The higher "
 "the resolution the performance. Values between 50 and 100 are recommended."
 msgstr ""
+"Netflow 塗り潰しグラフを表示する最大ポイント数。高い精度にするとパフォーマンスが落ちます。50 と 100の間の値をお勧めします。"
 
 #: ../../godmode/setup/setup_netflow.php:60
 msgid "Sets the maximum lifetime for netflow data in days."
-msgstr ""
+msgstr "netflow データの最大保持日数を指定します。"
 
 #: ../../godmode/setup/setup_visuals.php:90
 msgid "Interval values"
-msgstr ""
+msgstr "間隔値"
 
 #: ../../godmode/setup/setup_visuals.php:100
 msgid "Add new custom value to intervals"
-msgstr ""
+msgstr "間隔に新たなカスタム値を追加"
 
 #: ../../godmode/setup/setup_visuals.php:133
 msgid "Colors"
@@ -20120,11 +20141,11 @@ msgstr "WMIコンポーネントを新規作成する。"
 
 #: ../../godmode/modules/manage_network_components_form_common.php:139
 msgid "Any value below this number is discarted"
-msgstr ""
+msgstr "この数値より小さい値は破棄されます"
 
 #: ../../godmode/modules/manage_network_components_form_common.php:141
 msgid "Any value over this number is discarted"
-msgstr ""
+msgstr "この数値より大きい値は破棄されます"
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:32
 #: ../../godmode/modules/manage_network_components_form_wmi.php:150
@@ -20162,7 +20183,7 @@ msgstr "最大タイムアウト"
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
 #: ../../godmode/servers/plugin.php:121
 msgid "Max. retries"
-msgstr ""
+msgstr "最大リトライ"
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:194
 msgid "Minimum Data"
@@ -20207,7 +20228,7 @@ msgstr "レポートアイテム"
 
 #: ../../godmode/netflow/nf_item_list.php:49
 msgid "Edit report"
-msgstr ""
+msgstr "レポート編集"
 
 #: ../../godmode/netflow/nf_item_list.php:58
 msgid "Netflow reports"
@@ -20215,15 +20236,15 @@ msgstr "Netflow レポート"
 
 #: ../../godmode/netflow/nf_item_list.php:59
 msgid "Item list"
-msgstr ""
+msgstr "アイテム一覧"
 
 #: ../../godmode/netflow/nf_item_list.php:149
 msgid "Chart type"
-msgstr ""
+msgstr "グラフタイプ"
 
 #: ../../godmode/netflow/nf_item_list.php:253
 msgid "There are no defined items"
-msgstr ""
+msgstr "定義済のアイテムがありません"
 
 #: ../../godmode/netflow/nf_edit.php:37
 msgid "Manage Netflow Filter"
@@ -20249,7 +20270,7 @@ msgstr "フィルタの作成"
 
 #: ../../godmode/netflow/nf_edit_form.php:52
 msgid "Filter list"
-msgstr ""
+msgstr "フィルター一覧"
 
 #: ../../godmode/netflow/nf_edit_form.php:56
 #: ../../godmode/netflow/nf_edit_form.php:64
@@ -20371,7 +20392,7 @@ msgstr "スクリプトフィールド #1"
 msgid ""
 "several networks separated by comma. For example: "
 "192.168.100.0/24,192.168.50.0/24"
-msgstr ""
+msgstr "カンマ区切りの複数ネットワーク。例: 192.168.100.0/24,192.168.50.0/24"
 
 #: ../../godmode/servers/manage_recontask_form.php:231
 msgid "Script field #2"
@@ -20381,7 +20402,7 @@ msgstr "スクリプトフィールド #2"
 msgid ""
 "several communities separated by comma. For example: "
 "snmp_community,public,private "
-msgstr ""
+msgstr "カンマ区切りの複数コミュニティ。例: snmp_community,public,private "
 
 #: ../../godmode/servers/manage_recontask_form.php:235
 msgid "Script field #3"
@@ -20455,12 +20476,12 @@ msgstr "Nagios"
 msgid ""
 "This value only will be applied if is minor than the server general "
 "configuration plugin timeout"
-msgstr ""
+msgstr "この値は、サーバ全体のプラグインタイムアウトよりも小さい場合に適用されます。"
 
 #: ../../godmode/servers/plugin.php:119
 msgid ""
 "If you set a 0 seconds timeout, the server plugin timeout will be used"
-msgstr ""
+msgstr "タイムアウトを 0 に設定すると、サーバプラグインのタイムアウトが利用されます。"
 
 #: ../../godmode/servers/plugin.php:162
 msgid "Plugin command"
@@ -20468,7 +20489,7 @@ msgstr "プラグインコマンド"
 
 #: ../../godmode/servers/plugin.php:170
 msgid "Plug-in parameters"
-msgstr ""
+msgstr "プラグインパラメータ"
 
 #: ../../godmode/servers/plugin.php:178
 #: ../../godmode/alerts/configure_alert_action.php:143
@@ -20487,7 +20508,7 @@ msgstr "コマンド"
 
 #: ../../godmode/servers/plugin.php:271
 msgid "Parameters macros"
-msgstr ""
+msgstr "パラメータマクロ"
 
 #: ../../godmode/servers/plugin.php:294
 msgid "Plugins registered in Pandora FMS"
@@ -20519,7 +20540,7 @@ msgstr "プラグインを削除しました。"
 
 #: ../../godmode/servers/plugin.php:463
 msgid "All the modules that are using this plugin will be deleted"
-msgstr ""
+msgstr "このプラグインを利用している全モジュールを削除します。"
 
 #: ../../godmode/servers/plugin.php:469
 msgid "There are no plugins in the system"
@@ -20529,7 +20550,7 @@ msgstr "プラグインがありません。"
 msgid ""
 "The plugin command cannot be updated because some modules or components are "
 "using the plugin."
-msgstr ""
+msgstr "このプラグインを利用しているモジュールまたはコンポーネントがあるため、プラグインコマンドを更新できません。"
 
 #: ../../godmode/servers/manage_recontask.php:43
 msgid "Successfully deleted recon task"
@@ -20621,11 +20642,11 @@ msgstr "プロファイルの削除に失敗しました。"
 
 #: ../../godmode/users/user_list.php:170
 msgid "There was a problem disabling user"
-msgstr ""
+msgstr "ユーザの無効化で問題が発生しました。"
 
 #: ../../godmode/users/user_list.php:175
 msgid "There was a problem enabling user"
-msgstr ""
+msgstr "ユーザの有効化で問題が発生しました。"
 
 #: ../../godmode/users/user_list.php:266
 msgid "First name"
@@ -20693,7 +20714,7 @@ msgstr "エージェント編集"
 
 #: ../../godmode/users/configure_profile.php:158
 msgid "Disable agents"
-msgstr ""
+msgstr "エージェント無効化"
 
 #: ../../godmode/users/configure_profile.php:160
 msgid "Edit alerts"
@@ -20709,7 +20730,7 @@ msgstr "データベース管理"
 
 #: ../../godmode/users/configure_profile.php:170
 msgid "Edit reports"
-msgstr ""
+msgstr "レポート編集"
 
 #: ../../godmode/users/configure_profile.php:172
 msgid "Manage reports"
@@ -20717,7 +20738,7 @@ msgstr "レポート管理"
 
 #: ../../godmode/users/configure_profile.php:176
 msgid "Edit events"
-msgstr ""
+msgstr "イベント編集"
 
 #: ../../godmode/users/configure_profile.php:180
 msgid "Pandora management"
@@ -20778,35 +20799,35 @@ msgstr "グローバル設定を利用します。"
 
 #: ../../godmode/users/configure_user.php:473
 msgid "Metaconsole access"
-msgstr ""
+msgstr "メタコンソールアクセス"
 
 #: ../../godmode/users/configure_user.php:481
 msgid "Not Login"
-msgstr ""
+msgstr "ログイン不可"
 
 #: ../../godmode/users/configure_user.php:482
 msgid "The user with not login set only can access to API."
-msgstr ""
+msgstr "ログイン不可を設定した場合、APIアクセスのみが可能です。"
 
 #: ../../godmode/users/configure_user.php:488
 msgid "Enable agents managment"
-msgstr ""
+msgstr "エージェント管理の有効化"
 
 #: ../../godmode/users/configure_user.php:495
 msgid "Assigned node"
-msgstr ""
+msgstr "割り当てノード"
 
 #: ../../godmode/users/configure_user.php:495
 msgid "Server where the agents managed of this user will be placed"
-msgstr ""
+msgstr "このユーザで管理するエージェントがあるサーバです"
 
 #: ../../godmode/users/configure_user.php:507
 msgid "Enable node access"
-msgstr ""
+msgstr "ノードアクセスを利用する"
 
 #: ../../godmode/users/configure_user.php:507
 msgid "With this option enabled, the user will can access to nodes console"
-msgstr ""
+msgstr "このオプションを有効化すると、ユーザはノードコンソールにアクセスできます。"
 
 #: ../../godmode/users/profile_list.php:150
 msgid "There was a problem updating this profile"
@@ -20839,7 +20860,7 @@ msgstr "エージェントからの情報取得"
 
 #: ../../godmode/users/profile_list.php:207
 msgid "Agents disable"
-msgstr ""
+msgstr "エージェント無効化"
 
 #: ../../godmode/users/profile_list.php:208
 msgid "Alerts editing"
@@ -20859,11 +20880,11 @@ msgstr "アラート管理"
 
 #: ../../godmode/users/profile_list.php:212
 msgid "Reports reading"
-msgstr ""
+msgstr "レポート参照"
 
 #: ../../godmode/users/profile_list.php:213
 msgid "Reports writing"
-msgstr ""
+msgstr "レポート編集"
 
 #: ../../godmode/users/profile_list.php:214
 msgid "Reports management"
@@ -20871,11 +20892,11 @@ msgstr "レポート管理"
 
 #: ../../godmode/users/profile_list.php:215
 msgid "Events reading"
-msgstr ""
+msgstr "イベント参照"
 
 #: ../../godmode/users/profile_list.php:216
 msgid "Events writing"
-msgstr ""
+msgstr "イベント編集"
 
 #: ../../godmode/users/profile_list.php:217
 msgid "Events management"
@@ -21162,19 +21183,19 @@ msgstr "この後ろに移動:"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:444
 msgid "Delete items"
-msgstr ""
+msgstr "アイテム削除"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:445
 msgid "Delete selected items from position: "
-msgstr ""
+msgstr "次の位置から選択したアイテムを削除: "
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:447
 msgid "Delete above to"
-msgstr ""
+msgstr "この上を削除"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:447
 msgid "Delete below to"
-msgstr ""
+msgstr "この下を削除"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:475
 msgid ""
@@ -21188,11 +21209,11 @@ msgstr "並び替えるアイテムを選択してください"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:521
 msgid "Are you sure to delete the items into the report?\\n"
-msgstr ""
+msgstr "レポートのアイテムを削除しても良いですか?\\n"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:543
 msgid "Please select any item to delete"
-msgstr ""
+msgstr "削除するアイテムを選択してください"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:94
 msgid "Range between elements (px)"
@@ -21217,7 +21238,7 @@ msgstr "エージェント - モジュール"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:182
 msgid "Enable link agent"
-msgstr ""
+msgstr "エージェントリンクの有効化"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:191
 #: ../../godmode/reporting/visual_console_builder.wizard.php:196
@@ -21236,7 +21257,7 @@ msgstr "グラフ数"
 
 #: ../../godmode/reporting/graphs.php:193
 msgid "There are no defined graphs"
-msgstr ""
+msgstr "定義済のグラフがありません"
 
 #: ../../godmode/reporting/graphs.php:199
 msgid "Create graph"
@@ -21287,25 +21308,25 @@ msgstr "最初の文字には [ または ( を使ってください。例えば
 
 #: ../../godmode/reporting/reporting_builder.main.php:65
 msgid "Only the group can view the report"
-msgstr ""
+msgstr "レポートを参照できるグループ"
 
 #: ../../godmode/reporting/reporting_builder.main.php:66
 msgid "The next group can edit the report"
-msgstr ""
+msgstr "次のグループがレポートを編集可能"
 
 #: ../../godmode/reporting/reporting_builder.main.php:67
 msgid "Only the user and admin user can edit the report"
-msgstr ""
+msgstr "ユーザと管理者のみがレポートを編集可能"
 
 #: ../../godmode/reporting/reporting_builder.main.php:69
 msgid "Write Access"
-msgstr ""
+msgstr "書き込みアクセス"
 
 #: ../../godmode/reporting/reporting_builder.main.php:70
 msgid ""
 "For example, you want a report that the people of \"All\" groups can see but "
 "you want to edit only for you or your group."
-msgstr ""
+msgstr "例えば、\"全て\"グループのユーザが参照はできるが、自分または自分のグループのみが編集可能。"
 
 #: ../../godmode/reporting/visual_console_builder.php:89
 msgid "Successfully update."
@@ -21345,7 +21366,7 @@ msgstr "値 (平均値)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:470
 msgid "Not valid"
-msgstr ""
+msgstr "不正です"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:868
 msgid "Target server"
@@ -21353,27 +21374,27 @@ msgstr "対象サーバ"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:978
 msgid "Greater or equal (>=)"
-msgstr ""
+msgstr "以上 (>=)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:979
 msgid "Less or equal (<=)"
-msgstr ""
+msgstr "以下 (<=)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:980
 msgid "Less (<)"
-msgstr ""
+msgstr "未満 (<)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:981
 msgid "Greater (>)"
-msgstr ""
+msgstr "超えて (>)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:982
 msgid "Equal (=)"
-msgstr ""
+msgstr "同じ (=)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:983
 msgid "Not equal (!=)"
-msgstr ""
+msgstr "異なる (!=)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1106
 msgid "Please save the SLA for start to add items in this list."
@@ -21411,16 +21432,16 @@ msgstr "リモートエージェント設定"
 
 #: ../../godmode/agentes/modificar_agente.php:525
 msgid "Enable agent"
-msgstr ""
+msgstr "エージェントの有効化"
 
 #: ../../godmode/agentes/modificar_agente.php:530
 msgid "Disable agent"
-msgstr ""
+msgstr "エージェントの無効化"
 
 #: ../../godmode/agentes/module_manager_editor.php:390
 #, php-format
 msgid "DEBUG: Invalid module type specified in %s:%s"
-msgstr ""
+msgstr "DEBUG: %s:%s にて不正なモジュールタイプが指定されました"
 
 #: ../../godmode/agentes/module_manager_editor.php:392
 msgid ""
@@ -21431,6 +21452,11 @@ msgid ""
 "#2124706 for the solution)<br />\n"
 "\t\t\t\t3) found a new bug - please report a way to duplicate this error"
 msgstr ""
+"Pandora の初期バージョンからアップグレードをした可能性があります。また、次の可能性があります。<br/>\n"
+"\t\t\t\t1) データベースコンバーターの利用を忘れている<br />\n"
+"\t\t\t\t2) 正しくないバージョンのデータベースコンバーターを利用した (解決方法はバグレポート #2124706 を参照してください)<br "
+"/>\n"
+"\t\t\t\t3) 新しいバグに遭遇した - このエラーを再現する方法をお知らせください"
 
 #: ../../godmode/agentes/module_manager_editor.php:460
 msgid "No module to predict"
@@ -21504,11 +21530,11 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_common.php:314
 msgid "Any value below this number is discarted."
-msgstr ""
+msgstr "この数値よりも小さい値は破棄されます。"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:316
 msgid "Any value over this number is discarted."
-msgstr ""
+msgstr "この数値よりも大きい値は破棄されます。"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:318
 #: ../../godmode/massive/massive_edit_modules.php:398
@@ -21523,7 +21549,7 @@ msgstr "エクスポートサーバを利用している場合は、このモジ
 
 #: ../../godmode/agentes/module_manager_editor_common.php:405
 msgid "The module still stores data but the alerts and events will be stop"
-msgstr ""
+msgstr "モジュールはデータ保存を行いますが、アラートとイベントは停止します。"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:422
 msgid "Cron"
@@ -21533,7 +21559,7 @@ msgstr "Cron"
 msgid ""
 "If cron is set the module interval is ignored and the module runs on the "
 "specified date and time"
-msgstr ""
+msgstr "cron が設定されている場合、module interval は無視されます。また、モジュールは特定の日時に実行されます。"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:426
 msgid "Timeout"
@@ -21541,15 +21567,15 @@ msgstr "タイムアウト"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:427
 msgid "Seconds that agent will wait for the execution of the module."
-msgstr ""
+msgstr "エージェントがモジュールの実行を待つ秒数です。"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:429
 msgid "Retries"
-msgstr ""
+msgstr "再実行"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:430
 msgid "Number of retries that the module will attempt to run."
-msgstr ""
+msgstr "モジュールの再実行回数。"
 
 #: ../../godmode/agentes/agent_conf_gis.php:46
 msgid ""
@@ -21635,20 +21661,20 @@ msgstr "エージェントのロードに失敗しました。"
 msgid ""
 "There was a problem updating module. Another module already exists with the "
 "same name."
-msgstr ""
+msgstr "モジュールの更新で問題が発生しました。同じ名前で他のモジュールがすでにあります。"
 
 #: ../../godmode/agentes/configurar_agente.php:912
 msgid ""
 "There was a problem updating module. Some required fields are missed: (name)"
-msgstr ""
+msgstr "モジュールの更新で問題が発生しました。必須フィールドが入力されていません: (名前)"
 
 #: ../../godmode/agentes/configurar_agente.php:915
 msgid "There was a problem updating module. \"No change\""
-msgstr ""
+msgstr "モジュールの更新で問題が発生しました。変更されていません。"
 
 #: ../../godmode/agentes/configurar_agente.php:920
 msgid "There was a problem updating module. Processing error"
-msgstr ""
+msgstr "モジュールの更新で問題が発生しました。処理エラー。"
 
 #: ../../godmode/agentes/configurar_agente.php:939
 msgid "Module successfully updated"
@@ -21658,16 +21684,16 @@ msgstr "モジュールの更新が完了しました。"
 msgid ""
 "There was a problem adding module. Another module already exists with the "
 "same name."
-msgstr ""
+msgstr "モジュールの追加で問題が発生しました。同じ名前で他のモジュールがすでにあります。"
 
 #: ../../godmode/agentes/configurar_agente.php:1032
 msgid ""
 "There was a problem adding module. Some required fields are missed : (name)"
-msgstr ""
+msgstr "モジュールの追加で問題が発生しました。必須フィールドが入力されていません: (名前)"
 
 #: ../../godmode/agentes/configurar_agente.php:1037
 msgid "There was a problem adding module. Processing error"
-msgstr ""
+msgstr "モジュールの追加で問題が発生しました。処理エラー"
 
 #: ../../godmode/agentes/configurar_agente.php:1201
 msgid "There was a problem deleting the module"
@@ -21689,20 +21715,20 @@ msgstr "%s (%d) のコピー"
 
 #: ../../godmode/agentes/configurar_agente.php:1302
 msgid "Save by Pandora Console"
-msgstr ""
+msgstr "Pandoraコンソールによる保存"
 
 #: ../../godmode/agentes/configurar_agente.php:1317
 msgid "Update by Pandora Console"
-msgstr ""
+msgstr "Pandoraコンソールによる更新"
 
 #: ../../godmode/agentes/configurar_agente.php:1330
 msgid "Insert by Pandora Console"
-msgstr ""
+msgstr "Pandoraコンソールによる挿入"
 
 #: ../../godmode/agentes/configurar_agente.php:1382
 #: ../../godmode/agentes/configurar_agente.php:1389
 msgid "Invalid tab specified"
-msgstr ""
+msgstr "不正なタブが指定されました"
 
 #: ../../godmode/agentes/fields_manager.php:31
 msgid "Agents custom fields manager"
@@ -21761,35 +21787,35 @@ msgstr "計画停止には名前が必要です"
 #: ../../godmode/agentes/planned_downtime.editor.php:314
 #: ../../godmode/agentes/planned_downtime.list.php:234
 msgid "Disabled Agents"
-msgstr ""
+msgstr "エージェント無効化"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:315
 #: ../../godmode/agentes/planned_downtime.list.php:235
 msgid "Disabled only Alerts"
-msgstr ""
+msgstr "アラートのみ無効化"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:318
 #: ../../godmode/agentes/planned_downtime.list.php:196
 msgid "Execution"
-msgstr ""
+msgstr "実行"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:319
 #: ../../godmode/agentes/planned_downtime.list.php:239
 msgid "once"
-msgstr ""
+msgstr "一回"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:320
 #: ../../godmode/agentes/planned_downtime.list.php:240
 msgid "Periodically"
-msgstr ""
+msgstr "定期的"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:324
 msgid "Configure the time"
-msgstr ""
+msgstr "時間設定"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:347
 msgid "Type Periodicity:"
-msgstr ""
+msgstr "定期実行タイプ:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:384
 msgid "From day:"
@@ -21817,11 +21843,11 @@ msgstr "グループでフィルタする"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:488
 msgid "Available modules:"
-msgstr ""
+msgstr "存在するモジュール:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:489
 msgid "Only for type Quiet for downtimes."
-msgstr ""
+msgstr "静観タイプの計画停止のみ"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:503
 msgid "Agents planned for this downtime"
@@ -21837,7 +21863,7 @@ msgstr "全アラート"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:548
 msgid "Entire agent"
-msgstr ""
+msgstr "エージェント全体"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:552
 #: ../../godmode/agentes/planned_downtime.editor.php:658
@@ -21848,11 +21874,11 @@ msgstr "全モジュール"
 #: ../../godmode/agentes/planned_downtime.editor.php:650
 #: ../../godmode/agentes/planned_downtime.editor.php:654
 msgid "Some modules"
-msgstr ""
+msgstr "いくつかのモジュール"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:622
 msgid "Add Module:"
-msgstr ""
+msgstr "モジュール追加:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:833
 msgid "Please select a module."
@@ -21860,16 +21886,16 @@ msgstr "モジュールを選択してください。"
 
 #: ../../godmode/agentes/planned_downtime.list.php:65
 msgid "Succesful stopped the Downtime"
-msgstr ""
+msgstr "計画停止を中止しました"
 
 #: ../../godmode/agentes/planned_downtime.list.php:66
 msgid "Unsuccesful stopped the Downtime"
-msgstr ""
+msgstr "計画停止の中止ができませんでした"
 
 #: ../../godmode/agentes/planned_downtime.list.php:166
 #, php-format
 msgid "Enabled %s elements from the downtime"
-msgstr ""
+msgstr "計画停止から、%s 要素を有効にしました"
 
 #: ../../godmode/agentes/planned_downtime.list.php:192
 msgid "Name #Ag."
@@ -21989,11 +22015,11 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager.php:671
 msgid "Create network component"
-msgstr ""
+msgstr "ネットワークコンポーネント作成"
 
 #: ../../godmode/agentes/module_manager.php:676
 msgid "Create network component (Disabled)"
-msgstr ""
+msgstr "ネットワークコンポーネント(無効化)作成"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:25
 msgid "Use this OID"
@@ -22069,11 +22095,11 @@ msgstr "GISマップのエージェントアイコン"
 #: ../../godmode/agentes/agent_manager.php:320
 #: ../../godmode/massive/massive_edit_agents.php:360
 msgid "The agent still runs but the alerts and events will be stop"
-msgstr ""
+msgstr "エージェントは動作継続しますが、アラートとイベントは停止します。"
 
 #: ../../godmode/agentes/agent_incidents.php:58
 msgid "No incidents associated to this agent"
-msgstr ""
+msgstr "このエージェントに関連付けられたインシデントはありません"
 
 #: ../../godmode/agentes/module_manager_editor_data.php:17
 msgid "Data server module"
@@ -22129,7 +22155,7 @@ msgstr "タグ管理"
 
 #: ../../godmode/menu.php:92
 msgid "Manage categories"
-msgstr ""
+msgstr "カテゴリ管理"
 
 #: ../../godmode/menu.php:95
 msgid "Module types"
@@ -22153,7 +22179,7 @@ msgstr "カスタムイベント"
 
 #: ../../godmode/menu.php:163 ../../godmode/events/events.php:44
 msgid "Event responses"
-msgstr ""
+msgstr "イベントレスポンス"
 
 #: ../../godmode/menu.php:172
 msgid "Manage servers"
@@ -22295,27 +22321,27 @@ msgstr "子のサブグループへ同じ ACL を適用します。"
 
 #: ../../godmode/groups/configure_group.php:142
 msgid "Contact"
-msgstr ""
+msgstr "連絡先"
 
 #: ../../godmode/groups/configure_group.php:142
 msgid "Contact information accessible through the _groupcontact_ macro"
-msgstr ""
+msgstr "_groupcontact_ マクロで参照できる連絡先情報"
 
 #: ../../godmode/groups/configure_group.php:145
 msgid "Information accessible through the _group_other_ macro"
-msgstr ""
+msgstr "_group_other_ マクロで参照できる情報"
 
 #: ../../godmode/category/edit_category.php:40
 #: ../../godmode/category/category.php:41
 msgid "List categories"
-msgstr ""
+msgstr "カテゴリ一覧"
 
 #: ../../godmode/category/edit_category.php:46
 #: ../../godmode/category/edit_category.php:49
 #: ../../godmode/category/category.php:47
 #: ../../godmode/category/category.php:50
 msgid "Categories configuration"
-msgstr ""
+msgstr "カテゴリ設定"
 
 #: ../../godmode/category/edit_category.php:65
 msgid "Error updating category"
@@ -22386,31 +22412,31 @@ msgstr "トラップタイプ"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:279
 msgid "Single value"
-msgstr ""
+msgstr "単一値"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:284
 msgid "Custom OID/Data #1"
-msgstr ""
+msgstr "カスタム OID/データ #1"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:292
 msgid "Custom OID/Data #2"
-msgstr ""
+msgstr "カスタム OID/データ #2"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:300
 msgid "Custom OID/Data #3"
-msgstr ""
+msgstr "カスタム OID/データ #3"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:308
 msgid "Custom OID/Data #4"
-msgstr ""
+msgstr "カスタム OID/データ #4"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:316
 msgid "Custom OID/Data #5"
-msgstr ""
+msgstr "カスタム OID/データ #5"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:324
 msgid "Custom OID/Data #6"
-msgstr ""
+msgstr "カスタム OID/データ #6"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:383
 msgid "Other value"
@@ -22795,27 +22821,27 @@ msgstr "モジュールはデータ保存を行いますが、アラートとイ
 
 #: ../../godmode/events/event_responses.editor.php:72
 msgid "Location"
-msgstr ""
+msgstr "場所"
 
 #: ../../godmode/events/event_responses.editor.php:72
 msgid "For Command type Modal Window mode is enforced"
-msgstr ""
+msgstr "コマンド入力に既存ウィンドウモードが利用されます"
 
 #: ../../godmode/events/event_responses.editor.php:73
 msgid "Modal window"
-msgstr ""
+msgstr "既存ウィンドウ"
 
 #: ../../godmode/events/event_responses.editor.php:73
 msgid "New window"
-msgstr ""
+msgstr "新規ウィンドウ"
 
 #: ../../godmode/events/event_responses.list.php:30
 msgid "Create response"
-msgstr ""
+msgstr "レスポンスの作成"
 
 #: ../../godmode/events/event_responses.list.php:44
 msgid "No responses found"
-msgstr ""
+msgstr "レスポンスがありません"
 
 #: ../../godmode/events/event_edit_filter.php:166
 msgid ""
@@ -22824,43 +22850,43 @@ msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:221
 msgid "Choose between the users who have validated an event. "
-msgstr ""
+msgstr "イベントを承諾したユーザの中から選択してください。 "
 
 #: ../../godmode/events/event_responses.php:52
 msgid "Response added succesfully"
-msgstr ""
+msgstr "レスポンスを追加しました"
 
 #: ../../godmode/events/event_responses.php:55
 msgid "Response cannot be added"
-msgstr ""
+msgstr "レスポンスを追加できません"
 
 #: ../../godmode/events/event_responses.php:81
 msgid "Response updated succesfully"
-msgstr ""
+msgstr "レスポンスを更新しました"
 
 #: ../../godmode/events/event_responses.php:84
 msgid "Response cannot be updated"
-msgstr ""
+msgstr "レスポンスを更新できません"
 
 #: ../../godmode/events/event_responses.php:93
 msgid "Response deleted succesfully"
-msgstr ""
+msgstr "レスポンスを削除しました"
 
 #: ../../godmode/events/event_responses.php:96
 msgid "Response cannot be deleted"
-msgstr ""
+msgstr "レスポンスを削除できません"
 
 #: ../../godmode/events/custom_events.php:128
 msgid "Show event fields"
-msgstr ""
+msgstr "イベントフィールド表示"
 
 #: ../../godmode/events/custom_events.php:130
 msgid "Load default event fields"
-msgstr ""
+msgstr "デフォルトのイベントフィールド読み込み"
 
 #: ../../godmode/events/custom_events.php:130
 msgid "Default event fields will be loaded. Do you want to continue?"
-msgstr ""
+msgstr "デフォルトのイベントフィールドを読み込みます。続けますか?"
 
 #: ../../godmode/events/custom_events.php:176
 msgid "Fields available"
@@ -23000,7 +23026,7 @@ msgstr "特別日一覧を利用する"
 
 #: ../../godmode/alerts/configure_alert_template.php:527
 msgid "Advanced fields management"
-msgstr ""
+msgstr "拡張フィールド管理"
 
 #: ../../godmode/alerts/configure_alert_template.php:540
 #: ../../godmode/alerts/configure_alert_template.php:580
@@ -23008,7 +23034,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_commands.php:73
 #, php-format
 msgid "Field %s"
-msgstr ""
+msgstr "フィールド %s"
 
 #: ../../godmode/alerts/configure_alert_template.php:544
 msgid "Default action"
@@ -23420,7 +23446,7 @@ msgstr "エージェント/アラート"
 
 #: ../../extensions/agents_alerts.php:147
 msgid "There are no agents with alerts"
-msgstr ""
+msgstr "アラートがついたエージェントがありません。"
 
 #: ../../extensions/agents_alerts.php:172
 msgid "Previous templates"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-22 18:49+0200\n"
-"PO-Revision-Date: 2013-05-10 13:00+0000\n"
+"PO-Revision-Date: 2013-06-12 12:15+0000\n"
 "Last-Translator: Inches <victoria.molina@artica.es>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-05-14 08:57+0000\n"
-"X-Generator: Launchpad (build 16617)\n"
+"X-Launchpad-Export-Date: 2013-07-11 07:15+0000\n"
+"X-Generator: Launchpad (build 16696)\n"
 "Language: \n"
 
 #: ../../operation/search_main.php:33
@@ -2880,7 +2880,7 @@ msgstr "Ok"
 
 #: ../../operation/gis_maps/render_view.php:126
 msgid "Show agents by state: "
-msgstr "Show agents by state: "
+msgstr "Show agents by status: "
 
 #: ../../operation/gis_maps/render_view.php:128
 #: ../../enterprise/dashboard/widgets/network_map.php:35
@@ -4983,7 +4983,7 @@ msgstr "At least one monitor fails"
 
 #: ../../operation/agentes/bulbs.php:23
 msgid "Change between Green/Red state"
-msgstr "Change between Green/Red state"
+msgstr "Change between Green/Red status"
 
 #: ../../operation/agentes/bulbs.php:26
 #: ../../enterprise/operation/agentes/policy_view.php:269
@@ -5332,7 +5332,7 @@ msgstr "Reset"
 
 #: ../../operation/agentes/estado_monitores.php:636
 msgid "Form filter"
-msgstr ""
+msgstr "Filter form"
 
 #: ../../operation/agentes/exportdata.php:36 ../../operation/menu.php:168
 msgid "Export data"
@@ -7041,7 +7041,7 @@ msgstr "Delete event"
 
 #: ../../operation/events/events.build_table.php:546
 msgid "Validate selected"
-msgstr ""
+msgstr "Validate selection"
 
 #: ../../operation/events/events.build_table.php:549
 #: ../../godmode/agentes/agent_manager.php:187
@@ -7253,7 +7253,7 @@ msgstr "Event graphs by agent"
 #: ../../include/functions_reporting.php:3755
 #: ../../include/functions_reporting.php:4000
 msgid "Amount events validated"
-msgstr ""
+msgstr "Amount of validated events"
 
 #: ../../general/footer.php:30 ../../mobile/include/functions_web.php:81
 #: ../../mobile/include/ui.class.php:253
@@ -7589,16 +7589,16 @@ msgstr "Critical events"
 
 #: ../../general/shortcut_bar.php:204 ../../general/shortcut_bar.php:224
 msgid "Incidents opened"
-msgstr "Incidents opened"
+msgstr "Open Incidents"
 
 #: ../../general/shortcut_bar.php:234
 #: ../../godmode/users/configure_profile.php:168
 msgid "View reports"
-msgstr "View reports"
+msgstr "See reports"
 
 #: ../../general/shortcut_bar.php:240
 msgid "Create new message"
-msgstr "Create new message"
+msgstr "Create a new message"
 
 #: ../../general/shortcut_bar.php:267
 msgid "Shortcut: "
@@ -7799,7 +7799,7 @@ msgstr "Networkmap generation method"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:191
 msgid "Refresh networkmap state"
-msgstr "Refresh networkmap state"
+msgstr "Refresh networkmap status"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:193
 msgid "Resize the networkmap"
@@ -8517,7 +8517,7 @@ msgstr "There are no Modules at normal status"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1139
 msgid "There are no Modules at critial or warning status"
-msgstr "There are no Modules at critial or warning status"
+msgstr "There are no Modules at critical or warning status"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1142
 msgid "There are no Modules under those conditions"
@@ -8555,24 +8555,24 @@ msgstr "The agent where the SLA service is stored does not exist"
 
 #: ../../enterprise/include/functions_services.php:57
 msgid "Alert critical SLA service does not exist."
-msgstr ""
+msgstr "The critical SLA service alert does not exist"
 
 #: ../../enterprise/include/functions_services.php:68
 msgid "Alert warning service does not exist."
-msgstr ""
+msgstr "The warning service alert does not exist"
 
 #: ../../enterprise/include/functions_services.php:79
 msgid "Alert critical service does not exist."
-msgstr ""
+msgstr "The critical service alert does not exist"
 
 #: ../../enterprise/include/functions_services.php:90
 msgid "Alert unknown service does not exist."
-msgstr ""
+msgstr "The unknown service alert does not exist"
 
 #: ../../enterprise/include/functions_services.php:240
 #, php-format
 msgid "Module automatic create for the service %s"
-msgstr ""
+msgstr "Automatic module created for the %s service"
 
 #: ../../enterprise/include/functions_services.php:701
 msgid "Critical (Alert)"
@@ -8811,7 +8811,7 @@ msgstr "Avg."
 #: ../../include/functions_reporting.php:4032
 #: ../../include/functions_reports.php:587
 msgid "Alert report group"
-msgstr ""
+msgstr "Alert group report"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2056
 msgid "There are no alerts for this module."
@@ -9539,7 +9539,7 @@ msgstr "Error connecting to the specified host"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:61
 msgid "Connected to the host, but cannot found the specified database"
-msgstr "Connected to the host, but cannot found the specified database"
+msgstr "Connected to the host, but the specified database cannot be found"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:72
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:94
@@ -9580,8 +9580,8 @@ msgid ""
 "The server seems to be configurated to replicate events, but no events has "
 "been received yet"
 msgstr ""
-"The server seems to be configurated to replicate events, but no event has "
-"been received yet"
+"The server seems to be configured to replicate events, but no event has been "
+"received yet"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:110
 msgid "Unknown error"
@@ -9795,7 +9795,7 @@ msgstr "String"
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:152
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:131
 msgid "Can't connect to Pandora FMS instance"
-msgstr ""
+msgstr "Impossible to connect to Pandora FMS instance"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:71
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:101
@@ -9958,16 +9958,16 @@ msgstr "Agent and monitor information"
 
 #: ../../enterprise/meta/monitoring/tactical.php:130
 msgid "State of agents"
-msgstr "State of agents"
+msgstr "Status of agents"
 
 #: ../../enterprise/meta/monitoring/tactical.php:188
 #: ../../enterprise/meta/monitoring/tactical.php:262
 msgid "State of modules"
-msgstr "State of modules"
+msgstr "Status of modules"
 
 #: ../../enterprise/meta/monitoring/tactical.php:250
 msgid "State of Agents"
-msgstr "State of Agents"
+msgstr "Status of agents"
 
 #: ../../enterprise/meta/monitoring/tactical.php:283
 msgid "No servers"
@@ -10289,16 +10289,16 @@ msgstr "Group synchronization"
 #: ../../enterprise/meta/advanced/synchronizing.php:66
 #: ../../enterprise/meta/advanced/synchronizing.php:82
 msgid "Alerts synchronization"
-msgstr ""
+msgstr "Alert synchronization"
 
 #: ../../enterprise/meta/advanced/synchronizing.php:70
 #: ../../enterprise/meta/advanced/synchronizing.php:85
 msgid "Tags synchronization"
-msgstr ""
+msgstr "Tag synchronization"
 
 #: ../../enterprise/meta/advanced/policymanager.php:35
 msgid "Policy Manager"
-msgstr ""
+msgstr "Policy Manager"
 
 #: ../../enterprise/meta/advanced/policymanager.php:64
 msgid "Apply policies"
@@ -10317,37 +10317,37 @@ msgstr "Policies apply"
 #: ../../enterprise/meta/advanced/propagation.component.php:255
 #, php-format
 msgid "Error creating %s components groups "
-msgstr ""
+msgstr "Error creating %s component  groups "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:258
 #: ../../enterprise/meta/advanced/propagation.component.php:258
 #, php-format
 msgid "Created %s component groups"
-msgstr ""
+msgstr "Created %s component groups"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:263
 #: ../../enterprise/meta/advanced/propagation.component.php:263
 #, php-format
 msgid "Error creating/updating %s/%s local components "
-msgstr ""
+msgstr "Error creating/updating %s/%s local components "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:266
 #: ../../enterprise/meta/advanced/propagation.component.php:266
 #, php-format
 msgid "Created/Updated %s/%s local components"
-msgstr ""
+msgstr "Created/Updated %s/%s local components"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:271
 #: ../../enterprise/meta/advanced/propagation.component.php:271
 #, php-format
 msgid "Error creating/updating %s/%s network components "
-msgstr ""
+msgstr "Error creating/updating %s/%s network components "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:274
 #: ../../enterprise/meta/advanced/propagation.component.php:274
 #, php-format
 msgid "Created/Updated %s/%s network components"
-msgstr ""
+msgstr "Created/Updated %s/%s network components"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:280
 #: ../../enterprise/meta/advanced/propagation.component.php:280
@@ -10369,7 +10369,7 @@ msgstr "Error connecting to %s"
 #: ../../enterprise/meta/advanced/synchronizing.group.php:153
 #: ../../enterprise/meta/advanced/synchronizing.user.php:507
 msgid "This metaconsole"
-msgstr ""
+msgstr "This metaconsole"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:304
 #: ../../enterprise/meta/advanced/propagation.component.php:304
@@ -10490,24 +10490,24 @@ msgstr "Use round corners"
 #: ../../enterprise/meta/advanced/metasetup.visual.php:127
 #: ../../enterprise/meta/include/functions_meta.php:333
 msgid "Show Visual Console"
-msgstr ""
+msgstr "Show Visual Console"
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:127
 msgid "Switch to show or hide Visual Console."
-msgstr ""
+msgstr "Switch to show or hide Visual Console."
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:131
 #: ../../enterprise/meta/include/functions_meta.php:343
 msgid "Metaconsole elements"
-msgstr ""
+msgstr "Metaconsole elements"
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:131
 msgid "The number of elements retrieved for each instance in some views."
-msgstr ""
+msgstr "The number of retrieved elements for each instance in some views."
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:138
 msgid "Visual"
-msgstr ""
+msgstr "Visual"
 
 #: ../../enterprise/meta/advanced/policymanager.queue.php:60
 #: ../../enterprise/godmode/policies/policy_queue.php:59
@@ -10564,12 +10564,12 @@ msgstr "Empty queue"
 #: ../../enterprise/meta/advanced/propagation.php:58
 #: ../../enterprise/meta/advanced/propagation.php:68
 msgid "Components propagation"
-msgstr ""
+msgstr "Component propagation"
 
 #: ../../enterprise/meta/advanced/propagation.php:62
 #: ../../enterprise/meta/advanced/propagation.php:71
 msgid "Agents movement"
-msgstr ""
+msgstr "Agent movement"
 
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:80
 #: ../../enterprise/meta/advanced/propagation.agent.php:80
@@ -10641,7 +10641,7 @@ msgstr "Group filter"
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:153
 #: ../../enterprise/meta/advanced/propagation.agent.php:153
 msgid "Add agents to destination server"
-msgstr ""
+msgstr "Add agents to destination server"
 
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:163
 #: ../../enterprise/meta/advanced/propagation.agent.php:163
@@ -10651,32 +10651,32 @@ msgstr "Move"
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:286
 #, php-format
 msgid "Error creating/updating %s/%s comamnds"
-msgstr ""
+msgstr "Error creating/updating %s/%s commands"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:289
 #, php-format
 msgid "Created/Updated %s/%s commands"
-msgstr ""
+msgstr "Created/Updated %s/%s commands"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:294
 #, php-format
 msgid "Error creating/updating %s/%s actions"
-msgstr ""
+msgstr "Error creating/updating %s/%s actions"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:297
 #, php-format
 msgid "Created/Updated %s/%s actions"
-msgstr ""
+msgstr "Created/Updated %s/%s actions"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:302
 #, php-format
 msgid "Error creating/updating %s/%s templates"
-msgstr ""
+msgstr "Error creating/updating %s/%s templates"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:305
 #, php-format
 msgid "Created/Updated %s/%s templates"
-msgstr ""
+msgstr "Created/Updated %s/%s templates"
 
 #: ../../enterprise/meta/advanced/metasetup.performance.php:70
 #: ../../enterprise/meta/include/functions_meta.php:353
@@ -10688,7 +10688,7 @@ msgstr "Max. days before delete events"
 #: ../../enterprise/meta/advanced/metasetup.performance.php:74
 #: ../../enterprise/meta/include/functions_meta.php:363
 msgid "Active events history"
-msgstr ""
+msgstr "Active event history"
 
 #: ../../enterprise/meta/advanced/metasetup.performance.php:79
 #: ../../enterprise/meta/include/functions_meta.php:373
@@ -10839,6 +10839,7 @@ msgstr "Console URL"
 msgid ""
 "Complete path to Pandora console without last \"/\" character. Example "
 msgstr ""
+"Complete path to Pandora console without last \"/\" character. Example "
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:207
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:183
@@ -10897,7 +10898,7 @@ msgstr "Compatibility"
 #: ../../enterprise/godmode/setup/setup.php:50
 #: ../../include/functions_config.php:194
 msgid "Events replication"
-msgstr ""
+msgstr "Event replication"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:328
 msgid "There aren't server added to metaconsole"
@@ -10905,27 +10906,27 @@ msgstr "There aren't any servers added to metaconsole"
 
 #: ../../enterprise/meta/advanced/metasetup.php:47
 msgid "Consoles Setup"
-msgstr ""
+msgstr "Console Setup"
 
 #: ../../enterprise/meta/advanced/metasetup.php:51
 #: ../../enterprise/meta/advanced/metasetup.php:82
 msgid "General setup"
-msgstr ""
+msgstr "General setup"
 
 #: ../../enterprise/meta/advanced/metasetup.php:55
 #: ../../enterprise/meta/advanced/metasetup.php:85
 msgid "Passwords setup"
-msgstr ""
+msgstr "Passwords setup"
 
 #: ../../enterprise/meta/advanced/metasetup.php:59
 #: ../../enterprise/meta/advanced/metasetup.php:88
 msgid "Visual setup"
-msgstr ""
+msgstr "Visual setup"
 
 #: ../../enterprise/meta/advanced/metasetup.php:63
 #: ../../enterprise/meta/advanced/metasetup.php:91
 msgid "Performance setup"
-msgstr ""
+msgstr "Performance setup"
 
 #: ../../enterprise/meta/advanced/metasetup.php:67
 #: ../../enterprise/meta/advanced/metasetup.php:94
@@ -10936,81 +10937,81 @@ msgstr "File manager"
 #: ../../enterprise/meta/advanced/metasetup.php:71
 #: ../../enterprise/meta/advanced/metasetup.php:97
 msgid "Strings translation"
-msgstr ""
+msgstr "String translation"
 
 #: ../../enterprise/meta/advanced/metasetup.php:79
 msgid "Consoles setup"
-msgstr ""
+msgstr "Console setup"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:122
 #, php-format
 msgid "Error creating/updating %s/%s tags"
-msgstr ""
+msgstr "Error creating/updating %s/%s tags"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:125
 #, php-format
 msgid "Created/Updated %s/%s tags"
-msgstr ""
+msgstr "Created/Updated %s/%s tags"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:253
 #, php-format
 msgid "Error creating %s policies"
-msgstr ""
+msgstr "Error creating %s policies"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:256
 #, php-format
 msgid "Created %s policies"
-msgstr ""
+msgstr "Created %s policies"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:261
 #, php-format
 msgid "Error creating/updating %s/%s policy modules"
-msgstr ""
+msgstr "Error creating/updating %s/%s policy modules"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:264
 #, php-format
 msgid "Created/Updated %s/%s policy modules"
-msgstr ""
+msgstr "Created/Updated %s/%s policy modules"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:269
 #, php-format
 msgid "Error deleting %s policy modules"
-msgstr ""
+msgstr "Error deleting %s policy modules"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:272
 #, php-format
 msgid "Deleted %s policy modules"
-msgstr ""
+msgstr "Deleted %s policy modules"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:277
 #, php-format
 msgid "Error creating %s policy alerts"
-msgstr ""
+msgstr "Error creating %s policy alerts"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:280
 #, php-format
 msgid "Created %s policy alerts"
-msgstr ""
+msgstr "Created %s policy alerts"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:285
 #, php-format
 msgid "Error deleting %s policy alerts"
-msgstr ""
+msgstr "Error deleting %s policy alerts"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:288
 #, php-format
 msgid "Deleted %s policy alerts"
-msgstr ""
+msgstr "Deleted %s policy alerts"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:137
 #, php-format
 msgid "Error creating/updating %s/%s groups"
-msgstr ""
+msgstr "Error creating/updating %s/%s groups"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:140
 #, php-format
 msgid "Created/Updated %s/%s groups"
-msgstr ""
+msgstr "Created/Updated %s/%s groups"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:68
 #: ../../enterprise/meta/include/functions_meta.php:33
@@ -11077,57 +11078,57 @@ msgstr "Directory where temporary data is stored."
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Africa"
-msgstr ""
+msgstr "Africa"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "America"
-msgstr ""
+msgstr "America"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Antarctica"
-msgstr ""
+msgstr "Antarctica"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Arctic"
-msgstr ""
+msgstr "Arctic"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Asia"
-msgstr ""
+msgstr "Asia"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Atlantic"
-msgstr ""
+msgstr "Atlantic Ocean"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Australia"
-msgstr ""
+msgstr "Australia"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Europe"
-msgstr ""
+msgstr "Europe"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Indian"
-msgstr ""
+msgstr "Indian"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Pacific"
-msgstr ""
+msgstr "Pacific"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:120
 #: ../../enterprise/meta/include/functions_meta.php:93
@@ -11165,7 +11166,7 @@ msgstr "License info"
 #: ../../include/functions_config.php:175
 #: ../../godmode/setup/setup_general.php:216
 msgid "Public URL"
-msgstr ""
+msgstr "Public URL"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:140
 #: ../../godmode/setup/setup_general.php:217
@@ -11173,12 +11174,14 @@ msgid ""
 "Set this value when your PandoraFMS across inverse proxy or for example with "
 "mod_proxy of Apache."
 msgstr ""
+"Set this value when your PandoraFMS is behind the inverse proxy or, for "
+"example, with Apache mod_proxy."
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:143
 #: ../../include/functions_config.php:461
 #: ../../godmode/setup/setup_netflow.php:56
 msgid "Disable custom live view filters"
-msgstr ""
+msgstr "Disable live view custom filters"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:143
 #: ../../godmode/setup/setup_netflow.php:57
@@ -11186,6 +11189,8 @@ msgid ""
 "Disable the definition of custom filters in the live view. Only existing "
 "filters can be used."
 msgstr ""
+"Disable the definition of custom filters in the live view. Only existing "
+"filters can be used."
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:151
 #: ../../enterprise/godmode/modules/configure_local_component.php:129
@@ -11193,7 +11198,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:474
 #: ../../godmode/alerts/configure_alert_template.php:639
 msgid "Basic"
-msgstr ""
+msgstr "Basic"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:194
 #, php-format
@@ -11222,6 +11227,8 @@ msgid ""
 "Error creating/updating the followings elements groups/profiles/user "
 "profiles (%d/%d/%d)"
 msgstr ""
+"Error creating/updating the followings element groups/profiles/user profiles "
+"(%d/%d/%d)"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:342
 #: ../../enterprise/meta/advanced/synchronizing.user.php:475
@@ -11230,6 +11237,8 @@ msgid ""
 "The followings elements groups/profiles/user profiles were created/updated "
 "sucessfully (%d/%d/%d)"
 msgstr ""
+"The following elements groups/profiles/user profiles were created/updated "
+"successfully (%d/%d/%d)"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:530
 #: ../../enterprise/godmode/agentes/inventory_manager.php:168
@@ -11243,7 +11252,7 @@ msgstr "Profile mode"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:545
 msgid "Profile synchronization mode."
-msgstr ""
+msgstr "Profile synchronization mode."
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:546
 msgid "New profile"
@@ -11283,15 +11292,15 @@ msgstr "Network components"
 #: ../../enterprise/meta/include/functions_components_meta.php:60
 #: ../../enterprise/meta/include/functions_components_meta.php:75
 msgid "Plugin management"
-msgstr ""
+msgstr "Plugin management"
 
 #: ../../enterprise/meta/include/functions_components_meta.php:81
 msgid "Create plugin"
-msgstr ""
+msgstr "Create plugin"
 
 #: ../../enterprise/meta/include/functions_components_meta.php:84
 msgid "Edit plugin"
-msgstr ""
+msgstr "Edit plugin"
 
 #: ../../enterprise/meta/include/functions_ui_meta.php:54
 #: ../../include/functions_ui.php:1146
@@ -11313,35 +11322,35 @@ msgstr "Commands"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:271
 msgid "Successful update the networkmap."
-msgstr ""
+msgstr "The networkmap has been successfully updated."
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:272
 msgid "Unsuccessful update the networkmap."
-msgstr ""
+msgstr "The networkmap could not be updated successfully."
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:277
 msgid "Unnamed "
-msgstr ""
+msgstr "Unnamed "
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:324
 msgid "Show detailed agent"
-msgstr ""
+msgstr "Show agent details"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:363
 msgid "Show modules"
-msgstr ""
+msgstr "Show modules"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:363
 msgid "Only the network modules."
-msgstr ""
+msgstr "Only network modules."
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:373
 msgid "Show children Metaconsole"
-msgstr ""
+msgstr "Show Metaconsole children"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:404
 msgid "Show modulegroup"
-msgstr ""
+msgstr "Show modulegroup"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:411
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:73
@@ -11373,24 +11382,24 @@ msgstr "Save"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:443
 msgid "There is no group selected"
-msgstr ""
+msgstr "No group has been selected"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:638
 #, php-format
 msgid "Cannot connect to %s Pandora to generate networkmap."
-msgstr ""
+msgstr "Impossible to connect to %s Pandora to generate networkmap."
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:229
 msgid "Latency"
-msgstr ""
+msgstr "Latency"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:230
 msgid "Response"
-msgstr ""
+msgstr "Response"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:232
 msgid "Check type"
-msgstr ""
+msgstr "Check type"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:249
 #: ../../enterprise/meta/include/functions_wizard_meta.php:299
@@ -11400,21 +11409,21 @@ msgstr "Web checks"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:280
 msgid "String to check"
-msgstr ""
+msgstr "String to check"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:285
 msgid "Add check"
-msgstr ""
+msgstr "Add check"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:293
 msgid "Delete check"
-msgstr ""
+msgstr "Delete check"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:398
 #: ../../enterprise/meta/include/functions_wizard_meta.php:487
 #: ../../enterprise/meta/include/functions_wizard_meta.php:668
 msgid "Various"
-msgstr ""
+msgstr "Various"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:406
 #: ../../enterprise/meta/include/functions_wizard_meta.php:850
@@ -11425,13 +11434,13 @@ msgstr "SNMP Community"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:413
 #: ../../enterprise/meta/include/functions_wizard_meta.php:495
 msgid "Credentials"
-msgstr ""
+msgstr "Credentials"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:435
 #: ../../enterprise/meta/include/functions_wizard_meta.php:517
 #: ../../enterprise/meta/include/functions_wizard_meta.php:689
 msgid "Thresholds"
-msgstr ""
+msgstr "Thresholds"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:523
 #: ../../enterprise/meta/include/functions_wizard_meta.php:974
@@ -11441,11 +11450,11 @@ msgstr "Proxy URL"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:528
 msgid "Web configuration"
-msgstr ""
+msgstr "Web configuration"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:744
 msgid "Alerts in module"
-msgstr ""
+msgstr "Alerts in module"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:752
 #: ../../include/functions_reporting.php:1646
@@ -11454,7 +11463,7 @@ msgstr "Alert description"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:970
 msgid "Checks"
-msgstr ""
+msgstr "Checks"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1238
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1342
@@ -11471,7 +11480,7 @@ msgstr "Another module already exists with the same name"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1493
 #, php-format
 msgid "Error adding module %s"
-msgstr ""
+msgstr "Error adding module %s"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1260
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1362
@@ -11479,6 +11488,7 @@ msgstr ""
 msgid ""
 "There was an error creating the alerts, the operation has been cancelled"
 msgstr ""
+"There was an error creating the alerts, the operation has been cancelled"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1293
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1392
@@ -11500,20 +11510,21 @@ msgstr "Error updating module %s"
 msgid ""
 "There was an error updating the alerts, the operation has been cancelled"
 msgstr ""
+"There was an error updating the alerts, the operation has been cancelled"
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1632
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1727
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1864
 msgid "Successfully updated module."
-msgstr ""
+msgstr "The module has been updated successfully."
 
 #: ../../enterprise/meta/include/functions_meta.php:25
 msgid "No admin user"
-msgstr ""
+msgstr "No admin user"
 
 #: ../../enterprise/meta/include/functions_meta.php:123
 msgid "Netflow disable custom live view filters"
-msgstr ""
+msgstr "Netflow disable custom live view filters"
 
 #: ../../enterprise/meta/include/functions_users_meta.php:172
 #: ../../enterprise/meta/include/functions_users_meta.php:196
@@ -11531,11 +11542,11 @@ msgstr "Group management"
 
 #: ../../enterprise/meta/include/functions_users_meta.php:187
 msgid "User synchronization"
-msgstr ""
+msgstr "User synchronization"
 
 #: ../../enterprise/meta/include/functions_users_meta.php:202
 msgid "Group synchronization"
-msgstr ""
+msgstr "Group synchronization"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:118
 #: ../../godmode/alerts/alert_templates.php:60
@@ -11660,7 +11671,7 @@ msgstr "Go"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1197
 msgid "Create new module"
-msgstr ""
+msgstr "Create a new module"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1244
 #: ../../godmode/groups/configure_modu_group.php:47
@@ -11687,11 +11698,11 @@ msgstr "Icon"
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1335
 #: ../../include/functions_treeview.php:47
 msgid "There was a problem loading module"
-msgstr ""
+msgstr "A problem occurred while loading module"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1398
 msgid "Go to module detail"
-msgstr ""
+msgstr "Go to module details"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1411
 #: ../../godmode/agentes/module_manager_editor_common.php:137
@@ -11700,11 +11711,11 @@ msgstr "Delete module"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1416
 msgid "Create new alert"
-msgstr ""
+msgstr "Create a new alert"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1457
 msgid "There was a problem loading alert"
-msgstr ""
+msgstr "A problem occurred while loading alerts"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1472
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:217
@@ -11715,19 +11726,19 @@ msgstr "Template name"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1548
 msgid "Stand By"
-msgstr ""
+msgstr "Stand By"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1574
 msgid "Go to Alert detail"
-msgstr ""
+msgstr "Go to alert details"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1580
 msgid "Delete alert"
-msgstr ""
+msgstr "Delete alert"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1624
 msgid "There was a problem loading tag"
-msgstr ""
+msgstr "A problem occurred while loading tag"
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1639
 #: ../../godmode/tag/tag.php:159
@@ -11736,7 +11747,7 @@ msgstr "Tag name"
 
 #: ../../enterprise/meta/screens/screens.visualmap.php:54
 msgid "Create visualmap"
-msgstr ""
+msgstr "Create Visualmap"
 
 #: ../../enterprise/meta/screens/screens.visualmap.php:95
 #: ../../godmode/reporting/visual_console_builder.php:107
@@ -11756,15 +11767,15 @@ msgstr "Editor"
 #: ../../enterprise/meta/screens/screens.visualmap.php:174
 #: ../../godmode/reporting/visual_console_builder.php:437
 msgid "New visual console"
-msgstr ""
+msgstr "New visual console"
 
 #: ../../enterprise/meta/screens/screens.visualmap.php:185
 msgid "Visualmap"
-msgstr ""
+msgstr "Visualmap"
 
 #: ../../enterprise/meta/screens/screens.main.php:73
 msgid "Welcome to the Pandora FMS screens."
-msgstr ""
+msgstr "Welcome to Pandora FMS screens."
 
 #: ../../enterprise/meta/index.php:305 ../../enterprise/meta/index.php:315
 #: ../../index.php:462
@@ -11777,7 +11788,7 @@ msgstr "Copy the dashboard"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:41
 msgid "Not copyed. Error copying data. You must select a dashboard"
-msgstr ""
+msgstr "Not copied. Error copying data. You must select a dashboard"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:63
 #: ../../enterprise/dashboard/dashboard_replicate.php:83
@@ -11790,15 +11801,15 @@ msgstr "Successfully copied"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:108
 msgid "Source user's group"
-msgstr ""
+msgstr "User's group Source"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:132
 msgid "Destination user's group"
-msgstr ""
+msgstr "User's group Destination"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:146
 msgid "Group Dashboards"
-msgstr ""
+msgstr "Group Dashboards"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:165
 msgid "Replicate Dashboard"
@@ -12545,77 +12556,79 @@ msgstr " Bytes"
 #: ../../enterprise/godmode/setup/setup.php:56
 #: ../../include/functions_config.php:197
 msgid "Replication interval"
-msgstr ""
+msgstr "Replication interval"
 
 #: ../../enterprise/godmode/setup/setup.php:57
 msgid "Seconds"
-msgstr ""
+msgstr "Seconds"
 
 #: ../../enterprise/godmode/setup/setup.php:60
 #: ../../include/functions_config.php:199
 msgid "Replication DB host"
-msgstr ""
+msgstr "DB host Replication"
 
 #: ../../enterprise/godmode/setup/setup.php:64
 #: ../../include/functions_config.php:201
 msgid "Replication DB database"
-msgstr ""
+msgstr "Replication DB database"
 
 #: ../../enterprise/godmode/setup/setup.php:68
 #: ../../include/functions_config.php:203
 msgid "Replication DB user"
-msgstr ""
+msgstr "Replication DB user"
 
 #: ../../enterprise/godmode/setup/setup.php:72
 #: ../../include/functions_config.php:205
 msgid "Replication DB password"
-msgstr ""
+msgstr "Replication DB password"
 
 #: ../../enterprise/godmode/setup/setup.php:76
 #: ../../include/functions_config.php:207
 msgid "Replication DB port"
-msgstr ""
+msgstr "Replication DB port"
 
 #: ../../enterprise/godmode/setup/setup.php:80
 #: ../../include/functions_config.php:209
 msgid "Replication mode"
-msgstr ""
+msgstr "Replication mode"
 
 #: ../../enterprise/godmode/setup/setup.php:81
 msgid "Only validated events"
-msgstr ""
+msgstr "Only validated events"
 
 #: ../../enterprise/godmode/setup/setup.php:85
 #: ../../include/functions_config.php:218
 msgid "Inventory changes blacklist"
-msgstr ""
+msgstr "Inventory changes blacklist"
 
 #: ../../enterprise/godmode/setup/setup.php:85
 msgid ""
 "The inventory modules included in the changes blacklist will not generate "
 "events when change."
 msgstr ""
+"The inventory modules included in the change blacklist will not generate "
+"events when they change."
 
 #: ../../enterprise/godmode/setup/setup.php:114
 msgid "Out of black list"
-msgstr ""
+msgstr "Out of black list"
 
 #: ../../enterprise/godmode/setup/setup.php:116
 msgid "In black list"
-msgstr ""
+msgstr "In black list"
 
 #: ../../enterprise/godmode/setup/setup.php:122
 msgid "Push selected modules into blacklist"
-msgstr ""
+msgstr "Push selected modules into blacklist"
 
 #: ../../enterprise/godmode/setup/setup.php:124
 msgid "Pop selected modules out of blacklist"
-msgstr ""
+msgstr "Pop selected modules out of blacklist"
 
 #: ../../enterprise/godmode/setup/setup.php:133
 #: ../../include/functions_config.php:214
 msgid "Activate Log Collector"
-msgstr ""
+msgstr "Activate Log Collector"
 
 #: ../../enterprise/godmode/setup/setup.php:158
 msgid "Enterprise options"
@@ -12635,7 +12648,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/modules/local_components.php:87
 msgid "Local component management"
-msgstr ""
+msgstr "Local component management"
 
 #: ../../enterprise/godmode/modules/local_components.php:103
 #: ../../godmode/modules/manage_network_components.php:128
@@ -12702,7 +12715,7 @@ msgstr "Duplicate"
 #: ../../godmode/modules/manage_network_components_form_common.php:56
 #: ../../godmode/alerts/configure_alert_template.php:638
 msgid "Wizard level"
-msgstr ""
+msgstr "Wizard level"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:169
 #: ../../include/functions_alerts.php:554
@@ -12762,7 +12775,7 @@ msgstr "Str."
 #: ../../godmode/massive/massive_edit_modules.php:307
 #: ../../godmode/massive/massive_edit_modules.php:344
 msgid "Inverse interval"
-msgstr ""
+msgstr "Inverse interval"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:182
 #: ../../include/functions_alerts.php:555
@@ -12800,42 +12813,42 @@ msgstr "Post process"
 #: ../../godmode/agentes/module_manager_editor_common.php:410
 #: ../../godmode/massive/massive_edit_modules.php:420
 msgid "Critical instructions"
-msgstr ""
+msgstr "Critical instructions"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:218
 #: ../../godmode/modules/manage_network_components_form_common.php:146
 #: ../../godmode/agentes/module_manager_editor_common.php:410
 #: ../../godmode/massive/massive_edit_modules.php:420
 msgid "Instructions when the status is critical"
-msgstr ""
+msgstr "Instructions when the status is critical"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:221
 #: ../../godmode/modules/manage_network_components_form_common.php:150
 #: ../../godmode/agentes/module_manager_editor_common.php:414
 #: ../../godmode/massive/massive_edit_modules.php:424
 msgid "Warning instructions"
-msgstr ""
+msgstr "Warning instructions"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:221
 #: ../../godmode/modules/manage_network_components_form_common.php:150
 #: ../../godmode/agentes/module_manager_editor_common.php:414
 #: ../../godmode/massive/massive_edit_modules.php:424
 msgid "Instructions when the status is warning"
-msgstr ""
+msgstr "Instructions for warning status"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:224
 #: ../../godmode/modules/manage_network_components_form_common.php:154
 #: ../../godmode/agentes/module_manager_editor_common.php:418
 #: ../../godmode/massive/massive_edit_modules.php:428
 msgid "Unknown instructions"
-msgstr ""
+msgstr "Unknown instructions"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:224
 #: ../../godmode/modules/manage_network_components_form_common.php:154
 #: ../../godmode/agentes/module_manager_editor_common.php:418
 #: ../../godmode/massive/massive_edit_modules.php:428
 msgid "Instructions when the status is unknown"
-msgstr ""
+msgstr "Instructions for unknown status"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:231
 #: ../../godmode/modules/manage_network_components_form_common.php:161
@@ -12869,12 +12882,12 @@ msgstr "Tags selected"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:274
 msgid "Macros"
-msgstr ""
+msgstr "Macros"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:310
 #: ../../godmode/servers/plugin.php:229
 msgid "Default value"
-msgstr ""
+msgstr "Default value"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:316
 #: ../../include/functions_ui.php:952 ../../godmode/servers/plugin.php:242
@@ -12884,12 +12897,12 @@ msgstr "Help"
 #: ../../enterprise/godmode/modules/configure_local_component.php:326
 #: ../../godmode/servers/plugin.php:256
 msgid "Add macro"
-msgstr ""
+msgstr "Add macro"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:333
 #: ../../godmode/servers/plugin.php:263
 msgid "Delete macro"
-msgstr ""
+msgstr "Delete macro"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:48
 #: ../../enterprise/godmode/agentes/inventory_manager.php:128
@@ -13339,20 +13352,21 @@ msgstr "Time to"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1083
 msgid "Match by regular expression or selection"
-msgstr ""
+msgstr "Match by regular expression or selection"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1083
 msgid ""
 "You can select agents and modules by regular expression or direct selection"
 msgstr ""
+"You can select agents and modules by regular expression or direct selection"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1086
 msgid "Reg expression"
-msgstr ""
+msgstr "Reg expression"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1087
 msgid "Direct selection"
-msgstr ""
+msgstr "Direct selection"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1096
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1098
@@ -13366,6 +13380,8 @@ msgid ""
 "Case insensitive regular expression for agent name. For example: Network.* "
 "will match with the following agent names: network_agent1, NetworK CHECKS"
 msgstr ""
+"Case insensitive regular expression for agent name. For example: Network.* "
+"will match with the following agent names: network_agent1, NetworK CHECKS"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1161
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1654
@@ -13377,6 +13393,11 @@ msgid ""
 "can use a regular expression. Example: .*usage.* will match: cpu_usage, vram "
 "usage in matchine 1."
 msgstr ""
+"Case insensitive regular expression or string for module name. For example: "
+"if you use this field with \"Module exact match\" enabled then this field "
+"has to be fulfilled with the literally string of the module name, otherwise "
+"you can use a regular expression. Example: .*usage.* will match: cpu_usage, "
+"vram usage in machine 1."
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1171
 msgid "Module exact match"
@@ -13396,11 +13417,11 @@ msgstr "SQL query"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1211
 msgid "Also you can add agents from this list"
-msgstr ""
+msgstr "Also you can add agents from this list"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1250
 msgid "You can add modules from this list"
-msgstr ""
+msgstr "You can add modules from this list"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1267
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:2389
@@ -13541,37 +13562,37 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1355
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1011
 msgid "Event filter"
-msgstr ""
+msgstr "Event filter"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1358
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1014
 msgid "No Validated"
-msgstr ""
+msgstr "No Validated"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1370
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1027
 msgid "Event graphs"
-msgstr ""
+msgstr "Event graphs"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1373
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1030
 msgid "By agent"
-msgstr ""
+msgstr "By agent"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1375
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1032
 msgid "By user validator"
-msgstr ""
+msgstr "By validator user"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1377
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1034
 msgid "By criticity"
-msgstr ""
+msgstr "By criticity"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1379
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1036
 msgid "Validated vs unvalidated"
-msgstr ""
+msgstr "Validated vs unvalidated"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1385
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1042
@@ -13591,29 +13612,31 @@ msgstr "Show in landscape"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1401
 msgid "Modules to match"
-msgstr ""
+msgstr "Modules to match"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1403
 msgid "Select the modules to match when create a report for agents"
-msgstr ""
+msgstr "Select modules to match when creating reports for agents"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1479
 msgid "Modules to match (Free text)"
-msgstr ""
+msgstr "Modules to match (Free text)"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1481
 msgid "Free text to filter the modules of agents when apply this template."
-msgstr ""
+msgstr "Free text to filter modules of agents when applying this template."
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1494
 msgid "Create a graph for each agent"
-msgstr ""
+msgstr "Create a graph for each agent"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1496
 msgid ""
 "If it is checked, the regexp or name of modules match only each to each to "
 "agent, instead create a big graph with all modules from all agents."
 msgstr ""
+"If checked, the regexp or every name of modules will match an agent module. "
+"Otherwise, it will create a graph with all the agent modules."
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1520
 #: ../../godmode/netflow/nf_item_list.php:258
@@ -13650,6 +13673,8 @@ msgid ""
 "Case insensitive regular expression for agent name. For example: Network* "
 "will match with the following agent names: network_agent1, NetworK CHECKS"
 msgstr ""
+"Case insensitive regular expression for agent name. For example: Network* "
+"will match with the following agent names: network_agent1, NetworK CHECKS"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1673
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1784
@@ -13700,14 +13725,14 @@ msgstr "Height"
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:181
 msgid "3 hours"
-msgstr ""
+msgstr "3 hours"
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:182
 #: ../../enterprise/godmode/agentes/inventory_manager.php:174
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:194
 #: ../../include/ajax/module.php:79
 msgid "6 hours"
-msgstr ""
+msgstr "6 hours"
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:185
 #: ../../enterprise/godmode/agentes/inventory_manager.php:177
@@ -13720,7 +13745,7 @@ msgstr "2 days"
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:186
 msgid "4 days"
-msgstr ""
+msgstr "4 days"
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:187
 #: ../../include/functions_netflow.php:855
@@ -13761,7 +13786,7 @@ msgstr "1 year"
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:91
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:115
 msgid "Elements to apply"
-msgstr ""
+msgstr "Elements to apply"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:142
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:121
@@ -13935,47 +13960,47 @@ msgstr "Short Name"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:41
 msgid "Plug-in deleted succesfully"
-msgstr ""
+msgstr "Plug-in deleted successfully"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:41
 msgid "Plug-in cannot be deleted"
-msgstr ""
+msgstr "Plug-in cannot be deleted"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:47
 #: ../../enterprise/godmode/policies/policy_plugins.php:43
 msgid "Plug-in added succesfully"
-msgstr ""
+msgstr "Plug-in added successfully"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:47
 #: ../../enterprise/godmode/policies/policy_plugins.php:43
 msgid "Plug-in cannot be added"
-msgstr ""
+msgstr "Plug-in cannot be added"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:58
 msgid "Plug-in disabled succesfully"
-msgstr ""
+msgstr "Plug-in disabled successfully"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:58
 msgid "Plug-in cannot be disabled"
-msgstr ""
+msgstr "Plug-in cannot be disabled"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:69
 msgid "Plug-in enabled succesfully"
-msgstr ""
+msgstr "Plug-in enabled successfully"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:69
 msgid "Plug-in cannot be enabled"
-msgstr ""
+msgstr "Plug-in cannot be enabled"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:78
 #: ../../enterprise/godmode/policies/policy_plugins.php:52
 msgid "New plug-in"
-msgstr ""
+msgstr "New plug-in"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:95
 #: ../../enterprise/godmode/policies/policy_plugins.php:68
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:97
 #: ../../enterprise/godmode/agentes/plugins_manager.php:117
@@ -14069,7 +14094,7 @@ msgstr "Error forcing inventory module"
 #: ../../enterprise/godmode/agentes/inventory_manager.php:178
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:198
 msgid "7 days"
-msgstr ""
+msgstr "7 days"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:180
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:200
@@ -14257,7 +14282,7 @@ msgstr "Create a new web Server module"
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:40
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:41
 msgid "The changes on this field are linked with the configuration data."
-msgstr ""
+msgstr "The changes on this field are linked to the configuration data."
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:46
 msgid "Using local component"
@@ -14277,11 +14302,11 @@ msgstr "No component was found"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:118
 msgid "Show configuration data"
-msgstr ""
+msgstr "Show configuration data"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:128
 msgid "Hide configuration data"
-msgstr ""
+msgstr "Hide configuration data"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:136
 msgid "Data configuration"
@@ -14289,48 +14314,52 @@ msgstr "Data configuration"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:141
 msgid "Load basic"
-msgstr ""
+msgstr "Load basics"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:141
 msgid "Load a basic structure on data configuration"
-msgstr ""
+msgstr "Load a basic structure on data configuration"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:144
 msgid "Check the correct structure of the data configuration"
-msgstr ""
+msgstr "Check the correct structure of data configuration"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:154
 msgid "First line must be \"module_begin\""
-msgstr ""
+msgstr "First line must be \"module_begin\""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:155
 msgid "Data configuration is empty"
-msgstr ""
+msgstr "Data configuration is empty"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:156
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:160
 msgid "Last line must be \"module_end\""
-msgstr ""
+msgstr "Last line must be \"module_end\""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:157
 msgid ""
 "Name is missed. Please add a line with \"module_name yourmodulename\" to "
 "data configuration"
 msgstr ""
+"The Name is missing. Please add a line with \"module_name yourmodulename\" "
+"to data configuration"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:158
 msgid ""
 "Type is missed. Please add a line with \"module_type yourmoduletype\" to "
 "data configuration"
 msgstr ""
+"The Type is missing. Please add a line with \"module_type yourmoduletype\" "
+"to data configuration"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:159
 msgid "Type is wrong. Please set a correct type"
-msgstr ""
+msgstr "The Type is wrong. Please set a correct type"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:161
 msgid "Data configuration are built correctly"
-msgstr ""
+msgstr "Data configuration has been built correctly"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:29
 msgid "Web server module"
@@ -14422,7 +14451,7 @@ msgstr "Event alerts"
 
 #: ../../enterprise/godmode/menu.php:90
 msgid "Log Collector"
-msgstr ""
+msgstr "Log Collector"
 
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:47
 #: ../../enterprise/godmode/policies/policy_modules.php:251
@@ -14437,11 +14466,11 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy.php:50
 #: ../../enterprise/godmode/policies/policy.php:53
 msgid "Policies Management"
-msgstr "Policies Management"
+msgstr "Policy Management"
 
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:47
 msgid "Inventory modules policy"
-msgstr "Inventory modules policy"
+msgstr "Inventory module policy"
 
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:53
 #: ../../enterprise/godmode/policies/policy_modules.php:296
@@ -14465,7 +14494,7 @@ msgid ""
 "Successfully added to delete pending modules. Will be deleted in the next "
 "policy application."
 msgstr ""
-"Successfully added to delete pending modules. Will be deleted in the next "
+"Successfully added to delete pending modules. It will be deleted in the next "
 "policy application."
 
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:100
@@ -14505,10 +14534,12 @@ msgid ""
 "Successfully added to delete pending plugins. Will be deleted in the next "
 "policy application."
 msgstr ""
+"Successfully added to delete pending plugins. It will be deleted in the next "
+"policy application."
 
 #: ../../enterprise/godmode/policies/policy_plugins.php:31
 msgid "Cannot be added to delete pending plugins."
-msgstr ""
+msgstr "It cannot be added to delete pending plugins."
 
 #: ../../enterprise/godmode/policies/policy_modules.php:22
 #: ../../enterprise/godmode/policies/policy_modules.php:755
@@ -14530,7 +14561,7 @@ msgstr "Modules in policy"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:275
 msgid "Could not be added module(s). You must select a policy"
-msgstr ""
+msgstr "These modules could not be added. You must select a policy"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:423
 msgid "Could not be added module."
@@ -14559,7 +14590,7 @@ msgstr "Copy modules"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:704
 msgid "Copy selected modules to policy: "
-msgstr ""
+msgstr "Copy selected modules to policy: "
 
 #: ../../enterprise/godmode/policies/policy_modules.php:738
 #: ../../godmode/agentes/module_manager_editor.php:457
@@ -14582,11 +14613,11 @@ msgstr "Variable"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:854
 msgid "Are you sure to copy modules into policy?\\n"
-msgstr ""
+msgstr "Are you sure to copy modules into policy?\\n"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:874
 msgid "Please select any module to copy"
-msgstr ""
+msgstr "Please select any module to copy"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:101
 msgid "Operations successfully deleted from the queue"
@@ -14669,7 +14700,7 @@ msgstr "Delete pending file collections"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:261
 msgid "Delete pending plugins"
-msgstr ""
+msgstr "Delete pending plugins"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:273
 msgid "Advices"
@@ -14712,12 +14743,12 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:121
 #: ../../enterprise/godmode/policies/policy_alerts.php:173
 msgid "Added action successfuly"
-msgstr "Action added successfuly"
+msgstr "Action added successfully"
 
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:141
 #: ../../enterprise/godmode/policies/policy_alerts.php:191
 msgid "Deleted action successfuly"
-msgstr "Action deleted successfuly"
+msgstr "Action deleted successfully"
 
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:170
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:306
@@ -14781,7 +14812,7 @@ msgid ""
 "Successfully added to delete pending agents. Will be deleted in the next "
 "policy application."
 msgstr ""
-"Successfully added to delete pending agents. Will be deleted in the next "
+"Successfully added to delete pending agents. It will be deleted in the next "
 "policy application."
 
 #: ../../enterprise/godmode/policies/policy_agents.php:121
@@ -15025,39 +15056,40 @@ msgstr "Agents policy"
 
 #: ../../enterprise/godmode/policies/policy.php:53
 msgid "Plugins policy"
-msgstr ""
+msgstr "Plugin policy"
 
 #: ../../enterprise/godmode/services/services.elements.php:51
 #: ../../enterprise/godmode/services/services.service.php:126
 msgid ""
 "This values are by default because the service is auto calculate mode."
 msgstr ""
+"These are default values because the service is on autocalculate mode"
 
 #: ../../enterprise/godmode/services/services.elements.php:76
 #: ../../enterprise/godmode/services/services.service.php:148
 msgid "Config Service"
-msgstr ""
+msgstr "Config Service"
 
 #: ../../enterprise/godmode/services/services.elements.php:81
 #: ../../enterprise/godmode/services/services.service.php:153
 msgid "Config Elements"
-msgstr ""
+msgstr "Config Elements"
 
 #: ../../enterprise/godmode/services/services.elements.php:85
 msgid "Edit service elements"
-msgstr ""
+msgstr "Edit service elements"
 
 #: ../../enterprise/godmode/services/services.elements.php:99
 msgid "Error empty module"
-msgstr ""
+msgstr "Error: empty module"
 
 #: ../../enterprise/godmode/services/services.elements.php:108
 msgid "Error empty agent"
-msgstr ""
+msgstr "Error: empty agent"
 
 #: ../../enterprise/godmode/services/services.elements.php:117
 msgid "Error empty service"
-msgstr ""
+msgstr "Error: empty service"
 
 #: ../../enterprise/godmode/services/services.elements.php:137
 msgid "Service element created successfully"
@@ -15085,11 +15117,11 @@ msgstr "Error deleting service element"
 
 #: ../../enterprise/godmode/services/services.elements.php:207
 msgid "Edit element service"
-msgstr ""
+msgstr "Edit element service"
 
 #: ../../enterprise/godmode/services/services.elements.php:210
 msgid "Create element service"
-msgstr ""
+msgstr "Create element service"
 
 #: ../../enterprise/godmode/services/services.elements.php:260
 msgid "First select an agent"
@@ -15105,7 +15137,7 @@ msgstr "Warning weight"
 
 #: ../../enterprise/godmode/services/services.elements.php:288
 msgid "Unknown weight"
-msgstr ""
+msgstr "Unknown weight"
 
 #: ../../enterprise/godmode/services/services.elements.php:293
 msgid "Ok weight"
@@ -15129,39 +15161,39 @@ msgstr "Error updating service"
 
 #: ../../enterprise/godmode/services/services.service.php:100
 msgid "New Service"
-msgstr ""
+msgstr "New Service"
 
 #: ../../enterprise/godmode/services/services.service.php:193
 msgid "Auto calculate"
-msgstr ""
+msgstr "Auto calculate"
 
 #: ../../enterprise/godmode/services/services.service.php:208
 msgid "Agent to store data"
-msgstr ""
+msgstr "Agent to store data"
 
 #: ../../enterprise/godmode/services/services.service.php:228
 msgid "S.L.A. interval"
-msgstr ""
+msgstr "S.L.A. interval"
 
 #: ../../enterprise/godmode/services/services.service.php:233
 msgid "S.L.A. limit"
-msgstr ""
+msgstr "S.L.A. limit"
 
 #: ../../enterprise/godmode/services/services.service.php:235
 msgid "Please set limit between 0 to 100."
-msgstr ""
+msgstr "Please set a limit between 0 to 100."
 
 #: ../../enterprise/godmode/services/services.service.php:246
 msgid "Warning Service alert"
-msgstr ""
+msgstr "Warning Service alert"
 
 #: ../../enterprise/godmode/services/services.service.php:251
 msgid "Critical Service alert"
-msgstr ""
+msgstr "Critical Service alert"
 
 #: ../../enterprise/godmode/services/services.service.php:264
 msgid "SLA critical service alert"
-msgstr ""
+msgstr "SLA critical service alert"
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:52
 msgid "Error parsing MIB"
@@ -15876,6 +15908,7 @@ msgid ""
 "Is possible that this view uses part of information which your user has not "
 "access"
 msgstr ""
+"This view may use information to which your user does not have access"
 
 #: ../../include/functions_ui.php:875
 #: ../../godmode/alerts/configure_alert_template.php:717
@@ -15948,11 +15981,11 @@ msgstr "Type at least two characters to search."
 
 #: ../../include/functions_ui.php:3068
 msgid "Does not exist agent with this name."
-msgstr ""
+msgstr "No matches found for this agent name"
 
 #: ../../include/functions_ui.php:3214
 msgid "Problem with Pandora FMS database"
-msgstr ""
+msgstr "A problem with Pandora FMS occurred"
 
 #: ../../include/functions_ui.php:3215
 msgid ""
@@ -15962,10 +15995,15 @@ msgid ""
 "incorrect or \n"
 "\t\t\tthe database server is not running."
 msgstr ""
+"Cannot connect to the database, please check your database setup in the "
+"<b>include/config.php</b> file.<i><br/><br/>\n"
+"\t\t\tProbably your database, hostname, user or password values are "
+"incorrect or \n"
+"\t\t\tthe database server is not running."
 
 #: ../../include/functions_ui.php:3219
 msgid "DB ERROR"
-msgstr ""
+msgstr "DB ERROR"
 
 #: ../../include/functions_ui.php:3225
 msgid ""
@@ -15974,10 +16012,14 @@ msgid ""
 "them from your database by executing:<br><pre>DELETE FROM tconfig WHERE "
 "token = \"auth\";</pre>"
 msgstr ""
+"If you have modified auth system, this problem could be because Pandora "
+"cannot override authorization variables from the config database. Remove "
+"them from your database by executing:<br><pre>DELETE FROM tconfig WHERE "
+"token = \"auth\";</pre>"
 
 #: ../../include/functions_ui.php:3229
 msgid "Empty configuration table"
-msgstr ""
+msgstr "Empty configuration table"
 
 #: ../../include/functions_ui.php:3230
 msgid ""
@@ -15992,10 +16034,20 @@ msgid ""
 "\t\t\tpermissions and HTTP server cannot read it. Please read documentation "
 "to fix this problem.</i>"
 msgstr ""
+"Impossible to load configuration variables from database. Please, check your "
+"database setup in the\n"
+"\t\t\t<b>include/config.php</b> file.<i><br><br>\n"
+"\t\t\tMost likely your database schema has been created but there are no "
+"data in it, you have a problem with the database access credentials or your "
+"schema is out of date.\n"
+"\t\t\t<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or "
+"this file has invalid\n"
+"\t\t\tpermissions and HTTP server cannot read it. Please read the "
+"documentation to fix this problem.</i>"
 
 #: ../../include/functions_ui.php:3237
 msgid "No configuration file found"
-msgstr ""
+msgstr "No configuration file found"
 
 #: ../../include/functions_ui.php:3238
 msgid ""
@@ -16004,15 +16056,19 @@ msgid ""
 "\t\t\tpermissions and HTTP server cannot read it. Please read documentation "
 "to fix this problem."
 msgstr ""
+"Pandora FMS Console cannot find <i>include/config.php</i> or this file has "
+"invalid\n"
+"\t\t\tpermissions and HTTP server cannot read it. Please read the "
+"documentation to fix this problem."
 
 #: ../../include/functions_ui.php:3249
 #, php-format
 msgid "You may try to run the %s<b>installation wizard</b>%s to create one."
-msgstr ""
+msgstr "You can try to run the %s<b>installation wizard</b>%s to create one."
 
 #: ../../include/functions_ui.php:3252
 msgid "Installer active"
-msgstr ""
+msgstr "Installer activated"
 
 #: ../../include/functions_ui.php:3253
 msgid ""
@@ -16021,10 +16077,14 @@ msgid ""
 "\t\t\tPlease delete the <i>./install.php</i> file before running Pandora FMS "
 "Console."
 msgstr ""
+"For security reasons, normal operations can not be executed until you delete "
+"the installer file.\n"
+"\t\t\tPlease, delete the <i>./install.php</i> file before running Pandora "
+"FMS Console."
 
 #: ../../include/functions_ui.php:3257
 msgid "Bad permission for include/config.php"
-msgstr ""
+msgstr "Bad permission for include/config.php"
 
 #: ../../include/functions_ui.php:3258
 msgid ""
@@ -16037,6 +16097,14 @@ msgid ""
 "\t\t\tpermissions for <i>include/config.php</i> file. Please do it, it is "
 "for your security."
 msgstr ""
+"For security reasons, <i>config.php</i> must have restrictive permissions, "
+"and \"other\" users \n"
+"\t\t\tshould not read it or write on it. It should be written only for the "
+"owner \n"
+"\t\t\t(usually www-data or http daemon user), normal operation is not "
+"possible until you change \n"
+"\t\t\tpermissions for <i>include/config.php</i> file. Please do it, it is "
+"for your security."
 
 #: ../../include/functions_events.php:784
 msgid "Latest events"
@@ -16044,11 +16112,11 @@ msgstr "Latest events"
 
 #: ../../include/functions_events.php:914
 msgid "Events -by module-"
-msgstr ""
+msgstr "Events -by module-"
 
 #: ../../include/functions_events.php:1034
 msgid "Going to unknown"
-msgstr ""
+msgstr "Going to unknown"
 
 #: ../../include/functions_events.php:1037
 #: ../../include/functions_events.php:1320 ../../include/functions.php:879
@@ -16065,11 +16133,11 @@ msgstr "Going from critical to warning"
 
 #: ../../include/functions_events.php:1047
 msgid "Going down to critical state"
-msgstr "Going down to critical state"
+msgstr "Going down to critical status"
 
 #: ../../include/functions_events.php:1051
 msgid "Going up to normal state"
-msgstr "Going up to normal state"
+msgstr "Going up to normal status"
 
 #: ../../include/functions_events.php:1054
 msgid "Going down from normal to warning"
@@ -16141,11 +16209,11 @@ msgstr "Informational"
 
 #: ../../include/functions_events.php:1476
 msgid "Agent address"
-msgstr ""
+msgstr "Agent address"
 
 #: ../../include/functions_events.php:1477
 msgid "Agent id"
-msgstr ""
+msgstr "Agent id"
 
 #: ../../include/functions_events.php:1478
 #: ../../godmode/events/custom_events.php:65
@@ -16155,62 +16223,62 @@ msgstr "Event ID"
 
 #: ../../include/functions_events.php:1554
 msgid "Change owner"
-msgstr ""
+msgstr "Change owner"
 
 #: ../../include/functions_events.php:1584 ../../include/functions_xml.php:125
 msgid "New"
-msgstr ""
+msgstr "New"
 
 #: ../../include/functions_events.php:1584
 #: ../../include/functions_events.php:1590 ../../include/functions_xml.php:129
 msgid "In process"
-msgstr ""
+msgstr "In process"
 
 #: ../../include/functions_events.php:1636
 msgid "Custom responses"
-msgstr ""
+msgstr "Custom responses"
 
 #: ../../include/functions_events.php:1837
 msgid "Agent details"
-msgstr ""
+msgstr "Agent details"
 
 #: ../../include/functions_events.php:1869
 msgid "View custom fields"
-msgstr ""
+msgstr "See custom fields"
 
 #: ../../include/functions_events.php:1881
 msgid "Module details"
-msgstr ""
+msgstr "Module details"
 
 #: ../../include/functions_events.php:1899
 msgid "No assigned"
-msgstr ""
+msgstr "No assigned"
 
 #: ../../include/functions_events.php:1932
 msgid "Alert details"
-msgstr ""
+msgstr "Alert details"
 
 #: ../../include/functions_events.php:2073
 msgid "First event"
-msgstr ""
+msgstr "First event"
 
 #: ../../include/functions_events.php:2073
 msgid "Last event"
-msgstr ""
+msgstr "Last event"
 
 #: ../../include/functions_events.php:2149
 #: ../../mobile/operation/events.php:440
 msgid "Acknowledged by"
-msgstr ""
+msgstr "Acknowledged by"
 
 #: ../../include/functions_events.php:2235
 msgid "There are no comments"
-msgstr ""
+msgstr "No comments"
 
 #: ../../include/functions_events.php:2320
 #: ../../include/functions_reporting.php:2625
 msgid "Pandora System"
-msgstr ""
+msgstr "Pandora System"
 
 #: ../../include/functions_reporting.php:882
 #: ../../include/functions_reporting.php:898
@@ -16221,7 +16289,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:957
 #: ../../include/functions_reporting.php:969
 msgid "Ratio"
-msgstr ""
+msgstr "Ratio"
 
 #: ../../include/functions_reporting.php:882
 #: ../../include/functions_reporting.php:898
@@ -16232,81 +16300,81 @@ msgstr ""
 #: ../../include/functions_reporting.php:957
 #: ../../include/functions_reporting.php:969
 msgid "Modules by second"
-msgstr ""
+msgstr "Modules by second"
 
 #: ../../include/functions_reporting.php:917
 msgid "Network modules"
-msgstr ""
+msgstr "Network modules"
 
 #: ../../include/functions_reporting.php:929
 msgid "Plugin modules"
-msgstr ""
+msgstr "Plugin modules"
 
 #: ../../include/functions_reporting.php:941
 msgid "Prediction modules"
-msgstr ""
+msgstr "Prediction modules"
 
 #: ../../include/functions_reporting.php:953
 msgid "WMI modules"
-msgstr ""
+msgstr "WMI modules"
 
 #: ../../include/functions_reporting.php:965
 msgid "Web modules"
-msgstr ""
+msgstr "Web modules"
 
 #: ../../include/functions_reporting.php:1022
 msgid "Monitor normal"
-msgstr ""
+msgstr "Normal monitor"
 
 #: ../../include/functions_reporting.php:1026
 msgid "Monitor unknown"
-msgstr ""
+msgstr "Unknown monitor"
 
 #: ../../include/functions_reporting.php:1033
 msgid "Monitor not init"
-msgstr ""
+msgstr "Not initialized monitor"
 
 #: ../../include/functions_reporting.php:1052
 msgid "Monitors by status"
-msgstr ""
+msgstr "Monitors by status"
 
 #: ../../include/functions_reporting.php:1070
 msgid "Module status"
-msgstr ""
+msgstr "Module status"
 
 #: ../../include/functions_reporting.php:1143
 msgid "Defined and fired alerts"
-msgstr ""
+msgstr "Defined and fired alerts"
 
 #: ../../include/functions_reporting.php:1166
 msgid "Defined users"
-msgstr ""
+msgstr "Defined users"
 
 #: ../../include/functions_reporting.php:1221
 msgid "Total agents and monitors"
-msgstr ""
+msgstr "Total number of agents and monitors"
 
 #: ../../include/functions_reporting.php:1245
 #, php-format
 msgid "%d Downed servers"
-msgstr ""
+msgstr "%d Downed servers"
 
 #: ../../include/functions_reporting.php:1253
 #, php-format
 msgid "%d Not Normal monitors"
-msgstr ""
+msgstr "%d Not Normal monitors"
 
 #: ../../include/functions_reporting.php:1261
 #, php-format
 msgid "%d Not inited monitors"
-msgstr ""
+msgstr "%d Not inited monitors"
 
 #: ../../include/functions_reporting.php:1269
 #: ../../include/functions_reporting.php:6745
 #: ../../include/functions_reporting.php:6753
 #, php-format
 msgid "%d Fired alerts"
-msgstr ""
+msgstr "%d Fired alerts"
 
 #: ../../include/functions_reporting.php:1647
 #: ../../include/functions_reporting.php:2229
@@ -16341,7 +16409,7 @@ msgstr "Monitors BAD"
 #: ../../include/functions_reporting.php:2202
 #, php-format
 msgid "Agents in group: %s"
-msgstr ""
+msgstr "Agents in group: %s"
 
 #: ../../include/functions_reporting.php:2295
 msgid "Last failure"
@@ -16349,7 +16417,7 @@ msgstr "Last failure"
 
 #: ../../include/functions_reporting.php:2359
 msgid "N/A(*)"
-msgstr ""
+msgstr "N/A(*)"
 
 #: ../../include/functions_reporting.php:2391
 #: ../../include/functions_reporting.php:4351
@@ -16360,7 +16428,7 @@ msgstr "Monitors"
 #: ../../include/functions_agents.php:2015
 #: ../../include/functions_agents.php:2032
 msgid "At least one module in CRITICAL status"
-msgstr "At least one module in CRITICAL status"
+msgstr "At least one module is on CRITICAL status"
 
 #: ../../include/functions_reporting.php:2797
 #: ../../include/functions_agents.php:2018
@@ -16372,7 +16440,7 @@ msgstr "At least one module in WARNING status"
 #: ../../include/functions_agents.php:2021
 #: ../../include/functions_agents.php:2038
 msgid "At least one module is in UKNOWN status"
-msgstr "At least one module is in UKNOWN status"
+msgstr "At least one module is on UKNOWN status"
 
 #: ../../include/functions_reporting.php:3234
 msgid "Max/Min Values"
@@ -16381,7 +16449,7 @@ msgstr "Max/Min Values"
 #: ../../include/functions_reporting.php:3254
 #: ../../include/functions_reporting.php:3338
 msgid "Plannified downtime"
-msgstr ""
+msgstr "Planned downtime"
 
 #: ../../include/functions_reporting.php:3842
 msgid ""
@@ -16418,12 +16486,12 @@ msgstr "Insuficient data"
 
 #: ../../include/functions_reporting.php:5187
 msgid "Modules under or equal to"
-msgstr ""
+msgstr "Modules under or equal to"
 
 #: ../../include/functions_reporting.php:5193
 #: ../../include/functions_reporting.php:5394
 msgid "Modules over"
-msgstr ""
+msgstr "Modules over"
 
 #: ../../include/functions_reporting.php:5196
 #: ../../include/functions_alerts.php:552
@@ -16437,23 +16505,23 @@ msgstr "Not equal to"
 
 #: ../../include/functions_reporting.php:5388
 msgid "Modules less or equal to"
-msgstr ""
+msgstr "Modules under or equal to"
 
 #: ../../include/functions_reporting.php:5391
 msgid "Modules less"
-msgstr ""
+msgstr "Modules under"
 
 #: ../../include/functions_reporting.php:5397
 msgid "Modules equal to"
-msgstr ""
+msgstr "Modules equal to"
 
 #: ../../include/functions_reporting.php:5400
 msgid "Modules not equal to"
-msgstr ""
+msgstr "Modules not equal to"
 
 #: ../../include/functions_reporting.php:5403
 msgid "Modules normal status"
-msgstr ""
+msgstr "Normal status modules"
 
 #: ../../include/functions_reporting.php:5592
 #: ../../extensions/agents_modules.php:167
@@ -16462,66 +16530,66 @@ msgstr "There are no agents with modules"
 
 #: ../../include/functions_reporting.php:5800
 msgid "Agent configuration: "
-msgstr ""
+msgstr "Agent configuration: "
 
 #: ../../include/functions_reporting.php:5849
 #: ../../include/functions_reporting.php:5995
 msgid " MODULES"
-msgstr ""
+msgstr " MODULES"
 
 #: ../../include/functions_reporting.php:5929
 msgid "Group configuration: "
-msgstr ""
+msgstr "Group configuration: "
 
 #: ../../include/functions_reporting.php:6740
 #, php-format
 msgid "%d Total modules"
-msgstr ""
+msgstr "%d Total modules"
 
 #: ../../include/functions_reporting.php:6741
 #, php-format
 msgid "%d Normal modules"
-msgstr ""
+msgstr "%d Normal modules"
 
 #: ../../include/functions_reporting.php:6742
 #, php-format
 msgid "%d Critical modules"
-msgstr ""
+msgstr "%d Critical modules"
 
 #: ../../include/functions_reporting.php:6743
 #, php-format
 msgid "%d Warning modules"
-msgstr ""
+msgstr "%d Warning modules"
 
 #: ../../include/functions_reporting.php:6744
 #, php-format
 msgid "%d Unknown modules"
-msgstr ""
+msgstr "%d Unknown modules"
 
 #: ../../include/functions_reporting.php:6748
 #, php-format
 msgid "%d Total agents"
-msgstr ""
+msgstr "%d Total agents"
 
 #: ../../include/functions_reporting.php:6749
 #, php-format
 msgid "%d Normal agents"
-msgstr ""
+msgstr "%d Normal agents"
 
 #: ../../include/functions_reporting.php:6750
 #, php-format
 msgid "%d Critical agents"
-msgstr ""
+msgstr "%d Critical agents"
 
 #: ../../include/functions_reporting.php:6751
 #, php-format
 msgid "%d Warning agents"
-msgstr ""
+msgstr "%d Warning agents"
 
 #: ../../include/functions_reporting.php:6752
 #, php-format
 msgid "%d Unknown agents"
-msgstr ""
+msgstr "%d Unknown agents"
 
 #: ../../include/functions_db.php:74
 #, php-format
@@ -16637,11 +16705,11 @@ msgstr "Major"
 
 #: ../../include/functions.php:876
 msgid "Monitor Unknown"
-msgstr ""
+msgstr "Unknown Monitor"
 
 #: ../../include/functions.php:885
 msgid "Configuration change "
-msgstr "Changes on configuration "
+msgstr "Configuration change "
 
 #: ../../include/functions.php:1664
 msgid "custom"
@@ -16650,12 +16718,12 @@ msgstr "custom"
 #: ../../include/functions.php:1669 ../../include/functions.php:1670
 #, php-format
 msgid "%s minutes"
-msgstr ""
+msgstr "%s minutes"
 
 #: ../../include/functions.php:1672 ../../include/functions.php:1673
 #, php-format
 msgid "%s hours"
-msgstr ""
+msgstr "%s hours"
 
 #: ../../include/functions.php:1675 ../../include/functions_netflow.php:888
 #: ../../include/ajax/module.php:82
@@ -16665,20 +16733,20 @@ msgstr "1 week"
 #: ../../include/functions.php:1678 ../../include/functions.php:1679
 #, php-format
 msgid "%s months"
-msgstr ""
+msgstr "%s Months"
 
 #: ../../include/functions.php:1681 ../../include/functions.php:1682
 #, php-format
 msgid "%s years"
-msgstr ""
+msgstr "%s Years"
 
 #: ../../include/functions.php:1685
 msgid "Default values will be used"
-msgstr ""
+msgstr "Default values will be used"
 
 #: ../../include/get_file.php:47
 msgid "Security error. Please contact the administrator."
-msgstr "Security error. Please contact the administrator."
+msgstr "Security error. Please contact your administrator."
 
 #: ../../include/get_file.php:55
 msgid "File is missing in disk storage. Please contact the administrator."
@@ -16735,27 +16803,27 @@ msgstr "Enterprise SNMP server"
 
 #: ../../include/functions_netflow.php:356
 msgid "Total flows"
-msgstr ""
+msgstr "Total flows"
 
 #: ../../include/functions_netflow.php:358
 msgid "Total bytes"
-msgstr ""
+msgstr "Total bytes"
 
 #: ../../include/functions_netflow.php:360
 msgid "Total packets"
-msgstr ""
+msgstr "Total packets"
 
 #: ../../include/functions_netflow.php:362
 msgid "Average bits per second"
-msgstr ""
+msgstr "Average bits per second"
 
 #: ../../include/functions_netflow.php:364
 msgid "Average packets per second"
-msgstr ""
+msgstr "Average packets per second"
 
 #: ../../include/functions_netflow.php:366
 msgid "Average bytes per packet"
-msgstr ""
+msgstr "Average bytes per packet"
 
 #: ../../include/functions_netflow.php:828
 msgid "Area graph"
@@ -16763,7 +16831,7 @@ msgstr "Area graph"
 
 #: ../../include/functions_netflow.php:829
 msgid "Pie graph and Summary table"
-msgstr ""
+msgstr "Pie graph and Summary table"
 
 #: ../../include/functions_netflow.php:830
 msgid "Statistics table"
@@ -16803,15 +16871,15 @@ msgstr "2 years"
 
 #: ../../include/functions_netflow.php:874
 msgid "1 min"
-msgstr ""
+msgstr "1 min"
 
 #: ../../include/functions_netflow.php:875
 msgid "2 mins"
-msgstr ""
+msgstr "2 mins"
 
 #: ../../include/functions_netflow.php:876
 msgid "5 mins"
-msgstr ""
+msgstr "5 mins"
 
 #: ../../include/functions_netflow.php:921
 #: ../../include/functions_netflow.php:930
@@ -16820,47 +16888,47 @@ msgstr ""
 #: ../../include/functions_netflow.php:1041
 #: ../../include/functions_netflow.php:1074
 msgid "Aggregate"
-msgstr ""
+msgstr "Aggregate"
 
 #: ../../include/functions_netflow.php:1113
 msgid "Error generating report"
-msgstr ""
+msgstr "Error generating report"
 
 #: ../../include/functions_netflow.php:1310
 msgid "MB"
-msgstr ""
+msgstr "MB"
 
 #: ../../include/functions_netflow.php:1312
 msgid "MB/s"
-msgstr ""
+msgstr "MB/s"
 
 #: ../../include/functions_netflow.php:1314
 msgid "kB"
-msgstr ""
+msgstr "kB"
 
 #: ../../include/functions_netflow.php:1316
 msgid "kB/s"
-msgstr ""
+msgstr "kB/s"
 
 #: ../../include/functions_netflow.php:1320
 msgid "B/s"
-msgstr ""
+msgstr "B/s"
 
 #: ../../include/functions_netflow.php:1334
 msgid "Dst port"
-msgstr ""
+msgstr "Dst port"
 
 #: ../../include/functions_netflow.php:1336
 msgid "Dst IP"
-msgstr ""
+msgstr "Dst IP"
 
 #: ../../include/functions_netflow.php:1340
 msgid "Src IP"
-msgstr ""
+msgstr "Src IP"
 
 #: ../../include/functions_netflow.php:1342
 msgid "Src port"
-msgstr ""
+msgstr "Src port"
 
 #: ../../include/functions_alerts.php:549
 msgid "Max and min"
@@ -16986,7 +17054,7 @@ msgstr "Image"
 
 #: ../../include/functions_visual_map_editor.php:102
 msgid "Enable link"
-msgstr ""
+msgstr "Enable link"
 
 #: ../../include/functions_visual_map_editor.php:156
 #: ../../godmode/reporting/visual_console_builder.wizard.php:114
@@ -17224,7 +17292,7 @@ msgstr "SQL horizonal bar graph"
 
 #: ../../include/functions_reports.php:513
 msgid "Automatic combined Graph"
-msgstr ""
+msgstr "Automatic combined Graph"
 
 #: ../../include/functions_reports.php:518
 #: ../../include/functions_reports.php:520
@@ -17271,23 +17339,23 @@ msgstr "Event report group"
 
 #: ../../include/functions_reports.php:613
 msgid "Netflow area chart"
-msgstr ""
+msgstr "Netflow area chart"
 
 #: ../../include/functions_reports.php:615
 msgid "Netflow pie chart"
-msgstr ""
+msgstr "Netflow pie chart"
 
 #: ../../include/functions_reports.php:617
 msgid "Netflow data table"
-msgstr ""
+msgstr "Netflow data table"
 
 #: ../../include/functions_reports.php:619
 msgid "Netflow statistics table"
-msgstr ""
+msgstr "Netflow statistic table"
 
 #: ../../include/functions_reports.php:621
 msgid "Netflow summary table"
-msgstr ""
+msgstr "Netflow summary table"
 
 #: ../../include/functions_graph.php:639
 msgid "Units. Value"
@@ -17356,11 +17424,11 @@ msgstr "Units"
 
 #: ../../include/functions_graph.php:3070
 msgid "Avg."
-msgstr ""
+msgstr "Avg."
 
 #: ../../include/functions_graph.php:3862
 msgid "No data to show"
-msgstr ""
+msgstr "No data to show"
 
 #: ../../include/functions_custom_graphs.php:101
 msgid "Empty graph"
@@ -17395,19 +17463,19 @@ msgstr ""
 
 #: ../../include/functions_treeview.php:140
 msgid "There was a problem loading alerts"
-msgstr ""
+msgstr "A problem occurred while loading alerts"
 
 #: ../../include/functions_treeview.php:178
 msgid "Go to alerts detail"
-msgstr ""
+msgstr "Go to alert details"
 
 #: ../../include/functions_treeview.php:416
 msgid "There aren't agents in this agrupation"
-msgstr ""
+msgstr "No agents in this group"
 
 #: ../../include/auth/mysql.php:471
 msgid "Your installation of PHP does not support LDAP"
-msgstr ""
+msgstr "Your installation of PHP does not support LDAP"
 
 #: ../../include/functions_visual_map.php:435
 msgid "Agent successfully added to layout"
@@ -17447,11 +17515,11 @@ msgstr "weeks"
 
 #: ../../include/functions_html.php:716
 msgid "Month day"
-msgstr ""
+msgstr "Month day"
 
 #: ../../include/functions_html.php:718
 msgid "Week day"
-msgstr ""
+msgstr "Week day"
 
 #: ../../include/functions_html.php:1910
 msgid "Type at least two characters to search the module."
@@ -17467,11 +17535,11 @@ msgstr "Create a new group map"
 
 #: ../../include/functions_config.php:85
 msgid "Failed updated: User did not login."
-msgstr ""
+msgstr "Failed update: User did not login."
 
 #: ../../include/functions_config.php:93
 msgid "Failed updated: User is not admin."
-msgstr ""
+msgstr "Failed update: User is not admin."
 
 #: ../../include/functions_config.php:122
 #: ../../godmode/setup/setup_general.php:53
@@ -17537,21 +17605,21 @@ msgstr "Sound for Monitor warning"
 #: ../../include/functions_config.php:177
 #: ../../godmode/setup/setup_general.php:220
 msgid "Referer security"
-msgstr ""
+msgstr "Referer security"
 
 #: ../../include/functions_config.php:179
 #: ../../godmode/setup/setup_general.php:228
 msgid "Event storm protection"
-msgstr ""
+msgstr "Event storm protection"
 
 #: ../../include/functions_config.php:181
 #: ../../godmode/setup/setup_general.php:237
 msgid "Command Snapshot"
-msgstr ""
+msgstr "Command Snapshot"
 
 #: ../../include/functions_config.php:211
 msgid "Show events list in local console (read only)"
-msgstr ""
+msgstr "Show event list in the local console (read only)"
 
 #: ../../include/functions_config.php:252
 #: ../../godmode/setup/setup_auth.php:37
@@ -17656,7 +17724,7 @@ msgstr "Batch statistics period (secs)"
 #: ../../include/functions_config.php:354
 #: ../../godmode/setup/performance.php:107
 msgid "Max. recommended number of files in attachment directory"
-msgstr ""
+msgstr "Max. recommended number of files in attachment directory"
 
 #: ../../include/functions_config.php:376
 #: ../../godmode/setup/setup_visuals.php:116
@@ -17703,17 +17771,17 @@ msgstr "Item title size text"
 #: ../../include/functions_config.php:406
 #: ../../godmode/setup/setup_visuals.php:215
 msgid "GIS Labels"
-msgstr ""
+msgstr "GIS Labels"
 
 #: ../../include/functions_config.php:408
 #: ../../godmode/setup/setup_visuals.php:228
 msgid "Default icon in GIS"
-msgstr ""
+msgstr "Default icon in GIS"
 
 #: ../../include/functions_config.php:444
 #: ../../godmode/setup/setup_visuals.php:106
 msgid "Delete interval"
-msgstr ""
+msgstr "Delete interval"
 
 #: ../../include/functions_config.php:449
 #: ../../godmode/setup/setup_netflow.php:43
@@ -17733,32 +17801,32 @@ msgstr "Daemon binary path"
 #: ../../include/functions_config.php:455
 #: ../../godmode/setup/setup_netflow.php:50
 msgid "Nfdump binary path"
-msgstr ""
+msgstr "Nfdump binary path"
 
 #: ../../include/functions_config.php:457
 #: ../../godmode/setup/setup_netflow.php:52
 msgid "Nfexpire binary path"
-msgstr ""
+msgstr "Nfexpire binary path"
 
 #: ../../include/functions_config.php:459
 #: ../../godmode/setup/setup_netflow.php:54
 msgid "Maximum chart resolution"
-msgstr ""
+msgstr "Maximum chart resolution"
 
 #: ../../include/functions_config.php:463
 #: ../../include/functions_config.php:467
 #: ../../godmode/setup/setup_netflow.php:60
 msgid "Netflow max lifetime"
-msgstr ""
+msgstr "Netflow max lifetime"
 
 #: ../../include/functions_config.php:469
 msgid "Log max lifetime"
-msgstr ""
+msgstr "Log max lifetime"
 
 #: ../../include/functions_config.php:501
 #, php-format
 msgid "Failed updated: the next values cannot update: %s"
-msgstr ""
+msgstr "Update failed: the next values cannot be updated: %s"
 
 #: ../../include/functions_config.php:1096
 msgid "Default password for \"Admin\" user has not been changed."
@@ -17870,11 +17938,11 @@ msgstr ""
 
 #: ../../include/functions_menu.php:385
 msgid "Configure user"
-msgstr ""
+msgstr "Configure user"
 
 #: ../../include/functions_menu.php:386
 msgid "Configure profile"
-msgstr ""
+msgstr "Configure profile"
 
 #: ../../include/functions_menu.php:388
 #: ../../godmode/servers/manage_recontask_form.php:125
@@ -17884,15 +17952,15 @@ msgstr "Manage recontask"
 
 #: ../../include/functions_menu.php:390
 msgid "Module templates management"
-msgstr ""
+msgstr "Module template management"
 
 #: ../../include/functions_menu.php:391
 msgid "Inventory modules management"
-msgstr ""
+msgstr "Inventory module management"
 
 #: ../../include/functions_menu.php:392
 msgid "Tags management"
-msgstr ""
+msgstr "Tag management"
 
 #: ../../include/functions_menu.php:394
 #: ../../godmode/users/profile_list.php:206
@@ -17901,7 +17969,7 @@ msgstr "Agents management"
 
 #: ../../include/functions_menu.php:396
 msgid "View agent"
-msgstr ""
+msgstr "See agent"
 
 #: ../../include/functions_menu.php:398
 #: ../../godmode/alerts/configure_alert_template.php:68
@@ -17912,35 +17980,35 @@ msgstr "Configure alert template"
 
 #: ../../include/functions_menu.php:400
 msgid "Manage network map"
-msgstr ""
+msgstr "Manage network map"
 
 #: ../../include/functions_menu.php:402
 msgid "View reporting"
-msgstr ""
+msgstr "See reporting"
 
 #: ../../include/functions_menu.php:403
 msgid "View visual console"
-msgstr ""
+msgstr "See visual console"
 
 #: ../../include/functions_menu.php:404
 msgid "Manage custom graphs"
-msgstr ""
+msgstr "Manage custom graphs"
 
 #: ../../include/functions_menu.php:405
 msgid "Copy dashboard"
-msgstr ""
+msgstr "Copy dashboard"
 
 #: ../../include/functions_menu.php:408
 msgid "Manage GIS Maps"
-msgstr ""
+msgstr "Manage GIS Maps"
 
 #: ../../include/functions_menu.php:410
 msgid "Incidents statistics"
-msgstr ""
+msgstr "Incident statistics"
 
 #: ../../include/functions_menu.php:411
 msgid "Manage messages"
-msgstr ""
+msgstr "Manage messages"
 
 #: ../../include/functions_menu.php:413 ../../godmode/menu.php:41
 msgid "Manage groups"
@@ -17948,39 +18016,39 @@ msgstr "Manage groups"
 
 #: ../../include/functions_menu.php:414
 msgid "Manage module groups"
-msgstr ""
+msgstr "Manage module groups"
 
 #: ../../include/functions_menu.php:415
 msgid "Manage custom field"
-msgstr ""
+msgstr "Manage custom field"
 
 #: ../../include/functions_menu.php:417
 msgid "Manage alert actions"
-msgstr ""
+msgstr "Manage alert actions"
 
 #: ../../include/functions_menu.php:418
 msgid "Manage commands"
-msgstr ""
+msgstr "Manage commands"
 
 #: ../../include/functions_menu.php:419
 msgid "Manage event alerts"
-msgstr ""
+msgstr "Manage event alerts"
 
 #: ../../include/functions_menu.php:421
 msgid "Manage export targets"
-msgstr ""
+msgstr "Manage export targets"
 
 #: ../../include/functions_menu.php:423
 msgid "Manage services"
-msgstr ""
+msgstr "Manage services"
 
 #: ../../include/functions_menu.php:429
 msgid "Manage incident"
-msgstr ""
+msgstr "Manage incident"
 
 #: ../../include/functions_menu.php:431
 msgid "Manage visual console"
-msgstr ""
+msgstr "Manage visual console"
 
 #: ../../include/functions_users.php:361
 #, php-format
@@ -18004,76 +18072,76 @@ msgstr "Map summary"
 
 #: ../../include/ajax/module.php:89
 msgid "3 years"
-msgstr ""
+msgstr "3 years"
 
 #: ../../include/ajax/module.php:91
 msgid "Select period:"
-msgstr ""
+msgstr "Select period:"
 
 #: ../../include/ajax/events.php:145
 #, php-format
 msgid "Executing command: %s"
-msgstr ""
+msgstr "Executing command: %s"
 
 #: ../../include/ajax/events.php:152
 msgid "Execute again"
-msgstr ""
+msgstr "Execute it again"
 
 #: ../../include/ajax/events.php:285
 msgid "Agent fields"
-msgstr ""
+msgstr "Agent fields"
 
 #: ../../include/ajax/events.php:289 ../../godmode/events/events.php:61
 msgid "Responses"
-msgstr ""
+msgstr "Responses"
 
 #: ../../include/ajax/events.php:349
 msgid "Error adding comment"
-msgstr ""
+msgstr "Error adding comment"
 
 #: ../../include/ajax/events.php:350
 msgid "Comment added successfully"
-msgstr ""
+msgstr "Comment added successfully"
 
 #: ../../include/ajax/events.php:351
 msgid "Error changing event status"
-msgstr ""
+msgstr "Error changing event status"
 
 #: ../../include/ajax/events.php:352
 msgid "Event status changed successfully"
-msgstr ""
+msgstr "Event status changed successfully"
 
 #: ../../include/ajax/events.php:353
 msgid "Error changing event owner"
-msgstr ""
+msgstr "Error changing event owner"
 
 #: ../../include/ajax/events.php:354
 msgid "Event owner changed successfully"
-msgstr ""
+msgstr "Event owner changed successfully"
 
 #: ../../include/ajax/events.php:449
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: ../../include/functions_snmp_browser.php:145
 msgid "Target IP cannot be blank."
-msgstr ""
+msgstr "Target IP cannot be blank."
 
 #: ../../include/functions_snmp_browser.php:307
 msgid "Numeric OID"
-msgstr ""
+msgstr "Numeric OID"
 
 #: ../../include/functions_snmp_browser.php:323
 msgid "Syntax"
-msgstr ""
+msgstr "Syntax"
 
 #: ../../include/functions_snmp_browser.php:328
 msgid "Display hint"
-msgstr ""
+msgstr "Display hint"
 
 #: ../../include/functions_snmp_browser.php:333
 msgid "Max access"
-msgstr ""
+msgstr "Max access"
 
 #: ../../include/functions_snmp_browser.php:380
 #: ../../godmode/agentes/module_manager_editor_wmi.php:42
@@ -18089,48 +18157,48 @@ msgstr "Community"
 
 #: ../../include/functions_snmp_browser.php:384
 msgid "Expand the tree"
-msgstr ""
+msgstr "Expand the tree"
 
 #: ../../include/functions_snmp_browser.php:384
 msgid "can be slow"
-msgstr ""
+msgstr "can be slow"
 
 #: ../../include/functions_snmp_browser.php:385
 msgid "Collapse the tree"
-msgstr ""
+msgstr "Collapse tree"
 
 #: ../../include/functions_snmp_browser.php:386
 msgid "Starting OID"
-msgstr ""
+msgstr "Starting OID"
 
 #: ../../include/functions_snmp_browser.php:388
 msgid "Search text"
-msgstr ""
+msgstr "Search text"
 
 #: ../../include/functions_snmp_browser.php:391
 msgid "First match"
-msgstr ""
+msgstr "First match"
 
 #: ../../include/functions_snmp_browser.php:392
 msgid "Previous match"
-msgstr ""
+msgstr "Previous match"
 
 #: ../../include/functions_snmp_browser.php:393
 msgid "Next match"
-msgstr ""
+msgstr "Next match"
 
 #: ../../include/functions_snmp_browser.php:394
 msgid "Last match"
-msgstr ""
+msgstr "Last match"
 
 #: ../../include/functions_snmp_browser.php:403
 msgid "Browse"
-msgstr ""
+msgstr "Browse"
 
 #: ../../include/functions_snmp_browser.php:413
 #: ../../godmode/agentes/module_manager_editor_network.php:22
 msgid "Search matches"
-msgstr ""
+msgstr "Search matches"
 
 #: ../../include/functions_api.php:73
 msgid "No set or get or help operation."
@@ -18852,27 +18920,27 @@ msgstr "Error creating group."
 
 #: ../../include/functions_api.php:3907
 msgid "Error in netflow filter creation. Filter name cannot be left blank."
-msgstr ""
+msgstr "Error creating netflow filter. Filter name cannot be left blank."
 
 #: ../../include/functions_api.php:3912
 msgid "Error in netflow filter creation. Group id cannot be left blank."
-msgstr ""
+msgstr "Error creating netflow filter. Group id cannot be left blank."
 
 #: ../../include/functions_api.php:3925
 msgid "Error in netflow filter creation. Filter cannot be left blank."
-msgstr ""
+msgstr "Error creating netflow filter. Filter cannot be left blank."
 
 #: ../../include/functions_api.php:3930
 msgid "Error in netflow filter creation. Aggregate_by cannot be left blank."
-msgstr ""
+msgstr "Error creating netflow filter. Aggregate_by cannot be left blank."
 
 #: ../../include/functions_api.php:3935
 msgid "Error in netflow filter creation. Output_format cannot be left blank."
-msgstr ""
+msgstr "Error creating netflow filter. Output_format cannot be left blank."
 
 #: ../../include/functions_api.php:3953
 msgid "Error in netflow filter creation."
-msgstr ""
+msgstr "Error creating netflow filter."
 
 #: ../../include/functions_api.php:4073
 msgid "Create user."
@@ -18924,7 +18992,7 @@ msgstr "Successfully disabled module"
 
 #: ../../include/functions_api.php:5426
 msgid "Error disabling module"
-msgstr ""
+msgstr "Error disabling module"
 
 #: ../../include/functions_api.php:5447
 msgid "Correct module enable"
@@ -18932,7 +19000,7 @@ msgstr "Successfully enabled module"
 
 #: ../../include/functions_api.php:5450
 msgid "Error enabling module"
-msgstr ""
+msgstr "Error enabling module"
 
 #: ../../include/functions_groups.php:59
 msgid "Alert Actions"
@@ -18972,38 +19040,38 @@ msgstr "Network maps"
 
 #: ../../mobile/operation/home.php:30
 msgid "PandoraFMS: Home"
-msgstr ""
+msgstr "PandoraFMS: Home"
 
 #: ../../mobile/operation/home.php:45
 msgid "Tactical"
-msgstr ""
+msgstr "Tactical"
 
 #: ../../mobile/operation/modules.php:171
 msgid "PandoraFMS: Modules"
-msgstr ""
+msgstr "PandoraFMS: Modules"
 
 #: ../../mobile/operation/modules.php:174
 #, php-format
 msgid "Filter Modules by %s"
-msgstr ""
+msgstr "Filter Modules by %s"
 
 #: ../../mobile/operation/modules.php:234
 #: ../../mobile/operation/events.php:581 ../../mobile/operation/alerts.php:199
 #: ../../mobile/operation/agents.php:190
 msgid "Apply Filter"
-msgstr ""
+msgstr "Apply Filter"
 
 #: ../../mobile/operation/modules.php:437
 msgid "Interval."
-msgstr ""
+msgstr "Interval."
 
 #: ../../mobile/operation/modules.php:443
 msgid "Last update."
-msgstr ""
+msgstr "Last update."
 
 #: ../../mobile/operation/modules.php:522
 msgid "No modules"
-msgstr ""
+msgstr "No modules"
 
 #: ../../mobile/operation/modules.php:544
 #: ../../mobile/operation/events.php:768
@@ -19017,226 +19085,227 @@ msgstr "Loading..."
 #: ../../mobile/operation/events.php:997 ../../mobile/operation/alerts.php:292
 #: ../../mobile/operation/agents.php:392
 msgid "(Default)"
-msgstr ""
+msgstr "(Default)"
 
 #: ../../mobile/operation/modules.php:627
 #, php-format
 msgid ""
 "(Status: %s - Group: %s - Module group: %s - Tag: %s - Free Search: %s)"
 msgstr ""
+"(Status: %s - Group: %s - Module group: %s - Tag: %s - Free Search: %s)"
 
 #: ../../mobile/operation/groups.php:66
 msgid "PandoraFMS: Groups"
-msgstr ""
+msgstr "PandoraFMS: Groups"
 
 #: ../../mobile/operation/events.php:335 ../../mobile/operation/events.php:336
 #: ../../mobile/operation/events.php:513 ../../mobile/operation/events.php:514
 msgid "Preset Filters"
-msgstr ""
+msgstr "Preset Filters"
 
 #: ../../mobile/operation/events.php:401
 msgid "Event detail"
-msgstr ""
+msgstr "Event details"
 
 #: ../../mobile/operation/events.php:474
 msgid "Sucessful validate"
-msgstr ""
+msgstr "Validated successfully"
 
 #: ../../mobile/operation/events.php:476
 msgid "Fail validate"
-msgstr ""
+msgstr "validation failed"
 
 #: ../../mobile/operation/events.php:486
 msgid "ERROR: Event detail"
-msgstr ""
+msgstr "ERROR: Event details"
 
 #: ../../mobile/operation/events.php:488
 msgid "Error connecting to DB pandora."
-msgstr ""
+msgstr "Error connecting to Pandora FMS DB"
 
 #: ../../mobile/operation/events.php:492
 msgid "PandoraFMS: Events"
-msgstr ""
+msgstr "PandoraFMS: Events"
 
 #: ../../mobile/operation/events.php:498
 #, php-format
 msgid "Filter Events by %s"
-msgstr ""
+msgstr "Filter Events by %s"
 
 #: ../../mobile/operation/events.php:1003
 #, php-format
 msgid "Filter: %s"
-msgstr ""
+msgstr "Filter: %s"
 
 #: ../../mobile/operation/events.php:1018
 #, php-format
 msgid "(Status: %s - Hours: %s - Type: %s - Severity: %s - Free Search: %s)"
-msgstr ""
+msgstr "(Status: %s - Hours: %s - Type: %s - Severity: %s - Free Search: %s)"
 
 #: ../../mobile/operation/alerts.php:86 ../../mobile/operation/alerts.php:87
 #: ../../mobile/operation/alerts.php:189 ../../mobile/operation/alerts.php:190
 msgid "Stand by"
-msgstr ""
+msgstr "Stand by"
 
 #: ../../mobile/operation/alerts.php:145
 msgid "PandoraFMS: Alerts"
-msgstr ""
+msgstr "PandoraFMS: Alerts"
 
 #: ../../mobile/operation/alerts.php:148
 #, php-format
 msgid "Filter Alerts by %s"
-msgstr ""
+msgstr "Filter Alerts by %s"
 
 #: ../../mobile/operation/alerts.php:259
 msgid "Last Fired"
-msgstr ""
+msgstr "Last Fired"
 
 #: ../../mobile/operation/alerts.php:269
 msgid "No alerts"
-msgstr ""
+msgstr "No alerts"
 
 #: ../../mobile/operation/alerts.php:299
 #, php-format
 msgid "(Status: %s - Standby: %s - Group: %s - Free Search: %s)"
-msgstr ""
+msgstr "(Status: %s - Standby: %s - Group: %s - Free Search: %s)"
 
 #: ../../mobile/operation/module_graph.php:298
 #: ../../mobile/operation/agent.php:77
 #, php-format
 msgid "PandoraFMS: %s"
-msgstr ""
+msgstr "PandoraFMS: %s"
 
 #: ../../mobile/operation/module_graph.php:312
 msgid "Show Alerts"
-msgstr ""
+msgstr "Show Alerts"
 
 #: ../../mobile/operation/module_graph.php:320
 msgid "Show Events"
-msgstr ""
+msgstr "Show Events"
 
 #: ../../mobile/operation/module_graph.php:328
 msgid "Time compare (Separated)"
-msgstr ""
+msgstr "Time comparison (Separated)"
 
 #: ../../mobile/operation/module_graph.php:336
 msgid "Time compare (Overlapped)"
-msgstr ""
+msgstr "Time comparison (Overlapped)"
 
 #: ../../mobile/operation/module_graph.php:352
 msgid "Avg Only"
-msgstr ""
+msgstr "Only Avg"
 
 #: ../../mobile/operation/module_graph.php:357
 msgid "Time range (hours)"
-msgstr ""
+msgstr "Time range (hours)"
 
 #: ../../mobile/operation/module_graph.php:391
 msgid "Update graph"
-msgstr ""
+msgstr "Update graph"
 
 #: ../../mobile/operation/module_graph.php:400
 msgid "Error get the graph"
-msgstr ""
+msgstr "Error getting the graph"
 
 #: ../../mobile/operation/tactical.php:58
 msgid "PandoraFMS: Tactical"
-msgstr ""
+msgstr "PandoraFMS: Tactical"
 
 #: ../../mobile/operation/tactical.php:133
 msgid "Last activity"
-msgstr ""
+msgstr "Last activity"
 
 #: ../../mobile/operation/agent.php:80 ../../mobile/operation/agents.php:152
 msgid "PandoraFMS: Agents"
-msgstr ""
+msgstr "PandoraFMS: Agents"
 
 #: ../../mobile/operation/agent.php:85
 msgid "No agent found"
-msgstr ""
+msgstr "No agents found"
 
 #: ../../mobile/operation/agent.php:159
 #, php-format
 msgid "Last %s Events"
-msgstr ""
+msgstr "Last %s Events"
 
 #: ../../mobile/operation/agents.php:155
 #, php-format
 msgid "Filter Agents by %s"
-msgstr ""
+msgstr "Filter Agents by %s"
 
 #: ../../mobile/operation/agents.php:262
 msgid "I."
-msgstr ""
+msgstr "I."
 
 #: ../../mobile/operation/agents.php:268
 msgid "M."
-msgstr ""
+msgstr "M."
 
 #: ../../mobile/operation/agents.php:281
 msgid "L."
-msgstr ""
+msgstr "L."
 
 #: ../../mobile/operation/agents.php:310
 msgid "No agents"
-msgstr ""
+msgstr "No agents"
 
 #: ../../mobile/operation/agents.php:400
 #, php-format
 msgid "(Status: %s - Group: %s - Free Search: %s)"
-msgstr ""
+msgstr "(Status: %s - Group: %s - Free Search: %s)"
 
 #: ../../mobile/include/ui.class.php:87 ../../mobile/include/ui.class.php:126
 #: ../../mobile/include/ui.class.php:168
 msgid "Pandora FMS mobile"
-msgstr ""
+msgstr "Pandora FMS mobile"
 
 #: ../../mobile/include/ui.class.php:181
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: ../../mobile/include/ui.class.php:619
 msgid "Not found header."
-msgstr ""
+msgstr "Header not found."
 
 #: ../../mobile/include/ui.class.php:622
 msgid "Not found content."
-msgstr ""
+msgstr "Content not found."
 
 #: ../../mobile/include/ui.class.php:625
 msgid "Not found footer."
-msgstr ""
+msgstr "Footer not found."
 
 #: ../../mobile/include/ui.class.php:628
 msgid "Incorrect form."
-msgstr ""
+msgstr "Incorrect form."
 
 #: ../../mobile/include/ui.class.php:631
 msgid "Incorrect grid."
-msgstr ""
+msgstr "Incorrect grid."
 
 #: ../../mobile/include/ui.class.php:634
 msgid "Incorrect collapsible."
-msgstr ""
+msgstr "Wrong collapsible."
 
 #: ../../mobile/include/user.class.php:143
 msgid "Login Failed"
-msgstr ""
+msgstr "Login Failed"
 
 #: ../../mobile/include/user.class.php:144
 msgid "User not found in database or incorrect password."
-msgstr ""
+msgstr "User not found in database or wrong password."
 
 #: ../../mobile/include/user.class.php:151
 msgid "Login out"
-msgstr ""
+msgstr "Log out"
 
 #: ../../mobile/include/user.class.php:168
 msgid "user"
-msgstr ""
+msgstr "User"
 
 #: ../../mobile/include/user.class.php:175
 msgid "password"
-msgstr ""
+msgstr "Password"
 
 #: ../../mobile/include/user.class.php:180
 msgid "Login"
@@ -19701,7 +19770,7 @@ msgstr "Last day"
 
 #: ../../godmode/setup/performance.php:85
 msgid "10 days"
-msgstr ""
+msgstr "10 days"
 
 #: ../../godmode/setup/performance.php:87
 msgid "2 weeks"
@@ -19725,6 +19794,9 @@ msgid ""
 "number is reached then a warning message will appear in the header "
 "notification space."
 msgstr ""
+"This number is the maximum number of files allowed in the attachment "
+"directory. If this number is reached, a warning message will appear in the "
+"header notification space."
 
 #: ../../godmode/setup/performance.php:112
 msgid "Database maintenance options"
@@ -19756,28 +19828,35 @@ msgid ""
 "Must have the same time zone as the system or database to avoid mismatches "
 "of time."
 msgstr ""
+"The time zone must be the same as the system or database to avoid mismatches "
+"of time."
 
 #: ../../godmode/setup/setup_general.php:195
 #: ../../godmode/setup/setup_general.php:200
 #: ../../godmode/setup/setup_general.php:205
 msgid "Play sound"
-msgstr ""
+msgstr "Play sound"
 
 #: ../../godmode/setup/setup_general.php:221
 msgid ""
 "When it is set as \"yes\" in some important sections check if the user have "
 "gone from url Pandora."
 msgstr ""
+"When it is set as \"yes\", checks will be performed in some important "
+"sections  to check if the user has logged out from Pandora url."
 
 #: ../../godmode/setup/setup_general.php:229
 msgid ""
 "If set to yes no events or alerts will be generated, but agents will "
 "continue receiving data."
 msgstr ""
+"If set to \"yes\" no events or alerts will be generated, but agents will "
+"continue receiving data."
 
 #: ../../godmode/setup/setup_general.php:238
 msgid "The string modules with several lines show as command output"
 msgstr ""
+"The string modules with several lines will be shown as a command output"
 
 #: ../../godmode/setup/setup_general.php:245
 msgid "General options"
@@ -19837,7 +19916,7 @@ msgstr "Visual styles"
 
 #: ../../godmode/setup/setup.php:136
 msgid "Correct update the setup options"
-msgstr ""
+msgstr "Correct update the setup options"
 
 #: ../../godmode/setup/setup_netflow.php:44
 msgid "Directory where netflow data will be stored."
@@ -19848,18 +19927,21 @@ msgid ""
 "Maximum number of points that a netflow area chart will display. The higher "
 "the resolution the performance. Values between 50 and 100 are recommended."
 msgstr ""
+"Maximum number of points that a netflow area chart will display. The higher "
+"the resolution, the higher the performance. Values between 50 and 100 are "
+"recommended."
 
 #: ../../godmode/setup/setup_netflow.php:60
 msgid "Sets the maximum lifetime for netflow data in days."
-msgstr ""
+msgstr "This parameter sets the maximum lifetime for netflow data in days."
 
 #: ../../godmode/setup/setup_visuals.php:90
 msgid "Interval values"
-msgstr ""
+msgstr "Interval values"
 
 #: ../../godmode/setup/setup_visuals.php:100
 msgid "Add new custom value to intervals"
-msgstr ""
+msgstr "Add new custom values to intervals"
 
 #: ../../godmode/setup/setup_visuals.php:133
 msgid "Colors"
@@ -19924,10 +20006,13 @@ msgid ""
 "This enabling this, you get a label with agent name in GIS maps. If you have "
 "lots of agents in the map, will be unreadable. Disabled by default."
 msgstr ""
+"You will get a label with agent name in GIS maps by enabling this. If you "
+"have lots of agents in the map, it will be unreadable. Disabled by default."
 
 #: ../../godmode/setup/setup_visuals.php:228
 msgid "Agent icon for GIS Maps. If set to \"none\", group icon will be used"
 msgstr ""
+"Agent icon for GIS Maps. If set to \"none\", the group icon will be used"
 
 #: ../../godmode/setup/news.php:28
 msgid "Site news management"
@@ -20320,11 +20405,11 @@ msgstr "Create a new WMI component"
 
 #: ../../godmode/modules/manage_network_components_form_common.php:139
 msgid "Any value below this number is discarted"
-msgstr ""
+msgstr "Any value below this number is discarded"
 
 #: ../../godmode/modules/manage_network_components_form_common.php:141
 msgid "Any value over this number is discarted"
-msgstr ""
+msgstr "Any value over this number is discarded"
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:32
 #: ../../godmode/modules/manage_network_components_form_wmi.php:150
@@ -20362,7 +20447,7 @@ msgstr "Max. timeout"
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
 #: ../../godmode/servers/plugin.php:121
 msgid "Max. retries"
-msgstr ""
+msgstr "Max. retries"
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:194
 msgid "Minimum Data"
@@ -20411,11 +20496,11 @@ msgstr "Edit report"
 
 #: ../../godmode/netflow/nf_item_list.php:58
 msgid "Netflow reports"
-msgstr ""
+msgstr "Netflow reports"
 
 #: ../../godmode/netflow/nf_item_list.php:59
 msgid "Item list"
-msgstr ""
+msgstr "Item list"
 
 #: ../../godmode/netflow/nf_item_list.php:149
 msgid "Chart type"
@@ -20433,7 +20518,7 @@ msgstr "Manage Netflow Filter"
 #: ../../godmode/netflow/nf_edit_form.php:63
 #: ../../godmode/netflow/nf_edit_form.php:68 ../../godmode/menu.php:226
 msgid "Netflow filters"
-msgstr ""
+msgstr "Netflow filters"
 
 #: ../../godmode/netflow/nf_edit.php:160
 #: ../../godmode/events/event_filter.php:151
@@ -20530,7 +20615,7 @@ msgstr "Mode"
 
 #: ../../godmode/servers/manage_recontask_form.php:177
 msgid "The minimum recomended interval for Recon Task is 5 minutes"
-msgstr ""
+msgstr "The recommended minimum interval for Recon Task is 5 minutes"
 
 #: ../../godmode/servers/manage_recontask_form.php:181
 msgid "Module template"
@@ -20575,6 +20660,8 @@ msgid ""
 "several networks separated by comma. For example: "
 "192.168.100.0/24,192.168.50.0/24"
 msgstr ""
+"Several networks separated by comma. For example: "
+"192.168.100.0/24,192.168.50.0/24"
 
 #: ../../godmode/servers/manage_recontask_form.php:231
 msgid "Script field #2"
@@ -20585,6 +20672,8 @@ msgid ""
 "several communities separated by comma. For example: "
 "snmp_community,public,private "
 msgstr ""
+"Several communities separated by comma. For example: "
+"snmp_community,public,private "
 
 #: ../../godmode/servers/manage_recontask_form.php:235
 msgid "Script field #3"
@@ -20659,11 +20748,14 @@ msgid ""
 "This value only will be applied if is minor than the server general "
 "configuration plugin timeout"
 msgstr ""
+"This value only will be applied if it's smaller than the server general "
+"configuration plugin timeout"
 
 #: ../../godmode/servers/plugin.php:119
 msgid ""
 "If you set a 0 seconds timeout, the server plugin timeout will be used"
 msgstr ""
+"If you set a 0 seconds timeout, the server plugin timeout will be used"
 
 #: ../../godmode/servers/plugin.php:162
 msgid "Plugin command"
@@ -20671,7 +20763,7 @@ msgstr "Plug-in command"
 
 #: ../../godmode/servers/plugin.php:170
 msgid "Plug-in parameters"
-msgstr ""
+msgstr "Plug-in parameters"
 
 #: ../../godmode/servers/plugin.php:178
 #: ../../godmode/alerts/configure_alert_action.php:143
@@ -20690,7 +20782,7 @@ msgstr "Command"
 
 #: ../../godmode/servers/plugin.php:271
 msgid "Parameters macros"
-msgstr ""
+msgstr "Parameter macros"
 
 #: ../../godmode/servers/plugin.php:294
 msgid "Plugins registered in Pandora FMS"
@@ -20722,7 +20814,7 @@ msgstr "Plug-in deleted successfully"
 
 #: ../../godmode/servers/plugin.php:463
 msgid "All the modules that are using this plugin will be deleted"
-msgstr ""
+msgstr "All the modules that this plugin is using  will be deleted"
 
 #: ../../godmode/servers/plugin.php:469
 msgid "There are no plugins in the system"
@@ -20733,6 +20825,8 @@ msgid ""
 "The plugin command cannot be updated because some modules or components are "
 "using the plugin."
 msgstr ""
+"The plugin command cannot be updated because some modules or components are "
+"using the plugin."
 
 #: ../../godmode/servers/manage_recontask.php:43
 msgid "Successfully deleted recon task"
@@ -20755,7 +20849,7 @@ msgstr "Error updating recon task"
 #: ../../godmode/servers/manage_recontask.php:138
 #: ../../godmode/servers/manage_recontask.php:193
 msgid "Incorrect format in Subnet field"
-msgstr ""
+msgstr "Incorrect format in Subnet field"
 
 #: ../../godmode/servers/manage_recontask.php:186
 msgid "Network provided is not correct"
@@ -20898,7 +20992,7 @@ msgstr "Edit agents"
 
 #: ../../godmode/users/configure_profile.php:158
 msgid "Disable agents"
-msgstr ""
+msgstr "Disable agents"
 
 #: ../../godmode/users/configure_profile.php:160
 msgid "Edit alerts"
@@ -20914,7 +21008,7 @@ msgstr "Manage Database"
 
 #: ../../godmode/users/configure_profile.php:170
 msgid "Edit reports"
-msgstr ""
+msgstr "Edit reports"
 
 #: ../../godmode/users/configure_profile.php:172
 msgid "Manage reports"
@@ -20922,7 +21016,7 @@ msgstr "Manage reports"
 
 #: ../../godmode/users/configure_profile.php:176
 msgid "Edit events"
-msgstr ""
+msgstr "Edit events"
 
 #: ../../godmode/users/configure_profile.php:180
 msgid "Pandora management"
@@ -20988,35 +21082,37 @@ msgstr "Use global conf"
 
 #: ../../godmode/users/configure_user.php:473
 msgid "Metaconsole access"
-msgstr ""
+msgstr "Metaconsole access"
 
 #: ../../godmode/users/configure_user.php:481
 msgid "Not Login"
-msgstr ""
+msgstr "Not logged in"
 
 #: ../../godmode/users/configure_user.php:482
 msgid "The user with not login set only can access to API."
 msgstr ""
+"Every user that has set the \"not login parameter\" only can access to API"
 
 #: ../../godmode/users/configure_user.php:488
 msgid "Enable agents managment"
-msgstr ""
+msgstr "Enable agents management"
 
 #: ../../godmode/users/configure_user.php:495
 msgid "Assigned node"
-msgstr ""
+msgstr "Assigned node"
 
 #: ../../godmode/users/configure_user.php:495
 msgid "Server where the agents managed of this user will be placed"
-msgstr ""
+msgstr "Server where the agents managed by this user will be placed"
 
 #: ../../godmode/users/configure_user.php:507
 msgid "Enable node access"
-msgstr ""
+msgstr "Enable node access"
 
 #: ../../godmode/users/configure_user.php:507
 msgid "With this option enabled, the user will can access to nodes console"
 msgstr ""
+"With this option enabled, the user will have access to the nodes console"
 
 #: ../../godmode/users/profile_list.php:150
 msgid "There was a problem updating this profile"
@@ -21049,7 +21145,7 @@ msgstr "Agents reading"
 
 #: ../../godmode/users/profile_list.php:207
 msgid "Agents disable"
-msgstr ""
+msgstr "Disable agents"
 
 #: ../../godmode/users/profile_list.php:208
 msgid "Alerts editing"
@@ -21069,27 +21165,27 @@ msgstr "Alerts management"
 
 #: ../../godmode/users/profile_list.php:212
 msgid "Reports reading"
-msgstr ""
+msgstr "Report reading"
 
 #: ../../godmode/users/profile_list.php:213
 msgid "Reports writing"
-msgstr ""
+msgstr "Report writing"
 
 #: ../../godmode/users/profile_list.php:214
 msgid "Reports management"
-msgstr ""
+msgstr "Report management"
 
 #: ../../godmode/users/profile_list.php:215
 msgid "Events reading"
-msgstr ""
+msgstr "Event reading"
 
 #: ../../godmode/users/profile_list.php:216
 msgid "Events writing"
-msgstr ""
+msgstr "Event writing"
 
 #: ../../godmode/users/profile_list.php:217
 msgid "Events management"
-msgstr ""
+msgstr "Event management"
 
 #: ../../godmode/users/profile_list.php:218
 msgid "Systems management"
@@ -21336,15 +21432,15 @@ msgstr "Items"
 
 #: ../../godmode/reporting/reporting_builder.php:297
 msgid "Free text for search: "
-msgstr ""
+msgstr "Free text for search: "
 
 #: ../../godmode/reporting/reporting_builder.php:409
 msgid "HTML view"
-msgstr ""
+msgstr "HTML view"
 
 #: ../../godmode/reporting/reporting_builder.php:410
 msgid "Export to XML"
-msgstr ""
+msgstr "Export to XML"
 
 #: ../../godmode/reporting/reporting_builder.php:475
 msgid "Create report"
@@ -21376,19 +21472,19 @@ msgstr "Move after to"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:444
 msgid "Delete items"
-msgstr ""
+msgstr "Delete items"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:445
 msgid "Delete selected items from position: "
-msgstr ""
+msgstr "Delete selected items from position: "
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:447
 msgid "Delete above to"
-msgstr ""
+msgstr "Delete above"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:447
 msgid "Delete below to"
-msgstr ""
+msgstr "Delete below"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:475
 msgid ""
@@ -21404,11 +21500,11 @@ msgstr "Please select any item to order"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:521
 msgid "Are you sure to delete the items into the report?\\n"
-msgstr ""
+msgstr "Are you sure you want to delete the report agents?\\n"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:543
 msgid "Please select any item to delete"
-msgstr ""
+msgstr "Please select any item to delete"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:94
 msgid "Range between elements (px)"
@@ -21433,7 +21529,7 @@ msgstr "Agent - Module"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:182
 msgid "Enable link agent"
-msgstr ""
+msgstr "Enable agent link"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:191
 #: ../../godmode/reporting/visual_console_builder.wizard.php:196
@@ -21450,7 +21546,7 @@ msgstr "Number of Graphs"
 
 #: ../../godmode/reporting/graphs.php:193
 msgid "There are no defined graphs"
-msgstr ""
+msgstr "There are no defined graphs"
 
 #: ../../godmode/reporting/graphs.php:199
 msgid "Create graph"
@@ -21503,25 +21599,27 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.main.php:65
 msgid "Only the group can view the report"
-msgstr ""
+msgstr "Only the group can see the report"
 
 #: ../../godmode/reporting/reporting_builder.main.php:66
 msgid "The next group can edit the report"
-msgstr ""
+msgstr "The next group can edit the report"
 
 #: ../../godmode/reporting/reporting_builder.main.php:67
 msgid "Only the user and admin user can edit the report"
-msgstr ""
+msgstr "Only the user and the admin user can edit the report"
 
 #: ../../godmode/reporting/reporting_builder.main.php:69
 msgid "Write Access"
-msgstr ""
+msgstr "Write Access"
 
 #: ../../godmode/reporting/reporting_builder.main.php:70
 msgid ""
 "For example, you want a report that the people of \"All\" groups can see but "
 "you want to edit only for you or your group."
 msgstr ""
+"For example, you want people from \"All\" groups to see the report but you "
+"just want you or your group to have permissions to edit it."
 
 #: ../../godmode/reporting/visual_console_builder.php:89
 msgid "Successfully update."
@@ -21561,7 +21659,7 @@ msgstr "Simple Value (Process Avg)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:470
 msgid "Not valid"
-msgstr ""
+msgstr "Not valid"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:868
 msgid "Target server"
@@ -21569,27 +21667,27 @@ msgstr "Target server"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:978
 msgid "Greater or equal (>=)"
-msgstr ""
+msgstr "Greater or equal (>=)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:979
 msgid "Less or equal (<=)"
-msgstr ""
+msgstr "Smaller or equal (<=)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:980
 msgid "Less (<)"
-msgstr ""
+msgstr "Smaller (<)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:981
 msgid "Greater (>)"
-msgstr ""
+msgstr "Greater (>)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:982
 msgid "Equal (=)"
-msgstr ""
+msgstr "Equal (=)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:983
 msgid "Not equal (!=)"
-msgstr ""
+msgstr "Not equal (!=)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1106
 msgid "Please save the SLA for start to add items in this list."
@@ -21600,6 +21698,8 @@ msgid ""
 "Please be careful, when the module have diferent intervals in their life, "
 "the summatory maybe get bad result."
 msgstr ""
+"Please be careful, when the module has different intervals in their life, "
+"the summatory may get bad result."
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1231
 msgid "Please save the report to start adding items into the list."
@@ -21627,16 +21727,16 @@ msgstr "Remote agent configuration"
 
 #: ../../godmode/agentes/modificar_agente.php:525
 msgid "Enable agent"
-msgstr ""
+msgstr "Enable agent"
 
 #: ../../godmode/agentes/modificar_agente.php:530
 msgid "Disable agent"
-msgstr ""
+msgstr "Disable agent"
 
 #: ../../godmode/agentes/module_manager_editor.php:390
 #, php-format
 msgid "DEBUG: Invalid module type specified in %s:%s"
-msgstr ""
+msgstr "DEBUG: Invalid module type specified in %s:%s"
 
 #: ../../godmode/agentes/module_manager_editor.php:392
 msgid ""
@@ -21647,6 +21747,12 @@ msgid ""
 "#2124706 for the solution)<br />\n"
 "\t\t\t\t3) found a new bug - please report a way to duplicate this error"
 msgstr ""
+"Most likely you have recently upgraded from an earlier version of Pandora "
+"and either <br />\n"
+"\t\t\t\t1) forgot to use the database converter<br />\n"
+"\t\t\t\t2) used a bad version of the database converter (see Bugreport "
+"#2124706 for the solution)<br />\n"
+"\t\t\t\t3) found a new bug - please report a way to duplicate this error"
 
 #: ../../godmode/agentes/module_manager_editor.php:460
 msgid "No module to predict"
@@ -21682,15 +21788,15 @@ msgstr "Created by template "
 
 #: ../../godmode/agentes/agent_template.php:120
 msgid "Error adding modules"
-msgstr ""
+msgstr "Error adding modules"
 
 #: ../../godmode/agentes/agent_template.php:122
 msgid "Error adding modules. The following errors already exists: "
-msgstr ""
+msgstr "Error adding modules. The following errors already exist: "
 
 #: ../../godmode/agentes/agent_template.php:125
 msgid "Modules successfully added"
-msgstr ""
+msgstr "Modules successfully added"
 
 #: ../../godmode/agentes/agent_template.php:153
 msgid "Assign"
@@ -21722,11 +21828,11 @@ msgstr "Module execution flip flop time interval (in secs)."
 
 #: ../../godmode/agentes/module_manager_editor_common.php:314
 msgid "Any value below this number is discarted."
-msgstr ""
+msgstr "Any value below this number will be discarded."
 
 #: ../../godmode/agentes/module_manager_editor_common.php:316
 msgid "Any value over this number is discarted."
-msgstr ""
+msgstr "Any value over this number will be discarded."
 
 #: ../../godmode/agentes/module_manager_editor_common.php:318
 #: ../../godmode/massive/massive_edit_modules.php:398
@@ -21743,17 +21849,19 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_common.php:405
 msgid "The module still stores data but the alerts and events will be stop"
-msgstr ""
+msgstr "The module still stores data but the alerts and events will stop"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:422
 msgid "Cron"
-msgstr ""
+msgstr "Cron"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:422
 msgid ""
 "If cron is set the module interval is ignored and the module runs on the "
 "specified date and time"
 msgstr ""
+"If cron is set, the module interval will be ignored and the module will run "
+"on the specified date and time"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:426
 msgid "Timeout"
@@ -21761,15 +21869,15 @@ msgstr "Timeout"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:427
 msgid "Seconds that agent will wait for the execution of the module."
-msgstr ""
+msgstr "Seconds that agent will wait for the execution of the module."
 
 #: ../../godmode/agentes/module_manager_editor_common.php:429
 msgid "Retries"
-msgstr ""
+msgstr "Retries"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:430
 msgid "Number of retries that the module will attempt to run."
-msgstr ""
+msgstr "Number of retries that the module will attempt to run."
 
 #: ../../godmode/agentes/agent_conf_gis.php:46
 msgid ""
@@ -21858,19 +21966,23 @@ msgid ""
 "There was a problem updating module. Another module already exists with the "
 "same name."
 msgstr ""
+"A problem occurred while updating the module. Another module  with the same "
+"name already exists."
 
 #: ../../godmode/agentes/configurar_agente.php:912
 msgid ""
 "There was a problem updating module. Some required fields are missed: (name)"
 msgstr ""
+"A problem occurred while updating module. Some required fields are missing: "
+"(name)"
 
 #: ../../godmode/agentes/configurar_agente.php:915
 msgid "There was a problem updating module. \"No change\""
-msgstr ""
+msgstr "A problem occurred while updating module. \"No change\""
 
 #: ../../godmode/agentes/configurar_agente.php:920
 msgid "There was a problem updating module. Processing error"
-msgstr ""
+msgstr "A problem occurred while updating module. Processing error"
 
 #: ../../godmode/agentes/configurar_agente.php:939
 msgid "Module successfully updated"
@@ -21881,15 +21993,19 @@ msgid ""
 "There was a problem adding module. Another module already exists with the "
 "same name."
 msgstr ""
+"A problem occurred while adding module. There's another module with the same "
+"name."
 
 #: ../../godmode/agentes/configurar_agente.php:1032
 msgid ""
 "There was a problem adding module. Some required fields are missed : (name)"
 msgstr ""
+"A problem occurred while adding module. Some required fields are missing: "
+"(name)"
 
 #: ../../godmode/agentes/configurar_agente.php:1037
 msgid "There was a problem adding module. Processing error"
-msgstr ""
+msgstr "A problem occurred while adding module. Processing error"
 
 #: ../../godmode/agentes/configurar_agente.php:1201
 msgid "There was a problem deleting the module"
@@ -21902,29 +22018,29 @@ msgstr "Module deleted succesfully"
 #: ../../godmode/agentes/configurar_agente.php:1219
 #, php-format
 msgid "copy of %s"
-msgstr ""
+msgstr "copy of %s"
 
 #: ../../godmode/agentes/configurar_agente.php:1228
 #, php-format
 msgid "copy of %s (%d)"
-msgstr ""
+msgstr "copy of %s (%d)"
 
 #: ../../godmode/agentes/configurar_agente.php:1302
 msgid "Save by Pandora Console"
-msgstr ""
+msgstr "Saved by Pandora Console"
 
 #: ../../godmode/agentes/configurar_agente.php:1317
 msgid "Update by Pandora Console"
-msgstr ""
+msgstr "Updated by Pandora Console"
 
 #: ../../godmode/agentes/configurar_agente.php:1330
 msgid "Insert by Pandora Console"
-msgstr ""
+msgstr "Inserted by Pandora Console"
 
 #: ../../godmode/agentes/configurar_agente.php:1382
 #: ../../godmode/agentes/configurar_agente.php:1389
 msgid "Invalid tab specified"
-msgstr ""
+msgstr "Invalid tab specified"
 
 #: ../../godmode/agentes/fields_manager.php:31
 msgid "Agents custom fields manager"
@@ -21983,51 +22099,51 @@ msgstr "Planned downtime must have a name"
 #: ../../godmode/agentes/planned_downtime.editor.php:314
 #: ../../godmode/agentes/planned_downtime.list.php:234
 msgid "Disabled Agents"
-msgstr ""
+msgstr "Disabled Agents"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:315
 #: ../../godmode/agentes/planned_downtime.list.php:235
 msgid "Disabled only Alerts"
-msgstr ""
+msgstr "Only Disabled Alerts"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:318
 #: ../../godmode/agentes/planned_downtime.list.php:196
 msgid "Execution"
-msgstr ""
+msgstr "Execution"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:319
 #: ../../godmode/agentes/planned_downtime.list.php:239
 msgid "once"
-msgstr ""
+msgstr "once"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:320
 #: ../../godmode/agentes/planned_downtime.list.php:240
 msgid "Periodically"
-msgstr ""
+msgstr "Periodically"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:324
 msgid "Configure the time"
-msgstr ""
+msgstr "Configure the time"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:347
 msgid "Type Periodicity:"
-msgstr ""
+msgstr "Type of periodicity:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:384
 msgid "From day:"
-msgstr ""
+msgstr "From day:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:389
 msgid "To day:"
-msgstr ""
+msgstr "To day:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:398
 msgid "From hour:"
-msgstr ""
+msgstr "From hour:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:404
 msgid "To hour:"
-msgstr ""
+msgstr "To hour:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:445
 msgid "Available agents"
@@ -22039,11 +22155,11 @@ msgstr "Filter by group"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:488
 msgid "Available modules:"
-msgstr ""
+msgstr "Available modules:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:489
 msgid "Only for type Quiet for downtimes."
-msgstr ""
+msgstr "Only for Quiet type for downtimes."
 
 #: ../../godmode/agentes/planned_downtime.editor.php:503
 msgid "Agents planned for this downtime"
@@ -22055,43 +22171,43 @@ msgstr "There are no scheduled downtimes"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:545
 msgid "All alerts"
-msgstr ""
+msgstr "All alerts"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:548
 msgid "Entire agent"
-msgstr ""
+msgstr "Entire agent"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:552
 #: ../../godmode/agentes/planned_downtime.editor.php:658
 msgid "All modules"
-msgstr ""
+msgstr "All modules"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:555
 #: ../../godmode/agentes/planned_downtime.editor.php:650
 #: ../../godmode/agentes/planned_downtime.editor.php:654
 msgid "Some modules"
-msgstr ""
+msgstr "Some modules"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:622
 msgid "Add Module:"
-msgstr ""
+msgstr "Add Module:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:833
 msgid "Please select a module."
-msgstr ""
+msgstr "Please select a module."
 
 #: ../../godmode/agentes/planned_downtime.list.php:65
 msgid "Succesful stopped the Downtime"
-msgstr ""
+msgstr "Downtime Successfully stopped"
 
 #: ../../godmode/agentes/planned_downtime.list.php:66
 msgid "Unsuccesful stopped the Downtime"
-msgstr ""
+msgstr "Downtime Unsuccessfully stopped"
 
 #: ../../godmode/agentes/planned_downtime.list.php:166
 #, php-format
 msgid "Enabled %s elements from the downtime"
-msgstr ""
+msgstr "Enabled %s elements from the downtime"
 
 #: ../../godmode/agentes/planned_downtime.list.php:192
 msgid "Name #Ag."
@@ -22108,19 +22224,19 @@ msgstr "No planned downtime"
 
 #: ../../godmode/agentes/planned_downtime.list.php:253
 msgid "Weekly:"
-msgstr ""
+msgstr "Weekly:"
 
 #: ../../godmode/agentes/planned_downtime.list.php:287
 msgid "Monthly:"
-msgstr ""
+msgstr "Monthly:"
 
 #: ../../godmode/agentes/planned_downtime.list.php:288
 msgid "From day"
-msgstr ""
+msgstr "From day"
 
 #: ../../godmode/agentes/planned_downtime.list.php:289
 msgid "To day"
-msgstr ""
+msgstr "To day"
 
 #: ../../godmode/agentes/planned_downtime.list.php:313
 msgid "Executed"
@@ -22169,25 +22285,25 @@ msgstr "Create a new prediction server module"
 
 #: ../../godmode/agentes/module_manager.php:119
 msgid "Get more modules in Pandora FMS Library"
-msgstr ""
+msgstr "Get more modules in Pandora FMS Library"
 
 #: ../../godmode/agentes/module_manager.php:152
 msgid "Nice try buddy"
-msgstr ""
+msgstr "Nice try, buddy!"
 
 #: ../../godmode/agentes/module_manager.php:261
 #, php-format
 msgid "There was a problem deleting %s modules, none deleted."
-msgstr ""
+msgstr "A problem occurred while deleting %s modules: none deleted."
 
 #: ../../godmode/agentes/module_manager.php:266
 msgid "All Modules deleted succesfully"
-msgstr ""
+msgstr "All Modules have been successfully deleted"
 
 #: ../../godmode/agentes/module_manager.php:270
 #, php-format
 msgid "There was a problem only deleted %s modules of %s total."
-msgstr ""
+msgstr "A problem occurred: only %s modules of %s total deleted"
 
 #: ../../godmode/agentes/module_manager.php:586
 msgid "(Adopt) (Unlinked) "
@@ -22195,11 +22311,11 @@ msgstr "(Adopt) (Unlinked) "
 
 #: ../../godmode/agentes/module_manager.php:637
 msgid "Enable module"
-msgstr ""
+msgstr "Enable module"
 
 #: ../../godmode/agentes/module_manager.php:641
 msgid "Disable module"
-msgstr ""
+msgstr "Disable module"
 
 #: ../../godmode/agentes/module_manager.php:656
 msgid "Normalize"
@@ -22207,19 +22323,19 @@ msgstr "Normalise"
 
 #: ../../godmode/agentes/module_manager.php:662
 msgid "Normalize (Disabled)"
-msgstr ""
+msgstr "Normalize (Disabled)"
 
 #: ../../godmode/agentes/module_manager.php:671
 msgid "Create network component"
-msgstr ""
+msgstr "Create network component"
 
 #: ../../godmode/agentes/module_manager.php:676
 msgid "Create network component (Disabled)"
-msgstr ""
+msgstr "Create network component (Disabled)"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:25
 msgid "Use this OID"
-msgstr ""
+msgstr "Use this OID"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:53
 msgid "Network server module"
@@ -22291,7 +22407,7 @@ msgstr "Agent icon for GIS Maps."
 #: ../../godmode/agentes/agent_manager.php:320
 #: ../../godmode/massive/massive_edit_agents.php:360
 msgid "The agent still runs but the alerts and events will be stop"
-msgstr ""
+msgstr "The agent will keep running but the alerts and events will stop"
 
 #: ../../godmode/agentes/agent_incidents.php:58
 msgid "No incidents associated to this agent"
@@ -22351,7 +22467,7 @@ msgstr "Manage tags"
 
 #: ../../godmode/menu.php:92
 msgid "Manage categories"
-msgstr ""
+msgstr "Manage categories"
 
 #: ../../godmode/menu.php:95
 msgid "Module types"
@@ -22367,7 +22483,7 @@ msgstr "Manage profiles"
 
 #: ../../godmode/menu.php:159
 msgid "Event filters"
-msgstr ""
+msgstr "Event filters"
 
 #: ../../godmode/menu.php:162
 msgid "Custom events"
@@ -22375,7 +22491,7 @@ msgstr "Custom events"
 
 #: ../../godmode/menu.php:163 ../../godmode/events/events.php:44
 msgid "Event responses"
-msgstr ""
+msgstr "Event responses"
 
 #: ../../godmode/menu.php:172
 msgid "Manage servers"
@@ -22517,63 +22633,63 @@ msgstr "Propagate the same ACL security into the child subgroups."
 
 #: ../../godmode/groups/configure_group.php:142
 msgid "Contact"
-msgstr ""
+msgstr "Contact"
 
 #: ../../godmode/groups/configure_group.php:142
 msgid "Contact information accessible through the _groupcontact_ macro"
-msgstr ""
+msgstr "Contact information accessible through the _groupcontact_ macro"
 
 #: ../../godmode/groups/configure_group.php:145
 msgid "Information accessible through the _group_other_ macro"
-msgstr ""
+msgstr "Information accessible through the _group_other_ macro"
 
 #: ../../godmode/category/edit_category.php:40
 #: ../../godmode/category/category.php:41
 msgid "List categories"
-msgstr ""
+msgstr "Category list"
 
 #: ../../godmode/category/edit_category.php:46
 #: ../../godmode/category/edit_category.php:49
 #: ../../godmode/category/category.php:47
 #: ../../godmode/category/category.php:50
 msgid "Categories configuration"
-msgstr ""
+msgstr "Category configuration"
 
 #: ../../godmode/category/edit_category.php:65
 msgid "Error updating category"
-msgstr ""
+msgstr "Error updating category"
 
 #: ../../godmode/category/edit_category.php:69
 msgid "Successfully updated category"
-msgstr ""
+msgstr "Category Updated Successfully"
 
 #: ../../godmode/category/edit_category.php:88
 msgid "Error creating category"
-msgstr ""
+msgstr "Error creating category"
 
 #: ../../godmode/category/edit_category.php:94
 msgid "Successfully created category"
-msgstr ""
+msgstr "Category Created Successfully"
 
 #: ../../godmode/category/category.php:60
 msgid "Error deleting category"
-msgstr ""
+msgstr "Error deleting category"
 
 #: ../../godmode/category/category.php:64
 msgid "Successfully deleted category"
-msgstr ""
+msgstr "Category successfully deleted"
 
 #: ../../godmode/category/category.php:85
 msgid "Create category"
-msgstr ""
+msgstr "Create category"
 
 #: ../../godmode/category/category.php:107
 msgid "Category name"
-msgstr ""
+msgstr "Category name"
 
 #: ../../godmode/category/category.php:130
 msgid "No categories found"
-msgstr ""
+msgstr "No categories found"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:34
 #: ../../godmode/snmpconsole/snmp_alert.php:38
@@ -22760,7 +22876,7 @@ msgstr ""
 
 #: ../../godmode/massive/massive_operations.php:162
 msgid "Please wait..."
-msgstr ""
+msgstr "Please wait..."
 
 #: ../../godmode/massive/massive_operations.php:210
 msgid "The blank fields will not be updated"
@@ -23001,15 +23117,15 @@ msgstr "Without status"
 
 #: ../../godmode/massive/massive_delete_action_alerts.php:56
 msgid "Could not be deleted. No agents selected"
-msgstr ""
+msgstr "Could not be deleted. No agents selected"
 
 #: ../../godmode/massive/massive_delete_action_alerts.php:72
 msgid "Could not be deleted. No alerts selected"
-msgstr ""
+msgstr "Could not be deleted. No alerts selected"
 
 #: ../../godmode/massive/massive_delete_action_alerts.php:111
 msgid "Could not be deleted. No action selected"
-msgstr ""
+msgstr "Could not be deleted. No action selected"
 
 #: ../../godmode/massive/massive_edit_modules.php:359
 msgid "SMNP community"
@@ -23018,30 +23134,31 @@ msgstr "SMNP community"
 #: ../../godmode/massive/massive_edit_modules.php:433
 msgid "The module still store data but the alerts and events will be stop"
 msgstr ""
+"The module will keep storing data but the alerts and events will stop"
 
 #: ../../godmode/events/event_responses.editor.php:72
 msgid "Location"
-msgstr ""
+msgstr "Location"
 
 #: ../../godmode/events/event_responses.editor.php:72
 msgid "For Command type Modal Window mode is enforced"
-msgstr ""
+msgstr "For Command type Modal Window mode is enforced"
 
 #: ../../godmode/events/event_responses.editor.php:73
 msgid "Modal window"
-msgstr ""
+msgstr "Modal window"
 
 #: ../../godmode/events/event_responses.editor.php:73
 msgid "New window"
-msgstr ""
+msgstr "New window"
 
 #: ../../godmode/events/event_responses.list.php:30
 msgid "Create response"
-msgstr ""
+msgstr "Create response"
 
 #: ../../godmode/events/event_responses.list.php:44
 msgid "No responses found"
-msgstr ""
+msgstr "No responses found"
 
 #: ../../godmode/events/event_edit_filter.php:166
 msgid ""
@@ -23051,31 +23168,31 @@ msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:221
 msgid "Choose between the users who have validated an event. "
-msgstr ""
+msgstr "Choose between the users who have validated an event. "
 
 #: ../../godmode/events/event_responses.php:52
 msgid "Response added succesfully"
-msgstr ""
+msgstr "Response added successfully"
 
 #: ../../godmode/events/event_responses.php:55
 msgid "Response cannot be added"
-msgstr ""
+msgstr "Response cannot be added"
 
 #: ../../godmode/events/event_responses.php:81
 msgid "Response updated succesfully"
-msgstr ""
+msgstr "Response successfully updated"
 
 #: ../../godmode/events/event_responses.php:84
 msgid "Response cannot be updated"
-msgstr ""
+msgstr "The response cannot be updated"
 
 #: ../../godmode/events/event_responses.php:93
 msgid "Response deleted succesfully"
-msgstr ""
+msgstr "Response successfully deleted"
 
 #: ../../godmode/events/event_responses.php:96
 msgid "Response cannot be deleted"
-msgstr ""
+msgstr "Response cannot be deleted"
 
 #: ../../godmode/events/custom_events.php:128
 msgid "Show event fields"
@@ -23164,6 +23281,7 @@ msgstr "Hyperlink to help information that has to exist previously."
 #: ../../godmode/tag/edit_tag.php:174
 msgid "Associated Email direction to use later in alerts associated to Tags."
 msgstr ""
+"This is the email address that will be used in alerts related to tags."
 
 #: ../../godmode/alerts/alert_templates.php:321
 msgid "No alert templates defined"
@@ -23193,12 +23311,12 @@ msgstr "Configure alert command"
 #: ../../godmode/alerts/configure_alert_command.php:86
 #, php-format
 msgid "Field %s description"
-msgstr ""
+msgstr "Field %s description"
 
 #: ../../godmode/alerts/configure_alert_command.php:101
 #, php-format
 msgid "Field %s values"
-msgstr ""
+msgstr "Field %s values"
 
 #: ../../godmode/alerts/alert_special_days.php:220
 msgid "No special days configured"
@@ -23227,7 +23345,7 @@ msgstr "Use special days list"
 
 #: ../../godmode/alerts/configure_alert_template.php:527
 msgid "Advanced fields management"
-msgstr ""
+msgstr "Advanced field management"
 
 #: ../../godmode/alerts/configure_alert_template.php:540
 #: ../../godmode/alerts/configure_alert_template.php:580
@@ -23235,7 +23353,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_commands.php:73
 #, php-format
 msgid "Field %s"
-msgstr ""
+msgstr "Field %s"
 
 #: ../../godmode/alerts/configure_alert_template.php:544
 msgid "Default action"
@@ -23274,14 +23392,15 @@ msgid ""
 "The alert would fire when the value doesn\\'t match <span "
 "id=\"value\"></span>"
 msgstr ""
+"The alert will fire when the value doesn't match <span id=\"value\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:721
 msgid "The alert would fire when the value is below <span id=\"min\"></span>"
-msgstr ""
+msgstr "The alert will fire when the value is below <span id=\"min\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:722
 msgid "The alert would fire when the value is above <span id=\"max\"></span>"
-msgstr ""
+msgstr "The alert will fire when the value is above <span id=\"max\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:725
 msgid "The alert would fire when the module value changes"
@@ -23418,7 +23537,7 @@ msgstr "Generate file"
 
 #: ../../extensions/system_info.php:328
 msgid "download here"
-msgstr ""
+msgstr "download it here"
 
 #: ../../extensions/system_info.php:331
 msgid "File:"
@@ -23459,7 +23578,7 @@ msgstr "You need to specify a user and a host address"
 
 #: ../../extensions/ssh_gateway.php:61
 msgid "Port (use 0 for default)"
-msgstr ""
+msgstr "Port (use 0 by default)"
 
 #: ../../extensions/ssh_gateway.php:63
 msgid "Connect mode"
@@ -23535,11 +23654,11 @@ msgstr "SNMPget executable does not exist."
 
 #: ../../extensions/net_tools.php:150
 msgid "Uptime"
-msgstr ""
+msgstr "Uptime"
 
 #: ../../extensions/net_tools.php:154
 msgid "Device info"
-msgstr ""
+msgstr "Device info"
 
 #: ../../extensions/net_tools.php:162
 msgid "Interface"
@@ -23646,6 +23765,8 @@ msgid ""
 "Blue cell when the module group and agent have all modules in not init "
 "status."
 msgstr ""
+"The blue cell appears when all the modules from an agent or a group are in "
+"not init status"
 
 #: ../../extensions/module_groups.php:317
 msgid "There are no defined groups or module groups"
@@ -23857,11 +23978,11 @@ msgstr "There's a new update for Pandora FMS"
 
 #: ../../extensions/update_manager/lib/functions.php:77
 msgid "Unsuccesful store conf data in DB."
-msgstr "Unsuccesful store conf data in DB."
+msgstr "Unsuccessful storing of conf data in DB."
 
 #: ../../extensions/update_manager/lib/functions.php:88
 msgid "Unsuccesful create a dir to save package in Pandora Console"
-msgstr "Unsuccesful create a dir to save package in Pandora Console"
+msgstr "Unsuccessful creation of a dir to save package to in Pandora Console"
 
 #: ../../extensions/update_manager/lib/functions.php:119
 #, php-format
@@ -24040,6 +24161,9 @@ msgid ""
 "of agents and modules running). To disable it, remove remote server address "
 "from Update Manager plugin setup."
 msgstr ""
+"The Update Manager sends anonymous information about Pandora FMS usage "
+"(number of agents and modules running). To disable it, remove the remote "
+"server address from Update Manager plugin setup."
 
 #: ../../extensions/update_manager/main.php:137
 msgid "Checking for an update"
@@ -24059,7 +24183,7 @@ msgstr "Offline packages loader"
 
 #: ../../extensions/update_manager/main.php:177
 msgid "Apply, in order, the packets corresponding to your current version"
-msgstr ""
+msgstr "Apply, in order, the packages corresponding to your current version"
 
 #: ../../extensions/extension_uploader.php:28
 msgid "Uploader extension"

@@ -94,7 +94,7 @@ if ($search_agents && ((!defined('METACONSOLE')) || $force_local)) {
 	$filter = array ();
 	
 	if ($id_group != -1) {
-		if($id_group == 0) {
+		if ($id_group == 0) {
 			$user_groups = users_get_groups ($config['id_user'], "AR", true);
 			
 			$filter['id_grupo'] = array_keys ($user_groups);

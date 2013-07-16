@@ -663,7 +663,7 @@ if (!$fail) {
 	$modes['processes'] = __('Processes');
 	$modes['disks'] = __('Free space on disk');
 	$modes['temperatures'] = __('Temperature sensors');
-	$modes['snmpdata'] = __('SNMP data');
+	$modes['snmpdata'] = __('Other SNMP data');
 	
 	$table->data[1][0] = __('Wizard mode') . ': ';
 	$table->data[1][0] .= html_print_select ($modes,
@@ -762,8 +762,17 @@ ui_require_javascript_file ('pandora_modules');
 var separator = '<?php echo $separator; ?>';
 
 $(document).ready (function () {	
-	$("#wmi_form").submit(function() {
+	$("#walk_form").submit(function() {
 		$("#oid_loading").show ();
+	});
+	
+	$("#snmp_version").change(function () {
+		if (this.value == "3") {
+			$("#snmp3_options").css("display", "");
+		}
+		else {
+			$("#snmp3_options").css("display", "none");
+		}
 	});
 	
 	network_component_group_change_event();

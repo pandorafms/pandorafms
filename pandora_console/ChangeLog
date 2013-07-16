@@ -1,5 +1,11 @@
 2013-07-16  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/massive/massive_delete_alerts.php: Fixed an 
+	ajax call to retrieve the agents associated to an alert 
+	template in massive alerts deletion for bug #2282
+
+2013-07-16  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/agent_wizard.snmp_explorer.php
 	godmode/agentes/configurar_agente.php: Add missing 
 	javascript to show snmp v3 options and other little

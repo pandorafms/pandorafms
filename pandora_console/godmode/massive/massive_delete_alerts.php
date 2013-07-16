@@ -252,7 +252,7 @@ $(document).ready (function () {
 			"get_agents" : 1,
 			"id_group" : this.value,
 			"recursion" : $("#checkbox-recursion").attr ("checked") ? 1 : 0,
-			"id_alert_template" : $("#id_alert_template").attr ("value")
+			"id_alert_template" : $("#id_alert_template").val()
 			},
 			function (data, status) {
 				options = "";

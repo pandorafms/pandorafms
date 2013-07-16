@@ -6,13 +6,13 @@
 function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator, legend_position, height, colors) {
 	var labels = labels.split(separator);
 	var data = values.split(separator);
-	if(colors != '') {
+	if (colors != '') {
 		colors = colors.split(separator);
 	}
 	
 	var color = null;
 	for (var i = 0; i < nseries; i++) {
-		if(colors != '') {
+		if (colors != '') {
 			color = colors[i];
 		}
 		
@@ -250,13 +250,13 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 	// Events
 	$('#'+graph_id).bind('plothover',  function (event, pos, item) {
 		$('.values_'+graph_id).css('font-weight', '');
-		if(item != null) {
+		if (item != null) {
 			index = item.dataIndex;
 			$('#value_'+index+'_'+graph_id).css('font-weight', 'bold');
 		}
 	});
 	
-	if(water_mark) {
+	if (water_mark) {
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
 }
@@ -270,17 +270,17 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	
 	var datas = new Array();
 	
-	for(i=0;i<values.length;i++) {
+	for (i=0;i<values.length;i++) {
 		var serie = values[i].split(separator);
 		
 		var serie_color;
-		if(colors[i] != '') {
+		if (colors[i] != '') {
 			serie_color = colors[i];
 		}
 		else {
 			serie_color = null;
 		}
-	
+		
 		var aux = new Array();
 		$.each(serie,function(i,v) {
 			aux.push([i, v]);
@@ -368,7 +368,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	
 	// Format functions
 	function xFormatter(v, axis) {
-		if(labels[v] != undefined) {
+		if (labels[v] != undefined) {
 			return labels[v];
 		}
 		else {
@@ -457,11 +457,11 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	
 	// Events
 	$('#'+graph_id).bind('plothover',  function (event, pos, item) {
-		if(item) {
+		if (item) {
 			var from = legend[item.seriesIndex];
 			var to = legend[item.seriesIndex+1];
 			
-			if(to == undefined) {
+			if (to == undefined) {
 				to = '>';
 			}
 			
@@ -483,8 +483,8 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	
 	// Format functions
 	function xFormatter(v, axis) {
-		for(i = 0; i < acumulate_data.length; i++) {
-			if(acumulate_data[i] == v) {
+		for (i = 0; i < acumulate_data.length; i++) {
+			if (acumulate_data[i] == v) {
 				return '<span style=\'font-size: 6pt\'>' + legend[i] + '</span>';
 			}
 		}
@@ -553,7 +553,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		var warning_min = new Array();
 		$.each(serie,function(i,v) {
 			aux.push([i, v]);
-			if(threshold) {
+			if (threshold) {
 				critical_min.push([i,red_threshold]);
 				warning_min.push([i,yellow_threshold]);
 			}
@@ -572,7 +572,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		}
 		
 		var serie_color;
-		if(colors[i] != '') {
+		if (colors[i] != '') {
 			serie_color = colors[i];
 		}
 		else {
@@ -616,7 +616,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	
 	var threshold_data = new Array();
 	
-	if(threshold) {
+	if (threshold) {
 		// Warning and critical treshold
 		threshold_data.push({ 
 			id: 'critical_min',
@@ -775,7 +775,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			// i is the series counter without thresholds
 			var series = dataset[k];
 			
-			if(series.label == null) {
+			if (series.label == null) {
 				continue;
 			}
 			
@@ -787,10 +787,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			
 			var y = series.data[j][1];
 			
-			if(currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
+			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
-				if(legends.length == 0) {
+				if (legends.length == 0) {
 					$('#timestamp_'+graph_id).text(labels[j] + ' (' + parseFloat(y).toFixed(2) + ')');
 				}
 				else {
@@ -801,7 +801,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				
 				var timesize = $('#timestamp_'+graph_id).width();
 				
-				if(currentRanges != null) {
+				if (currentRanges != null) {
 					dataset = plot.getData();
 				}
 				
@@ -809,7 +809,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				
 				var canvaslimit = plot.offset().left + plot.width();
 				
-				if(timesize+timenewpos > canvaslimit) {
+				if (timesize+timenewpos > canvaslimit) {
 					$('#timestamp_'+graph_id).css('left', timenewpos - timesize);
 				}
 				else {
@@ -855,7 +855,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			var extrasize = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
 			
 			var left_pos;
-			if(extrasize+timenewpos > canvaslimit) {
+			if (extrasize+timenewpos > canvaslimit) {
 				left_pos = timenewpos - extrasize - 20;
 			}
 			else {
@@ -872,7 +872,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				case legend_alerts+series_suffix_str:
 				case legend_alerts:
 					extra_info = '<b>'+legend_alerts+':<br><span style="font-size:xx-small; font-weight: normal;">From: '+labels_long[item.dataIndex];
-					if(labels_long[item.dataIndex+1] != undefined) {
+					if (labels_long[item.dataIndex+1] != undefined) {
 						extra_info += '<br>To: '+labels_long[item.dataIndex+1];
 					}
 					extra_info += '</span></b>'+get_event_details(alertsz[item.dataIndex]);
@@ -881,18 +881,18 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				case legend_events+series_suffix_str:
 				case legend_events:
 					extra_info = '<b>'+legend_events+':<br><span style="font-size:xx-small; font-weight: normal;">From: '+labels_long[item.dataIndex];
-					if(labels_long[item.dataIndex+1] != undefined) {
+					if (labels_long[item.dataIndex+1] != undefined) {
 						extra_info += '<br>To: '+labels_long[item.dataIndex+1];
 					}
 					extra_info += '</span></b>'+get_event_details(eventsz[item.dataIndex]);
 					extra_show = true;
 					break;
 				default:
-						return;
+					return;
 					break;
 			}
 			
-			if(extra_show) {
+			if (extra_show) {
 				$('#extra_'+graph_id).html(extra_info);
 				$('#extra_'+graph_id).css('display','');
 			}
@@ -929,7 +929,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	
 	// Format functions
 	function xFormatter(v, axis) {
-		if(labels[v] == undefined) {
+		if (labels[v] == undefined) {
 			return '';
 		}
 		return '<div style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
@@ -955,7 +955,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		//~ showed[id_clicked] = this.checked;
 	//~ });
 	
-	if(menu) {
+	if (menu) {
 		var parent_height;
 		$('#menu_overview_'+graph_id).click(function() {
 			$('#overview_'+graph_id).toggle();
@@ -965,7 +965,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		$('#menu_threshold_'+graph_id).click(function() {
 			datas = new Array();
 			
-			if(thresholded) {
+			if (thresholded) {
 				thresholded = false;
 			}
 			else {
@@ -1054,7 +1054,7 @@ function set_watermark(graph_id, plot, watermark_src) {
 		//~ // Now resize the image: x, y, w, h.
 		
 		var down_ticks_height = 0;
-		if($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
+		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
 			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
 		}
 		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
@@ -1106,7 +1106,7 @@ function check_adaptions(graph_id) {
 	
 	$.each(classes, function(i,v) {
 		// If has a class starting with adapted, we adapt it
-		if(v.split('_')[0] == 'adapted') {
+		if (v.split('_')[0] == 'adapted') {
 			var adapter_id = $('.adapter_'+v.split('_')[1]).attr('id');
 			adjust_left_width_canvas(adapter_id, graph_id);
 		}
@@ -1115,7 +1115,7 @@ function check_adaptions(graph_id) {
 
 function number_format(number, force_integer, unit) {	
 	if (force_integer) {
-		if(Math.round(number) != number) {
+		if (Math.round(number) != number) {
 			return '';
 		}
 	}

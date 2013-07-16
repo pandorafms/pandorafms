@@ -40,14 +40,14 @@ $history = get_parameter ('history', 0);
 if ($get_event_name) {
 	$event_id = get_parameter ('event_id');
 	
-	if($meta) {
+	if ($meta) {
 		$name = events_meta_get_event_name($event_id, $history);
 	}
 	else {
 		$name = db_get_value('evento','tevento','id_evento',$event_id);
 	}
 	
-	if($name === false) {
+	if ($name === false) {
 		return;
 	}
 	
@@ -78,7 +78,7 @@ if ($get_response_params) {
 	
 	$params = db_get_value('params','tevent_response','id',$response_id);
 	
-	if($params === false) {
+	if ($params === false) {
 		return;
 	}
 	
@@ -94,7 +94,7 @@ if ($get_response_target) {
 	
 	$event_response = db_get_row('tevent_response','id',$response_id);
 	
-	if(empty($event_response)) {
+	if (empty($event_response)) {
 		return;
 	}
 	
@@ -108,7 +108,7 @@ if ($get_response) {
 	
 	$event_response = db_get_row('tevent_response','id',$response_id);
 	
-	if(empty($event_response)) {
+	if (empty($event_response)) {
 		return;
 	}
 	
@@ -116,11 +116,11 @@ if ($get_response) {
 	return;
 }
 
-if($perform_event_response) {
+if ($perform_event_response) {
 	global $config;
-		
+	
 	$command = get_parameter('target','');
-
+	
 	echo system('/usr/bin/timeout 10 '.io_safe_output($command).' 2>&1');
 	
 	return;
@@ -191,7 +191,7 @@ if ($change_owner) {
 	$event_id = get_parameter ('event_id');
 	$similars = true;
 	
-	if($new_owner == -1) {
+	if ($new_owner == -1) {
 		$new_owner = '';
 	}
 	
@@ -218,13 +218,13 @@ if ($get_extended_event) {
 	}
 	
 	$readonly = false;
-	if(!$meta &&
+	if (!$meta &&
 		isset($config['event_replication']) &&  
 		$config['event_replication'] == 1 && 
 		$config['show_events_in_local'] == 1) {
 			$readonly = true;
 	}
-		
+	
 	// Clean url from events and store in array
 	$event['clean_tags'] = events_clean_tags($event['tags']);
 	
@@ -432,7 +432,7 @@ if ($get_events_details) {
 		$out .= '<tr class="'.get_priority_class ($event['criticity']).'" style="font-size:0px; height: 25px;">';
 		$out .= '<td class="'.get_priority_class ($event['criticity']).'" style="width: 18px; text-align:center;">';
 		$out .= html_print_image(ui_get_full_url('images/clock.png', false, false, false), true, array('title' => __('Timestamp')), false, true);
-
+		
 		$out .= '</td>';
 		$out .= '<td class="'.get_priority_class ($event['criticity']).'" style="font-size:7pt">';
 		$out .= date($config['date_format'], $event['utimestamp']);
@@ -444,8 +444,8 @@ if ($get_events_details) {
 		$out .= '</td>';
 		$out .= '<td class="'.get_priority_class ($event['criticity']).'" style="font-size:7pt">';
 		$out .= $title;
-		if($event["estado"] == 1) {
-			if(empty($event['id_usuario'])) {
+		if ($event["estado"] == 1) {
+			if (empty($event['id_usuario'])) {
 				$ack_user = '<i>' . __('Auto') . '</i>';
 			}
 			else {
@@ -454,7 +454,7 @@ if ($get_events_details) {
 			
 			$out .= ' (' . $ack_user . ')';
 		}
-
+		
 		$out .= '</td></tr>';
 		
 		$out .= '<tr style="font-size:0px; heigth: 0px; background: #999;"><td></td><td>';

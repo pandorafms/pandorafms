@@ -1,3 +1,11 @@
+2013-07-16 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/graphs/flot/pandora.flot.js,
+	include/functions_networkmap.php, include/constants.php,
+	include/ajax/agent.php, include/ajax/events.php: improve the
+	source code and remove the magic number and they changed for
+	constants.
+
 2013-07-15  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Fixed javascript 

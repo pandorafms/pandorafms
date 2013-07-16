@@ -247,7 +247,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 	}
 	else {
 		$groups = db_get_all_rows_in_table ('tgrupo');
-		if($groups === false) {
+		if ($groups === false) {
 			$groups = array();
 		}
 	}
@@ -545,7 +545,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		$server_data = db_get_row('tmetaconsole_setup', 'id', $agent['id_server']);
 	}
 	
-	if(empty($server_data)) {
+	if (empty($server_data)) {
 		$server_name = '';
 		$server_id = '';
 		$url_hash = '';
@@ -560,20 +560,21 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	
 	// Set node status
 	switch ($status) {
-		case 0: 
-			$status_color = '#8DFF1D'; // Normal monitor
+		case AGENT_STATUS_NORMAL: 
+			$status_color = '#8DFF1D';
 			break;
-		case 1:
-			$status_color = '#FF1D1D'; // Critical monitor
+		case AGENT_STATUS_CRITICAL:
+			$status_color = '#FF1D1D';
 			break;
-		case 2:
-			$status_color = '#FFE308'; // Warning monitor
+		case AGENT_STATUS_WARNING:
+			$status_color = '#FFE308';
 			break;
-		case 4:
-			$status_color = '#FFA300'; // Alert fired
+		case AGENT_STATUS_ALERT_FIRED:
+			$status_color = '#FFA300';
 			break;
 		default:
-			$status_color = '#BBBBBB'; // Unknown monitor
+			//Unknown monitor
+			$status_color = '#BBBBBB';
 			break;
 	}
 	
@@ -641,7 +642,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 			$ajax_prefix = '../../';
 			$meta_params = '&metaconsole=1&id_server=' . $id_server;
 		}
-
+		
 		if (can_user_access_node ()) {
 			$url_node_link = ', URL="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $agent['id_agente'] . $url_hash . '"';
 		}

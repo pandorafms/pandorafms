@@ -60,8 +60,8 @@ if (! defined ('METACONSOLE')) {
 }
 else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
-		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit', 'text' => __('Netflow filters')),
-		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form', 'text' => __('Add filter')));
+		array('link' => 'index.php?sec=netf&sec2=godmode/netflow/nf_edit', 'text' => __('Netflow filters')),
+		array('link' => 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form', 'text' => __('Add filter')));
 	
 	ui_meta_print_page_header($nav_bar);
 	
@@ -217,7 +217,7 @@ $table->data[9][0] = '<b>'.__('Output format').'</b>';
 $show_output = array ('kilobytes' => __('Kilobytes'), 'megabytes' => __('Megabytes'), 'kilobytespersecond' => __('Kilobytes per second'), 'megabytespersecond' => __('Megabytes per second'));
 $table->data[9][1] = html_print_select ($show_output, 'output', $output, '', '', 0, true, false, true, '', false);
 
-echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form&pure='.$pure.'">';
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {

@@ -448,6 +448,19 @@ if ($id_agente) {
 		case "incident":
 			$tab_description = '- ' . __('Incidents');
 			break;
+		case "agent_wizard":
+			switch(get_parameter('wizard_section')) {
+				case 'snmp_explorer':
+					$tab_description = '- ' . __('SNMP Wizard');
+					break;
+				case 'snmp_interfaces_explorer':
+					$tab_description = '- ' . __('SNMP Interfaces wizard');
+					break;
+				case 'wmi_explorer':
+					$tab_description = '- ' . __('WMI Wizard');
+					break;
+			}
+			break;
 		case "extension":
 			$id_extension = get_parameter('id_extension', '');
 			switch ($id_extension) {

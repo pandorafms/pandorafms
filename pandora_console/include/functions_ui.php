@@ -20,7 +20,7 @@
  */
 
 // Check to avoid error when load this library in error screen situations
-if(isset($config['homedir'])) {
+if (isset($config['homedir'])) {
 	require_once($config['homedir'] . '/include/functions_agents.php');
 	require_once($config['homedir'] . '/include/functions_modules.php');
 	require_once($config['homedir'] . '/include/functions.php');
@@ -474,7 +474,7 @@ function ui_print_tags_warning ($return = false) {
 	$msg .= __("Is possible that this view uses part of information which your user has not access");
 	$msg .= '</div>';
 	
-	if($return) {
+	if ($return) {
 		return $msg;
 	}
 	else {
@@ -535,12 +535,12 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
  * @return string HTML code if return parameter is true.
  */
 function ui_print_group_icon_path ($id_group, $return = false, $path = "images/groups_small", $style='', $link = true) {
-	if($id_group > 0)
+	if ($id_group > 0)
 		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
 		$icon = "world";
 	
-	if($style == '')
+	if ($style == '')
 		$style = 'width: 16px; height: 16px;';
 	
 	$output = '';
@@ -593,7 +593,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative);
 		}
 		else {
-			if(!isset($options['title'])) {
+			if (!isset($options['title'])) {
 				$options['title'] = $os_name;
 			}
 			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, false, $relative);
@@ -627,7 +627,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
  * @return string HTML with agent name and link
  */
 function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false, $server_url = '', $extra_params = '', $known_agent_name = false) {
-	if($known_agent_name === false) {
+	if ($known_agent_name === false) {
 		$agent_name = (string) agents_get_name ($id_agent);
 	}
 	else {
@@ -669,7 +669,7 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_mediu
 function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = false) {
 	global $config;
 	
-	if(!isset($alert['server_data'])) {
+	if (!isset($alert['server_data'])) {
 		$server_name = '';
 		$server_id = '';
 		$url_hash = '';
@@ -1004,7 +1004,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 	if (empty($home_url))
 		$home_url = "";
 	
-	if(defined('METACONSOLE')) {
+	if (defined('METACONSOLE')) {
 		$home_url = "../../" . $home_url;
 	}
 	
@@ -1855,7 +1855,7 @@ function ui_get_status_images_path () {
  * @return string HTML code if return parameter is true.
  */
 function ui_print_status_image ($type, $title = "", $return = false, $options = false, $path = false) {
-	if($path === false) {
+	if ($path === false) {
 		list ($imagepath) = ui_get_status_images_path ();
 	}
 	else {
@@ -1864,7 +1864,7 @@ function ui_print_status_image ($type, $title = "", $return = false, $options = 
 	
 	$imagepath .= "/" . $type;
 	
-	if($options === false) {
+	if ($options === false) {
 		$options = array();
 	}
 	
@@ -2184,7 +2184,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	if (is_array($options)) {
 		$buffer .= '<div id="menu_tab"><ul class="mn">';
 		foreach ($options as $key => $option) {
-			if(empty($option)) {
+			if (empty($option)) {
 				continue;
 			}
 			else if ($key === 'separator') {
@@ -3309,7 +3309,7 @@ function ui_get_error ($error_code) {
 			$message .= db_get_last_error();
 			$message .= '</span>';
 			
-			if($error_code == 'error_authconfig') {
+			if ($error_code == 'error_authconfig') {
 				$message .= '<br/><br/>';
 				$message .= __('If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>');
 			}

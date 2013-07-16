@@ -65,7 +65,7 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
  * @return mixed Value of first column of the first row. False if there were no row.
  */
 function oracle_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
-
+	
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT *
 			FROM (SELECT %s FROM %s WHERE %s = %d)
@@ -861,7 +861,7 @@ function oracle_db_get_value_sql($sql, $dbconnection = false) {
 	$sql = "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
 	$result = oracle_db_get_all_rows_sql ($sql, false, true, $dbconnection);
 	
-	if($result === false)
+	if ($result === false)
 		return false;
 	
 	foreach ($result[0] as $f)
@@ -879,7 +879,7 @@ function oracle_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql = "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
 	$result = oracle_db_get_all_rows_sql($sql, $search_history_db);
 	
-	if($result === false)
+	if ($result === false)
 		return false;
 	
 	return $result[0];
@@ -1115,7 +1115,7 @@ function oracle_db_format_array_to_update_sql ($values) {
 			else if (substr($value, 0,1) == '#'){
 				$sql = sprintf ("%s = %s", $field, substr($value,1));
 			}
-			else{
+			else {
 				$sql = sprintf ("%s = '%s'", $field, $value);
 			}
 		}

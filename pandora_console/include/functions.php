@@ -139,48 +139,6 @@ function safe_url_extraclean ($string, $default_string = '') {
 }
 
 /** 
- * DEPRECATED: This function is not used anywhere. Remove it?
- * (use general/noaccess.php followed by exit instead)
- */
-function no_permission () {
-	require ("config.php");
-	
-	ui_print_error_message(__('You don\'t have access'));
-	echo html_print_image('images/noaccess.png', true, array("alt" => 'No access', "width" => '120')) . "<br /><br />";
-	echo "<table width=550>";
-	echo "<tr><td>";
-	echo __('You don\'t have enough permission to access this resource');
-	echo "</table>";
-	echo "<tr><td><td><td><td>";
-	include "general/footer.php";
-	
-	exit;
-}
-
-/** 
- * DEPRECATED: This function is not used anywhere. Remove it?
- * (use print_error function instead followed by return or exit)
- *
- * @param string $error Aditional error string to be shown. Blank by default
- */
-function unmanaged_error ($error = "") {
-	require_once ("config.php");
-	
-	ui_print_error_message(__('Unmanaged error'));
-	echo html_print_image('images/error.png', true, array("alt" => 'error')) . "<br /><br />";
-	echo "<table width=550>";
-	echo "<tr><td>";
-	echo __('Unmanaged error');
-	echo "<tr><td>";
-	echo $error;
-	echo "</table>";
-	echo "<tr><td><td><td><td>";
-	include "general/footer.php";
-	
-	exit;
-}
-
-/** 
  * List files in a directory in the local path.
  * 
  * @param string $directory Local path.
@@ -1775,10 +1733,11 @@ function is_snapshot_data ($data) {
 
 /**
 *  Create an invisible div with a provided ID and value to
-* can retrieve it from javascript with function get_php_value(value)
+* can retrieve it from javascript with function get_php_value(name)
 */
 function set_js_value($name, $value) {
-	html_print_div(array('id' => 'php_to_js_value_' . $name, 'content' => $value, 'hidden' => true));
+	html_print_div(array('id' => 'php_to_js_value_' . $name,
+		'content' => json_encode($value), 'hidden' => true));
 }
 
 

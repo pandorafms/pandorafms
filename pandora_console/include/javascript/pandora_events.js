@@ -2,7 +2,7 @@
 function show_event_dialog(event_id, group_rep, dialog_page, result) {
 	var ajax_file = $('#hidden-ajax_file').val();
 	
-	if(dialog_page == undefined) {
+	if (dialog_page == undefined) {
 		dialog_page = 'general';
 	}
 	
@@ -121,7 +121,7 @@ function execute_response(event_id, server_id) {
 	var response = get_response(response_id);
 	
 	// If cannot get response abort it
-	if(response == null) {
+	if (response == null) {
 		return;
 	}
 	
@@ -132,7 +132,7 @@ function execute_response(event_id, server_id) {
 			show_response_dialog(event_id, response_id, response);
 			break;
 		case 'url':
-			if(response['new_window'] == 1) {
+			if (response['new_window'] == 1) {
 				window.open(response['target'],'_blank');
 			}
 			else {

@@ -163,7 +163,7 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 		$snmpwalk_bin = $config['snmpwalk'];
 	}
 	$oid_tree = array('__LEAVES__' => array());
-	exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v 1 ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid), $output, $rc);
+	exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v 2c ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid), $output, $rc);
 	
 	//if ($rc != 0) {
 	//	return __('No data');
@@ -260,7 +260,7 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
 	else {
 		$snmpget_bin = $config['snmpget'];
 	}
-	exec ($snmpget_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -On -v1 -c ' .  escapeshellarg($community) . " " . escapeshellarg($target_ip) . ' ' . escapeshellarg($target_oid), $output, $rc);
+	exec ($snmpget_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -On -v 2c -c ' .  escapeshellarg($community) . " " . escapeshellarg($target_ip) . ' ' . escapeshellarg($target_oid), $output, $rc);
 	if ($rc != 0) {
 		return $oid_data;
 	}

@@ -1,3 +1,8 @@
+2013-07-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_snmp_browser.php: Use version 2c by default. Some
+	  OIDs may not be available for version 1 queries.
+
 2013-07-16  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_delete_alerts.php: Fixed an 

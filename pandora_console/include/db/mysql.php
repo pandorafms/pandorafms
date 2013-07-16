@@ -580,7 +580,7 @@ function mysql_db_get_value_sql($sql, $dbconnection = false) {
 	$sql .= " LIMIT 1";
 	$result = mysql_db_get_all_rows_sql ($sql, false, true, $dbconnection);
 	
-	if($result === false)
+	if ($result === false)
 		return false;
 	
 	foreach ($result[0] as $f)
@@ -598,7 +598,7 @@ function mysql_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql .= " LIMIT 1";
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
-	if($result === false)
+	if ($result === false)
 		return false;
 	
 	return $result[0];

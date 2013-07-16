@@ -17,7 +17,7 @@
 function treeview_printModuleTable($id_module, $server_data = false) {
 	global $config;
 	
-	if(empty($server_data)) {
+	if (empty($server_data)) {
 		$server_name = '';
 		$server_id = '';
 		$url_hash = '';
@@ -40,9 +40,9 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	enterprise_include_once ('meta/include/functions_metaconsole.php');
 	
 	$filter["id_agente_modulo"] = $id_module;
-
+	
 	$module = db_get_row_filter ("tagente_modulo", $filter);
-
+	
 	if ($module === false) {
 		ui_print_error_message(__('There was a problem loading module'));
 		return;
@@ -50,7 +50,7 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	
 	if (! check_acl ($config["id_user"], $module["id_grupo"], "AR")) {
 		db_pandora_audit("ACL Violation", 
-				  "Trying to access Module Information");
+			"Trying to access Module Information");
 		require_once ("general/noaccess.php");
 		return;
 	}
@@ -108,13 +108,13 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	// Tags
 	$tags = tags_get_module_tags($module['id_agente_modulo']);
 	
-	if(empty($tags)) {
+	if (empty($tags)) {
 		$tags = array();
 	}
 	
-	foreach($tags as $k => $v) {
+	foreach ($tags as $k => $v) {
 		$tag_name = tags_get_name($v);
-		if(empty($tag_name)) {
+		if (empty($tag_name)) {
 			unset($tags[$k]);
 		}
 		else {
@@ -122,16 +122,16 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 		}
 	}
 	
-	if(empty($tags)) {
+	if (empty($tags)) {
 		$tags = '<i>' . __('N/A') . '</i>';
 	}
 	else {
 		$tags = implode(', ' , $tags);
 	}
-
+	
 	echo '<tr><td class="datos"><b>'.__('Tags').'</b></td>';
 	echo '<td class="datos" colspan="2">' . $tags . '</td></tr>';
-					
+	
 	// Data
 	$last_data = db_get_row_filter ('tagente_estado', array('id_agente_modulo' => $module['id_agente_modulo'], 'order' => array('field' => 'id_agente_estado', 'order' => 'DESC')));
 	if (is_numeric($last_data["datos"]))
@@ -141,15 +141,15 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	
 	echo '<tr><td class="datos"><b>'.__('Last data').'</b></td>';
 	echo '<td class="datos" colspan="2">';
-		
+	
 	if (!empty($last_data['utimestamp'])) {
 		echo $data;
-			
+		
 		if ($module['unit'] != '') {
 			echo "&nbsp;";
 			echo '('.$module['unit'].')';
 		}
-	
+		
 		echo "&nbsp;";
 		html_print_image('images/clock2.png', false, array('title' => $last_data["timestamp"], 'width' => '18px'));
 	}
@@ -189,7 +189,7 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 function treeview_printAlertsTable($id_module, $server_data = array()) {
 	global $config;
 	
-	if(empty($server_data)) {
+	if (empty($server_data)) {
 		$server_name = '';
 		$server_id = '';
 		$url_hash = '';
@@ -226,7 +226,7 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 		echo '<td class="datos">'.$template_name.'</td>';
 		$actions = alerts_get_alert_agent_module_actions($module_alert['id']);
 		echo '<td class="datos">'; 
-		if(empty($actions)) {
+		if (empty($actions)) {
 			echo '<i>'.__('N/A').'</i>';
 		}
 		else {
@@ -242,7 +242,7 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 	}
 	echo '</table>';
 	
-	if(can_user_access_node () && check_acl ($config["id_user"], $id_group, 'LW')) {
+	if (can_user_access_node () && check_acl ($config["id_user"], $id_group, 'LW')) {
 		// Actions table
 		echo '<div style="width:90%; text-align: right; min-width: 300px;">';
 		echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name=' . $module_name . '&id_agente=' . $agent_id . $url_hash . '" target="_blank">';
@@ -255,7 +255,7 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 function treeview_printTable($id_agente, $server_data = array()) {
 	global $config;
 	
-	if(empty($server_data)) {
+	if (empty($server_data)) {
 		$server_name = '';
 		$server_id = '';
 		$url_hash = '';
@@ -283,7 +283,7 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	
 	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
 	
-	if($is_extra === ENTERPRISE_NOT_HOOK) {
+	if ($is_extra === ENTERPRISE_NOT_HOOK) {
 		$is_extra = false;
 	}
 	
@@ -313,8 +313,8 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	$addresses = agents_get_addresses ($id_agente);
 	$address = agents_get_address($id_agente);
 	
-	foreach($addresses as $k => $add) {
-		if($add == $address) {
+	foreach ($addresses as $k => $add) {
+		if ($add == $address) {
 			unset($addresses[$k]);
 		}
 	}
@@ -590,7 +590,7 @@ function treeview_getData ($type) {
 		$avariableGroups = array_intersect_key($avariableGroups, $fgroups);
 	
 	$avariableGroupsIds = implode(',',array_keys($avariableGroups));
-	if($avariableGroupsIds == '') {
+	if ($avariableGroupsIds == '') {
 		$avariableGroupsIds == -1;
 	}
 	
@@ -874,7 +874,7 @@ function treeview_getData ($type) {
 		default:
 		case 'module':
 			$avariableGroupsIds = implode(',',array_keys($avariableGroups));
-			if($avariableGroupsIds == ''){
+			if ($avariableGroupsIds == ''){
 				$avariableGroupsIds == -1;
 			}
 			
@@ -926,7 +926,7 @@ function treeview_getData ($type) {
 		case 'tag':
 				// Restrict the tags showed to the user tags
 				$user_tags = tags_get_user_tags();
-				if(empty($user_tags)) {
+				if (empty($user_tags)) {
 					$user_tags_sql = ' AND 1 = 0';
 				}
 				else {
@@ -953,7 +953,7 @@ function treeview_getData ($type) {
 			break;
 	}
 	
-	if($list == false) {
+	if ($list == false) {
 		$list = array();
 	}
 	
@@ -1041,7 +1041,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 	
 	//TODO CHANGE POLICY ACL FOR TAG ACL
 	$extra_sql = '';
-	if($extra_sql != '') {
+	if ($extra_sql != '') {
 		$extra_sql .= ' OR';
 	}
 	$groups_sql = implode(', ', $avariableGroupsIds);
@@ -1184,7 +1184,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				return false;
 			}
 			
-			if(empty($groups_sql)) {
+			if (empty($groups_sql)) {
 				$groups_condition = ' AND 1 = 0';
 			}
 			else {

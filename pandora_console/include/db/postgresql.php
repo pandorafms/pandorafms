@@ -37,7 +37,7 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
 	if (! $connect_id) {
 		return false;
 	}
-		
+	
 	return $connect_id;
 }
 
@@ -54,18 +54,18 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
 function postgresql_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
 	if ($field_search[0] == '`')
 		$field_search = str_replace ('`', '', $field_search);
-
+	
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
-				$field, $table, $field_search, $condition);
+			$field, $table, $field_search, $condition);
 	}
 	else if (is_float ($condition) || is_double ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %f LIMIT 1",
-				$field, $table, $field_search, $condition);
+			$field, $table, $field_search, $condition);
 	}
 	else {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' LIMIT 1",
-				$field, $table, $field_search, $condition);
+			$field, $table, $field_search, $condition);
 	}
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
@@ -74,7 +74,7 @@ function postgresql_db_get_value ($field, $table, $field_search = 1, $condition 
 	
 	if ($field[0] == '`')
 		$field = str_replace ('`', '', $field);
-		
+	
 	if (!isset($result[0][$field])) {
 		return reset($result[0]);
 	}
@@ -120,7 +120,7 @@ function postgresql_db_get_row ($table, $field_search, $condition, $fields = fal
 			$fields, $table, $field_search, $condition);
 	}
 	$result = db_get_all_rows_sql ($sql);
-		
+	
 	if ($result === false) 
 		return false;
 	
@@ -131,11 +131,11 @@ function postgresql_db_get_all_rows_sql ($sql, $search_history_db = false, $cach
 	global $config;
 	
 	$history = array ();
-
+	
 	if ($dbconnection === false) {
 		$dbconnection = $config['dbconnection'];
 	}
-		
+	
 	// To disable globally SQL cache depending on global variable.
 	// Used in several critical places like Metaconsole trans-server queries
 	if (isset($config["dbcache"]))
@@ -161,16 +161,17 @@ function postgresql_db_get_all_rows_sql ($sql, $search_history_db = false, $cach
 	if ($return === false) {
 		$return = array ();
 	}
-
+	
 	// Append result to the history DB data
 	if (! empty ($return)) {
 		foreach ($return as $row) {
 			array_push ($history, $row);
 		}
 	}
-
+	
 	if (! empty ($history))
 		return $history;
+	
 	//Return false, check with === or !==
 	return false;
 }
@@ -247,8 +248,8 @@ function postgresql_db_process_sql($sql, $rettype = "affected_rows", $dbconnecti
 					$result = $rows;
 				}
 				db_add_database_debug_trace ($sql, $result, $rows,
-						array ('time' => $time));
-						
+					array ('time' => $time));
+				
 				return $result;	
 			}
 			else { //The query IS a select.
@@ -308,7 +309,7 @@ function postgresql_db_process_sql_insert($table, $values) {
 		return false;
 	
 	$values = (array) $values;
-		
+	
 	$query = sprintf ('INSERT INTO "%s" ', $table);
 	$fields = array ();
 	$values_str = '';
@@ -357,7 +358,7 @@ function postgresql_db_process_sql_insert($table, $values) {
  */
 function postgresql_escape_string_sql($string) {
 	$str = pg_escape_string($string);
-
+	
 	return $str;
 }
 
@@ -389,7 +390,7 @@ function postgresql_escape_string_sql($string) {
 function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	if (! is_array ($filter) || empty ($filter))
 		return false;
-
+	
 	/* Avoid limit and offset if given */
 	unset ($filter['limit']);
 	unset ($filter['offset']);
@@ -413,7 +414,7 @@ function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 
 	
 	if ($result === false)
 		return false;
-
+	
 	if (!$is_a_function) {
 		$fieldClean = str_replace('"', '', $field);
 		$fieldClean = str_replace('`', '', $fieldClean);
@@ -536,7 +537,7 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 		$group = sprintf (' GROUP BY %s', $values['group']);
 		unset ($values['group']);
 	}
-
+	
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
@@ -550,7 +551,7 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 			$i++;
 			continue;
 		}
-
+		
 		if ($field[0] != "\"") {
 			//If the field is as <table>.<field>, don't scape.
 			if (strstr($field, '.') === false)
@@ -597,7 +598,7 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 		}
 		$i++;
 	}
-
+	
 	return (! empty ($query) ? $prefix: '').$query.$group.$order.$limit.$offset;
 }
 
@@ -613,7 +614,7 @@ function postgresql_db_get_value_sql($sql, $dbconnection = false) {
 	$sql .= " LIMIT 1";
 	$result = postgresql_db_get_all_rows_sql ($sql, false, true, $dbconnection);
 	
-	if($result === false)
+	if ($result === false)
 		return false;
 	
 	foreach ($result[0] as $f)
@@ -631,7 +632,7 @@ function postgresql_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql .= " LIMIT 1";
 	$result = postgresql_db_get_all_rows_sql($sql, $search_history_db);
 	
-	if($result === false)
+	if ($result === false)
 		return false;
 	
 	return $result[0];
@@ -671,7 +672,7 @@ function postgresql_db_get_row_filter ($table, $filter, $fields = false, $where_
 		else if (! is_string ($fields))
 		return false;
 	}
-
+	
 	if (is_array ($filter))
 		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
 	else if (is_string ($filter))
@@ -680,7 +681,7 @@ function postgresql_db_get_row_filter ($table, $filter, $fields = false, $where_
 		$filter = '';
 	
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-
+	
 	return db_get_row_sql ($sql);
 }
 
@@ -719,7 +720,7 @@ function postgresql_db_get_all_rows_filter ($table, $filter = array(), $fields =
 	elseif (!is_string($fields)) {
 		return false;
 	}
-
+	
 	//TODO: Validate and clean filter options
 	if (is_array ($filter)) {
 		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
@@ -730,7 +731,7 @@ function postgresql_db_get_all_rows_filter ($table, $filter = array(), $fields =
 	else {
 		$filter = '';
 	}
-
+	
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
 	
 	if ($returnSQL)
@@ -747,7 +748,7 @@ function postgresql_db_get_all_rows_filter ($table, $filter = array(), $fields =
  */
 function postgresql_db_get_num_rows ($sql) {
 	$result = pg_query($sql);
-
+	
 	return pg_num_rows($result);
 }
 
@@ -771,10 +772,10 @@ function postgresql_db_get_all_rows_field_filter ($table, $field, $condition, $o
 	else {
 		$sql = sprintf ("SELECT * FROM \"%s\" WHERE \"%s\" = '%s'", $table, $field, $condition);
 	}
-
+	
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -792,10 +793,10 @@ function postgresql_db_get_all_fields_in_table ($table, $field = '', $condition 
 	if ($condition != '') {
 		$sql .= sprintf (" WHERE \"%s\" = '%s'", $field, $condition);
 	}
-
+	
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -824,7 +825,7 @@ function postgresql_db_get_all_fields_in_table ($table, $field = '', $condition 
  */
 function postgresql_db_format_array_to_update_sql ($values) {
 	$fields = array ();
-
+	
 	foreach ($values as $field => $value) {
 		if (is_numeric($field)) {
 			array_push ($fields, $value);
@@ -833,7 +834,7 @@ function postgresql_db_format_array_to_update_sql ($values) {
 		else if ($field[0] == "`") {
 			$field = str_replace('`', '', $field);
 		}
-
+		
 		if ($value === NULL) {
 			$sql = sprintf ("\"%s\" = NULL", $field);
 		}
@@ -853,7 +854,7 @@ function postgresql_db_format_array_to_update_sql ($values) {
 		}
 		array_push ($fields, $sql);
 	}
-
+	
 	return implode (", ", $fields);
 }
 
@@ -885,7 +886,7 @@ function postgresql_db_process_sql_update($table, $values, $where = false, $wher
 	$query = sprintf ("UPDATE \"%s\" SET %s",
 	$table,
 	db_format_array_to_update_sql ($values));
-
+	
 	if ($where) {
 		if (is_string ($where)) {
 			// No clean, the caller should make sure all input is clean, this is a raw function
@@ -895,7 +896,7 @@ function postgresql_db_process_sql_update($table, $values, $where = false, $wher
 			$query .= db_format_array_where_clause_sql ($where, $where_join, ' WHERE ');
 		}
 	}
-
+	
 	return db_process_sql ($query);
 }
 
@@ -931,9 +932,9 @@ function postgresql_db_process_sql_delete($table, $where, $where_join = 'AND') {
 	if (empty ($where))
 		/* Should avoid any mistake that lead to deleting all data */
 		return false;
-
+	
 	$query = sprintf ("DELETE FROM \"%s\" WHERE ", $table);
-
+	
 	if ($where) {
 		if (is_string ($where)) {
 			/* FIXME: Should we clean the string for sanity?
@@ -944,7 +945,7 @@ function postgresql_db_process_sql_delete($table, $where, $where_join = 'AND') {
 			$query .= db_format_array_where_clause_sql ($where, $where_join);
 		}
 	}
-
+	
 	return db_process_sql ($query);
 }
 
@@ -961,7 +962,7 @@ function postgresql_db_process_sql_delete($table, $where, $where_join = 'AND') {
 function postgresql_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 	if ($new == true)
 		$result = pg_query($sql);
-
+	
 	return pg_fetch_assoc($result);
 }
 
@@ -1056,16 +1057,16 @@ function postgresql_db_get_type_field_table($table, $field) {
  */
 function postgresql_db_get_table_count($sql, $search_history_db = false) {
 	global $config;
-
+	
 	$history_count = 0;
 	$count = postgresql_db_get_value_sql ($sql);
 	if ($count === false) {
 		$count = 0;
 	}
-
+	
 	// Search the history DB for matches
 	if ($search_history_db && $config['history_db_enabled'] == 1) {
-
+		
 		// Connect to the history DB
 		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
 			$config['history_db_connection'] = postgresql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
@@ -1077,9 +1078,9 @@ function postgresql_db_get_table_count($sql, $search_history_db = false) {
 			}
 		}
 	}
-
+	
 	$count += $history_count;
-
+	
 	return $count;
 }
 

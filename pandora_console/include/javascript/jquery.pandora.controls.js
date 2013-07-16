@@ -111,7 +111,7 @@
 									config.callbackPre ();
 									// Get the selected item from hidden field
 									selected = $('#hidden-'+config.moduleSelect.attr('id')+'_selected').val();
-									if(selected == i) {
+									if (selected == i) {
 										option = $("<option></option>")
 											.attr ("selected", "selected")
 											.attr ("value", value['id_agente_modulo'])

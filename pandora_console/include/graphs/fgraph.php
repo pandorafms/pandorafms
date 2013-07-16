@@ -13,40 +13,6 @@
 $ttl = 1;
 $homeurl = '';
 
-/*function include_graphs_dependencies($home_url = '', $serialize_ttl = 1) {
-	global $ttl;
-	global $homeurl;
-	
-	$ttl = $serialize_ttl;
-	$homeurl = $home_url;
-	
-	include_once($homeurl . 'include/functions.php');
-	include_once($homeurl . 'include/functions_html.php');
-	
-	include_once($homeurl . 'include/graphs/functions_fsgraph.php');
-	include_once($homeurl . 'include/graphs/functions_gd.php');
-	include_once($homeurl . 'include/graphs/functions_utils.php');
-}*/
-/*
-// If is called from index
-if(file_exists('include/functions.php')) {
-	include_once('include/functions.php');
-	include_once('include/graphs/functions_fsgraph.php');
-	include_once('include/graphs/functions_utils.php');
-} // If is called through url
-else if(file_exists('../functions.php')) {
-	include_once('../functions.php');
-	include_once('../functions_html.php');
-	include_once('functions_fsgraph.php');
-	include_once('functions_gd.php');
-	include_once('functions_utils.php');
-}
-
-
-include_once('functions_fsgraph.php');
-include_once('functions_utils.php');
-*/
-
 if (isset($_GET['homeurl'])) {
 	$homeurl = $_GET['homeurl'];
 }
@@ -197,7 +163,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
-	if($flash_chart) {
+	if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $homedir, $reduce_data_columns, $adapt_key);
 	}
 	else {
@@ -285,7 +251,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 		return '<img src="' . $no_data_image . '" />';
 	}
 	
-	if($flash_chart) {
+	if ($flash_chart) {
 		return flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url);
 	}
 	else {
@@ -321,7 +287,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 	}
 	
 	
-	if($flash_chart) {
+	if ($flash_chart) {
 		return flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url);
 	}
 	else {
@@ -356,7 +322,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		return '<img src="' . $no_data_image . '" />';
 	}
 	
-	if($flash_chart) {
+	if ($flash_chart) {
 		return flot_line_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url);
 	}
 	else {
@@ -407,7 +373,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
-	if($flash_chart) {
+	if ($flash_chart) {
 		if ($return){
 			return flot_hcolumn_chart ($chart_data, $width, $height, $water_mark_url);
 		}

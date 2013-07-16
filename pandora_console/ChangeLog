@@ -1,5 +1,22 @@
 2013-07-16 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions.php,
+	include/javascript/jquery.pandora.controls.js: improved the
+	functions to pass the php vars to js, now it supports json.
+	
+	* include/javascript/d3.v3.js: added this library for to make
+	beautiful things.
+	
+	* include/functions_ui.php, include/graphs/fgraph.php,
+	include/javascript/pandora_events.js, include/javascript/pandora.js,
+	include/functions_treeview.php,
+	include/include_graph_dependencies.php,
+	include/functions_categories.php, include/db/postgresql.php,
+	include/db/oracle.php, include/db/mysql.php: cleaned source code
+	style.
+
+2013-07-16 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/graphs/flot/pandora.flot.js,
 	include/functions_networkmap.php, include/constants.php,
 	include/ajax/agent.php, include/ajax/events.php: improve the

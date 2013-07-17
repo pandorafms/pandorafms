@@ -166,6 +166,7 @@ ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f7_` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f8_` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f9_` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f10_` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `position` int(10) UNSIGNED NOT NULL DEFAULT '0';
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_modulo`

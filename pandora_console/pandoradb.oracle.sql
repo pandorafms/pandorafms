@@ -302,7 +302,8 @@ CREATE TABLE talert_snmp (
 	_snmp_f9_ CLOB default '',
 	_snmp_f10_ CLOB default '',
 	trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL,
-	single_value VARCHAR2(255) DEFAULT ''
+	single_value VARCHAR2(255) DEFAULT '',
+	"position" NUMBER(10, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE talert_snmp_s INCREMENT BY 1 START WITH 1;

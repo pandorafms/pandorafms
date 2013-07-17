@@ -1,5 +1,14 @@
 2013-07-17  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_users.php
+	include/functions_groups.php
+	operation/events/events_list.php: Fixed the visibility
+	of the users in the events view filter. Now the user 
+	can only filter by the users of the groups where the
+	user belongs
+
+2013-07-17  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/menu.php
 	operation/events/events_rss.php
 	operation/events/export_csv.php

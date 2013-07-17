@@ -387,8 +387,10 @@ $table_advanced->rowclass[] = '';
 
 $data = array();
 $data[0] = __('User ack.') . '<br>';
-$users = users_get_info ();
-$data[0] .= html_print_select($users, "id_user_ack", $id_user_ack, '',
+
+$user_users = users_get_user_users();
+	
+$data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 	__('Any'), 0, true);
 $data[1] = '';
 $table_advanced->data[] = $data;

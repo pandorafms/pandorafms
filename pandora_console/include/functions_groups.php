@@ -592,10 +592,12 @@ function groups_get_id ($group_name, $returnAllGroup = false) {
  * Get all the users belonging to a group.
  *
  * @param int $id_group The group id to look for
+ * @param mixed filter array
+ * @param bool True if users with all permissions in the group are retrieved 
  *
  * @return array An array with all the users or an empty array
  */
-function groups_get_users ($id_group, $filter = false) {
+function groups_get_users ($id_group, $filter = false, $return_user_all = false) {
 	global $config;
 	
 	if (! is_array ($filter))

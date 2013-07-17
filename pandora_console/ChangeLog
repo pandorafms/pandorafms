@@ -1,5 +1,15 @@
 2013-07-17  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/status_monitor.php
+	operation/agentes/alerts_status.php
+	godmode/alerts/configure_alert_template.php: Clean 
+	useless ACL checks. Change header string by the same
+	string but translated. Added to the alert templates
+	wizard level combo the option No Wizard to avoid
+	confussing
+
+2013-07-17  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/planned_downtime.editor.php
 	godmode/menu.php: Fix a planned downtime ACLS problem
 	for bug #2305

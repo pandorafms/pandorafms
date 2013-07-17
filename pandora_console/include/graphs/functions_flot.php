@@ -61,7 +61,7 @@ function include_javascript_dependencies_flot_graph($return = false) {
 				percent = parseFloat(obj.series.percent).toFixed(2);
 				$('#hover').html('<span style=\'font-weight: bold; color: '+obj.series.color+'\'>'+obj.series.label+' ('+percent+'%)</span>');
 				$('.legendLabel').each(function() {
-					if($(this).html() == obj.series.label) {
+					if ($(this).html() == obj.series.label) {
 						$(this).css('font-weight','bold');
 					}
 					else {
@@ -344,7 +344,7 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	
 	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
 	
-	if($water_mark != '') {
+	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
 		$water_mark = 'true';
 	}
@@ -356,7 +356,7 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	
 	$labels = implode($separator, $labels);
 	$values = implode($separator, $values);
-	if(!empty($colors)) {
+	if (!empty($colors)) {
 		$colors = implode($separator, $colors);
 	}
 	
@@ -417,8 +417,8 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 			$jsvar = "data_".$graph_id."_".$key;
 			
 			if ($multicolor) {
-				for($j = count($graph_data) - 1; $j>=0; $j--) {
-					if($j == $i) {
+				for ($j = count($graph_data) - 1; $j>=0; $j--) {
+					if ($j == $i) {
 						$data[$jsvar.$i][$j] = $value;
 					}
 					else {
@@ -431,7 +431,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 			}
 			
 			$return .= "<div id='value_".$i."_$graph_id' class='values_$graph_id' style='color: #000; position:absolute;'>$value</div>";
-			if($value > $max) {
+			if ($value > $max) {
 				$max = $value;
 			}
 		}
@@ -522,9 +522,9 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 		foreach ($values as $key => $value) {
 			$jsvar = "data_".$graph_id."_".$key;
 			
-			if($multicolor) {
-				for($j = count($graph_data) - 1; $j>=0; $j--) {
-					if($j == $i) {
+			if ($multicolor) {
+				for ($j = count($graph_data) - 1; $j>=0; $j--) {
+					if ($j == $i) {
 						$data[$jsvar.$i][$j] = $value;
 					}
 					else {
@@ -623,7 +623,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	
 	$i_aux = $i;
 	while(1) {
-		if($i_aux <= $maxticks ) {
+		if ($i_aux <= $maxticks ) {
 			break;
 		}
 		
@@ -636,13 +636,13 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$acumulate = 0;
 	$c = 0;
 	$acumulate_data = array();
-	foreach($graph_data as $label => $values) {
+	foreach ($graph_data as $label => $values) {
 		$labels[] = io_safe_output($label);
 		$i--;
 		
-		foreach($values as $key => $value) {
+		foreach ($values as $key => $value) {
 			$jsvar = "d_".$graph_id."_".$i;
-			if($key == 'data') {
+			if ($key == 'data') {
 				$datacolor[$jsvar] = $colors[$value];
 				continue;
 			}
@@ -653,7 +653,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 			$c++;
 			
 			//$return .= "<div id='value_".$i."_$graph_id' class='values_$graph_id' style='color: #000; position:absolute;'>$value</div>";
-			if($value > $max) {
+			if ($value > $max) {
 				$max = $value;
 			}
 		}

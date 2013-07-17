@@ -226,7 +226,7 @@ function network_components_get_network_component ($id_network_component, $filte
 	
 	$network_component = db_get_row_filter ('tnetwork_component', $filter, $fields);
 	
-	if(!empty($network_component) && $network_component['id_category'] != 0) {
+	if (!empty($network_component) && $network_component['id_category'] != 0) {
 		$network_component['category_name'] = (string) db_get_value('name','tcategory','id',$network_component['id_category']);
 	}
 	

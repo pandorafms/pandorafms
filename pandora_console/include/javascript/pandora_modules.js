@@ -117,7 +117,7 @@ function configure_modules_form () {
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
 				// Workaround to update the advanced select control from html and ajax
-				if(typeof 'period_select_module_interval_update' == 'function') {
+				if (typeof 'period_select_module_interval_update' == 'function') {
 					period_select_module_interval_update(data["module_interval"]);
 				}
 				else {
@@ -154,32 +154,32 @@ function configure_modules_form () {
 				
 				// Reset the selection of tags (put all of them into available box)
 				$("#id_tag_selected option").each(function(){
-					if($(this).attr('value') != '') {
+					if ($(this).attr('value') != '') {
 						$("#id_tag_selected").find("option[value='" + $(this).attr('value') + "']").remove();
 						$("select[name='id_tag_available[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
 					}
 				});
-				if($("#id_tag_available option").length > 1) {
+				if ($("#id_tag_available option").length > 1) {
 					$("#id_tag_available").find("option[value='']").remove();
 				}
-				if($("#id_tag_selected option").length == 0) {
+				if ($("#id_tag_selected option").length == 0) {
 					$("select[name='id_tag_selected[]']").append($("<option></option>").val('').html('<i>None</i>'));
 				}
 				
-				if(tags != '') {
+				if (tags != '') {
 					tags = tags.split(',');
 					
 					// Fill the selected tags box with select ones
-					for(i=0; i<tags.length; i++){
+					for (i = 0; i < tags.length; i++){
 						$("#id_tag_available option").each(function(){
-							if(tags[i] == $(this).text()) {
+							if (tags[i] == $(this).text()) {
 								$("#id_tag_available").find("option[value='" + $(this).attr('value') + "']").remove();
 								$("select[name='id_tag_selected[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
 								$("#id_tag_selected").find("option[value='']").remove();
 							}
 						});
 						
-						if($("#id_tag_available option").length == 0) {
+						if ($("#id_tag_available option").length == 0) {
 							$("select[name='id_tag_available[]']").append($("<option></option>").val('').html('<i>None</i>'));
 						}
 					}
@@ -192,7 +192,7 @@ function configure_modules_form () {
 				
 				var legend = '';
 				// If exist macros, load the fields
-				if(data["macros"] != '' && data["macros"] != null) {
+				if (data["macros"] != '' && data["macros"] != null) {
 					$('#hidden-macros').val(Base64.encode(data["macros"]));
 					
 					var obj = jQuery.parseJSON(data["macros"]);
@@ -237,7 +237,7 @@ function configure_modules_form () {
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
 				// Workaround to update the advanced select control from html and ajax
-				if(typeof 'period_select_module_interval_update' == 'function') {
+				if (typeof 'period_select_module_interval_update' == 'function') {
 					period_select_module_interval_update(data["module_interval"]);
 				}
 				else {
@@ -287,7 +287,7 @@ function configure_modules_form () {
 				
 				// Reset the selection of tags (put all of them into available box)
 				$("#id_tag_selected option").each(function(){
-					if($(this).attr('value') != '') {
+					if ($(this).attr('value') != '') {
 						$("#id_tag_selected").find("option[value='" + $(this).attr('value') + "']").remove();
 						$("select[name='id_tag_available[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
 					}
@@ -303,16 +303,16 @@ function configure_modules_form () {
 					tags = tags.split(',');
 					
 					// Fill the selected tags box with select ones
-					for(i=0; i<tags.length; i++){
+					for (i = 0; i < tags.length; i++){
 						$("#id_tag_available option").each(function(){
-							if(tags[i] == $(this).text()) {
+							if (tags[i] == $(this).text()) {
 								$("#id_tag_available").find("option[value='" + $(this).attr('value') + "']").remove();
 								$("select[name='id_tag_selected[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
 								$("#id_tag_selected").find("option[value='']").remove();
 							}
 						});
 						
-						if($("#id_tag_available option").length == 0) {
+						if ($("#id_tag_available option").length == 0) {
 							$("select[name='id_tag_available[]']").append($("<option></option>").val('').html('<i>None</i>'));
 						}
 					}
@@ -324,7 +324,7 @@ function configure_modules_form () {
 				$('#hidden-macros').val('');
 				
 				// If exist macros, load the fields
-				if(data["macros"] != '' && data["macros"] != null) {
+				if (data["macros"] != '' && data["macros"] != null) {
 					$('#hidden-macros').val(Base64.encode(data["macros"]));
 					
 					var obj = jQuery.parseJSON(data["macros"]);
@@ -407,7 +407,7 @@ function configure_modules_form () {
 		return true;
 	});
 	
-	if(typeof $("#prediction_id_group").pandoraSelectGroupAgent == 'function') {
+	if (typeof $("#prediction_id_group").pandoraSelectGroupAgent == 'function') {
 		$("#prediction_id_group").pandoraSelectGroupAgent ({
 			agentSelect: "select#prediction_id_agent",
 			callbackBefore: function () {
@@ -610,7 +610,7 @@ function load_plugin_macros_fields(row_model_id) {
 			if (data['array'] != null) {
 				$('#hidden-macros').val(data['base64']);
 				jQuery.each (data['array'], function (i, macro) {
-					if(macro['desc'] != '') {
+					if (macro['desc'] != '') {
 						add_macro_field(macro, row_model_id);
 					}
 				});

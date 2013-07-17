@@ -319,8 +319,8 @@ function get_response_target(event_id, response_id, server_id) {
 	// Replace the custom params macros
 	var response_params = get_response_params(response_id);
 	
-	if(response_params.length > 1 || response_params[0] != '') {
-		for(i=0;i<response_params.length;i++) {
+	if (response_params.length > 1 || response_params[0] != '') {
+		for (i = 0; i < response_params.length; i++) {
 			target = target.replace('_'+response_params[i]+'_',$('#'+response_params[i]).val());
 		}
 	}
@@ -331,7 +331,7 @@ function get_response_target(event_id, response_id, server_id) {
 // Perform a response and put the output into a div
 function perform_response(target) {
 	var ajax_file = $('#hidden-ajax_file').val();
-
+	
 	$('#re_exec_command').hide();
 	$('#response_loading_command').show();
 	$('#response_out').html('');
@@ -394,12 +394,12 @@ function event_change_status(event_ids) {
 			$('#button-status_button').removeAttr('disabled');
 			$('#response_loading').hide();
 			show_event_dialog(event_id, $('#hidden-group_rep').val(), 'responses', data);
-			if(data == 'status_ok') {
+			if (data == 'status_ok') {
 			}
 			else {
 			}
 		}
-	});	
+	});
 	return false;
 }
 
@@ -444,13 +444,13 @@ function event_change_owner() {
 // Save a comment into an event
 function event_comment() {
 	var ajax_file = $('#hidden-ajax_file').val();
-
+	
 	var event_id = $('#hidden-id_event').val();
 	var comment = $('#textarea_comment').val();
 	var meta = $('#hidden-meta').val();
 	var history = $('#hidden-history').val();
-
-	if(comment == '') {
+	
+	if (comment == '') {
 		show_event_dialog(event_id, $('#hidden-group_rep').val(), 'comments', 'comment_error');
 		return false;
 	}
@@ -465,7 +465,7 @@ function event_comment() {
 	
 	$('#button-comment_button').attr('disabled','disabled');
 	$('#response_loading').show();
-
+	
 	jQuery.ajax ({
 		data: params.join ("&"),
 		type: 'POST',
@@ -479,7 +479,7 @@ function event_comment() {
 			
 			show_event_dialog(event_id, $('#hidden-group_rep').val(), 'comments', data);
 		}
-	});	
+	});
 	
 	return false;
 }

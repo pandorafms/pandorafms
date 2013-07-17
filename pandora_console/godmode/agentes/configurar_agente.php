@@ -741,7 +741,7 @@ if ($update_module || $create_module) {
 	// 1.23E-10 is 0.000000000123
 	
 	$post_process = (string) get_parameter ('post_process', 0.0);
-	$prediction_module = 1;
+	$prediction_module = 0;
 	$max_timeout = (int) get_parameter ('max_timeout');
 	$max_retries = (int) get_parameter ('max_retries');
 	$min = (int) get_parameter_post ("min");

@@ -1,3 +1,7 @@
+2013-07-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Do not execute more than one alert per trap.
+
 2013-07-15  Sergio Martin <sergio.martin@artica.es>
 
 	* util/plugin/snmp_remote.pl: Add SNMP remote plugin to the

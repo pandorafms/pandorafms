@@ -198,6 +198,7 @@ ALTER TABLE talert_snmp ADD (al_field8 CLOB default '');
 ALTER TABLE talert_snmp ADD (al_field9 CLOB default '');
 ALTER TABLE talert_snmp ADD (al_field10 CLOB default '');
 ALTER TABLE talert_snmp ADD (al_field10 CLOB default '');
+ALTER TABLE talert_snmp ADD (position NUMBER(10, 0) default 0 NOT NULL);
 
 -- ---------------------------------------------------------------------
 -- Table tevent_filter

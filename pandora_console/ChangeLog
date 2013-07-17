@@ -1,3 +1,13 @@
+2013-07-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  godmode/snmpconsole/snmp_alert.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql: Added support for SNMP alert ordering.
+
 2013-07-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_users.php

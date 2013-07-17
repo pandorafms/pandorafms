@@ -70,6 +70,7 @@ else if (isset ($_GET["submit"])) {
 	$custom_oid_data_10 = (string) get_parameter ("custom_oid_data_10");
 	$trap_type = (int) get_parameter ("trap_type", -1);
 	$single_value = (string) get_parameter ("single_value"); 
+	$position = (int) get_parameter ("position"); 
 	
 	if ($time_threshold == -1) {
 		$time_threshold = $time_other;
@@ -107,7 +108,8 @@ else if (isset ($_GET["submit"])) {
 			'_snmp_f9_' => $custom_oid_data_9,
 			'_snmp_f10_' => $custom_oid_data_10,
 			'trap_type' => $trap_type,
-			'single_value' => $single_value);
+			'single_value' => $single_value,
+			'position' => $position);
 			
 			$result = db_process_sql_insert('talert_snmp', $values);
 		
@@ -133,7 +135,8 @@ else if (isset ($_GET["submit"])) {
 			_snmp_f1_ = '%s', _snmp_f2_ = '%s', _snmp_f3_ = '%s',
 			_snmp_f4_ = '%s', _snmp_f5_ = '%s', _snmp_f6_ = '%s',
 			_snmp_f7_ = '%s', _snmp_f8_ = '%s', _snmp_f9_ = '%s',
-			_snmp_f10_ = '%s', trap_type = %d, single_value = '%s' 
+			_snmp_f10_ = '%s', trap_type = %d, single_value = '%s',
+			position = '%s' 
 			WHERE id_as = %d",
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
 			$al_field4, $al_field5, $al_field6, $al_field7, $al_field8,
@@ -142,7 +145,7 @@ else if (isset ($_GET["submit"])) {
 			$max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2,
 			$custom_oid_data_3, $custom_oid_data_4, $custom_oid_data_5,
 			$custom_oid_data_6, $custom_oid_data_7, $custom_oid_data_8,
-			$custom_oid_data_9, $custom_oid_data_10, $trap_type, $single_value, $id_as);
+			$custom_oid_data_9, $custom_oid_data_10, $trap_type, $single_value, $position, $id_as);
 		
 		$result = db_process_sql ($sql);
 		
@@ -197,6 +200,7 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$custom_oid_data_10 = $alert["_snmp_f10_"];
 	$trap_type = $alert["trap_type"];
 	$single_value = $alert["single_value"]; 
+	$position = $alert["position"];
 }
 elseif (isset ($_GET["update_alert"])) {
 	// Variable init
@@ -232,6 +236,7 @@ elseif (isset ($_GET["update_alert"])) {
 	$custom_oid_data_10 = '';
 	$trap_type = -1;
 	$single_value = '';
+	$position = 0;
 }
 
 // Header
@@ -459,7 +464,9 @@ if (isset ($_GET["update_alert"])) {
 			break;
 	}
 	echo '</td></tr>';
-	
+	echo '<tr><td class="datos">'.__('Position').'</td><td class="datos">';
+	html_print_input_text ("position", $position, '', 3);
+	echo '</td></tr>';
 	echo '</table>';
 	
 	echo "<table style='width:98%'>";
@@ -493,52 +500,57 @@ else {
 	$table->class= "databox";
 	$table->align = array ();
 	
-	$table->head[0] = __('Alert action');
+	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';
+	$table->align[0] = 'center';
+		
+	$table->head[1] = __('Alert action');
 	
-	$table->head[1] = __('SNMP Agent');
-	$table->size[1] = "90px";
-	$table->align[1] = 'center';
-	
-	$table->head[2] = __('OID');
+	$table->head[2] = __('SNMP Agent');
+	$table->size[2] = "90px";
 	$table->align[2] = 'center';
 	
-	$table->head[3] = __('Custom Value/OID');
+	$table->head[3] = __('OID');
 	$table->align[3] = 'center';
 	
-	$table->head[4] = __('Description');
+	$table->head[4] = __('Custom Value/OID');
+	$table->align[4] = 'center';
 	
-	$table->head[5] = __('Times fired');
-	$table->align[5] = 'center';
+	$table->head[5] = __('Description');
 	
-	$table->head[6] = __('Last fired');
+	$table->head[6] = __('Times fired');
 	$table->align[6] = 'center';
 	
-	$table->head[7] = __('Action');
-	$table->size[7] = "50px";
+	$table->head[7] = __('Last fired');
 	$table->align[7] = 'center';
+	
+	$table->head[8] = __('Action');
+	$table->size[8] = "50px";
+	$table->align[8] = 'center';
 	
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' . alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
+		$data[0] = $row["position"];
 		
-		$data[1] = __('SNMP Agent');
-		$data[1] = $row["agent"];
-		$data[2] = __('OID');
-		$data[2] = $row["oid"];
-		$data[3] = __('Custom Value/OID');
-		$data[3] = $row["custom_oid"];
+		$data[1] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' . alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
 		
-		$data[4] = $row["description"];
-		$data[5] = $row["times_fired"];
+		$data[2] = __('SNMP Agent');
+		$data[2] = $row["agent"];
+		$data[3] = __('OID');
+		$data[3] = $row["oid"];
+		$data[4] = __('Custom Value/OID');
+		$data[4] = $row["custom_oid"];
+		
+		$data[5] = $row["description"];
+		$data[6] = $row["times_fired"];
 		
 		if (($row["last_fired"] != "1970-01-01 00:00:00") and ($row["last_fired"] != "01-01-1970 00:00:00")) {
-			$data[6] = ui_print_timestamp($row["last_fired"], true);
+			$data[7] = ui_print_timestamp($row["last_fired"], true);
 		}
 		else {
-			$data[6] = __('Never');
+			$data[7] = __('Never');
 		}
 		
-		$data[7] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' .
+		$data[8] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
 			'&nbsp;&nbsp;<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
 			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';

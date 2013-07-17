@@ -189,6 +189,7 @@ ALTER TABLE "talert_snmp" ADD COLUMN "al_field7" text NOT NULL default '';
 ALTER TABLE "talert_snmp" ADD COLUMN "al_field8" text NOT NULL default '';
 ALTER TABLE "talert_snmp" ADD COLUMN "al_field9" text NOT NULL default '';
 ALTER TABLE "talert_snmp" ADD COLUMN "al_field10" text NOT NULL default '';
+ALTER TABLE "talert_snmp" ADD COLUMN "position" INTEGER NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table "tagente_modulo"

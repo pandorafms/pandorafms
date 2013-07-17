@@ -1,3 +1,9 @@
+2013-07-17  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/planned_downtime.editor.php
+	godmode/menu.php: Fix a planned downtime ACLS problem
+	for bug #2305
+
 2013-07-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_snmp_browser.php: Use version 2c by default. Some

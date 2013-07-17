@@ -309,7 +309,7 @@ $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 40, true);
 $table->data[1][0] = __('Group');
-$table->data[1][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
+$table->data[1][1] = html_print_select_groups(false, "AW", true, 'id_group', $id_group, '', '', 0, true);
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 3, 35, $description, '', true);
 
@@ -476,7 +476,7 @@ if ($id_downtime > 0) {
 	$data = array ();
 	if ($downtimes) {
 		foreach ($downtimes as $downtime) {
-			if (check_acl ($config["id_user"], $downtime['id_grupo'], "AR")) {
+			if (check_acl ($config["id_user"], $downtime['id_grupo'], "AW")) {
 				$data[$downtime['id_agente']] = $downtime['nombre'];
 			}
 		}
@@ -489,7 +489,7 @@ if ($id_downtime > 0) {
 	
 	echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
 	
-	html_print_select_groups(false, "AR", true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');
+	html_print_select_groups(false, "AW", true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');
 	
 	echo "<br /><br />";
 	html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);

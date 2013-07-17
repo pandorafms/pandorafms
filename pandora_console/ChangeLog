@@ -1,5 +1,16 @@
 2013-07-17  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/menu.php
+	operation/events/events_rss.php
+	operation/events/export_csv.php
+	operation/events/events_list.php
+	operation/events/events.php
+	operation/events/events.build_query.php
+	general/shortcut_bar.php: Fixed group filter
+	for bug #2346 and clean a lot of events code
+
+2013-07-17  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/events/events_list.php: Delete unnecessary ACL 
 	check
 

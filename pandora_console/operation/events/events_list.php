@@ -590,7 +590,7 @@ $(document).ready( function() {
 		// If selected 'none' flush filter
 		if ( $("#filter_id").val() == 0 ) {
 			$("#hidden-id_name").val('');
-			$("#ev_group").val(0);
+			$("#id_group").val(0);
 			$("#event_type").val('');
 			$("#severity").val(-1);
 			$("#status").val(3);
@@ -625,7 +625,7 @@ $(document).ready( function() {
 						if (i == 'id_name')
 							$("#hidden-id_name").val(val);
 						if (i == 'id_group')
-							$("#ev_group").val(val);
+							$("#id_group").val(val);
 						if (i == 'event_type')
 							$("#event_type").val(val);
 						if (i == 'severity')
@@ -701,7 +701,7 @@ $(document).ready( function() {
 			{"page" : "operation/events/events_list",
 			"save_event_filter" : 1,
 			"id_name" : $("#text-id_name").val(),
-			"id_group" : $("#ev_group").val(),
+			"id_group" : $("#id_group").val(),
 			"event_type" : $("#event_type").val(),
 			"severity" : $("#severity").val(),
 			"status" : $("#status").val(),
@@ -771,7 +771,7 @@ $(document).ready( function() {
 			{"page" : "operation/events/events_list",
 			"update_event_filter" : 1,
 			"id" : $("#filter_id").val(),
-			"id_group" : $("#ev_group").val(),
+			"id_group" : $("#id_group").val(),
 			"event_type" : $("#event_type").val(),
 			"severity" : $("#severity").val(),
 			"status" : $("#status").val(),

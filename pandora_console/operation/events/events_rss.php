@@ -64,7 +64,7 @@ function rss_error_handler ($errno, $errstr, $errfile, $errline) {
 
 set_error_handler ('rss_error_handler', E_ALL); //Errors output as RSS
 
-$ev_group = get_parameter ("ev_group", 0); // group
+$id_group = get_parameter ("id_group", 0); // group
 $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green

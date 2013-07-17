@@ -163,13 +163,13 @@ $own_info = get_user_info ($config['id_user']);
 
 // If user is admin can see all groups
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM")) {	
-	echo "<a href='index.php?sec=eventos&sec2=operation/events/events&status=3&severity=4&event_view_hr=8&ev_group=0&group_rep=1&filter_only_alert=-1'>";
+	echo "<a href='index.php?sec=eventos&sec2=operation/events/events&status=3&severity=4&event_view_hr=8&id_group=0&group_rep=1&filter_only_alert=-1'>";
 }
 else {
 	$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));
 	if (!empty($own_groups)){
 		$events_group = array_shift($own_groups);
-		echo "<a href='index.php?sec=eventos&sec2=operation/events/events&status=3&severity=4&event_view_hr=8&ev_group=0&group_rep=1&ev_group=$events_group&filter_only_alert=-1'>";
+		echo "<a href='index.php?sec=eventos&sec2=operation/events/events&status=3&severity=4&event_view_hr=8&group_rep=1&id_group=$events_group&filter_only_alert=-1'>";
 	}
 }
 html_print_image("images/lightning_go.png", false, array("title" => __("Critical events"), "style" => "margin-bottom: -5px;"));

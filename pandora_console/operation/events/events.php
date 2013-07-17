@@ -180,7 +180,7 @@ if (is_ajax ()) {
 
 
 $offset = (int) get_parameter ("offset", 0);
-$ev_group = (int) get_parameter ("ev_group", 0); //0 all
+$id_group = (int) get_parameter('id_group', 0);//0 all
 $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 3); // -1 all, 0 only new, 1 only validated, 2 only in process, 3 only not validated,
@@ -196,7 +196,6 @@ $text_agent = (string) get_parameter('text_agent', __("All"));
 $filter_only_alert = (int) get_parameter('filter_only_alert', -1);
 $filter_id = (int) get_parameter('filter_id', 0);
 $id_name = (string) get_parameter('id_name', '');
-$id_group = (int) get_parameter('id_group', 0);
 $open_filter = (int) get_parameter('open_filter', 0);
 
 $text_agent = (string) get_parameter("text_agent", __("All"));
@@ -225,7 +224,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;event_type=" . $event_type .
 	"&amp;severity=" . $severity . 
 	"&amp;status=" . $status . 
-	"&amp;ev_group=" . $ev_group . 
+	"&amp;id_group=" . $id_group . 
 	"&amp;refr=" . (int)get_parameter("refr", 0) . 
 	"&amp;id_agent=" . $id_agent . 
 	"&amp;pagination=" . $pagination . 

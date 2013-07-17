@@ -41,7 +41,7 @@ if (file_exists ($config['homedir'].'/include/languages/'.$user_language.'.mo'))
 }
 
 $offset = (int) get_parameter ("offset");
-$ev_group = (int) get_parameter ("ev_group"); // group
+$id_group = (int) get_parameter ("id_group"); // group
 $event_type = (string) get_parameter ("event_type", "all"); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", -1); // -1 all, 0 only red, 1 only green

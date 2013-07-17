@@ -16,16 +16,16 @@
 $groups = users_get_groups($id_user, 'ER');
 
 //Group selection
-if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
+if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
 	
 	if ($meta) {
 		// In metaconsole the group search is performed by name
-		$group_name = groups_get_name ($ev_group);
+		$group_name = groups_get_name ($id_group);
 		$sql_post = " AND group_name = '$group_name'";
 	}
 	else {
 		//If a group is selected and it's in the groups allowed
-		$sql_post = " AND id_grupo = $ev_group";
+		$sql_post = " AND id_grupo = $id_group";
 	}
 }
 else {
@@ -152,8 +152,8 @@ if (isset($filter_only_alert)) {
 }
 
 // Tags ACLS
-if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
-	$group_array = (array) $ev_group;
+if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
+	$group_array = (array) $id_group;
 }
 else {
 	$group_array = array_keys($groups);

@@ -451,7 +451,7 @@ $table->rowclass[] = '';
 
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
-if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM") ) {
+if (check_acl ($config["id_user"], 0, "EW")) {
 	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
 $data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a><br>';

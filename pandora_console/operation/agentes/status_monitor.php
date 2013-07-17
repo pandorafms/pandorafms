@@ -38,7 +38,7 @@ $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php')
 
 if (! defined ('METACONSOLE')) {
 	//Header
-	ui_print_page_header ("Monitor detail", "images/brick.png", false);
+	ui_print_page_header (__("Monitor detail"), "images/brick.png", false);
 }
 else {
 	

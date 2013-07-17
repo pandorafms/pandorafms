@@ -465,7 +465,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 	
 	if (!defined('METACONSOLE')) {
-		if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "AM")) {
+		if (check_acl ($config["id_user"], $id_group, "AW")) {
 			if (count($alerts['alerts_simple']) > 0) {
 				echo '<div class="action-buttons" style="width: '.$table->width.';">';
 				html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub ok"', false);

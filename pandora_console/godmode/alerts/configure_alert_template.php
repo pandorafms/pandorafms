@@ -644,6 +644,7 @@ else {
 	if(defined('METACONSOLE')) {
 		$table->data[3][0] = __('Wizard level');
 		$wizard_levels = array(
+			'nowizard' => __('No wizard'),
 			'basic' => __('Basic'),
 			'advanced' => __('Advanced'));
 		$table->data[3][1] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);

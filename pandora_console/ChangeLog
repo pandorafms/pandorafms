@@ -1,3 +1,16 @@
+2013-07-17 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/configurar_agente.php: fixed the default value for
+	"prediction_module" in tagente_module.
+	
+	* include/graphs/functions_flot.php,
+	include/graphs/functions_pchart.php,
+	include/graphs/functions_gd.php, include/graphs/functions_utils.php,
+	include/javascript/pandora_alerts.js,
+	include/javascript/pandora_modules.js,
+	include/javascript/pandora_events.js,
+	include/functions_network_components.php: cleaned source code style.
+
 2013-07-17  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/status_monitor.php

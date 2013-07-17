@@ -30,7 +30,7 @@ $types = array('histogram', 'progressbar');
 $id_graph = get_parameter('id_graph', false);
 $graph_type = get_parameter('graph_type', '');
 
-if($id_graph && in_array($graph_type, $types)) {
+if ($id_graph && in_array($graph_type, $types)) {
 	
 	if (!$id_graph) {
 		exit;
@@ -136,7 +136,7 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 		$margin_up += $rectangle_height + 1;
 		
 		$c++;
-		if(!isset($colors[$c])) {
+		if (!isset($colors[$c])) {
 			$c = 0;
 		}
 	}
@@ -161,11 +161,11 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 // Draw a dynamic progress bubble using GDlib directly
 // ***************************************************************************
 function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1, $fontsize=10, $value_text = '', $colorRGB = '') {
-	if($out_of_lim_str === false) {
+	if ($out_of_lim_str === false) {
 		$out_of_lim_str = __("Out of limits");
 	}
 	
-	if($out_of_lim_image === false) {
+	if ($out_of_lim_image === false) {
 		$out_of_lim_image = "images_graphs/outlimits.png";
 	}
 	
@@ -231,7 +231,7 @@ function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_
 					imagefilledellipse($image, $width / 2, $height / 2,
 						$ratingWidth, $ratingHeight, $soft_red);
 				}
-				else if($rating > 0) {
+				else if ($rating > 0) {
 					imagefilledellipse($image, $width / 2, $height / 2,
 						$ratingWidth, $ratingHeight, $other_red);
 				}
@@ -342,8 +342,8 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_red);
 					$bordercolor = $soft_red_border;
 				}
-				else if($rating > 0) {
-					if($radius != 0) {
+				else if ($rating > 0) {
+					if ($radius != 0) {
 						$x2 = $ratingbar30;
 					}
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $other_red);
@@ -358,8 +358,8 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$red);
 				elseif ($rating == 100)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$green);
-				else if($rating > 0){
-					if($radius != 0 && $rating < 30) {
+				else if ($rating > 0){
+					if ($radius != 0 && $rating < 30) {
 						$x2 = $ratingbar30;
 					}
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$blue);
@@ -383,8 +383,8 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_red);
 				elseif ($rating > 30)
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_yellow);
-				else if($rating > 0) {
-					if($radius != 0) {
+				else if ($rating > 0) {
+					if ($radius != 0) {
 						$x2 = $ratingbar30;
 					}
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_green);
@@ -392,7 +392,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 				break;
 		}
 		
-		if($bordercolor !== false) {
+		if ($bordercolor !== false) {
 			$x1-=1;
 			$x2 = $width-2;
 			imageline($image, $x1+$radius, $y1, $x2-$radius, $y1, $bordercolor);

@@ -51,7 +51,7 @@ function unserialize_in_temp($serial_id = null, $delete = true, $ttl = 1) {
 	$array = json_decode($content, true);
 	
 	if ($delete) {
-		if($volume == $ttl) {
+		if ($volume == $ttl) {
 			unlink($file_path);
 		}
 		else {

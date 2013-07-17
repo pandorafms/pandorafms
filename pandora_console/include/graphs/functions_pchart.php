@@ -136,7 +136,7 @@ if ($force_steps) {
 	$pixels_between_xdata = 50;
 	$max_xdata_display = round($width / $pixels_between_xdata);
 	$ndata = count($data);
-	if($max_xdata_display > $ndata) {
+	if ($max_xdata_display > $ndata) {
 		$xdata_display = $ndata;
 	}
 	else {
@@ -522,10 +522,10 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 		}
 		
 		// Assign cyclic colors to bars if are setted
-		if($fine_colors) {
+		if ($fine_colors) {
 			$c = 0;
-			foreach($values as $ii => $vv) {
-				if(!isset($fine_colors[$c])) {
+			foreach ($values as $ii => $vv) {
+				if (!isset($fine_colors[$c])) {
 					$c = 0;
 				}
 				$overridePalette[$ii] = $fine_colors[$c];
@@ -600,7 +600,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	
 	$myPicture->drawScale($scaleSettings);
 	
-	if(isset($legend)) {
+	if (isset($legend)) {
 		/* Write the chart legend */
 		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
 		$myPicture->drawLegend($width-$size['Width'],0,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL, "BoxWidth"=>10, "BoxHeight"=>10));
@@ -710,7 +710,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		/* Set horizontal legend if is posible */
 		$legend_mode = LEGEND_HORIZONTAL;
 		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
-		if($size['Width'] > ($width - 5)) {
+		if ($size['Width'] > ($width - 5)) {
 			$legend_mode = LEGEND_VERTICAL;
 			$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
 		}
@@ -891,7 +891,7 @@ function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font
 	$myPicture->drawSplineChart($settings);
 	$myPicture->setShadow(FALSE);
 	
-	if($show_legend) {
+	if ($show_legend) {
 		/* Write the chart legend */ 
 		$myPicture->drawLegend(643,210,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
 	}

@@ -233,7 +233,7 @@ switch ($action) {
 		$buttons = array(
 			'list_reports' => array('active' => false,
 				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
-					html_print_image("images/op_reporting.png", true, array ("title" => __('Main'))) .'</a>')
+					html_print_image("images/report_list.png", true, array ("title" => __('Reports list'))) .'</a>')
 			);
 		
 		if ($enterpriseEnable) {
@@ -1352,7 +1352,7 @@ switch ($action) {
 			$buttons = array(
 				'list_reports' => array('active' => false,
 					'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
-						html_print_image("images/op_reporting.png", true, array ("title" => __('Main'))) .'</a>')
+						html_print_image("images/op_reporting.png", true, array ("title" => __('Reports list'))) .'</a>')
 				);
 			
 			$buttons = reporting_enterprise_add_main_Tabs($buttons);

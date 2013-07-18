@@ -153,7 +153,7 @@ $table->width = '98%';
 $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
-$table->class = "databox_color";
+$table->class = "databox";
 $table->style[0] = 'vertical-align: top;';
 
 $table->valign[1] = 'top';

@@ -1,5 +1,16 @@
 2013-07-18  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/reporting/reporting_viewer.php
+	images/report_list.png
+	godmode/events/event_edit_filter.php
+	godmode/reporting/reporting_builder.php: Fix the manage
+	tabs wich appeared in the view report section even when 
+	the user hasnt RW permissions for bug #2347
+	Added some new buttons and icon to make more usable the
+	reports section
+
+2013-07-18  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_events.php: Fixed the access to the
 	module graph from events view on metaconsole for bug
 	#2344

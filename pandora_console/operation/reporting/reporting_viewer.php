@@ -63,22 +63,27 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time&pure=$pure";
 
-$options['main']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
-	html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
+if (check_acl ($config['id_user'], 0, "RW")) {
+	$options['main']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
+		html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
 
-$options['list_items']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
-	html_print_image("images/list.png", true, array ("title" => __('List items'))) .'</a>';
+	$options['list_items']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
+		html_print_image("images/list.png", true, array ("title" => __('List items'))) .'</a>';
 
-$options['item_editor']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $id_report . '&pure='.$pure.'">' . 
-	html_print_image("images/pen.png", true, array ("title" => __('Item editor'))) .'</a>';
+	$options['item_editor']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $id_report . '&pure='.$pure.'">' . 
+		html_print_image("images/pen.png", true, array ("title" => __('Item editor'))) .'</a>';
 
-if (enterprise_installed()) {
-	$options = reporting_enterprise_add_Tabs($options, $id_report);
+	if (enterprise_installed()) {
+		$options = reporting_enterprise_add_Tabs($options, $id_report);
+	}
 }
-
 $options['view'] = array('active' => true,
 	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $id_report . '&pure='.$pure.'">' . 
 		html_print_image("images/operation.png", true, array ("title" => __('View report'))) .'</a>');
+
+$options['list_reports'] = array('active' => false,
+	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
+		html_print_image("images/report_list.png", true, array ("title" => __('Report list'))) .'</a>');
 
 if (!defined('METACONSOLE')) {
 	if ($config["pure"] == 0) {
@@ -118,7 +123,7 @@ if ($enable_init_date) {
 }
 
 $table->id = 'controls_table';
-$table->width = '99%';
+$table->width = '98%';
 $table->class = 'databox';
 $table->style = array ();
 $table->style[0] = 'width: 60px;';
@@ -166,6 +171,8 @@ $table->data[1][2] .= '<div style="float:left;padding-top:3px;display:'.$display
 $table->data[1][2] .= html_print_input_text ('date', $date, '', 12, 10, true). ' ';
 $table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true). ' ';
 $table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
+
+enterprise_hook('open_meta_frame');
 
 echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'" style="margin-right: 0px;">';
 html_print_table ($table);
@@ -320,4 +327,6 @@ foreach ($contents as $content) {
 	
 	flush ();
 }
+
+enterprise_hook('close_meta_frame');
 ?>

@@ -156,7 +156,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	
 	if (($id_agent !== false) && ($idGroup !== false)) {
 		$where_tags = tags_get_acl_tags($config['id_user'], $idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
-		
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -167,7 +166,13 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 				FROM tagente_modulo WHERE delete_pending = 0';
 		}
 		
-		$subQuery .= $where_tags;
+		// If there are any errors add imposible condition
+		if(in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL)) || TRUE) {
+			$subQuery .= ' AND 1 = 0';
+		} 
+		else {
+			$subQuery .= $where_tags;
+		}
 	}
 	else if ($id_agent === false) {
 		if ($allModules)
@@ -214,7 +219,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 				ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s",
 	$selectText, $subQuery, $where, $filter, $orderbyText);
-	
 	$alerts = db_get_all_rows_sql ($sql);
 	
 	if ($alerts === false)

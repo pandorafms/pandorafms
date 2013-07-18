@@ -1,5 +1,11 @@
 2013-07-18  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_agents.php: Add check to avoid SQL
+	errors when retrieve alerts and the user profiles
+	are not properly configurated for bug #2349
+
+2013-07-18  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/reporting/reporting_viewer.php
 	images/report_list.png
 	godmode/events/event_edit_filter.php

@@ -153,8 +153,8 @@ $(document).ready (function () {
 		jQuery.post ("ajax.php",
 			{"page" : "godmode/massive/massive_delete_profiles",
 			"get_users" : 1,
-			"id_group[]" : $("#groups_id").attr("value"),
-			"id_profile[]" : $("#profiles_id").attr("value")
+			"id_group[]" : $("#groups_id").val(),
+			"id_profile[]" : $("#profiles_id").val()
 			},
 			function (data, status) {
 				options = "";

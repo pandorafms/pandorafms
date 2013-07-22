@@ -408,7 +408,7 @@ function incidents_call_api($url, $postparameters = false) {
 	$curlObj = curl_init();
 	curl_setopt($curlObj, CURLOPT_URL, $url);
 	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
-	if($postparameters !== false) {
+	if ($postparameters !== false) {
 		curl_setopt($curlObj, CURLOPT_POSTFIELDS, $postparameters);
 	}
 	$result = curl_exec($curlObj);

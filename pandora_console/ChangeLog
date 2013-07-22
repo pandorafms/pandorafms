@@ -1,3 +1,13 @@
+2013-07-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php, include/functions_reports.php,
+	include/functions_groups.php, include/functions_incidents.php: fixed
+	the source code style.
+	
+	* include/javascript/d3.v3.js: uploaded custom d3 version from
+	https://github.com/mdtrooper/d3 . We need to pull request to
+	the main branch...I love git.
+
 2013-07-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_ui.php

@@ -412,7 +412,7 @@ function groups_get_all($groupWithAgents = false) {
 	
 	$rows = db_get_all_rows_sql ($sql);
 	
-	if($rows === false) {
+	if ($rows === false) {
 		$rows = array();
 	}
 	
@@ -573,7 +573,7 @@ function groups_get_status ($id_group = 0) {
 function groups_get_name ($id_group, $returnAllGroup = false) {
 	if ($id_group > 0)
 		return (string) db_get_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
-	elseif($returnAllGroup)
+	elseif ($returnAllGroup)
 		return __("All");
 }
 

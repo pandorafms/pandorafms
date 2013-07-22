@@ -18,7 +18,13 @@ function snmpBrowse () {
 	var target_ip = $('#text-target_ip').val();
 	var community = $('#text-community').val();
 	var starting_oid = $('#text-starting_oid').val();
-	var starting_oid = $('#text-starting_oid').val();
+	var snmp_version = $('#snmp_browser_version').val();
+	var snmp3_auth_user = $('#text-snmp3_browser_auth_user').val();
+	var snmp3_security_level = $('#snmp3_browser_security_level').val();
+	var snmp3_auth_method = $('#snmp3_browser_auth_method').val();
+	var snmp3_auth_pass = $('#text-snmp3_browser_auth_pass').val();
+	var snmp3_privacy_method = $('#snmp3_browser_privacy_method').val();
+	var snmp3_privacy_pass = $('#text-snmp3_browser_privacy_pass').val();
 	var ajax_url = $('#hidden-ajax_url').val();
 	
 	// Prepare the AJAX call
@@ -26,6 +32,13 @@ function snmpBrowse () {
 		"target_ip=" + target_ip,
 		"community=" + community,
 		"starting_oid=" + starting_oid,
+		"snmp_browser_version=" + snmp_version,
+		"snmp3_browser_auth_user=" + snmp3_auth_user,
+		"snmp3_browser_security_level=" + snmp3_security_level,
+		"snmp3_browser_auth_method=" + snmp3_auth_method,
+		"snmp3_browser_auth_pass=" + snmp3_auth_pass,
+		"snmp3_browser_privacy_method=" + snmp3_privacy_method,
+		"snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
 		"action=" + "snmptree",
 		"page=operation/snmpconsole/snmp_browser"
 	];
@@ -129,6 +142,13 @@ function snmpGet (oid) {
 	// Read the target IP and community
 	var target_ip = $('#text-target_ip').val();
 	var community = $('#text-community').val();
+	var snmp_version = $('#snmp_browser_version').val();
+	var snmp3_auth_user = $('#text-snmp3_browser_auth_user').val();
+	var snmp3_security_level = $('#snmp3_browser_security_level').val();
+	var snmp3_auth_method = $('#snmp3_browser_auth_method').val();
+	var snmp3_auth_pass = $('#text-snmp3_browser_auth_pass').val();
+	var snmp3_privacy_method = $('#snmp3_browser_privacy_method').val();
+	var snmp3_privacy_pass = $('#text-snmp3_browser_privacy_pass').val();
 	var ajax_url = $('#hidden-ajax_url').val();
 	
 	// Check for a custom action
@@ -142,6 +162,13 @@ function snmpGet (oid) {
 		"target_ip=" + target_ip,
 		"community=" + community,
 		"oid=" + oid,
+		"snmp_browser_version=" + snmp_version,
+		"snmp3_browser_auth_user=" + snmp3_auth_user,
+		"snmp3_browser_security_level=" + snmp3_security_level,
+		"snmp3_browser_auth_method=" + snmp3_auth_method,
+		"snmp3_browser_auth_pass=" + snmp3_auth_pass,
+		"snmp3_browser_privacy_method=" + snmp3_privacy_method,
+		"snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
 		"action=" + "snmpget",
 		"custom_action=" + custom_action,
 		"page=operation/snmpconsole/snmp_browser"
@@ -343,4 +370,14 @@ function searchLastMatch () {
 
 	// Focus the last match
 	searchPrevMatch();
+}
+
+// Hide or show SNMP v3 options
+function checkSNMPVersion () {
+	if ($("#snmp_browser_version").val() == "3") {
+		$("#snmp3_browser_options").css("display", "");
+	}
+	else {
+		$("#snmp3_browser_options").css("display", "none");
+	}
 }

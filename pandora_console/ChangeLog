@@ -1,3 +1,11 @@
+2013-07-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/module_manager_editor_network.php,
+	  include/javascript/pandora_snmp_browser.js,
+	  include/functions_snmp_browser.php,
+	  operation/snmpconsole/snmp_browser.php: Added SNMP version support to
+	  the SNMP browser.
+
 2013-07-22 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php, include/functions_reports.php,

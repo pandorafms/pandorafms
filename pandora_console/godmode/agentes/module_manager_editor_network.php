@@ -243,6 +243,67 @@ $(document).ready (function () {
 	$('#text-snmp_community').keyup(function() {
 		$('#text-community').val($(this).val());
 	});
+	$('#snmp_version').change(function() {
+		$('#snmp_browser_version').val($(this).val());
+
+		// Display or collapse the SNMP browser's v3 options
+		checkSNMPVersion ();
+	});
+	$('#snmp_browser_version').change(function() {
+		$('#snmp_version').val($(this).val());
+
+		// Display or collapse the SNMP v3 options in the main window
+		if ($(this).val() == "3") {
+			$("#simple-field_snmpv3_row1").attr("style", "");
+			$("#simple-field_snmpv3_row2").attr("style", "");
+			$("#simple-field_snmpv3_row3").attr("style", "");
+			$("input[name=active_snmp_v3]").val(1);
+			$("input[name=snmp_community]").attr("disabled", true);
+		}
+		else {
+			$("#simple-field_snmpv3_row1").css("display", "none");
+			$("#simple-field_snmpv3_row2").css("display", "none");
+			$("#simple-field_snmpv3_row3").css("display", "none");
+			$("input[name=active_snmp_v3]").val(0);
+			$("input[name=snmp_community]").removeAttr('disabled');
+		}
+	});
+	$('#snmp3_auth_user').keyup(function() {
+		$('#snmp3_browser_auth_user').val($(this).val());
+	});
+	$('#snmp3_browser_auth_user').keyup(function() {
+		$('#snmp3_auth_user').val($(this).val());
+	});
+	$('#snmp3_security_level').change(function() {
+		$('#snmp3_browser_security_level').val($(this).val());
+	});
+	$('#snmp3_browser_security_level').change(function() {
+		$('#snmp3_security_level').val($(this).val());
+	});
+	$('#snmp3_auth_method').change(function() {
+		$('#snmp3_browser_auth_method').val($(this).val());
+	});
+	$('#snmp3_browser_auth_method').change(function() {
+		$('#snmp3_auth_method').val($(this).val());
+	});
+	$('#snmp3_auth_pass').keyup(function() {
+		$('#snmp3_browser_auth_pass').val($(this).val());
+	});	
+	$('#snmp3_browser_auth_pass').keyup(function() {
+		$('#snmp3_auth_pass').val($(this).val());
+	});	
+	$('#snmp3_privacy_method').change(function() {
+		$('#snmp3_browser_privacy_method').val($(this).val());
+	});
+	$('#snmp3_browser_privacy_method').change(function() {
+		$('#snmp3_privacy_method').val($(this).val());
+	});
+	$('#snmp3_privacy_pass').keyup(function() {
+		$('#snmp3_browser_privacy_pass').val($(this).val());
+	});	
+	$('#snmp3_browser_privacy_pass').keyup(function() {
+		$('#snmp3_privacy_pass').val($(this).val());
+	});
 });
 
 // Show the SNMP browser window
@@ -251,7 +312,14 @@ function snmpBrowserWindow () {
 	// Keep elements in the form and the SNMP browser synced
 	$('#text-target_ip').val($('#text-ip_target').val());
 	$('#text-community').val($('#text-snmp_community').val());
-	
+	$('#snmp_browser_version').val($('#snmp_version').val());
+	$('#snmp3_browser_auth_user').val($('#snmp3_auth_user').val());
+	$('#snmp3_browser_security_level').val($('#snmp3_security_level').val());
+	$('#snmp3_browser_auth_method').val($('#snmp3_auth_method').val());
+	$('#snmp3_browser_auth_pass').val($('#snmp3_auth_pass').val());
+	$('#snmp3_browser_privacy_method').val($('#snmp3_privacy_method').val());
+	$('#snmp3_browser_privacy_pass').val($('#snmp3_privacy_pass').val());
+		
 	$("#snmp_browser_container").show().dialog ({
 		title: '',
 		resizable: true,

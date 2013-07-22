@@ -1,5 +1,10 @@
 2013-07-22  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/stat_win.php: Change the order of jquery
+	include file to avoid errors
+
+2013-07-22  Sergio Martin <sergio.martin@artica.es>
+
 	* include/graphs/flot/pandora.flot.js: Fixed access to 
 	events from graphics in metaconsole for bug #2335
 

@@ -1,3 +1,16 @@
+2013-07-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_module_interval_factor.php
+	include/help/es/help_module_interval_factor.php
+	godmode/agentes/module_manager_editor_common.php: Change the
+	input field of module interval on data modules form by 
+	a non editable info and improve the help explaining deeply the
+	way of change the interval and how to do it. For bug #2308
+
+	* images/cancel.png
+	godmode/massive/massive_operations.php: Add missed icon
+	and change another one
+
 2013-07-19  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_delete_profiles.php: Fix massive

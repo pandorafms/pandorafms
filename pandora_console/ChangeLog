@@ -1,5 +1,10 @@
 2013-07-22  Sergio Martin <sergio.martin@artica.es>
 
+	* include/graphs/flot/pandora.flot.js: Fixed access to 
+	events from graphics in metaconsole for bug #2335
+
+2013-07-22  Sergio Martin <sergio.martin@artica.es>
+
 	* include/help/en/help_module_interval_factor.php
 	include/help/es/help_module_interval_factor.php
 	godmode/agentes/module_manager_editor_common.php: Change the

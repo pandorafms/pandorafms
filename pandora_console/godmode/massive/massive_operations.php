@@ -112,7 +112,7 @@ $alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massi
 	. '</a>', 'active' => $tab == 'massive_alerts');
 
 $userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
-	. html_print_image ('images/group.png', true, array ('title' => __('Users operations')))
+	. html_print_image ('images/op_workspace.png', true, array ('title' => __('Users operations')))
 	. '</a>', 'active' => $tab == 'massive_users');
 
 $agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'

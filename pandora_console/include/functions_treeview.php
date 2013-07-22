@@ -298,12 +298,20 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox alternate" style="width:90%; min-width: 300px;">';
 	//Agent name
 	echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
+	
 	if ($agent['disabled']) {
-		$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true) . ui_print_help_tip(__('Disabled'), true) . "</em>";
+		$cellName = "<em>";
 	}
 	else {
-		$cellName = ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true);
+		$cellName = '';
 	}
+		
+	$cellName .= ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true, $console_url, $url_hash, false, can_user_access_node ());
+	
+	if ($agent['disabled']) {
+		$cellName .= ui_print_help_tip(__('Disabled'), true) . "</em>";
+	}
+	
 	echo '<td class="datos"><b>'.$cellName.'</b></td>';
 	
 	//Addresses

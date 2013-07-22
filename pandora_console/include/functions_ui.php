@@ -623,10 +623,11 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
  * @param string server url to concatenate at the begin of the link
  * @param string extra parameters to concatenate in the link
  * @param string name of the agent to avoid the query in some cases
+ * @param bool if the agent will provided with link or not
  * 
  * @return string HTML with agent name and link
  */
-function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false, $server_url = '', $extra_params = '', $known_agent_name = false) {
+function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false, $server_url = '', $extra_params = '', $known_agent_name = false, $link = true) {
 	if ($known_agent_name === false) {
 		$agent_name = (string) agents_get_name ($id_agent);
 	}
@@ -639,13 +640,18 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_mediu
 		$agent_name = ui_print_truncate_text($agent_name, $cutoff, true, true, true, '[&hellip;]', $style);
 	}
 	
-	$url = $server_url . 'index.php?sec=estado&amp;'. 
-		'sec2=operation/agentes/ver_agente&amp;' .
-		'id_agente=' . $id_agent.$extra_params;
-	
-	$output = '<a style="' . $style . '"' .
-		' href="' . $url . '"' .
-		' title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
+	if ($link) {
+		$url = $server_url . 'index.php?sec=estado&amp;'. 
+			'sec2=operation/agentes/ver_agente&amp;' .
+			'id_agente=' . $id_agent.$extra_params;
+		
+		$output = '<a style="' . $style . '"' .
+			' href="' . $url . '"' .
+			' title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
+	}
+	else {
+		$output = '<b><span style="'.$style.'">'.$agent_name.'</span></b>';
+	}
 	
 	//TODO: Add a pretty javascript (using jQuery) popup-box with agent details
 	

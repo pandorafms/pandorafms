@@ -595,7 +595,7 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 	$types['event_report_group'] = array('optgroup' => __('Events'),
 		'name' => __('Event report group'));
 	
-	if($config['enterprise_installed']) {
+	if ($config['enterprise_installed']) {
 		$types['inventory'] = array('optgroup' => __('Inventory'),
 			'name' => __('Inventory')); 
 		if (!$template) {

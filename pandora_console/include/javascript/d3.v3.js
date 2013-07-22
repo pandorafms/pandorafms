@@ -1,3 +1,6 @@
+//This is a custom version from
+// https://github.com/mdtrooper/d3
+
 d3 = function() {
   var d3 = {
     version: "3.2.4"
@@ -1149,7 +1152,7 @@ d3 = function() {
     return d3.rebind(drag, event, "on");
   };
   d3.behavior.zoom = function() {
-    var translate = [ 0, 0 ], translate0, scale = 1, distance0, scale0, scaleExtent = d3_behavior_zoomInfinity, event = d3_eventDispatch(zoom, "zoom"), x0, x1, y0, y1, touchtime;
+    var translate = [ 0, 0 ], zoom_levels = null, translate0, scale = 1, distance0, scale0, scaleExtent = d3_behavior_zoomInfinity, event = d3_eventDispatch(zoom, "zoom"), x0, x1, y0, y1, touchtime;
     function zoom() {
       this.on("mousedown.zoom", mousedown).on("mousemove.zoom", mousemove).on(d3_behavior_zoomWheel + ".zoom", mousewheel).on("dblclick.zoom", dblclick).on("touchstart.zoom", touchstart).on("touchmove.zoom", touchmove).on("touchend.zoom", touchstart);
     }
@@ -1208,6 +1211,88 @@ d3 = function() {
         return (y - translate[1]) / scale;
       }).map(y0.invert));
     }
+    
+    zoom.setScale = function(v) {
+		scale = v;
+	}
+	
+    zoom.setTranslate = function(v) {
+		translate = v;
+	}
+    zoom.getTranslate = function() {
+		return translate;
+	}
+    
+    zoom.convertLevelsToScale = function(i) {
+		min =  Math.pow(2, (-360 * i) * .002) * 1;
+		max =  Math.pow(2, (360 * i) * .002) * 1;
+		
+		return [min, max];
+	}
+    
+    zoom.getZoomLevel = function(x, y) {
+		if (typeof(x) == 'undefined') {
+			//Get center
+		}
+		if (typeof(y) == 'undefined') {
+			//Get center
+		}
+		
+		zoom_levels = [];
+		
+		if (!translate0)
+			translate0 = location([x, y]);
+		
+		var old_scale = scale;
+		var old_translate = [translate[0], translate[1]];
+		
+		var count = 0;
+		
+		
+		scale = 1;
+		high_levels = [];
+		high_levels.push({'scale': scale, 'translate': [translate[0], translate[1]]});
+		do {
+			scaleTo(Math.pow(2, 360 * .002) * scale);
+			translateTo([x, y], translate0);
+			
+			high_levels.push({'scale': scale, 'translate': [translate[0], translate[1]]});
+			
+			if (count > 30) {
+				break;
+			}
+			count++;
+		}
+		while (scale < scaleExtent[1]);
+		
+		
+		scale = 1;
+		count = 0;
+		do {
+			scaleTo(Math.pow(2, -360 * .002) * scale);
+			translateTo([x, y], translate0);
+			
+			zoom_levels.push({'scale': scale, 'translate': [translate[0], translate[1]]});
+			
+			if (count > 30) {
+				break;
+			}
+			count++;
+		}
+		while (scale > scaleExtent[0]);
+		
+		zoom_levels.reverse();
+		high_levels.forEach(function(v, i) {
+			zoom_levels.push(v);
+		});
+		
+		
+		
+		scale = old_scale;
+		translate = old_translate;
+		
+		return zoom_levels;
+	}
     function dispatch(event) {
       rescale();
       d3.event.preventDefault();
@@ -1231,8 +1316,14 @@ d3 = function() {
     }
     function mousewheel() {
       if (!translate0) translate0 = location(d3.mouse(this));
-      scaleTo(Math.pow(2, d3_behavior_zoomDelta() * .002) * scale);
-      translateTo(d3.mouse(this), translate0);
+      
+      var d3_behavior_zoomDelta_var = d3_behavior_zoomDelta();
+      
+      scaleTo(Math.pow(2, d3_behavior_zoomDelta_var * .002) * scale);
+      
+      var d3_mouse_this = d3.mouse(this);
+      
+      translateTo(d3_mouse_this, translate0);
       dispatch(event.of(this, arguments));
     }
     function mousemove() {
@@ -1240,7 +1331,9 @@ d3 = function() {
     }
     function dblclick() {
       var p = d3.mouse(this), l = location(p), k = Math.log(scale) / Math.LN2;
+      
       scaleTo(Math.pow(2, d3.event.shiftKey ? Math.ceil(k) - 1 : Math.floor(k) + 1));
+      
       translateTo(p, l);
       dispatch(event.of(this, arguments));
     }

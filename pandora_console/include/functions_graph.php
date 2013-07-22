@@ -106,7 +106,7 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 	$stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
 	
 	foreach ($chart_array as $item) {
-		if($series_suffix != '') {
+		if ($series_suffix != '') {
 			$item['sum'] = $item['sum'.$series_suffix];
 			$item['min'] = $item['min'.$series_suffix];
 			$item['max'] = $item['max'.$series_suffix];
@@ -277,7 +277,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			$data_i++;
 		}
 		
-		if($max_value < $interval_max) {
+		if ($max_value < $interval_max) {
 			$max_value = $interval_max;
 		}
 		
@@ -303,17 +303,17 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$alert_ids[] = $events[$event_i]['id_evento'];
 			}
 			if ($show_unknown) {
-				if($events[$event_i]['event_type'] == 'going_unknown') {
+				if ($events[$event_i]['event_type'] == 'going_unknown') {
 					$is_unknown = true;
 				}
-				else if(substr ($events[$event_i]['event_type'], 0, 5) == 'going') {
+				else if (substr ($events[$event_i]['event_type'], 0, 5) == 'going') {
 					$is_unknown = false;
 				}
 			}
 			$event_i++;
 		}
-
-		if($is_unknown) {
+		
+		if ($is_unknown) {
 			$unknown_value++;
 		}
 		
@@ -362,35 +362,35 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		}
 		
 		// Data
-		if($show_events) {
-			if(!isset($chart[$timestamp]['event'.$series_suffix])) {
+		if ($show_events) {
+			if (!isset($chart[$timestamp]['event'.$series_suffix])) {
 				$chart[$timestamp]['event'.$series_suffix] = 0;
 			}
 			
 			$chart[$timestamp]['event'.$series_suffix] += $event_value;
 			$series_type['event'.$series_suffix] = 'points';
 		}
-		if($show_alerts) {
-			if(!isset($chart[$timestamp]['alert'.$series_suffix])) {
+		if ($show_alerts) {
+			if (!isset($chart[$timestamp]['alert'.$series_suffix])) {
 				$chart[$timestamp]['alert'.$series_suffix] = 0;
 			}
 			
 			$chart[$timestamp]['alert'.$series_suffix] += $alert_value;
 			$series_type['alert'.$series_suffix] = 'points';
 		}
-		if($show_unknown) {
-			if(!isset($chart[$timestamp]['unknown'.$series_suffix])) {
+		if ($show_unknown) {
+			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
 				$chart[$timestamp]['unknown'.$series_suffix] = 0;
 			}
 			
 			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
 			$series_type['unknown'.$series_suffix] = 'area';
 		}
-
-		if($is_unknown) {
+		
+		if ($is_unknown) {
 			$total = $interval_max = $interval_min = $previous_data = 0;
 		}
-
+		
 		if ($count > 0) {
 			if ($avg_only) {
 				$chart[$timestamp]['sum'.$series_suffix] = $total;
@@ -659,7 +659,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	//$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
 	
-	if($show_events) {
+	if ($show_events) {
 		$legend['event'.$series_suffix_str] = __('Events').$series_suffix_str;
 		$chart_extra_data['legend_events'] = $legend['event'].$series_suffix_str;
 	}
@@ -667,7 +667,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
 		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix_str];
 	}
-	if($show_unknown) {
+	if ($show_unknown) {
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
 	}
@@ -1479,7 +1479,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	}
 	
 	foreach ($events as $event) {
-		if($event['id_agentmodule'] == 0) {
+		if ($event['id_agentmodule'] == 0) {
 			$key = __('System') . ' ('.$event['count_number'].')';
 		}
 		else {
@@ -1734,7 +1734,7 @@ function graph_db_agentes_modulos($width, $height) {
 	foreach ($modules as $module) {
 		$agent_name = agents_get_name ($module['id_agente'], "none");
 		
-		if(empty($agent_name)) {
+		if (empty($agent_name)) {
 			continue;
 		}
 		switch ($config['dbtype']){
@@ -1788,7 +1788,7 @@ function graphic_user_activity ($width = 350, $height = 230) {
 	}
 	$logins = db_get_all_rows_sql ($sql);
 	
-	if($logins == false) {
+	if ($logins == false) {
 		$logins = array();
 	}
 	foreach ($logins as $login) {
@@ -1814,7 +1814,7 @@ function grafico_incidente_prioridad () {
 		ORDER BY 2 DESC';
 	$incidents = db_get_all_rows_sql ($sql);
 	
-	if($incidents == false) {
+	if ($incidents == false) {
 		$incidents = array();
 	}
 	foreach ($incidents as $incident) {
@@ -1892,14 +1892,14 @@ function graphic_incident_group () {
 	
 	$incidents_all = db_get_value_sql($sql);
 	
-	if($incidents == false) {
+	if ($incidents == false) {
 		$incidents = array();
 	}
 	foreach ($incidents as $incident) {
 		$data[$incident['nombre']] = $incident['n_incidents'];
 	}
 	
-	if($incidents_all > 0) {
+	if ($incidents_all > 0) {
 		$data[__('All')] = $incidents_all;
 	}
 	
@@ -1928,11 +1928,11 @@ function graphic_incident_user () {
 		ORDER BY 1 DESC LIMIT %d', $max_items);
 	$incidents = db_get_all_rows_sql ($sql);
 	
-	if($incidents == false) {
+	if ($incidents == false) {
 		$incidents = array();
 	}
 	foreach ($incidents as $incident) {
-		if($incident['id_usuario'] == false) {
+		if ($incident['id_usuario'] == false) {
 			$name = __('System');
 		}
 		else {
@@ -1983,7 +1983,7 @@ function graphic_incident_source($width = 320, $height = 200) {
 	}
 	$origins = db_get_all_rows_sql ($sql);
 	
-	if($origins == false) {
+	if ($origins == false) {
 		$origins = array();
 	}
 	foreach ($origins as $origin) {
@@ -2004,7 +2004,7 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
 	
 	$colors = array();
 	foreach ($data_graph as $k => $v) {
-		if($k == __('Validated')) {
+		if ($k == __('Validated')) {
 			$colors[$k] = COL_NORMAL;
 		}
 		else {
@@ -2046,7 +2046,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	
 	// Choose the table where search if metaconsole or not
 	if ($meta) {
-		if($history) {
+		if ($history) {
 			$event_table = 'tmetaconsole_event_history';
 		}
 		else {
@@ -2650,10 +2650,10 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 				$alert_ids[] = $events[$k]['id_evento'];
 			}
 			if ($show_unknown) {
-				if($events[$k]['event_type'] == 'going_unknown') {
+				if ($events[$k]['event_type'] == 'going_unknown') {
 					$is_unknown = true;
 				}
-				else if(substr ($events[$k]['event_type'], 0, 5) == 'going') {
+				else if (substr ($events[$k]['event_type'], 0, 5) == 'going') {
 					$is_unknown = false;
 				}
 			}
@@ -3278,7 +3278,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			$j++;
 		}
 		
-		if($max_value < $count) {
+		if ($max_value < $count) {
 			$max_value = $count;
 		}
 		
@@ -3329,7 +3329,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			$chart[$timestamp]['alert'] = $alert_value;
 		}
 		
-		if(!$avg_only) {
+		if (!$avg_only) {
 			$chart[$timestamp]['max'] = 0;
 		}
 		
@@ -3342,7 +3342,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			$chart[$timestamp]['sum'] = $previous_data;
 		}
 		
-		if(!$avg_only) {
+		if (!$avg_only) {
 			$chart[$timestamp]['min'] = 0;
 		}
 	}
@@ -3376,12 +3376,12 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$color['alert'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
 	}
 	
-	if(!$avg_only) {
+	if (!$avg_only) {
 		$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	}
 	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	
-	if(!$avg_only) {
+	if (!$avg_only) {
 		$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	}
 	
@@ -3403,13 +3403,13 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$legend['alert'] = __('Alerts');
 	}
 	
-	if(!$avg_only) {
+	if (!$avg_only) {
 		$legend['max'] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
 	}
 	
 	$legend['sum'] = __('Avg').': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
 	
-	if(!$avg_only) {
+	if (!$avg_only) {
 		$legend['min'] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
 	}
 	
@@ -3443,7 +3443,7 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 	
 	$interval = (int) ($period / $resolution);
-	if($date === false) {
+	if ($date === false) {
 		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
@@ -3501,13 +3501,13 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 						// The default status is normal. Do nothing
 						break;
 					case 'going_unknown':
-						if($status == 'normal') {
+						if ($status == 'normal') {
 							$status = 'unknown';
 						}
 						break;
 					case 'going_up_warning':
 					case 'going_down_warning':
-						if($status == 'normal' || $status == 'unknown') {
+						if ($status == 'normal' || $status == 'unknown') {
 							$status = 'warning';
 						}
 						break;

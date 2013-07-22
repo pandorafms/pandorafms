@@ -1,5 +1,13 @@
 2013-07-22  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_ui.php
+	include/functions_treeview.php: Fixed bad link on
+	agent info of the right side in treeview on metaconsole.
+	And added access to node check to this link.
+	For bug #2312
+
+2013-07-22  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/stat_win.php: Change the order of jquery
 	include file to avoid errors
 

@@ -1073,6 +1073,14 @@ function get_event_details (event_ids) {
 		inputs.push ("get_events_details=1");
 		inputs.push ("event_ids="+event_ids);
 		inputs.push ("page=include/ajax/events");
+		
+		// Autologin
+		if($('#hidden-loginhash').val() != undefined) {
+			inputs.push ("loginhash=" + $('#hidden-loginhash').val());
+			inputs.push ("loginhash_data=" + $('#hidden-loginhash_data').val());
+			inputs.push ("loginhash_user=" + $('#hidden-loginhash_user').val());
+		}
+		
 		jQuery.ajax ({
 			data: inputs.join ("&"),
 			type: 'GET',

@@ -1,3 +1,9 @@
+2013-07-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/es/help_field_match_snmp.php,
+	  include/help/ja/help_field_match_snmp.php,
+	  include/help/en/help_field_match_snmp.php: Updated.
+
 2013-07-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php,

@@ -1,5 +1,10 @@
 2013-07-23  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/alerts/alert_list.builder.php: Fix layout
+	of alerts editor for bug 2273 
+
+2013-07-23  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php: Few improvements
 	of monitor item and top n item on the reports for
 	bug #2331

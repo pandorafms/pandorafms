@@ -70,7 +70,7 @@ if ($id_agente)
 	$modules = agents_get_modules ($id_agente, false, array("delete_pending" => 0));
 
 $table->data[0][1] = html_print_select ($modules, 'id_agent_module', 0, true,
-	__('Select'), 0, true, false, true, '', ($id_agente == 0));
+	__('Select'), 0, true, false, true, '', ($id_agente == 0), 'width: 250px;');
 $table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest value').': ';
 $table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
 $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
@@ -88,7 +88,7 @@ else{
 }
 
 $table->data[1][1] = html_print_select (index_array ($templates, 'id', 'name'),
-	'template', '', '', __('Select'), 0, true);
+	'template', '', '', __('Select'), 0, true, false, true, '', false, 'width: 250px;');
 $table->data[1][1] .= ' <a class="template_details invisible" href="#">' .
 	html_print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
 if (check_acl ($config['id_user'], 0, "LM")) {
@@ -108,8 +108,8 @@ if (!empty($groups_user)) {
 }
 
 $table->data[2][1] = '<div class="actions_container">';
-$table->data[2][1] = html_print_select(index_array ($actions, 'id', 'name'),'action_select','','','','',true, '', true);
-$table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
+$table->data[2][1] = html_print_select(index_array ($actions, 'id', 'name'),'action_select','','','','',true, '', true, '', false, 'width: 250px;');
+$table->data[2][1] .= '<span id="advanced_action" class="advanced_actions"><br>';
 $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
 $table->data[2][1] .= ' '.__('to').' ';
@@ -118,7 +118,7 @@ $table->data[2][1] .= ui_print_help_icon ("alert-matches", true, ui_get_full_url
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
 if (check_acl ($config['id_user'], 0, "LM")) {
-	$table->data[2][1] .= html_print_image ('images/add.png', true);
+	$table->data[2][1] .= '<br>' . html_print_image ('images/add.png', true);
 	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
 	$table->data[2][1] .= __('Create Action');
 	$table->data[2][1] .= '</a>';

@@ -3557,13 +3557,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			else {
 				$monitor_value = format_numeric ($monitor_value);
 			}
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
-			$data[0] .= $monitor_value.' % ' . html_print_image("images/b_green.png", true, array("height" => "32", "width" => "32")) . '</p>';
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: ' . COL_NORMAL . ';">';
+			$data[0] .= html_print_image("images/module_ok.png", true) . ' ' . __('OK') . ': ' . $monitor_value.' %</p>';
 			if ($monitor_value !== __('Unknown')) {
 				$monitor_value = format_numeric (100 - $monitor_value, 2) ;
 			}
-			$data[1] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
-			$data[1] .= $monitor_value.' % ' . html_print_image("images/b_red.png", true, array("height" => "32", "width" => "32")) . '</p>';
+			$data[1] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: ' . COL_CRITICAL . ';">';
+			$data[1] .= html_print_image("images/module_critical.png", true) . ' ' .__('Not OK') . ': ' .$monitor_value.' % ' . '</p>';
 			array_push ($table->data, $data);
 			
 			break;
@@ -4950,7 +4950,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			reporting_header_content($mini, $content, $report, $table,
-				__('Top').' '.$content['top_n_value'] . '<br>' . $type_top_n);
+				'Top '.$content['top_n_value'] . '<br>' . $type_top_n);
 			
 			$order_uptodown = $content['order_uptodown'];
 			

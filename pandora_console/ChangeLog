@@ -1,3 +1,14 @@
+2013-07-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php: Few improvements
+	of monitor item and top n item on the reports for
+	bug #2331
+
+	* godmode/users/user_list.php: Change the default 
+	order of the user list to user id, and hide the
+	useless first and second name from the view
+	(this data is not editable)
+
 2013-07-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/es/help_field_match_snmp.php,

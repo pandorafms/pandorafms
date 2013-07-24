@@ -1,5 +1,25 @@
 2013-07-24  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_visual_map.php
+	include/functions_agents.php
+	include/functions_modules.php
+	include/functions_reporting.php
+	include/constants.php
+	operation/agentes/status_monitor.php
+	operation/agentes/estado_agente.php
+	operation/agentes/estado_monitores.php
+	mobile/operation/agents.php
+	mobile/operation/modules.php
+	godmode/agentes/module_manager.php: Fix typo
+	errors on few constants
+
+	* operation/tree.php: Fix status check for 
+	async not init modules to set the status in
+	modules branch of tree view. Now it depends on
+	the server
+
+2013-07-24  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_modules.php
 	include/functions_reporting.php
 	operation/agentes/estado_monitores.php

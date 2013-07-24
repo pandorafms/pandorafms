@@ -34,7 +34,7 @@ class Agents {
 			AGENT_MODULE_STATUS_CRITICAL_ALERT => __('Alert'),
 			AGENT_MODULE_STATUS_NORMAL => __('Normal'),
 			AGENT_MODULE_STATUS_WARNING => __('Warning'),
-			AGENT_MODULE_STATUS_UNKNOW => __('Unknow'));
+			AGENT_MODULE_STATUS_UNKNOWN => __('Unknown'));
 		
 		if ($system->checkACL($this->acl)) {
 			$this->correct_acl = true;

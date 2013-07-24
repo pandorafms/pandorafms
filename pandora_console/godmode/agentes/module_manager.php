@@ -191,7 +191,7 @@ if ($multiple_delete) {
 						SET warning_count = warning_count - 1
 						WHERE id_agente=' . $module['id_agente']);
 				}
-				else if ($module['estado'] == AGENT_MODULE_STATUS_UNKNOW) {
+				else if ($module['estado'] == AGENT_MODULE_STATUS_UNKNOWN) {
 					db_process_sql ('UPDATE tagente
 						SET unknown_count = unknown_count - 1
 						WHERE id_agente =' . $module['id_agente']);

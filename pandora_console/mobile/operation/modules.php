@@ -39,7 +39,7 @@ class Modules {
 			AGENT_MODULE_STATUS_NORMAL => __('Normal'),
 			AGENT_MODULE_STATUS_WARNING => __('Warning'),
 			AGENT_MODULE_STATUS_CRITICAL_BAD => __('Critical'),
-			AGENT_MODULE_STATUS_UNKNOW => __('Unknown'),
+			AGENT_MODULE_STATUS_UNKNOWN => __('Unknown'),
 			AGENT_MODULE_STATUS_NOT_NORMAL => __('Not normal'), //default
 			AGENT_MODULE_STATUS_NOT_INIT => __('Not init'));
 		
@@ -322,7 +322,7 @@ class Modules {
 		elseif ($this->status == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
 			$sql_conditions .= " AND tagente_estado.estado <> 0";
 		} 
-		elseif ($this->status == AGENT_MODULE_STATUS_UNKNOW) { //Unknown
+		elseif ($this->status == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
 			$sql_conditions .= " AND tagente_estado.estado = 3 AND tagente_estado.utimestamp <> 0";
 		}
 		elseif ($this->status == AGENT_MODULE_STATUS_NOT_INIT) { //Not init

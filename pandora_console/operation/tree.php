@@ -342,28 +342,25 @@ if (is_ajax ())
 				else
 					html_print_image ("operation/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "2" ));
 				
-				// This line checks for (non-initialized) asyncronous modules
-				if ($row["estado"] == 0 AND $row["utimestamp"] == 0
-					AND ($row["id_tipo_modulo"] >= 21
-					AND $row["id_tipo_modulo"] <= 23)) {
-					$status = STATUS_MODULE_NO_DATA;
-					$title = __('UNKNOWN');
-				} // Else checks module status
-				elseif ($row["estado"] == 1) {
-					$status = STATUS_MODULE_CRITICAL;
-					$title = __('CRITICAL');
-				}
-				elseif ($row["estado"] == 2) {
-					$status = STATUS_MODULE_WARNING;
-					$title = __('WARNING');
-				}
-				elseif ($row["estado"] == 3) {
-					$status = STATUS_MODULE_NO_DATA;
-					$title = __('UNKNOWN');
-				}
-				else {
-					$status = STATUS_MODULE_OK;
-					$title = __('NORMAL');
+				// Assign image and status depend on the status data
+				switch ($row["estado"]) {
+					case AGENT_MODULE_STATUS_NO_DATA:
+					case AGENT_MODULE_STATUS_UNKNOWN:
+						$status = STATUS_MODULE_NO_DATA;
+						$title = __('UNKNOWN');
+						break;
+					case AGENT_MODULE_STATUS_CRITICAL_BAD:
+						$status = STATUS_MODULE_CRITICAL;
+						$title = __('CRITICAL');
+						break;
+					case AGENT_MODULE_STATUS_WARNING:
+						$status = STATUS_MODULE_WARNING;
+						$title = __('WARNING');
+						break;
+					default:
+						$status = STATUS_MODULE_OK;
+						$title = __('NORMAL');
+						break;
 				}
 				
 				if (is_numeric($row["datos"])) {

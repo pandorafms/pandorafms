@@ -637,7 +637,7 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 		AGENT_MODULE_STATUS_NORMAL => __('Normal'),
 		AGENT_MODULE_STATUS_NOT_NORMAL => __('Not Normal'),
 		AGENT_MODULE_STATUS_WARNING => __('Warning'),
-		AGENT_MODULE_STATUS_UNKNOW => __('Unknow'));
+		AGENT_MODULE_STATUS_UNKNOWN => __('Unknown'));
 	$table->data[0][1] = html_print_select ($status_list,
 		'status_filter_monitor', $status_filter_monitor, '', '', 0,
 		true);

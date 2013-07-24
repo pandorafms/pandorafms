@@ -2753,12 +2753,6 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	global $config;
 	
 	$return = array ();
-	$return["modules"] = 0; //Number of modules
-	$return["monitor_normal"] = 0; //Number of 'good' monitors
-	$return["monitor_warning"] = 0; //Number of 'warning' monitors
-	$return["monitor_critical"] = 0; //Number of 'critical' monitors
-	$return["monitor_unknown"] = 0; //Number of 'unknown' monitors
-	$return["monitor_alertsfired"] = 0; //Number of monitors with fired alerts
 	$return["last_contact"] = 0; //Last agent contact
 	$return["status"] = STATUS_AGENT_NO_DATA;
 	$return["status_img"] = ui_print_status_image (STATUS_AGENT_NO_DATA, __('Agent without data'), true);
@@ -2767,9 +2761,9 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	$return["alert_img"] = ui_print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
 	$return["agent_group"] = agents_get_agent_group ($id_agent);
 	
-	if (!check_acl ($config["id_user"], $return["agent_group"], "RR")) {
+	if (!check_acl ($config["id_user"], $return["agent_group"], "AR")) {
 		return $return;
-	} 
+	}
 	
 	if ($filter != '') {
 		$filter = 'AND ';
@@ -2785,44 +2779,28 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	
 	$now = get_system_time ();
 	
-	// Calculate modules for this agent
-	foreach ($modules as $key => $module) {
-		$return["modules"]++;
-		
-		$alert_status = modules_get_agentmodule_status($key, false);
-		$module_status = modules_get_agentmodule_status($key, true);
-		
-		switch ($module_status) {
-			case 0:
-				$return["monitor_normal"]++;
-				break;
-			case 1:
-				$return["monitor_critical"]++;
-				break;
-			case 2:
-				$return["monitor_warning"]++;
-				break;
-			case 3:
-				$return["monitor_unknown"]++;
-				break;
-		}
-		
-		if ($alert_status == 4) {
-			$return["monitor_alertsfired"]++;
-		}
-		
-	}
+	// Get modules status for this agent
 	
-	if ($return["modules"] > 0) {
-		if ($return["monitor_critical"] > 0) {
+	$agent = db_get_row ("tagente", "id_agente", $id_agent);
+
+	$return["total_count"] = $agent["total_count"];
+	$return["normal_count"] = $agent["normal_count"];
+	$return["warning_count"] = $agent["warning_count"];
+	$return["critical_count"] = $agent["critical_count"];
+	$return["unknown_count"] = $agent["unknown_count"];
+	$return["fired_count"] = $agent["fired_count"];
+	$return["notinit_count"] = $agent["notinit_count"];
+			
+	if ($return["total_count"] > 0) {
+		if ($return["critical_count"] > 0) {
 			$return["status"] = STATUS_AGENT_CRITICAL;
 			$return["status_img"] = ui_print_status_image (STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
 		}
-		else if ($return["monitor_warning"] > 0) {
+		else if ($return["warning_count"] > 0) {
 			$return["status"] = STATUS_AGENT_WARNING;
 			$return["status_img"] = ui_print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
 		}
-		else if ($return["monitor_unknown"] > 0) {
+		else if ($return["unknown_count"] > 0) {
 			$return["status"] = STATUS_AGENT_DOWN;
 			$return["status_img"] = ui_print_status_image (STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);	
 		}
@@ -2833,7 +2811,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	}
 	
 	//Alert not fired is by default
-	if ($return["monitor_alertsfired"] > 0) {
+	if ($return["fired_count"] > 0) {
 		$return["alert_status"] = "fired";
 		$return["alert_img"] = ui_print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);
 		$return["alert_value"] = STATUS_ALERT_FIRED;

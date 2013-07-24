@@ -84,14 +84,7 @@ else {
 	foreach ($agents as $agent) {
 		$agent_info = reporting_get_agent_module_info ($agent["id_agente"]);
 		
-		$counts_info = array('total_count' => $agent_info["modules"],
-			'normal_count' => $agent_info["monitor_normal"],
-			'critical_count' => $agent_info["monitor_critical"],
-			'warning_count' => $agent_info["monitor_warning"],
-			'unknown_count' => $agent_info["monitor_unknown"],
-			'fired_count' => $agent_info["monitor_alertsfired"]);
-		
-		$modulesCell = reporting_tiny_stats($counts_info, true);
+		$modulesCell = reporting_tiny_stats($agent_info, true);
 		
 		if ($agent['disabled']) {
 			$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, "text-transform: uppercase;") . ui_print_help_tip(__('Disabled'), true) . "</em>";

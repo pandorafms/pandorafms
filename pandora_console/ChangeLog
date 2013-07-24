@@ -1,3 +1,8 @@
+2013-07-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/alerts/configure_alert_template.php: Fixed a translation that
+	  broke the javascript.
+
 2013-07-24 Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
 
 	* include/functions_forecast.php: Avoid timeout in prediction date

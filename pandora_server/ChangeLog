@@ -1,3 +1,12 @@
+2013-07-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Search for sub-strings when matching an OID
+	  within an SNMP alert. Regular expressions should not be necessary and
+	  this avoids having to escape dots inside the OID. Added a couple of new
+	  SNMP macros.
+
+	* lib/PandoraFMS/Tools.pm: Added a function to check for valid regular expressions.
+
 2013-07-23 Juan Manuel Ramón Vigo <juanmanuel.ramon@artica.es>
 	
 	* util/pandora_revent_create.pl: Pandora revent only for create events.

@@ -72,6 +72,7 @@ our @EXPORT = qw(
 	safe_output
 	month_have_days
 	translate_obj
+	valid_regex
 );
 
 ########################################################################
@@ -1177,6 +1178,24 @@ sub resolve_hostname ($) {
 	return $hostname if (! defined ($resolved_hostname));
 	
 	return inet_ntoa($resolved_hostname);
+}
+
+###############################################################################
+# Returns 1 if the given regular expression is valid, 0 otherwise.
+###############################################################################
+sub valid_regex ($) {
+	my $regex = shift;
+	
+	eval {
+		local $SIG{'__DIE__'};
+		qr/$regex/
+	};
+	
+	# Invalid regex
+	return 0 if ($@);
+	
+	# Valid regex
+	return 1;
 }
 
 # End of function declaration

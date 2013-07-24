@@ -739,7 +739,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 <script type="text/javascript">
 /* <![CDATA[ */
 var matches = <?php echo "'" . __("The alert would fire when the value matches <span id=\"value\"></span>") . "'";?>;
-var matches_not = <?php echo "'" . __("The alert would fire when the value doesn\'t match <span id=\"value\"></span>") . "'";?>;
+var matches_not = <?php echo "\"" . __("The alert would fire when the value doesn\'t match %s", "<span id='value'></span>") . "\"";?>;
 var is = <?php echo "'" . __("The alert would fire when the value is <span id=\"value\"></span>") . "'";?>;
 var is_not = <?php echo "'" . __("The alert would fire when the value is not <span id=\"value\"></span>") . "'";?>;
 var between = <?php echo "'" . __("The alert would fire when the value is between <span id=\"min\"></span> and <span id=\"max\"></span>") . "'";?>;

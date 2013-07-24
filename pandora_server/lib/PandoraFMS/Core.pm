@@ -417,11 +417,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		if ($alert->{'type'} eq "regex") {
 			
 			# Make sure the regexp is valid
-			eval {
-				local $SIG{'__DIE__'};
-				$data =~ m/$alert->{'value'}/i;
-			};
-			if ($@) {
+			if (valid_regex ($alert->{'value'}) == 0) {
 				logger ($pa_config, "Error evaluating alert '" .
 					safe_output($alert->{'name'}) . "' for agent '" .
 					safe_output($agent->{'nombre'}) . "': '" . $alert->{'value'} . "' is not a valid regular expression.", 10);
@@ -429,10 +425,10 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 			}
 			
 			if ($alert->{'matches_value'} == 1) {
-				return $status if ($data !~ m/$alert->{'value'}/i);
+				return $status if (valid_regex ($alert->{'value'}) == 1 && $data !~ m/$alert->{'value'}/i);
 			}
 			else {
-				return $status if ($data =~ m/$alert->{'value'}/i);
+				return $status if (valid_regex ($alert->{'value'}) == 1 && $data =~ m/$alert->{'value'}/i);
 			}
 		}
 		
@@ -2711,7 +2707,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 	my ($pa_config, $trap_id, $trap_agent, $trap_oid, $trap_type,
 		$trap_oid_text, $trap_value, $trap_custom_oid, $dbh) = @_;
 
-
 	# Get all SNMP alerts
 	my @snmp_alerts = get_db_rows ($dbh, 'SELECT * FROM talert_snmp ORDER BY position ASC');
 
@@ -2727,7 +2722,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		$alert->{'oid'} = decode_entities($alert->{'oid'});
 		my $oid = $alert->{'oid'};
 		if ($oid ne '') {
-			next if ($trap_oid !~ m/^$oid$/i && $trap_oid_text !~ m/^$oid$/i);
+			next if (index ($trap_oid, $oid) == -1 && index ($trap_oid_text, $oid) == -1);
 			$alert_data .= "OID: $oid ";
 		}
 
@@ -2746,14 +2741,18 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		# Trap value
 		my $single_value = decode_entities($alert->{'single_value'});
 		if ($single_value ne '') {
-			next if ($trap_value !~ m/^$single_value$/i);
+
+			# No match
+			next if (valid_regex ($single_value) == 0 || $trap_value !~ m/^$single_value$/i);
 			$alert_data .= "Value: $trap_value ";
 		}
 
 		# Agent IP
 		my $agent = decode_entities($alert->{'agent'});
 		if ($agent ne '') {
-			next if ($trap_agent !~ m/^$agent$/i );
+			
+			# No match
+			next if (valid_regex ($agent) == 0 || $trap_agent !~ m/^$agent$/i );
 			$alert_data .= "Agent: $agent";
 		}
 		
@@ -2768,18 +2767,17 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		if ($custom_oid ne '') {
 			
 			# No match
-			next if ($trap_custom_oid !~ m/^$custom_oid$/i);
-
+			next if (valid_regex ($custom_oid) == 0 || $trap_custom_oid !~ m/^$custom_oid$/i);
 			$alert_data .= " Custom: $trap_custom_oid";
-
 		}
 
 		# Assign default values to the _snmp_fx_ macros from variable bindings
+		my $count;
 		my @custom_values = split ("\t", $trap_custom_oid);
-		for (my $i = 1; defined ($custom_values[$i-1]); $i++) {
-			my $macro_name = '_snmp_f' . $i . '_';
+		for ($count = 1; defined ($custom_values[$count-1]); $count++) {
+			my $macro_name = '_snmp_f' . $count . '_';
 			
-			if ($custom_values[$i-1] =~ m/= \S+: (.*)/) {
+			if ($custom_values[$count-1] =~ m/= \S+: (.*)/) {
 				my $value = $1;
 				
 				# Strip leading and trailing double quotes
@@ -2789,6 +2787,13 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				$macros{$macro_name} = $value;
 			}
 		}
+		$count--;
+		
+		# Number of variables
+		$macros{'_snmp_argc_'} = $count;
+
+		# All variables
+		$macros{'_snmp_argv_'} = $trap_custom_oid;
 
 		# Evaluate _snmp_fx_ filters
 		my $filter_match = 1;

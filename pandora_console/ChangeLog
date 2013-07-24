@@ -1,3 +1,11 @@
+2013-07-24  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_modules.php
+	include/functions_reporting.php
+	operation/agentes/estado_monitores.php
+	operation/search_agents.php: Fixed several errors on
+	module status counts for bug #2338
+
 2013-07-23  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_list.builder.php: Fix layout

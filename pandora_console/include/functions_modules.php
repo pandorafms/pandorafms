@@ -370,11 +370,11 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	
 	if (isset ($values['id_tipo_modulo']) && ($values['id_tipo_modulo'] == 21 || $values['id_tipo_modulo'] == 22 || $values['id_tipo_modulo'] == 23)) {
 		// Async modules start in normal status
-		$status = 0;
+		$status = AGENT_MODULE_STATUS_NORMAL;
 	}
 	else {
 		// Sync modules start in unknown status
-		$status = 4;
+		$status = AGENT_MODULE_STATUS_NO_DATA;
 	}
 	switch ($config["dbtype"]) {
 		case "mysql":

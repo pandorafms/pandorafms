@@ -189,9 +189,9 @@ switch ($config["dbtype"]) {
 				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND %s %s 
-				AND tagente_estado.utimestamp != 0  
+				AND tagente_estado.estado != %d  
 			ORDER BY tagente_modulo.id_module_group , %s  %s",
-			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, $order['field'], $order['order']);	
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);	
 		break;
 	case "oracle":
 		$sql = sprintf ("
@@ -205,9 +205,9 @@ switch ($config["dbtype"]) {
 				AND %s %s
 				AND tagente_modulo.delete_pending = 0
 				AND tagente_modulo.disabled = 0
-				AND tagente_estado.utimestamp != 0 
+				AND tagente_estado.estado != %d 
 			ORDER BY tagente_modulo.id_module_group , %s %s
-			", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, $order['field'], $order['order']);
+			", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
 		break;
 }
 $count_modules = db_get_all_rows_sql ($sql);
@@ -230,9 +230,9 @@ switch ($config["dbtype"]) {
 				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND %s %s 
-				AND tagente_estado.utimestamp != 0  
+				AND tagente_estado.estado != %d  
 			ORDER BY tagente_modulo.id_module_group , %s  %s",
-			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, $order['field'], $order['order']);	
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);	
 		break;
 	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 	case "oracle":
@@ -251,9 +251,9 @@ switch ($config["dbtype"]) {
 				AND %s %s
 				AND tagente_modulo.delete_pending = 0
 				AND tagente_modulo.disabled = 0
-				AND tagente_estado.utimestamp != 0 
+				AND tagente_estado.estado != %d 
 			ORDER BY tagente_modulo.id_module_group , %s %s
-			", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, $order['field'], $order['order']);
+			", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
 		break;
 }
 
@@ -263,7 +263,6 @@ if ($monitors_change_filter) {
 else {
 	$limit = " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 }
-
 
 $modules = db_get_all_rows_sql ($sql . $limit);
 if (empty ($modules)) {

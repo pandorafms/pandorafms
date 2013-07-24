@@ -144,7 +144,7 @@ elseif ($status == AGENT_MODULE_STATUS_WARNING) { //Warning
 elseif ($status == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
 	$sql_conditions .= " AND tagente_estado.estado <> 0";
 } 
-elseif ($status == AGENT_MODULE_STATUS_UNKNOW) { //Unknown
+elseif ($status == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
 	$sql_conditions .= " AND tagente_estado.estado = 3 AND tagente_estado.utimestamp <> 0";
 }
 elseif ($status == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
@@ -357,7 +357,7 @@ $fields = array ();
 $fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
 $fields[AGENT_MODULE_STATUS_WARNING] = __('Warning');
 $fields[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
-$fields[AGENT_MODULE_STATUS_UNKNOW] = __('Unknown');
+$fields[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
 $fields[AGENT_MODULE_STATUS_NOT_NORMAL] = __('Not normal'); //default
 $fields[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 

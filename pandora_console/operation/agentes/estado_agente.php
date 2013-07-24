@@ -176,7 +176,7 @@ $fields = array ();
 $fields[AGENT_STATUS_NORMAL] = __('Normal'); 
 $fields[AGENT_STATUS_WARNING] = __('Warning');
 $fields[AGENT_STATUS_CRITICAL] = __('Critical');
-$fields[AGENT_STATUS_UNKNOW] = __('Unknown');
+$fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
 $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 

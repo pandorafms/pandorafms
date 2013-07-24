@@ -286,7 +286,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$status_sql =
 					"critical_count > 0";
 				break;
-			case AGENT_STATUS_UNKNOW:
+			case AGENT_STATUS_UNKNOWN:
 				$status_sql =
 					"critical_count = 0 AND warning_count = 0
 						AND unknown_count > 0";
@@ -1468,7 +1468,7 @@ function agents_get_status_from_counts($agent) {
 		return AGENT_MODULE_STATUS_WARNING;
 	}
 	else if ($agent['unknown_count'] > 0) {
-		return AGENT_MODULE_STATUS_UNKNOW;
+		return AGENT_MODULE_STATUS_UNKNOWN;
 	}
 	else if ($agent['normal_count'] == $agent['total_count']) {
 		return AGENT_MODULE_STATUS_NORMAL;
@@ -1551,7 +1551,7 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		}
 		
 		if (! $status)
-			return AGENT_MODULE_STATUS_UNKNOW;
+			return AGENT_MODULE_STATUS_UNKNOWN;
 	}
 	
 	// Checking if any module has alert fired
@@ -1567,8 +1567,8 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		return AGENT_MODULE_STATUS_WARNING;
 	}
 	// Checking if any module has unknown status
-	elseif (is_int(array_search(AGENT_MODULE_STATUS_UNKNOW, $modules_status))) {
-		return AGENT_MODULE_STATUS_UNKNOW;
+	elseif (is_int(array_search(AGENT_MODULE_STATUS_UNKNOWN, $modules_status))) {
+		return AGENT_MODULE_STATUS_UNKNOWN;
 	}
 	else {
 		return AGENT_MODULE_STATUS_NORMAL;

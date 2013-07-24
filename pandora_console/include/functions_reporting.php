@@ -1016,7 +1016,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL;
 		$urls['monitor_unknown'] = "index.php?" .
 			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOW;
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN;
 		$urls['monitor_not_init'] = "index.php?" .
 			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT;

@@ -88,7 +88,7 @@ function visual_map_print_item($layoutData) {
 			//Warning
 			$colorStatus = "#ffff00";
 			break;
-		case VISUAL_MAP_STATUS_UNKNOW:
+		case VISUAL_MAP_STATUS_UNKNOWN:
 		default:
 			//Unknown
 			// Default is Blue (Other)
@@ -838,10 +838,10 @@ function visual_map_get_status_element($layoutData) {
 				else if ($layoutData['id_agent'] != 0) {
 					$status = agents_get_status ($layoutData["id_agent"]);
 					if ($status == -1) // agents_get_status return -1 for unknown!
-						$status = VISUAL_MAP_STATUS_UNKNOW;
+						$status = VISUAL_MAP_STATUS_UNKNOWN;
 				}
 				else {
-					$status = VISUAL_MAP_STATUS_UNKNOW;
+					$status = VISUAL_MAP_STATUS_UNKNOWN;
 					$id_agent = 0;
 				}
 				
@@ -971,7 +971,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			$line['node_end'] = 'layout-data-'.$layout_data["id"];
 			switch ($status_parent) {
 				default:
-				case VISUAL_MAP_STATUS_UNKNOW:
+				case VISUAL_MAP_STATUS_UNKNOWN:
 					$line["color"] = COL_UNKNOWN; // Gray
 					break;
 				case VISUAL_MAP_STATUS_WARNING:
@@ -1013,7 +1013,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				//Warning
 				$colorStatus = COL_WARNING;
 				break;
-			case VISUAL_MAP_STATUS_UNKNOW:
+			case VISUAL_MAP_STATUS_UNKNOWN:
 			default:
 				//Unknown
 				$colorStatus = COL_UNKNOWN;
@@ -1121,7 +1121,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					case VISUAL_MAP_STATUS_WARNING:
 						$img .= "_warning.png";
 						break;
-					case VISUAL_MAP_STATUS_UNKNOW:
+					case VISUAL_MAP_STATUS_UNKNOWN:
 					default:
 						// Default is Grey (Other)
 						$img .= ".png";
@@ -1803,7 +1803,7 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 	
 	// TODO: Implement this limit as a configurable item in setup
 	if ($depth > 10) {
-		return VISUAL_MAP_STATUS_UNKNOW; // No status data if we need to exit by a excesive recursion
+		return VISUAL_MAP_STATUS_UNKNOWN; // No status data if we need to exit by a excesive recursion
 	}
 	
 	$id_layout = (int) $id_layout;

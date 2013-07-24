@@ -1,3 +1,8 @@
+2013-07-24 Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
+
+	* include/functions_forecast.php: Avoid timeout in prediction date
+	item report. 
+
 2013-07-24  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php

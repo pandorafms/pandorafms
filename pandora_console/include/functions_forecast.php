@@ -34,6 +34,16 @@
 function forecast_projection_graph($module_id, $period = 5184000, $prediction_period, $max_value = false, $min_value = false, $csv = false){
 	global $config;
 
+	$max_exec_time = ini_get('max_execution_time'); 
+
+	if ($max_exec_time !== false) {
+
+		$max_exec_time = (int)$max_exec_time; 
+
+	}
+
+	$begin_time = time();
+
 	$module_data=grafico_modulo_sparse ($module_id, $period, 0,
 				300, 300 , '', null,
 				false, 0, false,
@@ -187,6 +197,15 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	$idx = 0;
 	// Create data in graph format like
 	while ($in_range) {
+		$now = time();
+
+		//  Check that exec time is not greater than half max exec server time
+		if ($max_exec_time !== false) {
+			if (($begin_time + ($max_exec_time/2)) < $now) {
+				return false;
+			}
+		}
+
 		$timestamp_f = date($time_format, $current_ts);
 		
 		//$timestamp_f = date($time_format, $current_ts);

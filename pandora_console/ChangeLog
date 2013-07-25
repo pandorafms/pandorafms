@@ -1,3 +1,8 @@
+2013-07-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/servers/manage_recontask_form.php: Added a help tip for parent
+	  recursion.
+
 2013-07-25  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_tags.php: Sort the tags by name for

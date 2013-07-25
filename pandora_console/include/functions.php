@@ -327,6 +327,16 @@ function get_user_language ($id_user = null) {
 	if ($quick_language) {
 		$language = get_parameter('language', 0);
 		
+		if (defined('METACONSOLE')) {
+
+			if ($id_user == null)
+				$id_user = $config['id_user'];
+
+			if ($language !== 0)
+				update_user($id_user, array('language' => $language));	
+
+		}
+	
 		if ($language === 'default') {
 			return $config['language'];
 		}

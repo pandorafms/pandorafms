@@ -423,8 +423,8 @@ $table->data['edit8'][3] = html_print_select (categories_get_all_categories('for
 if(enterprise_installed()) {
 	$table->rowspan['edit8'][0] = $table->rowspan['edit8'][1] = 2;
 
-	$table->data['edit81'][2] = __('Policy link status') . ui_print_help_tip(__("This field only has sense in modules adopted by a policy."), true);
-	$table->data['edit81'][3] = html_print_select (array('1' => __('Linked'), '0' => __('Unlinked')), 'policy_linked', '','', __('No change'), '', true, false, false);
+	$table->data['edit81'][2] = __('Policy linking status') . ui_print_help_tip(__("This field only has sense in modules adopted by a policy.") . '<br><br>' . __("This action only set the module as pending to link/unlink. Is necessary to apply the policy that affects these modules to perform the change."), true);
+	$table->data['edit81'][3] = html_print_select (array(MODULE_PENDING_LINK => __('Linked'), MODULE_PENDING_UNLINK => __('Unlinked')), 'policy_linked', '','', __('No change'), '', true, false, false);
 }
 
 $table->data['edit10'][0] = '<b>'.__('Critical instructions'). '</b>'. ui_print_help_tip(__("Instructions when the status is critical"), true);

@@ -1152,7 +1152,7 @@ d3 = function() {
     return d3.rebind(drag, event, "on");
   };
   d3.behavior.zoom = function() {
-    var translate = [ 0, 0 ], zoom_levels = null, translate0, scale = 1, distance0, scale0, scaleExtent = d3_behavior_zoomInfinity, event = d3_eventDispatch(zoom, "zoom"), x0, x1, y0, y1, touchtime;
+    var translate = [ 0, 0 ], translate0, scale = 1, distance0, scale0, scaleExtent = d3_behavior_zoomInfinity, event = d3_eventDispatch(zoom, "zoom"), x0, x1, y0, y1, touchtime;
     function zoom() {
       this.on("mousedown.zoom", mousedown).on("mousemove.zoom", mousemove).on(d3_behavior_zoomWheel + ".zoom", mousewheel).on("dblclick.zoom", dblclick).on("touchstart.zoom", touchstart).on("touchmove.zoom", touchmove).on("touchend.zoom", touchstart);
     }
@@ -1211,34 +1211,36 @@ d3 = function() {
         return (y - translate[1]) / scale;
       }).map(y0.invert));
     }
-    
-    zoom.setScale = function(v) {
+	
+	zoom.setScale = function(v) {
 		scale = v;
 	}
 	
-    zoom.setTranslate = function(v) {
+	zoom.setTranslate = function(v) {
 		translate = v;
 	}
-    zoom.getTranslate = function() {
+	zoom.getTranslate = function() {
 		return translate;
 	}
-    
-    zoom.convertLevelsToScale = function(i) {
+	
+	zoom.convertLevelsToScale = function(i) {
 		min =  Math.pow(2, (-360 * i) * .002) * 1;
 		max =  Math.pow(2, (360 * i) * .002) * 1;
 		
 		return [min, max];
 	}
-    
-    zoom.getZoomLevel = function(x, y) {
+	
+	zoom.getZoomLevel = function(x, y) {
 		if (typeof(x) == 'undefined') {
+			x = 0;
 			//Get center
 		}
 		if (typeof(y) == 'undefined') {
+			y = 0;
 			//Get center
 		}
 		
-		zoom_levels = [];
+		var zoom_levels = [];
 		
 		if (!translate0)
 			translate0 = location([x, y]);

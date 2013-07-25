@@ -46,6 +46,189 @@ function networkmap_is_descendant ($node, $ascendant, $parents) {
 	return networkmap_is_descendant ($parents[$node], $ascendant, $parents);
 }
 
+
+function networkmap_print_jsdata($graph, $js_tags = true) {
+	if ($js_tags) {
+		echo "<script type='text/javascript'>";
+		
+		if (empty($graph)) {
+			echo "var graph = null;\n";
+			return;
+		}
+		else {
+			echo "var graph = \n";
+		}
+	}
+	
+	echo "{\n";
+	echo "'nodes' : \n";
+	echo "[\n";
+	$first = true;
+	foreach ($graph['nodes'] as $id => $node) {
+		if (!$first) {
+			echo ",\n";
+		}
+		$first = false;
+		
+		echo "{
+			'id' : " . $id . ",
+			'name' : '" . $node['label'] . "',
+			'url' : '" . $node['url'] . "',
+			'tooltip' : '" . $node['tooltip'] . "',
+			'color' : '" . $node['color'] . "'}\n";
+	}
+	echo "],\n";
+	
+	echo "'links' : \n";
+	echo "[\n";
+	$first = true;
+	foreach ($graph['lines'] as $line) {
+		if (!$first) {
+			echo ",\n";
+		}
+		$first = false;
+		
+		echo "{
+			'source' : " . $line['source'] . ",
+			'target' : " . $line['target'] . "}\n";
+	}
+	echo "]\n";
+	
+	echo "}\n";
+	
+	if ($js_tags) {
+		echo ";\n";
+		echo "</script>";
+	}
+}
+
+function networkmap_generate_hash($pandora_name, $group = 0,
+	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
+	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
+	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
+	$relative = false, $text_filter = '') {
+	
+	$graph = networkmap_generate_dot($pandora_name, $group,
+		$simple, $font_size, $layout, $nooverlap, $zoom, $ranksep,
+		$center, $regen, $pure, $id_networkmap, $show_snmp_modules,
+		$cut_names, $relative, $text_filter); html_debug_print($graph, true);
+	
+	$return = array();
+	if (!empty($graph)) {
+		$graph = str_replace("\r", "\n", $graph);
+		$graph = str_replace("\n", " ", $graph);
+		
+		//Removed the head
+		preg_match("/graph networkmap {(.*)}/", $graph, $matches);
+		$graph = $matches[1];
+		
+		
+		//Get the lines and nodes
+		$tokens = preg_split("/; /", $graph);
+		foreach ($tokens as $token) {
+			if (empty($token)) {
+				continue;
+			}
+			
+			//Ignore the head rests.
+			if (preg_match("/(.+)\s*\[(.*)\]/", $token) != 0) {
+				$items[] = $token; 
+			}
+		}
+		
+		$lines = $nodes = array();
+		foreach ($items as $item) {
+			$matches = null;
+			preg_match("/(.+)\s*\[(.*)\]/", $item, $matches);
+			if (empty($matches))
+				continue;
+			
+			$id_item = trim($matches[1]);
+			$content_item = trim($matches[2]);
+			
+			//Check if is a edge or node
+			if (strstr($id_item, "--") !== false) {
+				//edge
+				$lines[$id_item] = $content_item;
+			}
+			else {
+				//node
+				$id_item = (int)$id_item;
+				$nodes[$id_item] = $content_item;
+			}
+		}
+		
+		
+		foreach($nodes as $key => $node) {
+			if ($key != 0) {
+				//Get label
+				$matches = null;
+				preg_match("/label=(.*),/", $node, $matches);
+				$label = $matches[1];
+				$matches = null;
+				preg_match("/\<TR\>\<TD\>(.*?)\<\/TD\>\<\/TR\>/",
+					$label, $matches);
+				$label = str_replace($matches[0], '', $label);
+				$matches = null;
+				preg_match("/\<TR\>\<TD\>(.*?)\<\/TD\>\<\/TR\>/",
+					$label, $matches);
+				$label = $matches[1];
+				
+				//Get color
+				$matches = null;
+				preg_match("/color=\"([^\"]*)/", $node, $matches);
+				$color = $matches[1];
+				
+				//Get tooltip
+				$matches = null;
+				preg_match("/tooltip=\"([^\"]*)/", $node, $matches);
+				$tooltip = $matches[1];
+				
+				//Get URL
+				$matches = null;
+				preg_match("/URL=\"([^\"]*)/", $node, $matches);
+				$url = $matches[1];
+				
+				$return['nodes'][$key]['label'] = $label;
+				$return['nodes'][$key]['color'] = $color;
+				$return['nodes'][$key]['tooltip'] = $tooltip;
+				$return['nodes'][$key]['url'] = $url;
+			}
+			else {
+				//Get tooltip
+				$matches = null;
+				preg_match("/tooltip=\"([^\"]*)/", $node, $matches);
+				$tooltip = $matches[1];
+				
+				//Get URL
+				$matches = null;
+				preg_match("/URL=\"([^\"]*)/", $node, $matches);
+				$url = $matches[1];
+				
+				$return['nodes'][$key]['label'] = "Pandora FMS";
+				$return['nodes'][$key]['color'] = "#7EBE3F";
+				$return['nodes'][$key]['tooltip'] = $tooltip;
+				$return['nodes'][$key]['url'] = $url;
+			}
+		}
+		ksort($return['nodes']);
+		
+		foreach($lines as $key => $line) {
+			$data = array();
+			
+			$points = explode(' -- ', $key);
+			$data['source'] = (int) $points[0];
+			$data['target'] = (int) $points[1];
+			$return['lines'][] = $data;
+		}
+		
+		//html_debug_print($graph, true);
+		
+	}
+	
+	return $return;
+}
+
 // Generate a dot graph definition for graphviz
 function networkmap_generate_dot ($pandora_name, $group = 0,
 	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
@@ -180,7 +363,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	foreach ($parents as $node => $parent_id) {
 		// Verify that the parent is in the graph
 		if (isset ($nodes[$parent_id])) {
-			$graph .= networkmap_create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+			$graph .= networkmap_create_edge ($parent_id, $node , $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
 		}
 		else {
 			$orphans[$node] = 1;
@@ -1062,11 +1245,17 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$networkmaps_raw =  db_get_all_rows_filter ('tnetwork_map', 'id_user = "'.$id_user.'"'.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
+			$networkmaps_raw =  db_get_all_rows_filter(
+				'tnetwork_map', 'id_user = "' . $id_user . '" ' .
+				$type_cond . ' ORDER BY type DESC, name ASC',
+				array('id_networkmap','name', 'type'));
 			break;
 		case "postgresql":
 		case "oracle":
-			$networkmaps_raw =  db_get_all_rows_filter ('tnetwork_map', 'id_user = \''.$id_user.'\' '.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
+			$networkmaps_raw =  db_get_all_rows_filter(
+				'tnetwork_map', 'id_user = \'' . $id_user . '\' ' .
+				$type_cond . ' ORDER BY type DESC, name ASC',
+				array('id_networkmap','name', 'type'));
 			break;
 	}
 	
@@ -1082,7 +1271,8 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 					'optgroup' => $networkmapitem['type']);
 		}
 		else {
-			$networkmaps[$networkmapitem['id_networkmap']] = $networkmapitem['name'];
+			$networkmaps[$networkmapitem['id_networkmap']] =
+				$networkmapitem['name'];
 		}
 	}
 	
@@ -1135,6 +1325,7 @@ function networkmap_get_types () {
 	
 	$networkmap_types['topology'] = __('Create a new topology map');
 	$networkmap_types['groups'] = __('Create a new group map');
+	$networkmap_types['dinamic'] = __('Create a new dinamic map');
 	
 	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_types');
@@ -1157,6 +1348,7 @@ function networkmap_get_filter_types () {
 	
 	$networkmap_types['topology'] = __('Topology');
 	$networkmap_types['groups'] = __('Group');
+	$networkmap_types['dinamic'] = __('Dinamic');
 	
 	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_filter_types');

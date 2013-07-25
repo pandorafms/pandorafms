@@ -251,6 +251,9 @@ switch ($activeTab) {
 	case 'policies':
 		$title = __('Policies view');
 		break;
+	case 'dinamic':
+		$title = __('Dinamic view');
+		break;
 }
 
 if (!empty($name)) {
@@ -307,8 +310,12 @@ if ($activeTab == 'topology') {
 	$table->data[0][] = __('Show interfaces') . '&nbsp;' .
 		html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
 }
-$table->data[0][] = __('Layout') . '&nbsp;' .
-	html_print_select ($layout_array, 'layout', $layout, '', '', '', true);
+
+if ($activeTab != 'dinamic') {
+	$table->data[0][] = __('Layout') . '&nbsp;' .
+		html_print_select ($layout_array, 'layout', $layout, '', '', '', true);
+}
+
 if ($activeTab == 'groups') {
 	$depth_levels = array(
 		'all' => __('All'),
@@ -327,8 +334,10 @@ if ($activeTab == 'policies') {
 		html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
 }
 
-$table->data[1][] = __('No Overlap') . '&nbsp;' .
-	html_print_checkbox ('nooverlap', '1', $nooverlap, true);
+if ($activeTab != 'dinamic') {
+	$table->data[1][] = __('No Overlap') . '&nbsp;' .
+		html_print_checkbox ('nooverlap', '1', $nooverlap, true);
+}
 
 if (($activeTab == 'groups' || $activeTab == 'policies') &&
 	$depth == 'all') {
@@ -342,11 +351,16 @@ if (($activeTab == 'groups' || $activeTab == 'policies') &&
 		}
 	}
 }
-$table->data[1][] = __('Simple') . '&nbsp;' .
-	html_print_checkbox ('simple', '1', $simple, true);
 
-$table->data[1][] = __('Regenerate') . '&nbsp;' .
-	html_print_checkbox ('regen', '1', $regen, true);
+if ($activeTab != 'dinamic') {
+	$table->data[1][] = __('Simple') . '&nbsp;' .
+		html_print_checkbox ('simple', '1', $simple, true);
+}
+
+if ($activeTab != 'dinamic') {
+	$table->data[1][] = __('Regenerate') . '&nbsp;' .
+		html_print_checkbox ('regen', '1', $regen, true);
+}
 
 if ($pure == "1") {
 	// Zoom
@@ -368,8 +382,12 @@ if ($nooverlap == 1) {
 	$table->data[1][] = __('Distance between nodes') . '&nbsp;' .
 		html_print_input_text ('ranksep', $ranksep, __('Separation between elements in the map (in Non-overlap mode)'), 3, 4, true);
 }
-$table->data[1][] = __('Font') . '&nbsp;' .
-	html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
+
+if ($activeTab != 'dinamic') {
+	$table->data[1][] = __('Font') . '&nbsp;' .
+		html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
+}
+
 $table->data[2][] = __('Free text for search (*):') . '&nbsp;' .
 	html_print_input_text('text_filter', $text_filter, '', 30, 100, true);
 if ($activeTab == 'groups') {
@@ -396,6 +414,9 @@ if ($id_networkmap != 0) {
 			break;
 		case 'policies':
 			require_once(ENTERPRISE_DIR . '/operation/policies/networkmap.policies.php');
+			break;
+		case 'dinamic':
+			require_once('operation/agentes/networkmap.dinamic.php');
 			break;
 		default:
 		case 'topology':

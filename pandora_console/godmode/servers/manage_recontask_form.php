@@ -258,7 +258,7 @@ $table->data[20][1] =  html_print_checkbox ('parent_detection', 1, $parent_detec
 
 // Parent recursion
 $table->data[21][0] = "<b>".__('Parent recursion');
-$table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true);
+$table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true) . ui_print_help_tip (__('Maximum number of parent hosts that will be created if parent detection is enabled.'), true);
 
 // Different Form url if it's a create or if it's a update form
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';

@@ -1,3 +1,13 @@
+2013-07-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/d3.v3.js: removed some changes.
+	
+	* include/functions_networkmap.php,
+	operation/agentes/networkmap.dinamic.php,
+	operation/agentes/networkmap.php: first version of dinamic view
+	for networkmap. It needs implement tooltip and of course fix
+	the new bugs.
+
 2013-07-25  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Fix alert

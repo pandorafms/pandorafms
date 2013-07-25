@@ -1,3 +1,8 @@
+2013-07-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Fixed some parentheses that prevented
+	  remote_snmp_string modules from working.
+
 2013-07-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Search for sub-strings when matching an OID

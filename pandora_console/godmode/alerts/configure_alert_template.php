@@ -669,11 +669,13 @@ else {
 	$table->data['value'][1] .= html_print_image ('images/suc.png', true,
 		array ('style' => 'display:none',
 			'id' => 'regex_good',
-			'title' => __('The regular expression is valid')));
+			'title' => __('The regular expression is valid'),
+			'width' => '20px'));
 	$table->data['value'][1] .= html_print_image ('images/err.png', true,
 		array ('style' => 'display:none',
 			'id' => 'regex_bad',
-			'title' => __('The regular expression is not valid')));
+			'title' => __('The regular expression is not valid'),
+			'width' => '20px'));
 	$table->data['value'][1] .= '</span>';
 	
 	//Min first, then max, that's more logical
@@ -732,7 +734,8 @@ enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file ('pandora_alerts');
 ui_require_jquery_file ("ui-timepicker-addon");
-ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+// This script is included manually to be included after jquery and avoid error
+echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/i18n/jquery-ui-timepicker-' . get_user_language() . '"></script>';
 ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 ?>
 
@@ -753,13 +756,13 @@ var onchange_not = <?php echo "'" . __("The alert would fire when the module val
 var unknown = <?php echo "'" . __("The alert would fire when the module is in unknown status") . "'";?>;
 
 function check_regex () {
-	if ($("#type").attr ('value') != 'regex') {
+	if ($("#type").val() != 'regex') {
 		$("img#regex_good, img#regex_bad").hide ();
 		return;
 	}
 	
 	try {
-		re = new RegExp ($("#text-value").attr ("value"));
+		re = new RegExp ($("#text-value").val());
 	} catch (error) {
 		$("img#regex_good").hide ();
 		$("img#regex_bad").show ();
@@ -771,7 +774,7 @@ function check_regex () {
 
 function render_example () {
 	/* Set max */
-	vmax = parseInt ($("input#text-max").attr ("value"));
+	var vmax = parseInt ($("input#text-max").val());
 	if (isNaN (vmax) || vmax == "") {
 		$("span#max").empty ().append ("0");
 	}
@@ -780,7 +783,7 @@ function render_example () {
 	}
 	
 	/* Set min */
-	vmin = parseInt ($("input#text-min").attr ("value"));
+	var vmin = parseInt ($("input#text-min").val());
 	if (isNaN (vmin) || vmin == "") {
 		$("span#min").empty ().append ("0");
 	}
@@ -789,7 +792,7 @@ function render_example () {
 	}
 	
 	/* Set value */
-	vvalue = $("input#text-value").attr ("value");
+	var vvalue = $("input#text-value").val();
 	if (vvalue == "") {
 		$("span#value").empty ().append ("<em><?php echo __('Empty');?></em>");
 	}
@@ -917,7 +920,7 @@ if ($step == 1) {
 	
 	$("#checkbox-matches_value").click (function () {
 		enabled = this.checked;
-		type = $("#type").attr ("value");
+		type = $("#type").val();
 		if (type == "regex") {
 			if (enabled) {
 				$("span#example").empty ().append (matches);
@@ -963,7 +966,7 @@ elseif ($step == 2) {
 	
 	$("#threshold").change (function () {
 		if (this.value == -1) {
-			$("#text-other_threshold").attr ("value", "");
+			$("#text-other_threshold").val("");
 			$("#template-threshold-other_label").show ();
 			$("#template-threshold-other_input").show ();
 		}

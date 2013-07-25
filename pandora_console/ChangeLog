@@ -1,3 +1,11 @@
+2013-07-25  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/configure_alert_template.php: Fix alert
+	template hint javascript problem for bug #2357
+
+	* godmode/massive/massive_edit_modules.php: Change 
+	help tip to clarify user experience
+
 2013-07-25 Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
 
 	* include/functions.php: Modified function get_user_language

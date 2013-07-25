@@ -1,5 +1,14 @@
 2013-07-25  Sergio Martin <sergio.martin@artica.es>
 
+	* include/constants.php: Move policy constants from
+	functions_policy to constants file
+
+	* godmode/massive/massive_edit_modules.php: Change the 
+	values of link/unlink in massive modules to pending to 
+	link/unlink. Its the correct way of do it
+
+2013-07-25  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/massive/massive_operations.php
 	godmode/massive/massive_edit_modules.php: Added category
 	and link/unkink module from policy in massive modules edition

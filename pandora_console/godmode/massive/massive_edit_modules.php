@@ -27,6 +27,7 @@ require_once ('include/functions_modules.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . "/include/functions_groups.php");
 require_once($config['homedir'] . '/include/functions_users.php');
+require_once($config['homedir'] . '/include/functions_categories.php');
 
 $module_type = (int) get_parameter ('module_type');
 $idGroupMassive = (int) get_parameter('id_group_massive');
@@ -413,9 +414,18 @@ $table->data['edit7'][3] = html_print_select(array('' => __('No change'), '1' =>
 
 /* Tags avalaible */
 $id_tag = array();
-$table->data['edit8'][2] = __('Tags');
-$table->data['edit8'][3] = html_print_select_from_sql ('SELECT id_tag, name FROM ttag ORDER BY name',
+$table->data['edit8'][0] = __('Tags');
+$table->data['edit8'][1] = html_print_select_from_sql ('SELECT id_tag, name FROM ttag ORDER BY name',
 	'id_tag[]', $id_tag, '',__('None'),'0', true, true, false, false);
+$table->data['edit8'][2] = __('Category');
+$table->data['edit8'][3] = html_print_select (categories_get_all_categories('forselect'), 'id_category', '','', __('No change'), '', true, false, false);
+
+if(enterprise_installed()) {
+	$table->rowspan['edit8'][0] = $table->rowspan['edit8'][1] = 2;
+
+	$table->data['edit81'][2] = __('Policy link status') . ui_print_help_tip(__("This field only has sense in modules adopted by a policy."), true);
+	$table->data['edit81'][3] = html_print_select (array('1' => __('Linked'), '0' => __('Unlinked')), 'policy_linked', '','', __('No change'), '', true, false, false);
+}
 
 $table->data['edit10'][0] = '<b>'.__('Critical instructions'). '</b>'. ui_print_help_tip(__("Instructions when the status is critical"), true);
 $table->data['edit10'][1] = html_print_textarea ('critical_instructions', 2, 50, '', '', true);
@@ -670,7 +680,8 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'max', 'id_module_group', 'plugin_user', 'plugin_pass',
 		'id_export', 'history_data', 'critical_inverse',
 		'warning_inverse', 'critical_instructions',
-		'warning_instructions', 'unknown_instructions');
+		'warning_instructions', 'unknown_instructions', 'policy_linked', 
+		'id_category');
 	$values = array ();
 	
 	// Specific snmp reused fields

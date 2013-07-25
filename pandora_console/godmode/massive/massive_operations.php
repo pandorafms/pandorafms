@@ -56,6 +56,10 @@ $options_modules = array(
 	'edit_modules' => __('Massive modules edition'), 
 	'copy_modules' => __('Massive modules copy'));
 
+if (! check_acl ($config['id_user'], 0, "PM")) {
+	unset($options_modules['edit_modules']);
+}
+
 $options_policies = array();
 
 $policies_options = enterprise_hook('massive_policies_options');

@@ -131,24 +131,24 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 				$sql = 'SELECT *
 					FROM ttag
 					WHERE ((name COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%") OR 
-						(description COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%"))';
+						(description COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%")) ORDER BY name';
 				break;
 			case "postgresql":
 				$sql = 'SELECT *
 					FROM ttag
 					WHERE ((name COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\') OR
-						(description COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\'))';
+						(description COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\')) ORDER BY name';
 				break;
 			case "oracle":
 				$sql = 'SELECT *
 					FROM ttag
 					WHERE (UPPER(name) LIKE UPPER (\'%'. $tag_name_description .'%\') OR
-						UPPER(dbms_lob.substr(description, 4000, 1)) LIKE UPPER (\'%'. $tag_name_description .'%\'))';
+						UPPER(dbms_lob.substr(description, 4000, 1)) LIKE UPPER (\'%'. $tag_name_description .'%\')) ORDER BY name';
 				break;
 		}
 	}
 	else {
-		$sql = 'SELECT * FROM ttag';
+		$sql = 'SELECT * FROM ttag ORDER BY name';
 	}
 	if ($filter !== false) {
 		switch ($config["dbtype"]) {
@@ -550,7 +550,7 @@ function tags_get_policy_module_tags ($id_policy_module) {
  * @return mixed Array with tags.
  */
 function tags_get_all_tags ($return_url = false) {
-	$tags = db_get_all_fields_in_table('ttag', 'name');
+	$tags = db_get_all_fields_in_table('ttag', 'name', '', 'name');
 	
 	if ($tags === false)
 		return false;

@@ -1,3 +1,8 @@
+2013-07-25  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_tags.php: Sort the tags by name for
+	bug #2355
+
 2013-07-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Fixed a translation that

@@ -187,7 +187,7 @@ next_pair:
 			        $handle->send($tcp_send);
 		        }
 		        # we expect to receive data ? (non proc types)
-		        if ((defined ($tcp_rcv)) && (($tcp_rcv ne "") || ($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11))) {
+		        if ((defined ($tcp_rcv) && $tcp_rcv ne "") || (($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11))) {
 			        # Receive data, non-blocking !!!! (VERY IMPORTANT!)
 			        $temp2 = "";
 			        for ($tam=0; $tam<($pa_config->{'tcp_timeout'}); $tam++){

@@ -449,28 +449,31 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	?>
 	<script type="text/javascript">
 		function show_form_create_folder() {
-			$("#table2-1").css('display', '');
+			show_main_buttons_folder()
+			$("#table_filemanager-1").css('display', '');
 			
 			$("#main_buttons").css("display", "none");
 			$("#create_folder").css("display", "");
 		}
 		
 		function show_upload_file() {
-			$("#table2-1").css('display', '');
+			show_main_buttons_folder()
+			$("#table_filemanager-1").css('display', '');
 			
 			$("#main_buttons").css("display", "none");
 			$("#upload_file").css("display", "");
 		}
 	
 		function show_create_text_file() {
-			$("#table2-1").css('display', '');
+			show_main_buttons_folder()
+			$("#table_filemanager-1").css('display', '');
 		
 			$("#main_buttons").css("display", "none");
 			$("#create_text_file").css("display", "");
 		}
 	
 		function show_main_buttons_folder() {
-			$("#table2-1").css('display', 'none');
+			$("#table_filemanager-1").css('display', 'none');
 			$("#create_folder").css("display", "none");
 			$("#upload_file").css("display", "none");
 			$("#create_text_file").css("display", "none");
@@ -487,7 +490,8 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	$files = filemanager_list_dir ($real_directory);
 	
 	$table->width = '98%';
-	$table->class = 'listing';
+	$table->id = 'table_filemanager';
+	$table->class = 'databox alternate';
 	
 	$table->colspan = array ();
 	$table->data = array ();
@@ -531,7 +535,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] = '';
 		
 		$table->data[1][1] .= '<div id="create_folder" style="display: none;">';
-		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub' style='float: left;'", true);
+		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '">';
 		$table->data[1][1] .= html_print_input_text ('dirname', '', '', 15, 255, true);
 		$table->data[1][1] .= html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"', true);
@@ -543,7 +547,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="upload_file" style="display: none;">';
-		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub' style='float: left;'", true);
+		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
 		$table->data[1][1] .= ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] .= html_print_input_file ('file', true, false);
@@ -561,10 +565,10 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="create_text_file" style="display: none;">';
-		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub' style='float: left;'", true);
+		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '">';
 		$table->data[1][1] .= html_print_input_text('name_file', '', '', 30, 50, true);
-		$table->data[1][1] .= html_print_submit_button (__('Create'), 'create', false, 'class="sub"', true);
+		$table->data[1][1] .= html_print_submit_button (__('Create'), 'create', false, 'class="sub next"', true);
 		$table->data[1][1] .= html_print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][1] .= html_print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);

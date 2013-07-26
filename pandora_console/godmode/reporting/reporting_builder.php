@@ -530,7 +530,6 @@ switch ($action) {
 						$private = 1;
 						break;
 				}
-				
 				if ($action == 'update') {
 					if ($reportName != "" && $idGroupReport != "") {
 						$new_values = array('name' => $reportName,
@@ -544,14 +543,14 @@ switch ($action) {
 							array('id_report' => $idReport));
 						$report_id_user = $report['id_user'];
 						if ($report_id_user != $config['id_user'] &&
-							is_user_admin ($config["id_user"])) {
+							!is_user_admin ($config["id_user"])) {
 							unset($new_values['private']);
 							unset($new_values['id_group_edit']);
 						}
-						
 						$resultOperationDB = (bool)db_process_sql_update(
 							'treport', $new_values,
 							array('id_report' => $idReport));
+						
 						if ($resultOperationDB !== false)
 							db_pandora_audit( "Report management",
 								"Update report #$idReport");
@@ -1352,7 +1351,7 @@ switch ($action) {
 			$buttons = array(
 				'list_reports' => array('active' => false,
 					'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
-						html_print_image("images/op_reporting.png", true, array ("title" => __('Reports list'))) .'</a>')
+						html_print_image("images/report_list.png", true, array ("title" => __('Reports list'))) .'</a>')
 				);
 			
 			$buttons = reporting_enterprise_add_main_Tabs($buttons);
@@ -1401,7 +1400,14 @@ if ($enterpriseEnable) {
 	}
 }
 
+		$buttons = array(
+			
+			);
+			
 $buttons = array(
+	'list_reports' => array('active' => false,
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
+			html_print_image("images/report_list.png", true, array ("title" => __('Reports list'))) .'</a>'),
 	'main' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '&pure='.$pure.'">' . 
 			html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>'),

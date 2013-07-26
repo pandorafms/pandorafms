@@ -43,6 +43,14 @@ $graph = networkmap_generate_hash(__('Pandora FMS'), $group, $simple,
 html_debug_print($graph, true);
 networkmap_print_jsdata($graph);
 
+$zoom_default = file($config['homedir'] . '/images/zoom_default.svg');
+?>
+<div style="display: none">
+	<?php
+	echo implode("\n", $zoom_default);
+	?>
+</div>
+<?php
 
 //html_debug_print($graph);
 echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.v3.js" charset="utf-8"></script>';
@@ -111,7 +119,23 @@ var svg = d3.select("#dinamic_networkmap").append("svg")
 	.attr("height", height)
 	.attr("pointer-events", "all")
     .call(zoom_obj)
-    .append('svg:g');
+    .append('svg:g')
+    
+    
+///Added default zoom buttom
+d3.select("#dinamic_networkmap svg")
+		.append("g")
+		.attr("id", "zoom_control");
+		
+zoom_default = $("#zoom_default").clone();
+$("#zoom_default").remove();
+
+$("#zoom_control").append(zoom_default);
+
+d3.select("#zoom_default")
+	.on("click", click_zoom_default)
+	.on("mouseover", over_zoom_default)
+	.on("mouseout", out_zoom_default);
 
 force
   .nodes(graph.nodes)
@@ -166,6 +190,14 @@ link.attr("x1", function(d) { return d.source.x; })
 node.attr("cx", function(d) { return d.x; })
 	.attr("cy", function(d) { return d.y; });
 });
+
+function click_zoom_default() {
+	zoom([0, 0], 1);
+}
+function over_zoom_default() {
+}
+function out_zoom_default() {
+}
 
 function over(d) {
 	$("#node_" + d.id).attr('class', 'select_node');
@@ -222,6 +254,13 @@ function zoom(translate_param, scale_param) {
 		scale = d3.event.scale;
 		translate = d3.event.translate;
 	}
+	else {
+		translate = translate_param;
+		scale = scale_param;
+		
+		zoom_obj.setScale(scale);
+		zoom_obj.setTranslate(translate);
+	}
 	
 	svg.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 }
@@ -275,8 +314,6 @@ function show_tooltip(d) {
 			$("#tooltip_networkmap_loading").hide();
 			
 			create_tooltip(d, x, y);
-			
-			console.log(d.id);
 			
 			graph.nodes[d.id].tooltip_content = data;
 			graph.nodes[d.id].default_tooltip = 0;

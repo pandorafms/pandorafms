@@ -1,3 +1,8 @@
+2013-07-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_filemanager.php: Fixed file manager
+	in metaconsole for bug #2361 and more little aesthetic fixes
+
 2013-07-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/d3.v3.js: removed some changes.

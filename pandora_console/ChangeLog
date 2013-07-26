@@ -1,3 +1,9 @@
+2013-07-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_networkmap.php,
+	operation/agentes/networkmap.dinamic.php: added the tooltips and
+	only it needs reorganize the code.
+
 2013-07-26  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Fix errors

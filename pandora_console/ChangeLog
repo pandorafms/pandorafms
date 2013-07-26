@@ -1,5 +1,12 @@
 2013-07-26 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/agentes/networkmap.dinamic.php: added default zoom
+	buttom.
+	
+	* images/zoom_default.svg: the default buttom.
+
+2013-07-26 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_networkmap.php,
 	operation/agentes/networkmap.dinamic.php: added the tooltips and
 	only it needs reorganize the code.

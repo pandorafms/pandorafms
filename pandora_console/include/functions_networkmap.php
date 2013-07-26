@@ -75,6 +75,8 @@ function networkmap_print_jsdata($graph, $js_tags = true) {
 			'name' : '" . $node['label'] . "',
 			'url' : '" . $node['url'] . "',
 			'tooltip' : '" . $node['tooltip'] . "',
+			'default_tooltip' : 1,
+			'tooltip_content' : ' " . html_print_image('images/spinner.gif',true) . "',
 			'color' : '" . $node['color'] . "'}\n";
 	}
 	echo "],\n";
@@ -1028,8 +1030,8 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	else {
 		$img = '<TR><TD>' . html_print_image("images/networkmap/pandora_node.png", true, false, false, true) . '</TD></TR>';
 	}
-	$name = '<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR>';
-	$label = '<TABLE BORDER="0">'.$img.$name.'</TABLE>';
+	$name = '<TR><TD BGCOLOR="#FFFFFF">' . $name . '</TD></TR>';
+	$label = '<TABLE BORDER="0">' . $img.$name . '</TABLE>';
 	if ($simple == 1) {
 		$label = '';
 	}

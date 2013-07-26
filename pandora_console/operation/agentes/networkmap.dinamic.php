@@ -45,10 +45,25 @@ networkmap_print_jsdata($graph);
 
 
 //html_debug_print($graph);
-
 echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.v3.js" charset="utf-8"></script>';
 echo '<div id="dinamic_networkmap"></div>';
 ?>
+<style type="text/css">
+	#tooltip_networkmap {
+		text-align: left !important;
+		padding: 5px;
+		-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);
+		-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);
+		box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);
+	}
+	
+	#tooltip_networkmap h3 {
+		text-align: center !important;
+		background-color: #B1B1B1;
+		color: #FFFFFF;
+	}
+</style>
+
 <style>
 
 .node {
@@ -91,6 +106,7 @@ var zoom_obj = d3.behavior.zoom();
 zoom_obj.scaleExtent([0.3, 3]).on("zoom", zoom);
 
 var svg = d3.select("#dinamic_networkmap").append("svg")
+	.attr("id", "dinamic_networkmap_svg")
     .attr("width", width)
 	.attr("height", height)
 	.attr("pointer-events", "all")
@@ -125,16 +141,16 @@ var node = svg.selectAll(".node")
   .data(graph.nodes)
   .enter().append("circle")
   .attr("id", function(d) { return "node_" + d.id})
+  .attr("tooltip", function(d) { return d.tooltip})
   .attr("class", "node")
   .attr("r", 5)
   .style("fill", function(d) { return d.color; })
-  .call(force.drag)
   .on("mouseover", over)
   .on("mouseout", out)
-  .on("click", click);
-
-node.append("title")
-  .text(function(d) { return d.name; });
+  .on("mousedown", mousedown)
+  .on("mouseup", mouseup)
+  //.on("click", click)
+  .call(force.drag);
 
  svg.style("opacity", 1e-6)
     .transition()
@@ -160,6 +176,7 @@ function over(d) {
 		$("#" + id_txt).attr('class',
 			class_txt.replace("link", "select_link"));
 	});
+	show_tooltip(d);
 }
 
 function out(d) {
@@ -172,10 +189,29 @@ function out(d) {
 		$("#" + id_txt).attr('class',
 			class_txt.replace("select_link", "link"));
 	});
+	
+	hide_tooltip(d);
 }
 
 function click(d) {
 	window.location = d.url;
+}
+
+var mouse_x = -1;
+var mouse_y = -1;
+
+function mousedown(d) {
+	mouse_x = d3.event.clientX;
+	mouse_y = d3.event.clientY;
+}
+
+function mouseup(d) {
+	if ((d3.event.clientX == mouse_x) &&
+		(d3.event.clientY == mouse_y)) {
+		
+		//The drag is diferent to click in the same position.
+		click(d);
+	}
 }
 
 function zoom(translate_param, scale_param) {
@@ -188,5 +224,72 @@ function zoom(translate_param, scale_param) {
 	}
 	
 	svg.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+}
+
+function create_tooltip(d, x, y) {
+	if ($("#tooltip_networkmap").length == 0) {
+		$("body")
+			.append($("<div></div>")
+			.attr('id', 'tooltip_networkmap')
+			.html(d.tooltip_content));
+	}
+	else {
+		$("#tooltip_networkmap").html(d.tooltip_content);
+	}
+	
+	$("#tooltip_networkmap").attr('style', 'background: #fff;' + 
+		'position: absolute;' + 
+		'display: block;' + 
+		'width: 275px;' + 
+		'left: ' + x + 'px;' + 
+		'top: ' + y + 'px;');
+}
+
+function create_loading_tooltip(d, x, y) {
+	if ($("#tooltip_networkmap_loading").length == 0) {
+		$("body")
+			.append($("<div></div>")
+			.attr('id', 'tooltip_networkmap_loading')
+			.html(d.tooltip_content));
+	}
+	else {
+		$("#tooltip_networkmap_loading").html(d.tooltip_content);
+	}
+	
+	$("#tooltip_networkmap_loading").attr('style', 'background: #fff;' + 
+		'position: absolute;' + 
+		'display: block;' + 
+		'left: ' + x + 'px;' + 
+		'top: ' + y + 'px;');
+}
+
+function show_tooltip(d) {
+	x = d3.event.clientX + 10;
+	y = d3.event.clientY + 10;
+	
+	if (d.default_tooltip) {
+		create_loading_tooltip(d, x, y);
+		
+		
+		$.get(d.tooltip, function(data) {
+			$("#tooltip_networkmap_loading").hide();
+			
+			create_tooltip(d, x, y);
+			
+			console.log(d.id);
+			
+			graph.nodes[d.id].tooltip_content = data;
+			graph.nodes[d.id].default_tooltip = 0;
+			$("#tooltip_networkmap").html(data);
+		});
+	}
+	else {
+		create_tooltip(d, x, y);
+	}
+}
+
+function hide_tooltip(d) {
+	$("#tooltip_networkmap").hide();
+	$("#tooltip_networkmap_loading").hide();
 }
 </script>

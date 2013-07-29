@@ -1,5 +1,11 @@
 2013-07-29 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_api.php: a lot of tiny fixes.
+	
+	* extensions/api_checker.php: some fixes.
+
+2013-07-29 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* extensions/api_checker.php: a tiny extension to make more easy
 	the checks in the api, it is a early version but works.
 

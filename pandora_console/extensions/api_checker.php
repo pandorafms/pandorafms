@@ -68,7 +68,7 @@ function extension_api_checker() {
 	$id2 = io_safe_output(get_parameter('id2', ''));
 	$return_type = io_safe_output(get_parameter('return_type', ''));
 	$other = io_safe_output(get_parameter('other', ''));
-	$other_mode = io_safe_output(get_parameter('other', 'url_encode_separator_|'));
+	$other_mode = io_safe_output(get_parameter('other_mode', 'url_encode_separator_|'));
 	
 	$api_execute = get_parameter('api_execute', 0);
 	
@@ -76,7 +76,8 @@ function extension_api_checker() {
 	if ($api_execute) {
 		$return_call_api =
 			api_execute($url, $ip, $pandora_url, $apipass, $user, $password,
-				$op, $op2, $id, $id2, $return_type, $other, $other_mode);
+				$op, $op2, urlencode($id), urlencode($id2),
+				$return_type, urlencode($other), $other_mode);
 	}
 	
 	ui_print_page_header (__("API checker"),
@@ -130,7 +131,7 @@ function extension_api_checker() {
 	
 	$row = array();
 	$row[] = __("ID 2");
-	$row[] = html_print_input_text('id', $id2, '', 50, 255, true);
+	$row[] = html_print_input_text('id2', $id2, '', 50, 255, true);
 	$table2->data[] = $row;
 	
 	$row = array();

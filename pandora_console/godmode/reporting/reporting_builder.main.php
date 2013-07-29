@@ -57,8 +57,16 @@ $table->data['name'][1] = html_print_input_text('name', $reportName,
 	__('Name'), 80, 100, true);
 
 $table->data['group'][0] = __('Group');
-$table->data['group'][1] = html_print_select_groups(false, "RW", users_can_manage_group_all(), 'id_group', $idGroupReport, false, '', '', true);
 
+$write_groups = users_get_groups_for_select(false, "RW", users_can_manage_group_all(), true, false, 'id_grupo');
+	
+// If the report group is not among the RW groups (special permission) we add it
+if (!isset($write_groups[$idGroupReport])) {
+	$write_groups[$idGroupReport] = groups_get_name($idGroupReport);
+}
+
+$table->data['group'][1] = html_print_select ($write_groups, 'id_group', $idGroupReport, false, '', '', true);
+	
 if ($report_id_user == $config['id_user'] ||
 	is_user_admin ($config["id_user"])) {
 	//S/he is the creator of report (or admin) and s/he can change the access.

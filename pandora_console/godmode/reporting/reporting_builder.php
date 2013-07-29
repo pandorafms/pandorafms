@@ -452,6 +452,13 @@ switch ($action) {
 				
 				
 				if ($edit) {
+					if (!isset($table->head[$next])) {
+						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
+						$table->size = array ();
+						$table->size[$next] = '80px';
+						$table->style[$next] = 'text-align:center;';
+					}
+				
 					$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
 					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 					$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));

@@ -1,3 +1,15 @@
+2013-07-29  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/reporting_builder.main.php
+	godmode/reporting/reporting_builder.php: Added the report
+	group to the group combo in the main edition screen of this
+	report when the user hasnt permissions on this groups but
+	this report have special permissions to edit by this group
+	bug: #2362
+
+	Fix a header layout in reports edit view when only have permission
+	to edit extrapermission reports
+
 2013-07-28  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_field_match_snmp.php: Translated.

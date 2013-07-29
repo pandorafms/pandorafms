@@ -81,8 +81,8 @@ function returnError($typeError, $returnType = 'string') {
 				array('type' => 'string', 'data' => __('Id does not exist in BD.')));
 			break;
 		default:
-			returnData($returnType,
-				array('type' => 'string', 'data' => __($typeError)));
+			returnData("string",
+				array('type' => 'string', 'data' => __($returnType)));
 			break;
 	}
 }
@@ -100,8 +100,10 @@ function returnData($returnType, $data, $separator = ';') {
 		case 'string':
 			if ($data['type'] == 'string') {
 				echo $data['data'];
-			} else
-				;//TODO
+			}
+			else {
+				//TODO
+			}
 			break;
 		case 'csv':
 		case 'csv_head':
@@ -4024,15 +4026,15 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	$config['flash_charts'] = 0;
 	
 	$image = grafico_modulo_sparse ($id, $period, $draw_events,
-				$width, $height , '',null,
-				$draw_alerts, $avg_only, false,
-				$date, '', 0, 0,true,
-				false, $homeurl, $ttl);
-		
+		$width, $height , '',null,
+		$draw_alerts, $avg_only, false,
+		$date, '', 0, 0,true,
+		false, $homeurl, $ttl);
+	
 	// Extract url of the image from img tag			
 	preg_match("/src='([^']*)'/i",$image, $match);
-			
-	if(empty($match[1])) {
+	
+	if (empty($match[1])) {
 		echo "Error getting graph";
 	}
 	else {
@@ -4576,7 +4578,7 @@ function api_set_new_module($id, $id2, $other, $trash1) {
 		}
 		
 		$values['id_modulo'] = 2; 
-				
+		
 		$return = modules_create_agent_module($values['id_agente'], $values['nombre'], $values);
 		
 		$data['type'] = 'string';
@@ -4587,7 +4589,7 @@ function api_set_new_module($id, $id2, $other, $trash1) {
 			$data['data'] = $return;
 		}
 		returnData('string', $data);
-		return;		
+		return;
 	}
 }
 
@@ -4813,7 +4815,7 @@ function api_set_event_validate_filter_pro($trash1, $trash2, $other, $trash3) {
 	}
 	else if ($other['type'] == 'array') {
 		$filter = array();
-
+		
 		if (($other['data'][1] != null) && ($other['data'][1] != -1) && ($other['data'][1] != '')) {
 			$filter['criticity'] = $other['data'][1];
 		}
@@ -5546,7 +5548,7 @@ function api_set_enable_module_alerts ($agent_name, $module_name, $thrash3, $thr
 	returnData('string', array('type' => 'string', 'data' => "Correct alerts enable"));
 }
 
-function get_tags($thrash1, $thrash2, $other, $returnType, $user_in_db) {
+function api_get_tags($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 	if ($other['type'] == 'string') {
 		if ($other['data'] != '') {
 			returnError('error_parameter', 'Error in the parameters.');

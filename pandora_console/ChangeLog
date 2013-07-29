@@ -1,3 +1,8 @@
+2013-07-29 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/api_checker.php: a tiny extension to make more easy
+	the checks in the api, it is a early version but works.
+
 2013-07-29  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/reporting_builder.main.php

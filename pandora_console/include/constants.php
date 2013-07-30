@@ -49,24 +49,27 @@ define ('ERR_NOCHANGES', -60000);
 define ('ERR_NODATA', -70000);
 define ('ERR_CONNECTION', -80000);
 
+
 /* Seconds in a time unit constants */
-define('SECONDS_1MINUTE',60);
-define('SECONDS_2MINUTES',120);
-define('SECONDS_5MINUTES',300);
-define('SECONDS_10MINUTES',600);
-define('SECONDS_30MINUTES',1800);
-define('SECONDS_1HOUR',3600);
-define('SECONDS_6HOURS',21600);
-define('SECONDS_12HOURS',43200);
-define('SECONDS_1DAY',86400);
-define('SECONDS_1WEEK',604800);
-define('SECONDS_15DAYS',1296000);
-define('SECONDS_1MONTH',2592000);
-define('SECONDS_3MONTHS',7776000);
-define('SECONDS_6MONTHS',15552000);
-define('SECONDS_1YEAR',31104000);
-define('SECONDS_2YEARS',62208000);
-define('SECONDS_3YEARS',93312000);
+define('SECONDS_1MINUTE', 60);
+define('SECONDS_2MINUTES', 120);
+define('SECONDS_5MINUTES', 300);
+define('SECONDS_10MINUTES', 600);
+define('SECONDS_30MINUTES', 1800);
+define('SECONDS_1HOUR', 3600);
+define('SECONDS_6HOURS', 21600);
+define('SECONDS_12HOURS', 43200);
+define('SECONDS_1DAY', 86400);
+define('SECONDS_1WEEK', 604800);
+define('SECONDS_15DAYS', 1296000);
+define('SECONDS_1MONTH', 2592000);
+define('SECONDS_3MONTHS', 7776000);
+define('SECONDS_6MONTHS', 15552000);
+define('SECONDS_1YEAR', 31104000);
+define('SECONDS_2YEARS', 62208000);
+define('SECONDS_3YEARS', 93312000);
+
+
 
 /* Separator constats */
 define('SEPARATOR_COLUMN', ';');
@@ -88,6 +91,11 @@ switch ($config["dbtype"]) {
 		define ('BACKUP_FULLPATH', 'DATA_PUMP_DIR');
 		break;
 }
+
+
+
+
+
 
 /* The styles */
 /* Size of text in characters for truncate */
@@ -119,6 +127,7 @@ define('AGENT_STATUS_NORMAL', 0);
 define('AGENT_STATUS_NOT_INIT', 5);
 define('AGENT_STATUS_NOT_NORMAL', 6);
 define('AGENT_STATUS_UNKNOW', 3);
+define('AGENT_STATUS_ALERT_FIRED', 4);
 define('AGENT_STATUS_WARNING', 2);
 
 
@@ -164,4 +173,30 @@ define('VISUAL_MAP_STATUS_NORMAL', 0);
 define('VISUAL_MAP_STATUS_WARNING', 2);
 define('VISUAL_MAP_STATUS_UNKNOW', 3);
 define('VISUAL_MAP_STATUS_WARNING_ALERT', 10);
+
+
+
+
+
+
+
+
+
+
+
+/* Type of Modules of Prediction */
+define ('MODULE_PREDICTION_SERVICE', 2);
+define ('MODULE_PREDICTION_SYNTHETIC', 3);
+define ('MODULE_PREDICTION_NETFLOW', 4);
+
+
+
+
+
+
+
+
+
+
+
 ?>

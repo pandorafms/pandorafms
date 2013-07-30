@@ -1,3 +1,13 @@
+2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor_prediction.php,
+	include/constants.php: fixed the repeat operator and added some
+	constants for to make more easy the code.
+	
+	Fixes: #2279
+	
+	MERGED FROM THE TRUNK
+
 2013-07-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/servers/manage_recontask_form.php: Merged from trunk. Added a

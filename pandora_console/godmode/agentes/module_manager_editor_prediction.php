@@ -23,7 +23,9 @@ $id_agente = get_parameter('id_agente', '');
 $agent_name = get_parameter('agent_name', agents_get_name($id_agente));
 $id_agente_modulo= get_parameter('id_agent_module',0);
 $custom_integer_2 = get_parameter ('custom_integer_2', 0);
-$sql = 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$id_agente_modulo;
+$sql = 'SELECT *
+	FROM tagente_modulo
+	WHERE id_agente_modulo = '.$id_agente_modulo;
 $row = db_get_row_sql($sql);
 $is_service = false;
 $is_synthetic = false;
@@ -35,19 +37,29 @@ if ($row !== false && is_array($row)) {
 	$custom_integer_2 = $row ['custom_integer_2'];
 	// Services are an Enterprise feature.
 	$custom_integer_1 = $row['custom_integer_1'];
-
-	switch($prediction_module) {
-		case 2:
+	
+	switch ($prediction_module) {
+		case MODULE_PREDICTION_SERVICE:
 			$is_service = true;
 			$custom_integer_2 = 0;
 			break;
-		case 3:
-			$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_agente_modulo));
-			$ops = json_decode($ops_json, true);
-
-			$first_op = explode('_', reset(array_keys($ops)));
+		case MODULE_PREDICTION_SYNTHETIC:
+			$ops_json = enterprise_hook('modules_get_synthetic_operations',
+				array($id_agente_modulo));
 			
-			if(isset($first_op[1]) && $first_op[1] == 'avg') {
+			
+			$ops = json_decode($ops_json, true);
+			
+			
+			
+			//Erase the key of array serialize as <num>**
+			$chunks = explode('**', reset(array_keys($ops)));
+			
+			$first_op = explode('_', $chunks[1]);
+			
+			
+			
+			if (isset($first_op[1]) && $first_op[1] == 'avg') {
 				$is_synthetic_avg = true;
 			}
 			else {
@@ -59,6 +71,7 @@ if ($row !== false && is_array($row)) {
 			break;
 		default:
 			$prediction_module = $custom_integer_1;
+			break;
 	}
 }
 else {
@@ -91,11 +104,16 @@ if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
 	$data[0] = '';
 }
 
+
+
+
 $data[1] = '<div id="module_data" style="top:1em; float:left; width:50%;">';
 $data[1] .= html_print_label(__("Agent"),'agent_name', true)."<br/>";
+
 $sql = "SELECT id_agente, nombre FROM tagente";
 // TODO: ACL Filter
-//
+
+// Get module and agent of the target prediction module
 if (!empty($prediction_module)) {
 	$id_agente_clean = modules_get_agentmodule_agent($prediction_module);
 	$prediction_module_agent = modules_get_agentmodule_agent_name($prediction_module);
@@ -115,8 +133,12 @@ $data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if ($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
-		WHERE delete_pending = 0 AND history_data = 1 AND id_agente =  " . $id_agente_clean . " AND id_agente_modulo  <> " . $id_agente_modulo;
-    $data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true);
+		WHERE delete_pending = 0
+			AND history_data = 1
+			AND id_agente =  " . $id_agente_clean . "
+			AND id_agente_modulo  <> " . $id_agente_modulo;
+	$data[1] .= html_print_select_from_sql($sql, 'prediction_module',
+		$prediction_module, false, __('Select Module'), 0, true);
 }
 else {
 	$data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
@@ -139,9 +161,9 @@ push_table_simple ($data, 'prediction_module');
 $selector_form = enterprise_hook('get_selector_form', array($custom_integer_1));
 if ($selector_form !== ENTERPRISE_NOT_HOOK) {
 	$data = array();
-    $data[0] = '';
-    $data[1] = $selector_form;
-    
+	$data[0] = '';
+	$data[1] = $selector_form;
+	
 	$table_simple->colspan['service_module'][1] = 3;
 	push_table_simple ($data, 'service_module');
 }
@@ -157,16 +179,19 @@ if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
 	push_table_simple ($data, 'synthetic_module');
 }
 
+
+
+
+
 /* Removed common useless parameter */
 unset ($table_advanced->data[3]);
-
 ?>
 <script type="text/javascript">
-$(document).ready(function() {
-	agent_module_autocomplete ("#text_agent_name", "#id_agente", "#prediction_module");
-	<?php 
-		enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $ops));
-	?>
-});
-	
+	$(document).ready(function() {
+		agent_module_autocomplete ("#text_agent_name", "#id_agente", "#prediction_module");
+		<?php 
+			enterprise_hook('setup_services_synth',
+				array($is_service, $is_synthetic, $is_synthetic_avg, $ops));
+		?>
+	});
 </script>

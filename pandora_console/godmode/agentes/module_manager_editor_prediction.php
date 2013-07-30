@@ -38,16 +38,26 @@ if ($row !== false && is_array($row)) {
 	// Services are an Enterprise feature.
 	$custom_integer_1 = $row['custom_integer_1'];
 	
-	switch($prediction_module) {
-		case 2:
+	switch ($prediction_module) {
+		case MODULE_PREDICTION_SERVICE:
 			$is_service = true;
 			$custom_integer_2 = 0;
 			break;
-		case 3:
-			$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_agente_modulo));
+		case MODULE_PREDICTION_SYNTHETIC:
+			$ops_json = enterprise_hook('modules_get_synthetic_operations',
+				array($id_agente_modulo));
+			
+			
 			$ops = json_decode($ops_json, true);
 			
-			$first_op = explode('_', reset(array_keys($ops)));
+			
+			
+			//Erase the key of array serialize as <num>**
+			$chunks = explode('**', reset(array_keys($ops)));
+			
+			$first_op = explode('_', $chunks[1]);
+			
+			
 			
 			if (isset($first_op[1]) && $first_op[1] == 'avg') {
 				$is_synthetic_avg = true;
@@ -59,7 +69,7 @@ if ($row !== false && is_array($row)) {
 			$custom_integer_1 = 0;
 			$custom_integer_2 = 0;
 			break;
-		case 4:
+		case MODULE_PREDICTION_NETFLOW:
 			$is_netflow = true;
 			$custom_integer_2 = 0;
 			break;
@@ -189,9 +199,10 @@ if ($netflow_module_form !== ENTERPRISE_NOT_HOOK) {
 }
 
 
+
+
 /* Removed common useless parameter */
 unset ($table_advanced->data[3]);
-
 ?>
 <script type="text/javascript">
 	$(document).ready(function() {

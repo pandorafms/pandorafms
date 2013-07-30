@@ -113,7 +113,7 @@ function networkmap_generate_hash($pandora_name, $group = 0,
 	$graph = networkmap_generate_dot($pandora_name, $group,
 		$simple, $font_size, $layout, $nooverlap, $zoom, $ranksep,
 		$center, $regen, $pure, $id_networkmap, $show_snmp_modules,
-		$cut_names, $relative, $text_filter); html_debug_print($graph, true);
+		$cut_names, $relative, $text_filter);
 	
 	$return = array();
 	if (!empty($graph)) {
@@ -223,9 +223,6 @@ function networkmap_generate_hash($pandora_name, $group = 0,
 			$data['target'] = (int) $points[1];
 			$return['lines'][] = $data;
 		}
-		
-		//html_debug_print($graph, true);
-		
 	}
 	
 	return $return;
@@ -668,7 +665,7 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $me
 		// Set node icon
 		if ($hack_networkmap_mobile) {
 			$img_node = $config['homedir'] . "/images/groups_small/" . $icon . ".png";
-			html_debug_print($img_node, true);
+			
 			if (!file_exists($img_node)) {
 				$img_node = '-';
 			}

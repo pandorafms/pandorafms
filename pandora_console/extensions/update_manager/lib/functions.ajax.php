@@ -402,7 +402,7 @@ function update_pandora_install_package() {
 	// bsdtar use stderr for verbose output
 	if ($tar_type === 'BSD')
 		$command .= ' 2>&1';
-
+	
 	print_debug_message_trace($command);
 	//html_debug_print($command, true);
 	

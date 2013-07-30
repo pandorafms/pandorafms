@@ -1,3 +1,9 @@
+2013-07-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_users.php
+	operation/events/events_list.php: Improve the encapsulation
+	of the last Juanmas fix using my previous solution
+
 2013-07-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/events/events_list.php: Fix user filter in

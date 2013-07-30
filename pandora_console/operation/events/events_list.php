@@ -387,35 +387,10 @@ $table_advanced->rowclass[] = '';
 
 $data = array();
 $data[0] = __('User ack.') . '<br>';
-$users = users_get_info ();
-if ($users === false) 
-	$users = array();
-	
-$user_groups = users_get_groups($config['id_user'], "ER", users_can_manage_group_all(0));
-	
-$acl_column = get_acl_column("ER");	
-$users_acl = array();
-foreach ($users as $user => $user_desc) {
 
-	$query = sprintf("SELECT id_grupo 
-			FROM tusuario_perfil, tperfil
-			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-				tusuario_perfil.id_usuario = '%s' AND 
-				tperfil.%s = 1 AND
-			(tusuario_perfil.id_grupo IN (%s))
-			ORDER BY id_grupo", $user, $acl_column, implode(',',array_keys($user_groups)));
-				
-	$user_group = db_get_all_rows_sql($query);
-
-	if ($user_group === false) {
-		continue;
-	} 
-				
-	$users_acl[$user] = $user;
+$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
 	
-}
-
-$data[0] .= html_print_select($users_acl, "id_user_ack", $id_user_ack, '',
+$data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 	__('Any'), 0, true);
 $data[1] = '';
 $table_advanced->data[] = $data;

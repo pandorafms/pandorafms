@@ -283,43 +283,40 @@ if (!empty($groups)) {
 	//Set the content of page of groups
 	$offset = (int)get_parameter('offset', 0);
 	$count_visible_groups = 0;
-	$count_visible_groups_block = 0;
-	$stop_count_block = false;
 	$count = 0;
 	$start = 0;
 	$stop = 0;
-	//$offset = $offset - $offset / $config['block_size'];
+	
+	// Do the pagination manually to show the N first groups of first level (parent=0)
+	// TODO: Do it better. Maybe with ajax like tree view
 	foreach ($groups as $group) {
 		if (((int)$group['parent']) == 0) {
 			$count_visible_groups++;
-			if (!$stop_count_block)
-				$count_visible_groups_block++;
+			
+			if (($count_visible_groups - 1) == $offset) {
+				$start = $count;
+				if ($offset > 0) {
+					$start++;
+				}
+			}
+			
+			if (($count_visible_groups - 1) == ($config['block_size'] + $offset)) {
+				$stop = $count;
+			}
 		}
-		
-		if (($count_visible_groups - 1) == ($offset) ) {
-			$stop_count_block = true;
-			$start = $count;
-		}
-		
-		// -1 for in the all pages is added all group
-		if (($count_visible_groups - 1) == ($offset + ($config['block_size'] - 1))) {
-			$stop_count_block = true;
-			$stop = $count;
-		}
-		
+
 		$count++;
 	}
 	if ($stop == 0) {
-		$stop = $start + $config['block_size'];
+		$stop = $start + $config['block_size'] + 1;
 	}
-	
+		
 	// 1 for to add all group
-	ui_pagination($count_visible_groups + 1, false, 0, $config['block_size'] - 1);
-	
+	ui_pagination($count_visible_groups + 1, false, 0, $config['block_size']);
 	
 	$groups = array_slice($groups, $start, ($stop - $start));
 	$groups = array_merge(array($all_group), $groups);
-	
+
 	foreach ($groups as $id_group => $group) {
 		if ($group['deep'] == 0) {
 			$table->rowstyle[$iterator] = '';

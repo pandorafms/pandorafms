@@ -1,5 +1,16 @@
 2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/update_manager/lib/functions.ajax.php,
+	godmode/agentes/configurar_agente.php
+	
+
+godmode/agentes/module_manager_editor_prediction.php
+include/functions_html.php
+include/constants.php
+include/functions_networkmap.php
+
+2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/operation/networkmap.php, godmode/users/user_list.php,
 	include/javascript/pandora.js,
 	include/javascript/openlayers.pandora.js,

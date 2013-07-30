@@ -984,7 +984,8 @@ if ($update_module) {
 	}
 	else {
 		if ($prediction_module == 3) {
-			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
+			enterprise_hook('modules_create_synthetic_operations',
+				array($id_agent_module, $serialize_ops));
 		}
 		
 		// Update the module interval

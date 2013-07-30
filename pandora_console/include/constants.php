@@ -253,6 +253,11 @@ define ('MODULE_PREDICTION', 5);
 define ('MODULE_WMI', 6);
 define ('MODULE_WEB', 7);
 
+/* Type of Modules of Prediction */
+define ('MODULE_PREDICTION_SERVICE', 2);
+define ('MODULE_PREDICTION_SYNTHETIC', 3);
+define ('MODULE_PREDICTION_NETFLOW', 4);
+
 /* SNMP CONSTANTS */
 define ('SNMP_DIR_MIBS', "attachment/mibs");
 

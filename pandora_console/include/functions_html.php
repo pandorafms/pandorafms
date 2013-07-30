@@ -1632,7 +1632,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			$skin_path = enterprise_hook('skins_get_image_path',array($src));
-			//html_debug_print($skin_path);
+			
 			if ($skin_path)
 				$src = $skin_path;
 		}
@@ -1671,16 +1671,16 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	if (!empty ($options)) {
 		//Deprecated or value-less attributes
 		if (isset ($options["align"])) {
-			$style .= 'align:'.$options["align"].';'; //Align is deprecated, use styles.
+			$style .= 'align:' . $options["align"] . ';'; //Align is deprecated, use styles.
 		}
 		
 		if (isset ($options["border"])) {
-			$style .= 'border:'.$options["border"].'px;'; //Border is deprecated, use styles
+			$style .= 'border:' . $options["border"] . 'px;'; //Border is deprecated, use styles
 		}
 		
 		if (isset ($options["hspace"])) {
-			$style .= 'margin-left:'.$options["hspace"].'px;'; //hspace is deprecated, use styles
-			$style .= 'margin-right:'.$options["hspace"].'px;';
+			$style .= 'margin-left:' . $options["hspace"] . 'px;'; //hspace is deprecated, use styles
+			$style .= 'margin-right:' . $options["hspace"] . 'px;';
 		}
 		
 		if (isset ($options["ismap"])) {
@@ -1688,8 +1688,8 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		}
 		
 		if (isset ($options["vspace"])) {
-			$style .= 'margin-top:'.$options["vspace"].'px;'; //hspace is deprecated, use styles
-			$style .= 'margin-bottom:'.$options["vspace"].'px;';
+			$style .= 'margin-top:' . $options["vspace"] . 'px;'; //hspace is deprecated, use styles
+			$style .= 'margin-bottom:' . $options["vspace"] . 'px;';
 		}
 		
 		if (isset ($options["style"])) {
@@ -1709,10 +1709,11 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 				$options['id'] = uniqid();
 			}
 			
-			$params = array('id' => 'forced_title_' . $options['id'], 
-									'class' => 'forced_title_layer', 
-									'content' => $options["title"],
-									'hidden' => true);
+			$params = array(
+				'id' => 'forced_title_' . $options['id'], 
+				'class' => 'forced_title_layer', 
+				'content' => $options["title"],
+				'hidden' => true);
 			$output = html_print_div($params, true) . $output;
 		}
 		
@@ -1724,7 +1725,8 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		
 		foreach ($attrs as $attribute) {
 			if (isset ($options[$attribute])) {
-				$output .= $attribute.'="'.io_safe_input_html ($options[$attribute]).'" ';
+				$output .= $attribute . '="' .
+					io_safe_input_html ($options[$attribute]) . '" ';
 			}
 		}
 	}

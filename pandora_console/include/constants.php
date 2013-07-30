@@ -159,6 +159,8 @@ define('AGENT_STATUS_UNKNOWN', 3);
 define('AGENT_STATUS_ALERT_FIRED', 4);
 define('AGENT_STATUS_WARNING', 2);
 
+
+
 /* Visual maps contants */
 //The items kind
 define('STATIC_GRAPH', 0);

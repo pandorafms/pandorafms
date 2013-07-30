@@ -138,7 +138,7 @@ else {
 }
 
 $data[1] .= html_print_label(__("Module"),'prediction_module',true);
-if($id_agente) {
+if ($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
 		WHERE delete_pending = 0

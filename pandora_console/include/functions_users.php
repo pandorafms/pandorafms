@@ -812,16 +812,20 @@ function users_can_manage_group_all($id_group = 0) {
 /**
  * Get the users that belongs to the same groups of the current user
  * 
+ * @param string User id
+ * @param string The privilege to evaluate, and it is false then no check ACL.
+ * @param boolean $returnAllGroup Flag the return group, by default true.
+ * 
  * @return mixed Array with id_user as index and value
  */
-function users_get_user_users() {
+function users_get_user_users($id_user = false, $privilege = "AR", $returnAllGroup = true) {
 	global $config;
 	
-	$user_groups = users_get_groups();
+	$user_groups = users_get_groups($id_user, $privilege, $returnAllGroup);
 
 	$user_users = array();
 	foreach($user_groups as $id_user_group => $name_user_group) {
-		$group_users = groups_get_users($id_user_group, false, true);
+		$group_users = groups_get_users($id_user_group, false, $returnAllGroup);
 		
 		foreach($group_users as $gu) {
 			$user_users[$gu['id_user']] = $gu['id_user'];

@@ -1,3 +1,7 @@
+2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* ChangeLog: Fixes changelog.
+
 2013-07-30  Sergio Martin <sergio.martin@artica.es>
 
 	* include/ajax/module.php
@@ -15,13 +19,15 @@
 2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/lib/functions.ajax.php,
-	godmode/agentes/configurar_agente.php
+	godmode/agentes/configurar_agente.php, include/functions_html.php,
+	include/functions_networkmap.php: cleaned source code and removed
+	the debug traces.
 	
-
-godmode/agentes/module_manager_editor_prediction.php
-include/functions_html.php
-include/constants.php
-include/functions_networkmap.php
+	* godmode/agentes/module_manager_editor_prediction.php,
+	include/constants.php: fixed the repeat operator and added some
+	constants for to make more easy the code.
+	
+	Fixes: #2279
 
 2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
 	

@@ -190,7 +190,8 @@ echo '</div>';
  */
 
 ui_require_jquery_file ("ui-timepicker-addon");
-ui_require_javascript_file("i18n/jquery-ui-timepicker-" . get_user_language());
+// This script is included manually to be included after jquery and avoid error
+echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language(), false, false, false) . '"></script>';
 ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 
 ?>

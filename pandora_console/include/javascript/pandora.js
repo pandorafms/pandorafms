@@ -124,12 +124,12 @@ function agent_changed (event, id_agent, selected) {
  * @returns {Boolean} True it is empty
  */
 function isEmptyObject(obj) {
-    for(var prop in obj) {
-        if(obj.hasOwnProperty(prop))
-            return false;
-    }
-
-    return true;
+	for(var prop in obj) {
+		if(obj.hasOwnProperty(prop))
+			return false;
+	}
+	
+	return true;
 }
 
 

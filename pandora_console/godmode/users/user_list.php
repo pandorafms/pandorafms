@@ -168,7 +168,7 @@ if (isset ($_GET["user_del"])) { //delete user
 				// Log to the metaconsole too
 				if ($result) {
 					db_pandora_audit("User management",
-				                     __("Deleted user %s from %s", io_safe_input($id_user), io_safe_input($server['server_name'])));
+						__("Deleted user %s from %s", io_safe_input($id_user), io_safe_input($server['server_name'])));
 				}
 				ui_print_result_message ($result,
 					__('Successfully deleted from %s', io_safe_input($server['server_name'])),

@@ -165,7 +165,8 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 	$oid_tree = array('__LEAVES__' => array());
 	if ($version == "3") {
 		exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2>/dev/null', $output, $rc);
-	} else {
+	}
+	else {
 		exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2>/dev/null', $output, $rc);
 	}
 	//if ($rc != 0) {
@@ -259,16 +260,17 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
 				$snmpget_bin = 'snmpget';
 				break;
 		}
-        }
+	}
 	else {
 		$snmpget_bin = $config['snmpget'];
 	}
 	if ($version == "3") {
 		exec ($snmpget_bin  . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($target_oid) . ' 2>/dev/null', $output, $rc);
-	} else {
+	}
+	else {
 		exec ($snmpget_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -On -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($target_oid) . ' 2>/dev/null', $output, $rc);
 	}
-
+	
 	if ($rc != 0) {
 		return $oid_data;
 	}
@@ -402,14 +404,14 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = 
 	
 	$table->head[0] = $closer;
 	$table->head[1] = __('OID Information');
-		
+	
 	// Add a span for custom actions
 	if ($custom_action != '') {
 		$output .= '<span id="snmp_custom_action">' . $closer . $custom_action . '</span>';
 	}
 	
 	$output .= html_print_table($table, true);
-
+	
 	if ($return) {
 		return $output;
 	}
@@ -441,11 +443,11 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table->data[0][1] .= html_print_input_text ('community', '', '', 25, 0, true);
 	$table->data[0][2] = '<strong>'.__('Starting OID').'</strong><br>';
 	$table->data[0][2] .= html_print_input_text ('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
-
+	
 	$table->data[0][3] = '<strong>' . __('Version') . '</strong>';
 	$table->data[0][3] .= html_print_select (array ('1' => 'v. 1', '2' => 'v. 2', '2c' => 'v. 2c', '3' => 'v. 3'), 'snmp_browser_version', '', 'checkSNMPVersion();', '', '', true, false, false, '');
 	$table->cellstyle[0][3] = 'width: 15px;';
-
+	
 	$table->data[0][4] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search"', true);
 	$table->cellstyle[0][4] = 'vertical-align: bottom;';
 	
@@ -471,7 +473,7 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table3->data[6][2] = '<b>'.__('Security level').'</b>';
 	$table3->data[6][3] = html_print_select(array('noAuthNoPriv' => __('Not auth and not privacy method'),
 		'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'snmp3_browser_security_level', '', '', '', '', true);
-
+	
 	// Search tools
 	$table2->width = '100%';
 	$table2->size = array ();
@@ -509,13 +511,13 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	else {
 		$output .= '<div id="snmp3_browser_options" style="display: none;">';
 	}
-
+	
 	$output .= ui_toggle(html_print_table($table3, true), __('SNMP v3 options'), '', true, true);
 	$output .= '</div>';
 	$output .=   '<div style="width: 100%; padding-top: 10px;">';
 	$output .=   ui_toggle(html_print_table($table2, true), __('Search options'), '', true, true);
 	$output .=   '</div>';
-
+	
 	// SNMP tree container
 	$output .=   '<div style="width: 100%; height: 100%; margin-top: 5px; position: relative;">';
 	$output .=   html_print_input_hidden ('search_count', 0, true);

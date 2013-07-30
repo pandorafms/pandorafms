@@ -170,7 +170,7 @@ class Networkmap {
 			$filename_img =  safe_url_extraclean (
 				$system->getConfig('attachment_store')) . "/networkmap_" .
 				$filter . "_" . $this->networkmap['font_size'];
-			$url_img =   "../attachment/networkmap_" .
+			$url_img = "../attachment/networkmap_" .
 				$filter . "_" . $this->networkmap['font_size'];
 			$filename_dot = safe_url_extraclean(
 				$system->getConfig("attachment_store")) . "/networkmap_" . $filter;

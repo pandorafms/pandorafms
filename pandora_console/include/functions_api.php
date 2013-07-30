@@ -266,7 +266,9 @@ function api_get_agent_module_name_last_value($agentName, $moduleName, $other = 
 
 function api_get_module_last_value($idAgentModule, $trash1, $other = ';', $returnType)
 {
-	$sql = sprintf('SELECT datos FROM tagente_estado WHERE id_agente_modulo = %d', $idAgentModule);
+	$sql = sprintf('SELECT datos
+		FROM tagente_estado
+		WHERE id_agente_modulo = %d', $idAgentModule);
 	$value = db_get_value_sql($sql);
 	if ($value === false) {
 		switch ($other['type']) {
@@ -330,16 +332,16 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 		$returnReplace = ' ';
 		$fields = false;
 	}
-
+	
 	/** NOTE: if you want to add an output field, you have to add it to;
-	    1. $master_fields (field name)
-	    2. one of following field_column_mapping array (a pair of field name and corresponding column designation) 
-
-	    e.g. To add a new field named 'agent_NEWFIELD' that comes from tagente's COLUMN_X , you have to add;
-	     1. "agent_NEW_FIELD"  to $master_fields
-	     2. "'agent_NEW_FIELD' => 'agent_NEWFIELD as COLUMN_X'"  to $agent_field_column_mapping
-         **/
-
+		1. $master_fields (field name)
+		2. one of following field_column_mapping array (a pair of field name and corresponding column designation) 
+		
+		e.g. To add a new field named 'agent_NEWFIELD' that comes from tagente's COLUMN_X , you have to add;
+		1. "agent_NEW_FIELD"  to $master_fields
+		2. "'agent_NEW_FIELD' => 'agent_NEWFIELD as COLUMN_X'"  to $agent_field_column_mapping
+		**/
+	
 	/* all of output field names */
 	$master_fields = array(
 		'type_row',
@@ -471,209 +473,204 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 		'alert_templates_field3',
 		'alert_actions_field3',
 		'alert_templates_id_group',
-		'alert_actions_id_group'
-	);
-
+		'alert_actions_id_group');
+	
 	/* agent related field mappings (output field => column designation for 'tagente') */
-
+	
 	$agent_field_column_mapping = array(
-	 /* agent_id is not in this list (because it is mandatory) */
-	 /* agent_id_group is not in this list  */
-	 'agent_name' => 'nombre as agent_name',
-	 'agent_direction' => 'direccion as agent_direction',
-	 'agent_comentary' => 'comentarios as agent_comentary',
-	 'agent_last_contant' => 'ultimo_contacto as agent_last_contant',
-	 'agent_mode' => 'modo as agent_mode',
-	 'agent_interval' => 'intervalo as agent_interval',
-	 'agent_id_os' => 'id_os as agent_id_os',
-	 'agent_os_version' => 'os_version as agent_os_version',
-	 'agent_version' => 'agent_version as agent_version',
-	 'agent_last_remote_contact' => 'ultimo_contacto_remoto as agent_last_remote_contact',
-	 'agent_disabled' => 'disabled as agent_disabled',
-	 'agent_id_parent' => 'id_parent as agent_id_parent',
-	 'agent_custom_id' => 'custom_id as agent_custom_id',
-	 'agent_server_name' => 'server_name as agent_server_name',
-	 'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection',
-	);
-
+		/* agent_id is not in this list (because it is mandatory) */
+		/* agent_id_group is not in this list  */
+		'agent_name' => 'nombre as agent_name',
+		'agent_direction' => 'direccion as agent_direction',
+		'agent_comentary' => 'comentarios as agent_comentary',
+		'agent_last_contant' => 'ultimo_contacto as agent_last_contant',
+		'agent_mode' => 'modo as agent_mode',
+		'agent_interval' => 'intervalo as agent_interval',
+		'agent_id_os' => 'id_os as agent_id_os',
+		'agent_os_version' => 'os_version as agent_os_version',
+		'agent_version' => 'agent_version as agent_version',
+		'agent_last_remote_contact' => 'ultimo_contacto_remoto as agent_last_remote_contact',
+		'agent_disabled' => 'disabled as agent_disabled',
+		'agent_id_parent' => 'id_parent as agent_id_parent',
+		'agent_custom_id' => 'custom_id as agent_custom_id',
+		'agent_server_name' => 'server_name as agent_server_name',
+		'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection');
+	
 	/* module related field mappings 1/2 (output field => column for 'tagente_modulo') */
-
+	
 	$module_field_column_mampping = array(
-	 /* 'module_id_agent_modulo (id_agente_modulo) is not in this list */
-	 'module_id_agent' => 'id_agente as module_id_agent',
-	 'module_id_module_type' => 'id_tipo_modulo as module_id_module_type',
-	 'module_description' => 'descripcion as module_description',
-	 'module_name' => 'nombre as module_name',
-	 'module_max' => 'max as module_max',
-	 'module_min' => 'min as module_min',
-	 'module_interval' => 'module_interval',
-	 'module_tcp_port' => 'tcp_port as module_tcp_port',
-	 'module_tcp_send' => 'tcp_send as module_tcp_send',
-	 'module_tcp_rcv' => 'tcp_rcv as module_tcp_rcv',
-	 'module_snmp_community' => 'snmp_community as module_snmp_community',
-	 'module_snmp_oid' => 'snmp_oid as module_snmp_oid',
-	 'module_ip_target' => 'ip_target as module_ip_target',
-	 'module_id_module_group' => 'id_module_group as module_id_module_group',
-	 'module_flag' => 'flag as module_flag',
-	 'module_id_module' => 'id_modulo as module_id_module',
-	 'module_disabled' => 'disabled as module_disabled',
-	 'module_id_export' => 'id_export as module_id_export',
-	 'module_plugin_user' => 'plugin_user as module_plugin_user',
-	 'module_plugin_pass' => 'plugin_pass as module_plugin_pass',
-	 'module_plugin_parameter' => 'plugin_parameter as module_plugin_parameter',
-	 'module_id_plugin' => 'id_plugin as module_id_plugin',
-	 'module_post_process' => 'post_process as module_post_process',
-	 'module_prediction_module' => 'prediction_module as module_prediction_module',
-	 'module_max_timeout' => 'max_timeout as module_max_timeout',
-	 'module_max_retries' => 'max_retries as module_max_retries',
-	 'module_custom_id' => 'custom_id as module_custom_id',
-	 'module_history_data' => 'history_data as module_history_data',
-	 'module_min_warning' => 'min_warning as module_min_warning',
-	 'module_max_warning' => 'max_warning as module_max_warning',
-	 'module_str_warning' => 'str_warning as module_str_warning',
-	 'module_min_critical' => 'min_critical as module_min_critical',
-	 'module_max_critical' => 'max_critical as module_max_critical',
-	 'module_str_critical' => 'str_critical as module_str_critical',
-	 'module_min_ff_event' => 'min_ff_event as module_min_ff_event',
-	 'module_delete_pending' => 'delete_pending as module_delete_pending',
-	);
-
+		/* 'module_id_agent_modulo (id_agente_modulo) is not in this list */
+		'module_id_agent' => 'id_agente as module_id_agent',
+		'module_id_module_type' => 'id_tipo_modulo as module_id_module_type',
+		'module_description' => 'descripcion as module_description',
+		'module_name' => 'nombre as module_name',
+		'module_max' => 'max as module_max',
+		'module_min' => 'min as module_min',
+		'module_interval' => 'module_interval',
+		'module_tcp_port' => 'tcp_port as module_tcp_port',
+		'module_tcp_send' => 'tcp_send as module_tcp_send',
+		'module_tcp_rcv' => 'tcp_rcv as module_tcp_rcv',
+		'module_snmp_community' => 'snmp_community as module_snmp_community',
+		'module_snmp_oid' => 'snmp_oid as module_snmp_oid',
+		'module_ip_target' => 'ip_target as module_ip_target',
+		'module_id_module_group' => 'id_module_group as module_id_module_group',
+		'module_flag' => 'flag as module_flag',
+		'module_id_module' => 'id_modulo as module_id_module',
+		'module_disabled' => 'disabled as module_disabled',
+		'module_id_export' => 'id_export as module_id_export',
+		'module_plugin_user' => 'plugin_user as module_plugin_user',
+		'module_plugin_pass' => 'plugin_pass as module_plugin_pass',
+		'module_plugin_parameter' => 'plugin_parameter as module_plugin_parameter',
+		'module_id_plugin' => 'id_plugin as module_id_plugin',
+		'module_post_process' => 'post_process as module_post_process',
+		'module_prediction_module' => 'prediction_module as module_prediction_module',
+		'module_max_timeout' => 'max_timeout as module_max_timeout',
+		'module_max_retries' => 'max_retries as module_max_retries',
+		'module_custom_id' => 'custom_id as module_custom_id',
+		'module_history_data' => 'history_data as module_history_data',
+		'module_min_warning' => 'min_warning as module_min_warning',
+		'module_max_warning' => 'max_warning as module_max_warning',
+		'module_str_warning' => 'str_warning as module_str_warning',
+		'module_min_critical' => 'min_critical as module_min_critical',
+		'module_max_critical' => 'max_critical as module_max_critical',
+		'module_str_critical' => 'str_critical as module_str_critical',
+		'module_min_ff_event' => 'min_ff_event as module_min_ff_event',
+		'module_delete_pending' => 'delete_pending as module_delete_pending');
+	
 	/* module related field mappings 2/2 (output field => column for 'tagente_estado') */
-
+	
 	$estado_fields_to_columns_mapping = array(
-	 /* 'module_id_agent_modulo (id_agente_modulo) is not in this list */
-	 'module_id_agent_state' => 'id_agente_estado as module_id_agent_state',
-	 'module_data' => 'datos as module_data',
-	 'module_timestamp' => 'timestamp as module_timestamp',
-	 'module_state' => 'estado as module_state',
-	 'module_last_try' => 'last_try as module_last_try',
-	 'module_utimestamp' => 'utimestamp as module_utimestamp',
-	 'module_current_interval' => 'current_interval as module_current_interval',
-	 'module_running_by' => 'running_by as module_running_by',
-	 'module_last_execution_try' => 'last_execution_try as module_last_execution_try',
-	 'module_status_changes' => 'status_changes as module_status_changes',
-	 'module_last_status' => 'last_status as module_last_status',
-	);
-
+		/* 'module_id_agent_modulo (id_agente_modulo) is not in this list */
+		'module_id_agent_state' => 'id_agente_estado as module_id_agent_state',
+		'module_data' => 'datos as module_data',
+		'module_timestamp' => 'timestamp as module_timestamp',
+		'module_state' => 'estado as module_state',
+		'module_last_try' => 'last_try as module_last_try',
+		'module_utimestamp' => 'utimestamp as module_utimestamp',
+		'module_current_interval' => 'current_interval as module_current_interval',
+		'module_running_by' => 'running_by as module_running_by',
+		'module_last_execution_try' => 'last_execution_try as module_last_execution_try',
+		'module_status_changes' => 'status_changes as module_status_changes',
+		'module_last_status' => 'last_status as module_last_status');
+	
 	/* alert related field mappings (output field => column for 'talert_template_modules', ... ) */
-
+	
 	$alert_fields_to_columns_mapping = array(
-	 /*** 'alert_id_agent_module (id_agent_module) is not in this list ***/
-	 'alert_template_modules_id'  => 't1.id as alert_template_modules_id',
-	 'alert_id_alert_template' => 't1.id_alert_template as alert_id_alert_template',
-	 'alert_internal_counter' => 't1.internal_counter as alert_internal_counter',
-	 'alert_last_fired' => 't1.last_fired as alert_last_fired',
-	 'alert_last_reference' => 't1.last_reference as alert_last_reference',
-	 'alert_times_fired' => 't1.times_fired as alert_times_fired',
-	 'alert_disabled' => 't1.disabled as alert_disabled',
-	 'alert_force_execution' => 't1.force_execution as alert_force_execution',
-	 'alert_template_modules_priority' => 't1.priority as alert_template_modules_priority',
-
-	 'alert_templates_id'  => 't2.id as alert_templates_id',
-	 'alert_type' => 't2.type as alert_type',
-	 'alert_value' => 't2.value as alert_value',
-	 'alert_matches_value' => 't2.matches_value as alert_matches_value',
-	 'alert_max_value' => 't2.max_value as alert_max_value',
-	 'alert_min_value' => 't2.min_value as alert_min_value',
-	 'alert_time_threshold' => 't2.time_threshold as alert_time_threshold',
-	 'alert_max_alerts' => 't2.max_alerts as alert_max_alerts',
-	 'alert_min_alerts' => 't2.min_alerts as alert_min_alerts',
-	 'alert_time_from' => 't2.time_from as alert_time_from',
-	 'alert_time_to' => 't2.time_to as alert_time_to',
-	 'alert_monday' => 't2.monday as alert_monday',
-	 'alert_tuesday' => 't2.tuesday as alert_tuesday',
-	 'alert_wednesday' => 't2.wednesday as alert_wednesday',
-	 'alert_thursday' => 't2.thursday as alert_thursday',
-	 'alert_friday' => 't2.friday as alert_friday',
-	 'alert_saturday' => 't2.saturday as alert_saturday',
-	 'alert_sunday' => 't2.sunday as alert_sunday',
-	 'alert_templates_name' => 't2.name as alert_templates_name',
-	 'alert_templates_description' => 't2.description as alert_templates_description',
-	 'alert_templates_priority' => 't2.priority as alert_templates_priority',
-	 'alert_templates_id_group' => 't2.id_group as alert_templates_id_group',
-	 'alert_recovery_notify' => 't2.recovery_notify as alert_recovery_notify',
-	 'alert_field2_recovery' => 't2.field2_recovery as alert_field2_recovery',
-	 'alert_field3_recovery' => 't2.field3_recovery as alert_field3_recovery',
-	 'alert_templates_field1' => 't2.field1 as alert_templates_field1',
-	 'alert_templates_field2' => 't2.field2 as alert_templates_field2',
-	 'alert_templates_field3' => 't2.field3 as alert_templates_field3',
-
-	 'alert_template_module_actions_id' => 't3.id as alert_template_module_actions_id',
-	 'alert_id_alert_action' => 't3.id_alert_action as alert_id_alert_action',
-	 'alert_id_alert_template_module' => 't3.id_alert_template_module as alert_id_alert_template_module',
-	 'alert_fires_min' => 't3.fires_min as alert_fires_min',
-	 'alert_fires_max' => 't3.fires_max as alert_fires_max',
-
-	 'alert_actions_id'  => 't4.id as alert_actions_id',
-	 'alert_actions_name' => 't4.name as alert_actions_name',
-	 'alert_id_alert_command' => 't4.id_alert_command as alert_id_alert_command',
-	 'alert_actions_id_group' => 't4.id_group as alert_actions_id_group',
-	 'alert_actions_field1' => 't4.field1 as alert_actions_field1',
-	 'alert_actions_field2' => 't4.field2 as alert_actions_field2',
-	 'alert_actions_field3' => 't4.field3 as alert_actions_field3',
-
-	 'alert_command'  => 't5.command as alert_command',
-	 'alert_internal' => 't5.internal as alert_internal',
-	 'alert_commands_id'  => 't5.id as alert_commands_id',
-	 'alert_commands_name'	=> 't5.name as alert_commands_name',
-	 'alert_commands_description'  => 't5.description as alert_commands_description',
-	);
-
-
+		/*** 'alert_id_agent_module (id_agent_module) is not in this list ***/
+		'alert_template_modules_id'  => 't1.id as alert_template_modules_id',
+		'alert_id_alert_template' => 't1.id_alert_template as alert_id_alert_template',
+		'alert_internal_counter' => 't1.internal_counter as alert_internal_counter',
+		'alert_last_fired' => 't1.last_fired as alert_last_fired',
+		'alert_last_reference' => 't1.last_reference as alert_last_reference',
+		'alert_times_fired' => 't1.times_fired as alert_times_fired',
+		'alert_disabled' => 't1.disabled as alert_disabled',
+		'alert_force_execution' => 't1.force_execution as alert_force_execution',
+		'alert_template_modules_priority' => 't1.priority as alert_template_modules_priority',
+		
+		'alert_templates_id'  => 't2.id as alert_templates_id',
+		'alert_type' => 't2.type as alert_type',
+		'alert_value' => 't2.value as alert_value',
+		'alert_matches_value' => 't2.matches_value as alert_matches_value',
+		'alert_max_value' => 't2.max_value as alert_max_value',
+		'alert_min_value' => 't2.min_value as alert_min_value',
+		'alert_time_threshold' => 't2.time_threshold as alert_time_threshold',
+		'alert_max_alerts' => 't2.max_alerts as alert_max_alerts',
+		'alert_min_alerts' => 't2.min_alerts as alert_min_alerts',
+		'alert_time_from' => 't2.time_from as alert_time_from',
+		'alert_time_to' => 't2.time_to as alert_time_to',
+		'alert_monday' => 't2.monday as alert_monday',
+		'alert_tuesday' => 't2.tuesday as alert_tuesday',
+		'alert_wednesday' => 't2.wednesday as alert_wednesday',
+		'alert_thursday' => 't2.thursday as alert_thursday',
+		'alert_friday' => 't2.friday as alert_friday',
+		'alert_saturday' => 't2.saturday as alert_saturday',
+		'alert_sunday' => 't2.sunday as alert_sunday',
+		'alert_templates_name' => 't2.name as alert_templates_name',
+		'alert_templates_description' => 't2.description as alert_templates_description',
+		'alert_templates_priority' => 't2.priority as alert_templates_priority',
+		'alert_templates_id_group' => 't2.id_group as alert_templates_id_group',
+		'alert_recovery_notify' => 't2.recovery_notify as alert_recovery_notify',
+		'alert_field2_recovery' => 't2.field2_recovery as alert_field2_recovery',
+		'alert_field3_recovery' => 't2.field3_recovery as alert_field3_recovery',
+		'alert_templates_field1' => 't2.field1 as alert_templates_field1',
+		'alert_templates_field2' => 't2.field2 as alert_templates_field2',
+		'alert_templates_field3' => 't2.field3 as alert_templates_field3',
+		
+		'alert_template_module_actions_id' => 't3.id as alert_template_module_actions_id',
+		'alert_id_alert_action' => 't3.id_alert_action as alert_id_alert_action',
+		'alert_id_alert_template_module' => 't3.id_alert_template_module as alert_id_alert_template_module',
+		'alert_fires_min' => 't3.fires_min as alert_fires_min',
+		'alert_fires_max' => 't3.fires_max as alert_fires_max',
+		
+		'alert_actions_id'  => 't4.id as alert_actions_id',
+		'alert_actions_name' => 't4.name as alert_actions_name',
+		'alert_id_alert_command' => 't4.id_alert_command as alert_id_alert_command',
+		'alert_actions_id_group' => 't4.id_group as alert_actions_id_group',
+		'alert_actions_field1' => 't4.field1 as alert_actions_field1',
+		'alert_actions_field2' => 't4.field2 as alert_actions_field2',
+		'alert_actions_field3' => 't4.field3 as alert_actions_field3',
+		
+		'alert_command'  => 't5.command as alert_command',
+		'alert_internal' => 't5.internal as alert_internal',
+		'alert_commands_id'  => 't5.id as alert_commands_id',
+		'alert_commands_name'	=> 't5.name as alert_commands_name',
+		'alert_commands_description'  => 't5.description as alert_commands_description');
+	
+	
 	if ($fields == false) {
 		$fields = $master_fields;
 	}
-
+	
 	/** construct column list to query for tagente, tagente_modulo, tagente_estado and alert-related tables **/
 	{
 		$agent_additional_columns  = "";
 		$module_additional_columns = "";
 		$estado_additional_columns = "";
 		$alert_additional_columns  = "";
-
-		foreach( $fields as $fld ) {
-			if( array_key_exists ($fld, $agent_field_column_mapping ) ) {
+		
+		foreach ($fields as $fld ) {
+			if (array_key_exists ($fld, $agent_field_column_mapping ) ) {
 				$agent_additional_columns  .= (", " . $agent_field_column_mapping[$fld] );
 			}
-			if( array_key_exists ($fld, $module_field_column_mampping ) ) {
+			if (array_key_exists ($fld, $module_field_column_mampping ) ) {
 				$module_additional_columns .= (", " . $module_field_column_mampping[$fld]);
 			}
-			if( array_key_exists ($fld, $estado_fields_to_columns_mapping ) ) {
+			if (array_key_exists ($fld, $estado_fields_to_columns_mapping ) ) {
 				$estado_additional_columns .= (", " . $estado_fields_to_columns_mapping[$fld]);
 			}
-			if( array_key_exists ($fld, $alert_fields_to_columns_mapping ) ) {
+			if (array_key_exists ($fld, $alert_fields_to_columns_mapping ) ) {
 				$alert_additional_columns .= (", " . $alert_fields_to_columns_mapping[$fld]);
 			}
 		}
 	}
-
+	
 	$returnVar = array();
 	
-        $groups = db_get_all_rows_sql('SELECT id_grupo as group_id, nombre as group_name, parent as group_parent, disabled, custom_id FROM tgrupo');
+	$groups = db_get_all_rows_sql('SELECT id_grupo as group_id, nombre as group_name, parent as group_parent, disabled, custom_id FROM tgrupo');
 	if ($groups === false) $groups = array();
 	$groups = str_replace('\n', $returnReplace, $groups);
-
-	$agents = db_get_all_rows_sql('SELECT id_agente as agent_id, id_grupo as agent_id_group ' . $agent_additional_columns . ' FROM tagente');
+	
+	$agents = db_get_all_rows_sql('
+		SELECT id_agente AS agent_id, id_grupo AS agent_id_group ' . $agent_additional_columns . ' FROM tagente');
 	if ($agents === false) $agents = array();
 	$agents = str_replace('\n', $returnReplace, $agents);
-
+	
 	foreach ($groups as &$group) {
 		$group['type_row'] = 'group';
 		$returnVar[] = $group;
-
+		
 		foreach ($agents as $index => &$agent) {
 			if ($agent['agent_id_group'] == $group['group_id']) {
-
+				
 				$agent['type_row']  = 'agent';
 				$returnVar[] = $agent;
-
-				if( strlen($module_additional_columns) <= 0
-				    && strlen($estado_additional_columns) <= 0 
-				    && strlen($alert_additional_columns) <= 0 )
-				{
+				
+				if ( strlen($module_additional_columns) <= 0
+					&& strlen($estado_additional_columns) <= 0 
+					&& strlen($alert_additional_columns) <= 0 ) {
 					continue; /** SKIP collecting MODULES and ALERTS **/
 				}
-
+				
 				$modules = db_get_all_rows_sql('SELECT *
 					FROM (SELECT id_agente_modulo as module_id_agent_modulo ' .  $module_additional_columns . '
 							FROM tagente_modulo 
@@ -682,19 +679,18 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 							FROM tagente_estado
 							WHERE id_agente = ' . $agent['agent_id'] . ') AS t2
 						ON t1.module_id_agent_modulo = t2.module_id_agent_modulo');
-
+				
 				if ($modules === false) $modules = array();
 				$modules = str_replace('\n', $returnReplace, $modules);
-
+				
 				foreach ($modules as &$module) {
 					$module['type_row']  = 'module';
 					$returnVar[] = $module;
-
-					if( strlen($alert_additional_columns) <= 0 )
-					 {
+					
+					if ( strlen($alert_additional_columns) <= 0 ) {
 						continue;	/** SKIP collecting ALERTS info **/
 					}
-
+					
 					$alerts = db_get_all_rows_sql('SELECT t1.id_agent_module as alert_id_agent_module ' .  $alert_additional_columns . '
 						FROM (SELECT * FROM talert_template_modules
 							WHERE id_agent_module = ' . $module['module_id_agent_modulo'] . ') AS t1 
@@ -706,10 +702,10 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 							ON t3.id_alert_action = t4.id
 						LEFT JOIN talert_commands AS t5
 							ON t4.id_alert_command = t5.id');
-
+					
 					if ($alerts === false) $alerts = array();
 					$alerts = str_replace('\n', $returnReplace, $alerts);
-				
+					
 					foreach ($alerts as &$alert) {
 						$alert['type_row'] = 'alert';
 						$returnVar[] = $alert;
@@ -720,7 +716,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 		}
 	}
 	$data = array('type' => 'array', 'data' => $returnVar);
-
+	
 	$data['list_index'] = $fields;
 	
 	returnData($returnType, $data, $separator);
@@ -3713,7 +3709,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
  *  example:  
  * 
  *  api.php?op=set&op2=apply_policy&id=1
- *    
+ * 
  * @param $thrash3 Don't use
  */
 function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
@@ -3786,7 +3782,7 @@ function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
  *  example:  
  * 
  *  api.php?op=set&op2=apply_all_policies
- *    
+ * 
  * @param $thrash3 Don't use
  */
 function api_set_apply_all_policies($thrash1, $thrash2, $other, $thrash3) {

@@ -40,7 +40,7 @@ $graph = networkmap_generate_hash(__('Pandora FMS'), $group, $simple,
 	$font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen,
 	$pure, $id_networkmap, $show_snmp_modules, true, true,
 	$text_filter);
-html_debug_print($graph, true);
+
 networkmap_print_jsdata($graph);
 
 $zoom_default = file($config['homedir'] . '/images/zoom_default.svg');
@@ -75,25 +75,25 @@ echo '<div id="dinamic_networkmap"></div>';
 <style>
 
 .node {
-  stroke: #fff;
-  stroke-width: 1.5px;
+	stroke: #fff;
+	stroke-width: 1.5px;
 }
 
 .select_node {
-  stroke: #000;
-  stroke-width: 1.5px;
+	stroke: #000;
+	stroke-width: 1.5px;
 }
 
 .link {
-  stroke: #999;
-  stroke-opacity: 1;
-  stroke-width: 1;
+	stroke: #999;
+	stroke-opacity: 1;
+	stroke-width: 1;
 }
 
 .select_link {
-  stroke: #000;
-  stroke-opacity: 1;
-  stroke-width: 1;
+	stroke: #000;
+	stroke-opacity: 1;
+	stroke-width: 1;
 }
 
 </style>
@@ -104,29 +104,29 @@ var width = $("#dinamic_networkmap").width(),
 var color = d3.scale.category20();
 
 var force = d3.layout.force()
-    .charge(-60)
-    .linkDistance(20)
-    .friction(0.9)
-    //.gravity(0.2)
-    .size([width, height]);
+	.charge(-60)
+	.linkDistance(20)
+	.friction(0.9)
+	//.gravity(0.2)
+	.size([width, height]);
 
 var zoom_obj = d3.behavior.zoom();
 zoom_obj.scaleExtent([0.3, 3]).on("zoom", zoom);
 
 var svg = d3.select("#dinamic_networkmap").append("svg")
 	.attr("id", "dinamic_networkmap_svg")
-    .attr("width", width)
+	.attr("width", width)
 	.attr("height", height)
 	.attr("pointer-events", "all")
-    .call(zoom_obj)
-    .append('svg:g')
+	.call(zoom_obj)
+	.append('svg:g')
     
     
 ///Added default zoom buttom
 d3.select("#dinamic_networkmap svg")
-		.append("g")
-		.attr("id", "zoom_control");
-		
+	.append("g")
+	.attr("id", "zoom_control");
+
 zoom_default = $("#zoom_default").clone();
 $("#zoom_default").remove();
 
@@ -138,21 +138,21 @@ d3.select("#zoom_default")
 	.on("mouseout", out_zoom_default);
 
 force
-  .nodes(graph.nodes)
-  .links(graph.links)
-  .start();
+	.nodes(graph.nodes)
+	.links(graph.links)
+	.start();
 
 var link = svg.selectAll(".link")
-  .data(graph.links)
-  .enter().append("line")
-  .attr("id", function(d) {
+	.data(graph.links)
+	.enter().append("line")
+	.attr("id", function(d) {
 		var id_text = 'link_'
 			+ d.source.id
 			+ "_" + d.target.id;
 		
 		return id_text;
 	})
-  .attr("class", function(d) {
+	.attr("class", function(d) {
 		var class_text = 'link';
 		
 		class_text += " source_" + d.source.id;
@@ -162,24 +162,24 @@ var link = svg.selectAll(".link")
 	});
 
 var node = svg.selectAll(".node")
-  .data(graph.nodes)
-  .enter().append("circle")
-  .attr("id", function(d) { return "node_" + d.id})
-  .attr("tooltip", function(d) { return d.tooltip})
-  .attr("class", "node")
-  .attr("r", 5)
-  .style("fill", function(d) { return d.color; })
-  .on("mouseover", over)
-  .on("mouseout", out)
-  .on("mousedown", mousedown)
-  .on("mouseup", mouseup)
-  //.on("click", click)
-  .call(force.drag);
+	.data(graph.nodes)
+	.enter().append("circle")
+	.attr("id", function(d) { return "node_" + d.id})
+	.attr("tooltip", function(d) { return d.tooltip})
+	.attr("class", "node")
+	.attr("r", 5)
+	.style("fill", function(d) { return d.color; })
+	.on("mouseover", over)
+	.on("mouseout", out)
+	.on("mousedown", mousedown)
+	.on("mouseup", mouseup)
+	//.on("click", click)
+	.call(force.drag);
 
- svg.style("opacity", 1e-6)
-    .transition()
-      .duration(1000)
-      .style("opacity", 1);
+svg.style("opacity", 1e-6)
+	.transition()
+	.duration(1000)
+	.style("opacity", 1);
 
 force.on("tick", function() {
 link.attr("x1", function(d) { return d.source.x; })

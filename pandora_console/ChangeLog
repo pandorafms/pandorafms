@@ -1,3 +1,13 @@
+2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/networkmap.php, godmode/users/user_list.php,
+	include/javascript/pandora.js,
+	include/javascript/openlayers.pandora.js,
+	include/functions_snmp_browser.php, include/api.php,
+	include/functions_api.php, operation/snmpconsole/snmp_browser.php,
+	operation/agentes/networkmap.dinamic.php: improved the source code
+	style.
+
 2013-07-30  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_users.php

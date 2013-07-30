@@ -80,11 +80,11 @@ if ($correctLogin) {
 			// The extension API file must exist and the extension must be enabled
 			if (file_exists($extension_api_url) && !in_array($ext_name,extensions_get_disabled_extensions())) {
 				include_once($extension_api_url);
-				$function_name = 'apiextension_'.$op.'_'.$ext_function;
+				$function_name = 'apiextension_' . $op .'_' . $ext_function;
 			}
 		}
 		else {
-			$function_name = 'api_'.$op.'_'.$op2;
+			$function_name = 'api_' . $op . '_' . $op2;
 		}
 		
 		// Check if the function exists

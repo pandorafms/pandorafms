@@ -56,8 +56,10 @@ if (is_ajax()) {
 			$custom_action = urldecode (base64_decode ($custom_action));
 		}
 		
-		$oid = snmp_browser_get_oid ($target_ip, $community, $target_oid, $snmp_version,
-		                             $snmp3_auth_user, $snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass, $snmp3_privacy_method, $snmp3_privacy_pass);
+		$oid = snmp_browser_get_oid ($target_ip, $community,
+			$target_oid, $snmp_version, $snmp3_auth_user,
+			$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
+			$snmp3_privacy_method, $snmp3_privacy_pass);
 		snmp_browser_print_oid ($oid, $custom_action);
 		return;
 	}

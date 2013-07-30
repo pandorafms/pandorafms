@@ -1,3 +1,8 @@
+2013-07-30  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/reporting_builder.list_items.php: Add the
+	pure parameter to sort arrows in reporting view
+
 2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* ChangeLog: Fixes changelog.

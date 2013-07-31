@@ -208,6 +208,10 @@ $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
 		html_print_image("images/op_network.png", true, array ("title" => __('Topology view'))) .'</a>');
 
+$buttons['dinamic'] = array('active' => $activeTab == 'dinamic',
+	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=dinamic&amp;pure='.$pure.'">' . 
+		html_print_image("images/dynamic_network_icon.png", true, array ("title" => __('Dinamic view'))) .'</a>');
+
 
 $combolist = '<form name="query_sel" method="post" action="index.php?sec=network&sec2=operation/agentes/networkmap">';
 

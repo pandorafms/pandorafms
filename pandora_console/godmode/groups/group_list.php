@@ -137,20 +137,21 @@ if (($create_group) && (check_acl($config['id_user'], 0, "PM"))) {
 	$contact = (string) get_parameter ('contact');
 	$other = (string) get_parameter ('other');
 	$check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
-	
+	$propagate = (bool) get_parameter('propagate');
 	
 	/*Check if name field is empty*/
 	if ($name != "") {
 		if (!$check) {
 			$values = array(
 				'nombre' => $name,
-				'icon' => substr ($icon, 0, -4),
+				'icon' => empty($icon) ? '' : substr ($icon, 0, -4),
 				'parent' => $id_parent,
 				'disabled' => $alerts_disabled,
 				'custom_id' => $custom_id,
 				'id_skin' => $skin,
 				'description' => $description,
 				'contact' => $contact,
+				'propagate' => $propagate,
 				'other' => $other
 			);
 		
@@ -194,7 +195,7 @@ if ($update_group) {
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
 					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d, description = "%s", contact = "%s", other = "%s"
 					WHERE id_grupo = %d',
-					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $contact, $other, $id_group);
+					$name, empty($icon) ? '' : substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $contact, $other, $id_group);
 				break;
 			case "postgresql":
 			case "oracle":

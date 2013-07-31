@@ -167,7 +167,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		}
 		
 		// If there are any errors add imposible condition
-		if(in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL)) || TRUE) {
+		if(in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL))) {
 			$subQuery .= ' AND 1 = 0';
 		} 
 		else {

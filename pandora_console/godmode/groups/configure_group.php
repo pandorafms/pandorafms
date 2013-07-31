@@ -153,7 +153,7 @@ if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 	$table->data[9][1] = skins_print_select($config["id_user"], 'skin', $skin, '', __('None'), 0, true);
 }
 
-echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list">';
+echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list&pure=' . $config['pure'] . '">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_group) {
@@ -186,7 +186,7 @@ function icon_changed () {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action="ajax.php",
+				url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 				async: false,
 				timeout: 10000,
 				success: function (result) {
@@ -206,7 +206,7 @@ function parent_changed () {
 	jQuery.ajax ({
 		data: inputs.join ("&"),
 		type: 'GET',
-		url: action="ajax.php",
+		url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 		timeout: 10000,
 		dataType: 'json',
 		success: function (data) {
@@ -225,7 +225,7 @@ function parent_changed () {
 					jQuery.ajax ({
 						data: params.join ("&"),
 						type: 'POST',
-						url: action="ajax.php",
+						url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 						async: false,
 						timeout: 10000,
 						success: function (result) {

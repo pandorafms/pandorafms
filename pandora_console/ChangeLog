@@ -1,3 +1,16 @@
+2013-07-31  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_agents.php: Fix a if condition
+	broken for a previous test code
+
+	* godmode/groups/group_list.php: Fix propagate ACL 
+	field when create group
+
+	* godmode/groups/configure_group.php: Fixed pure parameter
+
+	* godmode/users/configure_user.php: Fixed autohidding of fields in 
+	user edition due return avoiding javascript code
+
 2013-07-31 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/agentes/networkmap.php: added dinamic tab.

@@ -2615,8 +2615,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	
 	$input_id_server_name = uniqid('server_'); //Default value
-	if (isset($parameters['input_id_server_id'])) {
-		$input_id_server_id = $parameters['input_id_server_id'];
+	if (isset($parameters['input_id_server_name'])) {
+		$input_id_server_name = $parameters['input_id_server_name'];
 	}
 	
 	

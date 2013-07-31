@@ -1,5 +1,14 @@
 2013-07-31 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/visual_console_builder.php: change the code
+	to show the tabs in metaconsole after create a new visualmap.
+	
+	* include/functions_ui.php: fixed into the function
+	"ui_print_agent_autocomplete_input" the parameter
+	"input_id_server_name" for metaconsole.
+
+2013-07-31 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_ui.php: reduced the char lenght of title in
 	the header for to avoid crash when have title with wide chars.
 

@@ -14,6 +14,7 @@
 
 // Login check
 global $config;
+global $statusProcessInDB;
 
 check_login ();
 
@@ -52,7 +53,9 @@ $refr = (int) get_parameter ('refr', $config['vc_refr']);
 
 
 //Save/Update data in DB
-$statusProcessInDB = null;
+global $statusProcessInDB;
+if (empty($statusProcessInDB))
+	$statusProcessInDB = null;
 switch ($activeTab) {
 	case 'data':
 		switch ($action) {
@@ -68,10 +71,12 @@ switch ($activeTab) {
 				$background = get_parameter('background');
 				$visualConsoleName = get_parameter('name');
 				
-				$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
+				$values = array('name' => $visualConsoleName,
+					'id_group' => $idGroup, 'background' => $background);
 				
 				// If the background is changed the size is reseted
-				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
+				$visualConsole = db_get_row_filter('tlayout',
+					array('id' => $idVisualConsole));
 				$background_now = $visualConsole['background'];
 				if ($background_now != $background && $background) {
 					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
@@ -96,27 +101,33 @@ switch ($activeTab) {
 						break;
 					
 					case 'save':
-						if ($values['name'] != "" && $values['background'])
-							$idVisualConsole = db_process_sql_insert('tlayout', $values);
-						else
-							$idVisualConsole = false;
-						
-						if ($idVisualConsole !== false) {
-							db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
-							$action = 'edit';
-							$statusProcessInDB = array('flag' => true, 'message' => ui_print_success_message(__('Successfully created.'), '', true));
-						}
-						else {
-							db_pandora_audit( "Visual console builder", "Fail try to create visual console");
-							$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__('Could not be created.'), '', true));
+						if (!defined('METACONSOLE')) {
+							if ($values['name'] != "" && $values['background'])
+								$idVisualConsole = db_process_sql_insert('tlayout', $values);
+							else
+								$idVisualConsole = false;
+							
+							if ($idVisualConsole !== false) {
+								db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
+								$action = 'edit';
+								$statusProcessInDB = array('flag' => true,
+									'message' => ui_print_success_message(__('Successfully created.'), '', true));
+							}
+							else {
+								db_pandora_audit( "Visual console builder", "Fail try to create visual console");
+								$statusProcessInDB = array('flag' => false,
+									'message' => ui_print_error_message(__('Could not be created.'), '', true));
+							}
 						}
 						break;
 				}
-				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
+				$visualConsole = db_get_row_filter('tlayout',
+					array('id' => $idVisualConsole));
 				break;
 			
 			case 'edit':
-				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
+				$visualConsole = db_get_row_filter('tlayout',
+					array('id' => $idVisualConsole));
 				$visualConsoleName = $visualConsole['name'];
 				$idGroup = $visualConsole['id_group'];
 				$background = $visualConsole['background'];

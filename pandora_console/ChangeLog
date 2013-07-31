@@ -1,3 +1,10 @@
+2013-07-31 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/networkmap.php: added dinamic tab.
+	
+	* images/dynamic_network_icon.png: added a Carla's icon for the
+	dinamic tab.
+
 2013-07-30  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/reporting_builder.list_items.php: Add the

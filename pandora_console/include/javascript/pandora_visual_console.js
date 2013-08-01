@@ -25,6 +25,11 @@ function draw_line (line, id_div, editor) {
 		selector = '';
 	}
 	
+	//Check if the global var resize_map is defined
+	if (typeof(resize_map) == 'undefined') {
+		resize_map = 0;
+	}
+	
 	div = document.getElementById (id_div);
 	brush = new jsGraphics (div);
 	brush.setStroke (1);

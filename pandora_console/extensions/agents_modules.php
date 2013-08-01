@@ -350,7 +350,7 @@ function mainAgentsModules() {
 				$.each($('.th_class_module_r'), function (i, elem) {
 					id = $(elem).attr('id').replace('th_module_r_', '');
 					$(\"#th_module_r_\" + id).height(($(\"#div_module_r_\" + id).width() + 10) + 'px');
-					console.log($(\"#div_module_r_\" + id).width());
+					
 					//$(\"#div_module_r_\" + id).css('margin-top', (max_width - $(\"#div_module_r_\" + id).width()) + 'px');
 					$(\"#div_module_r_\" + id).css('margin-top', (max_width - 20) + 'px');
 					$(\"#div_module_r_\" + id).show();

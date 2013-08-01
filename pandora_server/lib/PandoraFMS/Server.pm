@@ -29,37 +29,31 @@ use lib '/usr/lib/perl5';
 use PandoraFMS::DB;
 use PandoraFMS::Core;
 
-# defined in PandoraFMS::Core.pm
+# Defined in PandoraFMS::Core.pm
 our @ServerSuffixes;
 
 ########################################################################################
 # Server class constructor.
 ########################################################################################
 sub new ($$$;$) {
-    my $class = shift;
-    my $self = {
-        _pa_config => shift,
-        _server_id => 0,
-        _server_type => shift,
-        _dbh => shift,
-        _num_threads => 1,
-        _threads => [],
-        _queue_size => 0,
+	my $class = shift;
+	my $self = {
+		_pa_config => shift,
+		_server_id => 0,
+		_server_type => shift,
+		_dbh => shift,
+		_num_threads => 1,
+		_threads => [],
+		_queue_size => 0,
 		_errstr => ''
-    };
-
+	};
+	
 	# Share variables that may be set from different threads
 	share ($self->{'_queue_size'});
 	share ($self->{'_errstr'});
-
-	# Thread kill signal handler
-	#$SIG{'KILL'} = sub {
-    #	threads->exit() if threads->can('exit');
-    #	exit();
-	#};
-
-    bless $self, $class;
-    return $self;
+		
+	bless $self, $class;
+	return $self;
 }
 
 ########################################################################################
@@ -206,6 +200,12 @@ sub checkThreads ($) {
 	
 	foreach my $tid (@{$self->{'_threads'}}) {
 		my $thr = threads->object ($tid);
+		
+		# May happen when the server is killed
+		if (! defined ($thr)) {
+			next;
+		}
+		
 		return 1 unless $thr->can ('is_running');
 		return 0 unless $thr->is_running ();
 	}
@@ -275,17 +275,12 @@ sub stop ($) {
 		                       0, $self->{'_server_type'}, 0, 0);
 	};
 
-	# Kill server threads
+	# Detach server threads
 	foreach my $tid (@{$self->{'_threads'}}) {
 		my $thr = threads->object($tid);
 		next unless defined ($thr);
 
-		# A kill method might not be available
-		#if ($thr->can('kill')) {
-    	#	$thr->kill('KILL')->detach();
-    	#} else {
-    		$thr->detach();
-    	#}
+   		$thr->detach();
 	}
 }
 

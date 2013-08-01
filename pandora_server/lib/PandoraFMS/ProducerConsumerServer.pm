@@ -31,8 +31,11 @@ use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::Server;
 
-# inherits from PandoraFMS::Server
+# Inherits from PandoraFMS::Server
 our @ISA = qw(PandoraFMS::Server);
+
+# Tells the producer and consumers to keep running
+my $RUN :shared;
 
 ########################################################################################
 # ProducerConsumerServer class constructor.
@@ -48,6 +51,9 @@ sub new ($$$$$;$) {
 	$self->{'_producer'} = $producer;
 	$self->{'_consumer'} = $consumer;
 
+	# Run!
+	$RUN = 1;
+	
     bless $self, $class;
     return $self;
 }
@@ -101,21 +107,19 @@ sub run ($$$$$) {
 sub data_producer ($$$$$) {
 	my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
 	my $pa_config = $self->getConfig ();
+	my $dbh;
 
 	eval {
 		# Connect to the DB
-		my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
+		$dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
 							  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
 		$self->setDBH ($dbh);
 
-		while (1) {
+		while ($RUN == 1) {
 
 			# Get pending tasks
 			my @tasks = &{$self->{'_producer'}}($self);
 			
-			# Update queue size for statistics
-			$self->setQueueSize (scalar @{$task_queue});
-
 			foreach my $task (@tasks) {
 				$sem->down;
 				
@@ -132,6 +136,9 @@ sub data_producer ($$$$$) {
 				$sem->up;
 			}
 
+			# Update queue size for statistics
+			$self->setQueueSize (scalar @{$task_queue});
+
 			threads->yield;
 			sleep ($pa_config->{'server_threshold'});
 		}
@@ -140,6 +147,9 @@ sub data_producer ($$$$$) {
 	if ($@) {
 		$self->setErrStr ($@);
 	}
+	
+	$task_sem->up($self->getNumThreads ());
+	db_disconnect ($dbh);
 }
 
 ###############################################################################
@@ -149,13 +159,14 @@ sub data_consumer ($$$$$) {
 	my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
 	my $pa_config = $self->getConfig ();
 
+	my $dbh;
 	eval {
 		# Connect to the DB
-		my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
+		$dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
 							  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
 		$self->setDBH ($dbh);
 
-		while (1) {
+		while ($RUN == 1) {
 
 			# Wait for data
 			$task_sem->down;
@@ -164,6 +175,9 @@ sub data_consumer ($$$$$) {
 			my $task = shift (@{$task_queue});
 			$sem->up;
 
+			# The consumer was waiting for data when the producer exited
+			last if ($RUN == 0);
+			
 			# Execute task
 			&{$self->{'_consumer'}}($self, $task);
 
@@ -179,6 +193,17 @@ sub data_consumer ($$$$$) {
 	if ($@) {
 		$self->setErrStr ($@);
 	}
+
+	db_disconnect ($dbh);
+}
+
+###############################################################################
+# Clean-up when the server is destroyed.
+###############################################################################
+sub DESTROY {
+	my $self = shift;
+	
+	$RUN = 0;
 }
 
 1;

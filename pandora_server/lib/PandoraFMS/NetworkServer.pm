@@ -42,9 +42,8 @@ our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 # Global variables
 my @TaskQueue :shared;
 my %PendingTasks :shared;
-my $Sem :shared = new Thread::Semaphore;
-my $TaskSem :shared = new Thread::Semaphore (0);
-my $SNMPSem :shared = new Thread::Semaphore (1);
+my $Sem :shared;
+my $TaskSem :shared;
 
 ########################################################################################
 # Network Server class constructor.
@@ -60,6 +59,12 @@ sub new ($$$) {
 		return undef;
 	}
 
+	# Initialize semaphores and queues
+	@TaskQueue = ();
+	%PendingTasks = ();
+	$Sem = Thread::Semaphore->new;
+	$TaskSem = Thread::Semaphore->new (0);
+	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 1, \&PandoraFMS::NetworkServer::data_producer, \&PandoraFMS::NetworkServer::data_consumer, $dbh);
 

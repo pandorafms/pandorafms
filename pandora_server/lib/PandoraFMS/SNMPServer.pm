@@ -38,6 +38,9 @@ use PandoraFMS::Server;
 # Inherits from PandoraFMS::Server
 our @ISA = qw(PandoraFMS::Server);
 
+# Tells the server to keep running
+my $RUN :shared;
+
 ########################################################################################
 # SNMP Server class constructor.
 ########################################################################################
@@ -83,6 +86,9 @@ sub new ($$;$) {
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 2, $dbh);
 
+	# Run!
+	$RUN = 1;
+
     bless $self, $class;
     return $self;
 }
@@ -105,9 +111,10 @@ sub pandora_snmptrapd {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
+	my $dbh;
 	eval {
 		# Connect to the DB
-		my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'},
+		$dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'},
 							  $pa_config->{'dbport'}, $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
 		$self->setDBH ($dbh);
 
@@ -137,7 +144,7 @@ sub pandora_snmptrapd {
 		readline SNMPLOGFILE for (1..$last_line);
 
 		# Main loop
-		while (1) {
+		while ($RUN == 1) {
 			while (my $line = <SNMPLOGFILE>) {
 				$last_line++;
 				$last_size = (stat ($log_file))[7];
@@ -215,6 +222,8 @@ sub pandora_snmptrapd {
 	if ($@) {
 		$self->setErrStr ($@);
 	}
+
+	db_disconnect ($dbh);
 }
 
 ########################################################################################
@@ -254,6 +263,15 @@ sub matches_filter ($$$) {
 	}
 	
 	return 0;
+}
+
+###############################################################################
+# Clean-up when the server is destroyed.
+###############################################################################
+sub DESTROY {
+	my $self = shift;
+	
+	$RUN = 0;
 }
 
 1;

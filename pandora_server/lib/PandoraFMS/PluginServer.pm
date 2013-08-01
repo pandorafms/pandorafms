@@ -41,8 +41,8 @@ our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 # Global variables
 my @TaskQueue :shared;
 my %PendingTasks :shared;
-my $Sem :shared = Thread::Semaphore->new;
-my $TaskSem :shared = Thread::Semaphore->new (0);
+my $Sem :shared;
+my $TaskSem :shared;
 
 ########################################################################################
 # Plugin Server class constructor.
@@ -58,7 +58,13 @@ sub new ($$;$) {
 		print_message ($config, ' [E] ' . $config->{'plugin_exec'} . ' not found. Plugin Server not started.', 1);
 		return undef;
 	}
-		
+
+	# Initialize semaphores and queues
+	@TaskQueue = ();
+	%PendingTasks = ();
+	$Sem = Thread::Semaphore->new;
+	$TaskSem = Thread::Semaphore->new (0);
+			
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 4, \&PandoraFMS::PluginServer::data_producer, \&PandoraFMS::PluginServer::data_consumer, $dbh);
 

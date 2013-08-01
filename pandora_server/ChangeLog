@@ -1,3 +1,17 @@
+2013-08-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm,
+	  lib/PandoraFMS/DataServer.pm,
+	  lib/PandoraFMS/SNMPServer.pm,
+	  lib/PandoraFMS/Server.pm,
+	  lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/WMIServer.pm,
+	  lib/PandoraFMS/PluginServer.pm,
+	  lib/PandoraFMS/ProducerConsumerServer.pm,
+	  lib/PandoraFMS/PredictionServer.pm: Merged from trunk. Added clean-up
+	  code to avoid resource leaks when there is a crash and the server has
+	  to auto-restart.
+
 2013-07-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Merged from trunk. Fixed some

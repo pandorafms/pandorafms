@@ -45,8 +45,8 @@ our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 # Global variables
 my @TaskQueue :shared;
 my %PendingTasks :shared;
-my $Sem :shared = Thread::Semaphore->new;
-my $TaskSem :shared = Thread::Semaphore->new (0);
+my $Sem :shared;
+my $TaskSem :shared;
 
 ########################################################################################
 # Recon Server class constructor.
@@ -61,6 +61,12 @@ sub new ($$$$$$) {
 		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by Pandora FMS Recon Server not found.", 1);
 		return undef;
 	}
+
+	# Initialize semaphores and queues
+	@TaskQueue = ();
+	%PendingTasks = ();
+	$Sem = Thread::Semaphore->new;
+	$TaskSem = Thread::Semaphore->new (0);
 	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 3, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);
@@ -155,10 +161,10 @@ sub data_consumer ($$) {
 		# Get agent address
 		my $addr = $host->addr();
 		next unless ($addr ne '0');
-
+		
 		# Update the recon task or break if it does not exist anymore
 		last if (update_recon_task ($dbh, $task_id, ceil ($progress / ($total_up / 100))) eq '0E0');
-
+		
 		# Resolve hostnames
 		my $host_name = undef;
 		if ($task->{'resolve_names'} == 1){
@@ -261,7 +267,7 @@ sub data_consumer ($$) {
 					                                  $host_name, $addr, $task->{'id_group'},
 									  $parent_id, $id_os, '', 300, $dbh);
 		}
-
+		
 		# Check agent creation
 		if ($agent_id <= 0) {
 			logger($pa_config, "Error creating agent '$host_name'.", 3);
@@ -285,14 +291,14 @@ sub data_consumer ($$) {
 
 		# Create network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
-
+		
 		# Generate an event
 		pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
 		               $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
 		
 		$added_hosts .= "$addr ";
 	}
-
+	
 	# Create an incident with totals
 	if ($added_hosts ne '' && $task->{'create_incident'} == 1) {
 		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " ($added_hosts) new hosts were detected by Pandora FMS Recon Server running on [" . $pa_config->{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
@@ -483,6 +489,8 @@ sub exec_recon_script ($$$) {
 	# Get recon plugin data	
 	my $script = get_db_single_row ($dbh, 'SELECT * FROM trecon_script WHERE id_recon_script = ?', $task->{'id_recon_script'});
 	return -1 unless defined ($script);
+	
+	logger($pa_config, 'Executing recon script ' . safe_output($script->{'name'}), 10);
 	
 	my $command = safe_output($script->{'script'});
 	my $field1 = safe_output($task->{'field1'}); 

@@ -41,8 +41,8 @@ our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 # Global variables
 my @TaskQueue :shared;
 my %PendingTasks :shared;
-my $Sem :shared = Thread::Semaphore->new;
-my $TaskSem :shared = Thread::Semaphore->new (0);
+my $Sem :shared;
+my $TaskSem :shared;
 
 ########################################################################################
 # NetworkServer class constructor.
@@ -58,7 +58,13 @@ sub new ($$;$) {
 		print_message ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 1);
 		return undef;
 	}
-		
+
+	# Initialize semaphores and queues
+	@TaskQueue = ();
+	%PendingTasks = ();
+	$Sem = Thread::Semaphore->new;
+	$TaskSem = Thread::Semaphore->new (0);
+
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 6, \&PandoraFMS::WMIServer::data_producer, \&PandoraFMS::WMIServer::data_consumer, $dbh);
 
@@ -132,10 +138,10 @@ sub data_producer ($) {
 sub data_consumer ($$) {
 	my ($self, $module_id) = @_;
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
-
+	
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $module_id);
 	return unless defined $module;
-
+	
 	# Build command to execute
 	my $wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"%"' . $module->{'plugin_pass'} . '"';
 

@@ -5231,4 +5231,61 @@ function api_get_pandora_servers($trash1, $trash2, $other, $returnType) {
 
 }
 
+/**
+ * Enable/Disable agent given an id
+ * 
+ * @param string $id String Agent ID
+ * @param $thrash2 not used.
+ * @param array $other it's array, $other as param is <enable/disable value> in this order and separator char
+ *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ * 
+ * 	example 1 (Enable agent 'example_id') 
+ * 
+ *  api.php?op=set&op2=enable_disable_agent&id=example_id&other=0&other_mode=url_encode_separator_|
+ *  
+ * 	example 2 (Disable agent 'example_id')
+ * 
+ *  api.php?op=set&op2=enable_disable_agent&id=example_id16&other=1&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+
+function api_set_enable_disable_agent ($id, $thrash2, $other, $thrash3) {
+	
+	if ($id == ""){
+		returnError('error_enable_disable_agent', 'Error enable/disable agent. Id_agent cannot be left blank.');
+		return;
+	}
+	
+	
+	if ($other['data'][0] != "0" and $other['data'][0] != "1"){
+		returnError('error_enable_disable_agent', 'Error enable/disable agent. Enable/disable value cannot be left blank.');
+		return;
+	}
+	
+	if (agents_get_name($id) == false){
+		returnError('error_enable_disable_agent', 'Error enable/disable agent. The agent doesn\'t exists.');
+		return;
+	}
+
+	$disabled = ( $other['data'][0] ? 0 : 1 );
+	
+	$result = db_process_sql_update('tagente', array('disabled' => $disabled), array('id_agente' => $id));
+	
+	if (is_error($result)) {
+		// TODO: Improve the error returning more info
+		returnError('error_enable_disable_agent', __('Error in agent enabling/disabling.'));
+	}
+	else {
+		if ($disabled == 0){
+			returnData('string', array('type' => 'string', 'data' => __('Enabled agent.')));
+		}
+		else {
+			returnData('string', array('type' => 'string', 'data' => __('Disabled agent.')));			
+		}
+	}
+}
+
+?>
 ?>

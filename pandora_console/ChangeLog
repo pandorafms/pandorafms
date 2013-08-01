@@ -1,3 +1,10 @@
+2013-08-01 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/functions_api.php: Added new API function
+	'api_set_enable_disable_agent'.
+
+	MERGED FROM TRUNK.
+
 2013-07-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor_prediction.php,

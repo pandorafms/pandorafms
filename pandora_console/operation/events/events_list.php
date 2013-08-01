@@ -968,8 +968,7 @@ function click_button_add_tag(what_button) {
 			select_destiny_empty = select_without_tag_empty;
 		}
 		
-		console.log($(this).val());
-
+		
 		without_val = $(this).val();
 		if(without_val == null) {
 			next;

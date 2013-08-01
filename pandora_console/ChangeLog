@@ -1,5 +1,13 @@
 2013-08-01 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/events/events_list.php, extensions/agents_modules.php:
+	removed the debug trace javascript code.
+	
+	* godmode/reporting/visual_console_builder.editor.js: fixed the
+	add fake lines and prevent the remove lines.
+
+2013-08-01 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/pandora_visual_console.js: fixed the javascript
 	error when sometimes there is not a new lines.
 

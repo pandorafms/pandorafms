@@ -1196,6 +1196,8 @@ function createItem(type, values, id_data) {
 			"node_begin":  values['parent'],
 			"node_end": id_data,
 			"color": visual_map_get_color_line_status(id_data) };
+		
+		
 		lines.push(line);
 		
 		refresh_lines(lines, 'background', true);
@@ -1356,7 +1358,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 					found = true;
 					if (values['parent'] == 0) {
 						//Erased the line
-						lines.splice(i);
+						lines.splice(i, 1);
 						end_foreach = true;
 					}
 					else {
@@ -1370,12 +1372,17 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				}
 			});
 			
-			if (!found) {
-				var line = {"id": idElement,
-					"node_begin":  values['parent'],
-					"node_end": idElement,
-					"color": visual_map_get_color_line_status(idElement) };
-				lines.push(line);
+			if (typeof(values['parent']) != 'undefined') {
+				if (!found) {
+					var line = {"id": idElement,
+						"node_begin":  values['parent'],
+						"node_end": idElement,
+						"color": visual_map_get_color_line_status(idElement) };
+					
+					
+					
+					lines.push(line);
+				}
 			}
 			
 			refresh_lines(lines, 'background', true);
@@ -1499,10 +1506,15 @@ function deleteDB(idElement) {
 					$("#parent > option[value=" + idElement + "]").remove();
 					
 					
-					
 					jQuery.each(lines, function(i, line) {
-						if ((line['id'] == idElement) || (line['node_begin'] == idElement)) {
-							lines.splice(i);
+						if (typeof(line) == 'undefined') {
+							return; //Continue
+						}
+						
+						if ((line['id'] == idElement)
+							|| (line['node_begin'] == idElement)) {
+							
+							lines.splice(i, 1);
 						}
 					});
 					refresh_lines(lines, 'background', true);

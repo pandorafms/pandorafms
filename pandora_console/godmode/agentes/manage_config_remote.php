@@ -76,18 +76,18 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 
 		// Source
 		$id_origen = get_parameter ("origen");
-
+		
 		// Security check here
 		if (!users_access_to_agent ($id_origen)) {
 			db_pandora_audit("ACL Violation", "Trying to forge a source agent in remote config tool");
 			require ("general/noaccess.php");
 			exit;
-		}		
-
+		}
+		
 		// Copy files
 		for ($a=0;$a <count($destino); $a++){ 
 			// For every agent in destination
-
+			
 			//Security check here
 			$id_agente = $destino[$a];
 			
@@ -96,15 +96,15 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 				db_pandora_audit("ACL Violation", "Trying to forge a source agent in remote config tool");
 				require ("general/noaccess.php");
 				exit;
-			}			
-
-			$agent_name_src = agents_get_name($id_origen, "");
-			$agent_name_dst = agents_get_name($id_agente, "");
+			}
+			
+			$agent_name_src = io_safe_output(agents_get_name($id_origen, ""));
+			$agent_name_dst = io_safe_output(agents_get_name($id_agente, ""));
 			echo "<br><br>".__('Making copy of configuration file for')." [<b>".$agent_name_src."</b>] ".__('to')." [<b>".$agent_name_dst."</b>]";
 			
 			$agent_md5_src = md5($agent_name_src);
 			$agent_md5_dst = md5($agent_name_dst);
-	
+			
 			$copy_md5 = copy  ( $config["remote_config"]."/md5/".$agent_md5_src.".md5", $config["remote_config"]."/md5/".$agent_md5_dst.".md5" );
 			$copy_conf = copy  ( $config["remote_config"]."/conf/".$agent_md5_src.".conf", $config["remote_config"]."/conf/".$agent_md5_dst.".conf" );			
 			

@@ -1747,9 +1747,11 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		// Delete remote configuration
 		if (isset ($config["remote_config"])) {
-			$agent_md5 = md5 ($agent_name, FALSE);
-			
-			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
+			if (config_agents_has_remote_configuration($id_agent)) {
+				$agent_name = agents_get_name($id_agent);
+				$agent_name = io_safe_output($agent_name);
+				$agent_md5 = md5 ($agent_name, false);
+				
 				// Agent remote configuration editor
 				$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
 				

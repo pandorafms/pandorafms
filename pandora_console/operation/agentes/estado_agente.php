@@ -22,6 +22,7 @@ require_once ("include/functions_reporting.php");
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_users.php');
 require_once($config['homedir'] . '/include/functions_modules.php');
+enterprise_include_once('include/functions_config_agents.php');
 
 check_login ();
 
@@ -163,10 +164,12 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	else
 		$setuptab['active'] = false;
 	
+	
 	$onheader = array('setup' => $setuptab);
 }
 
 ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status", false, $onheader);
+
 
 // User is deleting agent
 if (isset($result_delete)) {
@@ -176,10 +179,11 @@ if (isset($result_delete)) {
 		ui_print_error_message(__("There was an error message deleting the agent"));
 }
 
+
 echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
-echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
+echo '<tr><td style="white-space:nowrap;">' . __('Group') . ': ';
 
 $groups = users_get_groups ();
 html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:150px');
@@ -529,13 +533,12 @@ foreach ($agents as $agent) {
 	if (check_acl ($config["id_user"], $group_id, "AW")) {
 		// Has remote configuration ?
 		$data[9]="";
-		$agent_name = db_get_value("nombre", "tagente", "id_agente", $agent["id_agente"]);
-		$agent_md5 = md5 ($agent_name, false);
-		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
+		
+		if (config_agents_has_remote_configuration($agent["id_agente"])) {
 			$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
 			html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
 		}
-	
+		
 		$data[10] = 	"<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&
 			borrar_agente=".$agent["id_agente"]."&group_id=$group_id&recursion=$recursion&search=$search&offset=$offset&sort_field=$sortField&sort=$sort'".
 			' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, array("border" => '0')) ."</a></td>";

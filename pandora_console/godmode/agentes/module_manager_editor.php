@@ -51,7 +51,9 @@ if (is_ajax ()) {
 		require_once ($config['homedir'].'/'.ENTERPRISE_DIR.'/include/functions_local_components.php');
 		
 		$id_module_group = (int) get_parameter ('id_module_component_group');
-		$localComponents = local_components_get_local_components(array('id_network_component_group' => $id_module_group), array('id', 'name'));
+		$localComponents = local_components_get_local_components(
+			array('id_network_component_group' => $id_module_group),
+			array('id', 'name'));
 		
 		echo json_encode($localComponents);
 		return;
@@ -69,11 +71,17 @@ if (is_ajax ()) {
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
-						$component['type'] = db_get_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE "' . $typeName . '"');
+				$component['type'] = db_get_value_sql('
+					SELECT id_tipo
+					FROM ttipo_modulo
+					WHERE nombre LIKE "' . $typeName . '"');
 				break;
 			case "postgresql":
 			case "oracle":
-						$component['type'] = db_get_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE \'' . $typeName . '\'');
+				$component['type'] = db_get_value_sql('
+					SELECT id_tipo
+					FROM ttipo_modulo
+					WHERE nombre LIKE \'' . $typeName . '\'');
 				break;
 		}
 		
@@ -92,11 +100,12 @@ if (is_ajax ()) {
 		$snmp3_privacy_method = get_parameter('snmp3_privacy_method');
 		$snmp3_privacy_pass = get_parameter('snmp3_privacy_pass');
 		$snmp_port = get_parameter('snmp_port');
-
-		$snmpwalk = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
-					$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-					$snmp3_privacy_method, $snmp3_privacy_pass, 1, ".", $snmp_port);
-
+		
+		$snmpwalk = get_snmpwalk($ip_target, $snmp_version, $snmp_community,
+			$snmp3_auth_user, $snmp3_security_level, $snmp3_auth_method,
+			$snmp3_auth_pass, $snmp3_privacy_method, $snmp3_privacy_pass,
+			1, ".", $snmp_port);
+		
 		if ($snmpwalk === false) {
 			echo json_encode ($snmpwalk);
 			return;
@@ -178,6 +187,7 @@ if ($id_agent_module) {
 	$ff_event = $module['min_ff_event'];
 	// Select tag info.
 	$id_tag = tags_get_module_tags ($id_agent_module);
+	
 }
 else {
 	if (!isset ($moduletype)) {
@@ -203,7 +213,7 @@ else {
 		$tcp_send = '';
 		$tcp_rcv = '';
 		$tcp_port = '';
-	
+		
 		if ($moduletype == "wmiserver")
 			$snmp_community = '';
 		else
@@ -231,6 +241,7 @@ else {
 		$snmp3_privacy_method = "";
 		$snmp3_privacy_pass = "";
 		$snmp3_security_level = "";
+		
 	}
 }
 
@@ -239,11 +250,11 @@ $is_function_policies = enterprise_include_once('include/functions_policies.php'
 if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 	$relink_policy = get_parameter('relink_policy', 0);
 	$unlink_policy = get_parameter('unlink_policy', 0);
-
+	
 	if($relink_policy) {
 		$policy_info = policies_info_module_policy($id_agent_module);
 		$policy_id = $policy_info['id_policy'];
-
+		
 		if($relink_policy && policies_get_policy_queue_status ($policy_id) == STATUS_IN_QUEUE_APPLYING) {
 			ui_print_error_message(__('This policy is applying and cannot be modified'));
 		}
@@ -254,7 +265,7 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 			db_pandora_audit("Agent management", "Re-link module " . $id_agent_module);
 		}
 	}
-
+	
 	if($unlink_policy) {
 		$result = policies_unlink_module($id_agent_module);
 		ui_print_result_message($result, __('Module will be unlinked in the next application'));
@@ -266,13 +277,13 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 global $__code_from;
 $__code_from = 'modules';
 $remote_conf = false;
+
 switch ($moduletype) {
 	case "dataserver":
 	case 1:
 		$moduletype = 1;
 		// Has remote configuration ?
-		$agent_md5 = md5 (agents_get_name($id_agente), false);
-		$remote_conf = file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5");
+		$remote_conf = config_agents_has_remote_configuration($id_agente);
 		
 		/* Categories is an array containing the allowed module types
 		 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
@@ -334,7 +345,7 @@ switch ($moduletype) {
 }
 
 
-if($config['enterprise_installed'] && $id_agent_module) {
+if ($config['enterprise_installed'] && $id_agent_module) {
 	if (policies_is_module_in_policy($id_agent_module)) {
 		policies_add_policy_linkation($id_agent_module);
 	}
@@ -402,7 +413,7 @@ var no_plugin_lang = "<?php echo __('No plug-in provided') ?>";
 
 $(document).ready (function () {
 	configure_modules_form ();
-
+	
 	$("#module_form").submit(function() {
 		if (check_remote_conf) {
 			//Check the name
@@ -419,19 +430,20 @@ $(document).ready (function () {
 				return false;
 			}
 		}
-
+		
 		return true;
 	});
 	
 	function checkKeepaliveModule() {
 		// keepalive modules have id = 100
-		if($("#id_module_type").val()==100 || $("#hidden-id_module_type_hidden").val()==100) {
-				$("#simple-configuration_data").hide();
+		if ($("#id_module_type").val()==100 ||
+			$("#hidden-id_module_type_hidden").val()==100) {
+			$("#simple-configuration_data").hide();
 		}
 		else {
 				$("#simple-configuration_data").show();
 		}
-
+		
 	}
 	
 	checkKeepaliveModule();

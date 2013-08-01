@@ -43,6 +43,12 @@ require_once ('include/functions_users.php');
 
 $search = get_parameter ("search", "");
 
+
+
+
+
+
+
 $agent_to_delete = (int)get_parameter('borrar_agente');
 
 $result = null;
@@ -85,11 +91,10 @@ ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined i
 
 if (isset($result)) {
 	ui_print_result_message($result, __('Success deleted agent.'), __('Could not be deleted.'));
+	
+	// Check if the remote config file still exist
 	if (isset ($config["remote_config"])) {
-		$agent_md5 = md5 (agents_get_name($id_agente, ""), FALSE);
-		
-		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5") ||
-			file_exists ($config["remote_config"]."/conf/".$agent_md5.".conf")) {
+		if (config_agents_has_remote_configuration($id_agente)) {
 			ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
 		}
 	}
@@ -106,7 +111,8 @@ else {
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%'><tr>";
+echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%'>
+	<tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 $own_info = get_user_info($config['id_user']);
@@ -142,7 +148,7 @@ echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes
 	html_print_input_hidden ('new_agent', 1);
 	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 echo "</form>";
-echo '</div>';
+echo "</div>";
 
 
 $selected = 'border: 1px solid black;';
@@ -157,11 +163,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'nombre COLLATE utf8_general_ci',
+					'field2' => 'nombre COLLATE utf8_general_ci',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'nombre COLLATE utf8_general_ci',
+					'field2' => 'nombre COLLATE utf8_general_ci',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -169,11 +179,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectOsUp = $selected;
-				$order = array('field' => 'id_os', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'id_os',
+					'field2' => 'nombre COLLATE utf8_general_ci',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectOsDown = $selected;
-				$order = array('field' => 'id_os', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'id_os',
+					'field2' => 'nombre COLLATE utf8_general_ci',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -181,11 +195,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectGroupUp = $selected;
-				$order = array('field' => 'id_grupo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'id_grupo',
+					'field2' => 'nombre COLLATE utf8_general_ci',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectGroupDown = $selected;
-				$order = array('field' => 'id_grupo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'id_grupo',
+					'field2' => 'nombre COLLATE utf8_general_ci',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -201,7 +219,7 @@ switch ($sortField) {
 }
 
 $search_sql = '';
-if ($search != ""){
+if ($search != "") {
 	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%') ";
 }
 
@@ -210,10 +228,10 @@ if ($ag_group > 0) {
 	$sql = sprintf ('SELECT COUNT(*)
 		FROM tagente
 		WHERE id_grupo = %d
-		%s',
+			%s',
 		$ag_group, $search_sql);
 	$total_agents = db_get_sql ($sql);
-
+	
 	$ag_groups = array();
 	$ag_groups = (array)$ag_group;
 	if ($recursion) {
@@ -225,16 +243,18 @@ if ($ag_group > 0) {
 			$sql = sprintf ('SELECT *
 				FROM tagente
 				WHERE id_grupo IN (%s)
-				%s
-				ORDER BY %s, %s %s LIMIT %d, %d',
+					%s
+				ORDER BY %s, %s %s
+				LIMIT %d, %d',
 				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order'], $offset, $config["block_size"]);
 			break;
 		case "postgresql":
 			$sql = sprintf ('SELECT *
 				FROM tagente
 				WHERE id_grupo IN (%s)
-				%s
-				ORDER BY %s, %s %s LIMIT %d OFFSET %d',
+					%s
+				ORDER BY %s, %s %s
+				LIMIT %d OFFSET %d',
 				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order'], $config["block_size"], $offset);
 			break;
 		case "oracle":
@@ -244,7 +264,7 @@ if ($ag_group > 0) {
 			$sql = sprintf ('SELECT *
 				FROM tagente
 				WHERE id_grupo IN (%s)
-				%s
+					%s
 				ORDER BY %s, %s %s',
 				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order']);
 			$sql = oracle_recode_query ($sql, $set);
@@ -254,21 +274,25 @@ if ($ag_group > 0) {
 else {
 	// CLEAN: sql_extra
 	$sql_extra = '';
-		
-    // Admin user get ANY group, even if they doesnt exist
-    if (check_acl ($config['id_user'], 0, "PM")) {		
-	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE (1=1 %s) %s', $search_sql, $sql_extra);
-	    $total_agents = db_get_sql ($sql);
-    	switch ($config["dbtype"]) {
+	
+	// Admin user get ANY group, even if they doesnt exist
+	if (check_acl ($config['id_user'], 0, "PM")) {		
+		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE (1=1 %s) %s', $search_sql, $sql_extra);
+		$total_agents = db_get_sql ($sql);
+		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE (1=1 %s) %s
+					FROM tagente
+					WHERE (1=1 %s)
+						%s
 					ORDER BY %s, %s %s LIMIT %d, %d', $search_sql, $sql_extra, $order['field'], $order['field2'],
 					$order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE (1=1 %s) %s
+					FROM tagente
+					WHERE (1=1 %s)
+						%s
 					ORDER BY %s, %s %s LIMIT %d OFFSET %d', $search_sql, $sql_extra, $order['field'], $order['field2'],
 					$order['order'], $config["block_size"], $offset);
 				break;
@@ -277,20 +301,23 @@ else {
 				$set['limit'] = $config["block_size"];
 				$set['offset'] = $offset;
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE (1=1 %s) %s
+					FROM tagente
+					WHERE (1=1 %s)
+						%s
 					ORDER BY %s, %s %s', $search_sql, $sql_extra, $order['field'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
-    }
-    else {
+	}
+	else {
+		
 		$sql = sprintf ('SELECT COUNT(*)
 			FROM tagente
 			WHERE (id_grupo IN (%s)
-			%s) %s',
+				%s) %s',
 			implode (',', array_keys (users_get_groups ())),
-			$search_sql, $sql_extra);    
-			
+			$search_sql, $sql_extra);
+		
 		$total_agents = db_get_sql ($sql);
 		
 		switch ($config["dbtype"]) {
@@ -299,7 +326,8 @@ else {
 					FROM tagente
 					WHERE (id_grupo IN (%s)
 					%s) %s
-					ORDER BY %s, %s %s LIMIT %d, %d',
+					ORDER BY %s, %s %s
+					LIMIT %d, %d',
 					implode (',', array_keys (users_get_groups ())),
 					$search_sql, $sql_extra, $order['field'], $order['field2'], $order['order'], $offset, $config["block_size"]);
 				break;
@@ -308,7 +336,8 @@ else {
 					FROM tagente
 					WHERE (id_grupo IN (%s)
 					%s) %s
-					ORDER BY %s, %s %s LIMIT %d OFFSET %d',
+					ORDER BY %s, %s %s
+					LIMIT %d OFFSET %d',
 					implode (',', array_keys (users_get_groups ())),
 					$search_sql, $sql_extra, $order['field'], $order['field2'], $order['order'], $config["block_size"], $offset);
 				break;
@@ -326,7 +355,7 @@ else {
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
-   }
+	}
 }
 
 $agents = db_get_all_rows_sql ($sql);
@@ -334,7 +363,7 @@ $agents = db_get_all_rows_sql ($sql);
 // Delete rnum row generated by oracle_recode_query() function
 if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
 	for ($i=0; $i < count($agents); $i++) {
-		unset($agents[$i]['rnum']);		
+		unset($agents[$i]['rnum']);
 	}
 }
 
@@ -358,8 +387,8 @@ if ($agents !== false) {
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
 		echo "</th>";
-	echo "<th>".__('Description')."</th>";
-	echo "<th>".__('Delete')."</th>";
+	echo "<th>" . __('Description') . "</th>";
+	echo "<th>" . __('Delete') . "</th>";
 	$color=1;
 	
 	$rowPair = true;
@@ -367,8 +396,8 @@ if ($agents !== false) {
 	foreach ($agents as $agent) {
 		$id_grupo = $agent["id_grupo"];
 		$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($agent["id_agente"]));
-
-		if($is_extra === ENTERPRISE_NOT_HOOK) {
+		
+		if ($is_extra === ENTERPRISE_NOT_HOOK) {
 			$is_extra = false;
 		}
 		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']) && !$is_extra)
@@ -396,11 +425,14 @@ if ($agents !== false) {
 			echo "<em>";
 		}
 		echo '<span class="left">';
-		echo "<strong><a href='index.php?sec=gagente&
+		echo "<strong>";
+		
+		echo "<a href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=main&
 			id_agente=" . $agent["id_agente"] . "'>" .
 			ui_print_truncate_text($agent["nombre"], 'agent_medium', true, true, true, '[&hellip;]', 'font-size: 7pt') .
-			"</a></strong>";
+			"</a>";
+		echo "</strong>";
 		if ($agent["disabled"]) {
 			ui_print_help_tip(__('Disabled'));
 			echo "</em>";
@@ -427,8 +459,7 @@ if ($agents !== false) {
 		
 		echo "<td align='center' class='$tdcolor'>";
 		// Has remote configuration ?
-		$agent_md5 = md5 ($agent["nombre"], false);
-		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
+		if (config_agents_has_remote_configuration($agent["id_agente"])) {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>";
 			echo html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')));		
 			echo "</a>";
@@ -452,7 +483,9 @@ if ($agents !== false) {
 		else
 			$offsetArg = $offset;
 		
-		echo "<td class='$tdcolor' align='center' valign='middle'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+		echo "<td class='$tdcolor' align='center' valign='middle'>";
+		
+		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 		borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
 		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		echo html_print_image('images/cross.png', true, array("border" => '0')) . "</a></td>";
@@ -462,7 +495,7 @@ if ($agents !== false) {
 	echo "<table width='95%'><tr><td align='right'>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined agents')."</div>";
+	echo "<div class='nf'>" . __('There are no defined agents') . "</div>";
 	echo "&nbsp;</td></tr><tr><td>";
 }
 
@@ -471,32 +504,34 @@ echo '<a name="bottom">';
 echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 html_print_input_hidden ('new_agent', 1);
 html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-echo "</form></td></tr></table>";
+echo "</form>";
+
+echo "</td></tr></table>";
 ?>
 
 <script type="text/javascript">
-$(document).ready (function () {
-	$("table#agent_list tr").hover (function () {
-			$(".actions", this).css ("visibility", "");
-		},
+	$(document).ready (function () {
+		$("table#agent_list tr").hover (function () {
+				$(".actions", this).css ("visibility", "");
+			},
+			function () {
+				$(".actions", this).css ("visibility", "hidden");
+		});
+		
+		$("#ag_group").click (
+			function () {
+				$(this).css ("width", "auto"); 
+				$(this).css ("min-width", "100px"); 
+			});
+			
+	/*	$("#ag_group").hover (
 		function () {
-			$(".actions", this).css ("visibility", "hidden");
-	});
-	
-	$("#ag_group").click (
-	function () {
-		$(this).css ("width", "auto"); 
-		$(this).css ("min-width", "100px"); 
-	});
+			$(this).css ("width", "auto"); 
+		});*/
 		
-/*	$("#ag_group").hover (
-	function () {
-		$(this).css ("width", "auto"); 
-	});*/
-	
-	$("#ag_group").blur (function () {
-		$(this).css ("width", "100px"); 
-	});
+		$("#ag_group").blur (function () {
+			$(this).css ("width", "100px"); 
+		});
 		
-});
+	});
 </script>

@@ -50,8 +50,8 @@ require_once ('include/functions_reporting.php');
 
 // Get passed variables
 $tab = get_parameter ('tab', 'main');
-$alerttype = get_parameter ('alerttype');
-$id_agent_module = (int) get_parameter ('id_agent_module');
+$alerttype = get_parameter('alerttype');
+$id_agent_module = (int)get_parameter('id_agent_module');
 
 // Init vars
 $descripcion = "";
@@ -62,7 +62,7 @@ $campo_3 = "";
 $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
-$direccion_agente = get_parameter ('direccion', '');
+$direccion_agente = get_parameter('direccion', '');
 $intervalo = 300;
 $id_server = "";
 $max_alerts = 0;
@@ -378,7 +378,7 @@ if ($delete_conf_file) {
 	$correct = false;
 	// Delete remote configuration
 	if (isset ($config["remote_config"])) {
-		$agent_md5 = md5 (agents_get_name ($id_agente,'none'), FALSE);
+		$agent_md5 = md5(io_safe_output(agents_get_name ($id_agente,'none')), FALSE);
 		
 		if (file_exists ($config["remote_config"] . "/md5/" . $agent_md5 . ".md5")) {
 			// Agent remote configuration editor

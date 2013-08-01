@@ -1,3 +1,14 @@
+2013-08-01 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/manage_config_remote.php,
+	godmode/agentes/agent_manager.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/agentes/configurar_agente.php,
+	include/functions_modules.php,
+	include/functions_agents.php, operation/agentes/estado_agente.php:
+	fixed and unified the code to access the remote config.
+
 2013-08-01 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Added new API function

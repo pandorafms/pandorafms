@@ -488,7 +488,7 @@ if ($delete_conf_file) {
 	$correct = false;
 	// Delete remote configuration
 	if (isset ($config["remote_config"])) {
-		$agent_md5 = md5 (agents_get_name ($id_agente,'none'), FALSE);
+		$agent_md5 = md5(io_safe_output(agents_get_name ($id_agente,'none')), FALSE);
 		
 		if (file_exists ($config["remote_config"] . "/md5/" . $agent_md5 . ".md5")) {
 			// Agent remote configuration editor

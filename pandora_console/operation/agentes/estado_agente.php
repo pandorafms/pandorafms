@@ -22,6 +22,7 @@ require_once ("include/functions_reporting.php");
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_users.php');
 require_once($config['homedir'] . '/include/functions_modules.php');
+enterprise_include_once('include/functions_config_agents.php');
 
 check_login ();
 
@@ -109,6 +110,7 @@ if (is_ajax ()) {
 }
 ob_end_clean();
 
+
 // Take some parameters (GET)
 $group_id = (int) get_parameter ("group_id", 0);
 $search = trim(get_parameter ("search", ""));
@@ -131,13 +133,13 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$setuptab['godmode'] = true;
 	
 	$setuptab['active'] = false;
-		
+	
 	$onheader = array('setup' => $setuptab);
 }
 
 ui_print_page_header ( __("Agent detail"), "images/agent_mc.png", false, "agent_status", false, $onheader);
 
-if(tags_has_user_acl_tags()) {
+if (tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
 }
 
@@ -434,7 +436,7 @@ foreach ($agents as $agent) {
 	$status_img = agents_tree_view_status_img ($agent["critical_count"],
 		$agent["warning_count"], $agent["unknown_count"], $agent["total_count"], 
 		$agent["notinit_count"]);
-		
+	
 	$data = array ();
 	
 	$data[0] = '';
@@ -464,6 +466,7 @@ foreach ($agents as $agent) {
 	
 	$data[5] = reporting_tiny_stats($agent, true);
 	
+	
 	$data[6] = $status_img;
 	
 	$data[7] = $alert_img;
@@ -487,12 +490,12 @@ foreach ($agents as $agent) {
 	if (check_acl ($config["id_user"], $group_id, "AW")) {
 		// Has remote configuration ?
 		$data[9]="";
-		$agent_name = db_get_value("nombre", "tagente", "id_agente", $agent["id_agente"]);
-		$agent_md5 = md5 ($agent_name, false);
-		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
+		
+		if (config_agents_has_remote_configuration($agent["id_agente"])) {
 			$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
 			html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
 		}
+		
 	}
 
 	array_push ($table->data, $data);

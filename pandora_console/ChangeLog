@@ -1,3 +1,16 @@
+2013-08-01 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* enterprise/godmode/agentes/agent_disk_conf_editor.php,
+	enterprise/godmode/agentes/collection_manager.php,
+	enterprise/godmode/policies/policy_agents.php,
+	enterprise/include/functions_collection.php,
+	enterprise/include/functions_policies.php,
+	enterprise/include/functions_config_agents.php,
+	enterprise/operation/agentes/collection_view.php: fixed and unified
+	the code to access the remote config.
+	
+	MERGED FROM BRANCH PANDORA_4
+
 2013-08-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_filemanager.php

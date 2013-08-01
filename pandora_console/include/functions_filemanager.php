@@ -587,19 +587,19 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		
 		switch ($fileinfo['mime']) {
 			case MIME_DIR:
-				$data[0] = html_print_image ('images/mimetypes/directory.png', true);
+				$data[0] = html_print_image ('images/mimetypes/directory.png', true, array('title' => __('Directory')));
 				break;
 			case MIME_IMAGE:
-				$data[0] = html_print_image ('images/mimetypes/image.png', true);
+				$data[0] = html_print_image ('images/mimetypes/image.png', true, array('title' => __('Image')));
 				break;
 			case MIME_ZIP:
-				$data[0] = html_print_image ('images/mimetypes/zip.png', true);
+				$data[0] = html_print_image ('images/mimetypes/zip.png', true, array('title' => __('Compressed file')));
 				break;
 			case MIME_TEXT:
-				$data[0] = html_print_image ('images/mimetypes/text.png', true);
+				$data[0] = html_print_image ('images/mimetypes/text.png', true, array('title' => __('Text file')));
 				break;
 			default:
-				$data[0] = html_print_image ('images/mimetypes/unknown.png', true);
+				$data[0] = html_print_image ('images/mimetypes/unknown.png', true, array('title' => __('Unknown')));
 				break;
 		}
 		
@@ -649,7 +649,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			
 			if (($editor) && (!$readOnly)) {
 				if ($fileinfo['mime'] == MIME_TEXT) {
-					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'>" . html_print_image('images/edit.png', true, array("style" => 'margin-top: 2px;')) . "</a>";
+					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'>" . html_print_image('images/edit.png', true, array("style" => 'margin-top: 2px;', 'title' => __('Edit file'))) . "</a>";
 				}
 			}
 		}
@@ -668,13 +668,13 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		if (is_writable ($real_directory)) {
 			echo "<div style='text-align: right; width: " . $table->width . ";'>";
 			echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
-			echo html_print_image('images/mimetypes/directory.png', true, array("title" => __('Create directory'))); 
+			echo html_print_image('images/create_directory.png', true, array("title" => __('Create directory'))); 
 			echo "</a>";
 			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px; margin-bottom: 5px;'>";
-			echo html_print_image('images/mimetypes/text.png', true, array("title" => __('Create text')));
+			echo html_print_image('images/create_file.png', true, array("title" => __('Create text')));
 			echo "</a>";
 			echo "<a href='javascript: show_upload_file();'>";
-			echo html_print_image('images/mimetypes/unknown.png', true, array("title" => __('Upload file/s'))); 
+			echo html_print_image('images/upload_file.png', true, array("title" => __('Upload file/s'))); 
 			echo "</a>";
 			echo "</div>";
 		}

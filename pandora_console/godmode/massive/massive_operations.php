@@ -178,15 +178,6 @@ echo '</div>';
 				return false;
 		});
 		
-		$('#form_edit').submit( function() {
-			confirm_status =
-				confirm("<?php echo __('Are you sure?'); ?>");
-			if (confirm_status)
-				$("#loading").css("display", "");
-			else
-				return false;
-		});
-		
 		$('[id^=form]').submit( function() {
 			confirm_status =
 				confirm("<?php echo __('Are you sure?'); ?>");

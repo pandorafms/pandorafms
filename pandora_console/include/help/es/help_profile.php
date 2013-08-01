@@ -23,7 +23,7 @@
 <tr><td>Crear un informe	<td>RW
 <tr><td>Crear una grafica combinada	<td>RW
 <tr><td>Ver informe, mapa, grafica, etc	<td>RR
-<tr><td>Aplicar una plantilla de informe<td>RW
+<tr><td>Aplicar una plantilla de informe<td>RR
 <tr><td>Crear una plantilla de informe<td>RM
 <tr><td>Crear incidente	<td>IW
 <tr><td>Leer incidente	<td>IR
@@ -32,9 +32,12 @@
 <tr><td>Borrar incidente que no es tuyo	<td>IM
 <tr><td>Ver evento	<td>ER
 <tr><td>Validar/Comentar evento	<td>EW
-<tr><td>Borrar evento	<td>EW
+<tr><td>Borrar evento	<td>EM
 <tr><td>Ejecutar respuestas<td>EW
 <tr><td>Crear incidencia a traves del evento (Respuesta)	<td>EW&IW
+<tr><td>Gestionar respuestas<td>PM
+<tr><td>Gestionar filtros<td>EW
+<tr><td>Personalizar columnas de eventos<td>PM
 <tr><td>Cambiar propietario/Re-abrir evento	<td>EM
 <tr><td>Ver usuarios	<td>AR
 <tr><td>Ver Consola SNMP	<td>AR
@@ -55,7 +58,7 @@
 <tr><td>Crear agente	<td>AW
 <tr><td>Duplicar configuración remota<td>AW
 <tr><td>Gestión de paradas de servicio<td>AW
-<tr><td>Gestión de alertas	<td>AM
+<tr><td>Gestión de alertas	<td>LW
 <tr><td>Gestión de usuarios	<td>UM
 <tr><td>Gestión de consola SNMP<td>PM
 <tr><td>Gestión de perfiles<td>PM

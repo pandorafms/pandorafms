@@ -1,5 +1,10 @@
 2013-08-01  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Changed the name of the self-monitoring XML
+	  files. Fixes bug #2365.
+
+2013-08-01  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DataServer.pm,
 	  lib/PandoraFMS/SNMPServer.pm,
 	  lib/PandoraFMS/Server.pm,

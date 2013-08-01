@@ -550,6 +550,7 @@ else {
 
 if ($config["pure"] == 0) {
 	echo '</div>'; //container div
+	echo '<div style="clear:both"></div>';
 	echo '<div id="foot">';
 	require ("general/footer.php");
 	echo '</div>';

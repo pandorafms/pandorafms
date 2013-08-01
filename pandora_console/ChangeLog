@@ -1,3 +1,28 @@
+2013-08-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_filemanager.php
+	images/upload_file.png
+	images/edit.png
+	images/mimetypes/unknown.png
+	images/mimetypes/image.png
+	images/mimetypes/zip.png
+	images/mimetypes/directory.png
+	images/mimetypes/text.png
+	images/create_directory.png
+	images/create_file.png: Change icons on filemanager
+	adding some usability improvements
+
+	* index.php: Fix out of bounds of the footer in the
+	policy modules view for bug #2320
+
+	* godmode/massive/massive_operations.php: Fix double
+	advertment alert
+
+	* include/help/en/help_profile.php
+	include/help/es/help_profile.php: Make changes on the
+	ACLs table to put it with the same permissions of the 
+	wiki
+
 2013-08-01 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Added new API function

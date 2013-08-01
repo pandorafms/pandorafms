@@ -21,7 +21,7 @@
 <tr><td>Create report<td>RW
 <tr><td>Create user custom-defined graph<td>RW
 <tr><td>View report, visual map and/or custom graph<td>RR
-<tr><td>Apply report template<td>RW
+<tr><td>Apply report template<td>RR
 <tr><td>Create report template<td>RM
 <tr><td>Create incident<td>IW
 <tr><td>Read incident<td>IR
@@ -30,9 +30,12 @@
 <tr><td>Delete incident of another user<td>IM
 <tr><td>View event<td>ER
 <tr><td>Validate/Comment event<td>EW
-<tr><td>Delete event<td>EW
+<tr><td>Delete event<td>EM
 <tr><td>Execute response<td>EW
 <tr><td>Create incident from event (Response)<td>EW&IW
+<tr><td>Manage response<td>PM
+<tr><td>Manage filters<td>EW
+<tr><td>Customize event columns<td>PM
 <tr><td>Change owner/Re-open event<td>EM
 <tr><td>View user<td>AR
 <tr><td>SNMP Console view<td>AR
@@ -53,7 +56,7 @@
 <tr><td>Create agent<td>AW
 <tr><td>Duplicate remote configurations<td>AW
 <tr><td>Downtime management<td>AW
-<tr><td>Alert management<td>AM
+<tr><td>Alert management<td>LW
 <tr><td>User management<td>UM
 <tr><td>SNMP Console management (alerts and MIB load)<td>PM
 <tr><td>Profile management<td>PM

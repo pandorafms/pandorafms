@@ -45,8 +45,8 @@ our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 # Global variables
 my @TaskQueue :shared;
 my %PendingTasks :shared;
-my $Sem :shared = Thread::Semaphore->new;
-my $TaskSem :shared = Thread::Semaphore->new (0);
+my $Sem :shared;
+my $TaskSem :shared;
 
 ########################################################################
 # Prediction Server class constructor.
@@ -55,10 +55,16 @@ sub new ($$;$) {
 	my ($class, $config, $dbh) = @_;
 	
 	return undef unless $config->{'predictionserver'} == 1;
-	
+
+	# Initialize semaphores and queues
+	@TaskQueue = ();
+	%PendingTasks = ();
+	$Sem = Thread::Semaphore->new;
+	$TaskSem = Thread::Semaphore->new (0);
+		
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 5, \&PandoraFMS::PredictionServer::data_producer, \&PandoraFMS::PredictionServer::data_consumer, $dbh);
-	
+
 	bless $self, $class;
 	
 	return $self;

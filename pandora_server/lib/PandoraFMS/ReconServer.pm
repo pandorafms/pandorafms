@@ -45,8 +45,8 @@ our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 # Global variables
 my @TaskQueue :shared;
 my %PendingTasks :shared;
-my $Sem :shared = Thread::Semaphore->new;
-my $TaskSem :shared = Thread::Semaphore->new (0);
+my $Sem :shared;
+my $TaskSem :shared;
 
 ########################################################################################
 # Recon Server class constructor.
@@ -61,6 +61,12 @@ sub new ($$$$$$) {
 		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by Pandora FMS Recon Server not found.", 1);
 		return undef;
 	}
+
+	# Initialize semaphores and queues
+	@TaskQueue = ();
+	%PendingTasks = ();
+	$Sem = Thread::Semaphore->new;
+	$TaskSem = Thread::Semaphore->new (0);
 	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 3, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);

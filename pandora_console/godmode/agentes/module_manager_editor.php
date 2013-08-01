@@ -52,7 +52,7 @@ if (is_ajax ()) {
 		
 		$id_module_group = (int) get_parameter ('id_module_component_group');
 		$localComponents = local_components_get_local_components(
-			array('id_network_component_group' => $id_module_group), 
+			array('id_network_component_group' => $id_module_group),
 			array('id', 'name'));
 		
 		echo json_encode($localComponents);
@@ -324,6 +324,7 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 		
 		db_pandora_audit("Agent management", "Unlink module " . $id_agent_module);
 	}
+
 }
 global $__code_from;
 $__code_from = 'modules';
@@ -334,9 +335,7 @@ switch ($moduletype) {
 	case MODULE_DATA:
 		$moduletype = MODULE_DATA;
 		// Has remote configuration ?
-		$agent_md5 = md5 (agents_get_name($id_agente), false);
-		$remote_conf = file_exists ($config["remote_config"] ."/md5/" .
-			$agent_md5 . ".md5");
+		$remote_conf = config_agents_has_remote_configuration($id_agente);
 		
 		/* Categories is an array containing the allowed module types
 		 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
@@ -391,6 +390,7 @@ switch ($moduletype) {
 				1) forgot to use the database converter<br />
 				2) used a bad version of the database converter (see Bugreport #2124706 for the solution)<br />
 				3) found a new bug - please report a way to duplicate this error');
+			
 			return;
 		}
 		break;

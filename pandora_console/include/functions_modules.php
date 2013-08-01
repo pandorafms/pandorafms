@@ -88,6 +88,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		if ($id_new_module === false) {
 			return false;
 		}
+		
 	}
 	
 	// If the module is synthetic we duplicate the operations too
@@ -128,8 +129,9 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	$id_agente = modules_get_agentmodule_agent($id_agent_module);
 	
-	$agent_md5 = md5 (agents_get_name($id_agente), false);
-	$remote_conf = file_exists ($config["remote_config"] . "/md5/" . $agent_md5 . ".md5");
+	$file = config_agents_get_agent_config_filenames($id_agente);
+	$agent_md5  = $file['md5'];
+	$remote_conf  = $file['conf'];
 	
 	if ($remote_conf) {
 		$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
@@ -309,6 +311,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	}
 	
 	$result = @db_process_sql_update ('tagente_modulo', $values, $where);
+	
 	if (($result === false) || ($result_disable === ERR_GENERIC)) {
 		return ERR_DB;
 	}

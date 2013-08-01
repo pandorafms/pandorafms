@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 
 if (is_ajax ()) {
+	
 	global $config;
 	
 	$search_parents_2 = (bool) get_parameter ('search_parents_2');
@@ -78,7 +79,7 @@ if (is_ajax ()) {
 			if ($out === false) {
 				$out = $oid_snmp;
 			}
-			else{
+			else {
 				$out = array_intersect($out,$oid_snmp);
 			}
 			
@@ -117,11 +118,7 @@ echo '<div style="height: 5px">&nbsp;</div>';
 
 if (!$new_agent) {
 	// Agent remote configuration editor
-	$agent_md5 = md5 ($nombre_agente, false);
-	$filename['md5'] = $config["remote_config"] . "/md5/" .
-		$agent_md5 . ".md5";
-	$filename['conf'] = $config["remote_config"] . "/conf/" .
-		$agent_md5 . ".conf";
+	$filename = config_agents_get_agent_config_filenames($id_agente);
 }
 
 $disk_conf = (bool) get_parameter ('disk_conf');
@@ -155,6 +152,7 @@ $table->data[0][0] = __('Agent name') .
 $table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 50, 100,true);
 
 if ($id_agente) {
+	
 	$table->data[0][1] .= "&nbsp;<b>".__("ID")."</b>&nbsp; $id_agente &nbsp;";
 	$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
 	$table->data[0][1] .= html_print_image ("images/zoom.png", true, array ("border" => 0, "title" => __('Agent detail')));
@@ -164,6 +162,10 @@ if ($id_agente) {
 // Remote configuration available
 if (!$new_agent) {
 	if (file_exists ($filename['md5'])) {
+		$agent_name = agents_get_name($id_agente);
+		$agent_name = io_safe_output($agent_name);
+		$agent_md5 = md5 ($agent_name, false);
+		
 		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
 		$table->data[0][1] .= html_print_image ("images/application_edit.png", true, array ("border" => 0, "title" => __('This agent can be remotely configured')));
 		$table->data[0][1] .= '</a>'.ui_print_help_tip (__('You can remotely edit this agent configuration'), true);
@@ -282,7 +284,8 @@ else
 $listIcons = gis_get_array_list_icons();
 
 $arraySelectIcon = array();
-foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
+foreach ($listIcons as $index => $value)
+	$arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 $table->data[4][0] = __('Agent icon') . ui_print_help_tip(__('Agent icon for GIS Maps.'), true);

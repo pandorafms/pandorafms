@@ -87,10 +87,7 @@ if ($agent_to_delete) {
 	
 	// Check if the remote config file still exist
 	if (isset ($config["remote_config"])) {
-		$agent_md5 = md5 (agents_get_name($id_agente, ""), FALSE);
-		
-		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5") ||
-			file_exists ($config["remote_config"]."/conf/".$agent_md5.".conf")) {
+		if (config_agents_has_remote_configuration($id_agente)) {
 			ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
 		}
 	}
@@ -159,6 +156,7 @@ echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes
 	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 echo "</form>";
 echo "</div>";
+
 
 $selected = 'border: 1px solid black;';
 $selectNameUp = '';
@@ -281,6 +279,7 @@ if ($ag_group > 0) {
 	}
 }
 else {
+	
 	// Admin user get ANY group, even if they doesnt exist
 	if (check_acl ($config['id_user'], 0, "PM")) {		
 		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
@@ -397,8 +396,8 @@ if ($agents !== false) {
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
 		echo "</th>";
-	echo "<th>".__('Description')."</th>";
-	echo "<th>".__('Actions')."</th>";
+	echo "<th>" . __('Description') . "</th>";
+	echo "<th>" . __('Actions') . "</th>";
 	$color=1;
 	
 	$rowPair = true;
@@ -478,8 +477,7 @@ if ($agents !== false) {
 		
 		echo "<td align='center' class='$tdcolor'>";
 		// Has remote configuration ?
-		$agent_md5 = md5 ($agent["nombre"], false);
-		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
+		if (config_agents_has_remote_configuration($agent["id_agente"])) {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>";
 			echo html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')));		
 			echo "</a>";
@@ -530,7 +528,7 @@ if ($agents !== false) {
 	echo "<table width='95%'><tr><td align='right'>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined agents')."</div>";
+	echo "<div class='nf'>" . __('There are no defined agents') . "</div>";
 	echo "&nbsp;</td></tr><tr><td>";
 }
 
@@ -548,23 +546,23 @@ echo "</td></tr></table>";
 ?>
 
 <script type="text/javascript">
-$(document).ready (function () {
-	$("table#agent_list tr").hover (function () {
-			$(".actions", this).css ("visibility", "");
-		},
-		function () {
-			$(".actions", this).css ("visibility", "hidden");
+	$(document).ready (function () {
+		$("table#agent_list tr").hover (function () {
+				$(".actions", this).css ("visibility", "");
+			},
+			function () {
+				$(".actions", this).css ("visibility", "hidden");
 		});
-	
-	$("#ag_group").click (
-		function () {
-			$(this).css ("width", "auto"); 
-			$(this).css ("min-width", "100px"); 
-		});
-	
-	$("#ag_group").blur (function () {
+		
+		$("#ag_group").click (
+			function () {
+				$(this).css ("width", "auto"); 
+				$(this).css ("min-width", "100px"); 
+			});
+			
+		$("#ag_group").blur (function () {
 			$(this).css ("width", "100px"); 
 		});
-	
-});
+		
+	});
 </script>

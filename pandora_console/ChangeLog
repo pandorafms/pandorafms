@@ -1,3 +1,8 @@
+2013-08-01 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/pandora_visual_console.js: fixed the javascript
+	error when sometimes there is not a new lines.
+
 2013-07-31 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/visual_console_builder.php: change the code

@@ -1,3 +1,12 @@
+2013-08-02 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/graphs/functions_gd.php, include/graphs/fgraph.php,
+	include/functions.php, include/functions_graph.php,
+	include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php,
+	operation/visual_console/render_view.php: a lot of fixes in the
+	visualmap.
+
 2013-08-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_modules.php: Fix modules and 

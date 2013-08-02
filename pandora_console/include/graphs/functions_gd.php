@@ -162,7 +162,7 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 // ***************************************************************************
 function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1, $fontsize=10, $value_text = '', $colorRGB = '') {
 	if ($out_of_lim_str === false) {
-		$out_of_lim_str = __("Out of limits");
+		$out_of_lim_str = io_safe_output(__("Out of limits"));
 	}
 	
 	if ($out_of_lim_image === false) {
@@ -254,7 +254,7 @@ function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_
 
 function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1, $fontsize=10, $value_text = '', $colorRGB = '') {
 	if ($out_of_lim_str === false) {
-		$out_of_lim_str = __("Out of limits");
+		$out_of_lim_str = io_safe_output(__("Out of limits"));
 	}
 	
 	if ($out_of_lim_image === false) {

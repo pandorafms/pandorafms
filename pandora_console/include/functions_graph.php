@@ -1501,7 +1501,8 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false, $options = false) {
 	global $config;
 	
-	$out_of_lim_str = __("Out of limits");
+	$out_of_lim_str = io_safe_output(__("Out of limits"));
+	
 	$title = "";
 	
 	if ($value_text === false) {
@@ -1547,7 +1548,7 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 	if (defined('METACONSOLE'))
 		$hack_metaconsole = '../../';
 	
-	$out_of_lim_str = __("Out of limits");
+	$out_of_lim_str = io_safe_output(__("Out of limits"));
 	$title = "";
 	
 	if ($value_text === false) {

@@ -31,7 +31,7 @@ if ($id_layout) {
 else {
 	$default_action = 'new';
 }
-	
+
 if (!defined('METACONSOLE')) {
 	$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), $default_action);
 }

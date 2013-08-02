@@ -65,7 +65,7 @@ switch($graph_type) {
 		$height = get_parameter('height');
 		$progress = get_parameter('progress');
 		
-		$out_of_lim_str = get_parameter('out_of_lim_str', false);
+		$out_of_lim_str = io_safe_output(get_parameter('out_of_lim_str', false));
 		$out_of_lim_image = get_parameter('out_of_lim_image', false);
 		
 		$font = get_parameter('font');
@@ -86,7 +86,7 @@ switch($graph_type) {
 		$height = get_parameter('height');
 		$progress = get_parameter('progress');
 		
-		$out_of_lim_str = get_parameter('out_of_lim_str', false);
+		$out_of_lim_str = io_safe_output(get_parameter('out_of_lim_str', false));
 		$out_of_lim_image = get_parameter('out_of_lim_image', false);
 		
 		$font = get_parameter('font');

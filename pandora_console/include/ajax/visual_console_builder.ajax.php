@@ -234,26 +234,26 @@ switch ($action) {
 		}
 		
 		switch ($status) {
-			case 1:
+			case VISUAL_MAP_STATUS_CRITICAL_BAD:
 				//Critical (BAD)
-				$colorStatus = "#ff0000";
+				$colorStatus = COL_CRITICAL;
 				break;
-			case 4:
+			case VISUAL_MAP_STATUS_CRITICAL_ALERT:
 				//Critical (ALERT)
-				$colorStatus = "#ff8800";
+				$colorStatus = COL_ALERTFIRED;
 				break;
-			case 0:
+			case VISUAL_MAP_STATUS_NORMAL:
 				//Normal (OK)
-				$colorStatus = "#00ff00";
+				$colorStatus = COL_NORMAL;
 				break;
-			case 2:
+			case VISUAL_MAP_STATUS_WARNING:
 				//Warning
-				$colorStatus = "#ffff00";
+				$colorStatus = COL_WARNING;
 				break;
-			case 3:
+			case VISUAL_MAP_STATUS_UNKNOWN:
 				//Unknown
 			default:
-				$colorStatus = "#5A5AFF";
+				$colorStatus = COL_UNKNOWN;
 				// Default is Grey (Other)
 				break;
 		}

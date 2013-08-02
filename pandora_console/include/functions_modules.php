@@ -199,12 +199,31 @@ function modules_change_disabled($id_agent_module, $new_value = 1) {
  * @return True if the module was deleted. False if not.
  */
 function modules_delete_agent_module ($id_agent_module) {
-	if (!$id_agent_module) 
+	if (empty($id_agent_module)) 
 		return false;
 	
-	// Read module data
-	$module = db_get_row_sql ('SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=' . (int)$id_agent_module);
-	
+	if (is_array($id_agent_module)) {
+		$id_agents = db_get_all_rows_sql (sprintf('SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo IN (%s) GROUP BY id_agente',  implode(',', $id_agent_module)));
+
+		foreach($id_agents as $k => $v) {
+			$id_agents[$k] = $v['id_agente'];
+		}
+		
+		// Update update flags to server side
+		db_process_sql (sprintf('UPDATE tagente
+			SET update_module_count=1, update_alert_count=1
+			WHERE id_agente IN (%s)', implode(',', $id_agents)));
+	}
+	else {
+		// Read module data
+		$id_agent = modules_get_agentmodule_agent($id_agent_module);
+		
+		// Update update flags to server side
+		db_process_sql (sprintf('UPDATE tagente
+			SET update_module_count=1, update_alert_count=1
+			WHERE id_agente = %s', $id_agent));
+	}
+
 	$where = array ('id_agent_module' => $id_agent_module);
 	
 	enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_agent_module), modules_get_agentmodule_name($id_agent_module)));
@@ -221,39 +240,7 @@ function modules_delete_agent_module ($id_agent_module) {
 		array ('nombre' => 'delete_pending', 'delete_pending' => 1, 'disabled' => 1),
 		$where);
 	db_process_sql_delete('ttag_module', $where);
-	
-	// Update module status count only if the module is not disabled
-	if ($module['disabled'] == 0) {
-		if ($module['estado'] == AGENT_MODULE_STATUS_NORMAL) {
-			db_process_sql ('UPDATE tagente
-				SET normal_count=normal_count-1
-				WHERE id_agente=' . $module['id_agente']);
-		}
-		else if ($module['estado'] == AGENT_MODULE_STATUS_CRITICAL_BAD) {
-			db_process_sql ('UPDATE tagente
-				SET critical_count=critical_count-1
-				WHERE id_agente=' . $module['id_agente']);
-		}
-		else if ($module['estado'] == AGENT_MODULE_STATUS_WARNING) {
-			db_process_sql ('UPDATE tagente
-				SET warning_count=warning_count-1
-				WHERE id_agente=' . $module['id_agente']);
-		}
-		else if ($module['estado'] == AGENT_MODULE_STATUS_UNKNOWN) {
-			db_process_sql ('UPDATE tagente
-				SET unknown_count=unknown_count-1
-				WHERE id_agente=' . $module['id_agente']);
-		}
-		else if ($module['estado'] == AGENT_MODULE_STATUS_NO_DATA) {
-			db_process_sql ('UPDATE tagente
-				SET notinit_count=notinit_count-1
-				WHERE id_agente=' . $module['id_agente']);
-		}
 		
-		db_process_sql ('UPDATE tagente
-			SET total_count=total_count-1
-			WHERE id_agente=' . $module['id_agente']);
-	}
 	return true;
 }
 

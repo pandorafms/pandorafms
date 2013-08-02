@@ -187,6 +187,12 @@ if ($upload_file) {
 	}
 }
 
+// Control the max_post_size exceed
+if (intval($_SERVER['CONTENT_LENGTH']) > 0 && empty($_POST) AND empty($_FILES)) {
+	$config['filemanager']['correct_upload_file'] = 0;
+	$config['filemanager']['message'] = ui_print_error_message(__('File size seems to be too large. Please check your php.ini configuration or contact with the administrator'), '', true);
+}
+
 // Create text file 
 $create_text_file = (bool) get_parameter ('create_text_file');
 if ($create_text_file) {

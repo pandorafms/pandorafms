@@ -1,3 +1,8 @@
+2013-08-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_modules.php: Fix modules and 
+	alerts count when delete modules massively
+
 2013-08-01 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* enterprise/godmode/agentes/agent_disk_conf_editor.php,

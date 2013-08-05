@@ -1,3 +1,8 @@
+2013-08-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/agent_manager.php: fixed when the tagente have
+	a unknown server show none.
+
 2013-08-01 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor.php,

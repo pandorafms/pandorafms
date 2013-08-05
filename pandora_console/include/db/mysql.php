@@ -70,7 +70,10 @@ function mysql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = t
 			$history = array ();
 		}
 	}
-	$return = mysql_db_process_sql ($sql, 'affected_rows', $dbconnection, $cache);
+	$return = mysql_db_process_sql ($sql,
+		'affected_rows', $dbconnection, $cache);
+	
+	
 	if ($return === false) {
 		$return = array ();
 	}

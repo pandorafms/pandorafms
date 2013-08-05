@@ -1529,8 +1529,8 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 			$inicio_pag = 0;
 		else
 			$inicio_pag = $index_page;
-		else
-			$inicio_pag = 0;
+	else
+		$inicio_pag = 0;
 	
 	$output = '<div class="pagination">';
 	// Show GOTO FIRST button
@@ -1542,7 +1542,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 			$index_page_prev = 0;
 		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.html_print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
 	}
-
+	
 	// Draw blocks markers
 	// $i stores number of page
 	for ($i = $inicio_pag; $i < $index_limit; $i++) {

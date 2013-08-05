@@ -140,7 +140,7 @@ foreach ($filters as $filter) {
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	echo "<form method='post' action='" . $config['homeurl'] . "index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure=$pure'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);

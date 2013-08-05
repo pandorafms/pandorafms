@@ -50,24 +50,24 @@ function incidents_get_priorities ($priority = false) {
  */
 function incidents_print_priority_img ($id_priority, $return = false) {
 	switch ($id_priority) {
-	case 0:
-		$img = html_print_image ("images/dot_green.png", true, array('title' => __('Informative'))).html_print_image ("images/dot_green.png", true, array('title' => __('Informative'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Informative')));
-		break;
-	case 1:
-		$img = html_print_image ("images/dot_green.png", true, array('title' => __('Low'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Low'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Low')));
-		break;
-	case 2:
-		$img = html_print_image ("images/dot_yellow.png", true, array('title' => __('Medium'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Medium'))).html_print_image ("images/dot_red.png", true, array('title' => __('Medium')));
-		break;
-	case 3:
-		$img = html_print_image ("images/dot_yellow.png", true, array('title' => __('Serious'))).html_print_image ("images/dot_red.png", true, array('title' => __('Serious'))).html_print_image ("images/dot_red.png", true, array('title' => __('Serious')));
-		break;
-	case 4:
-		$img = html_print_image ("images/dot_red.png", true, array('title' => __('Very serious'))).html_print_image ("images/dot_red.png", true, array('title' => __('Very serious'))).html_print_image ("images/dot_red.png", true, array('title' => __('Very serious')));
-		break;
-	case 10:
-		$img = html_print_image ("images/dot_green.png", true, array('title' => __('Maintenance'))).html_print_image ("images/dot_green.png", true, array('title' => __('Maintenance'))).html_print_image ("images/dot_green.png", true, array('title' => __('Maintenance')));
-		break;
+		case 0:
+			$img = html_print_image ("images/dot_green.png", true, array('title' => __('Informative'))).html_print_image ("images/dot_green.png", true, array('title' => __('Informative'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Informative')));
+			break;
+		case 1:
+			$img = html_print_image ("images/dot_green.png", true, array('title' => __('Low'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Low'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Low')));
+			break;
+		case 2:
+			$img = html_print_image ("images/dot_yellow.png", true, array('title' => __('Medium'))).html_print_image ("images/dot_yellow.png", true, array('title' => __('Medium'))).html_print_image ("images/dot_red.png", true, array('title' => __('Medium')));
+			break;
+		case 3:
+			$img = html_print_image ("images/dot_yellow.png", true, array('title' => __('Serious'))).html_print_image ("images/dot_red.png", true, array('title' => __('Serious'))).html_print_image ("images/dot_red.png", true, array('title' => __('Serious')));
+			break;
+		case 4:
+			$img = html_print_image ("images/dot_red.png", true, array('title' => __('Very serious'))).html_print_image ("images/dot_red.png", true, array('title' => __('Very serious'))).html_print_image ("images/dot_red.png", true, array('title' => __('Very serious')));
+			break;
+		case 10:
+			$img = html_print_image ("images/dot_green.png", true, array('title' => __('Maintenance'))).html_print_image ("images/dot_green.png", true, array('title' => __('Maintenance'))).html_print_image ("images/dot_green.png", true, array('title' => __('Maintenance')));
+			break;
 	}
 	
 	if ($return === false) {

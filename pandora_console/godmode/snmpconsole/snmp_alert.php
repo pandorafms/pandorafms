@@ -23,21 +23,41 @@ if (! check_acl ($config['id_user'], 0, "LW")) {
 	return;
 }
 
+$trap_types = array(
+	SNMP_TRAP_TYPE_NONE => __('None'),
+	SNMP_TRAP_TYPE_COLD_START => __('Cold start (0)'),
+	SNMP_TRAP_TYPE_WARM_START => __('Warm start (1)'),
+	SNMP_TRAP_TYPE_LINK_DOWN => __('Link down (2)'),
+	SNMP_TRAP_TYPE_LINK_UP => __('Link up (3)'),
+	SNMP_TRAP_TYPE_AUTHENTICATION_FAILURE => __('Authentication failure (4)'),
+	SNMP_TRAP_TYPE_OTHER => __('Other'));
+
 // Form submitted
 // =============
 
-if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Create alert'),
+$update_alert = (bool)get_parameter('update_alert', false);
+$create_alert = (bool)get_parameter('create_alert', false);
+$save_alert = (bool)get_parameter('save_alert', false);
+$modify_alert = (bool)get_parameter('modify_alert', false);
+$delete_alert = (bool)get_parameter('delete_alert', false);
+$multiple_delete = (bool)get_parameter('multiple_delete', false);
+
+if ($update_alert || $modify_alert) {
+	ui_print_page_header(__('SNMP Console')." &raquo; ".__('Update alert'),
 		"images/op_snmp.png", false, "snmp_alert", false);
 }
-else if (isset ($_GET["update_alert"]) && $_GET["update_alert"] != "-1") {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'),
+else if ($create_alert || $save_alert) {
+	ui_print_page_header(__('SNMP Console')." &raquo; ".__('Create alert'),
 		"images/op_snmp.png", false, "snmp_alert", false);
 }
-else if (isset ($_GET["submit"])) {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'),
+else {
+	ui_print_page_header(__('SNMP Console')." &raquo; ".__('Alert overview'),
 		"images/op_snmp.png", false, "snmp_alert", false);
-	$id_as = (int) get_parameter_get ("submit", -1);
+}
+
+if ($save_alert || $modify_alert) {
+	$id_as = (int) get_parameter("id_alert_snmp", -1);
+	
 	$source_ip = (string) get_parameter_post ("source_ip");
 	$alert_type = (int) get_parameter_post ("alert_type"); //Event, e-mail
 	$description = (string) get_parameter_post ("description");
@@ -76,7 +96,7 @@ else if (isset ($_GET["submit"])) {
 		$time_threshold = $time_other;
 	}
 	
-	if ($id_as < 1) {
+	if ($save_alert) {
 		$values = array(
 			'id_alert' => $alert_type,
 			'al_field1' => $al_field1,
@@ -110,8 +130,8 @@ else if (isset ($_GET["submit"])) {
 			'trap_type' => $trap_type,
 			'single_value' => $single_value,
 			'position' => $position);
-			
-			$result = db_process_sql_insert('talert_snmp', $values);
+		
+		$result = db_process_sql_insert('talert_snmp', $values);
 		
 		if (!$result) {
 			db_pandora_audit("SNMP management", "Fail try to create snmp alert");
@@ -145,7 +165,8 @@ else if (isset ($_GET["submit"])) {
 			$max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2,
 			$custom_oid_data_3, $custom_oid_data_4, $custom_oid_data_5,
 			$custom_oid_data_6, $custom_oid_data_7, $custom_oid_data_8,
-			$custom_oid_data_9, $custom_oid_data_10, $trap_type, $single_value, $position, $id_as);
+			$custom_oid_data_9, $custom_oid_data_10, $trap_type, $single_value,
+			$position, $id_as);
 		
 		$result = db_process_sql ($sql);
 		
@@ -159,14 +180,12 @@ else if (isset ($_GET["submit"])) {
 		}
 	}
 }
-else {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Alert overview'), "images/op_snmp.png", false, "snmp_alert", false);
-}
 
 // From variable init
 // ==================
-if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
-	$id_as = (int) get_parameter_get ("update_alert", -1);
+if ($update_alert) {
+	$id_as = (int) get_parameter("id_alert_snmp", -1);
+	
 	$alert = db_get_row ("talert_snmp", "id_as", $id_as);
 	$id_as = $alert["id_as"];
 	$source_ip = $alert["agent"];
@@ -187,7 +206,7 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$al_field10 = $alert["al_field10"];
 	$max_alerts = $alert["max_alerts"];
 	$min_alerts = $alert["min_alerts"];
-	$priority = $alert["priority"];	
+	$priority = $alert["priority"];
 	$custom_oid_data_1 = $alert["_snmp_f1_"];
 	$custom_oid_data_2 = $alert["_snmp_f2_"];
 	$custom_oid_data_3 = $alert["_snmp_f3_"];
@@ -202,7 +221,7 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$single_value = $alert["single_value"]; 
 	$position = $alert["position"];
 }
-elseif (isset ($_GET["update_alert"])) {
+elseif ($create_alert) {
 	// Variable init
 	$id_as = -1;
 	$source_ip = "";
@@ -243,10 +262,12 @@ elseif (isset ($_GET["update_alert"])) {
 
 // Alert Delete
 // =============
-if (isset ($_GET["delete_alert"])) { // Delete alert
+if ($delete_alert) { // Delete alert
 	$alert_delete = (int) get_parameter_get ("delete_alert", 0);
 	
-	$result = db_process_sql_delete('talert_snmp', array('id_as' => $alert_delete));
+	$result = db_process_sql_delete('talert_snmp',
+		array('id_as' => $alert_delete));
+	
 	if ($result === false) {
 		db_pandora_audit("SNMP management", "Fail try to delete snmp alert #$alert_delete");
 		ui_print_error_message(__('There was a problem deleting the alert'));
@@ -257,10 +278,47 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 	}
 }
 
+if ($multiple_delete) {
+	$delete_ids = get_parameter('delete_ids', array());
+	
+	$total = count($delete_ids);
+	
+	$count = 0;
+	foreach ($delete_ids as $alert_delete) {
+		$result = db_process_sql_delete('talert_snmp',
+			array('id_as' => $alert_delete));
+		
+		if ($result !== false) {
+			db_pandora_audit("SNMP management", "Delete snmp alert #$alert_delete");
+			$count++;
+		}
+		else {
+			db_pandora_audit("SNMP management", "Fail try to delete snmp alert #$alert_delete");
+		}
+	}
+	
+	if ($count == $total) {
+		ui_print_success_message(__('Successfully deleted alerts (%s / %s)', $count, $total));
+	}
+	else {
+		ui_print_error_message(__('Unsuccessfully deleted alerts (%s / %s)', $count, $total));
+	}
+}
+
 // Alert form
-if (isset ($_GET["update_alert"])) {
+if ($create_alert || $update_alert) {
+//if (isset ($_GET["update_alert"])) {
 	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
-	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
+	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
+	
+	html_print_input_hidden('id_alert_snmp', $id_as);
+	
+	if ($create_alert) {
+		html_print_input_hidden('save_alert', 1);
+	}
+	if ($update_alert) {
+		html_print_input_hidden('modify_alert', 1);
+	}
 	
 	/* SNMP alert filters */
 	
@@ -294,7 +352,6 @@ if (isset ($_GET["update_alert"])) {
 	
 	// Trap type
 	echo '<tr><td class="datos">'.__('Trap type').'</td><td class="datos">';
-	$trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 	echo html_print_select ($trap_types, 'trap_type', $trap_type, '', '', '', false, false, false);
 	echo '</td></tr>';
 	
@@ -350,31 +407,31 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td><td class="datos">';
 	html_print_input_text ("custom_oid_data_6", $custom_oid_data_6, '', 60);
 	echo '</td></tr>';
-
+	
 	//  Custom OID/Data #7
 	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #7');
 	echo '</td><td class="datos">';
 	html_print_input_text ("custom_oid_data_7", $custom_oid_data_7, '', 60);
 	echo '</td></tr>';
-
+	
 	//  Custom OID/Data #8
 	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #8');
 	echo '</td><td class="datos">';
 	html_print_input_text ("custom_oid_data_8", $custom_oid_data_8, '', 60);
 	echo '</td></tr>';
-
+	
 	//  Custom OID/Data #9
 	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #9');
 	echo '</td><td class="datos">';
 	html_print_input_text ("custom_oid_data_9", $custom_oid_data_9, '', 60);
 	echo '</td></tr>';
-
+	
 	//  Custom OID/Data #10
 	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #10');
 	echo '</td><td class="datos">';
 	html_print_input_text ("custom_oid_data_10", $custom_oid_data_10, '', 60);
 	echo '</td></tr>';
-
+	
 	//Button
 	//echo '<tr><td></td><td align="right">';
 	
@@ -397,9 +454,9 @@ if (isset ($_GET["update_alert"])) {
 	// Hidden div with help hint to fill with javascript
 	html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
 	
-	for ($i=1; $i<=10; $i++) {
+	for ($i = 1; $i <= 10; $i++) {
 		echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
-		echo '<td class="datos">'.html_print_image('images/spinner.gif',true);
+		echo '<td class="datos">' . html_print_image('images/spinner.gif',true);
 		html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
 		echo '</td></tr>';
 	}
@@ -432,7 +489,7 @@ if (isset ($_GET["update_alert"])) {
 	html_print_select ($fields, "time_threshold", $time_threshold, '', '', '0', false, false, false, '" style="margin-right:60px');
 	echo '<div id="div-time_other" style="display:none">';
 	html_print_input_text ("time_other", 0, '', 6);
-	echo ' '.__('seconds').'</div></td></tr>';
+	echo ' ' . __('seconds') . '</div></td></tr>';
 	
 	// Priority
 	echo '<tr><td class="datos">'.__('Priority').'</td><td class="datos">';
@@ -484,11 +541,107 @@ if (isset ($_GET["update_alert"])) {
 else {
 	require_once ('include/functions_alerts.php');
 	
+	$free_search = (string)get_parameter('free_search', '');
+	$trap_type_filter = (int)get_parameter('trap_type_filter', SNMP_TRAP_TYPE_NONE);
+	$priority_filter = (int)get_parameter('priority_filter', -1);
+	$filter_param = (bool)get_parameter('filter', false);
+	$offset = (int) get_parameter ('offset');
+	
+	$table_filter = null;
+	$table_filter->width = "98%";
+	$table_filter->data = array();
+	$table_filter->data[0][0] = __('Free search') . ui_print_help_tip(
+		__('Search by these fields description, OID, Custom Value, SNMP Agent (IP), Single value, each Custom OIDs/Datas.'), true);
+	$table_filter->data[0][1] =
+		html_print_input_text('free_search', $free_search, '', 30, 100, true);
+	$table_filter->data[0][2] = __('Trap type');
+	$table_filter->data[0][3] =
+		html_print_select ($trap_types, 'trap_type_filter', $trap_type_filter, '', '', '', true, false, false);
+	$table_filter->data[0][4] = __('Priority');
+	$table_filter->data[0][5] =
+		html_print_select (get_priorities(), "priority_filter", $priority_filter, '', __('None'), '-1', true, false, false);;
+	
+	$form_filter = '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
+	$form_filter .= html_print_input_hidden('filter', 1, true);
+	$form_filter .= html_print_table($table_filter, true);
+	$form_filter .= '<div style="text-align: right; width: ' . $table_filter->width . '">';
+	$form_filter .= html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
+	$form_filter .= '</div>';
+	$form_filter .= '</form>';
+	
+	echo "<br>";
+	ui_toggle($form_filter,__('Alert SNMP control filter'), __('Toggle filter(s)'));
+	
+	$filter = array();
+	$filter['offset'] = (int) get_parameter ('offset');
+	$filter['limit'] = (int) $config['block_size'];
+	if ($filter_param) {
+		//Move the first page
+		$offset = 0;
+		
+		$url_pagination = "index.php?" .
+			"sec=snmpconsole&" .
+			"sec2=godmode/snmpconsole/snmp_alert&" .
+			"free_seach=" . $free_search . "&" .
+			"trap_type_filter=" . $trap_type_filter . "&" .
+			"priority_filter=" . $priority_filter;
+	}
+	else {
+		$url_pagination = "index.php?" .
+			"sec=snmpconsole&" .
+			"sec2=godmode/snmpconsole/snmp_alert&" .
+			"free_seach=" . $free_search . "&" .
+			"trap_type_filter=" . $trap_type_filter . "&" .
+			"priority_filter=" . $priority_filter . "&" .
+			"offset=" . $offset;
+	}
+	
+	$where_sql = ' 1 = 1';
+	if ($trap_type_filter != SNMP_TRAP_TYPE_NONE) {
+		$where_sql .= ' AND `trap_type` = ' . $trap_type_filter;
+	}
+	
+	if ($priority_filter != -1) {
+		$where_sql .= ' AND `priority` = ' . $priority_filter;
+	}
+	
+	if (!empty($free_search)) {
+		$where_sql .= " AND (`single_value` = '" . $free_search . "'
+			OR `_snmp_f10_` = '" . $free_search . "'
+			OR `_snmp_f9_` = '" . $free_search . "'
+			OR `_snmp_f8_` = '" . $free_search . "'
+			OR `_snmp_f7_` = '" . $free_search . "'
+			OR `_snmp_f6_` = '" . $free_search . "'
+			OR `_snmp_f5_` = '" . $free_search . "'
+			OR `_snmp_f4_` = '" . $free_search . "'
+			OR `_snmp_f3_` = '" . $free_search . "'
+			OR `_snmp_f2_` = '" . $free_search . "'
+			OR `_snmp_f1_` = '" . $free_search . "'
+			OR `oid` = '" . $free_search . "'
+			OR `custom_oid` = '" . $free_search . "'
+			OR `agent` = '" . $free_search . "'
+			OR `description` = '" . $free_search . "')";
+	}
+	
+	$count = db_get_value_sql('SELECT COUNT(*)
+		FROM talert_snmp WHERE' . $where_sql);
+	
+	
+	
+	
+	$result = array();
+	
 	//Overview
-	$result = db_get_all_rows_in_table ("talert_snmp");
-	if ($result === false) {
+	if ($count == 0) {
 		$result = array ();
-		echo "<div class='nf'>".__('There are no SNMP alerts')."</div>";
+		echo "<div class='nf'>" . __('There are no SNMP alerts') . "</div>";
+	}
+	else {
+		ui_pagination ($count, $url_pagination);
+		
+		$where_sql .= ' LIMIT ' . $config['block_size'] . ' OFFSET ' . $offset;
+		$result = db_get_all_rows_sql('SELECT *
+			FROM talert_snmp WHERE' . $where_sql);
 	}
 	
 	$table->data = array ();
@@ -517,21 +670,33 @@ else {
 	
 	$table->head[5] = __('Description');
 	
-	$table->head[6] = __('Times fired');
+	$table->head[6] = '<span title="' . __('Times fired') . '">' . __('TF.') . '</span>';
+	$table->size[6] = "50px";
 	$table->align[6] = 'center';
 	
 	$table->head[7] = __('Last fired');
 	$table->align[7] = 'center';
 	
 	$table->head[8] = __('Action');
-	$table->size[8] = "50px";
+	$table->size[8] = "80px";
 	$table->align[8] = 'center';
+	
+	$table->head[9] = html_print_checkbox ("all_delete_box", "1", false, true);
+	$table->size[9] = "10px";
+	$table->align[9] = 'center';
 	
 	foreach ($result as $row) {
 		$data = array ();
 		$data[0] = $row["position"];
 		
-		$data[1] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' . alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
+		$url = "index.php?" .
+			"sec=snmpconsole&" .
+			"sec2=godmode/snmpconsole/snmp_alert&" .
+			"id_alert_snmp=" . $row["id_as"] ."&" .
+			"update_alert=1";
+		
+		$data[1] = '<a href="' . $url . '">' .
+			alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
 		
 		$data[2] = __('SNMP Agent');
 		$data[2] = $row["agent"];
@@ -554,6 +719,10 @@ else {
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
 			'&nbsp;&nbsp;<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
 			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
+		
+		$data[9] = html_print_checkbox_extended("delete_ids[]",
+			$row['id_as'], false, false, false, 'class="chk_delete"', true);
+		
 		$idx = count ($table->data); //The current index of the table is 1 less than the count of table data so we count before adding to table->data
 		array_push ($table->data, $data);
 		
@@ -561,26 +730,37 @@ else {
 	}
 	
 	if (!empty ($table->data)) {
+		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
 		html_print_table ($table);
+		
+		ui_pagination ($count, $url_pagination);
+		
+		echo '<div style="text-align:right; width: ' . $table->width . '; margin-bottom: 30px;">';
+		html_print_input_hidden('multiple_delete', 1);
+		html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete"');
+		echo '</div>';
+		echo '</form>';
 	}
 	
-	unset ($table);
-	
-	echo '<div style="text-align:right; width:98%">';
-	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
+	echo '<div style="text-align:right; width:' . $table->width . ';">';
+	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
+	html_print_input_hidden('create_alert', 1);
 	html_print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
 	echo "</form></div>";
 	
 	echo '<div style="margin-left: 30px; line-height: 17px; vertical-align: top; width:120px;">';
 	echo '<h3>'.__('Legend').'</h3>';
-	foreach (get_priorities () as $num => $name) {
-		echo '<span class="'.get_priority_class ($num).'">'.$name.'</span>';
+	foreach (get_priorities() as $num => $name) {
+		echo '<span class="' . get_priority_class ($num).'">' . $name . '</span>';
 		echo '<br />';
 	}
 	echo '</div>';
+	
+	unset ($table);
 }
 ?>
 <script language="javascript" type="text/javascript">
+
 function time_changed () {
 	var time = this.value;
 	if (time == -1) {
@@ -593,43 +773,75 @@ function time_changed () {
 $(document).ready (function () {
 	$('#time_threshold').change (time_changed);
 	
+	$("input[name=all_delete_box]").change (function() {
+		if ($(this).is(":checked")) {
+			$("input[name='delete_ids[]']").check();
+		}
+		else {
+			$("input[name='delete_ids[]']").uncheck();
+		}
+	});
+	
 	$("#alert_type").change (function () {
 		values = Array ();
-		values.push ({name: "page",
-			value: "godmode/alerts/alert_commands"});
-		values.push ({name: "get_alert_command",
-			value: "1"});
-		values.push ({name: "id_action",
-			value: this.value});
-		jQuery.get (<?php echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'"; ?>,
+		
+		values.push ({
+			name: "page",
+			value: "godmode/alerts/alert_commands"
+		});
+		values.push ({
+			name: "get_alert_command",
+			value: "1"
+		});
+		values.push ({
+			name: "id_action",
+			value: this.value
+		});
+		
+		jQuery.get (
+			<?php
+			echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'";
+			?>,
 			values,
 			function (data, status) {
 				original_command = js_html_entity_decode (data["command"]);
 				command_description = js_html_entity_decode (data["description"]);
-				for (i=1; i<=10; i++) {
+				for (i = 1; i <= 10; i++) {
 					var old_value = '';
 					// Only keep the value if is provided from hidden (first time)
-					if ($("[name=field"+i+"_value]").attr('id') == "hidden-field" + i + "_value") {
-						old_value = $("[name=field"+i+"_value]").val();
+					
+					var id_field = $("[name=field" + i + "_value]").attr('id');
+					
+					if (id_field == "hidden-field" + i + "_value") {
+						old_value = $("[name=field" + i + "_value]").val();
 					}
 					
 					// If the row is empty, hide de row
-					if(data["fields_rows"][i] == '') {
-						$('#table_macros-field'+i).hide();
+					if (data["fields_rows"][i] == '') {
+						$('#table_macros-field' + i).hide();
 					}
 					else {
-						$('#table_macros-field'+i).replaceWith(data["fields_rows"][i]);
+						$('#table_macros-field' + i)
+							.replaceWith(data["fields_rows"][i]);
 						
 						// The row provided has a predefined class. We delete it
-						$('#table_macros-field'+i).removeAttr('class');
+						$('#table_macros-field' + i)
+							.removeAttr('class');
 						
 						// Add help hint only in first field
-						if(i == 1) {
-							var td_content = $('#table_macros-field'+i).find('td').eq(0);
-							td_content.html(td_content.html() + $('#help_snmp_alert_hint').html());
+						if (i == 1) {
+							var td_content =
+								$('#table_macros-field' + i)
+									.find('td').eq(0);
+							
+							td_content
+								.html(
+									td_content.html() +
+									$('#help_snmp_alert_hint').html()
+								);
 						}
 						
-						$("[name=field"+i+"_value]").val(old_value);
+						$("[name=field" + i + "_value]").val(old_value);
 						$('#table_macros-field').show();
 					}
 				}

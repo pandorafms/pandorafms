@@ -148,7 +148,7 @@ if ($i != 0 && $allow_action) {
 	}
 }
 
-if($meta) {
+if ($meta) {
 	// Get info of the all servers to use it on hash auth
 	$servers_url_hash = metaconsole_get_servers_url_hash();
 	$servers = metaconsole_get_servers();
@@ -176,15 +176,15 @@ foreach ($result as $event) {
 	
 	// Colored box
 	switch($estado) {
-		case 0:
+		case EVENT_NEW:
 			$img_st = "images/star.png";
 			$title_st = __('New event');
 			break;
-		case 1:
+		case EVENT_VALIDATE:
 			$img_st = "images/tick.png";
 			$title_st = __('Event validated');
 			break;
-		case 2:
+		case EVENT_PROCESS:
 			$img_st = "images/hourglass.png";
 			$title_st = __('Event in process');
 			break;
@@ -194,7 +194,7 @@ foreach ($result as $event) {
 	
 	$data[$i] = "#".$event["id_evento"];
 	$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3; color: #111 !important;';
-
+	
 	// Pass grouped values in hidden fields to use it from modal window
 	if ($group_rep) {
 		$similar_ids = $event['similar_ids'];
@@ -488,10 +488,10 @@ foreach ($result as $event) {
 				break;
 		}
 		
-		if(!isset($data[$i])) {
+		if (!isset($data[$i])) {
 			$data[$i] = '';
 		}
-
+		
 		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
@@ -527,11 +527,11 @@ foreach ($result as $event) {
 		$data[$i] .= '<a href="javascript:" onclick="show_event_dialog(' . $event["id_evento"] . ', '.$group_rep.');">';
 		$data[$i] .= html_print_input_hidden('event_title_'.$event["id_evento"], "#".$event["id_evento"]." - ".$event["evento"], true);
 		$data[$i] .= html_print_image ("images/eye.png", true,
-			array ("title" => __('Show more')));	
+			array ("title" => __('Show more')));
 		$data[$i] .= '</a>';
 		
 		$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
-
+		
 		$i++;
 		
 		if(!$readonly) {
@@ -603,7 +603,7 @@ if (!empty ($table->data)) {
 	}
 }
 else {
-	echo '<div class="nf">'.__('No events').'</div>';
+	echo '<div class="nf">' . __('No events') . '</div>';
 }
 echo '</div>';
 

@@ -1,3 +1,13 @@
+2013-08-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/constants.php, godmode/snmpconsole/snmp_alert.php: added
+	filter in the alert snmp page and pagination.
+	
+	* operation/events/events.build_table.php,
+	godmode/netflow/nf_edit.php, include/functions_ui.php,
+	include/db/mysql.php, include/functions_incidents.php: improved the
+	source code style.
+
 2013-08-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_filemanager.php: added new error message

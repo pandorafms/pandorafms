@@ -170,6 +170,9 @@ sub exec_prediction_module ($$$$) {
 			enterprise_hook ('exec_service_module_sla', [$pa_config, $agent_module, $server_id, $dbh]);
 			logger ($pa_config, "End execution", 5);
 		}
+		elsif ($agent_module->{'custom_string_1'} eq 'SLA_Value')  {
+			#Do none
+		}
 		else {
 			logger ($pa_config, "Executing service module " .
 				$agent_module->{'id_agente_modulo'} . " " .

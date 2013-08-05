@@ -1,3 +1,8 @@
+2013-08-05 Miguel de Dios <miguel.dedios@artica.es>
+
+	* util/pandora_snmp.sh: added first and weird version of tool to
+	generate a lot of traps snmp for Pandora. Needs to improve.
+
 2013-08-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Changed the name of the self-monitoring XML

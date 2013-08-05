@@ -1,5 +1,10 @@
 2013-08-05 Miguel de Dios <miguel.dedios@artica.es>
 
+	* ChangeLog: lost line about "lib/PandoraFMS/PredictionServer.pm"
+	uploaded changes for SLA value of service.
+
+2013-08-05 Miguel de Dios <miguel.dedios@artica.es>
+
 	* util/pandora_snmp.sh: added first and weird version of tool to
 	generate a lot of traps snmp for Pandora. Needs to improve.
 

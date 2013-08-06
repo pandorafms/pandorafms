@@ -32,14 +32,16 @@ enterprise_include ('godmode/massive/massive_operations.php');
 $tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
 
-$options_alerts = array('add_alerts' => __('Massive alerts addition'),
+$options_alerts = array(
+	'add_alerts' => __('Massive alerts addition'),
 	'delete_alerts' => __('Massive alerts deletion'), 
 	'add_action_alerts' => __('Massive alert actions addition'),
 	'delete_action_alerts' => __('Massive alert actions deletion'),
 	'enable_disable_alerts' => __('Massive alert enable/disable'),
 	'standby_alerts' => __('Massive alert setting standby'));
 
-$options_agents = array('edit_agents' => __('Massive agents edition'),
+$options_agents = array(
+	'edit_agents' => __('Massive agents edition'),
 	'delete_agents' => __('Massive agents deletion'));
 
 if (check_acl ($config['id_user'], 0, "PM")) {
@@ -61,12 +63,19 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 $options_policies = array();
-
 $policies_options = enterprise_hook('massive_policies_options');
 
-if($policies_options != -1) {
+if ($policies_options != ENTERPRISE_NOT_HOOK) {
 	$options_policies =
 		array_merge($options_policies, $policies_options);
+}
+
+$options_snmp = array();
+$snmp_options = enterprise_hook('massive_snmp_options');
+
+if ($snmp_options != ENTERPRISE_NOT_HOOK) {
+	$options_snmp =
+		array_merge($options_snmp, $snmp_options);
 }
 
 if (in_array($option, array_keys($options_alerts))) {
@@ -84,11 +93,14 @@ elseif (in_array($option, array_keys($options_modules))) {
 elseif (in_array($option, array_keys($options_policies))) {
 	$tab = 'massive_policies';
 }
+elseif (in_array($option, array_keys($options_snmp))) {
+	$tab = 'massive_snmp';
+}
 else {
 	$option = '';
 }
 
-switch($tab) {
+switch ($tab) {
 	case 'massive_alerts':
 		$options = $options_alerts;
 		break;
@@ -103,6 +115,9 @@ switch($tab) {
 		break;
 	case 'massive_policies':
 		$options = $options_policies;
+		break;
+	case 'massive_snmp':
+		$options = $options_snmp;
 		break;
 }
 
@@ -127,11 +142,18 @@ $modulestab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/mass
 	. html_print_image ('images/brick.png', true, array ('title' => __('Modules operations')))
 	. '</a>', 'active' => $tab == 'massive_modules');
 
-/* Collection */
+
+
 $policiestab = enterprise_hook('massive_policies_tab');
 
-if ($policiestab == -1)
+if ($policiestab == ENTERPRISE_NOT_HOOK)
 	$policiestab = "";
+
+$snmptab = enterprise_hook('massive_snmp_tab');
+
+if ($snmptab == ENTERPRISE_NOT_HOOK)
+	$snmptab = "";
+
 
 $onheader = array();
 $onheader['massive_agents'] = $agentstab;
@@ -141,11 +163,16 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 }
 $onheader['massive_alerts'] = $alertstab;
 $onheader['policies'] = $policiestab;
+$onheader['snmp'] = $snmptab;
 
-ui_print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/gm_massive_operations.png", false, "", true, $onheader);
+ui_print_page_header(
+	__('Massive operations') . ' &raquo; '. $options[$option],
+	"images/gm_massive_operations.png", false, "", true, $onheader);
 
 // Checks if the PHP configuration is correctly
-if ((get_cfg_var("max_execution_time") != 0) or (get_cfg_var("max_input_time") != -1)) {
+if ((get_cfg_var("max_execution_time") != 0)
+	or (get_cfg_var("max_input_time") != -1)) {
+	
 	echo '<div id="notify_conf" class="notify">';
 	echo __("In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>");
 	echo '</div>';
@@ -192,7 +219,6 @@ echo '</div>';
 </script>
 
 <?php
-
 echo "<br />";
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';
 echo '<table border="0"><tr><td>';
@@ -200,7 +226,7 @@ echo __("Action");
 echo '</td><td>';
 html_print_select($options, 'option', $option, 'this.form.submit()', '',
 	0, false, false, false);
-if($option == 'edit_agents' || $option == 'edit_modules') 
+if ($option == 'edit_agents' || $option == 'edit_modules') 
 	ui_print_help_tip(__("The blank fields will not be updated"));
 echo '</td></tr></table>';
 echo '</form>';

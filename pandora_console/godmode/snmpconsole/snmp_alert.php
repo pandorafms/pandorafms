@@ -446,10 +446,17 @@ if ($create_alert || $update_alert) {
 	
 	// Alert fields
 	
-	$al = array('al_field1' => $al_field1, 'al_field2' => $al_field2, 'al_field3' => $al_field3,
-			'al_field4' => $al_field4, 'al_field5' => $al_field5, 'al_field6' => $al_field6,
-			'al_field7' => $al_field7, 'al_field8' => $al_field8, 'al_field9' => $al_field9,
-			'al_field10' => $al_field10);
+	$al = array(
+		'al_field1' => $al_field1,
+		'al_field2' => $al_field2,
+		'al_field3' => $al_field3,
+		'al_field4' => $al_field4,
+		'al_field5' => $al_field5,
+		'al_field6' => $al_field6,
+		'al_field7' => $al_field7,
+		'al_field8' => $al_field8,
+		'al_field9' => $al_field9,
+		'al_field10' => $al_field10);
 	
 	// Hidden div with help hint to fill with javascript
 	html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
@@ -462,7 +469,7 @@ if ($create_alert || $update_alert) {
 	}
 	
 	// Max / Min alerts
-	echo '<tr><td class="datos2">'.__('Min. number of alerts').'</td><td class="datos2">';
+	echo '<tr><td class="datos2">' . __('Min. number of alerts').'</td><td class="datos2">';
 	html_print_input_text ("min_alerts", $min_alerts, '', 3);
 	
 	echo '</td></tr><tr><td class="datos">'.__('Max. number of alerts').'</td><td class="datos">';
@@ -509,19 +516,25 @@ if ($create_alert || $update_alert) {
 		$fields[$row["id"]] = $row["name"];
 	}
 	
-	switch ($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
-			html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
-			"alert_type", $alert_type, '', '', 0, false, false, false);
+			html_print_select_from_sql(
+				'SELECT id, name
+				FROM talert_actions
+				ORDER BY name',
+				"alert_type", $alert_type, '', '', 0, false, false, false);
 			break;
 		case "oracle":
-			html_print_select_from_sql ('SELECT id, dbms_lob.substr(name,4000,1) as name FROM talert_actions ORDER BY dbms_lob.substr(name,4000,1)',
-			"alert_type", $alert_type, '', '', 0, false, false, false);
+			html_print_select_from_sql(
+				'SELECT id, dbms_lob.substr(name,4000,1) as name
+				FROM talert_actions
+				ORDER BY dbms_lob.substr(name,4000,1)',
+				"alert_type", $alert_type, '', '', 0, false, false, false);
 			break;
 	}
 	echo '</td></tr>';
-	echo '<tr><td class="datos">'.__('Position').'</td><td class="datos">';
+	echo '<tr><td class="datos">' . __('Position') . '</td><td class="datos">';
 	html_print_input_text ("position", $position, '', 3);
 	echo '</td></tr>';
 	echo '</table>';
@@ -697,14 +710,9 @@ else {
 		
 		$data[1] = '<a href="' . $url . '">' .
 			alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
-		
-		$data[2] = __('SNMP Agent');
 		$data[2] = $row["agent"];
-		$data[3] = __('OID');
 		$data[3] = $row["oid"];
-		$data[4] = __('Custom Value/OID');
 		$data[4] = $row["custom_oid"];
-		
 		$data[5] = $row["description"];
 		$data[6] = $row["times_fired"];
 		

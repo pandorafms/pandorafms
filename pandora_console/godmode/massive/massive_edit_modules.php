@@ -420,9 +420,9 @@ $table->data['edit8'][1] = html_print_select_from_sql ('SELECT id_tag, name FROM
 $table->data['edit8'][2] = __('Category');
 $table->data['edit8'][3] = html_print_select (categories_get_all_categories('forselect'), 'id_category', '','', __('No change'), '', true, false, false);
 
-if(enterprise_installed()) {
+if (enterprise_installed()) {
 	$table->rowspan['edit8'][0] = $table->rowspan['edit8'][1] = 2;
-
+	
 	$table->data['edit81'][2] = __('Policy linking status') . ui_print_help_tip(__("This field only has sense in modules adopted by a policy."), true);
 	$table->data['edit81'][3] = html_print_select (array(MODULE_PENDING_LINK => __('Linked'), MODULE_PENDING_UNLINK => __('Unlinked')), 'policy_linked', '','', __('No change'), '', true, false, false);
 }

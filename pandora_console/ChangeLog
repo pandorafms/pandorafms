@@ -1,3 +1,11 @@
+2013-08-06 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/menu.php, godmode/massive/massive_edit_modules.php:
+	improved the source code style.
+	
+	* godmode/snmpconsole/snmp_alert.php,
+	godmode/massive/massive_operations.php: added snmp alert operations.
+
 2013-08-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/constants.php, godmode/snmpconsole/snmp_alert.php: added

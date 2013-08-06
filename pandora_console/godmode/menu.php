@@ -29,7 +29,7 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 	$menu_godmode["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu_godmode["gagente"]["id"] = "god-agents";
 	
-	if(check_acl ($config['id_user'], 0, "AW")) {
+	if (check_acl ($config['id_user'], 0, "AW")) {
 		$sub = array ();
 		$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
 		$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
@@ -64,6 +64,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	}
 	$sub["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
 	enterprise_hook('massivepolicies_submenu');
+	enterprise_hook('massivesnmp_submenu');
 	
 	$menu_godmode["gmassive"]["sub"] = $sub;
 }
@@ -104,7 +105,7 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 	$menu_godmode["galertas"]["sec2"] = "godmode/alerts/alert_list";
 	$menu_godmode["galertas"]["id"] = "god-alerts";
 	
-	if(check_acl ($config['id_user'], 0, "LM")) {
+	if (check_acl ($config['id_user'], 0, "LM")) {
 		$sub = array ();
 		$sub["godmode/alerts/alert_templates"]["text"] = __('Templates');
 		$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');

@@ -1,5 +1,15 @@
 2013-08-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/agentes/estado_agente.php: fixed the call to
+	enterprise function.
+	
+	Fixes: #2367 
+	
+	* godmode/agentes/module_manager.php: make more easy the merges
+	from the last branch.
+
+2013-08-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/setup/setup_auth.php, godmode/admin_access_logs.php,
 	godmode/agentes/module_manager.php: removed the code as
 	"call time passing variables by reference" deprecated in PHP 5.4.

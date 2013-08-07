@@ -399,6 +399,7 @@ switch ($sortField) {
 		break;
 }
 
+
 // Build the order sql
 if (!empty($order)) {
 	$order_sql = ' ORDER BY ';

@@ -472,17 +472,31 @@ echo "\n<!-- Page generated in $run_time seconds -->\n";
 
 <script type="text/javascript" language="javascript">
 //Initial load of page
-$(document).ready(sizeContent);
+$(document).ready(adjustFooter);
 
 //Every resize of window
-$(window).resize(sizeContent);
+$(window).resize(adjustFooter);
 
-//Dynamically assign height
-function sizeContent() {
-	var footposition_bottom = $('#foot').position().top + $("#foot").height();
-
-	if(footposition_bottom < $(window).height()) {		
-		$('#container').css('height', $(window).height() - $("#foot").height() - 15 + 'px');
+//Every resize (height change) of div#container
+container_height = $('#container').height();
+$('#container').bind(($.browser.opera ? 'DOMAttrModified' : 'DOMSubtreeModified'), function() {
+	if (container_height != $('#container').height()) {
+		container_height = $('#container').height();
+		adjustFooter();
 	}
+});
+
+//Dynamically assign footer position and width.
+function adjustFooter() {
+	// minimum top value (upper limit) for div#foot
+	var ulim = $('#container').position().top + $('#container').outerHeight(true);
+	// $(window).height() returns wrong value on Opera and Google Chrome.
+	var wh = document.documentElement.clientHeight;
+	var h = $('#foot').height();
+	var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
+
+	$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
+	$('#foot').width($(window).width());
+	$('#foot').height(h);
 }
 </script>

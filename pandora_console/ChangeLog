@@ -1,3 +1,10 @@
+2013-08-07 Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* index.php: Fixed footer layout probrems: Now we can see the
+	 footer at the browser bottom when reducing the browser height.
+	 Also fixes the footer overlay probrem in some pages (e.g.
+	 "Modules in policy" page).
+
 2013-08-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/agent_manager.php: fixed when the tagente have

@@ -533,17 +533,18 @@ foreach ($agents as $agent) {
 	if (check_acl ($config["id_user"], $group_id, "AW")) {
 		// Has remote configuration ?
 		$data[9]="";
-		
-		if (config_agents_has_remote_configuration($agent["id_agente"])) {
-			$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
-			html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
+		if (enterprise_installed()) {
+			if (config_agents_has_remote_configuration($agent["id_agente"])) {
+				$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
+				html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
+			}
 		}
 		
 		$data[10] = 	"<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&
 			borrar_agente=".$agent["id_agente"]."&group_id=$group_id&recursion=$recursion&search=$search&offset=$offset&sort_field=$sortField&sort=$sort'".
 			' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, array("border" => '0')) ."</a></td>";
 	}
-
+	
 	array_push ($table->data, $data);
 }
 

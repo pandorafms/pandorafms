@@ -1,10 +1,15 @@
 2013-08-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/agentes/estado_agente.php: fixed the call to
+	enterprise function.
+	
+	Fixes: #2370 
+
+2013-08-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/setup/setup_auth.php, godmode/admin_access_logs.php,
 	godmode/agentes/module_manager.php: removed the code as
 	"call time passing variables by reference" deprecated in PHP 5.4.
-	
-	MERGED FROM THE TRUNK.
 
 2013-08-07 Koichiro Kikuchi <koichiro@rworks.jp>
 
@@ -74,6 +79,7 @@
 	All of them to fix new console mobile pie graph in agent view
 
 2013-07-09  Ramon Novoa  <rnovoa@artica.es>
+
 
 	* operation/snmpconsole/snmp_view.php: Do not retrieve all traps to
 	  get a list of sources.

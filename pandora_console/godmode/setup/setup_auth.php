@@ -36,7 +36,9 @@ $table->size[0] = '30%';
 
 $table->data[0][0] = __('Authentication method');
 $auth_methods = array ('mysql' => __('Local Pandora FMS'), 'ldap' => __('ldap'));
-enterprise_hook ('add_enterprise_auth_methods', array (&$auth_methods));
+if (enterprise_installed()) {
+	add_enterprise_auth_methods($auth_methods);
+}
 $table->data[0][1] = html_print_select ($auth_methods, 'auth', $config['auth'], 'show_selected_rows ();', '', 0, true);
 
 $table->data[1][0] = __('Autocreate remote users');
@@ -80,7 +82,9 @@ for ($i = 5; $i <= 10; $i++) {
 }
 
 // Add enterprise authentication options
-enterprise_hook ('add_enterprise_auth_options', array (&$table, 11));
+if (enterprise_installed()) {
+	add_enterprise_auth_options($table, 11);
+}
 
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);

@@ -284,10 +284,10 @@ foreach ($result as $row) {
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
-				enterprise_hook('rowEnterpriseAudit', array($table, &$iterator, $row['id_sesion']));
+				rowEnterpriseAudit$table, $iterator, $row['id_sesion']);
 				break;
 			case "oracle":
-				enterprise_hook('rowEnterpriseAudit', array($table, &$iterator, $row['id_sesion']));
+				rowEnterpriseAudit($table, $iterator, $row['id_sesion']);
 				break;
 		}
 	}

@@ -565,21 +565,23 @@ echo "\n<!-- Page generated in $run_time seconds -->\n";
 
 // Values from PHP to be recovered from JAVASCRIPT
 require('include/php_to_js_values.php');
+
+
 ?>
 
 <script type="text/javascript" language="javascript">
-//Initial load of page
-$(document).ready(sizeContent);
-
-//Every resize of window
-$(window).resize(sizeContent);
-
-//Dynamically assign height
-function sizeContent() {
-	var footposition_bottom = $('#foot').position().top + $("#foot").height();
-
-	if(footposition_bottom < $(window).height()) {		
-		$('#container').css('height', $(window).height() - $("#foot").height() - 15 + 'px');
+	//Initial load of page
+	$(document).ready(sizeContent);
+	
+	//Every resize of window
+	$(window).resize(sizeContent);
+	
+	//Dynamically assign height
+	function sizeContent() {
+		var footposition_bottom = $('#foot').position().top + $("#foot").height();
+		
+		if (footposition_bottom < $(window).height()) {
+			$('#container').css('height', $(window).height() - $("#foot").height() - 15 + 'px');
+		}
 	}
-}
 </script>

@@ -77,7 +77,9 @@ if ($wmi_available)
 if ($prediction_available)
 	$modules['predictionserver'] = __('Create a new prediction server module');
 
-enterprise_hook ('set_enterprise_module_types', array (&$modules));
+if (enterprise_installed()) {
+	set_enterprise_module_types($modules);
+}
 
 $sec2 = get_parameter('sec2', '');
 if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {

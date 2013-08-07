@@ -1,3 +1,11 @@
+2013-08-07 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/setup/setup_auth.php, godmode/admin_access_logs.php,
+	godmode/agentes/module_manager.php: removed the code as
+	"call time passing variables by reference" deprecated in PHP 5.4.
+	
+	* index.php: improved the source code style.
+
 2013-08-06 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/menu.php, godmode/massive/massive_edit_modules.php:

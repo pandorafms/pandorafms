@@ -491,13 +491,15 @@ foreach ($agents as $agent) {
 		// Has remote configuration ?
 		$data[9]="";
 		
-		if (config_agents_has_remote_configuration($agent["id_agente"])) {
-			$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
-			html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
+		if (enterprise_installed()) {
+			if (config_agents_has_remote_configuration($agent["id_agente"])) {
+				$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
+				html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
+			}
 		}
 		
 	}
-
+	
 	array_push ($table->data, $data);
 }
 

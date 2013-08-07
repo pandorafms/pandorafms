@@ -16,7 +16,8 @@
 /* You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack */
 if (isset ($id_agente)) {
 	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
-
+}
+else {
 }
 
 enterprise_include ('godmode/agentes/module_manager.php');
@@ -65,7 +66,9 @@ if ($wmi_available)
 if ($prediction_available)
 	$modules['predictionserver'] = __('Create a new prediction server module');
 
-enterprise_hook ('set_enterprise_module_types', array (&$modules));
+if (enterprise_installed()) {
+	set_enterprise_module_types($modules);
+}
 
 $sec2 = get_parameter('sec2', '');
 if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
@@ -128,6 +131,7 @@ if ($multiple_delete) {
 			WHERE id_agente_modulo = " . $id_agent_module_del, "affected_rows", '', true, $status, false) === false) {
 			$error++;
 		}
+		
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
@@ -319,7 +323,7 @@ switch ($sortField) {
 
 // TODO: CLEAN extra_sql
 $extra_sql = '';
-	
+
 // Build the order sql
 if (!empty($order)) {
 	$order_sql = ' ORDER BY ';
@@ -360,6 +364,8 @@ $params = implode(',',
 		'str_critical'));
 
 $where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);
+
+
 switch ($config["dbtype"]) {
 	case "postgresql":
 		$limit_sql = " LIMIT $limit OFFSET $offset ";
@@ -414,8 +420,10 @@ $table->head = array ();
 $table->head[0] = __('Name') . ' ' .
 	'<a href="' . $url . '&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
 	'<a href="' . $url . '&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+}
+
 $table->head[2] = "<span title='" . __('Server') . "'>" . __('S.') . "</span>" . ' ' .
 	'<a href="' . $url . '&sort_field=server&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectServerUp)) . '</a>' .
 	'<a href="' . $url . '&sort_field=server&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectServerDown)) . '</a>';
@@ -457,11 +465,11 @@ foreach($tempRows as $row) {
 
 foreach ($modules as $module) {
 	$is_extra = enterprise_hook('policies_is_module_extra_policy', array($module["id_agente_modulo"]));
-
+	
 	if($is_extra === ENTERPRISE_NOT_HOOK) {
 		$is_extra = false;
 	}
-
+	
 	if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && !$is_extra) {
 		continue;
 	}

@@ -1,3 +1,11 @@
+2013-08-07 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/setup/setup_auth.php, godmode/admin_access_logs.php,
+	godmode/agentes/module_manager.php: removed the code as
+	"call time passing variables by reference" deprecated in PHP 5.4.
+	
+	MERGED FROM THE TRUNK.
+
 2013-08-07 Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* index.php: Fixed footer layout probrems: Now we can see the

@@ -24,7 +24,7 @@ import java.net.UnknownHostException;
 class tentacle_client {
 
 	// Return 0 when success, -1 when error
-	public int tentacle_client(String args[]) {
+	public int send(String args[]) {
 
 		int port = 41121;
 		String send = null;
@@ -36,17 +36,18 @@ class tentacle_client {
 		boolean verbose = false;
 		File file = new File("");
 
-		for (int i=0;i<args.length;i++) {
-			if(i == (args.length - 1)) {
+		for (int i = 0; i < args.length; i++) {
+			if (i == (args.length - 1)) {
 				filePath = args[i];
-			} else {
+			}
+			else {
 				// Get the param if is -* format or empty string otherwise
 				String last_parameter = parameter;
 				parameter = isParameter(args[i]);
 
 				// If is not -* param check the previous param
-				if(parameter.equals("")) {
-					if(last_parameter.equals("-a")) {
+				if (parameter.equals("")) {
+					if (last_parameter.equals("-a")) {
 						address = args[i];
 					}
 					else if(last_parameter.equals("-p")) {
@@ -55,7 +56,7 @@ class tentacle_client {
 				}
 
 				// The solo params are checked otherwise
-				if(parameter.equals("-v")) {
+				if (parameter.equals("-v")) {
 					verbose = true;
 				}
 			}
@@ -125,12 +126,14 @@ class tentacle_client {
 			send = "SEND <" + file.getName() + "> SIZE " + Integer.toString(data.length) + '\n';
 			getInfo("Client -> Server: " + send, verbose);
 			serverOutput.writeBytes(send);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			getError("Could not write on server");
 		}
 		try {
 			serverResponse = serverInput.readLine();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			getError("Could not get server response");
 		}
 

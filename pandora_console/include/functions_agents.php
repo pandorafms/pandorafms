@@ -218,7 +218,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			INNER JOIN talert_templates t4
 				ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s",
-	$selectText, $subQuery, $where, $filter, $orderbyText);
+		$selectText, $subQuery, $where, $filter, $orderbyText);
 	$alerts = db_get_all_rows_sql ($sql);
 	
 	if ($alerts === false)

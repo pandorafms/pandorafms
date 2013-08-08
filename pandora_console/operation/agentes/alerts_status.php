@@ -76,7 +76,7 @@ if ($idAgent != 0) {
 	$is_extra = enterprise_hook('policies_is_agent_extra_policy',
 		array($id_agente));
 	
-	if($is_extra === ENTERPRISE_NOT_HOOK) {
+	if ($is_extra === ENTERPRISE_NOT_HOOK) {
 		$is_extra = false;
 	}
 	
@@ -86,7 +86,6 @@ if ($idAgent != 0) {
 		exit;
 	}
 	
-	$agents = array($idAgent);
 	$idGroup = false;
 	
 	$print_agent = false;
@@ -276,17 +275,51 @@ else {
 
 if (defined('METACONSOLE')) {
 	require_once ($config['homedir'] . '/enterprise/meta/include/functions_alerts_meta.php');
-	
-	$alerts['alerts_simple'] = alerts_meta_get_alerts ($agents,
-		$filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
+	if ($idAgent != 0) {
+		$alerts['alerts_simple'] = alerts_meta_get_alerts ($agents,
+			$filter_alert, $options_simple, $whereAlertSimple, false, false,
+			$idGroup);
+		
+		
+		$countAlertsSimple = alerts_meta_get_alerts ($agents, $filter_alert,
+			false, $whereAlertSimple, false, false, $idGroup, true);
+	}
+	else {
+		$id_groups = array_keys(
+			users_get_groups($config["id_user"], 'AR', false));
+		
+		$alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups,
+			$filter_alert, $options_simple, $whereAlertSimple, false,
+			false, $idGroup);
+		
+		$countAlertsSimple = alerts_meta_get_group_alerts($id_groups,
+			$filter_alert, false, $whereAlertSimple, false, false,
+			$idGroup, true);
+	}
 }
 else {
-	$alerts['alerts_simple'] = agents_get_alerts_simple ($agents,
-		$filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
+	if ($idAgent != 0) {
+		$alerts['alerts_simple'] = agents_get_alerts_simple ($idAgent,
+			$filter_alert, $options_simple, $whereAlertSimple, false, false,
+			$idGroup);
+		
+		$countAlertsSimple = agents_get_alerts_simple ($idAgent,
+			$filter_alert, false, $whereAlertSimple, false, false,
+			$idGroup, true);
+	}
+	else {
+		$id_groups = array_keys(
+			users_get_groups($config["id_user"], 'AR', false));
+		
+		$alerts['alerts_simple'] = get_group_alerts($id_groups,
+			$filter_alert, $options_simple, $whereAlertSimple, false,
+			false, $idGroup);
+		
+		$countAlertsSimple = get_group_alerts($id_groups,
+			$filter_alert, false, $whereAlertSimple, false, false,
+			$idGroup, true);
+	}
 }
-
-$countAlertsSimple = agents_get_alerts_simple ($agents, $filter_alert,
-	false, $whereAlertSimple, false, false, $idGroup, true);
 
 if ($tab != null) {
 	$url = $url.'&tab='.$tab;

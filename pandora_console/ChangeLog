@@ -1,5 +1,10 @@
 2013-08-08 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* images/zoom_default.svg: added a beatiful buttom for default zoom
+	from Carla job.
+
+2013-08-08 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_agents.php, include/functions_alerts.php,
 	operation/agentes/alerts_status.php: improved the function
 	"get_group_alerts" to use in the places that there were a foreach

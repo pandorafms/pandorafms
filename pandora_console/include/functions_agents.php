@@ -179,7 +179,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			$disabled = '';
 		else
 			$disabled = 'WHERE disabled = 0';
-			
+		
 		$subQuery = 'SELECT id_agente_modulo
 			FROM tagente_modulo ' . $disabled;
 	}

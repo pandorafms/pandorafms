@@ -149,7 +149,7 @@ public class PandroidAgentListener extends Service {
 	//				  "/data/data/pandroid.agent/files/" + destFileName
 	//	    		  };
 	//
-	//		int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
+	//		int tentacleRet = new tentacle_client().send(tentacleData);
 	//    	
 	//		// Deleting the file after send it
 	//		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
@@ -301,7 +301,7 @@ public class PandroidAgentListener extends Service {
 				};
 
 
-				tentacleRet = new tentacle_client().tentacle_client(tentacleData);
+				tentacleRet = new tentacle_client().send(tentacleData);
 
 				if (tentacleRet == 0) {
 					putSharedData("PANDROID_DATA", "contactError", "0", "integer");

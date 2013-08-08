@@ -1,3 +1,10 @@
+2013-08-08 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* src/pandroid/agent/PandroidAgentListener.java,
+	src/pandroid/agent/PandroidAgentTentacle.java: removed the java
+	warning that the class of tentacle have a method with the same name
+	as a constructor.
+
 2013-07-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* Pandroid Agent v3.0_iso-8859-1.apk, Pandroid Agent v3.0_UTF8.apk:

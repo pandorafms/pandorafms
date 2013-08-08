@@ -1522,24 +1522,147 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
  *
  * @return array An array with alerts dictionaries defined in a group.
  */
-function get_group_alerts ($id_group) {
+function get_group_alerts($id_group, $filter = '', $options = false,
+	$where = '', $allModules = false, $orderby = false,
+	$idGroup = false, $count = false) {
+	
 	global $config;
 	
-	require_once ($config["homedir"] . '/include/functions_agents.php');
 	
-	$alerts = array ('simple' => array());
-	$agents = agents_get_group_agents ($id_group, false, "none");
-	
-	foreach ($agents as $agent_id => $agent_name) {
-		$agent_alerts = agents_get_alerts ($agent_id);
-		
-		
-		if (!empty($agent_alerts['simple']))
-			$alerts['simple'] = array_merge ($alerts['simple'],
-				$agent_alerts['simple']);
+	if (is_array($filter)) {
+		$disabled = $filter['disabled'];
+		if (isset($filter['standby'])) {
+			$filter = ' AND talert_template_modules.standby = "'.$filter['standby'].'"';
+		}
+		else {
+			$filter = '';
+		}
+	}
+	else {
+		$filter = '';
+		$disabled = $filter;
 	}
 	
-	return $alerts;
+	switch ($disabled) {
+		case "notfired":
+			$filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
+			break;
+		case "fired":
+			$filter .= ' AND times_fired > 0 AND talert_template_modules.disabled = 0';
+			break;
+		case "disabled":
+			$filter .= ' AND talert_template_modules.disabled = 1';
+			break;
+		case "all_enabled":
+			$filter .= ' AND talert_template_modules.disabled = 0';
+			break;
+		default:
+			$filter .= '';
+			break;
+	}
+	
+	if (is_array ($options)) {
+		$filter .= db_format_array_where_clause_sql ($options);
+	}
+	
+	
+	if ($id_group !== false) {
+		$where_tags = tags_get_acl_tags($config['id_user'],
+			$idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+		
+		if ($id_group != 0) {
+			if (is_array($id_group)) {
+				if (in_array(0, $id_group)) {
+					$id_group = 0;
+				}
+			}
+			
+			if (is_array($id_group)) {
+				if (empty($id_group)) {
+					$subQuery = 'SELECT id_agente_modulo
+						FROM tagente_modulo
+						WHERE 1 = 0';
+				}
+				else {
+					$subQuery = 'SELECT id_agente_modulo
+						FROM tagente_modulo
+						WHERE delete_pending = 0
+							AND id_agente IN (SELECT id_agente
+								FROM tagente
+								WHERE
+									id_grupo IN (' . implode(',', $id_group) . '))';
+				}
+			}
+			else {
+				$subQuery = 'SELECT id_agente_modulo
+					FROM tagente_modulo
+					WHERE delete_pending = 0
+						AND id_agente IN (SELECT id_agente
+							FROM tagente WHERE id_grupo = ' . $idGroup . ')';
+			}
+		}
+		else {
+			//ALL GROUP
+			$subQuery = 'SELECT id_agente_modulo
+				FROM tagente_modulo WHERE delete_pending = 0';
+		}
+		
+		// If there are any errors add imposible condition
+		if (in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL))) {
+			$subQuery .= ' AND 1 = 0';
+		} 
+		else {
+			$subQuery .= $where_tags;
+		}
+	}
+	else {
+		if ($allModules)
+			$disabled = '';
+		else
+			$disabled = 'WHERE disabled = 0';
+		
+		$subQuery = 'SELECT id_agente_modulo
+			FROM tagente_modulo ' . $disabled;
+	}
+	
+	$orderbyText = '';
+	if ($orderby !== false) {
+		if (is_array($orderby)) {
+			$orderbyText = sprintf("ORDER BY %s", $orderby['field'], $orderby['order']);
+		}
+		else {
+			$orderbyText = sprintf("ORDER BY %s", $orderby);
+		}
+	}
+	
+	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.nombre AS agent_name, t4.name AS template_name';
+	if ($count !== false) {
+		$selectText = 'COUNT(talert_template_modules.id) AS count';
+	}
+	
+	
+	
+	$sql = sprintf ("SELECT %s
+		FROM talert_template_modules
+			INNER JOIN tagente_modulo t2
+				ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+			INNER JOIN tagente t3
+				ON t2.id_agente = t3.id_agente
+			INNER JOIN talert_templates t4
+				ON talert_template_modules.id_alert_template = t4.id
+		WHERE id_agent_module in (%s) %s %s %s",
+	$selectText, $subQuery, $where, $filter, $orderbyText);
+	$alerts = db_get_all_rows_sql ($sql);
+	
+	if ($alerts === false)
+		return array ();
+	
+	if ($count !== false) {
+		return $alerts[0]['count'];
+	}
+	else {
+		return $alerts;	
+	}
 }
 
 /**

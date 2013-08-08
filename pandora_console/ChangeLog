@@ -1,3 +1,12 @@
+2013-08-08 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php, include/functions_alerts.php,
+	operation/agentes/alerts_status.php: improved the function
+	"get_group_alerts" to use in the places that there were a foreach
+	loop with all agents for any group.
+	
+	Fixes: #2060
+
 2013-08-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/modificar_agente.php,

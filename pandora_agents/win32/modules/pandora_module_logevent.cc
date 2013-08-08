@@ -211,8 +211,10 @@ Pandora_Module_Logevent::openLogEvent () {
 
     // Discard existing events the first time the module is executed
     if (this->first_run == 1) {
-        this->getLogEvents (event_list, 1);
-	this->first_run = 0;
+		this->first_run = 0;
+		if (Pandora::getPandoraDebug() == false) {
+			this->getLogEvents (event_list, 1);
+		}
     }
 
     return this->log_event;

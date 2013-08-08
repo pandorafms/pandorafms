@@ -1,21 +1,11 @@
 <svg>
-	  <g
-     id="zoom_default">
-  <path
-     inkscape:connector-curvature="0"
-     style="fill:#000000;fill-opacity:1;stroke:none"
-     id="path3031"
-     d="m 46.42857,11.428571 a 23.214285,11.428571 0 0 1 -46.42857,0 23.214285,11.428571 0 1 1 46.42857,0 z" />
-  <text
-     xml:space="preserve"
-     style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
-     x="16.860435"
-     y="17.624054"
-     id="text3227"
-     sodipodi:linespacing="125%"><tspan
-       sodipodi:role="line"
-       id="tspan3229"
-       x="16.860435"
-       y="17.624054">D</tspan></text>
-   </g>
+	<g id="zoom_default">
+		<g>
+			<g>
+				<path fill="#999999" d="M38.95,29.703c0,3.895-3.189,7.086-7.087,7.086H17.037c-3.896,0-7.087-3.189-7.087-7.086V14.876
+					c0-3.898,3.188-7.088,7.087-7.088h14.826c3.896,0,7.087,3.188,7.087,7.088V29.703z"/>
+			</g>
+		</g>
+		<text transform="matrix(1 0 0 1 18.0239 29.0308)" fill="#FFFFFF" font-family="'Arial-BoldMT'" font-size="19">D</text>
+	</g>
 </svg>

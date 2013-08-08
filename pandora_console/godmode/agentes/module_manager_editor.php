@@ -335,7 +335,10 @@ switch ($moduletype) {
 	case MODULE_DATA:
 		$moduletype = MODULE_DATA;
 		// Has remote configuration ?
-		$remote_conf = config_agents_has_remote_configuration($id_agente);
+		$remote_conf = false;
+		if (enterprise_installed()) {
+			$remote_conf = config_agents_has_remote_configuration($id_agente);
+		}
 		
 		/* Categories is an array containing the allowed module types
 		 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */

@@ -570,18 +570,34 @@ require('include/php_to_js_values.php');
 ?>
 
 <script type="text/javascript" language="javascript">
+
+//Dynamically assign footer position and width.
 	//Initial load of page
-	$(document).ready(sizeContent);
-	
+	$(document).ready(adjustFooter);
+
 	//Every resize of window
-	$(window).resize(sizeContent);
+	$(window).resize(adjustFooter);
 	
+	//Every resize (height change) of div#container
+	container_height = $('#container').height();
+	$('#container').bind((window.opera ? 'DOMAttrModified' : 'DOMSubtreeModified'), function() {
+		if (container_height != $('#container').height()) {
+			container_height = $('#container').height();
+			adjustFooter();
+	        }
+	});
+
 	//Dynamically assign height
-	function sizeContent() {
-		var footposition_bottom = $('#foot').position().top + $("#foot").height();
+	function adjustFooter() {
+		// highest Y pos for #foot
+		var ulim = $('#container').position().top + $('#container').outerHeight(true);
+		// $(window).height() returns wrong value on Opera and Google Chrome.
+		var wh = $(window).height(); //document.documentElement.clientHeight;
+		var h = $('#foot').height();
+		var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
 		
-		if (footposition_bottom < $(window).height()) {
-			$('#container').css('height', $(window).height() - $("#foot").height() - 15 + 'px');
-		}
+		$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
+		$('#foot').width($(window).width());
+		$('#foot').height(h);
 	}
 </script>

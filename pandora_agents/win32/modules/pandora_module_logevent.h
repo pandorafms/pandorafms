@@ -34,7 +34,10 @@
 
 // The EventID property equals the InstanceId with the top two bits masked off.
 // See: http://msdn.microsoft.com/en-us/library/system.diagnostics.eventlogentry.eventid.aspx
-#define EVENT_ID_MASK 0x3FFFFFFF
+//#define EVENT_ID_MASK 0x3FFFFFFF
+
+// The Windows Event Log Viewer seems to ignore the most significant 16 bits.
+#define EVENT_ID_MASK 0x0000FFFF
 
 // Types for pointers to Wevtapi.dll functions
 typedef EVT_HANDLE WINAPI (*EvtQueryT) (EVT_HANDLE Session, LPCWSTR Path, LPCWSTR Query, DWORD Flags);

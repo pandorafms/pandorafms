@@ -1,5 +1,10 @@
 2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/snmpconsole/snmp_alert.php: change the text input for
+	description, now it is a textarea for large descriptions.
+
+2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/snmpconsole/snmp_alert.php: fixed the PHP warnings for
 	empty objects.
 

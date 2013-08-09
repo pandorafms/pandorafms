@@ -325,8 +325,10 @@ if ($create_alert || $update_alert) {
 	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox" style="font-weight: bold">';
 	
 	// Description
-	echo '<tr><td class="datos">'.__('Description').'</td><td class="datos">';
-	html_print_input_text ("description", $description, '', 60);
+	echo '<tr><td class="datos" valign="top">'.__('Description').'</td><td class="datos">';
+	html_print_textarea('description', 3, 2, $description, 'style="width:400px;"');
+	
+	//html_print_input_text ("description", $description, '', 60);
 	echo '</td></tr>';
 	
 	//echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';

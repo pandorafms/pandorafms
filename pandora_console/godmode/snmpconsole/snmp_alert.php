@@ -560,7 +560,7 @@ else {
 	$filter_param = (bool)get_parameter('filter', false);
 	$offset = (int) get_parameter ('offset');
 	
-	$table_filter = null;
+	$table_filter = new stdClass();
 	$table_filter->width = "98%";
 	$table_filter->data = array();
 	$table_filter->data[0][0] = __('Free search') . ui_print_help_tip(
@@ -655,6 +655,7 @@ else {
 			FROM talert_snmp WHERE' . $where_sql);
 	}
 	
+	$table = new stdClass();
 	$table->data = array ();
 	$table->head = array ();
 	$table->size = array ();

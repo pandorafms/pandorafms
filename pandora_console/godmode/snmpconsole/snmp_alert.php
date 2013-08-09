@@ -619,27 +619,25 @@ else {
 	}
 	
 	if (!empty($free_search)) {
-		$where_sql .= " AND (`single_value` = '" . $free_search . "'
-			OR `_snmp_f10_` = '" . $free_search . "'
-			OR `_snmp_f9_` = '" . $free_search . "'
-			OR `_snmp_f8_` = '" . $free_search . "'
-			OR `_snmp_f7_` = '" . $free_search . "'
-			OR `_snmp_f6_` = '" . $free_search . "'
-			OR `_snmp_f5_` = '" . $free_search . "'
-			OR `_snmp_f4_` = '" . $free_search . "'
-			OR `_snmp_f3_` = '" . $free_search . "'
-			OR `_snmp_f2_` = '" . $free_search . "'
-			OR `_snmp_f1_` = '" . $free_search . "'
-			OR `oid` = '" . $free_search . "'
-			OR `custom_oid` = '" . $free_search . "'
-			OR `agent` = '" . $free_search . "'
-			OR `description` = '" . $free_search . "')";
+		$where_sql .= " AND (`single_value` LIKE '%" . $free_search . "%'
+			OR `_snmp_f10_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f9_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f8_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f7_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f6_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f5_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f4_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f3_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f2_` LIKE '%" . $free_search . "%'
+			OR `_snmp_f1_` LIKE '%" . $free_search . "%'
+			OR `oid` LIKE '%" . $free_search . "%'
+			OR `custom_oid` LIKE '%" . $free_search . "%'
+			OR `agent` LIKE '%" . $free_search . "%'
+			OR `description` LIKE '%" . $free_search . "%')";
 	}
 	
 	$count = db_get_value_sql('SELECT COUNT(*)
 		FROM talert_snmp WHERE' . $where_sql);
-	
-	
 	
 	
 	$result = array();
@@ -723,7 +721,11 @@ else {
 			$data[7] = __('Never');
 		}
 		
-		$data[8] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' .
+		$data[8] = '<a href="index.php?' .
+			'sec=snmpconsole&' .
+			'sec2=godmode/snmpconsole/snmp_alert&' .
+			'update_alert=1&'.
+			'id_alert_snmp='.$row["id_as"].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
 			'&nbsp;&nbsp;<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
 			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';

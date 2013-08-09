@@ -1,3 +1,8 @@
+2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/snmpconsole/snmp_alert.php: fixed the link to edit in the
+	button to edit, and fixed the free text filter.
+
 2013-08-08 Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* index.php: Fixed footer layout probrems: Now we can see the

@@ -479,7 +479,7 @@ $(window).resize(adjustFooter);
 
 //Every resize (height change) of div#container
 container_height = $('#container').height();
-$('#container').bind(($.browser.opera ? 'DOMAttrModified' : 'DOMSubtreeModified'), function() {
+($.browser.opera ? $('#container') : $('body')).bind(($.browser.opera ? 'DOMAttrModified' : 'DOMSubtreeModified'), function() {
 	if (container_height != $('#container').height()) {
 		container_height = $('#container').height();
 		adjustFooter();

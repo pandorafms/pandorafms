@@ -1,3 +1,7 @@
+2013-08-08 Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* index.php: Improve the footer layout.
+
 2013-08-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/agentes/estado_agente.php: fixed the call to

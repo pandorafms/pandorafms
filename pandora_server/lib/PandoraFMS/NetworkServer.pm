@@ -452,6 +452,11 @@ sub exec_network_module ($$$$) {
 	my $timeout = $module->{'max_timeout'};
 	my $retries = $module->{'max_retries'};
 
+	# Use the agent address by default
+	if (! defined($ip_target) || $ip_target eq '') {
+		$ip_target = $agent_row->{'direccion'};
+	}
+
 	if ((defined($ip_target)) && ($ip_target)) {
 
 	    # -------------------------------------------------------

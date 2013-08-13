@@ -1,3 +1,14 @@
+2013-08-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Use the agent's address if ip_target
+	  is not set.
+
+	* lib/PandoraFMS/Core.pm: Fixed a warning.
+
+	* conf/pandora_server.conf.new,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/SNMPServer.pm: Added SNMP storm protection.
+
 2013-08-05 Miguel de Dios <miguel.dedios@artica.es>
 
 	* ChangeLog: lost line about "lib/PandoraFMS/PredictionServer.pm"

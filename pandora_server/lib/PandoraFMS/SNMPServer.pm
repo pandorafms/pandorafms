@@ -41,6 +41,9 @@ our @ISA = qw(PandoraFMS::Server);
 # Tells the server to keep running
 my $RUN :shared;
 
+# Trap statistics by agent
+my %AGENTS = ();
+
 ########################################################################################
 # SNMP Server class constructor.
 ########################################################################################
@@ -118,7 +121,16 @@ sub pandora_snmptrapd {
 		readline SNMPLOGFILE for (1..$last_line);
 
 		# Main loop
+		my $storm_ref = time ();
 		while ($RUN == 1) {
+			
+			# Reset storm protection counters
+			my $curr_time = time ();
+			if ($storm_ref + $pa_config->{"snmp_storm_timeout"} < $curr_time) {
+				$storm_ref = $curr_time;
+				%AGENTS = ();
+			}
+
 			while (my $line = <SNMPLOGFILE>) {
 				$last_line++;
 				$last_size = (stat ($log_file))[7];
@@ -178,6 +190,21 @@ sub pandora_snmptrapd {
 				# custom_type, custom_value is not used since 4.0 version, all custom data goes on custom_oid
 				$custom_oid = $data;
 
+				# Storm protection
+				if (! defined ($AGENTS{$source})) {
+					$AGENTS{$source}{'count'} = 1;
+					$AGENTS{$source}{'event'} = 0;
+				} else {
+					$AGENTS{$source}{'count'} += 1;
+				}
+				if ($pa_config->{'snmp_storm_protection'} > 0 && $AGENTS{$source}{'count'} > $pa_config->{'snmp_storm_protection'}) {
+					if ($AGENTS{$source}{'event'} == 0) {
+						pandora_event ($pa_config, "Too many traps coming from $source. Silenced for " . int ($pa_config->{"snmp_storm_timeout"} / 60) . " minutes.", 0, 0, 4, 0, 0, 'system', 0, $dbh);
+					}
+					$AGENTS{$source}{'event'} = 1;
+					next;
+				}
+				
 				# Insert the trap into the DB
 				if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $self->getServerID (), $dbh]))) {
 					my $trap_id = db_insert ($dbh, 'id_trap', 'INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',

@@ -1,3 +1,9 @@
+2013-08-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/es/help_snmp_alert_custom.php,
+	  include/help/en/help_snmp_alert_custom.php: Updated. The Japanese
+	  help file seems to be ok.
+
 2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/snmpconsole/snmp_alert.php: change the text input for

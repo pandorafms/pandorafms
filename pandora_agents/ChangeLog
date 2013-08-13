@@ -1,3 +1,7 @@
+2013-08-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/pandora_agent: Display proxy mode errors in the log file.
+
 2013-07-10 Miguel de Dios <miguel.dedios@artica.es>
 
 	* unix/NT4/pandora_agent.conf, pc/NT4/pandora_agent.conf: set the

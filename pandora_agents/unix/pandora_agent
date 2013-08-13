@@ -921,10 +921,11 @@ sub launch_tentacle_proxy () {
 			my $new_process = "tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
 
 			log_message ('setup', 'Proxy mode enabled');
-			exec ($new_process);		
+			exec ($new_process);
 		} 
 	} else {
-		error ('You can not proxy to localhost');
+		log_message ('error', 'You can not proxy to localhost');
+		exit 1;
 	}
 }
 
@@ -2002,7 +2003,8 @@ if ($Conf{'proxy_mode'}) {
 	if ($> != 0) {		
 		launch_tentacle_proxy();
 	} else {
-		error ('Proxy mode can not be launched as root');
+		log_message ('Proxy mode can not be launched as root');
+		exit 1;
 	}
 }
 

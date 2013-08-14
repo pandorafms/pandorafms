@@ -571,33 +571,49 @@ require('include/php_to_js_values.php');
 
 <script type="text/javascript" language="javascript">
 
-//Dynamically assign footer position and width.
 	//Initial load of page
 	$(document).ready(adjustFooter);
 
 	//Every resize of window
 	$(window).resize(adjustFooter);
 	
-	//Every resize (height change) of div#container
-	container_height = $('#container').height();
-	$('#container').bind((window.opera ? 'DOMAttrModified' : 'DOMSubtreeModified'), function() {
-		if (container_height != $('#container').height()) {
-			container_height = $('#container').height();
-			adjustFooter();
-	        }
-	});
+	//Every show/hide call may need footer re-layout
+	(function() {
+		var oShow = jQuery.fn.show;
+		var oHide = jQuery.fn.hide;
 
-	//Dynamically assign height
+		jQuery.fn.show = function () {
+			var rv = oShow.apply(this, arguments);
+			adjustFooter();
+			return rv;
+		};
+		jQuery.fn.hide = function () {
+			var rv = oHide.apply(this, arguments);
+			adjustFooter();
+			return rv;
+		};
+	})();
+
+	//Dynamically assign footer position and width.
 	function adjustFooter() {
-		// highest Y pos for #foot
+		if (document.readyState !== 'complete') {
+			return;
+		}
+		// minimum top value (upper limit) for div#foot
 		var ulim = $('#container').position().top + $('#container').outerHeight(true);
-		// $(window).height() returns wrong value on Opera and Google Chrome.
-		var wh = $(window).height(); //document.documentElement.clientHeight;
+		// window height. $(window).height() returns wrong value on Opera and Google Chrome.
+		var wh = document.documentElement.clientHeight;
+		// save div#foot's height for latter use
 		var h = $('#foot').height();
+		// new top value for div#foot
 		var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
-		
-		$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
-		$('#foot').width($(window).width());
-		$('#foot').height(h);
+
+		if ($('#foot').position().top != t) {
+			$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
+			$('#foot').height(h);
+		}
+		if ($('#foot').width() !=  $(window).width()) {
+			$('#foot').width($(window).width());
+		}
 	}
 </script>

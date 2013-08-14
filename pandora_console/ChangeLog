@@ -1,3 +1,9 @@
+2013-08-14 Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* index.php: Improve footer layout.
+
+	MERGED FROM branch_4.0
+
 2013-08-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/es/help_snmp_alert_custom.php,

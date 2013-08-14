@@ -11,7 +11,7 @@ BEGIN
       VALUE "LegalCopyright", "Artica ST"
       VALUE "OriginalFilename", "PandoraAgent.exe"
       VALUE "ProductName", "Pandora FMS Windows Agent"
-      VALUE "ProductVersion", "(4.1(Build 130814))"
+      VALUE "ProductVersion", "(4.1(Build 130815))"
       VALUE "FileVersion", "1.0.0.0"
     END
   END

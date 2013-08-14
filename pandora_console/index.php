@@ -446,7 +446,7 @@ else {
 
 if ($config["pure"] == 0) {
 	echo '</div>'; // main
-	echo '<div style="clear:both;padding-top: 15px">&nbsp;</div>';
+	echo '<div style="clear:both">&nbsp;</div>';
 	echo '</div>'; // page (id = page)
 }
 else {

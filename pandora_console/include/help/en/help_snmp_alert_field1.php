@@ -18,4 +18,6 @@ You can use these macros in FieldX (1-10) of any alert
 <b>_AGENT_</b>: Agent name<br>
 <b>_IP_</b>: IP Address<br>
 <b>_TIMESTAMP_</b>: Trap date<br> 
+<b>_SNMP_OID_</b>: Trap OID<br> 
+<b>_SNMP_VALUE_</b>: Trap OID value<br> 
 </p>

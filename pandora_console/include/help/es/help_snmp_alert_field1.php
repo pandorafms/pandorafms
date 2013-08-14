@@ -18,5 +18,6 @@ Puede usar esas macros en los campos FieldX (1-10) de cualquier alerta.
 <b>_AGENT_</b>: Nombre del Agente <br>
 <b>_IP_</b>: Dirección IP<br>
 <b>_TIMESTAMP_</b>: Fecha trap<br>
-
+<b>_SNMP_OID_</b>: OID del trap<br> 
+<b>_SNMP_VALUE_</b>: Valor del OID del trap<br> 
 </p>

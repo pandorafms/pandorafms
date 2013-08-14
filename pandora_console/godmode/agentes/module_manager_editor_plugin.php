@@ -44,7 +44,7 @@ else {
 $extra_title = __('Plugin server module');
 
 $data = array ();
-$data[0] = __('Plugin');
+$data[0] = __('Plugin') . ui_print_help_icon ('plugin_macros', true);
 $data[1] = html_print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
 	'id_plugin', $id_plugin, 'changePluginSelect();', __('None'), 0, true, false, false, $disabledBecauseInPolicy);
 // Store the macros in base64 into a hidden control to move between pages

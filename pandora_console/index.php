@@ -446,7 +446,7 @@ else {
 
 if ($config["pure"] == 0) {
 	echo '</div>'; // main
-	echo '<div style="clear:both">&nbsp;</div>';
+	echo '<div style="clear:both;padding-top: 15px">&nbsp;</div>';
 	echo '</div>'; // page (id = page)
 }
 else {
@@ -477,26 +477,43 @@ $(document).ready(adjustFooter);
 //Every resize of window
 $(window).resize(adjustFooter);
 
-//Every resize (height change) of div#container
-container_height = $('#container').height();
-($.browser.opera ? $('#container') : $('body')).bind(($.browser.opera ? 'DOMAttrModified' : 'DOMSubtreeModified'), function() {
-	if (container_height != $('#container').height()) {
-		container_height = $('#container').height();
+//Every show/hide call may need footer re-layout
+(function() {
+	var oShow = jQuery.fn.show;
+	var oHide = jQuery.fn.hide;
+
+	jQuery.fn.show = function () {
+		var rv = oShow.apply(this, arguments);
 		adjustFooter();
-	}
-});
+		return rv;
+	};
+	jQuery.fn.hide = function () {
+		var rv = oHide.apply(this, arguments);
+		adjustFooter();
+		return rv;
+	};
+})();
 
 //Dynamically assign footer position and width.
 function adjustFooter() {
+	if (document.readyState !== 'complete') {
+		return;
+	}
 	// minimum top value (upper limit) for div#foot
 	var ulim = $('#container').position().top + $('#container').outerHeight(true);
-	// $(window).height() returns wrong value on Opera and Google Chrome.
+	// window height. $(window).height() returns wrong value on Opera and Google Chrome.
 	var wh = document.documentElement.clientHeight;
+	// save div#foot's height for latter use
 	var h = $('#foot').height();
+	// new top value for div#foot
 	var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
 
-	$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
-	$('#foot').width($(window).width());
-	$('#foot').height(h);
+	if ($('#foot').position().top != t) {
+		$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
+		$('#foot').height(h);
+	}
+	if ($('#foot').width() !=  $(window).width()) {
+		$('#foot').width($(window).width());
+	}
 }
 </script>

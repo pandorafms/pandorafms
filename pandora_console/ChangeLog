@@ -1,3 +1,15 @@
+2013-08-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/module_manager_editor_plugin.php,
+	  include/help/ja/help_web_checks.php,
+	  include/help/ja/help_plugin_macros.php,
+	  include/help/en/help_plugin_macros.php,
+	  include/help/en/help_web_checks.php,
+	  include/help/en/help_snmp_alert_field1.php,
+	  include/help/es/help_plugin_macros.php,
+	  include/help/es/help_snmp_alert_field1.php,
+	  include/help/es/help_web_checks.php: Updated help files.
+
 2013-08-14 Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* index.php: Improve footer layout.

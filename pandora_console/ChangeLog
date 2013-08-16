@@ -1,3 +1,9 @@
+2013-08-16 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/ajax/module.php, include/javascript/pandora_modules.js:
+	fixed the ajax call to get the plugin fields in the form editor
+	module plugin server.
+
 2013-08-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_plugin.php,

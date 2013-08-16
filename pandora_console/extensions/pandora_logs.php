@@ -18,7 +18,8 @@ function view_logfile ($file_name) {
 	global $config;
 	
 	$memory_limit = ini_get("memory_limit");
-	if (strstr("M", $memory_limit) !== false) {
+	
+	if (strstr($memory_limit, "M") !== false) {
 		$memory_limit = str_replace("M", "", $memory_limit);
 		$memory_limit = $memory_limit * 1024 * 1024;
 		

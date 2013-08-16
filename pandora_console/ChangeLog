@@ -1,5 +1,10 @@
 2013-08-16 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/pandora_logs.php: fixed the translation the human
+	size of php memory limit to bytes size limit.
+
+2013-08-16 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/ajax/module.php, include/javascript/pandora_modules.js:
 	fixed the ajax call to get the plugin fields in the form editor
 	module plugin server.

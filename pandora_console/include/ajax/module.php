@@ -20,6 +20,19 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 require_once ($config['homedir'] . '/enterprise/include/functions_metaconsole.php');
 
+$get_plugin_macros = get_parameter('get_plugin_macros');
+if ($get_plugin_macros) {
+	$plugin_macros = db_get_value('macros','tplugin','id',get_parameter('id_plugin',0));
+	
+	$macros = array();
+	
+	$macros['base64'] = base64_encode($plugin_macros);
+	$macros['array'] = json_decode($plugin_macros,true);
+	
+	echo json_encode($macros);
+	return;
+}
+
 ui_require_jquery_file ("ui-timepicker-addon");
 // This script is included manually to be included after jquery and avoid error
 echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language(), false, false, false) . '"></script>';
@@ -42,18 +55,6 @@ if ($search_modules) {
 	$modules = io_safe_output($modules);
 	
 	echo json_encode($modules);
-}
-
-$get_plugin_macros = get_parameter('get_plugin_macros');
-if ($get_plugin_macros) {
-	$plugin_macros = db_get_value('macros','tplugin','id',get_parameter('id_plugin',0));
-	
-	$macros = array();
-	
-	$macros['base64'] = base64_encode($plugin_macros);
-	$macros['array'] = json_decode($plugin_macros,true);
-	
-	echo json_encode($macros);
 }
 
 $get_module_detail = get_parameter ('get_module_detail', 0);

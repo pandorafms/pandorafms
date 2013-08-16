@@ -572,7 +572,7 @@ function add_macro_field(macro, row_model_id) {
 		regex = /forced_title_(\w+)/;
 		var forced_title_id = field_desc.match(regex)[1];
 		var uniq_id = 'id' + (new Date()).getTime();
-
+		
 		field_desc = field_desc.replace(forced_title_id, uniq_id);
 		field_desc = field_desc.replace(forced_title_id, uniq_id);
 		

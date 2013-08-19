@@ -56,7 +56,7 @@ if (isset ($_POST["update"])) { // if update
 	
 	$values = array('subject' => $subject, 'text' => $text, 'timestamp' => $timestamp);
 	$result = db_process_sql_update('tnews', $values, array('id_news' => $id_news));
-
+	
 	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Not updated. Error updating data'));

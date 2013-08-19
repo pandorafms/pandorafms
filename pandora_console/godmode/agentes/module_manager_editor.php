@@ -337,7 +337,8 @@ switch ($moduletype) {
 		// Has remote configuration ?
 		$remote_conf = false;
 		if (enterprise_installed()) {
-			$remote_conf = config_agents_has_remote_configuration($id_agente);
+			enterprise_include_once('include/functions_config_agents.php');
+			$remote_conf = enterprise_hook('config_agents_has_remote_configuration', $id_agente);
 		}
 		
 		/* Categories is an array containing the allowed module types

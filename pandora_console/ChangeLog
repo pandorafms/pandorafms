@@ -1,3 +1,14 @@
+2013-08-19 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/agent_manager.php,
+	godmode/agentes/modificar_agente.php,
+	include/functions_agents.php,
+	include/functions_modules.php: Added missing enterprise_hook()
+	wrapper calls.
+
+	MERGED FROM branch4.x
+
 2013-08-16 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/pandora_logs.php: fixed the translation the human

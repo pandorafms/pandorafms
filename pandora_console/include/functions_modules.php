@@ -129,7 +129,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	$id_agente = modules_get_agentmodule_agent($id_agent_module);
 	
-	$file = config_agents_get_agent_config_filenames($id_agente);
+	$file = enterprise_hook('config_agents_get_agent_config_filenames', $id_agente);
 	$agent_md5  = $file['md5'];
 	$remote_conf  = $file['conf'];
 	

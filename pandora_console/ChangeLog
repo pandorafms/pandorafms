@@ -1,3 +1,7 @@
+2013-08-19 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/functions_api.php: Small Fix. Corrected error message.
+
 2013-08-19 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* general/logon_ok.php: fixed the lost "<br>" in the news.

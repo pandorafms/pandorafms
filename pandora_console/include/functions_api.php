@@ -3819,7 +3819,7 @@ function api_set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
 	
 	if (is_error($result)) {
 		// TODO: Improve the error returning more info
-		returnError('error_create_network_module', __('Error in user enabling/disabling.'));
+		returnError('error_enable_disable_user', __('Error in user enabling/disabling.'));
 	}
 	else {
 		if ($other['data'][0] == "0"){

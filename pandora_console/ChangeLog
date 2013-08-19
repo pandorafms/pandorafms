@@ -1,5 +1,10 @@
 2013-08-19 Hirofumi Kosaka <kosaka@rworks.jp>
 
+	* include/functions_api.php: Deleted extra "?>" at the bottom
+	that was added at rev8616.
+
+2013-08-19 Hirofumi Kosaka <kosaka@rworks.jp>
+
 	* godmode/agentes/module_manager_editor.php,
 	godmode/agentes/agent_manager.php,
 	godmode/agentes/modificar_agente.php,

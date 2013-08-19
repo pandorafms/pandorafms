@@ -44,10 +44,16 @@ echo '<div style="width:50%; float:left;" id="leftcolumn">';
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$sql = "SELECT subject,timestamp,text,author FROM tnews ORDER by timestamp DESC LIMIT 3";
+			$sql = "SELECT subject,timestamp,text,author
+				FROM tnews
+				ORDER BY timestamp DESC
+				LIMIT 3";
 			break;
 		case "oracle":
-			$sql = "SELECT subject,timestamp,text,author FROM tnews where rownum <= 3 ORDER by timestamp DESC";
+			$sql = "SELECT subject,timestamp,text,author
+				FROM tnews
+				WHERE rownum <= 3
+				ORDER BY timestamp DESC";
 			break;
 	}
 	
@@ -62,10 +68,13 @@ echo '<div style="width:50%; float:left;" id="leftcolumn">';
 			$comparation_suffix = __('ago');
 		}
 		foreach ($news as $article) {
+			$text = io_safe_output($article["text"]);
+			
+			
 			echo '<tr><th><b>'.$article["subject"].'</b></th></tr>';
 			echo '<tr><td>'.__('by').' <b>'.$article["author"].'</b> <i>' . ui_print_timestamp ($article["timestamp"], true).'</i> ' . $comparation_suffix . '</td></tr>';
 			echo '<tr><td class="datos">';
-			echo nl2br ($article["text"]);
+			echo nl2br($text);
 			echo '</td></tr>';
 		}
 		echo '</table>';

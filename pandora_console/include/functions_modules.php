@@ -178,10 +178,10 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		
 		//Added the config data if necesary
 		enterprise_include_once('include/functions_config_agents.php');
-		
+
 		$id_agente = modules_get_agentmodule_agent($id_agent_module);
-		
-		$file = config_agents_get_agent_config_filenames($id_agente);
+
+		$file = enterprise_hook('config_agents_get_agent_config_filenames', $id_agente);
 		$agent_md5  = $file['md5'];
 		$remote_conf  = $file['conf'];
 		
@@ -211,6 +211,7 @@ function modules_delete_agent_module ($id_agent_module) {
 	
 	$where = array ('id_agent_module' => $id_agent_module);
 	
+	enterprise_include_once('include/functions_config_agents.php');
 	enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_agent_module), modules_get_agentmodule_name($id_agent_module)));
 	
 	db_process_sql_delete ('talert_template_modules', $where);

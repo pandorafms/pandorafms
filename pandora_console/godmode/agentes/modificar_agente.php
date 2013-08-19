@@ -94,7 +94,8 @@ if (isset($result)) {
 	
 	// Check if the remote config file still exist
 	if (isset ($config["remote_config"])) {
-		if (config_agents_has_remote_configuration($id_agente)) {
+		enterprise_include_once('include/functions_config_agents.php');
+		if (enterprise_hook('config_agents_has_remote_configuration', $id_agente)) {
 			ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
 		}
 	}
@@ -459,7 +460,8 @@ if ($agents !== false) {
 		
 		echo "<td align='center' class='$tdcolor'>";
 		// Has remote configuration ?
-		if (config_agents_has_remote_configuration($agent["id_agente"])) {
+		enterprise_include_once('include/functions_config_agents.php');
+		if (enterprise_hook('config_agents_has_remote_configuration', $agent["id_agente"])) {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>";
 			echo html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')));		
 			echo "</a>";

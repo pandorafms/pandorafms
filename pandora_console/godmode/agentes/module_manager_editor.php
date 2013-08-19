@@ -283,8 +283,9 @@ switch ($moduletype) {
 	case 1:
 		$moduletype = 1;
 		// Has remote configuration ?
-		$remote_conf = config_agents_has_remote_configuration($id_agente);
-		
+		enterprise_include_once('include/functions_config_agents.php');
+		$remote_conf = enterprise_hook('config_agents_has_remote_configuration', $id_agente);
+
 		/* Categories is an array containing the allowed module types
 		 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
 		$categories = array (0, 1, 2, 6, 7, 8, -1);

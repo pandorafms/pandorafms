@@ -1,3 +1,12 @@
+2013-08-19 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/agent_manager.php,
+	godmode/agentes/modificar_agente.php,
+	include/functions_agents.php,
+	include/functions_modules.php: Added missing enterprise_hook()
+	wrapper calls.
+
 2013-08-14 Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* index.php: Removed erroneously committed chunk.

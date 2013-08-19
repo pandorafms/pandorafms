@@ -1,3 +1,9 @@
+2013-08-19 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/functions_api.php: Small Fix. Corrected error message.
+
+	MERGED FROM branch4.x
+
 2013-08-19 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* general/logon_ok.php, godmode/setup/news.php: fixed the lost

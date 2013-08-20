@@ -894,9 +894,9 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	
 	$where = '';
 
-	if (isset($other['data'][0])){
+	if (isset($other['data'][0])) {
 		// Filter by SO
-		if ($other['data'][0] != ""){
+		if ($other['data'][0] != "") {
 			$where .= " AND tconfig_os.id_os = " . $other['data'][0];
 		}
 	}
@@ -916,7 +916,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 		// Filter by policy
 		if ($other['data'][4] != "") {
 			$filter_by_policy = enterprise_hook('policies_get_filter_by_agent', array($other['data'][4]));
-			if ($filter_by_policy !== ENTERPRISE_NOT_HOOK){
+			if ($filter_by_policy !== ENTERPRISE_NOT_HOOK) {
 				$where .= $filter_by_policy;
 			}
 		}
@@ -930,18 +930,23 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	// Initialization of array
 	$result_agents = array();
 	// Filter by state
-	$sql = "SELECT id_agente, nombre, direccion, comentarios, tconfig_os.name, url_address FROM tagente, tconfig_os WHERE tagente.id_os = tconfig_os.id_os AND disabled = 0 " . $where;
+	$sql = "SELECT id_agente, nombre, direccion, comentarios,
+			tconfig_os.name, url_address
+		FROM tagente, tconfig_os
+		WHERE tagente.id_os = tconfig_os.id_os
+			AND disabled = 0 " . $where;
 	
 	$all_agents = db_get_all_rows_sql($sql);
 	
 	// Filter by status: unknown, warning, critical, without modules 
-	if (isset($other['data'][2])){
+	if (isset($other['data'][2])) {
 		if ($other['data'][2] != "") {
-			foreach($all_agents as $agent){
+			foreach($all_agents as $agent) {
 				$filter_modules['id_agente'] = $agent['id_agente'];
 				$filter_modules['disabled'] = 0;
 				$filter_modules['delete_pending'] = 0;
-				$modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
+				$modules = db_get_all_rows_filter('tagente_modulo',
+					$filter_modules, 'id_agente_modulo'); 
 				$result_modules = array(); 
 				// Skip non init modules
 				foreach ($modules as $module) {
@@ -4909,6 +4914,143 @@ function api_set_validate_events($id_event, $trash1, $other, $return_type, $user
 	else {
 		returnError('Error in validation operation.');
 	}
+}
+
+function api_get_gis_agent($id_agent, $trash1, $tresh2, $return_type, $user_in_db) {
+	$agent_gis_data = db_get_row_sql("
+		SELECT *
+		FROM tgis_data_status
+		WHERE tagente_id_agente = " . $id_agent);
+	
+	if ($agent_gis_data) {
+		returnData($return_type,
+			array('type' => 'array', 'data' => $agent_gis_data));
+	}
+	else {
+		returnError('Error.');
+	}
+}
+
+function api_set_gis_agent_only_position($id_agent, $trash1, $other, $return_type, $user_in_db) {
+	global $config;
+	
+	$new_gis_data = $other['data'];
+	
+	$correct = true;
+	
+	if (isset($new_gis_data[0])) {
+		$latitude = $new_gis_data[0];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[1])) {
+		$longitude = $new_gis_data[1];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[2])) {
+		$altitude = $new_gis_data[2];
+	}
+	else $correct = false;
+	
+	if (!$config['activate_gis']) {
+		$correct = false;
+	}
+	else {
+		if ($correct) {
+			$correct = agents_update_gis($id_agent, $latitude,
+				$longitude, $altitude, 0, 1, date( 'Y-m-d H:i:s'), null,
+				1, __('Save by Pandora Console'),
+				__('Update by Pandora Console'),
+				__('Insert by Pandora Console'));
+		}
+	}
+	
+	$data = array('type' => 'string', 'data' => (int)$correct);
+	
+	$returnType = 'string';
+	returnData($returnType, $data);
+}
+
+function api_set_gis_agent($id_agent, $trash1, $other, $return_type, $user_in_db) {
+	global $config;
+	
+	$new_gis_data = $other['data'];
+	
+	$correct = true;
+	
+	if (isset($new_gis_data[0])) {
+		$latitude = $new_gis_data[0];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[1])) {
+		$longitude = $new_gis_data[1];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[2])) {
+		$altitude = $new_gis_data[2];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[3])) {
+		$ignore_new_gis_data = $new_gis_data[3];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[4])) {
+		$manual_placement = $new_gis_data[4];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[5])) {
+		$start_timestamp = $new_gis_data[5];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[6])) {
+		$end_timestamp = $new_gis_data[6];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[7])) {
+		$number_of_packages = $new_gis_data[7];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[8])) {
+		$description_save_history = $new_gis_data[8];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[9])) {
+		$description_update_gis = $new_gis_data[9];
+	}
+	else $correct = false;
+	
+	if (isset($new_gis_data[10])) {
+		$description_first_insert = $new_gis_data[10];
+	}
+	else $correct = false;
+	
+	if (!$config['activate_gis']) {
+		$correct = false;
+	}
+	else {
+		if ($correct) {
+			$correct = agents_update_gis($id_agent, $latitude,
+				$longitude, $altitude, $ignore_new_gis_data,
+				$manual_placement, $start_timestamp, $end_timestamp,
+				$number_of_packages, $description_save_history,
+				$description_update_gis, $description_first_insert);
+		}
+	}
+	
+	$data = array('type' => 'string', 'data' => (int)$correct);
+	
+	$returnType = 'string';
+	returnData($returnType, $data);
 }
 
 function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db) {

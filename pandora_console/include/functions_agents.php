@@ -1954,4 +1954,79 @@ function agents_detail_view_status_img ($critical, $warning, $unknown, $total, $
 			__('All Monitors OK'), true, false, 'images');
 	}
 }
+
+function agents_update_gis($idAgente, $latitude, $longitude, $altitude,
+	$ignore_new_gis_data, $manual_placement, $start_timestamp,
+	$end_timestamp, $number_of_packages, $description_save_history,
+	$description_update_gis, $description_first_insert) {
+	
+	$previusAgentGISData = db_get_row_sql("
+		SELECT *
+		FROM tgis_data_status
+		WHERE tagente_id_agente = " . $idAgente);
+	
+	db_process_sql_update('tagente',
+		array('update_gis_data' => $updateGisData),
+		array('id_agente' => $idAgente));
+	
+	$return = false;
+	
+	if ($previusAgentGISData !== false) {
+		$return = db_process_sql_insert('tgis_data_history', array(
+			"longitude" => $previusAgentGISData['stored_longitude'],
+			"latitude" => $previusAgentGISData['stored_latitude'],
+			"altitude" => $previusAgentGISData['stored_altitude'],
+			"start_timestamp" => $previusAgentGISData['start_timestamp'],
+			"end_timestamp" => $end_timestamp,
+			"description" => $description_save_history,
+			"manual_placement" => $previusAgentGISData['manual_placement'],
+			"number_of_packages" => $previusAgentGISData['number_of_packages'],
+			"tagente_id_agente" => $previusAgentGISData['tagente_id_agente']
+		));
+		$return = db_process_sql_update('tgis_data_status', array(
+				"tagente_id_agente" => $idAgente,
+				"current_longitude" => $longitude,
+				"current_latitude" => $latitude,
+				"current_altitude" => $altitude,
+				"stored_longitude" => $longitude,
+				"stored_latitude" => $latitude,
+				"stored_altitude" => $altitude,
+				"start_timestamp" => $start_timestamp,
+				"manual_placement" => $manual_placement,
+				"description" => $description_update_gis,
+				"number_of_packages" => $number_of_packages),
+			array("tagente_id_agente" => $idAgente));
+	}
+	else {
+		//The table "tgis_data_status" have not a autonumeric
+		//then the mysql_insert_id function return 0
+		
+		$prev_count = db_get_num_rows("SELECT * FROM tgis_data_status");
+		
+		$return = db_process_sql_insert('tgis_data_status', array(
+			"tagente_id_agente" => $idAgente,
+			"current_longitude" => $longitude,
+			"current_latitude" => $latitude,
+			"current_altitude" => $altitude,
+			"stored_longitude" => $longitude,
+			"stored_latitude" => $latitude,
+			"stored_altitude" => $altitude,
+			"start_timestamp" => $start_timestamp,
+			"manual_placement" => $manual_placement,
+			"description" => $description_first_insert,
+			"number_of_packages" => $number_of_packages
+		));
+		
+		
+		$count = db_get_num_rows("SELECT * FROM tgis_data_status");
+		
+		if ($return === 0) {
+			if ($prev_count < $count) {
+				$return = true;
+			}
+		}
+	}
+	
+	return (bool)$return;
+}
 ?>

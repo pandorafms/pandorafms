@@ -722,6 +722,41 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 	returnData($returnType, $data, $separator);
 }
 
+function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
+	global $config;
+		//html_debug_print($other);
+	$name = $other['data'][0];
+	$ip = $other['data'][1];
+	$idParent = $other['data'][2];
+	$idGroup = $other['data'][3];
+	$cascadeProtection = $other['data'][4];
+	$intervalSeconds = $other['data'][5];
+	$idOS = $other['data'][6];
+	$idServer = $other['data'][7];
+	$customId = $other['data'][8];
+	$learningMode = $other['data'][9];
+	$disabled = $other['data'][10];
+	$description = $other['data'][11];
+	
+	$return = db_process_sql_update('tagente', 
+		array('nombre' => $name,
+			'direccion' => $ip,
+			'id_grupo' => $idGroup,
+			'intervalo' => $intervalSeconds,
+			'comentarios' => $description,
+			'modo' => $learningMode,
+			'id_os' => $idOS,
+			'disabled' => $disabled,
+			'cascade_protection' => $cascadeProtection,
+			'server_name' => $nameServer,
+			'id_parent' => $idParent,
+			'custom_id' => $customId),
+		array('id_agente' => $id_agent));
+	
+	returnData('string',
+		array('type' => 'string', 'data' => (int)((bool)$return)));
+}
+
 /**
  * Create a new agent, and print the id for new agent.
  * 
@@ -754,11 +789,13 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql1 = 'SELECT name FROM tserver WHERE id_server ='. $idServer;
+			$sql1 = 'SELECT name
+				FROM tserver WHERE id_server =' . $idServer;
 			break;
 		case "postgresql":
 		case "oracle":
-			$sql1 = 'SELECT name FROM tserver WHERE id_server ='. $idServer;
+			$sql1 = 'SELECT name
+				FROM tserver WHERE id_server =' . $idServer;
 			break;
 	}
 	
@@ -768,13 +805,22 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 		returnError('agent_name_exist', 'The name of agent yet exist in DB.');
 	}
 	else if (($idParent != 0) && 
-		(db_get_value_sql('SELECT id_agente FROM tagente WHERE id_agente = ' . $idParent) === false)) {
-			returnError('parent_agent_not_exist', 'The agent parent don`t exist.');
+		(db_get_value_sql('SELECT id_agente
+			FROM tagente
+			WHERE id_agente = ' . $idParent) === false)) {
+		
+		returnError('parent_agent_not_exist', 'The agent parent don`t exist.');
 	}
-	else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = ' . $idGroup) === false) {
+	else if (db_get_value_sql('SELECT id_grupo
+		FROM tgrupo
+		WHERE id_grupo = ' . $idGroup) === false) {
+		
 		returnError('id_grupo_not_exist', 'The group don`t exist.');
 	}
-	else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = ' . $idOS) === false) {
+	else if (db_get_value_sql('SELECT id_os
+		FROM tconfig_os
+		WHERE id_os = ' . $idOS) === false) {
+		
 		returnError('id_os_not_exist', 'The OS don`t exist.');
 	}
 	else if (db_get_value_sql($sql1) === false) {
@@ -796,7 +842,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 				'custom_id' => $customId));
 		
 		returnData('string',
-				array('type' => 'string', 'data' => $idAgente));
+			array('type' => 'string', 'data' => $idAgente));
 	}
 }
 
@@ -840,6 +886,7 @@ function api_set_create_custom_field($t1, $t2, $other, $returnType) {
 		
 		$data['type'] = "string";
 		$data["data"] = $result;
+		
 		returnData("string", $data);
 	}
 }
@@ -851,10 +898,10 @@ function api_set_create_custom_field($t1, $t2, $other, $returnType) {
  * @param string $name Custom field name
  */
 function api_get_custom_field_id($t1, $t2, $other, $returnType) {
-
+	
 	$name = $other["data"][0];
 	$id = db_get_value ('id_field', 'tagent_custom_fields', 'name', $name);	
-
+	
 	$data['type'] = "string";
 	$data["data"] = $id;
 	returnData("string", $data);
@@ -893,7 +940,7 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	
 	$where = '';
-
+	
 	if (isset($other['data'][0])) {
 		// Filter by SO
 		if ($other['data'][0] != "") {
@@ -926,7 +973,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 		$separator = ';'; //by default
 	else
 		$separator = $other['data'][5];
-		
+	
 	// Initialization of array
 	$result_agents = array();
 	// Filter by state

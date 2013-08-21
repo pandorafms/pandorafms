@@ -560,25 +560,25 @@ function db_sql_error_handler ($errno, $errstr) {
  */
 function db_add_database_debug_trace ($sql, $result = false, $affected = false, $extra = false) {
 	global $config;
-
+	
 	if (! isset ($config['debug']))
 	return false;
-
+	
 	if (! isset ($config['db_debug']))
 	$config['db_debug'] = array ();
-
+	
 	if (isset ($config['db_debug'][$sql])) {
 		$config['db_debug'][$sql]['saved']++;
 		return;
 	}
-
+	
 	$var = array ();
 	$var['sql'] = $sql;
 	$var['result'] = $result;
 	$var['affected'] = $affected;
 	$var['saved'] = 0;
 	$var['extra'] = $extra;
-
+	
 	$config['db_debug'][$sql] = $var;
 }
 
@@ -590,7 +590,7 @@ function db_add_database_debug_trace ($sql, $result = false, $affected = false, 
  */
 function db_clean_cache() {
 	global $sql_cache;
-
+	
 	$sql_cache = array ('saved' => 0);
 }
 
@@ -615,7 +615,7 @@ function db_clean_cache() {
  */
 function db_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true, &$status = null, $autocommit = true) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return @mysql_db_process_sql($sql, $rettype, $dbconnection, $cache);
@@ -625,7 +625,7 @@ function db_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $c
 			break;
 		case "oracle":
 			return @oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
-			break;			
+			break;
 	}
 }
 
@@ -640,7 +640,7 @@ function db_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $c
  */
 function db_get_all_rows_in_table ($table, $order_field = "", $order = 'ASC') {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_all_rows_in_table($table, $order_field, $order);
@@ -666,7 +666,7 @@ function db_get_all_rows_in_table ($table, $order_field = "", $order = 'ASC') {
  */
 function db_get_all_rows_field_filter($table, $field, $condition, $order_field = "") {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_all_rows_field_filter($table, $field, $condition, $order_field);
@@ -690,7 +690,7 @@ function db_get_all_rows_field_filter($table, $field, $condition, $order_field =
  */
 function db_get_all_fields_in_table($table, $field = '', $condition = '', $order_field = '') {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_all_fields_in_table($table, $field, $condition, $order_field);

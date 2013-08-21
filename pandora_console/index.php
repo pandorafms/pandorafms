@@ -570,10 +570,9 @@ require('include/php_to_js_values.php');
 ?>
 
 <script type="text/javascript" language="javascript">
-
 	//Initial load of page
 	$(document).ready(adjustFooter);
-
+	
 	//Every resize of window
 	$(window).resize(adjustFooter);
 	

@@ -27,7 +27,7 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 
 global $tiny;
 
-$servers = servers_get_info ();
+$servers = servers_get_info();
 if ($servers === false) {
 	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
 	return;
@@ -101,41 +101,43 @@ foreach ($servers as $server) {
 		default:
 			$data[3] = progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
 			$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
-			$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
+			$data[5] = '<span style="white-space:nowrap;">' .
+				$server["lag_txt"] . '</span>';
 			break;
 	}
 	
 	$data[6] = $server['threads'].' : '.$server['queued_modules'];
 	$data[7] = ui_print_timestamp ($server['keepalive'], true);
 	
-	//Only Pandora Administrator can delete servers	 
-	if (check_acl ($config["id_user"], 0, "PM")) {	 
-		 $data[8] = '';	 
-		 if ($server['type'] == 'data') {	 
-				 $data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server["id_server"].'">';	 
-				 $data[8] .= html_print_image ('images/target.png', true,	 
-						 array('title' => __('Reset module status and fired alert counts')));	 
-				 $data[8] .= '</a>&nbsp;&nbsp;';	 
-		 } else if ($server['type'] == 'enterprise snmp') {	 
-				 $data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_snmp_enterprise='.$server["id_server"].'">';	 
-				 $data[8] .= html_print_image ('images/target.png', true,	 
-						 array('title' => __('Claim back SNMP modules')));	 
-				 $data[8] .= '</a>&nbsp;&nbsp;';	 
-		 }	 
-
-		 $data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';	 
-		 $data[8] .= html_print_image ('images/config.png', true,	 
-				 array('title' => __('Edit')));	 
-		 $data[8] .= '</a>';	 
-
-		 $data[8] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';	 
-		 $data[8] .= html_print_image ('images/cross.png', true,	 
-				 array('title' => __('Delete'),	 
-						 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));	 
-		 $data[8] .= '</a>';	 
+	//Only Pandora Administrator can delete servers
+	if (check_acl ($config["id_user"], 0, "PM")) {
+		 $data[8] = '';
+		 if ($server['type'] == 'data') {
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server["id_server"].'">';
+			$data[8] .= html_print_image ('images/target.png', true,
+				array('title' => __('Reset module status and fired alert counts')));
+			$data[8] .= '</a>&nbsp;&nbsp;';
+		}
+		else if ($server['type'] == 'enterprise snmp') {
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_snmp_enterprise='.$server["id_server"].'">';
+			$data[8] .= html_print_image ('images/target.png', true,
+				array('title' => __('Claim back SNMP modules')));
+			$data[8] .= '</a>&nbsp;&nbsp;';
+		}
+		
+		$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';
+		$data[8] .= html_print_image ('images/config.png', true,
+			array('title' => __('Edit')));
+		$data[8] .= '</a>';
+		
+		$data[8] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
+		$data[8] .= html_print_image ('images/cross.png', true,
+			array('title' => __('Delete'),
+				'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
+		$data[8] .= '</a>';
 	}
 	
-	if($tiny) {
+	if ($tiny) {
 		unset($data[4]);
 		unset($data[6]);
 		unset($data[7]);
@@ -144,7 +146,7 @@ foreach ($servers as $server) {
 	array_push ($table->data, $data);
 }
 
-if($tiny) {
+if ($tiny) {
 	unset($table->head[4]);
 	unset($table->head[6]);
 	unset($table->head[7]);

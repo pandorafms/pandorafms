@@ -300,7 +300,7 @@ function servers_get_rate($avg_interval, $num_modules) {
  */
 function servers_get_info ($id_server = -1) {
 	global $config;
-
+	
 	if (is_array ($id_server)) {
 		$select_id = " WHERE id_server IN (".implode (",", $id_server).")";
 	}
@@ -600,7 +600,11 @@ function servers_get_info ($id_server = -1) {
 		} // Take data for realtime mode
 		
 		if (isset($server["module_lag"]))
-			$server["lag_txt"] = ($server["lag"] == 0 ? '-' : human_time_description_raw ($server["lag"])) . " / ". $server["module_lag"];
+			$server["lag_txt"] =
+				($server["lag"] == 0 ?
+					'-'
+					:
+					human_time_description_raw($server["lag"])) . " / " . $server["module_lag"];
 		else
 			$server["lag_txt"] = "";
 		

@@ -31,6 +31,7 @@ PANDORA_MAN=/usr/share/man
 
 MODE=${1:-}
 PANDORA_BASE=`echo ${2:-} | sed -e 's/\/$//'`
+
 if [ "${3:-}" != "" ]
 then
 	PANDORA_USER=$3
@@ -201,6 +202,9 @@ install () {
 	# Alter dynamically the daemon launcher and setup the new path 
 	# if PANDORA_BASE is customized.
 
+        AGENT_CFG=$OS_NAME/pandora_agent.conf
+        AGENT_CFG_TEMP=$OS_NAME/pandora_agent.conf.temp
+
 	if [ ! -z "$PANDORA_BASE" ]
 	then
 		if [ "$OS_NAME" = "FreeBSD" ]
@@ -295,11 +299,30 @@ install () {
 	# Set the user the agent will run as
 	if [ "$PANDORA_USER" != "root" ]
 	then
+	
 		sed -e "s/.*pandora_user .*/pandora_user $PANDORA_USER/" $AGENT_CFG > $AGENT_CFG_TEMP 2> /dev/null && \
 		mv $AGENT_CFG_TEMP $AGENT_CFG
 		chmod 755 pandora_agent_daemon
-		chown -R $PANDORA_USER $PANDORA_BASE
+		
+		#chown each directory one by one to avoid erros when no pandora_base and pandora_use is given
+              	chown -R $PANDORA_USER $PANDORA_BASE/var/log
+                chown -R $PANDORA_USER $PANDORA_BASE/$PANDORA_MAN/man1
+
+                if [ "$OS_NAME" = "FreeBSD" ]
+                then
+                        chown -R $PANDORA_USER $PANDORA_BASE/usr/local/bin
+                else
+                        chown -R $PANDORA_USER $PANDORA_BASE/usr/bin
+                fi
+        
+		chown -R $PANDORA_USER $PANDORA_BASE$PANDORA_HOME 
+
+        	chown -R $PANDORA_USER $PANDORA_BASE/tmp
+        	chown -R $PANDORA_USER $PANDORA_BASE$PANDORA_TEMP/data_out
+        	chown -R $PANDORA_USER $PANDORA_BASE$PANDORA_CFG
+        	chown -R $PANDORA_USER $PANDORA_BASE$PANDORA_LOG_DIR
 	fi
+
 
 	# Create logfile
 	if [ ! -z "`touch $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG`" ]

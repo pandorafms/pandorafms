@@ -1,3 +1,8 @@
+2013-08-22  Dario Rodriguez <dario@artica.es>
+
+	* pandora_agent_installer: Fixed a problem installing agent using
+	custom option like this: --install "" pandora
+
 2013-07-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Changed the regexp used to retrieve ip addresses to

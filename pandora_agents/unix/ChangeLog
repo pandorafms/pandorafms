@@ -1,4 +1,8 @@
 2013-08-22  Dario Rodriguez <dario@artica.es>
+
+        * pandora_agent_installer: Added missing code in last commit.
+
+2013-08-22  Dario Rodriguez <dario@artica.es>
 	
 	* pandora_agent_installer: Improved custom installation,
 	adding permissions to plugins and collections folders.

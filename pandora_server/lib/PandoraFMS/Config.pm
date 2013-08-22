@@ -279,22 +279,25 @@ sub pandora_load_config {
 
 	# max log size (bytes)
 	$pa_config->{'max_log_size'} = 32000;
-
+	
 	# Ignore the timestamp in the XML and use the file timestamp instead
 	$pa_config->{'use_xml_timestamp'} = 0; 
-
+	
 	# Server restart delay in seconds
 	$pa_config->{'restart_delay'} = 60; 
-
+	
 	# Auto restart every x seconds
 	$pa_config->{'auto_restart'} = 0; 
-
+	
 	# Restart server on error
 	$pa_config->{'restart'} = 0; 
-
+	
 	# Self monitoring
 	$pa_config->{'self_monitoring'} = 0; 
-
+	
+	# Patrol process of policies queue
+	$pa_config->{"policy_manager"} = 0; # Backported from 5.0
+	
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -304,7 +307,7 @@ sub pandora_load_config {
 	$pa_config->{"stats_interval"} = 300;
 	$pa_config->{"agentaccess"} = 1; 
 	# -------------------------------------------------------------------------
-
+	
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -312,7 +315,7 @@ sub pandora_load_config {
 			printf "	please consider starting it with a non-privileged user.\n";
 		}
 	}
-
+	
 	# Check for file
 	if ( ! -f $archivo_cfg ) {
 		printf "\n [ERROR] Cannot open configuration file at $archivo_cfg. \n";
@@ -320,13 +323,13 @@ sub pandora_load_config {
 		print "	Standard configuration file is at /etc/pandora/pandora_server.conf \n";
 		exit 1;
 	}
-
+	
 	# Collect items from config file and put in an array 
 	if (! open (CFG, "< $archivo_cfg")) {
 		print "[ERROR] Error opening configuration file $archivo_cfg: $!.\n";
 		exit 1;
 	}
-
+	
 	while (<CFG>){
 		$buffer_line = $_;
 		if ($buffer_line =~ /^[a-zA-Z]/){ # begins with letters
@@ -632,8 +635,11 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^block_size\s([0-9]*)/i) {
 			$pa_config->{'block_size'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^policy_manager\s+([0-1])/i) {
+			$pa_config->{'policy_manager'}= clean_blank($1);
+		}
 	} # end of loop for parameter #
-
+	
 	# Set to RDBMS' standard port
 	if (!defined($pa_config->{'dbport'})) {
 		if ($pa_config->{'dbengine'} eq "mysql") {
@@ -646,7 +652,7 @@ sub pandora_load_config {
 			$pa_config->{'dbport'} = 1521;
 		}
 	}
-
+	
 	if (($pa_config->{"verbosity"} > 4) && ($pa_config->{"quiet"} == 0)){
 		if ($pa_config->{"PID"} ne ""){
 			print " [*] PID File is written at ".$pa_config->{'PID'}."\n";
@@ -658,12 +664,12 @@ sub pandora_load_config {
 		print " [*] Server keepalive ".$pa_config->{"keepalive"}."\n";
 		print " [*] Server threshold ".$pa_config->{"server_threshold"}."\n";
 	}
- 	# Check for valid token token values
- 	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "") || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
+	# Check for valid token token values
+	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "") || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
 		print " [ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
 		exit;
 	}
-
+	
 	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 		if ($pa_config->{"pandora_check"} == 1) {
 			print " [*] MD5 Security enabled.\n";
@@ -672,7 +678,7 @@ sub pandora_load_config {
 			print " [*] This server is running in MASTER mode.\n";
 		}
 	}
-
+	
 	logger ($pa_config, "Launching $pa_config->{'version'} $pa_config->{'build'}", 1);
 	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}.$pa_config->{"servermode"}."'";
 	logger ($pa_config, "Config options: $config_options", 1);

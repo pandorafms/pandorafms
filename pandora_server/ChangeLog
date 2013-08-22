@@ -1,3 +1,9 @@
+2013-08-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/Config.pm, bin/pandora_server: backport the token
+	"policy_manager" from the 5 version for to disabled the policy
+	queue.
+
 2013-08-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm,

@@ -200,7 +200,12 @@ if ($Config{'daemon'} == 1) {
 
 # Start thread to patrol policy queue
 if (enterprise_load (\%Config) != 0 && $Config{'pandora_master'} == 1) {
-	my $thr = threads->create('pandora_process_policy_queue', (\%Config));
+	
+	if ($Config{'policy_manager'} == 1) {
+		my $thr = threads->create('pandora_process_policy_queue', (\%Config));
+	}
+	else {
+	}
 }
 
 # Start the servers

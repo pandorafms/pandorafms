@@ -1,4 +1,9 @@
 2013-08-22  Dario Rodriguez <dario@artica.es>
+	
+	* pandora_agent_installer: Improved custom installation,
+	adding permissions to plugins and collections folders.
+
+2013-08-22  Dario Rodriguez <dario@artica.es>
 
 	* pandora_agent_installer: Fixed a problem installing agent using
 	custom option like this: --install "" pandora

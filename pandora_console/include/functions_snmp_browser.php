@@ -505,6 +505,9 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$output .=   '<div style="width: 100%">';
 	$output .=   html_print_table($table, true);
 	$output .=   '</div>';
+	if (!isset($snmp_version)) {
+		$snmp_version = null;
+	}
 	if ($snmp_version == 3) {
 		$output .= '<div id="snmp3_browser_options">';
 	}

@@ -4079,7 +4079,7 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 		$date, '', 0, 0,true,
 		false, $homeurl, $ttl);
 	
-	// Extract url of the image from img tag			
+	// Extract url of the image from img tag
 	preg_match("/src='([^']*)'/i",$image, $match);
 	
 	if (empty($match[1])) {

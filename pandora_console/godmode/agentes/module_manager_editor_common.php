@@ -304,11 +304,14 @@ $table_advanced->data[1][4] = html_print_input_text ('module_ff_interval', $ff_i
 
 // In the data modules, the interval is not in seconds. It is a factor 
 // to be multiplied for the agent interval
-if($moduletype == MODULE_DATA) {
+if ($moduletype == MODULE_DATA) {
 	$table_advanced->data[2][0] = __('Interval');
 	$table_advanced->colspan[2][1] = 2;
-	$agent_interval = agents_get_interval ($id_agente);
-	$interval_factor = $interval / $agent_interval;
+	$interval_factor = 1;
+	if (isset($id_agente)) {
+		$agent_interval = agents_get_interval ($id_agente);
+		$interval_factor = $interval / $agent_interval;
+	}
 	$table_advanced->data[2][1] = human_time_description_raw($interval) . ' (' . sprintf(__('Agent interval x %s'), $interval_factor) . ') ' . ui_print_help_icon ('module_interval_factor', true);
 }
 else {

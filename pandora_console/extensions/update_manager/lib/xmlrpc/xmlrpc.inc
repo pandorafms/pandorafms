@@ -1273,6 +1273,7 @@
 			$username='', $password='', $authtype=1, $proxyhost='',
 			$proxyport=0, $proxyusername='', $proxypassword='', $proxyauthtype=1)
 		{
+			
 			if($port==0)
 			{
 				$port=80;
@@ -1401,7 +1402,8 @@
 				// let the client see this now in case http times out...
 				flush();
 			}
-
+			
+			
 			if($timeout>0)
 			{
 				$fp=@fsockopen($connectserver, $connectport, $this->errno, $this->errstr, $timeout);
@@ -1410,29 +1412,30 @@
 			{
 				$fp=@fsockopen($connectserver, $connectport, $this->errno, $this->errstr);
 			}
+			
 			if($fp)
-			{				
+			{
 				if($timeout>0 && function_exists('stream_set_timeout'))
 				{
 					stream_set_timeout($fp, $timeout);
 				}
 			}
 			else
-			{				
+			{
 				$this->errstr='Connect error: '.$this->errstr;
 				$r=new xmlrpcresp(0, $GLOBALS['xmlrpcerr']['http_error'], $this->errstr . ' (' . $this->errno . ')');
 				return $r;
 			}
-
+			
 			if(!fputs($fp, $op, strlen($op)))
-			{				
+			{
 				fclose($fp);
 				$this->errstr='Write error';
 				$r=new xmlrpcresp(0, $GLOBALS['xmlrpcerr']['http_error'], $this->errstr);
 				return $r;
 			}
 			else
-			{				
+			{
 				// reset errno and errstr on succesful socket connection
 				$this->errstr = '';
 			}
@@ -1444,6 +1447,11 @@
 				// shall we check for $data === FALSE?
 				// as per the manual, it signals an error
 				$ipd.=fread($fp, 32768);
+				$info = stream_get_meta_data($fp);
+				
+				if ($info['timed_out']) {
+					break;
+				}
 			} while(!feof($fp));
 			fclose($fp);
 
@@ -1491,6 +1499,7 @@
 			$proxyhost='', $proxyport=0, $proxyusername='', $proxypassword='', $proxyauthtype=1,
 			$keepalive=false, $key='', $keypass='')
 		{
+		
 			$r =& $this->sendPayloadCURL($msg, $server, $port, $timeout, $username,
 				$password, $authtype, $cert, $certpass, $cacert, $cacertdir, $proxyhost, $proxyport,
 				$proxyusername, $proxypassword, $proxyauthtype, 'https', $keepalive, $key, $keypass);

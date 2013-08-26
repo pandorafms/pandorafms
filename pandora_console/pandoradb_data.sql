@@ -981,7 +981,7 @@ INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal
 
 INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `id_group`, `action_threshold`) VALUES (1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','',0,0);
 
-INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `id_group`, `action_threshold`) VALUES (2,'Restart&#x20;agent',10,'REFRESH AGENT *','','',0,0);
+INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `id_group`, `action_threshold`) VALUES (2,'Restart&#x20;agent',11,'REFRESH AGENT *','','',0,0);
 
 INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `id_group`, `action_threshold`) VALUES (3,'Pandora&#x20;FMS&#x20;Event',3,'Event&#x20;generated&#x20;by&#x20;alert','alert_fired','',0,0);
 

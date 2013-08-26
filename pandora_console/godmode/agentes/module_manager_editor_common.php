@@ -331,7 +331,7 @@ $table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, tru
 $table_advanced->data[3][3] = __('Max. Value');
 $table_advanced->data[3][4] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value over this number is discarted.'), true);
 
-$table_advanced->data[4][0] = __('Export target'); 
+$table_advanced->data[4][0] = __('Export target');
 // Default text message for export target select and disabled option
 $none_text = __('None');
 $disabled_export = false;

@@ -1,5 +1,16 @@
 2013-08-26 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* pandoradb.data.postgreSQL.sql, pandoradb.data.oracle.sql,
+	pandoradb_data.sql: fixed the id_alert_command for restart the
+	agent set 11 (before it was 10).
+
+2013-08-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/lib/xmlrpc/xmlrpc.inc: fixed the timeout
+	for to check packages of pandora update manager.
+
+2013-08-26 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/module_manager_editor.php,
 	godmode/agentes/module_manager_editor_common.php: fixed PHP
 	warnings.

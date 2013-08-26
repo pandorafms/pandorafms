@@ -1,3 +1,10 @@
+2013-08-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/lib/xmlrpc/xmlrpc.inc: fixed the timeout
+	for to check packages of pandora update manager.
+	
+	MERGED FROM THE TRUNK
+
 2013-08-19 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Small Fix. Corrected error message.

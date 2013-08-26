@@ -1,3 +1,9 @@
+2013-08-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_common.php: fixed PHP
+	warnings.
+
 2013-08-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor_common.php: fixed the PHP

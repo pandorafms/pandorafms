@@ -207,6 +207,7 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "warning_inverse" SMALLINT NOT NULL defa
 ALTER TABLE "tagente_modulo" ADD COLUMN "cron_interval" varchar(100) default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "max_retries" INTEGER default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "id_category" INTEGER default 0;
+ALTER TABLE "tagente_modulo" ADD COLUMN "disabled_types_event" TEXT default '';
 
 -- Move the number of retries for web modules from plugin_pass to max_retries
 UPDATE "tagente_modulo" SET max_retries=CAST(plugin_pass AS INT) WHERE id_modulo=7;
@@ -281,6 +282,13 @@ ALTER TABLE "tmensajes" ALTER COLUMN "mensaje" TYPE TEXT;
 ALTER TABLE "tnetwork_component" ADD COLUMN "unit" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "max_retries" INTEGER default 0;
 ALTER TABLE "tnetwork_component" ADD COLUMN "id_category" INTEGER default 0;
+ALTER TABLE "tnetwork_component" ADD COLUMN "critical_instructions" text default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "warning_instructions" text default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "unknown_instructions" text default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "critical_inverse" SMALLINT NOT NULL default 0;
+ALTER TABLE "tnetwork_component" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
+ALTER TABLE "tnetwork_component" ADD COLUMN "tags" text default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "disabled_types_event" TEXT default '';
 
 -- -----------------------------------------------------
 -- Table "talert_commands"
@@ -355,16 +363,6 @@ ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;
 ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
 ALTER TABLE "tlayout_data" ADD COLUMN "id_metaconsole" INTEGER NOT NULL default 0;
 ALTER TABLE "tlayout_data" ALTER COLUMN "label" TEXT default '';
-
-------------------------------------------------------------------------
--- Table "tnetwork_component"
-------------------------------------------------------------------------
-ALTER TABLE "tnetwork_component" ADD COLUMN "critical_instructions" text default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "warning_instructions" text default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "unknown_instructions" text default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "critical_inverse" SMALLINT NOT NULL default 0;
-ALTER TABLE "tnetwork_component" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
-ALTER TABLE "tnetwork_component" ADD COLUMN "tags" text default '';
 
 ------------------------------------------------------------------------
 -- Table "tnetwork_map"

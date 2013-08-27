@@ -79,18 +79,25 @@ if ($update) {
 			if ($module_type != 0)
 				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
 			
-			$agents_ = db_get_all_rows_sql('SELECT DISTINCT(t1.id_agente)
-				FROM tagente t1, tagente_modulo t2
-				WHERE t1.id_agente = t2.id_agente AND t2.delete_pending = 0 ' . $condition);
-			foreach($agents_ as $id_agent) {
-				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type, 'delete_pending' => 0),'nombre');
+			$agents_ = db_get_all_rows_sql('
+				SELECT DISTINCT(t1.id_agente)
+				FROM tagente AS t1, tagente_modulo AS t2
+				WHERE t1.id_agente = t2.id_agente
+					AND t2.delete_pending = 0 ' . $condition);
+			foreach ($agents_ as $id_agent) {
+				$module_name = db_get_all_rows_filter('tagente_modulo',
+					array('id_agente' => $id_agent,
+						'id_tipo_modulo' =>  $module_type,
+						'delete_pending' => 0),
+					'nombre');
 				
-				if($module_name == false) {
+				if ($module_name == false) {
 					$module_name = array();
 				}
 				foreach ($module_name as $mod_name) {
-					$result = process_manage_edit ($mod_name['nombre'], $id_agent['id_agente']);
-					$count ++;
+					$result = process_manage_edit($mod_name['nombre'],
+						$id_agent['id_agente']);
+					$count++;
 					$success += (int)$result;
 				}
 			}
@@ -427,6 +434,20 @@ if (enterprise_installed()) {
 	$table->data['edit81'][3] = html_print_select (array(MODULE_PENDING_LINK => __('Linked'), MODULE_PENDING_UNLINK => __('Unlinked')), 'policy_linked', '','', __('No change'), '', true, false, false);
 }
 
+if ($table->rowspan['edit8'][0] == 2) {
+	$table->rowspan['edit8'][0] = $table->rowspan['edit8'][1] = 3;
+}
+else {
+	$table->rowspan['edit8'][0] = $table->rowspan['edit8'][1] = 2;
+}
+$table->data['edit82'][2] = __('Throw unknown events');
+
+$table->data['edit82'][3] = html_print_select(
+	array('' => __('No change'),
+		'1' => __('Yes'),
+		'0' => __('No')),
+	'throw_unknown_events','','','', '', true);
+
 $table->data['edit10'][0] = '<b>'.__('Critical instructions'). '</b>'. ui_print_help_tip(__("Instructions when the status is critical"), true);
 $table->data['edit10'][1] = html_print_textarea ('critical_instructions', 2, 50, '', '', true);
 $table->colspan['edit10'][1] = 3;
@@ -596,6 +617,7 @@ $(document).ready (function () {
 			"tr#delete_table-edit12").hide ();
 		$('input[type=checkbox]').attr('checked', false);
 		$('input[type=checkbox]').attr('disabled', true);
+		
 		$('#module_type').val(-1);
 		$('#groups_select').val(-1);
 	}
@@ -792,7 +814,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'id_export', 'history_data', 'critical_inverse',
 		'warning_inverse', 'critical_instructions',
 		'warning_instructions', 'unknown_instructions', 'policy_linked', 
-		'id_category');
+		'id_category', 'disabled_types_event');
 	$values = array ();
 	
 	// Specific snmp reused fields
@@ -809,10 +831,24 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	foreach ($fields as $field) {
 		$value = get_parameter ($field, '');
-		if ($value != '') {
-			$values[$field] = $value;
+		
+		switch ($field) {
+			default:
+				if ($value != '') {
+					$values[$field] = $value;
+				}
+				break;
 		}
 	}
+	
+	$throw_unknown_events = get_parameter('throw_unknown_events', '');
+	if ($throw_unknown_events !== '') {
+		//Set the event type that can show.
+		$disabled_types_event = array(
+			EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
+		$values['disabled_types_event'] = json_encode($disabled_types_event);
+	}
+	
 	
 	if (strlen(get_parameter('history_data')) > 0) {
 		$values['history_data'] = get_parameter('history_data');

@@ -113,6 +113,12 @@ $snmp3_privacy_method = (string) get_parameter('snmp3_privacy_method');
 $snmp3_privacy_pass = (string) get_parameter('snmp3_privacy_pass');
 $snmp3_security_level = (string) get_parameter('snmp3_security_level');
 
+
+$throw_unknown_events = get_parameter('throw_unknown_events', false);
+//Set the event type that can show.
+$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
+$disabled_types_event = json_encode($disabled_types_event);
+
 $create_component = (bool) get_parameter ('create_component');
 $update_component = (bool) get_parameter ('update_component');
 $delete_component = (bool) get_parameter ('delete_component');
@@ -160,7 +166,6 @@ if ($create_component) {
 			'name', $name);
 	}
 	
-	
 	if ($name && !$name_check) {
 		
 		$id = network_components_create_network_component ($name, $type, $id_group, 
@@ -203,7 +208,8 @@ if ($create_component) {
 				'critical_inverse' => $critical_inverse,
 				'warning_inverse' => $warning_inverse,
 				'id_category' => $id_category,
-				'tags' => $tags));
+				'tags' => $tags,
+				'disabled_types_event' => $disabled_types_event));
 	}
 	else {
 		$id = '';
@@ -239,6 +245,7 @@ if ($update_component) {
 		$custom_string_3 = $snmp3_security_level;
 		//$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name); 
 	}
+	
 	if (!empty($name)) { 
 		$result = network_components_update_network_component ($id,
 			array ('type' => $type,
@@ -283,7 +290,8 @@ if ($update_component) {
 				'critical_inverse' => $critical_inverse,
 				'warning_inverse' => $warning_inverse,
 				'id_category' => $id_category,
-				'tags' => $tags));
+				'tags' => $tags,
+				'disabled_types_event' => $disabled_types_event));
 	}
 	else {
 		$result = '';

@@ -343,7 +343,12 @@ if ($__code_from == 'policies') {
 } 
 $table_advanced->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM tserver_export ORDER BY name',
 	'id_export', $id_export, '', $none_text, '0', true, false, false, $disabled_export).ui_print_help_tip (__('In case you use an Export server you can link this module and export data to one these.'), true);
-$table_advanced->colspan[4][1] = 4;
+$table_advanced->colspan[4][1] = 2;
+
+$table_advanced->data[4][3] = __('Throw unknown events');
+$table_advanced->data[4][4] = html_print_checkbox('throw_unknown_events',
+	1, !modules_is_disable_type_event($id_agent_module, EVENTS_GOING_UNKNOWN), true);
+
 $table_advanced->data[5][0] = __('Unit');
 $table_advanced->data[5][1] = html_print_input_text ('unit', $unit,
 	'', 20, 65, true);

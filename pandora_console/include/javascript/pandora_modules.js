@@ -286,7 +286,7 @@ function configure_modules_form () {
 				var tags = data["tags"];
 				
 				// Reset the selection of tags (put all of them into available box)
-				$("#id_tag_selected option").each(function(){
+				$("#id_tag_selected option").each(function() {
 					if ($(this).attr('value') != '') {
 						$("#id_tag_selected").find("option[value='" + $(this).attr('value') + "']").remove();
 						$("select[name='id_tag_available[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
@@ -349,6 +349,11 @@ function configure_modules_form () {
 						$("input[name=active_snmp_v3]").val(1);
 					}
 				}
+				
+				if (data["throw_unknown_events"])
+					$("input[name='throw_unknown_events']").check ();
+				else
+					$("input[name='throw_unknown_events']").uncheck ();
 			},
 			"json"
 		);

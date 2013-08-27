@@ -29,6 +29,10 @@ if (is_ajax ()) {
 		
 		$component = db_get_row ('tnetwork_component', 'id_nc', $id_component);
 		
+		$component['throw_unknown_events'] =
+			!network_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
+		
+		
 		echo json_encode ($component);
 		return;
 	}
@@ -299,11 +303,11 @@ else {
 
 $is_function_policies = enterprise_include_once('include/functions_policies.php');
 
-if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
+if ($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 	$relink_policy = get_parameter('relink_policy', 0);
 	$unlink_policy = get_parameter('unlink_policy', 0);
 	
-	if($relink_policy) {
+	if ($relink_policy) {
 		$policy_info = policies_info_module_policy($id_agent_module);
 		$policy_id = $policy_info['id_policy'];
 		
@@ -318,7 +322,7 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 		}
 	}
 	
-	if($unlink_policy) {
+	if ($unlink_policy) {
 		$result = policies_unlink_module($id_agent_module);
 		ui_print_result_message($result, __('Module will be unlinked in the next application'));
 		

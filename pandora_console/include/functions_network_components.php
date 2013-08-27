@@ -27,6 +27,79 @@ include_once ($config['homedir'] . '/include/functions_modules.php');
 include_once ($config['homedir'] . '/include/functions_agents.php');
 include_once ($config['homedir'] . '/include/functions_users.php');
 
+function network_components_is_disable_type_event($id = false, $type_event = false) {
+	if ($id === false) {
+		switch ($type_event) {
+			case EVENTS_GOING_UNKNOWN:
+				return false;
+				break;
+			case EVENTS_UNKNOWN:
+				return false;
+				break;
+			case EVENTS_ALERT_FIRED:
+				return false;
+				break;
+			case EVENTS_ALERT_RECOVERED:
+				return false;
+				break;
+			case EVENTS_ALERT_CEASED:
+				return false;
+				break;
+			case EVENTS_ALERT_MANUAL_VALIDATION:
+				return false;
+				break;
+			case EVENTS_RECON_HOST_DETECTED:
+				return false;
+				break;
+			case EVENTS_SYSTEM:
+				return false;
+				break;
+			case EVENTS_ERROR:
+				return false;
+				break;
+			case EVENTS_NEW_AGENT:
+				return false;
+				break;
+			case EVENTS_GOING_UP_WARNING:
+				return false;
+				break;
+			case EVENTS_GOING_UP_CRITICAL:
+				return false;
+				break;
+			case EVENTS_GOING_DOWN_WARNING:
+				return false;
+				break;
+			case EVENTS_GOING_DOWN_NORMAL:
+				return false;
+				break;
+			case EVENTS_GOING_DOWN_CRITICAL:
+				return false;
+				break;
+			case EVENTS_GOING_UP_NORMAL:
+				return false;
+				break;
+			case EVENTS_CONFIGURATION_CHANGE:
+				return false;
+				break;
+		}
+	}
+	
+	$disabled_types_event = json_decode(
+		db_get_value('disabled_types_event', 'tnetwork_component',
+			'id_nc', $id),
+		true);
+	
+	if (isset($disabled_types_event[$type_event])) {
+		if ($disabled_types_event[$type_event]) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	return false;
+}
+
 /**
  * Get a list of network components.
  * 

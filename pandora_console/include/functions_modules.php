@@ -23,6 +23,77 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once($config['homedir'] . '/include/functions_tags.php');
 
+function modules_is_disable_type_event($id_agent_module = false, $type_event = false) {
+	if ($id_agent_module === false) {
+		switch ($type_event) {
+			case EVENTS_GOING_UNKNOWN:
+				return false;
+				break;
+			case EVENTS_UNKNOWN:
+				return false;
+				break;
+			case EVENTS_ALERT_FIRED:
+				return false;
+				break;
+			case EVENTS_ALERT_RECOVERED:
+				return false;
+				break;
+			case EVENTS_ALERT_CEASED:
+				return false;
+				break;
+			case EVENTS_ALERT_MANUAL_VALIDATION:
+				return false;
+				break;
+			case EVENTS_RECON_HOST_DETECTED:
+				return false;
+				break;
+			case EVENTS_SYSTEM:
+				return false;
+				break;
+			case EVENTS_ERROR:
+				return false;
+				break;
+			case EVENTS_NEW_AGENT:
+				return false;
+				break;
+			case EVENTS_GOING_UP_WARNING:
+				return false;
+				break;
+			case EVENTS_GOING_UP_CRITICAL:
+				return false;
+				break;
+			case EVENTS_GOING_DOWN_WARNING:
+				return false;
+				break;
+			case EVENTS_GOING_DOWN_NORMAL:
+				return false;
+				break;
+			case EVENTS_GOING_DOWN_CRITICAL:
+				return false;
+				break;
+			case EVENTS_GOING_UP_NORMAL:
+				return false;
+				break;
+			case EVENTS_CONFIGURATION_CHANGE:
+				return false;
+				break;
+		}
+	}
+	
+	$disabled_types_event = json_decode(
+		db_get_value('disabled_types_event', 'tagente_modulo', 'id_agente_modulo', $id_agent_module), true);
+	
+	if (isset($disabled_types_event[$type_event])) {
+		if ($disabled_types_event[$type_event]) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	return false;
+}
+
 /**
  * Copy a module defined in an agent to other agent.
  * 
@@ -265,7 +336,8 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 		
 		$id_agent = modules_get_agentmodule_agent($id);
 		
-		$exists = (bool)db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $values['nombre'], 'id_agente' => $id_agent, 'id_agente_modulo' => "<>$id"));
+		$exists = (bool)db_get_value_filter('id_agente_modulo',
+			'tagente_modulo', array('nombre' => $values['nombre'], 'id_agente' => $id_agent, 'id_agente_modulo' => "<>$id"));
 		
 		if ($exists) {
 			return ERR_EXIST;
@@ -351,14 +423,15 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	if (($tags !== false) || (empty($tags)))
 		$return_tag = tags_insert_module_tag ($id_agent_module, $tags);
 	
-	if ($return_tag === false){
+	if ($return_tag === false) {
 		db_process_sql_delete ('tagente_modulo',
 			array ('id_agente_modulo' => $id_agent_module));
 		
 		return ERR_DB;
 	}
 	
-	if (isset ($values['id_tipo_modulo']) && ($values['id_tipo_modulo'] == 21 || $values['id_tipo_modulo'] == 22 || $values['id_tipo_modulo'] == 23)) {
+	if (isset ($values['id_tipo_modulo'])
+		&& ($values['id_tipo_modulo'] == 21 || $values['id_tipo_modulo'] == 22 || $values['id_tipo_modulo'] == 23)) {
 		// Async modules start in normal status
 		$status = AGENT_MODULE_STATUS_NORMAL;
 	}

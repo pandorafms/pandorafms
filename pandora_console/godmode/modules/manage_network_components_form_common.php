@@ -141,7 +141,10 @@ $table->data[5][2] = __('Max. Value');
 $table->data[5][3] = html_print_input_text ('max', $max, '', 5, 15, true) . ' ' . ui_print_help_tip (__('Any value over this number is discarted'), true);
 $table->data[6][0] = __('Unit');
 $table->data[6][1] = html_print_input_text ('unit', $unit, '', 12, 25, true);
-$table->data[6][2] = $table->data[6][3] = '';
+
+$table->data[6][2] = __('Throw unknown events');
+$table->data[6][3] = html_print_checkbox('throw_unknown_events', 1,
+	!network_components_is_disable_type_event($id, EVENTS_GOING_UNKNOWN), true);
 
 $table->data[7][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
 $table->data[7][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);

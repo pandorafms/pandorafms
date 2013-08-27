@@ -324,4 +324,22 @@ define("MODULE_LINKED", 1);
 define("MODULE_PENDING_UNLINK", 10);
 define("MODULE_PENDING_LINK", 11);
 
+/* EVENTS */
+define("EVENTS_GOING_UNKNOWN" , 'going_unknown');
+define("EVENTS_UNKNOWN", 'unknown');
+define("EVENTS_ALERT_FIRED", 'alert_fired');
+define("EVENTS_ALERT_RECOVERED", 'alert_recovered');
+define("EVENTS_ALERT_CEASED", 'alert_ceased');
+define("EVENTS_ALERT_MANUAL_VALIDATION", 'alert_manual_validation');
+define("EVENTS_RECON_HOST_DETECTED", 'recon_host_detected');
+define("EVENTS_SYSTEM", 'system');
+define("EVENTS_ERROR", 'error');
+define("EVENTS_NEW_AGENT", 'new_agent');
+define("EVENTS_GOING_UP_WARNING", 'going_up_warning');
+define("EVENTS_GOING_UP_CRITICAL", 'going_up_critical');
+define("EVENTS_GOING_DOWN_WARNING", 'going_down_warning');
+define("EVENTS_GOING_DOWN_NORMAL", 'going_down_normal');
+define("EVENTS_GOING_DOWN_CRITICAL", 'going_down_critical');
+define("EVENTS_GOING_UP_NORMAL", 'going_up_normal');
+define("EVENTS_CONFIGURATION_CHANGE", 'configuration_change');
 ?>

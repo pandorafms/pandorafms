@@ -890,6 +890,11 @@ if ($update_module || $create_module) {
 		//LOST CODE?
 	}
 	
+	$throw_unknown_events = (bool)get_parameter('throw_unknown_events', false);
+	//Set the event type that can show.
+	$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	// Make changes in the conf file if necessary
 	enterprise_include_once('include/functions_config_agents.php');
 	enterprise_hook('config_agents_write_module_in_conf',
@@ -947,7 +952,8 @@ if ($update_module) {
 		'critical_inverse' => $critical_inverse,
 		'warning_inverse' => $warning_inverse,
 		'cron_interval' => $cron_interval,
-		'id_category' => $id_category);
+		'id_category' => $id_category,
+		'disabled_types_event' => $disabled_types_event);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;
@@ -1069,7 +1075,8 @@ if ($create_module) {
 		'critical_inverse' => $critical_inverse,
 		'warning_inverse' => $warning_inverse,
 		'cron_interval' => $cron_interval,
-		'id_category' => $id_category);
+		'id_category' => $id_category,
+		'disabled_types_event' => $disabled_types_event);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;

@@ -21,7 +21,6 @@ enterprise_include_once ('meta/include/functions_agents_meta.php');
 enterprise_include_once ('meta/include/functions_modules_meta.php');
 
 
-
 /**
  * @package Include
  * @subpackage Events

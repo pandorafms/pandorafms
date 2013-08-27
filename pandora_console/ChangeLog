@@ -1,5 +1,25 @@
 2013-08-27 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/massive/massive_edit_modules.php,
+	godmode/modules/manage_network_components_form_common.php,
+	godmode/modules/manage_network_components.php,
+	include/functions_events.php, include/functions.php,
+	include/javascript/pandora_modules.js,
+	include/functions_network_components.php,
+	include/functions_modules.php, include/constants.php, pandoradb.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: first version of
+	disabled unknown events for modules, now it is implemented in
+	modules, massive operations and components, but it is necesary in
+	local component, policy,  api, cli, pandora server and recond task.
+
+2013-08-27 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* index.php, include/javascript/pandora.js: fixed code style.
 	
 	* godmode/massive/massive_edit_modules.php: fixed the javascript

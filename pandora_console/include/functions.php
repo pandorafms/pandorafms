@@ -659,8 +659,9 @@ function get_parameter_get ($name, $default = "") {
  * @return mixed Whatever was in that parameter, cleaned however 
  */
 function get_parameter_post ($name, $default = "") {
-	if ((isset ($_POST[$name])) && ($_POST[$name] != ""))
+	if ((isset ($_POST[$name])) && ($_POST[$name] != "")) {
 		return io_safe_input ($_POST[$name]);
+	}
 	
 	return $default;
 }

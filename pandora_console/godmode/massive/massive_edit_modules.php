@@ -503,7 +503,21 @@ $(document).ready (function () {
 			$(".select_modules_row_2").css('display', '');
 		}
 		
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").hide ();
+		$("tr#delete_table-edit1, " +
+			"tr#delete_table-edit2, " +
+			"tr#delete_table-edit3, " +
+			"tr#delete_table-edit35, " +
+			"tr#delete_table-edit4, " +
+			"tr#delete_table-edit5, " +
+			"tr#delete_table-edit6, " +
+			"tr#delete_table-edit7, " +
+			"tr#delete_table-edit8, " +
+			"tr#delete_table-edit81, " +
+			"tr#delete_table-edit82, " +
+			"tr#delete_table-edit9, " +
+			"tr#delete_table-edit10, " +
+			"tr#delete_table-edit11, " +
+			"tr#delete_table-edit12").hide ();
 		
 		if (this.value == '0') {
 			filter = '';
@@ -535,10 +549,26 @@ $(document).ready (function () {
 		);
 	});
 	function show_form() {
-		$("td#delete_table-0-1, td#delete_table-edit1-1, td#delete_table-edit2-1").css ("width", "300px");
+		$("td#delete_table-0-1, " +
+			"td#delete_table-edit1-1, " +
+			"td#delete_table-edit2-1").css ("width", "300px");
 		$("#form_edit input[type=text]").attr ("value", "");
 		$("#form_edit input[type=checkbox]").not ("#checkbox-recursion").removeAttr ("checked");
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").show ();
+		$("tr#delete_table-edit1, " +
+			"tr#delete_table-edit2, " +
+			"tr#delete_table-edit3, " +
+			"tr#delete_table-edit35, " +
+			"tr#delete_table-edit4, " +
+			"tr#delete_table-edit5, " +
+			"tr#delete_table-edit6, " +
+			"tr#delete_table-edit7, " +
+			"tr#delete_table-edit8, " +
+			"tr#delete_table-edit81, " +
+			"tr#delete_table-edit82, " +
+			"tr#delete_table-edit9, " +
+			"tr#delete_table-edit10, " +
+			"tr#delete_table-edit11, " +
+			"tr#delete_table-edit12").show ();
 	}
 	
 	function clean_lists() {
@@ -546,7 +576,24 @@ $(document).ready (function () {
 		$("#module_name").html('<?php echo __('None'); ?>');
 		$("#agents").html('<?php echo __('None'); ?>');
 		$("#module").html('<?php echo __('None'); ?>');
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit36, tr#delete_table-edit37, tr#delete_table-edit38, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").hide ();
+		$("tr#delete_table-edit1, "  +
+			"tr#delete_table-edit2, " +
+			"tr#delete_table-edit3, " +
+			"tr#delete_table-edit35, " +
+			"tr#delete_table-edit36, " +
+			"tr#delete_table-edit37, " +
+			"tr#delete_table-edit38, " +
+			"tr#delete_table-edit4, " +
+			"tr#delete_table-edit5, " +
+			"tr#delete_table-edit6, " +
+			"tr#delete_table-edit7, " +
+			"tr#delete_table-edit8, " +
+			"tr#delete_table-edit81, " +
+			"tr#delete_table-edit82, " +
+			"tr#delete_table-edit9, " +
+			"tr#delete_table-edit10, " +
+			"tr#delete_table-edit11, " +
+			"tr#delete_table-edit12").hide ();
 		$('input[type=checkbox]').attr('checked', false);
 		$('input[type=checkbox]').attr('disabled', true);
 		$('#module_type').val(-1);
@@ -558,12 +605,34 @@ $(document).ready (function () {
 			if (this.id == "checkbox-force_type") {
 				if (this.checked) {
 					$(".select_modules_row_2").css('display', 'none');
-					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
+					$("tr#delete_table-edit1, " +
+						"tr#delete_table-edit2, " +
+						"tr#delete_table-edit3, " +
+						"tr#delete_table-edit35, " +
+						"tr#delete_table-edit4, " +
+						"tr#delete_table-edit5, " +
+						"tr#delete_table-edit6, " +
+						"tr#delete_table-edit7, " +
+						"tr#delete_table-edit8").show ();
 				}
 				else {
 					$(".select_modules_row_2").css('display', '');
 					if ($('#module_name option:selected').val() == undefined) {
-						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").hide ();
+						$("tr#delete_table-edit1, " +
+							"tr#delete_table-edit2, " +
+							"tr#delete_table-edit3, " +
+							"tr#delete_table-edit35, " +
+							"tr#delete_table-edit4, " +
+							"tr#delete_table-edit5, " +
+							"tr#delete_table-edit6, " +
+							"tr#delete_table-edit7, " +
+							"tr#delete_table-edit8, " +
+							"tr#delete_table-edit81, " +
+							"tr#delete_table-edit82, " +
+							"tr#delete_table-edit9, " +
+							"tr#delete_table-edit10, " +
+							"tr#delete_table-edit11, " +
+							"tr#delete_table-edit12").hide ();
 					}
 				}
 			}
@@ -584,12 +653,40 @@ $(document).ready (function () {
 				
 				if (this.checked) {
 					$(".select_agents_row_2").css('display', 'none');
-					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").show ();
+					$("tr#delete_table-edit1, " +
+						"tr#delete_table-edit2, " +
+						"tr#delete_table-edit3, " +
+						"tr#delete_table-edit35, " +
+						"tr#delete_table-edit4, " +
+						"tr#delete_table-edit5, " +
+						"tr#delete_table-edit6, " +
+						"tr#delete_table-edit7, " +
+						"tr#delete_table-edit8, " +
+						"tr#delete_table-edit81, " +
+						"tr#delete_table-edit82, " +
+						"tr#delete_table-edit9, " +
+						"tr#delete_table-edit10, " +
+						"tr#delete_table-edit11, " +
+						"tr#delete_table-edit12").show ();
 				}
 				else {
 					$(".select_agents_row_2").css('display', '');
 					if ($('#id_agents option:selected').val() == undefined) {
-						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").hide ();
+						$("tr#delete_table-edit1, " +
+							"tr#delete_table-edit2, " +
+							"tr#delete_table-edit3, " +
+							"tr#delete_table-edit35, " +
+							"tr#delete_table-edit4, " +
+							"tr#delete_table-edit5, " +
+							"tr#delete_table-edit6, " +
+							"tr#delete_table-edit7, " +
+							"tr#delete_table-edit8, " +
+							"tr#delete_table-edit81, " +
+							"tr#delete_table-edit82, " +
+							"tr#delete_table-edit9, " +
+							"tr#delete_table-edit10, " +
+							"tr#delete_table-edit11, " +
+							"tr#delete_table-edit12").hide ();
 					}
 				}
 			}
@@ -637,7 +734,21 @@ $(document).ready (function () {
 				$(".select_agents_row_2").css('display', '');
 			}
 			
-			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").hide ();
+			$("tr#delete_table-edit1, " +
+				"tr#delete_table-edit2, " +
+				"tr#delete_table-edit3, " +
+				"tr#delete_table-edit35, " +
+				"tr#delete_table-edit4, " +
+				"tr#delete_table-edit5, " +
+				"tr#delete_table-edit6, " +
+				"tr#delete_table-edit7, " +
+				"tr#delete_table-edit8, " +
+				"tr#delete_table-edit81, " +
+				"tr#delete_table-edit82, " +
+				"tr#delete_table-edit9, " +
+				"tr#delete_table-edit10, " +
+				"tr#delete_table-edit11, " +
+				"tr#delete_table-edit12").hide ();
 			
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",

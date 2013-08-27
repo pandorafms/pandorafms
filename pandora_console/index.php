@@ -592,7 +592,7 @@ require('include/php_to_js_values.php');
 			return rv;
 		};
 	})();
-
+	
 	//Dynamically assign footer position and width.
 	function adjustFooter() {
 		if (document.readyState !== 'complete') {

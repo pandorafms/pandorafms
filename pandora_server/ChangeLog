@@ -1,3 +1,8 @@
+2013-08-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* conf/pandora_server.conf.new: set the policy queues as default
+	running.
+
 2013-08-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Use the agent's address if ip_target

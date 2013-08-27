@@ -1,3 +1,10 @@
+2013-08-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* index.php, include/javascript/pandora.js: fixed code style.
+	
+	* godmode/massive/massive_edit_modules.php: fixed the javascript
+	that showed some rows before to select modules to edit.
+
 2013-08-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* pandoradb.data.postgreSQL.sql, pandoradb.data.oracle.sql,

@@ -474,7 +474,7 @@ sub process_module_data ($$$$$$$$$) {
 	my $tags = {'name' => 0, 'data' => 0, 'type' => 0, 'description' => 0, 'max' => 0,
 	            'min' => 0, 'descripcion' => 0, 'post_process' => 0, 'module_interval' => 0, 'min_critical' => 0,
 	            'max_critical' => 0, 'min_warning' => 0, 'max_warning' => 0, 'disabled' => 0, 'min_ff_event' => 0,
-	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'id_module_group' => 0};
+	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'module_group' => 0, 'id_module_group' => 0};
 
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -521,6 +521,13 @@ sub process_module_data ($$$$$$$$$) {
 			logger($pa_config, "Invalid module type '$module_type' for module '$module_name' agent '$agent_name'.", 3);
 			$ModuleSem->up ();
 			return;
+		}
+
+		# The group name has to be translated to a group ID
+		if (defined $module_conf->{'module_group'}) {
+			# Use id_module_group when both module_group and id_module_group are set (keep compatible behavior)
+			$module_conf->{'id_module_group'} = get_module_group_id ($dbh, $module_conf->{'module_group'}) unless defined $module_conf->{'id_module_group'}; 
+			delete $module_conf->{'module_group'};
 		}
 
 		# Set default values

@@ -184,6 +184,7 @@ namespace Pandora_Modules {
 		list<Condition *>     *condition_list;
 		list<Precondition *>  *precondition_list;
 		Cron				  *cron;
+		string                module_group;
 
 	protected:
 		
@@ -268,6 +269,7 @@ namespace Pandora_Modules {
 		void        setMaxWarning  (string value);
 		void        setDisabled    (string value);
 		void        setMinFFEvent  (string value);
+		void        setModuleGroup (string value);
 		
 		void        setAsync       (bool async);
 		void        setSave        (string save);

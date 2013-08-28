@@ -61,6 +61,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->max_warning     = "";
 	this->disabled        = "";
 	this->min_ff_event    = "";
+	this->module_group    = "";
 }
 
 /** 
@@ -562,6 +563,13 @@ Pandora_Module::getXml () {
 		module_xml += "]]></min_ff_event>\n";
 	}
 
+	/* Module group */
+	if (this->module_group != "") {
+		module_xml += "\t<module_group>";
+		module_xml += this->module_group;
+		module_xml += "</module_group>\n";
+	}
+ 
     /* Write module data */
 	if (this->data_list && this->data_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;
@@ -706,6 +714,15 @@ Pandora_Module::setDisabled (string value) {
 void
 Pandora_Module::setMinFFEvent (string value) {
 	this->min_ff_event = value;
+}
+/**
+ * Set the module group for the module.
+ *
+ * @param value module group value to set.
+ **/
+void
+Pandora_Module::setModuleGroup (string value) {
+	this->module_group = value;
 }
 
 /** 

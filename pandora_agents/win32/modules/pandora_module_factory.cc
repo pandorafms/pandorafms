@@ -105,6 +105,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_SNMPAGENT     ("module_snmp_agent ")
 #define TOKEN_SNMPOID       ("module_snmp_oid ")
 #define TOKEN_ADVANCEDOPTIONS ("module_advanced_options ")
+#define TOKEN_MODULE_GROUP ("module_group ")
 
 string
 parseLine (string line, string token) {
@@ -153,7 +154,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_disabled, module_min_ff_event, module_noseekeof;
 	string                 module_ping, module_ping_count, module_ping_timeout;
 	string                 module_snmpget, module_snmp_version, module_snmp_community, module_snmp_agent, module_snmp_oid;
-	string                 module_advanced_options, module_cooked;
+	string                 module_advanced_options, module_cooked, module_group;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -217,6 +218,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
     module_snmp_oid      = "";
     module_advanced_options = "";
     module_cooked        = "";
+	module_group       = "";
     
 	stringtok (tokens, definition, "\n");
 	
@@ -418,6 +420,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_cooked == "") {
 			module_cooked = parseLine (line, TOKEN_COOKED);
+		}
+		if (module_group == "") {
+			module_group = parseLine (line, TOKEN_MODULE_GROUP);
 		}
 		iter++;
 	}
@@ -682,6 +687,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 
 	if (module_min_ff_event != "") {
 		module->setMinFFEvent (module_min_ff_event);
+	}
+
+	if (module_group != "") {
+		module->setModuleGroup (module_group);
 	}
 
 	return module;

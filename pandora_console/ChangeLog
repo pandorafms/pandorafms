@@ -1,5 +1,10 @@
 2013-08-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/module_manager_editor_common.php: added code to
+	policy module editor with disabled unknown events modules.
+
+2013-08-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_modules.php: fixed the massive copy modules
 	between agents.
 

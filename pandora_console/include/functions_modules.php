@@ -200,16 +200,14 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	$id_agente = modules_get_agentmodule_agent($id_agent_module);
 	
-	$file = enterprise_hook('config_agents_get_agent_config_filenames', $id_agente);
-	$agent_md5  = $file['md5'];
-	$remote_conf  = $file['conf'];
-	
-	if ($remote_conf) {
-		$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
-			array($id_agent_module, $id_new_module));
-		
-		if ($result === false)
-			return false;
+	if (enterprise_installed()) {
+		if (config_agents_has_remote_configuration($id_agente)) {
+			$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
+				array($id_agent_module, $id_new_module));
+			
+			if ($result === false)
+				return false;
+		}
 	}
 	
 	return $id_new_module;

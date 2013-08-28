@@ -1,5 +1,10 @@
 2013-08-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_modules.php: fixed the massive copy modules
+	between agents.
+
+2013-08-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/module_manager_editor.php,
 	include/javascript/pandora_modules.js: implemented the disabled
 	unknown events for local modules.

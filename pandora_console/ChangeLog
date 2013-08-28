@@ -1,3 +1,8 @@
+2013-08-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/agent_manager.php: fixed the PHP warnings in the
+	call to enterprise function.
+
 2013-08-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* pandoradb.postgreSQL.sql, pandoradb.oracle.sql,

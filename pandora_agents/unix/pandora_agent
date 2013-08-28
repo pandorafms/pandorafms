@@ -347,6 +347,7 @@ sub parse_conf_modules($) {
 			    'max_warning' => undef,
 			    'disabled' => undef,
 			    'min_ff_event' => undef,
+			    'module_group' => undef,
 				'save' => '',
 				'conditions' => [],
 				'cron' => '',
@@ -481,6 +482,9 @@ sub parse_conf_modules($) {
 		# Min ff event
 		} elsif ($line =~ /^\s*module_min_ff_event\s+(.*)\s*$/) {
 			$module->{'min_ff_event'} = $1;
+		# Module_group
+		} elsif ($line =~ /^\s*module_group\s+(\S+)\s*$/) {
+			$module->{'module_group'} = $1;
 		}
 	}
 	return;
@@ -1558,6 +1562,9 @@ sub write_module_xml ($@) {
 
 	# Min ff event
 	$Xml .= "	<min_ff_event>" . $module->{'min_ff_event'} . "</min_ff_event>\n" if (defined ($module->{'min_ff_event'}));
+
+	# Module group
+	$Xml .= "       <module_group>" . $module->{'module_group'} . "</module_group>\n" if (defined ($module->{'module_group'}));
 
 	# Data list
 	if ($#data > 0) {

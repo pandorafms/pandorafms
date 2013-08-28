@@ -1,3 +1,7 @@
+2013-08-28  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent: Added module_group support.
+
 2013-08-22  Dario Rodriguez <dario@artica.es>
 
         * pandora_agent_installer: Added missing code in last commit.

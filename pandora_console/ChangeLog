@@ -1,5 +1,11 @@
 2013-08-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/module_manager_editor.php,
+	include/javascript/pandora_modules.js: implemented the disabled
+	unknown events for local modules.
+
+2013-08-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/agent_manager.php: fixed the PHP warnings in the
 	call to enterprise function.
 

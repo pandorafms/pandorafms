@@ -185,6 +185,11 @@ function configure_modules_form () {
 					}
 				}
 				
+				if (data["throw_unknown_events"])
+					$("input[name='throw_unknown_events']").check();
+				else
+					$("input[name='throw_unknown_events']").uncheck();
+				
 				// Delete macro fields
 				$('.macro_field').remove();
 				
@@ -351,9 +356,9 @@ function configure_modules_form () {
 				}
 				
 				if (data["throw_unknown_events"])
-					$("input[name='throw_unknown_events']").check ();
+					$("input[name='throw_unknown_events']").check();
 				else
-					$("input[name='throw_unknown_events']").uncheck ();
+					$("input[name='throw_unknown_events']").uncheck();
 			},
 			"json"
 		);

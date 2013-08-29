@@ -109,6 +109,10 @@ use POSIX qw(strftime);
 use threads;
 use threads::shared;
 
+use JSON qw(decode_json);
+# Debugging
+#use Data::Dumper;
+
 # Force XML::Simple to use XML::Parser instead SAX to manage XML
 # due a bug processing some XML with blank spaces.
 # See http://www.perlmonks.org/?node_id=706838
@@ -3850,31 +3854,34 @@ sub pandora_module_unknown ($$) {
 			AND tagente.disabled = 0 
 			AND tagente_modulo.disabled = 0 
 			AND ((tagente_estado.estado <> 3 AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100))
-			    OR (tagente_estado.estado <> 0 AND tagente_modulo.id_tipo_modulo IN (21, 22, 23)))
+				OR (tagente_estado.estado <> 0 AND tagente_modulo.id_tipo_modulo IN (21, 22, 23)))
 			AND tagente_estado.utimestamp != 0
 			AND (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP()');
 	
 	foreach my $module (@modules) {
-
+		
 		# Async
 		if ($module->{'id_tipo_modulo'} == 21 ||
-		    $module->{'id_tipo_modulo'} == 22 ||
-		    $module->{'id_tipo_modulo'} == 23) {
-
+			$module->{'id_tipo_modulo'} == 22 ||
+			$module->{'id_tipo_modulo'} == 23) {
+			
 			# Set the module state to normal
 			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to NORMAL", 10);
 			db_do ($dbh, 'UPDATE tagente_estado SET last_known_status = estado, last_status = 0, estado = 0 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
-
+			
 			# Get agent information
-			my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+			my $agent = get_db_single_row ($dbh, 'SELECT *
+				FROM tagente
+				WHERE id_agente = ?', $module->{'id_agente'});
+			
 			if (! defined ($agent)) {
 				logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while executing unknown alerts for module '" . $module->{'nombre'} . "'.", 3);
 				return;
 			}
-		
+			
 			# Update module status count
 			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
-
+			
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
 				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
@@ -3882,7 +3889,7 @@ sub pandora_module_unknown ($$) {
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 			}
-
+			
 			# Generate event with severity minor
 			my ($event_type, $severity) = ('going_down_normal', 5);
 			my $description = "Module " . safe_output($module->{'nombre'}) . " is going to NORMAL";
@@ -3890,7 +3897,7 @@ sub pandora_module_unknown ($$) {
 				$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 		}
 		# Regular module
-		else {	 
+		else {
 			# Set the module state to unknown
 			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
 			db_do ($dbh, 'UPDATE tagente_estado SET last_known_status = estado, last_status = 3, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
@@ -3901,10 +3908,10 @@ sub pandora_module_unknown ($$) {
 				logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while executing unknown alerts for module '" . $module->{'nombre'} . "'.", 3);
 				return;
 			}
-		
+			
 			# Update module status count
 			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
-		
+			
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
 				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
@@ -3913,11 +3920,28 @@ sub pandora_module_unknown ($$) {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 			}
 			
+			my $do_event = 0;
+			if ($module->{'disabled_types_event'} eq "") {
+				$do_event = 1;
+			}
+			else {
+				my $disabled_types_event = decode_json($module->{'disabled_types_event'});
+				
+				if ($disabled_types_event->{'going_unknown'}) {
+					$do_event = 0;
+				}
+				else {
+					$do_event = 1;
+				}
+			}
+			
 			# Generate event with severity minor
-			my ($event_type, $severity) = ('going_unknown', 5);
-			my $description = "Module " . safe_output($module->{'nombre'}) . " is going to UNKNOWN";
-			pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-				$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			if ($do_event) {
+				my ($event_type, $severity) = ('going_unknown', 5);
+				my $description = "Module " . safe_output($module->{'nombre'}) . " is going to UNKNOWN";
+				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
+					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			}
 		}
 	}
 }

@@ -17,6 +17,7 @@ use POSIX qw(strftime);
 use POSIX;
 use HTML::Entities;		# Encode or decode strings with HTML entities
 use File::Basename;
+use JSON qw(encode_json);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -881,17 +882,17 @@ sub cli_create_data_module($) {
 	my $in_policy = shift;
 	my ($policy_name, $module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str);
-		
-	if($in_policy == 0) {
+		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str, $enable_unknown_events);
+	
+	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $definition_file, $warning_str, $critical_str) = @ARGV[2..18];
+		$critical_max, $history_data, $definition_file, $warning_str, $critical_str, $enable_unknown_events) = @ARGV[2..19];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $configuration_data, $warning_str, $critical_str) = @ARGV[2..18];
+		$critical_max, $history_data, $configuration_data, $warning_str, $critical_str, $enable_unknown_events) = @ARGV[2..19];
 	}
 	
 	my $module_name_def;
@@ -900,10 +901,19 @@ sub cli_create_data_module($) {
 	my $agent_id;
 	my $policy_id;
 	
-	if($in_policy == 0) {
+	my $disabled_types_event = {};
+	if ($enable_unknown_events) {
+		$disabled_types_event->{'going_unknown'} = 0;
+	}
+	else {
+		$disabled_types_event->{'going_unknown'} = 1;
+	}
+	my $disabled_types_event_json = encode_json($disabled_types_event);
+	
+	if ($in_policy == 0) {
 		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
-	
+		
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
 		
@@ -912,20 +922,20 @@ sub cli_create_data_module($) {
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 		exist_check($policy_id,'policy',$policy_name);
-	
+		
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
 		
 		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
-
+	
 	# If the module is local and is not to policy, we add it to the conf file
-	if(defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
+	if (defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
 		open (FILE, $definition_file);
 		my @file = <FILE>;
 		my $definition = join("", @file);
 		close (FILE);
-
+		
 		# If the parameter name or type and the definition file name or type 
 		# dont match will be set the file definitions
 		open (FILE, $definition_file);
@@ -952,13 +962,13 @@ sub cli_create_data_module($) {
 		
 		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 	}
-
-	if(defined($definition_file) && $module_type ne $module_type_def) {
+	
+	if (defined($definition_file) && $module_type ne $module_type_def) {
 		$module_type = $module_type_def;
 		print_log "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
 	}
 	
-	if(defined($definition_file) && $module_name ne $module_name_def) {
+	if (defined($definition_file) && $module_name ne $module_name_def) {
 		$module_name = $module_name_def;
 		print_log "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
 	}
@@ -966,15 +976,15 @@ sub cli_create_data_module($) {
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-
+	
 	if ($module_type !~ m/.?generic.?/ && $module_type !~ m/.?async.?/ && $module_type ne 'log4x' && $module_type ne 'keep_alive') {
 			print_log "[ERROR] '$module_type' is not valid type for data modules. Try with generic, asyncronous, keep alive or log4x types\n\n";
 			exit;
 	}
-		
+	
 	my $module_group_id = 0;
 	
-	if(defined($module_group)) {
+	if (defined($module_group)) {
 		$module_group_id = get_module_group_id($dbh,$module_group);
 		exist_check($module_group_id,'module group',$module_group);
 	}
@@ -983,7 +993,7 @@ sub cli_create_data_module($) {
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
 	
-	if($in_policy == 0) {
+	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
 		$parameters{'id_agente'} = $agent_id;
 	}
@@ -991,7 +1001,7 @@ sub cli_create_data_module($) {
 		$parameters{'name'} = safe_input($module_name);
 		$parameters{'id_policy'} = $policy_id;
 	}
-
+	
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 	$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
@@ -999,7 +1009,7 @@ sub cli_create_data_module($) {
 	$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 	$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
-	if($in_policy == 0) {
+	if ($in_policy == 0) {
 		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
 		$parameters{'id_modulo'} = 1;	
 	}
@@ -1015,8 +1025,9 @@ sub cli_create_data_module($) {
 	$parameters{'module_interval'} = $interval unless !defined ($interval);
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
+	$parameters{'disabled_types_event'} = $disabled_types_event_json;
 	
-	if($in_policy == 0) {
+	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
 	else {
@@ -1076,17 +1087,17 @@ sub cli_create_network_module($) {
 	my $in_policy = shift;
 	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
 	$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
-	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str);
-		
-	if($in_policy == 0) {
+	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events);
+	
+	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
 		$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..20];
+		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events) = @ARGV[2..21];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $description, 
 		$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..19];
+		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events) = @ARGV[2..20];
 	}
 	
 	my $module_name_def;
@@ -1094,7 +1105,16 @@ sub cli_create_network_module($) {
 	my $agent_id;
 	my $policy_id;
 	
-	if($in_policy == 0) {
+	my $disabled_types_event = {};
+	if ($enable_unknown_events) {
+		$disabled_types_event->{'going_unknown'} = 0;
+	}
+	else {
+		$disabled_types_event->{'going_unknown'} = 1;
+	}
+	my $disabled_types_event_json = encode_json($disabled_types_event);
+	
+	if ($in_policy == 0) {
 		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
 		
@@ -1127,7 +1147,7 @@ sub cli_create_network_module($) {
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-		
+	
 	my $module_group_id = 0;
 	
 	if(defined($module_group)) {
@@ -1148,8 +1168,8 @@ sub cli_create_network_module($) {
 	my %parameters;
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-
-	if($in_policy == 0) {
+	
+	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
 		$parameters{'id_agente'} = $agent_id;
 		$parameters{'ip_target'} = $module_address;
@@ -1158,7 +1178,7 @@ sub cli_create_network_module($) {
 		$parameters{'name'} = safe_input($module_name);
 		$parameters{'id_policy'} = $policy_id;
 	}
-
+	
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 	$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
@@ -1167,9 +1187,9 @@ sub cli_create_network_module($) {
 	$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
 	$parameters{'tcp_port'} = $module_port unless !defined ($module_port);
-	if($in_policy == 0) {
+	if ($in_policy == 0) {
 		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
-		$parameters{'id_modulo'} = 2;	
+		$parameters{'id_modulo'} = 2;
 	}
 	else {
 		$parameters{'description'} = safe_input($description) unless !defined ($description);
@@ -1182,8 +1202,9 @@ sub cli_create_network_module($) {
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
-		
-	if($in_policy == 0) {
+	$parameters{'disabled_types_event'} = $disabled_types_event_json;
+	
+	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
 	else {
@@ -1201,27 +1222,36 @@ sub cli_create_snmp_module($) {
 	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
 		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
-		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str);
-		
-	if($in_policy == 0) {
+		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events);
+	
+	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
 		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
-		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..29];
+		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events) = @ARGV[2..30];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $version, $community, 
 		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
-		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str) = @ARGV[2..28];
+		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events) = @ARGV[2..29];
 	}
-
+	
 	my $module_name_def;
 	my $module_type_def;
 	my $agent_id;
 	my $policy_id;
 	
-	if($in_policy == 0) {
+	my $disabled_types_event = {};
+	if ($enable_unknown_events) {
+		$disabled_types_event->{'going_unknown'} = 0;
+	}
+	else {
+		$disabled_types_event->{'going_unknown'} = 1;
+	}
+	my $disabled_types_event_json = encode_json($disabled_types_event);
+	
+	if ($in_policy == 0) {
 		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
 		
@@ -1238,15 +1268,15 @@ sub cli_create_snmp_module($) {
 		non_exist_check($policy_module_exist,'policy module',$module_name);
 		
 		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
-	}	
+	}
 	
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
 	
 	my $module_group_id = 0;
-
-	if(defined($module_group)) {
+	
+	if (defined($module_group)) {
 		$module_group_id = get_module_group_id($dbh,$module_group);
 		exist_check($module_group_id,'module group',$module_group);
 	}
@@ -1265,7 +1295,7 @@ sub cli_create_snmp_module($) {
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
 	
-	if($in_policy == 0) {
+	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
 		$parameters{'id_agente'} = $agent_id;
 		$parameters{'ip_target'} = $module_address;
@@ -1274,10 +1304,10 @@ sub cli_create_snmp_module($) {
 		$parameters{'name'} = safe_input($module_name);
 		$parameters{'id_policy'} = $policy_id;
 	}
-
+	
 	$parameters{'tcp_port'} = $module_port;
 	$parameters{'tcp_send'} = $version;
-
+	
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 	$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
@@ -1285,10 +1315,10 @@ sub cli_create_snmp_module($) {
 	$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 	$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
-	if($in_policy == 0) {
+	if ($in_policy == 0) {
 		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
 		#2 for snmp modules
-		$parameters{'id_modulo'} = 2;	
+		$parameters{'id_modulo'} = 2;
 	}
 	else {
 		$parameters{'description'} = safe_input($description) unless !defined ($description);
@@ -1305,7 +1335,7 @@ sub cli_create_snmp_module($) {
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
 	
-	if($version == 3) {
+	if ($version == 3) {
 		$parameters{'custom_string_1'} = $snmp3_priv_method;
 		$parameters{'custom_string_2'} = $snmp3_priv_pass;
 		$parameters{'custom_string_3'} = $snmp3_sec_level;
@@ -1314,7 +1344,9 @@ sub cli_create_snmp_module($) {
 		$parameters{'plugin_pass'} = $snmp3_auth_pass;
 	}
 	
-	if($in_policy == 0) {
+	$parameters{'disabled_types_event'} = $disabled_types_event_json;
+	
+	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
 	else {
@@ -1330,29 +1362,38 @@ sub cli_create_snmp_module($) {
 sub cli_create_plugin_module($) {
 	my $in_policy = shift;
 	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
-	$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
-	$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
-	$ff_threshold, $warning_str, $critical_str);
+		$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
+		$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
+		$ff_threshold, $warning_str, $critical_str, $enable_unknown_events);
 	
-	if($in_policy == 0) {
+	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
 			$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
 			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
-			$ff_threshold, $warning_str, $critical_str) = @ARGV[2..24];
+			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events) = @ARGV[2..25];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $plugin_name,
 			$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
 			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
-			$ff_threshold, $warning_str, $critical_str) = @ARGV[2..23];
+			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events) = @ARGV[2..24];
 	}
-		
+	
 	my $module_name_def;
 	my $module_type_def;
 	my $agent_id;
 	my $policy_id;
-
-	if($in_policy == 0) {
+	
+	my $disabled_types_event = {};
+	if ($enable_unknown_events) {
+		$disabled_types_event->{'going_unknown'} = 0;
+	}
+	else {
+		$disabled_types_event->{'going_unknown'} = 1;
+	}
+	my $disabled_types_event_json = encode_json($disabled_types_event);
+	
+	if ($in_policy == 0) {
 		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
 		
@@ -1374,15 +1415,15 @@ sub cli_create_plugin_module($) {
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-
+	
 	if ($module_type !~ m/.?generic.?/ && $module_type ne 'log4x') {
 			print_log "[ERROR] '$module_type' is not valid type for plugin modules. Try with generic or log4x types\n\n";
 			exit;
 	}
-		
+	
 	my $module_group_id = get_module_group_id($dbh,$module_group);
 	exist_check($module_group_id,'module group',$module_group);
-			
+	
 	my $plugin_id = get_plugin_id($dbh,$plugin_name);
 	exist_check($plugin_id,'plugin',$plugin_name);
 	
@@ -1390,12 +1431,12 @@ sub cli_create_plugin_module($) {
 		print_log "[ERROR] Port error. Port must into [1-65535]\n\n";
 		exit;
 	}
-
+	
 	my %parameters;
 	
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-
-	if($in_policy == 0) {
+	
+	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
 		$parameters{'id_agente'} = $agent_id;
 		$parameters{'ip_target'} = $module_address;
@@ -1410,7 +1451,7 @@ sub cli_create_plugin_module($) {
 	$parameters{'plugin_user'} = $user;
 	$parameters{'plugin_pass'} = $password;
 	$parameters{'plugin_parameter'} = safe_input($params);
-
+	
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 	$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
@@ -1418,7 +1459,7 @@ sub cli_create_plugin_module($) {
 	$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
 	$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
-	if($in_policy == 0) {
+	if ($in_policy == 0) {
 		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
 		#4 for plugin modules
 		$parameters{'id_modulo'} = 4;	
@@ -1435,8 +1476,10 @@ sub cli_create_plugin_module($) {
 	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
-		
-	if($in_policy == 0) {
+	
+	$parameters{'disabled_types_event'} = $disabled_types_event_json;
+	
+	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
 	else {
@@ -2070,28 +2113,39 @@ sub cli_module_update() {
 		$field = 'id_agente';
 		$new_value = $id_agent_change;
 	}
-	elsif($field eq 'module_name') {
+	elsif ($field eq 'module_name') {
 		my $id_agent_module_change = get_agent_module_id ($dbh, $new_value, $id_agent);
-		if($id_agent_module_change != -1) {
+		if ($id_agent_module_change != -1) {
 			print_log "[ERROR] A module called '$new_value' already exist in the agent '$agent_name'\n\n";
 			exit;
 		}
 		$field = 'nombre';
 		$new_value = safe_input($new_value);
 	}
-	elsif($field eq 'description') {
+	elsif ($field eq 'description') {
 		$field = 'descripcion';
 		$new_value = safe_input($new_value);
 	}
-	elsif($field eq 'module_group') {
+	elsif ($field eq 'module_group') {
 		my $module_group_id = get_module_group_id($dbh,$new_value);
-
-		if($module_group_id == -1) {
+		
+		if ($module_group_id == -1) {
 			print_log "[ERROR] Module group '$new_value' doesnt exist\n\n";
 			exit;
 		}
 		$field = 'id_module_group';
 		$new_value = $module_group_id;
+	}
+	elsif ($field eq 'enable_unknown_events') {
+		my $disabled_types_event = {};
+		if ($new_value) {
+			$disabled_types_event->{'going_unknown'} = 0;
+		}
+		else {
+			$disabled_types_event->{'going_unknown'} = 1;
+		}
+		$field = 'disabled_types_event';
+		$new_value = encode_json($disabled_types_event);
 	}
 	else {
 		# If is not a common value, check type and call type update funtion
@@ -2100,7 +2154,7 @@ sub cli_module_update() {
 		my %field_value;
 		$field_value{'field'} = $field;
 		$field_value{'new_value'} = $new_value;
-
+		
 		if($type eq 'data') {
 			pandora_check_data_module_fields(\%field_value);
 		}

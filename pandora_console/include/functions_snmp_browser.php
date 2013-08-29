@@ -146,7 +146,7 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 	}
 	
 	// Call snmpwalk
-	if ($config['snmpwalk'] == '') {
+	if (empty($config['snmpwalk'])) {
 		switch (PHP_OS) {
 			case "FreeBSD":
 				$snmpwalk_bin = '/usr/local/bin/snmpwalk';
@@ -248,7 +248,7 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
 	}
 	
 	$oid_data['oid'] = $target_oid;
-	if ($config['snmpget'] == '') {
+	if (empty($config['snmpget'])) {
 		switch (PHP_OS) {
 			case "FreeBSD":
 				$snmpget_bin = '/usr/local/bin/snmpget';
@@ -287,7 +287,7 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
 		$oid_data['numeric_oid'] = $oid;
 		
 		// Translate the OID
-		if ($config['snmptranslate'] == '') {
+		if (empty($config['snmptranslate'])) {
 			switch (PHP_OS) {
 				case "FreeBSD":
 					$snmptranslate_bin = '/usr/local/bin/snmptranslate';
@@ -348,6 +348,7 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
  * @return string The OID data.
  */
 function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = false) {
+	$output = '';
 	
 	// OID information table
 	$table->width = '100%';

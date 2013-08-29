@@ -1,5 +1,9 @@
 2013-08-29 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_snmp_browser.php: fixed PHP warnings.
+
+2013-08-29 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_api.php: added supoport for disabled unknown
 	events modules, components and policies.
 

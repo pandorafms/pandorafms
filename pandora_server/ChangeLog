@@ -1,3 +1,8 @@
+2013-08-29 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* util/pandora_manage.pl: added support to disable/enable unknown
+	events for modules.
+
 2013-08-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* conf/pandora_server.conf.new: set the policy queues as default

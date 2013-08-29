@@ -1228,17 +1228,23 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 	
 	$idAgent = agents_get_agent_id($agentName);
 	
-	if (!$idAgent){
-		returnError('error_create_network_module', __('Error in creation network module. Agent name doesn\'t exists.'));
+	if (!$idAgent) {
+		returnError('error_create_network_module',
+			__('Error in creation network module. Agent name doesn\'t exists.'));
 		return;
 	}
 	
-	if ($other['data'][2] < 6 or $other['data'][2] > 18){
-		returnError('error_create_network_module', __('Error in creation network module. Id_module_type is not correct for network modules.'));
+	if ($other['data'][2] < 6 or $other['data'][2] > 18) {
+		returnError('error_create_network_module',
+			__('Error in creation network module. Id_module_type is not correct for network modules.'));
 		return;
 	}
 	
 	$name = $other['data'][0];
+	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][22]);
+	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array(
 		'id_agente' => $idAgent,
@@ -1263,7 +1269,8 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 		'max' => $other['data'][19],
 		'custom_id' => $other['data'][20],
 		'descripcion' => $other['data'][21],
-		'id_modulo' => 2
+		'id_modulo' => 2,
+		'disabled_types_event' => $disabled_types_event
 	);
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
@@ -1312,19 +1319,39 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3){
 	if ($other['data'][0] != "") {
 		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
 		
-		if ($id_agent_old != $other['data'][0]){
+		if ($id_agent_old != $other['data'][0]) {
 			$id_module_exists = db_get_value_filter ('id_agente_modulo', 'tagente_modulo', array('nombre' => $module_name, 'id_agente' => $other['data'][0]));
 			
 			if ($id_module_exists){
-				returnError('error_update_network_module', __('Error updating network module. Id_module exists in the new agent.'));
+				returnError('error_update_network_module',
+					__('Error updating network module. Id_module exists in the new agent.'));
 				return;
 			}
 		}
 	}
 	
-	$network_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
-	'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'snmp_community', 
-	'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion');	
+	$network_module_fields = array('id_agente',
+		'disabled',
+		'id_module_group',
+		'min_warning',
+		'max_warning',
+		'str_warning', 
+		'min_critical',
+		'max_critical',
+		'str_critical',
+		'min_ff_event',
+		'history_data',
+		'ip_target',
+		'tcp_port',
+		'snmp_community',
+		'snmp_oid',
+		'module_interval',
+		'post_process',
+		'min',
+		'max',
+		'custom_id',
+		'descripcion',
+		'disabled_types_event');
 	
 	$values = array();
 	$cont = 0;
@@ -1375,6 +1402,10 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][26]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	$name = $other['data'][0];
 	
 	$values = array(
@@ -1404,7 +1435,8 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 		'id_plugin' => $other['data'][22],
 		'plugin_user' => $other['data'][23],
 		'plugin_pass' => $other['data'][24],
-		'plugin_parameter' => $other['data'][25]
+		'plugin_parameter' => $other['data'][25],
+		'disabled_types_event' => $disabled_types_event
 	);
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
@@ -1462,10 +1494,32 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
 		}
 	}
 	
-	$plugin_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
-		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target',
-		'tcp_port', 'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max',
-		'custom_id', 'descripcion', 'id_plugin', 'plugin_user', 'plugin_pass', 'plugin_parameter');	
+	$plugin_module_fields = array('id_agente',
+		'disabled',
+		'id_module_group',
+		'min_warning',
+		'max_warning',
+		'str_warning', 
+		'min_critical',
+		'max_critical',
+		'str_critical',
+		'min_ff_event',
+		'history_data',
+		'ip_target',
+		'tcp_port',
+		'snmp_community',
+		'snmp_oid',
+		'module_interval',
+		'post_process',
+		'min',
+		'max',
+		'custom_id',
+		'descripcion',
+		'id_plugin',
+		'plugin_user',
+		'plugin_pass',
+		'plugin_parameter',
+		'disabled_types_event');
 	
 	$values = array();
 	$cont = 0;
@@ -1518,6 +1572,10 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 	
 	$name = $other['data'][0];
 	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][16]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	$values = array(
 		'id_agente' => $idAgent,
 		'disabled' => $other['data'][1],
@@ -1525,7 +1583,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 		'descripcion' => $other['data'][3],
 		'id_module_group' => $other['data'][4],
 		'min' => $other['data'][5],
-		'max' => $other['data'][6],		
+		'max' => $other['data'][6],
 		'post_process' => $other['data'][7],
 		'module_interval' => $other['data'][8],
 		'min_warning' => $other['data'][9],
@@ -1535,7 +1593,8 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 		'max_critical' => $other['data'][13],
 		'str_critical' => $other['data'][14],
 		'history_data' => $other['data'][15],
-		'id_modulo' => 1
+		'id_modulo' => 1,
+		'disabled_types_event' => $disabled_types_event
 	);
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
@@ -1594,9 +1653,22 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3){
 		}
 	}
 	
-	$data_module_fields = array('id_agente', 'disabled', 'descripcion', 'id_module_group', 'min', 'max', 
-	'post_process', 'module_interval', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 
-	'history_data');
+	$data_module_fields = array('id_agente',
+		'disabled',
+		'descripcion',
+		'id_module_group',
+		'min',
+		'max', 
+		'post_process',
+		'module_interval',
+		'min_warning',
+		'max_warning',
+		'str_warning',
+		'min_critical',
+		'max_critical',
+		'str_critical', 
+		'history_data',
+		'disabled_types_event');
 	
 	$values = array();
 	$cont = 0;
@@ -1662,6 +1734,11 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	
 	$name = $other['data'][0];
 	
+	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][27]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	# SNMP version 3
 	if ($other['data'][14] == "3") {
 		
@@ -1710,7 +1787,8 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 			'custom_string_3' => $other['data'][25],
 			'plugin_parameter' => $other['data'][26],
 			'plugin_user' => $other['data'][27],
-			'plugin_pass' => $other['data'][28]
+			'plugin_pass' => $other['data'][28],
+			'disabled_types_event' => $disabled_types_event
 		);
 	}
 	else {
@@ -1738,7 +1816,8 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 			'max' => $other['data'][20],	
 			'custom_id' => $other['data'][21],
 			'descripcion' => $other['data'][22],
-			'id_modulo' => 2
+			'id_modulo' => 2,
+			'disabled_types_event' => $disabled_types_event
 		);
 	}
 	
@@ -1818,15 +1897,60 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			return;
 		}
 		
-		$snmp_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
-		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'tcp_send', 
-		'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion', 'custom_string_1', 
-		'custom_string_2', 'custom_string_3', 'plugin_parameter', 'plugin_user', 'plugin_pass');
+		$snmp_module_fields = array('id_agente',
+			'disabled',
+			'id_module_group',
+			'min_warning',
+			'max_warning',
+			'str_warning', 
+			'min_critical',
+			'max_critical',
+			'str_critical',
+			'min_ff_event',
+			'history_data',
+			'ip_target',
+			'tcp_port',
+			'tcp_send', 
+			'snmp_community',
+			'snmp_oid',
+			'module_interval',
+			'post_process',
+			'min',
+			'max',
+			'custom_id',
+			'descripcion',
+			'custom_string_1', 
+			'custom_string_2',
+			'custom_string_3',
+			'plugin_parameter',
+			'plugin_user',
+			'plugin_pass',
+			'disabled_types_event');
 	}
 	else {
-		$snmp_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
-		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target', 'tcp_port', 'tcp_send', 
-		'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'descripcion');
+		$snmp_module_fields = array('id_agente',
+			'disabled',
+			'id_module_group',
+			'min_warning',
+			'max_warning',
+			'str_warning', 
+			'min_critical',
+			'max_critical',
+			'str_critical',
+			'min_ff_event',
+			'history_data',
+			'ip_target',
+			'tcp_port',
+			'tcp_send', 
+			'snmp_community',
+			'snmp_oid',
+			'module_interval',
+			'post_process',
+			'min',
+			'max',
+			'custom_id',
+			'descripcion',
+			'disabled_types_event');
 	}
 	
 	$values = array();
@@ -1882,6 +2006,10 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
 		return;
 	}
 	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][18]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	$values = array ( 
 		'description' => $other['data'][1],
 		'module_interval' => $other['data'][2],
@@ -1901,7 +2029,7 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
 		'min_ff_event' => $other['data'][15],
 		'post_process' => $other['data'][16],
 		'max_retries' => $other['data'][17],
-		);
+		'disabled_types_event' => $disabled_types_event);
 	
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
 	
@@ -1953,6 +2081,10 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
 		return;
 	}
 	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][12]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	$values = array ( 
 		'description' => $other['data'][1],
 		'module_interval' => $other['data'][2],
@@ -1975,7 +2107,8 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
 		'str_critical' => $other['data'][18],
 		'min_ff_event' => $other['data'][19],
 		'post_process' => $other['data'][20],
-		'max_retries' => $other['data'][11]);
+		'max_retries' => $other['data'][11],
+		'disabled_types_event' => $disabled_types_event);
 	
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
 	
@@ -2028,12 +2161,16 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 		return;
 	}
 	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][27]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	# SNMP version 3
 	if ($other['data'][16] == "3") {
 		
 		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
 			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
-			return;	
+			return;
 		}
 		
 		if ($other['data'][25] != "authNoPriv" and $other['data'][25] != "authPriv" and $other['data'][25] != "noAuthNoPriv"){
@@ -2047,72 +2184,74 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 		}
 		
 		$values = array ( 
-				'description' => $other['data'][1],
-				'module_interval' => $other['data'][2],
-				'max' => $other['data'][3],
-				'min' => $other['data'][4],
-				'id_module_group' => $other['data'][5],		
-				'max_timeout' => $other['data'][6],
-				'history_data' => $other['data'][7],
-				'min_warning' => $other['data'][8],
-				'max_warning' => $other['data'][9],
-				'str_warning' => $other['data'][10],
-				'min_critical' => $other['data'][11],
-				'max_critical' => $other['data'][12],
-				'str_critical' => $other['data'][13],
-				'min_ff_event' => $other['data'][14],
-				'post_process' => $other['data'][15],
-				'tcp_send' => $other['data'][16],
-				'snmp_oid' => $other['data'][17],
-				'snmp_community' => $other['data'][18],
-				'plugin_user' => $other['data'][19],		// snmp3_auth_user
-				'plugin_pass' => $other['data'][20],		// snmp3_auth_pass
-				'tcp_port' => $other['data'][21],
-				'id_modulo' => 2,				
-				'custom_string_1' => $other['data'][22],	// snmp3_privacy_method
-				'custom_string_2' => $other['data'][23],  	// snmp3_privacy_pass
-				'plugin_parameter' => $other['data'][24],	// snmp3_auth_method
-				'custom_string_3' => $other['data'][25],	// snmp3_security_level
-				'max_retries' => $other['data'][26],
-				);	
+			'description' => $other['data'][1],
+			'module_interval' => $other['data'][2],
+			'max' => $other['data'][3],
+			'min' => $other['data'][4],
+			'id_module_group' => $other['data'][5],
+			'max_timeout' => $other['data'][6],
+			'history_data' => $other['data'][7],
+			'min_warning' => $other['data'][8],
+			'max_warning' => $other['data'][9],
+			'str_warning' => $other['data'][10],
+			'min_critical' => $other['data'][11],
+			'max_critical' => $other['data'][12],
+			'str_critical' => $other['data'][13],
+			'min_ff_event' => $other['data'][14],
+			'post_process' => $other['data'][15],
+			'tcp_send' => $other['data'][16],
+			'snmp_oid' => $other['data'][17],
+			'snmp_community' => $other['data'][18],
+			'plugin_user' => $other['data'][19],		// snmp3_auth_user
+			'plugin_pass' => $other['data'][20],		// snmp3_auth_pass
+			'tcp_port' => $other['data'][21],
+			'id_modulo' => 2,
+			'custom_string_1' => $other['data'][22],	// snmp3_privacy_method
+			'custom_string_2' => $other['data'][23],  	// snmp3_privacy_pass
+			'plugin_parameter' => $other['data'][24],	// snmp3_auth_method
+			'custom_string_3' => $other['data'][25],	// snmp3_security_level
+			'max_retries' => $other['data'][26],
+			'disabled_types_event' => $disabled_types_event
+			);
 	}
 	else {
 		$values = array ( 
-				'description' => $other['data'][1],
-				'module_interval' => $other['data'][2],
-				'max' => $other['data'][3],
-				'min' => $other['data'][4],
-				'id_module_group' => $other['data'][5],		
-				'max_timeout' => $other['data'][6],			
-				'history_data' => $other['data'][7],
-				'min_warning' => $other['data'][8],
-				'max_warning' => $other['data'][9],
-				'str_warning' => $other['data'][10],
-				'min_critical' => $other['data'][11],
-				'max_critical' => $other['data'][12],
-				'str_critical' => $other['data'][13],
-				'min_ff_event' => $other['data'][14],
-				'post_process' => $other['data'][15],
-				'tcp_send' => $other['data'][16],
-				'snmp_oid' => $other['data'][17],
-				'snmp_community' => $other['data'][18],
-				'plugin_user' => '',
-				'plugin_pass' => '',		
-				'tcp_port' => $other['data'][21],
-				'id_modulo' => 2,
-				'max_retries' => $other['data'][22],
-				);			
+			'description' => $other['data'][1],
+			'module_interval' => $other['data'][2],
+			'max' => $other['data'][3],
+			'min' => $other['data'][4],
+			'id_module_group' => $other['data'][5],
+			'max_timeout' => $other['data'][6],
+			'history_data' => $other['data'][7],
+			'min_warning' => $other['data'][8],
+			'max_warning' => $other['data'][9],
+			'str_warning' => $other['data'][10],
+			'min_critical' => $other['data'][11],
+			'max_critical' => $other['data'][12],
+			'str_critical' => $other['data'][13],
+			'min_ff_event' => $other['data'][14],
+			'post_process' => $other['data'][15],
+			'tcp_send' => $other['data'][16],
+			'snmp_oid' => $other['data'][17],
+			'snmp_community' => $other['data'][18],
+			'plugin_user' => '',
+			'plugin_pass' => '',
+			'tcp_port' => $other['data'][21],
+			'id_modulo' => 2,
+			'max_retries' => $other['data'][22],
+			'disabled_types_event' => $disabled_types_event
+			);
 	}
 	
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
 	
-	if ($name_check !== false){
+	if ($name_check !== false) {
 		returnError('error_set_new_snmp_component', __('Error creating SNMP component. This SNMP component already exists.'));
-		return;			
+		return;
 	}
 	
 	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][25], $values);
-
+	
 	if (!$id)
 		returnError('error_set_new_snmp_component', 'Error creating SNMP component.');
 	else
@@ -2138,33 +2277,43 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
 	
 	if ($id == "") {
-		returnError('error_set_new_local_component', __('Error creating local component. Local component name cannot be left blank.'));
+		returnError('error_set_new_local_component',
+			__('Error creating local component. Local component name cannot be left blank.'));
 		return;
 	}
 	
 	if ($other['data'][1] == "") {
-		returnError('error_set_new_local_component', __('Error creating local component. Local component group cannot be left blank.'));
+		returnError('error_set_new_local_component',
+			__('Error creating local component. Local component group cannot be left blank.'));
 		return;
 	}
+	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][4]);
+	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array ( 
 		'description' => $other['data'][0],
-		'id_network_component_group' => $other['data'][1]
-	);
+		'id_network_component_group' => $other['data'][1],
+		'disabled_types_event' => $disabled_types_event);
 	
-	$name_check = enterprise_hook('local_components_get_local_components', array(array('name' => $id), 'name'));
+	$name_check = enterprise_hook('local_components_get_local_components',
+		array(array('name' => $id), 'name'));
 	
 	if ($name_check === ENTERPRISE_NOT_HOOK) {
-		returnError('error_set_new_local_component', __('Error creating local component.'));
-		return;	
-	}
-	
-	if ($name_check !== false) {
-		returnError('error_set_new_local_component', __('Error creating local component. This local component already exists.'));
+		returnError('error_set_new_local_component',
+			__('Error creating local component.'));
 		return;
 	}
 	
-	$id = enterprise_hook('local_components_create_local_component', array($id, $other['data'][3], $other['data'][1], $values));
+	if ($name_check !== false) {
+		returnError('error_set_new_local_component',
+			__('Error creating local component. This local component already exists.'));
+		return;
+	}
+	
+	$id = enterprise_hook('local_components_create_local_component',
+		array($id, $other['data'][3], $other['data'][1], $values));
 	
 	if (!$id)
 		returnError('error_set_new_local_component', 'Error creating local component.');
@@ -2997,6 +3146,10 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][16]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	$values = array();
 	$values['id_tipo_modulo'] = $other['data'][1];
 	$values['description'] = $other['data'][2];
@@ -3012,16 +3165,19 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['max_critical'] = $other['data'][12];
 	$values['str_critical'] = $other['data'][13];
  	$values['history_data'] = $other['data'][14];
- 	$values['configuration_data'] = $other['data'][15];	
+ 	$values['configuration_data'] = $other['data'][15];
+ 	$values['disabled_types_event'] = $disabled_types_event;
  	
  	if ($name_module_policy !== false) {
 		if ($name_module_policy[0]['name'] == $other['data'][0]) {
-			returnError('error_add_data_module_policy', __('Error adding data module to policy. The module is already in the policy.'));
+			returnError('error_add_data_module_policy',
+				__('Error adding data module to policy. The module is already in the policy.'));
 			return;
 		}
 	}
 	
-	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 1, $values, false)); 
+	$success = enterprise_hook('policies_create_module',
+		array($other['data'][0], $id, 1, $values, false)); 
 	
 	if ($success)
 		//returnData('string', array('type' => 'string', 'data' => __('Data module added to policy. Is necessary to apply the policy in order to changes take effect.')));		
@@ -3115,27 +3271,36 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
  */
 function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == "") {
-		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_policy cannot be left blank.'));
+		returnError('error_network_data_module_policy',
+			__('Error adding network module to policy. Id_policy cannot be left blank.'));
 		return;
 	}
 	
 	if ($other['data'][0] == "") {
-		returnError('error_network_data_module_policy', __('Error adding network module to policy. Module_name cannot be left blank.'));
+		returnError('error_network_data_module_policy',
+			__('Error adding network module to policy. Module_name cannot be left blank.'));
 		return;
 	}
 	
 	if ($other['data'][1] < 6 or $other['data'][1] > 18) {
-		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_module_type is not correct for network modules.'));
+		returnError('error_network_data_module_policy',
+			__('Error adding network module to policy. Id_module_type is not correct for network modules.'));
 		return;
 	}
 	
 	// Check if the module is already in the policy
-	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
+	$name_module_policy = enterprise_hook('policies_get_modules',
+		array($id, array('name'=>$other['data'][0]), 'name'));
 	
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
-		returnError('error_network_data_module_policy', __('Error adding network module to policy.'));
+		returnError('error_network_data_module_policy',
+			__('Error adding network module to policy.'));
 		return;
 	}
+	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][21]);
+	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array();
 	$values['id_tipo_modulo'] = $other['data'][1];
@@ -3158,6 +3323,7 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['snmp_community'] = $other['data'][18];
 	$values['snmp_oid'] = $other['data'][19];
 	$values['custom_id'] = $other['data'][20];
+	$values['disabled_types_event'] = $disabled_types_event;
 	
 	if ($name_module_policy !== false) {
 		if ($name_module_policy[0]['name'] == $other['data'][0]){
@@ -3194,12 +3360,14 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
  */
 function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == "") {
-		returnError('error_update_network_module_policy', __('Error updating network module in policy. Id_policy cannot be left blank.'));
+		returnError('error_update_network_module_policy',
+			__('Error updating network module in policy. Id_policy cannot be left blank.'));
 		return;
 	}
 	
 	if ($other['data'][0] == "") {
-		returnError('error_update_network_module_policy', __('Error updating network module in policy. Id_policy_module cannot be left blank.'));
+		returnError('error_update_network_module_policy',
+			__('Error updating network module in policy. Id_policy_module cannot be left blank.'));
 		return;
 	}
 	
@@ -3207,12 +3375,14 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 	
 	if ($module_policy === false) {
-		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module doesn\'t exists.'));
+		returnError('error_update_network_module_policy',
+			__('Error updating network module in policy. Module doesn\'t exists.'));
 		return;
 	}
 	
 	if ($module_policy[0]['id_module'] != 2) {
-		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module type is not network type.'));
+		returnError('error_update_network_module_policy',
+			__('Error updating network module in policy. Module type is not network type.'));
 		return;
 	}
 	
@@ -3281,6 +3451,10 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][25]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	$values = array();
 	$values['disabled'] = $other['data'][1];
 	$values['id_tipo_modulo'] = $other['data'][2];
@@ -3306,6 +3480,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['plugin_user'] = $other['data'][22];
 	$values['plugin_pass'] = $other['data'][23];
 	$values['plugin_parameter'] = $other['data'][24];
+	$values['disabled_types_event'] = $disabled_types_event;
 	
 	if ($name_module_policy !== false) {
 		if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -3421,7 +3596,7 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
 	}
 	
 	$result = enterprise_hook('config_agents_add_module_in_conf', array($id_agent, $new_configuration_data));
-		
+	
 	if($result && $result !== ENTERPRISE_NOT_HOOK) {
 		returnData('string', array('type' => 'string', 'data' => '0'));		
 	}
@@ -3566,6 +3741,10 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	$disabled_types_event = array();
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][28]);
+	$disabled_types_event = json_encode($disabled_types_event);
+	
 	# SNMP version 3
 	if ($other['data'][13] == "3") {
 		
@@ -3611,7 +3790,8 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			'custom_string_3' => $other['data'][24],
 			'plugin_parameter' => $other['data'][25],
 			'plugin_user' => $other['data'][26],
-			'plugin_pass' => $other['data'][27]
+			'plugin_pass' => $other['data'][27],
+			'disabled_types_event' => $disabled_types_event
 		);
 	}
 	else {
@@ -3634,9 +3814,10 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			'module_interval' => $other['data'][16],
 			'post_process' => $other['data'][17],
 			'min' => $other['data'][18],
-			'max' => $other['data'][19],	
+			'max' => $other['data'][19],
 			'custom_id' => $other['data'][20],
-			'description' => $other['data'][21]
+			'description' => $other['data'][21],
+			'disabled_types_event' => $disabled_types_event
 		);
 	}
 	
@@ -3767,7 +3948,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == "") {
 		returnError('error_apply_policy', __('Error applying policy. Id_policy cannot be left blank.'));
-		return;			
+		return;
 	}
 	
 	# Check if this operation is duplicated
@@ -4138,35 +4319,47 @@ function api_set_new_user($id, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_set_update_user($id, $thrash2, $other, $thrash3) {
-
-	$fields_user = array('fullname', 'firstname', 'lastname', 'middlename', 'password', 'email', 
-						 'phone', 'language', 'comments', 'is_admin', 'block_size', 'flash_chart');
-
-
+	
+	$fields_user = array('fullname',
+		'firstname',
+		'lastname',
+		'middlename',
+		'password',
+		'email', 
+		'phone',
+		'language',
+		'comments',
+		'is_admin',
+		'block_size',
+		'flash_chart');
+	
+	
 	if ($id == "") {
-		returnError('error_update_user', __('Error updating user. Id_user cannot be left blank.'));
+		returnError('error_update_user',
+			__('Error updating user. Id_user cannot be left blank.'));
 		return;
 	}
 
 	$result_user = users_get_user_by_id($id);
 	
-	if (!$result_user){
-		returnError('error_update_user', __('Error updating user. Id_user doesn\'t exists.'));
+	if (!$result_user) {
+		returnError('error_update_user',
+			__('Error updating user. Id_user doesn\'t exists.'));
 		return;
 	}
 	
 	$cont = 0;
-	foreach ($fields_user as $field){
-		if ($other['data'][$cont] != "" and $field != "password"){
+	foreach ($fields_user as $field) {
+		if ($other['data'][$cont] != "" and $field != "password") {
 			$values[$field] = $other['data'][$cont];
 		}
 		
 		$cont++;
 	}
-
+	
 	// If password field has data
-	if ($other['data'][4] != ""){
-		if (!update_user_password($id, $other['data'][4])){
+	if ($other['data'][4] != "") {
+		if (!update_user_password($id, $other['data'][4])) {
 			returnError('error_update_user', __('Error updating user. Password info incorrect.'));
 			return;
 		}
@@ -4604,7 +4797,7 @@ function api_set_new_module($id, $id2, $other, $trash1) {
 		if ($other['data'][9] != '') {
 			$values['max_warning'] = $other['data'][9];
 		}
-
+		
 		if ($other['data'][10] != '') {
 			$values['str_warning'] = $other['data'][10];
 		}
@@ -4616,7 +4809,7 @@ function api_set_new_module($id, $id2, $other, $trash1) {
 		if ($other['data'][12] != '') {
 			$values['max_critical'] = $other['data'][12];
 		}
-
+		
 		if ($other['data'][13] != '') {
 			$values['str_critical'] = $other['data'][13];
 		}
@@ -4625,9 +4818,15 @@ function api_set_new_module($id, $id2, $other, $trash1) {
 			$values['history_data'] = $other['data'][14];
 		}
 		
+		$disabled_types_event = array();
+		$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][15]);
+		$disabled_types_event = json_encode($disabled_types_event);
+		$values['disabled_types_event'] = $disabled_types_event;
+		
 		$values['id_modulo'] = 2; 
 		
-		$return = modules_create_agent_module($values['id_agente'], $values['nombre'], $values);
+		$return = modules_create_agent_module($values['id_agente'],
+			$values['nombre'], $values);
 		
 		$data['type'] = 'string';
 		if ($return === false) {
@@ -4660,7 +4859,7 @@ function api_set_alert_actions($id, $id2, $other, $trash1) {
 		if ($row === false) {
 			returnError('error_parameter', 'Error in the parameters.');
 			return;
-		}		
+		}
 		$idTemplate = $row['id'];
 		
 		$idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $other['data'][0]));
@@ -4772,7 +4971,7 @@ function api_set_new_event($trash1, $trash2, $other, $trash3) {
 			$idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo',
 				array('nombre' => $other['data'][4], 'id_agente' => $values['id_agente']));
 		}
-			
+		
 		if ($idAgentModule === false) {
 			returnError('error_parameter', 'Error in the parameters.');
 			return;
@@ -4824,7 +5023,8 @@ function api_set_new_event($trash1, $trash2, $other, $trash3) {
 				FROM talert_template_modules AS t1 
 					INNER JOIN talert_templates AS t2 
 						ON t1.id_alert_template = t2.id 
-				WHERE t1.id_agent_module = 1 AND t2.name LIKE '" . $other['data'][7] . "'");
+				WHERE t1.id_agent_module = 1
+					AND t2.name LIKE '" . $other['data'][7] . "'");
 			
 			if ($idAlert === false) {
 				returnError('error_parameter', 'Error in the parameters.');
@@ -4928,7 +5128,7 @@ function api_set_event_validate_filter($trash1, $trash2, $other, $trash3) {
 				$simulate = true;
 			}
 		}
-
+		
 		$filterString = otherParameter2Filter($other);
 		
 	}

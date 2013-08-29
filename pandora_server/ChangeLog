@@ -1,5 +1,10 @@
 2013-08-29 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* lib/PandoraFMS/Core.pm: into the function "pandora_module_unknown"
+	now checks if the module have disable unknown events.
+
+2013-08-29 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* util/pandora_manage.pl: added support to disable/enable unknown
 	events for modules.
 

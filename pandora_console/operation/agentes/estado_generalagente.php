@@ -32,6 +32,11 @@ $id_agente = get_parameter_get ("id_agente", -1);
 
 $agent = db_get_row ("tagente", "id_agente", $id_agente);
 
+if (empty($agent['server_name'])) {
+	ui_print_error_message(
+		__('The agent has not assigned server. Maybe agent does not run fine.'));
+}
+
 if ($agent === false) {
 	echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
 	return;
@@ -45,7 +50,7 @@ if($is_extra === ENTERPRISE_NOT_HOOK) {
 
 if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 	db_pandora_audit("ACL Violation", 
-			  "Trying to access Agent General Information");
+		"Trying to access Agent General Information");
 	require_once ("general/noaccess.php");
 	return;
 }

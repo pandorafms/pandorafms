@@ -1,3 +1,11 @@
+2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/estado_generalagente.php: show a warning
+	message when the agent has not a assigned server.
+	
+	* operation/agentes/ver_agente.php: some changes for to make more
+	easy the merge with the trunk.
+
 2013-08-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/lib/xmlrpc/xmlrpc.inc: fixed the timeout

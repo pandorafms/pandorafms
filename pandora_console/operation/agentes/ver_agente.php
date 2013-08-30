@@ -47,7 +47,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
 		
-		if($id_group > 0) {
+		if ($id_group > 0) {
 			$groups = array($id_group);
 			if ($recursion) {
 				$groups = array_merge($groups, groups_get_id_recursive($id_group, true));
@@ -60,7 +60,8 @@ if (is_ajax ()) {
 		}
 		
 		$filter = " WHERE id_grupo IN (". implode(',', $groups) .") ORDER BY nombre";
-		$agents = db_get_all_rows_sql("SELECT id_agente, nombre FROM tagente". $filter);
+		$agents = db_get_all_rows_sql("SELECT id_agente, nombre
+			FROM tagente" . $filter);
 		
 		echo json_encode($agents);
 		return;
@@ -78,8 +79,10 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json_for_multiple_agents_id) {
 		$idAgents = get_parameter('id_agent');
 		
-		$modules = db_get_all_rows_sql('SELECT nombre, id_agente_modulo
-			FROM tagente_modulo WHERE id_agente IN (' . implode(',', $idAgents) . ')');
+		$modules = db_get_all_rows_sql('
+			SELECT nombre, id_agente_modulo
+			FROM tagente_modulo
+			WHERE id_agente IN (' . implode(',', $idAgents) . ')');
 		
 		$return = array();
 		foreach ($modules as $module) {
@@ -135,7 +138,7 @@ if (is_ajax ()) {
 				AND id_alert_template = '.$id_template.'
 				AND id_agente IN (' . implode(',', $idAgents) . ')';
 			
-		if($selection_mode == 'common') {
+		if ($selection_mode == 'common') {
 			$sql .= ' AND (
 					SELECT count(nombre)
 					FROM tagente_modulo t3, talert_template_modules t4
@@ -201,6 +204,8 @@ if (is_ajax ()) {
 				
 				//Copy only the very first result to $nameModules
 				if (empty($nameModules) && $first == true) {
+					
+					
 					$first = false;
 					$nameModules = $temp;
 				}
@@ -213,8 +218,8 @@ if (is_ajax ()) {
 				}
 				$nameModules = array_intersect ($nameModules, $temp); 
 				
-			//Restore db connection
-			metaconsole_restore_db();
+				//Restore db connection
+				metaconsole_restore_db();
 			}
 			
 			foreach ($nameModules as $nameModule) {
@@ -228,8 +233,8 @@ if (is_ajax ()) {
 					io_safe_output($custom_condition) . '
 					AND delete_pending = 0
 					AND id_agente IN (' . implode(',', $idAgents) . ')';
-				
-			if($selection_mode == 'common') {
+			
+			if ($selection_mode == 'common') {
 				$sql .= ' AND (
 							SELECT count(nombre)
 							FROM tagente_modulo t2
@@ -246,7 +251,7 @@ if (is_ajax ()) {
 			}
 			
 			$result = array();
-			foreach($nameModules as $nameModule) {
+			foreach ($nameModules as $nameModule) {
 				$result[] = io_safe_output($nameModule['nombre']);
 			}
 		}
@@ -266,19 +271,25 @@ if (is_ajax ()) {
 		$force_local_modules = (int) get_parameter ('force_local_modules', 0);
 		
 		if ($agentName != null) {
-				$search = array();
-				$search['name'] = io_safe_output($agentName);
+			$search = array();
+			$search['name'] = io_safe_output($agentName);
 		}
 		else
 			$search = false;
 		
-		if ($config ['metaconsole'] == 1 and !$force_local_modules) { 
+		if ($config ['metaconsole'] == 1 and !$force_local_modules) {
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
+				
+				
+				
+				
 				if (metaconsole_load_external_db($connection)) {
 					/* Get all agents if no agent was given */
 					if ($id_agent == 0)
-						$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));
+						$id_agent = array_keys(
+							agents_get_group_agents(
+								array_keys (users_get_groups ()), $search, "none"));
 					
 					$agent_modules = agents_get_modules ($id_agent,
 						($fields != '' ? explode (',', $fields) : "*"),
@@ -304,26 +315,36 @@ if (is_ajax ()) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
 		
+		
 		//Hack to translate text "any" in PHP to javascript
 		//$agent_modules['any_text'] = __('Any');
 		
 		echo json_encode ($agent_modules);
+		
 		return;
 	}
 	
 	if ($get_agent_status_tooltip) {
 		$id_agent = (int) get_parameter ('id_agent');
+		
+		
+		
+		
+		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agent);
 		echo '<h3>'.$agent['nombre'].'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
+		
 		echo html_print_image('images/groups_small/'.groups_get_icon ($agent['id_grupo']).'.png', true); 
 		echo groups_get_name ($agent['id_grupo']).'<br />';
 		
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 		
-		$sql = sprintf ('SELECT tagente_modulo.descripcion, tagente_modulo.nombre
+		
+		$sql = sprintf ('SELECT tagente_modulo.descripcion,
+				tagente_modulo.nombre
 			FROM tagente_estado, tagente_modulo 
 			WHERE tagente_modulo.id_agente = %d
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
@@ -364,6 +385,7 @@ if (is_ajax ()) {
 					AND talert_template_modules.times_fired > 0 ',
 				$id_agent);
 		$alert_modules = db_get_sql ($sql);
+		
 		if ($alert_modules > 0) {
 			$sql = sprintf ('SELECT tagente_modulo.nombre, talert_template_modules.last_fired
 				FROM talert_template_modules, tagente_modulo, tagente
@@ -391,7 +413,10 @@ if (is_ajax ()) {
 	
 	if ($get_agentmodule_status_tooltip) {
 		$id_module = (int) get_parameter ('id_module');
+		
+		
 		$module = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_module);
+		
 		echo '<h3>';
 		echo html_print_image("images/brick.png", true) . '&nbsp;'; 
 		echo ui_print_truncate_text($module['nombre'], 'module_small', false, true, false).'</h3>';
@@ -401,7 +426,7 @@ if (is_ajax ()) {
 		echo html_print_image("images/" . modules_get_type_icon ($agentmoduletype), true) . '<br />';
 		echo '<strong>'.__('Module group').':</strong> ';
 		$modulegroup =  modules_get_modulegroup_name (modules_get_agentmodule_modulegroup ($module['id_agente_modulo']));
-		if($modulegroup === false){
+		if ($modulegroup === false) {
 			echo __('None').'<br />';
 		}
 		else{
@@ -410,7 +435,7 @@ if (is_ajax ()) {
 		echo '<strong>'.__('Agent').':</strong> ';
 		echo ui_print_truncate_text(modules_get_agentmodule_agent_name($module['id_agente_modulo']), 'agent_small', false, true, false).'<br />';
 		
-		if($module['id_tipo_modulo'] == 18) {
+		if ($module['id_tipo_modulo'] == 18) {
 			echo '<strong>'.__('Address').':</strong> ';
 			
 			// Get the IP/IPs from the module description
@@ -430,6 +455,8 @@ if (is_ajax ()) {
 				echo '</ul>';
 			}
 		}
+		
+		
 		return;
 	}
 	
@@ -440,14 +467,14 @@ if (is_ajax ()) {
 		echo ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false) . '</h3>';
 		echo '<strong>'.__('Parent').':</strong> ';
 		if ($group['parent'] == 0) {
-			echo __('None').'<br />';
+			echo __('None') . '<br />';
 		}
 		else {
 			$group_parent = db_get_row ('tgrupo', 'id_grupo', $group['parent']);
 			echo html_print_image("images/groups_small/" . groups_get_icon ($group['parent']) . ".png", true); 
-			echo $group_parent['nombre'].'<br />';
+			echo $group_parent['nombre'] . '<br />';
 		}
-		echo '<strong>'.__('Sons').':</strong> ';
+		echo '<strong>' . __('Sons') . ':</strong> ';
 		$groups_sons = db_get_all_fields_in_table ('tgrupo', 'parent', $group['id_grupo']);
 		if ($groups_sons === false) { 
 			echo __('None').'<br />';
@@ -523,30 +550,31 @@ else {
 $tab = get_parameter ("tab", "main");
 
 /* Manage tab */
-
 $managetab = "";
 
 if (check_acl ($config['id_user'],$id_grupo, "AW") || $is_extra) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
 		. html_print_image("images/setup.png", true, array ("title" => __('Manage')))
 		. '</a>';
-
+	
 	if ($tab == 'manage')
 		$managetab['active'] = true;
 	else
 		$managetab['active'] = false;
+		
 }
+
 
 /* Main tab */
 $maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'
-		. html_print_image("images/monitor.png", true, array("title" => __('Main')))
-		. '</a>';
-		
+	. html_print_image("images/monitor.png", true, array("title" => __('Main')))
+	. '</a>';
+
 if ($tab == 'main')
 	$maintab['active'] = true;
 else
 	$maintab['active'] = false;
-	
+
 /* Data */
 $datatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=data">'
 	. html_print_image("images/lightbulb.png", true, array("title" => __('Data')))
@@ -559,26 +587,26 @@ else
 
 /* Alert tab */
 $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'
-		. html_print_image("images/bell.png", true, array("title" => __('Alerts')))
-		. '</a>';
-		
+	. html_print_image("images/bell.png", true, array("title" => __('Alerts')))
+	. '</a>';
+
 if ($tab == 'alert')
 	$alerttab['active'] = true;
 else
 	$alerttab['active'] = false;
-	
+
 /* Inventory */
 $inventorytab = enterprise_hook ('inventory_tab');
-
 if ($inventorytab == -1)
 	$inventorytab = "";
 
+
 /* Collection */
 $collectiontab = enterprise_hook('collection_tab');
-
 if ($collectiontab == -1)
 	$collectiontab = "";
-	
+
+
 /* Policy */
 $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1)
@@ -595,7 +623,6 @@ $grouptab['active']=false;
 /* GIS tab */
 $gistab="";
 if ($config['activate_gis']) {
-	
 	$gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'
 		.html_print_image("images/world.png", true, array( "title" => __('GIS data')))
 		.'</a>';
@@ -606,9 +633,11 @@ if ($config['activate_gis']) {
 		$gistab['active'] = false;
 }
 
+
 $custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
 		. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
 		. '</a>';
+
 
 if ($tab == 'custom_fields') {
 	$custom_fields['active'] = true;
@@ -617,9 +646,11 @@ else {
 	$custom_fields['active'] = false;
 }
 
+
+/* Graphs tab */
 $graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'
-		. html_print_image("images/chart_curve.png", true, array("title" => __('Graphs')))
-		. '</a>';
+	. html_print_image("images/chart_curve.png", true, array("title" => __('Graphs')))
+	. '</a>';
 if ($tab == 'graphs') {
 	$graphs['active'] = true;
 }
@@ -633,6 +664,8 @@ $onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab,
 				'inventory' => $inventorytab, 'collection' => $collectiontab, 
 				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields, 'graphs' => $graphs, 'policy' => $policyTab);
 
+
+//Tabs for extensions
 foreach ($config['extensions'] as $extension) {
 	if (isset($extension['extension_ope_tab'])) {
 		
@@ -641,7 +674,7 @@ foreach ($config['extensions'] as $extension) {
 			
 			//Check if OS is vmware
 			$id_remote_field = db_get_value ("id_field", "tagent_custom_fields", "name", "vmware_type");
-		
+			
 			$vmware_type = db_get_value_filter("description", "tagent_custom_data", array("id_field" => $id_remote_field, "id_agent" => $agent["id_agente"]));
 			
 			if ($vmware_type != "vm") {
@@ -649,22 +682,21 @@ foreach ($config['extensions'] as $extension) {
 			}
 			
 		}
-
-                //RHEV extension is only available for RHEV Virtual Machines
-                if ($extension['extension_ope_tab']['id'] === "rhev_manager") {
-
-                        //Get id for remote field "rhev_type"
+		
+		//RHEV extension is only available for RHEV Virtual Machines
+		if ($extension['extension_ope_tab']['id'] === "rhev_manager") {
+			//Get id for remote field "rhev_type"
 			$id_remote_field = db_get_value("id_field", "tagent_custom_fields", "name", "rhev_type");
-
+			
 			//Get rhev type for this agent
 			$rhev_type = db_get_value_filter ("description", "tagent_custom_data", array ("id_field" => $id_remote_field, "id_agent" => $agent['id_agente']));
-
+			
 			//Check if rhev type is a vm
-                        if ($rhev_type != "vm") {
-                                continue;
-                        }
-                }
-
+			if ($rhev_type != "vm") {
+				continue;
+			}
+		}
+		
 		
 		$image = $extension['extension_ope_tab']['icon'];
 		$name = $extension['extension_ope_tab']['name'];
@@ -699,19 +731,19 @@ switch($tab) {
 		break;
 	case "inventory":
 		$header_description = ' - ' . __('Inventory');
-		break;	
+		break;
 	case "collection":
 		$header_description = ' - ' . __('Collection');
-		break;		
+		break;
 	case "gis":
 		$header_description = ' - ' . __('Gis');
-		break;	
+		break;
 	case "custom_fields":
 		$header_description = ' - ' . __('Custom fields');
-		break;	
+		break;
 	case "graphs":
 		$header_description = ' - ' . __('Graphs');
-		break;	
+		break;
 	case "policy":
 		$header_description = ' - ' . __('Policy');
 		break;
@@ -780,5 +812,4 @@ switch ($tab) {
 		}
 		break;
 }
-
 ?>

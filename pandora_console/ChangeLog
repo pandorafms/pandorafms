@@ -1,12 +1,19 @@
 2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/agent_manager.php: set the first default server
+	when create a new agent.
+	
+	MERGED FROM THE BRANCH 4.0
+
+2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/estado_generalagente.php: show a warning
 	message when the agent has not a assigned server.
 	
 	* operation/agentes/ver_agente.php: some changes for to make more
-	easy the merge with the trunk.
+	easy the merge with the last branch.
 	
-	MERGED FROM THE TRUNK.
+	MERGED FROM THE BRANCH 4.0
 
 2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
 	

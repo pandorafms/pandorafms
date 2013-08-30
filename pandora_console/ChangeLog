@@ -1,5 +1,10 @@
 2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/agent_manager.php: set the first default server
+	when create a new agent.
+
+2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/estado_generalagente.php: show a warning
 	message when the agent has not a assigned server.
 	

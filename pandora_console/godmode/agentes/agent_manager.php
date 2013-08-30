@@ -108,6 +108,10 @@ if (! isset ($id_agente) && ! $new_agent) {
 if ($new_agent) {
 	if (! empty ($direccion_agente) && empty ($nombre_agente))
 		$nombre_agente = $direccion_agente;
+	
+	$servers = servers_get_names();
+	if (!empty($servers))
+		$server_name = reset(array_keys($servers));
 }
 
 echo '<div style="height: 5px">&nbsp;</div>';

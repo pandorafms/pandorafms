@@ -32,6 +32,11 @@ $id_agente = get_parameter_get ("id_agente", -1);
 
 $agent = db_get_row ("tagente", "id_agente", $id_agente);
 
+if (empty($agent['server_name'])) {
+	ui_print_error_message(
+		__('The agent has not assigned server. Maybe agent does not run fine.'));
+}
+
 if ($agent === false) {
 	ui_print_error_message(__('There was a problem loading agent'));
 	return;
@@ -119,8 +124,9 @@ $table_agent->rowclass[] = '';
 
 $addresses = agents_get_addresses($id_agente);
 $address = agents_get_address($id_agente);
+
 foreach ($addresses as $k => $add) {
-	if($add == $address) {
+	if ($add == $address) {
 		unset($addresses[$k]);
 	}
 }

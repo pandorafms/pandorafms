@@ -347,8 +347,8 @@ if (is_ajax ()) {
 				if (metaconsole_load_external_db($connection) == NOERR) {
 					/* Get all agents if no agent was given */
 					if ($id_agent == 0)
-						$id_agent = array_keys (
-							agents_get_group_agents (
+						$id_agent = array_keys(
+							agents_get_group_agents(
 								array_keys (users_get_groups ()), $search, "none"));
 					
 					$agent_modules = agents_get_modules ($id_agent,
@@ -362,14 +362,16 @@ if (is_ajax ()) {
 		else {
 			/* Get all agents if no agent was given */
 			if ($id_agent == 0)
-				$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));
+				$id_agent = array_keys(
+					agents_get_group_agents(
+						array_keys(users_get_groups ()), $search, "none"));
 			
 			$agent_modules = agents_get_modules ($id_agent,
 				($fields != '' ? explode (',', $fields) : "*"),
 				($filter != '' ? $filter : false), $indexed);
 		}
 		
-		foreach($agent_modules as $key => $module) {
+		foreach ($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
 		
@@ -687,6 +689,7 @@ $tab = get_parameter ("tab", "main");
 
 /* Manage tab */
 $managetab = "";
+
 if (check_acl ($config['id_user'],$id_grupo, "AW") || $is_extra) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
 		. html_print_image("images/setup.png", true, array ("title" => __('Manage')))
@@ -705,16 +708,19 @@ if (check_acl ($config['id_user'],$id_grupo, "AW") || $is_extra) {
 $maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'
 	. html_print_image("images/agent_mc.png", true, array("title" => __('Main')))
 	. '</a>';
+
 if ($tab == 'main')
 	$maintab['active'] = true;
 else
 	$maintab['active'] = false;
 
 
+
 /* Alert tab */
 $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'
 	. html_print_image("images/op_alerts.png", true, array("title" => __('Alerts')))
 	. '</a>';
+
 if ($tab == 'alert')
 	$alerttab['active'] = true;
 else
@@ -736,6 +742,7 @@ if ($collectiontab == -1)
 $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1)
 	$policyTab = "";
+
 
 /* GIS tab */
 $gistab="";
@@ -821,7 +828,7 @@ if ($agent['url_address'] != '') {
 }
 
 //Tabs for extensions
-foreach($config['extensions'] as $extension) {
+foreach ($config['extensions'] as $extension) {
 	if (isset($extension['extension_ope_tab'])) {
 		
 		//VMware extension is only available for VMware OS
@@ -870,7 +877,7 @@ foreach($config['extensions'] as $extension) {
 		
 		$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
 		
-		$onheader = $onheader + array($id => $extension_tab);	
+		$onheader = $onheader + array($id => $extension_tab);
 	}
 }
 

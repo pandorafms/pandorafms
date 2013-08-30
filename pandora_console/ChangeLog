@@ -1,3 +1,9 @@
+2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/groups/group_list.php: fixed pagination mismatch.
+	
+	Fixes: #2383
+
 2013-08-29 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_snmp_browser.php: fixed PHP warnings.

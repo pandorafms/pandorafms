@@ -311,13 +311,14 @@ if (!empty($groups)) {
 	if ($stop == 0) {
 		$stop = $start + $config['block_size'] + 1;
 	}
-		
+	
 	// 1 for to add all group
-	ui_pagination($count_visible_groups + 1, false, 0, $config['block_size']);
+	$pagination_element = ui_pagination($count_visible_groups + 1,
+		false, 0, $config['block_size'], true);
 	
 	$groups = array_slice($groups, $start, ($stop - $start));
 	$groups = array_merge(array($all_group), $groups);
-
+	
 	foreach ($groups as $id_group => $group) {
 		if ($group['deep'] == 0) {
 			$table->rowstyle[$iterator] = '';
@@ -421,9 +422,11 @@ if (!empty($groups)) {
 		$iterator++;
 	}
 	
+	echo $pagination_element;
+	
 	html_print_table ($table);
 	
-	ui_pagination($count_visible_groups + 1, false, 0, $config['block_size'] - 1);
+	echo $pagination_element;
 }
 else {
 	echo "<div class='nf'>".__('There are no defined groups')."</div>";

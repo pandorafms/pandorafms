@@ -340,3 +340,8 @@ snmp_threads 2
 # Block size for block producer/consumer servers, that is, the number of modules
 # per block (25 by default) (PANDORA FMS ENTERPRISE ONLY).
 block_size 25
+
+# If set to 1, the policy manager is enabled and the server is listening the policy queue. 
+# 0 by default (PANDORA FMS ENTERPRISE ONLY) 
+
+policy_manager 1

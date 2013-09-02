@@ -1,3 +1,8 @@
+2013-09-02 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* conf/pandora_server.conf.new: re-added the token "policy_manager"
+	into the default server conf file.
+
 2013-08-28 Kikuchi Koichiro <koichiro@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Added PID number to self monitoring XML

@@ -1,3 +1,8 @@
+2013-09-02 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/massive/massive_edit_modules.php: added field "ip_target"
+	for to massive edit module.
+
 2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/servers/servers.build_table.php: fixed the tooltip for

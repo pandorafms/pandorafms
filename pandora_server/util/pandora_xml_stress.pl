@@ -61,7 +61,7 @@ sub load_config ($\%\@) {
 				next if ($line =~ m/^#/);
 				
 				last if ($line =~ m/module_end/);
-				 
+				
 				# Unknown line
 				next if ($line !~ /^\s*(\w+)\s+(.+)$/);
 				
@@ -95,6 +95,7 @@ sub generate_xml_files ($$$$$$) {
 	my $os_name = get_conf_token ($conf, 'os_name', 'Linux');
 	my $os_version = get_conf_token ($conf, 'os_version', '2.6');
 	my $temporal = get_conf_token ($conf, 'temporal', '/tmp');
+	
 	my $startup_delay = get_conf_token ($conf, 'startup_delay', '5');
 	my $ag_timezone_offset = get_conf_token ($conf, 'timezone_offset', '0');
 	my $ag_timezone_offset_range = get_conf_token ($conf, 'timezone_offset_range', '0');
@@ -107,12 +108,14 @@ sub generate_xml_files ($$$$$$) {
 	# Get time_from
 	my $time_now = strftime ("%Y-%m-%d %H:%M:%S", localtime ());
 	my $time_from = get_conf_token ($conf, 'time_from', $time_now);
-	die ("[error] Invalid time_from: $time_from\n\n") unless ($time_from =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
+	die ("[error] Invalid time_from: $time_from\n\n")
+		unless ($time_from =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
 	my $utimestamp_from = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
 	
 	# Get time_to
 	my $time_to = get_conf_token ($conf, 'time_to', $time_now);
-	die ("[error] Invalid time_to: $time_to\n\n") unless ($time_to =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
+	die ("[error] Invalid time_to: $time_to\n\n")
+		unless ($time_to =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
 	my $utimestamp_to = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
 	
 	my %modules_src_pointers = init_src_pointers($modules);
@@ -562,13 +565,13 @@ sub leftrotate ($$) {
 ###############################################################################
 my (@R, @K);
 sub md5_init () {
-
+	
 	# R specifies the per-round shift amounts
 	@R = (7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
 		  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
 		  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
 		  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21);
-
+	
 	# Use binary integer part of the sines of integers (radians) as constants
 	for (my $i = 0; $i < 64; $i++) {
 		$K[$i] = floor(abs(sin($i + 1)) * MOD232);
@@ -672,7 +675,7 @@ sub md5 ($) {
 ################################################################################
 sub send_file($$) {
 	my $file = shift;
-	my $conf = shift;printf($file . "\n");
+	my $conf = shift;
 	my $output;
 	my $server_ip =  get_conf_token($conf, 'server_ip', '');
 	my $server_port =  get_conf_token($conf, 'server_port', '41121');
@@ -681,6 +684,7 @@ sub send_file($$) {
 	my $CmdSep = ';';
 	# $DevNull
 	my $DevNull = '/dev/null';
+	
 	
 	$output = `tentacle_client -v -a $server_ip -p $server_port $tentacle_options $file 2>&1 >$DevNull`;
 	
@@ -700,7 +704,7 @@ sub recv_file ($$) {
 	my $file = shift;
 	my $conf = shift;
 	my $output;
-	my $directory_temp = get_conf_token($conf, 'directory_temp', '/tmp/');
+	my $directory_temp = get_conf_token($conf, 'directory_temp', '/tmp');
 	my $server_ip =  get_conf_token($conf, 'server_ip', '');
 	my $server_port =  get_conf_token($conf, 'server_port', '41121');
 	my $tentacle_options =  get_conf_token($conf, 'tentacle_options', '');
@@ -734,7 +738,7 @@ sub get_and_send_agent_conf(\@\%\@\%) {
 	my $get_and_send_agent_conf = get_conf_token($conf, 'get_and_send_agent_conf', '0');
 	my $directory_confs = get_conf_token($conf, 'directory_confs', '.');
 	
-	my $directory_temp = get_conf_token($conf, 'directory_temp', '/tmp/');
+	my $directory_temp = get_conf_token($conf, 'directory_temp', '/tmp');
 	my $md5_agent_name = '';
 	
 	if ($get_and_send_agent_conf == 1) {
@@ -748,6 +752,7 @@ sub get_and_send_agent_conf(\@\%\@\%) {
 				
 				# Get the remote MD5 file
 				if (recv_file("$md5_agent_name.md5", $conf) != 0) {
+					
 					#The remote agent don't recive, then it send the agent conf and md5.
 					open (MD5_FILE, ">$directory_temp/$md5_agent_name.md5")
 						|| log_message ($conf, "\tERROR:\tCould not open file '$directory_temp/$md5_agent_name.md5' for writing: $!.");
@@ -760,6 +765,8 @@ sub get_and_send_agent_conf(\@\%\@\%) {
 					log_message ($conf, "\tINFO:\tUploading configuration for the first time.");
 					unlink ("$directory_temp/$md5_agent_name.conf");
 					unlink ("$directory_temp/$md5_agent_name.md5");
+					
+					
 				}
 				else {
 					#There is a remote agent.
@@ -778,6 +785,7 @@ sub get_and_send_agent_conf(\@\%\@\%) {
 						}
 					}
 				}
+				
 			}
 			else {
 				log_message ($conf, "\tWARNING:\tThere is not the $agent.conf .'\n");
@@ -790,7 +798,7 @@ sub get_and_send_agent_conf(\@\%\@\%) {
 				
 				# Create the block of modules.
 				foreach my $module (@{$modules}) {
-					$temp .= "
+					$temp = $temp . "
 module_begin
 module_name " . $module->{'module_name'} . "
 module_type " . $module->{'module_type'} . "

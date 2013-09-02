@@ -366,8 +366,8 @@ $table->data['edit3'][0] = __('Post process').ui_print_help_icon ('postprocess',
 $table->data['edit3'][1] = html_print_input_text ('post_process', '', '', 10, 15, true);
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '', '', 10, 15, true);
-$table->data['edit35'][0] = '';
-$table->data['edit35'][1] = '';
+$table->data['edit35'][0] = __('Target IP');
+$table->data['edit35'][1] = html_print_input_text ('ip_target', '', '', 15, 60, true);
 $table->data['edit35'][2] = __('SNMP version');
 $table->data['edit35'][3] = html_print_select ($snmp_versions, 'tcp_send', '', '', __('No change'), '', true, false, false, '');
 $table->data['edit36'][0] = __('Auth user');
@@ -814,7 +814,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'id_export', 'history_data', 'critical_inverse',
 		'warning_inverse', 'critical_instructions',
 		'warning_instructions', 'unknown_instructions', 'policy_linked', 
-		'id_category', 'disabled_types_event');
+		'id_category', 'disabled_types_event', 'ip_target');
 	$values = array ();
 	
 	// Specific snmp reused fields

@@ -94,7 +94,7 @@ if (is_ajax ())
 		
 		treeview_printModuleTable($id_module, $server);
 		
-
+		
 		if (defined ('METACONSOLE')) {
 			metaconsole_restore_db();
 		}
@@ -605,7 +605,7 @@ else {
 
 enterprise_hook('open_meta_frame');
 
-if(tags_has_user_acl_tags()) {
+if (tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
 }
 

@@ -1081,7 +1081,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
 				true);
 			break;
-		case 'os':		
+		case 'os':
 			
 			$sql = agents_get_agents(array (
 				'id_os' => $id,

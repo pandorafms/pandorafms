@@ -1472,10 +1472,12 @@ function ui_process_page_body ($string, $bitfield) {
  * @param int $pagination Current pagination size. If a user requests a larger
  * pagination than config["block_size"]
  * @param bool $return Whether to return or print this 
+ * @param string $offset_name The name of parameter for the offset.
+ * @param bool $print_total_items Show the text with the total items. By default true.
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
-function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false, $offset_name = 'offset') {
+function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false, $offset_name = 'offset', $print_total_items = true) {
 	global $config;
 	
 	if (empty ($pagination)) {
@@ -1503,6 +1505,20 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	 */
 	$block_limit = 15; // Visualize only $block_limit blocks
 	if ($count <= $pagination) {
+		
+		if ($print_total_items) {
+			$output = '<div class="pagination">';
+			//Show the count of items
+			$output .= sprintf(__('Total items: %s'), $count);
+			// End div and layout
+			$output .= "</div>";
+			
+			if ($return === false)
+				echo $output;
+			
+			return $output;
+		}
+		
 		return false;
 	}
 	// If exists more registers than I can put in a page, calculate index markers
@@ -1533,6 +1549,13 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$inicio_pag = 0;
 	
 	$output = '<div class="pagination">';
+	
+	//Show the count of items
+	if ($print_total_items) {
+		$output .= sprintf(__('Total items: %s'), $count);
+		$output .= '<br>';
+	}
+	
 	// Show GOTO FIRST button
 	$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.html_print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
 	// Show PREVIOUS button
@@ -1557,13 +1580,13 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		}
 		else {
 			$output .= "<span>";
-		}		
+		}
 		
 		$inicio_bloque_fake = $inicio_bloque + 1;
 		// To Calculate last block (doesnt end with round data,
 		// it must be shown if not round to block limit)
 		$link_offset = $config['block_size'] * $i;
-
+		
 		$output .= '<a class="pagination offset_' . $link_offset . '" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
 		$output .= "[ $i ]";
 		
@@ -1587,6 +1610,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$myoffset = floor (($count - 1) / $pagination) * $pagination;
 		$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.html_print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
 	}
+	
 	// End div and layout
 	$output .= "</div>";
 	
@@ -1639,7 +1663,7 @@ function ui_print_session_action_icon ($action, $return = false) {
 			break;
 		}
 	}
-		
+	
 	if ($return)
 		return $output;
 	echo $output;

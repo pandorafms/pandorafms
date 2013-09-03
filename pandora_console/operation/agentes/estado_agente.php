@@ -505,7 +505,14 @@ foreach ($agents as $agent) {
 
 if (!empty ($table->data)) {
 	html_print_table ($table);
-	ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
+	ui_pagination ($total_agents,
+		ui_get_url_refresh(array(
+			'group_id' => $group_id,
+			'search' => $search,
+			'sort_field' => $sortField,
+			'sort' => $sort,
+			'status' => $status)),
+		0, 0, false, 'offset', false);
 	unset ($table);
 }
 else {

@@ -467,6 +467,7 @@ ALTER TABLE "tusuario_perfil" ADD COLUMN "tags" text default '';
 -- Table "ttag"
 -- ---------------------------------------------------------------------
 ALTER TABLE "ttag" ADD COLUMN "email" TEXT NULL;
+ALTER TABLE "ttag" ADD COLUMN "phone" TEXT NULL;
 
 -- ---------------------------------------------------------------------
 -- Add more fields in snmp alerts (05/03/13)

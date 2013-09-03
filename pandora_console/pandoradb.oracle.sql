@@ -1606,7 +1606,8 @@ CREATE TABLE ttag (
 	name VARCHAR2(100) default '' NOT NULL, 
 	description CLOB default '' NOT NULL, 
 	url CLOB default '' NOT NULL,
-	email CLOB NULL
+	email CLOB NULL,
+	phone CLOB NULL
 ); 
 
 CREATE SEQUENCE ttag_s INCREMENT BY 1 START WITH 1;

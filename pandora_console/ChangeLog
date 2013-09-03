@@ -1,5 +1,11 @@
 2013-09-03 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_groups.php, operation/agentes/group_view.php:
+	fixed the links (now use constants instead the magic number and
+	unicorns) to the filtered list of modules.
+
+2013-09-03 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_api.php: fixed typing bugs...yes I wrote a lot
 	of them, sorry.
 

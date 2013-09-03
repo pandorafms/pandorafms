@@ -1243,7 +1243,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 	$name = $other['data'][0];
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][22]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][22];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array(
@@ -1403,7 +1403,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][26]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][26];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$name = $other['data'][0];
@@ -1573,7 +1573,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 	$name = $other['data'][0];
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][16]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][16];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array(
@@ -1736,23 +1736,23 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][27]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][27];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	# SNMP version 3
 	if ($other['data'][14] == "3") {
 		
-		if ($other['data'][23] != "AES" and $other['data'][23] != "DES"){
+		if ($other['data'][23] != "AES" and $other['data'][23] != "DES") {
 			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
-		if ($other['data'][25] != "authNoPriv" and $other['data'][25] != "authPriv" and $other['data'][25] != "noAuthNoPriv"){
+		if ($other['data'][25] != "authNoPriv" and $other['data'][25] != "authPriv" and $other['data'][25] != "noAuthNoPriv") {
 			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
-		if ($other['data'][26] != "MD5" and $other['data'][26] != "SHA"){
+		if ($other['data'][26] != "MD5" and $other['data'][26] != "SHA") {
 			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
@@ -2007,7 +2007,7 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][18]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][18];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array ( 
@@ -2082,7 +2082,7 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][12]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][12];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array ( 
@@ -2162,7 +2162,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][27]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][27];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	# SNMP version 3
@@ -2207,7 +2207,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 			'tcp_port' => $other['data'][21],
 			'id_modulo' => 2,
 			'custom_string_1' => $other['data'][22],	// snmp3_privacy_method
-			'custom_string_2' => $other['data'][23],  	// snmp3_privacy_pass
+			'custom_string_2' => $other['data'][23],	// snmp3_privacy_pass
 			'plugin_parameter' => $other['data'][24],	// snmp3_auth_method
 			'custom_string_3' => $other['data'][25],	// snmp3_security_level
 			'max_retries' => $other['data'][26],
@@ -2289,7 +2289,7 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][4]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][4];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array ( 
@@ -3147,7 +3147,7 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][16]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][16];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array();
@@ -3299,7 +3299,7 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][21]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][21];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array();
@@ -3326,7 +3326,7 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['disabled_types_event'] = $disabled_types_event;
 	
 	if ($name_module_policy !== false) {
-		if ($name_module_policy[0]['name'] == $other['data'][0]){
+		if ($name_module_policy[0]['name'] == $other['data'][0]) {
 			returnError('error_network_data_module_policy', __('Error adding network module to policy. The module is already in the policy.'));
 			return;
 		}
@@ -3452,7 +3452,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][25]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][25];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	$values = array();
@@ -3742,7 +3742,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	$disabled_types_event = array();
-	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][28]);
+	$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][28];
 	$disabled_types_event = json_encode($disabled_types_event);
 	
 	# SNMP version 3
@@ -4819,7 +4819,7 @@ function api_set_new_module($id, $id2, $other, $trash1) {
 		}
 		
 		$disabled_types_event = array();
-		$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][15]);
+		$disabled_types_event[EVENTS_GOING_UNKNOWN] = (int)!$other['data'][15];
 		$disabled_types_event = json_encode($disabled_types_event);
 		$values['disabled_types_event'] = $disabled_types_event;
 		

@@ -1,3 +1,10 @@
+2013-09-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* util/pandora_revent.pl: fixed the script, now runs fine the tags
+	and set correclty the comment and owner user, and other fixes.
+	
+	Fixes: #2386
+
 2013-09-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added support for tag phone information.

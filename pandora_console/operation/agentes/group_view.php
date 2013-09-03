@@ -48,7 +48,7 @@ if (isset ($_GET["update_netgroup"])) {
 $groups_full = users_get_groups ($config['id_user'], "AR", true, true);
 
 $groups = array();
-foreach($groups_full as $group) {
+foreach ($groups_full as $group) {
 	$groups[$group['id_grupo']]['name'] = $group['nombre'];
 	
 	if ($group['id_grupo'] != 0) {
@@ -117,7 +117,7 @@ if (count($agents) > 0) {
 	}
 	
 	$table_rows = array_slice($table_rows, $offset, $config['block_size']);
-	foreach($table_rows as $row) {
+	foreach ($table_rows as $row) {
 		echo $row;
 	}
 	

@@ -741,42 +741,50 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 			WHERE disabled = 0");
 	}
 	
-	$row[__('Agents')] = "<a class='link_count' href='index.php?page=agents&id_group=" . $id_group . "'>";
+	$row[__('Agents')] = "<a class='link_count' href='index.php?" .
+		"page=agents&id_group=" . $id_group . "'>";
 	$row[__('Agents')] .= $data["total_agents"];
 	$row[__('Agents')] .= "</a>";
 	
 	// Agents unknown
-	$row[__('Agents unknown')] = "<a class='link_count' href='index.php?page=agents&id_group=" . $id_group . "&status=3'>";
+	$row[__('Agents unknown')] = "<a class='link_count' href='index.php?" .
+		"page=agents&id_group=" . $id_group . "&status=" . AGENT_STATUS_UNKNOWN . "'>";
 	$row[__('Agents unknown')] .= $data["agents_unknown"];
 	$row[__('Agents unknown')] .= "</a>";
 	
 	// Monitors Unknown
-	$row[__('Unknown')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=3'>";
+	$row[__('Unknown')] = "<a class='link_count' href='index.php?" .
+		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
 	$row[__('Unknown')] .= $data["monitor_unknown"];
 	$row[__('Unknown')] .= "</a>";
 	
 	// Monitors Not Init
-	$row[__('Not init')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=5'>";
+	$row[__('Not init')] = "<a class='link_count' href='index.php?" .
+		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
 	$row[__('Not init')] .= $data["monitor_not_init"];
 	$row[__('Not init')] .= "</a>";
 	
 	// Monitors OK
-	$row[__('Normal')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=0'>";
+	$row[__('Normal')] = "<a class='link_count' href='index.php?" .
+		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
 	$row[__('Normal')] .= $data["monitor_ok"];
 	$row[__('Normal')] .= "</a>";
 	
 	// Monitors Warning
-	$row[__('Warning')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=1'>";
+	$row[__('Warning')] = "<a class='link_count' href='index.php?" .
+		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
 	$row[__('Warning')] .= $data["monitor_warning"];
 	$row[__('Warning')] .= "</a>";
 	
 	// Monitors Critical
-	$row[__('Critical')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=2'>";
+	$row[__('Critical')] = "<a class='link_count' href='index.php?" .
+		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
 	$row[__('Critical')] .= $data["monitor_critical"];
 	$row[__('Critical')] .= "</a>";
 	
 	// Alerts fired
-	$row[__('Alerts fired')] = "<a class='link_count' href='index.php?page=alerts&group=" . $id_group . "&status=fired'>";;
+	$row[__('Alerts fired')] = "<a class='link_count' href='index.php?" .
+		"page=alerts&group=" . $id_group . "&status=fired'>";;
 	$row[__('Alerts fired')] .= $data["monitor_alerts_fired"];
 	$row[__('Alerts fired')] .= "</a>";
 	
@@ -918,7 +926,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["agents_unknown"] > 0) {
 		echo "<td class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 		echo "<a class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
-			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group&status=3'>";
+			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group&status=" . AGENT_STATUS_UNKNOWN ."'>";
 		echo $data["agents_unknown"];
 		echo "</a>";
 		echo "</td>";
@@ -931,7 +939,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["monitor_unknown"] > 0) {
 		echo "<td class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 		echo "<a class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'
-			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=3'>";
+			href='index.php?" .
+			"sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
 		echo $data["monitor_unknown"];
 		echo "</a>";
 		echo "</td>";
@@ -945,7 +954,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["monitor_not_init"] > 0) {
 		echo "<td class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 		echo "<a class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'
-			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=5'>";
+			href='index.php?" .
+			"sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
 		echo $data["monitor_not_init"];
 		echo "</a>";
 		echo "</td>";
@@ -958,7 +968,9 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	// Monitors OK
 	echo "<td class='group_view_data group_view_data_ok $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 	if ($data["monitor_ok"] > 0) {
-		echo "<a class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=0'>";
+		echo "<a class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+			href='index.php?" .
+			"sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
 		echo $data["monitor_ok"];
 		echo "</a>";
 	}
@@ -971,7 +983,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["monitor_warning"] > 0) {
 		echo "<td class='group_view_data group_view_data_warn $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 		echo "<a class='group_view_data group_view_data_warn $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'
-			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=1'>";
+			href='index.php?" .
+			"sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
 		echo $data["monitor_warning"];
 		echo "</a>";
 		echo "</td>";
@@ -984,7 +997,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["monitor_critical"] > 0) {
 		echo "<td class='group_view_data group_view_data_crit $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 		echo "<a class='group_view_data group_view_data_crit $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'
-			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=2'>";
+			href='index.php?" .
+			"sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
 		echo $data["monitor_critical"];
 		echo "</a>";
 		echo "</td>";
@@ -996,7 +1010,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["monitor_alerts_fired"] > 0) {
 		echo "<td class='group_view_data group_view_data_alrm $group_class' style='font-weight: bold; font-size: 18px;  text-align: center;'>";
 		echo "<a class='group_view_data group_view_data_alrm $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'
-			href='index.php?sec=estado&sec2=operation/agentes/alerts_status&ag_group=$id_group&filter=fired'>";
+			href='index.php?" .
+			"sec=estado&sec2=operation/agentes/alerts_status&ag_group=$id_group&filter=fired'>";
 		echo $data["monitor_alerts_fired"];
 		echo "</a>";
 		echo "</td>";
@@ -1010,7 +1025,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	$row[$id_group] = ob_get_clean();
 	
 	
-	foreach($group['childs'] as $child) {
+	foreach ($group['childs'] as $child) {
 		if (array_key_exists($child, $group_all)) {
 			$row_child = groups_get_group_row($child, $group_all, $group_all[$child], $printed_groups);
 			

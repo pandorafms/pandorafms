@@ -1,3 +1,12 @@
+2013-09-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_ui.php: into the function "ui_pagination"
+	added the parameter "print_total_items" to show the total of
+	item in the list. It is showed althought the pagination does not.
+	
+	* operation/agentes/estado_agente.php: changed to don't show the
+	total in the pagination block in the bottom.
+
 2013-09-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

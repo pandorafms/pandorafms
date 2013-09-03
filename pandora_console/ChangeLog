@@ -1,3 +1,11 @@
+2013-09-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/tree.php, include/functions_treeview.php: improved the
+	source code style.
+	
+	* operation/search_agents.getdata.php: added to search for the
+	main address of agent.
+
 2013-09-02 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/massive/massive_edit_modules.php: added field "ip_target"

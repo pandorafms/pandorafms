@@ -161,6 +161,7 @@ our @EXPORT = qw(
 	pandora_generate_alerts
 	pandora_get_config_value
 	pandora_get_module_tags
+	pandora_get_module_phone_tags
 	pandora_get_module_url_tags
 	pandora_get_os
 	pandora_module_keep_alive
@@ -762,6 +763,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	# Thanks to people of Cordoba univ. for the patch for adding module and 
 	# id_agent macros to the alert.
 	
+	# TODO: Reuse queries. For example, tag data can be extracted with a single query.
 	# Alert macros
 	my %macros = (_field1_ => $field1,
 				_field2_ => $field2,
@@ -801,6 +803,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
 				_email_tag_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_phone_tag_ => (defined ($module)) ? pandora_get_module_phone_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -3976,7 +3979,7 @@ sub pandora_get_module_tags ($$$) {
 ##########################################################################
 =head2 C<< get_module_url_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
 
-Get a list of email module tags in the format: |email|email| ... |email|
+Get a list of email module tags in the format: email,email,...,email
 
 =cut
 ##########################################################################
@@ -3992,13 +3995,45 @@ sub pandora_get_module_url_tags ($$$) {
 
 	my $email_tag_string = '';
 	foreach my $email_tag (@email_tags) {
+		next if ($email_tag->{'email'} eq '');
 		$email_tag_string .=  $email_tag->{'email'} . ',';
 	}
 	
-	# Remove the trailing ','
+	# Remove the trailing '|'
 	chop ($email_tag_string);
+
 	return $email_tag_string;
 }
+
+##########################################################################
+=head2 C<< get_module_url_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+
+Get a list of phone module tags in the format: phone,phone,...,phone
+
+=cut
+##########################################################################
+sub pandora_get_module_phone_tags ($$$) {
+	my ($pa_config, $dbh, $id_agentmodule) = @_;
+	
+	my @phone_tags = get_db_rows ($dbh, 'SELECT ttag.phone FROM ttag, ttag_module
+	                               WHERE ttag.id_tag = ttag_module.id_tag
+	                               AND ttag_module.id_agente_modulo = ?', $id_agentmodule);
+	
+	# No tags found
+	return '' if ($#phone_tags < 0);
+
+	my $phone_tag_string = '';
+	foreach my $phone_tag (@phone_tags) {
+		next if ($phone_tag->{'phone'} eq '');
+		$phone_tag_string .=  $phone_tag->{'phone'} . ',';
+	}
+	
+	# Remove the trailing ','
+	chop ($phone_tag_string);
+	
+	return $phone_tag_string;
+}
+
 
 ##########################################################################
 # Mark an agent for module status count update.

@@ -482,6 +482,7 @@ ALTER TABLE tusuario_perfil ADD (tags CLOB NOT NULL default '');
 -- Table `ttag`
 -- ---------------------------------------------------------------------
 ALTER TABLE ttag ADD (email CLOB NULL);
+ALTER TABLE ttag ADD (phone CLOB NULL);
 
 -- ---------------------------------------------------------------------
 -- Add more fields in snmp alerts (05/03/13)

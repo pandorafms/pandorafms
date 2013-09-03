@@ -163,7 +163,8 @@ if (!empty($result)) {
 	$table->head[2] = __('Detail information');
 	$table->head[3] = __('Number of modules affected');
 	$table->head[4] = __('Email');
-	$table->head[5] = __('Actions');
+	$table->head[5] = __('Phone');
+	$table->head[6] = __('Actions');
 	
 	foreach ($result as $tag) {
 		if ($rowPair)
@@ -198,9 +199,24 @@ if (!empty($result)) {
 				"<a href='javascript: show_dialog(" . $tag["id_tag"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</a></span>";
 		}
 		$data[4] = $output;
+
+		$phone_large = io_safe_output($tag["phone"]);
+		$phone_small = substr($phone_large,0, 24);
+		if ($phone_large == $phone_small) {
+			$output = $phone_large;
+		}
+		else {
+			$output = 
+				"<div title='" . sprintf(__('Phones for the tag: %s'), $tag['name']) . "' style='display: none;' class='phone_large' id='phone_large_" . $tag["id_tag"] . "'>" .
+					$phone_large . "</div>" . 
+				'<span id="value_' . $tag["id_tag"] . '">' .
+				$phone_small . '</span> ' .
+				"<a href='javascript: show_phone_dialog(" . $tag["id_tag"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</a></span>";
+		}
+		$data[5] = $output;
 		
-		$data[5] = "<a href='index.php?sec=".$sec."&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
-		$data[5] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
+		$data[6] = "<a href='index.php?sec=".$sec."&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
+		$data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
 		array_push ($table->data, $data);
 	}
 	
@@ -234,8 +250,18 @@ ui_require_jquery_file ('cluetip');
 				width: 400,
 				height: 200
 			});
+		$(".phone_large").dialog(
+			{
+				autoOpen: false,
+				resizable: true,
+				width: 400,
+				height: 200
+			});
 	});
 	function show_dialog(id) {
 		$("#email_large_" + id).dialog("open");
+	}
+	function show_phone_dialog(id) {
+		$("#phone_large_" + id).dialog("open");
 	}
 </script>

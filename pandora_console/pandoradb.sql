@@ -1494,6 +1494,7 @@ CREATE TABLE IF NOT EXISTS `ttag` (
 	`description` text NOT NULL, 
 	`url` mediumtext NOT NULL, 
 	`email` text NULL,
+	`phone` text NULL,
 	PRIMARY KEY  (`id_tag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 

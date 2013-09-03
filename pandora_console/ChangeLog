@@ -1,3 +1,15 @@
+2013-09-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  godmode/tag/tag.php,
+	  godmode/tag/edit_tag.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  pandoradb_data.sql: Added support for tag phone information.
+
 2013-09-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/tree.php, include/functions_treeview.php: improved the

@@ -1,3 +1,11 @@
+2013-09-04 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/modificar_agente.php,
+	include/functions_agents.php: fixed the delete agent when sometimes
+	have remote config but not the enterprise.
+	
+	MERGED FROM THE BRANCH PANDORA_4
+
 2013-09-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_events.php,

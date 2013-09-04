@@ -52,7 +52,8 @@ if (is_ajax ()) {
 	}
 	
 	if ($get_module_local_components) {
-		require_once ($config['homedir'].'/'.ENTERPRISE_DIR.'/include/functions_local_components.php');
+		require_once ($config['homedir'] . '/' . ENTERPRISE_DIR .
+			'/include/functions_local_components.php');
 		
 		$id_module_group = (int) get_parameter ('id_module_component_group');
 		$localComponents = local_components_get_local_components(

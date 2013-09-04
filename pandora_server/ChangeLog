@@ -1,3 +1,8 @@
+2013-09-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added support for treating events with the
+	  same id_extra as a single event.
+
 2013-09-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* util/pandora_revent.pl: fixed the script, now runs fine the tags

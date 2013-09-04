@@ -1,3 +1,9 @@
+2013-09-04 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/modificar_agente.php,
+	include/functions_agents.php: fixed the delete agent when sometimes
+	have remote config but not the enterprise.
+
 2013-08-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/agent_manager.php: set the first default server

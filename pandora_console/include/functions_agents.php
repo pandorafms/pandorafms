@@ -169,7 +169,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			$disabled = '';
 		else
 			$disabled = 'WHERE disabled = 0';
-			
+		
 		$subQuery = 'SELECT id_agente_modulo
 			FROM tagente_modulo ' . $disabled;
 	}
@@ -210,7 +210,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			INNER JOIN talert_templates t4
 				ON talert_template_modules.id_alert_template = t4.id
 		WHERE (%s id_agent_module in (%s)) %s %s %s",
-	$selectText, $extra_sql, $subQuery, $where, $filter, $orderbyText);
+		$selectText, $extra_sql, $subQuery, $where, $filter, $orderbyText);
 	
 	$alerts = db_get_all_rows_sql ($sql);
 	
@@ -1746,26 +1746,28 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		// db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules);
 		
 		// Delete remote configuration
-		if (isset ($config["remote_config"])) {
-			enterprise_include_once('include/functions_config_agents.php');
-			if (enterprise_hook('config_agents_has_remote_configuration', $id_agent)) {
-				$agent_name = agents_get_name($id_agent);
-				$agent_name = io_safe_output($agent_name);
-				$agent_md5 = md5 ($agent_name, false);
-				
-				// Agent remote configuration editor
-				$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
-				
-				$error = !@unlink ($file_name);
-				
-				if (!$error) {
-					$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
+		if (enterprise_installed()) {
+			if (isset ($config["remote_config"])) {
+				enterprise_include_once('include/functions_config_agents.php');
+				if (enterprise_hook('config_agents_has_remote_configuration', $id_agent)) {
+					$agent_name = agents_get_name($id_agent);
+					$agent_name = io_safe_output($agent_name);
+					$agent_md5 = md5 ($agent_name, false);
+					
+					// Agent remote configuration editor
+					$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
+					
 					$error = !@unlink ($file_name);
-				}
-				
-				if ($error) {
-					db_pandora_audit( "Agent management",
-						"Error: Deleted agent '$agent_name', the error is in the delete conf or md5.");
+					
+					if (!$error) {
+						$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
+						$error = !@unlink ($file_name);
+					}
+					
+					if ($error) {
+						db_pandora_audit( "Agent management",
+							"Error: Deleted agent '$agent_name', the error is in the delete conf or md5.");
+					}
 				}
 			}
 		}

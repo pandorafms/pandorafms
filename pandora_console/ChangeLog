@@ -1,3 +1,9 @@
+2013-09-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_events.php,
+	  include/javascript/pandora_events.js: Added 'ID extra' to the event
+	  details.
+
 2013-09-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_groups.php, operation/agentes/group_view.php:

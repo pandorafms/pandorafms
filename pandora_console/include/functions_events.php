@@ -2250,6 +2250,16 @@ function events_page_general ($event) {
 	}
 	$table_general->data[] = $data;
 	 
+	$data = array();
+	$data[0] = __('ID extra');
+	if ($event["id_extra"] != '') {
+		$data[1] = $event["id_extra"];
+	}
+	else {
+		$data[1] = '<i>' . __('N/A') . '</i>';
+	}
+	$table_general->data[] = $data;
+
 	$general = '<div id="extended_event_general_page" class="extended_event_pages">'.html_print_table($table_general,true).'</div>';
 	
 	return $general;

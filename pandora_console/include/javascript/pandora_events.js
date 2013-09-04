@@ -47,7 +47,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 						background: "black"
 					},
 					width: 700,
-					height: 500
+					height: 510
 				})
 				.show ();
 				

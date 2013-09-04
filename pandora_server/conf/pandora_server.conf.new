@@ -422,3 +422,9 @@ event_auto_validation 1
 # Time interval for snmp_storm protection (in seconds).
 #snmp_storm_timeout 600
 
+# Default texts for some events. The macros _module_ and _data_ are supported.
+#text_going_down_normal Module '_module_' is going to NORMAL (_data_)
+#text_going_up_critical Module '_module_' is going to CRITICAL (_data_)
+#text_going_up_warning Module '_module_' is going to WARNING (_data_)
+#text_going_down_warning Module '_module_' is going to WARNING (_data_)
+#text_going_unknown Module '_module_' is going to UNKNOWN

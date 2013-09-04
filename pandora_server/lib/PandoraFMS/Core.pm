@@ -3220,7 +3220,7 @@ sub pandora_validate_event ($$$) {
 sub generate_status_event ($$$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $status, $last_status, $last_known_status, $dbh) = @_;
 	my ($event_type, $severity);
-	my $description = "Module " . safe_output($module->{'nombre'}) . " (".safe_output($data).") is ";
+	my $description = '';
 
 	# No events when event storm protection is enabled
 	if ($EventStormProtection == 1) {
@@ -3229,7 +3229,7 @@ sub generate_status_event ($$$$$$$$) {
 
 	# Mark as "validated" any previous event for this module
 	pandora_validate_event ($pa_config, $module->{'id_agente_modulo'}, $dbh);
-
+	
 	# Normal
 	if ($status == 0) {
 		
@@ -3239,23 +3239,23 @@ sub generate_status_event ($$$$$$$$) {
 		}
 		
 		($event_type, $severity) = ('going_down_normal', 2);
-		$description .= "going to NORMAL";
+		$description = $pa_config->{"text_going_down_normal"};
 	# Critical
 	} elsif ($status == 1) {
 		($event_type, $severity) = ('going_up_critical', 4);
-		$description .= "going to CRITICAL";
+		$description = $pa_config->{"text_going_up_critical"};
 	# Warning
 	} elsif ($status == 2) {
 		
 		# From normal
 		if ($last_known_status == 0 || $last_known_status == 4) {
 			($event_type, $severity) = ('going_up_warning', 3);
-			$description .= "going to WARNING";
+			$description = $pa_config->{"text_going_up_warning"};
 			
 		# From critical
 		} elsif ($last_known_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
-			$description .= "going to WARNING";
+			$description = $pa_config->{"text_going_down_warning"};
 		} else {
 			# Unknown last_status
 			return;
@@ -3265,6 +3265,13 @@ sub generate_status_event ($$$$$$$$) {
 		logger($pa_config, "Unknown status $status for module '" . $module->{'nombre'} . "' agent '" . $agent->{'nombre'} . "'.", 10);
 		return;
 	}
+
+	# Replace macros
+	my %macros = (
+		_module_ => safe_output($module->{'nombre'}),
+		_data_ => safe_output($data),
+	);
+	$description = subst_alert_macros ($description, \%macros);
 
 	# Generate the event
 	if ($status != 0){
@@ -3912,7 +3919,14 @@ sub pandora_module_unknown ($$) {
 			
 			# Generate event with severity minor
 			my ($event_type, $severity) = ('going_down_normal', 5);
-			my $description = "Module " . safe_output($module->{'nombre'}) . " is going to NORMAL";
+			my $description = $pa_config->{"text_going_down_normal"};
+
+			# Replace macros
+			my %macros = (
+				_module_ => safe_output($module->{'nombre'}),
+				_data_ => 'N/A',
+			);
+			
 			pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
 				$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 		}
@@ -3958,7 +3972,14 @@ sub pandora_module_unknown ($$) {
 			# Generate event with severity minor
 			if ($do_event) {
 				my ($event_type, $severity) = ('going_unknown', 5);
-				my $description = "Module " . safe_output($module->{'nombre'}) . " is going to UNKNOWN";
+				my $description = $pa_config->{"going_unknown"};
+
+		        # Replace macros
+		        my %macros = (
+		                _module_ => safe_output($module->{'nombre'}),
+		        );
+		        $description = subst_alert_macros ($description, \%macros);
+		        
 				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
 					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 			}

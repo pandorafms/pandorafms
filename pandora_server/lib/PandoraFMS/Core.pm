@@ -2520,7 +2520,9 @@ Generate an event.
 ##########################################################################
 sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
-		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $critical_instructions, $warning_instructions, $unknown_instructions) = @_;
+		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh,
+		$source, $user_name, $comment, $id_extra, $tags,
+		$critical_instructions, $warning_instructions, $unknown_instructions) = @_;
 	
 	my $agent = undef;
 	if ($id_agente != 0) {
@@ -2539,9 +2541,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 			return;
 		}
 	}
-	
-	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	
+		
 	# Get module tags
 	my $module_tags = '';
 	if (defined ($tags) && ($tags ne '')) {
@@ -2570,9 +2570,26 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
-	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp);
+	# Treat events with the same extended id as a single event
+	my $count = 0;
+	if (defined ($id_extra) && $id_extra ne '') {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tevento WHERE id_extra=?', $id_extra);
+		$count = 0 unless defined ($count);
+	}
+	
+	# Update or create the event
+	if ($count > 0) {
+		logger($pa_config, "Updating event '$evento' with extended id '$id_extra' for agent ID $id_agente module ID $id_agentmodule.", 10);
 
+		db_do ($dbh, 'UPDATE tevento SET id_agente=?, id_grupo=?, evento=?, timestamp=?, estado=?, utimestamp=?, event_type=?, id_agentmodule=?, id_alert_am=?, criticity=?, user_comment=?, tags=?, source=?, id_extra=?, id_usuario=?, critical_instructions=?, warning_instructions=?, unknown_instructions=?, ack_utimestamp=?
+		              WHERE id_extra=?', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $id_extra);
+	} else {
+		logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
+
+		db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp)
+		              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp);
+	}
+	
 	# Do not write to the event file
 	return if ($pa_config->{'event_file'} eq '');
 

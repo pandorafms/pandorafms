@@ -85,11 +85,13 @@ if ($agent_to_delete) {
 	
 	ui_print_result_message($result, __('Success deleted agent.'), __('Could not be deleted.'));
 	
-	// Check if the remote config file still exist
-	if (isset ($config["remote_config"])) {
-		enterprise_include_once('include/functions_config_agents.php');
-		if (enterprise_hook('config_agents_has_remote_configuration', $id_agente)) {
-			ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
+	if (enterprise_installed()) {
+		// Check if the remote config file still exist
+		if (isset ($config["remote_config"])) {
+			enterprise_include_once('include/functions_config_agents.php');
+			if (enterprise_hook('config_agents_has_remote_configuration', $id_agente)) {
+				ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
+			}
 		}
 	}
 }

@@ -1,5 +1,13 @@
 2013-09-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/Config.pm,
+	  conf/pandora_server.conf.new: Added support for custom event texts.
+
+	* lib/PandoraFMS/Server.pm: Fixed a comparison.
+
+2013-09-04  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Added support for treating events with the
 	  same id_extra as a single event.
 

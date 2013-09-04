@@ -306,6 +306,13 @@ sub pandora_load_config {
 	# Export events to a text file
 	$pa_config->{"event_file"} = ''; # 5.0
 
+	# Default event messages
+	$pa_config->{"text_going_down_normal"} = "Module '_module_' is going to NORMAL (_data_)"; # 5.0
+	$pa_config->{"text_going_up_critical"} = "Module '_module_' is going to CRITICAL (_data_)"; # 5.0
+	$pa_config->{"text_going_up_warning"} = "Module '_module_' is going to WARNING (_data_)"; # 5.0
+	$pa_config->{"text_going_down_warning"} = "Module '_module_' is going to WARNING (_data_)"; # 5.0
+	$pa_config->{"text_going_unknown"} = "Module '_module_' is going to UNKNOWN"; # 5.0
+
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -670,6 +677,21 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_file\s+(.*)/i) {
 			$pa_config->{'event_file'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^text_going_down_normal\s+(.*)/i) {
+			$pa_config->{'text_going_down_normal'} = safe_input ($1);
+		}
+		elsif ($parametro =~ m/^text_going_up_critical\s+(.*)/i) {
+			$pa_config->{'text_going_up_critical'} = safe_input ($1);
+		}
+		elsif ($parametro =~ m/^text_going_up_warning\s+(.*)/i) {
+			$pa_config->{'text_going_up_warning'} = safe_input ($1);
+		}
+		elsif ($parametro =~ m/^text_going_down_warning\s+(.*)/i) {
+			$pa_config->{'text_going_down_warning'} = safe_input ($1);
+		}
+		elsif ($parametro =~ m/^text_going_unknown\s+(.*)/i) {
+			$pa_config->{'text_going_unknown'} = safe_input ($1);
 		}
 	} # end of loop for parameter #
 

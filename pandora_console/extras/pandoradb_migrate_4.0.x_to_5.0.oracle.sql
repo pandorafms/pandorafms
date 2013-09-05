@@ -320,6 +320,7 @@ ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'nowizard
 ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'));
 ALTER TABLE tnetwork_component ADD (macros CLOB default '');
 ALTER TABLE tnetwork_component ADD (disabled_types_event CLOB default '');
+ALTER TABLE tnetwork_component ADD (module_macros CLOB default '');
 
 
 -- -----------------------------------------------------
@@ -332,6 +333,7 @@ ALTER TABLE tagente_modulo ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tagente_modulo ADD (cron_interval VARCHAR2(100) DEFAULT '');
 ALTER TABLE tagente_modulo ADD (max_retries NUMBER(10, 0) default 0);
 ALTER TABLE tagente_modulo ADD (disabled_types_event CLOB default '');
+ALTER TABLE tagente_modulo ADD (module_macros CLOB default '');
 
 
 -- Move the number of retries for web modules from plugin_pass to max_retries

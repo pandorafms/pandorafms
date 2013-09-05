@@ -208,6 +208,7 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "cron_interval" varchar(100) default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "max_retries" INTEGER default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "id_category" INTEGER default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "disabled_types_event" TEXT default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "module_macros" TEXT default '';
 
 -- Move the number of retries for web modules from plugin_pass to max_retries
 UPDATE "tagente_modulo" SET max_retries=CAST(plugin_pass AS INT) WHERE id_modulo=7;
@@ -289,6 +290,7 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "critical_inverse" SMALLINT NOT NULL
 ALTER TABLE "tnetwork_component" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
 ALTER TABLE "tnetwork_component" ADD COLUMN "tags" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "disabled_types_event" TEXT default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "module_macros" TEXT default '';
 
 -- -----------------------------------------------------
 -- Table "talert_commands"

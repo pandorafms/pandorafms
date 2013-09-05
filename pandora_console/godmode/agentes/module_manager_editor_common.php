@@ -471,6 +471,32 @@ else {
 	$table_advanced->data[12][4] .= html_print_input_hidden ('id_category', $id_category, true);
 }
 
+/* Advanced form part */
+$table_macros->id = 'module_macros';
+$table_macros->width = '98%';
+$table_macros->class = 'databox_color';
+$table_macros->data = array ();
+$table_macros->style = array ();
+$table_macros->style[0] = 'font-weight: bold; vertical-align: top';
+$table_macros->style[2] = 'font-weight: bold; vertical-align: top';
+$table_macros->style[5] = 'width: 10px';
+$table_macros->colspan = array ();
+
+$macro_count = 0;
+foreach ($module_macros as $macro_name => $macro_value) {
+	$table_macros->data[$macro_count][0] = __('Name');
+	$table_macros->data[$macro_count][1] = html_print_input_text ('module_macro_names[]', $macro_name, '', 50, 60, true);
+	$table_macros->data[$macro_count][2] = __('Value');
+	$table_macros->data[$macro_count][3] = html_print_input_text ('module_macro_values[]', $macro_value, '', 50, 60, true);
+	$table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro(' . $macro_count . ');">' . html_print_image('images/cross.png', true) . '</a>';
+	$macro_count++;
+}
+$table_macros->data[$macro_count][0] = '<span>'.__('Add module macro').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png',true).'</a>';
+$table_macros->colspan[$macro_count][0] = 5;
+$macro_count++;
+
+html_print_input_hidden ('module_macro_count', $macro_count);
+
 ui_require_jquery_file('json');
 
 ?>
@@ -542,5 +568,31 @@ $(document).ready (function () {
 	
 	$("#id_module_type").trigger('change');
 });
+
+// Add a new module macro
+function add_macro () {
+	var macro_count = parseInt($("#hidden-module_macro_count").val());
+	var delete_icon = '<?php html_print_image ("images/cross.png", false) ?>';
+	
+	// Add inputs for the new macro
+	$("#module_macros").append('<tr id="module_macros-' + macro_count + '" class="datos2"><td style=" font-weight: bold; vertical-align: top;" class="datos2">Name</td> \
+	<td style="" class="datos2"><input type="text" name="module_macro_names[]" value="" id="text-module_macro_names[]" size="50" maxlength="60"></td> \
+	<td style="font-weight: bold; vertical-align: top;" class="datos2">Value</td> \
+	<td style="" class="datos2"><input type="text" name="module_macro_values[]" value="" id="text-module_macro_values[]" size="50" maxlength="60"></td> \
+	<td style="" class="datos2"><a href="javascript: delete_macro(' + macro_count + ');">' + delete_icon + '</a></td></tr>');
+	
+	// Update the macro count
+	$("#hidden-module_macro_count").val(macro_count + 1);
+}
+
+// Delete an existing module macro
+function delete_macro (num) {
+	if ($("#module_macros-" + num).length) {
+		$("#module_macros-" + num).remove();
+	}
+	
+	// Do not decrease the macro counter or new macros may overlap existing ones!
+}
+
 /* ]]> */
 </script>

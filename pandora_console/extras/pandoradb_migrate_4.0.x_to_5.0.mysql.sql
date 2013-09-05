@@ -185,6 +185,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `cron_interval` varchar(100) default '';
 ALTER TABLE `tagente_modulo` ADD COLUMN `max_retries` int(4) UNSIGNED NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `id_category` int(10) NOT NULL DEFAULT '0';
 ALTER TABLE `tagente_modulo` ADD COLUMN `disabled_types_event` TEXT NOT NULL DEFAULT '';
+ALTER TABLE `tagente_modulo` ADD COLUMN `module_macros` TEXT NOT NULL DEFAULT '';
 
 -- Move the number of retries for web modules from plugin_pass to max_retries
 UPDATE `tagente_modulo` SET max_retries=plugin_pass WHERE id_modulo=7;
@@ -205,6 +206,7 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `max_retries` int(4) UNSIGNED NOT NU
 ALTER TABLE `tnetwork_component` ADD COLUMN `id_category` int(10) NOT NULL DEFAULT '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `tags` TEXT NOT NULL default '';
 ALTER TABLE `tnetwork_component` ADD COLUMN `disabled_types_event` TEXT NOT NULL DEFAULT '';
+ALTER TABLE `tnetwork_component` ADD COLUMN `module_macros` TEXT NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Table `tgraph_source` Alter table to allow negative values in weight

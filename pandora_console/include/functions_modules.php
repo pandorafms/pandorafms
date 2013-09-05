@@ -1661,4 +1661,17 @@ function modules_group_agent_warning ($module_group) {
 			AND critical_count = 0 AND warning_count > 0
 			AND id_module_group = $module_group");
 }
+
+// Return a base64 encoded JSON document to store module macros inside the database
+function modules_get_module_macros_json ($macro_names, $macro_values) {
+	$module_macros = array ();
+	for ($i = 0; $i < count($macro_names); $i++) {
+		if (isset ($macro_values[$i])) {
+			$module_macros[$macro_names[$i]] = $macro_values[$i];
+		}
+	}
+	
+	return base64_encode(json_encode ($module_macros));
+}
+
 ?>

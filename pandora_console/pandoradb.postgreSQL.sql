@@ -236,7 +236,8 @@ CREATE TABLE "tagente_modulo" (
 	"critical_inverse" SMALLINT NOT NULL default 0,
 	"warning_inverse" SMALLINT NOT NULL default 0,
 	"id_category" INTEGER NOT NULL default 0,
-	"disabled_types_event" TEXT default ''
+	"disabled_types_event" TEXT default '',
+	"module_macros" TEXT default ''
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");
@@ -599,7 +600,8 @@ CREATE TABLE "tnetwork_component" (
 	"warning_inverse" SMALLINT NOT NULL default 0,
 	"id_category" INTEGER NOT NULL default 0,
 	"tags" text NOT NULL,
-	"disabled_types_event" TEXT default ''
+	"disabled_types_event" TEXT default '',
+	"module_macros" TEXT default ''
 );
 
 -- ---------------------------------------------------------------------

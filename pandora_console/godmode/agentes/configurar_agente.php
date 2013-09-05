@@ -142,6 +142,7 @@ $quiet = 0;
 $macros = '';
 
 $create_agent = (bool)get_parameter('create_agent');
+$module_macros = array ();
 
 // Create agent
 if ($create_agent) {
@@ -894,6 +895,10 @@ if ($update_module || $create_module) {
 	//Set the event type that can show.
 	$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
 	$disabled_types_event = json_encode($disabled_types_event);
+
+	$module_macro_names = (array) get_parameter('module_macro_names', array());
+	$module_macro_values = (array) get_parameter('module_macro_values', array());
+	$module_macros = modules_get_module_macros_json ($module_macro_names, $module_macro_values);
 	
 	// Make changes in the conf file if necessary
 	enterprise_include_once('include/functions_config_agents.php');
@@ -953,7 +958,8 @@ if ($update_module) {
 		'warning_inverse' => $warning_inverse,
 		'cron_interval' => $cron_interval,
 		'id_category' => $id_category,
-		'disabled_types_event' => $disabled_types_event);
+		'disabled_types_event' => $disabled_types_event,
+		'module_macros' => $module_macros);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;
@@ -1076,7 +1082,8 @@ if ($create_module) {
 		'warning_inverse' => $warning_inverse,
 		'cron_interval' => $cron_interval,
 		'id_category' => $id_category,
-		'disabled_types_event' => $disabled_types_event);
+		'disabled_types_event' => $disabled_types_event,
+		'module_macros' => $module_macros);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;

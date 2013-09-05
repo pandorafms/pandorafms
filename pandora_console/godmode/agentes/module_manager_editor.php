@@ -230,6 +230,8 @@ if ($id_agent_module) {
 		$month = '*';
 		$wday = '*';
 	}
+	
+	$module_macros = json_decode(base64_decode($module['module_macros']));
 }
 else {
 	if (!isset ($moduletype)) {
@@ -302,6 +304,8 @@ else {
 		$wday = '*';
 		
 		$ff_interval = 0;
+		
+		$module_macros = array ();
 	}
 }
 
@@ -422,6 +426,7 @@ echo '<form method="post" id="module_form">';
 html_print_table ($table_simple);
 
 ui_toggle(html_print_table ($table_advanced, true), __('Advanced options'));
+ui_toggle(html_print_table ($table_macros, true), __('Module macros'));
 
 
 // Submit

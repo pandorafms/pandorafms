@@ -1,3 +1,8 @@
+2013-09-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_filemanager.php: fixed PHP notice when this
+	file is included and there is not a upload file action.
+
 2013-09-04 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/modificar_agente.php,

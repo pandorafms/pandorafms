@@ -1,3 +1,11 @@
+2013-09-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/PluginServer.pm: fixed the lost decode html
+	entities for the value in the macros.
+	
+	* util/plugin/dummy_plugin.pl: added tiny plugin server with only
+	purpose to testing.
+
 2013-09-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm,

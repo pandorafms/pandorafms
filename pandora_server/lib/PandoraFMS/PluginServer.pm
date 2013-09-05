@@ -162,17 +162,17 @@ sub data_consumer ($$) {
 	
 	# Build command to execute
 	my $command = $plugin->{'execute'};
-
+	
 	if (!defined($plugin->{'parameters'})){
 		$plugin->{'parameters'} = "";
 	}
 		
 	my $parameters = $plugin->{'parameters'};
-
+	
 	if (!defined($module->{'macros'})){
 		$module->{'macros'} = "";
 	}
-
+	
 	# Plugin macros
 	eval {
 		if ($module->{'macros'} ne '') {
@@ -182,7 +182,9 @@ sub data_consumer ($$) {
 			if(ref($macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))
 				{
-					$parameters =~ s/$macros{$macro_id}{'macro'}/$macros{$macro_id}{'value'}/g;
+					my $macro_value = safe_output($macros{$macro_id}{'value'});
+					
+					$parameters =~ s/$macros{$macro_id}{'macro'}/$macro_value/g;
 				}
 			}
 		}
@@ -215,13 +217,13 @@ sub data_consumer ($$) {
 	
 	$command .= ' ' . $parameters;
 
-	$command = decode_entities($command);
+	$command = safe_output($command);
 
 	logger ($pa_config, "Executing AM # $module_id plugin command '$command'", 9);
 
 	# Execute command
 	$command = $pa_config->{'plugin_exec'} . ' ' . $timeout . ' ' . $command;
-
+	
 	my $module_data;
 	eval {
 		$module_data = `$command`;

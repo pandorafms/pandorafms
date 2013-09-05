@@ -108,8 +108,9 @@ use Time::Local;
 use POSIX qw(strftime);
 use threads;
 use threads::shared;
-
 use JSON qw(decode_json);
+use MIME::Base64;
+
 # Debugging
 #use Data::Dumper;
 
@@ -204,6 +205,7 @@ our @EXPORT = qw(
 	subst_alert_macros
 	get_agent_from_addr
 	get_agent_from_name
+	load_module_macros
 	@ServerTypes
 	$EventStormProtection
 	);
@@ -811,7 +813,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			$macros{$macro} = $value;
 		}
 	}
-
+	
+	if (defined ($module)) {
+		load_module_macros ($module->{'module_macros'}, \%macros);
+	}
+	
 	# User defined alerts
 	if ($action->{'internal'} == 0) {
 		$macros{_field1_} = subst_alert_macros ($field1, \%macros);
@@ -2980,10 +2986,11 @@ sub subst_alert_macros ($$) {
 	my $macro_regexp = join('|', grep { defined $macros->{$_} } keys %{$macros});
 
 	# Macro data may contain HTML entities
-	{
+	eval {
 		no warnings;
+		local $SIG{__DIE__};
 		$string =~ s/($macro_regexp)/decode_entities($macros->{$1})/ige;
-	}
+	};
 
 	return $string;
 }
@@ -3271,6 +3278,7 @@ sub generate_status_event ($$$$$$$$) {
 		_module_ => safe_output($module->{'nombre'}),
 		_data_ => safe_output($data),
 	);
+	load_module_macros ($module->{'module_macros'}, \%macros);
 	$description = subst_alert_macros ($description, \%macros);
 
 	# Generate the event
@@ -3959,7 +3967,11 @@ sub pandora_module_unknown ($$) {
 				$do_event = 1;
 			}
 			else {
-				my $disabled_types_event = decode_json($module->{'disabled_types_event'});
+				my $disabled_types_event;
+				eval {
+					local $SIG{__DIE__};
+					$disabled_types_event = decode_json($module->{'disabled_types_event'});
+				};
 				
 				if ($disabled_types_event->{'going_unknown'}) {
 					$do_event = 0;
@@ -3972,12 +3984,13 @@ sub pandora_module_unknown ($$) {
 			# Generate event with severity minor
 			if ($do_event) {
 				my ($event_type, $severity) = ('going_unknown', 5);
-				my $description = $pa_config->{"going_unknown"};
+				my $description = $pa_config->{"text_going_unknown"};
 
 		        # Replace macros
 		        my %macros = (
 		                _module_ => safe_output($module->{'nombre'}),
 		        );
+		        load_module_macros ($module->{'module_macros'}, \%macros);
 		        $description = subst_alert_macros ($description, \%macros);
 		        
 				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
@@ -4202,6 +4215,29 @@ sub pandora_get_os ($$) {
 	return 10;
 }
 
+########################################################################
+# Load module macros (a base 64 encoded JSON document) into the macro
+# hash.
+########################################################################
+sub load_module_macros ($$) {
+	my ($macros, $macro_hash) = @_;
+	
+	# Decode and parse module macros
+	my $decoded_macros = {};
+	eval {
+		local $SIG{__DIE__};
+		$decoded_macros = decode_json (decode_base64 ($macros));
+	};
+	return if ($@);
+	
+	# Add module macros to the macro hash
+	if(ref($decoded_macros) eq "HASH") {
+		while (my ($macro, $value) = each (%{$decoded_macros})) {
+			$macro_hash->{$macro} = $value;
+		}
+	}
+}
+	
 # End of function declaration
 # End of defined Code
 

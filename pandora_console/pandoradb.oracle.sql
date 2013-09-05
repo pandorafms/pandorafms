@@ -248,6 +248,7 @@ CREATE TABLE tagente_modulo (
 	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
 	id_category NUMBER(10, 0) default 0 NOT NULL,
 	disabled_types_event CLOB default '',
+	module_macros CLOB default '',
 	
 	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
@@ -702,6 +703,7 @@ CREATE TABLE tnetwork_component (
 	id_category NUMBER(10, 0) default 0 NOT NULL,
 	tags CLOB,
 	disabled_types_event CLOB default '',
+	module_macros CLOB default '',
 	
 	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );

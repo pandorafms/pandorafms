@@ -95,7 +95,8 @@ if (isset ($_POST["template_id"])) {
 				'critical_instructions' => $row2['critical_instructions'],
 				'warning_instructions' => $row2['warning_instructions'],
 				'unknown_instructions' => $row2['unknown_instructions'],
-				'id_category' => $row2['id_category']
+				'id_category' => $row2['id_category'],
+				'module_macros' => $row2['module_macros']
 				);
 			
 			$name = $row2["name"];

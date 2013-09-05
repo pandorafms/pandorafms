@@ -547,7 +547,7 @@ function add_macro_field(macro, row_model_id) {
 	// Change the carriage returns by html returns <br> in help
 	var macro_help = macro['help'].replace(/&#x0d;/g,"<br>");
 	var macro_macro = macro['macro'];
-	var macro_value = macro['value'];
+	var macro_value =  $('<div />').html(macro['value']).text();;
 	
 	var row_id = row_model_id + macro_macro;
 	

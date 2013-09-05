@@ -1,5 +1,11 @@
 2013-09-05 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/module_manager_editor_plugin.php,
+	include/javascript/pandora_modules.js: fixed the double apply
+	entities in the plugin components.
+
+2013-09-05 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_filemanager.php: fixed PHP notice when this
 	file is included and there is not a upload file action.
 

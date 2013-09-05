@@ -1,3 +1,10 @@
+2013-09-05  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager.php
+	godmode/agentes/configurar_agente.php: Change old counts
+	of status by new way setting flags to be updated by 
+	server
+
 2013-09-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor_plugin.php,

@@ -428,3 +428,11 @@ event_auto_validation 1
 #text_going_up_warning Module '_module_' is going to WARNING (_data_)
 #text_going_down_warning Module '_module_' is going to WARNING (_data_)
 #text_going_unknown Module '_module_' is going to UNKNOWN
+
+# Events older that the specified time (in seconds) will be auto-validated. Set to 0 to disable this feature.
+event_expiry_time 0
+
+# Only events more recent than the specified time window (in seconds) will be auto-validated. This value must
+# be greater than event_expiry_time.
+#event_expiry_window 86400
+

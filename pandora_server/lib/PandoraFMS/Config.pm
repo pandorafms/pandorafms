@@ -313,6 +313,12 @@ sub pandora_load_config {
 	$pa_config->{"text_going_down_warning"} = "Module '_module_' is going to WARNING (_data_)"; # 5.0
 	$pa_config->{"text_going_unknown"} = "Module '_module_' is going to UNKNOWN"; # 5.0
 
+	# Event auto-expiry time
+	$pa_config->{"event_expiry_time"} = 0; # 5.0
+
+	# Event auto-expiry time window
+	$pa_config->{"event_expiry_window"} = 86400; # 5.0
+	
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -692,6 +698,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^text_going_unknown\s+(.*)/i) {
 			$pa_config->{'text_going_unknown'} = safe_input ($1);
+		}
+		elsif ($parametro =~ m/^event_expiry_time\s+([0-9]*)/i) {
+			$pa_config->{'event_expiry_time'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_expiry_window\s+([0-9]*)/i) {
+			$pa_config->{'event_expiry_window'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

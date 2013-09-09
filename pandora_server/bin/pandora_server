@@ -306,6 +306,16 @@ sub pandora_server_tasks ($) {
 			&& $pa_config->{"self_monitoring"} == 1){
 				pandora_self_monitoring ($pa_config, $dbh);
 			}
+
+			# Event auto-expiry
+			my $expiry_time = $pa_config->{"event_expiry_time"};
+			my $expiry_window = $pa_config->{"event_expiry_window"};
+			if ($expiry_time > 0 && $expiry_window > 0 && $expiry_window > $expiry_time) {
+				my $time_ref = time ();
+				my $expiry_limit = $time_ref - $expiry_time;
+				my $expiry_window = $time_ref - $expiry_window;
+				db_do ($dbh, 'UPDATE tevento SET estado=1, ack_utimestamp=? WHERE estado=0 AND utimestamp < ? AND utimestamp > ?', $time_ref, $expiry_limit, $expiry_window);
+			}
 		}
 	
 		# Avoid counter overflow

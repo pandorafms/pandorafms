@@ -456,7 +456,8 @@ CREATE TABLE "tevento" (
 	"warning_instructions" TEXT default '',
 	"unknown_instructions" TEXT default '',
 	"owner_user" varchar(100) NOT NULL default '0',
-	"ack_utimestamp" BIGINT NOT NULL default 0
+	"ack_utimestamp" BIGINT NOT NULL default 0,
+	"custom_data" text NOT NULL
 );
 CREATE INDEX "tevento_id_1_idx" ON "tevento"("id_agente", "id_evento");
 CREATE INDEX "tevento_id_2_idx" ON "tevento"("utimestamp", "id_evento");

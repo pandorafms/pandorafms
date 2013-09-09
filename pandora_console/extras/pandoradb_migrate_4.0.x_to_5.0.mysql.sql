@@ -139,6 +139,7 @@ ALTER TABLE `tevento` ADD COLUMN `warning_instructions` TEXT NOT NULL DEFAULT ''
 ALTER TABLE `tevento` ADD COLUMN `unknown_instructions` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tevento` ADD COLUMN `owner_user` VARCHAR(100) NOT NULL DEFAULT '';
 ALTER TABLE `tevento` ADD COLUMN `ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0';
+ALTER TABLE `tevento` ADD COLUMN `custom_data` TEXT NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Table `tgrupo`

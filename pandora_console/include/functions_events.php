@@ -734,33 +734,33 @@ function events_get_description ($id_event) {
  *
  * @return int event id
  */
-function events_create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0, $critical_instructions = '', $warning_instructions = '', $unknown_instructions = '', $source="Pandora", $tags="") {
+function events_create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0, $critical_instructions = '', $warning_instructions = '', $unknown_instructions = '', $source="Pandora", $tags="", $custom_data="") {
 	global $config;
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
 				estado, utimestamp, id_usuario, event_type, criticity,
-				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags) 
-				VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s")',
+				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags, custom_data) 
+				VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s")',
 				$id_agent, $id_group, $event, $status, $id_user, $event_type,
-				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags);
+				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags, $custom_data);
 			break;
 		case "postgresql":
 			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
 				estado, utimestamp, id_usuario, event_type, criticity,
-				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags) 
-				VALUES (%d, %d, "%s", NOW(), %d, ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s")',
+				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags, custom_data) 
+				VALUES (%d, %d, "%s", NOW(), %d, ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s")',
 				$id_agent, $id_group, $event, $status, $id_user, $event_type,
-				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags);
+				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags, $custom_data);
 			break;
 		case "oracle":
 			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
 				estado, utimestamp, id_usuario, event_type, criticity,
-				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags) 
-				VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d, ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s")',
+				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags, custom_data) 
+				VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d, ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s")',
 				$id_agent, $id_group, $event, $status, $id_user, $event_type,
-				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags);
+				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags, $custom_data);
 			break;
 	}
 	
@@ -2107,6 +2107,41 @@ function events_page_details ($event, $server = "") {
 	$details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
 	
 	return $details;
+}
+
+function events_page_custom_data ($event) {
+	global $config;
+	
+	////////////////////////////////////////////////////////////////////
+	// Custom data
+	////////////////////////////////////////////////////////////////////
+	if ($event['custom_data'] == '') {
+		return '';
+	}
+
+	$table->width = '100%';
+	$table->data = array ();
+	$table->head = array ();
+	$table->style[0] = 'width:35%; font-weight: bold; text-align: left;';
+	$table->style[1] = 'text-align: left;';
+	$table->class = "alternate rounded_cells";
+
+	$json_custom_data = base64_decode ($event['custom_data']);
+	$custom_data = json_decode ($json_custom_data);
+	if ($custom_data === NULL) {
+		return '<div id="extended_event_custom_data_page" class="extended_event_pages">'.__('Invalid custom data: %s', $json_custom_data).'</div>';
+	}	
+	
+	$i = 0;
+	foreach ($custom_data as $field => $value) {
+		$table->data[$i][0] = io_safe_output ($field);
+		$table->data[$i][1] = io_safe_output ($value);
+		$i++;
+	}
+
+	$custom_data = '<div id="extended_event_custom_data_page" class="extended_event_pages">'.html_print_table($table, true).'</div>';
+	
+	return $custom_data;
 }
 
 function events_page_general ($event) {

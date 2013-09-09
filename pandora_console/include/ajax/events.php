@@ -288,6 +288,9 @@ if ($get_extended_event) {
 		(tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags']))) {
 		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true).__('Responses')."</a></li>";
 	}
+	if ($event['custom_data'] != '') {
+		$tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image('images/custom_field_col.png',true).__('Custom data')."</a></li>";
+	}
 	$tabs .= "</ul>";
 	
 	// Get criticity image
@@ -338,6 +341,8 @@ if ($get_extended_event) {
 	
 	$custom_fields = events_page_custom_fields($event);
 	
+	$custom_data = events_page_custom_data($event);
+	
 	if ($meta) {
 		metaconsole_restore_db_force();
 	}
@@ -364,6 +369,7 @@ if ($get_extended_event) {
 				$custom_fields.
 				$comments.
 				$responses.
+				$custom_data.
 				html_print_input_hidden('id_event',$event['id_evento']).
 			'</div>';
 	
@@ -389,6 +395,9 @@ if ($get_extended_event) {
 			break;
 		case "responses":
 			$js .= '$tabs.tabs( "option", "active", 4);';
+			break;
+		case "custom_data":
+			$js .= '$tabs.tabs( "option", "active", 5);';
 			break;
 	}
 	

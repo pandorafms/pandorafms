@@ -166,6 +166,7 @@ ALTER TABLE tevento ADD (unknown_instructions VARCHAR2(255) default '');
 ALTER TABLE tevento MODIFY CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
 ALTER TABLE tevento ADD (owner_user VARCHAR2(100) NOT NULL default '0');
 ALTER TABLE tevento ADD (ack_utimestamp NUMBER(19, 0) NOT NULL default 0);
+ALTER TABLE tevento ADD (custom_data VARCHAR2(255) default '');
 
 -- ---------------------------------------------------------------------
 -- Table tgrupo

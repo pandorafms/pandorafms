@@ -1,3 +1,13 @@
+2013-09-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf.new,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/Core.pm,
+	  bin/pandora_server: Added support for event auto-expiry and small
+	  fixes.
+
+	* util/pandora_manage.pl: Added support for event custom data.
+
 2013-09-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added support for module macros.

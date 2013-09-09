@@ -157,6 +157,7 @@ ALTER TABLE "tevento" ADD COLUMN "unknown_instructions" text default '';
 ALTER TYPE type_tevento_event ADD VALUE 'going_unknown' BEFORE 'unknown';
 ALTER TABLE "tevento" ADD COLUMN "owner_user" varchar(100) NOT NULL default '0';
 ALTER TABLE "tevento" ADD COLUMN "ack_utimestamp" BIGINT NOT NULL default 0;
+ALTER TABLE "tevento" ADD COLUMN "custom_data" text NULL default '';
 
 -- -----------------------------------------------------
 -- Table "tgrupo"

@@ -6123,7 +6123,7 @@ function api_set_create_tag ($id, $trash1, $other, $returnType) {
 }
 
 
-//http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+//http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other||&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_event($id, $trash1, $other, $returnType) {
 	
 	if ($other['type'] == 'string') {
@@ -6229,12 +6229,20 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		else {
 			$values['tags'] = "";
 		}
-		
+
+		if ($other['data'][16] != '') {
+			$values['custom_data'] = $other['data'][16];
+		}
+		else {
+			$values['custom_data'] = "";
+		}
+			
 		$return = events_create_event($values['event'], $values['id_grupo'], $values['id_agente'], 
 		$values['status'], $values['id_usuario'], $values['event_type'], 
 		$values['priority'], $value['id_agentemodule'], $values['id_alert_am'], 
 		$values['critical_instructions'], $values['warning_instructions'], 
-		$values['unknown_instructions'], $values['source'], $values['tags']);
+		$values['unknown_instructions'], $values['source'], $values['tags'],
+		$values['custom_data']);
 		
 		if ($other['data'][12] != '') { //user comments
 			if ($return !== false) { //event successfully created

@@ -1,3 +1,17 @@
+2013-09-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  include/ajax/events.php,
+	  include/functions_api.php,
+	  include/functions_events.php,
+	  include/javascript/pandora_events.js,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql: Added support for event custom data (via CLI
+	  and API).
+
 2013-09-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

@@ -507,6 +507,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`unknown_instructions` text NOT NULL default '',
 	`owner_user` VARCHAR(100) NOT NULL DEFAULT '',
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
+	`custom_data` TEXT NOT NULL,
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),

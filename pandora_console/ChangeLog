@@ -1,3 +1,10 @@
+2013-09-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+        
+        * godmode/admin_access_logs.php: Fixed php error that breaks
+        this view
+
+	Merged from trunk.
+
 2013-09-04 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/modificar_agente.php,

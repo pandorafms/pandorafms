@@ -283,7 +283,7 @@ foreach ($result as $row) {
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
-				rowEnterpriseAudit$table, $iterator, $row['id_sesion']);
+				rowEnterpriseAudit($table, $iterator, $row['id_sesion']);
 				break;
 			case "oracle":
 				rowEnterpriseAudit($table, $iterator, $row['id_sesion']);

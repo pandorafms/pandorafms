@@ -1,3 +1,8 @@
+2013-09-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/admin_access_logs.php: Fixed php error that breaks
+	this view.
+
 2013-09-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

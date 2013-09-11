@@ -6,7 +6,7 @@
 <h1>Alert macros</h1>
 
 <p>
-The following macros are available:
+Besides the defined module macros, the following macros are available:
 <ul>
 <li>_field1_ : User defined field 1.</li>
 <li>_field2_ : User defined field 2.</li>

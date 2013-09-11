@@ -6,7 +6,7 @@
 <h1>Macros de alertas</h1>
 
 <p>
-Las siguientes macros están disponibles:
+Además de las macros de módulo definidas, las siguientes macros están disponibles:
 </p>
 <ul>
 <li>_field1_: Campo 1 definido por el usuario.</li>

@@ -1,3 +1,16 @@
+2013-09-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/module_manager_editor.php,
+	  include/help/en/help_alert_config.php,
+	  include/help/en/help_alert_macros.php,
+	  include/help/en/help_module_macros.php,
+	  include/help/es/help_module_macros.php,
+	  include/help/es/help_alert_config.php,
+	  include/help/es/help_alert_macros.php,
+	  include/help/ja/help_alert_macros.php,
+	  include/help/ja/help_module_macros.php,
+	  include/help/ja/help_alert_config.php: Updated help for module macros.
+
 2013-09-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/admin_access_logs.php: Fixed php error that breaks

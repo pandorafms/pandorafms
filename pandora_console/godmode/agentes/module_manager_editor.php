@@ -426,7 +426,7 @@ echo '<form method="post" id="module_form">';
 html_print_table ($table_simple);
 
 ui_toggle(html_print_table ($table_advanced, true), __('Advanced options'));
-ui_toggle(html_print_table ($table_macros, true), __('Module macros'));
+ui_toggle(html_print_table ($table_macros, true), __('Module macros') . ui_print_help_icon ('module_macros', true));
 
 
 // Submit

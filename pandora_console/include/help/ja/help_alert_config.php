@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Include/help/en
+ * @package Include/help/ja
  */
 ?>
 <h1>Configure Alert Action</h1>

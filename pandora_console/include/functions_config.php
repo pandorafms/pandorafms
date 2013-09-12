@@ -817,10 +817,6 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['netflow_disable_custom_lvfilters'])) {
-		config_update_value('netflow_disable_custom_lvfilters', 100);
-	}
-
-	if (!isset ($config['netflow_disable_custom_lvfilters'])) {
 		config_update_value ( 'netflow_disable_custom_lvfilters', 0);
 	}
 

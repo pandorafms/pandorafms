@@ -1,3 +1,8 @@
+2013-09-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_config.php: Removed some code that set
+	  netflow_disable_custom_lvfilters to an invalid value.
+
 2013-09-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor.php,

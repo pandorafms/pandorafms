@@ -1,5 +1,13 @@
 2013-09-12  Ramon Novoa  <rnovoa@artica.es>
 
+	* godmode/snmpconsole/snmp_alert.php: Fixed pagination (was not working
+	  well when a search filter was being used).
+
+	* godmode/netflow/nf_edit_form.php: Force the ID of the table (the
+	  javascript was broken).
+
+2013-09-12  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions_config.php: Removed some code that set
 	  netflow_disable_custom_lvfilters to an invalid value.
 

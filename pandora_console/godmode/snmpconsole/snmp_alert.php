@@ -597,7 +597,7 @@ else {
 		$url_pagination = "index.php?" .
 			"sec=snmpconsole&" .
 			"sec2=godmode/snmpconsole/snmp_alert&" .
-			"free_seach=" . $free_search . "&" .
+			"free_search=" . $free_search . "&" .
 			"trap_type_filter=" . $trap_type_filter . "&" .
 			"priority_filter=" . $priority_filter;
 	}
@@ -605,7 +605,7 @@ else {
 		$url_pagination = "index.php?" .
 			"sec=snmpconsole&" .
 			"sec2=godmode/snmpconsole/snmp_alert&" .
-			"free_seach=" . $free_search . "&" .
+			"free_search=" . $free_search . "&" .
 			"trap_type_filter=" . $trap_type_filter . "&" .
 			"priority_filter=" . $priority_filter . "&" .
 			"offset=" . $offset;

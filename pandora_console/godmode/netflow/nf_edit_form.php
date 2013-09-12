@@ -164,6 +164,7 @@ if ($create) {
 	}
 }
 
+$table->id = 'table1';
 $table->width = '80%';
 $table->border = 0;
 $table->cellspacing = 3;

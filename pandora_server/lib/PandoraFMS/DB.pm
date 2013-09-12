@@ -82,6 +82,7 @@ our @EXPORT = qw(
 		get_agent_status
 		get_agent_modules
 		get_agentmodule_status
+		get_agentmodule_status_str
 		get_agentmodule_data
 		$RDBMS
 		$RDBMS_QUOTE
@@ -303,6 +304,24 @@ sub get_agentmodule_status($$$) {
 			WHERE id_agente_modulo = ?', $agent_module_id);
 	
 	return $status;
+}
+
+########################################################################
+## Return the status of an agent module as a string.
+########################################################################
+sub get_agentmodule_status_str($$$) {
+	my ($pa_config, $dbh, $agent_module_id) = @_;
+	
+	my $status = get_db_value($dbh, 'SELECT estado
+			FROM tagente_estado
+			WHERE id_agente_modulo = ?', $agent_module_id);
+	
+	return 'Normal' if ($status == 0);
+	return 'Critical' if ($status == 1);
+	return 'Warning' if ($status == 2);
+	return 'Unknown' if ($status == 3);
+	return 'Not init' if ($status == 4);
+	return 'N/A';
 }
 
 ########################################################################

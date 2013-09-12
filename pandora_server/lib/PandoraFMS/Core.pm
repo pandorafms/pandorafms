@@ -804,7 +804,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
-				_modulestatus_ => (defined ($module)) ? get_agentmodule_status($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_modulestatus_ => (defined ($module)) ? get_agentmodule_status_str($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				_moduletags_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',

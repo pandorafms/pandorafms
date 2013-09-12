@@ -95,7 +95,7 @@ Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, st
       	if (WINEVENT == NULL) {
 			
 			// Log to the bedug log, since this is not an error
-            pandoraDebug ("Error loading library Wevtapi.dll");
+            pandoraLog ("Library Wevtapi.dll not available");
             return;
         }
 

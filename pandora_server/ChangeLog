@@ -1,3 +1,8 @@
+2013-09-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Validate existing events with the same 'ID extra' instead
+	  of treating them as a single event.
+
 2013-09-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* NetBSD/pandora_server.conf,

@@ -1,3 +1,7 @@
+2013-09-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added a missing parameter to a call to log_message.
+
 2013-08-22  Dario Rodriguez <dario@artica.es>
 
 	* pandora_agent_installer: Merged improvements from 4.1 branch

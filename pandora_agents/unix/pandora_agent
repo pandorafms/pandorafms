@@ -2003,7 +2003,7 @@ if ($Conf{'proxy_mode'}) {
 	if ($> != 0) {		
 		launch_tentacle_proxy();
 	} else {
-		log_message ('Proxy mode can not be launched as root');
+		log_message ('error', 'Proxy mode can not be launched as root');
 		exit 1;
 	}
 }

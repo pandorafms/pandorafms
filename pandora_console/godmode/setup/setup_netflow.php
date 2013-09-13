@@ -43,7 +43,8 @@ $table->data = array ();
 $table->data[0][0] = '<b>' . __('Data storage path') . '</b>' .
 	ui_print_help_tip (__("Directory where netflow data will be stored."), true);
 $table->data[0][1] = html_print_input_text ('netflow_path', $config['netflow_path'], false, 50, 200, true);
-$table->data[1][0] = '<b>' . __('Daemon interval') . '</b>';
+$table->data[1][0] = '<b>' . __('Daemon interval') . '</b>' .
+	ui_print_help_tip (__("Specifies the time interval in seconds to rotate netflow data files."), true);
 $table->data[1][1] = html_print_input_text ('netflow_interval', $config['netflow_interval'], false, 50, 200, true);
 $table->data[2][0] = '<b>' . __('Daemon binary path') . '</b>';
 $table->data[2][1] = html_print_input_text ('netflow_daemon', $config['netflow_daemon'], false, 50, 200, true);

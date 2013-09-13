@@ -1,3 +1,12 @@
+2013-09-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/setup/setup_netflow.php: Added a help tip to the
+	  configuration token "Daemon interval".
+
+	* include/functions_agents.php: Fixed an invalid call to
+	  config_agents_has_remote_configuration. Remote configuration
+	  files were not being deleted.
+
 2013-09-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/snmpconsole/snmp_alert.php: Fixed pagination (was not working

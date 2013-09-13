@@ -1671,7 +1671,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		if (enterprise_installed()) {
 			if (isset ($config["remote_config"])) {
 				enterprise_include_once('include/functions_config_agents.php');
-				if (enterprise_hook('config_agents_has_remote_configuration', $id_agent)) {
+				if (enterprise_hook('config_agents_has_remote_configuration', array($id_agent))) {
 					$agent_name = agents_get_name($id_agent);
 					$agent_name = io_safe_output($agent_name);
 					$agent_md5 = md5 ($agent_name, false);

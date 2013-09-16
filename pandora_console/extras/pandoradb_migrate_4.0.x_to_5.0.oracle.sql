@@ -323,7 +323,6 @@ ALTER TABLE tnetwork_component ADD (macros CLOB default '');
 ALTER TABLE tnetwork_component ADD (disabled_types_event CLOB default '');
 ALTER TABLE tnetwork_component ADD (module_macros CLOB default '');
 
-
 -- -----------------------------------------------------
 -- Table tagente_modulo
 -- -----------------------------------------------------
@@ -1157,3 +1156,8 @@ ALTER TABLE tagente_datos_inc DROP COLUMN id_adi;
 -- ---------------------------------------------------------------------
 
 UPDATE tconfig SET value = 'pandora_logo_head.png' WHERE token = 'custom_logo';
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component` (16/09/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE tnetwork_component MODIFY (name CLOB NOT NULL);

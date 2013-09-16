@@ -1154,3 +1154,7 @@ ALTER TABLE tagente_datos_inc DROP COLUMN id_adi;
 
 UPDATE tconfig SET value = 'pandora_logo_head.png' WHERE token = 'custom_logo';
 
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component` (16/09/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE `tnetwork_component` CHANGE COLUMN `name` `name` TEXT NOT NULL;

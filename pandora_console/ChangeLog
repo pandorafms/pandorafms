@@ -1,3 +1,14 @@
+2013-09-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql:
+	Changed data type in field 'name' of 'tnetwork_component' table
+	to TEXT/CLOB. 
+
 2013-09-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/setup/setup_netflow.php: Added a help tip to the

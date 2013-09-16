@@ -557,7 +557,7 @@ CREATE TABLE "tmodule_group" (
 CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced','nowizard');
 CREATE TABLE "tnetwork_component" (
 	"id_nc" SERIAL NOT NULL PRIMARY KEY,
-	"name" varchar(80) NOT NULL,
+	"name" text NOT NULL,
 	"description" varchar(250) default NULL,
 	"id_group" INTEGER NOT NULL default 1,
 	"type" INTEGER NOT NULL default 6,

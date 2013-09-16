@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 if (is_ajax ()) {
 	$get_plugin_description = get_parameter('get_plugin_description');
 	$id_plugin = get_parameter('id_plugin');
@@ -28,8 +27,7 @@ if (is_ajax ()) {
 
 // Load global vars
 global $config;
-
-require_once ("include/functions_filemanager.php");
+require_once ($config['homedir'] . "/include/functions_filemanager.php");
 
 check_login ();
 
@@ -46,6 +44,7 @@ $view = get_parameter ("view", "");
 $create = get_parameter ("create", "");
 $filemanager = (bool)get_parameter("filemanager", false);
 $plugin_command = get_parameter('plugin_command', '');
+$tab = get_parameter('tab', '');
 
 if ($view != "") {
 	$form_id = $view;
@@ -158,10 +157,10 @@ if (($create != "") OR ($view != "")) {
 
 	if ($create == "") {
 		$plugin_id = get_parameter ("view","");
-		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id&pure=" . $config['pure'] . "'>";
+		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&update_plugin=$plugin_id&pure=" . $config['pure'] . "'>";
 	}
 	else {
-		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create_plugin=1&pure=" . $config['pure'] . "'>";
+		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create_plugin=1&pure=" . $config['pure'] . "'>";
 	}
 	
 	$table->width = '98%';
@@ -539,8 +538,8 @@ else {
 			echo "</td><td class=$tdcolor>";
 			echo $row["execute"];
 			echo "</td><td class=$tdcolor>";
-			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "'>" . html_print_image('images/config.png', true, array("title" => __("Edit"))) . "</a>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "' onclick='javascript: if (!confirm(\"" . __('All the modules that are using this plugin will be deleted') . '. ' . __('Are you sure?') . "\")) return false;'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
+			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&view=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "'>" . html_print_image('images/config.png', true, array("title" => __("Edit"))) . "</a>&nbsp;&nbsp;";
+			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "' onclick='javascript: if (!confirm(\"" . __('All the modules that are using this plugin will be deleted') . '. ' . __('Are you sure?') . "\")) return false;'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
 			echo "</td></tr>";
 		}
 		echo "</table>";
@@ -551,7 +550,7 @@ else {
 	}
 	echo "<table width='98%'>";
 	echo "<tr><td align=right>";
-	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1&pure=" . $config['pure'] . "'>";
+	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=" . $config['pure'] . "'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
 	echo "</td></tr></table>";
 	

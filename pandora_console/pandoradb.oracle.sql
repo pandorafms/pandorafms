@@ -658,7 +658,7 @@ CREATE OR REPLACE TRIGGER tmodule_group_inc BEFORE INSERT ON tmodule_group REFER
 
 CREATE TABLE tnetwork_component (
 	id_nc NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(80) NOT NULL,
+	name CLOB NOT NULL,
 	description VARCHAR2(300) default NULL,
 	id_group NUMBER(10, 0) default 1 NOT NULL,
 	type NUMBER(10, 0) default 6 NOT NULL,

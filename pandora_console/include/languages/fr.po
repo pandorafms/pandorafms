@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: pandora-fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-22 18:49+0200\n"
-"PO-Revision-Date: 2013-07-05 19:24+0000\n"
-"Last-Translator: Teromene <teromene@gmail.com>\n"
+"PO-Revision-Date: 2013-09-16 13:11+0000\n"
+"Last-Translator: katalina rodriguez <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-07-11 07:13+0000\n"
-"X-Generator: Launchpad (build 16696)\n"
+"X-Launchpad-Export-Date: 2013-09-16 13:21+0000\n"
+"X-Generator: Launchpad (build 16761)\n"
 "Language: fr\n"
 
 #: ../../operation/events/events.php:344 ../../operation/events/events.php:353
@@ -88,7 +88,7 @@ msgstr "Événements"
 #: ../../extensions/agents_alerts.php:168
 #: ../../extensions/agents_modules.php:173
 msgid "Agents"
-msgstr "Agents"
+msgstr "Les Agents"
 
 #: ../../operation/search_main.php:34 ../../operation/search_main.php:42
 #: ../../operation/search_main.php:50 ../../operation/search_main.php:58
@@ -96,7 +96,7 @@ msgstr "Agents"
 #: ../../operation/search_main.php:82
 #, php-format
 msgid "%d results found"
-msgstr "%d résultats trouvés"
+msgstr ""
 
 #: ../../operation/search_main.php:34 ../../operation/search_main.php:42
 #: ../../operation/search_main.php:50 ../../operation/search_main.php:58
@@ -295,13 +295,13 @@ msgstr "Rafraîchir"
 #: ../../operation/visual_console/render_view.php:83
 #: ../../godmode/reporting/visual_console_builder.php:413
 msgid "Visual consoles list"
-msgstr "Liste des consoles Visuel"
+msgstr "Liste des consoles visuelles"
 
 #: ../../operation/visual_console/render_view.php:91
 #: ../../enterprise/meta/screens/screens.visualmap.php:157
 #: ../../godmode/reporting/visual_console_builder.php:416
 msgid "Show link to public Visual Console"
-msgstr "Afficher lien aux public Console Visual"
+msgstr "Afficher un lien vers Console public visuel"
 
 #: ../../operation/visual_console/render_view.php:95
 #: ../../operation/reporting/graph_viewer.php:114
@@ -336,7 +336,7 @@ msgstr "Assistant"
 #: ../../operation/visual_console/render_view.php:101
 #: ../../godmode/reporting/visual_console_builder.php:428
 msgid "Builder"
-msgstr ""
+msgstr "Constructeur"
 
 #: ../../operation/visual_console/render_view.php:104
 #: ../../operation/agentes/estado_agente.php:447
@@ -387,12 +387,12 @@ msgstr "Console visuelle"
 #: ../../operation/netflow/nf_live_view.php:115
 #: ../../operation/netflow/nf_live_view.php:119
 msgid "Netflow live view"
-msgstr "vue Netflow actuelle"
+msgstr "Netflow vue en direct"
 
 #: ../../operation/netflow/nf_live_view.php:109
 #, php-format
 msgid "nfdump binary (%s) not found!"
-msgstr "nfdump binaire (% s) introuvable !"
+msgstr "nfdump binary (%s) pas trouve´"
 
 #: ../../operation/netflow/nf_live_view.php:114
 #: ../../operation/agentes/ver_agente.php:702
@@ -419,7 +419,7 @@ msgstr "Page principale"
 #: ../../operation/events/events_list.php:699
 #: ../../enterprise/meta/event/event_view.php:1436
 msgid "Error creating filter"
-msgstr "Erreur lors de la création du filtre"
+msgstr "Erreur de création de filtre"
 
 #: ../../operation/netflow/nf_live_view.php:134
 msgid "Filter created successfully"
@@ -427,13 +427,13 @@ msgstr "Filtre créé avec succès"
 
 #: ../../operation/netflow/nf_live_view.php:149
 msgid "Filter updated successfully"
-msgstr "Filtremis à jour avec succès"
+msgstr "Filtrer mis à jour"
 
 #: ../../operation/netflow/nf_live_view.php:150
 #: ../../operation/events/events_list.php:772
 #: ../../enterprise/meta/event/event_view.php:1510
 msgid "Error updating filter"
-msgstr "Erreur lors de la mise à jour du filtre"
+msgstr "Erreur mise à jour du filtre"
 
 #: ../../operation/netflow/nf_live_view.php:173
 #: ../../operation/reporting/graph_viewer.php:151
@@ -582,11 +582,11 @@ msgstr "Type"
 #: ../../godmode/netflow/nf_item_list.php:148
 #: ../../godmode/reporting/reporting_builder.item_editor.php:953
 msgid "Max. values"
-msgstr "Valeurs max."
+msgstr "Max valeurs"
 
 #: ../../operation/netflow/nf_live_view.php:233
 msgid "Connection"
-msgstr ""
+msgstr "Connexion"
 
 #: ../../operation/netflow/nf_live_view.php:255
 #: ../../operation/extensions.php:47 ../../operation/gis_maps/index.php:33
@@ -905,7 +905,7 @@ msgstr "Normal"
 #: ../../godmode/users/configure_user.php:475
 #: ../../godmode/alerts/configure_alert_template.php:640
 msgid "Advanced"
-msgstr "Avancé"
+msgstr "Avancée"
 
 #: ../../operation/netflow/nf_live_view.php:278
 #: ../../operation/events/events_list.php:188
@@ -914,7 +914,7 @@ msgstr "Avancé"
 #: ../../operation/events/events_list.php:433
 #: ../../enterprise/meta/event/event_view.php:541
 msgid "Load filter"
-msgstr "Charger le filtre"
+msgstr "Load filter"
 
 #: ../../operation/netflow/nf_live_view.php:284
 #: ../../operation/events/events_list.php:710
@@ -938,9 +938,9 @@ msgid ""
 "field blank, will show all ip. Example filter by "
 "ip:<br>25.46.157.214,160.253.135.249"
 msgstr ""
-"IP de destination. Une liste d'ip de destination séparées par une virgule. "
-"Si ce champ est laissé vide, toutes les ip seront affichées. Exemple d'un "
-"filtre par ip:<br>25.46.157.214,160.253.135.249"
+"Destination IP. Une virgule liste de destination IP séparées. Si nous "
+"laissons le champ vide, va montrer tout IP. Exemple de filtre par IP: <br> "
+"25.46.157.214,160.253.135.249"
 
 #: ../../operation/netflow/nf_live_view.php:306
 #: ../../godmode/netflow/nf_edit_form.php:199
@@ -953,9 +953,9 @@ msgid ""
 "Source IP. A comma separated list of source ip. If we leave the field blank, "
 "will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"
 msgstr ""
-"IP source. Une liste d'ip source séparées par une virgule. Si ce champ est "
-"laissé vide, toutes les ip seront affichées. Exemple d'un filtre par "
-"ip:<br>25.46.157.214,160.253.135.249"
+"IP Source. Une virgule liste des ip source séparée. Si nous laissons le "
+"champ vide, va montrer tout IP. Exemple de filtre par IP: <br> "
+"25.46.157.214,160.253.135.249"
 
 #: ../../operation/netflow/nf_live_view.php:318
 #: ../../operation/netflow/nf_live_view.php:342
@@ -971,9 +971,9 @@ msgid ""
 "the field blank, will show all ports. Example filter by ports 80 and "
 "22:<br>80,22"
 msgstr ""
-"Port de destination. Une liste de ports séparés par une virgule. Si ce champ "
-"est laissé vide, tous les ports seront affichés. Exemple d'un filtre sur les "
-"ports 80 et 22:<br>80,22"
+"Port de destination. Une virgule liste des ports de destination séparé. Si "
+"nous laissons le champ vide, va montrer tous les ports. Exemple de filtre "
+"par les ports 80 et 22: <br> 80,22"
 
 #: ../../operation/netflow/nf_live_view.php:327
 #: ../../operation/netflow/nf_live_view.php:342
@@ -988,14 +988,13 @@ msgid ""
 "Source port. A comma separated list of source ports. If we leave the field "
 "blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"
 msgstr ""
-"Port source. Liste séparée par des virgules des ports source. Si nous "
-"laissez le champ vide, affiche tous les ports. Filtre d'exemple par les "
-"ports 80 et 22 : <br>80,22"
+"Source port. A comma separated list of source ports. If we leave the field "
+"blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"
 
 #: ../../operation/netflow/nf_live_view.php:340
 #: ../../godmode/netflow/nf_edit_form.php:211
 msgid "Aggregate by"
-msgstr "Regrouper par"
+msgstr "Aggregate par"
 
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../operation/users/user_edit.php:308
@@ -1168,12 +1167,12 @@ msgstr "Protocole"
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Src Ip Address"
-msgstr "Adresse Ip Srce"
+msgstr "Dst adresse IP"
 
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Dst Ip Address"
-msgstr "Adresse Ip Dest"
+msgstr "Dst Ip Address"
 
 #: ../../operation/netflow/nf_live_view.php:345
 #: ../../godmode/netflow/nf_edit_form.php:216
@@ -1192,34 +1191,34 @@ msgstr "Octets par seconde"
 #: ../../operation/netflow/nf_live_view.php:346
 #: ../../godmode/netflow/nf_edit_form.php:217
 msgid "Kilobytes"
-msgstr ""
+msgstr "Kilooctets"
 
 #: ../../operation/netflow/nf_live_view.php:346
 #: ../../godmode/netflow/nf_edit_form.php:217
 msgid "Megabytes"
-msgstr ""
+msgstr "Mégaoctets"
 
 #: ../../operation/netflow/nf_live_view.php:346
 #: ../../godmode/netflow/nf_edit_form.php:217
 msgid "Kilobytes per second"
-msgstr ""
+msgstr "Kilooctets par seconde"
 
 #: ../../operation/netflow/nf_live_view.php:346
 #: ../../godmode/netflow/nf_edit_form.php:217
 msgid "Megabytes per second"
-msgstr ""
+msgstr "Mégaoctets par seconde"
 
 #: ../../operation/netflow/nf_live_view.php:360
 msgid "Draw"
-msgstr "Tracer"
+msgstr "Dessiner"
 
 #: ../../operation/netflow/nf_live_view.php:364
 msgid "Save as new filter"
-msgstr "Sauvegarder comme nouveau filtre"
+msgstr "Enregistrer en tant que nouveau filtre"
 
 #: ../../operation/netflow/nf_live_view.php:366
 msgid "Update current filter"
-msgstr "Mettre à jour le filtre courant"
+msgstr "Mise à jour du filtre courant"
 
 #: ../../operation/search_alerts.php:39 ../../operation/gis_maps/ajax.php:141
 #: ../../operation/gis_maps/ajax.php:159
@@ -1523,7 +1522,7 @@ msgstr "Action"
 
 #: ../../operation/servers/recon_view.php:28
 msgid "Recon View"
-msgstr "Vue Recon"
+msgstr "Recon Voir"
 
 #: ../../operation/servers/recon_view.php:81
 #: ../../operation/servers/recon_view.php:113
@@ -1855,14 +1854,14 @@ msgstr ""
 #: ../../godmode/setup/setup_visuals.php:168
 #: ../../godmode/users/configure_user.php:458
 msgid "Interactive charts"
-msgstr "Graphiques interactifs"
+msgstr "graphiques interactifs"
 
 #: ../../operation/users/user_edit.php:253
 #: ../../enterprise/meta/advanced/metasetup.visual.php:123
 #: ../../godmode/setup/setup_visuals.php:168
 #: ../../godmode/users/configure_user.php:458
 msgid "Whether to use Javascript or static PNG graphs"
-msgstr "Si vous souhaitez utiliser Javascript ou statiques graphiques PNG"
+msgstr "Que ce soit pour utiliser Javascript ou graphiques PNG statiques"
 
 #: ../../operation/users/user_edit.php:254
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:129
@@ -2039,12 +2038,12 @@ msgid ""
 "This will activate a shortcut bar with alerts, events, messages... "
 "information"
 msgstr ""
-"Cela activera un raccourci avec une barre d' alertes, événements, "
-"messages... informations"
+"Cela permettra d'activer une barre de raccourcis avec des alertes, des "
+"événements, des messages ... informations"
 
 #: ../../operation/users/user_edit.php:289
 msgid "Home screen"
-msgstr "Écran d'accueil"
+msgstr "Page d'accueil"
 
 #: ../../operation/users/user_edit.php:289
 msgid ""
@@ -2052,9 +2051,9 @@ msgid ""
 "Example: Select 'Other' and type "
 "sec=estado&sec2=operation/agentes/estado_agente to show agent detail view"
 msgstr ""
-"L'utilisateur peut personnaliser la page d'accueil. Par défaut, affiche « "
-"Détail de l'Agent ». Exemple : Sélectionnez « Autre » et tapez sec = estado "
-"& S2 = opération/agentes/estado_agente pour afficher le détail de l'agent vue"
+"L'utilisateur peut personnaliser la page d'accueil. Par défaut, affiche "
+"Agent Detail ». Exemple: Sélectionnez «Autre» et du type sec = estado & s2 = "
+"opération / agentes / estado_agente pour montrer l'agent vue détaillée"
 
 #: ../../operation/users/user_edit.php:292
 #: ../../godmode/users/configure_user.php:452
@@ -2073,7 +2072,7 @@ msgstr "Tableau de bord"
 #: ../../operation/users/user_edit.php:422
 #: ../../operation/events/events.php:267
 msgid "Event list"
-msgstr ""
+msgstr "Liste des événements"
 
 #: ../../operation/users/user_edit.php:304
 #: ../../operation/users/user_edit.php:427
@@ -2297,7 +2296,7 @@ msgstr "Cet usager n'a aucun profil/groupe associé"
 
 #: ../../operation/users/webchat.php:71
 msgid "Webchat"
-msgstr ""
+msgstr "Webchat"
 
 #: ../../operation/users/webchat.php:81
 msgid "Users Online"
@@ -2310,19 +2309,19 @@ msgstr "Envoyer le message"
 
 #: ../../operation/users/webchat.php:155
 msgid "Connection established...get last 24h messages..."
-msgstr "Connection etabli.... obtenir les derniers 24 messages"
+msgstr "Connexion établie ... get derniers messages 24h ..."
 
 #: ../../operation/users/webchat.php:166
 msgid "Error in connection."
-msgstr "Erreur de connection"
+msgstr "Erreur dans la connexion."
 
 #: ../../operation/users/webchat.php:247
 msgid "Error sendding message."
-msgstr "Erreur en envoyant des messages"
+msgstr "Erreur d'envoi d'un message."
 
 #: ../../operation/users/webchat.php:275
 msgid "Error login."
-msgstr "Erreur de connexion"
+msgstr "Connexion erreur."
 
 #: ../../operation/extensions.php:27 ../../operation/menu.php:353
 #: ../../godmode/extensions.php:27 ../../godmode/menu.php:250
@@ -2349,7 +2348,7 @@ msgstr "Exécuter"
 #: ../../operation/gis_maps/ajax.php:142 ../../operation/gis_maps/ajax.php:163
 #: ../../operation/gis_maps/ajax.php:167
 msgid "Position (Lat, Long, Alt)"
-msgstr ""
+msgstr "Position (Lat, Long, Alt)"
 
 #: ../../operation/gis_maps/ajax.php:143
 msgid "Start contact"
@@ -2625,39 +2624,39 @@ msgstr "Configuration"
 
 #: ../../operation/gis_maps/render_view.php:107 ../../general/header.php:116
 msgid "5 seconds"
-msgstr ""
+msgstr "5 secondes"
 
 #: ../../operation/gis_maps/render_view.php:108 ../../general/header.php:117
 msgid "10 seconds"
-msgstr ""
+msgstr "10 secondes"
 
 #: ../../operation/gis_maps/render_view.php:109 ../../general/header.php:119
 msgid "30 seconds"
-msgstr ""
+msgstr "30 secondes"
 
 #: ../../operation/gis_maps/render_view.php:110 ../../general/header.php:120
 #: ../../extensions/agents_alerts.php:81
 #: ../../extensions/agents_modules.php:89
 msgid "1 minute"
-msgstr ""
+msgstr "1 minute"
 
 #: ../../operation/gis_maps/render_view.php:111 ../../general/header.php:121
 #: ../../extensions/agents_alerts.php:82
 #: ../../extensions/agents_modules.php:90
 msgid "2 minutes"
-msgstr ""
+msgstr "2 minutes"
 
 #: ../../operation/gis_maps/render_view.php:112 ../../general/header.php:122
 #: ../../include/ajax/module.php:76 ../../extensions/agents_alerts.php:83
 #: ../../extensions/agents_modules.php:91
 msgid "5 minutes"
-msgstr ""
+msgstr "5 minutes"
 
 #: ../../operation/gis_maps/render_view.php:113
 #: ../../extensions/agents_alerts.php:84
 #: ../../extensions/agents_modules.php:92
 msgid "10 minutes"
-msgstr ""
+msgstr "10 minutes"
 
 #: ../../operation/gis_maps/render_view.php:114 ../../general/header.php:125
 #: ../../enterprise/dashboard/widgets/single_graph.php:57
@@ -3078,7 +3077,7 @@ msgstr "Zoom x3"
 #: ../../godmode/alerts/configure_alert_template.php:930
 #: ../../extensions/insert_data.php:196
 msgid "Choose time"
-msgstr ""
+msgstr "Choisissez fois"
 
 #: ../../operation/reporting/graph_viewer.php:205
 #: ../../operation/reporting/reporting_viewer.php:197
@@ -3123,7 +3122,7 @@ msgstr "Heure"
 #: ../../godmode/alerts/configure_alert_template.php:933
 #: ../../extensions/insert_data.php:199
 msgid "Minute"
-msgstr ""
+msgstr "Minute"
 
 #: ../../operation/reporting/graph_viewer.php:208
 #: ../../operation/reporting/reporting_viewer.php:200
@@ -3137,7 +3136,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:934
 #: ../../extensions/insert_data.php:200
 msgid "Second"
-msgstr ""
+msgstr "Seconde"
 
 #: ../../operation/reporting/graph_viewer.php:209
 #: ../../operation/reporting/reporting_viewer.php:201
@@ -3569,7 +3568,7 @@ msgstr "Rapport de configuration pour l'agent "
 #: ../../operation/reporting/reporting_xml.php:1262
 #: ../../enterprise/include/functions_reporting_xml.php:1162
 msgid "Configuration report for group "
-msgstr ""
+msgstr "Rapport de configuration pour le groupe "
 
 #: ../../operation/reporting/reporting_viewer.php:70
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:86
@@ -3594,7 +3593,7 @@ msgstr "Rapport"
 
 #: ../../operation/reporting/reporting_viewer.php:154
 msgid "Set initial date"
-msgstr "Date initiale fixée"
+msgstr "Définir la date initiale"
 
 #: ../../operation/reporting/reporting_viewer.php:161
 #: ../../operation/agentes/gis_view.php:119
@@ -3609,7 +3608,7 @@ msgstr "De"
 
 #: ../../operation/reporting/reporting_viewer.php:164
 msgid "Items period before"
-msgstr ""
+msgstr "Période d'articles avant"
 
 #: ../../operation/reporting/reporting_viewer.php:165
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:151
@@ -3739,7 +3738,7 @@ msgstr "Incidents"
 #: ../../include/functions_treeview.php:294
 #: ../../godmode/agentes/agent_manager.php:316
 msgid "Url address"
-msgstr "Adresse URL"
+msgstr "Adresse Url"
 
 #: ../../operation/agentes/ver_agente.php:778
 #: ../../operation/agentes/ver_agente.php:893
@@ -3966,25 +3965,25 @@ msgstr "Afficher les alertes"
 
 #: ../../operation/agentes/stat_win.php:295
 msgid "Show event graph"
-msgstr ""
+msgstr "Afficher graphe d'événements"
 
 #: ../../operation/agentes/stat_win.php:304
 #: ../../operation/agentes/stat_win.php:310
 msgid "Time compare"
-msgstr "Comparez le temps"
+msgstr "Comparer temps"
 
 #: ../../operation/agentes/stat_win.php:304
 msgid "Overlapped"
-msgstr "Se chevaucher"
+msgstr "Chevauché"
 
 #: ../../operation/agentes/stat_win.php:310
 msgid "Separated"
-msgstr ""
+msgstr "Séparé"
 
 #: ../../operation/agentes/stat_win.php:316
 #: ../../mobile/operation/module_graph.php:344
 msgid "Show unknown graph"
-msgstr "Afficher graphique inconnu"
+msgstr "Montrer graphique inconnu"
 
 #: ../../operation/agentes/stat_win.php:339
 msgid "Reload"
@@ -4510,15 +4509,15 @@ msgstr "Police"
 #: ../../operation/agentes/networkmap.php:367
 #: ../../operation/agentes/estado_monitores.php:624
 msgid "Free text for search (*):"
-msgstr "Texte libre pour rechercher (*) :"
+msgstr "Texte libre pour la recherche (*):"
 
 #: ../../operation/agentes/networkmap.php:370
 msgid "Don't show subgroups:"
-msgstr ""
+msgstr "Ne pas montrer  les sous-groupes:"
 
 #: ../../operation/agentes/networkmap.php:371
 msgid "Only run with it is filter for any group"
-msgstr "Exécuter seul avec elle est filtre pour tout groupe"
+msgstr "Fonctionner uniquement avec le filtre est pour tout groupe"
 
 #: ../../operation/agentes/networkmap.php:380
 #: ../../enterprise/meta/advanced/policymanager.apply.php:214
@@ -4590,24 +4589,24 @@ msgstr "Desactivé"
 #: ../../godmode/massive/massive_edit_agents.php:359
 #: ../../godmode/massive/massive_edit_modules.php:432
 msgid "Quiet"
-msgstr ""
+msgstr "Silencieux"
 
 #: ../../operation/agentes/estado_generalagente.php:110
 #: ../../mobile/operation/agent.php:107
 msgid "IP address"
-msgstr ""
+msgstr "Addresse IP"
 
 #: ../../operation/agentes/estado_generalagente.php:148
 msgid "Agent contact"
-msgstr ""
+msgstr "Contact d'agent"
 
 #: ../../operation/agentes/estado_generalagente.php:170
 msgid "Next contact"
-msgstr "Prochain contact"
+msgstr "Contact suivant"
 
 #: ../../operation/agentes/estado_generalagente.php:186
 msgid "Agent info"
-msgstr ""
+msgstr "Info agent"
 
 #: ../../operation/agentes/estado_generalagente.php:191
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1092
@@ -4666,7 +4665,7 @@ msgstr "Actualisation des données"
 #: ../../operation/agentes/estado_generalagente.php:309
 #: ../../mobile/operation/agent.php:132
 msgid "Events (24h)"
-msgstr "Événements (24h)"
+msgstr "Evénements (24h)"
 
 #: ../../operation/agentes/estado_generalagente.php:320
 #: ../../include/functions_treeview.php:350
@@ -4727,7 +4726,7 @@ msgstr "Aucun agent n'a été désigné"
 #: ../../operation/agentes/status_monitor.php:45
 #: ../../enterprise/meta/general/main_header.php:124
 msgid "Monitor view"
-msgstr "Moniteur"
+msgstr "Surveiller vue"
 
 #: ../../operation/agentes/status_monitor.php:332
 msgid "Monitor status"
@@ -4784,11 +4783,11 @@ msgstr "Nom du module"
 
 #: ../../operation/agentes/status_monitor.php:392
 msgid "Only it is show tags in use."
-msgstr ""
+msgstr "Seulement, il est afficher les balises utilisées."
 
 #: ../../operation/agentes/status_monitor.php:401
 msgid "No tags"
-msgstr ""
+msgstr "pas d'étiquette"
 
 #: ../../operation/agentes/status_monitor.php:416
 #: ../../operation/agentes/estado_agente.php:188
@@ -5093,11 +5092,11 @@ msgstr "Detail de l'agent"
 
 #: ../../operation/agentes/estado_agente.php:147
 msgid "Sucessfully deleted agent"
-msgstr "Agent supprimé avec succès"
+msgstr "L'agent a ete supprimé avec succes"
 
 #: ../../operation/agentes/estado_agente.php:149
 msgid "There was an error message deleting the agent"
-msgstr "Il y avait un message d'erreur à la suppression de l'agent"
+msgstr "Il y avait un message d'erreur de supprimer l'agent"
 
 #: ../../operation/agentes/estado_agente.php:162
 #: ../../godmode/agentes/modificar_agente.php:154
@@ -5250,7 +5249,7 @@ msgstr "Total"
 
 #: ../../operation/agentes/snapshot_view.php:61
 msgid "Current data at"
-msgstr ""
+msgstr "Les données actuelles sur"
 
 #: ../../operation/agentes/status_events.php:27
 msgid "Latest events for this agent"
@@ -5312,7 +5311,7 @@ msgstr ""
 #: ../../operation/agentes/estado_monitores.php:483
 #: ../../operation/search_modules.php:180
 msgid "Snapshot view"
-msgstr ""
+msgstr "Vue instantanée"
 
 #: ../../operation/agentes/estado_monitores.php:570
 msgid "Full list of monitors"
@@ -5324,11 +5323,11 @@ msgstr "Tous les moniteurs ne sont pas avec ce filtre."
 
 #: ../../operation/agentes/estado_monitores.php:578
 msgid "This agent doesn't have any active monitors."
-msgstr ""
+msgstr "Cet agent n'a pas de moniteurs actifs."
 
 #: ../../operation/agentes/estado_monitores.php:613
 msgid "Status:"
-msgstr ""
+msgstr "État :"
 
 #: ../../operation/agentes/estado_monitores.php:617
 #: ../../operation/snmpconsole/snmp_view.php:321
@@ -5349,15 +5348,15 @@ msgstr "Alerte"
 #: ../../enterprise/include/functions_services.php:711
 #: ../../mobile/operation/agents.php:35
 msgid "Unknow"
-msgstr ""
+msgstr "Inconnu"
 
 #: ../../operation/agentes/estado_monitores.php:629
 msgid "Reset"
-msgstr ""
+msgstr "Réinitialiser"
 
 #: ../../operation/agentes/estado_monitores.php:636
 msgid "Form filter"
-msgstr ""
+msgstr "Filtre de forme"
 
 #: ../../operation/agentes/exportdata.php:36 ../../operation/menu.php:168
 msgid "Export data"
@@ -5372,6 +5371,7 @@ msgstr "Agent d'origine"
 #: ../../operation/agentes/exportdata.php:228
 msgid "No modules of type string. You can not calculate their average"
 msgstr ""
+"Aucun module de type string. Vous ne pouvez pas calculer leur moyenne"
 
 #: ../../operation/agentes/exportdata.php:269
 #: ../../enterprise/operation/log/log_viewer.php:140
@@ -5421,7 +5421,7 @@ msgstr "Données reçus de"
 
 #: ../../operation/agentes/datos_agente.php:174
 msgid "Main database"
-msgstr ""
+msgstr "Base de données principale"
 
 #: ../../operation/agentes/datos_agente.php:174
 #: ../../enterprise/include/functions_setup.php:33
@@ -5435,6 +5435,8 @@ msgid ""
 "Switch between the main database and the history database to retrieve module "
 "data"
 msgstr ""
+"Basculer entre la base de données principale et la base de l'histoire de "
+"récupérer les données du module"
 
 #: ../../operation/agentes/datos_agente.php:187
 msgid "Choose a time from now"
@@ -5446,7 +5448,7 @@ msgstr "Spécifier le intervalle de temps"
 
 #: ../../operation/agentes/datos_agente.php:191
 msgid "Timestamp from:"
-msgstr "Timestamp depuis"
+msgstr "Timestamp de:"
 
 #: ../../operation/agentes/datos_agente.php:197
 msgid "Timestamp to:"
@@ -5496,11 +5498,11 @@ msgstr "groupes"
 
 #: ../../operation/tree.php:529
 msgid "module groups"
-msgstr ""
+msgstr "groupes de modules"
 
 #: ../../operation/tree.php:532
 msgid "policies"
-msgstr ""
+msgstr "Politiques"
 
 #: ../../operation/tree.php:535
 msgid "modules"
@@ -5508,7 +5510,7 @@ msgstr "modules"
 
 #: ../../operation/tree.php:541
 msgid "tags"
-msgstr ""
+msgstr "Étiquettes"
 
 #: ../../operation/tree.php:547 ../../operation/tree.php:572
 #: ../../operation/menu.php:43
@@ -5519,13 +5521,13 @@ msgstr "Vue arborescente"
 
 #: ../../operation/tree.php:547
 msgid "Sort the agents by "
-msgstr ""
+msgstr "Trier les agents de "
 
 #: ../../operation/tree.php:551
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1200
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1404
 msgid "Tree View"
-msgstr ""
+msgstr "Vue en arbre"
 
 #: ../../operation/tree.php:601
 #: ../../enterprise/include/functions_networkmap_enterprise.php:273
@@ -5569,21 +5571,23 @@ msgstr "Gestion d'incidents"
 
 #: ../../operation/integria_incidents/incident.php:99
 msgid "Incident updated"
-msgstr ""
+msgstr "Mise à jour de l'incident"
 
 #: ../../operation/integria_incidents/incident.php:102
 msgid ""
 "There was a problem updating the incident, please check if any field was "
 "modified and the values are correct."
 msgstr ""
+"Il y avait un problème la mise à jour de l'incident, s'il vous plaît "
+"vérifier si un champ a été modifié et les valeurs sont correctes."
 
 #: ../../operation/integria_incidents/incident.php:126
 msgid "Incident created"
-msgstr ""
+msgstr "incident créé"
 
 #: ../../operation/integria_incidents/incident.php:129
 msgid "There was a problem creating incident"
-msgstr ""
+msgstr "Il y avait un problème de création incidents"
 
 #: ../../operation/integria_incidents/incident.php:142
 #: ../../operation/integria_incidents/incident_detail.php:111
@@ -5601,7 +5605,7 @@ msgstr "Fichier téléchargé"
 
 #: ../../operation/integria_incidents/incident.php:159
 msgid "There was a problem uploading file"
-msgstr ""
+msgstr "Il y avait un probleme en telechargant le fichier"
 
 #: ../../operation/integria_incidents/incident.php:165
 msgid "File is too big"
@@ -5621,33 +5625,37 @@ msgstr "Erreur general de telechargement"
 
 #: ../../operation/integria_incidents/incident.php:193
 msgid "File deleted"
-msgstr ""
+msgstr "Fichier supprimé"
 
 #: ../../operation/integria_incidents/incident.php:196
 msgid "You user doesn't have enough rights to delete this file"
 msgstr ""
+"Vous utilisateur ne dispose pas de droits suffisants pour supprimer ce "
+"fichier"
 
 #: ../../operation/integria_incidents/incident.php:211
 msgid "Incident deleted"
-msgstr ""
+msgstr "Incident supprimé"
 
 #: ../../operation/integria_incidents/incident.php:214
 msgid "There was a problem deteling incident"
-msgstr ""
+msgstr "Il y avait un problème en supprimant l'incident"
 
 #: ../../operation/integria_incidents/incident.php:238
 msgid "Workunit added"
-msgstr ""
+msgstr "Unité de travail ajouté"
 
 #: ../../operation/integria_incidents/incident.php:241
 msgid "There was a problem adding workunit"
-msgstr ""
+msgstr "Il y avait un problème ajoutant unité de travail"
 
 #: ../../operation/integria_incidents/incident.php:342
 msgid ""
 "There is a error in the message from your Integria or there is not "
 "connection."
 msgstr ""
+"Il ya une erreur dans le message de votre Integria ou il n'y a pas de "
+"connexion."
 
 #: ../../operation/integria_incidents/incident.files.php:23
 #: ../../godmode/extensions.php:143
@@ -6207,11 +6215,11 @@ msgstr "Detail des moniteurs"
 
 #: ../../operation/menu.php:61
 msgid "Recon view"
-msgstr ""
+msgstr "Vue Recon"
 
 #: ../../operation/menu.php:73
 msgid "Network View"
-msgstr ""
+msgstr "Vue du réseau"
 
 #: ../../operation/menu.php:225
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:215
@@ -6254,7 +6262,7 @@ msgstr "Editer mon usager"
 
 #: ../../operation/menu.php:283
 msgid "WebChat"
-msgstr ""
+msgstr "WebChat"
 
 #: ../../operation/menu.php:312 ../../operation/messages/message_edit.php:46
 #: ../../operation/messages/message_list.php:43
@@ -6267,7 +6275,7 @@ msgstr "Nouveau Message"
 
 #: ../../operation/menu.php:327
 msgid "Netflow Live View"
-msgstr ""
+msgstr "Netflow Live View"
 
 #: ../../operation/menu.php:336 ../../operation/events/events_rss.php:152
 msgid "SNMP"
@@ -6279,12 +6287,12 @@ msgstr "Console SNMP"
 
 #: ../../operation/menu.php:343
 msgid "SNMP browser"
-msgstr ""
+msgstr "SNMP navigateur"
 
 #: ../../operation/menu.php:344
 #: ../../operation/snmpconsole/snmp_mib_uploader.php:30
 msgid "MIB uploader"
-msgstr ""
+msgstr "MIB uploader"
 
 #: ../../operation/menu.php:345 ../../include/functions_menu.php:424
 msgid "SNMP alerts"
@@ -6305,12 +6313,12 @@ msgstr "Elements"
 
 #: ../../operation/search_results.php:60 ../../mobile/operation/home.php:37
 msgid "Global search"
-msgstr ""
+msgstr "la recherche globale"
 
 #: ../../operation/messages/message_edit.php:35
 #: ../../operation/messages/message_list.php:32
 msgid "Received messages"
-msgstr ""
+msgstr "Messages reçus"
 
 #: ../../operation/messages/message_edit.php:39
 #: ../../operation/messages/message_list.php:36
@@ -6393,11 +6401,11 @@ msgstr "OU"
 
 #: ../../operation/messages/message_edit.php:181
 msgid "Select group"
-msgstr "Sélectionner le groupe"
+msgstr "Sélectionner groupe"
 
 #: ../../operation/messages/message_list.php:81
 msgid "Not deleted. Error deleting messages"
-msgstr "Pas effacé. Erreur en effaçant messages"
+msgstr "Pas supprimé. Erreur suppression de messages"
 
 #: ../../operation/messages/message_list.php:87
 #: ../../operation/messages/message_list.php:94
@@ -6406,7 +6414,7 @@ msgstr "Vous avez"
 
 #: ../../operation/messages/message_list.php:87
 msgid "sent message(s)"
-msgstr "Envoyer message(s)"
+msgstr "message envoyé (s)"
 
 #: ../../operation/messages/message_list.php:94
 msgid "unread message(s)"
@@ -6418,7 +6426,7 @@ msgstr "Il n'y a pas de messages"
 
 #: ../../operation/messages/message_list.php:138
 msgid "Click to read"
-msgstr "Cliquer pour lire"
+msgstr "Cliquez ici pour lire"
 
 #: ../../operation/messages/message_list.php:143
 msgid "Mark as unread"
@@ -6559,7 +6567,7 @@ msgstr "Cet utilisateur n'a pas aucun profil/group assigné"
 
 #: ../../operation/snmpconsole/snmp_browser.php:76
 msgid "SNMP Browser"
-msgstr ""
+msgstr "Explorateur SNMP"
 
 #: ../../operation/snmpconsole/snmp_view.php:57
 #: ../../godmode/snmpconsole/snmp_alert.php:30
@@ -6646,46 +6654,46 @@ msgstr "Recherche libre"
 
 #: ../../operation/snmpconsole/snmp_view.php:349
 msgid "Search by any alphanumeric field in the trap"
-msgstr ""
+msgstr "Rechercher par n'importe quel champ alphanumérique dans le piège"
 
 #: ../../operation/snmpconsole/snmp_view.php:353
 msgid "Search by trap type"
-msgstr ""
+msgstr "Recherche par type de piège"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:550
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Cold start (0)"
-msgstr ""
+msgstr "Démarrage à froid (0)"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:553
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Warm start (1)"
-msgstr ""
+msgstr "Démarrage à chaud (1)"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:556
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Link down (2)"
-msgstr ""
+msgstr "Lien vers le bas (2)"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:559
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Link up (3)"
-msgstr ""
+msgstr "Rattacher"
 
 #: ../../operation/snmpconsole/snmp_view.php:354
 #: ../../operation/snmpconsole/snmp_view.php:543
 #: ../../operation/snmpconsole/snmp_view.php:562
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Authentication failure (4)"
-msgstr ""
+msgstr "Échec d'authentification (4)"
 
 #: ../../operation/snmpconsole/snmp_view.php:392
 #: ../../godmode/snmpconsole/snmp_alert.php:268
@@ -6756,7 +6764,7 @@ msgstr "Description :"
 
 #: ../../operation/snmpconsole/snmp_view.php:568
 msgid "Type:"
-msgstr "Type :"
+msgstr "Type :"
 
 #: ../../operation/snmpconsole/snmp_view.php:586
 msgid "No matching traps found"
@@ -6790,7 +6798,7 @@ msgstr "Système"
 
 #: ../../operation/events/sound_events.php:65
 msgid "Sound console"
-msgstr ""
+msgstr "Console sonore"
 
 #: ../../operation/events/sound_events.php:78
 #: ../../include/functions_reporting.php:1011
@@ -6809,7 +6817,7 @@ msgstr "Événement"
 
 #: ../../operation/events/events.php:272
 msgid "History event list"
-msgstr ""
+msgstr "Liste des événements de l'histoire"
 
 #: ../../operation/events/events.php:277
 msgid "RSS Events"
@@ -6835,7 +6843,7 @@ msgstr "Gérer les évènements"
 
 #: ../../operation/events/events.php:334
 msgid "History"
-msgstr ""
+msgstr "Hstorique"
 
 #: ../../operation/events/events.php:338 ../../include/functions_html.php:645
 #: ../../godmode/category/category.php:47
@@ -6948,12 +6956,12 @@ msgstr "Serveur"
 #: ../../include/functions_events.php:2061
 #: ../../mobile/operation/events.php:412
 msgid "Event ID"
-msgstr ""
+msgstr "Identification d'event"
 
 #: ../../operation/events/events.build_table.php:49
 #: ../../mobile/operation/events.php:75 ../../mobile/operation/events.php:683
 msgid "Event Name"
-msgstr "Nom de l’événement"
+msgstr "Nom de l’évènement"
 
 #: ../../operation/events/events.build_table.php:54
 #: ../../enterprise/include/functions_reporting_pdf.php:3611
@@ -6989,7 +6997,7 @@ msgstr "Type d'Évènement"
 
 #: ../../operation/events/events.build_table.php:84
 msgid "Agent Module"
-msgstr ""
+msgstr "Le module agent"
 
 #: ../../operation/events/events.build_table.php:100
 #: ../../include/functions_events.php:1616
@@ -7000,13 +7008,13 @@ msgstr "Commentaire"
 
 #: ../../operation/events/events.build_table.php:115
 msgid "Extra ID"
-msgstr ""
+msgstr "ID Extra"
 
 #: ../../operation/events/events.build_table.php:120
 #: ../../godmode/events/custom_events.php:113
 #: ../../godmode/events/custom_events.php:163
 msgid "ACK Timestamp"
-msgstr ""
+msgstr "Timestamp ACK"
 
 #: ../../operation/events/events.build_table.php:125
 #: ../../include/functions_events.php:1982
@@ -7015,7 +7023,7 @@ msgstr ""
 #: ../../godmode/events/custom_events.php:116
 #: ../../godmode/events/custom_events.php:164
 msgid "Instructions"
-msgstr ""
+msgstr "Instructions"
 
 #: ../../operation/events/events.build_table.php:170
 #: ../../enterprise/include/functions_reporting_pdf.php:2553
@@ -7042,7 +7050,7 @@ msgstr "Eliminer l'événement"
 
 #: ../../operation/events/events.build_table.php:546
 msgid "Validate selected"
-msgstr ""
+msgstr "valider sélectionné"
 
 #: ../../operation/events/events.build_table.php:549
 #: ../../godmode/agentes/agent_manager.php:187
@@ -7064,17 +7072,17 @@ msgstr "Filtre de contrôle des événements"
 
 #: ../../operation/events/events_list.php:174
 msgid "Show events graph"
-msgstr ""
+msgstr "Voir le graphique des événements"
 
 #: ../../operation/events/events_list.php:182
 #: ../../operation/events/events_list.php:435
 msgid "No filter loaded"
-msgstr ""
+msgstr "Pas de filtre chargé"
 
 #: ../../operation/events/events_list.php:184
 #: ../../operation/events/events_list.php:438
 msgid "Filter loaded"
-msgstr ""
+msgstr "Filtre chargé"
 
 #: ../../operation/events/events_list.php:186
 #: ../../operation/events/events_list.php:218
@@ -7085,7 +7093,7 @@ msgstr "Sauvegarder le filtre"
 
 #: ../../operation/events/events_list.php:202
 msgid "New filter"
-msgstr ""
+msgstr "Nouveau filtre"
 
 #: ../../operation/events/events_list.php:203
 #: ../../operation/events/events_list.php:228
@@ -7123,12 +7131,12 @@ msgstr ""
 #: ../../operation/events/events_list.php:293
 #: ../../godmode/events/event_edit_filter.php:267
 msgid "Events with following tags"
-msgstr ""
+msgstr "Événements avec des etiquetes suivantes"
 
 #: ../../operation/events/events_list.php:296
 #: ../../godmode/events/event_edit_filter.php:284
 msgid "Events without following tags"
-msgstr ""
+msgstr "Évenements sans etiquetes suivantes"
 
 #: ../../operation/events/events_list.php:306
 #: ../../operation/events/events_list.php:312
@@ -7222,17 +7230,17 @@ msgstr "Événements générés -par modules-"
 #: ../../enterprise/meta/event/event_view.php:1409
 #: ../../enterprise/meta/event/event_view.php:1479
 msgid "Filter name cannot be left blank"
-msgstr "Le nom du filtre ne peut pas être vide"
+msgstr "Nom du filtre ne peut pas être laissé en blanc"
 
 #: ../../operation/events/events_list.php:703
 #: ../../enterprise/meta/event/event_view.php:1440
 msgid "Filter created"
-msgstr ""
+msgstr "filtre créé"
 
 #: ../../operation/events/events_list.php:769
 #: ../../enterprise/meta/event/event_view.php:1507
 msgid "Filter updated"
-msgstr ""
+msgstr "Filtre mis à jour"
 
 #: ../../operation/events/event_statistics.php:37
 #: ../../include/functions_events.php:924
@@ -7246,7 +7254,7 @@ msgstr "Tableau des commandes effectuées par usager"
 #: ../../operation/events/event_statistics.php:61
 #: ../../include/functions_events.php:929
 msgid "Event graph by agent"
-msgstr ""
+msgstr "Graphique des événements par l'agent"
 
 #: ../../operation/events/event_statistics.php:65
 #: ../../enterprise/include/functions_reporting_pdf.php:2484
@@ -7254,7 +7262,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:3755
 #: ../../include/functions_reporting.php:4000
 msgid "Amount events validated"
-msgstr ""
+msgstr "Événements Montant validés"
 
 #: ../../general/footer.php:30 ../../mobile/include/functions_web.php:81
 #: ../../mobile/include/ui.class.php:253
@@ -7268,15 +7276,15 @@ msgstr "Page générée le"
 
 #: ../../general/login_page.php:35
 msgid "Go to Pandora FMS Website"
-msgstr ""
+msgstr "Aller à Pandora FMS Site"
 
 #: ../../general/login_page.php:39
 msgid "Go to Login"
-msgstr ""
+msgstr "Allez à Connexion"
 
 #: ../../general/login_page.php:104
 msgid "Log-in"
-msgstr ""
+msgstr "Enregistrer"
 
 #: ../../general/login_page.php:108
 msgid "Logged out"
@@ -7292,7 +7300,7 @@ msgstr ""
 
 #: ../../general/login_page.php:118
 msgid "View details"
-msgstr ""
+msgstr "Voir les détails"
 
 #: ../../general/login_page.php:127
 #: ../../enterprise/meta/general/login_page.php:82
@@ -7309,16 +7317,20 @@ msgid ""
 "Pandora FMS frontend is built on advanced, modern technologies and does not "
 "support old browsers."
 msgstr ""
+"Pandora FMS frontend est construite sur des technologies modernes et de "
+"pointe et ne supporte pas les anciens navigateurs."
 
 #: ../../general/login_page.php:170
 msgid ""
 "It is highly recommended that you choose and install a modern browser. It is "
 "free of charge and only takes a couple of minutes."
 msgstr ""
+"Il est fortement recommandé de choisir et d'installer un navigateur moderne. "
+"Il est gratuit et ne prend que quelques minutes."
 
 #: ../../general/login_page.php:233
 msgid "Why is it recommended to upgrade the web browser?"
-msgstr ""
+msgstr "Pourquoi est-il recommandé de mettre à jour le navigateur web?"
 
 #: ../../general/login_page.php:238
 msgid ""
@@ -7326,10 +7338,14 @@ msgid ""
 "page speed, better privacy settings and so on. They also resolve security "
 "and functional issues."
 msgstr ""
+"Nouveaux navigateurs viennent généralement avec le support de nouvelles "
+"technologies, en augmentant la vitesse d'une page Web, l'amélioration des "
+"paramètres de confidentialité et ainsi de suite. Ils règlent également les "
+"questions de sécurité et fonctionnel."
 
 #: ../../general/login_page.php:247
 msgid "Continue despite this warning"
-msgstr ""
+msgstr "Continuer malgré cet avertissement"
 
 #: ../../general/main_menu.php:26
 #: ../../enterprise/include/functions_reporting_pdf.php:1237
@@ -7395,6 +7411,9 @@ msgid ""
 "learn more about Pandora FMS. Monitoring could be overwhelm, but take your "
 "time to learn how to use the power of Pandora!"
 msgstr ""
+"Si c'est votre première fois avec Pandora FMS, nous vous proposons quelques "
+"liens pour en savoir plus sur Pandora FMS. Le suivi peut être accabler, mais "
+"prenez votre temps pour apprendre à utiliser la puissance de Pandore!"
 
 #: ../../general/login_help_dialog.php:51
 #: ../../general/login_help_dialog.php:54
@@ -7404,16 +7423,16 @@ msgstr "Aide en ligne"
 #: ../../general/login_help_dialog.php:59
 #: ../../general/login_help_dialog.php:62
 msgid "Support"
-msgstr "Réseau de soutien"
+msgstr "Assistance"
 
 #: ../../general/login_help_dialog.php:62
 msgid "Forums"
-msgstr "Forum"
+msgstr "Forums"
 
 #: ../../general/login_help_dialog.php:69
 #: ../../general/login_help_dialog.php:72
 msgid "Enterprise version"
-msgstr "Version Enterprise"
+msgstr "La version Enterprise"
 
 #: ../../general/login_help_dialog.php:77
 #: ../../general/login_help_dialog.php:80
@@ -7422,7 +7441,7 @@ msgstr "Documentation"
 
 #: ../../general/login_help_dialog.php:90
 msgid "Click here to don't show again this message"
-msgstr "Cliquer ici pour ne montrer pas ce message"
+msgstr "Cliquez ici pour ne montrent pas de nouveau ce message"
 
 #: ../../general/header.php:69 ../../general/header.php:77
 msgid "All systems"
@@ -7442,19 +7461,19 @@ msgstr "Pret"
 
 #: ../../general/header.php:108
 msgid "Configure autorefresh"
-msgstr ""
+msgstr "configurer autorefresh"
 
 #: ../../general/header.php:118
 msgid "15 seconds"
-msgstr ""
+msgstr "15 secondes"
 
 #: ../../general/header.php:123
 msgid "15 minutes"
-msgstr ""
+msgstr "15 minutes"
 
 #: ../../general/header.php:124 ../../include/ajax/module.php:77
 msgid "30 minutes"
-msgstr ""
+msgstr "30 minutes"
 
 #: ../../general/header.php:127
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:86
@@ -7491,7 +7510,7 @@ msgstr "Sélectionner"
 
 #: ../../general/header.php:132
 msgid "Disabled autorefresh"
-msgstr ""
+msgstr "Autorefresh désactivé"
 
 #: ../../general/header.php:153
 msgid "System alerts detected - Please fix as soon as possible"
@@ -7505,7 +7524,7 @@ msgstr "Vous avez %d alarmes"
 
 #: ../../general/header.php:162
 msgid "There are not warnings"
-msgstr ""
+msgstr "Il n'y a pas des avertissements"
 
 #: ../../general/header.php:172 ../../mobile/include/functions_web.php:33
 #: ../../mobile/include/ui.class.php:176
@@ -7514,7 +7533,7 @@ msgstr "Fermer la session"
 
 #: ../../general/header.php:188
 msgid "New chat message"
-msgstr ""
+msgstr "Nouveau message de discussion"
 
 #: ../../general/header.php:198
 msgid "Message overview"
@@ -7531,7 +7550,7 @@ msgstr "mettez votre mot de passe pour chercher"
 
 #: ../../general/header.php:224
 msgid "Blank characters are used as AND conditions"
-msgstr ""
+msgstr "Les caractères vides sont utilisés comme ET conditions"
 
 #: ../../general/pandora_help.php:24 ../../general/pandora_help.php:79
 msgid "Pandora FMS help system"
@@ -7574,28 +7593,28 @@ msgstr ""
 
 #: ../../general/shortcut_bar.php:127
 msgid "Press here to activate shortcut bar"
-msgstr ""
+msgstr "Presser ici pour activer la barre de raccourci"
 
 #: ../../general/shortcut_bar.php:175 ../../general/shortcut_bar.php:198
 msgid "Critical events"
-msgstr ""
+msgstr "Les événements critiques"
 
 #: ../../general/shortcut_bar.php:204 ../../general/shortcut_bar.php:224
 msgid "Incidents opened"
-msgstr ""
+msgstr "Incidents ouverts"
 
 #: ../../general/shortcut_bar.php:234
 #: ../../godmode/users/configure_profile.php:168
 msgid "View reports"
-msgstr ""
+msgstr "Afficher les rapports"
 
 #: ../../general/shortcut_bar.php:240
 msgid "Create new message"
-msgstr ""
+msgstr "Créer un nouveau message"
 
 #: ../../general/shortcut_bar.php:267
 msgid "Shortcut: "
-msgstr "Raccourci : "
+msgstr "Raccourci: "
 
 #: ../../general/logon_ok.php:31
 msgid "Welcome to Pandora FMS Web Console"
@@ -7603,7 +7622,7 @@ msgstr "Bienvenue à Pandora FMS Web Console"
 
 #: ../../general/logon_ok.php:57
 msgid "News board"
-msgstr ""
+msgstr "Tableau des nouvelles"
 
 #: ../../general/logon_ok.php:62
 msgid "ago"
@@ -7633,11 +7652,11 @@ msgstr "Généralités Pandora FMS"
 #: ../../enterprise/operation/log/log_viewer.php:80
 #: ../../enterprise/operation/menu.php:82
 msgid "Log viewer"
-msgstr ""
+msgstr "Viseur de logs"
 
 #: ../../enterprise/operation/log/log_viewer.php:131
 msgid "Draw chart"
-msgstr ""
+msgstr "Dessinez tableau"
 
 #: ../../enterprise/operation/log/log_viewer.php:134
 #: ../../enterprise/include/functions_reporting_pdf.php:3457
@@ -7648,7 +7667,7 @@ msgstr "Date de début"
 #: ../../enterprise/operation/log/log_viewer.php:146
 #: ../../godmode/modules/manage_network_templates.php:214
 msgid "Export to CSV"
-msgstr ""
+msgstr "Exporter en CSV"
 
 #: ../../enterprise/operation/log/log_viewer.php:153
 #: ../../enterprise/operation/agentes/agent_inventory.php:208
@@ -7708,7 +7727,7 @@ msgstr "Carte reseau Enterprise %s"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.popup.php:60
 msgid "Details of node:"
-msgstr "Détails du noeuds"
+msgstr "Détails du nœud:"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:70
 msgid "Succesfully created"
@@ -8029,34 +8048,34 @@ msgstr "Actions"
 #: ../../enterprise/operation/services/services.list.php:173
 #: ../../enterprise/godmode/services/services.service.php:54
 msgid "Create Service"
-msgstr ""
+msgstr "Créer service"
 
 #: ../../enterprise/operation/services/services.service_map.php:39
 #: ../../enterprise/operation/services/services.service.php:37
 #: ../../enterprise/godmode/services/services.service.php:96
 #: ../../enterprise/godmode/services/services.service.php:121
 msgid "Not found"
-msgstr ""
+msgstr "Non trouvé"
 
 #: ../../enterprise/operation/services/services.service_map.php:66
 #: ../../enterprise/operation/services/services.service.php:61
 msgid "View Service"
-msgstr ""
+msgstr "Voir service"
 
 #: ../../enterprise/operation/services/services.service_map.php:72
 #: ../../enterprise/operation/services/services.service_map.php:110
 #: ../../enterprise/operation/services/services.service_map.php:115
 #: ../../enterprise/operation/services/services.service.php:67
 msgid "Service map"
-msgstr ""
+msgstr "Carte de service"
 
 #: ../../enterprise/operation/services/services.service_map.php:76
 msgid "Service Map"
-msgstr ""
+msgstr "Carte Service"
 
 #: ../../enterprise/operation/services/services.service.php:154
 msgid "List of elements"
-msgstr ""
+msgstr "Liste des éléments"
 
 #: ../../enterprise/include/functions_inventory.php:48
 #: ../../enterprise/include/functions_inventory.php:373
@@ -8071,13 +8090,13 @@ msgstr "Pas de données trouvées"
 #: ../../enterprise/include/functions_inventory.php:388
 #: ../../enterprise/include/functions_inventory.php:451
 msgid "Added"
-msgstr "Ajoutés"
+msgstr "Ajouté(s)"
 
 #: ../../enterprise/include/functions_inventory.php:394
 #: ../../enterprise/include/functions_inventory.php:459
 #: ../../include/functions_filemanager.php:352
 msgid "Deleted"
-msgstr "Supprimé"
+msgstr "Supprimé(s)"
 
 #: ../../enterprise/include/functions_reporting.php:30
 msgid "Wizard SLA"
@@ -8094,11 +8113,11 @@ msgstr "Options avancés"
 #: ../../enterprise/include/functions_reporting.php:54
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:101
 msgid "List templates"
-msgstr ""
+msgstr "Liste de modeles"
 
 #: ../../enterprise/include/functions_reporting.php:60
 msgid "Templates wizard"
-msgstr ""
+msgstr "Assistant Modèles"
 
 #: ../../enterprise/include/functions_reporting.php:76
 #: ../../enterprise/include/functions_reporting.php:2741
@@ -8114,27 +8133,27 @@ msgstr "Modèles"
 
 #: ../../enterprise/include/functions_reporting.php:80
 msgid "Templates Wizard"
-msgstr ""
+msgstr "Assistant Modèles"
 
 #: ../../enterprise/include/functions_reporting.php:1189
 #, php-format
 msgid "Graph agents(%s) - %s"
-msgstr ""
+msgstr "Agents de graphiques (%s) - %s"
 
 #: ../../enterprise/include/functions_reporting.php:1300
 #, php-format
 msgid "%s - agents (%s) - %s"
-msgstr ""
+msgstr "%s - agents (%s) - %s"
 
 #: ../../enterprise/include/functions_reporting.php:1560
 #, php-format
 msgid "%s - %s"
-msgstr ""
+msgstr "%s - %s"
 
 #: ../../enterprise/include/functions_reporting.php:2773
 #: ../../enterprise/include/functions_reporting.php:2823
 msgid "Template editor"
-msgstr ""
+msgstr "Editeur de modèle"
 
 #: ../../enterprise/include/functions_reporting.php:2837
 msgid "Get PDF file"
@@ -8148,7 +8167,7 @@ msgstr "Licence pas valide, si vous plaît verifie la"
 #: ../../enterprise/include/functions_license.php:129
 #: ../../extensions/update_manager.php:59
 msgid "Expires"
-msgstr "Expiration"
+msgstr "Expire"
 
 #: ../../enterprise/include/functions_license.php:131
 #: ../../extensions/update_manager.php:61
@@ -8175,7 +8194,7 @@ msgstr "Graphique simple"
 
 #: ../../enterprise/include/functions_reporting_csv.php:203
 msgid "Projection Graph"
-msgstr "Graphique de prévision"
+msgstr "Graphique de projection"
 
 #: ../../enterprise/include/functions_reporting_csv.php:235
 #: ../../enterprise/include/functions_reporting_pdf.php:431
@@ -8497,24 +8516,24 @@ msgstr "modules dans un status critique ou d'alerte"
 #: ../../enterprise/include/functions_reporting_csv.php:1130
 #, php-format
 msgid "There are no Modules over or equal to %s"
-msgstr ""
+msgstr "Il n'y a pas de modules supérieur ou égal à% s"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1133
 #, php-format
 msgid "There are no Modules under %s"
-msgstr ""
+msgstr "Il n'y a pas de modules sous% s"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1136
 msgid "There are no Modules at normal status"
-msgstr ""
+msgstr "Il n'y a pas de modules à l'état normal"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1139
 msgid "There are no Modules at critial or warning status"
-msgstr ""
+msgstr "Il n'y a pas de modules en état ​​critique ou d'avertissement"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1142
 msgid "There are no Modules under those conditions"
-msgstr ""
+msgstr "Il n'y a pas de modules dans ces conditions"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1195
 msgid "Serialized data "
@@ -8528,48 +8547,48 @@ msgstr "Pas de données"
 
 #: ../../enterprise/include/functions_services.php:23
 msgid "Service does not exist."
-msgstr ""
+msgstr "Le service n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:30
 msgid "Module store the service does not exist."
-msgstr ""
+msgstr "Magasin de module le service n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:35
 msgid "Module store SLA service does not exist."
-msgstr ""
+msgstr "Magasin de module SLA le service n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:41
 msgid "Agent store the service does not exist."
-msgstr ""
+msgstr "Magasin de l'agent du service n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:47
 msgid "Agent store SLA service does not exist."
-msgstr ""
+msgstr "Service SLA du magasin de l'agent n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:57
 msgid "Alert critical SLA service does not exist."
-msgstr ""
+msgstr "Service SLA critique alerte n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:68
 msgid "Alert warning service does not exist."
-msgstr ""
+msgstr "Service d'alerte d'alerte n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:79
 msgid "Alert critical service does not exist."
-msgstr ""
+msgstr "Service essentiel alerte n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:90
 msgid "Alert unknown service does not exist."
-msgstr ""
+msgstr "Service inconnu Alert n'existe pas."
 
 #: ../../enterprise/include/functions_services.php:240
 #, php-format
 msgid "Module automatic create for the service %s"
-msgstr ""
+msgstr "Module automatique créer pour le service% s"
 
 #: ../../enterprise/include/functions_services.php:701
 msgid "Critical (Alert)"
-msgstr ""
+msgstr "Critique (Alert)"
 
 #: ../../enterprise/include/functions_services.php:796
 msgid "There are no service elements defined"
@@ -8585,7 +8604,7 @@ msgstr "Alerte pour le poids"
 
 #: ../../enterprise/include/functions_services.php:823
 msgid "Weight Unknown"
-msgstr ""
+msgstr "Poids Unknown"
 
 #: ../../enterprise/include/functions_services.php:824
 msgid "Weight Ok"
@@ -8610,7 +8629,7 @@ msgstr "Supprimer l'element du service"
 
 #: ../../enterprise/include/functions_services.php:965
 msgid "FAIL"
-msgstr ""
+msgstr "ÉCHEC"
 
 #: ../../enterprise/include/functions_alert_event.php:920
 msgid "Module alert"
@@ -8805,7 +8824,7 @@ msgstr "Moyenne"
 #: ../../include/functions_reporting.php:4032
 #: ../../include/functions_reports.php:587
 msgid "Alert report group"
-msgstr ""
+msgstr "Groupe de rapport d'alerte"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2056
 msgid "There are no alerts for this module."
@@ -8831,21 +8850,21 @@ msgstr "Il n'y a pas de evenements dans ce groupe"
 #: ../../enterprise/include/functions_reporting_pdf.php:2396
 #: ../../include/functions_reporting.php:3931
 msgid "Events by agent"
-msgstr ""
+msgstr "Evénements par agent"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2436
 #: ../../enterprise/include/functions_reporting_pdf.php:2618
 #: ../../include/functions_reporting.php:3709
 #: ../../include/functions_reporting.php:3954
 msgid "Events validated by user"
-msgstr ""
+msgstr "Événements validées par l'utilisateur"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2460
 #: ../../enterprise/include/functions_reporting_pdf.php:2642
 #: ../../include/functions_reporting.php:3732
 #: ../../include/functions_reporting.php:3977
 msgid "Events by criticity"
-msgstr ""
+msgstr "Événements de criticité"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2529
 msgid "There are no Events."
@@ -8875,7 +8894,7 @@ msgstr "Criticité"
 #: ../../include/functions_reporting.php:2471
 #: ../../include/functions_reporting.php:2578
 msgid "Val. by"
-msgstr ""
+msgstr "Val. par"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2829
 msgid "Info"
@@ -8886,7 +8905,7 @@ msgstr "Info"
 #: ../../include/functions_reporting.php:3236
 #: ../../include/functions_reporting.php:3486
 msgid "SLA Compliance"
-msgstr ""
+msgstr "Réalisation SLA"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2843
 #: ../../enterprise/include/functions_reporting_pdf.php:2849
@@ -8942,11 +8961,11 @@ msgstr "Limite SLA"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3012
 msgid "Agent:"
-msgstr ""
+msgstr "Agent:"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3015
 msgid "Module:"
-msgstr ""
+msgstr "Module :"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3167
 #: ../../include/functions_visual_map.php:1828
@@ -8969,7 +8988,7 @@ msgstr "Génerée: "
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3454
 msgid "Report date: "
-msgstr ""
+msgstr "Date du rapport: "
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3465
 #: ../../enterprise/include/functions_netflow_pdf.php:159
@@ -8986,17 +9005,17 @@ msgstr "CONTENUS"
 #: ../../include/functions_reporting.php:2906
 #: ../../godmode/agentes/planned_downtime.editor.php:329
 msgid "From:"
-msgstr "Depuis:"
+msgstr "De:"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3534
 msgid "Untitled"
-msgstr "Sans-titre"
+msgstr "Sans titre"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3576
 #: ../../include/functions_reporting.php:2907
 #: ../../godmode/agentes/planned_downtime.editor.php:336
 msgid "To:"
-msgstr "A:"
+msgstr "À :"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3594
 #: ../../include/functions_reports.php:609
@@ -9010,7 +9029,7 @@ msgstr "Configuration des agents"
 #: ../../include/functions_reporting.php:5811
 #: ../../include/functions_reporting.php:5952
 msgid "SO"
-msgstr ""
+msgstr "Système d'Exploitation"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3614
 #: ../../enterprise/include/functions_reporting_pdf.php:3749
@@ -9027,7 +9046,7 @@ msgstr "IP"
 #: ../../enterprise/include/functions_reporting_pdf.php:3649
 #: ../../enterprise/include/functions_reporting_pdf.php:3788
 msgid "There are no modules."
-msgstr ""
+msgstr "Il n'y a pas de modules."
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3656
 #: ../../enterprise/include/functions_reporting_pdf.php:3795
@@ -9071,71 +9090,71 @@ msgstr "Unité"
 #: ../../enterprise/include/functions_reporting_pdf.php:3729
 #: ../../include/functions_reports.php:611
 msgid "Group configuration"
-msgstr ""
+msgstr "Configuration groupe"
 
 #: ../../enterprise/include/functions_login.php:22
 msgid "You must change password"
-msgstr ""
+msgstr "You must change password"
 
 #: ../../enterprise/include/functions_login.php:44
 msgid "NEW PASS: "
-msgstr ""
+msgstr "NOUVEAU MOT DE PASSE "
 
 #: ../../enterprise/include/functions_login.php:46
 msgid "CONFIRM: "
-msgstr ""
+msgstr "CONFIRMER: "
 
 #: ../../enterprise/include/functions_login.php:53
 msgid "Change"
-msgstr ""
+msgstr "Modifier"
 
 #: ../../enterprise/include/functions_login.php:104
 msgid "User has been blocked. Try again in "
-msgstr ""
+msgstr "L'utilisateur a été bloqué. Essayez à nouveau en "
 
 #: ../../enterprise/include/functions_login.php:104
 msgid " minutes"
-msgstr ""
+msgstr " minutes"
 
 #: ../../enterprise/include/functions_login.php:220
 msgid "Password must be different from the "
-msgstr ""
+msgstr "Mot de passe doit être différent de l' "
 
 #: ../../enterprise/include/functions_login.php:220
 msgid " previous changes."
-msgstr ""
+msgstr " les modifications précédentes."
 
 #: ../../enterprise/include/functions_login.php:234
 msgid "Password must be different"
-msgstr ""
+msgstr "Mot de passe doit etre different"
 
 #: ../../enterprise/include/functions_login.php:244
 msgid "Password too short"
-msgstr ""
+msgstr "Le mot de passe est trop petit"
 
 #: ../../enterprise/include/functions_login.php:255
 msgid "Password must contain numbers"
-msgstr ""
+msgstr "Mot de passe doit contenir que des chiffres"
 
 #: ../../enterprise/include/functions_login.php:267
 msgid "Password must contain symbols"
-msgstr ""
+msgstr "Mot de passe doit contenir des symboles"
 
 #: ../../enterprise/include/functions_login.php:304
 msgid "User pass successfully updated"
-msgstr ""
+msgstr "User Pass correctement mis à jour"
 
 #: ../../enterprise/include/functions_login.php:305
 msgid "Error updating user pass (no change?)"
-msgstr ""
+msgstr "Erreur mise à jour de passe de l'utilisateur (pas de changement?)"
 
 #: ../../enterprise/include/functions_login.php:313
 msgid "Password confirm does not match"
-msgstr ""
+msgstr "Mot de passe Confirmez ne correspond pas"
 
 #: ../../enterprise/include/functions_login.php:321
 msgid "Password empty"
-msgstr ""
+msgstr "Mot de passe vide"
 
 #: ../../enterprise/include/functions_policies.php:394
 #: ../../include/functions_alerts.php:382
@@ -9180,7 +9199,7 @@ msgstr "Module en attendatnt pour se separer"
 #: ../../enterprise/include/functions_policies.php:2605
 #: ../../godmode/agentes/module_manager_editor.php:323
 msgid "Module will be unlinked in the next application"
-msgstr ""
+msgstr "Module sera dissocié dans l'application prochaine"
 
 #: ../../enterprise/include/functions_policies.php:2771
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:30
@@ -9218,7 +9237,7 @@ msgstr "File d'attente"
 #: ../../enterprise/godmode/agentes/configurar_agente.php:49
 #: ../../godmode/agentes/configurar_agente.php:414
 msgid "Agent plugins"
-msgstr ""
+msgstr "Plugins d'agent"
 
 #: ../../enterprise/include/functions_policies.php:3292
 msgid "Create a new policy map"
@@ -9340,27 +9359,27 @@ msgstr "Dans votre base de donnés de destination"
 #: ../../enterprise/include/functions_visual_map.php:287
 #: ../../enterprise/include/functions_visual_map.php:298
 msgid "Crit:"
-msgstr ""
+msgstr "Crit:"
 
 #: ../../enterprise/include/functions_visual_map.php:168
 #: ../../enterprise/include/functions_visual_map.php:221
 #: ../../enterprise/include/functions_visual_map.php:289
 #: ../../enterprise/include/functions_visual_map.php:300
 msgid "Warn:"
-msgstr ""
+msgstr "Alerte:"
 
 #: ../../enterprise/include/functions_visual_map.php:170
 #: ../../enterprise/include/functions_visual_map.php:223
 #: ../../enterprise/include/functions_visual_map.php:291
 msgid "Ok:"
-msgstr ""
+msgstr "OK:"
 
 #: ../../enterprise/include/functions_visual_map.php:172
 #: ../../enterprise/include/functions_visual_map.php:225
 #: ../../enterprise/include/functions_visual_map.php:293
 #: ../../enterprise/include/functions_visual_map.php:302
 msgid "Value:"
-msgstr ""
+msgstr "Valeur"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:152
 msgid "Update config"
@@ -9422,15 +9441,15 @@ msgstr "Losange"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:307
 msgid "Use a browser that support HTML5."
-msgstr "Utiliser un navigateur qui support HTML5"
+msgstr "Utilisez un navigateur qui support HTML5"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:308
 msgid ""
 "Pandora FMS recommends use of Google Chrome browser to use Enterprise "
 "Network Console."
 msgstr ""
-"Pandora FMS recommande utiliser Google Chrome pour utiliser la Console de "
-"Réseau Enterprise"
+"Pandora FMS recommande l'utilisation du navigateur Google Chrome pour "
+"utiliser la console Enterprise Network."
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:313
 msgid "Open Minimap"
@@ -9484,11 +9503,11 @@ msgstr "Nom vide"
 
 #: ../../enterprise/include/functions_local_components.php:68
 msgid "Empty configuration"
-msgstr ""
+msgstr "Configuration vide"
 
 #: ../../enterprise/include/functions_local_components.php:72
 msgid "Empty OS"
-msgstr ""
+msgstr "Système d'Exploitation vide"
 
 #: ../../enterprise/include/functions_local_components.php:202
 #: ../../include/functions_alerts.php:904
@@ -9527,23 +9546,24 @@ msgstr "Mot de Passe"
 #: ../../enterprise/include/functions_setup.php:37
 #: ../../enterprise/include/functions_setup.php:67
 msgid "Log collector"
-msgstr ""
+msgstr "Log collector"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:42
 msgid "Error accesing to API"
-msgstr ""
+msgstr "Erreur d'accès à l'API"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:53
 msgid "Database credentials not found"
-msgstr ""
+msgstr "Les données d'identification introuvables"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:57
 msgid "Error connecting to the specified host"
-msgstr ""
+msgstr "Erreur de connexion à l'hôte spécifié"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:61
 msgid "Connected to the host, but cannot found the specified database"
 msgstr ""
+"Connecté à l'hôte, mais ne peut pas trouver la base de données spécifiée"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:72
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:94
@@ -9556,34 +9576,42 @@ msgid ""
 "\"Translate string\" extension is missed in the server. This extension is "
 "mandatory to be configured on metaconsole."
 msgstr ""
+"Extension \"Traduire chaîne\" est manquée dans le serveur. Cette extension "
+"est obligatoire d'être configuré sur la metaconsole."
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:80
 msgid ""
 "Server name doesnt match. Check the node server name and configure the same "
 "one on metasetup"
 msgstr ""
+"Nom du serveur ne correspond pas. Vérifiez le nom du nœud de serveur et de "
+"configurer le même que celui sur la configuration du métastup"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:88
 msgid "Last event replication"
-msgstr ""
+msgstr "Mise à la réplication de l'événement"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:98
 msgid "Events replication is not enabled"
-msgstr ""
+msgstr "La réplication des événements n'est pas activée"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:102
 msgid "Events replication is not properly configured for this metaconsole"
 msgstr ""
+"La réplication des événements n'est pas correctement configuré pour cette "
+"console médias"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:106
 msgid ""
 "The server seems to be configurated to replicate events, but no events has "
 "been received yet"
 msgstr ""
+"La réplication des événements n'est pas correctement configuré pour cette "
+"console médias"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:110
 msgid "Unknown error"
-msgstr ""
+msgstr "Erreur inconnue."
 
 #: ../../enterprise/include/functions_groups.php:47
 msgid "Metaconsole"
@@ -9592,29 +9620,35 @@ msgstr "Metaconsole"
 #: ../../enterprise/include/functions_log.php:277
 #: ../../enterprise/include/functions_log.php:290
 msgid "Lines"
-msgstr ""
+msgstr "Lignes"
 
 #: ../../enterprise/meta/general/login_page.php:115
 msgid ""
 "In order to have the best user experience with Pandora FMS, we <b>strongly "
 "recommend</b> to use"
 msgstr ""
+"Afin d'avoir la meilleure expérience utilisateur avec Pandora FMS, web "
+"recommander> fortement </ sb> à utiliser"
 
 #: ../../enterprise/meta/general/login_page.php:116
 msgid ""
 "<a href='http://www.mozilla.org/en-US/firefox/fx/'>Mozilla Firefox</a> or <a "
 "href='https://www.google.com/chrome'>Google Chrome</a> browsers."
 msgstr ""
+"<a href='http://www.mozilla.org/en-US/firefox/fx/'>Mozilla Firefox</a> or <a "
+"href='https://www.google.com/chrome'>Google Chrome</a> browsers."
 
 #: ../../enterprise/meta/general/noaccess.php:17
 msgid "Back to login"
-msgstr ""
+msgstr "Retour à la connexion"
 
 #: ../../enterprise/meta/general/metaconsole_no_activated.php:25
 msgid ""
 "Metaconsole needs previous activation from regular console, please contact "
 "system administrator if you need assistance. <br>"
 msgstr ""
+"Console de Meta doit activation précédente de console régulière, veuillez "
+"contacter l'administrateur système si vous avez besoin d'aide. <br>"
 
 #: ../../enterprise/meta/general/main_header.php:110
 #: ../../enterprise/meta/screens/screens.php:83
@@ -9624,33 +9658,33 @@ msgstr "Console visuelle"
 
 #: ../../enterprise/meta/general/main_header.php:121
 msgid "Without permissions"
-msgstr ""
+msgstr "sans autorisations"
 
 #: ../../enterprise/meta/general/main_header.php:121
 msgid "disabled"
-msgstr ""
+msgstr "Désactivé"
 
 #: ../../enterprise/meta/general/main_header.php:130
 msgid "Create new report"
-msgstr ""
+msgstr "Créer un nouveau rapport"
 
 #: ../../enterprise/meta/general/main_header.php:132
 msgid "Report templates"
-msgstr ""
+msgstr "Les modèles de rapport"
 
 #: ../../enterprise/meta/general/main_header.php:133
 #: ../../enterprise/meta/general/logon_ok.php:35
 #: ../../enterprise/meta/screens/screens.php:35
 #: ../../enterprise/meta/screens/screens.main.php:35
 msgid "Screens"
-msgstr ""
+msgstr "Écrans"
 
 #: ../../enterprise/meta/general/main_header.php:136
 #: ../../enterprise/meta/screens/screens.php:78
 #: ../../enterprise/meta/screens/screens.networkmap.php:51
 #: ../../enterprise/meta/screens/screens.networkmap.php:64
 msgid "Networkmap"
-msgstr ""
+msgstr "Carte réseau"
 
 #: ../../enterprise/meta/general/main_header.php:142
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:32
@@ -9661,26 +9695,26 @@ msgstr ""
 #: ../../include/functions_reports.php:620 ../../godmode/setup/setup.php:95
 #: ../../godmode/setup/setup.php:124
 msgid "Netflow"
-msgstr "Flux réseaau"
+msgstr ""
 
 #: ../../enterprise/meta/general/main_header.php:143
 msgid "Live view"
-msgstr ""
+msgstr "Vue dynamique"
 
 #: ../../enterprise/meta/general/main_header.php:145
 #: ../../godmode/events/events.php:53 ../../godmode/events/events.php:68
 msgid "Filters"
-msgstr ""
+msgstr "Filtres"
 
 #: ../../enterprise/meta/general/main_header.php:150
 #: ../../enterprise/meta/advanced/synchronizing.php:33
 msgid "Synchronizing"
-msgstr ""
+msgstr "En cours de synchronisation"
 
 #: ../../enterprise/meta/general/main_header.php:151
 #: ../../enterprise/meta/advanced/propagation.php:33
 msgid "Propagation"
-msgstr ""
+msgstr "Propagation"
 
 #: ../../enterprise/meta/general/main_header.php:153
 #: ../../enterprise/meta/general/main_header.php:164
@@ -9709,19 +9743,19 @@ msgstr "Gestion des modules"
 
 #: ../../enterprise/meta/general/main_header.php:155
 msgid "Alert management"
-msgstr ""
+msgstr "La gestion des alertes"
 
 #: ../../enterprise/meta/general/main_header.php:156
 msgid "Tag management"
-msgstr ""
+msgstr "Gestion de Tag"
 
 #: ../../enterprise/meta/general/main_header.php:157
 msgid "Policy management"
-msgstr ""
+msgstr "Gestion de la politique"
 
 #: ../../enterprise/meta/general/main_header.php:158
 msgid "Category management"
-msgstr ""
+msgstr "La gestion des catégories"
 
 #: ../../enterprise/meta/general/main_header.php:160
 msgid "Metasetup"
@@ -9729,7 +9763,7 @@ msgstr ""
 
 #: ../../enterprise/meta/general/logon_ok.php:36
 msgid "Network traffic"
-msgstr ""
+msgstr "Le trafic du réseau"
 
 #: ../../enterprise/meta/general/logon_ok.php:37
 #: ../../include/functions_networkmap.php:1060
@@ -9753,20 +9787,20 @@ msgstr "Finir"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:73
 msgid "The alert you are trying to add is already in the list of alerts"
-msgstr ""
+msgstr "L'alerte vous essayez d'ajouter est déjà dans la liste des alertes"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:81
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:327
 msgid "Please, select a module"
-msgstr ""
+msgstr "S'il vous plaît, choisissez un module"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:82
 msgid "Please, select an alert"
-msgstr ""
+msgstr "S'il vous plaît, sélectionnez une alerte"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:83
 msgid "Please, select an agent"
-msgstr ""
+msgstr "S'il vous plaît, choisissez un agent"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:87
 #: ../../enterprise/meta/include/functions_wizard_meta.php:276
@@ -9777,7 +9811,7 @@ msgstr "Url"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:88
 msgid "String"
-msgstr ""
+msgstr "Chaîne"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:117
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:120
@@ -9786,7 +9820,7 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:152
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:131
 msgid "Can't connect to Pandora FMS instance"
-msgstr ""
+msgstr "Impossible de se connecter à l'instance FMS Pandora"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:71
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:101
@@ -9803,7 +9837,7 @@ msgstr "Configuration"
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:102
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:82
 msgid "Advanced configuration"
-msgstr ""
+msgstr "Configuration avancée"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:74
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:104
@@ -9812,7 +9846,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_wizard_meta.php:988
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1076
 msgid "Preview"
-msgstr ""
+msgstr "Prévisualiser"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:91
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:40
@@ -9821,7 +9855,7 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:172
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:103
 msgid "Create module"
-msgstr ""
+msgstr "Creér module"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:94
 #: ../../enterprise/meta/monitoring/wizard/wizard.update_module.php:37
@@ -9829,7 +9863,7 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:106
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1405
 msgid "Edit module"
-msgstr ""
+msgstr "Editer module"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:171
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:198
@@ -9837,15 +9871,15 @@ msgstr ""
 #: ../../include/functions_graph.php:714
 #: ../../include/functions_graph.php:2855
 msgid "Previous"
-msgstr ""
+msgstr "Précedent"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:188
 msgid "Please, set a name"
-msgstr ""
+msgstr "S'il vous plaît, mettre un nom"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:198
 msgid "Please, set an interval"
-msgstr ""
+msgstr "S'il vous plaît, définir un intervalle"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:132
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1375
@@ -9865,40 +9899,40 @@ msgstr "Moniteur"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:134
 msgid "Web check"
-msgstr ""
+msgstr "Enregistrement en ligne"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:140
 msgid "Select template group"
-msgstr ""
+msgstr "Choisir le groupe de modèle"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:201
 msgid "Select template"
-msgstr ""
+msgstr "Sélectionnez le modèle"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:207
 msgid "Module description"
-msgstr ""
+msgstr "Selectionnez le Modèle"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:221
 msgid "Step by step wizard"
-msgstr ""
+msgstr "Wizard étape par étape"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:227
 msgid "Click Create to continue"
-msgstr ""
+msgstr "Cliquez sur Créer pour continuer"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.network.php:215
 msgid "Please, set a valid IP address"
-msgstr ""
+msgstr "S'il vous plaît, définir une adresse IP valide"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:153
 msgid "Welcome to the Pandora FMS wizard."
-msgstr ""
+msgstr "Bienvenue dans l'assistant Pandora FMS."
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:154
 #: ../../enterprise/meta/screens/screens.main.php:74
 msgid "To start select an option from the left side."
-msgstr ""
+msgstr "Pour commencer à sélectionner une option sur la gauche."
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:173
 #: ../../godmode/menu.php:76
@@ -9912,15 +9946,15 @@ msgstr "Gérer les modules"
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:398
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:479
 msgid "Back"
-msgstr ""
+msgstr "Retour"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:219
 msgid "Select the agent where the module will be created"
-msgstr ""
+msgstr "Sélectionnez l'agent où le module sera créé"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:231
 msgid "Create Module"
-msgstr ""
+msgstr "Créer un module"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:328
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:401
@@ -9937,40 +9971,40 @@ msgstr "Gestion d'alertes"
 
 #: ../../enterprise/meta/monitoring/group_view.php:31
 msgid "Group View"
-msgstr ""
+msgstr "Vue par groupe"
 
 #: ../../enterprise/meta/monitoring/tactical.php:32
 msgid "Tactical View"
-msgstr ""
+msgstr "Vue tactique"
 
 #: ../../enterprise/meta/monitoring/tactical.php:73
 msgid "Agent and monitor information"
-msgstr ""
+msgstr "Agent de surveillance et d'information"
 
 #: ../../enterprise/meta/monitoring/tactical.php:130
 msgid "State of agents"
-msgstr ""
+msgstr "État des agents"
 
 #: ../../enterprise/meta/monitoring/tactical.php:188
 #: ../../enterprise/meta/monitoring/tactical.php:262
 msgid "State of modules"
-msgstr ""
+msgstr "État des modules"
 
 #: ../../enterprise/meta/monitoring/tactical.php:250
 msgid "State of Agents"
-msgstr ""
+msgstr "État des agents"
 
 #: ../../enterprise/meta/monitoring/tactical.php:283
 msgid "No servers"
-msgstr ""
+msgstr "Pas de serveurs"
 
 #: ../../enterprise/meta/monitoring/tactical.php:333
 msgid "Event information"
-msgstr ""
+msgstr "Informations de l'événement"
 
 #: ../../enterprise/meta/monitoring/tactical.php:338
 msgid "More events"
-msgstr ""
+msgstr "Plus d'événements"
 
 #: ../../enterprise/meta/agentsearch.php:75
 msgid "Search results for"
@@ -9982,7 +10016,7 @@ msgstr "Aucun agent n'a été mis dans ce groupe"
 
 #: ../../enterprise/meta/event/event_view.php:193
 msgid "Event View"
-msgstr ""
+msgstr "Affichage des événements"
 
 #: ../../enterprise/meta/event/event_view.php:197
 msgid "Event viewer"
@@ -10032,7 +10066,7 @@ msgstr "Étiquette"
 
 #: ../../enterprise/meta/event/event_view.php:547
 msgid "Delete filter"
-msgstr ""
+msgstr "Supprimer le filtre"
 
 #: ../../enterprise/meta/event/event_view.php:770
 #: ../../enterprise/meta/event/event_view.php:945
@@ -10090,14 +10124,14 @@ msgstr "Aller a la vue d'ensemble des bases de données"
 #: ../../enterprise/meta/event/event_view.php:1171
 #: ../../include/functions_tags.php:622
 msgid "Click here to open a popup window with URL tag"
-msgstr ""
+msgstr "Cliquez ici pour ouvrir une fenêtre avec l'étiquette d'URL"
 
 #: ../../enterprise/meta/event/event_view.php:1196
 #: ../../include/functions_events.php:2018
 #: ../../godmode/events/custom_events.php:107
 #: ../../godmode/events/custom_events.php:161
 msgid "Extra id"
-msgstr ""
+msgstr "Identifiant supplémentaire"
 
 #: ../../enterprise/meta/event/event_view.php:1207
 msgid "User name"
@@ -10105,15 +10139,17 @@ msgstr "Nom d'utilisateur"
 
 #: ../../enterprise/meta/event/event_view.php:1282
 msgid "Error deleting filter"
-msgstr ""
+msgstr "Erreur filtre supprimant"
 
 #: ../../enterprise/meta/event/event_view.php:1286
 msgid "Filter deleted"
-msgstr ""
+msgstr "Filtrer supprimé"
 
 #: ../../enterprise/meta/event/event_view.php:1399
 msgid "Define name and group for the filter and click on Save filter again"
 msgstr ""
+"Définir le nom et le groupe pour le filtre et cliquez sur Enregistrer le "
+"filtre à nouveau"
 
 #: ../../enterprise/meta/event/event_view.php:1584
 msgid "Could not set standby alert"
@@ -10125,7 +10161,7 @@ msgstr "Ce  n'est pas possible de configurer l'alerte de standby"
 #: ../../enterprise/meta/advanced/metasetup.setup.php:47
 #, php-format
 msgid "Could not be update: Error in %s"
-msgstr ""
+msgstr "Ne pouvait pas être mise à jour: Erreur  en % s"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:53
 #: ../../enterprise/meta/advanced/metasetup.visual.php:53
@@ -10141,111 +10177,111 @@ msgstr "Mis à jour avec succès"
 #: ../../enterprise/godmode/setup/setup.php:185
 #: ../../include/functions_config.php:225
 msgid "Enable password policy"
-msgstr ""
+msgstr "Activer la stratégie de mot de passe"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:76
 #: ../../enterprise/meta/include/functions_meta.php:143
 #: ../../enterprise/godmode/setup/setup.php:190
 #: ../../include/functions_config.php:228
 msgid "Min. size password"
-msgstr ""
+msgstr "Min. mot de passe de taille"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:77
 #: ../../enterprise/godmode/setup/setup.php:191
 msgid " Caracters"
-msgstr ""
+msgstr " Caractères"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:81
 #: ../../enterprise/meta/include/functions_meta.php:153
 #: ../../enterprise/godmode/setup/setup.php:194
 #: ../../include/functions_config.php:238
 msgid "Password must have numbers"
-msgstr ""
+msgstr "Mot de passe doit avoir des numéros"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:87
 #: ../../enterprise/meta/include/functions_meta.php:163
 #: ../../enterprise/godmode/setup/setup.php:199
 #: ../../include/functions_config.php:240
 msgid "Password must have symbols"
-msgstr ""
+msgstr "Mot de passe doit avoir des symboles"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:93
 #: ../../enterprise/meta/include/functions_meta.php:173
 #: ../../enterprise/godmode/setup/setup.php:204
 #: ../../include/functions_config.php:230
 msgid "Password expiration"
-msgstr ""
+msgstr "Date d'expiration du Mot de Passe"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:93
 #: ../../enterprise/godmode/setup/setup.php:204
 msgid "Set 0 if never expire."
-msgstr ""
+msgstr "Réglez 0 si jamais expire"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:94
 #: ../../enterprise/godmode/setup/setup.php:205
 msgid " Days"
-msgstr ""
+msgstr " Jours"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:98
 #: ../../enterprise/meta/include/functions_meta.php:183
 #: ../../enterprise/godmode/setup/setup.php:208
 #: ../../include/functions_config.php:232
 msgid "Force change password on first login"
-msgstr ""
+msgstr "Forcer le changement mot de passe à la première connexion"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:104
 #: ../../enterprise/meta/include/functions_meta.php:193
 #: ../../enterprise/godmode/setup/setup.php:213
 #: ../../include/functions_config.php:234
 msgid "User blocked if login fails"
-msgstr ""
+msgstr "Utilisateur bloqué si la connexion échoue"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:105
 #: ../../enterprise/godmode/setup/setup.php:214
 msgid " Minutes"
-msgstr ""
+msgstr " Minutes"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:109
 #: ../../enterprise/meta/include/functions_meta.php:203
 #: ../../enterprise/godmode/setup/setup.php:217
 #: ../../include/functions_config.php:236
 msgid "Number of failed login attempts"
-msgstr ""
+msgstr "Nombre de tentatives de connexion infructueuses"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:109
 #: ../../enterprise/godmode/setup/setup.php:217
 msgid "Two attempts minimum"
-msgstr ""
+msgstr "Deux tentatives minimum"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:110
 #: ../../enterprise/godmode/setup/setup.php:218
 msgid " Attempts"
-msgstr ""
+msgstr " Tentatives"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:114
 #: ../../enterprise/meta/include/functions_meta.php:213
 #: ../../enterprise/godmode/setup/setup.php:221
 #: ../../include/functions_config.php:242
 msgid "Apply password policy to admin users"
-msgstr ""
+msgstr "Appliquer la stratégie de mot de passe pour les utilisateurs d'admin"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:120
 #: ../../enterprise/meta/include/functions_meta.php:223
 #: ../../enterprise/godmode/setup/setup.php:226
 #: ../../include/functions_config.php:244
 msgid "Enable password history"
-msgstr ""
+msgstr "Activer l'historique des mots de passe"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:126
 #: ../../enterprise/meta/include/functions_meta.php:233
 #: ../../enterprise/godmode/setup/setup.php:231
 #: ../../include/functions_config.php:246
 msgid "Compare previous password"
-msgstr ""
+msgstr "Comparer mot de passe précédent"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:135
 msgid "Passwords"
-msgstr ""
+msgstr "Mots de passe"
 
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:133
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:134
@@ -10270,26 +10306,26 @@ msgstr "Si vous plaÎt cherchez des textes"
 #: ../../enterprise/meta/advanced/synchronizing.php:58
 #: ../../enterprise/meta/advanced/synchronizing.php:76
 msgid "Users synchronization"
-msgstr ""
+msgstr "La synchronisation des utilisateurs"
 
 #: ../../enterprise/meta/advanced/synchronizing.php:62
 #: ../../enterprise/meta/advanced/synchronizing.php:79
 msgid "Groups synchronization"
-msgstr ""
+msgstr "La synchronisation des groupes"
 
 #: ../../enterprise/meta/advanced/synchronizing.php:66
 #: ../../enterprise/meta/advanced/synchronizing.php:82
 msgid "Alerts synchronization"
-msgstr ""
+msgstr "La synchronisation des Alertes"
 
 #: ../../enterprise/meta/advanced/synchronizing.php:70
 #: ../../enterprise/meta/advanced/synchronizing.php:85
 msgid "Tags synchronization"
-msgstr ""
+msgstr "La synchronisation des Alertes"
 
 #: ../../enterprise/meta/advanced/policymanager.php:35
 msgid "Policy Manager"
-msgstr ""
+msgstr "Gérant des politiques"
 
 #: ../../enterprise/meta/advanced/policymanager.php:64
 msgid "Apply policies"
@@ -10326,19 +10362,19 @@ msgstr ""
 #: ../../enterprise/meta/advanced/propagation.component.php:266
 #, php-format
 msgid "Created/Updated %s/%s local components"
-msgstr ""
+msgstr "Erreur de création / mise à jour% s /% s composantes locales"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:271
 #: ../../enterprise/meta/advanced/propagation.component.php:271
 #, php-format
 msgid "Error creating/updating %s/%s network components "
-msgstr ""
+msgstr "Erreur de création / mise à jour% s /% s éléments du réseau "
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:274
 #: ../../enterprise/meta/advanced/propagation.component.php:274
 #, php-format
 msgid "Created/Updated %s/%s network components"
-msgstr ""
+msgstr "Création / Mise à jour% s /% s éléments du réseau"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:280
 #: ../../enterprise/meta/advanced/propagation.component.php:280
@@ -10360,7 +10396,7 @@ msgstr "Erreur en connectant a %s"
 #: ../../enterprise/meta/advanced/synchronizing.group.php:153
 #: ../../enterprise/meta/advanced/synchronizing.user.php:507
 msgid "This metaconsole"
-msgstr ""
+msgstr "Cette metaconsole"
 
 #: ../../enterprise/meta/advanced/synchronizing.component.php:304
 #: ../../enterprise/meta/advanced/propagation.component.php:304
@@ -10481,24 +10517,26 @@ msgstr "Utiliser angles rondes"
 #: ../../enterprise/meta/advanced/metasetup.visual.php:127
 #: ../../enterprise/meta/include/functions_meta.php:333
 msgid "Show Visual Console"
-msgstr ""
+msgstr "Montrer Console visuelle"
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:127
 msgid "Switch to show or hide Visual Console."
-msgstr ""
+msgstr "Basculer pour afficher ou masquer la console de Visual."
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:131
 #: ../../enterprise/meta/include/functions_meta.php:343
 msgid "Metaconsole elements"
-msgstr ""
+msgstr "Éléments de Metaconsole"
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:131
 msgid "The number of elements retrieved for each instance in some views."
 msgstr ""
+"Le nombre d'éléments récupérés pour chaque instance dans certains points de "
+"vue."
 
 #: ../../enterprise/meta/advanced/metasetup.visual.php:138
 msgid "Visual"
-msgstr ""
+msgstr "Visuel"
 
 #: ../../enterprise/meta/advanced/policymanager.queue.php:60
 #: ../../enterprise/godmode/policies/policy_queue.php:59
@@ -10555,12 +10593,12 @@ msgstr "Queue vide"
 #: ../../enterprise/meta/advanced/propagation.php:58
 #: ../../enterprise/meta/advanced/propagation.php:68
 msgid "Components propagation"
-msgstr ""
+msgstr "Composants de propagation"
 
 #: ../../enterprise/meta/advanced/propagation.php:62
 #: ../../enterprise/meta/advanced/propagation.php:71
 msgid "Agents movement"
-msgstr ""
+msgstr "Mouvement des agents"
 
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:80
 #: ../../enterprise/meta/advanced/propagation.agent.php:80
@@ -10632,7 +10670,7 @@ msgstr "Filtre de group"
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:153
 #: ../../enterprise/meta/advanced/propagation.agent.php:153
 msgid "Add agents to destination server"
-msgstr ""
+msgstr "Ajouter agents de serveur de destination"
 
 #: ../../enterprise/meta/advanced/synchronizing.agent.php:163
 #: ../../enterprise/meta/advanced/propagation.agent.php:163
@@ -10652,17 +10690,17 @@ msgstr ""
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:294
 #, php-format
 msgid "Error creating/updating %s/%s actions"
-msgstr ""
+msgstr "Erreur de création / mise à jour% s /% s actions"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:297
 #, php-format
 msgid "Created/Updated %s/%s actions"
-msgstr ""
+msgstr "Actions créées Mise à jour de% s /% s de"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:302
 #, php-format
 msgid "Error creating/updating %s/%s templates"
-msgstr ""
+msgstr "Erreur de création / mise à jour% s /% s modèles"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:305
 #, php-format
@@ -10679,7 +10717,7 @@ msgstr "Maximum de jours avant supprimer les événements"
 #: ../../enterprise/meta/advanced/metasetup.performance.php:74
 #: ../../enterprise/meta/include/functions_meta.php:363
 msgid "Active events history"
-msgstr ""
+msgstr "Activer histoire des événements"
 
 #: ../../enterprise/meta/advanced/metasetup.performance.php:79
 #: ../../enterprise/meta/include/functions_meta.php:373
@@ -10830,6 +10868,7 @@ msgstr "Console URL"
 msgid ""
 "Complete path to Pandora console without last \"/\" character. Example "
 msgstr ""
+"Remplissez chemin de console Pandora sans dernier caractère \"/\". exemple "
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:207
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:183
@@ -10862,7 +10901,7 @@ msgstr "Mot de passe de la BD"
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:217
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:206
 msgid "Console User"
-msgstr "Utilisateur de la console"
+msgstr "Utilisateur de la Console"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:219
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:210
@@ -10888,7 +10927,7 @@ msgstr "Compatibilité"
 #: ../../enterprise/godmode/setup/setup.php:50
 #: ../../include/functions_config.php:194
 msgid "Events replication"
-msgstr ""
+msgstr "La réplication des événements"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:328
 msgid "There aren't server added to metaconsole"
@@ -10896,27 +10935,27 @@ msgstr "Il nỳ a pas de serveur ajouté dans la metaconsole"
 
 #: ../../enterprise/meta/advanced/metasetup.php:47
 msgid "Consoles Setup"
-msgstr ""
+msgstr "Configuration des consoles"
 
 #: ../../enterprise/meta/advanced/metasetup.php:51
 #: ../../enterprise/meta/advanced/metasetup.php:82
 msgid "General setup"
-msgstr ""
+msgstr "Configuration globale"
 
 #: ../../enterprise/meta/advanced/metasetup.php:55
 #: ../../enterprise/meta/advanced/metasetup.php:85
 msgid "Passwords setup"
-msgstr ""
+msgstr "Configuration des mots de passe"
 
 #: ../../enterprise/meta/advanced/metasetup.php:59
 #: ../../enterprise/meta/advanced/metasetup.php:88
 msgid "Visual setup"
-msgstr ""
+msgstr "Configuration visuelle"
 
 #: ../../enterprise/meta/advanced/metasetup.php:63
 #: ../../enterprise/meta/advanced/metasetup.php:91
 msgid "Performance setup"
-msgstr ""
+msgstr "Configuration de la performance"
 
 #: ../../enterprise/meta/advanced/metasetup.php:67
 #: ../../enterprise/meta/advanced/metasetup.php:94
@@ -10927,21 +10966,21 @@ msgstr "Gestionnaire de fichiers"
 #: ../../enterprise/meta/advanced/metasetup.php:71
 #: ../../enterprise/meta/advanced/metasetup.php:97
 msgid "Strings translation"
-msgstr ""
+msgstr "Traduire des chaines"
 
 #: ../../enterprise/meta/advanced/metasetup.php:79
 msgid "Consoles setup"
-msgstr ""
+msgstr "Configuration des consoles"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:122
 #, php-format
 msgid "Error creating/updating %s/%s tags"
-msgstr ""
+msgstr "Erreur de création / mise à jour% s /% s balises"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:125
 #, php-format
 msgid "Created/Updated %s/%s tags"
-msgstr ""
+msgstr "Création / Mise à jour% s /% s balises"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:253
 #, php-format
@@ -10951,12 +10990,12 @@ msgstr ""
 #: ../../enterprise/meta/advanced/policymanager.sync.php:256
 #, php-format
 msgid "Created %s policies"
-msgstr ""
+msgstr "% spolitiques créés"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:261
 #, php-format
 msgid "Error creating/updating %s/%s policy modules"
-msgstr ""
+msgstr "Erreur de création / mise à jour% s /% s modules de politique"
 
 #: ../../enterprise/meta/advanced/policymanager.sync.php:264
 #, php-format
@@ -11068,12 +11107,12 @@ msgstr "Répertoire d'adresses ou les données sont enregistrés"
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Africa"
-msgstr ""
+msgstr "Afrique"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "America"
-msgstr ""
+msgstr "Amérique"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
@@ -11083,17 +11122,17 @@ msgstr ""
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Arctic"
-msgstr ""
+msgstr "Arctique"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Asia"
-msgstr ""
+msgstr "Asie"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Atlantic"
-msgstr ""
+msgstr "Atlantique"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
@@ -11103,22 +11142,22 @@ msgstr ""
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Europe"
-msgstr ""
+msgstr "Europe"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Indian"
-msgstr ""
+msgstr "Indien"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "Pacific"
-msgstr ""
+msgstr "Pacifique"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:101
 #: ../../godmode/setup/setup_general.php:165
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:120
 #: ../../enterprise/meta/include/functions_meta.php:93
@@ -11130,7 +11169,7 @@ msgstr "Configuration horaire"
 #: ../../enterprise/meta/advanced/metasetup.setup.php:122
 #: ../../godmode/setup/setup_general.php:187
 msgid "Change timezone"
-msgstr ""
+msgstr "Changer fuseau horaire"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:128
 #: ../../enterprise/meta/include/functions_meta.php:103
@@ -11156,7 +11195,7 @@ msgstr "Info de  la licence"
 #: ../../include/functions_config.php:175
 #: ../../godmode/setup/setup_general.php:216
 msgid "Public URL"
-msgstr ""
+msgstr "URL publique"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:140
 #: ../../godmode/setup/setup_general.php:217
@@ -11164,6 +11203,8 @@ msgid ""
 "Set this value when your PandoraFMS across inverse proxy or for example with "
 "mod_proxy of Apache."
 msgstr ""
+"Définissez cette valeur lors de vos PandoraFMS travers proxy inverse ou par "
+"exemple avec mod_proxy d'Apache."
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:143
 #: ../../include/functions_config.php:461
@@ -11176,7 +11217,7 @@ msgstr ""
 msgid ""
 "Disable the definition of custom filters in the live view. Only existing "
 "filters can be used."
-msgstr ""
+msgstr "Désactiver les filtres d'affichage en direct personnalisées"
 
 #: ../../enterprise/meta/advanced/metasetup.setup.php:151
 #: ../../enterprise/godmode/modules/configure_local_component.php:129
@@ -11184,7 +11225,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:474
 #: ../../godmode/alerts/configure_alert_template.php:639
 msgid "Basic"
-msgstr ""
+msgstr "Élémentaire"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:194
 #, php-format
@@ -11230,11 +11271,11 @@ msgstr "Cible"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:545
 msgid "Profile mode"
-msgstr ""
+msgstr "Mode profil"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:545
 msgid "Profile synchronization mode."
-msgstr ""
+msgstr "Profile synchronization mode."
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:546
 msgid "New profile"
@@ -11242,11 +11283,12 @@ msgstr "Nouveau profil"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:546
 msgid "Copy profile"
-msgstr "Copier profil"
+msgstr "Copier le profil"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:546
 msgid "Check this to copy user original profiles"
-msgstr "Verifiez ce pour les profils originaux de l'utilisateur"
+msgstr ""
+"Vérifier cette case pour copier des profils originaux des utilisateurs"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:552
 #: ../../godmode/users/profile_list.php:200
@@ -11274,15 +11316,15 @@ msgstr "Composants du réseau"
 #: ../../enterprise/meta/include/functions_components_meta.php:60
 #: ../../enterprise/meta/include/functions_components_meta.php:75
 msgid "Plugin management"
-msgstr ""
+msgstr "Gestion des plugins"
 
 #: ../../enterprise/meta/include/functions_components_meta.php:81
 msgid "Create plugin"
-msgstr ""
+msgstr "Créer  plugin"
 
 #: ../../enterprise/meta/include/functions_components_meta.php:84
 msgid "Edit plugin"
-msgstr ""
+msgstr "Editer plugin"
 
 #: ../../enterprise/meta/include/functions_ui_meta.php:54
 #: ../../include/functions_ui.php:1146
@@ -11308,15 +11350,15 @@ msgstr ""
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:272
 msgid "Unsuccessful update the networkmap."
-msgstr ""
+msgstr "Échec de mettre à jour la carte du réseau."
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:277
 msgid "Unnamed "
-msgstr ""
+msgstr "Sans nom "
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:324
 msgid "Show detailed agent"
-msgstr ""
+msgstr "Afficher un agent détaillée"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:363
 msgid "Show modules"
@@ -12246,30 +12288,26 @@ msgstr "Ajouter un nouveau widget"
 
 #: ../../enterprise/load_enterprise.php:166
 msgid "Invalid license"
-msgstr "licence pas valide"
+msgstr ""
 
 #: ../../enterprise/load_enterprise.php:166
 msgid "Please contact Artica at info@artica.es for a valid license."
 msgstr ""
-"Si vous plaît contacter avec Artica dans info@artica.es pour une licence "
-"valide"
 
 #: ../../enterprise/load_enterprise.php:167
 msgid "Or disable Pandora FMS enterprise (mv "
-msgstr "Ou disactiver Pandora FMS Enterprise (mv "
+msgstr ""
 
 #: ../../enterprise/load_enterprise.php:230
 #: ../../enterprise/load_enterprise.php:356
 msgid "Renew"
-msgstr "Renouveler"
+msgstr ""
 
 #: ../../enterprise/load_enterprise.php:273
 msgid ""
 "<strong style=\"font-size: 11pt\">This license has expired.</strong> "
 "<br><br>You can not get updates until you renew the license."
 msgstr ""
-"<strong style=\"font-size: 11pt\"> Cette licence a expiré </strong> <br><br> "
-"Vous ne pouvez pas obtenir mises à jour jusqu'a vous renouvelez le licence."
 
 #: ../../enterprise/load_enterprise.php:278
 #, php-format
@@ -12284,15 +12322,10 @@ msgid ""
 "Enterprise directory in the console.<br><br>Or contact Artica at "
 "info@artica.es for a valid license:"
 msgstr ""
-"Pour continuer utilisant Pandora FMS si vous plaît désactivez enterprise en "
-"renommant le directoire Enterprise dans le console <br><br> ou contacter "
-"Artica dans info@artica.es pour obtenir une licence valable."
 
 #: ../../enterprise/load_enterprise.php:288
 msgid "Please contact Artica at info@artica.es to renew the license."
 msgstr ""
-"Si vous plaît contacter avec Artica dans info@artica.es pour renouveler le "
-"licence"
 
 #: ../../enterprise/godmode/setup/edit_skin.php:42
 #: ../../enterprise/godmode/setup/setup_skins.php:36
@@ -12619,7 +12652,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/setup/setup.php:158
 msgid "Enterprise options"
-msgstr "Options Enterprise"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup.php:249
 msgid "Enterprise password policy"
@@ -12901,7 +12934,7 @@ msgstr "Interpretèr"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:80
 msgid "Left in blank for Network Inventory Modules"
-msgstr "Laissez vide pour les Modules d'inventaire de réseau"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:83
 #: ../../godmode/massive/massive_standby_alerts.php:149
@@ -12921,7 +12954,7 @@ msgstr "Code"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:88
 msgid "Put here your script code for the inventory module"
-msgstr "Ecri ici votre code script pour le module d'inventaire"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:60
 msgid "Successfully created inventory module"
@@ -12979,7 +13012,7 @@ msgstr "Export target supprimé avec succès"
 msgid ""
 "Can't be created export target: User and password must be filled with FTP "
 "mode"
-msgstr "Ne"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export.php:129
 #: ../../enterprise/godmode/servers/manage_export_form.php:74
@@ -13619,7 +13652,7 @@ msgstr "Créer un objet"
 #: ../../include/functions_visual_map_editor.php:364
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1070
 msgid "Update item"
-msgstr "Mettre à jour l'article"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1559
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1097
@@ -14054,11 +14087,11 @@ msgstr "Une erreur a été comis en ajoutant le module de inventoire"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:80
 msgid "Successfully forced inventory module"
-msgstr "Inventaire des modules forcé avec succès"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:83
 msgid "Error forcing inventory module"
-msgstr "Erreur en forcant le module d'inventaire"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:178
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:198
@@ -14178,26 +14211,26 @@ msgstr "Faire une copie du fichier de configuration pour"
 
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:116
 msgid "Error copying md5 file "
-msgstr "Erreur en copiant le fichier md5 "
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:116
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:118
 msgid " md5 file"
-msgstr " Fichier md5"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:118
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:123
 msgid "Copied "
-msgstr "Copié "
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:121
 msgid "Error copying "
-msgstr "Erreur en copiant "
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:121
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:123
 msgid " config file"
-msgstr " Fichier de configuration"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/manage_config_remote.php:136
 msgid "Remote configuration management"
@@ -14590,11 +14623,11 @@ msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:101
 msgid "Operations successfully deleted from the queue"
-msgstr "Operations supprimées avec succès de la queue"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:102
 msgid "Operations cannot be deleted from the queue"
-msgstr "Impossible de supprimer les operations dans la queue"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:159
 msgid "Update pending"
@@ -14685,7 +14718,7 @@ msgstr "Cet operation peut durer longtemp"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:487
 msgid "Delete all"
-msgstr "Supprimer tout"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:38
 msgid "External Alerts Policy"
@@ -14806,11 +14839,11 @@ msgstr "Agents dans la politique"
 
 #: ../../enterprise/godmode/policies/policy_agents.php:292
 msgid "Add agents to policy"
-msgstr "Ajouter les agents dans la politique"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:298
 msgid "Delete agents from policy"
-msgstr "Supprimer les agents de la politique"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:333
 msgid "Applied"
@@ -14879,8 +14912,6 @@ msgid ""
 "Successfully added to delete the collection. Will be deleted in the next "
 "policy application."
 msgstr ""
-"Ajouté avec succès dans supprimer la collection. Il será supprimé dans la "
-"prochaine application"
 
 #: ../../enterprise/godmode/policies/policy_linking.php:26
 msgid "Linking modules"
@@ -15364,7 +15395,7 @@ msgstr "Opérateur"
 
 #: ../../enterprise/godmode/alerts/alert_events_rules.php:482
 msgid "Logic expression for these rules:"
-msgstr "Expression logique pour ces règles"
+msgstr ""
 
 #: ../../enterprise/godmode/alerts/alert_events_rules.php:496
 msgid "Update operators"
@@ -15860,11 +15891,11 @@ msgstr "Sauvegarder"
 
 #: ../../include/functions_ui.php:212
 msgid "Information"
-msgstr "Information"
+msgstr ""
 
 #: ../../include/functions_ui.php:218
 msgid "Success"
-msgstr "Réussi"
+msgstr ""
 
 #: ../../include/functions_ui.php:340
 msgid "Request successfully processed"
@@ -16422,7 +16453,7 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:5010
 msgid "Insuficient data"
-msgstr "Donées insuffisantes"
+msgstr ""
 
 #: ../../include/functions_reporting.php:5187
 msgid "Modules under or equal to"
@@ -16593,7 +16624,7 @@ msgstr "mois"
 #: ../../include/functions.php:432 ../../include/functions_html.php:611
 #: ../../godmode/setup/setup_visuals.php:98
 msgid "years"
-msgstr "années"
+msgstr ""
 
 #: ../../include/functions.php:433 ../../include/functions_html.php:606
 #: ../../godmode/setup/setup_visuals.php:94
@@ -16619,7 +16650,7 @@ msgstr "M"
 
 #: ../../include/functions.php:441
 msgid "Y"
-msgstr "Et"
+msgstr ""
 
 #: ../../include/functions.php:442
 msgid "m"
@@ -16651,11 +16682,11 @@ msgstr ""
 
 #: ../../include/functions.php:885
 msgid "Configuration change "
-msgstr "Changement de configuration "
+msgstr ""
 
 #: ../../include/functions.php:1664
 msgid "custom"
-msgstr "personnalisé"
+msgstr ""
 
 #: ../../include/functions.php:1669 ../../include/functions.php:1670
 #, php-format
@@ -16964,7 +16995,7 @@ msgstr "Graphique des statistiques"
 #: ../../include/functions_visual_map_editor.php:352
 #: ../../godmode/reporting/visual_console_builder.wizard.php:78
 msgid "Percentile Item"
-msgstr "Article percentile"
+msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:56
 #: ../../include/functions_visual_map_editor.php:57
@@ -17036,7 +17067,7 @@ msgstr "Hauteur proportionnel"
 #: ../../include/functions_visual_map_editor.php:209
 #: ../../godmode/reporting/visual_console_builder.wizard.php:139
 msgid "Value to show"
-msgstr "Valeur a montrer"
+msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:277
 #: ../../godmode/reporting/reporting_builder.list_items.php:242
@@ -17126,7 +17157,7 @@ msgstr ""
 #: ../../include/functions_filemanager.php:268
 #: ../../include/functions_filemanager.php:349
 msgid "Security error"
-msgstr "Erreur de sécurité"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:172
 msgid "Upload error"
@@ -17140,20 +17171,20 @@ msgstr "Téléchargé avec succès"
 
 #: ../../include/functions_filemanager.php:228
 msgid "Error creating file"
-msgstr "Erreur en créant fichier"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:237
 #: ../../include/functions_filemanager.php:329
 msgid "Error creating file with empty name"
-msgstr "Erreur en creant fichier avec nom vide"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:279
 msgid "Attach error"
-msgstr "Ajouter erreur"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:324
 msgid "Directory created"
-msgstr "Répertoire créé"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:473
 #, php-format
@@ -17249,12 +17280,12 @@ msgstr ""
 #: ../../include/functions_reports.php:522
 #: ../../include/functions_reports.php:524
 msgid "ITIL"
-msgstr "ITIL"
+msgstr ""
 
 #: ../../include/functions_reports.php:534
 #: ../../include/functions_reports.php:536
 msgid "Forecasting"
-msgstr "Prévision"
+msgstr ""
 
 #: ../../include/functions_reports.php:556
 #: ../../include/functions_reports.php:558
@@ -17263,7 +17294,7 @@ msgstr "Prévision"
 #: ../../include/functions_reports.php:567
 #: ../../include/functions_reports.php:570
 msgid "Grouped"
-msgstr "Groupé"
+msgstr ""
 
 #: ../../include/functions_reports.php:568
 #: ../../godmode/reporting/reporting_builder.item_editor.php:896
@@ -17273,7 +17304,7 @@ msgstr "Requête SQL"
 #: ../../include/functions_reports.php:575
 #: ../../include/functions_reports.php:577
 msgid "Text/HTML "
-msgstr "Texte/HTML "
+msgstr ""
 
 #: ../../include/functions_reports.php:592
 msgid "Event report agent"
@@ -17477,11 +17508,11 @@ msgstr "Ecrire deux caràcteres au minimum pour chercher le module"
 
 #: ../../include/functions_networkmap.php:1038
 msgid "Create a new topology map"
-msgstr "Créer une nouvelle carte de topologie"
+msgstr ""
 
 #: ../../include/functions_networkmap.php:1039
 msgid "Create a new group map"
-msgstr "Creer une nouvelle carte de groupe"
+msgstr ""
 
 #: ../../include/functions_config.php:85
 msgid "Failed updated: User did not login."
@@ -17712,7 +17743,7 @@ msgstr ""
 #: ../../include/functions_config.php:402
 #: ../../godmode/setup/setup_visuals.php:205
 msgid "Description size text"
-msgstr "Taille de la description du texte"
+msgstr ""
 
 #: ../../include/functions_config.php:404
 #: ../../godmode/setup/setup_visuals.php:210
@@ -17868,11 +17899,11 @@ msgstr ""
 
 #: ../../include/functions_config.php:1191
 msgid "Error first setup Open update"
-msgstr "Erreur premiere configuration Open update"
+msgstr ""
 
 #: ../../include/functions_config.php:1200
 msgid "New update of Pandora Console"
-msgstr "Nouveau mise à jour de la Console de Pandora"
+msgstr ""
 
 #: ../../include/functions_config.php:1201
 msgid ""
@@ -17999,7 +18030,7 @@ msgstr ""
 #: ../../include/functions_users.php:361
 #, php-format
 msgid "User %s login at %s"
-msgstr "Utilisateur %s connexion  dans %s"
+msgstr ""
 
 #: ../../include/functions_users.php:422
 #, php-format
@@ -18009,12 +18040,12 @@ msgstr ""
 #: ../../include/functions_users.php:427
 #, php-format
 msgid "User %s logout at %s"
-msgstr "utilisateur %s déconnexion dans %s"
+msgstr ""
 
 #: ../../include/ajax/networkmap.ajax.php:107
 #: ../../include/ajax/networkmap.ajax.php:164
 msgid "Map summary"
-msgstr "Carte résumé"
+msgstr ""
 
 #: ../../include/ajax/module.php:89
 msgid "3 years"
@@ -18164,15 +18195,13 @@ msgstr "Corriger Supprimer"
 
 #: ../../include/functions_api.php:1182
 msgid "Error in creation network module. Agent name doesn't exists."
-msgstr "Erreur en creant module de réseau. Le nom de l'agent n'existe pas."
+msgstr ""
 
 #: ../../include/functions_api.php:1187
 msgid ""
 "Error in creation network module. Id_module_type is not correct for network "
 "modules."
 msgstr ""
-"Erreur ne creant module de reseau. Id_module_type n'est pas correct pour "
-"modules de réseau"
 
 #: ../../include/functions_api.php:1223
 msgid "Error in creation network module."
@@ -18181,103 +18210,87 @@ msgstr "Erreur en creant module de réseau"
 #: ../../include/functions_api.php:1250
 msgid "Error updating network module. Module name cannot be left blank."
 msgstr ""
-"Erreur en mettant à jour le module de réseau. Le nom du module ne peut etre "
-"pas vide"
 
 #: ../../include/functions_api.php:1257
 msgid "Error updating network module. Id_module doesn't exists."
-msgstr "Erreur en mettant à jour le module de réseau."
+msgstr ""
 
 #: ../../include/functions_api.php:1269
 msgid "Error updating network module. Id_module exists in the new agent."
 msgstr ""
-"Erreur en mettant à jour le module de réseau. Id_module n'existe pas dans le "
-"nouveu agent."
 
 #: ../../include/functions_api.php:1294
 msgid "Network module updated."
-msgstr "Module de reseau mis à jour"
+msgstr ""
 
 #: ../../include/functions_api.php:1317
 msgid "Error in creation plugin module. Id_plugin cannot be left blank."
 msgstr ""
-"Erreur en creant plugin module. Id_plugin ne peut etre pas etre vide."
 
 #: ../../include/functions_api.php:1324
 msgid "Error in creation plugin module. Agent name doesn't exists."
-msgstr "Erreur en creant le plugin module. Le nom de l'agent n'existe pas"
+msgstr ""
 
 #: ../../include/functions_api.php:1364
 msgid "Error in creation plugin module."
-msgstr "Erreur en creant le plugin module."
+msgstr ""
 
 #: ../../include/functions_api.php:1390
 msgid "Error updating plugin module. Id_module cannot be left blank."
 msgstr ""
-"Erreur en mettant a jour le plugin module. Id-module ne peut etre pas vide"
 
 #: ../../include/functions_api.php:1397
 msgid "Error updating plugin module. Id_module doesn't exists."
-msgstr "Erreur en mettant à jour le plugin module. Id_module n'existe pas."
+msgstr ""
 
 #: ../../include/functions_api.php:1409
 msgid "Error updating plugin module. Id_module exists in the new agent."
 msgstr ""
-"Erreur en mettant a jour plugin module. Id_module n'existe pas dans le "
-"nouveau agent."
 
 #: ../../include/functions_api.php:1435
 msgid "Plugin module updated."
-msgstr "Plugin module mis à jour"
+msgstr ""
 
 #: ../../include/functions_api.php:1458
 msgid "Error in creation data module. Module_name cannot be left blank."
 msgstr ""
-"Erreur en creant le data module. Le module_name ne peut etre pas laisse vide."
 
 #: ../../include/functions_api.php:1465
 msgid "Error in creation data module. Agent name doesn't exists."
-msgstr "Erreur en creant data module. L'agent n'existe pas."
+msgstr ""
 
 #: ../../include/functions_api.php:1495
 msgid "Error in creation data module."
-msgstr "Erreur en creant data module"
+msgstr ""
 
 #: ../../include/functions_api.php:1522
 msgid "Error updating data module. Id_module cannot be left blank."
 msgstr ""
-"Erreur en mettan à jour le data module. Id_module ne peut etre pas laissé "
-"vied"
 
 #: ../../include/functions_api.php:1529
 msgid "Error updating data module. Id_module doesn't exists."
-msgstr "Erreur en mettant à jour le data module. Id-module n'existe pas."
+msgstr ""
 
 #: ../../include/functions_api.php:1541
 msgid "Error updating data module. Id_module exists in the new agent."
 msgstr ""
-"Erreur en mettant à jour le data module. Id-module n'existe pas dans le "
-"nouveau agent."
 
 #: ../../include/functions_api.php:1566
 msgid "Data module updated."
-msgstr "Data module mis à jour"
+msgstr ""
 
 #: ../../include/functions_api.php:1597
 msgid "Error in creation SNMP module. Module_name cannot be left blank."
 msgstr ""
-"Erreur en creant le module SNMP. Module_name ne peut etre pas laissé vide"
 
 #: ../../include/functions_api.php:1602
 msgid ""
 "Error in creation SNMP module. Invalid id_module_type for a SNMP module."
 msgstr ""
-"Erreur en creant le module SNMP.Le id_module_type est invalide pout un "
-"module SNMP."
 
 #: ../../include/functions_api.php:1609
 msgid "Error in creation SNMP module. Agent name doesn't exists."
-msgstr "Erreur en creant le module SNMP.Le nom de l'agent n'existe pas"
+msgstr ""
 
 #: ../../include/functions_api.php:1619 ../../include/functions_api.php:1757
 #: ../../include/functions_api.php:3523
@@ -18285,8 +18298,6 @@ msgid ""
 "Error in creation SNMP module. snmp3_priv_method doesn't exists. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
-"Erreur en la creation du module SNMP snmp3_priv_method n'existe pas. "
-"Configure le pour 'AES' ou 'DES'. "
 
 #: ../../include/functions_api.php:1624 ../../include/functions_api.php:1762
 #: ../../include/functions_api.php:3528
@@ -18294,8 +18305,6 @@ msgid ""
 "Error in creation SNMP module. snmp3_sec_level doesn't exists. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
-"Erreur en la creation du module SNMP snmp3_priv_method n'existe pas. "
-"Configure le pour 'authNoPriv' ou 'authPriv' or 'noAuthNoPriv'. "
 
 #: ../../include/functions_api.php:1629 ../../include/functions_api.php:1767
 #: ../../include/functions_api.php:3533
@@ -18303,657 +18312,519 @@ msgid ""
 "Error in creation SNMP module. snmp3_auth_method doesn't exists. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
-"Erreur en la creation du module SNMP snmp3_priv_method n'existe pas. "
-"Configure le pour 'MD5' or 'SHA'. "
 
 #: ../../include/functions_api.php:1699
 msgid "Error in creation SNMP module."
-msgstr "Erreur en creant SNMP module"
+msgstr ""
 
 #: ../../include/functions_api.php:1728
 msgid "Error updating SNMP module. Id_module cannot be left blank."
 msgstr ""
-"Erreur en mettant á jour le module SNMP. Id_module ne peut etre pas laissé "
-"vide."
 
 #: ../../include/functions_api.php:1735
 msgid "Error updating SNMP module. Id_module doesn't exists."
-msgstr "Erreur en mettant a jour le module SNMP. Id_module n'existe pas"
+msgstr ""
 
 #: ../../include/functions_api.php:1747
 msgid "Error updating SNMP module. Id_module exists in the new agent."
 msgstr ""
-"Erreur en mettant à jour module SNMP. Id_moduel n'existe pas dans le nouveu "
-"agent"
 
 #: ../../include/functions_api.php:1797
 msgid "SNMP module updated."
-msgstr "Module SNMP mis à jour"
+msgstr ""
 
 #: ../../include/functions_api.php:1821
 msgid ""
 "Error creating network component. Network component name cannot be left "
 "blank."
 msgstr ""
-"Erreur en creant composante de reseau. Le nom du composante de reseau ne "
-"peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:1826
 msgid ""
 "Error creating network component. Incorrect value for Network component type "
 "field."
 msgstr ""
-"Erreur en creant composante de reseau. Valeur incorrect pour champ  genre "
-"composant de reseau"
 
 #: ../../include/functions_api.php:1831
 msgid ""
 "Error creating network component. Network component group cannot be left "
 "blank."
 msgstr ""
-"Erreur en creant composante de réseau. Le groupe de composantes de reseau ne "
-"peut pas etre laissé vide"
 
 #: ../../include/functions_api.php:1859
 msgid ""
 "Error creating network component. This network component already exists."
 msgstr ""
-"Erreur en creant composante de réseau. Ce composante de reseau existe dèjá."
 
 #: ../../include/functions_api.php:1892
 msgid ""
 "Error creating plugin component. Plugin component name cannot be left blank."
 msgstr ""
-"Erreur en creant composante du plugin. Le nom du composante du plugin ne "
-"peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:1897
 msgid "Error creating plugin component. Incorrect value for Id plugin."
 msgstr ""
-"Erreur en creant composante du plugin.Valeur incorrect pour plugin Id"
 
 #: ../../include/functions_api.php:1902
 msgid ""
 "Error creating plugin component. Plugin component group cannot be left blank."
 msgstr ""
-"Erreur en creant composante de réseau. Le groupe de composantes de reseau ne "
-"peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:1933
 msgid ""
 "Error creating plugin component. This plugin component already exists."
 msgstr ""
-"Erreur en creant composante de réseau. Ce composante de reseau existe dèjá."
 
 #: ../../include/functions_api.php:1967
 msgid ""
 "Error creating SNMP component. SNMP component name cannot be left blank."
 msgstr ""
-"Erreur en creant composant SNMP. Le nom du composant SNMP ne peut etre pas "
-"laissé vide."
 
 #: ../../include/functions_api.php:1972
 msgid ""
 "Error creating SNMP component. Incorrect value for Snmp component type field."
 msgstr ""
-"Erreur en creant composant SNMP. Valeur incorrect pour champ genre composant "
-"Snmp"
 
 #: ../../include/functions_api.php:1977
 msgid ""
 "Error creating SNMP component. Snmp component group cannot be left blank."
 msgstr ""
-"Erreur en creant composante SNMP. Le groupe de composantes SNMP ne peut etre "
-"pas laissé vide."
 
 #: ../../include/functions_api.php:1985
 msgid ""
 "Error creating SNMP component. snmp3_priv_method doesn't exists. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
-"Erreur en creant composante SNMP.snmp3_priv_method n'existe pas. Configure t-"
-"il dans 'AES' ou 'DES' "
 
 #: ../../include/functions_api.php:1990
 msgid ""
 "Error creating SNMP component. snmp3_sec_level doesn't exists. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
-"Erreur en creant composante SNMP. snmp3_sec_level n'existe pas.Configure t-"
-"il dans 'authNoPriv' "
 
 #: ../../include/functions_api.php:1995
 msgid ""
 "Error creating SNMP component. snmp3_auth_method doesn't exists. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
-"Erreur en creant composante SNMP. snmp3_auth_method n'existe pas. Configure "
-"t-il dans 'MD5' ou 'SHA'. "
 
 #: ../../include/functions_api.php:2060
 msgid "Error creating SNMP component. This SNMP component already exists."
-msgstr "Erreur en creant composante SNMP. Ce SNMP composante existe deja"
+msgstr ""
 
 #: ../../include/functions_api.php:2091
 msgid ""
 "Error creating local component. Local component name cannot be left blank."
 msgstr ""
-"Erreur en creant composante local. Le nom du composante local ne peut etre "
-"pas laissé vide."
 
 #: ../../include/functions_api.php:2096
 msgid ""
 "Error creating local component. Local component group cannot be left blank."
 msgstr ""
-"Erreur en creant composante local. Le groupe du composante local ne peut "
-"etre pas laissé vide."
 
 #: ../../include/functions_api.php:2108
 msgid "Error creating local component."
-msgstr "Erreur en creant composante local."
+msgstr ""
 
 #: ../../include/functions_api.php:2113
 msgid "Error creating local component. This local component already exists."
-msgstr "Erreur en creant composante local. Ce  composante local existe deja"
+msgstr ""
 
 #: ../../include/functions_api.php:2141
 msgid ""
 "Error getting module value from all agents. Module name cannot be left blank."
 msgstr ""
-"Erreur en obtenant valeur du module de tous les agents. Le nom du module ne "
-"peut etre pas vide."
 
 #: ../../include/functions_api.php:2148
 msgid ""
 "Error getting module value from all agents. Module name doesn't exists."
 msgstr ""
-"Erreur en obtenant valeur du module de tous les agents. Le nom du module "
-"n'existe pas."
 
 #: ../../include/functions_api.php:2188
 msgid "Error creating alert template. Template name cannot be left blank."
 msgstr ""
-"Erreur en creant le mòdele de l'alerte. Le nom du modele ne peut etre pas "
-"laissé vide."
 
 #: ../../include/functions_api.php:2260
 msgid "Error creating alert template."
-msgstr "Erreur en creant le mòdele de l'alerte."
+msgstr ""
 
 #: ../../include/functions_api.php:2288
 msgid "Error updating alert template. Id_template cannot be left blank."
 msgstr ""
-"Erreur en mettre à jour le modele d'alerte. Id_template ne peut etre pas "
-"laissé vide"
 
 #: ../../include/functions_api.php:2296
 msgid "Error updating alert template. Id_template doesn't exists."
 msgstr ""
-"Erreur en mettant à jour le modele d'alerte. Id_template n'existe pas"
 
 #: ../../include/functions_api.php:2322
 msgid "Error updating alert template."
-msgstr "Erreur en mettant à jour le modele d'alerte."
+msgstr ""
 
 #: ../../include/functions_api.php:2327
 msgid "Correct updating of alert template"
-msgstr "Mis à jour juste de modele d'alerte."
+msgstr ""
 
 #: ../../include/functions_api.php:2348
 msgid "Error deleting alert template. Id_template cannot be left blank."
 msgstr ""
-"Erreur en effaçant le modele d'alerte. Id_template ne peut etre pas laissé "
-"vide."
 
 #: ../../include/functions_api.php:2357
 msgid "Error deleting alert template."
-msgstr "Erreur en effaçant le modele d'alerte"
+msgstr ""
 
 #: ../../include/functions_api.php:2361
 msgid "Correct deleting of alert template."
-msgstr "Effacemetne de modele d'alerte correcte"
+msgstr ""
 
 #: ../../include/functions_api.php:2395
 msgid "Error getting all alert templates."
-msgstr "Erreur en obtenanta les modeles de toutes les alertes"
+msgstr ""
 
 #: ../../include/functions_api.php:2424
 msgid "Error getting alert template. Id_template doesn't exists."
-msgstr "Erreur en obtenant  le modele d'alerte. Id_template n'existe pas"
+msgstr ""
 
 #: ../../include/functions_api.php:2441
 msgid "Error getting alert template."
-msgstr "Erreur en obtenant le modele d'alerte"
+msgstr ""
 
 #: ../../include/functions_api.php:2477
 msgid "Error getting module groups."
-msgstr "Erreur en obtenant les groupes de modeles"
+msgstr ""
 
 #: ../../include/functions_api.php:2513
 msgid "Error getting plugins."
-msgstr "Erreur en obtenant plugins"
+msgstr ""
 
 #: ../../include/functions_api.php:2532
 msgid "Error creating module from network component. Agent doesn't exists."
 msgstr ""
-"Erreur en creant module du composante de reseau. L'agent n'existe pas."
 
 #: ../../include/functions_api.php:2539
 msgid ""
 "Error creating module from network component. Network component doesn't "
 "exists."
 msgstr ""
-"Erreur en creant le module du composante de reseau. Le composante de reseau "
-"n'existe pas"
 
 #: ../../include/functions_api.php:2557
 msgid "Error creating module from network component. Error creating module."
 msgstr ""
-"Erreur en creant le module du composante de reseau. Erreur en creant le "
-"module"
 
 #: ../../include/functions_api.php:2579
 msgid "Error assigning module to template. Id_template cannot be left blank."
 msgstr ""
-"Erreur en assignant  module dans le composante.Id_template ne peut etre pas "
-"laissé vide."
 
 #: ../../include/functions_api.php:2584
 msgid "Error assigning module to template. Id_module cannot be left blank."
 msgstr ""
-"Erreur en assignant module dans le composante. Id_module ne peut etre pas "
-"laissé vide."
 
 #: ../../include/functions_api.php:2589
 msgid "Error assigning module to template. Id_agent cannot be left blank."
 msgstr ""
-"Erreur en assignant module dans le composante. Id_agent ne peut etre pas "
-"laissé vide."
 
 #: ../../include/functions_api.php:2596
 msgid "Error assigning module to template. Id_template doensn't exists."
 msgstr ""
-"Erreur en assignant module dans le composante. Id-template n'existe pas."
 
 #: ../../include/functions_api.php:2606
 msgid "Error assigning module to template. Id_agent doesn't exists."
 msgstr ""
-"Erreur en assignant module dans le composante. Id-agent n'existe pas."
 
 #: ../../include/functions_api.php:2613
 msgid "Error assigning module to template. Id_module doesn't exists."
 msgstr ""
-"Erreur en assignant module dans le composante. Id-module n'existe pas."
 
 #: ../../include/functions_api.php:2621
 msgid "Error assigning module to template."
-msgstr "Erreur en assignant module dans le composante"
+msgstr ""
 
 #: ../../include/functions_api.php:2644
 msgid ""
 "Error deleting module template. Id_module_template cannot be left blank."
 msgstr ""
-"Erreur en effaçant le modele du module.Id_module_template ne peut etre pas "
-"laissé vide."
 
 #: ../../include/functions_api.php:2651
 msgid "Error deleting module template. Id_module_template doesn't exists."
 msgstr ""
-"Erreur en effaçant le modele du module.Id_module_template n'existe pas."
 
 #: ../../include/functions_api.php:2659
 msgid "Error deleting module template."
-msgstr "Erreur en effaçant le modele du module"
+msgstr ""
 
 #: ../../include/functions_api.php:2662
 msgid "Correct deleting of module template."
-msgstr "Effacement du modele de module correcte"
+msgstr ""
 
 #: ../../include/functions_api.php:2734
 msgid "Error validate all alerts. Failed "
-msgstr "Erreur en validant toutes les alertes.Failli "
+msgstr ""
 
 #: ../../include/functions_api.php:2737
 msgid "Correct validating of all alerts."
-msgstr "Validation correcte de toutes les alertes"
+msgstr ""
 
 #: ../../include/functions_api.php:2760
 msgid "Error validating all alert policies."
-msgstr "Erreur en validant toutes les politiques d'alerte"
+msgstr ""
 
 #: ../../include/functions_api.php:2817
 msgid "Error validate all policy alerts. Failed "
-msgstr "Erreur en validant toutes les alertes des politiques. Failli "
+msgstr ""
 
 #: ../../include/functions_api.php:2820
 msgid "Correct validating of all policy alerts."
-msgstr "Validation correcte de toutes les alertes"
+msgstr ""
 
 #: ../../include/functions_api.php:2839
 msgid "Error stopping downtime. Id_downtime cannot be left blank."
-msgstr "Erreur en arretant downtime.Id_downtime ne peut etre pas laissé vide"
+msgstr ""
 
 #: ../../include/functions_api.php:2855
 msgid "Downtime stopped."
-msgstr "Downtime arreté"
+msgstr ""
 
 #: ../../include/functions_api.php:2875
 msgid "Error adding agent to policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en ajoutant agent dans le politique.Id_policy ne peut etre pas laissé "
-"vide."
 
 #: ../../include/functions_api.php:2880
 msgid "Error adding agent to policy. Id_agent cannot be left blank."
 msgstr ""
-"Erreur en ajoutant agent dans le politique.Id_agent ne peut etre pas laissé "
-"vide."
 
 #: ../../include/functions_api.php:2888
 msgid "Error adding agent to policy. Id_agent doesn't exists."
-msgstr "Erreur en ajoutant agent dans le politique.Id_agent n'existe pas."
+msgstr ""
 
 #: ../../include/functions_api.php:2896
 msgid "Error adding agent to policy."
-msgstr "Erreur en ajoutant agent dans le politique."
+msgstr ""
 
 #: ../../include/functions_api.php:2904
 msgid "Error adding agent to policy. The agent is already in the policy."
 msgstr ""
-"Erreur en ajoutant agent dans le politique.L'agent est dans la politique dejà"
 
 #: ../../include/functions_api.php:2933
 msgid "Error adding data module to policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en ajoutant  data module dans le politique.Id_policy  ne peut etre "
-"pas laissé vide."
 
 #: ../../include/functions_api.php:2938
 msgid "Error adding data module to policy. Module_name cannot be left blank."
 msgstr ""
-"Erreur en ajoutant  data module dans le politique.Module_name ne peut etre "
-"pas laissé vide."
 
 #: ../../include/functions_api.php:2946
 msgid "Error adding data module to policy."
-msgstr "Erreur en ajoutant  data module dans le politique"
+msgstr ""
 
 #: ../../include/functions_api.php:2969
 msgid ""
 "Error adding data module to policy. The module is already in the policy."
 msgstr ""
-"Erreur en ajoutant le data module dans la politique. Le module est deja dans "
-"la politique"
 
 #: ../../include/functions_api.php:3003
 msgid "Error updating data module in policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en mettant a jour le module dans la politique.Id_policy ne peut etre "
-"pas laissé vide."
 
 #: ../../include/functions_api.php:3008
 msgid ""
 "Error updating data module in policy. Id_policy_module cannot be left blank."
 msgstr ""
-"Erreur en mettant a jour le module dans la politique.Id_policy_module  ne "
-"peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:3016
 msgid "Error updating data module in policy. Module doesn't exists."
 msgstr ""
-"Erreur en mettant a jour le module dans la politique.Le module n'existe pas."
 
 #: ../../include/functions_api.php:3021 ../../include/functions_api.php:3165
 msgid ""
 "Error updating network module in policy. Module type is not network type."
 msgstr ""
-"Erreur en mettant a jour le module dans la politique.Le module type n'est "
-"pas un type de reseau."
 
 #: ../../include/functions_api.php:3045
 msgid "Data policy module updated."
-msgstr "Le module de data policy a ete mis a jour"
+msgstr ""
 
 #: ../../include/functions_api.php:3068
 msgid ""
 "Error adding network module to policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en ajoutant le module de reseau dans la politique. Id_policy ne peut "
-"etre pas laissé vide."
 
 #: ../../include/functions_api.php:3073
 msgid ""
 "Error adding network module to policy. Module_name cannot be left blank."
 msgstr ""
-"Erreur en ajoutant le module de reseau dans la politique. Le module_name ne "
-"peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:3078
 msgid ""
 "Error adding network module to policy. Id_module_type is not correct for "
 "network modules."
 msgstr ""
-"Erreur en ajoutant le module de reseau dans la politique.Id_module_type "
-"n'est pas correct pour les modules de reseau"
 
 #: ../../include/functions_api.php:3086
 msgid "Error adding network module to policy."
-msgstr "Erreur ajoutant module de reseau dans la politique"
+msgstr ""
 
 #: ../../include/functions_api.php:3114
 msgid ""
 "Error adding network module to policy. The module is already in the policy."
 msgstr ""
-"Erreur en ajoutant module de reseau dans la politique. Le module est dejá "
-"dans la politique"
 
 #: ../../include/functions_api.php:3147
 msgid ""
 "Error updating network module in policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en mettant a jour le module de reseau dans la politique.Id_policy ne "
-"peut etre pas laisse vide."
 
 #: ../../include/functions_api.php:3152
 msgid ""
 "Error updating network module in policy. Id_policy_module cannot be left "
 "blank."
 msgstr ""
-"Erreur en mettant a jour le module de réseau dans la "
-"politique.Id_policy_module ne peut etre pas laisse vide."
 
 #: ../../include/functions_api.php:3160
 msgid "Error updating network module in policy. Module doesn't exists."
 msgstr ""
-"Erreur en mettant a jour le module de réseau dans la politique. Le module "
-"n'existe pas"
 
 #: ../../include/functions_api.php:3191
 msgid "Network policy module updated."
-msgstr "Module de politique de réseau mis a jour."
+msgstr ""
 
 #: ../../include/functions_api.php:3212
 msgid "Error adding plugin module to policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en ajoutant module de plugin dans la politique. Id_policy ne peut "
-"etre pas laissé vide"
 
 #: ../../include/functions_api.php:3217
 msgid ""
 "Error adding plugin module to policy. Module_name cannot be left blank."
 msgstr ""
-"Erreur en ajoutant module de plugin dans la politique. Module_name ne peut "
-"etre pas laissé vide."
 
 #: ../../include/functions_api.php:3222
 msgid "Error adding plugin module to policy. Id_plugin cannot be left blank."
 msgstr ""
-"Erreur en ajoutant module de plugin dans la politique.Id_plugin ne peut etre "
-"pas laissé vide."
 
 #: ../../include/functions_api.php:3230
 msgid "Error adding plugin module to policy."
-msgstr "Erreur en ajoutant module de plugin dans la politique"
+msgstr ""
 
 #: ../../include/functions_api.php:3262
 msgid ""
 "Error adding plugin module to policy. The module is already in the policy."
 msgstr ""
-"Erreur en ajoutant module de plugin dans la politique.Le module est dejà "
-"dans la politique."
 
 #: ../../include/functions_api.php:3296
 msgid ""
 "Error updating plugin module in policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en mettant a jour le module plugin dans la politique.Id_policy ne "
-"peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:3302
 msgid ""
 "Error updating plugin module in policy. Id_policy_module cannot be left "
 "blank."
 msgstr ""
-"Erreur en mettant a jour le module plugin dans la politique.Id_policy_module "
-"ne peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:3311
 msgid "Error updating plugin module in policy. Module doesn't exists."
 msgstr ""
-"Erreur en mettant a jour le module plugin dans la politique.Le module "
-"n'existe pas."
 
 #: ../../include/functions_api.php:3317
 msgid ""
 "Error updating plugin module in policy. Module type is not network type."
 msgstr ""
-"Erreur en mettant a jour le module plugin dans la politique.Le type module "
-"n'esta pas un type de reseau."
 
 #: ../../include/functions_api.php:3344
 msgid "Plugin policy module updated."
-msgstr "Module de plugin de politique mis a jour"
+msgstr ""
 
 #: ../../include/functions_api.php:3497
 msgid "Error adding SNMP module to policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur ajoutant module SNMP dans la politique.Id_policy ne peut etre pas "
-"laisse vide."
 
 #: ../../include/functions_api.php:3502
 msgid "Error adding SNMP module to policy. Module_name cannot be left blank."
 msgstr ""
-"Erreur ajoutant module SNMP dans la politique. Module_name ne peut etre pas "
-"laisse vide."
 
 #: ../../include/functions_api.php:3510
 msgid "Error adding SNMP module to policy."
-msgstr "Erreur en ajoutant module SNMP dans la politique"
+msgstr ""
 
 #: ../../include/functions_api.php:3515
 msgid ""
 "Error adding SNMP module to policy. Id_module_type is not correct for SNMP "
 "modules."
 msgstr ""
-"Erreur en ajoutant module SNMP dans la politique. Id_module_type n'est pas "
-"correcte pour  les modules SNMP"
 
 #: ../../include/functions_api.php:3595
 msgid ""
 "Error adding SNMP module to policy. The module is already in the policy."
 msgstr ""
-"Erreur en ajoutant le module SNMP dans la politique. Le module est dejá dans "
-"la politique"
 
 #: ../../include/functions_api.php:3630
 msgid "Error updating SNMP module in policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en mettant a jour le module SNMP dans la politique. Id_policy ne peut "
-"etre pas laissé vide."
 
 #: ../../include/functions_api.php:3635
 msgid ""
 "Error updating SNMP module in policy. Id_policy_module cannot be left blank."
 msgstr ""
-"Erreur en mettant a jour le module SNMP dans la politique.Id_policy_module "
-"ne peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:3643
 msgid "Error updating SNMP module in policy. Module doesn't exists."
 msgstr ""
-"Erreur en mettant a jour le module SNMP dans la politique. Le module "
-"n'existe pas."
 
 #: ../../include/functions_api.php:3648
 msgid "Error updating SNMP module in policy. Module type is not SNMP type."
 msgstr ""
-"Errreur en mettant a jour le module SNMP dans la politique. Le type de "
-"module n'est pas type SNMP."
 
 #: ../../include/functions_api.php:3657
 msgid ""
 "Error updating SNMP module. snmp3_priv_method doesn't exists. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
-"Errreur en mettant a jour le module SNMP. snmp3_priv_method n'existe pas. "
-"Configurez le dans 'AES' ou 'DES' "
 
 #: ../../include/functions_api.php:3663
 msgid ""
 "Error updating SNMP module. snmp3_sec_level doesn't exists. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
-"Errreur en mettant a jour le module SNMP. snmp3_sec_level n'existe pas. "
-"Configurez le dans 'authNoPriv' ou 'noAuthNoPriv'. "
 
 #: ../../include/functions_api.php:3669
 msgid ""
 "Error updating SNMP module. snmp3_auth_method doesn't exists. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
-"Errreur en mettant a jour le module SNMP. snmp3_auth_method n'existe pas. "
-"Configurez le dans 'MD5' or 'SHA'. "
 
 #: ../../include/functions_api.php:3700
 msgid "SNMP policy module updated."
-msgstr "Module de politique SNMP mis a jour"
+msgstr ""
 
 #: ../../include/functions_api.php:3719
 msgid "Error applying policy. Id_policy cannot be left blank."
 msgstr ""
-"Erreur en aplicant la politique. Id_policy ne peut etre pas laissé vide"
 
 #: ../../include/functions_api.php:3732 ../../include/functions_api.php:3756
 msgid "Error applying policy."
-msgstr "Erreur en aplicant la politique"
+msgstr ""
 
 #: ../../include/functions_api.php:3743
 msgid "Error applying policy. This policy is already pending to apply."
 msgstr ""
-"Erreur en applicant la politique. Cette politique est dejá en attendant pour "
-"s'appliquer."
 
 #: ../../include/functions_api.php:3797
 msgid "Error applying all policies."
-msgstr "Erreur en aplicant toutes les politiques"
+msgstr ""
 
 #: ../../include/functions_api.php:3845
 msgid "Error in group creation. Group_name cannot be left blank."
 msgstr ""
-"Erreur dans l'application du groupe.Group_name ne peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:3850
 msgid "Error in group creation. Icon_name cannot be left blank."
 msgstr ""
-"Erreur dans la creation du grope. Icon_name ne peut etre pas laissé vide."
 
 #: ../../include/functions_api.php:3858 ../../include/functions_api.php:3919
 msgid "Error in group creation. Id_parent_group doesn't exists."
-msgstr "Erreur dans la creation du grope. Id_parent_group n'existe pas."
+msgstr ""
 
 #: ../../include/functions_api.php:3881
 msgid "Error in group creation."
-msgstr "Erreur dans la creation du groupe"
+msgstr ""
 
 #: ../../include/functions_api.php:3907
 msgid "Error in netflow filter creation. Filter name cannot be left blank."
@@ -18986,34 +18857,30 @@ msgstr "Créer utilisateur"
 #: ../../include/functions_api.php:4097
 msgid "Error updating user. Id_user cannot be left blank."
 msgstr ""
-"Erreur en mettant a jour le utilisateur. Id_user ne peut etre pas laissé "
-"vide."
 
 #: ../../include/functions_api.php:4104
 msgid "Error updating user. Id_user doesn't exists."
-msgstr "Erreur en mettant a jour l'utilisateur.Id_user n'existe pas."
+msgstr ""
 
 #: ../../include/functions_api.php:4120
 msgid "Error updating user. Password info incorrect."
 msgstr ""
-"Erreur en mettant a jour l'utilisateur. L'info du mot de cle n'est pas "
-"correcte"
 
 #: ../../include/functions_api.php:4128
 msgid "Updated user."
-msgstr "Utilisateur mis a jour"
+msgstr ""
 
 #: ../../include/functions_api.php:4173
 msgid "Error in user enabling/disabling."
-msgstr "Erreur en utilisant habilitation/pas habilitation"
+msgstr ""
 
 #: ../../include/functions_api.php:4177
 msgid "Enabled user."
-msgstr "Utilisateur habilité"
+msgstr ""
 
 #: ../../include/functions_api.php:4180
 msgid "Disabled user."
-msgstr "Utilisateur pas habilité"
+msgstr ""
 
 #: ../../include/functions_api.php:5283
 msgid "Delete user."
@@ -19120,7 +18987,7 @@ msgstr ""
 #: ../../mobile/operation/agents.php:321
 #: ../../godmode/reporting/visual_console_builder.wizard.php:216
 msgid "Loading..."
-msgstr "Chargement en cours..."
+msgstr ""
 
 #: ../../mobile/operation/modules.php:614
 #: ../../mobile/operation/events.php:997 ../../mobile/operation/alerts.php:292
@@ -19551,7 +19418,7 @@ msgstr ""
 
 #: ../../godmode/db/db_audit.php:72
 msgid "Error deleting data"
-msgstr "Erreur en supprimant données"
+msgstr ""
 
 #: ../../godmode/db/db_audit.php:88
 msgid "Latest date"
@@ -19842,11 +19709,11 @@ msgstr ""
 
 #: ../../godmode/setup/performance.php:112
 msgid "Database maintenance options"
-msgstr "Options de maintenance de la base de données"
+msgstr ""
 
 #: ../../godmode/setup/performance.php:118
 msgid "Others"
-msgstr "Autres"
+msgstr ""
 
 #: ../../godmode/setup/os.list.php:67
 msgid "There are no defined operating systems"
@@ -19895,7 +19762,7 @@ msgstr ""
 
 #: ../../godmode/setup/setup_general.php:245
 msgid "General options"
-msgstr "Options générales"
+msgstr ""
 
 #: ../../godmode/setup/setup_general.php:305
 msgid ""
@@ -19998,12 +19865,12 @@ msgstr ""
 #: ../../godmode/setup/setup_visuals.php:194
 #: ../../godmode/setup/setup_visuals.php:200
 msgid "Small:"
-msgstr "Petite :"
+msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:195
 #: ../../godmode/setup/setup_visuals.php:201
 msgid "Normal:"
-msgstr "Normale :"
+msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:199
 msgid ""
@@ -20503,7 +20370,7 @@ msgstr "Le module a été actualisé avec succès"
 
 #: ../../godmode/netflow/nf_item_list.php:39
 msgid "Report list"
-msgstr "Liste des rapports"
+msgstr ""
 
 #: ../../godmode/netflow/nf_item_list.php:44
 #: ../../godmode/netflow/nf_item_list.php:54
@@ -21480,11 +21347,11 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:424
 msgid "Move before to"
-msgstr "Enlever avant de"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:424
 msgid "Move after to"
-msgstr "Enlever après de"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:444
 msgid "Delete items"
@@ -21510,7 +21377,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:496
 msgid "Please select any item to order"
-msgstr "Si vous plaît selectionner toutes les éléments à ordre"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:521
 msgid "Are you sure to delete the items into the report?\\n"
@@ -21522,15 +21389,15 @@ msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:94
 msgid "Range between elements (px)"
-msgstr "Série entre elements (px)"
+msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:99
 msgid "Size (px)"
-msgstr "Taille(px)"
+msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:120
 msgid "Width (px)"
-msgstr "Largeur"
+msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:159
 msgid "One item per agent"
@@ -21539,7 +21406,7 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.wizard.php:175
 #: ../../godmode/reporting/visual_console_builder.wizard.php:374
 msgid "Agent - Module"
-msgstr "Agent-Module"
+msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:182
 msgid "Enable link agent"
@@ -21554,7 +21421,7 @@ msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:321
 msgid "Please select any module or modules."
-msgstr "Si vous plaît selectionner quelque module ou modules"
+msgstr ""
 
 #: ../../godmode/reporting/graphs.php:145
 msgid "Number of Graphs"
@@ -21667,7 +21534,7 @@ msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:128
 msgid "Simple Value (Process Avg)"
-msgstr "Valeur simple (Process Avg)"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:470
 msgid "Not valid"
@@ -21675,7 +21542,7 @@ msgstr "Non valide"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:868
 msgid "Target server"
-msgstr "Serveur objet"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:978
 msgid "Greater or equal (>=)"
@@ -22211,7 +22078,7 @@ msgstr "Nom #Ag."
 #: ../../godmode/agentes/planned_downtime.list.php:201
 #: ../../godmode/agentes/planned_downtime.list.php:327
 msgid "Stop downtime"
-msgstr "Arrêter downtime"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.list.php:220
 msgid "No planned downtime"
@@ -22467,7 +22334,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:95
 msgid "Module types"
-msgstr "Types de modules"
+msgstr ""
 
 #: ../../godmode/menu.php:113 ../../godmode/alerts/alert_special_days.php:43
 msgid "Special days list"
@@ -22884,7 +22751,7 @@ msgstr "Pas d'actions selectionnés"
 #: ../../godmode/massive/massive_add_action_alerts.php:137
 #: ../../godmode/massive/massive_delete_action_alerts.php:138
 msgid "Agents with templates"
-msgstr "Agents avec modèles"
+msgstr ""
 
 #: ../../godmode/massive/massive_add_action_alerts.php:143
 #: ../../godmode/massive/massive_delete_action_alerts.php:150
@@ -22906,21 +22773,21 @@ msgstr "Pas d'alertes sélectionnées"
 #: ../../godmode/massive/massive_delete_modules.php:298
 #: ../../godmode/massive/massive_edit_modules.php:267
 msgid "When select agents"
-msgstr "Quand les agents sont selectionnés"
+msgstr ""
 
 #: ../../godmode/massive/massive_add_alerts.php:138
 #: ../../godmode/massive/massive_delete_alerts.php:191
 #: ../../godmode/massive/massive_delete_modules.php:300
 #: ../../godmode/massive/massive_edit_modules.php:270
 msgid "Show common modules"
-msgstr "Montrer les modules courantes"
+msgstr ""
 
 #: ../../godmode/massive/massive_add_alerts.php:138
 #: ../../godmode/massive/massive_delete_alerts.php:191
 #: ../../godmode/massive/massive_delete_modules.php:300
 #: ../../godmode/massive/massive_edit_modules.php:271
 msgid "Show all modules"
-msgstr "Montrer tous les modules"
+msgstr ""
 
 #: ../../godmode/massive/massive_delete_agents.php:57
 msgid ""
@@ -23020,17 +22887,17 @@ msgstr "Selectionner tous les modules de ce groupe"
 #: ../../godmode/massive/massive_delete_modules.php:284
 #: ../../godmode/massive/massive_edit_modules.php:251
 msgid "When select modules"
-msgstr "Quand sélectionner modules"
+msgstr ""
 
 #: ../../godmode/massive/massive_delete_modules.php:286
 #: ../../godmode/massive/massive_edit_modules.php:254
 msgid "Show common agents"
-msgstr "Montrer les agents communes"
+msgstr ""
 
 #: ../../godmode/massive/massive_delete_modules.php:286
 #: ../../godmode/massive/massive_edit_modules.php:255
 msgid "Show all agents"
-msgstr "Montrer tous les agents"
+msgstr ""
 
 #: ../../godmode/massive/massive_enable_disable_alerts.php:148
 msgid "Enabled alerts"
@@ -23846,15 +23713,15 @@ msgstr "Vue des Aents/Modules"
 
 #: ../../extensions/update_manager/update_pandora.php:67
 msgid "First execution of Update Pandora"
-msgstr "Première execution de Update Pandora"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:84
 msgid "Your Pandora FMS open source package installed is"
-msgstr "Votre progiciel installé de Pandora FMS open source est"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:90
 msgid "Your Pandora FMS does not have any update installed yet"
-msgstr "Votre Pandora FMS n'y a pas aucune mis à jour installé encore"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:98
 msgid ""
@@ -23878,11 +23745,11 @@ msgstr ""
 #: ../../extensions/update_manager/update_pandora.php:105
 #: ../../extensions/update_manager/main.php:126
 msgid "Online"
-msgstr "En ligne"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:111
 msgid "Get list online Package"
-msgstr "Obtenir liste de Progiciel en ligne"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:119
 msgid "Processing package"
@@ -23890,19 +23757,19 @@ msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:123
 msgid "Downloading <span class=\"package_name\">package</span> in progress"
-msgstr "Téléchargeant <span class=\"package_name\">package</span> en cours"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:126
 msgid "Downloaded <span class=\"package_name\">package</span>"
-msgstr "<span class=\"package_name\">package</span> téléchargé"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:127
 msgid "Installing <span class=\"package_name\">package</span> in progress"
-msgstr "Installation du <span class=\"package_name\">package</span> en cours"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:130
 msgid "Installed <span class=\"package_name\">package</span> in progress"
-msgstr "<span class=\"package_name\">package</span> Installé en progress"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:131
 msgid "Fail download <span class=\"package_name\">package</span>"
@@ -23910,15 +23777,15 @@ msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:156
 msgid "Downloaded Packages"
-msgstr "Paquets téléchargés"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:173
 msgid "Install"
-msgstr "Installez"
+msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:179
 msgid "Reinstall"
-msgstr "Réinstaller"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.ajax.php:92
 msgid "Error download packages."
@@ -23926,7 +23793,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.ajax.php:293
 msgid "In progress..."
-msgstr "En cours ..."
+msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.ajax.php:300
 msgid "bytes"
@@ -23984,7 +23851,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.php:436
 msgid "There is a new version:"
-msgstr "Il y a une nouvelle version"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.php:484
 msgid "Incorrect file extension"
@@ -24017,15 +23884,15 @@ msgstr "Le fichier ne peut etre pas téléchargé"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:59
 msgid "Error reading settings"
-msgstr "Erreur en lisant paramètres"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:77
 msgid "Error updating settings"
-msgstr "Erreur en mettant a jour les paramètres"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:95
 msgid "Error creating settings"
-msgstr "Erreur en creant les paramètres"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:811
 msgid "Development"
@@ -24097,11 +23964,11 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:105
 msgid "Download Method"
-msgstr "Méthode de téléchargement"
+msgstr ""
 
 #: ../../extensions/update_manager/main.php:79
 msgid "Success update to the last package."
-msgstr "Mis à jour avec succès a le dernier progiciel"
+msgstr ""
 
 #: ../../extensions/update_manager/main.php:80
 msgid "Error update to the last package."
@@ -24373,11 +24240,11 @@ msgstr "Filtre de groupe "
 
 #: ../../extensions/update_manager.php:62
 msgid "Unlimited"
-msgstr "Illimitée"
+msgstr ""
 
 #: ../../extensions/update_manager.php:67
 msgid "Open Source Version"
-msgstr "Version Open Source"
+msgstr ""
 
 #: ../../extensions/update_manager.php:235
 msgid "Update manager settings"

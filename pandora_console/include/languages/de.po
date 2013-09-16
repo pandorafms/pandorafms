@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-22 18:49+0200\n"
-"PO-Revision-Date: 2013-06-26 20:19+0000\n"
-"Last-Translator: Daniel Winzen <d@winzen4.de>\n"
+"PO-Revision-Date: 2013-08-21 14:21+0000\n"
+"Last-Translator: Daniel Pache <deep470@googlemail.com>\n"
 "Language-Team: de <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-07-11 07:14+0000\n"
-"X-Generator: Launchpad (build 16696)\n"
+"X-Launchpad-Export-Date: 2013-09-16 13:22+0000\n"
+"X-Generator: Launchpad (build 16761)\n"
 "Language: \n"
 
 #: ../../operation/users/user_edit.php:229
@@ -97,14 +97,14 @@ msgstr "Agenten"
 #: ../../operation/search_main.php:82
 #, php-format
 msgid "%d results found"
-msgstr ""
+msgstr "%d Ergebnisse gefunden"
 
 #: ../../operation/search_main.php:34 ../../operation/search_main.php:42
 #: ../../operation/search_main.php:50 ../../operation/search_main.php:58
 #: ../../operation/search_main.php:66 ../../operation/search_main.php:74
 #: ../../operation/search_main.php:82
 msgid "Show results"
-msgstr ""
+msgstr "Ergebnisse anzeigen"
 
 #: ../../operation/search_main.php:41 ../../operation/agentes/graphs.php:63
 #: ../../operation/agentes/estado_agente.php:394
@@ -420,21 +420,21 @@ msgstr "Haupt"
 #: ../../operation/events/events_list.php:699
 #: ../../enterprise/meta/event/event_view.php:1436
 msgid "Error creating filter"
-msgstr "Fehler beim Erstellen des Filters"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:134
 msgid "Filter created successfully"
-msgstr "Filter wurde erfolgreich erstellt"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:149
 msgid "Filter updated successfully"
-msgstr "Filter wurde erfolgreich aktualisiert"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:150
 #: ../../operation/events/events_list.php:772
 #: ../../enterprise/meta/event/event_view.php:1510
 msgid "Error updating filter"
-msgstr "Fehler beim Aktualisieren des Filters"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:173
 #: ../../operation/reporting/graph_viewer.php:151
@@ -582,7 +582,7 @@ msgstr "Typ"
 #: ../../godmode/netflow/nf_item_list.php:148
 #: ../../godmode/reporting/reporting_builder.item_editor.php:953
 msgid "Max. values"
-msgstr "Max. Werte"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:233
 msgid "Connection"
@@ -905,7 +905,7 @@ msgstr "Normal"
 #: ../../godmode/users/configure_user.php:475
 #: ../../godmode/alerts/configure_alert_template.php:640
 msgid "Advanced"
-msgstr "Erweitert"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:278
 #: ../../operation/events/events_list.php:188
@@ -914,7 +914,7 @@ msgstr "Erweitert"
 #: ../../operation/events/events_list.php:433
 #: ../../enterprise/meta/event/event_view.php:541
 msgid "Load filter"
-msgstr "Filter laden"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:284
 #: ../../operation/events/events_list.php:710
@@ -924,12 +924,12 @@ msgstr "Filter laden"
 #: ../../enterprise/meta/event/event_view.php:1448
 #: ../../enterprise/meta/event/event_view.php:1517
 msgid "none"
-msgstr "Nichts"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:297
 #: ../../godmode/netflow/nf_edit_form.php:196
 msgid "Dst Ip"
-msgstr "Empfänger-IP"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:297
 #: ../../godmode/netflow/nf_edit_form.php:196
@@ -956,7 +956,7 @@ msgstr ""
 #: ../../godmode/netflow/nf_edit_form.php:202
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Dst Port"
-msgstr "Empfänger-Port"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:318
 #: ../../godmode/netflow/nf_edit_form.php:202
@@ -1151,27 +1151,27 @@ msgstr "Keine"
 #: ../../include/functions_netflow.php:1338
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Protocol"
-msgstr "Protokoll"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Src Ip Address"
-msgstr "Quell-IP-Adresse"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Dst Ip Address"
-msgstr "Empfänger-IP-Adresse"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:345
 #: ../../godmode/netflow/nf_edit_form.php:216
 msgid "Output format"
-msgstr "Ausgabeformat"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:346
 #: ../../include/functions_netflow.php:1318
 msgid "Bytes"
-msgstr "Bytes"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:346
 msgid "Bytes per second"
@@ -1199,15 +1199,15 @@ msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:360
 msgid "Draw"
-msgstr "Zeichnen"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:364
 msgid "Save as new filter"
-msgstr "Als neuen Filter speichern"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:366
 msgid "Update current filter"
-msgstr "Momentanen Filter aktualisieren"
+msgstr ""
 
 #: ../../operation/search_alerts.php:39 ../../operation/gis_maps/ajax.php:141
 #: ../../operation/gis_maps/ajax.php:159
@@ -2021,7 +2021,7 @@ msgstr ""
 
 #: ../../operation/users/user_edit.php:289
 msgid "Home screen"
-msgstr "Startbildschirm"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:289
 msgid ""
@@ -2275,7 +2275,7 @@ msgstr ""
 
 #: ../../operation/users/webchat.php:81
 msgid "Users Online"
-msgstr "Benutzer online"
+msgstr ""
 
 #: ../../operation/users/webchat.php:87
 #: ../../operation/messages/message_edit.php:193
@@ -2288,15 +2288,15 @@ msgstr ""
 
 #: ../../operation/users/webchat.php:166
 msgid "Error in connection."
-msgstr "Verbindungsfehler"
+msgstr ""
 
 #: ../../operation/users/webchat.php:247
 msgid "Error sendding message."
-msgstr "Fehler beim Senden der Nachricht."
+msgstr ""
 
 #: ../../operation/users/webchat.php:275
 msgid "Error login."
-msgstr "Fehler beim Login."
+msgstr ""
 
 #: ../../operation/extensions.php:27 ../../operation/menu.php:353
 #: ../../godmode/extensions.php:27 ../../godmode/menu.php:250
@@ -3568,7 +3568,7 @@ msgstr "Report ansehen"
 
 #: ../../operation/reporting/reporting_viewer.php:154
 msgid "Set initial date"
-msgstr "Anfangsdatum wählen"
+msgstr ""
 
 #: ../../operation/reporting/reporting_viewer.php:161
 #: ../../operation/agentes/gis_view.php:119
@@ -3960,7 +3960,7 @@ msgstr ""
 
 #: ../../operation/agentes/stat_win.php:339
 msgid "Reload"
-msgstr "Neu laden"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.excel.php:67
 #: ../../operation/agentes/exportdata.csv.php:68
@@ -5462,11 +5462,11 @@ msgstr "Module Gruppen"
 
 #: ../../operation/tree.php:526
 msgid "groups"
-msgstr "Gruppen"
+msgstr ""
 
 #: ../../operation/tree.php:529
 msgid "module groups"
-msgstr "Modulgruppen"
+msgstr ""
 
 #: ../../operation/tree.php:532
 msgid "policies"
@@ -6169,7 +6169,7 @@ msgstr "Benutzer"
 #: ../../enterprise/godmode/services/services.elements.php:82
 #: ../../enterprise/godmode/services/services.service.php:157
 msgid "Monitoring"
-msgstr "Überwachung"
+msgstr ""
 
 #: ../../operation/menu.php:54
 msgid "Monitor detail"
@@ -6213,7 +6213,7 @@ msgstr "Sound-Alarme"
 
 #: ../../operation/menu.php:271
 msgid "Workspace"
-msgstr "Arbeitsbereich"
+msgstr ""
 
 #: ../../operation/menu.php:278 ../../general/header.php:177
 #: ../../general/header.php:179
@@ -6285,13 +6285,13 @@ msgstr ""
 #: ../../operation/messages/message_edit.php:39
 #: ../../operation/messages/message_list.php:36
 msgid "Sent messages"
-msgstr "Gesendete Nachrichten"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:43
 #: ../../operation/messages/message_list.php:40
 #: ../../operation/messages/message_list.php:218
 msgid "Create message"
-msgstr "Nachricht erstellen"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:60
 msgid "This message does not exist in the system"
@@ -6311,7 +6311,7 @@ msgstr "an"
 #: ../../operation/messages/message_edit.php:164
 #: ../../operation/messages/message_list.php:125
 msgid "Destination"
-msgstr "Ziel"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:83
 #: ../../operation/messages/message_edit.php:183
@@ -6355,7 +6355,7 @@ msgstr "Nachricht konnte nicht an Gruppe %s zugestellt werden"
 
 #: ../../operation/messages/message_edit.php:179
 msgid "Select user"
-msgstr "Benutzer auswählen"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:180
 msgid "OR"
@@ -6363,7 +6363,7 @@ msgstr "ODER"
 
 #: ../../operation/messages/message_edit.php:181
 msgid "Select group"
-msgstr "Gruppe auswählen"
+msgstr ""
 
 #: ../../operation/messages/message_list.php:81
 msgid "Not deleted. Error deleting messages"
@@ -6376,7 +6376,7 @@ msgstr "Sie haben"
 
 #: ../../operation/messages/message_list.php:87
 msgid "sent message(s)"
-msgstr "Gesendete Nachricht(en)"
+msgstr ""
 
 #: ../../operation/messages/message_list.php:94
 msgid "unread message(s)"
@@ -6655,7 +6655,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:562
 #: ../../godmode/snmpconsole/snmp_alert.php:274
 msgid "Authentication failure (4)"
-msgstr "Authentifizierungsfehler"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:392
 #: ../../godmode/snmpconsole/snmp_alert.php:268
@@ -6726,7 +6726,7 @@ msgstr "Beschreibung:"
 
 #: ../../operation/snmpconsole/snmp_view.php:568
 msgid "Type:"
-msgstr "Typ:"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:586
 msgid "No matching traps found"
@@ -6801,7 +6801,7 @@ msgstr "Sound-Ereignis"
 #: ../../godmode/users/configure_profile.php:178 ../../godmode/menu.php:153
 #: ../../godmode/events/events.php:73 ../../godmode/events/events.php:76
 msgid "Manage events"
-msgstr "Ereignisse verwalten"
+msgstr ""
 
 #: ../../operation/events/events.php:334
 msgid "History"
@@ -6935,12 +6935,12 @@ msgstr "Server"
 #: ../../include/functions_events.php:2061
 #: ../../mobile/operation/events.php:412
 msgid "Event ID"
-msgstr "Ereignis-ID"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:49
 #: ../../mobile/operation/events.php:75 ../../mobile/operation/events.php:683
 msgid "Event Name"
-msgstr "Ereignisname"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:54
 #: ../../enterprise/include/functions_reporting_pdf.php:3611
@@ -6983,7 +6983,7 @@ msgstr ""
 #: ../../godmode/events/custom_events.php:98
 #: ../../godmode/events/custom_events.php:158
 msgid "Comment"
-msgstr "Kommentar"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:115
 msgid "Extra ID"
@@ -7068,7 +7068,7 @@ msgstr ""
 #: ../../operation/events/events_list.php:432
 #: ../../enterprise/meta/event/event_view.php:579
 msgid "Save filter"
-msgstr "Filter speichern"
+msgstr ""
 
 #: ../../operation/events/events_list.php:202
 msgid "New filter"
@@ -7085,7 +7085,7 @@ msgstr "Filter aktualisieren"
 #: ../../enterprise/meta/event/event_view.php:422
 #: ../../godmode/events/event_edit_filter.php:163
 msgid "Filter name"
-msgstr "Filtername"
+msgstr ""
 
 #: ../../operation/events/events_list.php:211
 #: ../../enterprise/include/functions_networkmap_enterprise.php:182
@@ -7214,12 +7214,12 @@ msgstr ""
 #: ../../operation/events/events_list.php:703
 #: ../../enterprise/meta/event/event_view.php:1440
 msgid "Filter created"
-msgstr "Filter erzeugt"
+msgstr ""
 
 #: ../../operation/events/events_list.php:769
 #: ../../enterprise/meta/event/event_view.php:1507
 msgid "Filter updated"
-msgstr "Filter wurde aktualisiert"
+msgstr ""
 
 #: ../../operation/events/event_statistics.php:37
 #: ../../include/functions_events.php:924
@@ -7387,16 +7387,16 @@ msgstr ""
 #: ../../general/login_help_dialog.php:51
 #: ../../general/login_help_dialog.php:54
 msgid "Online help"
-msgstr "Online-Hilfe"
+msgstr ""
 
 #: ../../general/login_help_dialog.php:59
 #: ../../general/login_help_dialog.php:62
 msgid "Support"
-msgstr "Hilfe"
+msgstr ""
 
 #: ../../general/login_help_dialog.php:62
 msgid "Forums"
-msgstr "Foren"
+msgstr ""
 
 #: ../../general/login_help_dialog.php:69
 #: ../../general/login_help_dialog.php:72
@@ -7406,11 +7406,11 @@ msgstr ""
 #: ../../general/login_help_dialog.php:77
 #: ../../general/login_help_dialog.php:80
 msgid "Documentation"
-msgstr "Dokumentation"
+msgstr ""
 
 #: ../../general/login_help_dialog.php:90
 msgid "Click here to don't show again this message"
-msgstr "Nachricht nicht mehr anzeigen"
+msgstr ""
 
 #: ../../general/header.php:69 ../../general/header.php:77
 msgid "All systems"
@@ -7562,7 +7562,7 @@ msgstr ""
 
 #: ../../general/shortcut_bar.php:175 ../../general/shortcut_bar.php:198
 msgid "Critical events"
-msgstr "Kritische Ereignisse"
+msgstr ""
 
 #: ../../general/shortcut_bar.php:204 ../../general/shortcut_bar.php:224
 msgid "Incidents opened"
@@ -7571,15 +7571,15 @@ msgstr ""
 #: ../../general/shortcut_bar.php:234
 #: ../../godmode/users/configure_profile.php:168
 msgid "View reports"
-msgstr "Berichte betrachten"
+msgstr ""
 
 #: ../../general/shortcut_bar.php:240
 msgid "Create new message"
-msgstr "Neue Nachricht erstellen"
+msgstr ""
 
 #: ../../general/shortcut_bar.php:267
 msgid "Shortcut: "
-msgstr "Tastenkombination: "
+msgstr ""
 
 #: ../../general/logon_ok.php:31
 msgid "Welcome to Pandora FMS Web Console"
@@ -10035,7 +10035,7 @@ msgstr ""
 #: ../../include/functions_events.php:1617
 #: ../../include/functions_events.php:2241
 msgid "Add comment"
-msgstr "Kommentar hinzufügen"
+msgstr ""
 
 #: ../../enterprise/meta/event/event_view.php:918
 #: ../../include/functions_events.php:1578
@@ -10074,11 +10074,11 @@ msgstr ""
 #: ../../godmode/events/custom_events.php:107
 #: ../../godmode/events/custom_events.php:161
 msgid "Extra id"
-msgstr "Zusätzliche ID"
+msgstr ""
 
 #: ../../enterprise/meta/event/event_view.php:1207
 msgid "User name"
-msgstr "Benutzername"
+msgstr ""
 
 #: ../../enterprise/meta/event/event_view.php:1282
 msgid "Error deleting filter"
@@ -20237,7 +20237,7 @@ msgstr "Modul wurde erfolgreich aktualisiert"
 
 #: ../../godmode/netflow/nf_item_list.php:39
 msgid "Report list"
-msgstr "Berichteliste"
+msgstr ""
 
 #: ../../godmode/netflow/nf_item_list.php:44
 #: ../../godmode/netflow/nf_item_list.php:54

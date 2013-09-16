@@ -16,8 +16,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-07-11 07:14+0000\n"
-"X-Generator: Launchpad (build 16696)\n"
+"X-Launchpad-Export-Date: 2013-09-16 13:22+0000\n"
+"X-Generator: Launchpad (build 16761)\n"
 "Language: ru\n"
 
 #: ../../operation/search_main.php:33
@@ -907,7 +907,7 @@ msgstr ""
 #: ../../enterprise/meta/event/event_view.php:1448
 #: ../../enterprise/meta/event/event_view.php:1517
 msgid "none"
-msgstr "отсутствует"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:297
 #: ../../godmode/netflow/nf_edit_form.php:196
@@ -921,9 +921,6 @@ msgid ""
 "field blank, will show all ip. Example filter by "
 "ip:<br>25.46.157.214,160.253.135.249"
 msgstr ""
-"IP адрес назначения. Запятая разделяет IP адреса в списке. Если оставить "
-"поле пустым, будут показаны все IP адреса. Пример фильтра по IP "
-"адресу:<br>25.46.157.214,160.253.135.249"
 
 #: ../../operation/netflow/nf_live_view.php:306
 #: ../../godmode/netflow/nf_edit_form.php:199
@@ -936,9 +933,6 @@ msgid ""
 "Source IP. A comma separated list of source ip. If we leave the field blank, "
 "will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"
 msgstr ""
-"IP адрес источника. Запятая разделяет IP адреса в списке. Если оставить поле "
-"пустым, будут показаны все IP адреса. Пример фильтра по IP "
-"адресу:<br>25.46.157.214,160.253.135.249"
 
 #: ../../operation/netflow/nf_live_view.php:318
 #: ../../operation/netflow/nf_live_view.php:342
@@ -954,16 +948,13 @@ msgid ""
 "the field blank, will show all ports. Example filter by ports 80 and "
 "22:<br>80,22"
 msgstr ""
-"Номер порта назначения. Запятая разделяет номер портов в списке. Если "
-"оставить поле пустым, будут показаны все номера портов. Пример фильтра по "
-"номеру порта:<br>80,22"
 
 #: ../../operation/netflow/nf_live_view.php:327
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../godmode/netflow/nf_edit_form.php:205
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Src Port"
-msgstr "Номер порта источника"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:327
 #: ../../godmode/netflow/nf_edit_form.php:205
@@ -971,14 +962,11 @@ msgid ""
 "Source port. A comma separated list of source ports. If we leave the field "
 "blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"
 msgstr ""
-"Номер порта источника. Запятая разделяет номер портов в списке. Если "
-"оставить поле пустым, будут показаны все номера портов. Пример фильтра по "
-"номеру порта:<br>80,22"
 
 #: ../../operation/netflow/nf_live_view.php:340
 #: ../../godmode/netflow/nf_edit_form.php:211
 msgid "Aggregate by"
-msgstr "Совокупно по"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../operation/users/user_edit.php:308
@@ -1146,7 +1134,7 @@ msgstr "Нет"
 #: ../../include/functions_netflow.php:1338
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Protocol"
-msgstr "Протокол"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../godmode/netflow/nf_edit_form.php:212
@@ -1156,17 +1144,17 @@ msgstr ""
 #: ../../operation/netflow/nf_live_view.php:342
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Dst Ip Address"
-msgstr "IP адрес назначения"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:345
 #: ../../godmode/netflow/nf_edit_form.php:216
 msgid "Output format"
-msgstr "Выходной формат"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:346
 #: ../../include/functions_netflow.php:1318
 msgid "Bytes"
-msgstr "Байты"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:346
 msgid "Bytes per second"
@@ -1194,7 +1182,7 @@ msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:360
 msgid "Draw"
-msgstr "Рисовать"
+msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:364
 msgid "Save as new filter"
@@ -6925,12 +6913,12 @@ msgstr "Сервер"
 #: ../../include/functions_events.php:2061
 #: ../../mobile/operation/events.php:412
 msgid "Event ID"
-msgstr "ID события"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:49
 #: ../../mobile/operation/events.php:75 ../../mobile/operation/events.php:683
 msgid "Event Name"
-msgstr "Имя события"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:54
 #: ../../enterprise/include/functions_reporting_pdf.php:3611
@@ -6973,7 +6961,7 @@ msgstr ""
 #: ../../godmode/events/custom_events.php:98
 #: ../../godmode/events/custom_events.php:158
 msgid "Comment"
-msgstr "Комментарий"
+msgstr ""
 
 #: ../../operation/events/events.build_table.php:115
 msgid "Extra ID"
@@ -7075,7 +7063,7 @@ msgstr ""
 #: ../../enterprise/meta/event/event_view.php:422
 #: ../../godmode/events/event_edit_filter.php:163
 msgid "Filter name"
-msgstr "Название фильтра"
+msgstr ""
 
 #: ../../operation/events/events_list.php:211
 #: ../../enterprise/include/functions_networkmap_enterprise.php:182

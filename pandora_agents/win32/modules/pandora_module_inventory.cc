@@ -310,11 +310,11 @@ Pandora_Module_Inventory::getXml() {
 	if (!this->has_output || this->inventory_list == NULL) {
 		return "";
 	}
-	
-	module_xml = "\t<inventory>\n";
   
 	if (this->inventory_list && this->inventory_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;		
+
+		module_xml = "\t<inventory>\n";
 
 		for (iter = this->inventory_list->begin ();
 		     iter != this->inventory_list->end ();

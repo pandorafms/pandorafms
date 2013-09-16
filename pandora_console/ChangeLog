@@ -1,3 +1,7 @@
+2013-09-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/servers/plugin.php: Added tab support for the metaconsole.
+
 2013-09-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb.sql

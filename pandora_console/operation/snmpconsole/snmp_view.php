@@ -440,29 +440,25 @@ $table->head[3] = __('Value');
 $table->align[3] = "center";
 $table->size[3] = '10%';
 
-$table->head[4] = __('Custom');
+$table->head[4] = __('User ID');
 $table->align[4] = "center";
-$table->size[4] = '12%';
+$table->size[4] = '10%';
 
-$table->head[5] = __('User ID');
+$table->head[5] = __('Timestamp');
 $table->align[5] = "center";
 $table->size[5] = '10%';
 
-$table->head[6] = __('Timestamp');
+$table->head[6] = __('Alert');
 $table->align[6] = "center";
 $table->size[6] = '10%';
 
-$table->head[7] = __('Alert');
+$table->head[7] = __('Action');
 $table->align[7] = "center";
 $table->size[7] = '10%';
 
-$table->head[8] = __('Action');
+$table->head[8] = html_print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
 $table->align[8] = "center";
-$table->size[8] = '10%';
-
-$table->head[9] = html_print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
-$table->align[9] = "center";
-$table->size[9] = '5%';
+$table->size[8] = '5%';
 
 // Skip offset records
 $idx = 0;
@@ -520,52 +516,44 @@ if ($traps !== false) {
 			$data[3] = ui_print_truncate_text($trap["value"], GENERIC_SIZE_TEXT, false);
 		}
 		
-		//Custom
-		if (empty ($trap["oid_custom"])) {
-			$data[4] = __('N/A');
-		}
-		else {
-			$data[4] = ui_print_truncate_text($trap["oid_custom"], GENERIC_SIZE_TEXT, false);
-		}
-		
 		//User
 		if (!empty ($trap["status"])) {
-			$data[5] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
+			$data[4] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
 			if (!empty($trap["id_usuario"]))
-				$data[5] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
+				$data[4] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
 		}
 		else {
-			$data[5] = '--';
+			$data[4] = '--';
 		}
 		
 		// Timestamp
-		$data[6] = '<span title="'.$trap["timestamp"].'">';
-		$data[6] .= ui_print_timestamp ($trap["timestamp"], true);
-		$data[6] .= '</span>';
+		$data[5] = '<span title="'.$trap["timestamp"].'">';
+		$data[5] .= ui_print_timestamp ($trap["timestamp"], true);
+		$data[5] .= '</span>';
 		
 		// Use alert severity if fired
 		if (!empty ($trap["alerted"])) {
-			$data[7] = html_print_image("images/pixel_yellow.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert fired'))); 		
+			$data[6] = html_print_image("images/pixel_yellow.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert fired'))); 		
 		}
 		else {
-			$data[7] = html_print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert not fired')));
+			$data[6] = html_print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert not fired')));
 		}
 		
 		// Severity
 		$table->rowclass[$idx] = get_priority_class ($severity);
 		
 		//Actions
-		$data[8] = "";
+		$data[7] = "";
 		
 		if (empty ($trap["status"]) && check_acl ($config["id_user"], 0, "IW")) {
-			$data[8] .= '<a href="' . $url_snmp . '&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a> ';
+			$data[7] .= '<a href="' . $url_snmp . '&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a> ';
 		}
 		if (check_acl ($config["id_user"], 0, "IM")) {
-			$data[8] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
+			$data[7] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
 		}
-		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
+		$data[7] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
 		
-		$data[9] = html_print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
+		$data[8] = html_print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
 	
 		array_push ($table->data, $data);
 		

@@ -1,5 +1,11 @@
 2013-09-16  Ramon Novoa  <rnovoa@artica.es>
 
+	* operation/snmpconsole/snmp_view.php: Hide binding vars from the main
+	  view (they do not fit in the table). They are translated and shown in
+	  the detailed view.
+
+2013-09-16  Ramon Novoa  <rnovoa@artica.es>
+
 	* godmode/servers/plugin.php: Added tab support for the metaconsole.
 
 2013-09-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

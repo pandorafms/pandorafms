@@ -1,3 +1,8 @@
+2013-09-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_inventory.cc: Do not output anything if the
+	  module has no data.
+
 2013-08-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_logevent.h: Updated the EventID mask. The

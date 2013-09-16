@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-24 18:23+0200\n"
-"PO-Revision-Date: 2013-06-12 13:39+0000\n"
+"PO-Revision-Date: 2013-07-26 18:37+0000\n"
 "Last-Translator: Anthony Harrington <untaintableangel@ubuntu.com>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-06-14 08:09+0000\n"
-"X-Generator: Launchpad (build 16667)\n"
+"X-Launchpad-Export-Date: 2013-09-16 14:56+0000\n"
+"X-Generator: Launchpad (build 16761)\n"
 "Language: \n"
 
 #: ../../include/graphs/functions_fsgraph.php:785
@@ -3025,7 +3025,7 @@ msgstr "No data found."
 #: ../../enterprise/include/functions_reporting_pdf.php:450
 #: ../../enterprise/include/functions_reporting_csv.php:298
 msgid "Inventory changes"
-msgstr "Changes in inventory"
+msgstr "Inventory changes"
 
 #: ../../include/functions_reporting.php:5137
 #: ../../enterprise/include/functions_reporting_pdf.php:470
@@ -3192,7 +3192,7 @@ msgstr "Unknown monitor"
 
 #: ../../include/functions_reporting.php:5861
 msgid "Monitor not init"
-msgstr "Not initialized monitor"
+msgstr "Not initialised monitor"
 
 #: ../../include/functions_reporting.php:5871
 msgid "Monitors by status"
@@ -5645,12 +5645,12 @@ msgstr "Customer key"
 #: ../../extensions/update_manager/settings.php:72
 #: ../../godmode/setup/setup.php:220
 msgid "License Info"
-msgstr "License Info"
+msgstr "Licence Info"
 
 #: ../../extensions/update_manager/settings.php:72
 #: ../../godmode/setup/setup.php:220
 msgid "License info"
-msgstr "License info"
+msgstr "Licence info"
 
 #: ../../extensions/update_manager/settings.php:75
 msgid "Update server host"
@@ -6538,7 +6538,7 @@ msgstr "Current Platform Count"
 #: ../../extensions/update_manager.php:66
 #: ../../enterprise/include/functions_license.php:136
 msgid "License Mode"
-msgstr "License Mode"
+msgstr "Licence Mode"
 
 #: ../../extensions/update_manager.php:67
 msgid "Open Source Version"
@@ -8975,7 +8975,7 @@ msgstr "Send message"
 
 #: ../../operation/users/webchat.php:155
 msgid "Connection established...get last 24h messages..."
-msgstr "Connection established... Getting last 24h messages..."
+msgstr "Connection established... Getting messages of last 24h..."
 
 #: ../../operation/users/webchat.php:166
 msgid "Error in connection."
@@ -9137,7 +9137,7 @@ msgstr "Incident deleted"
 
 #: ../../operation/integria_incidents/incident.php:208
 msgid "There was a problem deteling incident"
-msgstr "There was a problem deteling incident"
+msgstr "There was a problem deleting incident"
 
 #: ../../operation/integria_incidents/incident.php:232
 msgid "Workunit added"
@@ -10496,7 +10496,7 @@ msgstr "Documentation"
 
 #: ../../general/login_help_dialog.php:88
 msgid "Click here to don't show again this message"
-msgstr "Click here to don't show this message again"
+msgstr "Click here to not show this message again"
 
 #: ../../godmode/groups/modu_group_list.php:54
 msgid "Module groups defined in Pandora"
@@ -10790,10 +10790,10 @@ msgstr ""
 "Pandora FMS Sanity tool is used to remove bad database structure data, "
 "created modules with missing status, or modules that cannot be initialised "
 "(and don't report any valid data) but retry each its own interval to get "
-"data. This kind of bad modules could degrade performance of Pandora FMS. "
+"data. These kind of bad modules could degrade Pandora FMS's performance. "
 "This database sanity tool is also implemented in the <b>pandora_db.pl</b> "
-"that you should be running each day or week. This console sanity DONT "
-"compact your database, only delete bad structured data."
+"that you should be running each day or week. This console sanity tool "
+"DOESN'T compact your database, only delete bad structured data."
 
 #: ../../godmode/db/db_sanity.php:108
 msgid "Sanitize my database now"
@@ -13080,7 +13080,7 @@ msgstr "Sound for Monitor warning"
 
 #: ../../godmode/setup/setup.php:209
 msgid "License information"
-msgstr "License information"
+msgstr "Licence information"
 
 #: ../../godmode/setup/setup.php:224
 msgid "Referer security"
@@ -15005,7 +15005,7 @@ msgstr "Select server"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:720
 msgid "Serialized header"
-msgstr "Serialized header"
+msgstr "Serialised header"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:720
 msgid "The separator character is |"
@@ -15030,7 +15030,7 @@ msgstr "Field separator"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:736
 msgid "Separator for different fields in the serialized text chain"
-msgstr "Separator for different fields in the serialized text chain"
+msgstr "Separator for different fields in the serialised text chain"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:740
 msgid "Line separator"
@@ -15041,7 +15041,7 @@ msgid ""
 "Separator in different lines (composed by fields) of the serialized text "
 "chain"
 msgstr ""
-"Separator in different lines (composed by fields) of the serialized text "
+"Separator in different lines (composed by fields) of the serialised text "
 "chain"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:744
@@ -15849,7 +15849,7 @@ msgstr "Last 8 hours events"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1171
 msgid "Serialized data "
-msgstr "Serialized data "
+msgstr "Serialised data "
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:149
 msgid "Update config"
@@ -15962,7 +15962,7 @@ msgstr "Copy of "
 #: ../../enterprise/include/functions_license.php:109
 #: ../../enterprise/include/functions_license.php:117
 msgid "Invalid license, please check it."
-msgstr "Invalid license, please check it."
+msgstr "Invalid licence, please check it."
 
 #: ../../enterprise/include/functions_inventory.php:48
 #: ../../enterprise/include/functions_inventory.php:373
@@ -16242,7 +16242,7 @@ msgstr "Destination user"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:136
 msgid "User Dashboards"
-msgstr "Users dasboards"
+msgstr "User Dashboards"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:154
 msgid "Replicate Dashboard"
@@ -16890,7 +16890,7 @@ msgid ""
 "Profile synchronization mode. It's important to note that copy profile mode "
 "only works fine if the source profile exists in the target"
 msgstr ""
-"Profile synchronization mode. It's important to note that copy profile mode "
+"Profile synchronisation mode. It's important to note that copy profile mode "
 "only works fine if the source profile exists in the target"
 
 #: ../../enterprise/operation/metaconsole/usermanager.php:221
@@ -16927,7 +16927,7 @@ msgstr "Policies queue"
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:50
 msgid "Policies synchronization"
-msgstr "Policies synchronization"
+msgstr "Policies synchronisation"
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:53
 msgid "Policies apply"
@@ -18856,11 +18856,11 @@ msgstr "Skins"
 
 #: ../../enterprise/load_enterprise.php:158
 msgid "Invalid license"
-msgstr "Invalid license"
+msgstr "Invalid licence"
 
 #: ../../enterprise/load_enterprise.php:158
 msgid "Please contact Artica at info@artica.es for a valid license."
-msgstr "Please contact Artica at info@artica.es for a valid license."
+msgstr "Please contact Artica at info@artica.es for a valid licence."
 
 #: ../../enterprise/load_enterprise.php:159
 msgid "Or disable Pandora FMS enterprise (mv "
@@ -18876,8 +18876,8 @@ msgid ""
 "<strong style=\"font-size: 11pt\">This license has expired.</strong> "
 "<br><br>You can not get updates until you renew the license."
 msgstr ""
-"<strong style=\"font-size: 11pt\">This license has expired.</strong> "
-"<br><br>You can not get updates until you renew the license."
+"<strong style=\"font-size: 11pt\">This licence has expired.</strong> "
+"<br><br>You cannot get updates until you renew the licence."
 
 #: ../../enterprise/load_enterprise.php:262
 #, php-format
@@ -18885,8 +18885,8 @@ msgid ""
 "<strong style=\"font-size: 11pt\">License out of limits</strong> <br><br> "
 "This license allows %d agents and you have %d agents configured."
 msgstr ""
-"<strong style=\"font-size: 11pt\">License out of limits</strong> <br><br> "
-"This license allows %d agents and you have %d agents configured."
+"<strong style=\"font-size: 11pt\">Licence out of limits</strong> <br><br> "
+"This licence allows %d agents and you have %d agents configured."
 
 #: ../../enterprise/load_enterprise.php:268
 msgid ""
@@ -18896,11 +18896,11 @@ msgid ""
 msgstr ""
 "To continue using Pandora FMS, please disable enterprise by renaming the "
 "Enterprise directory in the console.<br><br>Or contact Artica at "
-"info@artica.es for a valid license:"
+"info@artica.es for a valid licence:"
 
 #: ../../enterprise/load_enterprise.php:272
 msgid "Please contact Artica at info@artica.es to renew the license."
-msgstr "Please contact Artica at info@artica.es to renew the license."
+msgstr "Please contact Artica at info@artica.es to renew the licence."
 
 #: ../../index.php:364
 msgid "Sorry! I can't find the page!"

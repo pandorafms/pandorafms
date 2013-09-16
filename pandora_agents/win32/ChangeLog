@@ -1,3 +1,11 @@
+2013-09-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_inventory.cc: Merged from trunk. Do not output
+	  anything if the module has no data.
+
+	* modules/pandora_module_logevent.cc: Write to the log file (instead of the
+	  debug log file) if Wevtapi.dll is not present.
+
 2013-08-28  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* modules/pandora_module.h,

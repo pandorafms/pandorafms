@@ -1,3 +1,8 @@
+2013-09-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_modules.php: Module name checking 
+	for invalid characters added at creation time.
+
 2013-09-16  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

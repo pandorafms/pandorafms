@@ -400,6 +400,11 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	if (empty ($name)) {
 		return ERR_INCOMPLETE;
 	}
+		
+	// Check for non valid characters in module name
+	if (strpbrk(io_safe_output($name), '¡¿÷ºª') !==  false) {
+		return ERR_GENERIC;
+	}
 	
 	if (! is_array ($values))
 		$values = array ();

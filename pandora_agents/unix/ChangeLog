@@ -1,3 +1,14 @@
+2013-09-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf: The default user should not be pandora.
+
+	* pandora_agent_installer: Removed some calls to chown that had the
+	  potential to damage a Linux system.
+
+	* pandora_agent: Delay the parsing of include files to make sure
+	  that all variables that may affect a module's configuration
+	  have already been read.
+
 2013-09-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Added a missing parameter to a call to log_message.

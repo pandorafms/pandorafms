@@ -649,22 +649,6 @@ sub read_config (;$) {
 			next;
 		}
 		next if ($line =~ /^module\s*\w*/);
-		
-		# Additional configuration file
-		if ($line =~ /^include\s+(.*)\s*/) {
-			log_message ('setup', "include is $1");
-			$Conf{'include'} = $Conf{'include'} ? "$Conf{'include'} $1" : $1;
-
-			foreach my $file_name (glob("$1")) {
-				open (FILE, "$file_name") or next;
-
-				log_message ('setup', "reading $file_name");
-				my @file_conf = <FILE>;
-				parse_conf_modules(\@file_conf); 
-				close (FILE);
-			}
-			next;
-		}
 
 		#Configuration token
 		if ($line =~ /^\s*(\S+)\s+(.*)$/) {		
@@ -693,6 +677,31 @@ sub read_config (;$) {
 		$Conf{'intensive_interval'} = $Conf{'interval'};
 	}
 
+	# Search for includes after all other variables have been set
+	foreach my $line (@file) {
+		
+		# Skip comments and empty lines
+		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
+		
+		# Replace CRLF with LF
+		$line =~ s/\r\n/\n/g;
+
+		# Additional configuration file
+		if ($line =~ /^include\s+(.*)\s*/) {
+			$Conf{'include'} = $Conf{'include'} ? "$Conf{'include'} $1" : $1;
+
+			foreach my $file_name (glob("$1")) {
+				open (FILE, "$file_name") or next;
+
+				log_message ('setup', "reading $file_name");
+				my @file_conf = <FILE>;
+				parse_conf_modules(\@file_conf); 
+				close (FILE);
+			}
+			next;
+		}
+	}
+	
 	# Module, plugin and collection definitions
 	parse_conf_modules(\@file);
 

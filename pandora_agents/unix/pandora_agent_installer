@@ -32,7 +32,7 @@ PANDORA_BASE=`echo $2 | sed -e 's/\/$//'`
 if [ "$3" != "" ]
 then
 	PANDORA_USER=$3
-	if [ "$PANDORA_BASE" == "" ]
+	if [ "$PANDORA_BASE" = "" ]
 	then
 		echo "When specifying a custom user the agent must be installed to a custom location where that user has write permissions!"
 		exit 1

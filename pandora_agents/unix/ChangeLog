@@ -1,5 +1,9 @@
 2013-09-19  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent_installer: Changed the bash style == to =.
+
+2013-09-19  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent_installer: Merged from trunk. Removed some calls to
 	  chown that had the potential to damage a Linux system.
 

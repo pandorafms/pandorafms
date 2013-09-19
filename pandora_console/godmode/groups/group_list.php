@@ -254,6 +254,18 @@ db_clean_cache();
 $groups = users_get_groups_tree ($config['id_user'], "AR", true);
 $table->width = '98%';
 
+$groups_count = 0;
+$sons = array();
+foreach($groups as $k => $g) {
+	if ($g['parent'] == 0) {
+		$groups_count++;
+	}
+	else if ($g['parent'] != 0) {
+		$sons[$g['parent']][] = $g;
+		unset($groups[$k]);
+	}
+}
+
 if (check_acl($config['id_user'], 0, "PM")) {
 	echo '<br />';
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
@@ -276,157 +288,42 @@ if (!empty($groups)) {
 	$table->align[5] = 'center';
 	$table->data = array ();
 	
-	$iterator = 0;
-	
-	
-	$all_group = $groups[0];
-	$groups = array_slice($groups, 1);
-	//Set the content of page of groups
 	$offset = (int)get_parameter('offset', 0);
-	$count_visible_groups = 0;
-	$count = 0;
-	$start = 0;
-	$stop = 0;
-	
-	// Do the pagination manually to show the N first groups of first level (parent=0)
-	// TODO: Do it better. Maybe with ajax like tree view
-	foreach ($groups as $group) {
-		if (((int)$group['parent']) == 0) {
-			$count_visible_groups++;
-			
-			if (($count_visible_groups - 1) == $offset) {
-				$start = $count;
-				if ($offset > 0) {
-					$start++;
-				}
-			}
-			
-			if (($count_visible_groups - 1) == ($config['block_size'] + $offset)) {
-				$stop = $count;
-			}
-		}
+	$limit = $offset + $config['block_size'];
 
-		$count++;
-	}
-	if ($stop == 0) {
-		$stop = $start + $config['block_size'] + 1;
-	}
-	
-	// 1 for to add all group
-	$pagination_element = ui_pagination($count_visible_groups + 1,
-		false, 0, $config['block_size'], true);
-	
-	$groups = array_slice($groups, $start, ($stop - $start));
-	$groups = array_merge(array($all_group), $groups);
-	
-	foreach ($groups as $id_group => $group) {
-		if ($group['deep'] == 0) {
-			$table->rowstyle[$iterator] = '';
-		}
-		else {
-			if ($group['parent'] != 0) {
-				$table->rowstyle[$iterator] = 'display: none;';
-			}
+	$pagination = ui_pagination($groups_count,
+		false, 0, $config['block_size'], true, 'offset', false);
+		
+	$n = -1;
+	$iterator = 0;
+	$branch_classes = array();
+	foreach ($groups as $group) {
+		$n++;
+
+		// Only print the page range
+		if($n < $offset || $n >= $limit) {
+			continue;
 		}
 		
-		$symbolBranchs = '';
-		if ($group['id_grupo'] != 0) {
-			
-			//Make a list of parents this group
-			$end = false;
-			$unloop = true;
-			$parents = null;
-			$parents[] = $group['parent'];
-			while (!$end) {
-				$lastParent = end($parents);
-				if ($lastParent == 0) {
-					$end = true;
-				}
-				else {
-					$unloop = true;
-					foreach ($groups as $id => $node) {
-						if ($node['id_grupo'] == 0) {
-							continue;
-						}
-						if ($node['id_grupo'] == $lastParent) {
-							array_push($parents, $node['parent']);
-							$unloop = false;
-						}
-					}
-					
-					//For exit of infinite loop
-					if ($unloop) {
-						break;
-					}
-				}
-			}
-			
-			$table->rowclass[$iterator] = 'parent_' . $group['parent'];
-			
-			//Print the branch classes (for close a branch with child branch in the
-			//javascript) of this parent as example:
-			//
-			// the tree (0(1,2(4,5),3))
-			// for the group 4 have the style "parent_4 branch_0 branch_2"
-			if (!empty($parents)) {
-				foreach ($parents as $idParent) {
-					$table->rowclass[$iterator] .= ' branch_' . $idParent;
-					$symbolBranchs .= ' symbol_branch_' . $idParent;
-				}
-			}
-		}
+		$symbolBranchs = ' symbol_branch_' . $group['parent'];
 		
-		$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
-		
-		if ($group['id_grupo'] == 0) {
-			$symbol = '-';
-		}
-		else {
-			$symbol = '+';
-		}
-		
-		$group_hash_branch = false;
-		if (isset($group['hash_branch'])) {
-			$group_hash_branch = $group['hash_branch'];
-		}
-		
-		if ($group_hash_branch) {
-			$data[0] = '<strong>'.$tabulation . ' ' . 
-				'<a href="javascript: showBranch(' . $group['id_grupo'] .
-				', ' . $group['parent'] . ');" title="' . __('Show branch children') .
-				'"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' .
-				$symbol . '</span> '. ui_print_truncate_text($group['nombre']) . '</a></strong>';
-		}
-		else {
-			$data[0] = '<strong>' . $tabulation . ' ' . ui_print_truncate_text($group['nombre']) . '</strong>';
-		}
-		$data[1] = $group['id_grupo'];
-		$data[2] = ui_print_group_icon($group['id_grupo'], true);
-		$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
-		$data[4] = $group['description'];
-		if ($group['id_grupo'] == 0) {
-			$data[5] = '';
-		}
-		else {
-			$data[5] = '<a href="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&id_group=' . $group['id_grupo'] . '&pure='.$pure.'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
-			//Check if there is only a group to unable delete it
-			if ((count($groups) > 3) || (count($groups) <= 3 && $group['parent'] != 0)) {
-				$data[5] .= '&nbsp;&nbsp;' .
-					'<a href="index.php?sec=' . $sec . '&' .
-						'sec2=godmode/groups/group_list&' .
-						'id_group=' . $group['id_grupo'] . '&delete_group=1&pure=' . $pure . '" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
-			}
-		}
-		
+		$data = groups_get_group_to_list($group, $groups_count, $symbolBranchs);
 		array_push ($table->data, $data);
+		$table->rowstyle[$iterator] = '';
+		if ($group['id_grupo'] != 0) {
+			$branch_classes[$group['id_grupo']] = ' branch_0';
+			$table->rowclass[$iterator] = 'parent_' . $group['parent'] . ' branch_0';
+		}
 		$iterator++;
+		
+		groups_print_group_sons($group, $sons, $branch_classes, $groups_count, $table, $iterator, $symbolBranchs);
 	}
-	
-	echo $pagination_element;
+
+	echo $pagination;
 	
 	html_print_table ($table);
 	
-	echo $pagination_element;
+	echo $pagination;
 }
 else {
 	echo "<div class='nf'>".__('There are no defined groups')."</div>";

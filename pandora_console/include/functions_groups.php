@@ -489,26 +489,19 @@ function groups_flatten_tree_groups($tree, $deep) {
 function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
 	$return = array();
 	
-	$pointer_to_parent = array();
-	$tree = array();
-	foreach ($groups as $key => $group) {
-		if (!isset($pointer_to_parent[$group['parent']])) {
-			$group['branch'] = array();
-			$group['hash_branch'] = false;
-			$tree[$key] = $group;
-			$pointer_to_parent[$key] = &$tree[$key];
+	$tree = $groups;
+	foreach($groups as $key => $group) {
+		if ($group['id_grupo'] == 0) {
+			continue;
 		}
-		else {
-			$group['branch'] = array();
-			$pointer_to_parent[$group['parent']]['branch'][$key] = $group;
-			$pointer_to_parent[$group['parent']]['hash_branch'] = true;
-			
-			$pointer_to_parent[$key] = &$pointer_to_parent[$group['parent']]['branch'][$key];
-		}
+		$tree[$group['parent']]['hash_branch'] = 1;
+		$tree[$group['parent']]['branch'][$key] = &$tree[$key];
+		
 	}
+	$tree = array($tree[0]);
 	
 	$return = groups_flatten_tree_groups($tree, 0);
-	
+
 	return $return;
 }
 
@@ -1413,5 +1406,100 @@ function groups_agent_disabled ($group_array) {
 	$sql = "SELECT COUNT(*) FROM tagente WHERE id_grupo IN $group_clause AND disabled = 1";
 	
 	return db_get_sql ($sql);
+}
+
+/**
+ *  Return a group row for Groups managment list
+ *
+ * @param mixed Group info
+ * @param int total number of groups
+ * @param string (ref) Concatenation of branches class with the parent classes
+ *
+ * @return mixed Row with html_print_table format
+ * 
+ */
+function groups_get_group_to_list($group, $groups_count, &$symbolBranchs) {
+	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
+	
+	if ($group['id_grupo'] == 0) {
+		$symbol = '-';
+	}
+	else {
+		$symbol = '+';
+	}
+	
+	$group_hash_branch = false;
+	if (isset($group['hash_branch'])) {
+		$group_hash_branch = $group['hash_branch'];
+	}
+	
+	if ($group_hash_branch) {
+		$data[0] = '<strong>'.$tabulation . ' ' . 
+			'<a href="javascript: showBranch(' . $group['id_grupo'] .
+			', ' . $group['parent'] . ');" title="' . __('Show branch children') .
+			'"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' .
+			$symbol . '</span> '. ui_print_truncate_text($group['nombre']) . '</a></strong>';
+	}
+	else {
+		$data[0] = '<strong>' . $tabulation . ' ' . ui_print_truncate_text($group['nombre']) . '</strong>';
+	}
+	$data[1] = $group['id_grupo'];
+	$data[2] = ui_print_group_icon($group['id_grupo'], true);
+	$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
+	$data[4] = $group['description'];
+	if ($group['id_grupo'] == 0) {
+		$data[5] = '';
+	}
+	else {
+		$data[5] = '<a href="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&id_group=' . $group['id_grupo'] . '&pure='.$pure.'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+		//Check if there is only a group to unable delete it
+		if ($groups_count > 2) {
+			$data[5] .= '&nbsp;&nbsp;' .
+				'<a href="index.php?sec=' . $sec . '&' .
+					'sec2=godmode/groups/group_list&' .
+					'id_group=' . $group['id_grupo'] . '&delete_group=1&pure=' . $pure . '" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+		}
+	}
+	
+	return $data;
+}
+
+/**
+ * Store to be printed the subgroups rows (Recursive)
+ *
+ * @param mixed Group info
+ * @param mixed Hash list with all the groups of 2nd or higher level
+ * @param string (ref) Concatenation of branches classes to control the symbols from Javascript
+ * @param int total number of groups
+ * @param obj (ref) table object in html_print_table format with the stored groups
+ * @param int (ref) counter of the row stored
+ * @param string (ref) Concatenation of branches class with the parent classes
+ * 
+ */
+function groups_print_group_sons($group, $sons, &$branch_classes, $groups_count, &$table, &$iterator, &$symbolBranchs) {		
+	if (isset($sons[$group['id_grupo']])) {
+		foreach($sons[$group['id_grupo']] as $key => $g) {
+			$symbolBranchs .= ' symbol_branch_' . $g['parent'];
+
+			$data = groups_get_group_to_list($g, $groups_count, $symbolBranchs);
+			array_push ($table->data, $data);
+			
+			$branch_classes[$g['id_grupo']] = $branch_classes[$g['parent']] . ' branch_' . $g['parent'];
+			$table->rowclass[$iterator] = 'parent_' . $g['parent'] . $branch_classes[$g['id_grupo']];
+			
+			if ($g['deep'] == 0) {
+				$table->rowstyle[$iterator] = '';
+			}
+			else {
+				if ($g['parent'] != 0) {
+					$table->rowstyle[$iterator] = 'display: none;';
+				}
+			}
+	
+			$iterator++;
+			
+			groups_print_group_sons($g, $sons, $branch_classes, $groups_count, $table, $iterator, $symbolBranchs);
+		}
+	}
 }
 ?>

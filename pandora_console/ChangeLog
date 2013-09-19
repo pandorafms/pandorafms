@@ -1,3 +1,9 @@
+2013-09-19  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php
+	godmode/groups/group_list.php: Fix groups view pagination
+	and other internal fail retrieving the groups in tree way
+
 2013-09-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_modules.php: Module name checking 

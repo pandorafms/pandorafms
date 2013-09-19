@@ -1,3 +1,8 @@
+2013-09-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Merged from trunk. Removed some calls to
+	  chown that had the potential to damage a Linux system.
+
 2013-08-28  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_agent: Added module_group support.

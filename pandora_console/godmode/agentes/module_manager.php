@@ -592,7 +592,7 @@ foreach ($modules as $module) {
 			if ($linked) {
 				if ($adopt) {
 					$img = 'images/policies_brick.png';
-					$title = __('(Adopt) ') . $policyInfo['name_policy'];
+					$title = '(' . __('Adopted') . ') ' . $policyInfo['name_policy'];
 				}
 				else {
 					$img = 'images/policies.png';
@@ -602,11 +602,11 @@ foreach ($modules as $module) {
 			else {
 				if ($adopt) {
 					$img = 'images/policies_not_brick.png';
-					$title = __('(Adopt) (Unlinked) ') . $policyInfo['name_policy'];
+					$title = '(' . __('Unlinked') . ') (' . __('Adopted') . ') ' . $policyInfo['name_policy'];
 				}
 				else {
 					$img = 'images/unlinkpolicy.png';
-					$title = __('(Unlinked) ') . $policyInfo['name_policy'];
+					$title = '(' . __('Unlinked') . ') ' . $policyInfo['name_policy'];
 				}
 			}
 			

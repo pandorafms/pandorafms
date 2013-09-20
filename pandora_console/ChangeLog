@@ -1,3 +1,8 @@
+2013-09-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/alerts/configure_alert_action.php: Fix update
+	process of alert actions when group is not ALL.
+	
 2013-09-20  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/estado_monitores.php

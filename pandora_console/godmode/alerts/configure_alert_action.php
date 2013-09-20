@@ -124,6 +124,11 @@ if ($id) {
 			html_print_input_hidden ('update_action', 1);
 			html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
 		}
+	} 
+	else {
+	
+			html_print_input_hidden ('update_action', 1);
+			html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
 	}
 }
 else {

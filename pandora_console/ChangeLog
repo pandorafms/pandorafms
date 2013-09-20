@@ -1,3 +1,10 @@
+2013-09-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+        * godmode/alerts/configure_alert_action.php: Fix update
+        process of alert actions when group is not ALL.
+
+	Merged from trunk.
+
 2013-09-16  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

@@ -457,7 +457,7 @@ foreach ($simple_alerts as $alert) {
 			WHERE id = ".$alert["id_alert_template"]);
 		if ($default_action != "") {
 			$data[3] .= "<tr><td>";
-			$data[3] .= __("Default"). " : ".db_get_sql ("SELECT name FROM talert_actions WHERE id = $default_action");
+			$data[3] .= __("Default"). " : ".db_get_sql ("SELECT name FROM talert_actions WHERE id = $default_action") . ' <em>(' . __('Always') . ')</em>';
 			$data[3] .= "</td>";
 			$data[3] .= "<td></td>";
 			$data[3] .= "</tr>";

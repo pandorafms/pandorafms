@@ -106,10 +106,9 @@ if (!empty($groups_user)) {
 	$sql = "SELECT id, name FROM talert_actions WHERE id_group IN ($groups)";
 	$actions = db_get_all_rows_sql($sql);
 }
-
 $table->data[2][1] = '<div class="actions_container">';
-$table->data[2][1] = html_print_select(index_array ($actions, 'id', 'name'),'action_select','','','','',true, '', true, '', false, 'width: 250px;');
-$table->data[2][1] .= '<span id="advanced_action" class="advanced_actions"><br>';
+$table->data[2][1] .= html_print_select(index_array ($actions, 'id', 'name'),'action_select','','',__('Default action'),'0',true, '', true, '', false, 'width: 250px;');
+$table->data[2][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
 $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
 $table->data[2][1] .= ' '.__('to').' ';
@@ -176,8 +175,8 @@ $(document).ready (function () {
 		$("#action_loading").show ();
 	});
 	
-	$("#action_select").change(function () {
-			if ($("#action_select").attr ("value") != '0') {
+	$(".actions_container [name='action_select']").change(function () {
+			if ($(this).val() != '0') {
 				$('#advanced_action').show();
 			}
 			else {

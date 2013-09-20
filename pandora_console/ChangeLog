@@ -1,3 +1,10 @@
+2013-09-20  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_list.builder.php: Fix the alerts creation
+	to allow create an alert with default action. bug #2353
+	Improve default actions string too.
+
 2013-09-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/alerts/configure_alert_action.php: Fix update

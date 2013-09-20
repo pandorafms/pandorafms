@@ -1,3 +1,13 @@
+2013-09-20  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/estado_monitores.php
+	godmode/agentes/module_manager.php: Fixing translation
+	of adopted modules and reestructure translations calls
+	to do the translations more efecctively for bug #2375
+
+	* general/login_help_dialog.php: Fix size
+	of the login help dialog
+
 2013-09-19  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_groups.php

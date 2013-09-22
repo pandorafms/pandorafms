@@ -1,3 +1,12 @@
+2013-09-22  Junichi Satoh <junichi@rworks.jp>
+
+	* bin/tentacle_server: Upgraded to 0.4.0. (Imported from trunk of
+	tentacled repository.)
+	Added support for IPv6 and improved to be able to bind multiple
+	interfaces and/or IP addresses.
+	Added support for 'TCP Wrappers'. When the 'Authen::Libwrap' is
+	installed and -T option is specified, this feature can be used.
+
 2013-09-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Validate existing events with the same 'ID extra' instead

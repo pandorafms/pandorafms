@@ -1,5 +1,9 @@
 2013-09-22  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/help/ja/help_alert_config.php: Translated new sentences.
+	
+2013-09-22  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/help/ja/help_module_macros.php,
 	include/help/ja/help_alert_macros.php: Translated new sentences.
 

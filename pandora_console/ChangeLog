@@ -1,3 +1,8 @@
+2013-09-22  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_module_macros.php,
+	include/help/ja/help_alert_macros.php: Translated new sentences.
+
 2013-09-20  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_list.list.php

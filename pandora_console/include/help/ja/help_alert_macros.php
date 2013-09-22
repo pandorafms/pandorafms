@@ -6,7 +6,7 @@
 <h1>アラートマクロ</h1>
 
 <p>
-Besides the defined module macros, 次のマクロが利用できます:
+定義したモジュールマクロ以外に、次のマクロが利用できます:
 </p>
 <ul>
 <li>_field1_ : ユーザ定義フィールド1</li>

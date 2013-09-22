@@ -3,19 +3,19 @@
  * @package Include/help/ja
  */
 ?>
-<h1>Module macros</h1>
+<h1>モジュールマクロ</h1>
 
-Any number of custom module macros may be defined. The recommended format for macro names is:
+任意の数のモジュールマクロを定義できます。マクロ名の書式は次の通りです。
 
 <pre>
 _macroname_
 </pre>
 
-For example:
+例:
 <ul>
 <li>_technology_</li>
 <li>_modulepriority_</li>
 <li>_contactperson_</li>
 </ul>
 
-This macros can be used in module alerts.
+このマクロは、モジュールアラートで利用できます。

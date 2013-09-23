@@ -165,8 +165,12 @@ function pandora_update_manager_uninstall () {
 	}
 }
 
+/**
+ * The code for to show in the operation menu entry.
+ */
 function pandora_update_manager_main () {
 	global $config;
+	
 	
 	if (! check_acl($config['id_user'], 0, "PM")) {
 		require ("general/noaccess.php");

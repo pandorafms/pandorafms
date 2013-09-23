@@ -14,6 +14,9 @@
 
 return;
 
+/**
+ * The code for to show in the operation menu entry.
+ */
 function main_view() {
 	// Load global vars
 	global $config;

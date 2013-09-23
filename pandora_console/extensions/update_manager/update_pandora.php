@@ -54,6 +54,8 @@ function update_pandora_administration($settings, $user_key) {
 	global $config;
 	global $conf_update_pandora;
 	
+	require_once("include/functions_graph.php");
+	
 	check_login ();
 	
 	if (! check_acl ($config["id_user"], 0, "PM")) {

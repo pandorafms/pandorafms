@@ -1,3 +1,8 @@
+2013-09-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php: Fix groups in tree way
+	when All group is not exist
+
 2013-09-22  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_alert_config.php: Translated new sentences.

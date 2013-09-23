@@ -498,7 +498,14 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
 		$tree[$group['parent']]['branch'][$key] = &$tree[$key];
 		
 	}
-	$tree = array($tree[0]);
+	
+	// Depends on the All group we give different format
+	if (isset($groups[0])) {
+		$tree = array($tree[0]);
+	}
+	else {
+		$tree = $tree[0]['branch'];
+	}
 	
 	$return = groups_flatten_tree_groups($tree, 0);
 

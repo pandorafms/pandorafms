@@ -1,5 +1,11 @@
 2013-09-24  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/reporting/reporting_builder.item_editor.php: Added
+	error message when try to add a new SLA item without configure
+	parameters
+
+2013-09-24  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css
 	include/javascript/jquery.pandora.js
 	images/license_key.png

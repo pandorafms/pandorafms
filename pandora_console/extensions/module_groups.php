@@ -284,34 +284,18 @@ function mainModuleGroups() {
 		html_print_table($table);
 		echo "</div>";
 		
-		echo "<p>" . __("The colours meaning:") .
-			"<ul style='float: left;'>" .
-				'<li style="clear: both;">
-					<div style="float: left; background: #ffa300; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Orange cell when the module group and agent have at least one alarm fired.") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Red cell when the module group and agent have at least one module in critical status and the others in any status") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Green cell when the module group and agent have all modules in OK status") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Grey cell when the module group and agent have at least one in unknown status and the others in green status") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #729fcf; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Blue cell when the module group and agent have all modules in not init status.") .
-				'</li>' .
-			"</ul>" .
-		"</p>";
+		echo "<div class='legend_basic' style='width: 94%'>";
+
+		echo "<table>";
+		echo "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
+		echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module group and agent have at least one alarm fired.") . "</td></tr>";
+		echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_CRITICAL . ";'></div></td><td>" . __("Red cell when the module group and agent have at least one module in critical status and the others in any status") . "</td></tr>";
+		echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status") . "</td></tr>";
+		echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module group and agent have all modules in OK status") . "</td></tr>";
+		echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module group and agent have at least one in unknown status and the others in green status") . "</td></tr>";
+		echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_MAINTENANCE . ";'></div></td><td>" .__("Blue cell when the module group and agent have all modules in not init status.") . "</td></tr>";
+		echo "</table>";
+		echo "</div>";
 	}
 	else {
 		echo "<div class='nf'>".__('There are no defined groups or module groups')."</div>";

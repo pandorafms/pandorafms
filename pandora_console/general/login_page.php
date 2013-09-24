@@ -150,7 +150,7 @@ if (isset ($login_failed)) {
 			echo '</div>';
 			
 			echo '<div style="position:absolute; margin: 0 auto; top: 70px; left: 35%; ">';
-				html_print_submit_button("Ok", 'hide-login-error', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');  
+				html_print_submit_button("Ok", 'hide-login-error', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 			echo '</div>';
 			
 		echo '</div>';
@@ -158,6 +158,7 @@ if (isset ($login_failed)) {
 	echo '</div>';
 }
 
+ui_require_css_file ('dialog');
 ui_require_css_file ('jquery-ui-1.10.0.custom');
 ui_require_jquery_file('jquery-ui-1.10.0.custom');
 ?>

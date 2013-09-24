@@ -1144,7 +1144,6 @@ tr.disabled_row_user * {
 }
 .red, .redb, .redi, .error {
 	color: #c00;
-http://localhost/pandora_blackout/index.php?sec=gpolicies&sec2=enterprise/godmode/policies/policies&tab=agents&id=3
 }
 
 .sep {
@@ -2295,18 +2294,20 @@ tr.group_view_data, .group_view_data {
 }
 
 tr.group_view_crit, .group_view_crit {
-	background-color:  #FA3030;
+	background-color:  #FF4040;
+	color: #fff;
 }
 
 tr.group_view_norm, .group_view_norm {
 	background-color: #ffffff;
 }
 tr.group_view_ok, .group_view_ok {
-	background-color: #00C000;
+	background-color: #6EB432;
+	color: #fff;
 }
 
 tr.group_view_warn, .group_view_warn, tr.group_view_warn.a, a.group_view_warn, tr.a.group_view_warn {
-	background-color: #F5E535;
+	background-color: #F2D400;
 	color: #3F3F3F !important;
 }
 
@@ -2315,11 +2316,12 @@ a.group_view_warn {
 }
 
 tr.group_view_alrm, .group_view_alrm {
-	background-color: #ED8701;
+	background-color: #FF8800;
 }
 
 tr.group_view_unk, .group_view_unk {
-	background-color: #C4C4C4;
+	background-color: #AAAAAA;
+	color: #fff;
 }
 
 /* classes for event priorities. Sits now in functions.php */
@@ -2681,4 +2683,51 @@ div#agent_wizard_subtabs {
 
 .agent_wizard_tab:hover {
 	cursor: default;
+}
+
+#container_servicemap_legend {
+	position: absolute;
+	width: 200px;
+	background: #F4F4F4;
+	margin-top: 10px;
+	right: 2px;
+	border-radius: 5px;
+	padding: 10px;
+	opacity: .90;
+}
+
+#container_servicemap_legend table {
+	text-align: left;
+}
+
+.legend_square {
+	width: 20px;
+	padding-left: 20px;
+	padding-right: 10px;
+}
+
+.legend_square_simple {
+	padding-left:0px;
+	padding-right: 10px;
+	padding-bottom: 3px;
+}
+.legend_square div, .legend_square_simple div {
+	width: 20px;
+	height: 20px;
+	border-radius: 3px;
+}
+
+.legend_basic {
+	background: #F4F4F4;
+	margin-top: 10px;
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.agents_modules_table th {
+	background: #3F3F3F;
+}
+
+.agents_modules_table th * {
+	color: #FFFFFF;
 }

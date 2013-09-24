@@ -1,3 +1,16 @@
+2013-09-24  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/javascript/jquery.pandora.js
+	images/license_key.png
+	general/login_help_dialog.php
+	general/login_page.php: Change the visual styles
+	of some dialogs
+
+	* extensions/agents_modules.php
+	extensions/module_groups.php: Improve the visual
+	style of extensions and their legends
+
 2013-09-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager.php,

@@ -90,8 +90,8 @@ $(document).ready (function () {
 					resizable: true,
 					draggable: true,
 					modal: true,
-					height: 280,
-					width: 600,
+					height: 310,
+					width: 650,
 					overlay: {
 								opacity: 0.5,
 								background: "black"

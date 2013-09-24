@@ -170,7 +170,7 @@ function mainAgentsModules() {
 		return;
 	}
 	
-	echo '<table cellpadding="4" cellspacing="4" border="0">';
+	echo '<table cellpadding="4" cellspacing="4" border="0" style="width:98%;" class="agents_modules_table">';
 	
 	echo "<tr>";
 	
@@ -298,30 +298,17 @@ function mainAgentsModules() {
 	
 	echo "</table>";
 	
-	echo "<br><br><p>" . __("The colours meaning:") .
-		"<ul style='float: left;'>" .
-		'<li style="clear: both;">
-			<div style="float: left; background: #ffa300; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Orange cell when the module has fired alerts") .
-		'</li>' .
-		'<li style="clear: both;">
-			<div style="float: left; background: #cc0000; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Red cell when the module has a critical status") .
-		'</li>' .
-		'<li style="clear: both;">
-			<div style="float: left; background: #fce94f; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Yellow cell when the module has a warning status") .
-		'</li>' .
-		'<li style="clear: both;">
-			<div style="float: left; background: #8ae234; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Green cell when the module has a normal status") .
-		'</li>' .
-		'<li style="clear: both;">
-			<div style="float: left; background: #babdb6; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Grey cell when the module has an unknown status") .
-		'</li>' .
-		"</ul>" .
-	"</p>";
+	echo "<div class='legend_basic' style='width: 96%'>";
+
+	echo "<table>";
+	echo "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
+	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module has fired alerts") . "</td></tr>";
+	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_CRITICAL . ";'></div></td><td>" . __("Red cell when the module has a critical status") . "</td></tr>";
+	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module has a warning status") . "</td></tr>";
+	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module has a normal status") . "</td></tr>";
+	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module has an unknown status") . "</td></tr>";
+	echo "</table>";
+	echo "</div>";
 	
 	echo "
 		<style type='text/css'>

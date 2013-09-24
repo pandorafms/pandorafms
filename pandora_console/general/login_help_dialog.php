@@ -90,7 +90,7 @@ echo '<div id="login_help_dialog" title="' .
 			echo '&nbsp;<span style="font-size: 12px;">' .__("Click here to don't show again this message") . '</span>';
 		echo '</div>';
 		echo '<div style="float: right; width: 20%;">';
-		html_print_submit_button("Ok", 'hide-login-help', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');  
+		html_print_submit_button("Ok", 'hide-login-help', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
 	echo '</div>';
 	

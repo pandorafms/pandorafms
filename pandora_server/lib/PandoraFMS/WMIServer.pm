@@ -159,10 +159,11 @@ sub data_consumer ($$) {
 	}
 
 	# WMI query
-	my $wmi_query = decode_entities($module->{'snmp_oid'});
+	my $wmi_query = $module->{'snmp_oid'};
 	$wmi_query =~ s/\"/\'/g;
 
 	$wmi_command .= ' //' . $module->{'ip_target'} . ' "' . $wmi_query . '"';
+	$wmi_command = safe_output ($wmi_command);
 	logger ($pa_config, "Executing AM # $module_id WMI command '$wmi_command'", 9);
 
 	# Execute command
@@ -192,7 +193,7 @@ sub data_consumer ($$) {
 	my @row = split(/\|/, $output[2]);
 
 	# Get the specified column
-	$module_data = $row[$module->{'tcp_port'}] if defined ($row[$module->{'tcp_port'}]);
+	$module_data = $row[$module->{'tcp_port'}] if (defined ($module->{'tcp_port'}) &&  defined ($row[$module->{'tcp_port'}]));
 	if ($module_data =~ m/^ERROR/) {
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;

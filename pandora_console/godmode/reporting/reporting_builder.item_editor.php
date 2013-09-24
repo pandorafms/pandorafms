@@ -1054,8 +1054,9 @@ echo '</form>';
 ui_require_jquery_file ("ui-timepicker-addon");
 ui_require_javascript_file('pandora');
 // This script is included manually to be included after jquery and avoid error
-echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language(), false, false, false) . '"></script>';
-ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
+if(file_exists('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language() . '.js')) {
+	echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language() . '.js', false, false, false) . '"></script>';
+}
 
 if ($enterpriseEnable) {
 	reporting_enterprise_text_box();
@@ -1640,6 +1641,9 @@ function addSLARow() {
 					}
 				}
 			});
+	}
+	else {
+		alert('<?php echo __('Could not be created'); ?>');
 	}
 }
 

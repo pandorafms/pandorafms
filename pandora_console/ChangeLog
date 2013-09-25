@@ -1,5 +1,11 @@
 2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/modificar_agente.php,
+	godmode/agentes/agent_manager.php, include/functions_modules.php:
+	fixed the call to check or get remote config.
+
+2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/modificar_agente.php: refixed, sorry.
 
 2013-09-25 Miguel de Dios <miguel.dedios@artica.es>

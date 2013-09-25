@@ -119,7 +119,9 @@ echo '<div style="height: 5px">&nbsp;</div>';
 if (!$new_agent) {
 	// Agent remote configuration editor
 	enterprise_include_once('include/functions_config_agents.php');
-	$filename = enterprise_hook('config_agents_get_agent_config_filenames', $id_agente);
+	if (enterprise_installed()) {
+		$filename = config_agents_get_agent_config_filenames($id_agente);
+	}
 }
 
 $disk_conf = (bool) get_parameter ('disk_conf');

@@ -23,6 +23,7 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once($config['homedir'] . '/include/functions_tags.php');
 
+
 /**
  * Copy a module defined in an agent to other agent.
  * 
@@ -122,6 +123,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 					$new_module, false);
 				break;
 		}
+		
 		if ($id_new_module === false) {
 			return false;
 		}
@@ -131,7 +133,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	}
 	
 	$values['id_agente'] = $id_destiny_agent;
-
+	
 	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":	
@@ -173,25 +175,23 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		
 		if ($source_tags ==  false)
 			$source_tags = array();
-			
+		
 		tags_insert_module_tag($id_new_module, $source_tags);
 		
 		//Added the config data if necesary
 		enterprise_include_once('include/functions_config_agents.php');
-
-		$id_agente = modules_get_agentmodule_agent($id_agent_module);
-
-		$file = enterprise_hook('config_agents_get_agent_config_filenames', $id_agente);
-		$agent_md5  = $file['md5'];
-		$remote_conf  = $file['conf'];
 		
-		if ($remote_conf) {
-			$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
+		$id_agente = modules_get_agentmodule_agent($id_agent_module);
+		
+		if (enterprise_installed()) {
+			if (config_agents_has_remote_configuration($id_agente)) {
+				$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
 				array($id_agent_module, $id_new_module));
-			
-			
-			if ($result === false)
-				return false;
+				
+				
+				if ($result === false)
+					return false;
+			}
 		}
 	}
 	
@@ -251,7 +251,8 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 		
 		$id_agent = modules_get_agentmodule_agent($id);
 		
-		$exists = (bool)db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $values['nombre'], 'id_agente' => $id_agent, 'id_agente_modulo' => "<>$id"));
+		$exists = (bool)db_get_value_filter('id_agente_modulo',
+			'tagente_modulo', array('nombre' => $values['nombre'], 'id_agente' => $id_agent, 'id_agente_modulo' => "<>$id"));
 		
 		if ($exists) {
 			return ERR_EXIST;
@@ -272,6 +273,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	if ($onlyNoDeletePending) {
 		$where['delete_pending'] = 0;
 	}
+	
 	
 	$result = @db_process_sql_update ('tagente_modulo', $values, $where);
 	
@@ -307,6 +309,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 		return ERR_INCOMPLETE;
 	}
 	
+	
 	if (! is_array ($values))
 		$values = array ();
 	$values['nombre'] = $name;
@@ -327,7 +330,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	if (($tags !== false) || (empty($tags)))
 		$return_tag = tags_insert_module_tag ($id_agent_module, $tags);
 	
-	if ($return_tag === false){
+	if ($return_tag === false) {
 		db_process_sql_delete ('tagente_modulo',
 			array ('id_agente_modulo' => $id_agent_module));
 		
@@ -592,7 +595,10 @@ function modules_get_agentmodule_id ($agentmodule_name, $agent_id) {
  * @return bool true if is init and false if is not init
  */
 function modules_get_agentmodule_is_init ($id_agentmodule) {
-	$result = db_get_row_filter ('tagente_estado', array('id_agente_modulo' => $id_agentmodule), 'utimestamp');
+	
+	$result = db_get_row_filter ('tagente_estado',
+		array('id_agente_modulo' => $id_agentmodule), 'utimestamp');
+	
 	return (bool)$result['utimestamp'];
 }
 
@@ -686,7 +692,9 @@ function modules_get_agentmodule_name ($id_agente_modulo) {
  * @return string Module type of the given agent module.
  */
 function modules_get_agentmodule_type ($id_agentmodule) {
-	return (int) db_get_value ('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+	
+	return (int) db_get_value ('id_tipo_modulo',
+		'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 }
 
 /**
@@ -1279,15 +1287,18 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 		switch($last_status) {
 			case 0:
 				$status = STATUS_AGENT_DOWN;
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL');
+				$title = __('UNKNOWN') . " - " . __('Last status') .
+					" " . __('NORMAL');
 				break;
 			case 1:
 				$status = STATUS_AGENT_DOWN;
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL');
+				$title = __('UNKNOWN') . " - " . __('Last status') .
+					" " . __('CRITICAL');
 				break;
 			case 2:
 				$status = STATUS_AGENT_DOWN;
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('WARNING');
+				$title = __('UNKNOWN') . " - " . __('Last status') .
+					" " . __('WARNING');
 				break;
 		}
 	}
@@ -1534,7 +1545,7 @@ function modules_group_agent_critical ($module_group) {
 // Get warning agents by using the status code in modules.
 
 function modules_group_agent_warning ($module_group) {
-
+	
 	// Agent of module group X and critical status	
 	$agents_critical = "SELECT tagente.id_agente 
 						FROM tagente_estado, tagente, tagente_modulo

@@ -460,7 +460,6 @@ if ($agents !== false) {
 		echo '</div>';
 		echo "</td>";
 		
-		
 		echo "<td align='center' class='$tdcolor'>";
 		// Has remote configuration ?
 		enterprise_include_once('include/functions_config_agents.php');

@@ -1,5 +1,10 @@
 2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_modules.php: made more easy the merge with the
+	last branch.
+
+2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/modules/manage_network_components_form_common.php,
 	godmode/modules/manage_network_components_form.php: fixed the
 	javascript to configure the form of snmp.

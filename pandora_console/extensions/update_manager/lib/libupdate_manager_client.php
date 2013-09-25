@@ -142,7 +142,7 @@ function um_client_get_package ($settings, $user_key) {
 		$settings->proxy_pass,
 		'get_next_package', $params);
 	
-	if ($result === false)
+	if (empty($result))
 		return false;
 	
 	$value = $result->value ();

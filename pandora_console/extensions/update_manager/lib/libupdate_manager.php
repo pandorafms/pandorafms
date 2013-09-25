@@ -145,7 +145,7 @@ function um_db_update_package ($id_package, $description = '', $status = 'disabl
 	
 	$result = db_process_sql_update(DB_PREFIX.'tupdate_package', $values, $where);
 	
-	if($result === false) {
+	if ($result === false) {
 		echo '<strong>Error updating package</strong><br />';
 		return false;
 	}

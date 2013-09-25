@@ -309,7 +309,7 @@ function modules_delete_agent_module ($id_agent_module) {
 		array ('nombre' => 'delete_pending', 'delete_pending' => 1, 'disabled' => 1),
 		$where);
 	db_process_sql_delete('ttag_module', $where);
-		
+	
 	return true;
 }
 
@@ -400,7 +400,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	if (empty ($name)) {
 		return ERR_INCOMPLETE;
 	}
-		
+	
 	// Check for non valid characters in module name
 	if (strpbrk(io_safe_output($name), '¡¿÷ºª') !==  false) {
 		return ERR_GENERIC;
@@ -736,6 +736,7 @@ function modules_get_agentmodule_id ($agentmodule_name, $agent_id) {
  * @return bool true if is init and false if is not init
  */
 function modules_get_agentmodule_is_init ($id_agentmodule, $metaconsole = false, $id_server = null) {
+	
 	if ($metaconsole) {
 		$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
 		
@@ -870,6 +871,7 @@ function modules_get_agentmodule_name ($id_agente_modulo) {
  * @return string Module type of the given agent module.
  */
 function modules_get_agentmodule_type ($id_agentmodule, $metaconsole = false, $id_server = null) {
+	
 	if ($metaconsole) {
 		$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
 		

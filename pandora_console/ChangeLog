@@ -1,3 +1,8 @@
+2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/modificar_agente.php: fixed the check remote
+	config.
+
 2013-09-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
         * godmode/alerts/configure_alert_action.php: Fix update

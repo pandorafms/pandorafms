@@ -1,5 +1,9 @@
 2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/modificar_agente.php: refixed, sorry.
+
+2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/modificar_agente.php: fixed the check remote
 	config.
 

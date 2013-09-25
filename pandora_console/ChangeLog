@@ -1,3 +1,14 @@
+2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/modules/manage_network_components_form_common.php,
+	godmode/modules/manage_network_components_form.php: fixed the
+	javascript to configure the form of snmp.
+	
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager_editor_common.php: fixed the
+	"module_macros" when it is fail when is not set for example.
+
 2013-09-24  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/reporting_builder.item_editor.php: Added

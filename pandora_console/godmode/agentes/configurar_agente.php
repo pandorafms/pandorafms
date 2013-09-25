@@ -1089,7 +1089,8 @@ if ($create_module) {
 		$id_agent_module = false;
 	}
 	else {
-		$id_agent_module = modules_create_agent_module ($id_agente, $name, $values, false, $id_tag);
+		$id_agent_module = modules_create_agent_module (
+			$id_agente, $name, $values, false, $id_tag);
 	}
 	
 	if (is_error($id_agent_module)) {

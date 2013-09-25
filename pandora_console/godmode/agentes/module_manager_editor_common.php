@@ -483,13 +483,17 @@ $table_macros->style[5] = 'width: 10px';
 $table_macros->colspan = array ();
 
 $macro_count = 0;
-foreach ($module_macros as $macro_name => $macro_value) {
-	$table_macros->data[$macro_count][0] = __('Name');
-	$table_macros->data[$macro_count][1] = html_print_input_text ('module_macro_names[]', $macro_name, '', 50, 60, true);
-	$table_macros->data[$macro_count][2] = __('Value');
-	$table_macros->data[$macro_count][3] = html_print_input_text ('module_macro_values[]', $macro_value, '', 50, 60, true);
-	$table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro(' . $macro_count . ');">' . html_print_image('images/cross.png', true) . '</a>';
-	$macro_count++;
+if (isset($module_macros)) {
+	if (is_array($module_macros)) {
+		foreach ($module_macros as $macro_name => $macro_value) {
+			$table_macros->data[$macro_count][0] = __('Name');
+			$table_macros->data[$macro_count][1] = html_print_input_text ('module_macro_names[]', $macro_name, '', 50, 60, true);
+			$table_macros->data[$macro_count][2] = __('Value');
+			$table_macros->data[$macro_count][3] = html_print_input_text ('module_macro_values[]', $macro_value, '', 50, 60, true);
+			$table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro(' . $macro_count . ');">' . html_print_image('images/cross.png', true) . '</a>';
+			$macro_count++;
+		}
+	}
 }
 $table_macros->data[$macro_count][0] = '<span>'.__('Add module macro').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png',true).'</a>';
 $table_macros->colspan[$macro_count][0] = 5;

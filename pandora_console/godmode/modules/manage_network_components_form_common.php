@@ -71,7 +71,7 @@ $sql = sprintf ('SELECT id_tipo, descripcion
 	ORDER BY descripcion',
 	implode (',', $categories));
 $table->data[1][1] = html_print_select_from_sql ($sql, 'type',
-	$type, '', '', '', true,
+	$type, 'javascript: type_change();', '', '', true,
 	false, false, false, true, false, false, false, 0);
 
 // Store the relation between id and name of the types on a hidden field

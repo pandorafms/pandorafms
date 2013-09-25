@@ -249,7 +249,7 @@ function type_change () {
 		document.component.tcp_rcv.disabled=true;
 		document.component.tcp_port.style.background="#ddd";
 		document.component.tcp_port.disabled=true;
-
+		
 		document.component.snmp_version.style.background="#ddd";
 		document.component.snmp_version.disabled=true;
 		document.component.snmp3_auth_user.style.background="#ddd";
@@ -279,7 +279,7 @@ function type_change () {
 		document.component.tcp_rcv.disabled=true;
 		document.component.tcp_port.style.background="#fff";
 		document.component.tcp_port.disabled=false;
-
+		
 		document.component.snmp_version.style.background="#fff";
 		document.component.snmp_version.disabled=false;
 		document.component.snmp3_auth_user.style.background="#fff";
@@ -294,6 +294,8 @@ function type_change () {
 		document.component.snmp3_auth_method.disabled=false;
 		document.component.snmp3_security_level.style.background="#fff";
 		document.component.snmp3_security_level.disabled=false;
+		
+		$("#snmp_version" ).trigger("change");
 	}
 	// type 6-7 - ICMP
 	if ((document.component.type.value == 6) || (document.component.type.value == 7)) {
@@ -398,6 +400,7 @@ $(document).ready (function () {
 			}
 		});
 	});
+	
 	$("#left").click (function () {
 		jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
 				tag_name = $(value).html();
@@ -412,16 +415,19 @@ $(document).ready (function () {
 				}
 		});
 	});
+	
 	$("#submit-crt").click(function () {
 		$('#id_tag_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});
+	
 	$("#submit-upd").click(function () {
 		$('#id_tag_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});
+	
 	if ($("#snmp_version").value == "3") {
 		$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});
 		$("input[name=snmp3_auth_user]").removeAttr('disabled');
@@ -525,7 +531,7 @@ $(document).ready (function () {
 	});
 	
 	$("#type"). change(function () {
-		if ($("#snmp_version").value == "3") {
+		if ($("#snmp_version").val() == "3") {
 			$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});
 			$("input[name=snmp3_auth_user]").removeAttr('disabled');
 			
@@ -575,6 +581,8 @@ $(document).ready (function () {
 			$("input[name=snmp_community]").removeAttr('disabled');
 		}
 	});
+	
+	$("#snmp_version" ).trigger("change");
 });
 
 <?php

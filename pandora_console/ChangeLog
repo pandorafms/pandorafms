@@ -1,5 +1,11 @@
 2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/update_manager/lib/functions.php: changed the code
+	to show better info about the error when upload a oum with a size
+	biggest than the PHP limit.
+
+2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* extensions/update_manager/lib/libupdate_manager_client.php,
 	extensions/update_manager/lib/libupdate_manager.php: fixed when the
 	response it is 0 instead the false value.

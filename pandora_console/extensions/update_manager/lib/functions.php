@@ -574,7 +574,18 @@ function install_offline_enterprise_package(&$settings, $user_key) {
 		}
 	}
 	else {
-		ui_print_error_message(__('File cannot be uploaded'));
+		//Check if the file is biggest than the limit in PHP
+		if ($_FILES["fileloaded"]["error"] === 1) {
+			$upload_max_filesize = ini_get('upload_max_filesize');
+			
+			ui_print_error_message(
+				sprintf(
+					__('File is more biggest than the PHP limit (%s). Please change it in PHP configuration.'),
+					$upload_max_filesize));
+		}
+		else {
+			ui_print_error_message(__('File cannot be uploaded'));
+		}
 	}
 }
 ?>

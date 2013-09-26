@@ -85,17 +85,17 @@ $(document).ready (function () {
 	});
 	
 	if ($('#license_error_msg_dialog').length) {
-
+		
 		$( "#license_error_msg_dialog" ).dialog({
-					resizable: true,
-					draggable: true,
-					modal: true,
-					height: 310,
-					width: 650,
-					overlay: {
-								opacity: 0.5,
-								background: "black"
-							}
+			resizable: true,
+			draggable: true,
+			modal: true,
+			height: 350,
+			width: 600,
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			}
 		});
 		
 		$("#submit-hide-license-error-msg").click (function () {

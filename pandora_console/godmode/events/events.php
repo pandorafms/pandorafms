@@ -31,16 +31,16 @@ $section = (string) get_parameter ("section", "filter");
 // Draws header
 $buttons['view'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
-			html_print_image("images/operation.png", true, array("title" => __('View events'))) . '</a>',
+			html_print_image("images/events_list.png", true, array("title" => __('Event list'))) . '</a>',
 			'operation' => true);
 			
 $buttons['filter'] = array('active' => false, 
-			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
+			'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
 			html_print_image("images/filter_mc.png", true, array ("title" => __('Create filter'))) . '</a>');
 
 if (check_acl ($config["id_user"], 0, "PM")) {
 	$buttons['responses'] = array('active' => false,
-				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
+				'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
 				html_print_image("images/event_responses.png", true, array ("title" => __('Event responses'))) . '</a>');
 	
 	if (! defined ('METACONSOLE')) {

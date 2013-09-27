@@ -293,7 +293,7 @@ if ($config["pure"] == 0 || $meta) {
 	if (check_acl ($config["id_user"], 0, "EW")) {
 		// Manage events
 		$manage_events['active'] = false;
-		$manage_events['text'] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
+		$manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
 			html_print_image("images/setup.png", true, array ("title" => __('Manage events'))) . '</a>';
 		
 		$manage_events['godmode'] = true;

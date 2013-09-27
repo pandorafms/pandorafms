@@ -1,3 +1,16 @@
+2013-09-27  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events.php
+	godmode/events/events.php: Fix some sec parameters to
+	higlight correct menu sections when events sections are
+	active
+
+	* godmode/agentes/agent_wizard.snmp_explorer.php: Change error 
+	message to help user to understand result of snmp walk
+
+	* godmode/agentes/module_manager_editor_network.php: Increase
+	the modal window of snmp walk
+
 2013-09-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/jquery.pandora.js: change the style of dialog

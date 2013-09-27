@@ -631,7 +631,7 @@ html_print_submit_button(__('SNMP Walk'), 'snmp_walk', false, array('class' => '
 echo "</div>";
 
 if ($snmpwalk && $fail) {
-	ui_print_error_message(__('Unable to do SNMP walk'));
+	ui_print_error_message('<br>' . __('No data found') . '<br><br>' . __('If the device is a network device, try with the SNMP Interfaces wizard'));
 }
 
 unset($table);

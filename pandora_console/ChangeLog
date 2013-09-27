@@ -1,3 +1,9 @@
+2013-09-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/jquery.pandora.js: the button to close in the
+	dialog information for outdate license is not, and the ok button
+	is hidden for a few seconds.
+
 2013-09-27  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events.php

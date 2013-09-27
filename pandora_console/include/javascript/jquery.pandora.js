@@ -87,14 +87,23 @@ $(document).ready (function () {
 	if ($('#license_error_msg_dialog').length) {
 		
 		$( "#license_error_msg_dialog" ).dialog({
+			dialogClass: "no-close",
 			resizable: true,
 			draggable: true,
 			modal: true,
 			height: 350,
-			width: 600,
+			width: 610,
 			overlay: {
 				opacity: 0.5,
 				background: "black"
+			},
+			open: function() {
+				setTimeout(function(){
+						$("#spinner_ok").hide();
+						$("#ok_buttom").show();
+					},
+					10000
+				);
 			}
 		});
 		

@@ -1345,4 +1345,47 @@ function netflow_format_aggregate ($aggregate) {
 		}
 }
 
+/**
+ * Check the nfdump binary for compatibility.
+ * 
+ * @param string nfdump binary full path.
+ * 
+ * @return 1 if the binary does not exist or is not executable, 2 if a
+ *         version older than 1.6.8 is installed or the version cannot be
+ *         determined, 0 otherwise.
+ */
+function netflow_check_nfdump_binary ($nfdump_binary) {
+	
+	// Check that the binary exists and is executable
+	if (! is_executable ($nfdump_binary)) {
+		return 1;
+	}
+
+	// Check at least version 1.6.8
+	$output = '';
+	$rc = -1;
+	exec ($nfdump_binary . ' -V', $output, $rc);
+	if ($rc != 0) {
+		return 2;
+	}
+	
+	$matches = array();
+	foreach ($output as $line) {
+		if (preg_match ('/Version:\s*(\d+)\.(\d+)\.(\d+)/', $line, $matches) === 1) {
+			if ($matches[1] < 1) {
+				return 2;
+			}
+			if ($matches[2] < 6) {
+				return 2;
+			}
+			if ($matches[3] < 8) {
+				return 2;
+			}
+			return 0;
+		}
+	}
+	
+	return 2;
+}
+
 ?>

@@ -104,10 +104,19 @@ $start_date = $end_date - $period;
 if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header (__('Netflow live view'), "images/op_netflow.png", false, "", false, array ());
-	if (! is_executable ($config['netflow_nfdump'])) {
+	
+	// Check the nfdump binary
+	$check_result = netflow_check_nfdump_binary ($config['netflow_nfdump']);
+	
+	// Not found or not executable
+	if ($check_result == 1) {
 		ui_print_error_message(
 			sprintf(__('nfdump binary (%s) not found!'),
 				$config['netflow_nfdump']));
+	}
+	// Wrong version
+	else if ($check_result == 2) {
+		ui_print_error_message(sprintf(__('Make sure nfdump version 1.6.8 or newer is installed!')));
 	}
 }
 else {

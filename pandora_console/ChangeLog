@@ -1,3 +1,10 @@
+2013-09-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_netflow.php,
+	  operation/netflow/nf_live_view.php: Show an error if nfdump version
+	  older than 1.6.8 is installed (this is the minimum version required
+	  to work with Pandora FMS).
+
 2013-09-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/jquery.pandora.js: the button to close in the

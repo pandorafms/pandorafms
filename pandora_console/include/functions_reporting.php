@@ -5217,7 +5217,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					break;
 				case REPORT_EXCEPTION_CONDITION_E:
 					$title_exeption =
-						sprintf(__('Exception - Equal to'),
+						sprintf(__('Exception - Equal to %s'),
 						$exception_condition_value);
 					break;
 				case REPORT_EXCEPTION_CONDITION_NE:

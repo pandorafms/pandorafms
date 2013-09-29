@@ -121,7 +121,18 @@ if ($perform_event_response) {
 	
 	$command = get_parameter('target','');
 	
-	echo system('/usr/bin/timeout 10 '.io_safe_output($command).' 2>&1');
+	switch (PHP_OS) {
+		case "FreeBSD":
+			$timeout_bin = '/usr/local/bin/gtimeout';
+			break;
+		case "NetBSD":
+			$timeout_bin = '/usr/pkg/bin/gtimeout';
+			break;
+		default:
+			$timeout_bin = '/usr/bin/timeout';
+			break;
+	}
+	echo system($timeout_bin . ' 10 '.io_safe_output($command).' 2>&1');
 	
 	return;
 }

@@ -114,9 +114,10 @@ if (get_parameter ("refr"))
 	$config["refr"] = (int) get_parameter ("refr");
 
 ob_start ();
-echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
-echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
-echo '<head>';
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' .
+	"\n";
+echo '<html xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+echo '<head>' . "\n";
 
 //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
 ob_start ('ui_process_page_head');
@@ -126,7 +127,8 @@ enterprise_include ('index.php');
 
 // This tag is included in the buffer passed to ui_process_page_head so 
 // technically it can be stripped
-echo '</head>'."\n";
+echo '</head>' . "\n";
+
 require_once ("include/functions_themes.php");
 ob_start ('ui_process_page_body');
 
@@ -182,7 +184,8 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 }
 elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	// Login process 
-	include_once('include/functions_db.php');//Include it to use escape_string_sql function
+	include_once('include/functions_db.php'); //Include it to use escape_string_sql function
+	
 	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
 	$nick = get_parameter_post ("nick"); //This is the variable with the login
 	$pass = get_parameter_post ("pass"); //This is the variable with the password
@@ -224,7 +227,9 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		}
 	}
 	
-	if (($nick_in_db !== false) && $expired_pass) { //login ok and password has expired
+	if (($nick_in_db !== false) && $expired_pass) {
+		//login ok and password has expired
+		
 		require_once ('general/login_page.php');
 		db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
 		while (@ob_end_flush ());
@@ -398,7 +403,7 @@ if ($old_global_counter_chat != $now_global_counter_chat) {
 }
 
 // Display login help info dialog
-if (get_parameter ('login', 0) == 1) {
+if (get_parameter ('login', 0) !== 0) {
 	
 	// If it's configured to not skip this
 	if (!isset($config['skip_login_help_dialog']) ||

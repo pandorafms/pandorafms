@@ -1,3 +1,7 @@
+2013-09-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* index.php: fixed the check login parameter.
+
 2013-09-30  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/pChart/pPie.class.php: Fix reversed colors bug in

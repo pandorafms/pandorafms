@@ -1,3 +1,8 @@
+2013-09-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: added code for to delete the nodes
+	of any agent when it is deleted.
+
 2013-09-30  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

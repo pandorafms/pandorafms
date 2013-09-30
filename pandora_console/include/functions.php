@@ -1704,6 +1704,7 @@ function get_periods ($custom = true, $show_default = true) {
  */
 function copy_dir($src, $dst) { 
 	$dir = opendir($src);
+	$return = true;
 	
 	if (!$dir)
 		return false;
@@ -1712,14 +1713,39 @@ function copy_dir($src, $dst) {
 	while (false !== ( $file = readdir($dir)) ) {
 		if (( $file != '.' ) && ( $file != '..' )) {
 			if ( is_dir($src . '/' . $file) ) {
-				copy_dir($src . '/' . $file,$dst . '/' . $file); 
+				$return = copy_dir($src . '/' . $file, $dst . '/' . $file);
+				
+				if (!$return) {
+					break;
+				}
 			}
 			else {
-				copy($src . '/' . $file,$dst . '/' . $file); 
+				$r = copy($src . '/' . $file, $dst . '/' . $file);
 			}
 		}
 	}
+	
 	closedir($dir); 
+	
+	return $return;
+}
+
+function delete_dir($dir) {
+	if (!file_exists($dir))
+		return true;
+	
+	if (!is_dir($dir))
+		return unlink($dir);
+	
+	foreach (scandir($dir) as $item) {
+		if ($item == '.' || $item == '..')
+			continue;
+		
+		if (!delete_dir($dir . "/" . $item))
+			return false;
+	}
+	
+	return rmdir($dir);
 }
 
 /**

@@ -316,8 +316,7 @@
       
 	 $ID = count($Values)-1;
 
-	 // Commented due to fix bellow
-     // $Values = array_reverse($Values);
+     $Values = array_reverse($Values);
      $Slice  = 0; $Slices = ""; $SliceColors = ""; $Visible = ""; $SliceAngle = "";
      foreach($Values as $Key => $Value)
       {

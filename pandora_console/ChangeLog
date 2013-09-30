@@ -1,3 +1,13 @@
+2013-09-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions.php: added function "delete_dir" and improved
+	the function "copy_dir".
+	
+	* extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/update_manager/lib/functions.php,
+	extensions/update_manager/main.php: added feature to upload zip
+	archives to update.
+
 2013-09-29  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/ajax/events.php: Added timeout binary paths to execute

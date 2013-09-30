@@ -325,7 +325,7 @@ function um_client_decrypt ($data) {
 // with the path of all files into directory //
 ///////////////////////////////////////////////
 function um_client_get_files ($dir_path) {
-	if(!file_exists($dir_path)) {
+	if (!file_exists($dir_path)) {
 		return array();
 	}
 	
@@ -334,10 +334,10 @@ function um_client_get_files ($dir_path) {
 	$cont = 0;
 	while ($element = readdir($dir))
 	{
-		if($element == '.' || $element == '..') {
+		if ($element == '.' || $element == '..') {
 			continue;
 		}
-		if(is_dir($dir_path.$element)) {
+		if (is_dir($dir_path.$element)) {
 			$file_temp = um_client_get_files ("$dir_path$element/");
 			$files = array_merge((array)$files,(array)$file_temp);
 		}
@@ -353,7 +353,7 @@ function um_client_get_files ($dir_path) {
 }
 
 function um_client_print_update ($update, $settings) {
-	if(isset($update->id)) {
+	if (isset($update->id)) {
 		echo 'Update #'.$update->id;
 	}
 	
@@ -554,7 +554,7 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 		}
 		
 		$tempDirServer = '/'.implode('/',$path_script).'/temp/';
-				
+		
 		$package_name = 'package_'.$package->id.'.oum';
 		$zipArchive = $tempDir . $package_name;
 		$zipArchiveServer = $tempDirServer . $package_name;

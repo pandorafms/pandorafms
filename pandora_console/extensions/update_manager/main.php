@@ -97,8 +97,11 @@ function main_view_enterprise($settings, $user_key) {
 		}
 	}
 	
-	if (!empty($_FILES)) {
-		install_offline_enterprise_package($settings, $user_key);
+	$upload_package = (bool)get_parameter('upload_package');
+	if ($upload_package) {
+		if (!empty($_FILES)) {
+			install_offline_enterprise_package($settings, $user_key);
+		}
 	}
 	
 	
@@ -170,7 +173,6 @@ function main_view_enterprise($settings, $user_key) {
 		</div>
 	</div>
 	<?php
-	
 	
 	
 	echo '<h4>' . __('Offline') . '</h4>';

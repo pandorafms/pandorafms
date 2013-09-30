@@ -876,17 +876,20 @@ html_print_input_hidden('id_item', $idItem);
 			</td>
 			<td style="" id="sql_example"></td> 
 		</tr>
+		<?php
+		if ($meta) {
+		?>
 		<tr id="row_servers" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
 			<td style="">
 				<?php
-				if (!$meta)
-					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0, false, false, true, '', true);
-				else
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0);
 				?>
 			</td>
 		</tr>
+		<?php
+		}
+		?>
 		<tr id="row_header" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
 			<td style=""><?php html_print_input_text('header', $header, '', 40, 90); ?></td>
@@ -1907,18 +1910,13 @@ function chooseType() {
 		case 'sql_graph_pie':
 			$("#row_description").show();
 			$("#row_query").show();
-			$("#row_custom").show();
-			$("#row_custom_example").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
-			
 			break;
 		case 'sql_graph_hbar':
 			$("#row_description").show();
 			$("#row_query").show();
-			$("#row_custom").show();
-			$("#row_custom_example").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
@@ -1926,8 +1924,6 @@ function chooseType() {
 		case 'sql_graph_vbar':
 			$("#row_description").show();
 			$("#row_query").show();
-			$("#row_custom").show();
-			$("#row_custom_example").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();

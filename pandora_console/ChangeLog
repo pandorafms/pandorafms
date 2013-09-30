@@ -1,3 +1,8 @@
+2013-09-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_config.php: Improve the db maintenance check
+	to avoid heavy tsesion queries each page load
+
 2013-09-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* index.php: fixed the check login parameter.

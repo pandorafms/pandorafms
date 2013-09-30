@@ -1,3 +1,90 @@
+2013-09-30  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/languages/ar.mo
+	  include/languages/ar.po
+	  include/languages/ast.mo
+	  include/languages/ast.po
+	  include/languages/bn.mo
+	  include/languages/bn.po
+	  include/languages/bg.mo
+	  include/languages/bg.po
+	  include/languages/ca.mo
+	  include/languages/ca.po
+ 	  include/languages/cs.mo
+	  include/languages/cs.po
+	  include/languages/da.mo
+	  include/languages/da.po
+	  include/languages/de.mo
+	  include/languages/de.po
+	  include/languages/el.mo
+	  include/languages/el.po
+	  include/languages/en.mo
+	  include/languages/en.po
+	  include/languages/en_AU.mo
+	  include/languages/en_AU.po
+	  include/languages/en_GB.mo
+	  include/languages/en_GB.po
+	  include/languages/es.mo
+	  include/languages/es.po
+	  include/languages/et.mo
+	  include/languages/et.po
+	  include/languages/eu.mo
+	  include/languages/eu.po
+	  include/languages/fi.po
+	  include/languages/fi.mo
+	  include/languages/fr.po
+	  include/languages/fr.mo
+	  include/languages/gl.po
+	  include/languages/gl.mo
+	  include/languages/he.po
+	  include/languages/he.mo
+	  include/languages/hi.po
+	  include/languages/hi.mo
+	  include/languages/hu.po
+	  include/languages/hu.mo
+	  include/languages/it.po
+	  include/languages/it.mo
+	  include/languages/ja.po
+	  include/languages/ja.mo
+	  include/languages/ko.po
+	  include/languages/ko.mo
+	  include/languages/mr.po
+	  include/languages/mr.mo
+	  include/languages/ms.po
+	  include/languages/ms.mo
+	  include/languages/nb.po
+	  include/languages/nb.mo
+	  include/languages/nl.po
+	  include/languages/nl.mo
+	  include/languages/pl.po
+	  include/languages/pl.mo
+	  include/languages/pt.po
+	  include/languages/pt.mo
+	  include/languages/pt_BR.po
+	  include/languages/pt_BR.mo
+	  include/languages/ro.po
+	  include/languages/ro.mo
+	  include/languages/ru.po
+	  include/languages/ru.mo
+	  include/languages/sk.po
+	  include/languages/sk.mo
+	  include/languages/sl.po
+	  include/languages/sl.mo
+	  include/languages/sv.po
+	  include/languages/sv.mo
+	  include/languages/te.po
+	  include/languages/te.mo
+	  include/languages/tr.po
+	  include/languages/tr.mo
+	  include/languages/uk.po
+	  include/languages/uk.mo
+	  include/languages/vi.po
+	  include/languages/vi.mo
+	  include/languages/zh_CN.po
+	  include/languages/zh_CN.mo
+	  include/languages/zh_TW.po
+	  include/languages/zh_TW.mo: Updated translations.
+
 2013-09-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/lib/functions.php: changed the code

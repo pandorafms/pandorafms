@@ -1151,15 +1151,16 @@ function config_check () {
 	
 	// Check database maintance
 	$db_maintance = db_get_value_filter ('value', 'tconfig', array('token' => 'db_maintance')); 
-	$now = date("U");
 	
-	// First action in order to know if it's a new installation or db maintenance never have been executed 
-	$first_action = db_get_value_filter('utimestamp', 'tsesion', array('1 = 1', 'order' => 'id_sesion ASC'));
-	$fresh_installation = $now - $first_action;
+	// If never was executed, it means we are in the first Pandora FMS execution. Set current timestamp
+	if(empty($db_maintance)) {
+		config_update_value ('db_maintance', date("U"));
+	}
 	
-	$resta = $now - $db_maintance;
+	$last_maintance = date("U") - $db_maintance;
+
 	// ~ about 50 hr
-	if (($resta > 190000 AND $fresh_installation> 190000)){
+	if ($last_maintance > 190000){
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('title' => __("Database maintance problem"),

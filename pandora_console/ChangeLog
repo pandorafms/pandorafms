@@ -1,3 +1,8 @@
+2013-10-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/menu.css: Fixed menus item height to
+	avoid ugliest menu ever when license expired dialog is shown
+
 2013-10-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* index.php,

@@ -35,10 +35,8 @@ else {
 	ini_set("date.timezone", $script_tz);
 }
 
-global $develop_bypass;
 /* Help to debug problems. Override global PHP configuration */
-$develop_bypass = 0;
-
+global $develop_bypass;
 if ($develop_bypass != 1) {
 	// error_reporting(E_ALL);
 	

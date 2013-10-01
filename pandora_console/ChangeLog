@@ -1,3 +1,9 @@
+2013-10-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* index.php,
+	  include/config_process.php: Removed a redeclaration of develop_bypass
+	  and set it to 0 by default.
+
 2013-09-30  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php: Improve the db maintenance check

@@ -99,7 +99,7 @@ $(document).ready (function () {
 				draggable: true,
 				modal: true,
 				height: 350,
-				width: 610,
+				width: 650,
 				overlay: {
 					opacity: 0.5,
 					background: "black"

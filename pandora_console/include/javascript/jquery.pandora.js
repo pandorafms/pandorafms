@@ -85,32 +85,37 @@ $(document).ready (function () {
 	});
 	
 	if ($('#license_error_msg_dialog').length) {
+		if (typeof(process_login_ok) == "undefined")
+			process_login_ok = 0;
 		
-		$( "#license_error_msg_dialog" ).dialog({
-			dialogClass: "no-close",
-			resizable: true,
-			draggable: true,
-			modal: true,
-			height: 350,
-			width: 650,
-			overlay: {
-				opacity: 0.5,
-				background: "black"
-			},
-			open: function() {
-				setTimeout(function(){
-						$("#spinner_ok").hide();
-						$("#ok_buttom").show();
-					},
-					10000
-				);
-			}
-		});
-		
-		$("#submit-hide-license-error-msg").click (function () {
-			$("#license_error_msg_dialog" ).dialog('close')
-		});
-	
+		if (process_login_ok) {
+			
+			$( "#license_error_msg_dialog" ).dialog({
+				dialogClass: "no-close",
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 350,
+				width: 610,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				open: function() {
+					setTimeout(function(){
+							$("#spinner_ok").hide();
+							$("#ok_buttom").show();
+						},
+						10000
+					);
+				}
+			});
+			
+			$("#submit-hide-license-error-msg").click (function () {
+				$("#license_error_msg_dialog" ).dialog('close')
+			});
+			
+		}
 	}
 	
 	

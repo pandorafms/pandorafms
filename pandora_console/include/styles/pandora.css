@@ -207,7 +207,7 @@ div#main_help {
 	margin-right: 0px;
 	border-radius: 10px;
 }
-div#main_help div.databox {
+div#main_help div.databox, .license_databox {
 	background: F3F3F3;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;

@@ -31,6 +31,7 @@
 <link rel="icon" href="images/pandora.ico" type="image/ico">
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 <link rel="stylesheet" href="include/styles/jquery-ui-1.10.0.custom.css" type="text/css">
+<link rel="stylesheet" href="include/styles/dialog.css" type="text/css">
 </head>
 <body>
 <?php 

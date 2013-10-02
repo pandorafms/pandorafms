@@ -1,5 +1,10 @@
 2013-10-02  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/jquery.pandora.js: Increase width of modal
+	window of license
+
+2013-10-02  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/install.css
 	include/styles/pandora.css
 	install.php

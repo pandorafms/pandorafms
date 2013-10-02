@@ -35,23 +35,61 @@ div#install_container {
 }
 div#logo_img {
 	text-align: center;
-	width: 200px;
+	width: 100%;
+	color: #666;
 }
 div#wizard {
 	text-align: left;
 	border: 1px solid #999;
 	margin-top: 1em;
-	padding: 20px;
-	padding-left: 20px;
+
 	width: 650px;
-	background-color: #fafafa;
+	padding-left: 0px;
+	padding-top: 0px;
+	padding-bottom: 20px;
+	background-color: #ffffff;
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	border-radius: 10px;
+	position: relative;
 }
+
+div#wizard a img {
+	padding-right: 30px;
+}
+
+div#wizard>input {
+	padding-right: 30px;
+	float:right; 
+	margin-top: 20px;
+}
+
 div#install_box, div#install_img {
-	float: right;
 	padding-right: 20px;
 	margin-top: 0px;
-	width: 400px;
+	width: 80%;
+	margin: 0px auto;
 }
+
+div#install_box {
+	background: F3F3F3;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	border: 0px;
+	padding: 10px 25px;
+	margin-top: 10px;
+	-moz-box-shadow: -1px 1px 6px #aaa;
+	-webkit-box-shadow: -1px 1px 6px #aaa;
+	box-shadow: -1px 1px 6px #aaa;
+}
+
+div#install_box h2 {
+	color: #00aa00;
+	text-transform: uppercase;
+}
+
 div#install_img {
 	margin-bottom: 25px;
 	margin-left: 25px;
@@ -65,10 +103,6 @@ div#foot_install {
 	padding-left: 20px;
 	padding-right: 20px;
 	text-align: center;
-	background: #777;
-	width: 650px;
-	border-left: 1px solid #999;
-	border-right: 1px solid #999;
 }
 div#foot_install a {
 	color: #ccc;
@@ -80,16 +114,22 @@ input#step4, input#step4:hover {
 	background-color: #fafafa;
 }
 div.warn {
-	background: url(../../images/info.png) no-repeat;
-	color: #ac4444;
+	background: url(../../images/warn.png) no-repeat 0% -2px;
+	color: #880;
 	margin-top: 7px;
-	padding: 2px 1px 6px 25px;
+	padding: 2px 1px 6px 30px;
 }
 div.info {
-	background: url(../../images/information.png) no-repeat;
-        color: #000000;
+	background: url(../../images/info.png) no-repeat 0% -2px;
+        color: #222;
         margin-top: 7px;
-        padding: 2px 1px 6px 25px;
+        padding: 2px 1px 6px 30px;
+}
+div.err {
+	background: url(../../images/error_red.png) no-repeat 0% -2px;
+	    color: #cc0000;
+        margin-top: 7px;
+        padding: 2px 1px 6px 30px;
 }
 span.arr {
 	background: url(../../images/arrow.png) no-repeat;
@@ -108,6 +148,12 @@ body, td {
 }
 
 body{
-    background: url(../../images/greyback.gif);
+    background-color: #555555;
 }
 
+div.installation_step {
+	position: absolute; 
+	top: 7px; 
+	right: 10px; 
+	color: #666;
+}

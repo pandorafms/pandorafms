@@ -83,7 +83,12 @@ if (! $id || ! file_exists ($help_file)) {
 /* Show help */
 echo '<div id="main_help">';
 echo '<span style="float:left; margin: 20px 20px 0px 20px; padding: 0px">';
-echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
+if (empty($config['enterprise_installed'])) {
+	echo html_print_image('images/pandora_tinylogo_open.png', true, array("border" => '0'));
+}
+else {
+	echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
+}
 echo "</span>";
 echo '<p style="text-align: right"><strong style="float: right; padding-top: 12px; padding-right: 8px;">'. html_print_image('images/interrogant.png', true, array('title' => __('Pandora FMS help system'))) . '</strong></p>';
 echo '<div style="clear:both;"></div>';

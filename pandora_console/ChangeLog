@@ -1,3 +1,20 @@
+2013-10-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/install.css
+	include/styles/pandora.css
+	install.php
+	images/warn.png
+	images/pandora_tinylogo_open.png
+	images/dot_red.png
+	images/dot_green.png: Improve visual styles of 
+	install screens
+
+	* general/pandora_help.php: Add a opensource logo
+	image in help screen when enterprise is not installed 
+
+	* general/error_screen.php: Add css styles to
+	error screens before login
+
 2013-10-02 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/setup/setup_general.php: removed the field

@@ -68,7 +68,7 @@ session_start ();
 require_once ("include/config.php");
 
 // If metaconsole activated, redirect to it
-if($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
+if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
 }
 
@@ -238,6 +238,8 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	else if (($nick_in_db !== false) && (!$expired_pass)) {
 		//login ok and password has not expired
 		$process_login = true;
+		
+		echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
 		
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
@@ -585,7 +587,7 @@ require('include/php_to_js_values.php');
 	(function() {
 		var oShow = jQuery.fn.show;
 		var oHide = jQuery.fn.hide;
-
+		
 		jQuery.fn.show = function () {
 			var rv = oShow.apply(this, arguments);
 			adjustFooter();
@@ -611,7 +613,7 @@ require('include/php_to_js_values.php');
 		var h = $('#foot').height();
 		// new top value for div#foot
 		var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
-
+		
 		if ($('#foot').position().top != t) {
 			$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
 			$('#foot').height(h);

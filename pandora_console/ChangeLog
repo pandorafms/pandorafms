@@ -1,3 +1,9 @@
+2013-10-02 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/jquery.pandora.js, index.php,
+	general/login_page.php: fixed the show the warning trial enterprise
+	message when fail login.
+
 2013-10-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/menu.css: Fixed menus item height to

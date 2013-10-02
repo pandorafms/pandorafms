@@ -104,7 +104,7 @@ echo '
 			html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login login_password"', false, true);
 			echo '</div>';
 			echo '<div class="login_button">';
-			html_print_submit_button(__("Login"), "login", false, 'class="sub next_login"');
+			html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
 			echo '</div>';
 			break;
 		case 'logout':

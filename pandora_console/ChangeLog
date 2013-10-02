@@ -1,5 +1,9 @@
 2013-10-02 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/jquery.pandora.js: fixed the previous fixed.
+
+2013-10-02 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/jquery.pandora.js, index.php,
 	general/login_page.php: fixed the show the warning trial enterprise
 	message when fail login.

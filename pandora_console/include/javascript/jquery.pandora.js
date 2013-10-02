@@ -88,7 +88,10 @@ $(document).ready (function () {
 		if (typeof(process_login_ok) == "undefined")
 			process_login_ok = 0;
 		
-		if (process_login_ok) {
+		if (typeof(show_error_license) == "undefined")
+			show_error_license = 0;
+		
+		if (process_login_ok || show_error_license) {
 			
 			$( "#license_error_msg_dialog" ).dialog({
 				dialogClass: "no-close",

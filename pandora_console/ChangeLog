@@ -1,5 +1,10 @@
 2013-10-02 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/setup/setup_general.php: removed the field
+	to change the license.
+
+2013-10-02 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/jquery.pandora.js: fixed the previous fixed.
 
 2013-10-02 Miguel de Dios <miguel.dedios@artica.es>

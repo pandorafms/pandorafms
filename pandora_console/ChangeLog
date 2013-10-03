@@ -1,4 +1,9 @@
-2013-10-02 Miguel de Dios <miguel.dedios@artica.es>
+2013-10-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.wizard.php: fixed the
+	form apperance of the wizard.
+
+2013-10-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/ajax/visual_console_builder.ajax.php: fixed update the
 	label.

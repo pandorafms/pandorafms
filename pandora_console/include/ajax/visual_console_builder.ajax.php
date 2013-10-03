@@ -317,6 +317,12 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			default:
+				if ($type == 'label') {
+					$values['type'] = LABEL;
+					$values['label'] = $label2;
+					$label = $label2;
+				}
+				
 				if ($enable_link !== null) {
 					$values['enable_link'] = $enable_link;
 				}

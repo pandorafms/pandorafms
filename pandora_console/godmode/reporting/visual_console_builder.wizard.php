@@ -42,7 +42,7 @@ else {
 
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align: text-top;';
-$table->style[1] = 'font-weight: bold; vertical-align: top;';
+$table->style[1] = 'font-weight: bold; vertical-align: middle;';
 $table->style[2] = 'font-weight: bold; vertical-align: top';
 
 $table->size = array ();
@@ -82,21 +82,24 @@ $type_list = array(
 
 $table->rowstyle["all_0"] = 'display: none;';
 $table->data["all_0"][0] = __('Type');
+$table->colspan["all_0"][1] = "3";
 $table->data["all_0"][1] = html_print_select ($type_list, 'type', '', 'hidden_rows()', '', '', true, false, false);
 
 
 $table->rowstyle["staticgraph"] = 'display: none;';
 $table->data["staticgraph"][0] = __('Image');
+$table->colspan["staticgraph"][1] = "3";
 $table->data["staticgraph"][1] = html_print_select ($images_list, 'image', '', '', '', '', true);
 
 
 $table->rowstyle["all_1"] = 'display: none;';
 $table->data["all_1"][0] = __('Range between elements (px)');
+$table->colspan["all_1"][1] = "3";
 $table->data["all_1"][1] = html_print_input_text ('range', 50, '', 5, 5, true);
 
-$table->colspan["staticgraph_modulegraph"][1] = "2";
 $table->rowstyle["staticgraph_modulegraph"] = 'display: none;';
 $table->data["staticgraph_modulegraph"][0] = __('Size (px)');
+$table->colspan["staticgraph_modulegraph"][1] = "3";
 $table->data["staticgraph_modulegraph"][1] = __('Width').': ' .
 	html_print_input_text ('width', 0, '', 5, 5, true);
 $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' . __('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
@@ -104,6 +107,7 @@ $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' . __('Height'
 
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';
 $table->data["modulegraph_simplevalue"][0] = __('Period');
+$table->colspan["modulegraph_simplevalue"][1] = "3";
 $table->data["modulegraph_simplevalue"][1] =
 	html_print_extended_select_for_time ('period', '', '', '', '', false, true);
 
@@ -151,12 +155,14 @@ if (defined('METACONSOLE')) {
 
 $table->rowstyle["all_3"] = 'display: none;';
 $table->data["all_3"][0] = __('Groups');
+$table->colspan["all_3"][1] = "3";
 $table->data["all_3"][1] = html_print_select_groups(
 	$config['id_user'], "AR", true, 'groups', '', '', '', 0, true); 
 
 
 $table->rowstyle["all_one_item_per_agent"] = 'display: none';
 $table->data["all_one_item_per_agent"][0] = __('One item per agent');
+$table->colspan["all_one_item_per_agent"][1] = "3";
 $table->data["all_one_item_per_agent"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('item_per_agent', 1, '', '', false, 'item_per_agent_change(1)', '', true).'&nbsp;&nbsp;';
 $table->data["all_one_item_per_agent"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)', '', true);
 $table->data["all_one_item_per_agent"][1] .= html_print_input_hidden ('item_per_agent_test', 0, true);
@@ -176,10 +182,12 @@ $label_type = array ('agent_module' => __('Agent - Module'),
 	'module' => __('Module'),
 	'agent' => __('Agent'),
 	'none' => __('None'));
+$table->colspan["all_6"][1] = "3";
 $table->data["all_6"][1] = html_print_select ($label_type, 'label_type', 'agent_module', '', '', '', true);
 
 
 $table->data["all_7"][0] = __('Enable link agent');
+$table->colspan["all_7"][1] = "3";
 $table->data["all_7"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 1, '', 1, false, '', '', true).'&nbsp;&nbsp;';
 $table->data["all_7"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 0, '', 1, false, '', '', true);
 

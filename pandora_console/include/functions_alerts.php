@@ -1528,18 +1528,22 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 	
 	global $config;
 	
-	
+	$group_query = '';
+	if (!empty($idGroup)) {
+		$group_query = ' AND id_grupo = ' . $idGroup;
+	}
+		
 	if (is_array($filter)) {
 		$disabled = $filter['disabled'];
 		if (isset($filter['standby'])) {
-			$filter = ' AND talert_template_modules.standby = "'.$filter['standby'].'"';
+			$filter = $group_query . ' AND talert_template_modules.standby = "'.$filter['standby'].'"';
 		}
 		else {
-			$filter = '';
+			$filter = $group_query;
 		}
 	}
 	else {
-		$filter = '';
+		$filter = $group_query;
 		$disabled = $filter;
 	}
 	
@@ -1639,8 +1643,6 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
-	
-	
 	
 	$sql = sprintf ("SELECT %s
 		FROM talert_template_modules

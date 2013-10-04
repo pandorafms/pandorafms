@@ -1678,8 +1678,11 @@ function events_page_responses ($event) {
 	// Custom responses
 	$data = array();
 	$data[0] = __('Custom responses');
-	$event_responses = db_get_all_rows_in_table('tevent_response');
-	
+
+	$id_groups = array_keys(users_get_groups(false, "EW"));
+	$event_responses = db_get_all_rows_filter('tevent_response',
+		array('id_group' => $id_groups));
+			
 	if(empty($event_responses)) {
 		$data[1] = '<i>'.__('N/A').'</i>';
 	}

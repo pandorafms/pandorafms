@@ -163,10 +163,6 @@ ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f7_` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f8_` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f9_` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f10_` text NOT NULL;
 ALTER TABLE `talert_snmp` ADD COLUMN `position` int(10) UNSIGNED NOT NULL DEFAULT '0';
 
 -- ----------------------------------------------------------------------

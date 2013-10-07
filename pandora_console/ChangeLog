@@ -1,3 +1,10 @@
+2013-10-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_pchart.php: Disabled 
+	second pass processing in 3d pie chart because
+	it was really heavy (13 seconds chargin a simple
+	pie is unacceptable)
+
 2013-10-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_4.1_to_5.0.postgreSQL.sql,

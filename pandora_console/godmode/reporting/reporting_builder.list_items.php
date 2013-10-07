@@ -155,6 +155,7 @@ $table->data[0][2] = __('Modules');
 $table->data[0][3] = html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
 $table->data[1][0] = __('Type');
 $table->data[1][1] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
+$table->data[1][2] = $table->data[1][3] = '';
 
 echo '<div id="form_filter" style="display: none;">';
 echo '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
@@ -230,7 +231,7 @@ $table->style[0] = 'text-align: right;';
 
 
 if ($items) {
-	$table->width = '100%';
+	$table->width = '98%';
 	
 	$table->size = array();
 	$table->size[0] = '5px';

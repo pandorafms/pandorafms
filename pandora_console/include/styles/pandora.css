@@ -1400,6 +1400,7 @@ div.title_line {
 	-webkit-border-top-left-radius: 5px;
 	border-top-left-radius: 5px;
 	margin-left:0px;
+	overflow-y: hidden;
 }
 
 #menu_tab_left ul.mn li.nomn {

@@ -1,3 +1,15 @@
+2013-10-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_4.1_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.1_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.1_to_5.0.mysql.sql: Added to repository.
+	  4.1 to 5.0 migration scripts.
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: Removed a suspicious
+	  insert into tusuario.
+
 2013-10-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

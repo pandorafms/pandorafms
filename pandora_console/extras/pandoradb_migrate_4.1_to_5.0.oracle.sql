@@ -11,8 +11,6 @@ ALTER TABLE tusuario ADD ((login_blocked NUMBER(5,0) DEFAULT 0 NOT NULL);
 ALTER TABLE tusuario ADD (disabled NUMBER(10, 0) NOT NULL DEFAULT 0;
 ALTER TABLE tusuario ADD (shortcut NUMBER(5, 0) DEFAULT 0;
 ALTER TABLE tusuario ADD (shortcut_data CLOB DEFAULT '';
-ALTER TABLE tusuario ADD (section VARCHAR2(255) NOT NULL);
-ALTER TABLE tusuario ADD ((data_section VARCHAR2(255) NOT NULL);
 ALTER TABLE tusuario ADD ((metaconsole_access VARCHAR2(100) DEFAULT 'basic' NOT NULL);
 ALTER TABLE tusuario ADD CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced'));
 ALTER TABLE tusuario ADD ((not_login NUMBER(5,0) default 0 NOT NULL);

@@ -283,8 +283,6 @@ UPDATE ttipo_modulo SET descripcion='Generic data incremental' WHERE id_tipo=4;
 -- ----------------------------------------------------------------------
 -- Table `tusuario`
 -- ----------------------------------------------------------------------
-ALTER TABLE `tusuario` ADD COLUMN `section` TEXT NOT NULL;
-ALTER TABLE `tusuario` ADD COLUMN `data_section` TEXT NOT NULL;
 ALTER TABLE `tusuario` ADD COLUMN `disabled` int(4) NOT NULL DEFAULT 0;
 ALTER TABLE `tusuario` ADD COLUMN `shortcut` tinyint(1) DEFAULT 0;
 ALTER TABLE `tusuario` ADD COLUMN `shortcut_data` text;
@@ -452,6 +450,17 @@ ALTER TABLE `tusuario_perfil` ADD COLUMN `tags` TEXT NOT NULL;
 -- ---------------------------------------------------------------------
 ALTER TABLE `ttag` ADD COLUMN `email` text NULL;
 ALTER TABLE `ttag` ADD COLUMN `phone` text NULL;
+
+-- ---------------------------------------------------------------------
+-- Add more fields in snmp alerts (05/03/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field4` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field5` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field6` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text;
 
 -- ---------------------------------------------------------------------
 -- Add metaconsole fields to user table (17/04/13)

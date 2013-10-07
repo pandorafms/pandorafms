@@ -531,7 +531,7 @@ if ($agents !== false) {
 	}
 	echo "</table>";
 	ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
-	echo "<table width='95%'><tr><td align='right'>";
+	echo "<table width='98%'><tr><td align='right'>";
 }
 else {
 	echo "<div class='nf'>" . __('There are no defined agents') . "</div>";
@@ -540,12 +540,13 @@ else {
 
 if (check_acl ($config["id_user"], 0, "AW")) {
 	// Create agent button
-	echo '<a name="bottom">';
+	echo '<div style="text-align: right; float: right;">';
 	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 	html_print_input_hidden ('new_agent', 1);
 	html_print_submit_button (__('Create agent'), 'crt', false,
 		'class="sub next"');
 	echo "</form>";
+	echo '</div>';
 }
 
 echo "</td></tr></table>";

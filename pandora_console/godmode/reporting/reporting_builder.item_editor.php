@@ -1197,6 +1197,11 @@ function print_General_list($width, $action, $idItem = null) {
 	if (!isset($meta))
 		$meta = false;
 	
+	$operation = array(
+		'avg' => __('rate'),
+		'max' => __('max'),
+		'min' => __('min'),
+		'sum' => __('sum'));
 	
 	include_once($config['homedir'] . '/include/functions_html.php');
 	?>
@@ -1248,7 +1253,7 @@ function print_General_list($width, $action, $idItem = null) {
 						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
 								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
 								<td>' . printSmallFont($nameModule) . '</td>
-								<td>' . printSmallFont($item['operation']) . '</td>
+								<td>' . printSmallFont($operation[$item['operation']]) . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
@@ -1292,13 +1297,6 @@ function print_General_list($width, $action, $idItem = null) {
 								?>
 							</td>
 							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
-							<?php
-							$operation = array(
-								'avg' => __('rate'),
-								'max' => __('max'),
-								'min' => __('min'),
-								'sum' => __('sum'));
-							?>
 							<td><?php html_print_select ($operation, 'id_operation_module_general', 0, false, '', '', false, false, true, 'width: 200px', false); ?></td>
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>

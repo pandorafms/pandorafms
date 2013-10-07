@@ -237,7 +237,7 @@ if ($items) {
 	$table->size[0] = '5px';
 	$table->size[1] = '15%';
 	$table->size[4] = '8%';
-	$table->size[6] = '60px';
+	$table->size[6] = '90px';
 	$table->size[7] = '30px';
 	
 	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';
@@ -383,8 +383,9 @@ foreach ($items as $item) {
 	
 	if (check_acl ($config['id_user'], $item['id_group'], "RM")) {
 		$row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
-		$row[6] .= '&nbsp;&nbsp;';
+		$row[6] .= '&nbsp;';
 		$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
+		$row[6] .= '&nbsp;';
 		$row[6] .= html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
 	}
 	$row[7] = '';

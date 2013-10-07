@@ -251,7 +251,7 @@ $(document).ready (function () {
 			{"page" : "godmode/massive/massive_delete_alerts",
 			"get_agents" : 1,
 			"id_group" : this.value,
-			"recursion" : $("#checkbox-recursion").attr ("checked") ? 1 : 0,
+			"recursion" : $("#checkbox-recursion").is(":checked") ? 1 : 0,
 			"id_alert_template" : $("#id_alert_template").val()
 			},
 			function (data, status) {

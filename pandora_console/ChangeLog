@@ -1,5 +1,13 @@
 2013-10-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/massive/massive_delete_alerts.php,
+	godmode/massive/massive_add_alerts.php: fixed the get agents in
+	the groups with subgroups and enabled "Group recursion".
+	
+	Fixes: #2393
+
+2013-10-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/modificar_agente.php: fixed the align of bottom
 	create buttom.
 	

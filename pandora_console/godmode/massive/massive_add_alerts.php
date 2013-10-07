@@ -183,7 +183,7 @@ $(document).ready (function () {
 			{"page" : "godmode/massive/massive_add_alerts",
 			"get_agents" : 1,
 			"id_group" : this.value,
-			"recursion" : $("#checkbox-recursion").attr("checked") ? 1 : 0
+			"recursion" : $("#checkbox-recursion").is(":checked") ? 1 : 0
 			},
 			function (data, status) {
 				options = "";

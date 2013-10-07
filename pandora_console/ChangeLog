@@ -1,3 +1,9 @@
+2013-10-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_networkmap.php,
+	  operation/agentes/networkmap_list.php,
+	  operation/agentes/networkmap.php: Fixed ACL related problems.
+
 2013-10-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_pchart.php: Disabled 

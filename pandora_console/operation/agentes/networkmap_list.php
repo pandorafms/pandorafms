@@ -166,22 +166,20 @@ else {
 }
 
 // Create networkmap form
-$networkmap_types = networkmap_get_types();
+if (check_acl ($config['id_user'], 0, "AW")) {
+	$networkmap_types = networkmap_get_types();
+	echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap">';
+	echo "<table style='width: 100%' class='databox'>";
+	echo 	"<tr>";
+	echo 		"<td class='datos' style='width: 50%'>";
+	html_print_input_hidden('add_networkmap', 1);
+	html_print_select($networkmap_types, 'tab', 'topology', '');
+	echo 		"</td>";
+	echo 		"<td class='datos'>";
+	html_print_submit_button (__('Create networkmap'), 'crt', false, 'class="sub next"');
+	echo 		"</td>";
+	echo 	"</tr>";
+	echo "</table>";
+	echo "</form>";
+}
 ?>
-<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap">
-	<table style='width: 100%' class='databox'>
-		<tr>
-			<td class='datos' style='width: 50%'>
-				<?php
-				html_print_input_hidden('add_networkmap', 1);
-				html_print_select($networkmap_types, 'tab', 'topology', '');
-				?>
-			</td>
-			<td class='datos'>
-				<?php 
-				html_print_submit_button (__('Create networkmap'), 'crt', false, 'class="sub next"');
-				?>
-			</td>
-		</tr>
-	</table>
-</form>

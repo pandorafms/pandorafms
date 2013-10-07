@@ -6,8 +6,6 @@ ALTER TABLE "tusuario" ADD COLUMN "shortcut" SMALLINT DEFAULT 0;
 ALTER TABLE "tusuario" ADD COLUMN "disabled" INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE "tusuario" ADD COLUMN "shortcut" SMALLINT DEFAULT 0;
 ALTER TABLE "tusuario" ADD COLUMN "shortcut_data" text DEFAULT '';
-ALTER TABLE "tusuario" ADD COLUMN "section" varchar(255) NOT NULL DEFAULT '';
-ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL DEFAULT '';
 ALTER TABLE "tusuario" ADD COLUMN "force_change_pass" SMALLINT NOT NULL DEFAULT 0;
 ALTER TABLE "tusuario" ADD COLUMN "last_pass_change" BIGINT NOT NULL DEFAULT 0;
 ALTER TABLE "tusuario" ADD COLUMN "last_failed_login" BIGINT NOT NULL DEFAULT 0;
@@ -470,6 +468,17 @@ ALTER TABLE "tusuario_perfil" ADD COLUMN "tags" text default '';
 -- ---------------------------------------------------------------------
 ALTER TABLE "ttag" ADD COLUMN "email" TEXT NULL;
 ALTER TABLE "ttag" ADD COLUMN "phone" TEXT NULL;
+
+-- ---------------------------------------------------------------------
+-- Add more fields in snmp alerts (05/03/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field4" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field5" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field6" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field7" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field8" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field9" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field10" TEXT;
 
 -- ---------------------------------------------------------------------
 -- Add metaconsole fields to user table (17/04/13)

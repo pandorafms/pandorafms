@@ -290,7 +290,7 @@ switch ($action) {
 			$search_name = "%$search%' OR description LIKE '%$search%";
 		}
 		
-		$table_aux->width = '98%';
+		$table_aux->width = '99%';
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		

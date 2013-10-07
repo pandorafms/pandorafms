@@ -77,6 +77,11 @@ input.button {
 	padding: 2px 3px; 
 	margin: 10px 15px;
 }
+
+input[type=submit], input[type=button] {
+	cursor: pointer;
+}
+
 select {
 	border:1px solid #ddd;
 }
@@ -2207,49 +2212,49 @@ div.cellWhite {
 div.cellNormal {
 	width: 100%; 
 	height: 100%;
-	background: #008e00;
+	background: #6EB432;
 	color: #fff;
 }
 
 div.cellCritical {
 	width: 100%; 
 	height: 100%;
-	background: #cc0000;
+	background: #FF4040;
 	color: #fff;
 }
 
 div.cellWarning {
 	width: 100%;
 	height: 100%;
-	background: #fce94f;
+	background: #F2D400;
 	color: #111;
 }
 
 div.cellUnknown {
 	width: 100%; 
 	height: 100%;
-	background: #babdb6;
-	color: #3F3F3F;
+	background: #AAAAAA;
+	color: #FFFFFF;
 }
 
 div.cellNotInit {
 	width: 100%; 
 	height: 100%;
-	background: #729fcf;
-	color: #111;
+	background: #3BA0FF;
+	color: #FFFFFF;
 }
 
 div.cellAlert {
 	width: 100%; 
 	height: 100%;
-	background: #ffa300;
+	background: #FF8800;
 	color: #111;
 }
 
 div.cellBorder1 {
 	width: 100%; 
 	height: 100%;
-	border: 1px solid black;
+	border: 1px solid #666;
 }
 
 div.cellBig {

@@ -42,7 +42,7 @@ if ($develop_bypass != 1) {
 	
 	if (version_compare(PHP_VERSION, '5.3.0') >= 0)
 	{ 
-		error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_STRICT);
+		error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 	}
 	else 
 	{ 
@@ -56,7 +56,7 @@ else {
 	// Develop mode, show all notices and errors on Console (and log it)
 	if (version_compare(PHP_VERSION, '5.3.0') >= 0)
 	{
-		error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+		error_reporting(E_ALL & ~E_DEPRECATED);
 	}
 	else
 	{

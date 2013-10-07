@@ -2907,8 +2907,8 @@ function reporting_header_content($mini, $content, $report, &$table, $title = fa
 	else {
 		$data[] = "<div style='text-align: right;'>" . $sizh .
 			"(" . human_time_description_raw ($content['period']) . ") " .
-			__("From:") . " " . date($config["date_format"], $report["datetime"]) . "<br />" .
-			__("To:") . " " . date($config["date_format"], $report["datetime"] - $content['period']) . "<br />" .
+			__("From:") . " " . date($config["date_format"], $report["datetime"] - $content['period']) . "<br />" .
+			__("To:") . " " . date($config["date_format"], $report["datetime"]) . "<br />" .
 			$sizhfin . "</div>";
 	}
 	
@@ -2982,16 +2982,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
-			$table->colspan[1][0] = 4;
+			
+			$next_row = 1;
 			
 			// Put description at the end of the module (if exists)
-			$table->colspan[2][0] = 4;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			
+			$table->colspan[$next_row][0] = 3;
+			$table->cellstyle[$next_row][0] = 'text-align: center;';
+				
 			$data = array ();
 			
 			$moduletype_name = modules_get_moduletype_name(
@@ -3026,14 +3031,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			set_time_limit(500);
 			
+			$next_row = 1;
 			// Put description at the end of the module (if exists)
-			$table->colspan[2][0] = 4;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			
+			$table->colspan[$next_row][0] = 3;
+			$table->cellstyle[$next_row][0] = 'text-align: center;';
 			$data = array ();
 			
 			$output_projection = forecast_projection_graph($content['id_agent_module'], $content['period'], $content['top_n_value']);
@@ -3518,6 +3527,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
+			$next_row = 1;
 			
 			// Put description at the end of the module (if exists)
 			if ($content["description"] != "") {
@@ -3525,6 +3535,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$next_row++;
 			}
 			
 			$data = array ();
@@ -3535,6 +3546,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			else {
 				$monitor_value = format_numeric ($monitor_value);
 			}
+			
+			$table->colspan[$next_row][0] = 2;
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: ' . COL_NORMAL . ';">';
 			$data[0] .= html_print_image("images/module_ok.png", true) . ' ' . __('OK') . ': ' . $monitor_value.' %</p>';
 			if ($monitor_value !== __('Unknown')) {
@@ -3611,7 +3624,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			//RUNNING
 			
 			// Put description at the end of the module (if exists)
-			$table->colspan[0][0] = 2;
+			$table->colspan[1][0] = 3;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
@@ -3619,7 +3632,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$data = array ();
-			$table->colspan[1][0] = 2;
+			$table->colspan[2][0] = 3;
+			
 			$value = reporting_get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
 			if ($value === false) {
@@ -3640,16 +3654,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			//RUNNING
 			
+			$next_row = 1;
+			
 			// Put description at the end of the module (if exists)
-			$table->colspan[0][0] = 2;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			
+			$table->colspan[$next_row][0] = 3;
+
 			$data = array ();
-			$table->colspan[1][0] = 2;
 			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 			
 			$value = reporting_get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $report["datetime"]);
@@ -3852,9 +3870,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$cellContent = html_print_table($table2, true);
 			array_push($table->data, array($cellContent));
 			break;
-		case 'sql_graph_pie':
 		case 'sql_graph_vbar':
 		case 'sql_graph_hbar':
+		case 'sql_graph_pie':
+			$sizgraph_h = 300;
+			
+			if ($content['type'] == 'sql_graph_vbar') {
+				$sizgraph_h = 400;
+			}
 			
 			if ($config['metaconsole'] == 1 && defined('METACONSOLE'))
 				metaconsole_restore_db();
@@ -3863,12 +3886,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				"", "");
 			
 			// Put description at the end of the module (if exists)
-			$table->colspan[0][0] = 2;
+			$next_row = 1;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
+			
+			$table->colspan[$next_row][0] = 3;
 			
 			$table2->class = 'databox';
 			$table2->width = '100%';
@@ -3881,7 +3908,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			
-			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, 200, $content["type"], true, ui_get_full_url(false) . '/');
+			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, $sizgraph_h, $content["type"], true, ui_get_full_url(false) . '/');
 			
 			array_push($table->data, $data);
 			break;
@@ -4118,14 +4145,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
+			$next_row = 1;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
+				$table->colspan[$next_row][0] = 3;
 				array_push ($table->data, $data_desc);
+				$next_row++;
 			}
 			
-			$table2->class = 'databox';
+			$table->colspan[$next_row][0] = 3;
+			
+			$table2->class = 'databox alternate';
 			$table2->width = '100%';
 			
 			//Create the head
@@ -4184,7 +4215,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$cellContent = html_print_table($table2, true);
 			array_push($table->data, array($cellContent));
-			$table->colspan[1][0] = 2;
 			break;
 		case 'TTRT':
 			reporting_header_content($mini, $content, $report, $table, __('TTRT'),
@@ -4322,7 +4352,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[2][0] = 3;
 			
-			$table->data[2][0] = html_print_table($table2, true) .
+			$table->data[2][0] = 
 				"<table width='100%'>
 					<tr>
 						<td></td>
@@ -5513,7 +5543,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[3][0] = 3;
-			
+			$table->cellstyle[3][0] = 'text-align: center;';
+
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,
@@ -5522,7 +5553,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 				//Display bars graph
 				$table->colspan[4][0] = 3;
-				$height = count($data_pie_graph) * 20 + 35;
+				$table->cellstyle[4][0] = 'text-align: center;';
+				$height = count($data_pie_graph) * 20 + 85;
 				$data = array();
 				
 				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
@@ -5545,6 +5577,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table_summary->data[0][2] = format_for_graph($max,2);
 				
 				$table->colspan[5][0] = 3;
+				$table->cellstyle[5][0] = 'text-align: center;';
 				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
 				$table->colspan[6][0] = 3;
 				array_push ($table->data, array(html_print_table($table_summary, true)));
@@ -5631,13 +5664,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			$table_data = '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
 			
-			$table_data .= "<th style='background-color: #799E48;'>".__("Agents")." / ".__("Modules")."</th>";
+			$table_data .= "<th>".__("Agents")." / ".__("Modules")."</th>";
 			
 			$nmodules = 0;
 			foreach ($modules_by_name as $module) {
 				$nmodules++;
 				
-				$file_name = string2image(ui_print_truncate_text($module['name'], 'module_small', false, true, false, '...'), false, false, 6, 270, '#90B165', 'FFF', 4, 0);
+				$file_name = string2image(ui_print_truncate_text($module['name'], 'module_small', false, true, false, '...'), false, false, 6, 270, '#B1B1B1', 'FFF', 4, 0);
 				$table_data .= '<th width="22px">' . html_print_image($file_name, true, array('title' => $module['name']))."</th>";
 			}
 			// Dont use pagination
@@ -5659,26 +5692,26 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				switch($agent_status) {
 					case 4: // Alert fired status
-						$rowcolor = '#ffa300';
+						$rowcolor = COL_ALERTFIRED;
 						$textcolor = '#000';
 						break;
 					case 1: // Critical status
-						$rowcolor = '#bc0000';
+						$rowcolor = COL_CRITICAL;
 						$textcolor = '#FFF';
 						break;
 					case 2: // Warning status
-						$rowcolor = '#f2ef00';
+						$rowcolor = COL_WARNING;
 						$textcolor = '#000';
 						break;
 					case 0: // Normal status
-						$rowcolor = '#8ae234';
-						$textcolor = '#000';
+						$rowcolor = COL_NORMAL;
+						$textcolor = '#FFF';
 						break;
 					case 3: 
 					case -1: 
 					default: // Unknown status
-						$rowcolor = '#babdb6';
-						$textcolor = '#000';
+						$rowcolor = COL_UNKNOWN;
+						$textcolor = '#FFF';
 						break;
 				}
 				
@@ -5737,30 +5770,17 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table_data .= "</table>";
 			
-			$table_data .= "<br><br><p>" . __("The colours meaning:") .
-				"<ul style='float: left;'>" .
-				'<li style="clear: both;">
-					<div style="float: left; background: #ffa300; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Orange cell when the module has fired alerts") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #cc0000; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Red cell when the module has a critical status") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #fce94f; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Yellow cell when the module has a warning status") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #8ae234; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Green cell when the module has a normal status") .
-				'</li>' .
-				'<li style="clear: both;">
-					<div style="float: left; background: #babdb6; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-					__("Grey cell when the module has an unknown status") .
-				'</li>' .
-				"</ul>" .
-			"</p>";
+			$table_data .= "<div class='legend_basic' style='width: 96%'>";
+
+			$table_data .= "<table>";
+			$table_data .= "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
+			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module has fired alerts") . "</td></tr>";
+			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_CRITICAL . ";'></div></td><td>" . __("Red cell when the module has a critical status") . "</td></tr>";
+			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module has a warning status") . "</td></tr>";
+			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module has a normal status") . "</td></tr>";
+			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module has an unknown status") . "</td></tr>";
+			$table_data .= "</table>";
+			$table_data .= "</div>";
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$data[0] = $table_data;

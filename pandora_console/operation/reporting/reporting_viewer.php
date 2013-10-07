@@ -63,6 +63,10 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time&pure=$pure";
 
+$options['list_reports'] = array('active' => false,
+	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
+		html_print_image("images/report_list.png", true, array ("title" => __('Report list'))) .'</a>');
+		
 if (check_acl ($config['id_user'], 0, "RW")) {
 	$options['main']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
 		html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
@@ -80,10 +84,6 @@ if (check_acl ($config['id_user'], 0, "RW")) {
 $options['view'] = array('active' => true,
 	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $id_report . '&pure='.$pure.'">' . 
 		html_print_image("images/operation.png", true, array ("title" => __('View report'))) .'</a>');
-
-$options['list_reports'] = array('active' => false,
-	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
-		html_print_image("images/report_list.png", true, array ("title" => __('Report list'))) .'</a>');
 
 if (!defined('METACONSOLE')) {
 	if ($config["pure"] == 0) {
@@ -123,10 +123,11 @@ if ($enable_init_date) {
 }
 
 $table->id = 'controls_table';
-$table->width = '98%';
+$table->width = '99%';
 $table->class = 'databox';
 $table->style = array ();
 $table->style[0] = 'width: 60px;';
+$table->rowspan[0][0] = 2;
 
 // Set initial conditions for these controls, later will be modified by javascript
 if (!$enable_init_date) {
@@ -145,7 +146,6 @@ else {
 $table->size = array ();
 $table->size[0] = '60px';
 $table->colspan[0][1] = 2;
-$table->rowspan[0][0] = 2;
 $table->style[0] = 'text-align:center;';
 $table->data = array ();
 $table->data[0][0] = html_print_image("images/reporting32.png", true, array("width" => "32", "height" => "32")); 
@@ -178,6 +178,9 @@ echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'" style="marg
 html_print_table ($table);
 html_print_input_hidden ('id_report', $id_report);
 echo '</form>';
+
+// The rowspan of the first row is only 2 in controls table. Why is used the same code here and in the items??
+$table->rowspan[0][0] = 1;
 
 echo '<div id="loading" style="text-align: center;">';
 echo html_print_image("images/wait.gif", true, array("border" => '0'));

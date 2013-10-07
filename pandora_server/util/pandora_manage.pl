@@ -107,7 +107,7 @@ sub help_screen{
 	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> \n\t  <critical_str>]", 'Add snmp network module to agent');
 	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]", 'Add plug-in module to agent');
     help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
-    help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> [<datetime>]", 'Insert data to module');
+    help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime>]", 'Insert data to module');
     help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', "Delete historic \n\t  data of a module, the modules of an agent or the modules of the agents of a group");
 	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
@@ -1653,7 +1653,7 @@ sub cli_delete_template_action() {
 ##############################################################################
 
 sub cli_data_module() {
-	my ($server_name,$agent_name,$module_name,$module_type,$datetime) = @ARGV[2..6];
+	my ($server_name,$agent_name,$module_name,$module_type,$module_new_data,$datetime) = @ARGV[2..7];
 	my $utimestamp;
 	
 	if(defined($datetime)) {
@@ -1676,18 +1676,22 @@ sub cli_data_module() {
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
 	
+	my $id_module = get_agent_module_id($dbh, $module_name, $id_agent);
+	exist_check($id_module, 'module name', $module_name);
+		
 	# Server_type 0 is dataserver
 	my $server_id = get_server_id($dbh,$server_name,0);
 	exist_check($server_id,'data server',$server_name);
 	
-	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND id_tipo_modulo = ?', $id_agent, $module_type_id);
-
+	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ? AND id_tipo_modulo = ?', $id_module, $id_agent, $module_type_id);
+	
 	if(not defined($module->{'module_interval'})) {
-		print_log "[ERROR] No module data finded. \n\n";
+		print_log "[ERROR] No module found with this type. \n\n";
 		exit;
 	}
-
-	my %data = ('data' => 1);
+	
+	my %data = ('data' => $module_new_data);
+	
 	pandora_process_module ($conf, \%data, '', $module, $module_type, '', $utimestamp, $server_id, $dbh);
 	
 	print_log "[INFO] Inserting data to module '$module_name'\n\n";
@@ -3450,7 +3454,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_template_action();
 		}
 		elsif ($param eq '--data_module') {
-			param_check($ltotal, 5, 1);
+			param_check($ltotal, 6, 1);
 			cli_data_module();
 		}
 		elsif ($param eq '--create_user') {

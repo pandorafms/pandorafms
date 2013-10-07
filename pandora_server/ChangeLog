@@ -1,3 +1,9 @@
+2013-10-07  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Fixed data_module feature adding the data
+	to be inserted into parameter list. The retro-compatibility has been 
+	broken, but this feature was useless, so it shouldnt be a problem.
+
 2013-09-29  Junichi Satoh <junichi@rworks.jp>
 
 	* FreeBSD/pandora_server.conf: Updated default settings as the same

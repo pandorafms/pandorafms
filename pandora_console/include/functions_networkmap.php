@@ -1228,40 +1228,24 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 	if ($id_user == '') {
 		$id_user = $config['id_user'];
 	}
-	
-	$type_cond = '';
-	if ($type != '') {
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$type_cond = ' AND type = "'.$type.'"';
-				break;
-			case "postgresql":
-			case "oracle":
-				$type_cond = ' AND type = \''.$type.'\'';
-				break;
-		}
+
+	// Configure filters
+    $where = array ();
+	$where['id_group'] = array_keys (users_get_groups($id_user));
+    if ($type != '') {
+		$where['type'] = $type;
 	}
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$networkmaps_raw =  db_get_all_rows_filter(
-				'tnetwork_map', 'id_user = "' . $id_user . '" ' .
-				$type_cond . ' ORDER BY type DESC, name ASC',
-				array('id_networkmap','name', 'type'));
-			break;
-		case "postgresql":
-		case "oracle":
-			$networkmaps_raw =  db_get_all_rows_filter(
-				'tnetwork_map', 'id_user = \'' . $id_user . '\' ' .
-				$type_cond . ' ORDER BY type DESC, name ASC',
-				array('id_networkmap','name', 'type'));
-			break;
-	}
-	
+
+	$where['order'][0]['field'] = 'type';
+	$where['order'][0]['order'] = 'DESC';
+	$where['order'][1]['field'] = 'name';
+	$where['order'][1]['order'] = 'ASC';
+
+	$networkmaps_raw =  db_get_all_rows_filter('tnetwork_map', $where);
 	if ($networkmaps_raw === false) {
 		return false;
 	}
-	
+
 	$networkmaps = array();
 	foreach ($networkmaps_raw as $key => $networkmapitem) {
 		if ($optgrouped) {

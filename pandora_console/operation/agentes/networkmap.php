@@ -223,16 +223,17 @@ $combolist .= '</form>';
 
 $buttons['combolist'] = $combolist;
 
-$buttons['addmap'] = array('active' => $activeTab == false,
+if (check_acl ($config['id_user'], 0, "AW")) {
+	$buttons['addmap'] = array('active' => $activeTab == false,
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 		html_print_image("images/add_mc.png", true, array ("title" => __('Add map'))) .'</a>');
 
-if (!$nomaps && $id_networkmap != 0) {
-	$buttons['deletemap'] = array('active' => $activeTab == false,
+	if (!$nomaps && $id_networkmap != 0) {
+		$buttons['deletemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 			html_print_image("images/delete_mc.png", true, array ("title" => __('Delete map'))) .'</a>');
 	
-	$buttons['savemap'] = array('active' => $activeTab == false,
+		$buttons['savemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
 			&amp;tab='.$activeTab.'&amp;save_networkmap=1&amp;name='.$name.'&amp;group='.$group.'
 			&amp;layout='.$layout.'&amp;nooverlap='.$nooverlap.'&amp;simple='.$simple.'&amp;regen='.$regen.'
@@ -242,6 +243,7 @@ if (!$nomaps && $id_networkmap != 0) {
 			&amp;module_group='.$module_group.'&amp;pure='.$pure.'&amp;hidden_options='.(int)$hidden_options.'
 			&amp;show_snmp_modules='.(int)$show_snmp_modules.'">' . 
 			html_print_image("images/save_mc.png", true, array ("title" => __('Save map'))) .'</a>');
+	}
 }
 
 $title = '';

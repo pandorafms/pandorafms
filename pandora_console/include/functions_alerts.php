@@ -1370,6 +1370,7 @@ function alerts_get_agents_with_alert_template ($id_alert_template, $id_group, $
 	$filter['id_alert_template'] = $id_alert_template;
 	$filter['tagente_modulo.disabled'] = '<> 1';
 	$filter['delete_pending'] = '<> 1';
+	
 	if (empty ($id_agents)) {
 		switch ($config["dbtype"]) {
 			case "mysql":

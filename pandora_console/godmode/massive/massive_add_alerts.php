@@ -35,10 +35,20 @@ if (is_ajax ()) {
 	
 	if ($get_agents) {
 		$id_group = (int) get_parameter ('id_group');
+		// Is is possible add keys prefix to avoid auto sorting in js object conversion
+		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		
-		$agents_alerts = agents_get_group_agents ($id_group, false, "", false, $recursion);
+		$agents = agents_get_group_agents ($id_group, false, "", false, $recursion);
 		
-		echo json_encode ($agents_alerts);
+		// Add keys prefix
+		if ($keys_prefix !== "") {
+			foreach($agents as $k => $v) {
+				$agents[$keys_prefix . $k] = $v;
+				unset($agents[$k]);
+			}
+		}
+		
+		echo json_encode ($agents);
 		return;
 	}
 	return;
@@ -183,11 +193,16 @@ $(document).ready (function () {
 			{"page" : "godmode/massive/massive_add_alerts",
 			"get_agents" : 1,
 			"id_group" : this.value,
-			"recursion" : $("#checkbox-recursion").is(":checked") ? 1 : 0
+			"recursion" : $("#checkbox-recursion").is(":checked") ? 1 : 0,
+			// Add a key prefix to avoid auto sorting in js object conversion
+			"keys_prefix" : "_"
 			},
 			function (data, status) {
 				options = "";
 				jQuery.each (data, function (id, value) {
+					// Remove keys_prefix from the index
+					id = id.substring(1);
+					
 					options += "<option value=\""+id+"\">"+value+"</option>";
 				});
 				$("#id_agents").append (options);

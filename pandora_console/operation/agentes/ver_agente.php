@@ -46,6 +46,8 @@ if (is_ajax ()) {
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
+		// Is is possible add keys prefix to avoid auto sorting in js object conversion
+		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		
 		if ($id_group > 0) {
 			$groups = array($id_group);
@@ -59,9 +61,17 @@ if (is_ajax ()) {
 			$groups = array_keys($groups_orig);
 		}
 		
-		$filter = " WHERE id_grupo IN (". implode(',', $groups) .")";
+		$filter = " WHERE id_grupo IN (". implode(',', $groups) .") ORDER BY nombre ASC";
 		$agents = db_get_all_rows_sql("SELECT id_agente, nombre
 			FROM tagente" . $filter);
+		
+		// Add keys prefix
+		if ($keys_prefix !== "") {
+			foreach($agents as $k => $v) {
+				$agents[$keys_prefix . $k] = $v;
+				unset($agents[$k]);
+			}
+		}
 		
 		echo json_encode($agents);
 		return;

@@ -197,14 +197,20 @@ function filterByGroup(idGroup) {
 	jQuery.post ("ajax.php",
 			{"page" : "godmode/groups/group_list",
 			"get_group_agents" : 1,
-			"id_group" : idGroup
+			"id_group" : idGroup,
+			// Add a key prefix to avoid auto sorting in js object conversion
+			"keys_prefix" : "_"
 			},
 			function (data, status) {
 				i = 0
 				jQuery.each (data, function (id, value) {
+					// Remove keys_prefix from the index
+					id = id.substring(1);
+					
 					i++;
 					$("#id_agents").append ($("<option></option>").attr ("value", id).html (value));
 				});
+				
 				if (i == 0) {
 					$("#id_agents").append ($("<option></option>").attr ("value", 0).html ('<?php echo __('None');?>'));
 				}

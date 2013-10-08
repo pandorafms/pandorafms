@@ -67,6 +67,8 @@ if (is_ajax ()) {
 		$disabled = (int) get_parameter ('disabled', 0);
 		$search = (string) get_parameter ('search', '');
 		$recursion = (int) get_parameter ('recursion', 0);
+		// Is is possible add keys prefix to avoid auto sorting in js object conversion
+		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		// Ids of agents to be include in the SQL clause as id_agent IN ()
 		$filter_agents_json = (string) get_parameter ('filter_agents_json', '');
 		
@@ -87,8 +89,15 @@ if (is_ajax ()) {
 			$filter['string'] = $search;
 		}
 		
-		
 		$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
+		
+		// Add keys prefix
+		if ($keys_prefix !== "") {
+			foreach($agents as $k => $v) {
+				$agents[$keys_prefix . $k] = $v;
+				unset($agents[$k]);
+			}
+		}
 		
 		echo json_encode ($agents);
 		return;

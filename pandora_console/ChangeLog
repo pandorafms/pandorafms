@@ -1,5 +1,11 @@
 2013-10-08 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map.php,
+	include/Image/image_functions.php: fixed the show visualmap widget
+	in dashboard.
+
+2013-10-08 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/styles/pandora.css: add the style for the dialogs in
 	the enteprise license dialog.
 

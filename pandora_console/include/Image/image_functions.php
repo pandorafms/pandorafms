@@ -43,7 +43,7 @@ if (isset($_GET['getFile'])) {
 				createthumb( $_SERVER['DOCUMENT_ROOT'] . $file, $fileTemp,$newWidth,$newHeight);
 			}
 		}
-		else createthumb( $_SERVER['DOCUMENT_ROOT'] . $file, $fileTemp,$newWidth,$newHeight);
+		else createthumb($file, $fileTemp,$newWidth,$newHeight);
 		getFile($fileName, $fileTemp);
 		unlink($fileTemp);
 	}

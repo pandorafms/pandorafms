@@ -2737,3 +2737,40 @@ div#agent_wizard_subtabs {
 .agents_modules_table th * {
 	color: #FFFFFF;
 }
+
+/*
+ * LOAD_ENTERPRISE.PHP
+ */
+#code_license_dialog {
+	padding: 50px;
+	padding-top: 10px;
+}
+#code_license_dialog #logo {
+	margin-bottom: 20px;
+	text-align: center;
+}
+#code_license_dialog, #code_license_dialog * {
+	font-size: 14px;
+}
+#code_license_dialog ul {
+	padding-left: 30px;
+	list-style-image: url("../../images/input_tick.png");
+}
+#code_license_dialog li {
+	margin-bottom: 12px;
+}
+
+#code_license_dialog #code {
+	font-weight: bolder;
+	font-size: 20px;
+	border: 1px solid #dddddd;
+	padding: 5px;
+	text-align: center;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+}
+
+#code_license_dialog a {
+	text-decoration: underline;
+}

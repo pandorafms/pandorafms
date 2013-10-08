@@ -123,6 +123,7 @@ if (is_ajax ())
 				$avariableGroups = users_get_groups();
 				$avariableGroupsIds = array_keys($avariableGroups);
 				$sql = treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel, $search_free);
+				
 				if ($sql === false) {
 					$rows = array ();
 				}

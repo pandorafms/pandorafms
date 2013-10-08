@@ -1,3 +1,18 @@
+2013-10-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_alerts.php
+	include/javascript/jquery.pandora.controls.js
+	include/functions_treeview.php
+	operation/tree.php
+	operation/agentes/ver_agente.php
+	godmode/groups/group_list.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_delete_modules.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/reporting/graph_builder.graph_editor.php: Add sorting
+	in many agents list retrieved by ajax and tree view
+
 2013-10-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css: Added a overflow hidden

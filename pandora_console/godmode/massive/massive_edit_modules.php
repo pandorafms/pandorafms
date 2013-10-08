@@ -776,12 +776,17 @@ $(document).ready (function () {
 				{"page" : "operation/agentes/ver_agente",
 				"get_agents_group_json" : 1,
 				"recursion" : $("#checkbox-recursion").attr ("checked") ? 1 : 0,
-				"id_group" : this.value
+				"id_group" : this.value,
+				// Add a key prefix to avoid auto sorting in js object conversion
+				"keys_prefix" : "_"
 				},
 				function (data, status) {
 					$("#id_agents").html('');
 					
 					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
 						option = $("<option></option>").attr ("value", value["id_agente"]).html (value["nombre"]);
 						$("#id_agents").append (option);
 					});

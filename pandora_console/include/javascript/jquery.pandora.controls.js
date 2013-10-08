@@ -41,12 +41,16 @@
 						"recursion" : config.recursion,
 						"filter_agents_json" : config.filter_agents_json,
 						"disabled" : config.disabled ? 1 : 0,
+						// Add a key prefix to avoid auto sorting in js object conversion
+						"keys_prefix" : "_"
 					};
 
 					jQuery.post ("ajax.php",
 						opts,
 						function (data, status) {
 							jQuery.each (data, function (id, value) {
+								// Remove keys_prefix from the index
+								id = id.substring(1);
 								if (id !== 'keycount'){
 									config.callbackPre ();
 									option = $("<option></option>")

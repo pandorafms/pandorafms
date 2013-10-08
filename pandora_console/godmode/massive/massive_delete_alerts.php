@@ -36,6 +36,8 @@ if (is_ajax ()) {
 	if ($get_agents) {
 		$id_group = (int) get_parameter ('id_group');
 		$id_alert_template = (int) get_parameter ('id_alert_template');
+		// Is is possible add keys prefix to avoid auto sorting in js object conversion
+		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		
 		if ($recursion) {
 			$groups = groups_get_id_recursive($id_group, true);
@@ -53,7 +55,19 @@ if (is_ajax ()) {
 			}
 		}
 		
-		echo json_encode (index_array ($agents_alerts, 'id_agente', 'nombre'));
+		$agents = index_array ($agents_alerts, 'id_agente', 'nombre');
+
+		asort($agents);
+		
+		// Add keys prefix
+		if ($keys_prefix !== "") {
+			foreach($agents as $k => $v) {
+				$agents[$keys_prefix . $k] = $v;
+				unset($agents[$k]);
+			}
+		}
+		
+		echo json_encode ($agents);
 		return;
 	}
 	return;
@@ -252,11 +266,16 @@ $(document).ready (function () {
 			"get_agents" : 1,
 			"id_group" : this.value,
 			"recursion" : $("#checkbox-recursion").is(":checked") ? 1 : 0,
-			"id_alert_template" : $("#id_alert_template").val()
+			"id_alert_template" : $("#id_alert_template").val(),
+			// Add a key prefix to avoid auto sorting in js object conversion
+			"keys_prefix" : "_"
 			},
 			function (data, status) {
 				options = "";
 				jQuery.each (data, function (id, value) {
+					// Remove keys_prefix from the index
+					id = id.substring(1);
+					
 					options += "<option value=\""+id+"\">"+value+"</option>";
 				});
 				$("#id_agents").append (options);

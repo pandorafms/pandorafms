@@ -693,10 +693,10 @@ function treeview_getData ($type) {
 			switch ($config["dbtype"]) {
 				case "mysql":
 				case "postgresql":
-					$list = db_get_all_rows_sql("SELECT * FROM tgrupo WHERE nombre IN (" . $stringAvariableGroups . ") $sql_search");
+					$list = db_get_all_rows_sql("SELECT * FROM tgrupo WHERE nombre IN (" . $stringAvariableGroups . ") $sql_search ORDER BY nombre COLLATE utf8_general_ci ASC");
 					break;
 				case "oracle":
-					$list = db_get_all_rows_sql("SELECT * FROM tgrupo WHERE dbms_lob.substr(nombre,4000,1) IN (" . $stringAvariableGroups . ")");
+					$list = db_get_all_rows_sql("SELECT * FROM tgrupo WHERE dbms_lob.substr(nombre,4000,1) IN (" . $stringAvariableGroups . ") ORDER BY nombre COLLATE utf8_general_ci ASC");
 					break;
 			}
 			break;
@@ -748,7 +748,8 @@ function treeview_getData ($type) {
 						tagente.id_grupo IN  ($groups) AND
 						tagente.nombre LIKE '%$search_free%' AND
 						tagente.disabled = 0 AND
-						tagente_modulo.disabled = 0";
+						tagente_modulo.disabled = 0
+						ORDER BY tpolicies.name COLLATE utf8_general_ci ASC";
 				
 				$list = db_get_all_rows_sql($sql);
 				
@@ -823,7 +824,8 @@ function treeview_getData ($type) {
 						tpolicies.id = tpolicy_modules.id_policy AND
 						tagente.id_grupo IN ($groups) AND
 						tagente.disabled = 0 AND
-						tagente_modulo.disabled = 0");
+						tagente_modulo.disabled = 0
+						ORDER BY tpolicies.name COLLATE utf8_general_ci ASC");
 				
 				$element = 0;
 				switch ($select_status) {
@@ -955,7 +957,8 @@ function treeview_getData ($type) {
 						AND tagente.disabled = 0
 						AND ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo" .
 						$search_sql . 
-						$user_tags_sql;
+						$user_tags_sql . 
+						"ORDER BY ttag.name COLLATE utf8_general_ci ASC";
 				
 				$list = db_get_all_rows_sql($sql);
 			break;
@@ -1301,7 +1304,7 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 		}
 	
 	// This line checks for initializated modules or (non-initialized) asyncronous modules	
-	$sql .= ' AND disabled = 0 AND (utimestamp > 0 OR id_tipo_modulo IN (21,22,23))';
+	$sql .= ' AND disabled = 0 AND (utimestamp > 0 OR id_tipo_modulo IN (21,22,23)) ORDER BY nombre COLLATE utf8_general_ci ASC';
 	return $sql;
 }
 ?>

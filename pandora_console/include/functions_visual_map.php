@@ -903,8 +903,16 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			$proportion = $width / $layout["width"];
 			$mapHeight = $proportion * $layout["height"];
 		}
-		$backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
-			$config['homeurl'] . 'images/console/background/'.io_safe_input ($layout["background"]);
+		
+		if (defined('METACONSOLE')) {
+			$backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+				$config['homeurl'] . 'images/console/background/'.io_safe_input ($layout["background"]);
+		}
+		else {
+			html_debug_print($config, true);
+			$backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+				$config['homedir'] . '/images/console/background/'.io_safe_input ($layout["background"]);
+		}
 	}
 	else {
 		$mapWidth = $layout["width"];

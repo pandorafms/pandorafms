@@ -1,5 +1,22 @@
 2013-10-08  Sergio Martin <sergio.martin@artica.es>
 
+	* include/help/en/help_reporting_advanced_tab.php
+	include/help/es/help_reporting_advanced_tab.php: Add info
+	in the report macros help with new feature
+
+	* images/custom_logo/none.png
+	images/custom_logo/artica_logo.jpg
+	images/custom_logo/artica_logo.png
+	images/custom_logo/sourceforge.png
+	images/custom_logo/pandora_logo_head.png
+	images/custom_logo/none.jpg: Clean and create new files for
+	pdf header
+
+	* godmode/reporting/reporting_builder.php: Set FreeSans as
+	default font in reports
+
+2013-10-08  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_alerts.php
 	include/javascript/jquery.pandora.controls.js
 	include/functions_treeview.php

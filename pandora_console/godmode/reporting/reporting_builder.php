@@ -523,6 +523,9 @@ switch ($action) {
 				$id_group_edit_param = (int)get_parameter('id_group_edit', 0);
 				$report_id_user = get_parameter('report_id_user');
 				
+				// Pretty font by default for pdf
+				$custom_font = 'FreeSans.ttf';
+				
 				switch ($type_access_selected) {
 					case 'group_view':
 						$id_group_edit = 0;
@@ -590,7 +593,8 @@ switch ($action) {
 								'private' => $private,
 								'id_group_edit' => $id_group_edit,
 								'id_user' => $config['id_user'],
-								'metaconsole' => $metaconsole_report));
+								'metaconsole' => $metaconsole_report,
+								'custom_font' => $custom_font));
 						if ($idOrResult !== false)
 							db_pandora_audit( "Report management", "Create report #$idOrResult");
 						else

@@ -1,3 +1,8 @@
+2013-10-08 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/styles/pandora.css: add the style for the dialogs in
+	the enteprise license dialog.
+
 2013-10-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/help/en/help_reporting_advanced_tab.php

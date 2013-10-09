@@ -1,3 +1,12 @@
+2013-10-09  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/jquery.pandora.js
+	images/tip.png: Replace tip image by new star, increse
+	a little the license info dialog
+
+	* operation/agentes/estado_generalagente.php: Added real 
+	time tip near status graph legend in main agent view
+
 2013-10-08 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php,

@@ -107,6 +107,7 @@ $data = array();
 $data[0] = '<div style="margin: 0 auto 6px auto; width: 150px;">';
 $data[0] .= graph_agent_status ($id_agente, 150, 120, true);
 $data[0] .= '<br>' . reporting_tiny_stats ($agent, true);
+$data[0] .= ui_print_help_tip(__('Agent statuses are re-calculated by the server, they are not  shown in real time.'), true);
 $data[0] .= '</div>';
 $table_agent->rowspan[count($table_agent->data)][0] = 6;
 $table_agent->colspan[count($table_agent->data)][0] = 2;

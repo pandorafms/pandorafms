@@ -702,6 +702,9 @@ sub free_mem {
 		$free_mem = $pages_free * $page_size / 1024;
 
 	}
+	elsif ($OSNAME eq "netbsd"){
+		$free_mem = `cat /proc/meminfo | grep MemFree | awk '{ print \$2 }'`;
+	}
 	# by default LINUX calls
 	else {
 		$free_mem = `free | grep Mem | awk '{ print \$4 }'`;
@@ -801,6 +804,24 @@ sub pandora_ping ($$$$) {
 		# Note: timeout(-t) option is not implemented in ping6.
 		# 'networktimeout' is not used by ping6 on FreeBSD.
 		
+		# Ping the host
+		`$ping_command -q -n -c $retries $host >/dev/null 2>&1`;
+		if ($? == 0) {
+			return 1;
+		}
+		return 0;
+	}
+
+        elsif ($OSNAME eq "netbsd"){                      
+		my $ping_command = "ping -w $timeout";
+
+		if ($host =~ /\d+:|:\d+/ ) {
+			$ping_command = "ping6";
+		}
+
+		# Note: timeout(-w) option is not implemented in ping6.
+		# 'networktimeout' is not used by ping6 on NetBSD.
+
 		# Ping the host
 		`$ping_command -q -n -c $retries $host >/dev/null 2>&1`;
 		if ($? == 0) {
@@ -913,6 +934,30 @@ sub pandora_ping_latency ($$$$) {
 		# Something went wrong
 		return undef if ($? != 0);
 		
+		# Parse the output
+		my $stats = pop (@output);
+		return undef unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+		return $2;
+	}
+
+        elsif ($OSNAME eq "netbsd"){
+		my $ping_command = "ping -w $timeout";
+
+		if ($host =~ /\d+:|:\d+/ ) {
+			$ping_command = "ping6";
+		}
+              
+		# Note: timeout(-w) option is not implemented in ping6.
+		# timeout(-w) and waittime(-W) options in ping are not the same as
+		# Linux. On latency, there are no way to set timeout.
+		# 'networktimeout' is not used on NetBSD.
+
+		# Ping the host
+		my @output = `$ping_command -q -n -c $retries $host >/dev/null 2>&1`;
+               
+		# Something went wrong
+		return undef in ($? != 0);
+              
 		# Parse the output
 		my $stats = pop (@output);
 		return undef unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
@@ -1203,3 +1248,4 @@ sub valid_regex ($) {
 
 1;
 __END__
+

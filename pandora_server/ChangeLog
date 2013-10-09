@@ -1,3 +1,8 @@
+2013-10-09  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Tools.pm: Fixed ping monitoring failure on NetBSD.
+	Contributed by Hiroki SHIMIZU. Thanks!
+
 2013-10-08  Junichi Satoh <junichi@rworks.jp>
 
 	* pandora_server_installer: Added p5-JSON to description for FreeBSD.

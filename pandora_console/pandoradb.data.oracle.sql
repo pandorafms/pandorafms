@@ -1228,7 +1228,7 @@ INSERT INTO tupdate_settings VALUES ('customer_key', 'PANDORA-FREE');
 INSERT INTO tupdate_settings VALUES ('keygen_path', '/usr/share/pandora_server/keygen.i386.static');
 INSERT INTO tupdate_settings VALUES ('update_server_host', 'www.artica.es');
 INSERT INTO tupdate_settings VALUES ('update_server_port', '80');
-INSERT INTO tupdate_settings VALUES ('update_server_path', '/pandoraupdate4/server.php');
+INSERT INTO tupdate_settings VALUES ('update_server_path', '/pandoraupdate5/server.php');
 INSERT INTO tupdate_settings VALUES ('updating_binary_path', 'Path where the updated binary files will be stored');
 INSERT INTO tupdate_settings VALUES ('updating_code_path', 'Path where the updated code is stored');
 INSERT INTO tupdate_settings VALUES ('dbname', '');

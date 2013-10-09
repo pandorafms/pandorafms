@@ -1,5 +1,10 @@
 2013-10-09  Sergio Martin <sergio.martin@artica.es>
 
+	* images/custom_logo/artica_logo.png: Resize artica logo
+	for header
+
+2013-10-09  Sergio Martin <sergio.martin@artica.es>
+
 	* images/custom_logo/none.png: Added none image to use
 	Pandora FMS without header logo
 

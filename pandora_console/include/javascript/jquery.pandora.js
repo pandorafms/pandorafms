@@ -145,7 +145,7 @@ $(document).ready (function () {
 							background: "black"
 						},
 						width: 500,
-						height: 190
+						height: 250
 					})
 					.show ();
 			},

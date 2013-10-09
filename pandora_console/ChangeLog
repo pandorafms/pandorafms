@@ -1,5 +1,12 @@
 2013-10-09  Sergio Martin <sergio.martin@artica.es>
 
+	* images/custom_logo/pandora_logo_head.png
+	images/custom_logo/artica_logo.png: Reupload
+	the open header image and artica logo as alternative
+	deleted by me due a confussion with pdf header images
+
+2013-10-09  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/jquery.pandora.js
 	images/tip.png: Replace tip image by new star, increse
 	a little the license info dialog

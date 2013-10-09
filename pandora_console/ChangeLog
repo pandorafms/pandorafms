@@ -1,3 +1,9 @@
+2013-10-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql,
+	  pandoradb.data.postgreSQL.sql,
+	  pandoradb.data.oracle.sql: Point to the OUM server version 5.
+
 2013-10-09  Sergio Martin <sergio.martin@artica.es>
 
 	* images/custom_logo/artica_logo.png: Resize artica logo

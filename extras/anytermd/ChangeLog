@@ -1,5 +1,10 @@
 2013-10-10  Ramon Novoa  <rnovoa@artica.es>
 
+	* src/expand_command.cc: Improved injection detection. Thanks to
+	  Robert van Hamburg (xistence) for finding the vulnerability.
+
+2013-10-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* src/expand_command.cc,
 	  src/expand_command.hh: Patched to avoid command injections.
 

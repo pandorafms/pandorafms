@@ -152,8 +152,11 @@ switch ($config["dbtype"]) {
 		break;
 }
 
+// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
+$groups = users_get_groups($config["id_user"]);
+
 $tags_sql = tags_get_acl_tags($config['id_user'],
-	$agent['id_grupo'], 'AR', 'module_condition', 'AND', 'tagente_modulo');
+	array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo');
 
 $status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
 $status_text_monitor = get_parameter('status_text_monitor', '');

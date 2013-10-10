@@ -767,10 +767,17 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 	}
 	
 	$condition = '';
+
+	// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression)   
+	$i = 0;
 	foreach ($acltags as $group_id => $group_tags) {
 		if ($condition != '') {
 			$condition .= ' OR ';
 		}
+		
+		// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
+		if ($i == 0)
+			$condition .= ' ( ';
 		
 		// Group condition (The module belongs to an agent of the group X)
 		if (!array_key_exists(0, array_keys($acltags))) {
@@ -784,8 +791,14 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 		$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, implode(',',$group_tags));
 		
 		$condition .= "($group_condition AND \n$tags_condition)\n";
+		
+		$i++;
 	}
 	
+	// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
+	if (!empty($acltags))
+		$condition .= ' ) ';
+		
 	//Avoid the user profiles with all group access.
 	//if (!empty($condition)) {
 	if (!empty($condition) &&

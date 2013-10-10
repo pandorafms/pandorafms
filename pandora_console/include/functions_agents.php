@@ -633,24 +633,9 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
 		FROM tagente
 		WHERE id_agente = " . $idAgent);
 	
-	
 	$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
 	
-	
-	$max = $agent["intervalo"];
-	if ($maxModules) {
-		$sql = sprintf ("SELECT MAX(module_interval)
-			FROM tagente_modulo
-			WHERE id_agente = %d", $id_agente);
-		$maxModules = (int) db_get_sql ($sql);
-		if ($maxModules > 0)
-			$max = $maxModules;
-	}
-	
-	if ($max > 0)
-		return round ($difference / (($max * 2) / 100));
-	else
-		return false;
+	return round ($difference / ($agent["intervalo"] / 100));
 }
 
 /**

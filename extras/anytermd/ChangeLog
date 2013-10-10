@@ -1,3 +1,8 @@
+2013-10-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* src/expand_command.cc,
+	  src/expand_command.hh: Patched to avoid command injections.
+
 2012-05-04  Sancho Lerena <slerena@artica.es>
 
         * anytermd.suse.spec: Added specific spec for SUSE. Tested on a

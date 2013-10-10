@@ -24,4 +24,5 @@
 // %p -> parameter supplied from the Javascript
 // %% -> %
 
+std::string safe_param(std::string param);
 std::string expand_command(std::string templ, std::string host, std::string user, std::string param);

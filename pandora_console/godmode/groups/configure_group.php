@@ -148,7 +148,7 @@ $table->data[8][0] = __('Other') . ui_print_help_tip (__("Information accessible
 $table->data[8][1] = html_print_textarea ('other', 4, 40, $other, "style='min-height: 0px;'", true);
 
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
-if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK && !defined('METACONSOLE')) {
 	$table->data[9][0] = __('Skin');
 	$table->data[9][1] = skins_print_select($config["id_user"], 'skin', $skin, '', __('None'), 0, true);
 }

@@ -142,10 +142,12 @@ else {
 	$phone_tag = "";
 }
 
+enterprise_hook('open_meta_frame');
+
 // Create/Update tag form 
 echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=' . $action . '&id_tag=' . $id_tag . '" enctype="multipart/form-data">';
 
-echo '<div align=left style="width: 98%" class="pandora_form">';
+echo '<div align=left style="width: 100%" class="pandora_form">';
 
 echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 	echo "<tr>";
@@ -212,5 +214,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 echo "</table>";
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
 
 ?>

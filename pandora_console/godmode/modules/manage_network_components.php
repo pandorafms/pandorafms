@@ -493,7 +493,7 @@ $table->head[6] = __('Action') .
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->size = array ();
 $table->size[1] = '75px';
-$table->size[6] = '60px';
+$table->size[6] = '80px';
 $table->align[6] = 'center';
 $table->data = array ();
 

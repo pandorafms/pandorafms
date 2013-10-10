@@ -289,7 +289,7 @@ class Modules {
 		
 		// Part SQL for the Tag
 		$sql_conditions_tags = tags_get_acl_tags($user->getIdUser(),
-			$this->group, $this->acl, 'module_condition', 'AND', 'tagente_modulo'); 
+			$user->getIdGroups($this->acl), $this->acl, 'module_condition', 'AND', 'tagente_modulo'); 
 		
 		
 		$sql_conditions = " AND tagente_modulo.disabled = 0 AND tagente.disabled = 0";

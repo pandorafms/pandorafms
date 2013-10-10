@@ -1,5 +1,14 @@
 2013-10-10  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_agents.php
+	include/functions_alerts.php
+	operation/agentes/status_monitor.php
+	operation/agentes/status_events.php
+	mobile/operation/modules.php: Fixed several calls
+	to acl tags with same fixes of Juanma in previous commits
+
+2013-10-10  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_agents.php: Change the way of 
 	calculate next contact in main agent view to real
 	next contact using only agent interval.

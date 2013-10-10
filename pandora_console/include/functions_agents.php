@@ -155,7 +155,9 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	}
 	
 	if (($id_agent !== false) && ($idGroup !== false)) {
-		$where_tags = tags_get_acl_tags($config['id_user'], $idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+		$groups = users_get_groups($config["id_user"]);
+		
+		$where_tags = tags_get_acl_tags($config['id_user'], $groups, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -635,7 +637,12 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
 	
 	$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
 	
-	return round ($difference / ($agent["intervalo"] / 100));
+	if ($agent["intervalo"] > 0 && strtotime($agent["ultimo_contacto"]) > 0) {
+		return round ($difference / ($agent["intervalo"] / 100));
+	}
+	else {
+		return 0;
+	}
 }
 
 /**

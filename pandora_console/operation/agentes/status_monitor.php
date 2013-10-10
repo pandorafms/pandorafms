@@ -175,7 +175,10 @@ if (defined('METACONSOLE') && $ag_group !== 0) {
 	$ag_group = groups_get_id($ag_group);
 }
 
-$sql_conditions_tags = tags_get_acl_tags($config['id_user'], $ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
+$groups = users_get_groups($config["id_user"]);
+
+$sql_conditions_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 
 if(is_numeric($sql_conditions_tags)) {
 	$sql_conditions_tags = ' AND 1 = 0';
@@ -334,7 +337,7 @@ if (!defined('METACONSOLE')) {
 		<td valign="middle">' . __('Group') . '</td>
 		<td valign="middle">' . 
 			html_print_select_groups(false, "AR", true, "ag_group",
-				$ag_group, '',  __('All'), '0', true, false, false, 'w130',
+				$ag_group, '',  '', '0', true, false, false, 'w130',
 				false, 'width:150px;') . '
 		</td>';
 }

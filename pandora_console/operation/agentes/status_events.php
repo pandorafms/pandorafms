@@ -29,7 +29,7 @@ echo "<h4 style='margin-top:0px !important;'>".__('Latest events for this agent'
 // Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 $groups = users_get_groups($config["id_user"]);
 
-$tags_condition = tags_get_acl_tags($config['id_user'], /*$agent['id_grupo']*/ array_keys($groups), 'ER', 'event_condition', 'AND');
+$tags_condition = tags_get_acl_tags($config['id_user'], array_keys($groups), 'ER', 'event_condition', 'AND');
 
 events_print_event_table ("estado <> 1 $tags_condition", 10, '100%', false, $id_agente);
 

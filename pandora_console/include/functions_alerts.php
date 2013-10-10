@@ -1572,8 +1572,10 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 	
 	
 	if ($id_group !== false) {
+		$groups = users_get_groups($config["id_user"]);
+		
 		$where_tags = tags_get_acl_tags($config['id_user'],
-			$idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+			array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 		
 		if ($id_group != 0) {
 			if (is_array($id_group)) {

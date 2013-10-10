@@ -25,8 +25,10 @@ using namespace std;
 string safe_param (string param)
 {
 
-	// Remove leading backticks
-	while (!param.empty() && param.at(0) == '`') {
+	// Remove leading backticks and blanks
+	while (!param.empty() && (param.at(0) == '`' ||
+	                          param.at(0) == '\t'||
+	                          param.at(0) == ' ')) {
 	    param.erase(0);
 	}
 

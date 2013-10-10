@@ -153,11 +153,9 @@ if (!empty($result)) {
 	$table->head = array ();
 	$table->align = array ();
 	$table->style = array ();
-	$table->style[0] = 'font-weight: bold; text-align:center';
-	$table->style[1] = 'text-align:center';
-	$table->style[2] = 'text-align:center';
+	$table->style[0] = 'font-weight: bold;';
 	$table->style[3] = 'text-align:center';
-	$table->style[5] = 'text-align:center';
+	$table->style[6] = 'text-align:center';
 	$table->head[0] = __('Tag name');
 	$table->head[1] = __('Description');
 	$table->head[2] = __('Detail information');

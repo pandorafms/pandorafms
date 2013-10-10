@@ -1,3 +1,14 @@
+2013-10-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	godmode/groups/configure_group.php
+	godmode/alerts/alert_templates.php
+	godmode/modules/manage_network_components.php
+	godmode/tag/tag.php
+	godmode/tag/edit_tag.php
+	godmode/category/edit_category.php: Fixed many aesthetic
+	issues
+
 2013-10-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql,

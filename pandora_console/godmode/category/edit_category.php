@@ -107,6 +107,8 @@ else {
 	$name_category = "";
 }
 
+enterprise_hook('open_meta_frame');
+
 // Create/Update category form 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=' . $action . '&id_category=' . $id_category . '&pure='.(int)$config['pure'].'" enctype="multipart/form-data">';
 
@@ -142,5 +144,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 echo "</table>";
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
 
 ?>

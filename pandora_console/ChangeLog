@@ -1,3 +1,10 @@
+2013-10-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_tags.php,
+	operation/agentes/estado_monitores.php,
+	operation/agentes/status_events.php: uploaded the fixes of Juanma.
+	Thanks Juanma ;) 
+
 2013-10-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

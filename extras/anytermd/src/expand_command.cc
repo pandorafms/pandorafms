@@ -20,6 +20,18 @@
 
 using namespace std;
 
+// Clean the given parameter to avoid command injections.
+
+string safe_param (string param)
+{
+
+	// Remove leading backticks
+	while (!param.empty() && param.at(0) == '`') {
+	    param.erase(0);
+	}
+
+	return param;
+}
 
 // Expand command string:
 // %h -> remote hostname
@@ -38,7 +50,7 @@ string expand_command(string templ, string host, string user, string param)
   case '%': v="%"; break;
   case 'h': v=host; break;
   case 'u': v=user; break;
-  case 'p': v=param; break;
+  case 'p': v=safe_param(param); break;
   default: v="?"; break;
   }
 

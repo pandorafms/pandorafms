@@ -1297,6 +1297,9 @@ function ui_process_page_head ($string, $bitfield) {
 	// Add the jquery UI styles CSS
 	$config['css']['jquery-UI'] = "include/styles/jquery-ui-1.10.0.custom.css";
 	
+	// Add the dialog styles CSS
+	$config['css']['dialog'] = "include/styles/dialog.css";
+	
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');
 	

@@ -93,11 +93,6 @@ config_check();
 				
 				
 				
-				
-				
-				
-				
-				
 				//======= Autorefresh code =============================
 				$autorefresh_txt = '';
 				$autorefresh_additional = '';
@@ -166,7 +161,6 @@ config_check();
 				
 				if ($config["alert_cnt"] > 0) {
 					echo '<div id="alert_messages" style="display: none"></div>';
-					ui_require_css_file ('dialog');
 					
 					$maintenance_link = 'javascript:';
 					$maintenance_title = __("System alerts detected - Please fix as soon as possible");
@@ -212,7 +206,6 @@ config_check();
 				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
 					echo '<div id="dialog_messages" style="display: none"></div>';
-					ui_require_css_file ('dialog');
 					
 					$table->data[0][9] = '<a href="ajax.php?page=operation/messages/message_list" title="' . __("Message overview") . '" id="show_messages_dialog">';
 					$table->data[0][9] .= html_print_image ("images/header_email.png", true, array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot", 'style' => 'width:24px;'));

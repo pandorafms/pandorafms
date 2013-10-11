@@ -1,3 +1,10 @@
+2013-10-11  Mario Pulido  <mario.pulido@artica.es>	
+
+	* include/help/es/help_critical_status.php,
+        include/help/es/help_warning_status.php,
+        include/help/en/help_critical_status.php,
+        include/help/en/help_warning_status.php: Added examples in help
+
 2013-10-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* extensions/ssh_gateway.php: Added a help tip to show invalid

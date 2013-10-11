@@ -36,6 +36,12 @@ These field have two values: String and Inverse interval. Configuring them corre
 In the field String we will set a regular expression. When the data matchs with it, the module will turn into Critical status.
 </p>
 
+<li>String:(urgent|serious)</li>
+
+<p>
+With this, if there is a word chain urgent or serious the module appear in warning state.
+</p>
+
 <p>
 If we enable the Inverse interval checkbox, the module will change to the Critical status when the value doesnt match with the regular expression.
 </p>

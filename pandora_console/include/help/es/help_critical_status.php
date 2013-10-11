@@ -36,6 +36,12 @@ Estos campos tiene dos valores: Cadena e intervalo inverso. Configurandolos corr
 En el campo Cadena podremos poner una expresión regular para que cuando el dato del módulo coincida con ella, el módulo pase a estado Crítico.
 </p>
 
+<li>String:(urgent|serious)</li>
+
+<p>
+Con esto, si en la cadena existe la palabra urgent o serious el módulo aparecerá en estado warning.
+</p>
+
 <p>
 Si activamos la casilla de intervalo inverso el módulo cambiará a estado Crítico cuando no coincida con la expresión regular.
 </p>

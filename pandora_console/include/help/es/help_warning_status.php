@@ -36,6 +36,12 @@ Estos campos tiene dos valores: Cadena e Intervalo inverso. Configurandolos corr
 En el campo Cadena podremos poner una expresión regular para que cuando el dato del módulo coincida con ella, el módulo pase a estado Warning.
 </p>
 
+<li>String:(error|fail)</li>
+
+<p>
+Con esto, si en la cadena existe la palabra error o fail el módulo aparecerá en estado warning.
+</p>
+
 <p>
 Si activamos la casilla de intervalo inverso el módulo cambiará a estado Warning cuando no coincida con la expresión regular.
 </p>

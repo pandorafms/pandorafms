@@ -36,6 +36,12 @@ These field have two values: String and Inverse interval. Configuring them corre
 In the field String we will set a regular expression. When the data matchs with it, the module will turn into Warning status.
 </p>
 
+<li>String:(error|fail)</li>
+
+<p>
+With this, if there is a word chain error or fail the module appear in warning state.
+</p>
+
 <p>
 If we enable the Inverse interval checkbox, the module will change to the Warning status when the value doesnt match with the regular expression.
 </p>

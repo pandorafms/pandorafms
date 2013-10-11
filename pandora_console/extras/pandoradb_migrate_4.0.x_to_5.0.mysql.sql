@@ -362,6 +362,7 @@ ALTER TABLE tnetwork_map ADD `show_modulegroup` TINYINT(1) UNSIGNED NOT NULL DEF
 -- Table `tagente_estado`
 -- ----------------------------------------------------------------------
 ALTER TABLE `tagente_estado` ADD COLUMN `last_known_status` tinyint(4) NOT NULL DEFAULT 0;
+ALTER TABLE `tagente_estado` ADD COLUMN `last_error` int(4) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_response`
@@ -1141,3 +1142,10 @@ UPDATE tconfig SET value = 'pandora_logo_head.png' WHERE token = 'custom_logo';
 -- Table `tnetwork_component` (16/09/13)
 -- ---------------------------------------------------------------------
 ALTER TABLE `tnetwork_component` CHANGE COLUMN `name` `name` TEXT NOT NULL;
+
+-- ---------------------------------------------------------------------
+-- Table tlanguage (11/11/2013)
+-- ---------------------------------------------------------------------
+
+DELETE FROM `tlanguage` WHERE id_language IN ('ast', 'eu', 'bn', 'bg', 'ca', 'da', 'et', 'fi', 'gl', 'he', 'hi', 'hu', 'ko', 'ms', 'mr', 'nb', 'ro', 'sl', 'sv', 'te', 'uk', 'vi');
+

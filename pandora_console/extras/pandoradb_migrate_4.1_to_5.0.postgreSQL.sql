@@ -380,6 +380,7 @@ ALTER TABLE "tnetwork_map" ADD COLUMN "show_modulegroup" INTEGER NOT NULL defaul
 -- Table "tagente_estado"
 ------------------------------------------------------------------------
 ALTER TABLE "tagente_estado" ADD COLUMN "last_known_status" INTEGER default 0;
+ALTER TABLE "tagente_estado" ADD COLUMN "last_error" INTEGER default 0;
 
 -- -----------------------------------------------------
 -- Table "tevent_response"
@@ -467,6 +468,17 @@ ALTER TABLE "tusuario_perfil" ADD COLUMN "tags" text default '';
 -- ---------------------------------------------------------------------
 ALTER TABLE "ttag" ADD COLUMN "email" TEXT NULL;
 ALTER TABLE "ttag" ADD COLUMN "phone" TEXT NULL;
+
+-- ---------------------------------------------------------------------
+-- Add more fields in snmp alerts (05/03/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field4" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field5" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field6" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field7" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field8" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field9" TEXT;
+ALTER TABLE "talert_snmp" ADD COLUMN "al_field10" TEXT;
 
 -- ---------------------------------------------------------------------
 -- Add metaconsole fields to user table (17/04/13)
@@ -1130,3 +1142,9 @@ UPDATE tconfig SET value = 'pandora_logo_head.png' WHERE token = 'custom_logo';
 -- Table `tnetwork_component` (16/09/13)
 -- ---------------------------------------------------------------------
 ALTER TABLE "tnetwork_component" ALTER COLUMN "name" TYPE text NOT NULL;
+
+-- ---------------------------------------------------------------------
+-- Table tlanguage (11/11/2013)
+-- ---------------------------------------------------------------------
+
+DELETE FROM "tlanguage" WHERE "id_language" IN ('ast', 'eu', 'bn', 'bg', 'ca', 'da', 'et', 'fi', 'gl', 'he', 'hi', 'hu', 'ko', 'ms', 'mr', 'nb', 'ro', 'sl', 'sv', 'te', 'uk', 'vi');

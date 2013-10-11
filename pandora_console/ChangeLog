@@ -1,3 +1,16 @@
+2013-10-11  Vanessa Gil <vanessa.gil@artica.es>
+
+	* pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+	  pandoradb_data.sql
+	  pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	  pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	  pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	  pandoradb_migrate_4.1_to_5.0.mysql.sql
+	  pandoradb_migrate_4.1_to_5.0.oracle.sql
+	  pandoradb_migrate_4.1_to_5.0.postgreSQL.sql: Removed some
+	languages from setup.
+
 2013-10-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/visual_console_builder.editor.php,

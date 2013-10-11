@@ -602,7 +602,7 @@ require('include/php_to_js_values.php');
 	
 	//Dynamically assign footer position and width.
 	function adjustFooter() {
-		if (document.readyState !== 'complete') {
+		if (document.readyState !== 'complete' || $('#container').position() == undefined) {
 			return;
 		}
 		// minimum top value (upper limit) for div#foot

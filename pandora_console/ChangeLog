@@ -1,3 +1,10 @@
+2013-10-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php
+	index.php
+	general/header.php: Add include of dialog.css in 
+	config for incident #254
+
 2013-10-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_agents.php

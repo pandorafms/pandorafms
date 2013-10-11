@@ -1,3 +1,9 @@
+2013-10-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.editor.php,
+	include/styles/pandora.css, include/styles/pandora_legacy.css: added
+	the font 72 pt for labels in visual maps.
+
 2013-10-11  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ast.mo

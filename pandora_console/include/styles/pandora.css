@@ -2477,6 +2477,9 @@ span#plugin_description {
 .visual_font_size_36pt, .visual_font_size_36pt > em, .visual_font_size_36pt > strong {
 	font-size: 36pt;
 }
+.visual_font_size_72pt, .visual_font_size_72pt > em, .visual_font_size_72pt > strong {
+	font-size: 72pt;
+}
 
 /*SIDEBAR*/
 .menu_sidebar {

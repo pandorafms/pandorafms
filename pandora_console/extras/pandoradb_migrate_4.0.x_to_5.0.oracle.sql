@@ -395,7 +395,6 @@ ALTER TABLE tnetwork_map ADD (show_modulegroup NUMBER(10, 0) default 0 NOT NULL)
 -- Table tagente_estado
 ------------------------------------------------------------------------
 ALTER TABLE tagente_estado ADD (last_known_status  NUMBER(10, 0) default 0 NOT NULL);
-ALTER TABLE tagente_estado ADD (last_error  NUMBER(10, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table tevent_response
@@ -484,17 +483,6 @@ ALTER TABLE tusuario_perfil ADD (tags CLOB NOT NULL default '');
 -- ---------------------------------------------------------------------
 ALTER TABLE ttag ADD (email CLOB NULL);
 ALTER TABLE ttag ADD (phone CLOB NULL);
-
--- ---------------------------------------------------------------------
--- Add more fields in snmp alerts (05/03/13)
--- ---------------------------------------------------------------------
-ALTER TABLE talert_snmp ADD COLUMN (al_field5 CLOB NOT NULL default '');
-ALTER TABLE talert_snmp ADD COLUMN (al_field5 CLOB NOT NULL default '');
-ALTER TABLE talert_snmp ADD COLUMN (al_field6 CLOB NOT NULL default '');
-ALTER TABLE talert_snmp ADD COLUMN (al_field7 CLOB NOT NULL default '');
-ALTER TABLE talert_snmp ADD COLUMN (al_field8 CLOB NOT NULL default '');
-ALTER TABLE talert_snmp ADD COLUMN (al_field9 CLOB NOT NULL default '');
-ALTER TABLE talert_snmp ADD COLUMN (al_field10 CLOB NOT NULL default '');
 
 -- ---------------------------------------------------------------------
 -- Add metaconsole fields to user table (17/04/13)

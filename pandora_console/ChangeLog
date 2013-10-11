@@ -1,3 +1,15 @@
+2013-10-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* extensions/ssh_gateway.php: Added a help tip to show invalid
+	  characters.
+
+	* extras/pandoradb_migrate_4.1_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.1_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.1_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: Removed duplicated columns.
+
 2013-10-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_agents.php, include/functions_graph.php,

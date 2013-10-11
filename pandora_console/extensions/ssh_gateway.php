@@ -56,7 +56,7 @@ function ssh_gateway () {
 		echo "<table class=databox cellspacing=4 cellpadding=4>";
 		echo "<td>".__("Host address")."<td><input type=text size=25 value='$HOST' name=host>";
 		echo "<tr>";
-		echo "<td>".__("User")."<td><input type=text size=25 value='$USER' name=user>";
+		echo "<td>".__("User")."<td><input type=text size=25 value='$USER' name=user>" . ui_print_help_tip(__('For security reasons the following characters are not allowed: %s', '< > | ` $ ; &'), true);
 		echo "<tr>";
 		echo "<td>".__("Port (use 0 for default)")."<td><input type=text size=5 value='$PORT' name=port>";	
 		echo "<tr><td>";

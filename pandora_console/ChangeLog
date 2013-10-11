@@ -1,3 +1,50 @@
+2013-10-11  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/languages/ast.mo
+	  include/languages/ast.po
+	  include/languages/bn.mo
+	  include/languages/bn.po
+	  include/languages/bg.mo
+	  include/languages/bg.po
+	  include/languages/ca.mo
+	  include/languages/ca.po
+	  include/languages/da.mo
+	  include/languages/da.po
+	  include/languages/et.mo
+	  include/languages/et.po
+	  include/languages/eu.mo
+	  include/languages/eu.po
+	  include/languages/fi.po
+	  include/languages/fi.mo
+	  include/languages/gl.po
+	  include/languages/gl.mo
+	  include/languages/he.po
+	  include/languages/he.mo
+	  include/languages/hi.po
+	  include/languages/hi.mo
+	  include/languages/hu.po
+	  include/languages/hu.mo
+	  include/languages/ko.po
+	  include/languages/ko.mo
+	  include/languages/mr.po
+	  include/languages/mr.mo
+	  include/languages/ms.po
+	  include/languages/ms.mo
+	  include/languages/nb.po
+	  include/languages/nb.mo
+	  include/languages/ro.po
+	  include/languages/ro.mo
+	  include/languages/sl.po
+	  include/languages/sl.mo
+	  include/languages/sv.po
+	  include/languages/sv.mo
+	  include/languages/te.po
+	  include/languages/te.mo
+	  include/languages/uk.po
+	  include/languages/uk.mo
+	  include/languages/vi.po
+	  include/languages/vi.mo: Deleted languages.
+
 2013-10-11  Mario Pulido  <mario.pulido@artica.es>	
 
 	* include/help/es/help_critical_status.php,

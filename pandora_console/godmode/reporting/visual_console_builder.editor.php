@@ -136,7 +136,7 @@ ui_require_javascript_file ('encode_decode_base64');
 			echo 'content_css: "' . ui_get_full_url('include/styles/pandora.css', false, false, false) . '",' . "\n";
 		}
 		?>
-		theme_advanced_font_sizes : "8pt=.visual_font_size_8pt, 14pt=.visual_font_size_14pt, 24pt=.visual_font_size_24pt, 36pt=.visual_font_size_36pt",
+		theme_advanced_font_sizes : "8pt=.visual_font_size_8pt, 14pt=.visual_font_size_14pt, 24pt=.visual_font_size_24pt, 36pt=.visual_font_size_36pt, 72pt=.visual_font_size_72pt",
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "left",
 		theme_advanced_buttons1 : "bold,italic, |, image, link, |, forecolor, fontsizeselect",

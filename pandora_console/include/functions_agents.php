@@ -1711,7 +1711,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		db_process_delete_temp ("tagente", "id_agente", $id_agent);
 		
 		db_pandora_audit( "Agent management",
-		"Deleted agent '$agent_name'");
+			"Deleted agent '$agent_name'");
 		
 		
 		/* Break the loop on error */

@@ -695,6 +695,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	global $config;
 	global $graphic_type;
 	
+	
 	$flash_chart = $config['flash_charts'];
 	
 	enterprise_include_once("include/functions_reporting.php");

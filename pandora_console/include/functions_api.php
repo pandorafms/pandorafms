@@ -223,6 +223,8 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 
 function api_get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType)
 {
+	global $config;
+	
 	$idAgent = agents_get_agent_id($agentName);
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -260,7 +262,7 @@ function api_get_agent_module_name_last_value($agentName, $moduleName, $other = 
 		}
 	}
 	else {
-		get_module_last_value($idModuleAgent, null, $other, $returnType);
+		api_get_module_last_value($idModuleAgent, null, $other, $returnType);
 	}
 }
 
@@ -918,7 +920,8 @@ function api_get_custom_field_id($t1, $t2, $other, $returnType) {
 function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 	$agentName = $id;
 	$idAgent[0] = agents_get_agent_id($agentName);
-	if (!agents_delete_agent ($idAgent, true))
+	
+	if (($idAgent[0] === 0) || (!agents_delete_agent ($idAgent, true)))
 		returnError('error_delete', 'Error in delete operation.');
 	else
 		returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
@@ -4248,6 +4251,7 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	$start_date = $other['data'][4];
 	$date = strtotime($start_date);
 	
+	
 	$homeurl = '../';
 	$ttl = 1;
 	
@@ -4255,20 +4259,28 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	$config['flash_charts'] = 0;
 	
 	$image = grafico_modulo_sparse ($id, $period, $draw_events,
-		$width, $height , '',null,
+		$width, $height , $label, null,
 		$draw_alerts, $avg_only, false,
 		$date, '', 0, 0,true,
 		false, $homeurl, $ttl);
 	
-	// Extract url of the image from img tag
-	preg_match("/src='([^']*)'/i",$image, $match);
+	preg_match("/<div class=\"nodata_text\">/",
+		$image, $match);
 	
-	if (empty($match[1])) {
-		echo "Error getting graph";
+	if (!empty($match[0])) {
+		echo "Error no data";
 	}
 	else {
-		header('Content-type: image/png');
-		header('Location: ' . $match[1]);
+		// Extract url of the image from img tag
+		preg_match("/src='([^']*)'/i", $image, $match);
+		
+		if (empty($match[1])) {
+			echo "Error getting graph";
+		}
+		else {
+			header('Content-type: image/png');
+			header('Location: ' . $match[1]);
+		}
 	}
 }
 

@@ -1,3 +1,8 @@
+2013-10-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php, include/functions_graph.php,
+	include/functions_api.php: fixed a pair of bugs of the api calls.
+
 2013-10-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/flot/pandora.flot.js: Fixed strange

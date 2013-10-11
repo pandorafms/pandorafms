@@ -1001,18 +1001,17 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		});
 		
 		// Adjust the menu image on top of the plot
-		$('#menu_overview_'+graph_id)[0].onload = function() {
-			// If there is no legend we increase top-padding to make space to the menu
-			if (legends.length == 0) {
-				$('#menu_'+graph_id).parent().css('padding-top',$('#menu_'+graph_id).css('height'));	
-			}
-			// Add bottom margin in the legend
-			var menu_height = parseInt($('#menu_'+graph_id).css('height').split('px')[0]);
-			var legend_margin_bottom = parseInt($('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
-			$('#legend_'+graph_id).css('margin-bottom', menu_height+legend_margin_bottom+'px');
-			parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
-			adjust_menu(graph_id, plot, parent_height);
+		// If there is no legend we increase top-padding to make space to the menu
+		if (legends.length == 0) {
+			$('#menu_'+graph_id).parent().css('padding-top',$('#menu_'+graph_id).css('height'));	
 		}
+		// Add bottom margin in the legend
+		// Estimated height of 24 (works fine with this data in all browsers)
+		menu_height = 24;
+		var legend_margin_bottom = parseInt($('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
+		$('#legend_'+graph_id).css('margin-bottom', menu_height+legend_margin_bottom+'px');
+		parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
+		adjust_menu(graph_id, plot, parent_height);
 	}
 	
 	if (water_mark) {
@@ -1040,7 +1039,8 @@ function adjust_menu(graph_id, plot, parent_height) {
 	
 	$('#menu_'+graph_id).css('top',
 		(-parent_height+legend_height-overview_height-7)+'px');
-	$('#menu_'+graph_id).css('left',plot.width()-(left_ticks_width/2));
+	
+	$('#menu_'+graph_id).css('left',plot.width()-$('#menu_'+graph_id).width() + 10);
 	$('#menu_'+graph_id).show();
 }
 

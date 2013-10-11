@@ -1,5 +1,13 @@
 2013-10-11  Sergio Martin <sergio.martin@artica.es>
 
+	* include/graphs/flot/pandora.flot.js: Fixed strange
+	random fail of flot graphs menus and improve allocation
+	of this menu. Incident: #253
+
+	* images/normalscreen.png: Change icon to modern style
+
+2013-10-11  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_ui.php
 	index.php
 	general/header.php: Add include of dialog.css in 

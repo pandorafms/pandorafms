@@ -382,7 +382,6 @@ ALTER TABLE "tnetwork_map" ADD COLUMN "show_modulegroup" INTEGER NOT NULL defaul
 -- Table "tagente_estado"
 ------------------------------------------------------------------------
 ALTER TABLE "tagente_estado" ADD COLUMN "last_known_status" INTEGER default 0;
-ALTER TABLE "tagente_estado" ADD COLUMN "last_error" INTEGER default 0;
 
 -- -----------------------------------------------------
 -- Table "tevent_response"

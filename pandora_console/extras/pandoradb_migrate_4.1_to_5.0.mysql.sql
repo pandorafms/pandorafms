@@ -360,6 +360,7 @@ ALTER TABLE tnetwork_map ADD `show_modulegroup` TINYINT(1) UNSIGNED NOT NULL DEF
 -- Table `tagente_estado`
 -- ----------------------------------------------------------------------
 ALTER TABLE `tagente_estado` ADD COLUMN `last_known_status` tinyint(4) NOT NULL DEFAULT 0;
+ALTER TABLE `tagente_estado` ADD COLUMN `last_error` int(4) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_response`
@@ -449,6 +450,17 @@ ALTER TABLE `tusuario_perfil` ADD COLUMN `tags` TEXT NOT NULL;
 -- ---------------------------------------------------------------------
 ALTER TABLE `ttag` ADD COLUMN `email` text NULL;
 ALTER TABLE `ttag` ADD COLUMN `phone` text NULL;
+
+-- ---------------------------------------------------------------------
+-- Add more fields in snmp alerts (05/03/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field4` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field5` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field6` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text;
 
 -- ---------------------------------------------------------------------
 -- Add metaconsole fields to user table (17/04/13)
@@ -1139,3 +1151,9 @@ UPDATE tconfig SET value = 'pandora_logo_head.png' WHERE token = 'custom_logo';
 -- Table `tnetwork_component` (16/09/13)
 -- ---------------------------------------------------------------------
 ALTER TABLE `tnetwork_component` CHANGE COLUMN `name` `name` TEXT NOT NULL;
+
+-- ---------------------------------------------------------------------
+-- Table tlanguage (11/11/2013)
+-- ---------------------------------------------------------------------
+
+DELETE FROM `tlanguage` WHERE id_language IN ('ast', 'eu', 'bn', 'bg', 'ca', 'da', 'et', 'fi', 'gl', 'he', 'hi', 'hu', 'ko', 'ms', 'mr', 'nb', 'ro', 'sl', 'sv', 'te', 'uk', 'vi');

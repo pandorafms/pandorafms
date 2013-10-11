@@ -24,15 +24,24 @@ using namespace std;
 
 string safe_param (string param)
 {
+	string safe_string = "";
 
-	// Remove leading backticks and blanks
-	while (!param.empty() && (param.at(0) == '`' ||
-	                          param.at(0) == '\t'||
-	                          param.at(0) == ' ')) {
-	    param.erase(0);
+	// Remove problematic characters
+	for (unsigned int i = 0; i < param.size(); i++){
+		if (param[i] == '<' ||
+		    param[i] == '>' ||
+		    param[i] == '|' ||
+		    param[i] == '`' ||
+		    param[i] == '$' ||
+		    param[i] == ';' ||
+		    param[i] == '&') {
+			continue;
+		}
+
+		safe_string += param[i];
 	}
 
-	return param;
+	return safe_string;
 }
 
 // Expand command string:

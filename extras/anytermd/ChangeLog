@@ -1,3 +1,9 @@
+2013-10-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* src/expand_command.cc: Remove more problematic characters
+	  from the parameters as suggested by Robert van Hamburg
+	  (xistence).
+
 2013-10-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* src/expand_command.cc: Improved injection detection. Thanks to

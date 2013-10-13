@@ -30,7 +30,7 @@ tentacle_server - Tentacle Server
 
 =head1 VERSION
 
-Version 0.3.0
+Version 0.4.0
 
 =head1 USAGE
 
@@ -56,20 +56,36 @@ The client and server (B<TCP port 41121>) are designed to be run from the comman
 
 =cut
 
-
 use strict;
 use warnings;
 use Getopt::Std;
 use IO::Select;
-use IO::Socket::INET;
 use Thread::Semaphore;
 use POSIX ":sys_wait_h";
 
-# Program version
-our $VERSION = '0.3.0';
+my $t_libwrap_installed = eval { require Authen::Libwrap } ? 1 : 0;
 
-# Address to listen on
-my $t_address = '0.0.0.0';
+if ($t_libwrap_installed) {
+	Authen::Libwrap->import( qw( hosts_ctl STRING_UNKNOWN ) );
+}
+
+# Log messages, 1 enabled, 0 disabled
+my $t_log = 0;
+
+my $SOCKET_MODULE =
+	eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
+      : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
+      : die $@;
+
+if ($SOCKET_MODULE eq 'IO::Socket::INET') {
+	print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
+}
+
+# Program version
+our $VERSION = '0.4.0';
+
+# IPv4 address to listen on
+my @t_addresses = ('0', '0.0.0.0');
 
 # Block size for socket read/write operations in bytes
 my $t_block_size = 1024;
@@ -88,9 +104,6 @@ my @t_filters;
 
 # String containing quoted invalid file name characters
 my $t_invalid_chars = '\?\[\]\/\\\=\+\<\>\:\;\'\,\*\~';
-
-# Log messages, 1 enabled, 0 disabled
-my $t_log = 0;
 
 # Maximum number of simultaneous connections
 my $t_max_conn = 10;
@@ -120,7 +133,8 @@ my $t_select;
 my $t_sem;
 
 # Server socket
-my $t_server_socket;
+my @t_server_sockets;
+my $select;
 
 # Use SSL, 1 true, 0 false
 my $t_ssl = 0;
@@ -152,16 +166,25 @@ my $t_proxy_socket;
 # Proxy selected handler
 my $t_proxy_select;
 
+# Use libwrap, 1 true, 0 false
+my $t_use_libwrap = 0;
+
+# Program name for libwrap
+my $t_program_name = $0;
+$t_program_name =~ s/.*\///g;
+
 ################################################################################
 ## SUB print_help
 ## Print help screen.
 ################################################################################
 sub print_help {
+	$" = ',';
 
 	print ("Usage: $0 -s <storage directory> [options]\n\n");
 	print ("Tentacle server v$VERSION. See http://www.openideas.info/wiki for protocol description.\n\n");
 	print ("Options:\n");
-	print ("\t-a ip_address\tAddress to listen on (default $t_address).\n");
+	print ("\t-a ip_addresses\tIP addresses to listen on (default @t_addresses).\n");
+	print ("\t\t(Multiple addresses separated by comma can be defined.)\n");
 	print ("\t-c number\tMaximum number of simultaneous connections (default $t_max_conn).\n");
 	print ("\t-d\t\tRun as daemon.\n");
 	print ("\t-e cert\t\tOpenSSL certificate file. Enables SSL.\n");
@@ -180,6 +203,8 @@ sub print_help {
 	print ("\t-x pwd\t\tServer password.\n\n");
 	print ("\t-b proxy_ip_address\t\tProxied server address.\n\n");	
 	print ("\t-g proxy_port\t\tPort of proxied server.\n\n");
+	print ("\t-T\t\tEnable tcpwrappers support.\n");
+	print ("\t\t(To use this option, 'Authen::Libwrap' should be installed.)\n\n");
 }
 
 ################################################################################
@@ -243,20 +268,29 @@ sub daemonize {
 sub parse_options {
 	my %opts;
 	my $tmp;
+	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:c:de:f:hi:k:m:op:qr:s:t:vwx:b:g:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:c:de:f:hi:k:m:op:qr:s:t:vwx:b:g:T', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
 
 	# Address
 	if (defined ($opts{'a'})) {
-		$t_address = $opts{'a'};
-		if ($t_address !~ /^[a-zA-Z\.]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
-			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
-			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
-			error ("Address $t_address is not valid.");
+		@t_addresses = ();
+		@t_addresses_tmp = split(/,/, $opts{'a'});
+		
+		foreach my $t_address (@t_addresses_tmp) {
+			$t_address =~ s/^ *(.*?) *$/$1/;
+			if (($t_address ne '0') && 
+				($t_address !~ /^[a-zA-Z\.]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+					|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
+					|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) &&
+				($t_address !~ /^[0-9a-f:]+$/o)) {
+					error ("Address $t_address is not valid.");
+			}
+			push @t_addresses, $t_address;
 		}
 	}
 	
@@ -411,7 +445,8 @@ sub parse_options {
 		$t_proxy_ip = $opts{'b'};
 		if ($t_proxy_ip !~ /^[a-zA-Z\.]+$/ && ($t_proxy_ip  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
 			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
-			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
+			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255) &&
+			$t_proxy_ip !~ /^[0-9a-f:]+$/o) {
 			error ("Proxy address $t_proxy_ip is not valid.");
 		}		
 	}
@@ -423,6 +458,15 @@ sub parse_options {
 			error ("Proxy port $t_port is not valid.");
 		}
 	}	
+
+	# TCP wrappers support
+	if (defined ($opts{'T'})) {
+		if ($t_libwrap_installed) {
+			$t_use_libwrap = 1;
+		} else {
+			error ("Authen::Libwrap is not installed.");
+		}
+	}
 }
 
 ################################################################################
@@ -445,7 +489,7 @@ sub sigchld_handler {
 sub open_proxy {
 
 	# Connect to server
-	$t_proxy_socket = IO::Socket::INET->new (
+	$t_proxy_socket = $SOCKET_MODULE->new (
 	    PeerAddr => $t_proxy_ip,
 		PeerPort => $t_proxy_port,
 	);
@@ -466,25 +510,41 @@ sub open_proxy {
 ################################################################################
 sub start_server {
 
-	$t_server_socket = IO::Socket::INET->new (
-		Listen    => $t_max_conn,
-		LocalAddr => $t_address,
-		LocalPort => $t_port,
-		Proto     => 'tcp',
-		ReuseAddr     => 1,
-	);
+	my $t_server_socket;
 
-        if (! defined ($t_server_socket)) {
-		error ("Cannot open socket for address $t_address on port $t_port: $!.");
-	}
+	foreach my $t_address (@t_addresses) {
 
-	print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
+		$t_server_socket = $SOCKET_MODULE->new (
+			Listen    => $t_max_conn,
+			LocalAddr => $t_address,
+			LocalPort => $t_port,
+			Proto     => 'tcp',
+			ReuseAddr     => 1,
+		);
+
+		if (! defined ($t_server_socket)) {
+			print_log ("Cannot open socket for address $t_address on port $t_port: $!.");
+			next;
+		}
+
+		print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
 	
-	# Say message if tentacle proxy is enable
-	if (defined ($t_proxy_ip)) {
-		print_log ("Proxy Mode enable, data will be sent to $t_proxy_ip port $t_proxy_port");	
+		# Say message if tentacle proxy is enable
+		if (defined ($t_proxy_ip)) {
+			print_log ("Proxy Mode enable, data will be sent to $t_proxy_ip port $t_proxy_port");	
+		}
+	
+		push @t_server_sockets, $t_server_socket;
 	}
 
+	if (!@t_server_sockets) {
+		error ("Cannot open socket for all addresses on port $t_port: $!.");
+       	}
+	
+	$select = IO::Select->new();
+	foreach my $t_server_socket (@t_server_sockets){
+		$select->add($t_server_socket);
+ 	}
 }
 
 ################################################################################
@@ -551,8 +611,10 @@ sub close_proxy {
 ## Close the server socket.
 ################################################################################
 sub stop_server {
-	
-	$t_server_socket->close ();
+
+	foreach my $t_server_socket (@t_server_sockets) {
+		$t_server_socket->close ();
+	}
 	print_log ("Server going down");
 	
 	exit 0;
@@ -603,8 +665,11 @@ sub start_ssl {
 ################################################################################
 sub accept_connection {
 	my $pid;
+	my $t_server_socket;
 
-	while (1) {
+	my @ready = $select->can_read;
+
+	foreach $t_server_socket (@ready) {
 
 		# Accept connection
 		$t_client_socket = $t_server_socket->accept ();
@@ -619,55 +684,63 @@ sub accept_connection {
 			error ("accept: $!.");
 		}
 
-		last;
-	}
+		print_log ("Client connected from " . $t_client_socket->sockhost ());
 
-	print_log ("Client connected from " . $t_client_socket->sockhost ());
-
-	# Fork and serve the client
-	$pid = fork ();
-	if (! defined ($pid)) {
-		error ("Cannot fork: $!.");
-	}
+		# Fork and serve the client
+		$pid = fork ();
+		if (! defined ($pid)) {
+			error ("Cannot fork: $!.");
+		}
 	
-	# Child
-	if ($pid == 0) {
+		# Child
+		if ($pid == 0) {
 		
-		# We do not need the server socket
-		$t_server_socket->close ();
+			# We do not need the server socket
+			$t_server_socket->close ();
+
+			if ($t_use_libwrap) {
+				if (! hosts_ctl($t_program_name, $t_client_socket)) {
+					print_log ("Connection from " . $t_client_socket->sockhost() . " is closed by tcpwrappers.");
+					$t_client_socket->close ();
+
+					exit;
+				}
+			}
 		
-		# Add client socket to select queue
-		$t_select = IO::Select->new ();
-		$t_select->add ($t_client_socket);
+			# Add client socket to select queue
+			$t_select = IO::Select->new ();
+			$t_select->add ($t_client_socket);
 		
-		# Start SSL
-		if ($t_ssl == 1) {
-			start_ssl ();
-		}
+			# Start SSL
+			if ($t_ssl == 1) {
+				start_ssl ();
+			}
 
-		# Authenticate client
-		if ($t_pwd ne '') {
-			auth_pwd ();
-		}
+			# Authenticate client
+			if ($t_pwd ne '') {
+				auth_pwd ();
+			}
 
-		# Check if proxy mode is enable
-		if (defined ($t_proxy_ip)) {
+			# Check if proxy mode is enable
+			if (defined ($t_proxy_ip)) {
 
-			serve_proxy_connection ();	
+				serve_proxy_connection ();	
 			
-		} else {
+			} else {
 			
-			serve_connection ();
+				serve_connection ();
+			}
+
+			$t_client_socket->close ();
+
+			# Must exit now
+			exit;
 		}
-		
+
+		# Parent
 		$t_client_socket->close ();
 
-		# Must exit now
-		exit;
 	}
-
-	# Parent
-	$t_client_socket->close ();
 }
 
 ################################################################################
@@ -1357,6 +1430,11 @@ parse_options ();
 if ($#ARGV != -1) {
 	print_help ();
 	exit 1;
+}
+
+# Show IPv6 status
+if ($SOCKET_MODULE eq 'IO::Socket::INET') {
+	print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
 }
 
 # Run as daemon?

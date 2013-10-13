@@ -1,3 +1,9 @@
+2013-10-13  Junichi Satoh  <junichi@rworks.jp>
+
+	* unix/tentacle_server: Upgraded to 0.4.0. (Imported from trunk of
+        tentacled repository.)
+	Added IPv6 support.
+
 2013-09-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module_logevent.cc: Write to the log file

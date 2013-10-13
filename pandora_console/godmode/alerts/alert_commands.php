@@ -149,8 +149,8 @@ if ($create_command) {
 		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];
 	}
 	
-	$values['fields_values'] = json_encode($fields_values);
-	$values['fields_descriptions'] = json_encode($fields_descriptions);
+	$values['fields_values'] = io_json_mb_encode($fields_values);
+	$values['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
 	$values['description'] = $description;
 	
 	$name_check = db_get_value ('name', 'talert_commands', 'name', $name);
@@ -200,8 +200,8 @@ if ($update_command) {
 		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];
 	}
 	
-	$values['fields_values'] = json_encode($fields_values);
-	$values['fields_descriptions'] = json_encode($fields_descriptions);
+	$values['fields_values'] = io_json_mb_encode($fields_values);
+	$values['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
 	
 	$values['name'] = $name;
 	$values['command'] = $command;

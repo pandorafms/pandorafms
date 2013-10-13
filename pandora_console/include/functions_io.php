@@ -415,4 +415,18 @@ function __ ($string /*, variable arguments */) {
 	return vsprintf ($l10n->translate ($string), $args);
 }
 
+/*
+ * json_encode for multibyte characters.
+ *
+ * @param string Text string to be encoded.
+*/
+function io_json_mb_encode($string){
+	$v = json_encode($string);
+	$v = preg_replace_callback("/\\\\u([0-9a-zA-Z]{4})/",
+		create_function('$matches', 'return mb_convert_encoding(pack("H*", $matches[1]), "UTF-8", "UTF-16");'
+		), $v);
+	$v = preg_replace('/\\\\\//', '/', $v);
+	return $v;
+}
+
 ?>

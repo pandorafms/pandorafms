@@ -1,3 +1,9 @@
+2013-10-14 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/events/events.build_query.php,
+	operation/events/events_list.php, operation/events/events.php: added
+	the filter for events of group childrens of parent group selected.
+
 2013-10-14  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php

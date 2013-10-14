@@ -24,8 +24,22 @@ if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
 		$sql_post = " AND group_name = '$group_name'";
 	}
 	else {
-		//If a group is selected and it's in the groups allowed
-		$sql_post = " AND id_grupo = $id_group";
+		if ($recursion) {
+			$childrens_ids = array($id_group);
+			
+			$childrens = groups_get_childrens($id_group);
+			if (!empty($childrens)) {
+				foreach ($childrens as $child) {
+					$childrens_ids[] = $child['id_grupo'];
+				}
+			}
+			
+			$sql_post = " AND id_grupo IN (" . implode(',', $childrens_ids) . ")";
+		}
+		else {
+			//If a group is selected and it's in the groups allowed
+			$sql_post = " AND id_grupo = $id_group";
+		}
 	}
 }
 else {

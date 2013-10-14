@@ -389,7 +389,7 @@ $data = array();
 $data[0] = __('User ack.') . '<br>';
 
 $user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
-	
+
 $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 	__('Any'), 0, true);
 $data[1] = '';
@@ -413,12 +413,22 @@ $table->data = array();
 $data = array();
 $data[0] = __('Group') . '<br>';
 $data[0] .= html_print_select_groups($config["id_user"], "ER", true,
-	'id_group', $id_group, '', '', 0, true, false, false, 'w130');
+	'id_group', $id_group, '', '', 0, true, false, false, 'w130') . '<br>';
+//**********************************************************************
+// TODO
+// This code is disabled for to enabled in Pandora 5.1
+// but it needs a field in tevent_filter.
+//
+//$data[0] .= __('Group recursion') . ' ';
+//$data[0] .= html_print_checkbox ("recursion", 1, $recursion, true, false);
+//**********************************************************************
+
 $data[1] = __('Event type') . '<br>';
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
 $types["not_normal"] = __("Not normal");
 $data[1] .= html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
+
 $data[2] = __('Severity') . '<br>';
 $data[2] .= html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true, false, false);
 $table->data[] = $data;

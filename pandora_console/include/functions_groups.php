@@ -1458,13 +1458,16 @@ function groups_get_group_to_list($group, $groups_count, &$symbolBranchs) {
 		$data[5] = '';
 	}
 	else {
-		$data[5] = '<a href="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&id_group=' . $group['id_grupo'] . '&pure='.$pure.'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+		$data[5] = '<a href="index.php?sec=gagente&' .
+			'sec2=godmode/groups/configure_group&' .
+			'id_group=' . $group['id_grupo'] . '">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
 		//Check if there is only a group to unable delete it
 		if ($groups_count > 2) {
 			$data[5] .= '&nbsp;&nbsp;' .
-				'<a href="index.php?sec=' . $sec . '&' .
+				'<a href="index.php?sec=gagente&' .
 					'sec2=godmode/groups/group_list&' .
-					'id_group=' . $group['id_grupo'] . '&delete_group=1&pure=' . $pure . '" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+					'id_group=' . $group['id_grupo'] . '&' .
+					'delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 		}
 	}
 	

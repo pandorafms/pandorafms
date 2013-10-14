@@ -1,5 +1,11 @@
 2013-10-14 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_groups.php: into the function
+	"groups_get_group_to_list" fixed PHP warnings about uninitialized
+	vars.
+
+2013-10-14 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/status_monitor.php: fixed the filter by group
 	in the metaconsole.
 

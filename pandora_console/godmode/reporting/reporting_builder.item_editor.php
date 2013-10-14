@@ -892,11 +892,11 @@ html_print_input_hidden('id_item', $idItem);
 		?>
 		<tr id="row_header" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
-			<td style=""><?php html_print_input_text('header', $header, '', 40, 90); ?></td>
+			<td style=""><?php html_print_input_text('header', $header, '', 90, 250); ?></td>
 		</tr>
 		<tr id="row_url" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('URL'); ?></td>
-			<td style=""><?php html_print_input_text('url', $url, '', 40, 90); ?></td>
+			<td style=""><?php html_print_input_text('url', $url, '', 90, 250); ?></td>
 		</tr>
 		<tr id="row_field_separator" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Field separator') . ui_print_help_tip(__("Separator for different fields in the serialized text chain"), true); ?></td>

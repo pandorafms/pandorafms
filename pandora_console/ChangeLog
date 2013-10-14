@@ -1,3 +1,10 @@
+2013-10-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php
+	include/functions_reporting.php
+	godmode/reporting/reporting_builder.item_editor.php: Fixed filters
+	of event reports filters and some visual issues
+
 2013-10-14 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_groups.php: into the function

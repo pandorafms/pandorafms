@@ -434,7 +434,7 @@ $table->size[1] = '15%';
 
 $table->head[2] = __('OID');
 $table->align[2] = "center";
-$table->size[2] = '13%';
+$table->size[2] = '18%';
 
 $table->head[3] = __('Value');
 $table->align[3] = "center";
@@ -450,7 +450,7 @@ $table->size[5] = '10%';
 
 $table->head[6] = __('Alert');
 $table->align[6] = "center";
-$table->size[6] = '10%';
+$table->size[6] = '5%';
 
 $table->head[7] = __('Action');
 $table->align[7] = "center";
@@ -459,6 +459,8 @@ $table->size[7] = '10%';
 $table->head[8] = html_print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
 $table->align[8] = "center";
 $table->size[8] = '5%';
+
+$table->style[7] = "background: #F3F3F3; color: #111 !important;";
 
 // Skip offset records
 $idx = 0;
@@ -482,6 +484,7 @@ if ($traps !== false) {
 		}
 		
 		// Agent matching source address
+		$table->cellclass[$idx][1] = get_priority_class ($severity);
 		$agent = agents_get_agent_with_ip ($trap['source']);
 		if ($agent === false) {
 			if (! check_acl ($config["id_user"], 0, "AR")) {
@@ -498,17 +501,11 @@ if ($traps !== false) {
 		}
 	
 		//OID
-		if (empty ($trap["oid"])) {
-			$data[2] = __('N/A');
-		}
-		else {
-			$data[2] = enterprise_hook ('editor_link', array ($trap));
-			if ($data[2] === ENTERPRISE_NOT_HOOK) {
-				$data[2] = $trap["oid"];
-			}
-		}
+		$table->cellclass[$idx][2] = get_priority_class ($severity);
+		$data[2] = '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . (empty($trap["oid"]) ? __('N/A') : $trap["oid"]) .'</a>';
 		
 		//Value
+		$table->cellclass[$idx][3] = get_priority_class ($severity);
 		if (empty ($trap["value"])) {
 			$data[3] = __('N/A');
 		}
@@ -517,6 +514,7 @@ if ($traps !== false) {
 		}
 		
 		//User
+		$table->cellclass[$idx][4] = get_priority_class ($severity);
 		if (!empty ($trap["status"])) {
 			$data[4] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
 			if (!empty($trap["id_usuario"]))
@@ -527,6 +525,7 @@ if ($traps !== false) {
 		}
 		
 		// Timestamp
+		$table->cellclass[$idx][5] = get_priority_class ($severity);
 		$data[5] = '<span title="'.$trap["timestamp"].'">';
 		$data[5] .= ui_print_timestamp ($trap["timestamp"], true);
 		$data[5] .= '</span>';
@@ -539,9 +538,6 @@ if ($traps !== false) {
 			$data[6] = html_print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert not fired')));
 		}
 		
-		// Severity
-		$table->rowclass[$idx] = get_priority_class ($severity);
-		
 		//Actions
 		$data[7] = "";
 		
@@ -552,6 +548,8 @@ if ($traps !== false) {
 			$data[7] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
 		}
 		$data[7] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
+                $data[7] .= enterprise_hook ('editor_link', array ($trap));
+
 		
 		$data[8] = html_print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
 	

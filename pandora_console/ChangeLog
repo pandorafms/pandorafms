@@ -1,3 +1,8 @@
+2013-10-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/snmpconsole/snmp_view.php: Made the SNMP trap viewer look
+	  more like the event viewer.
+
 2013-10-14 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/graphs/flot/pandora.flot.js,

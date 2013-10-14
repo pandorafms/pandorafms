@@ -161,6 +161,7 @@ $label = base64_decode(get_parameter('label', ''));
 			echo '<div style="margin-left: 70px; padding-top: 10px;">';
 		else
 			echo '<div style="margin-left: 50px; padding-top: 10px;">';
+		
 		switch ($graph_type) {
 			case 'boolean':
 				echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,

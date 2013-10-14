@@ -163,12 +163,12 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 			$colors[] = '';
 		}
 	}
-		
+	
 	foreach($chart_data as $label => $values) {
 		$labels[] = io_safe_output($label);
-			
+		
 		foreach($values as $key => $value) {
-			$jsvar = "data_".$graph_id."_".$key;
+			$jsvar = "data_" . $graph_id . "_" . $key;
 			
 			if (!isset($serie_types[$key])) {
 				$serie_types2[$jsvar] = 'line';
@@ -298,14 +298,42 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	else {
 		$force_integer = 'false';
 	}
-
+	
 	// Trick to get translated string from javascript
-	$return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
+	$return .= html_print_input_hidden('unknown_text', __('Unknown'),
+		true);
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotArea('$graph_id', '$values', '$labels', '$labels_long', '$legend', '$colors', '$type', '$serie_types', $watermark, $width, $max_x, '".$config['homeurl']."', '$unit', $font_size, $menu, '$events', '$event_ids', '$legend_events', '$alerts', '$alert_ids', '$legend_alerts', '$yellow_threshold', '$red_threshold', $force_integer, '$separator', '$separator2', '$series_suffix_str');";
+	$return .= "pandoraFlotArea(" .
+		"'$graph_id', " .
+		"'$values', " .
+		"'$labels', " .
+		"'$labels_long', " .
+		"'$legend', " .
+		"'$colors', " .
+		"'$type', " .
+		"'$serie_types', " .
+		"$watermark, " .
+		"$width, " .
+		"$max_x, " .
+		"'" . $config['homeurl'] . "', " .
+		"'$unit', " .
+		"$font_size, " .
+		"$menu, " .
+		"'$events', " .
+		"'$event_ids', " .
+		"'$legend_events', " .
+		"'$alerts', " .
+		"'$alert_ids', " .
+		"'$legend_alerts', " .
+		"'$yellow_threshold', " .
+		"'$red_threshold', " .
+		"$force_integer, " .
+		"'$separator', " .
+		"'$separator2', " .
+		"'$series_suffix_str');";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

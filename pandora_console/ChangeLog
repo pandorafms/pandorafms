@@ -1,3 +1,9 @@
+2013-10-14 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/graphs/flot/pandora.flot.js,
+	include/graphs/functions_flot.php, operation/agentes/stat_win.php:
+	fixed the charts with negative values and a flot type.
+
 2013-10-14  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

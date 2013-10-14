@@ -181,6 +181,14 @@ if (is_ajax ()) {
 
 $offset = (int) get_parameter ("offset", 0);
 $id_group = (int) get_parameter('id_group', 0);//0 all
+//**********************************************************************
+// TODO
+// This code is disabled for to enabled in Pandora 5.1
+// but it needs a field in tevent_filter.
+//
+//$recursion = (bool)get_parameter('recursion', false); //Flag show in child groups
+//**********************************************************************
+$recursion = (bool)get_parameter('recursion', true); //Flag show in child groups
 $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 3); // -1 all, 0 only new, 1 only validated, 2 only in process, 3 only not validated,
@@ -225,6 +233,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;severity=" . $severity . 
 	"&amp;status=" . $status . 
 	"&amp;id_group=" . $id_group . 
+	"&amp;recursion=" . $recursion . 
 	"&amp;refr=" . (int)get_parameter("refr", 0) . 
 	"&amp;id_agent=" . $id_agent . 
 	"&amp;pagination=" . $pagination . 
@@ -238,7 +247,6 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;toogle_filter=no" .
 	"&amp;filter_id=" . $filter_id .
 	"&amp;id_name=" . $id_name .
-	"&amp;id_group=" . $id_group .
 	"&amp;history=" . (int)$history .
 	"&amp;section=" . $section .
 	"&amp;open_filter=" . $open_filter .
@@ -435,13 +443,13 @@ if ($delete) {
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
-	require_once($config['homedir'].'/operation/events/events_list.php');
+	require_once($config['homedir'] . '/operation/events/events_list.php');
 }
 else {
 	switch ($section) {
 		case 'list':
 		case 'history':
-			require_once($config['homedir'].'/operation/events/events_list.php');
+			require_once($config['homedir'] . '/operation/events/events_list.php');
 			break;
 	}
 }
@@ -473,16 +481,16 @@ $(document).ready( function() {
 	$("input[name='validate_ids[]']").change (function() {
 		var canDeleted = 1;
 		$("input[name='validate_ids[]']").each(function() {
-			if($(this).attr('checked') == 'checked') {
+			if ($(this).attr('checked') == 'checked') {
 				var classs = $(this).attr('class');
 				classs = classs.split(' ');
-				if(classs[0] != 'candeleted') {
+				if (classs[0] != 'candeleted') {
 					canDeleted = 0;
 				}
 			}
 		});
 		
-		if(canDeleted == 0) {
+		if (canDeleted == 0) {
 			$('#button-delete_button').attr('disabled','disabled');
 		}
 		else {
@@ -520,12 +528,13 @@ $(document).ready( function() {
 		}
 		
 		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-			{"page" : "operation/events/events",
-			"validate_event" : 1,
-			"id" : id,
-			"comment" : comment,
-			"new_status" : select_validate,
-			"similars" : similars
+			{
+				"page" : "operation/events/events",
+				"validate_event" : 1,
+				"id" : id,
+				"comment" : comment,
+				"new_status" : select_validate,
+				"similars" : similars
 			},
 			function (data, status) {
 				if (data == "ok") {
@@ -533,29 +542,35 @@ $(document).ready( function() {
 					// Refresh interface elements, don't reload (awfull)
 					// Validate
 					if (select_validate == 1) {
-						$("#status_img_"+id).attr ("src", "images/spinner.gif");
+						$("#status_img_"+id)
+							.attr ("src", "images/spinner.gif");
 						// Change status description
-						$("#status_row_"+id).html(<?php echo "'" . __('Event validated') . "'"; ?>);
+						$("#status_row_"+id)
+							.html(<?php echo "'" . __('Event validated') . "'"; ?>);
 						
 						// Get event comment
 						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-							{"page" : "operation/events/events",
-							"get_comment" : 1,
-							"id" : id
+							{
+								"page" : "operation/events/events",
+								"get_comment" : 1,
+								"id" : id
 							},
 							function (data, status) {
 								$("#comment_row_"+id).html(data);
-							});
+							}
+						);
 						
 						// Get event comment in header
 						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-							{"page" : "operation/events/events",
-							"get_comment_header" : 1,
-							"id" : id
+							{
+								"page" : "operation/events/events",
+								"get_comment_header" : 1,
+								"id" : id
 							},
 							function (data, status) {
 								$("#comment_header_"+id).html(data);
-							});
+							}
+						);
 						
 						// Change state image
 						$("#validate-"+id).css("display", "none");
@@ -597,23 +612,27 @@ $(document).ready( function() {
 						
 						// Get event comment
 						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-							{"page" : "operation/events/events",
-							"get_comment" : 1,
-							"id" : id
+							{
+								"page" : "operation/events/events",
+								"get_comment" : 1,
+								"id" : id
 							},
 							function (data, status) {
 								$("#comment_row_"+id).html(data);
-							});
+							}
+						);
 						
 						// Get event comment in header
 						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-							{"page" : "operation/events/events",
-							"get_comment_header" : 1,
-							"id" : id
+							{
+								"page" : "operation/events/events",
+								"get_comment_header" : 1,
+								"id" : id
 							},
 							function (data, status) {
 								$("#comment_header_"+id).html(data);
-							});
+							}
+						);
 						
 						// Remove delete link (if event is not grouped and there is more than one event)
 						if ($("#group_rep").val() == 1) {
@@ -732,125 +751,125 @@ $(document).ready( function() {
 		}
 	}
 });
+
+function toggleCommentForm(id_event) {
+	display = $('.event_form_' + id_event).css('display');
 	
-	function toggleCommentForm(id_event) {
-		display = $('.event_form_' + id_event).css('display');
-		
-		$('#select_validate_' + id_event).change (function() {
-			$option = $('#select_validate_' + id_event).val();
-		});
-		
-		if (display != 'none') {
-			$('.event_form_' + id_event).css('display', 'none');
-			// Hide All showed rows
-			$('.event_form').css('display', 'none');
-			$(".select_validate").find('option:first').attr('selected', 'selected').parent('select');
-		}
-		else {
-			$('.event_form_' + id_event).css('display', '');
-		}
+	$('#select_validate_' + id_event).change (function() {
+		$option = $('#select_validate_' + id_event).val();
+	});
+	
+	if (display != 'none') {
+		$('.event_form_' + id_event).css('display', 'none');
+		// Hide All showed rows
+		$('.event_form').css('display', 'none');
+		$(".select_validate").find('option:first').attr('selected', 'selected').parent('select');
 	}
+	else {
+		$('.event_form_' + id_event).css('display', '');
+	}
+}
+
+function validate_event_advanced(id, new_status) {
+	$tr = $('#validate-'+id).parents ("tr");
 	
-	function validate_event_advanced(id, new_status) {
-		$tr = $('#validate-'+id).parents ("tr");
-		
-		var grouped = $('#group_rep').val();
-		
-		var similar_ids;
-		similar_ids = $('#hidden-similar_ids_'+id).val();
-		meta = $('#hidden-meta').val();
-		var history = $('#hidden-history').val();
-		
-		$("#status_img_"+id).attr ("src", "images/spinner.gif");
-		
-		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-			{"page" : "include/ajax/events",
-			"change_status" : 1,
-			"event_ids" : similar_ids,
-			"new_status" : new_status,
-			"meta" : meta,
-			"history" : history
-			},
-			function (data, status) {
-				if (data == "status_ok") {
-					// Refresh interface elements, don't reload (awful)
-					// Validate
-					if (new_status == 1) {
-						// Change status description
-						$("#status_row_"+id).html(<?php echo "'" . __('Event validated') . "'"; ?>);
-						
-						// Change state image
-						$("#validate-"+id).css("display", "none");
-						$("#status_img_"+id).attr ("src", "images/tick.png");
-						$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event validated') . "'"; ?>);
-						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event validated') . "'"; ?>);
-					} // In process
-					else if (new_status == 2) {
-						// Change status description
-						$("#status_row_"+id).html(<?php echo "'" . __('Event in process') . "'"; ?>);
-						
-						// Remove delete link (if event is not grouped and there is more than one event)
-						if (grouped == 1) {
-							if (parseInt($("#count_event_group_"+id).text()) <= 1) {
-								$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
-							}
-						}
-						else { // Remove delete link (if event is not grouped)
+	var grouped = $('#group_rep').val();
+	
+	var similar_ids;
+	similar_ids = $('#hidden-similar_ids_'+id).val();
+	meta = $('#hidden-meta').val();
+	var history = $('#hidden-history').val();
+	
+	$("#status_img_"+id).attr ("src", "images/spinner.gif");
+	
+	jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+		{"page" : "include/ajax/events",
+		"change_status" : 1,
+		"event_ids" : similar_ids,
+		"new_status" : new_status,
+		"meta" : meta,
+		"history" : history
+		},
+		function (data, status) {
+			if (data == "status_ok") {
+				// Refresh interface elements, don't reload (awful)
+				// Validate
+				if (new_status == 1) {
+					// Change status description
+					$("#status_row_"+id).html(<?php echo "'" . __('Event validated') . "'"; ?>);
+					
+					// Change state image
+					$("#validate-"+id).css("display", "none");
+					$("#status_img_"+id).attr ("src", "images/tick.png");
+					$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event validated') . "'"; ?>);
+					$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event validated') . "'"; ?>);
+				} // In process
+				else if (new_status == 2) {
+					// Change status description
+					$("#status_row_"+id).html(<?php echo "'" . __('Event in process') . "'"; ?>);
+					
+					// Remove delete link (if event is not grouped and there is more than one event)
+					if (grouped == 1) {
+						if (parseInt($("#count_event_group_"+id).text()) <= 1) {
 							$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
 						}
+					}
+					else { // Remove delete link (if event is not grouped)
+						$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
+					}
+					
+					// Change state image
+					$("#status_img_"+id).attr ("src", "images/hourglass.png");
+					$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event in process') . "'"; ?>);
+					$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);
+					
+					// Remove row due to new state
+					if (($("#status").val() == 0)
+						|| ($("#status").val() == 1)) {
 						
-						// Change state image
-						$("#status_img_"+id).attr ("src", "images/hourglass.png");
-						$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event in process') . "'"; ?>);
-						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);
-						
-						// Remove row due to new state
-						if (($("#status").val() == 0)
-							|| ($("#status").val() == 1)) {
+						$.each($tr, function(index, value) {
+							row = value;
 							
-							$.each($tr, function(index, value) {
-								row = value;
+							if ($(row).attr('id') != '') {
 								
-								if ($(row).attr('id') != '') {
-									
-									row_id_name = $(row).attr('id').split('-').shift();
-									row_id_number = $(row).attr('id').split('-').pop() - 1;
-									row_id_number_next = parseInt($(row).attr('id').split('-').pop()) + 1;
-									previous_row_id = $(row).attr('id');
-									current_row_id = row_id_name + "-" + row_id_number;
-									selected_row_id = row_id_name + "-" + row_id_number + "-0";
-									next_row_id = row_id_name + '-' + row_id_number_next;
-									
-									$("#"+previous_row_id).css('display', 'none');
-									$("#"+current_row_id).css('display', 'none');
-									$("#"+selected_row_id).css('display', 'none');
-									$("#"+next_row_id).css('display', 'none');
-								}
-							});
-							
-						}
+								row_id_name = $(row).attr('id').split('-').shift();
+								row_id_number = $(row).attr('id').split('-').pop() - 1;
+								row_id_number_next = parseInt($(row).attr('id').split('-').pop()) + 1;
+								previous_row_id = $(row).attr('id');
+								current_row_id = row_id_name + "-" + row_id_number;
+								selected_row_id = row_id_name + "-" + row_id_number + "-0";
+								next_row_id = row_id_name + '-' + row_id_number_next;
+								
+								$("#"+previous_row_id).css('display', 'none');
+								$("#"+current_row_id).css('display', 'none');
+								$("#"+selected_row_id).css('display', 'none');
+								$("#"+next_row_id).css('display', 'none');
+							}
+						});
+						
 					}
 				}
-				else {
-					$("#result")
-						.showMessage ("<?php echo __('Could not be validated')?>")
-						.addClass ("error");
-				}
-			},
-			"html"
-		);
-	}
-	
-	
-	// Autoload event giving the id as POST/GET parameter
-	<?php
-	$load_event = get_parameter('load_event',0);
-	
-	if ($load_event) {
-	?>
-		show_event_dialog(<?php echo $load_event; ?>, 1);
-	<?php
-	}
-	?>
-	/* ]]> */
+			}
+			else {
+				$("#result")
+					.showMessage ("<?php echo __('Could not be validated')?>")
+					.addClass ("error");
+			}
+		},
+		"html"
+	);
+}
+
+
+// Autoload event giving the id as POST/GET parameter
+<?php
+$load_event = get_parameter('load_event',0);
+
+if ($load_event) {
+?>
+	show_event_dialog(<?php echo $load_event; ?>, 1);
+<?php
+}
+?>
+/* ]]> */
 </script>

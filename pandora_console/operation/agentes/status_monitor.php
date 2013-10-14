@@ -47,7 +47,14 @@ else {
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
-$ag_group = (int) get_parameter ('ag_group', 0);
+if (!defined('METACONSOLE')) {
+	$ag_group = (int) get_parameter ('ag_group', 0);
+}
+else {
+	$ag_group = get_parameter ('ag_group', 0);
+	$ag_group_metaconsole = $ag_group;
+}
+
 $offset = (int) get_parameter ('offset', 0);
 $status = (int) get_parameter ('status', 4);
 $modulegroup = (int) get_parameter ('modulegroup', -1);
@@ -180,7 +187,7 @@ $groups = users_get_groups($config["id_user"]);
 
 $sql_conditions_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 
-if(is_numeric($sql_conditions_tags)) {
+if (is_numeric($sql_conditions_tags)) {
 	$sql_conditions_tags = ' AND 1 = 0';
 }
 
@@ -330,6 +337,9 @@ if (defined('METACONSOLE')) {
 		metaconsole_restore_db();
 	}
 	unset($groups_select[__('All')]);
+	$key_group_all = array_search(__('All'), $groups_select);
+	if ($key_group_all !== false)
+		unset($groups_select[$key_group_all]);
 }
 
 if (!defined('METACONSOLE')) {
@@ -341,12 +351,12 @@ if (!defined('METACONSOLE')) {
 				false, 'width:150px;') . '
 		</td>';
 }
-else { 
+else {
 	echo '
 		<td valign="middle">' . __('Group') . '</td>
 		<td valign="middle">' .
 			html_print_select($groups_select, "ag_group",
-				io_safe_output($ag_group), '', __('All'), '0', true, false, false, 'w130',
+				io_safe_output($ag_group_metaconsole), '', __('All'), '0', true, false, false, 'w130',
 				false, 'width:150px;') . '
 		</td>';
 }

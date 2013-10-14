@@ -546,12 +546,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	// Prepared to turn series with a checkbox
 	// var showed = new Array();
 	
-	for(i=0;i<values.length;i++) {
+	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		var aux = new Array();
 		var critical_min = new Array();
 		var warning_min = new Array();
-		$.each(serie,function(i,v) {
+		$.each(serie, function(i, v) {
 			aux.push([i, v]);
 			if (threshold) {
 				critical_min.push([i,red_threshold]);
@@ -562,12 +562,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		switch(serie_types[i]) {
 			case 'line':
 			default:
-					line_show = true;
-					points_show = false;
+				line_show = true;
+				points_show = false;
 				break;
 			case 'points':
-					line_show = false;
-					points_show = true;
+				line_show = false;
+				points_show = true;
 				break;
 		}
 		
@@ -601,12 +601,18 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		
 		// Data
 		data_base.push({ 
-			id: 'serie_'+i,
+			id: 'serie_' + i,
 			data: aux, 
 			label: legend[i],
 			color: serie_color,
 			//threshold: [{ below: 80, color: "rgb(200, 20, 30)" } , { below: 65, color: "rgb(30, 200, 30)" }, { below: 50, color: "rgb(30, 200, 30)" }],
-			lines: { show: line_show, fill: filled, fillColor: { colors: [ { opacity: 0.9 }, { opacity: 0.9 } ]}, lineWidth:1, steps:false },
+			lines: { show: line_show,
+				fill: filled,
+				fillColor: {
+					colors: [ { opacity: 0.9 }, { opacity: 0.9 } ]
+				},
+				lineWidth: 1,
+				steps: false },
 			points: { show: points_show }
 		});
 		
@@ -642,14 +648,14 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	var min_tick_pixels = 80;
 	var steps = parseInt( count_data / (width/min_tick_pixels));
 	
-	var options = { 
-			series: { 
+	var options = {
+			series: {
 				stack: stacked,
 				shadowSize: 0.1
 			},
 			crosshair: { mode: 'xy' },
 			selection: { mode: 'x', color: '#777' },
-			grid: { 
+			grid: {
 				hoverable: true, 
 				clickable: true, 
 				borderWidth:1,
@@ -657,27 +663,26 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				tickColor: '#eee',
 				markings: markings
 				},
-			xaxes: [ { 
+			xaxes: [ {
 					tickFormatter: xFormatter,
 					minTickSize: steps,
 					color: '#000'
-					} ],
-			yaxes: [ { 
-					tickFormatter: yFormatter,
-					min: 0,
-					color: '#000'
+				} ],
+			yaxes: [ {
+						tickFormatter: yFormatter,
+						color: '#000'
 					},
 					{
-					  // align if we are to the right
-					  alignTicksWithAxis: 1,
-					  position: 'right'
-					  
-					  //tickFormatter: dFormatter
+						// align if we are to the right
+						alignTicksWithAxis: 1,
+						position: 'right'
+						
+						//tickFormatter: dFormatter
 					} ]
 					,
-			legend: { 
-				position: 'se', 
-				container: $('#legend_'+graph_id),
+			legend: {
+				position: 'se',
+				container: $('#legend_' + graph_id),
 				labelFormatter: lFormatter
 				}
 		};
@@ -700,20 +705,20 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		},
 		grid: { borderWidth: 1, hoverable: true, autoHighlight: false},
 		xaxis: { },
-			xaxes: [ { 
+			xaxes: [ {
 				tickFormatter: xFormatter,
 				minTickSize: steps,
 				color: '#000'
 				} ],
-		yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
-		selection: { mode: 'x', color: '#777' },
+		yaxis: {ticks: [], autoscaleMargin: 0.1 },
+		selection: {mode: 'x', color: '#777' },
 		legend: {show: false},
-		crosshair: { mode: 'x' }
+		crosshair: {mode: 'x'}
 	});
 	
 	// Connection between plot and miniplot
 	
-	$('#'+graph_id).bind('plotselected', function (event, ranges) {
+	$('#' + graph_id).bind('plotselected', function (event, ranges) {
 		// do the zooming if exist menu to undo it
 		if (menu == 0) {
 			return;
@@ -723,9 +728,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		
 		factor = dataInSelection / dataInPlot;
 		
-		new_steps = parseInt(factor*steps);
+		new_steps = parseInt(factor * steps);
 		
-		plot = $.plot($('#'+graph_id), datas,
+		plot = $.plot($('#' + graph_id), datas,
 			$.extend(true, {}, options, {
 				xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
 				xaxes: [ { 
@@ -736,18 +741,20 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				legend: { show: false }
 			}));
 		
-		$('#menu_cancelzoom_'+graph_id).attr('src',homeurl+'/images/zoom_cross.png');
+		$('#menu_cancelzoom_' + graph_id)
+			.attr('src',homeurl + '/images/zoom_cross.png');
 		
 		currentRanges = ranges;
 		// don't fire event on the overview to prevent eternal loop
 		overview.setSelection(ranges, true);
 	});
 	
-	$('#overview_'+graph_id).bind('plotselected', function (event, ranges) {
-		plot.setSelection(ranges);
-	});
+	$('#overview_' + graph_id)
+		.bind('plotselected', function (event, ranges) {
+			plot.setSelection(ranges);
+		});
 	
-	var legends = $('#legend_'+graph_id+' .legendLabel');
+	var legends = $('#legend_' + graph_id + ' .legendLabel');
 	
 	var updateLegendTimeout = null;
 	var latestPosition = null;
@@ -991,7 +998,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			// cancel the zooming
 			plot = $.plot($('#'+graph_id), data_base,
 				$.extend(true, {}, options, {
-					xaxis: { min: 0, max: max_x },
+					xaxis: {max: max_x },
 					legend: { show: false }
 				}));
 			

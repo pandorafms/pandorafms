@@ -2483,7 +2483,7 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	
 	$table->align = array();
 	$table->align[0] = 'center';
-	$table->align[2] = 'center';
+	$table->align[1] = 'center';
 	$table->align[3] = 'center';
 	
 	$table->data = array ();
@@ -2510,12 +2510,14 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 			array_push ($events, $event);
 		}
 	}
-	
+
 	if ($events)
 	foreach ($events as $eventRow) {
-		foreach ($eventRow as $event) {
+		foreach ($eventRow as $k => $event) {
 			//First pass along the class of this row
-			$table->rowclass[] =
+			$table->cellclass[$k][1] = $table->cellclass[$k][2] = 
+			$table->cellclass[$k][4] = $table->cellclass[$k][5] =
+			$table->cellclass[$k][6] =
 				get_priority_class ($event["criticity"]);
 			
 			$data = array ();
@@ -2609,9 +2611,11 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 		$filter_event_warning, $filter_event_no_validated);
 	
 	if ($events) {
-		foreach ($events as $event) {
+		foreach ($events as $k => $event) {
 			//First pass along the class of this row
-			$table->rowclass[] =
+			$table->cellclass[$k][1] = $table->cellclass[$k][3] =
+			$table->cellclass[$k][4] = $table->cellclass[$k][5] =
+			$table->cellclass[$k][6] =
 				get_priority_class ($event["criticity"]);
 			
 			$data = array ();
@@ -3699,16 +3703,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$event_graph_by_criticity = $style['event_graph_by_criticity'];
 			$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 			
+			$next_row = 1;
+			
 			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			
 			$data = array ();
-			$table->colspan[2][0] = 3;
+			$table->colspan[$next_row][0] = 3;
+			$next_row++;
 			$data[0] = reporting_get_agents_detailed_event(
 				$content['id_agent'], $content['period'],
 				$report["datetime"], true,
@@ -3717,7 +3725,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_event_warning,
 				$filter_event_no_validated);
 			
-			array_push ($table->data, $data);
+			if(!empty($data[0])) {
+				array_push ($table->data, $data);
+								
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
+			}
 			
 			
 			if ($event_graph_by_user_validator) {
@@ -3739,7 +3752,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
-				$table->colspan[2][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				array_push ($table->data, $data);
 			}
 			
@@ -3762,7 +3776,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
-				$table->colspan[2][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				array_push ($table->data, $data);
 			}
 			
@@ -3785,7 +3800,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
-				$table->colspan[2][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				array_push ($table->data, $data);
 			}
 			break;
@@ -3793,27 +3809,36 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			reporting_header_content($mini, $content, $report, $table, __('Text'),
 				"", "");
 			
+			$next_row = 1;
+			
 			if ($content["description"] != ""){
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			$data[0] = html_entity_decode($content['text']);
 			array_push($table->data, $data);
-			$table->colspan[2][0] = 2;
+			$table->colspan[$next_row][0] = 3;
 			break;
 		case 'sql':
 			reporting_header_content($mini, $content, $report, $table, __('SQL'),
 				"", "");
 			
+			$next_row = 1;
 			// Put description at the end of the module (if exists)
-			$table->colspan[0][0] = 2;
 			if ($content["description"] != ""){
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			
+			$table->colspan[$next_row][0] = 3;
+
 			$table2->class = 'databox';
 			$table2->width = '100%';
 			
@@ -3918,17 +3943,19 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				ui_print_truncate_text(
 					groups_get_name($content['id_group'], true),
 				60, false));
+				
+			$next_row = 1;
 			
 			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			
 			$data = array ();
-			$table->colspan[2][0] = 3;
 			
 			$style = json_decode(io_safe_output($content['style']), true);
 			
@@ -3949,7 +3976,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_event_critical,
 				$filter_event_warning,
 				$filter_event_no_validated);
-			array_push ($table->data, $data);
+			if(!empty($data[0])) {
+				array_push ($table->data, $data);
+								
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
+			}
 			
 			if ($event_graph_by_agent) {
 				$data_graph = reporting_get_count_events_by_agent(
@@ -3970,7 +4002,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
-				$table->colspan[2][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				array_push ($table->data, $data);
 			}
 			
@@ -3993,7 +4026,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
-				$table->colspan[2][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				array_push ($table->data, $data);
 			}
 			
@@ -4016,7 +4050,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
-				$table->colspan[2][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				array_push ($table->data, $data);
 			}
 			
@@ -4039,7 +4074,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
-				$table->colspan[2][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				array_push ($table->data, $data);
 			}
 			break;
@@ -4121,16 +4157,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			reporting_header_content($mini, $content, $report, $table, __('Import text from URL'),
 				ui_print_truncate_text($content["external_source"], 'description', false));
 			
+			$next_row = 1;
 			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
 			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			
 			$data = array();
-			$table->colspan[2][0] = 3;
+			$table->colspan[$next_row][0] = 3;
 			$data[0] = '<iframe id="item_' . $content['id_rc'] . '" src ="' . $content["external_source"] . '" width="100%" height="100%"></iframe>';
 			// TODO: make this dynamic and get the height if the iframe to resize this item
 			$data[0] .= '<script>
@@ -4475,7 +4513,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table1->style[0] = 'text-align: left';
 					$table1->style[1] = 'text-align: left';
 					$table1->style[2] = 'text-align: left';
-					$table1->style[3] = 'text-align: center';
+					$table1->style[3] = 'text-align: left';
 					
 					$data_res = array();
 					
@@ -4913,10 +4951,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table_summary->align = array();
 				
 				$table_summary->align[0] = 'left';
-				$table_summary->align[1] = 'right';
-				$table_summary->align[2] = 'right';
+				$table_summary->align[1] = 'left';
+				$table_summary->align[2] = 'left';
 				$table_summary->align[3] = 'left';
-				$table_summary->align[4] = 'right';
+				$table_summary->align[4] = 'left';
 				
 				$table_summary->head_colspan[0] = 2;
 				$table_summary->head[0] = __('Min Value');
@@ -5299,8 +5337,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table1->head[3] = __('Value');
 				$table1->style[0] = 'text-align: left';
 				$table1->style[1] = 'text-align: left';
-				$table1->style[2] = 'text-align: right';
-				$table1->style[3] = 'text-align: right';
+				$table1->style[2] = 'text-align: left';
+				$table1->style[3] = 'text-align: left';
 			}
 			
 			//Get the very first not null value 
@@ -5536,6 +5574,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[2][0] = 3;
+			$table->cellstyle[2][0] = 'text-align: center;';
 			if ($show_graph == 0 || $show_graph == 1) {
 				$data = array();
 				$data[0] = html_print_table($table1, true);

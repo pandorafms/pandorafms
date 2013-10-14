@@ -1152,11 +1152,15 @@ function events_get_group_events ($id_group, $period, $date,
 	$datelimit = $date - $period;
 	
 	$sql_where = ' AND 1 = 1 ';
+	$criticities = array();
 	if ($filter_event_critical) {
-		$sql_where .= ' AND criticity = 4 ';
+		$criticities[] = 4;
 	}
 	if ($filter_event_warning) {
-		$sql_where .= ' AND criticity = 3 ';
+		$criticities[] = 3;
+	}
+	if (!empty($criticities)) {
+		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
 	}
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
@@ -1209,11 +1213,15 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 	$datelimit = $date - $period;
 	
 	$sql_where = ' AND 1 = 1 ';
+	$criticities = array();
 	if ($filter_event_critical) {
-		$sql_where .= ' AND criticity = 4 ';
+		$criticities[] = 4;
 	}
 	if ($filter_event_warning) {
-		$sql_where .= ' AND criticity = 3 ';
+		$criticities[] = 3;
+	}
+	if (!empty($criticities)) {
+		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
 	}
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
@@ -2402,12 +2410,17 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	$datelimit = $date - $period;
 	
 	$sql_where = ' AND 1 = 1 ';
+	$criticities = array();
 	if ($filter_event_critical) {
-		$sql_where .= ' AND criticity = 4 ';
+		$criticities[] = 4;
 	}
 	if ($filter_event_warning) {
-		$sql_where .= ' AND criticity = 3 ';
+		$criticities[] = 3;
 	}
+	if (!empty($criticities)) {
+		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+	}
+	
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
 	}
@@ -2479,12 +2492,17 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 	$datelimit = $date - $period;
 	
 	$sql_where = ' AND 1 = 1 ';
+	$criticities = array();
 	if ($filter_event_critical) {
-		$sql_where .= ' AND criticity = 4 ';
+		$criticities[] = 4;
 	}
 	if ($filter_event_warning) {
-		$sql_where .= ' AND criticity = 3 ';
+		$criticities[] = 3;
 	}
+	if (!empty($criticities)) {
+		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+	}
+	
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
 	}
@@ -2556,12 +2574,17 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 	$datelimit = $date - $period;
 	
 	$sql_where = ' AND 1 = 1 ';
+	$criticities = array();
 	if ($filter_event_critical) {
-		$sql_where .= ' AND criticity = 4 ';
+		$criticities[] = 4;
 	}
 	if ($filter_event_warning) {
-		$sql_where .= ' AND criticity = 3 ';
+		$criticities[] = 3;
 	}
+	if (!empty($criticities)) {
+		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+	}
+	
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
 	}
@@ -2626,12 +2649,17 @@ function events_get_count_events_validated ($filter, $period, $date,
 	$datelimit = $date - $period;
 	
 	$sql_where = ' AND 1 = 1 ';
+	$criticities = array();
 	if ($filter_event_critical) {
-		$sql_where .= ' AND criticity = 4 ';
+		$criticities[] = 4;
 	}
 	if ($filter_event_warning) {
-		$sql_where .= ' AND criticity = 3 ';
+		$criticities[] = 3;
 	}
+	if (!empty($criticities)) {
+		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+	}
+	
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
 	}

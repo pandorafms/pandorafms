@@ -62,8 +62,8 @@
 	<body>
 		<div style='height: 10px'>
 			<?php
-$version = '5.0RC2';
-$build = '131008';
+$version = '5.0';
+$build = '131015';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);

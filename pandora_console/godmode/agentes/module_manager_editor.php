@@ -233,7 +233,7 @@ if ($id_agent_module) {
 	
 	$module_macros = null;
 	if (isset($module['module_macros'])) {
-		$module_macros = json_decode(base64_decode($module['module_macros']));
+		$module_macros = json_decode(base64_decode($module['module_macros']), true);
 	}
 }
 else {

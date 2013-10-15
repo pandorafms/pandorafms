@@ -1,5 +1,10 @@
 2013-10-15  Ramon Novoa  <rnovoa@artica.es>
 
+	* godmode/agentes/module_manager_editor.php: Fixed the module macro
+	  editor.
+
+2013-10-15  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandoradb_data.sql: Fixed some SQL queries.
 
 2013-10-15  Ramon Novoa  <rnovoa@artica.es>

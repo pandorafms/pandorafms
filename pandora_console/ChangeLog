@@ -1,5 +1,9 @@
 2013-10-15  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandoradb_data.sql: Fixed some SQL queries.
+
+2013-10-15  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandoradb_data.sql: Added more network components.
 
 2013-10-14 Miguel de Dios <miguel.dedios@artica.es>

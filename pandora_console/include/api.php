@@ -21,6 +21,8 @@ global $config;
 define("DEBUG", 0);
 define("VERBOSE", 0);
 
+//TESTING THE UPDATE MANAGER
+
 
 enterprise_include_once ('include/functions_enterprise_api.php');
 

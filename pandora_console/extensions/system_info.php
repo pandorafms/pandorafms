@@ -52,7 +52,6 @@ function getPandoraDiagnostic(&$systemInfo) {
 			$systemInfo['db_maintance'] = date ("Y/m/d H:i:s", db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'"));
 			$systemInfo['customer_key'] = db_get_sql("SELECT value FROM tupdate_settings WHERE `key` = 'customer_key';");
 			$systemInfo['updating_code_path'] = db_get_sql("SELECT value FROM tupdate_settings WHERE `key` = 'updating_code_path'");
-			$systemInfo['keygen_path'] = db_get_sql("SELECT value FROM tupdate_settings WHERE `key` = 'keygen_path'");
 			$systemInfo['current_update'] = db_get_sql("SELECT value FROM tupdate_settings WHERE `key` = 'current_update'");
 			break;
 		case "postgresql":
@@ -62,7 +61,6 @@ function getPandoraDiagnostic(&$systemInfo) {
 			$systemInfo['db_maintance'] = date ("Y/m/d H:i:s", db_get_sql ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_maintance'"));
 			$systemInfo['customer_key'] = db_get_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'customer_key';");
 			$systemInfo['updating_code_path'] = db_get_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'updating_code_path'");
-			$systemInfo['keygen_path'] = db_get_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'keygen_path'");
 			$systemInfo['current_update'] = db_get_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'current_update'");
 			break;
 		case "oracle":
@@ -72,7 +70,6 @@ function getPandoraDiagnostic(&$systemInfo) {
 			$systemInfo['db_maintance'] = db_get_sql ("SELECT value FROM tconfig WHERE token = 'db_maintance'");
 			$systemInfo['customer_key'] = db_get_sql("SELECT value FROM tupdate_settings WHERE key = 'customer_key';");
 			$systemInfo['updating_code_path'] = db_get_sql("SELECT value FROM tupdate_settings WHERE key = 'updating_code_path'");
-			$systemInfo['keygen_path'] = db_get_sql("SELECT value FROM tupdate_settings WHERE key = 'keygen_path'");
 			$systemInfo['current_update'] = db_get_sql("SELECT value FROM tupdate_settings WHERE key = 'current_update'");
 			break;
 	}

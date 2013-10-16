@@ -1209,7 +1209,6 @@ INSERT INTO tevent_response VALUES (1,'Ping&#x20;to&#x20;host','Ping&#x20;to&#x2
 
 INSERT INTO tupdate_settings VALUES ('current_update', '412');
 INSERT INTO tupdate_settings VALUES ('customer_key', 'PANDORA-FREE');
-INSERT INTO tupdate_settings VALUES ('keygen_path', '/usr/share/pandora_server/keygen.i386.static');
 INSERT INTO tupdate_settings VALUES ('update_server_host', 'www.artica.es');
 INSERT INTO tupdate_settings VALUES ('update_server_port', '80');
 INSERT INTO tupdate_settings VALUES ('update_server_path', '/pandoraupdate5/server.php');

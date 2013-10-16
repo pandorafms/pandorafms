@@ -1,3 +1,7 @@
+2013-10-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_vars.sh: Added arch information.
+
 2013-09-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Updated the name of the server conf file.

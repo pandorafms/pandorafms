@@ -143,9 +143,6 @@ switch ($config["dbtype"]) {
 			WHERE `key` = 'updating_code_path'", "Updating code path");
 		render_info_data ("SELECT value
 			FROM tupdate_settings
-			WHERE `key` = 'keygen_path'", "Keygen path");
-		render_info_data ("SELECT value
-			FROM tupdate_settings
 			WHERE `key` = 'current_update'", "Current Update #");
 		break;
 	case "postgresql":
@@ -170,9 +167,6 @@ switch ($config["dbtype"]) {
 			WHERE \"key\" = 'updating_code_path'", "Updating code path");
 		render_info_data ("SELECT value
 			FROM tupdate_settings
-			WHERE \"key\" = 'keygen_path'", "Keygen path");
-		render_info_data ("SELECT value
-			FROM tupdate_settings
 			WHERE \"key\" = 'current_update'", "Current Update #");
 		break;
 	case "oracle":
@@ -195,9 +189,6 @@ switch ($config["dbtype"]) {
 		render_info_data ("SELECT value
 			FROM tupdate_settings
 			WHERE key = 'updating_code_path'", "Updating code path");
-		render_info_data ("SELECT value
-			FROM tupdate_settings
-			WHERE key = 'keygen_path'", "Keygen path");
 		render_info_data ("SELECT value
 			FROM tupdate_settings
 			WHERE key = 'current_update'", "Current Update #");

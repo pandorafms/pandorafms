@@ -88,12 +88,14 @@ function process_manage_delete ($module_name, $id_agents) {
 	
 	$success = modules_delete_agent_module ($modules);
 	if (! $success) {
-		ui_print_error_message(__('There was an error deleting the modules, the operation has been cancelled'));
+		ui_print_error_message(
+			__('There was an error deleting the modules, the operation has been cancelled'));
 		
 		return false;
 	}
 	else {
-		ui_print_success_message(__('Successfully deleted') . '&nbsp;(' . $count_deleted_modules . ')');
+		ui_print_success_message(
+			__('Successfully deleted') . '&nbsp;(' . $count_deleted_modules . ')');
 		
 		return true;
 	}

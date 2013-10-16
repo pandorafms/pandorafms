@@ -1,3 +1,19 @@
+2013-10-16 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/massive/massive_delete_modules.php,
+	include/functions_modules.php: fixed the delete modules with
+	conf from the massive operations.
+
+2013-10-16 Miguel de Dios <miguel.dedios@artica.es>
+
+	* pandoradb_data.sql,
+	extensions/update_manager/sql/update_manager.sql,
+	extensions/update_manager/sql/update_manager.postgreSQL.sql,
+	extensions/update_manager/sql/update_manager.oracle.sql,
+	extensions/system_info.php, pandoradb.data.postgreSQL.sql,
+	pandoradb.data.oracle.sql, extras/pandora_diag.php: removed the
+	unused path to keygen.
+
 2013-10-16  Sergio Martin <sergio.martin@artica.es>
 
 	* ChangeLog: Commit last commit missed ChangeLog

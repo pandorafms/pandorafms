@@ -1,5 +1,10 @@
 2013-10-16 Miguel de Dios <miguel.dedios@artica.es>
 
+	* extensions/update_manager/main.php: fixed the javascript bugs
+	about the new version of jquery.
+
+2013-10-16 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/api.php: checking the update manager, sorry.
 
 2013-10-16 Miguel de Dios <miguel.dedios@artica.es>

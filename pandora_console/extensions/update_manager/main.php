@@ -208,8 +208,7 @@ function main_view_enterprise($settings, $user_key) {
 					overlay: {
 							opacity: 0.5,
 							background: "black"
-						},
-					bgiframe: jQuery.browser.msie
+						}
 				});
 			$("#dialog").show();
 		}
@@ -230,8 +229,8 @@ function main_view_enterprise($settings, $user_key) {
 					$("#dialog_description").html(data['details_text']);
 					
 					if (data['enable_buttons']) {
-						$("input[name='details_online']").attr('disabled', '');
-						$("input[name='update_online']").attr('disabled', '');
+						$("input[name='details_online']").removeAttr("disabled");
+						$("input[name='update_online']").removeAttr("disabled");
 					}
 				}
 			});

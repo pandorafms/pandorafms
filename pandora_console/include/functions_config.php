@@ -1102,6 +1102,13 @@ function config_check () {
 		}
 	}
 	
+	if (isset ($config['license_expired'])) {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_error_message(
+			array('message' => __('<strong style="font-size: 11pt">This license has expired.</strong> <br><br>You can not get updates until you renew the license.').'</h3>',
+				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	}
+	
 	if (!is_writable ("attachment")) {
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(

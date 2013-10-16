@@ -1,3 +1,10 @@
+2013-10-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/jquery.pandora.js
+	include/functions_config.php: Changed license warning window
+	time to 30 seconds. Added header warning message when license 
+	is expired in client mode
+
 2013-10-16 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/massive/massive_delete_modules.php,

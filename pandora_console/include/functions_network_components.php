@@ -471,7 +471,7 @@ function network_components_duplicate_network_component ($id_local_component) {
 	if ($network === false)
 		return false;
 	
-	$name = __('Copy of').' '.$network['name'];
+	$name = io_safe_input(__('Copy of') . ' ') . $network['name'];
 	unset($network['id_nc']);
 	unset($network['name']);
 	unset($network['category_name']);

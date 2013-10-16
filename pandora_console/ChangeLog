@@ -1,5 +1,9 @@
 2013-10-16 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/api.php: checking the update manager, sorry.
+
+2013-10-16 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/configurar_agente.php,
 	include/functions_network_components.php,
 	include/functions_alerts.php: fixed the name of items to duplicate,

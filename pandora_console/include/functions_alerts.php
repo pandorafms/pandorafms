@@ -901,7 +901,7 @@ function alerts_duplicate_alert_template ($id_alert_template) {
 	if ($template === false)
 		return false;
 	
-	$name = __('Copy of').' '.$template['name'];
+	$name = io_safe_input(__('Copy of') . ' ') . $template['name'];
 	$type = $template['type'];
 	
 	$size = count ($template) / 2;

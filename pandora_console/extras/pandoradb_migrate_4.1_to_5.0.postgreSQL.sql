@@ -470,17 +470,6 @@ ALTER TABLE "ttag" ADD COLUMN "email" TEXT NULL;
 ALTER TABLE "ttag" ADD COLUMN "phone" TEXT NULL;
 
 -- ---------------------------------------------------------------------
--- Add more fields in snmp alerts (05/03/13)
--- ---------------------------------------------------------------------
-ALTER TABLE "talert_snmp" ADD COLUMN "al_field4" TEXT;
-ALTER TABLE "talert_snmp" ADD COLUMN "al_field5" TEXT;
-ALTER TABLE "talert_snmp" ADD COLUMN "al_field6" TEXT;
-ALTER TABLE "talert_snmp" ADD COLUMN "al_field7" TEXT;
-ALTER TABLE "talert_snmp" ADD COLUMN "al_field8" TEXT;
-ALTER TABLE "talert_snmp" ADD COLUMN "al_field9" TEXT;
-ALTER TABLE "talert_snmp" ADD COLUMN "al_field10" TEXT;
-
--- ---------------------------------------------------------------------
 -- Add metaconsole fields to user table (17/04/13)
 -- ---------------------------------------------------------------------
 ALTER TABLE "tusuario" ADD COLUMN "metaconsole_agents_manager" SMALLINT DEFAULT 0;

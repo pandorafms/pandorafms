@@ -452,17 +452,6 @@ ALTER TABLE `ttag` ADD COLUMN `email` text NULL;
 ALTER TABLE `ttag` ADD COLUMN `phone` text NULL;
 
 -- ---------------------------------------------------------------------
--- Add more fields in snmp alerts (05/03/13)
--- ---------------------------------------------------------------------
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field4` text;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field5` text;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field6` text;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text;
-
--- ---------------------------------------------------------------------
 -- Add metaconsole fields to user table (17/04/13)
 -- ---------------------------------------------------------------------
 ALTER TABLE `tusuario` ADD COLUMN `metaconsole_agents_manager` tinyint(1) unsigned NOT NULL default 0;
@@ -1157,3 +1146,4 @@ ALTER TABLE `tnetwork_component` CHANGE COLUMN `name` `name` TEXT NOT NULL;
 -- ---------------------------------------------------------------------
 
 DELETE FROM `tlanguage` WHERE id_language IN ('ast', 'eu', 'bn', 'bg', 'ca', 'da', 'et', 'fi', 'gl', 'he', 'hi', 'hu', 'ko', 'ms', 'mr', 'nb', 'ro', 'sl', 'sv', 'te', 'uk', 'vi');
+

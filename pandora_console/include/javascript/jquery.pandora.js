@@ -109,7 +109,7 @@ $(document).ready (function () {
 							$("#spinner_ok").hide();
 							$("#ok_buttom").show();
 						},
-						10000
+						30000
 					);
 				}
 			});

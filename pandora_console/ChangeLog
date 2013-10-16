@@ -1,3 +1,14 @@
+2013-10-16  Sergio Martin <sergio.martin@artica.es>
+
+	* ChangeLog: Commit last commit missed ChangeLog
+
+2013-10-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	images/login_background.jpg
+	images/login_background.png: Change login screen background
+	image
+
 2013-10-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_4.1_to_5.0.postgreSQL.sql,

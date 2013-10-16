@@ -310,12 +310,9 @@ div#foot {
 	left: 0;
 	z-index: -999;
 	
-	background-image: url('../../images/login_background.jpg');
+	background-image: url('../../images/login_background.png');
 	background-color: #3f3f3f;
-	background-size: cover;
-	-moz-background-size: cover;
-	-webkit-background-size: cover;
-	-o-background-size: cover;
+	background-repeat: repeat;
 }
 
 @media screen and (max-width: 1024px) { /* Specific to this particular image */

@@ -414,7 +414,7 @@ function refreshMapViewSecondStep() {
 
 		//Obtain data of map of fields.
 		inital_zoom = $('input[name=initial_zoom]').val();
-		num_levels_zoom =$('input[name=num_levels_zoom').val();
+		num_levels_zoom =$('input[name=num_levels_zoom]').val();
 		center_latitude = $('input[name=center_latitude]').val();
 		center_longitude = $('input[name=center_longitude]').val();
 		center_altitude = $('input[name=center_altitude]').val();

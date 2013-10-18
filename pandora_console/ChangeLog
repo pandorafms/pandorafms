@@ -1,5 +1,10 @@
 2013-10-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/configurar_agente.php: fixed the string of
+	duplicate module.
+
+2013-10-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/setup/gis_step_2.php: fixed typo bug.
 
 2013-10-16  Sergio Martin <sergio.martin@artica.es>

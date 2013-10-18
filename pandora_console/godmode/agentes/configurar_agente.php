@@ -1257,7 +1257,7 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 	$id_duplicate_module = $duplicate_module;
 	
 	$original_name = modules_get_agentmodule_name($id_duplicate_module);
-	$copy_name = io_safe_input(sprintf(__('copy of %s'), $original_name));
+	$copy_name = io_safe_input(sprintf(__('copy of %s'), io_safe_output($original_name)));
 	
 	$cont = 0;
 	$exists = true;
@@ -1267,7 +1267,7 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 		if ($exists) {
 			$cont++;
 			$copy_name = io_safe_input(
-				sprintf(__('copy of %s (%d)'), $original_name, $cont));
+				sprintf(__('copy of %s (%d)'), io_safe_output($original_name), $cont));
 		}
 	}
 	

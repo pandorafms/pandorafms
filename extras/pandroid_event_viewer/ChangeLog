@@ -1,5 +1,10 @@
 2012-09-13  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* .classpath: removed the entry for ".svn" folder
+	...is the eclipse crazy?
+
+2012-09-13  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/values-ja/strings.xml, res/values/strings.xml,
 	res/values-es/strings.xml: fixed the untranslate strings.
 

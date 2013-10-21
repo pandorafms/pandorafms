@@ -1,3 +1,8 @@
+2013-10-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_daemon: Changed status return codes to conform to LSB
+	  specs. Fixes bug #2397.
+
 2013-10-13  Junichi Satoh  <junichi@rworks.jp>
 
 	* tentacle_server: Upgraded to 0.4.0. (Imported from trunk of

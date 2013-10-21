@@ -1,3 +1,10 @@
+2013-10-21 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: applied the path from
+	"http://sourceforge.net/p/pandora/bugs/2395/", thanks Jorge Loza.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
 2013-10-17 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/configurar_agente.php: fixed the string of

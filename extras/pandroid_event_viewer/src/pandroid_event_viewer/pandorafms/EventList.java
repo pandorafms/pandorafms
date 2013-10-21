@@ -392,42 +392,43 @@ public class EventList extends ListActivity {
 						content_event_item.setVisibility(RelativeLayout.GONE);
 					}
 				}
-			} else {
+			}
+			else {
 				final EventListItem item = this.object.eventList.get(position);
 
 				switch (item.criticity) {
-
-				case 0:
-					view.setBackgroundColor(getResources().getColor(
-							R.color.Blue));
-					break;
-				case 1:
-					view.setBackgroundColor(getResources().getColor(
-							R.color.Grey));
-					break;
-				case 2:
-					view.setBackgroundColor(getResources().getColor(
-							R.color.Green));
-					break;
-				case 3:
-					view.setBackgroundColor(getResources().getColor(
-							R.color.Yellow));
-					break;
-				case 4:
-					view.setBackgroundColor(getResources()
-							.getColor(R.color.Red));
-					break;
-				default:
-					view.setBackgroundColor(getResources().getColor(
-							R.color.Grey));
-					break;
+					case 0:
+						view.setBackgroundColor(getResources().getColor(
+								R.color.Blue));
+						break;
+					case 1:
+						view.setBackgroundColor(getResources().getColor(
+								R.color.Grey));
+						break;
+					case 2:
+						view.setBackgroundColor(getResources().getColor(
+								R.color.Green));
+						break;
+					case 3:
+						view.setBackgroundColor(getResources().getColor(
+								R.color.Yellow));
+						break;
+					case 4:
+						view.setBackgroundColor(getResources()
+								.getColor(R.color.Red));
+						break;
+					default:
+						view.setBackgroundColor(getResources().getColor(
+								R.color.Grey));
+						break;
 				}
 
 				TextView titulo = (TextView) view.findViewById(R.id.agent_name);
 
 				if (item.event_type.equals("system")) {
 					titulo.setText(R.string.system_str);
-				} else {
+				}
+				else {
 					titulo.setText(item.agent_name);
 				}
 

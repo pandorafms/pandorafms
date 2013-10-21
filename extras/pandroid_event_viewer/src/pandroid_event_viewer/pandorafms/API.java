@@ -15,9 +15,9 @@ import android.util.Log;
 
 @SuppressLint("UseSparseArrays")
 public class API {
-
+	
 	private static String TAG = "API";
-
+	
 	/**
 	 * Get groups through an api call.
 	 * 
@@ -34,10 +34,10 @@ public class API {
 		parameters.add(new BasicNameValuePair("op", "get"));
 		parameters.add(new BasicNameValuePair("op2", "groups"));
 		parameters.add(new BasicNameValuePair("other_mode",
-				"url_encode_separator_|"));
+			"url_encode_separator_|"));
 		parameters.add(new BasicNameValuePair("return_type", "csv"));
 		parameters.add(new BasicNameValuePair("other", ";"));
-
+		
 		String return_api = Core.httpGet(context, parameters);
 		String[] lines = return_api.split("\n");
 		try {
@@ -45,12 +45,13 @@ public class API {
 				String[] groups = lines[i].split(";", 21);
 				result.put(Integer.valueOf(groups[0]), groups[1]);
 			}
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			Log.e(TAG, "Problem parsing number in response");
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Get agents through an api call.
 	 * 
@@ -60,23 +61,24 @@ public class API {
 	 *             If there is a problem with the connection.
 	 */
 	public static Map<Integer, String> getAgents(Context context)
-			throws IOException {
+		throws IOException {
+		
 		Map<Integer, String> result = new HashMap<Integer, String>();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("op", "get"));
 		parameters.add(new BasicNameValuePair("op2", "all_agents"));
 		parameters.add(new BasicNameValuePair("return_type", "csv"));
-
+		
 		String return_api = Core.httpGet(context, parameters);
 		String[] lines = return_api.split("\n");
-
+		
 		for (int i = 0; i < lines.length; i++) {
 			String[] agents = lines[i].split(";");
 			result.put(Integer.valueOf(agents[0]), agents[1]);
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Get API version.
 	 * 
@@ -96,14 +98,16 @@ public class API {
 			String[] lines = return_api.split(",");
 			if (lines.length == 3) {
 				return lines[1];
-			} else {
+			}
+			else {
 				return context.getString(R.string.unknown_version);
 			}
-		} else {
+		}
+		else {
 			return "";
 		}
 	}
-
+	
 	/**
 	 * Performs a get_events API call.
 	 * 
@@ -144,16 +148,16 @@ public class API {
 		parameters.add(new BasicNameValuePair("op", "get"));
 		parameters.add(new BasicNameValuePair("op2", "events"));
 		parameters.add(new BasicNameValuePair("other_mode",
-				"url_encode_separator_|"));
+			"url_encode_separator_|"));
 		parameters.add(new BasicNameValuePair("return_type", "csv"));
 		parameters.add(new BasicNameValuePair("other",
-				serializeEventsParamsToAPI(filterAgentName, idGroup,
-						filterSeverity, filterStatus, filterEventSearch,
-						filterTag, filterTimestamp, itemsPerPage, offset,
-						total, more_criticity)));
+			serializeEventsParamsToAPI(filterAgentName, idGroup,
+				filterSeverity, filterStatus, filterEventSearch,
+				filterTag, filterTimestamp, itemsPerPage, offset, total,
+				more_criticity)));
 		return Core.httpGet(context, parameters);
 	}
-
+	
 	/**
 	 * Get tags through an api call.
 	 * 
@@ -176,12 +180,13 @@ public class API {
 				String[] tags = lines[i].split(";", 2);
 				array.add(tags[1]);
 			}
-		} catch (ArrayIndexOutOfBoundsException e) {
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
 			Log.e(TAG, "There was a problem getting tags: " + e.getMessage());
 		}
 		return array;
 	}
-
+	
 	/**
 	 * Creates new incident in console.
 	 * 
@@ -195,14 +200,15 @@ public class API {
 	 */
 	public static void createNewIncident(Context context,
 			String[] incidentParameters) throws IOException {
+		
 		Log.i(TAG, "Sending new incident");
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("op", "set"));
 		parameters.add(new BasicNameValuePair("op2", "new_incident"));
 		parameters.add(new BasicNameValuePair("other_mode",
-				"url_encode_separator_|"));
+			"url_encode_separator_|"));
 		parameters.add(new BasicNameValuePair("other", Core
-				.serializeParams2Api(incidentParameters)));
+			.serializeParams2Api(incidentParameters)));
 		Core.httpGet(context, parameters);
 	}
 
@@ -221,23 +227,25 @@ public class API {
 	 */
 	public static boolean validateEvent(Context context, int idEvent,
 			String comment) throws IOException {
+		
 		List<NameValuePair> parameters;
 		// Set event validation.
 		parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("op", "set"));
 		parameters.add(new BasicNameValuePair("op2", "validate_events"));
 		parameters.add(new BasicNameValuePair("id", Integer.valueOf(idEvent)
-				.toString()));
+			.toString()));
 		parameters.add(new BasicNameValuePair("other", comment));
 		String return_api = Core.httpGet(context, parameters);
-
+		
 		if (return_api.startsWith("Correct validation")) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
-
+	
 	/**
 	 * Serialize parameters to api.
 	 * 
@@ -266,17 +274,17 @@ public class API {
 	 * @return Serialized parameters.
 	 */
 	private static String serializeEventsParamsToAPI(String filterAgentName,
-			int idGroup, int filterSeverity, int filterStatus,
-			String filterEventSearch, String filterTag, long filterTimestamp,
-			long itemsPerPage, long offset, boolean total,
-			boolean more_criticity) {
-
+		int idGroup, int filterSeverity, int filterStatus,
+		String filterEventSearch, String filterTag, long filterTimestamp,
+		long itemsPerPage, long offset, boolean total,
+		boolean more_criticity) {
+		
 		String totalStr = (total) ? "total" : "-1";
 		if (more_criticity) {
 			totalStr = "more_criticity";
 		}
-		return Core.serializeParams2Api(new String[] { ";", // Separator for the
-															// csv
+		return Core.serializeParams2Api(new String[] {
+				";", // Separator for the csv
 				Integer.toString(filterSeverity), // criticity or severity
 				filterAgentName, // The agent name
 				"", // Name of module

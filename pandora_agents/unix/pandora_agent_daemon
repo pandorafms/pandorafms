@@ -109,10 +109,11 @@ case "$1" in
 		if [ -z "$PANDORA_PID" ]
 		then
 			echo "Pandora FMS Agent is not running."
+			exit 3
 		else
 			echo "Pandora FMS Agent is running with PID $PANDORA_PID."
+			exit 0
 		fi
-		exit 0
 	;;
 
 	force-reload|restart)

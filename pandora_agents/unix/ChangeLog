@@ -1,3 +1,8 @@
+2013-10-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_daemon: Merged from trunk. Changed status return codes
+	  to conform to LSB specs. Fixes bug #2397.
+
 2013-09-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent_installer: Changed the bash style == to =.

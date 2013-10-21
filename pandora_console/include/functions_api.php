@@ -162,7 +162,7 @@ function isInACL($ip) {
 	
 	// If the IP is not in the list, we check one by one, all the wildcard registers
 	foreach($config['list_ACL_IPs_for_API'] as $acl_ip) {
-		if(preg_match('/\*/', $acl_ip)) {
+		if (preg_match('/\*/', $acl_ip)) {
 			
 			// Scape for protection
 			$acl_ip = str_replace('.','\.',$acl_ip);
@@ -171,7 +171,7 @@ function isInACL($ip) {
 			$acl_ip = str_replace('*','.*',$acl_ip);
 			
 			// If the string match with the beginning of the IP give it access
-			if(preg_match('/'.$acl_ip.'/', $ip)) {
+			if (preg_match('/'.$acl_ip.'/', $ip)) {
 				return true;
 			}
 		}
@@ -4104,6 +4104,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1) {
 		$idAgentModule = $id;
 		$data = $other['data'][0];
 		$time = $other['data'][1];
+		
 		if ($time == 'now') $time = time();
 		
 		$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
@@ -4126,7 +4127,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1) {
 		
 			$xml = sprintf($xmlTemplate, io_safe_output(get_os_name($agent['id_os'])),
 				io_safe_output($agent['os_version']), $agent['intervalo'],
-				io_safe_output($agent['agent_version']), date('Y/m/d h:i:s', $time),
+				io_safe_output($agent['agent_version']), date('Y/m/d H:i:s', $time),
 				io_safe_output($agent['nombre']), $agent['timezone_offset'],
 				io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
 		

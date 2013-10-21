@@ -1,3 +1,8 @@
+2013-10-21 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: applied the path from
+	"http://sourceforge.net/p/pandora/bugs/2395/", thanks Jorge Loza.
+
 2013-09-30  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

@@ -232,7 +232,6 @@
             android:stretchColumns="0,1" >
 
             <TableRow
-                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" >
 
@@ -250,7 +249,6 @@
             </TableRow>
 
             <TableRow
-                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" >
 

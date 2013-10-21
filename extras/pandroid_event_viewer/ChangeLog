@@ -1,5 +1,15 @@
 2012-09-13  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* res/layout/main.xml: removed the typo bug.
+	
+	* src/pandroid_event_viewer/pandorafms/Core.java, 
+	src/pandroid_event_viewer/pandorafms/API.java,
+	src/pandroid_event_viewer/pandorafms/About.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java: fixed the code
+	style.
+
+2012-09-13  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* .classpath: removed the entry for ".svn" folder
 	...is the eclipse crazy?
 

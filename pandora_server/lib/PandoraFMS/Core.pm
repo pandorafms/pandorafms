@@ -3935,7 +3935,9 @@ sub pandora_module_unknown ($$) {
 				_module_ => safe_output($module->{'nombre'}),
 				_data_ => 'N/A',
 			);
-			
+		        load_module_macros ($module->{'module_macros'}, \%macros);
+			$description = subst_alert_macros ($description, \%macros);
+
 			pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
 				$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 		}

@@ -1,5 +1,13 @@
 2012-10-22  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/EventList.java: improved the
+	code style.
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
+	fixed the values criticity_name and criticity_image in the events.
+
+2012-10-22  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/API.java: added more log
 	for to make more easy.
 	

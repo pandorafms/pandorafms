@@ -1,5 +1,12 @@
 2012-10-22  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* res/values-ja/strings.xml: added string "empty" but I can not
+	translate into japanese.
+	* res/values-es/strings.xml: added string for translate "empty" into
+	spanish.
+
+2012-10-22  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/EventList.java: improved the
 	code style.
 	

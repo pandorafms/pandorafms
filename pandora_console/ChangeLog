@@ -1,3 +1,8 @@
+2013-10-22 Hirofumi Kosaka <kosaka@rworks.jp>
+        
+        * include/ajax/module.php: changed the code to avoid to try to
+          load enterprise code unconditionally.
+
 2013-10-21 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: applied the path from

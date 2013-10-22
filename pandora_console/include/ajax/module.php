@@ -18,7 +18,7 @@ global $config;
 
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
-require_once ($config['homedir'] . '/enterprise/include/functions_metaconsole.php');
+enterprise_include_once ('include/functions_metaconsole.php');
 
 $get_plugin_macros = get_parameter('get_plugin_macros');
 if ($get_plugin_macros) {

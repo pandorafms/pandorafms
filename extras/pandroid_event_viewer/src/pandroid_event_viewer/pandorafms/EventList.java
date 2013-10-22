@@ -346,11 +346,11 @@ public class EventList extends ListActivity {
 
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view;
-
+			
 			LayoutInflater inflater = (LayoutInflater) mContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			view = inflater.inflate(R.layout.item_list_event_layout, null);
-
+			
 			// If the end of the list.
 			if (this.object.eventList.size() == position) {
 				// Show button to get more events
@@ -367,15 +367,18 @@ public class EventList extends ListActivity {
 						Button button = (Button) view
 								.findViewById(R.id.button_load_more_events);
 						button.setVisibility(Button.GONE);
-					} else {
+					}
+					else {
 						Button button = (Button) view
 								.findViewById(R.id.button_load_more_events);
-
+						
 						if (object.eventList.size() == 0) {
 							button.setVisibility(Button.GONE);
-						} else if (((long) object.eventList.size()) >= object.count_events) {
+						}
+						else if (((long) object.eventList.size()) >= object.count_events) {
 							button.setVisibility(Button.GONE);
-						} else {
+						}
+						else {
 							button.setVisibility(Button.VISIBLE);
 						}
 
@@ -395,31 +398,31 @@ public class EventList extends ListActivity {
 			}
 			else {
 				final EventListItem item = this.object.eventList.get(position);
-
+				
 				switch (item.criticity) {
 					case 0:
 						view.setBackgroundColor(getResources().getColor(
-								R.color.Blue));
+							R.color.Blue));
 						break;
 					case 1:
 						view.setBackgroundColor(getResources().getColor(
-								R.color.Grey));
+							R.color.Grey));
 						break;
 					case 2:
 						view.setBackgroundColor(getResources().getColor(
-								R.color.Green));
+							R.color.Green));
 						break;
 					case 3:
 						view.setBackgroundColor(getResources().getColor(
-								R.color.Yellow));
+							R.color.Yellow));
 						break;
 					case 4:
 						view.setBackgroundColor(getResources()
-								.getColor(R.color.Red));
+							.getColor(R.color.Red));
 						break;
 					default:
 						view.setBackgroundColor(getResources().getColor(
-								R.color.Grey));
+							R.color.Grey));
 						break;
 				}
 
@@ -433,37 +436,38 @@ public class EventList extends ListActivity {
 				}
 
 				TextView descripcion = (TextView) view
-						.findViewById(R.id.event_name);
+					.findViewById(R.id.event_name);
 				descripcion.setText(item.event);
 
 				TextView timestamp = (TextView) view
-						.findViewById(R.id.timestamp);
+					.findViewById(R.id.timestamp);
 				timestamp.setText(item.timestamp);
 
 				if (item.criticity_image.length() != 0)
 					Core.setTextViewLeftImage((TextView) view
-							.findViewById(R.id.event_name), Core
-							.getSeverityImage(getApplicationContext(),
-									item.criticity), 16);
+						.findViewById(R.id.event_name), Core
+						.getSeverityImage(getApplicationContext(),
+							item.criticity), 16);
 
 				if (item.status == 1) {
 					Core.setTextViewLeftImage(timestamp, getResources()
-							.getDrawable(R.drawable.tick), 24);
-				} else {
+						.getDrawable(R.drawable.tick), 24);
+				}
+				else {
 					Core.setTextViewLeftImage(timestamp, getResources()
-							.getDrawable(R.drawable.tick_off), 24);
+						.getDrawable(R.drawable.tick_off), 24);
 				}
 
 				// Show extended info
 				if (item.opened) {
 					View viewEventExtended;
 					viewEventExtended = inflater.inflate(
-							R.layout.item_list_event_extended, null);
-
+						R.layout.item_list_event_extended, null);
+					
 					TextView text;
 					if (item.tags.length() != 0) {
 						text = (TextView) viewEventExtended
-								.findViewById(R.id.tags_text);
+							.findViewById(R.id.tags_text);
 						String[] tags = item.tags.split(",");
 						String tagText = "";
 						for (int i = 0; i < tags.length; i++) {
@@ -476,8 +480,9 @@ public class EventList extends ListActivity {
 									parts[1] = "http://" + parts[1];
 								}
 								tagText += "<a href=\"" + parts[1] + "\">"
-										+ parts[0] + "</a>";
-							} else {
+									+ parts[0] + "</a>";
+							}
+							else {
 								tagText += parts[0];
 							}
 						}
@@ -488,54 +493,54 @@ public class EventList extends ListActivity {
 					if (item.user_comment.length() != 0) {
 						if (item.user_comment.length() > 200) {
 							item.user_comment = item.user_comment.substring(0,
-									197);
+								197);
 							item.user_comment = item.user_comment.concat("...");
 						}
 						text = (TextView) viewEventExtended
-								.findViewById(R.id.comments_text);
+							.findViewById(R.id.comments_text);
 						text.setText(item.user_comment);
 					}
 
 					if (item.group_name.length() != 0) {
 						text = (TextView) viewEventExtended
-								.findViewById(R.id.group_text);
+							.findViewById(R.id.group_text);
 						text.setText(item.group_name);
 					}
 
 					if (item.agent_name.length() != 0) {
 						View row = viewEventExtended
-								.findViewById(R.id.row_agent);
+							.findViewById(R.id.row_agent);
 						row.setVisibility(View.VISIBLE);
 
 						text = (TextView) viewEventExtended
-								.findViewById(R.id.agent_text);
+							.findViewById(R.id.agent_text);
 						text.setText(Html.fromHtml("<a href='"
-								+ this.object.url
-								+ "/mobile/index.php?page=agent&id="
-								+ item.id_agent + " &autologin=1&user="
-								+ this.object.user + "&password="
-								+ this.object.password + "'>" + item.agent_name
-								+ "</a>"));
+							+ this.object.url
+							+ "/mobile/index.php?page=agent&id="
+							+ item.id_agent + " &autologin=1&user="
+							+ this.object.user + "&password="
+							+ this.object.password + "'>" + item.agent_name
+							+ "</a>"));
 						text.setMovementMethod(LinkMovementMethod.getInstance());
 					}
 
 					Core.setTextViewLeftImage((TextView) viewEventExtended
-							.findViewById(R.id.type_text), Core
-							.getEventTypeImage(getApplicationContext(),
-									item.event_type), 16);
+						.findViewById(R.id.type_text), Core
+						.getEventTypeImage(getApplicationContext(),
+							item.event_type), 16);
 
 					text = (TextView) viewEventExtended
-							.findViewById(R.id.type_text);
+						.findViewById(R.id.type_text);
 					text.setText(eventType2Text(item.event_type));
 
 					if (item.criticity_name.length() != 0) {
 						text = (TextView) viewEventExtended
-								.findViewById(R.id.severity_text);
+							.findViewById(R.id.severity_text);
 						text.setText(item.criticity_name);
 						Core.setTextViewLeftImage((TextView) viewEventExtended
-								.findViewById(R.id.severity_text), Core
-								.getSeverityImage(getApplicationContext(),
-										item.criticity), 16);
+							.findViewById(R.id.severity_text), Core
+							.getSeverityImage(getApplicationContext(),
+									item.criticity), 16);
 					}
 
 					// Set the open and close the extended info event row
@@ -550,46 +555,48 @@ public class EventList extends ListActivity {
 						// For unknow events
 						button.setVisibility(Button.GONE);
 						text = (TextView) viewEventExtended
-								.findViewById(R.id.validate_event_label);
+							.findViewById(R.id.validate_event_label);
 						text.setText("");
 						text.setVisibility(TextView.VISIBLE);
-					} else if (item.status != 1) {
+					}
+					else if (item.status != 1) {
 						currentElement = view;
 						OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate(
-								item.id_event);
+							item.id_event);
 						button.setOnClickListener(clickListener);
 						text = (TextView) viewEventExtended
-								.findViewById(R.id.validate_event_label);
+							.findViewById(R.id.validate_event_label);
 						text.setVisibility(TextView.GONE);
 						((Button) viewEventExtended
-								.findViewById(R.id.create_incident_button))
-								.setOnClickListener(new OnClickListener() {
-
-									public void onClick(View v) {
-										Bundle b = new Bundle();
-										b.putString("group", item.group_name);
-										b.putString("title", item.event);
-										b.putString("description",
-												item.description_event);
-										showDialog(CREATE_INCIDENT_DIALOG, b);
-									}
-								});
-					} else {
+							.findViewById(R.id.create_incident_button))
+							.setOnClickListener(new OnClickListener() {
+								
+								public void onClick(View v) {
+									Bundle b = new Bundle();
+									b.putString("group", item.group_name);
+									b.putString("title", item.event);
+									b.putString("description",
+										item.description_event);
+									showDialog(CREATE_INCIDENT_DIALOG, b);
+								}
+							});
+					}
+					else {
 						button.setVisibility(Button.GONE);
 						text = (TextView) viewEventExtended
-								.findViewById(R.id.validate_event_label);
+							.findViewById(R.id.validate_event_label);
 						text.setVisibility(TextView.VISIBLE);
 					}
-
+					
 					LinearLayout itemLinearLayout = (LinearLayout) view
-							.findViewById(R.id.item_linear_layout);
+						.findViewById(R.id.item_linear_layout);
 					itemLinearLayout.addView(viewEventExtended);
 				}
 			}
-
+			
 			return view;
 		}
-
+		
 		/**
 		 * Returns the event type in the correct format (and system locale).
 		 * 
@@ -598,49 +605,61 @@ public class EventList extends ListActivity {
 		 */
 		private String eventType2Text(String type) {
 			String return_var;
-
+			
 			if (type.equals("alert_recovered")) {
 				return_var = getApplicationContext().getString(
-						R.string.alert_recovered_str);
-			} else if (type.equals("alert_manual_validation")) {
-				return_var = getApplicationContext().getString(
-						R.string.alert_manual_validation_str);
-			} else if (type.equals("going_up_warning")) {
-				return_var = getApplicationContext().getString(
-						R.string.going_up_warning_str);
-			} else if (type.equals("going_down_critical")) {
-				return_var = getApplicationContext().getString(
-						R.string.going_down_critical_str);
-			} else if (type.equals("going_up_critical")) {
-				return_var = getApplicationContext().getString(
-						R.string.going_down_critical_str);
-			} else if (type.equals("going_up_normal")) {
-				return_var = getApplicationContext().getString(
-						R.string.going_up_normal_str);
-			} else if (type.equals("going_down_normal")) {
-				return_var = getApplicationContext().getString(
-						R.string.going_up_normal_str);
-			} else if (type.equals("going_down_warning")) {
-				return_var = getApplicationContext().getString(
-						R.string.going_down_warning_str);
-			} else if (type.equals("alert_fired")) {
-				return_var = getApplicationContext().getString(
-						R.string.alert_fired_str);
-			} else if (type.equals("system")) {
-				return_var = getApplicationContext().getString(
-						R.string.system_str);
-			} else if (type.equals("recon_host_detected")) {
-				return_var = getApplicationContext().getString(
-						R.string.system_str);
-			} else if (type.equals("new_agent")) {
-				return_var = getApplicationContext().getString(
-						R.string.new_agent_str);
-			} else {
-				return_var = getApplicationContext().getString(
-						R.string.unknown_str)
-						+ " " + type;
+					R.string.alert_recovered_str);
 			}
-
+			else if (type.equals("alert_manual_validation")) {
+				return_var = getApplicationContext().getString(
+					R.string.alert_manual_validation_str);
+			}
+			else if (type.equals("going_up_warning")) {
+				return_var = getApplicationContext().getString(
+					R.string.going_up_warning_str);
+			}
+			else if (type.equals("going_down_critical")) {
+				return_var = getApplicationContext().getString(
+					R.string.going_down_critical_str);
+			}
+			else if (type.equals("going_up_critical")) {
+				return_var = getApplicationContext().getString(
+					R.string.going_down_critical_str);
+			}
+			else if (type.equals("going_up_normal")) {
+				return_var = getApplicationContext().getString(
+					R.string.going_up_normal_str);
+			}
+			else if (type.equals("going_down_normal")) {
+				return_var = getApplicationContext().getString(
+					R.string.going_up_normal_str);
+			}
+			else if (type.equals("going_down_warning")) {
+				return_var = getApplicationContext().getString(
+					R.string.going_down_warning_str);
+			}
+			else if (type.equals("alert_fired")) {
+				return_var = getApplicationContext().getString(
+					R.string.alert_fired_str);
+			}
+			else if (type.equals("system")) {
+				return_var = getApplicationContext().getString(
+					R.string.system_str);
+			}
+			else if (type.equals("recon_host_detected")) {
+				return_var = getApplicationContext().getString(
+					R.string.system_str);
+			}
+			else if (type.equals("new_agent")) {
+				return_var = getApplicationContext().getString(
+					R.string.new_agent_str);
+			}
+			else {
+				return_var = getApplicationContext().getString(
+					R.string.unknown_str)
+					+ " " + type;
+			}
+			
 			return return_var;
 		}
 
@@ -653,12 +672,12 @@ public class EventList extends ListActivity {
 		private class OnItemClickListener implements OnClickListener {
 			private int mPosition;
 			private PandroidEventviewerActivity object;
-
+			
 			OnItemClickListener(int position, PandroidEventviewerActivity object) {
 				mPosition = position;
 				this.object = object;
 			}
-
+			
 			public void onClick(View arg0) {
 				EventListItem item = this.object.eventList.get(mPosition);
 				item.opened = !item.opened;
@@ -675,14 +694,14 @@ public class EventList extends ListActivity {
 		 */
 		private class OnClickListenerButtonValidate implements OnClickListener {
 			private int idEvent;
-
+			
 			public OnClickListenerButtonValidate(int idEvent) {
 				this.idEvent = idEvent;
 			}
-
+			
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(),
-						PopupValidationEvent.class);
+					PopupValidationEvent.class);
 				i.putExtra("id_event", idEvent);
 				startActivityForResult(i, VALIDATE_EVENT_ACTIVITY);
 			}
@@ -732,22 +751,24 @@ public class EventList extends ListActivity {
 			try {
 				sendNewIncident(params[0], params[1], params[2]);
 				return true;
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				return false;
 			}
 		}
-
+		
 		@Override
 		protected void onPostExecute(Boolean result) {
 			if (result) {
 				Toast.makeText(getApplicationContext(),
-						R.string.incident_created, Toast.LENGTH_SHORT).show();
+					R.string.incident_created, Toast.LENGTH_SHORT).show();
 				creatingIncidentDialog.dismiss();
 				finish();
-			} else {
+			}
+			else {
 				Toast.makeText(getApplicationContext(),
-						R.string.create_incident_group_error,
-						Toast.LENGTH_SHORT).show();
+					R.string.create_incident_group_error,
+					Toast.LENGTH_SHORT).show();
 				creatingIncidentDialog.dismiss();
 			}
 		}

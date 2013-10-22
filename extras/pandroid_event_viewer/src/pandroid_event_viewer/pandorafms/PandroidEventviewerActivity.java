@@ -374,8 +374,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				event.group_icon = items[24];
 				event.description_event = items[25];
 				event.description_image = items[26];
-				event.criticity_name = items[27];
-				event.criticity_image = items[28];
+				event.criticity_name = items[28];
+				event.criticity_image = items[27];
 
 				event.opened = false;
 			}

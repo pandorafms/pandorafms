@@ -1,5 +1,10 @@
 2013-10-22 Hirofumi Kosaka <kosaka@rworks.jp>
 
+	* util/pandora_migrate_plugins.pl: Added optional command-line	
+	argument 'dbport' for people who use non-standard DB port.
+
+2013-10-22 Hirofumi Kosaka <kosaka@rworks.jp>
+
 	* lib/PandoraFMS/Core.pm: Fixed missing macro replacing in
 	async modules' event description.
 

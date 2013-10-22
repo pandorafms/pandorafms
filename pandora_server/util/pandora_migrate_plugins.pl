@@ -109,8 +109,7 @@ sub pandora_load_credentials ($) {
     $conf{'dbhost'} = $ARGV[1];
     $conf{'dbuser'} = $ARGV[2];
     $conf{'dbpass'} = $ARGV[3];
-    $conf{'dbport'} = 0;
-    
+    $conf{'dbport'} = ($#ARGV >= 4 ? $ARGV[4] : 0);
 }
 
 ##############################################################################
@@ -119,7 +118,7 @@ sub pandora_load_credentials ($) {
 sub help_screen{
 	print "\n[ERROR] No valid arguments\n\n";
 
-	print "Usage: \n\n$0 <dbname> <dbhost> <dbuser> <dbpass> \n\n";
+	print "Usage: \n\n$0 <dbname> <dbhost> <dbuser> <dbpass> [<dbport>]\n\n";
 		
 	exit;
 }

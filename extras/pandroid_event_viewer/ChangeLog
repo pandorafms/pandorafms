@@ -1,3 +1,19 @@
+2012-10-22  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/API.java: added more log
+	for to make more easy.
+	
+	* src/pandroid_event_viewer/pandorafms/Core.java: the constant
+	TIMEOUT now is 10 seconds instead old 5 seconds that sometimes
+	fails.
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
+	added functions "getEvents_v50" and "getEvents_old" for to get
+	events list for serveral api pandora versions.
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java:
+	fixed source code style.
+
 2012-09-13  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* res/layout/main.xml: removed the typo bug.

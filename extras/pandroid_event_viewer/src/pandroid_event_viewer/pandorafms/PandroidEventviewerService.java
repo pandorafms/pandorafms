@@ -60,7 +60,8 @@ public class PandroidEventviewerService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		try {
 			checkNewEvents(getApplicationContext());
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			Log.e(TAG, "OnHandleIntent: " + e.getMessage());
 		}
 
@@ -104,12 +105,13 @@ public class PandroidEventviewerService extends IntentService {
 				"");
 		String filterTag = preferences.getString("filterTag", "");
 		String return_api = API.getEvents(this, filterAgentName, idGroup,
-				filterSeverity, filterStatus, filterEventSearch, filterTag,
-				new_events_filterTimestamp, 20, 0, true, false);
+			filterSeverity, filterStatus, filterEventSearch, filterTag,
+			new_events_filterTimestamp, 20, 0, true, false);
 		return_api = return_api.replace("\n", "");
 		try {
 			this.count_events = Long.valueOf(return_api);
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			Log.e(TAG, e.getMessage());
 			return;
 		}
@@ -118,12 +120,13 @@ public class PandroidEventviewerService extends IntentService {
 		if (this.count_events != 0) {
 			Log.i(TAG, "There are new events");
 			return_api = API.getEvents(this, filterAgentName, idGroup,
-					filterSeverity, filterStatus, filterEventSearch, filterTag,
-					new_events_filterTimestamp, 20, 0, false, true);
+				filterSeverity, filterStatus, filterEventSearch, filterTag,
+				new_events_filterTimestamp, 20, 0, false, true);
 			return_api = return_api.replace("\n", "");
 			try {
 				this.more_criticity = Integer.valueOf(return_api).intValue();
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				Log.e(TAG, e.getMessage());
 				return;
 			}
@@ -136,7 +139,8 @@ public class PandroidEventviewerService extends IntentService {
 				editor.commit();
 			}
 
-		} else {
+		}
+		else {
 			this.more_criticity = -1;
 		}
 		Log.d(TAG, "Check finished at "

@@ -94,6 +94,7 @@ public class API {
 		parameters.add(new BasicNameValuePair("op2", "test"));
 		String return_api;
 		return_api = Core.httpGet(context, parameters);
+		
 		if (return_api.contains("OK")) {
 			String[] lines = return_api.split(",");
 			if (lines.length == 3) {
@@ -144,6 +145,7 @@ public class API {
 			String filterEventSearch, String filterTag, long filterTimestamp,
 			long itemsPerPage, long offset, boolean total,
 			boolean more_criticity) throws IOException {
+		
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("op", "get"));
 		parameters.add(new BasicNameValuePair("op2", "events"));
@@ -283,6 +285,24 @@ public class API {
 		if (more_criticity) {
 			totalStr = "more_criticity";
 		}
+		
+		Log.i(TAG + " serializeEventsParamsToAPI",
+			" separator: ;" +
+			" Criticity: " + Integer.toString(filterSeverity) +
+			" Agent: " + filterAgentName +
+			" Module: " +
+			" Alter template: " +
+			" User: " +
+			" Min interval: " + Long.toString(filterTimestamp) +
+			" Max interval: " +
+			" Status: " + String.valueOf(filterStatus) +
+			" Description: " +
+			" Pagination: " + Integer.toString(20) +
+			" Count/Show: " + totalStr +
+			" Group ID: " + Integer.toString(idGroup) +
+			" Tag: " + filterTag
+			);
+		
 		return Core.serializeParams2Api(new String[] {
 				";", // Separator for the csv
 				Integer.toString(filterSeverity), // criticity or severity

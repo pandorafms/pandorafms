@@ -259,117 +259,199 @@ public class PandroidEventviewerActivity extends TabActivity implements
 					"Configuration changes commited (timestamp)");
 		}
 	}
-
+	
 	/**
-	 * Get events from pandora console.
+	 * Get events from pandora console. For only Pandora 5.0 version
 	 * 
 	 * @throws IOException
 	 *             If there is any connection problem.
 	 * 
 	 */
-	private void getEvents() throws IOException {
-		// Get total count.
-		String return_api = API.getEvents(getApplicationContext(),
-				agentNameStr, id_group, severity, status, eventSearch,
-				eventTag, timestamp, pagination, offset, true, false);
-		return_api = return_api.replace("\n", "");
-
-		try {
-			this.count_events = Long.valueOf(return_api);
-		} catch (NumberFormatException e) {
-			Log.e(TAG, e.getMessage());
-			return;
-		}
-
-		if (this.count_events == 0) {
-			return;
-		}
-
-		// Get the list of events.
-		return_api = API.getEvents(getApplicationContext(), agentNameStr,
-				id_group, severity, status, eventSearch, eventTag, timestamp,
-				pagination, offset, false, false);
-		Log.d(TAG, "List of events: " + return_api);
-		Pattern pattern = Pattern
-				.compile("Unable to process XML data file '(.*)'");
-		Matcher matcher;
-		String filename;
-
-		boolean endReplace = false;
-		int i22 = 0;
-		while (!endReplace) {
-			Log.i(TAG + " getEvents - loop", i22 + "");
-			i22++;
-			matcher = pattern.matcher(return_api);
-
-			if (matcher.find()) {
-				filename = matcher.group(1);
-				return_api = return_api
-						.replaceFirst(
-								"Unable to process XML data file[^\n]*\n[^\n]*line 187 thread .*\n",
-								"Bad XML: " + filename);
-			} else {
-				endReplace = true;
-			}
-		}
-
-		Log.i(TAG + " getEvents - return_api", return_api);
-
-		String[] lines = return_api.split("\n");
-		newEvents = true;
-		if (return_api.length() == 0) {
-			Log.d("WORKS?", "NEWEVENTS = FALSE");
-			newEvents = false;
-			return;
-		}
-
+	private void getEvents_v50(String[] lines) {
 		for (int i = 0; i < lines.length; i++) {
 			String[] items = lines[i].split(";");
 
 			EventListItem event = new EventListItem();
 			try {
+				//Get id event
 				if (items[0].length() == 0) {
 					event.id_event = 0;
-				} else {
+				}
+				else {
+					event.id_event = Integer.parseInt(items[0]);
+				}
+				
+				//Get id agent
+				if (items[1].length() == 0) {
+					event.id_agent = 0;
+				}
+				else {
+					event.id_agent = Integer.parseInt(items[1]);
+				}
+				
+				//Get id user
+				event.id_user = items[2];
+				
+				//Get id group
+				if (items[3].length() == 0) {
+					event.id_group = 0;
+				}
+				else {
+					event.id_group = Integer.parseInt(items[3]);
+				}
+				
+				//Get status
+				if (items[4].length() == 0) {
+					event.status = 0;
+				}
+				else {
+					event.status = Integer.parseInt(items[4]);
+				}
+				
+				//Get timestamp (format Y-M-d H:m:s)
+				event.timestamp = items[5];
+				
+				//Get event as text
+				event.event = items[6];
+				
+				//Get unix timestamp
+				if (items[7].length() == 0) {
+					event.utimestamp = 0;
+				}
+				else {
+					event.utimestamp = Integer.parseInt(items[7]);
+				}
+				
+				//Get event type
+				event.event_type = items[8];
+				
+				//Get id module
+				if (items[9].length() == 0) {
+					event.id_agentmodule = 0;
+				}
+				else {
+					event.id_agentmodule = Integer.parseInt(items[9]);
+				}
+				
+				//Get id alert
+				if (items[10].length() == 0) {
+					event.id_alert_am = 0;
+				}
+				else {
+					event.id_alert_am = Integer.parseInt(items[10]);
+				}
+				
+				//Get criticity
+				if (items[11].length() == 0) {
+					event.criticity = 0;
+				}
+				else {
+					event.criticity = Integer.parseInt(items[11]);
+				}
+				
+				//Get user comment
+				event.user_comment = items[12];
+				
+				//Get tags
+				event.tags = items[13];
+				
+				/* This fields are not used in the Pandroid event
+				 
+				 event.source = item[14];
+				 event.id_extra = item[15];
+				 event.critical_instructions = item[16];
+				 event.warning_instructions = item[17];
+				 event.unknown_instructions = item[18];
+				 event.owner_user = item[19];
+				 event.ack_utimestamp = item[20];
+				 event.custom_data = item[21]
+				 
+				 */
+				
+				//Get agent name
+				event.agent_name = items[22];
+				event.group_name = items[23];
+				event.group_icon = items[24];
+				event.description_event = items[25];
+				event.description_image = items[26];
+				event.criticity_name = items[27];
+				event.criticity_image = items[28];
+
+				event.opened = false;
+			}
+			catch (NumberFormatException nfe) {
+				event.event = getApplication().getString(
+						R.string.unknown_event_str);
+				launchProblemParsingNotification();
+			}
+			this.eventList.add(event);
+		}
+	}
+	
+	/**
+	 * Get events from pandora console. For old versions of Pandora (v4 <)
+	 * 
+	 * @throws IOException
+	 *             If there is any connection problem.
+	 * 
+	 */
+	private void getEvents_old(String[] lines) {
+		for (int i = 0; i < lines.length; i++) {
+			String[] items = lines[i].split(";");
+
+			EventListItem event = new EventListItem();
+			try {
+				
+				if (items[0].length() == 0) {
+					event.id_event = 0;
+				}
+				else {
 					event.id_event = Integer.parseInt(items[0]);
 				}
 				if (items[1].length() == 0) {
 					event.id_agent = 0;
-				} else {
+				}
+				else {
 					event.id_agent = Integer.parseInt(items[1]);
 				}
 				event.id_user = items[2];
 				if (items[3].length() == 0) {
 					event.id_group = 0;
-				} else {
+				}
+				else {
 					event.id_group = Integer.parseInt(items[3]);
 				}
 				if (items[4].length() == 0) {
 					event.status = 0;
-				} else {
+				}
+				else {
 					event.status = Integer.parseInt(items[4]);
 				}
 				event.timestamp = items[5];
 				event.event = items[6];
 				if (items[7].length() == 0) {
 					event.utimestamp = 0;
-				} else {
+				}
+				else {
 					event.utimestamp = Integer.parseInt(items[7]);
 				}
 				event.event_type = items[8];
 				if (items[9].length() == 0) {
 					event.id_agentmodule = 0;
-				} else {
+				}
+				else {
 					event.id_agentmodule = Integer.parseInt(items[9]);
 				}
 				if (items[10].length() == 0) {
 					event.id_alert_am = 0;
-				} else {
+				}
+				else {
 					event.id_alert_am = Integer.parseInt(items[10]);
 				}
 				if (items[11].length() == 0) {
 					event.criticity = 0;
-				} else {
+				}
+				else {
 					event.criticity = Integer.parseInt(items[11]);
 				}
 				event.user_comment = items[12];
@@ -383,12 +465,91 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				event.criticity_image = items[20];
 
 				event.opened = false;
-			} catch (NumberFormatException nfe) {
+			}
+			catch (NumberFormatException nfe) {
 				event.event = getApplication().getString(
 						R.string.unknown_event_str);
 				launchProblemParsingNotification();
 			}
 			this.eventList.add(event);
+		}
+	}
+	
+	/**
+	 * Get events from pandora console.
+	 * 
+	 * @throws IOException
+	 *             If there is any connection problem.
+	 * 
+	 */
+	private void getEvents() throws IOException {
+		// Get total count.
+		String return_api = API.getEvents(getApplicationContext(),
+				agentNameStr, id_group, severity, status, eventSearch,
+				eventTag, timestamp, pagination, offset, true, false);
+		return_api = return_api.replace("\n", "");
+		
+		try {
+			this.count_events = Long.valueOf(return_api);
+		}
+		catch (NumberFormatException e) {
+			Log.e(TAG, e.getMessage());
+			return;
+		}
+
+		if (this.count_events == 0) {
+			return;
+		}
+
+		// Get the list of events.
+		return_api = API.getEvents(getApplicationContext(), agentNameStr,
+			id_group, severity, status, eventSearch, eventTag, timestamp,
+			pagination, offset, false, false);
+		Log.d(TAG, "List of events: " + return_api);
+		Pattern pattern = Pattern
+			.compile("Unable to process XML data file '(.*)'");
+		Matcher matcher;
+		String filename;
+
+		boolean endReplace = false;
+		int i22 = 0;
+		while (!endReplace) {
+			Log.i(TAG + " getEvents - loop", i22 + "");
+			i22++;
+			matcher = pattern.matcher(return_api);
+
+			if (matcher.find()) {
+				filename = matcher.group(1);
+				return_api = return_api
+					.replaceFirst(
+						"Unable to process XML data file[^\n]*\n[^\n]*line 187 thread .*\n",
+						"Bad XML: " + filename);
+			}
+			else {
+				endReplace = true;
+			}
+		}
+
+		Log.i(TAG + " getEvents - return_api", return_api);
+
+		String[] lines = return_api.split("\n");
+		newEvents = true;
+		if (return_api.length() == 0) {
+			Log.d("WORKS?", "NEWEVENTS = FALSE");
+			newEvents = false;
+			return;
+		}
+		
+		SharedPreferences preferences = getSharedPreferences(
+				getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		String api_version = preferences.getString("api_version", "");
+		
+		if (api_version.equals("v5.0")) {
+			this.getEvents_v50(lines);
+		}
+		else {
+			this.getEvents_old(lines);
 		}
 	}
 

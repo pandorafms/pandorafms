@@ -75,5 +75,5 @@
 	<string name="unknown_event_str">不明なイベント</string>
 	<string name="validate_event_label_str">承諾済イベント</string>
 	<string name="pandroid_event_viewer_description_str">Pandora FMS リアルタイムイベントビューワ</string>
-	<string name="empty">- Empty -</string>
+	<string name="empty">- 空 -</string>
 </resources>

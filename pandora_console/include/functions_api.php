@@ -4631,15 +4631,28 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	//to a function.
 	
 	$groups = users_get_groups ($user_in_db, "IR");
+	$id_groups_user = array();
+	if (!empty($groups))
+		$id_groups_user = array_keys ($groups);
 	$is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $user_in_db);
 	
 	$sql_post = '';
 	
-	if (!empty($groups)) {
-		$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+	if (($id_group == -1) || ($id_group == 0)) {
+		if (!empty($groups)) {
+			$sql_post = " AND id_grupo IN (".implode (",", $id_groups_user).")";
+		}
+		else if ($is_admin) {
+			$sql_post = " AND 1 = 0";
+		}
 	}
-	else if ($is_admin) {
-		$sql_post = " AND 1 = 0";
+	else {
+		if (array_search($id_group, $id_groups_user) !== false) {
+			$sql_post = " AND id_grupo = " . $id_group;
+		}
+		else {
+			$sql_post = " AND 1 = 0";
+		}
 	}
 	
 	// Skip system messages if user is not PM

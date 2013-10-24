@@ -311,8 +311,20 @@ if ($moduletype == MODULE_DATA) {
 	if (isset($id_agente)) {
 		$agent_interval = agents_get_interval ($id_agente);
 		$interval_factor = $interval / $agent_interval;
+		$table_advanced->data[2][1] = human_time_description_raw($interval) . ' (' . sprintf(__('Agent interval x %s'), $interval_factor) . ') ' . ui_print_help_icon ('module_interval_factor', true);
 	}
-	$table_advanced->data[2][1] = human_time_description_raw($interval) . ' (' . sprintf(__('Agent interval x %s'), $interval_factor) . ') ' . ui_print_help_icon ('module_interval_factor', true);
+	else {
+		$table_advanced->data[2][1] = sprintf(__('Agent interval x %s'), $interval_factor) . ui_print_help_icon ('module_interval_factor', true);
+	}
+       
+    if ($__code_from == 'policies') {
+		// If is the policy form, module_interval will store the factor (not the seconds). 
+		// So server will transform it to interval in seconds
+		$table_advanced->data[2][1] .= html_print_input_hidden('module_interval', $interval_factor, true);
+	}
+	
+	// If it is a non policy form, the module_interval will not provided and will 
+	// be taken the agent interval (this code is at configurar_agente.php)
 }
 else {
 	$table_advanced->data[2][0] = __('Interval') . ui_print_help_icon ('module_interval', true);

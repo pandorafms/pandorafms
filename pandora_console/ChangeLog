@@ -1,3 +1,9 @@
+2013-10-24  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Store the 
+	interval factor in modules edition when is policy form and other
+	improvements. Incident #303
+
 2013-10-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the get events filtered by the

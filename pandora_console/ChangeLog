@@ -1,5 +1,12 @@
 2013-10-25 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/massive/massive_delete_action_alerts.php,
+	godmode/massive/massive_add_action_alerts.php: fixed the javascript
+	to load "alert templates" select box when change quickly the agents
+	in the select box "Agents with templates".
+
+2013-10-25 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/massive/massive_copy_modules.php,
 	include/functions_modules.php: fixed the module massive copy from
 	agent with remote configuration to agent without remote

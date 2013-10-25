@@ -221,7 +221,6 @@ $(document).ready (function () {
 		$("#template_loading").show();
 		
 		var $select_template = $("#id_alert_templates").disable ();
-		$("option", $select_template).remove ();
 		
 		jQuery.post ("ajax.php",
 			{"page" : "godmode/massive/massive_delete_action_alerts",
@@ -229,6 +228,8 @@ $(document).ready (function () {
 			"id_agents[]" : idAgents
 			},
 			function (data, status) {
+				$("option", $select_template).remove ();
+				
 				options = "";
 				jQuery.each (data, function (id, value) {
 					options += "<option value=\""+id+"\">"+value+"</option>";

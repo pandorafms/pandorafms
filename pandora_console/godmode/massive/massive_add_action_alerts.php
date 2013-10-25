@@ -217,18 +217,17 @@ $(document).ready (function () {
 		$("#template_loading").show();
 		
 		var $select_template = $("#id_alert_templates").disable ();
-		$("option", $select_template).remove ();
 		
-		jQuery.post ("ajax.php",
-			{
+		jQuery.post ("ajax.php", {
 				"page" : "godmode/massive/massive_add_action_alerts",
 				"get_alerts" : 1,
 				"id_agents[]" : idAgents
 			},
 			function (data, status) {
+				$("option", $select_template).remove ();
 				options = "";
 				jQuery.each (data, function (id, value) {
-						options += "<option value=\""+id+"\">"+value+"</option>";
+					options += "<option value=\""+id+"\">"+value+"</option>";
 				});
 				
 				if (options == "") {

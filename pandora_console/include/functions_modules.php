@@ -154,7 +154,8 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		unset ($new_module['id_agente_modulo']);
 		unset ($new_module['id_agente']);
 		
-		$id_new_module = modules_create_agent_module($id_destiny_agent, $new_module['nombre'], $new_module);
+		$id_new_module = modules_create_agent_module($id_destiny_agent,
+			$new_module['nombre'], $new_module);
 		
 		if ($id_new_module === false) {
 			return false;
@@ -164,7 +165,8 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	// If the module is synthetic we duplicate the operations too
 	if ($module['id_modulo'] == 5) {
-		$synth_ops = db_get_all_rows_field_filter('tmodule_synth','id_agent_module_target',$module['id_agente_modulo']);
+		$synth_ops = db_get_all_rows_field_filter('tmodule_synth',
+			'id_agent_module_target', $module['id_agente_modulo']);
 		
 		if ($synth_ops === false) {
 			$synth_ops = array();
@@ -200,13 +202,15 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	$id_agente = modules_get_agentmodule_agent($id_agent_module);
 	
-	if (enterprise_installed()) {
-		if (config_agents_has_remote_configuration($id_agente)) {
-			$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
-				array($id_agent_module, $id_new_module));
-			
-			if ($result === false)
-				return false;
+	if ($module['id_modulo'] == MODULE_DATA) {
+		if (enterprise_installed()) {
+			if (config_agents_has_remote_configuration($id_agente)) {
+				$result = enterprise_hook(
+					'config_agents_copy_agent_module_to_agent',
+					array($id_agent_module, $id_new_module));
+				if ($result === false)
+					return false;
+			}
 		}
 	}
 	

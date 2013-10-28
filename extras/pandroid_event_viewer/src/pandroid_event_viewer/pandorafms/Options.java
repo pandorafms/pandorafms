@@ -78,13 +78,16 @@ public class Options extends Activity {
 		// Connection
 		EditText text = (EditText) findViewById(R.id.url);
 		text.setText(preferences.getString("url",
-				"http://firefly.artica.es/pandora_demo"));
+				"http://192.168.70.133/pandora_console"));
 		text = (EditText) findViewById(R.id.user);
-		text.setText(preferences.getString("user", "demo"));
+		text.setText(preferences.getString("user", "admin"));
 		text = (EditText) findViewById(R.id.password);
-		text.setText(preferences.getString("password", "demo"));
+		text.setText(preferences.getString("password", "pandora"));
 		text = (EditText) findViewById(R.id.api_password);
-		text.setText(preferences.getString("api_password", "doreik0"));
+		text.setText(preferences.getString("api_password", ""));
+		text = (EditText) findViewById(R.id.timeout_connections);
+		text.setText(Integer.toString(preferences.getInt("timeout_connections", 10)));
+		
 		
 		Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -344,14 +347,14 @@ public class Options extends Activity {
 		@Override
 		protected Boolean doInBackground(URL... arg0) {
 			url = arg0[0];
-			online = Core.isOnline(url);
+			online = Core.isOnline(context, url);
 			SharedPreferences preferences = getSharedPreferences(
 					context.getString(R.string.const_string_preferences),
 					Activity.MODE_PRIVATE);
 			SharedPreferences.Editor editorPreferences = preferences.edit();
 			editorPreferences.putBoolean("online", online);
 			editorPreferences.commit();
-			return Core.isValidCertificate(arg0[0]);
+			return Core.isValidCertificate(context, arg0[0]);
 
 		}
 

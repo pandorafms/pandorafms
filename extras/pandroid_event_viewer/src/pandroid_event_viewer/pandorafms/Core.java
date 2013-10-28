@@ -77,7 +77,6 @@ import android.widget.Toast;
  */
 public class Core {
 	private static String TAG = "Core";
-	private static int CONNECTION_TIMEOUT = 10000;
 	private static Map<String, Bitmap> imgCache = new HashMap<String, Bitmap>();
 	// Don't use this variable, just call getSocketFactory
 	private static SSLSocketFactory sslSocketFactory;
@@ -350,6 +349,7 @@ public class Core {
 		String user = preferences.getString("user", "");
 		String password = preferences.getString("password", "");
 		String apiPassword = preferences.getString("api_password", "");
+		int timeout_connections = preferences.getInt("timeout_connections", 10) * 1000;
 		if (url.length() == 0 || user.length() == 0) {
 			return "";
 		}
@@ -363,13 +363,14 @@ public class Core {
 		Log.i(TAG, "sent: " + url);
 		if (url.toLowerCase().contains("https")) {
 			// Secure connection
-			return Core.httpsGet(url, parameters);
+			return Core.httpsGet(context, url, parameters);
 		}
 		else {
 			HttpParams params = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(params,
-				CONNECTION_TIMEOUT);
-			HttpConnectionParams.setSoTimeout(params, CONNECTION_TIMEOUT);
+					timeout_connections);
+			HttpConnectionParams.setSoTimeout(params, timeout_connections);
+			
 			DefaultHttpClient httpClient = new DefaultHttpClient(params);
 			UrlEncodedFormEntity entity;
 			HttpPost httpPost;
@@ -395,13 +396,18 @@ public class Core {
 	 *            Image's url.
 	 * @return A bitmap of that image.
 	 */
-	public static Bitmap downloadImage(String fileUrl) {
+	public static Bitmap downloadImage(Context context, String fileUrl) {
 		if (imgCache.containsKey(fileUrl)) {
 			Log.i(TAG, "Fetched from cache: " + fileUrl);
 			return imgCache.get(fileUrl);
 		}
 		Log.i(TAG, "Downloading image: " + fileUrl);
 		URL myFileUrl = null;
+		
+		SharedPreferences preferences = context.getSharedPreferences(
+				context.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		int timeout_connections = preferences.getInt("timeout_connections", 10) * 1000;
 		
 		try {
 			myFileUrl = new URL(fileUrl);
@@ -422,7 +428,7 @@ public class Core {
 				HttpURLConnection conn = (HttpURLConnection) myFileUrl
 					.openConnection();
 				conn.setDoInput(true);
-				conn.setConnectTimeout(CONNECTION_TIMEOUT);
+				conn.setConnectTimeout(timeout_connections);
 				conn.connect();
 				InputStream is = conn.getInputStream();
 				Bitmap img = BitmapFactory.decodeStream(is);
@@ -457,8 +463,8 @@ public class Core {
 	 * @param url
 	 *            Image's url.
 	 */
-	public static void setTextViewLeftImage(TextView view, String url) {
-		Drawable d = new BitmapDrawable(Core.downloadImage(url));
+	public static void setTextViewLeftImage(Context context, TextView view, String url) {
+		Drawable d = new BitmapDrawable(Core.downloadImage(context, url));
 		setTextViewLeftImage(view, d, 16);
 	}
 	
@@ -489,12 +495,17 @@ public class Core {
 	 * @throws IOException
 	 *             If the given url is not accessible.
 	 */
-	public static boolean isValidCertificate(URL url) {
+	public static boolean isValidCertificate(Context context, URL url) {
 		HttpsURLConnection con;
+		
+		SharedPreferences preferences = context.getSharedPreferences(
+				context.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		int timeout_connections = preferences.getInt("timeout_connections", 10) * 1000;
 		
 		try {
 			con = (HttpsURLConnection) url.openConnection();
-			con.setConnectTimeout(CONNECTION_TIMEOUT);
+			con.setConnectTimeout(timeout_connections);
 			con.connect();
 			con.disconnect();
 			
@@ -511,7 +522,12 @@ public class Core {
 	 * @param url
 	 * @return boolean
 	 */
-	public static boolean isOnline(URL url) {
+	public static boolean isOnline(Context context, URL url) {
+		SharedPreferences preferences = context.getSharedPreferences(
+				context.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		int timeout_connections = preferences.getInt("timeout_connections", 10) * 1000;
+		
 		try {
 			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 			con.setHostnameVerifier(new HostnameVerifier() {
@@ -519,7 +535,7 @@ public class Core {
 					return true;
 				}
 			});
-			con.setConnectTimeout(CONNECTION_TIMEOUT);
+			con.setConnectTimeout(timeout_connections);
 			con.setSSLSocketFactory(getSocketFactory());
 			con.setDoOutput(true);
 			con.getInputStream();
@@ -543,8 +559,13 @@ public class Core {
 	 *             If there is any problem with connection.
 	 * 
 	 */
-	private static String httpsGet(String url, List<NameValuePair> parameters)
+	private static String httpsGet(Context context, String url, List<NameValuePair> parameters)
 		throws IOException {
+		
+		SharedPreferences preferences = context.getSharedPreferences(
+				context.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		int timeout_connections = preferences.getInt("timeout_connections", 10) * 1000;
 		
 		String result = "";
 		HttpsURLConnection con;
@@ -557,7 +578,7 @@ public class Core {
 			});
 			con.setSSLSocketFactory(getSocketFactory());
 			con.setDoOutput(true);
-			con.setConnectTimeout(CONNECTION_TIMEOUT);
+			con.setConnectTimeout(timeout_connections);
 			String postData = "";
 			boolean first = true;
 			for (NameValuePair nameValuePair : parameters) {

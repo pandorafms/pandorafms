@@ -1,3 +1,9 @@
+2013-10-28  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Tools.pm: Added exeptions in safe_input
+	and safe_output to avoid differences with the console condification
+	with single and double quotes. Incident #309
+
 2013-09-02 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* conf/pandora_server.conf.new: re-added the token "policy_manager"

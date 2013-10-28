@@ -1,5 +1,11 @@
 2013-10-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* src/pandorafms/pandorafmsandroidconsole/Options.java,
+	src/pandorafms/pandorafmsandroidconsole/PandoraWebView.java: setted
+	the default values the Pandora public demo.
+
+2013-10-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* .classpath: some changes that eclipse makes "automagicaly".
 	
 	* src/pandorafms/pandorafmsandroidconsole/PandoraWebView.java:

@@ -54,9 +54,9 @@ public class PandoraWebView extends Activity {
 			getString(R.string.const_string_preferences),
 			Activity.MODE_PRIVATE);
 		
-		String url_pandora = preferences.getString("url_pandora", "");
-		String user = preferences.getString("user", "");
-		String password = preferences.getString("password", "");
+		String url_pandora = preferences.getString("url_pandora", "http://firefly.artica.es/pandora_demo/mobile");
+		String user = preferences.getString("user", "demo");
+		String password = preferences.getString("password", "demo");
 		
 		WebView myWebView = (WebView) findViewById(R.id.webview);
 		WebSettings webSettings = myWebView.getSettings();
@@ -80,7 +80,7 @@ public class PandoraWebView extends Activity {
 		});
 		
 		//Check if not empty the data of connection
-		if (url_pandora.equals("")) {
+		if (url_pandora.equals("http://firefly.artica.es/pandora_demo/mobile")) {
 			//Show the config dialog for to set a URL (normally the first execution)
 			i = new Intent(this, Options.class);
 			startActivityForResult(i, 666);

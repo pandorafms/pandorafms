@@ -792,6 +792,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_agentstatus_ => (defined ($agent)) ? get_agent_status ($pa_config, $dbh, $agent->{'id_agente'}) : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
+				_timezone_ => strftime ("%Z", localtime()),
 				_data_ => $data,
 				_alert_name_ => $alert->{'name'},
 				_alert_description_ => $alert->{'description'},

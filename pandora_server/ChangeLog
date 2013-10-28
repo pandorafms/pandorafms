@@ -1,3 +1,10 @@
+2013-10-28  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Tools.pm: Added exeptions in safe_input
+	and safe_output to avoid differences with the console condification
+	with single and double quotes. Incident #309
+	Merged from 4.1
+
 2013-10-28 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Added _timezone_ alert macro.

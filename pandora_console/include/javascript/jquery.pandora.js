@@ -80,7 +80,7 @@ $(document).ready (function () {
 					.show ();
 			},
 			"html"
-		);	
+		);
 		return false;
 	});
 	

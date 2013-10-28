@@ -44,7 +44,6 @@ $id_element = get_parameter('id_element', null);
 $image = get_parameter('image', null);
 $background = get_parameter('background', null);
 $label = get_parameter('label', '');
-$label2 = get_parameter('label2', '');
 $left = get_parameter('left', null);
 $top = get_parameter('top', null);
 $agent = get_parameter('agent', null);
@@ -319,8 +318,7 @@ switch ($action) {
 			default:
 				if ($type == 'label') {
 					$values['type'] = LABEL;
-					$values['label'] = $label2;
-					$label = $label2;
+					$values['label'] = $label;
 				}
 				
 				if ($enable_link !== null) {
@@ -611,8 +609,7 @@ switch ($action) {
 				break;
 			case 'label':
 				$values['type'] = LABEL;
-				$values['label'] = $label2;
-				$label = $label2;
+				$values['label'] = $label;
 				break;
 			case 'icon':
 				$values['type'] = ICON;

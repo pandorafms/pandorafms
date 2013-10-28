@@ -126,7 +126,7 @@ ui_require_javascript_file ('encode_decode_base64');
 	
 	tinyMCE.init({
 		mode : "exact",
-		elements: "text-label2",
+		elements: "text-label",
 		theme : "advanced",
 		<?php
 		if ($config['style'] == 'pandora_legacy') {

@@ -75,18 +75,19 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			<?php
 			$form_items = array();
 			
+			/*
 			$form_items['label_row'] = array();
-			$form_items['label_row']['items'] = array('static_graph',
-				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'icon');
+			$form_items['label_row']['items'] = array();
 			$form_items['label_row']['html'] = '<td align="left" style="">' . __('Label') .'</td>
 				<td align="left" style="">'. html_print_input_text ('label', '', '', 20, 200, true) .'</td>';
+			*/
 			
-			
-			$form_items['label2_row'] = array();
-			$form_items['label2_row']['items'] = array('label');
-			$form_items['label2_row']['html'] = '<td align="left" valign="top" style="">' . __('Label') .'</td>
-				<td align="left" style="">'. html_print_input_text ('label2', '', '', 20, 200, true) .'</td>';
+			$form_items['label_row'] = array();
+			$form_items['label_row']['items'] = array('label', 'static_graph',
+				'percentile_bar', 'percentile_item', 'module_graph',
+				'simple_value', 'datos', 'icon');
+			$form_items['label_row']['html'] = '<td align="left" valign="top" style="">' . __('Label') .'</td>
+				<td align="left" style="">'. html_print_input_text ('label', '', '', 20, 200, true) .'</td>';
 			
 			
 			$form_items['image_row'] = array();

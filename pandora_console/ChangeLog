@@ -1,3 +1,7 @@
+2013-10-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* install.php: Added some missing ids.
+
 2013-10-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/reporting_builder.list_items.php,

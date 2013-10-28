@@ -425,7 +425,7 @@ function install_step1() {
 
 		if ($writable == 0) {
 			echo "</div>";
-			echo "<a href='install.php?step=11'><img align='right' style='margin-top: 20px;' src='images/arrow_next.png' border='0'></a>";
+			echo "<a id='step11' href='install.php?step=11'><img align='right' style='margin-top: 20px;' src='images/arrow_next.png' border='0'></a>";
 		}
 		else {
 			echo "<div class='err'><b>ERROR:</b>You need to setup permissions to be able to write in ./include directory</div>";
@@ -529,7 +529,7 @@ function install_step2() {
 			}
 			else {
 				echo "</div>";
-				echo "<a href='install.php?step=3'><br>
+				echo "<a id='step3' href='install.php?step=3'><br>
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>		<div style='clear: both;'><!-- --></div>
 ";
 				
@@ -1081,7 +1081,7 @@ function install_step4() {
 				
 			if ($everything_ok == 1) {
 				echo "</div>";
-				echo "<div style='margin-top: 20px;'><a href='install.php?step=5'>
+				echo "<div style='margin-top: 20px;'><a id='step5' href='install.php?step=5'>
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a></div>";
 			}
 			else {
@@ -1143,7 +1143,7 @@ function install_step5() {
 			please change it both as soon as possible.</p>
 			<p>Don't forget to check <a href='http://pandorafms.com'>http://pandorafms.com</a> 
 			for updates.
-			<p><br><b><a href='index.php'>Click here to access to your Pandora FMS console</a>.</b>
+			<p><br><b><a id='access_pandora' href='index.php'>Click here to access to your Pandora FMS console</a>.</b>
 			</p>
 		</div>";
 	echo "</div>

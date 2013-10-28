@@ -47,13 +47,13 @@ public class Options extends Activity {
 		EditText field;
 		
 		field = (EditText)findViewById(R.id.url_option);
-		String url_pandora = preferences.getString("url_pandora", "");
+		String url_pandora = preferences.getString("url_pandora", "http://firefly.artica.es/pandora_demo/mobile");
 		field.setText(url_pandora);
 		field = (EditText)findViewById(R.id.user_option);
-		String user = preferences.getString("user", "");
+		String user = preferences.getString("user", "demo");
 		field.setText(user);
 		field = (EditText)findViewById(R.id.password_option);
-		String password = preferences.getString("password", "");
+		String password = preferences.getString("password", "demo");
 		field.setText(password);
 		
 		//Check if not empty the data of connection

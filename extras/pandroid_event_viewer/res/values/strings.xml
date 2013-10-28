@@ -82,7 +82,7 @@
     <string name="validate_event_label_str">Event validated</string>
     <string name="pandroid_event_viewer_description_str">Realtime event viewer for Pandora FMS.</string>
     <string name="pandroid_info_txt"><b>Welcome to Pandora FMS Event viewer for Android</b></string>
-    <string name="pandroid_info_long_txt"><p>This app is used for to see confortable and standaralone the events status from the monitoring server of Pandora FMS. From this app you can see in realtime the events and validate or filter.</p><p>The configuration as default connecting with public demo of Pandora FMS in firefly.artica.es. Please change the configuration for to use your Pandora FMS server.</p></string>
+    <string name="pandroid_info_long_txt"><p>This app is used for to see comfortable and standaralone the events status from the monitoring server of Pandora FMS. From this app you can see in realtime the events and validate or filter.</p><p>The configuration as default connecting with public demo of Pandora FMS in firefly.artica.es. Please change the configuration for to use your Pandora FMS server.</p></string>
     <string name="check_connection">Connection status</string>
     <string name="connection">Connection</string>
     <string name="notification">Notification</string>
@@ -122,5 +122,6 @@
     <string name="enable_background_service">Check in background</string>
     <string name="default_profile_can_not_remove">Default profile can not be removed</string>
     <string name="connection_problems">Connection failed</string>
+    <string name="timeout_connections_label_str">Timeout connections (in seconds)</string>
 
 </resources>

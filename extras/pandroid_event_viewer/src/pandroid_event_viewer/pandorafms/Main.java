@@ -53,6 +53,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 /**
@@ -68,30 +69,34 @@ public class Main extends Activity {
 	private static String DEFAULT_PROFILE_NAME = "Default";
 	private static String DEFAULT_PROFILE = "0|3||||0|6";
 	private static String VERSION_4_0_2_LABEL = "v4.0.2";
-	private PandroidEventviewerActivity object;
-	private HashMap<Integer, String> pandoraGroups;
+	private PandroidEventviewerActivity object = null;
+	public Map<Integer, String> pandoraGroups;
+	public List<String> pandoraGroups_list;
 	private Spinner comboSeverity;
 	private List<String> profiles;
 	private Context context = this;
 	private boolean selectLastProfile = false;
 	// If this version, there will be changes
 	private boolean version402 = false;
+	
+	public int id_group = -1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		Intent i = getIntent();
 		this.object = (PandroidEventviewerActivity) i
-				.getSerializableExtra("object");
-
+			.getSerializableExtra("object");
+		
 		this.pandoraGroups = new HashMap<Integer, String>();
 		final SharedPreferences preferences = getSharedPreferences(
-				this.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
+			this.getString(R.string.const_string_preferences),
+			Activity.MODE_PRIVATE);
 
 		if (preferences.getString("api_version", "")
-				.equals(VERSION_4_0_2_LABEL)) {
+			.equals(VERSION_4_0_2_LABEL)) {
+			
 			version402 = true;
 		}
 
@@ -111,7 +116,8 @@ public class Main extends Activity {
 			buttonSetAsFilterWatcher.setEnabled(false);
 			buttonSearch.setEnabled(false);
 			buttonDeleteProfile.setEnabled(false);
-		} else if (object.user.equals("demo") || object.password.equals("demo")) {
+		}
+		else if (object.user.equals("demo") || object.password.equals("demo")) {
 			Toast toast = Toast.makeText(this.getApplicationContext(),
 					this.getString(R.string.preferences_set_demo_pandora_str),
 					Toast.LENGTH_LONG);
@@ -234,7 +240,8 @@ public class Main extends Activity {
 		// Show advanced options?
 		if (preferences.getBoolean("show_advanced", false)) {
 			advancedOptions.setVisibility(View.VISIBLE);
-		} else {
+		}
+		else {
 			advancedOptions.setVisibility(View.GONE);
 			setAdvancedOptionsDefaults();
 			clearAdvancedOptions();
@@ -250,7 +257,8 @@ public class Main extends Activity {
 				if (isChecked) {
 					advancedOptions.setVisibility(View.VISIBLE);
 					preferencesEditor.putBoolean("show_advanced", true);
-				} else {
+				}
+				else {
 					advancedOptions.setVisibility(View.GONE);
 					preferencesEditor.putBoolean("show_advanced", false);
 					setAdvancedOptionsDefaults();
@@ -269,15 +277,19 @@ public class Main extends Activity {
 
 	public void onResume() {
 		super.onResume();
+		
 		Log.i(TAG, "Getting groups and tags");
-		new GetGroupsAsyncTask().execute();
+		GetGroupsAsyncTask task_group =  new GetGroupsAsyncTask();
+		task_group.execute();
+		
 		if (version402) {
 			((EditText) findViewById(R.id.tag_text))
 					.setVisibility(View.VISIBLE);
 			((ProgressBar) findViewById(R.id.loading_tag))
 					.setVisibility(View.GONE);
 			((Spinner) findViewById(R.id.tag)).setVisibility(View.GONE);
-		} else {
+		}
+		else {
 			new GetTagsAsyncTask().execute();
 		}
 	}
@@ -289,14 +301,14 @@ public class Main extends Activity {
 	 * 
 	 */
 	private class GetGroupsAsyncTask extends AsyncTask<Void, Void, Boolean> {
-		private List<String> list;
-
+		
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			list = new ArrayList<String>();
+			pandoraGroups = new HashMap<Integer, String>();
 			try {
-				list.addAll(API.getGroups(getApplicationContext()).values());
-			} catch (IOException e) {
+				pandoraGroups = API.getGroups(getApplicationContext());
+			}
+			catch (IOException e) {
 				return false;
 			}
 			return true;
@@ -308,12 +320,18 @@ public class Main extends Activity {
 			loadingGroup.setVisibility(ProgressBar.GONE);
 			if (result) {
 				Spinner combo = (Spinner) findViewById(R.id.group_combo);
-
+				
+				pandoraGroups_list = new ArrayList<String>();
+				pandoraGroups_list.addAll(pandoraGroups.values());
+				
 				ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
 						getApplicationContext(),
-						android.R.layout.simple_spinner_item, list);
+						android.R.layout.simple_spinner_item, pandoraGroups_list);
 				combo.setAdapter(spinnerArrayAdapter);
-				combo.setSelection(0);
+				
+				int index_combo = pandoraGroups_list.indexOf(pandoraGroups.get(object.id_group));
+				
+				combo.setSelection(index_combo);
 
 				Button buttonSaveAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
 				Button buttonSearch = (Button) findViewById(R.id.button_send);
@@ -324,7 +342,8 @@ public class Main extends Activity {
 				buttonSearch.setEnabled(true);
 				buttonDeleteProfile.setEnabled(true);
 				buttonSaveProfile.setEnabled(true);
-			} else {
+			}
+			else {
 				// Only this task will show the toast in order to prevent a
 				// message repeated.
 				Core.showConnectionProblemToast(getApplicationContext(), false);
@@ -346,7 +365,8 @@ public class Main extends Activity {
 			try {
 				list = API.getTags(getApplicationContext());
 				return true;
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				return false;
 			}
 		}
@@ -360,7 +380,16 @@ public class Main extends Activity {
 						getApplicationContext(),
 						android.R.layout.simple_spinner_item, list);
 				combo.setAdapter(spinnerArrayAdapter);
+				
+				SpinnerAdapter adapter = (SpinnerAdapter)combo.getAdapter();
 				combo.setSelection(0);
+				for (int position = 0; position < adapter.getCount(); position++) {
+					String event_text = adapter.getItem(position).toString();
+					
+					if (event_text.equals(object.eventTag)) {
+						combo.setSelection(position);
+					}
+				}
 			}
 			ProgressBar loadingGroup = (ProgressBar) findViewById(R.id.loading_tag);
 			loadingGroup.setVisibility(ProgressBar.GONE);
@@ -378,13 +407,13 @@ public class Main extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent i;
 		switch (item.getItemId()) {
-		case R.id.options_button_menu_options:
-			startActivity(new Intent(this, Options.class));
-			break;
-		case R.id.about_button_menu_options:
-			i = new Intent(this, About.class);
-			startActivity(i);
-			break;
+			case R.id.options_button_menu_options:
+				startActivity(new Intent(this, Options.class));
+				break;
+			case R.id.about_button_menu_options:
+				i = new Intent(this, About.class);
+				startActivity(i);
+				break;
 		}
 		return true;
 	}
@@ -403,28 +432,31 @@ public class Main extends Activity {
 		timeKey = combo.getSelectedItemPosition();
 
 		this.object.timestamp = Core.convertMaxTimeOldEventValuesToTimestamp(0,
-				timeKey);
+			timeKey);
 
 		EditText text = (EditText) findViewById(R.id.agent_name);
 		this.object.agentNameStr = text.getText().toString();
 
 		this.object.id_group = 0;
-
+		
 		combo = (Spinner) findViewById(R.id.group_combo);
 		if (combo.getSelectedItem() != null) {
 			String selectedGroup = combo.getSelectedItem().toString();
 
 			Iterator<Entry<Integer, String>> it = pandoraGroups.entrySet()
 					.iterator();
+			
 			while (it.hasNext()) {
 				Map.Entry<Integer, String> e = (Map.Entry<Integer, String>) it
-						.next();
+					.next();
 
 				if (e.getValue().equals(selectedGroup)) {
 					this.object.id_group = e.getKey();
 				}
 			}
 		}
+		
+		this.id_group = this.object.id_group;
 
 		combo = (Spinner) findViewById(R.id.severity_combo);
 		this.object.severity = combo.getSelectedItemPosition() - 1;
@@ -437,7 +469,8 @@ public class Main extends Activity {
 		if (version402) {
 			text = (EditText) findViewById(R.id.tag_text);
 			this.object.eventTag = text.getText().toString();
-		} else {
+		}
+		else {
 			combo = (Spinner) findViewById(R.id.tag);
 			if (combo.getSelectedItem() != null) {
 				this.object.eventTag = combo.getSelectedItem().toString();
@@ -492,7 +525,8 @@ public class Main extends Activity {
 		if (version402) {
 			text = (EditText) findViewById(R.id.tag_text);
 			filterTag = text.getText().toString();
-		} else {
+		}
+		else {
 			combo = (Spinner) findViewById(R.id.tag);
 			filterTag = combo.getSelectedItem().toString();
 		}
@@ -519,7 +553,8 @@ public class Main extends Activity {
 					this.getString(R.string.filter_update_succesful_str),
 					Toast.LENGTH_SHORT);
 			toast.show();
-		} else {
+		}
+		else {
 			Toast toast = Toast.makeText(getApplicationContext(),
 					this.getString(R.string.filter_update_fail_str),
 					Toast.LENGTH_SHORT);
@@ -575,7 +610,8 @@ public class Main extends Activity {
 		String tag = "";
 		if (version402) {
 			tag = ((EditText) findViewById(R.id.tag_text)).getText().toString();
-		} else {
+		}
+		else {
 			tag = String.valueOf(((Spinner) findViewById(R.id.tag))
 					.getSelectedItemPosition());
 		}
@@ -641,7 +677,8 @@ public class Main extends Activity {
 		String profileData = "";
 		if (profileName.equals(DEFAULT_PROFILE_NAME)) {
 			profileData = DEFAULT_PROFILE;
-		} else {
+		}
+		else {
 			SharedPreferences preferences = getSharedPreferences(
 					this.getString(R.string.const_string_preferences),
 					Activity.MODE_PRIVATE);
@@ -658,11 +695,13 @@ public class Main extends Activity {
 				if (version402) {
 					((EditText) findViewById(R.id.tag_text))
 							.setText(options[2]);
-				} else {
+				}
+				else {
 					spinner = (Spinner) findViewById(R.id.tag);
 					try {
 						spinner.setSelection(Integer.valueOf(options[2]));
-					} catch (NumberFormatException nf) {
+					}
+					catch (NumberFormatException nf) {
 						spinner.setSelection(0);
 					}
 				}
@@ -674,10 +713,12 @@ public class Main extends Activity {
 				spinner.setSelection(Integer.valueOf(options[5]));
 				spinner = (Spinner) findViewById(R.id.max_time_old_event_combo);
 				spinner.setSelection(Integer.valueOf(options[6]));
-			} catch (NumberFormatException ne) {
+			}
+			catch (NumberFormatException ne) {
 				Log.e(TAG, "NumberFormatException parsing profile");
 				return;
-			} catch (IndexOutOfBoundsException ie) {
+			}
+			catch (IndexOutOfBoundsException ie) {
 				Log.e(TAG,
 						"IndexOutOfBoundsException (maybe groups or tags are not correctly loaded)");
 				return;

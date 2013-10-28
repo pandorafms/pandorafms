@@ -118,7 +118,7 @@ function visual_map_print_item($layoutData) {
 					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
 				echo '<br />';
 			}
-			echo $text;
+			echo io_safe_output($text);
 			echo "</div>";
 			break;
 		
@@ -163,7 +163,7 @@ function visual_map_print_item($layoutData) {
 				$percentile = 100;
 			
 			echo '<div id="' . $id . '" class="item percentile_item" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
-			echo $text . '<br />';
+			echo io_safe_output($text) . '<br />';
 			
 			ob_start();
 			if ($type == PERCENTILE_BUBBLE) {
@@ -201,7 +201,7 @@ function visual_map_print_item($layoutData) {
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			
 			echo '<div id="' . $id . '" class="item module_graph" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
-			echo $text . '<br />'; 
+			echo io_safe_output($text) . '<br />'; 
 			echo $img;
 			echo '</div>';
 			break;
@@ -210,7 +210,7 @@ function visual_map_print_item($layoutData) {
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
 			echo '<div id="' . $id . '" class="item simple_value" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
-			echo $text;
+			echo io_safe_output($text);
 			
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -249,7 +249,7 @@ function visual_map_print_item($layoutData) {
 			echo '<div id="' . $id . '" class="item icon" style="z-index: 1; left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				// If match with protocol://direction 
-				if (preg_match('/^(http:\/\/)((.)+)$/i', $text)){
+				if (preg_match('/^(http:\/\/)((.)+)$/i', $text)) {
 					echo '<a href="' . $label . '">' . '</a>' . '<br />';
 				}
 				
@@ -1125,7 +1125,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				}
 				
 				$img_style = array ();
-				$img_style["title"] = $layout_data["label"];
+				$img_style["title"] = strip_tags($layout_data["label"]);
 				
 				if (!empty ($layout_data["width"])) {
 					$img_style["width"] = $layout_data["width"];
@@ -1191,7 +1191,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				// Print label if valid label_color (only testing for starting with #) otherwise print nothing
 				if ($layout_data['label_color'][0] == '#') {
 					echo "<br />";
-					echo $layout_data['label'];
+					echo io_safe_output($layout_data['label']);
 				}
 				echo "</div>";
 				
@@ -1217,7 +1217,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				}
 				if ($layout_data['label_color'][0] == '#') {
 					echo "<br />";
-					echo $layout_data['label'];
+					echo io_safe_output($layout_data['label']);
 				}
 				if ($endTagA) echo "</a>";
 				echo "</div>";
@@ -1374,7 +1374,16 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 				}
 				
-				echo '<strong>' . $layout_data['label']. ' ';
+				$label_simple_value = io_safe_output($layout_data['label']);
+				if (strstr($label_simple_value, '(_VALUE_)') === false) {
+					//OLD MODE
+					$label_simple_value = '<strong>' . $label_simple_value . ' ';
+				}
+				else {
+					//NEW MODE WITH MACRO (_VALUE_)
+				}
+				
+				
 				//TODO: change interface to add a period parameter, now is set to 1 day
 				switch ($layout_data['type']) {
 					case SIMPLE_VALUE:
@@ -1402,7 +1411,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						$value = format_for_graph($value, 2);
 						if (!empty($unit_text))
 							$value .= " " . $unit_text;
-						echo $value;
 						break;
 					case SIMPLE_VALUE_MAX:
 						
@@ -1435,7 +1443,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							if (!empty($unit_text))
 								$value .= " " . $unit_text;
 						}
-						echo $value;
 						break;
 					case SIMPLE_VALUE_MIN:
 						
@@ -1468,7 +1475,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							if (!empty($unit_text))
 								$value .= " " . $unit_text;
 						}
-						echo $value;
 						break;
 					case SIMPLE_VALUE_AVG:
 						
@@ -1502,10 +1508,21 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							if (!empty($unit_text))
 								$value .= " " . $unit_text;
 						}
-						echo $value;
 						break;
 				}
-				echo '</strong>';
+				
+				if (strstr($label_simple_value, '(_VALUE_)') === false) {
+					//OLD MODE
+					$label_simple_value .= '</strong>';
+				}
+				else {
+					//NEW MODE WITH MACRO (_VALUE_)
+					
+					$label_simple_value = str_replace('(_VALUE_)',
+						$value, $label_simple_value);
+				}
+				
+				echo $label_simple_value;
 				
 				if ($endTagA) echo '</a>';
 				
@@ -1558,7 +1575,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$endTagA = false;
 				
-				echo $layout_data['label'];
+				echo io_safe_output($layout_data['label']);
 				echo "<br>";
 				
 				if ($show_links) {
@@ -1697,7 +1714,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
-				echo $layout_data['label'];
+				echo io_safe_output($layout_data['label']);
 				echo "<br>";
 				
 				$endTagA = false;

@@ -148,7 +148,8 @@ foreach ($layoutDatas as $layoutData) {
 	//Label and color label
 	if ($layoutData['type'] != ICON) {
 		$table->data[$i + 1][0] = '<span style="width: 150px; display: block;">' .
-			html_print_input_text ('label_' . $idLayoutData, $layoutData['label'], '', 10, 200, true) . 
+			html_print_input_hidden('label_' . $idLayoutData, $layoutData['label'], true) .
+			'<a href="javascript: show_dialog_label_editor(' . $idLayoutData . ');">' . __('Edit label') .'</a>' .
 			html_print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData, '', 7, 7, false, '', 'style="visibility: hidden; width: 0px;" class="label_color"', true) . 
 			'</span>';
 	}
@@ -339,7 +340,12 @@ echo '</form>';
 
 //Trick for it have a traduct text for javascript.
 echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
-
+?>
+<div id="dialog_label_editor">
+	<input id="active_id_layout_data" type="hidden" />
+	<textarea id="tinyMCE_editor" name="tinyMCE_editor"></textarea>
+</div>
+<?php
 ui_require_css_file ('color-picker');
 
 ui_require_jquery_file ('colorpicker');
@@ -348,13 +354,69 @@ ui_require_javascript_file ('wz_jsgraphics');
 ui_require_javascript_file ('pandora_visual_console');
 ui_require_jquery_file('ajaxqueue');
 ui_require_jquery_file('bgiframe');
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ?>
 
 <script type="text/javascript">
 	$(document).ready (function () {
 		$(".label_color").attachColorPicker();
 		//$(".ColorPickerDivSample").css('float', 'right');
+		
+		
+		tinymce.init({
+			selector: "#tinyMCE_editor",
+			theme : "advanced",
+			<?php
+			if ($config['style'] == 'pandora_legacy') {
+				echo 'content_css: "' . ui_get_full_url('include/styles/pandora_legacy.css', false, false, false) . '",' . "\n";
+			}
+			else {
+				echo 'content_css: "' . ui_get_full_url('include/styles/pandora.css', false, false, false) . '",' . "\n";
+			}
+			?>
+			theme_advanced_font_sizes : "8pt=.visual_font_size_8pt, 14pt=.visual_font_size_14pt, 24pt=.visual_font_size_24pt, 36pt=.visual_font_size_36pt, 72pt=.visual_font_size_72pt",
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left",
+			theme_advanced_buttons1 : "bold,italic, |, image, link, |, forecolor, fontsizeselect",
+			theme_advanced_buttons2 : "",
+			theme_advanced_buttons3 : "",
+			theme_advanced_statusbar_location : "none",
+			width: "400",
+			height: "200",
+			nowrap: true
+		});
+		
+		$("#dialog_label_editor").hide ()
+			.dialog ({
+				title: "<?php echo __("Edit label");?>",
+				resizable: false,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				width: 450,
+				height: 300,
+				autoOpen: false,
+				beforeClose: function() {
+					var id_layout_data = $("#active_id_layout_data").val();
+					var label = tinyMCE.activeEditor.getContent();
+					
+					$("#hidden-label_" + id_layout_data).val(label);
+				}
+		});
 	});
 	
 	var idText = $("#ip_text").html();
+	
+	function show_dialog_label_editor(id_layout_data) {
+		var label = $("#hidden-label_" + id_layout_data).val();
+		
+		$("#active_id_layout_data").val(id_layout_data);
+		
+		$("#tinyMCE_editor").val(label);
+		tinyMCE.activeEditor.setContent(label);
+		$("#dialog_label_editor").dialog("open");
+	}
 </script>

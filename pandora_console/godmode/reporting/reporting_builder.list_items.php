@@ -322,19 +322,19 @@ foreach ($items as $item) {
 		}
 		else {
 			// The inventory items have the agents and modules in json format in the field external_source
-			if($is_inventory_item) {
+			if ($is_inventory_item) {
 				$external_source = json_decode($item['external_source'], true);
 				$agents = $external_source['id_agents'];
 				$modules = $external_source['id_agents'];
 				
 				$agent_name_db = array();
-				foreach($agents as $a) {
+				foreach ($agents as $a) {
 					$agent_name_db[] = agents_get_name($a);
 				}
 				$agent_name_db = implode('<br>',$agent_name_db);
 				
 				$module_name_db = array();
-				foreach($modules as $m) {
+				foreach ($modules as $m) {
 					$module_name_raw = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $m));
 					$module_name_db[] = ui_print_truncate_text(io_safe_output($module_name_raw), 'module_small');
 				}
@@ -365,7 +365,7 @@ foreach ($items as $item) {
 		}
 	}
 	
-	if($item['period'] > 0) {
+	if ($item['period'] > 0) {
 		$row[4] = human_time_description_raw($item['period']);
 	}
 	else {

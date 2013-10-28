@@ -1,3 +1,16 @@
+2013-10-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* .classpath: some changes that eclipse makes "automagicaly".
+	
+	* src/pandorafms/pandorafmsandroidconsole/PandoraWebView.java:
+	fixed java-android warnings.
+	
+	* res/layout/activity_web_view.xml: improved the source code style.
+	
+	* AndroidManifest.xml: fixed with ugly fix the lost "option button"
+	in the phones/tables with android version over that honeycomb and
+	have not a fisical option menu. Fixes the warnings of android.
+
 2013-05-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* AndroidManifest.xml: added icon for application.

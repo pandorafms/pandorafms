@@ -74,9 +74,8 @@ public class PandoraWebView extends Activity {
 				//connection message
 				
 				//Close the CustomToast (I love this hack, fuck javalovers and yours patterns.).
-				ConnectionCustomToast connectionCustomToast = new ConnectionCustomToast();
-				if (connectionCustomToast.activity != null)
-					connectionCustomToast.activity.finish();
+				if (ConnectionCustomToast.activity != null)
+					ConnectionCustomToast.activity.finish();
 			}
 		});
 		

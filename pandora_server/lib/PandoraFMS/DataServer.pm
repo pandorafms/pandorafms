@@ -632,9 +632,17 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'extended_info'} = $module->{'extended_info'} unless defined ($module_conf->{'extended_info'});
 		$module_conf->{'module_interval'} = $module->{'module_interval'} unless defined ($module_conf->{'module_interval'});
 	}
-
+	
+	# Check if the module is policy linked to update it or not
+	my $policy_linked = 0;
+	if ($module->{'id_policy_module'} != 0) {
+		if ($module->{'policy_adopted'} == 0 || ($module->{'policy_adopted'} == 1 && $module->{'policy_linked'} == 1)) {
+			$policy_linked = 1;
+		}
+	}
+	
 	# Update module configuration if in learning mode and not a policy module
-	if ($agent->{'modo'} eq '1' && $module->{'id_policy_module'} == 0) {
+	if ($agent->{'modo'} eq '1' && $policy_linked == 0) {
 		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
 	}
 

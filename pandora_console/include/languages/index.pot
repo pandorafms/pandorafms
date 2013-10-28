@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-30 13:06+0200\n"
+"POT-Creation-Date: 2013-10-28 09:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -303,7 +303,7 @@ msgstr ""
 #: ../../godmode/servers/plugin.php:211
 #: ../../godmode/servers/modificar_server.php:46
 #: ../../godmode/agentes/modificar_agente.php:393
-#: ../../godmode/agentes/agent_manager.php:225
+#: ../../godmode/agentes/agent_manager.php:227
 #: ../../godmode/agentes/planned_downtime.php:237
 #: ../../godmode/agentes/planned_downtime.php:382
 #: ../../godmode/agentes/module_manager.php:436
@@ -365,7 +365,7 @@ msgstr ""
 #: ../../godmode/servers/plugin.php:222
 #: ../../godmode/servers/manage_recontask.php:309
 #: ../../godmode/agentes/configure_field.php:59
-#: ../../godmode/agentes/agent_manager.php:364
+#: ../../godmode/agentes/agent_manager.php:366
 #: ../../godmode/agentes/planned_downtime.php:455
 #: ../../godmode/agentes/module_manager.php:82
 #: ../../godmode/agentes/module_manager_editor.php:385
@@ -379,7 +379,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:341
 #: ../../godmode/alerts/alert_templates.php:308
 #: ../../godmode/alerts/alert_commands.php:191
-#: ../../godmode/alerts/configure_alert_action.php:131
+#: ../../godmode/alerts/configure_alert_action.php:136
 #: ../../godmode/alerts/configure_alert_command.php:72
 #: ../../godmode/alerts/alert_list.list.php:574
 #: ../../godmode/alerts/alert_list.php:270
@@ -415,7 +415,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:268
 #: ../../godmode/servers/modificar_server.php:51
 #: ../../godmode/agentes/configure_field.php:56
-#: ../../godmode/agentes/agent_manager.php:359
+#: ../../godmode/agentes/agent_manager.php:361
 #: ../../godmode/agentes/planned_downtime.php:266
 #: ../../godmode/agentes/planned_downtime.php:388
 #: ../../godmode/agentes/planned_downtime.php:430
@@ -432,6 +432,7 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.elements.php:240
 #: ../../godmode/tag/edit_tag.php:154
 #: ../../godmode/alerts/configure_alert_action.php:125
+#: ../../godmode/alerts/configure_alert_action.php:131
 #: ../../godmode/alerts/configure_alert_command.php:68
 #: ../../godmode/alerts/alert_list.list.php:123
 #: ../../godmode/users/configure_profile.php:149
@@ -798,7 +799,7 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:283
 #: ../../godmode/agentes/modificar_agente.php:119
 #: ../../godmode/agentes/modificar_agente.php:389
-#: ../../godmode/agentes/agent_manager.php:205
+#: ../../godmode/agentes/agent_manager.php:207
 #: ../../godmode/agentes/planned_downtime.php:247
 #: ../../godmode/agentes/planned_downtime.php:346
 #: ../../godmode/agentes/planned_downtime.php:383
@@ -897,7 +898,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask.php:225
 #: ../../godmode/servers/manage_recontask_form.php:192
 #: ../../godmode/agentes/modificar_agente.php:385
-#: ../../godmode/agentes/agent_manager.php:212
+#: ../../godmode/agentes/agent_manager.php:214
 #: ../../godmode/agentes/planned_downtime.php:347
 #: ../../godmode/massive/massive_edit_agents.php:251
 #: ../../mobile/operation/agents.php:74 ../../mobile/operation/agents.php:273
@@ -910,7 +911,7 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:225
 #: ../../godmode/servers/manage_recontask_form.php:175
-#: ../../godmode/agentes/agent_manager.php:208
+#: ../../godmode/agentes/agent_manager.php:210
 #: ../../godmode/agentes/module_manager.php:433
 #: ../../godmode/agentes/module_manager_editor_common.php:244
 #: ../../godmode/agentes/module_manager_editor_common.php:249
@@ -1092,8 +1093,8 @@ msgid "Module template"
 msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:183
-#: ../../godmode/agentes/agent_manager.php:222
-#: ../../godmode/agentes/agent_manager.php:303
+#: ../../godmode/agentes/agent_manager.php:224
+#: ../../godmode/agentes/agent_manager.php:305
 #: ../../godmode/agentes/module_manager_editor_plugin.php:48
 #: ../../godmode/agentes/module_manager_editor_common.php:267
 #: ../../godmode/agentes/module_manager_editor_common.php:325
@@ -1239,7 +1240,7 @@ msgid "Update Server"
 msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:45
-#: ../../godmode/agentes/agent_manager.php:181
+#: ../../godmode/agentes/agent_manager.php:183
 #: ../../operation/agentes/estado_generalagente.php:94
 #: ../../operation/gis_maps/ajax.php:178 ../../operation/tree.php:70
 msgid "IP Address"
@@ -1270,7 +1271,7 @@ msgid "There are no servers configured into the database"
 msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:106
-#: ../../godmode/agentes/agent_manager.php:252
+#: ../../godmode/agentes/agent_manager.php:254
 #: ../../godmode/agentes/module_manager.php:437
 #: ../../godmode/alerts/alert_list.list.php:356
 #: ../../godmode/massive/massive_edit_agents.php:300
@@ -1582,7 +1583,7 @@ msgstr ""
 
 #: ../../godmode/admin_access_logs.php:69
 #: ../../godmode/admin_access_logs.php:70
-#: ../../godmode/agentes/agent_manager.php:429
+#: ../../godmode/agentes/agent_manager.php:431
 #: ../../godmode/reporting/visual_console_builder.editor.php:91
 #: ../../godmode/reporting/visual_console_builder.elements.php:245
 #: ../../godmode/gis_maps/configure_gis_map.php:586
@@ -1946,14 +1947,14 @@ msgid "Search"
 msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:152
-#: ../../godmode/agentes/modificar_agente.php:510
+#: ../../godmode/agentes/modificar_agente.php:513
 #: ../../operation/agentes/estado_agente.php:228
 #: ../../operation/snmpconsole/snmp_view.php:480
 msgid "Create agent"
 msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:380
-#: ../../godmode/agentes/agent_manager.php:151 ../../godmode/db/db_info.php:69
+#: ../../godmode/agentes/agent_manager.php:153 ../../godmode/db/db_info.php:69
 #: ../../mobile/operation/modules.php:370
 #: ../../mobile/operation/modules.php:587
 #: ../../operation/agentes/estado_generalagente.php:82
@@ -1973,8 +1974,8 @@ msgid "R"
 msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:440
-#: ../../godmode/agentes/agent_manager.php:253
-#: ../../godmode/agentes/agent_manager.php:313
+#: ../../godmode/agentes/agent_manager.php:255
+#: ../../godmode/agentes/agent_manager.php:315
 #: ../../godmode/agentes/agent_conf_gis.php:67
 #: ../../godmode/agentes/module_manager_editor_common.php:141
 #: ../../godmode/groups/group_list.php:320
@@ -1991,14 +1992,14 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: ../../godmode/agentes/modificar_agente.php:468
+#: ../../godmode/agentes/modificar_agente.php:470
 #: ../../operation/agentes/estado_agente.php:539
 msgid "Edit remote config"
 msgstr ""
 
-#: ../../godmode/agentes/modificar_agente.php:494
+#: ../../godmode/agentes/modificar_agente.php:497
 #: ../../godmode/agentes/fields_manager.php:114
-#: ../../godmode/agentes/agent_manager.php:178
+#: ../../godmode/agentes/agent_manager.php:180
 #: ../../godmode/agentes/module_manager.php:592
 #: ../../godmode/agentes/module_manager.php:597
 #: ../../godmode/agentes/module_manager.php:605
@@ -2056,7 +2057,7 @@ msgstr ""
 msgid "Are you sure?"
 msgstr ""
 
-#: ../../godmode/agentes/modificar_agente.php:502
+#: ../../godmode/agentes/modificar_agente.php:505
 #: ../../operation/agentes/estado_agente.php:557
 #: ../../operation/agentes/group_view.php:107
 msgid "There are no defined agents"
@@ -2197,7 +2198,7 @@ msgid "Agent"
 msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:131
-#: ../../godmode/agentes/agent_manager.php:201
+#: ../../godmode/agentes/agent_manager.php:203
 #: ../../godmode/reporting/reporting_builder.item_editor.php:548
 #: ../../godmode/gis_maps/configure_gis_map.php:430
 #: ../../godmode/alerts/alert_list.builder.php:58
@@ -2427,11 +2428,11 @@ msgstr ""
 msgid "Auth and privacy method"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:152
+#: ../../godmode/agentes/agent_manager.php:154
 msgid "The agent's name must be the same as the one defined at the console"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:157
+#: ../../godmode/agentes/agent_manager.php:159
 #: ../../godmode/groups/modu_group_list.php:180
 #: ../../godmode/groups/group_list.php:231
 #: ../../godmode/alerts/alert_commands.php:147
@@ -2441,28 +2442,28 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:159 ../../operation/menu.php:50
+#: ../../godmode/agentes/agent_manager.php:161 ../../operation/menu.php:50
 #: ../../operation/agentes/estado_agente.php:171
 msgid "Agent detail"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:171
+#: ../../godmode/agentes/agent_manager.php:173
 msgid "This agent can be remotely configured"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:172
+#: ../../godmode/agentes/agent_manager.php:174
 msgid "You can remotely edit this agent configuration"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:178
+#: ../../godmode/agentes/agent_manager.php:180
 msgid "Delete agent"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:190
+#: ../../godmode/agentes/agent_manager.php:192
 msgid "Delete selected"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:196
+#: ../../godmode/agentes/agent_manager.php:198
 #: ../../godmode/groups/configure_group.php:95
 #: ../../godmode/reporting/visual_console_builder.editor.php:258
 #: ../../godmode/reporting/visual_console_builder.elements.php:58
@@ -2473,12 +2474,12 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:203
+#: ../../godmode/agentes/agent_manager.php:205
 #: ../../godmode/massive/massive_edit_agents.php:242
 msgid "Cascade protection"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:220
+#: ../../godmode/agentes/agent_manager.php:222
 #: ../../godmode/agentes/module_manager.php:427
 #: ../../godmode/reporting/reporting_builder.item_editor.php:709
 #: ../../godmode/massive/massive_edit_agents.php:262
@@ -2487,71 +2488,71 @@ msgstr ""
 msgid "Server"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:240
+#: ../../godmode/agentes/agent_manager.php:242
 #: ../../godmode/agentes/module_manager_editor_common.php:236
 #: ../../godmode/groups/configure_group.php:117
 #: ../../godmode/massive/massive_edit_agents.php:290
 msgid "Custom ID"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:244
+#: ../../godmode/agentes/agent_manager.php:246
 #: ../../godmode/massive/massive_edit_agents.php:294
 msgid "Module definition"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:246
+#: ../../godmode/agentes/agent_manager.php:248
 #: ../../godmode/massive/massive_edit_agents.php:296
 msgid "Learning mode"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:248
+#: ../../godmode/agentes/agent_manager.php:250
 #: ../../godmode/massive/massive_edit_agents.php:297
 msgid "Normal mode"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:255
+#: ../../godmode/agentes/agent_manager.php:257
 #: ../../godmode/massive/massive_edit_agents.php:303
 #: ../../godmode/massive/massive_edit_agents.php:351
 msgid "Active"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:259
+#: ../../godmode/agentes/agent_manager.php:261
 #: ../../godmode/massive/massive_edit_agents.php:306
 msgid "Remote configuration"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:266
+#: ../../godmode/agentes/agent_manager.php:268
 msgid "Delete remote configuration file"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:268
+#: ../../godmode/agentes/agent_manager.php:270
 msgid ""
 "Delete this conf file implies that for restore you must reactive remote "
 "config in the local agent."
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:271
-#: ../../godmode/agentes/agent_manager.php:274
+#: ../../godmode/agentes/agent_manager.php:273
+#: ../../godmode/agentes/agent_manager.php:276
 #: ../../godmode/massive/massive_edit_agents.php:313
 msgid "Not available"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:283
+#: ../../godmode/agentes/agent_manager.php:285
 #: ../../godmode/massive/massive_edit_agents.php:339
 msgid "Agent icon"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:283
+#: ../../godmode/agentes/agent_manager.php:285
 msgid "Agent icon for GIS Maps."
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:312
+#: ../../godmode/agentes/agent_manager.php:314
 #: ../../godmode/agentes/agent_conf_gis.php:66
 #: ../../godmode/massive/massive_edit_agents.php:348
 msgid "Ignore new GIS data:"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:316
+#: ../../godmode/agentes/agent_manager.php:318
 #: ../../godmode/agentes/agent_conf_gis.php:68
 #: ../../godmode/groups/group_list.php:320
 #: ../../godmode/alerts/configure_alert_template.php:522
@@ -2559,7 +2560,7 @@ msgstr ""
 msgid "Enabled"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:323
+#: ../../godmode/agentes/agent_manager.php:325
 #: ../../godmode/agentes/module_manager_editor.php:361
 #: ../../godmode/reporting/visual_console_builder.editor.php:230
 #: ../../godmode/alerts/alert_list.list.php:479
@@ -2568,7 +2569,7 @@ msgstr ""
 msgid "Advanced options"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:354
+#: ../../godmode/agentes/agent_manager.php:356
 #: ../../godmode/massive/massive_edit_agents.php:385
 #: ../../operation/agentes/ver_agente.php:638
 #: ../../operation/agentes/ver_agente.php:742
@@ -5304,7 +5305,7 @@ msgstr ""
 #: ../../include/functions_visual_map.php:1270
 #: ../../include/functions_visual_map.php:1290
 #: ../../include/functions_visual_map.php:1311
-#: ../../include/functions_modules.php:1026 ../../include/functions_ui.php:414
+#: ../../include/functions_modules.php:1034 ../../include/functions_ui.php:414
 #: ../../include/functions_ui.php:415 ../../include/functions_groups.php:1398
 #: ../../include/functions_groups.php:1399
 #: ../../include/functions_groups.php:1400
@@ -8283,7 +8284,7 @@ msgstr ""
 #: ../../mobile/operation/modules.php:382
 #: ../../operation/agentes/status_monitor.php:690
 #: ../../operation/search_modules.php:206
-#: ../../include/functions_modules.php:1263
+#: ../../include/functions_modules.php:1271
 msgid "NOT INIT"
 msgstr ""
 
@@ -8294,8 +8295,8 @@ msgstr ""
 #: ../../operation/search_modules.php:209
 #: ../../operation/search_modules.php:221 ../../operation/tree.php:759
 #: ../../include/functions_reporting.php:5050
-#: ../../include/functions_modules.php:1275
-#: ../../include/functions_modules.php:1282
+#: ../../include/functions_modules.php:1283
+#: ../../include/functions_modules.php:1291
 msgid "NORMAL"
 msgstr ""
 
@@ -8306,8 +8307,8 @@ msgstr ""
 #: ../../operation/search_modules.php:212
 #: ../../operation/search_modules.php:224 ../../operation/tree.php:747
 #: ../../include/functions_reporting.php:5053
-#: ../../include/functions_modules.php:1267
-#: ../../include/functions_modules.php:1286
+#: ../../include/functions_modules.php:1275
+#: ../../include/functions_modules.php:1296
 msgid "CRITICAL"
 msgstr ""
 
@@ -8318,8 +8319,8 @@ msgstr ""
 #: ../../operation/search_modules.php:215
 #: ../../operation/search_modules.php:227 ../../operation/tree.php:751
 #: ../../include/functions_reporting.php:5056
-#: ../../include/functions_modules.php:1271
-#: ../../include/functions_modules.php:1290
+#: ../../include/functions_modules.php:1279
+#: ../../include/functions_modules.php:1301
 msgid "WARNING"
 msgstr ""
 
@@ -8333,9 +8334,9 @@ msgstr ""
 #: ../../operation/search_modules.php:224
 #: ../../operation/search_modules.php:227 ../../operation/tree.php:743
 #: ../../operation/tree.php:755 ../../include/functions_reporting.php:5059
-#: ../../include/functions_modules.php:1282
-#: ../../include/functions_modules.php:1286
 #: ../../include/functions_modules.php:1290
+#: ../../include/functions_modules.php:1295
+#: ../../include/functions_modules.php:1300
 msgid "UNKNOWN"
 msgstr ""
 
@@ -8348,9 +8349,9 @@ msgstr ""
 #: ../../operation/search_modules.php:221
 #: ../../operation/search_modules.php:224
 #: ../../operation/search_modules.php:227
-#: ../../include/functions_modules.php:1282
-#: ../../include/functions_modules.php:1286
 #: ../../include/functions_modules.php:1290
+#: ../../include/functions_modules.php:1295
+#: ../../include/functions_modules.php:1300
 msgid "Last status"
 msgstr ""
 
@@ -11650,7 +11651,14 @@ msgstr ""
 msgid "Cannot be upgraded"
 msgstr ""
 
-#: ../../extensions/update_manager/lib/functions.php:577
+#: ../../extensions/update_manager/lib/functions.php:583
+#, php-format
+msgid ""
+"File is more biggest than the PHP limit (%s). Please change it in PHP "
+"configuration."
+msgstr ""
+
+#: ../../extensions/update_manager/lib/functions.php:587
 msgid "File cannot be uploaded"
 msgstr ""
 
@@ -12896,35 +12904,35 @@ msgstr ""
 msgid "Disabled user."
 msgstr ""
 
-#: ../../include/functions_api.php:4931
+#: ../../include/functions_api.php:4945
 msgid "Delete user."
 msgstr ""
 
-#: ../../include/functions_api.php:4956
+#: ../../include/functions_api.php:4970
 msgid "Add user profile."
 msgstr ""
 
-#: ../../include/functions_api.php:4985
+#: ../../include/functions_api.php:4999
 msgid "Delete user profile."
 msgstr ""
 
-#: ../../include/functions_api.php:5068
+#: ../../include/functions_api.php:5082
 msgid "Correct module disable"
 msgstr ""
 
-#: ../../include/functions_api.php:5085
+#: ../../include/functions_api.php:5099
 msgid "Correct module enable"
 msgstr ""
 
-#: ../../include/functions_api.php:5278
+#: ../../include/functions_api.php:5292
 msgid "Error in agent enabling/disabling."
 msgstr ""
 
-#: ../../include/functions_api.php:5282
+#: ../../include/functions_api.php:5296
 msgid "Enabled agent."
 msgstr ""
 
-#: ../../include/functions_api.php:5285
+#: ../../include/functions_api.php:5299
 msgid "Disabled agent."
 msgstr ""
 
@@ -12966,19 +12974,19 @@ msgstr ""
 msgid "Topology"
 msgstr ""
 
-#: ../../include/functions_modules.php:1013
+#: ../../include/functions_modules.php:1021
 msgid "Software agent data"
 msgstr ""
 
-#: ../../include/functions_modules.php:1016
+#: ../../include/functions_modules.php:1024
 msgid "Software agent monitor"
 msgstr ""
 
-#: ../../include/functions_modules.php:1019
+#: ../../include/functions_modules.php:1027
 msgid "Network agent data"
 msgstr ""
 
-#: ../../include/functions_modules.php:1022
+#: ../../include/functions_modules.php:1030
 msgid "Network agent monitor"
 msgstr ""
 

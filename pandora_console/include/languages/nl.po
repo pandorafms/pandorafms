@@ -9,15 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-16 17:30+0200\n"
-"PO-Revision-Date: 2013-08-30 07:52+0000\n"
-"Last-Translator: Guido Leenders <guido.leenders@invantive.com>\n"
+"POT-Creation-Date: 2013-09-30 13:06+0200\n"
+"PO-Revision-Date: 2013-10-14 13:28+0000\n"
+"Last-Translator: Balaam's Miracle <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-09-30 10:26+0000\n"
-"X-Generator: Launchpad (build 16774)\n"
+"X-Launchpad-Export-Date: 2013-10-28 07:53+0000\n"
+"X-Generator: Launchpad (build 16818)\n"
 "Language: nl\n"
 
 #: ../../godmode/menu.php:28
@@ -8557,7 +8557,7 @@ msgstr ""
 
 #: ../../mobile/include/user.class.php:138
 msgid "Login Failed"
-msgstr "Login Mislukt"
+msgstr "Login mislukt"
 
 #: ../../mobile/include/user.class.php:139
 msgid "User not found in database or incorrect password."

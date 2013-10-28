@@ -1,3 +1,42 @@
+2013-10-28  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/languages/ar.mo
+	  include/languages/ar.po
+ 	  include/languages/cs.mo
+	  include/languages/cs.po
+	  include/languages/de.mo
+	  include/languages/de.po
+	  include/languages/el.mo
+	  include/languages/el.po
+	  include/languages/en_GB.mo
+	  include/languages/en_GB.po
+	  include/languages/es.mo
+	  include/languages/es.po
+	  include/languages/fr.po
+	  include/languages/fr.mo
+	  include/languages/it.po
+	  include/languages/it.mo
+	  include/languages/ja.po
+	  include/languages/ja.mo
+	  include/languages/nl.po
+	  include/languages/nl.mo
+	  include/languages/pl.po
+	  include/languages/pl.mo
+	  include/languages/pt.po
+	  include/languages/pt.mo
+	  include/languages/pt_BR.po
+	  include/languages/pt_BR.mo
+	  include/languages/ru.po
+	  include/languages/ru.mo
+	  include/languages/sk.po
+	  include/languages/sk.mo
+	  include/languages/tr.po
+	  include/languages/tr.mo
+	  include/languages/zh_CN.po
+	  include/languages/zh_CN.mo
+	  include/languages/zh_TW.po
+	  include/languages/zh_TW.mo: Updated translations.
+
 2013-10-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the get events filtered by the

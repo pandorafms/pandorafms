@@ -1,3 +1,9 @@
+2013-10-29  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php: Merge the logic from the 
+	pdf reports to have the same results in both sides for 
+	incident #314
+
 2013-10-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* install.php: Added some missing ids.

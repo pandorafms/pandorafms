@@ -1117,29 +1117,34 @@ function config_check () {
 	}
 	
 	// Get remote file dir.
-	$remote_config = db_get_value_filter('value', 'tconfig', array('token' => 'remote_config'));
+	$remote_config = db_get_value_filter('value',
+		'tconfig', array('token' => 'remote_config'));
+	
 	
 	if (enterprise_installed()) {
-		if (!is_writable ($remote_config)){
+		if (!is_readable ($remote_config)) {
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_error_message(
-				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
+				array('message' => __('Remote configuration directory is not readble for the console') .
+					' -' . $remote_config,
 				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
 		
 		$remote_config_conf = $remote_config . "/conf";
-		if (!is_writable ($remote_config_conf)){
+		if (!is_writable ($remote_config_conf)) {
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_error_message(
-				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
+				array('message' => __('Remote configuration directory is not writtable for the console') .
+					' - ' . $remote_config . '/conf',
 				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
 		
 		$remote_config_col = $remote_config . "/collections";
-		if (!is_writable ($remote_config_col)){
+		if (!is_writable ($remote_config_col)) {
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_error_message(
-				array('message' => __('Remote configuration directory is not writtable for the console').' - $remote_config',
+				array('message' => __('Remote configuration directory is not writtable for the console') .
+					' - ' . $remote_config . '/collections',
 				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
 	}

@@ -1,5 +1,12 @@
 2013-10-29 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_config.php: fixed the message to show the
+	user, and fixed the checks.
+	
+	INCIDENT: #320
+
+2013-10-29 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_agents.php: fixed the delete the nodes in the
 	networkmap enterprise.
 	

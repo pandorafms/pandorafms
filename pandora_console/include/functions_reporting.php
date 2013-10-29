@@ -3269,7 +3269,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data_graph[__('Unknown')] = 0;
 			
 			$data_graph[__('Plannified downtime')] = 0;
-			
+					
+			$urlImage = ui_get_full_url(false, true, false, false);
+
 			$sla_failed = false;
 			$total_SLA = 0;
 			$total_result_SLA = 'ok';
@@ -3287,84 +3289,22 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 				
-				//Get the array of the sla values
-				$data_sla = reporting_get_agentmodule_sla_array (
-					$sla['id_agent_module'],
-					$content['period'],
-					$sla['sla_min'],
-					$sla['sla_max'],
-					$report['datetime'],
-					$content,
-					$content['time_from'],
-					$content['time_to']);
-				
-				
-				if ($data_sla == false) {
-					$data_sla = array();
-				}
-				
 				//Get the sla_value in % and store it on $sla_value
-				$data_total = 0;
-				$data_pass = 0;
-				foreach ($data_sla as $d) {
-					switch ($d['data']) {
-						case 1:
-							$data_pass += $d['utimestamp'];
-							$data_total += $d['utimestamp'];
-							break;
-						case 2:
-							$data_pass += $d['utimestamp'];
-							$data_total += $d['utimestamp'];
-							break;
-						case 3:
-							$data_total += $d['utimestamp'];
-							break;
-						case 4:
-						case 5:
-							break;
-					}
-				}
-				
-				if ($data_total == 0) {
-					$sla_value = 0;
-				}
-				else {
-					$sla_value = ($data_pass / $data_total) * 100;
-				}
-				
-				//Do not show right modules if 'only_display_wrong' is active
-				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit'])
-					continue;
-				
-				// Calculate general pie graph data
-				foreach ($data_sla as $d) {
-					switch ($d['data']) {
-						case 1:
-							$data_graph[__('Inside limits')] += $d['utimestamp'];
-							break;
-						case 2:
-							$data_graph[__('On the edge')] += $d['utimestamp'];
-							break;
-						case 3:
-							$data_graph[__('Out of limits')] += $d['utimestamp'];
-							break;
-						case 4:
-							$data_graph[__('Unknown')] += $d['utimestamp'];
-							break;
-						case 5:
-							$data_graph[__('Plannified downtime')] += $d['utimestamp'];
-							break;
-					}
-				}
-			
-				$sla_showed[] = $sla;
-				$sla_showed_values[] = $sla_value;
-				$sla_data_arrays[] = $data_sla;
+				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
+				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
+				$content['time_to']);
 				
 				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
 					//Restore db connection
 					metaconsole_restore_db();
 				}
+				
+				//Do not show right modules if 'only_display_wrong' is active
+				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
+				
+				$sla_showed[] = $sla;
+				$sla_showed_values[] = $sla_value;
+				
 			}
 			
 			// SLA items sorted descending ()
@@ -3388,12 +3328,30 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$server_name = $sla ['server_name'];
 				//Metaconsole connection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
 					$connection = metaconsole_get_connection($server_name);
-					if (!metaconsole_load_external_db($connection)) {
+					if (metaconsole_connect($connection) != NOERR) {
 						//ui_print_error_message ("Error connecting to ".$server_name);
 						continue;
 					}
+				}
+				
+				//Fill the array data_graph for the pie graph
+				if ($sla_value === false) {
+					$data_graph[__('Unknown')]++;
+					$data_horin_graph[__('Unknown')]['g']++;
+				}
+				else if ($sla_value <= ($sla['sla_limit']+10) && $sla_value >= ($sla['sla_limit']-10)) {
+					$data_graph[__('On the edge')]++;
+					$data_horin_graph[__('On the edge')]['g']++;
+				}
+				else if ($sla_value > ($sla['sla_limit']+10)) {
+					$data_graph[__('Inside limits')]++;
+					$data_horin_graph[__('Inside limits')]['g']++;
+				}
+				else if ($sla_value < ($sla['sla_limit']-10)) {
+					$data_graph[__('Out of limits')]++;
+					$data_horin_graph[__('Out of limits')]['g']++;
 				}
 				
 				if ($sla_value === false) {
@@ -3462,7 +3420,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25, ui_get_full_url(false, false, false, false), 1, $sla_data_arrays[$k], false);
+						$content['time_to'], 650, 25, $urlImage, 1, false, false);
 					
 					array_push ($tableslice->data, $dataslice);
 				}

@@ -1,3 +1,10 @@
+2013-10-29 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: fixed the delete the nodes in the
+	networkmap enterprise.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
 2013-10-29  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/insert_data.php: Fix broken insert data

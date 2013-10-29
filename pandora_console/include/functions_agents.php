@@ -635,7 +635,9 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
 		FROM tagente
 		WHERE id_agente = " . $idAgent);
 	
+	
 	$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
+	
 	
 	if ($agent["intervalo"] > 0 && strtotime($agent["ultimo_contacto"]) > 0) {
 		return round ($difference / ($agent["intervalo"] / 100));
@@ -1072,7 +1074,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	//$where .= " AND id_policy_module = 0 ";
 	
 	$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
-
+	
 	$where .= $where_tags;
 	
 	switch ($config["dbtype"]) {
@@ -1676,6 +1678,10 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		// Delete agent policies
 		enterprise_hook('policies_delete_agent', array($id_agent));
 		
+		// Delete agent in networkmap enterprise
+		enterprise_include_once('include/functions_networkmap_enterprise.php');
+		enterprise_hook('networkmap_enterprise_delete_nodes_by_agent', array($id_agent));
+		
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
 		// db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules);
@@ -1718,6 +1724,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		if ($error)
 			break;
 	}
+	
 	
 	
 	if ($error) {

@@ -89,7 +89,7 @@ function mainInsertData() {
 			$date2 = str_replace('-', '/', $date);
 			$time2 = DATE(TIME_FORMAT, strtotime($time));
 			
-			$date_xml = $date2 . ' ' . $time2 . ':00';
+			$date_xml = $date2 . ' ' . $time2;
 			
 			$done = 0;
 			$errors = 0;

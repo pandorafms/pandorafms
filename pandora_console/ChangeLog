@@ -1,5 +1,10 @@
 2013-10-29  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/insert_data.php: Fix broken insert data
+	feature for incident #331
+
+2013-10-29  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php: Merge the logic from the 
 	pdf reports to have the same results in both sides for 
 	incident #314

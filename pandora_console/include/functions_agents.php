@@ -1186,6 +1186,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	//$where .= " AND id_policy_module = 0 ";
 	
 	
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -1632,19 +1633,19 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	
 	// Status is 0 for normal, 1 for critical, 2 for warning and 3 for unknown. 4 for alert fired
 	// Checking if any module has alert fired (4)
-	if (is_int(array_search(4,$modules_status))) {
+	if (is_int(array_search(4, $modules_status))) {
 		return 4;
 	}
 	// Checking if any module has critical status (1)
-	elseif (is_int(array_search(1,$modules_status))) {
+	elseif (is_int(array_search(1, $modules_status))) {
 		return 1;
 	}
 	// Checking if any module has warning status (2)
-	elseif (is_int(array_search(2,$modules_status))) {
+	elseif (is_int(array_search(2, $modules_status))) {
 		return 2;
 	}
 	// Checking if any module has unknown status (3)
-	elseif (is_int(array_search(3,$modules_status))) {
+	elseif (is_int(array_search(3, $modules_status))) {
 		return 3;
 	}
 	else {
@@ -1698,7 +1699,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			$addresses = array ();
 		}
 		foreach ($addresses as $address) {
-			db_process_delete_temp ("taddress_agent", "id_ag", $address["id_ag"]);
+			db_process_delete_temp ("taddress_agent",
+				"id_ag", $address["id_ag"]);
 		}
 		
 		// We cannot delete tagente_datos and tagente_datos_string here
@@ -1708,7 +1710,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		//Alert
 		db_process_delete_temp ("talert_compound", "id_agent", $id_agent);
-		db_process_delete_temp ("talert_template_modules", "id_agent_module", $where_modules);
+		db_process_delete_temp ("talert_template_modules",
+			"id_agent_module", $where_modules);
 		
 		//Events (up/down monitors)
 		// Dont delete here, could be very time-exausting, let the daily script
@@ -1716,12 +1719,16 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		// db_process_delete_temp ("tevento", "id_agente", $id_agent);
 		
 		//Graphs, layouts & reports
-		db_process_delete_temp ("tgraph_source", "id_agent_module", $where_modules);
-		db_process_delete_temp ("tlayout_data", "id_agente_modulo", $where_modules);
-		db_process_delete_temp ("treport_content", "id_agent_module", $where_modules);
+		db_process_delete_temp ("tgraph_source",
+			"id_agent_module", $where_modules);
+		db_process_delete_temp ("tlayout_data",
+			"id_agente_modulo", $where_modules);
+		db_process_delete_temp ("treport_content",
+			"id_agent_module", $where_modules);
 		
 		//Planned Downtime
-		db_process_delete_temp ("tplanned_downtime_agents", "id_agent", $id_agent);
+		db_process_delete_temp ("tplanned_downtime_agents", "id_agent",
+			$id_agent);
 		
 		//The status of the module
 		db_process_delete_temp ("tagente_estado", "id_agente", $id_agent);
@@ -1740,6 +1747,10 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		// Delete agent policies
 		enterprise_hook('policies_delete_agent', array($id_agent));
+		
+		// Delete agent in networkmap enterprise
+		enterprise_include_once('include/functions_networkmap_enterprise.php');
+		enterprise_hook('networkmap_enterprise_delete_nodes_by_agent', array($id_agent));
 		
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
@@ -1776,7 +1787,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		db_process_delete_temp ("tagente", "id_agente", $id_agent);
 		
 		db_pandora_audit( "Agent management",
-		"Deleted agent '$agent_name'");
+			"Deleted agent '$agent_name'");
 		
 		
 		/* Break the loop on error */
@@ -1784,10 +1795,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			break;
 	}
 	
-	//Delete the agents from the networkmaps enterprise if exist
-	enterprise_include_once('/include/functions_networkmap_enterprise.php');
 	
-	enterprise_hook('networkmap_enterprise_delete_agent', $id_agents);
 	
 	if ($error) {
 		return false;

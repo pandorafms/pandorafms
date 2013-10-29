@@ -1,3 +1,8 @@
+2013-10-29 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: fixed the delete the nodes in the
+	networkmap enterprise.
+
 2013-10-28  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

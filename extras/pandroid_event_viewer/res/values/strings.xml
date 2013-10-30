@@ -122,6 +122,7 @@
     <string name="enable_background_service">Check in background</string>
     <string name="default_profile_can_not_remove">Default profile can not be removed</string>
     <string name="connection_problems">Connection failed</string>
-    <string name="timeout_connections_label_str">Timeout connections (in seconds)</string>
+    <string name="timeout_connections_label_str">Timeout connections</string>
+    <string name="seconds_label_str">seconds</string>
 
 </resources>

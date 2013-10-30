@@ -76,5 +76,6 @@
 	<string name="validate_event_label_str">承諾済イベント</string>
 	<string name="pandroid_event_viewer_description_str">Pandora FMS リアルタイムイベントビューワ</string>
 	<string name="empty">- 空 -</string>
-	<string name="timeout_connections_label_str">Timeout connections (in seconds)</string>
+	<string name="timeout_connections_label_str">Timeout connections</string>
+	<string name="seconds_label_str">seconds</string>
 </resources>

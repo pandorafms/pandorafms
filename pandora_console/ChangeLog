@@ -1,3 +1,8 @@
+2013-10-30  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/setup/performance.php: Added tip messages to
+	advice possible conflicts of performance configuration
+
 2013-10-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the output of data as csv when

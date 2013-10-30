@@ -42,7 +42,7 @@ $table->data = array ();
 $table->size[0] = '70%';
 $table->size[1] = '30%';
 
-$table->data[1][0] = __('Max. days before delete events');
+$table->data[1][0] = __('Max. days before delete events') . ui_print_help_tip(__('If the compaction or purge of the data is more frequent than the events deletion, anomalies in module graphs could appear'), true);
 $table->data[1][1] = html_print_input_text ('event_purge', $config["event_purge"], '', 5, 5, true);
 
 $table->data[2][0] = __('Max. days before delete traps');
@@ -57,7 +57,7 @@ $table->data[4][1] = html_print_input_text ('string_purge', $config["string_purg
 $table->data[5][0] = __('Max. days before delete GIS data');
 $table->data[5][1] = html_print_input_text ('gis_purge', $config["gis_purge"], '', 5, 5, true);
 
-$table->data[6][0] = __('Max. days before purge');
+$table->data[6][0] = __('Max. days before purge') . ui_print_help_tip(__('Configure a purge period more frequent than a compact data period has no sense'), true);
 $table->data[6][1] = html_print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
 
 $table->data[7][0] = __('Max. days before compact data');

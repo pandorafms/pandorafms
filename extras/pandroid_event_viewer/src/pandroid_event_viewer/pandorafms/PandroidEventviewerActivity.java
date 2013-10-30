@@ -99,7 +99,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				&& (url.length() == 0)) {
 			startActivity(new Intent(this, Options.class));
 			this.showOptionsFirstTime = true;
-		} else {
+		}
+		else {
 			this.loadInProgress = true;
 
 			this.showOptionsFirstTime = false;
@@ -272,7 +273,12 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			String[] items = lines[i].split(";");
 
 			EventListItem event = new EventListItem();
+			boolean extract = true; 
 			try {
+				if (items.length < 14) {
+					extract = false;
+					continue;
+				}
 				//Get id event
 				if (items[0].length() == 0) {
 					event.id_event = 0;
@@ -368,14 +374,28 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				 
 				 */
 				
-				//Get agent name
-				event.agent_name = items[22];
-				event.group_name = items[23];
-				event.group_icon = items[24];
-				event.description_event = items[25];
-				event.description_image = items[26];
-				event.criticity_name = items[28];
-				event.criticity_image = items[27];
+				event.agent_name = "";
+				event.group_name = "";
+				event.group_icon = "";
+				event.description_event = "";
+				event.description_image = "";
+				event.criticity_name = "";
+				event.criticity_image = "";
+				
+				if (items.length >= 23)
+					event.agent_name = items[22];
+				if (items.length >= 24)
+					event.group_name = items[23];
+				if (items.length >= 25)
+					event.group_icon = items[24];
+				if (items.length >= 26)
+					event.description_event = items[25];
+				if (items.length >= 27)
+					event.description_image = items[26];
+				if (items.length >= 28)
+					event.criticity_name = items[28];
+				if (items.length >= 27)
+					event.criticity_image = items[27];
 
 				event.opened = false;
 			}
@@ -384,7 +404,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 						R.string.unknown_event_str);
 				launchProblemParsingNotification();
 			}
-			this.eventList.add(event);
+			if (extract) 
+				this.eventList.add(event);
 		}
 	}
 	
@@ -583,7 +604,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			Log.i(TAG + " GetEventsAsyncTask", "doInBackground");
 			try {
 				getEvents();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				connectionProblem = true;
 			}
 			return null;
@@ -602,7 +624,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				getNewListEvents = false;
 
 				i.putExtra("load_more", 0);
-			} else {
+			}
+			else {
 				i.putExtra("load_more", 1);
 			}
 

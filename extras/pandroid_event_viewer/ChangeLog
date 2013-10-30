@@ -1,3 +1,10 @@
+2012-10-29  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
+	fixed when the data return to call for get events is bad format,
+	before it was fails all app, now it tries to get correct event for
+	each line.
+
 2012-10-23  Junichi Satoh  <junichi@rworks.jp>
 
 	* res/values-ja/strings.xml: Traslated string "empty".

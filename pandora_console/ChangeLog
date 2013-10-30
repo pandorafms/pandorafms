@@ -1,3 +1,13 @@
+2013-10-22 Hirofumi Kosaka <kosaka@rworks.jp>
+        
+	* include/help/en/help_alert_config.php,
+	include/help/en/help_alert_macros.php,
+	include/help/es/help_alert_config.php,
+	include/help/es/help_alert_macros.php,
+	include/help/ja/help_alert_config.php,
+	include/help/ja/help_alert_macros.php: Added _timezone_
+	alert macro descriptions.
+
 2013-10-29 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php: fixed the message to show the

@@ -1,3 +1,8 @@
+2013-10-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the output of data as csv when
+	the data have a return carriges.
+
 2013-10-22 Hirofumi Kosaka <kosaka@rworks.jp>
         
 	* include/help/en/help_alert_config.php,

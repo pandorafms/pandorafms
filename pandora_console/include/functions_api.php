@@ -123,7 +123,7 @@ function returnData($returnType, $data, $separator = ';') {
 						foreach($data['data'] as $dataContent) {
 							foreach($data['list_index'] as $index) {
 								if (array_key_exists($index, $dataContent))
-									echo $dataContent[$index];
+									echo str_replace("\n", " ", $dataContent[$index]);
 								if (end($data['list_index']) == $index)
 									echo "\n";
 								else
@@ -135,7 +135,11 @@ function returnData($returnType, $data, $separator = ';') {
 						if (!empty($data['data'])) {
 							foreach($data['data'] as $dataContent) {
 								$clean = array_map("array_apply_io_safe_output", $dataContent);
-								echo implode($separator, $clean) . "\n";
+								$row = implode($separator, $clean);
+								$row = str_replace("\r", "\n", $row);
+								$row = str_replace("\n", " ", $row);
+								
+								echo $row . "\n";
 							}
 						}
 					}
@@ -5406,7 +5410,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 		$sql_post .= " AND id_grupo != 0";
 	}
 	
-	switch($status) {
+	switch ($status) {
 		case 0:
 		case 1:
 		case 2:
@@ -5619,8 +5623,10 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	$data['data'] = $result;
 	
 	returnData($returnType, $data, $separator);
+	
 	if (empty($result))
 		return false;
+	
 	return true;
 }
 

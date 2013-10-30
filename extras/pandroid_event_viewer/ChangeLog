@@ -1,5 +1,11 @@
 2012-10-30  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* res/layout/options.xml, res/values-ja/strings.xml,
+	res/values/strings.xml, res/values-es/strings.xml: changed the
+	style of app, wip.
+
+2012-10-30  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/values/styles.xml, res/layout/options.xml: I have started to
 	set the new style of app (Thanks Carla).
 

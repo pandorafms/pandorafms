@@ -1,4 +1,9 @@
-2012-10-29  Miguel de Dios  <miguel.dedios@artica.es>
+2012-10-30  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* res/values/styles.xml, res/layout/options.xml: I have started to
+	set the new style of app (Thanks Carla).
+
+2012-10-30  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
 	fixed when the data return to call for get events is bad format,

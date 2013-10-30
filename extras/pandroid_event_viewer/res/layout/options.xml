@@ -17,7 +17,9 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:background="#242424"
+>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -35,19 +37,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:text="@string/connection" />
+                android:text="@string/connection"
+            />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="5dip"
                     android:text="@string/url_label_str"
-                    android:textColor="#ffffff" />
+                    style="@style/options_label" />
 
                 <EditText
                     android:id="@+id/url"
@@ -61,7 +65,8 @@
                     android:layout_height="wrap_content"
                     android:paddingRight="5dip"
                     android:text="@string/user_label_str"
-                    android:textColor="#ffffff" />
+                    style="@style/options_label"
+                 />
 
                 <EditText
                     android:id="@+id/user"
@@ -75,7 +80,8 @@
                     android:layout_height="wrap_content"
                     android:paddingRight="5dip"
                     android:text="@string/password_label_str"
-                    android:textColor="#ffffff" />
+                    style="@style/options_label"
+                />
 
                 <EditText
                     android:id="@+id/password"
@@ -89,7 +95,8 @@
                     android:layout_height="wrap_content"
                     android:paddingRight="5dip"
                     android:text="@string/api_password_label_str"
-                    android:textColor="#ffffff" />
+                    style="@style/options_label"
+                />
 
                 <EditText
                     android:id="@+id/api_password"
@@ -97,6 +104,20 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
                     android:singleLine="true" />
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="2dp"
+                    android:text="@string/refresh_time_label_str"
+                    style="@style/options_label"
+                />
+
+                <Spinner
+                    android:id="@+id/refresh_combo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
                 <TableLayout
                     android:layout_width="fill_parent"
@@ -108,25 +129,6 @@
 
                     <TableRow android:layout_marginTop="10dp" >
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" >
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingLeft="2dp"
-                                android:text="@string/refresh_time_label_str"
-                                android:textColor="#ffffff" />
-
-                            <Spinner
-                                android:id="@+id/refresh_combo"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1" />
-                        </LinearLayout>
-
                         <TextView
                             android:id="@+id/check_connection_status"
                             android:layout_width="150dp"
@@ -134,7 +136,7 @@
                             android:layout_gravity="center_horizontal"
                             android:drawableBottom="@drawable/help"
                             android:text="@string/check_connection"
-                            android:textColor="#ffffff" />
+                        />
                     </TableRow>
 
                     <TableRow android:layout_marginTop="10dp" >
@@ -145,7 +147,8 @@
                             android:layout_gravity="left|center_vertical"
                             android:paddingLeft="2dp"
                             android:text="@string/enable_background_service"
-                            android:textColor="#ffffff" />
+                            style="@style/options_label"
+                         />
 
                         <CheckBox
                             android:id="@+id/background_service_on"
@@ -163,7 +166,8 @@
 	          android:layout_height="wrap_content"
 	          android:paddingLeft="2dp"
 	          android:text="@string/timeout_connections_label_str"
-	          android:textColor="#ffffff" />
+	          style="@style/options_label"
+	     />
 		<EditText
 			android:id="@+id/timeout_connections"
 			android:layout_height="wrap_content"
@@ -194,7 +198,8 @@
 
                     <TextView
                         android:layout_gravity="center_vertical"
-                        android:text="@string/vibration" />
+                        android:text="@string/vibration"
+                        style="@style/options_label" />
 
                     <CheckBox
                         android:id="@+id/vibration_on"
@@ -207,7 +212,8 @@
 
                     <TextView
                         android:layout_gravity="center_vertical"
-                        android:text="@string/led_flash" />
+                        android:text="@string/led_flash"
+                        style="@style/options_label" />
 
                     <CheckBox
                         android:id="@+id/led_flash_on"
@@ -222,7 +228,8 @@
                     <TextView
                         android:id="@+id/textView1"
                         android:layout_gravity="center_vertical"
-                        android:text="@string/sound" />
+                        android:text="@string/sound"
+                        style="@style/options_label" />
 
                     <Button
                         android:id="@+id/sound_button"

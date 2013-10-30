@@ -18,6 +18,7 @@
 <li>_agentstatus : エージェントの現在の状態</li>
 <li>_address_ : アラートが発生したエージェントのアドレス</li>
 <li>_timestamp_ : アラートが発生した日時 (yy-mm-dd hh:mm:ss).</li>
+<li>_timezone_: _timestamp_ で使用されるタイムゾーン名.</li>
 <li>_data_ : アラート発生時のモジュールのデータ(値)</li>
 <li>_alert_description_ : アラートの説明</li>
 <li>_alert_threshold_ : アラートのしきい値</li>

@@ -14,8 +14,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     style="@style/background_pandora"
+    >
+<ScrollView 
+    
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
@@ -48,6 +53,32 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0" />
+            </LinearLayout>
+              <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+            <Button
+                        android:id="@+id/button_set_as_filter_watcher"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/set_as_filter_watcher_button_str" />
+            
+            
+                    <Button
+                        android:id="@+id/button_save_profile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/save_profile_button_str" />
+
+                    <Button
+                        android:id="@+id/button_delete_profile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/profile_delete" />
+            
             </LinearLayout>
         </LinearLayout>
 
@@ -155,14 +186,15 @@
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="3"
+                    android:layout_weight="1"
                     android:text="@string/advanced_options" />
 
                 <CheckBox
                     android:id="@+id/checkBox_advanced_options"
-                    android:layout_width="0dip"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_gravity="center"
+                    android:layout_weight="0" />
             </LinearLayout>
 
             <LinearLayout
@@ -248,48 +280,13 @@
                 android:layout_marginTop="10dp"
                 android:background="#ffffff" />
 
-            <TableLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:stretchColumns="0,1" >
-
-                <TableRow
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
-
-                    <Button
-                        android:id="@+id/button_set_as_filter_watcher"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/set_as_filter_watcher_button_str" />
-
-                    <Button
+            <Button
                         android:id="@+id/button_send"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/search_button_str" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
-
-                    <Button
-                        android:id="@+id/button_save_profile"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/save_profile_button_str" />
-
-                    <Button
-                        android:id="@+id/button_delete_profile"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/profile_delete" />
-                </TableRow>
-            </TableLayout>
         </LinearLayout>
     </LinearLayout>
 
 </ScrollView>
+</LinearLayout>

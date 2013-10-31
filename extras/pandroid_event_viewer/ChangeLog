@@ -1,3 +1,11 @@
+2012-10-31  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* res/layout/options.xml,
+	res/drawable/edittext_pandora_default_shape.xml,
+	res/drawable/edittext_pandora_colors_states.xml,
+	res/drawable/edittext_pandora_select_shape.xml,
+	res/values/styles.xml: changed the style of options layout.
+
 2012-10-30  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* res/layout/options.xml, res/values-ja/strings.xml,

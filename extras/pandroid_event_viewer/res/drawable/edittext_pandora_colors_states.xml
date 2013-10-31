@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- SELECT ALL FORMS -->
+    <item android:state_enabled="true" android:state_focused="true"
+        android:drawable="@drawable/edittext_pandora_select_shape" />
+<!--     <item android:state_enabled="true"
+        android:drawable="@drawable/edittext_pandora_select_shape" /> -->
+    <item android:state_focused="true"
+        android:drawable="@drawable/edittext_pandora_select_shape" />
+    
+    <!-- DEFAULT -->
+    <item
+        android:drawable="@drawable/edittext_pandora_default_shape" />
+</selector>

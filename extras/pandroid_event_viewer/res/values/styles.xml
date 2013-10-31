@@ -22,22 +22,14 @@
         <item name="android:layout_marginTop">1dp</item>
         <item name="android:layout_marginBottom">2dp</item>
     </style>
-
-    <style name="options_entry_text">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">20dp</item>
-        <item name="android:layout_margin">5dp</item>
-        <item name="android:textColor">#FFFFFF</item>
-    </style>
     
-    <style name="options_label">
+    <style name="label_pandora">
         <item name="android:textColor">#F1F1F1</item>
         <item name="android:textSize">18dp</item>
         <item name="android:textStyle">bold</item>
     </style>
     
-    <style name="options_edittext">
+    <style name="edittext_pandora">
         <item name="android:textColor">#2C2C2C</item>
         <item name="android:textSize">14dp</item>
         <item name="android:padding">5dp</item>
@@ -45,6 +37,13 @@
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:layout_marginBottom">5dp</item>
     </style>
-
+    
+    <style name="margin_pandora">
+        <item name="android:padding">10dp</item>
+    </style>
+	
+    <style name="background_pandora">
+        <item name="android:background">#242424</item>
+    </style>
 
 </resources>

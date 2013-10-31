@@ -28,7 +28,7 @@
 	<string name="reset_button_str">リセット</string>
 	<string name="search_button_str">検索</string>
 	<string name="loading_label_str">読み込み</string>
-	<string name="options_label_str">オプション</string>
+	<string name="label_pandora_str">オプション</string>
 	<string name="url_label_str">URL</string>
 	<string name="user_label_str">ユーザ</string>
 	<string name="password_label_str">パスワード</string>

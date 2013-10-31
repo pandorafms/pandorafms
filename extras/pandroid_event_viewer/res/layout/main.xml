@@ -15,50 +15,62 @@
 // GNU General Public License for more details. 
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/background_pandora"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:orientation="vertical" >
 
-        <TableLayout
+        <LinearLayout
+            style="@style/margin_pandora"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:stretchColumns="0" >
+            android:orientation="vertical" >
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
                 <TextView
+                    style="@style/label_pandora"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/profile_label_str"
-                    android:textStyle="bold" />
+                    android:layout_weight="1"
+                    android:text="@string/profile_label_str" />
 
                 <Spinner
                     android:id="@+id/profile_combo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </TableRow>
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="#ffffff" />
+
+        <LinearLayout
+            style="@style/margin_pandora"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="2dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:background="#ffffff" />
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
                 <TextView
+                    style="@style/label_pandora"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -76,13 +88,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right" />
-            </TableRow>
+            </LinearLayout>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
                 <TextView
+                    style="@style/label_pandora"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -94,13 +108,15 @@
                     android:id="@+id/status_combo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-            </TableRow>
+            </LinearLayout>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
                 <TextView
+                    style="@style/label_pandora"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -110,6 +126,7 @@
 
                 <EditText
                     android:id="@+id/tag_text"
+                    style="@style/edittext_pandora"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="text"
@@ -125,148 +142,154 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right" />
-            </TableRow>
-        </TableLayout>
+            </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:orientation="horizontal" >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:orientation="horizontal" >
 
-            <TextView
-                android:layout_width="0dip"
+                <TextView
+                    style="@style/label_pandora"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:text="@string/advanced_options" />
+
+                <CheckBox
+                    android:id="@+id/checkBox_advanced_options"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/show_hide_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="3"
-                android:text="@string/advanced_options"
-                android:textColor="#ffffff" />
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:visibility="gone" >
 
-            <CheckBox
-                android:id="@+id/checkBox_advanced_options"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </LinearLayout>
+                <TextView
+                    style="@style/label_pandora"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/agent_label_str" />
 
-        <LinearLayout
-            android:id="@+id/show_hide_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="5dp"
-            android:visibility="gone" >
+                <EditText
+                    android:id="@+id/agent_name"
+                    style="@style/edittext_pandora"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:singleLine="true" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/agent_label_str" />
+                <TextView
+                    style="@style/label_pandora"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/event_search_label_str" />
 
-            <EditText
-                android:id="@+id/agent_name"
+                <EditText
+                    android:id="@+id/event_search_text"
+                    style="@style/edittext_pandora"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:singleLine="true" />
+
+                <TableLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TableRow>
+
+                        <TextView
+                            style="@style/label_pandora"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:paddingRight="5dip"
+                            android:text="@string/severity_label_str" />
+
+                        <Spinner
+                            android:id="@+id/severity_combo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </TableRow>
+
+                    <TableRow>
+
+                        <TextView
+                            style="@style/label_pandora"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:paddingRight="5dip"
+                            android:text="@string/max_time_old_event_str" />
+
+                        <Spinner
+                            android:id="@+id/max_time_old_event_combo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </TableRow>
+                </TableLayout>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:singleLine="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/event_search_label_str" />
-
-            <EditText
-                android:id="@+id/event_search_text"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:singleLine="true" />
+                android:layout_height="2dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="#ffffff" />
 
             <TableLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:stretchColumns="0,1" >
 
-                <TableRow>
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
 
-                    <TextView
+                    <Button
+                        android:id="@+id/button_set_as_filter_watcher"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:paddingRight="5dip"
-                        android:text="@string/severity_label_str" />
+                        android:text="@string/set_as_filter_watcher_button_str" />
 
-                    <Spinner
-                        android:id="@+id/severity_combo"
+                    <Button
+                        android:id="@+id/button_send"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:text="@string/search_button_str" />
                 </TableRow>
 
-                <TableRow>
+                <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
 
-                    <TextView
+                    <Button
+                        android:id="@+id/button_save_profile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:paddingRight="5dip"
-                        android:text="@string/max_time_old_event_str" />
+                        android:text="@string/save_profile_button_str" />
 
-                    <Spinner
-                        android:id="@+id/max_time_old_event_combo"
+                    <Button
+                        android:id="@+id/button_delete_profile"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/profile_delete" />
                 </TableRow>
             </TableLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="#ffffff" />
-
-        <TableLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:stretchColumns="0,1" >
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <Button
-                    android:id="@+id/button_set_as_filter_watcher"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/set_as_filter_watcher_button_str" />
-
-                <Button
-                    android:id="@+id/button_send"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/search_button_str" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <Button
-                    android:id="@+id/button_save_profile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/save_profile_button_str" />
-
-                <Button
-                    android:id="@+id/button_delete_profile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/profile_delete" />
-            </TableRow>
-        </TableLayout>
     </LinearLayout>
 
 </ScrollView>

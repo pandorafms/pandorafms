@@ -32,7 +32,7 @@
     <string name="reset_button_str">Reset</string>
     <string name="search_button_str">Search</string>
     <string name="loading_label_str">Loading</string>
-    <string name="options_label_str">Options</string>
+    <string name="label_pandora_str">Options</string>
     <string name="refresh_label_str">Refresh</string>
     <string name="about_label_str">About</string>
     <string name="url_label_str">URL</string>

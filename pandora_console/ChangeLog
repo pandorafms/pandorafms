@@ -1,3 +1,8 @@
+2013-10-31 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/functions_api.php: Added some parameters to
+	'create_group' API function.
+
 2013-10-30  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/setup/performance.php: Added tip messages to

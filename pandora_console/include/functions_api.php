@@ -4083,34 +4083,41 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 		returnError('error_create_group', __('Error in group creation. Group_name cannot be left blank.'));
 		return;
 	}
-	
+
 	if ($other['data'][0] == "") {
 		returnError('error_create_group', __('Error in group creation. Icon_name cannot be left blank.'));
 		return;
 	}
-	
-	if ($other['data'][1] != "") {
-		$group = groups_get_group_by_id($other['data'][1]);
+
+	$safe_other_data = io_safe_input($other['data']);
+
+	if ($safe_other_data[1] != "") {
+	       $group = groups_get_group_by_id($safe_other_data[1]);
 		
 		if ($group == false) {
 			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exists.'));
 			return;
 		}
 	}
-	
-	if ($other['data'][1] != "") {
+
+	if ($safe_other_data[1] != "") {
 		$values = array(
-			'icon' => $other['data'][0],
-			'parent' => $other['data'][1],
-			'description' => $other['data'][2]
+			'icon' => $safe_other_data[0],
+			'parent' => $safe_other_data[1],
+			'description' => $safe_other_data[2]
 		);
 	}
 	else {
 		$values = array(
-			'icon' => $other['data'][0],
-			'description' => $other['data'][2]
+			'icon' => $safe_other_data[0],
+			'description' => $safe_other_data[2]
 		);
 	}
+	$values['propagate'] = $safe_other_data[3];
+	$values['disabled'] = $safe_other_data[4];
+	$values['custom_id'] =$safe_other_data[5]; 
+	$values['contact'] = $safe_other_data[6];
+	$values['other'] = $safe_other_data[7];
 	
 	$id_group = groups_create_group($group_name, $values);
 	

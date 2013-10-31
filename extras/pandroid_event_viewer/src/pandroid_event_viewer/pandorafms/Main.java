@@ -50,6 +50,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -102,7 +103,7 @@ public class Main extends Activity {
 
 		setContentView(R.layout.main);
 		final Button buttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
-		final Button buttonSearch = (Button) findViewById(R.id.button_send);
+		final ImageButton buttonSearch = (ImageButton) findViewById(R.id.filter_icon_button);
 		final Button buttonDeleteProfile = (Button) findViewById(R.id.button_delete_profile);
 		final Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
 		// Check if the user preferences it is set.
@@ -334,7 +335,7 @@ public class Main extends Activity {
 				combo.setSelection(index_combo);
 
 				Button buttonSaveAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
-				Button buttonSearch = (Button) findViewById(R.id.button_send);
+				ImageButton buttonSearch = (ImageButton) findViewById(R.id.filter_icon_button);
 				Button buttonDeleteProfile = (Button) findViewById(R.id.button_delete_profile);
 				Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
 

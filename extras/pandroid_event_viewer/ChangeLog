@@ -1,5 +1,9 @@
 2013-10-31  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* res/layout/main.xml: changed the style app.
+
+2013-10-31  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/layout/main.xml, res/layout/options.xml,
 	res/values-ja/strings.xml, res/values/strings.xml,
 	res/values/styles.xml, res/menu/options_menu_list_events.xml,

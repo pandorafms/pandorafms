@@ -1,5 +1,12 @@
 2013-10-31  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/Main.java,
+	res/drawable-ldpi/filter_icon.png,
+	res/drawable-ldpi/refrest_icon.png, res/layout/main.xml: changed the
+	style app.
+
+2013-10-31  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/layout/main.xml: changed the style app.
 
 2013-10-31  Miguel de Dios  <miguel.dedios@artica.es>

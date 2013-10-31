@@ -19,7 +19,7 @@
     <item
         android:id="@+id/options_button_menu_options"
         android:icon="@drawable/config"
-        android:title="@string/options_label_str"/>
+        android:title="@string/label_pandora_str"/>
     <item
         android:id="@+id/refresh_button_menu_options"
         android:icon="@drawable/refresh"

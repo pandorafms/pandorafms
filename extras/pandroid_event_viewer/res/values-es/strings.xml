@@ -23,7 +23,7 @@
 	<string name="reset_button_str">Reseteo</string>
 	<string name="search_button_str">Buscar</string>
 	<string name="loading_label_str">Cargando</string>
-	<string name="options_label_str">Opciones</string>
+	<string name="label_pandora_str">Opciones</string>
 	<string name="refresh_label_str">Refrescar</string>
 	<string name="url_label_str">URL</string>
 	<string name="user_label_str">Usuario</string>

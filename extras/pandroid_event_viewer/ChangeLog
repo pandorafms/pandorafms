@@ -1,4 +1,12 @@
-2012-10-31  Miguel de Dios  <miguel.dedios@artica.es>
+2013-10-31  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* res/layout/main.xml, res/layout/options.xml,
+	res/values-ja/strings.xml, res/values/strings.xml,
+	res/values/styles.xml, res/menu/options_menu_list_events.xml,
+	res/menu/options_menu.xml, res/values-es/strings.xml: changed the
+	style app.
+
+2013-10-31  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* res/layout/options.xml,
 	res/drawable/edittext_pandora_default_shape.xml,
@@ -6,18 +14,18 @@
 	res/drawable/edittext_pandora_select_shape.xml,
 	res/values/styles.xml: changed the style of options layout.
 
-2012-10-30  Miguel de Dios  <miguel.dedios@artica.es>
+2013-10-30  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* res/layout/options.xml, res/values-ja/strings.xml,
 	res/values/strings.xml, res/values-es/strings.xml: changed the
 	style of app, wip.
 
-2012-10-30  Miguel de Dios  <miguel.dedios@artica.es>
+2013-10-30  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* res/values/styles.xml, res/layout/options.xml: I have started to
 	set the new style of app (Thanks Carla).
 
-2012-10-30  Miguel de Dios  <miguel.dedios@artica.es>
+2013-10-30  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
 	fixed when the data return to call for get events is bad format,

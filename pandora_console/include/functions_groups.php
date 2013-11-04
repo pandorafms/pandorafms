@@ -494,6 +494,13 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
 		if ($group['id_grupo'] == 0) {
 			continue;
 		}
+		
+		// If the user has ACLs on a gruop but not in his father,
+		// we consider it as a son of group "all"
+		if(!in_array($group['parent'], array_keys($groups))) {
+			$group['parent'] = 0;  
+		}
+		
 		$tree[$group['parent']]['hash_branch'] = 1;
 		$tree[$group['parent']]['branch'][$key] = &$tree[$key];
 		

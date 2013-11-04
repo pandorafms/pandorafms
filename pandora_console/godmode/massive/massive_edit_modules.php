@@ -162,6 +162,7 @@ $table->size[2] = '15%';
 $table->size[3] = '35%';
 if (! $module_type) {
 	$table->rowstyle['edit1'] = 'display: none';
+	$table->rowstyle['edit1_1'] = 'display: none';
 	$table->rowstyle['edit2'] = 'display: none';
 	$table->rowstyle['edit3'] = 'display: none';
 	$table->rowstyle['edit35'] = 'display: none';
@@ -357,6 +358,10 @@ $table->data['edit1'][3] = '<table width="100%">';
 	$table->data['edit1'][3] .= '</tr>';
 $table->data['edit1'][3] .= '</table>';
 
+$table->data['edit1_1'][0] = '<b>'.__('Description'). '</b>';
+$table->data['edit1_1'][1] = html_print_textarea ('descripcion', 2, 50, '', '', true);
+$table->colspan['edit1_1'][1] = 3;
+
 $table->data['edit2'][0] = __('Interval');
 $table->data['edit2'][1] = html_print_extended_select_for_time ('module_interval', 0, '', __('No change'), '0', 10, true, 'width: 150px');
 $table->data['edit2'][2] = __('Disabled');
@@ -525,6 +530,7 @@ $(document).ready (function () {
 		}
 		
 		$("tr#delete_table-edit1, " +
+			"tr#delete_table-edit1_1, " +
 			"tr#delete_table-edit2, " +
 			"tr#delete_table-edit3, " +
 			"tr#delete_table-edit35, " +
@@ -576,6 +582,7 @@ $(document).ready (function () {
 		$("#form_edit input[type=text]").attr ("value", "");
 		$("#form_edit input[type=checkbox]").not ("#checkbox-recursion").removeAttr ("checked");
 		$("tr#delete_table-edit1, " +
+			"tr#delete_table-edit1_1, " +
 			"tr#delete_table-edit2, " +
 			"tr#delete_table-edit3, " +
 			"tr#delete_table-edit35, " +
@@ -598,6 +605,7 @@ $(document).ready (function () {
 		$("#agents").html('<?php echo __('None'); ?>');
 		$("#module").html('<?php echo __('None'); ?>');
 		$("tr#delete_table-edit1, "  +
+			"tr#delete_table-edit1_1, " +
 			"tr#delete_table-edit2, " +
 			"tr#delete_table-edit3, " +
 			"tr#delete_table-edit35, " +
@@ -628,6 +636,7 @@ $(document).ready (function () {
 				if (this.checked) {
 					$(".select_modules_row_2").css('display', 'none');
 					$("tr#delete_table-edit1, " +
+						"tr#delete_table-edit1_1, " +
 						"tr#delete_table-edit2, " +
 						"tr#delete_table-edit3, " +
 						"tr#delete_table-edit35, " +
@@ -641,6 +650,7 @@ $(document).ready (function () {
 					$(".select_modules_row_2").css('display', '');
 					if ($('#module_name option:selected').val() == undefined) {
 						$("tr#delete_table-edit1, " +
+							"tr#delete_table-edit1_1, " +
 							"tr#delete_table-edit2, " +
 							"tr#delete_table-edit3, " +
 							"tr#delete_table-edit35, " +
@@ -676,6 +686,7 @@ $(document).ready (function () {
 				if (this.checked) {
 					$(".select_agents_row_2").css('display', 'none');
 					$("tr#delete_table-edit1, " +
+						"tr#delete_table-edit1_1, " +
 						"tr#delete_table-edit2, " +
 						"tr#delete_table-edit3, " +
 						"tr#delete_table-edit35, " +
@@ -695,6 +706,7 @@ $(document).ready (function () {
 					$(".select_agents_row_2").css('display', '');
 					if ($('#id_agents option:selected').val() == undefined) {
 						$("tr#delete_table-edit1, " +
+							"tr#delete_table-edit1_1, " +
 							"tr#delete_table-edit2, " +
 							"tr#delete_table-edit3, " +
 							"tr#delete_table-edit35, " +
@@ -757,6 +769,7 @@ $(document).ready (function () {
 			}
 			
 			$("tr#delete_table-edit1, " +
+				"tr#delete_table-edit1_1, " +
 				"tr#delete_table-edit2, " +
 				"tr#delete_table-edit3, " +
 				"tr#delete_table-edit35, " +
@@ -819,7 +832,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'id_export', 'history_data', 'critical_inverse',
 		'warning_inverse', 'critical_instructions',
 		'warning_instructions', 'unknown_instructions', 'policy_linked', 
-		'id_category', 'disabled_types_event', 'ip_target');
+		'id_category', 'disabled_types_event', 'ip_target', 'descripcion');
 	$values = array ();
 	
 	// Specific snmp reused fields

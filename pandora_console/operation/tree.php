@@ -247,7 +247,7 @@ if (is_ajax ())
 					href='javascript: loadTable(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\", \"" . $row['server_name'] . "\")'>";
 				echo " ";
 				
-				echo $row["nombre"];
+				echo ui_print_truncate_text($row["nombre"], 40, true);
 				
 				echo " (" . reporting_tiny_stats($row, true) . ")";
 				
@@ -451,7 +451,7 @@ if (is_ajax ())
 				}
 				
 				echo "<a style='vertical-align: middle;' onfocus='JavaScript: this.blur()' href='javascript: loadModuleTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\")'>";
-				echo io_safe_output($row['nombre']);
+				echo ui_print_truncate_text(io_safe_output($row['nombre']), 40, true);
 				echo "</a>";
 				if ($row['quiet']) {
 					echo "&nbsp;";

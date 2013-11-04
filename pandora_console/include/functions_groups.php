@@ -475,6 +475,12 @@ function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 	$return = array();
 	
 	foreach ($groups as $key => $group) {
+		// If the user has ACLs on a gruop but not in his father,
+		// we consider it as a son of group "all"
+		if(!in_array($group['parent'], array_keys($groups))) {
+			$group['parent'] = 0;  
+		}
+
 		if (($key == 0) && ($parent == 0)) { //When the groups is the all group
 			$group['deep'] = $deep;
 			$group['hash_branch'] = true;

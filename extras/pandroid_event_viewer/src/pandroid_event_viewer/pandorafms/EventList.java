@@ -68,7 +68,7 @@ public class EventList extends ListActivity {
 	private static final int VALIDATE_EVENT_ACTIVITY = 0;
 	private ListView lv;
 	private MyAdapter la;
-	private PandroidEventviewerActivity object;
+	public PandroidEventviewerActivity object;
 	private BroadcastReceiver onBroadcast;
 	private Dialog creatingIncidentDialog;
 	private Context context = this;
@@ -137,7 +137,23 @@ public class EventList extends ListActivity {
 				ta.getTabHost().setCurrentTab(0);
 			}
 		});
+		
+		ImageButton refresh_button = (ImageButton)findViewById(R.id.refresh_icon_button_list);
+		refresh_button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				EventList a = (EventList)v.getContext();
+				
+				
+				a.object.loadInProgress = true;
+				a.object.getNewListEvents = true;
+				a.object.eventList = new ArrayList<EventListItem>();
+				a.toggleLoadingLayout();
+				a.object.executeBackgroundGetEvents(true);
+			}
+		});
 
+		
+		
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
 
 		this.toggleLoadingLayout();

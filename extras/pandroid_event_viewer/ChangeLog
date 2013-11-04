@@ -1,4 +1,9 @@
-2013-11-01  Miguel de Dios  <miguel.dedios@artica.es>
+2013-11-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/EventList.java,
+	res/layout/list_view_layout.xml: changes in the theme of the app.
+
+2013-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/EventList.java,
 	src/pandroid_event_viewer/pandorafms/Main.java,

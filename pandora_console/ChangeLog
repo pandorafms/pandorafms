@@ -1,5 +1,11 @@
 2013-11-04  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/massive/massive_edit_modules.php: Added description
+	to module massive edition for incident #148.
+	Merged from 5.0 (trunk)
+
+2013-11-04  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_groups.php: Fixed function that
 	returns the user groups in tree way. It was broken
 	when the user has acls over a group but not in his

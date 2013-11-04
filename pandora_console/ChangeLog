@@ -1,5 +1,11 @@
 2013-11-04  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/tree.php: Truncate the name of agents
+	and modules in tree view to avoid ugly view for 
+	incident #306
+
+2013-11-04  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/massive/massive_edit_modules.php: Added
 	module description to massive operations for 
 	incident #148

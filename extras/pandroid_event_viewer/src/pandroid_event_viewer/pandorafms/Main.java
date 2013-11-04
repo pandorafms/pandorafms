@@ -103,7 +103,7 @@ public class Main extends Activity {
 
 		setContentView(R.layout.main);
 		final Button buttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
-		final ImageButton buttonSearch = (ImageButton) findViewById(R.id.filter_icon_button);
+		final ImageButton buttonSearch = (ImageButton) findViewById(R.id.refresh_icon_button_main);
 		final Button buttonDeleteProfile = (Button) findViewById(R.id.button_delete_profile);
 		final Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
 		// Check if the user preferences it is set.
@@ -115,7 +115,7 @@ public class Main extends Activity {
 			toast.show();
 
 			buttonSetAsFilterWatcher.setEnabled(false);
-			buttonSearch.setEnabled(false);
+			//buttonSearch.setEnabled(false);
 			buttonDeleteProfile.setEnabled(false);
 		}
 		else if (object.user.equals("demo") || object.password.equals("demo")) {
@@ -124,7 +124,7 @@ public class Main extends Activity {
 					Toast.LENGTH_LONG);
 			toast.show();
 		}
-		buttonSearch.setEnabled(false);
+		//buttonSearch.setEnabled(false);
 		buttonSetAsFilterWatcher.setEnabled(false);
 		buttonDeleteProfile.setEnabled(false);
 
@@ -335,12 +335,15 @@ public class Main extends Activity {
 				combo.setSelection(index_combo);
 
 				Button buttonSaveAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
-				ImageButton buttonSearch = (ImageButton) findViewById(R.id.filter_icon_button);
+				ImageButton buttonSearch = (ImageButton) findViewById(R.id.filter_icon_button_main);
 				Button buttonDeleteProfile = (Button) findViewById(R.id.button_delete_profile);
 				Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
 
 				buttonSaveAsFilterWatcher.setEnabled(true);
 				buttonSearch.setEnabled(true);
+				
+				Log.e("CACA", "CACA " + buttonSearch.isEnabled());
+				
 				buttonDeleteProfile.setEnabled(true);
 				buttonSaveProfile.setEnabled(true);
 			}

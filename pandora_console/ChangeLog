@@ -1,3 +1,11 @@
+2013-11-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php: Fixed function that
+	returns the user groups in tree way. It was broken
+	when the user has acls over a group but not in his
+	father. Incident: #342
+	Merged from 4.1
+
 2013-10-31 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Added some parameters to

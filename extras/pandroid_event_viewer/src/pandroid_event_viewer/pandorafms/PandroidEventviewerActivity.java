@@ -37,7 +37,9 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.Toast;
 public class PandroidEventviewerActivity extends TabActivity implements
@@ -148,8 +150,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 								R.string.item_tab_event_list_text))
 				.setContent(i_event_list));
 
-		tabHost.getTabWidget().getChildAt(0).getLayoutParams().height = 45;
-		tabHost.getTabWidget().getChildAt(1).getLayoutParams().height = 45;
+		tabHost.getTabWidget().getChildAt(0).getLayoutParams().height = 0;
+		tabHost.getTabWidget().getChildAt(1).getLayoutParams().height = 0;
 	}
 
 	public void onResume() {
@@ -178,7 +180,6 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			executeBackgroundGetEvents(false);
 			this.showTabListFirstTime = false;
 		}
-
 	}
 
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -243,7 +244,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		this.status = preferences.getInt("filterStatus", 3);
 		this.eventSearch = preferences.getString("filterEventSearch", "");
 
-		this.getTabHost().setCurrentTab(1);
+//		this.getTabHost().setCurrentTab(1);
 
 		this.loadInProgress = true;
 		this.getNewListEvents = true;

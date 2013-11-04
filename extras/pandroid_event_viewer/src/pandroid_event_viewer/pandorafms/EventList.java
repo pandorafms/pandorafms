@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.app.TabActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +45,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -99,9 +102,11 @@ public class EventList extends ListActivity {
 
 				if (object.eventList.size() == 0) {
 					button.setVisibility(Button.GONE);
-				} else if (((long) object.eventList.size()) >= object.count_events) {
+				}
+				else if (((long) object.eventList.size()) >= object.count_events) {
 					button.setVisibility(Button.GONE);
-				} else {
+				}
+				else {
 					button.setVisibility(Button.VISIBLE);
 				}
 
@@ -109,7 +114,8 @@ public class EventList extends ListActivity {
 					LinearLayout layout = (LinearLayout) findViewById(R.id.loading_layout);
 					layout.setVisibility(LinearLayout.GONE);
 					la.showLoadingEvents = false;
-				} else {
+				}
+				else {
 					LinearLayout layout = (LinearLayout) findViewById(R.id.loading_layout);
 					layout.setVisibility(LinearLayout.GONE);
 
@@ -122,6 +128,15 @@ public class EventList extends ListActivity {
 				la.notifyDataSetChanged();
 			}
 		};
+		
+		ImageButton filter_button = (ImageButton)findViewById(R.id.filter_icon_button_list);
+		filter_button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Activity a = (Activity)v.getContext();
+				TabActivity ta = (TabActivity) a.getParent();
+				ta.getTabHost().setCurrentTab(0);
+			}
+		});
 
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
 

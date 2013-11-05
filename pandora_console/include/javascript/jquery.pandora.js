@@ -95,6 +95,7 @@ $(document).ready (function () {
 			
 			$( "#license_error_msg_dialog" ).dialog({
 				dialogClass: "no-close",
+				closeOnEscape: false,
 				resizable: true,
 				draggable: true,
 				modal: true,

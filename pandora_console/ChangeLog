@@ -1,5 +1,10 @@
 2013-11-05  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/jquery.pandora.js: Fixed "press
+	on scape" close event on enterprise dialog
+
+2013-11-05  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_tags.php: Fix the tags acl 
 	check function to be compatible with acl propagation
 	incident #345

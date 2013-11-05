@@ -980,7 +980,18 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 	if($id_user === false) {
 		$id_user = $config['id_user'];
 	}
-		
+	
+	// Get parents to check in propagate ACL cases
+	if (!is_array($id_group) && $id_group != 0) {
+			$id_group = array($id_group);
+			$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
+			$parents = groups_get_parents($group['parent'], true);
+			
+			foreach ($parents as $parent) {
+				$id_group[] = $parent['id_grupo'];
+			}
+	}
+	
 	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
 	
 	// If there are wrong parameters or fail ACL check, return false

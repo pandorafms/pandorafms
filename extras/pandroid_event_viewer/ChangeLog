@@ -1,3 +1,18 @@
+2013-11-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/EventList.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	src/pandroid_event_viewer/pandorafms/Options.java,
+	src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	res/drawable-ldpi/save.png, res/drawable-ldpi/icon_filter.png,
+	res/drawable-ldpi/icon_refresh.png, res/layout/main.xml,
+	res/layout/options.xml, res/drawable/btn_dropdown_pressed.9.png,
+	res/drawable/btn_dropdown.xml,
+	res/drawable/btn_dropdown_normal.9.png, res/values-ja/arrays.xml,
+	res/values/styles.xml, res/values/arrays.xml,
+	res/menu/options_menu_list_events.xml, res/values-es/arrays.xml:
+	changes in the themes.
+
 2013-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/EventList.java,

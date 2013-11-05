@@ -25,14 +25,19 @@
         android:layout_height="wrap_content"
         android:background="#7EB628"
         android:orientation="horizontal" >
-		
+
         <ImageButton
             android:id="@+id/refresh_icon_button_main"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:padding="0dp"
-            android:src="@drawable/refrest_icon" />
+            android:src="@drawable/icon_refresh" />
+        
+        <LinearLayout
+            android:layout_width="2px"
+            android:layout_height="fill_parent"
+            android:background="#6D9624" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,6 +49,11 @@
             android:textColor="#ffffff"
             android:textSize="20dp"
             android:textStyle="bold" />
+        
+        <LinearLayout
+            android:layout_width="2px"
+            android:layout_height="fill_parent"
+            android:background="#6D9624" />
 
         <ImageButton
             android:id="@+id/filter_icon_button_main"
@@ -51,66 +61,59 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:padding="0dp"
-            android:src="@drawable/filter_icon" />
+            android:src="@drawable/icon_filter" />
     </LinearLayout>
+     <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="2px"
+            android:background="#6D9624" />
+
+    <TextView
+        style="@style/options_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:text="@string/profile_label_str" />
 
     <LinearLayout
+        style="@style/margin_pandora"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
         <LinearLayout
-            style="@style/margin_pandora"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="horizontal" >
 
-            <LinearLayout
-                android:layout_width="fill_parent"
+            <Spinner
+                android:id="@+id/profile_combo"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:layout_weight="1" />
 
-                <TextView
-                    style="@style/label_pandora"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="@string/profile_label_str" />
-
-                <Spinner
-                    android:id="@+id/profile_combo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
+            <ImageButton
+                android:id="@+id/button_delete_profile"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:layout_weight="0"
+                android:padding="0dp"
+                android:src="@drawable/cross" />
 
-                <Button
-                    android:id="@+id/button_set_as_filter_watcher"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/set_as_filter_watcher_button_str" />
-
-                <Button
-                    android:id="@+id/button_save_profile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/save_profile_button_str" />
-
-                <Button
-                    android:id="@+id/button_delete_profile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/profile_delete" />
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/button_save_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:padding="0dp"
+                android:src="@drawable/save" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/button_set_as_filter_watcher"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/set_as_filter_watcher_button_str" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -129,85 +132,55 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+                <TextView
+                    style="@style/label_pandora"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:paddingRight="5dip"
+                    android:text="@string/group_label_str" />
 
-                    <TextView
-                        style="@style/label_pandora"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:paddingRight="5dip"
-                        android:text="@string/group_label_str" />
-
-                    <Spinner
-                        android:id="@+id/group_combo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <ProgressBar
-                        android:id="@+id/loading_group"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right" />
-                </LinearLayout>
-
-                <LinearLayout
+                <Spinner
+                    android:id="@+id/group_combo"
                     android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/label_pandora"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:paddingRight="5dip"
+                    android:text="@string/status_label_str" />
 
-                    <TextView
-                        style="@style/label_pandora"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:paddingRight="5dip"
-                        android:text="@string/status_label_str" />
-
-                    <Spinner
-                        android:id="@+id/status_combo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout
+                <Spinner
+                    android:id="@+id/status_combo"
                     android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/label_pandora"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:paddingRight="5dip"
+                    android:text="@string/tag_label_str" />
 
-                    <TextView
-                        style="@style/label_pandora"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:paddingRight="5dip"
-                        android:text="@string/tag_label_str" />
+                <EditText
+                    android:id="@+id/tag_text"
+                    style="@style/edittext_pandora"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:visibility="gone" />
 
-                    <EditText
-                        android:id="@+id/tag_text"
-                        style="@style/edittext_pandora"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:visibility="gone" />
-
-                    <Spinner
-                        android:id="@+id/tag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <ProgressBar
-                        android:id="@+id/loading_tag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right" />
-                </LinearLayout>
+                <Spinner
+                    android:id="@+id/tag"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -267,59 +240,34 @@
                         android:inputType="text"
                         android:singleLine="true" />
 
-                    <TableLayout
+                    <TextView
+                        style="@style/label_pandora"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:paddingRight="5dip"
+                        android:text="@string/severity_label_str" />
+
+                    <Spinner
+                        android:id="@+id/severity_combo"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" >
+                        android:layout_height="wrap_content" />
 
-                        <TableRow>
+                    <TextView
+                        style="@style/label_pandora"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:paddingRight="5dip"
+                        android:text="@string/max_time_old_event_str" />
 
-                            <TextView
-                                style="@style/label_pandora"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_weight="1"
-                                android:paddingRight="5dip"
-                                android:text="@string/severity_label_str" />
-
-                            <Spinner
-                                android:id="@+id/severity_combo"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                        </TableRow>
-
-                        <TableRow>
-
-                            <TextView
-                                style="@style/label_pandora"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_weight="1"
-                                android:paddingRight="5dip"
-                                android:text="@string/max_time_old_event_str" />
-
-                            <Spinner
-                                android:id="@+id/max_time_old_event_combo"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                        </TableRow>
-                    </TableLayout>
+                    <Spinner
+                        android:id="@+id/max_time_old_event_combo"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
-<!-- 
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
-                    android:background="#ffffff" />
-
-                <Button
-                    android:id="@+id/button_send"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/search_button_str" />
-                 -->
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

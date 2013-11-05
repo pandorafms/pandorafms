@@ -37,9 +37,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.Toast;
 public class PandroidEventviewerActivity extends TabActivity implements

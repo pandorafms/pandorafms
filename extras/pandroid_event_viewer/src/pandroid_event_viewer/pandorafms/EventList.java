@@ -210,13 +210,6 @@ public class EventList extends ListActivity {
 		case R.id.options_button_menu_options:
 			startActivity(new Intent(this, Options.class));
 			break;
-		case R.id.refresh_button_menu_options:
-			this.object.loadInProgress = true;
-			this.object.getNewListEvents = true;
-			this.object.eventList = new ArrayList<EventListItem>();
-			this.toggleLoadingLayout();
-			this.object.executeBackgroundGetEvents(true);
-			break;
 		case R.id.about_button_menu_options:
 			i = new Intent(this, About.class);
 			startActivity(i);

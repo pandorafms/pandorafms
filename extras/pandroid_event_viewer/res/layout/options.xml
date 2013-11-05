@@ -15,10 +15,36 @@
 // GNU General Public License for more details. 
 -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/background_pandora"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#7EB628"
+        android:orientation="horizontal" >
+		
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="EVENT VIEWER"
+            android:textColor="#ffffff"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+    
+<ScrollView
+     android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+    
+    
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -113,9 +139,11 @@
 
                 <Spinner
                     android:id="@+id/refresh_combo"
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_dropdown"
+                    />
 
                 <TextView
                     style="@style/label_pandora"
@@ -123,11 +151,20 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="2dp"
                     android:text="@string/timeout_connections_label_str" />
+                
+                <Spinner
+                    android:id="@+id/timeout_connections_combo"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_dropdown"
+                    />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal"
+                    android:visibility="gone" >
 
                     <EditText
                         android:id="@+id/timeout_connections"
@@ -294,3 +331,4 @@
     </LinearLayout>
 
 </ScrollView>
+</LinearLayout>

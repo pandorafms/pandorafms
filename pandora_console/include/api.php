@@ -41,6 +41,7 @@ $returnType = get_parameter('return_type', 'string');
 $api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
+$info = get_parameter('info', '');
 
 $other = parseOtherParameter($otherSerialize, $otherMode);
 
@@ -49,6 +50,15 @@ $apiPassword = db_get_value_filter('value', 'tconfig', array('token' => 'api_pas
 $correctLogin = false;
 $user_in_db = null;
 $no_login_msg = "";
+
+// Special call without checks to retrieve version and build of the Pandora FMS
+// This info is avalable from the web console without login
+// Don't change the format, it is parsed by applications
+switch($info) {
+	case 'version':
+		echo 'Pandora FMS ' . $pandora_version . ' - ' . $build_version;
+		exit;
+}
 
 if (isInACL($ipOrigin)) {
 	if (empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {

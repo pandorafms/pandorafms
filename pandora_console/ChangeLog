@@ -1,5 +1,13 @@
 2013-11-05  Sergio Martin <sergio.martin@artica.es>
 
+	* include/api.php: Create a special call on Pandora FMS
+	API to verify if it is a correct installation of Pandora 
+	and get the Version.
+	This call only retrieve "Pandora FMS [version] - [build]"
+	without any security check.
+
+2013-11-05  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/jquery.pandora.js: Fixed "press
 	on scape" close event on enterprise dialog
 

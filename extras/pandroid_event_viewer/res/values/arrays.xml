@@ -49,6 +49,16 @@
         <item>36 hours</item>
         <item>48 hours</item>
     </string-array>
+    <!-- Please change the code in the function timeout2arrayKey -->
+    <string-array name="timeout_connections_combo">
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>20 seconds</item>
+        <item>30 seconds</item>
+        <item>40 seconds</item>
+        <item>50 seconds</item>
+        <item>1 minute</item>
+    </string-array>
     <string-array name="event_status_values">
 
         <!-- You must subtract -1 -->
@@ -82,7 +92,7 @@
         <item>2 weeks</item>
         <item>1 month</item>
     </string-array>
-    <!-- 
+    <!--
     <string-array name="incident_priority">
         <item>Informative</item>
         <item>Low</item>
@@ -109,6 +119,6 @@
         <item>Expired incidents</item>
         <item>Closed incidents</item>
     </string-array>
-     -->
+    -->
 
 </resources>

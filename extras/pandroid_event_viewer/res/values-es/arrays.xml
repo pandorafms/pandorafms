@@ -47,7 +47,16 @@
         <item>36 horas</item>
         <item>48 horas</item>
 	</string-array>
-	
+	<!-- Please change the code in the function timeout2arrayKey -->
+	<string-array name="timeout_connections_combo">
+        <item>5 segundos</item>
+        <item>10 segundos</item>
+        <item>20 segundos</item>
+        <item>30 segundos</item>
+        <item>40 segundos</item>
+        <item>50 segundos</item>
+        <item>1 minuto</item>
+    </string-array>
 	<string-array name="event_status_values">
 		<!-- You must subtract -1 -->
 		<!--<item>Todo los eventos</item> //The next version re-add please -->

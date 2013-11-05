@@ -96,6 +96,18 @@ public class Options extends Activity {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		combo.setAdapter(adapter);
 		combo.setSelection(preferences.getInt("refreshTimeKey", 3));
+		
+		
+
+		combo = (Spinner) findViewById(R.id.timeout_connections_combo);
+		adapter = ArrayAdapter.createFromResource(
+				this, R.array.timeout_connections_combo,
+				android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		combo.setAdapter(adapter);
+		int key_seconds = this.timeout2arrayKey(preferences.getInt("timeout_connections", 10));
+		combo.setSelection(key_seconds);
+		
 		((CheckBox) findViewById(R.id.background_service_on)).setChecked(true);
 		final Button button = (Button) findViewById(R.id.update_options);
 		button.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +172,67 @@ public class Options extends Activity {
 			}
 		}
 	}
+	
+	private int timeout2arrayKey(int seconds) {
+		int key = 1;
+		switch (seconds) {
+			case 5:
+				key = 0;
+				break;
+			case 10:
+				key = 1;
+				break;
+			case 20:
+				key = 2;
+				break;
+			case 30:
+				key = 3;
+				break;
+			case 40:
+				key = 4;
+				break;
+			case 50:
+				key = 5;
+				break;
+			case 60:
+				key = 6;
+				break;
+	
+		}
+		
+		return key;
+	}
+	
+
+	private int arrayKey2timeout(int key) {
+		int seconds = 10;
+		switch (key) {
+			case 0:
+				seconds = 5;
+				break;
+			case 1:
+				seconds = 10;
+				break;
+			case 2:
+				seconds = 20;
+				break;
+			case 3:
+				seconds = 30;
+				break;
+			case 4:
+				seconds = 40;
+				break;
+			case 5:
+				seconds = 50;
+				break;
+			case 6:
+				seconds = 60;
+				break;
+	
+		}
+		
+		return seconds;
+	}
 
 	/**
 	 * Saves all options
@@ -173,12 +246,14 @@ public class Options extends Activity {
 				asyncTask = new CheckCertificateAsyncTask();
 				asyncTask.execute(new URL[] { new URL(url) });
 				removeDialog(DIALOG_TIME, retrievingCertificate);
-			} catch (MalformedURLException e) {
+			}
+			catch (MalformedURLException e) {
 				Toast.makeText(getApplicationContext(), R.string.url_not_valid,
 						Toast.LENGTH_SHORT).show();
 				return;
 			}
-		} else {
+		}
+		else {
 			writeChanges();
 		}
 	}
@@ -206,6 +281,11 @@ public class Options extends Activity {
 		Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
 		editorPreferences.putInt("refreshTimeKey",
 				combo.getSelectedItemPosition());
+		
+		combo = (Spinner) findViewById(R.id.timeout_connections_combo);
+		editorPreferences.putInt("timeout_connections",
+				arrayKey2timeout(combo.getSelectedItemPosition()));
+		
 
 		// Notification settings
 		CheckBox cb = (CheckBox) findViewById(R.id.vibration_on);
@@ -226,7 +306,8 @@ public class Options extends Activity {
 			connectionStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0,
 					0, R.drawable.help);
 			new CheckConnectionAsyncTask().execute();
-		} else {
+		}
+		else {
 			Toast toast = Toast.makeText(context,
 					this.getString(R.string.config_update_fail_str),
 					Toast.LENGTH_LONG);
@@ -235,7 +316,8 @@ public class Options extends Activity {
 		// Enable or disable background checking
 		if (((CheckBox) findViewById(R.id.background_service_on)).isChecked()) {
 			Core.setBackgroundServiceFetchFrequency(getApplicationContext());
-		} else {
+		}
+		else {
 			Core.cancelBackgroundService(getApplicationContext());
 		}
 

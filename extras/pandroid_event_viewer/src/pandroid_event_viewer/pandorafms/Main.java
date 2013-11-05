@@ -104,8 +104,8 @@ public class Main extends Activity {
 		setContentView(R.layout.main);
 		final Button buttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
 		final ImageButton buttonSearch = (ImageButton) findViewById(R.id.refresh_icon_button_main);
-		final Button buttonDeleteProfile = (Button) findViewById(R.id.button_delete_profile);
-		final Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
+		final ImageButton buttonDeleteProfile = (ImageButton) findViewById(R.id.button_delete_profile);
+		final ImageButton buttonSaveProfile = (ImageButton) findViewById(R.id.button_save_profile);
 		// Check if the user preferences it is set.
 		if (object.user.length() == 0 || object.password.length() == 0
 				|| object.url.length() == 0) {
@@ -286,8 +286,6 @@ public class Main extends Activity {
 		if (version402) {
 			((EditText) findViewById(R.id.tag_text))
 					.setVisibility(View.VISIBLE);
-			((ProgressBar) findViewById(R.id.loading_tag))
-					.setVisibility(View.GONE);
 			((Spinner) findViewById(R.id.tag)).setVisibility(View.GONE);
 		}
 		else {
@@ -317,8 +315,6 @@ public class Main extends Activity {
 
 		@Override
 		protected void onPostExecute(Boolean result) {
-			ProgressBar loadingGroup = (ProgressBar) findViewById(R.id.loading_group);
-			loadingGroup.setVisibility(ProgressBar.GONE);
 			if (result) {
 				Spinner combo = (Spinner) findViewById(R.id.group_combo);
 				
@@ -336,8 +332,8 @@ public class Main extends Activity {
 
 				Button buttonSaveAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
 				ImageButton buttonSearch = (ImageButton) findViewById(R.id.filter_icon_button_main);
-				Button buttonDeleteProfile = (Button) findViewById(R.id.button_delete_profile);
-				Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
+				ImageButton buttonDeleteProfile = (ImageButton) findViewById(R.id.button_delete_profile);
+				ImageButton buttonSaveProfile = (ImageButton) findViewById(R.id.button_save_profile);
 
 				buttonSaveAsFilterWatcher.setEnabled(true);
 				buttonSearch.setEnabled(true);
@@ -395,8 +391,6 @@ public class Main extends Activity {
 					}
 				}
 			}
-			ProgressBar loadingGroup = (ProgressBar) findViewById(R.id.loading_tag);
-			loadingGroup.setVisibility(ProgressBar.GONE);
 		}
 	}
 

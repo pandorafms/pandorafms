@@ -21,10 +21,6 @@
         android:icon="@drawable/config"
         android:title="@string/label_pandora_str"/>
     <item
-        android:id="@+id/refresh_button_menu_options"
-        android:icon="@drawable/refresh"
-        android:title="@string/refresh_label_str"/>
-    <item
         android:id="@+id/about_button_menu_options"
         android:icon="@drawable/about"
         android:title="@string/about_label_str"/>

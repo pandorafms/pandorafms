@@ -92,7 +92,8 @@
                 android:id="@+id/profile_combo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@drawable/btn_dropdown" />
 
             <ImageButton
                 android:id="@+id/button_delete_profile"
@@ -148,7 +149,8 @@
                 <Spinner
                     android:id="@+id/group_combo"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_dropdown" />
 
                 <TextView
                     style="@style/label_pandora"
@@ -162,7 +164,8 @@
                 <Spinner
                     android:id="@+id/status_combo"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_dropdown" />
 
                 <TextView
                     style="@style/label_pandora"
@@ -184,7 +187,8 @@
                 <Spinner
                     android:id="@+id/tag"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_dropdown" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -256,7 +260,8 @@
                     <Spinner
                         android:id="@+id/severity_combo"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_dropdown" />
 
                     <TextView
                         style="@style/label_pandora"
@@ -270,7 +275,8 @@
                     <Spinner
                         android:id="@+id/max_time_old_event_combo"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_dropdown" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

@@ -423,30 +423,39 @@ public class EventList extends ListActivity {
 			else {
 				final EventListItem item = this.object.eventList.get(position);
 				
+				
+				
+				
 				switch (item.criticity) {
 					case 0:
-						view.setBackgroundColor(getResources().getColor(
-							R.color.Blue));
+						view.findViewById(R.id.content_event_item).setBackgroundResource(
+								R.drawable.round_event_item_blue
+								);
 						break;
 					case 1:
-						view.setBackgroundColor(getResources().getColor(
-							R.color.Grey));
+						view.findViewById(R.id.content_event_item).setBackgroundResource(
+								R.drawable.round_event_item_grey
+								);
 						break;
 					case 2:
-						view.setBackgroundColor(getResources().getColor(
-							R.color.Green));
+						view.findViewById(R.id.content_event_item).setBackgroundResource(
+								R.drawable.round_event_item_green
+								);
 						break;
 					case 3:
-						view.setBackgroundColor(getResources().getColor(
-							R.color.Yellow));
+						view.findViewById(R.id.content_event_item).setBackgroundResource(
+								R.drawable.round_event_item_yellow
+								);
 						break;
 					case 4:
-						view.setBackgroundColor(getResources()
-							.getColor(R.color.Red));
+						view.findViewById(R.id.content_event_item).setBackgroundResource(
+								R.drawable.round_event_item_red
+								);
 						break;
 					default:
-						view.setBackgroundColor(getResources().getColor(
-							R.color.Grey));
+						view.findViewById(R.id.content_event_item).setBackgroundResource(
+								R.drawable.round_event_item_grey
+								);
 						break;
 				}
 
@@ -467,11 +476,11 @@ public class EventList extends ListActivity {
 					.findViewById(R.id.timestamp);
 				timestamp.setText(item.timestamp);
 
-				if (item.criticity_image.length() != 0)
-					Core.setTextViewLeftImage((TextView) view
-						.findViewById(R.id.event_name), Core
-						.getSeverityImage(getApplicationContext(),
-							item.criticity), 16);
+//				if (item.criticity_image.length() != 0)
+//					Core.setTextViewLeftImage((TextView) view
+//						.findViewById(R.id.event_name), Core
+//						.getSeverityImage(getApplicationContext(),
+//							item.criticity), 16);
 
 				if (item.status == 1) {
 					Core.setTextViewLeftImage(timestamp, getResources()

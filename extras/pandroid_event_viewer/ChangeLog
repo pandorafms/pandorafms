@@ -1,5 +1,12 @@
 2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* res/drawable-ldpi/delete_pressed.png,
+	res/drawable-ldpi/save_pressed.png, res/layout/main.xml,
+	res/drawable/save_icon_button.xml,
+	res/drawable/delete_icon_button.xml: changes in the themes. 
+
+2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/layout/main.xml, res/drawable/combobox_pressed.9.png: changes
 	in the themes.
 

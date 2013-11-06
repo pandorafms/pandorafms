@@ -35,7 +35,9 @@
             android:layout_height="wrap_content"
             android:paddingRight="5dip"
             android:text="@string/severity_label_str"
-            android:textColor="#000" />
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_marginRight="2dp" />
 
         <TextView
             android:id="@+id/severity_text"
@@ -51,7 +53,9 @@
         <TextView
             android:paddingRight="5dip"
             android:text="@string/type_label_str"
-            android:textColor="#000" />
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_marginRight="2dp" />
 
         <TextView
             android:id="@+id/type_text"
@@ -70,7 +74,9 @@
         <TextView
             android:paddingRight="5dip"
             android:text="@string/agent_label_str"
-            android:textColor="#000" />
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_marginRight="2dp" />
 
         <TextView
             android:id="@+id/agent_text"
@@ -83,7 +89,9 @@
         <TextView
             android:paddingRight="5dip"
             android:text="@string/group_label_str"
-            android:textColor="#000" />
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_marginRight="2dp" />
 
         <TextView
             android:id="@+id/group_text"
@@ -100,7 +108,9 @@
         <TextView
             android:paddingRight="5dip"
             android:text="@string/comments_label_str"
-            android:textColor="#000" />
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_marginRight="2dp" />
 
         <TextView
             android:id="@+id/comments_text"
@@ -115,7 +125,9 @@
         <TextView
             android:paddingRight="5dip"
             android:text="@string/tags_label_str"
-            android:textColor="#000" />
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_marginRight="2dp" />
 
         <TextView
             android:id="@+id/tags_text"

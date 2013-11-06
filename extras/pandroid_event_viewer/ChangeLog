@@ -1,5 +1,12 @@
 2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* res/layout/item_list_event_extended.xml, res/layout/main.xml,
+	res/layout/options.xml, res/drawable/button_pressed.9.png,
+	res/drawable/pandora_button.xml, res/drawable/button_normal.9.png:
+	changes in the themes.
+
+2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/drawable-ldpi/delete_pressed.png,
 	res/drawable-ldpi/save_pressed.png, res/layout/main.xml,
 	res/drawable/save_icon_button.xml,

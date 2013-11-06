@@ -144,7 +144,8 @@
             android:id="@+id/validate_button_extended"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/validate_event_button_str" />
+            android:text="@string/validate_event_button_str"
+            android:background="@drawable/pandora_button" />
 
         <TextView
             android:id="@+id/validate_event_label"
@@ -157,7 +158,8 @@
             android:id="@+id/create_incident_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/create_incident" />
+            android:text="@string/create_incident"
+            android:background="@drawable/pandora_button" />
     </TableRow>
 
 </TableLayout>

@@ -5,8 +5,8 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">#D8D8D8</item>
-        <item name="android:paddingTop">2dp</item>
-        <item name="android:paddingBottom">2dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
         <item name="android:paddingLeft">15dp</item>
         <item name="android:layout_marginBottom">5dp</item>
         <item name="android:textSize">12dp</item>
@@ -45,5 +45,13 @@
     <style name="background_pandora">
         <item name="android:background">#242424</item>
     </style>
+    
+    
 
+    <style name="Pandora_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:background">#242424</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/round_dialog</item>
+    </style>
+    
 </resources>

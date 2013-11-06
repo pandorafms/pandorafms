@@ -1230,6 +1230,14 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	$color[0] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color[1] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	$color[2] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
+	$color[3] = array('border' => '#000000', 'color' => COL_GRAPH1, 'alpha' => 50);
+	$color[4] = array('border' => '#000000', 'color' => COL_GRAPH2, 'alpha' => 50);
+	$color[5] = array('border' => '#000000', 'color' => COL_GRAPH3, 'alpha' => 50);
+	$color[6] = array('border' => '#000000', 'color' => COL_GRAPH4, 'alpha' => 50);
+	$color[7] = array('border' => '#000000', 'color' => COL_GRAPH5, 'alpha' => 50);
+	$color[8] = array('border' => '#000000', 'color' => COL_GRAPH6, 'alpha' => 50);
+	$color[9] = array('border' => '#000000', 'color' => COL_GRAPH7, 'alpha' => 50);
+	$color[10] = array('border' => '#000000', 'color' => COL_GRAPH8, 'alpha' => 50);
 	
 	switch ($stacked) {
 		case GRAPH_AREA:

@@ -131,6 +131,14 @@ define('COL_MAJOR','#C97A4A');
 define('COL_INFORMATIONAL','#E4E4E4');
 define('COL_MAINTENANCE','#3BA0FF');
 
+define('COL_GRAPH1', '#C397F2');
+define('COL_GRAPH2', '#FFE66C');
+define('COL_GRAPH3', '#92CCA3');
+define('COL_GRAPH4', '#EA6D5B');
+define('COL_GRAPH5', '#6BD8DD');
+define('COL_GRAPH6', '#F49B31');
+define('COL_GRAPH7', '#999999');
+define('COL_GRAPH8', '#F2B8C1');
 
 
 /* The styles */

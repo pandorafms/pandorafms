@@ -1,5 +1,10 @@
 2013-11-06  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_api.php: Fix create event typo 
+	errors in api. Fix sent by tomas in incident #347
+
+2013-11-06  Sergio Martin <sergio.martin@artica.es>
+
 	* include/constants.php
 	include/functions_graph.php: Added color collection in
 	constants file and use it in custom graphs to avoid

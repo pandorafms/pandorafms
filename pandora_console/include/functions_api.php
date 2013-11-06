@@ -6223,7 +6223,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			$values['id_agentmodule'] = $other['data'][7];
 		}
 		else {
-			$value['id_agentemodule'] = 0;
+			$value['id_agentmodule'] = 0;
 		}
 		
 		if ($other['data'][8] != '') {
@@ -6277,7 +6277,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			
 		$return = events_create_event($values['event'], $values['id_grupo'], $values['id_agente'], 
 		$values['status'], $values['id_usuario'], $values['event_type'], 
-		$values['priority'], $value['id_agentemodule'], $values['id_alert_am'], 
+		$values['priority'], $values['id_agentmodule'], $values['id_alert_am'], 
 		$values['critical_instructions'], $values['warning_instructions'], 
 		$values['unknown_instructions'], $values['source'], $values['tags'],
 		$values['custom_data']);

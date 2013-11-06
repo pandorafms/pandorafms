@@ -1,5 +1,10 @@
 2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* res/layout/main.xml, res/drawable/combobox_pressed.9.png: changes
+	in the themes.
+
+2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/layout/main.xml, res/layout/list_view_layout.xml,
 	res/drawable/refresh_icon_button.xml,
 	res/drawable/filter_icon_button.xml,

@@ -41,11 +41,9 @@ Where options:\n
 Optional parameters:
 	
 	[-agent <id_agent>]       : Agent ID
-	[-agent_name <agent>]     : Set agent by name (Exact match!)
 	[-user <id_user>]         : User comment (use in combination with -comment option)
 	[-status <status>]        : 0 New, 1 Validated, 2 In process
 	[-am <id_agent_module>]   : ID Agent Module linked to event
-	[-module_name <module>]   : Name of the module linked to the event (You need <id_agent> or <agent_name>)
 	[-alert <id_alert_am>]    : ID Alert Module linked to event 
 	[-criticity <criticity>]  : 0 Maintance, 1 Informative, 2 Normal, 
 								3 Warning, 4 Crit, 5 Minor, 6 Major 
@@ -53,7 +51,6 @@ Optional parameters:
 	[-comment <user_comment>] : Free text for comment
 	[-tag <tags>]             : Tag (must exist in the system to be imported)
 	[-source <source>]        : (By default 'Pandora')
-	[-extra <id_extra>] 
 	[-c_instructions <critical_instructions>] 
 	[-w_instructions <warning_instructions>] 
 	[-u_instructions <unknown_instructions>] 
@@ -64,17 +61,17 @@ Optional parameters:
 
 	print "Example of event generation:\n\n";
 
-	print "\t$0 -p http://192.168.70.160/pandora_console/include/api.php -u pot12,admin,pandora \
-\t-create_event -name \"Sample event executed from commandline\" -group 2 -type \"system\" -agent 2 \
-\t-user \"admin\" -status 0 -am 0 -alert 9 -criticity 3 -comment \"User comments\" -tag \"tags\" \
-\t-source \"Commandline\" -extra 3 -c_instructions \"Critical instructions\" \
-\t-w_instructions \"Warning instructions\" -u_instructions \"Unknown instructions\" -owner \"other\" ";
-    
-    #print "\n\nOptions to validate event: \n\n\t";
-    #print "$0 -p <path_to_consoleAPI> -u <credentials> -validate_event <options> -id <id_event>\n\n";
-    #print "Sample of event validation: \n\n\t";
+	#print "\t$0 -p http://192.168.70.160/pandora_console/include/api.php -u pot12,admin,pandora \
+#\t-create_event -name \"Sample event executed from commandline\" -group 2 -type \"system\" -agent 2 \
+#\t-user \"admin\" -status 0 -am 0 -alert 9 -criticity 3 -comment \"User comments\" -tag \"tags\" \
+#\t-source \"Commandline\" -extra 3 -c_instructions \"Critical instructions\" \
+#\t-w_instructions \"Warning instructions\" -u_instructions \"Unknown instructions\" -owner \"other\" ";
 
-    #print "$0 -p http://localhost/pandora/include/api.php -u pot12,admin,pandora -validate_event -id 234";
+	print "\t$0 -p http://localhost/pandora_console/include/api.php -u 1234,admin,pandora \
+        \t-create_event -name \"SampleEvent\" -group 2 -type \"system\" -agent 189 -status 0 -user \"admin\" \
+        \t-criticity 3 -am 0 -alert 9 -c_instructions \"Critical instructions\" -w_instructions \"Warning instructions\" \
+        \t-u_instructions \"Unknown instructions\" -source \"Commandline\" -tag \"Tags\" -owner \"other\" ";
+    
     print "\n\n\n";
     exit;
 }
@@ -180,7 +177,6 @@ sub tool_api_main () {
 			help_screen ();
 		} else {
 			$id_group = $ARGV[8];
-			$data_event = $id_group;
 		}
 		
 		#~ id group (required)
@@ -189,7 +185,6 @@ sub tool_api_main () {
 			help_screen ();
 		} else {
 			$event_type = $ARGV[10];
-			$data_event .= ",".$event_type;
 		}
 
 		my $i = 0;
@@ -197,9 +192,6 @@ sub tool_api_main () {
 			my $line = $_;
 			if ($line eq '-agent') {
 				$id_agent = $ARGV[$i+1];
-			}
-			if ($line eq '-agent_name') {
-				$agent_name = $ARGV[$i+1];
 			}
 			if ($line eq '-user') {
 				$id_user = $ARGV[$i+1];
@@ -209,9 +201,6 @@ sub tool_api_main () {
 			}
 			if ($line eq '-am') {
 				$id_agent_module = $ARGV[$i+1];
-			}
-			if ($line eq '-module_name') {
-				$module_name = $ARGV[$i+1];
 			}
 			if ($line eq '-alert') {
 				$id_alert_am = $ARGV[$i+1];
@@ -228,9 +217,6 @@ sub tool_api_main () {
 			if ($line eq '-source') {
 				$source = $ARGV[$i+1];
 			}
-			if ($line eq '-extra') {
-				$id_extra = $ARGV[$i+1];
-			}
 			if ($line eq '-c_instructions') {
 				$critical_instructions = $ARGV[$i+1];
 			}
@@ -246,20 +232,15 @@ sub tool_api_main () {
 			$i++;
 		}
 
-		$data_event .= ",".$id_agent.",".$agent_name.",".$id_user.",".$status.",".$id_agent_module.",".$module_name.",".$id_alert_am.",".$criticity.",".$user_comment.",".$tags.",".$source.",".$id_extra.",".$critical_instructions.",".$warning_instructions.",".$unknown_instructions.",".$owner_user;
+		$data_event = $event_name.",".$id_group.",".$id_agent.",".$status.",".$id_user.",".$event_type.",".$criticity.",".$id_agent_module.",".$id_alert_am.",".$critical_instructions.",".$warning_instructions.",".$unknown_instructions.",".$user_comment.",".$owner_user.",".$source.",".$tags;
+
 		$call_api = $api_path.'?op=set&op2=create_event&id='.$event_name.'&other='.$data_event.'&other_mode=url_encode_separator_,&apipass='.$api_pass.'&user='.$db_user.'&pass='.$db_pass;
 
-	} #elsif ($ARGV[4] eq '-validate_event') {
-		#~ id event(required)	
-	#	if ($ARGV[5] ne '-id') {
-	#		print "[ERROR] Missing id event! Read help info:\n\n";
-	#		help_screen ();
-	#	} else {
-	#		$id_event = $ARGV[6];
-	#	}
-	#	
-	#	$call_api = $api_path.'?op=set&op2=validate_event_by_id&id='.$id_event.'&apipass='.$api_pass.'&user='.$db_user.'&pass='.$db_pass;
-	#} 
+		#DEBUG TRACE#
+
+		#print "$call_api\n";
+
+	}
 	
 	my @args = @ARGV;
  	my $ltotal=$#args; 
@@ -279,9 +260,7 @@ sub tool_api_main () {
 			} else {
 				print "Event ID: $content";
 			}
-		} #elsif ($option eq '-validate_event') {
-		#	print "[RESULT] $content";
-		#}
+		} 
 	}
 
     print "\nExiting!\n\n";

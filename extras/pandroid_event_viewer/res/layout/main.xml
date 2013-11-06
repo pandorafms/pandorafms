@@ -20,6 +20,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <!-- BEGIN THE HEADER -->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -32,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:padding="0dp"
-            android:src="@drawable/icon_refresh" />
+            android:src="@drawable/refrest_icon" />
         
         <LinearLayout
             android:layout_width="2px"
@@ -61,12 +62,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:padding="0dp"
-            android:src="@drawable/icon_filter" />
+            android:src="@drawable/filter_icon" />
     </LinearLayout>
      <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="2px"
             android:background="#6D9624" />
+    <!-- END THE HEADER -->
 
     <TextView
         style="@style/options_header"
@@ -98,7 +100,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:padding="0dp"
-                android:src="@drawable/cross" />
+                android:src="@drawable/delete"
+                android:background="@null" />
 
             <ImageButton
                 android:id="@+id/button_save_profile"
@@ -106,7 +109,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:padding="0dp"
-                android:src="@drawable/save" />
+                android:src="@drawable/save"
+                android:background="@null" />
         </LinearLayout>
 
         <Button

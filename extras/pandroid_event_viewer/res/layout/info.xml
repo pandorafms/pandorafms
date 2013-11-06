@@ -66,7 +66,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="10dp"
+            android:textColorLink="#a3a3a3" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -85,7 +86,8 @@
                 android:layout_marginLeft="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dont_show_again" />
+                android:text="@string/dont_show_again"
+                android:textColor="#a3a3a3" />
 
         </LinearLayout>
     </LinearLayout>

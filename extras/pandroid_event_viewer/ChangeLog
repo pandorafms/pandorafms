@@ -1,11 +1,20 @@
 2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/About.java,
+	res/layout/list_view_layout.xml, res/layout/main.xml,
+	res/layout/info.xml, res/drawable/btn_dropdown_pressed.9.png,
+	res/drawable/combobox_pressed.9.png, res/drawable/btn_dropdown.xml,
+	res/drawable-ldpi/save.png, res/drawable-ldpi/delete.png: changes
+	in the themes.
+
+2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/About.java,
 	res/values/styles.xml, res/layout/info.xml,
 	res/drawable/btn_dropdown.xml,
 	res/drawable/btn_dropdown_normal.9.png,
 	res/drawable/round_dialog.xml, res/drawable/combobox_normal.9.png,
-	AndroidManifest.xml: changes in th themes.
+	AndroidManifest.xml: changes in the themes.
 
 2013-11-05  Miguel de Dios  <miguel.dedios@artica.es>
 	

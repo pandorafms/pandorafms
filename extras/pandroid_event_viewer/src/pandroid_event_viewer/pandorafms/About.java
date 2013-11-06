@@ -41,7 +41,7 @@ public class About extends Activity {
 		
 		TextView text = (TextView) findViewById(R.id.url_pandora);
 		text.setText(Html
-			.fromHtml("<a href='http://pandorafms.org/'>PandoraFMS.org</a>"));
+			.fromHtml("<a href='http://pandorafms.org/'>www.PandoraFMS.org</a>"));
 		text.setMovementMethod(LinkMovementMethod.getInstance());
 		
 		CheckBox check_show = (CheckBox) findViewById(R.id.dont_show_again_extended);

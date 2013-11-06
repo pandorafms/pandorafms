@@ -244,7 +244,8 @@ public class EventList extends ListActivity {
 			temp = args.getString("group");
 			if (temp != null) {
 				group = temp;
-			} else {
+			}
+			else {
 				group = "";
 			}
 			dialog.findViewById(R.id.incident_create_button)
@@ -263,7 +264,8 @@ public class EventList extends ListActivity {
 										.getText().toString();
 								new SetNewIncidentAsyncTask().execute(title,
 										description, group);
-							} else {
+							}
+							else {
 								Toast.makeText(getApplicationContext(),
 										R.string.title_empty,
 										Toast.LENGTH_SHORT).show();
@@ -302,7 +304,8 @@ public class EventList extends ListActivity {
 			item.opened = !item.opened;
 			this.object.eventList.set(position, item);
 			la.notifyDataSetChanged();
-		} catch (IndexOutOfBoundsException e) {
+		}
+		catch (IndexOutOfBoundsException e) {
 
 		}
 	}
@@ -328,7 +331,8 @@ public class EventList extends ListActivity {
 							R.color.Green));
 					text = getApplicationContext().getString(
 							R.string.successful_validate_event_str);
-				} else {
+				}
+				else {
 					text = getApplicationContext().getString(
 							R.string.fail_validate_event_str);
 				}

@@ -14,10 +14,19 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingRight="8dp"
+    android:paddingLeft="4dp"
+    android:background="#242424"
+>
+<TableLayout
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFFFFF" >
+    android:background="#FFFFFF"
+    android:padding="5dp" >
 
     <TableRow style="@style/table_row" >
 
@@ -140,3 +149,4 @@
     </TableRow>
 
 </TableLayout>
+</LinearLayout>

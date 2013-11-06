@@ -101,8 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:padding="0dp"
-                android:src="@drawable/delete"
-                android:background="@null" />
+                android:background="@drawable/delete_icon_button" />
 
             <ImageButton
                 android:id="@+id/button_save_profile"
@@ -110,8 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:padding="0dp"
-                android:src="@drawable/save"
-                android:background="@null" />
+                android:background="@drawable/save_icon_button" />
         </LinearLayout>
 
         <Button

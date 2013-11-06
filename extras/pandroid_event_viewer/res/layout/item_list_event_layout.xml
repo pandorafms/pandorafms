@@ -18,16 +18,16 @@
     android:id="@+id/item_linear_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="#242424">
 
     <RelativeLayout
         android:id="@+id/content_event_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="1dp"
-        android:layout_marginBottom="1dp" >
+        android:padding="5dp"
+        android:background="#242424"
+        >
 
         <TextView
             android:id="@+id/event_name"
@@ -35,13 +35,15 @@
             android:layout_height="wrap_content"
             android:drawablePadding="5dp"
             android:textColor="#000"
-            android:textColorHighlight="#000" />
+            android:textColorHighlight="#000"
+            android:layout_margin="5dp" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/event_name"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:layout_margin="5dp" >
 
             <TextView
                 android:id="@+id/agent_name"
@@ -61,7 +63,8 @@
                 android:drawablePadding="10dp"
                 android:textColor="#000"
                 android:textColorHighlight="#000"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:paddingRight="5dp" />
         </LinearLayout>
     </RelativeLayout>
 

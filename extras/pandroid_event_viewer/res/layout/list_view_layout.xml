@@ -20,6 +20,7 @@
     android:orientation="vertical" >
 
     <!-- BEGIN THE HEADER -->
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -33,7 +34,7 @@
             android:layout_weight="0"
             android:padding="0dp"
             android:src="@drawable/refrest_icon" />
-        
+
         <LinearLayout
             android:layout_width="2px"
             android:layout_height="fill_parent"
@@ -49,7 +50,7 @@
             android:textColor="#ffffff"
             android:textSize="20dp"
             android:textStyle="bold" />
-        
+
         <LinearLayout
             android:layout_width="2px"
             android:layout_height="fill_parent"
@@ -63,51 +64,59 @@
             android:padding="0dp"
             android:src="@drawable/filter_icon" />
     </LinearLayout>
-     <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="2px"
-            android:background="#6D9624" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:background="#6D9624" />
     <!-- END THE HEADER -->
 
     <LinearLayout
-        android:id="@+id/loading_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="8dp"
+        android:background="#242424" >
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
+        <LinearLayout
+            android:id="@+id/loading_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="10dip" />
+            android:orientation="horizontal" >
 
-        <TextView
+            <ProgressBar
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dip" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/loading_label_str"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/empty_list_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_label_str"
+                android:textColor="#ffffff"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@id/android:list"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/loading_label_str"
-            android:textColor="#ffffff"
-            android:textStyle="bold" />
+            android:fadingEdge="none" />
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/empty_list_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/empty_label_str"
-            android:textColor="#ffffff"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <ListView
-        android:id="@id/android:list"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:fadingEdge="none" />
 
 </LinearLayout>

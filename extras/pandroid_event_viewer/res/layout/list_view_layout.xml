@@ -17,7 +17,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="#242424" >
 
     <!-- BEGIN THE HEADER -->
 
@@ -81,7 +82,8 @@
             android:id="@+id/loading_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:background="#242424" >
 
             <ProgressBar
                 style="?android:attr/progressBarStyleSmall"
@@ -102,6 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:background="#242424"
             android:visibility="gone" >
 
             <TextView
@@ -116,7 +119,8 @@
             android:id="@id/android:list"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:fadingEdge="none" />
+            android:fadingEdge="none"
+            android:background="#242424" />
     </LinearLayout>
 
 </LinearLayout>

@@ -2,6 +2,13 @@
 	
 	* src/pandroid_event_viewer/pandorafms/EventList.java,
 	res/layout/item_list_event_layout.xml,
+	res/layout/list_view_layout.xml,
+	res/layout/item_list_event_extended.xml: changes in the themes.
+
+2013-11-06  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/EventList.java,
+	res/layout/item_list_event_layout.xml,
 	res/layout/list_view_layout.xml, res/drawable/round_event_item.xml,
 	res/drawable/round_event_item_blue.xml,
 	res/drawable/round_event_item_green.xml,

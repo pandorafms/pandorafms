@@ -309,7 +309,8 @@
                         android:id="@+id/sound_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0" />
+                        android:layout_weight="0"
+                        android:background="@drawable/pandora_button" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -326,6 +327,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
+                android:background="@drawable/pandora_button"
                 android:text="@string/update_button_str" />
         </LinearLayout>
     </LinearLayout>

@@ -116,7 +116,8 @@
             android:id="@+id/button_set_as_filter_watcher"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/set_as_filter_watcher_button_str" />
+            android:text="@string/set_as_filter_watcher_button_str"
+            android:background="@drawable/pandora_button" />
 
         <LinearLayout
             android:layout_width="fill_parent"

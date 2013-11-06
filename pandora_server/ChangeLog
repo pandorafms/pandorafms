@@ -1,3 +1,9 @@
+2013-11-06  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_revent_create.pl: Adapt the script
+	of event creation to new API version. Fix by Tomas
+	in Incident #347
+
 2013-10-28  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Add check to update

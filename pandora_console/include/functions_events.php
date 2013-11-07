@@ -656,38 +656,78 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment', $m
 	// If the event hasn't owner, assign the user as owner
 	events_change_owner ($id_event, $similars);
 	
-	// Give old ugly format to comment. TODO: Change this method for aux table or json
-	$comment = str_replace(array("\r\n", "\r", "\n"), '<br>', $comment);
+	// Get the current event comments
+	$first_event = $id_event;
+	if (is_array($id_event)) {
+		$first_event = reset($id_event);
+	}
+	$event_comments = db_get_value('user_comment', 'tevento', 'id_evento', $first_event);
+	$event_comments_array = array();
 	
-	if ($comment != '') {
-		$commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$comment.'</div>';
+	if ($event_comments == '') {
+		$comments_format = 'new';
 	}
 	else {
-		$commentbox = '';
+		// If comments are not stored in json, the format is old
+		$event_comments_array = json_decode($event_comments);
+		
+		if (is_null($event_comments_array)) {
+			$comments_format = 'old';
+		}
+		else {
+			$comments_format = 'new';
+		}
 	}
-	
-	// Don't translate 'by' word because if various users with different languages 
-	// make comments in the same console will be a mess
-	$comment = '<b>-- ' . $action . ' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox.'<br>';
-	
-	// Update comment
-	switch ($config['dbtype']) {
-		// Oldstyle SQL to avoid innecesary PHP foreach
-		case 'mysql':
-			$sql_validation = "UPDATE $event_table 
-				SET user_comment = concat('" . $comment . "', user_comment) 
-				WHERE id_evento in (" . implode(',', $id_event) . ")";
+
+	switch($comments_format) {
+		case 'new':
+			$comment_for_json['comment'] = $comment;
+			$comment_for_json['action'] = $action;
+			$comment_for_json['id_user'] = $config['id_user'];
+			$comment_for_json['utimestamp'] = time();
 			
-			$ret = db_process_sql($sql_validation);
-			break;
-		case 'postgresql':
-		case 'oracle':
-			$sql_validation = "UPDATE $event_table 
-				SET user_comment='" . $comment . "' || user_comment) 
-				WHERE id_evento in (" . implode(',', $id_event) . ")";	
+			$event_comments_array[] = $comment_for_json;
 			
-			$ret = db_process_sql($sql_validation);
-			break;
+			$event_comments = json_encode($event_comments_array);
+			
+			// Update comment
+			$ret = db_process_sql_update($event_table,  array('user_comment' => $event_comments), array('id_evento' => implode(',', $id_event)));
+		break;
+		case 'old':
+			// Give old ugly format to comment. TODO: Change this method for aux table or json
+			$comment = str_replace(array("\r\n", "\r", "\n"), '<br>', $comment);
+			
+			if ($comment != '') {
+				$commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$comment.'</div>';
+			}
+			else {
+				$commentbox = '';
+			}
+			
+			// Don't translate 'by' word because if various users with different languages 
+			// make comments in the same console will be a mess
+			$comment = '<b>-- ' . $action . ' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox.'<br>';
+			
+			// Update comment
+			switch ($config['dbtype']) {
+				// Oldstyle SQL to avoid innecesary PHP foreach
+				case 'mysql':
+					$sql_validation = "UPDATE $event_table 
+						SET user_comment = concat('" . $comment . "', user_comment) 
+						WHERE id_evento in (" . implode(',', $id_event) . ")";
+					
+					$ret = db_process_sql($sql_validation);
+					break;
+				case 'postgresql':
+				case 'oracle':
+					$sql_validation = "UPDATE $event_table 
+						SET user_comment='" . $comment . "' || user_comment) 
+						WHERE id_evento in (" . implode(',', $id_event) . ")";	
+					
+					$ret = db_process_sql($sql_validation);
+					break;
+			}
+		break;
 	}
 	
 	if (($ret === false) || ($ret === 0)) {
@@ -2324,42 +2364,75 @@ function events_page_comments ($event) {
 	$table_comments->style[1] = 'text-align: left;';
 	$table_comments->class = "alternate rounded_cells";
 	
-	$comments_array = explode('<br>',io_safe_output($event["user_comment"]));
+	$event_comments = io_safe_output($event["user_comment"]);
 	
-	// Split comments and put in table
-	$col = 0;
-	$data = array();
+	// If comments are not stored in json, the format is old
+	$event_comments_array = json_decode($event_comments, true);
 	
-	foreach ($comments_array as $c) {
-		switch ($col) {
-			case 0:
-				$row_text = preg_replace('/\s*--\s*/',"",$c);
-				$row_text = preg_replace('/\<\/b\>/',"</i>",$row_text);
-				$row_text = preg_replace('/\[/',"</b><br><br><i>[",$row_text);
-				$row_text = preg_replace('/[\[|\]]/',"",$row_text);
-				break;
-			case 1:
-				$row_text = preg_replace("/[\r\n|\r|\n]/","<br>",io_safe_output(strip_tags($c)));
-				break;
-		}
-		
-		$data[$col] = $row_text;
-		
-		$col++;
-		
-		if($col == 2) {
-			$col = 0;
-			$table_comments->data[] = $data;
-			$data = array();
-		}
+	if (is_null($event_comments_array)) {
+		$comments_format = 'old';
 	}
+	else {
+		$comments_format = 'new';
+	}
+			
 	
-	if (count($comments_array) == 1 && $comments_array[0] == '') {
-		$table_comments->style[0] = 'text-align:center;';
-		$table_comments->colspan[0][0] = 2;
-		$data = array();
-		$data[0] = __('There are no comments');
-		$table_comments->data[] = $data;
+	switch($comments_format) {
+		case 'new':
+			if (empty($event_comments_array)) {
+				$table_comments->style[0] = 'text-align:center;';
+				$table_comments->colspan[0][0] = 2;
+				$data = array();
+				$data[0] = __('There are no comments');
+				$table_comments->data[] = $data;
+			}
+			
+			foreach($event_comments_array as $c) {
+				$data[0] = '<b>' . $c['action'] . ' by ' . $c['id_user'] . '</b>';
+				$data[0] .= '<br><br><i>' . date ($config["date_format"], $c['utimestamp']) . '</i>';
+				$data[1] = $c['comment'];
+				$table_comments->data[] = $data;
+			}
+			break;
+		case 'old':
+			$comments_array = explode('<br>',$event_comments);
+
+			// Split comments and put in table
+			$col = 0;
+			$data = array();
+			
+			foreach ($comments_array as $c) {
+				switch ($col) {
+					case 0:
+						$row_text = preg_replace('/\s*--\s*/',"",$c);
+						$row_text = preg_replace('/\<\/b\>/',"</i>",$row_text);
+						$row_text = preg_replace('/\[/',"</b><br><br><i>[",$row_text);
+						$row_text = preg_replace('/[\[|\]]/',"",$row_text);
+						break;
+					case 1:
+						$row_text = preg_replace("/[\r\n|\r|\n]/","<br>",io_safe_output(strip_tags($c)));
+						break;
+				}
+				
+				$data[$col] = $row_text;
+				
+				$col++;
+				
+				if($col == 2) {
+					$col = 0;
+					$table_comments->data[] = $data;
+					$data = array();
+				}
+			}
+			
+			if (count($comments_array) == 1 && $comments_array[0] == '') {
+				$table_comments->style[0] = 'text-align:center;';
+				$table_comments->colspan[0][0] = 2;
+				$data = array();
+				$data[0] = __('There are no comments');
+				$table_comments->data[] = $data;
+			}
+			break;
 	}
 	
 	if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {

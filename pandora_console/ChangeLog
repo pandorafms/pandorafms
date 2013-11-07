@@ -1,3 +1,11 @@
+2013-11-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php: Change the way of store
+	the event comments (supporting old way)
+
+	* include/functions_api.php: Improve API clean process
+	of the csv output.
+
 2013-11-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the validate event with the

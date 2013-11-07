@@ -1,3 +1,13 @@
+2013-11-07 Axel Amigo <axel.amigo@artica.es>
+
+	* ChangeLog: Added description of the last commit
+
+2013-11-07 Axel Amigo <axel.amigo@artica.es>
+
+	* pandora_server\lib\PandoraFMS\Config.pm: Added support for SNMP Forwarding tokens
+
+	*pandora_server\lib\PandoraFMS\SNMPServer.pm: Added new SNMP forwarding feature
+
 2013-11-06  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_revent_create.pl: Adapt the script

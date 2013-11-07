@@ -70,7 +70,7 @@ public class EventList extends ListActivity {
 	private MyAdapter la;
 	public PandroidEventviewerActivity object;
 	private BroadcastReceiver onBroadcast;
-	private Dialog creatingIncidentDialog;
+	public Dialog creatingIncidentDialog;
 	private Context context = this;
 	private View currentElement;
 
@@ -222,57 +222,54 @@ public class EventList extends ListActivity {
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		switch (id) {
-		case CREATE_INCIDENT_DIALOG:
-			final String group;
-			Dialog dialog = new Dialog(this);
-			dialog.setContentView(R.layout.create_incident);
-			dialog.setTitle(getString(R.string.create_incident));
-			final EditText titleEditText = (EditText) dialog
-					.findViewById(R.id.incident_title);
-			final EditText descriptionEditText = (EditText) dialog
-					.findViewById(R.id.incident_description);
-			String temp = args.getString("title");
+			case CREATE_INCIDENT_DIALOG:
+				final String group;
+				creatingIncidentDialog = new Dialog(this);
+				creatingIncidentDialog.setContentView(R.layout.create_incident);
+				creatingIncidentDialog.setTitle(getString(R.string.create_incident));
+				final EditText titleEditText = (EditText) creatingIncidentDialog
+						.findViewById(R.id.incident_title);
+				final EditText descriptionEditText = (EditText) creatingIncidentDialog
+						.findViewById(R.id.incident_description);
+				String temp = args.getString("title");
+	
+				if (temp != null) {
+					titleEditText.setText(temp);
+				}
+	
+				temp = args.getString("description");
+				if (temp != null) {
+					descriptionEditText.setText(temp);
+				}
+				temp = args.getString("group");
+				if (temp != null) {
+					group = temp;
+				}
+				else {
+					group = "";
+				}
+				creatingIncidentDialog.findViewById(R.id.incident_create_button)
+						.setOnClickListener(new OnClickListener() {
+	
+							public void onClick(View v) {
+								if (titleEditText != null
+										&& titleEditText.length() > 0) {
 
-			if (temp != null) {
-				titleEditText.setText(temp);
-			}
-
-			temp = args.getString("description");
-			if (temp != null) {
-				descriptionEditText.setText(temp);
-			}
-			temp = args.getString("group");
-			if (temp != null) {
-				group = temp;
-			}
-			else {
-				group = "";
-			}
-			dialog.findViewById(R.id.incident_create_button)
-					.setOnClickListener(new OnClickListener() {
-
-						public void onClick(View v) {
-							if (titleEditText != null
-									&& titleEditText.length() > 0) {
-								creatingIncidentDialog = ProgressDialog.show(
-										context, "",
-										getString(R.string.creating_incident),
-										true);
-								String title = titleEditText.getText()
-										.toString();
-								String description = descriptionEditText
-										.getText().toString();
-								new SetNewIncidentAsyncTask().execute(title,
-										description, group);
+									String title = titleEditText.getText()
+											.toString();
+									String description = descriptionEditText
+											.getText().toString();
+									new SetNewIncidentAsyncTask().execute(title,
+											description, group);
+								}
+								else {
+									Toast.makeText(getApplicationContext(),
+											R.string.title_empty,
+											Toast.LENGTH_SHORT).show();
+								}
 							}
-							else {
-								Toast.makeText(getApplicationContext(),
-										R.string.title_empty,
-										Toast.LENGTH_SHORT).show();
-							}
-						}
-					});
-			return dialog;
+						});
+				return creatingIncidentDialog;
 		}
 		return null;
 	}
@@ -612,9 +609,9 @@ public class EventList extends ListActivity {
 									Bundle b = new Bundle();
 									b.putString("group", item.group_name);
 									b.putString("title", item.event);
-									b.putString("description",
-										item.description_event);
+									b.putString("description", "");
 									showDialog(CREATE_INCIDENT_DIALOG, b);
+									Log.e("TEST", "TEST");
 								}
 							});
 					}
@@ -796,11 +793,17 @@ public class EventList extends ListActivity {
 		
 		@Override
 		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+			
 			if (result) {
 				Toast.makeText(getApplicationContext(),
 					R.string.incident_created, Toast.LENGTH_SHORT).show();
-				creatingIncidentDialog.dismiss();
-				finish();
+				if (creatingIncidentDialog != null && creatingIncidentDialog.isShowing()) {
+					creatingIncidentDialog.hide();
+					creatingIncidentDialog.dismiss();
+					creatingIncidentDialog = null;
+				}
+				
 			}
 			else {
 				Toast.makeText(getApplicationContext(),

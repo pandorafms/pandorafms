@@ -1,3 +1,8 @@
+2013-11-07 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the validate event with the
+	new validation form.
+
 2013-11-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/modificar_agente.php: Fixed a duplicated id.

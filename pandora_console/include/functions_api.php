@@ -5176,10 +5176,16 @@ function api_set_validate_events($id_event, $trash1, $other, $return_type, $user
 	$event = events_get_event ($id_event);
 	alerts_agent_module_standby ($event['id_alert_am'], 0);
 	
-	$result = events_validate_event ($id_event, false, $text);
+	$result = events_validate_event ($id_event, false, 1);
 	
 	if ($result) {
-		returnData('string', array('type' => 'string', 'data' => 'Correct validation'));
+		if (!empty($text)) {
+			//Set the comment for the validation
+			events_comment($id_event, $text);
+		}
+		
+		returnData('string',
+			array('type' => 'string', 'data' => 'Correct validation'));
 	}
 	else {
 		returnError('Error in validation operation.');

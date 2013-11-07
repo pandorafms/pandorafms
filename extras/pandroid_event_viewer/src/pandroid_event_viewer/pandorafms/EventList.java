@@ -18,6 +18,7 @@ package pandroid_event_viewer.pandorafms;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import android.app.Activity;
@@ -324,8 +325,19 @@ public class EventList extends ListActivity {
 			if (resultCode == RESULT_OK) {
 				String text;
 				if (data.getExtras().getBoolean("validated")) {
-					currentElement.setBackgroundColor(getResources().getColor(
-							R.color.Green));
+					
+					TextView timestamp = (TextView) currentElement
+						.findViewById(R.id.timestamp);
+					Core.setTextViewLeftImage(timestamp, getResources()
+						.getDrawable(R.drawable.tick), 24);
+					
+					for (int i = 0; i < this.object.eventList.size(); i++) {
+						int id_event = data.getIntExtra("id_event", -1);
+						
+						if (this.object.eventList.get(i).id_event == id_event)
+							this.object.eventList.get(i).status = 1;
+					}
+					
 					text = getApplicationContext().getString(
 							R.string.successful_validate_event_str);
 				}
@@ -770,7 +782,7 @@ public class EventList extends ListActivity {
 		}
 		API.createNewIncident(getApplicationContext(), incidentParams);
 	}
-
+	
 	/**
 	 * Performs the api call to add the new incident
 	 * 

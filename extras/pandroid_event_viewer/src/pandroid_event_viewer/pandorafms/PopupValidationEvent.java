@@ -102,7 +102,10 @@ public class PopupValidationEvent extends Activity {
 			else {
 				Intent resultIntent = new Intent();
 				resultIntent.putExtra("validated", result);
+				resultIntent.putExtra("id_event", id_event);
 				setResult(RESULT_OK, resultIntent);
+				
+				
 				finish();
 			}
 		}

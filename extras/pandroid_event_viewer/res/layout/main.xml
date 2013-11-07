@@ -21,6 +21,7 @@
     android:orientation="vertical" >
 
     <!-- BEGIN THE HEADER -->
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -32,9 +33,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:padding="0dp"
-            android:background="@drawable/refresh_icon_button" />
-        
+            android:background="@drawable/refresh_icon_button"
+            android:padding="0dp" />
+
         <LinearLayout
             android:layout_width="2px"
             android:layout_height="fill_parent"
@@ -49,7 +50,7 @@
             android:textColor="#ffffff"
             android:textSize="20dp"
             android:textStyle="bold" />
-        
+
         <LinearLayout
             android:layout_width="2px"
             android:layout_height="fill_parent"
@@ -60,14 +61,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:padding="0dp"
             android:background="@null"
+            android:padding="0dp"
             android:src="@drawable/icon_filter_pressed" />
     </LinearLayout>
-     <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="2px"
-            android:background="#6D9624" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:background="#6D9624" />
     <!-- END THE HEADER -->
 
     <TextView
@@ -100,31 +102,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:padding="0dp"
-                android:background="@drawable/delete_icon_button" />
+                android:background="@drawable/delete_icon_button"
+                android:padding="0dp" />
 
             <ImageButton
                 android:id="@+id/button_save_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:padding="0dp"
-                android:background="@drawable/save_icon_button" />
+                android:background="@drawable/save_icon_button"
+                android:padding="0dp" />
         </LinearLayout>
 
         <Button
             android:id="@+id/button_set_as_filter_watcher"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/set_as_filter_watcher_button_str"
-            android:background="@drawable/pandora_button" />
+            android:background="@drawable/pandora_button"
+            android:text="@string/set_as_filter_watcher_button_str" />
+    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="#ffffff" />
+    <TextView
+        style="@style/options_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:text="@string/filter_options_label_str" />
+
+    <LinearLayout
+        style="@style/margin_pandora"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
         <ScrollView
             android:layout_width="fill_parent"

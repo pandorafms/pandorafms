@@ -44,7 +44,7 @@
     <string name="load_more_events_button_str">Load more events</string>
     <string name="empty_label_str">Empty list events</string>
     <string name="refresh_time_label_str">Refresh time</string>
-    <string name="set_as_filter_watcher_button_str">Set background check filter</string>
+    <string name="set_as_filter_watcher_button_str">Set this filter for notifications</string>
     <string name="validate_event_button_str">Validate Event</string>
     <string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration failed.</string>
@@ -110,7 +110,8 @@
     <string name="options_not_saved">Options not saved.</string>
     <string name="notification_error_parsing">There was an error retrieving data from server.</string>
     <string name="save_profile_button_str">Save profile</string>
-    <string name="profile_label_str">Profile</string>
+    <string name="profile_label_str">Stored filters</string>
+    <string name="filter_options_label_str">Filter options</string>
     <string name="profile_name">Insert the profile\'s name</string>
     <string name="profile_saved">Profile saved</string>
     <string name="profile_already_exists">A profile with that name already exists.</string>

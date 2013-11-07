@@ -39,7 +39,9 @@
 	<string name="load_more_events_button_str">イベント読み込み</string>
 	<string name="empty_label_str">イベントがありません</string>
 	<string name="refresh_time_label_str">更新時間</string>
-	<string name="set_as_filter_watcher_button_str">デフォルトのフィルタ</string>
+	<string name="set_as_filter_watcher_button_str">Set this filter for notifications</string>
+	<string name="profile_label_str">Stored filters</string>
+	<string name="filter_options_label_str">Filter options</string>
 	<string name="config_update_succesful_str">設定を更新しました。</string>
 	<string name="config_update_fail_str">設定の更新に失敗しました。</string>
 	<string name="please_set_preferences_str">Pandora FMS の API URL、ユーザ、パスワードを設定してください。</string>

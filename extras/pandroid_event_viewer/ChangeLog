@@ -1,5 +1,11 @@
 2013-11-07  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* res/drawable/round_event_item_grey.xml,
+	res/drawable/round_event_item_blue.xml: added two lost colors,
+	thanks Carla ;) .
+
+2013-11-07  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/values-ja/strings.xml, res/values/strings.xml,
 	res/values-es/strings.xml, res/layout/main.xml: changes in the
 	themes.

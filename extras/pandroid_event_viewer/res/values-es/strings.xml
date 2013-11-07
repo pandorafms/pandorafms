@@ -34,7 +34,9 @@
 	<string name="load_more_events_button_str">Cargar mas eventos</string>
 	<string name="empty_label_str">Lista vacia de eventos</string>
 	<string name="refresh_time_label_str">Refresco scanner eventos</string>
-	<string name="set_as_filter_watcher_button_str">Filtro por defecto</string>
+	<string name="set_as_filter_watcher_button_str">Poner como filtro de notificaciones</string>
+	<string name="profile_label_str">Filtros guardados</string>
+	<string name="filter_options_label_str">Opciones filtro</string>
 	<string name="validate_event_button_str">Validar Evento</string>
 	<string name="config_update_succesful_str">Configuración guardada correctamente.</string>
 	<string name="config_update_fail_str">Configuración no ha podido guardarse..</string>

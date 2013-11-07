@@ -87,7 +87,8 @@ public class PopupValidationEvent extends Activity {
 			try {
 				return API.validateEvent(getApplicationContext(), idEvent,
 						comment);
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				connectionProblem = true;
 				return false;
 			}
@@ -97,7 +98,8 @@ public class PopupValidationEvent extends Activity {
 		protected void onPostExecute(Boolean result) {
 			if (connectionProblem) {
 				Core.showConnectionProblemToast(getApplicationContext(), true);
-			} else {
+			}
+			else {
 				Intent resultIntent = new Intent();
 				resultIntent.putExtra("validated", result);
 				setResult(RESULT_OK, resultIntent);

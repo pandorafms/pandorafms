@@ -1,5 +1,12 @@
 2013-11-07  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/EventList.java,
+	src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
+	res/layout/create_incident.xml: fixed the popup dialog for the
+	create incident.
+
+2013-11-07  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* res/drawable/round_event_item_grey.xml,
 	res/drawable/round_event_item_blue.xml: added two lost colors,
 	thanks Carla ;) .

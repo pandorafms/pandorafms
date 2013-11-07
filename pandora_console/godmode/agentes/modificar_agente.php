@@ -156,7 +156,7 @@ echo "</tr></table>";
 echo '<div style="text-align: right; float: right;">';
 echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 	html_print_input_hidden ('new_agent', 1);
-	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+	html_print_submit_button (__('Create agent'), 'crt-1', false, 'class="sub next"');
 echo "</form>";
 echo "</div>";
 
@@ -543,7 +543,7 @@ if (check_acl ($config["id_user"], 0, "AW")) {
 	echo '<div style="text-align: right; float: right;">';
 	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 	html_print_input_hidden ('new_agent', 1);
-	html_print_submit_button (__('Create agent'), 'crt', false,
+	html_print_submit_button (__('Create agent'), 'crt-2', false,
 		'class="sub next"');
 	echo "</form>";
 	echo '</div>';

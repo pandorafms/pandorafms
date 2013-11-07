@@ -1,3 +1,7 @@
+2013-11-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/modificar_agente.php: Fixed a duplicated id.
+
 2013-11-06  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php: Fix create event typo 

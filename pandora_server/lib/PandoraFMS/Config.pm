@@ -43,7 +43,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "5.0";
-my $pandora_build = "131107";
+my $pandora_build = "131017";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -329,6 +329,20 @@ sub pandora_load_config {
 	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
 	# -------------------------------------------------------------------------
+	
+	#SNMP Forwarding tokens
+	$pa_config->{"snmp_forward_trap"}=0;
+	$pa_config->{"snmp_forward_secName"}= '';
+	$pa_config->{"snmp_forward_engineid"}= '';
+	$pa_config->{"snmp_forward_authProtocol"}= '';
+	$pa_config->{"snmp_forward_authPassword"}= '';
+	$pa_config->{"snmp_forward_community"}= 'public';
+	$pa_config->{"snmp_forward_privProtocol"}= '';
+	$pa_config->{"snmp_forward_privPassword"}= '';
+	$pa_config->{"snmp_forward_secLevel"}= '';
+	$pa_config->{"snmp_forward_version"}= 2;
+	$pa_config->{"snmp_forward_ip"}= '';
+	                
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -705,6 +719,44 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^event_expiry_window\s+([0-9]*)/i) {
 			$pa_config->{'event_expiry_window'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^snmp_forward_trap\s+([0-1])/i) {
+			$pa_config->{'snmp_forward_trap'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^snmp_forward_secName\s(.*)/i) {
+			$pa_config->{'snmp_forward_secName'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^snmp_forward_engineid\s(.*)/i) {
+                        $pa_config->{'snmp_forward_engineid'}= safe_input($1);
+                }	
+		elsif ($parametro =~ m/^snmp_forward_authProtocol\s(.*)/i) {
+                        $pa_config->{'snmp_forward_authProtocol'}= safe_input($1);
+                }
+		elsif ($parametro =~ m/^snmp_forward_authPassword\s(.*)/i) {
+                        $pa_config->{'snmp_forward_authPassword'}= safe_input($1);
+                }
+		elsif ($parametro =~ m/^snmp_forward_community\s(.*)/i) {
+                        $pa_config->{'snmp_forward_community'}= safe_input($1);
+                }
+		elsif ($parametro =~ m/^snmp_forward_privProtocol\s(.*)/i) {
+                        $pa_config->{'snmp_forward_privProtocol'}= safe_input($1);
+                }
+		elsif ($parametro =~ m/^snmp_forward_privPassword\s(.*)/i) {
+                        $pa_config->{'snmp_forward_privPassword'}= safe_input($1);
+                }
+		elsif ($parametro =~ m/^snmp_forward_secLevel\s(.*)/i) {
+                        $pa_config->{'snmp_forward_secLevel'}= safe_input($1);
+                }
+		elsif ($parametro =~ m/^snmp_forward_version\s(.*)/i) {
+                        $pa_config->{'snmp_forward_version'}= safe_input($1);
+                }
+		elsif ($parametro =~ m/^snmp_forward_ip\s(.*)/i) {
+			$pa_config->{'snmp_forward_ip'}= safe_input($1);
+			if ($pa_config->{'snmp_forward_trap'}==1 && ($pa_config->{'snmp_forward_ip'} eq '127.0.0.1' || $pa_config->{'snmp_forward_ip'} eq 'localhost')) {
+				printf "\n [ERROR] Cannot set snmp_forward_ip to localhost or 127.0.0.1 \n";
+                		exit 1;
+
+			}
+                }
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

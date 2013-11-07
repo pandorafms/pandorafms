@@ -135,10 +135,14 @@ function returnData($returnType, $data, $separator = ';') {
 						if (!empty($data['data'])) {
 							foreach($data['data'] as $dataContent) {
 								$clean = array_map("array_apply_io_safe_output", $dataContent);
+								foreach($clean as $k => $v) {
+									$clean[$k] = str_replace("\r", "\n", $clean[$k]);
+									$clean[$k] = str_replace("\n", " ", $clean[$k]);
+									$clean[$k] = strip_tags($clean[$k]);
+									$clean[$k] = str_replace(';',' ',$clean[$k]);
+								}
 								$row = implode($separator, $clean);
-								$row = str_replace("\r", "\n", $row);
-								$row = str_replace("\n", " ", $row);
-								
+		
 								echo $row . "\n";
 							}
 						}
@@ -6116,6 +6120,9 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 	
 	$i = 0;
 	foreach ($event_data as $key => $data) {
+		$data = strip_tags($data);
+		$data = str_replace("\n",' ',$data);
+		$data = str_replace(';',' ',$data);
 		if ($i == 0)
 			$result = $key.': '.$data.'<br>';
 		else

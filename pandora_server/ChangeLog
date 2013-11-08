@@ -1,3 +1,7 @@
+2013-11-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server.spec: Copy the new pandora_server.conf.new to /etc/pandora/.
+
 2013-11-07 Axel Amigo <axel.amigo@artica.es>
 
 	* ChangeLog: Added description of the last commit

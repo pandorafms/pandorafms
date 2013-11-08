@@ -116,6 +116,9 @@
             android:id="@+id/comments_text"
             android:layout_width="wrap_content"
             android:singleLine="false"
+            android:ellipsize="none"
+            android:layout_weight="1"
+            android:scrollHorizontally="false"
             android:text="@string/empty"
             android:textColor="#000" />
     </TableRow>

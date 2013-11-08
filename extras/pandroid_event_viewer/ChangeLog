@@ -1,3 +1,11 @@
+2013-11-08  Sergio Martin <sergio.martin@artica.es>
+
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Adapt
+	the event comments to new storing format
+
+	* res/layout/item_list_event_extended.xml: Improve event 
+	comments layout to wrap the text to the container
+
 2013-11-07  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/EventList.java,

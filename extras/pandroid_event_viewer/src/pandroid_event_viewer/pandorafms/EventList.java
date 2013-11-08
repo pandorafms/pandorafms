@@ -17,9 +17,11 @@ GNU General Public License for more details.
 package pandroid_event_viewer.pandorafms;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -52,6 +54,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Activity where events are displayed.
@@ -537,14 +542,37 @@ public class EventList extends ListActivity {
 					}
 
 					if (item.user_comment.length() != 0) {
-						if (item.user_comment.length() > 200) {
-							item.user_comment = item.user_comment.substring(0,
-								197);
-							item.user_comment = item.user_comment.concat("...");
-						}
+						String comments = new String();
+						comments = "";
+						
+						try {
+							JSONArray mJsonArray = new JSONArray(item.user_comment);
+							JSONObject mJsonObject = new JSONObject();
+							for (int i = 0; i < mJsonArray.length(); i++) {
+							    mJsonObject = mJsonArray.getJSONObject(i);
+							    
+							    long comment_utimestamp = Integer.parseInt(mJsonObject.getString("utimestamp"));
+							    Date comment_date = new Date(comment_utimestamp * 1000);
+
+							    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					            String comment_date_str = formatter.format(comment_date);
+					            
+							    comments = comments + comment_date_str + "\n";
+							    comments = comments + mJsonObject.getString("action") + " by " + mJsonObject.getString("id_user") + "\n";
+							    comments = comments + "\"" + mJsonObject.getString("comment") + "\"" + "\n\n";
+							}			
+						} catch  (Exception e) {
+							// If comment is not stored as JSON (old format), clean it and show it as stored
+							item.user_comment = item.user_comment.replaceAll("^-- ", "\n");
+							item.user_comment = item.user_comment.replaceAll(" --$", "\n");
+							item.user_comment = item.user_comment.replaceAll(" --", "\n");
+							item.user_comment = item.user_comment.replaceAll("-- ", "\n\n");
+							comments = item.user_comment;
+					     }
+						
 						text = (TextView) viewEventExtended
 							.findViewById(R.id.comments_text);
-						text.setText(item.user_comment);
+						text.setText(comments);
 					}
 
 					if (item.group_name.length() != 0) {

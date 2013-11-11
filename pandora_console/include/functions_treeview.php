@@ -1211,7 +1211,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 			
 			$sql .= ' AND tagente.disabled = 0'. $search_sql;
 			
-			$sql .= ' ORDER BY tagente.nombre COLLATE utf8_general_ci ASC';
+			$sql .= ' GROUP BY tagente.id_agente ORDER BY tagente.nombre COLLATE utf8_general_ci ASC';
 			
 			break;
 	}

@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -442,7 +443,9 @@ public class EventList extends ListActivity {
 				final EventListItem item = this.object.eventList.get(position);
 				
 				
-				
+				TextView event_name = (TextView)view.findViewById(R.id.event_name);
+				TextView agent_name = (TextView)view.findViewById(R.id.agent_name);
+				TextView timestamp_textview = (TextView)view.findViewById(R.id.timestamp);
 				
 				switch (item.criticity) {
 					case 0:
@@ -459,6 +462,9 @@ public class EventList extends ListActivity {
 						view.findViewById(R.id.content_event_item).setBackgroundResource(
 								R.drawable.round_event_item_green
 								);
+						event_name.setTextColor(Color.parseColor("#ffffff"));
+						agent_name.setTextColor(Color.parseColor("#ffffff"));
+						timestamp_textview.setTextColor(Color.parseColor("#ffffff"));
 						break;
 					case 3:
 						view.findViewById(R.id.content_event_item).setBackgroundResource(
@@ -469,6 +475,9 @@ public class EventList extends ListActivity {
 						view.findViewById(R.id.content_event_item).setBackgroundResource(
 								R.drawable.round_event_item_red
 								);
+						event_name.setTextColor(Color.parseColor("#ffffff"));
+						agent_name.setTextColor(Color.parseColor("#ffffff"));
+						timestamp_textview.setTextColor(Color.parseColor("#ffffff"));
 						break;
 					default:
 						view.findViewById(R.id.content_event_item).setBackgroundResource(

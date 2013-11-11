@@ -1,3 +1,8 @@
+2013-11-11  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/EventList.java: changed the
+	style to show a better face the list of events.
+
 2013-11-08  Sergio Martin <sergio.martin@artica.es>
 
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Adapt

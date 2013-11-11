@@ -14,10 +14,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="15dp" >
+    android:layout_margin="15dp"
+    android:orientation="vertical" >
+<ScrollView 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    >
 
    <LinearLayout
         android:layout_width="fill_parent"
@@ -90,6 +96,20 @@
                 android:textColor="#a3a3a3" />
 
         </LinearLayout>
+        
+       
+        
     </LinearLayout>
 
 </ScrollView>
+
+ <Button
+    android:id="@+id/button_ok_about"
+    android:text="@string/text_ok_button"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:layout_weight="0"
+    android:background="@drawable/pandora_button"
+    />
+
+</LinearLayout>

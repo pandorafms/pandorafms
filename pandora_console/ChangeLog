@@ -1,3 +1,9 @@
+2013-11-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/OpenLayers/OpenLayers.js: Fix layer
+	order error that broke the zoom in google maps on GIS for 
+	incident #370
+
 2013-11-04  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_edit_modules.php: Added description

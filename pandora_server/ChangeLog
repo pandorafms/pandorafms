@@ -1,3 +1,8 @@
+2013-11-11  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Change the format of the comments when
+	create event from server to adapt it to new json format
+
 2013-11-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server.spec: Copy the new pandora_server.conf.new to /etc/pandora/.

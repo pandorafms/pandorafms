@@ -25,9 +25,19 @@ class Home {
 		require_once ($config["homedir"] . '/include/functions_graph.php');
 		
 		$ui = Ui::getInstance();
-		
+		$system = System::getInstance();	
+			
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Home"));
+		if ($system->getRequest('hide_logout', 0)) {
+			$left_button = null;
+		} else {
+			$left_button = $ui->createHeaderButton(
+				array('icon' => 'back',
+					'pos' => 'left',
+					'text' => __('Logout'),
+					'href' => 'index.php?action=logout'));
+		}
+		$ui->createHeader(__("PandoraFMS: Home"), $left_button);
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->beginForm("index.php?page=agents");

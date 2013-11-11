@@ -1,3 +1,8 @@
+2013-11-11  Alejandro Gallardo <alejandro.gallardo@artica.es>
+
+	* mobile/operation/home.php: Added an option to hide the
+	logout button.
+
 2013-11-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/OpenLayers/OpenLayers.js: Fix layer

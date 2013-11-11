@@ -108,7 +108,7 @@ use Time::Local;
 use POSIX qw(strftime);
 use threads;
 use threads::shared;
-use JSON qw(decode_json);
+use JSON qw(decode_json encode_json);
 use MIME::Base64;
 
 # Debugging
@@ -917,14 +917,6 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		# Field 8 (comments);
 		my $comment = $field8;
-		
-		if($comment ne '') {
-			# Get datetime for the comment of the event
-			my $datetime = strftime( "%F, %H:%M:%S %p", localtime(time));
-
-			# This format is necessary for the ugly parser of event comments. Will be changed in the future to json
-			$comment = "<b>-- Added comment by an alert [" . $datetime . "] --</b><br><div>" . $comment . "</div>";
-		}
 		
 		pandora_event ($pa_config, $event_text, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($fullagent) ? $fullagent->{'id_agente'} : 0), $priority, 0, 0, $event_type, 0, $dbh, $source, '', $comment, $id_extra, $tags);
 	# Validate event (field1: agent name; field2: module name)
@@ -2587,13 +2579,18 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
+	if($comment ne '') {
+		my @comment_data = ({ comment => $comment, action => "Added comment", id_user => "an alert", utimestamp => $utimestamp});
+		$comment = encode_json \@comment_data;
+	}
+	
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
 		db_do ($dbh, 'UPDATE tevento SET estado = 1, ack_utimestamp = ? WHERE estado = 0 AND id_extra=?', $utimestamp, $id_extra);
 	}
 	
-	# Update or create the event
+	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
 	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data)
 	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data);

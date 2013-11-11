@@ -1,5 +1,12 @@
 2013-11-11  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/OpenLayers/OpenLayers.js: Fix layer
+	order error that broke the zoom in google maps on GIS for 
+	incident #370
+	Merged from 4.1
+
+2013-11-11  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_treeview.php: Fix the agents query in
 	tree view of tags to avoid duplicated agents for
 	incident #349

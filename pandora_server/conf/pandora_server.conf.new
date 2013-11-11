@@ -339,6 +339,9 @@ webserver 1
 
 web_threads 1
 
+# Uncomment to perform web checks with CURL instead of LWP.
+#web_engine curl
+
 # Enable (1) or disable (0) Pandora FMS Inventory Server (PANDORA FMS ENTERPRISE ONLY).
 
 inventoryserver 1

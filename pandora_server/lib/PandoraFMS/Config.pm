@@ -223,6 +223,7 @@ sub pandora_load_config {
 	$pa_config->{"inventory_threads"} = 2; # 2.1
 	$pa_config->{"export_threads"} = 1; # 3.0
 	$pa_config->{"web_threads"} = 1; # 3.0
+	$pa_config->{"web_engine"} = 'lwp'; # 5.1
 	$pa_config->{"activate_gis"} = 0; # 3.1
 	$pa_config->{"location_error"} = 50; # 3.1
 	$pa_config->{"recon_reverse_geolocation_mode"} = 'disabled'; # 3.1
@@ -619,6 +620,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^web_threads\s([0-9]*)/i) {
 			$pa_config->{'web_threads'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^web_engine\s(.*)/i) {
+			$pa_config->{'web_engine'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmp_trapd\s(.*)/i) {
 			$pa_config->{'snmp_trapd'}= clean_blank($1); 

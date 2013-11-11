@@ -1,5 +1,12 @@
 2013-11-11  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/About.java,
+	res/values-es/strings.xml, res/layout/info.xml,
+	res/values-ja/strings.xml, res/values/strings.xml: added ok button
+	in the about view.
+
+2013-11-11  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/EventList.java: changed the
 	style to show a better face the list of events.
 

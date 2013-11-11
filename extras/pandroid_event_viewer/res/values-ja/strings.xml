@@ -80,4 +80,5 @@
 	<string name="empty">- 空 -</string>
 	<string name="timeout_connections_label_str">Timeout connections</string>
 	<string name="seconds_label_str">seconds</string>
+	<string name="text_ok_button">OK</string>
 </resources>

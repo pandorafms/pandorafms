@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -70,5 +71,16 @@ public class About extends Activity {
 				}
 			}
 		});
+		
+		
+		Button button = (Button) findViewById(R.id.button_ok_about);
+		button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		
+		
+		
 	}
 }

@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version     5.0
-%define release     131111
+%define release     131112
 
 Summary:            Pandora FMS Server
 Name:               %{name}

@@ -530,7 +530,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 			
 			// At this point macro_name is "macro_name macro_value"
 			pos = macro_name.find (" ");
-			if(pos != 0) {
+			if(pos != string::npos) {
 				// Split name of the macro y value
 				macro_value = macro_name.substr (pos + 1);
 				macro_name.erase(pos, macro_name.size () - pos);

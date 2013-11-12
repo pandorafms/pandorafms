@@ -1,3 +1,8 @@
+2013-11-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_factory.cc: Fixed a bug when a macro has
+	  no value.
+
 2013-09-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_inventory.cc: Do not output anything if the

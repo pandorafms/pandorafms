@@ -1,5 +1,11 @@
 2013-11-12 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* general/header.php: fixed the action to click in the search
+	bar with something wrote that before the javascript empty this
+	field, now it does not empty.
+
+2013-11-12 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/networkmap.php: changed the size of the field
 	for the name of networkmap.
 

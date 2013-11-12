@@ -1,3 +1,8 @@
+2013-11-12  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora.js: Fix ugly chars in the
+	title of the many select options.
+
 2013-11-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* general/header.php: fixed the action to click in the search

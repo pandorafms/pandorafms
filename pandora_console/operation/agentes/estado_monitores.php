@@ -648,7 +648,7 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	$table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
 	$table->data[0][4] = html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"', true);
 	$table->data[0][4] .= '</form>';
-	$table->data[0][5] = '<form action="" method="post">';
+	$table->data[0][5] = '<form action="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agent . '" method="post">';
 	$table->data[0][5] .= html_print_submit_button(__('Reset'), 'reset', false, 'class="sub upd"', true);
 	$table->data[0][5] .= '</form>';
 	html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"', true);

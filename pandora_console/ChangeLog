@@ -1,3 +1,12 @@
+2013-11-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/map_builder.php: added ids to the links for to
+	the make more easy the unit test.
+	
+	* godmode/reporting/visual_console_builder.editor.js,
+	include/functions_visual_map.php: fixed the simple value macros in
+	the editor.
+	
 2013-11-11  Alejandro Gallardo <alejandro.gallardo@artica.es>
 
 	* mobile/operation/home.php: Added an option to hide the

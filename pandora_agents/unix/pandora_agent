@@ -450,7 +450,7 @@ sub parse_conf_modules($) {
 			$module_begin = 0;
 			
 			# Check for invalid modules
-			next unless (($module->{'name'} ne '' && $module->{'func'} != 0) || $module->{'func'} == \&exec_plugin);
+			next unless (($module->{'name'} ne '' && $module->{'func'} != 0) || $module->{'func'} == \&module_plugin);
 
 			# Set the intensive interval
 			if ($module->{'is_intensive'} == 1) {				
@@ -476,7 +476,7 @@ sub parse_conf_modules($) {
 				init_module ($module);
 				
 				# Configure the plugin
-				$module->{'func'} = \&exec_plugin;
+				$module->{'func'} = \&module_plugin;
 				$module->{'params'} = $1;
 	
 				# Set the intensive interval
@@ -491,7 +491,7 @@ sub parse_conf_modules($) {
 							
 				push (@Modules, {%{$module}});
 			} else {
-				$module->{'func'} = \&exec_plugin;
+				$module->{'func'} = \&module_plugin;
 				$module->{'params'} = $1;
 			}
 		# Module proc command redefinition		
@@ -1640,6 +1640,14 @@ sub write_module_xml ($@) {
 	# No data
 	return unless (defined $data[0]);
 
+	# Is it a plugin?
+	if ($module->{'func'} == \&module_plugin) {
+		$Sem->down () if (defined ($Sem));
+		$Xml .= $data[0];
+		$Sem->up () if (defined ($Sem));
+		return;
+	}
+
 	# Critical section
 	$Sem->down () if (defined ($Sem));
 
@@ -1775,29 +1783,23 @@ sub udp_server ($$) {
 ################################################################################
 # Execute the given plugin.
 ################################################################################
-sub exec_plugin ($) {
+sub module_plugin ($) {
 	my $plugin = shift;
 
 	my $command = $plugin->{'params'};
 
 	# Empty plugin	
-	return if ($command eq '');
+	return () if ($command eq '');
 
 	# Execute the plugin
 	my $output = `$command 2>$DevNull`;
 
 	# Do not save the output if there was an error
 	if ($? != 0) {
-		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
-		return;
+		return ();
 	}
 
-	# Critical section
-	$Sem->down () if (defined ($Sem));
-	$Xml .= $output;
- 	$Sem->up () if (defined ($Sem));
-
-	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+	return ($output);
 }
 
 ################################################################################
@@ -2136,13 +2138,10 @@ while (1) {
 	# Execute modules
 	foreach my $module (@Modules) {
 
-		# Is it a plugin?
-		my $exec_func = ($module->{'func'} == \&exec_plugin) ? \&exec_plugin : \&exec_module;
-
 		# Execute the module in a separate thread
 		if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
 			$ThreadSem->down ();
-			my $thr = threads->create ($exec_func, $module);
+			my $thr = threads->create (\&exec_module, $module);
 			if (! defined ($thr)) {
 				$ThreadSem->up ();
 			} else {
@@ -2150,7 +2149,7 @@ while (1) {
 			}
 		# Execute the module
 		} else {
-			$exec_func->($module);
+			exec_module($module);
 		}
 	}
 

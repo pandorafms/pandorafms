@@ -304,7 +304,7 @@ $table->width = '95%';
 $table->class = 'databox';
 $table->data = array();
 $table->data[0][] = __('Name:') . '&nbsp;' .
-	html_print_input_text ('name', $name, '', 10, 25, true);
+	html_print_input_text ('name', $name, '', 25, 50, true);
 $table->data[0][] = __('Group:') . '&nbsp;' .
 	html_print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
 if ($activeTab == 'groups' || $activeTab == 'policies') {

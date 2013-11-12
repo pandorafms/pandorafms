@@ -229,7 +229,6 @@ function visual_map_print_item($layoutData) {
 				metaconsole_restore_db();
 			}
 			
-			echo ' <span id="simplevalue_' . $id . '" style="font-weight:bold;">' . $value . '</span>';
 			echo '</div>';
 			break;
 		case LABEL:

@@ -187,14 +187,12 @@ else {
 		if (check_acl ($config['id_user'], 0, "IW")) {
 			
 			if (!defined('METACONSOLE')) {
-				$data[3] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
-				$data[4] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
+				$data[3] = '<a class="copy_visualmap" href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
+				$data[4] = '<a class="delete_visualmap" href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
 			}
 			else {
-				
-				
-				$data[3] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
-				$data[4] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
+				$data[3] = '<a class="copy_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
+				$data[4] = '<a class="delete_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
 			}
 		}
 		array_push ($table->data, $data);

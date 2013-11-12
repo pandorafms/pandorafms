@@ -224,6 +224,7 @@ config_check();
 					$search_bar .= "value='" . $config['search_keywords'] . "'";
 				
 				$search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
+					onkeyup="javascript: fieldKeyWordEmpty = false;"
 					style="margin-top:5px;" class="search_input" />';
 				
 				//$search_bar .= 'onClick="javascript: document.quicksearch.submit()"';

@@ -1127,7 +1127,6 @@ function createItem(type, values, id_data) {
 			
 			item = $('<div id="' + id_data + '" class="item simple_value" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' +
-					'<strong>' + getModuleValue(id_data) + '</strong>' +
 				'</div>'
 			);
 			break;

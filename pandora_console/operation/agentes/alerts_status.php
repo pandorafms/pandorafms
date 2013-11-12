@@ -55,7 +55,7 @@ $alert_validate = (bool) get_parameter ('alert_validate', 0);
 $tab = get_parameter_get ("tab", null);
 
 $refr = (int)get_parameter('refr', 0);
-
+$pure = get_parameter('pure', 0);
 $url = 'index.php?sec=' . $sec . '&sec2=' . $sec2 . '&refr=' . $refr .
 	'&filter=' . $filter . '&filter_standby=' . $filter_standby .
 	'&ag_group=' . $id_group;
@@ -323,6 +323,10 @@ else {
 
 if ($tab != null) {
 	$url = $url.'&tab='.$tab;
+}
+
+if ($pure) {
+	$url .= '&pure='.$pure;
 }
 
 // Filter form

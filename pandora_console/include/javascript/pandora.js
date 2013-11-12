@@ -265,7 +265,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 						.append ($('<option></option>')
 							.html (s)
 							.attr ("value", i)
-							.attr("title", i));
+							.attr("title", s));
 					
 					$('#module').fadeIn ('normal');
 				});

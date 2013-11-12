@@ -1,3 +1,10 @@
+2013-11-12  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events.build_table.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/ver_agente.php: Fixed old link in 
+	module name in events list. Incident #369
+
 2013-11-12  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/agentes/alerts_status.php: Fixed bug displaying

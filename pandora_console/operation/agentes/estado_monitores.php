@@ -656,6 +656,12 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	
 	$form_text .= '';
 	
-	ui_toggle($form_text, __('Form filter'), __('Form filter'));
+	$filter_hidden = false;
+	
+	if ($status_filter_monitor == -1 && $status_text_monitor == '') {
+		$filter_hidden = true;
+	}
+	
+	ui_toggle($form_text, __('Form filter'), __('Form filter'), $filter_hidden);
 }
 ?>

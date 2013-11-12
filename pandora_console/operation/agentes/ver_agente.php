@@ -943,8 +943,11 @@ switch ($tab) {
 		break;
 	case "main":
 		require ("estado_generalagente.php");
+		echo "<a name='monitors'></a>";
 		require ("estado_monitores.php");
+		echo "<a name='alerts'></a>";
 		require ("alerts_status.php");
+		echo "<a name='events'></a>";
 		require ("status_events.php");
 		break;
 	case "data_view":

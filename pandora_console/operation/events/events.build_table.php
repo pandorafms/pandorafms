@@ -397,8 +397,9 @@ foreach ($result as $event) {
 			}
 		}
 		else {
-			$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">'
-				. db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]).'</a>';
+			$module_name = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]);
+			$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;status_text_monitor=' . io_safe_output($module_name) . '#monitors">'
+				. $module_name . '</a>';
 		}
 		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;

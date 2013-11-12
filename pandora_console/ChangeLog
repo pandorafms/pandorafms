@@ -1,5 +1,10 @@
 2013-11-12  Vanessa Gil <vanessa.gil@artica.es>
 
+	* operation/agentes/alerts_status.php: Fixed bug displaying
+	embedded metaconsole.
+
+2013-11-12  Vanessa Gil <vanessa.gil@artica.es>
+
 	* operation/agentes/status_monitor.php: Fixed search filter
 	in Monitor view.
 

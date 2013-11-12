@@ -1,5 +1,11 @@
 2013-11-12  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/estado_monitores.php: Added action url to
+	reset modules filter form work fine when the filter is a GET 
+	parameter
+
+2013-11-12  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/events/events.build_table.php
 	operation/agentes/estado_monitores.php
 	operation/agentes/ver_agente.php: Fixed old link in 

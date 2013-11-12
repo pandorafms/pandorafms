@@ -57,8 +57,8 @@ else {
 
 $offset = (int) get_parameter ('offset', 0);
 $status = (int) get_parameter ('status', 4);
-$modulegroup = (int) get_parameter ('modulegroup', -1);
-$tag_filter = (int) get_parameter('tag_filter', 0);
+$modulegroup = get_parameter ('modulegroup', -1);
+$tag_filter = get_parameter('tag_filter', 0);
 $refr = get_parameter('refr', 0);
 // Sort functionality
 
@@ -92,10 +92,13 @@ $sql_conditions_base = " WHERE tagente.id_agente = tagente_modulo.id_agente
 
 $sql_conditions = " AND tagente_modulo.disabled = 0 AND tagente.disabled = 0";
 
+
+$id_ag_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $ag_group);
+
 // Agent group selector
 if (!defined('METACONSOLE')) {
-	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
-		$sql_conditions_group = sprintf (" AND tagente.id_grupo = %d", $ag_group);
+	if ($ag_group > 0 && check_acl ($config["id_user"], $id_ag_group, "AR")) {
+		$sql_conditions_group = sprintf (" AND tagente.id_grupo = %d", $id_ag_group);
 	}
 	elseif ($user_groups != '') {
 		// User has explicit permission on group 1 ?
@@ -103,7 +106,7 @@ if (!defined('METACONSOLE')) {
 	}
 }
 else {
-	if ($ag_group != "0" && check_acl ($config["id_user"], $ag_group, "AR")) {
+	if ($ag_group != "0" && check_acl ($config["id_user"], $id_ag_group, "AR")) {
 		$sql_conditions_group = sprintf (" AND tagente.id_grupo IN ( SELECT id_grupo FROM tgrupo where nombre = '%s') ", $ag_group);
 	}
 	elseif ($user_groups != '') {
@@ -111,7 +114,6 @@ else {
 		$sql_conditions_group = " AND tagente.id_grupo IN (".$user_groups.")";
 	}
 }
-
 // Module group
 if (defined('METACONSOLE')) {
 	if ($modulegroup != '-1')
@@ -119,7 +121,9 @@ if (defined('METACONSOLE')) {
 			FROM tmodule_group WHERE name = '%s')", $modulegroup);	
 }
 else if ($modulegroup > -1) {
-	$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
+	
+	$id_modulegroup = db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $modulegroup);
+	$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $id_modulegroup);
 
 }
 
@@ -168,11 +172,12 @@ if ($tag_filter !== 0) {
 				WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
 			)";
 	}
-	else{
+	else{	
+		$id_tag_filter = db_get_value('id_tag', 'ttag', 'name', $tag_filter);
 		$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
 				FROM ttag_module
-				WHERE ttag_module.id_tag = " . $tag_filter . "
+				WHERE ttag_module.id_tag = " . $id_tag_filter . "
 			)";
 	
 	}

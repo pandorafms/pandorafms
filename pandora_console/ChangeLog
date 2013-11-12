@@ -1,3 +1,8 @@
+2013-11-12  Vanessa Gil <vanessa.gil@artica.es>
+
+	* operation/agentes/status_monitor.php: Fixed search filter
+	in Monitor view.
+
 2013-11-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora.js: Fix ugly chars in the

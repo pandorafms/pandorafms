@@ -309,7 +309,7 @@ echo "</div>";
 				);
 			}
 			else {
-				$('#shotcut_bar').css({height: 20}).animate({ height: '0' }, 900);
+				$('#shotcut_bar').css({height: 28}).animate({ height: '0' }, 900);
 				$('#shortcut_button').css({height: 40}).animate({ height: '22' }, 900);
 				jQuery.post ("ajax.php",
 					{"page" : "general/shortcut_bar",

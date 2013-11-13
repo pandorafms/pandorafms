@@ -132,54 +132,7 @@ else {
 
 visual_map_print_visual_map ($id_layout);
 
-$values = array ();
-$values[5] = human_time_description_raw (5);
-$values[30] = human_time_description_raw (30);
-$values[SECONDS_1MINUTE] = human_time_description_raw(SECONDS_1MINUTE);
-$values[SECONDS_2MINUTES] = human_time_description_raw(SECONDS_2MINUTES);
-$values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
-$values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
-$values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
-$table->width = '90%';
-$table->data = array ();
-$table->style = array ();
-$table->style[2] = 'text-align: center';
-$table->data[0][0] = __('Autorefresh time');
-
-if (empty($config["vc_refr"])) {
-	$vc_refr = true;
-	$config["vc_refr"] = $refr;
-}
-
-$table->data[0][1] = html_print_select ($values, 'refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
-$table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
-$table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
-
-if ($vc_refr) {
-	$config["vc_refr"] = 0;
-}
-
-echo '<div style="height:30px">&nbsp;</div>';
-
-if ($config['pure'] && ((int)get_parameter('refr', 0)) != 0) {
-	echo '<div id="countdown"><br /></div>';
-}
-
-echo '<div style="height:30px">&nbsp;</div>';
-
-if (!defined('METACONSOLE'))
-	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view">';
-else
-	echo '<form method="post" action="index.php?sec=screen&sec2=screens/screens&action=visualmap">';
-
-html_print_input_hidden ('pure', $config["pure"]);
-if (!defined('METACONSOLE'))
-	html_print_input_hidden ('id', $id_layout);
-else
-	html_print_input_hidden ('id_visualmap', $id_layout);
-html_print_table ($table);
-echo '</form>';
 
 if ($config["pure"] && ((int)get_parameter('refr', 0)) != 0) {
 	ui_require_jquery_file ('countdown');

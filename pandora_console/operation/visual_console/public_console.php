@@ -35,10 +35,6 @@ ob_start ('ui_process_page_head');
 
 require ('include/functions_visual_map.php');
 
-// Auto Refresh page (can now be disabled anywhere in the script)
-$config["refr"] = (int) get_parameter ("refr");
-$config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
-
 $hash = get_parameter ('hash');
 $id_layout = (int) get_parameter ('id_layout');
 $config["id_user"] = get_parameter ('id_user');
@@ -46,12 +42,11 @@ $config["id_user"] = get_parameter ('id_user');
 $myhash = md5($config["dbpass"].$id_layout. $config["id_user"]);
 
 // Check input hash
-if ( $myhash != $hash) {
+if ($myhash != $hash) {
 	exit;
 }
 
-$refr = (int) get_parameter ('refr', $config['vc_refr']);
-$vc_refr = false;
+$refr = (int) get_parameter ('refr', 0);
 $layout = db_get_row ('tlayout', 'id', $id_layout);
 
 if (! $layout) {
@@ -92,22 +87,13 @@ $table->style = array ();
 $table->style[2] = 'text-align: center';
 $table->data[0][0] = __('Autorefresh time');
 
-if (empty($config["vc_refr"])) {
-	$vc_refr = true;
-	$config["vc_refr"] = $refr;
-}
-
-$table->data[0][1] = html_print_select ($values, 'refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
+$table->data[0][1] = html_print_select ($values, 'refr', $refr, '', 'N/A', 0, true, false, false);
 $table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
 $table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
 
-if ($vc_refr) {
-	$config["vc_refr"] = 0;
-}
-
 echo '<div style="height:30px">&nbsp;</div>';
 
-if ($config['pure'] && $config["refr"] != 0) {
+if ($refr > 0) {
 	echo '<div id="countdown"><br /></div>';
 }
 
@@ -120,10 +106,12 @@ html_print_table ($table);
 echo '</form>';
 echo '</div>';
 
-if ($config["pure"] && $config["refr"] != 0) {
-	ui_require_jquery_file ('countdown');
-	ui_require_css_file ('countdown');
-}
+
+ui_require_jquery_file ('countdown');
+ui_require_css_file ('countdown');
+
+
+
 ui_require_javascript_file ('wz_jsgraphics');
 ui_require_javascript_file ('pandora_visual_console');
 ?>
@@ -135,11 +123,22 @@ $(document).ready (function () {
 	});
 	
 	<?php
-	if ($config["pure"] && $config["refr"] > 0) {
+	if ($refr > 0) {
 	?>
 		t = new Date();
-		t.setTime (t.getTime() + <?php echo $config["refr"] * 1000; ?>);
-		$("#countdown").countdown({until: t, format: 'MS', description: '<?php echo __('Until refresh'); ?>'});
+		t.setTime (t.getTime() + <?php echo $refr * 1000; ?>);
+		$("#countdown").countdown(
+			{
+				until: t,
+				format: 'MS',
+				description: '<?php echo __('Until refresh'); ?>',
+				onExpiry: function () {
+						href = "<?php echo ui_get_full_url();?>";
+						href = href + "&refr=<?php echo $refr;?>";
+						$(document).attr ("location", href);
+					}
+			}
+		);
 	
 	<?php
 	}

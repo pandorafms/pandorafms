@@ -1,3 +1,9 @@
+2013-11-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/visual_console/render_view.php,
+	operation/visual_console/public_console.php: fixed the refresh of
+	visualmaps.
+
 2013-11-12  Sergio Martin <sergio.martin@artica.es>
 
 	* general/shortcut_bar.php: Fix styles, icons and links of the

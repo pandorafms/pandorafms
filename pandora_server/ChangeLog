@@ -1,3 +1,9 @@
+2013-11-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Fixed a bug when a parent was defined but
+	  empty in the XML and an agent with an empty address existed in the
+	  database.
+
 2013-11-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm,

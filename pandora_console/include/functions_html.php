@@ -1639,22 +1639,30 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		
 	}
 	
-	if (!$relative) {
-		$src_tmp = $src;
-		$src = ui_get_full_url($src);
-	}
 	
 	// If metaconsole is activated and image doesn't exists try to search on normal console
+	
 	if (defined('METACONSOLE')) {
 		if (!$relative) {
-			if (false === @file_get_contents($src, 0, null, 0, 1)) {
-				$src = ui_get_full_url('../../' . $src_tmp); 
+			if (!is_readable("enterprise/meta/" . $src)) {
+				$src = ui_get_full_url('../../' . $src);
+				html_debug_print($src, true);
+			}
+			else {
+				html_debug_print("###### " . $src, true);
 			}
 		}
 		else {
 			$src = '../../' . $src;
 		}
 	}
+	else {
+		if (!$relative) {
+			$src_tmp = $src;
+			$src = ui_get_full_url($src);
+		}
+	}
+
 	
 	// Only return src field of image
 	if ($return_src) {

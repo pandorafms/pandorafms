@@ -228,7 +228,7 @@ sub process_xml_data ($$$$$) {
 	# Parent Agent Name
 	my $parent_id = 0; # Default value for unknown parent
 	my $parent_agent_name = $data->{'parent_agent_name'};
-	if (defined ($parent_agent_name)) {
+	if (defined ($parent_agent_name) && $parent_agent_name ne '') {
 		$parent_id = get_agent_id ($dbh, $parent_agent_name);
 		if ($parent_id < 1)	{ # Unknown parent
 			$parent_id = 0;

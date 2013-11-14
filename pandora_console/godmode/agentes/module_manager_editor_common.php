@@ -318,6 +318,7 @@ if ($moduletype == MODULE_DATA) {
     if ($__code_from == 'policies') {
 		// If is the policy form, module_interval will store the factor (not the seconds). 
 		// So server will transform it to interval in seconds
+		$table_advanced->data[2][1] = sprintf(__('Default') . ': 1' , $interval_factor) . ui_print_help_icon ('module_interval_factor', true);
 		$table_advanced->data[2][1] .= html_print_input_hidden('module_interval', $interval_factor, true);
 	}
 	

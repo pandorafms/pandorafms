@@ -1644,12 +1644,22 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	
 	if (defined('METACONSOLE')) {
 		if (!$relative) {
-			if (!is_readable("enterprise/meta/" . $src)) {
-				$src = ui_get_full_url('../../' . $src);
-				html_debug_print($src, true);
+			if (strstr(getcwd(), 'enterprise/meta') === false) {
+				if ($src[0] !== '/') {
+					$src = '/' . $src;
+				}
+				
+				if (!is_readable(getcwd() . '/enterprise/meta' . $src)) {
+					$src = ui_get_full_url('../..' . $src);
+				}
+				else {
+					$src = ui_get_full_url($src);
+				}
 			}
 			else {
-				html_debug_print("###### " . $src, true);
+				if (!is_readable($src)) {
+					$src = ui_get_full_url('../../' . $src);
+				}
 			}
 		}
 		else {
@@ -1662,7 +1672,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 			$src = ui_get_full_url($src);
 		}
 	}
-
+	
 	
 	// Only return src field of image
 	if ($return_src) {

@@ -123,6 +123,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$params['size'] = 30;
 			$params['selectbox_id'] = 'module';
 			$params['javascript_is_function_select'] = true;
+			$params['use_hidden_input_idagent'] = true;
+			$params['print_hidden_input_idagent'] = true;
 			if (defined('METACONSOLE')) {
 				$params['javascript_ajax_page'] = '../../ajax.php';
 				$params['disabled_javascript_on_blur_function'] = true;

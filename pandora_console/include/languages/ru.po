@@ -9,15 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-14 10:20+0200\n"
+"POT-Creation-Date: 2013-10-28 08:44+0100\n"
 "PO-Revision-Date: 2013-10-17 05:18+0000\n"
 "Last-Translator: Elena <translationservicesc@yahoo.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-10-28 07:24+0000\n"
-"X-Generator: Launchpad (build 16818)\n"
+"X-Launchpad-Export-Date: 2013-11-14 12:34+0000\n"
+"X-Generator: Launchpad (build 16820)\n"
 "Language: ru\n"
 
 #: ../../godmode/menu.php:28
@@ -180,7 +180,7 @@ msgstr "Разработчик GIS карт"
 #: ../../godmode/menu.php:151 ../../godmode/events/events.php:81
 #: ../../godmode/events/events.php:84
 #: ../../godmode/users/configure_profile.php:180
-#: ../../operation/events/events.php:297
+#: ../../operation/events/events.php:305
 msgid "Manage events"
 msgstr "Управление событиями"
 
@@ -314,7 +314,7 @@ msgstr "Обновить рекон скрипт"
 #: ../../godmode/agentes/configure_field.php:44
 #: ../../godmode/agentes/module_manager.php:479
 #: ../../godmode/agentes/module_manager_editor_common.php:130
-#: ../../godmode/agentes/module_manager_editor_common.php:489
+#: ../../godmode/agentes/module_manager_editor_common.php:501
 #: ../../godmode/groups/modu_group_list.php:181
 #: ../../godmode/groups/configure_modu_group.php:63
 #: ../../godmode/groups/configure_group.php:101
@@ -399,12 +399,12 @@ msgstr "Обновить рекон скрипт"
 #: ../../operation/agentes/networkmap_list.php:109
 #: ../../operation/gis_maps/index.php:33 ../../operation/search_maps.php:31
 #: ../../operation/extensions.php:47 ../../operation/search_users.php:41
-#: ../../include/functions_events.php:1899
-#: ../../include/functions_events.php:1954
+#: ../../include/functions_events.php:1907
+#: ../../include/functions_events.php:1962
 #: ../../include/functions_reporting.php:2494
-#: ../../include/functions_reporting.php:2600
-#: ../../include/functions_reporting.php:5908
-#: ../../include/functions_reporting.php:6059
+#: ../../include/functions_reporting.php:2602
+#: ../../include/functions_reporting.php:5947
+#: ../../include/functions_reporting.php:6098
 #: ../../include/functions_filemanager.php:517
 msgid "Name"
 msgstr "Имя"
@@ -548,12 +548,12 @@ msgstr "Полный путь скрипта"
 #: ../../operation/integria_incidents/incident_detail.php:435
 #: ../../operation/integria_incidents/incident.incident.php:112
 #: ../../operation/integria_incidents/incident.workunits.php:31
-#: ../../include/functions_events.php:1715
+#: ../../include/functions_events.php:1723
 #: ../../include/functions_reporting.php:2251
-#: ../../include/functions_reporting.php:5865
-#: ../../include/functions_reporting.php:5913
-#: ../../include/functions_reporting.php:6009
-#: ../../include/functions_reporting.php:6064
+#: ../../include/functions_reporting.php:5904
+#: ../../include/functions_reporting.php:5952
+#: ../../include/functions_reporting.php:6048
+#: ../../include/functions_reporting.php:6103
 #: ../../include/functions_treeview.php:105
 #: ../../include/functions_treeview.php:343
 #: ../../include/functions_snmp_browser.php:377
@@ -751,7 +751,7 @@ msgstr "Создать"
 #: ../../operation/agentes/datos_agente.php:211
 #: ../../operation/reporting/graph_viewer.php:190
 #: ../../operation/reporting/reporting_viewer.php:173
-#: ../../operation/events/events_list.php:468
+#: ../../operation/events/events_list.php:478
 #: ../../operation/users/user_edit.php:365
 #: ../../operation/snmpconsole/snmp_view.php:385
 #: ../../operation/integria_incidents/incident.incident.php:124
@@ -759,8 +759,8 @@ msgstr "Создать"
 #: ../../extensions/update_manager/settings.php:114
 #: ../../extensions/update_manager/main.php:149
 #: ../../extensions/update_manager/lib/functions.php:415
-#: ../../include/functions_events.php:1615
-#: ../../include/functions_events.php:1653
+#: ../../include/functions_events.php:1623
+#: ../../include/functions_events.php:1661
 #: ../../include/functions_visual_map_editor.php:242
 msgid "Update"
 msgstr "Обновить"
@@ -847,7 +847,7 @@ msgstr "Команда"
 #: ../../godmode/massive/massive_delete_profiles.php:131
 #: ../../godmode/massive/massive_delete_action_alerts.php:180
 #: ../../godmode/massive/massive_delete_alerts.php:231
-#: ../../godmode/massive/massive_delete_modules.php:306
+#: ../../godmode/massive/massive_delete_modules.php:308
 #: ../../godmode/snmpconsole/snmp_filters.php:141
 #: ../../godmode/snmpconsole/snmp_alert.php:734
 #: ../../godmode/setup/setup_visuals.php:108 ../../godmode/setup/links.php:137
@@ -916,13 +916,13 @@ msgstr "Команда"
 #: ../../operation/messages/message_list.php:193
 #: ../../operation/messages/message_list.php:204
 #: ../../operation/incidents/incident_detail.php:454
-#: ../../operation/snmpconsole/snmp_view.php:552
-#: ../../operation/snmpconsole/snmp_view.php:645
-#: ../../operation/snmpconsole/snmp_view.php:666
+#: ../../operation/snmpconsole/snmp_view.php:548
+#: ../../operation/snmpconsole/snmp_view.php:643
+#: ../../operation/snmpconsole/snmp_view.php:664
 #: ../../operation/integria_incidents/incident.files.php:46
 #: ../../operation/integria_incidents/incident_detail.php:391
 #: ../../extensions/update_manager/update_pandora.php:186
-#: ../../include/functions_groups.php:1467
+#: ../../include/functions_groups.php:1470
 msgid "Delete"
 msgstr "Удалить"
 
@@ -1048,7 +1048,7 @@ msgstr "Максимум попыток"
 #: ../../enterprise/include/functions_reporting_csv.php:774
 #: ../../enterprise/include/functions_reporting_pdf.php:872
 #: ../../include/functions_reports.php:557
-#: ../../include/functions_reporting.php:4434
+#: ../../include/functions_reporting.php:4472
 #: ../../include/ajax/events.php:294
 msgid "General"
 msgstr "Общие"
@@ -1162,7 +1162,7 @@ msgstr "Плагин удален успешно"
 #: ../../mobile/operation/events.php:447 ../../mobile/operation/events.php:577
 #: ../../mobile/operation/events.php:578
 #: ../../operation/netflow/nf_live_view.php:199
-#: ../../operation/agentes/status_monitor.php:798
+#: ../../operation/agentes/status_monitor.php:808
 #: ../../operation/agentes/estado_monitores.php:289
 #: ../../operation/agentes/networkmap_list.php:66
 #: ../../operation/agentes/networkmap_list.php:110
@@ -1171,12 +1171,12 @@ msgstr "Плагин удален успешно"
 #: ../../operation/events/sound_events.php:76
 #: ../../operation/snmpconsole/snmp_view.php:378
 #: ../../include/functions_events.php:844
-#: ../../include/functions_events.php:2203
+#: ../../include/functions_events.php:2211
 #: ../../include/functions_reporting.php:2250
 #: ../../include/functions_reporting.php:2495
-#: ../../include/functions_reporting.php:2601
-#: ../../include/functions_reporting.php:5909
-#: ../../include/functions_reporting.php:6060
+#: ../../include/functions_reporting.php:2603
+#: ../../include/functions_reporting.php:5948
+#: ../../include/functions_reporting.php:6099
 #: ../../include/functions_snmp_browser.php:372
 #: ../../include/functions_visual_map_editor.php:200
 msgid "Type"
@@ -1233,7 +1233,7 @@ msgstr "Опц."
 #: ../../operation/agentes/estado_agente.php:455
 #: ../../operation/agentes/networkmap_list.php:113
 #: ../../operation/search_reports.php:52
-#: ../../include/functions_groups.php:1461
+#: ../../include/functions_groups.php:1463
 msgid "Edit"
 msgstr "Редактировать"
 
@@ -1282,7 +1282,7 @@ msgstr "Все модули, которые используются данны�
 #: ../../godmode/massive/massive_add_action_alerts.php:174
 #: ../../godmode/massive/massive_operations.php:201
 #: ../../godmode/massive/massive_operations.php:210
-#: ../../godmode/massive/massive_delete_modules.php:304
+#: ../../godmode/massive/massive_delete_modules.php:306
 #: ../../godmode/snmpconsole/snmp_filters.php:140
 #: ../../godmode/setup/links.php:150 ../../godmode/setup/news.php:165
 #: ../../godmode/modules/manage_nc_groups.php:215
@@ -1333,17 +1333,17 @@ msgstr "Все модули, которые используются данны�
 #: ../../operation/agentes/networkmap_list.php:159
 #: ../../operation/messages/message_list.php:186
 #: ../../operation/messages/message_list.php:192
-#: ../../operation/events/events.php:693
+#: ../../operation/events/events.php:712
 #: ../../operation/events/events.build_table.php:586
 #: ../../operation/incidents/incident_detail.php:423
 #: ../../operation/incidents/incident_detail.php:470
-#: ../../operation/snmpconsole/snmp_view.php:552
-#: ../../operation/snmpconsole/snmp_view.php:645
+#: ../../operation/snmpconsole/snmp_view.php:548
+#: ../../operation/snmpconsole/snmp_view.php:643
 #: ../../operation/integria_incidents/incident_detail.php:360
 #: ../../operation/integria_incidents/incident_detail.php:401
-#: ../../include/functions_events.php:1670
+#: ../../include/functions_events.php:1678
 #: ../../include/functions_filemanager.php:643
-#: ../../include/functions_groups.php:1467
+#: ../../include/functions_groups.php:1470
 msgid "Are you sure?"
 msgstr "Вы уверены?"
 
@@ -1446,8 +1446,8 @@ msgstr "Режим"
 #: ../../godmode/massive/massive_edit_agents.php:248
 #: ../../godmode/massive/massive_add_alerts.php:131
 #: ../../godmode/massive/massive_add_profiles.php:88
-#: ../../godmode/massive/massive_copy_modules.php:72
-#: ../../godmode/massive/massive_copy_modules.php:157
+#: ../../godmode/massive/massive_copy_modules.php:74
+#: ../../godmode/massive/massive_copy_modules.php:159
 #: ../../godmode/massive/massive_enable_disable_alerts.php:130
 #: ../../godmode/massive/massive_standby_alerts.php:130
 #: ../../godmode/massive/massive_add_action_alerts.php:131
@@ -1530,8 +1530,8 @@ msgstr "Режим"
 #: ../../operation/netflow/nf_live_view.php:265
 #: ../../operation/agentes/exportdata.php:187
 #: ../../operation/agentes/alerts_status.functions.php:42
-#: ../../operation/agentes/status_monitor.php:337
-#: ../../operation/agentes/status_monitor.php:346
+#: ../../operation/agentes/status_monitor.php:347
+#: ../../operation/agentes/status_monitor.php:356
 #: ../../operation/agentes/estado_agente.php:160
 #: ../../operation/agentes/estado_agente.php:393
 #: ../../operation/agentes/networkmap_list.php:57
@@ -1553,11 +1553,11 @@ msgstr "Режим"
 #: ../../extensions/agents_alerts.php:73
 #: ../../extensions/agents_modules.php:81
 #: ../../include/functions_events.php:37
-#: ../../include/functions_events.php:2273
-#: ../../include/functions_reporting.php:5862
-#: ../../include/functions_reporting.php:5912
-#: ../../include/functions_reporting.php:6006
-#: ../../include/functions_reporting.php:6063
+#: ../../include/functions_events.php:2281
+#: ../../include/functions_reporting.php:5901
+#: ../../include/functions_reporting.php:5951
+#: ../../include/functions_reporting.php:6045
+#: ../../include/functions_reporting.php:6102
 #: ../../include/functions_networkmap.php:1333
 #: ../../include/functions_groups.php:699
 msgid "Group"
@@ -1592,7 +1592,7 @@ msgstr "инцидент"
 #: ../../operation/gis_maps/ajax.php:243 ../../operation/tree.php:511
 #: ../../operation/tree.php:547 ../../operation/search_agents.php:45
 #: ../../operation/search_agents.php:53
-#: ../../include/functions_events.php:1914
+#: ../../include/functions_events.php:1922
 msgid "OS"
 msgstr "ОС"
 
@@ -1601,7 +1601,7 @@ msgstr "ОС"
 #: ../../godmode/agentes/agent_manager.php:215
 #: ../../godmode/agentes/module_manager.php:494
 #: ../../godmode/agentes/module_manager_editor_common.php:308
-#: ../../godmode/agentes/module_manager_editor_common.php:318
+#: ../../godmode/agentes/module_manager_editor_common.php:330
 #: ../../godmode/massive/massive_edit_modules.php:360
 #: ../../godmode/massive/massive_edit_agents.php:251
 #: ../../godmode/modules/manage_network_components_form_common.php:102
@@ -1630,12 +1630,12 @@ msgstr "ОС"
 #: ../../operation/servers/recon_view.php:87
 #: ../../operation/netflow/nf_live_view.php:190
 #: ../../operation/agentes/estado_generalagente.php:186
-#: ../../operation/agentes/status_monitor.php:815
+#: ../../operation/agentes/status_monitor.php:825
 #: ../../operation/agentes/estado_agente.php:390
 #: ../../operation/search_modules.php:50 ../../operation/search_agents.php:46
 #: ../../operation/search_agents.php:56
-#: ../../include/functions_reporting.php:5914
-#: ../../include/functions_reporting.php:6065
+#: ../../include/functions_reporting.php:5953
+#: ../../include/functions_reporting.php:6104
 #: ../../include/functions_treeview.php:72
 #: ../../include/functions_treeview.php:339
 msgid "Interval"
@@ -1694,7 +1694,7 @@ msgstr "Порты"
 #: ../../operation/incidents/incident.php:370
 #: ../../operation/search_alerts.php:48
 #: ../../operation/snmpconsole/snmp_view.php:455
-#: ../../operation/snmpconsole/snmp_view.php:663
+#: ../../operation/snmpconsole/snmp_view.php:661
 #: ../../operation/integria_incidents/incident.list.php:103
 #: ../../extensions/agents_alerts.php:261
 #: ../../include/functions_ui_renders.php:97
@@ -1718,25 +1718,25 @@ msgstr "Действие"
 #: ../../operation/agentes/estado_generalagente.php:164
 #: ../../operation/agentes/estado_generalagente.php:233
 #: ../../operation/agentes/estado_generalagente.php:306
-#: ../../operation/snmpconsole/snmp_view.php:502
-#: ../../operation/snmpconsole/snmp_view.php:513
-#: ../../include/functions_events.php:1687
-#: ../../include/functions_events.php:1830
-#: ../../include/functions_events.php:1894
-#: ../../include/functions_events.php:1910
-#: ../../include/functions_events.php:1920
-#: ../../include/functions_events.php:1925
-#: ../../include/functions_events.php:1948
-#: ../../include/functions_events.php:2006
-#: ../../include/functions_events.php:2060
-#: ../../include/functions_events.php:2072
-#: ../../include/functions_events.php:2084
-#: ../../include/functions_events.php:2096
-#: ../../include/functions_events.php:2106
-#: ../../include/functions_events.php:2191
-#: ../../include/functions_events.php:2268
-#: ../../include/functions_events.php:2287
-#: ../../include/functions_events.php:2297
+#: ../../operation/snmpconsole/snmp_view.php:505
+#: ../../operation/snmpconsole/snmp_view.php:510
+#: ../../include/functions_events.php:1695
+#: ../../include/functions_events.php:1838
+#: ../../include/functions_events.php:1902
+#: ../../include/functions_events.php:1918
+#: ../../include/functions_events.php:1928
+#: ../../include/functions_events.php:1933
+#: ../../include/functions_events.php:1956
+#: ../../include/functions_events.php:2014
+#: ../../include/functions_events.php:2068
+#: ../../include/functions_events.php:2080
+#: ../../include/functions_events.php:2092
+#: ../../include/functions_events.php:2104
+#: ../../include/functions_events.php:2114
+#: ../../include/functions_events.php:2199
+#: ../../include/functions_events.php:2276
+#: ../../include/functions_events.php:2295
+#: ../../include/functions_events.php:2305
 #: ../../include/functions_reporting.php:2318
 #: ../../include/functions_reporting.php:2356
 #: ../../include/functions_treeview.php:126
@@ -1872,8 +1872,8 @@ msgstr "Да"
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1555
 #: ../../mobile/operation/events.php:188 ../../mobile/operation/events.php:195
 #: ../../operation/users/user_edit.php:254
-#: ../../include/functions_events.php:2211
-#: ../../include/functions_events.php:2218
+#: ../../include/functions_events.php:2219
+#: ../../include/functions_events.php:2226
 msgid "No"
 msgstr "Нет"
 
@@ -1960,12 +1960,12 @@ msgstr "Модуль шаблона"
 #: ../../godmode/agentes/agent_wizard.wmi_explorer.php:484
 #: ../../godmode/agentes/agent_wizard.snmp_interfaces_explorer.php:266
 #: ../../godmode/agentes/agent_wizard.snmp_interfaces_explorer.php:344
-#: ../../godmode/agentes/module_manager_editor_common.php:336
-#: ../../godmode/agentes/module_manager_editor_common.php:466
-#: ../../godmode/agentes/module_manager_editor_common.php:514
-#: ../../godmode/agentes/module_manager_editor_common.php:520
-#: ../../godmode/agentes/module_manager_editor_common.php:528
-#: ../../godmode/agentes/module_manager_editor_common.php:534
+#: ../../godmode/agentes/module_manager_editor_common.php:348
+#: ../../godmode/agentes/module_manager_editor_common.php:478
+#: ../../godmode/agentes/module_manager_editor_common.php:526
+#: ../../godmode/agentes/module_manager_editor_common.php:532
+#: ../../godmode/agentes/module_manager_editor_common.php:540
+#: ../../godmode/agentes/module_manager_editor_common.php:546
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:564
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:642
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:802
@@ -2016,14 +2016,14 @@ msgstr "Модуль шаблона"
 #: ../../godmode/massive/massive_delete_alerts.php:236
 #: ../../godmode/massive/massive_edit_agents.php:265
 #: ../../godmode/massive/massive_add_alerts.php:172
-#: ../../godmode/massive/massive_add_action_alerts.php:235
-#: ../../godmode/massive/massive_delete_modules.php:285
-#: ../../godmode/massive/massive_delete_modules.php:352
-#: ../../godmode/massive/massive_delete_modules.php:391
-#: ../../godmode/massive/massive_delete_modules.php:392
+#: ../../godmode/massive/massive_add_action_alerts.php:234
+#: ../../godmode/massive/massive_delete_modules.php:287
+#: ../../godmode/massive/massive_delete_modules.php:354
 #: ../../godmode/massive/massive_delete_modules.php:393
 #: ../../godmode/massive/massive_delete_modules.php:394
-#: ../../godmode/massive/massive_delete_modules.php:452
+#: ../../godmode/massive/massive_delete_modules.php:395
+#: ../../godmode/massive/massive_delete_modules.php:396
+#: ../../godmode/massive/massive_delete_modules.php:454
 #: ../../godmode/snmpconsole/snmp_alert.php:27
 #: ../../godmode/snmpconsole/snmp_alert.php:577
 #: ../../godmode/setup/os.builder.php:39
@@ -2125,15 +2125,15 @@ msgstr "Модуль шаблона"
 #: ../../operation/agentes/ver_agente.php:617
 #: ../../operation/agentes/ver_agente.php:627
 #: ../../operation/events/events_list.php:249
-#: ../../operation/events/events_list.php:572
+#: ../../operation/events/events_list.php:582
 #: ../../operation/users/user_edit.php:332
 #: ../../operation/snmpconsole/snmp_view.php:379
-#: ../../operation/snmpconsole/snmp_view.php:587
-#: ../../operation/snmpconsole/snmp_view.php:591
+#: ../../operation/snmpconsole/snmp_view.php:585
+#: ../../operation/snmpconsole/snmp_view.php:589
 #: ../../operation/integria_incidents/incident.incident.php:25
 #: ../../operation/integria_incidents/incident.list.php:42
-#: ../../include/functions_events.php:1607
-#: ../../include/functions_events.php:1614
+#: ../../include/functions_events.php:1615
+#: ../../include/functions_events.php:1622
 #: ../../include/functions_visual_map_editor.php:159
 #: ../../include/functions_visual_map_editor.php:306
 #: ../../include/functions.php:723
@@ -2305,7 +2305,7 @@ msgstr "Тактическая информация о сервере"
 #: ../../mobile/operation/modules.php:621
 #: ../../operation/servers/recon_view.php:93
 #: ../../operation/agentes/alerts_status.functions.php:57
-#: ../../operation/agentes/status_monitor.php:823
+#: ../../operation/agentes/status_monitor.php:833
 #: ../../operation/agentes/estado_monitores.php:296
 #: ../../operation/agentes/alerts_status.php:358
 #: ../../operation/agentes/alerts_status.php:396
@@ -2321,7 +2321,7 @@ msgstr "Тактическая информация о сервере"
 #: ../../operation/incidents/incident_detail.php:276
 #: ../../operation/snmpconsole/snmp_view.php:366
 #: ../../operation/snmpconsole/snmp_view.php:427
-#: ../../operation/snmpconsole/snmp_view.php:651
+#: ../../operation/snmpconsole/snmp_view.php:649
 #: ../../operation/integria_incidents/incident_detail.php:245
 #: ../../operation/integria_incidents/incident.incident.php:105
 #: ../../operation/integria_incidents/incident.list.php:58
@@ -2329,15 +2329,15 @@ msgstr "Тактическая информация о сервере"
 #: ../../operation/search_agents.php:64 ../../extensions/net_tools.php:199
 #: ../../extensions/agents_alerts.php:263
 #: ../../include/functions_events.php:38
-#: ../../include/functions_events.php:2251
+#: ../../include/functions_events.php:2259
 #: ../../include/functions_reporting.php:1615
 #: ../../include/functions_reporting.php:2492
-#: ../../include/functions_reporting.php:2599
-#: ../../include/functions_reporting.php:3250
-#: ../../include/functions_reporting.php:5866
-#: ../../include/functions_reporting.php:5916
-#: ../../include/functions_reporting.php:6010
-#: ../../include/functions_reporting.php:6067
+#: ../../include/functions_reporting.php:2601
+#: ../../include/functions_reporting.php:3254
+#: ../../include/functions_reporting.php:5905
+#: ../../include/functions_reporting.php:5955
+#: ../../include/functions_reporting.php:6049
+#: ../../include/functions_reporting.php:6106
 #: ../../include/functions_snmp_browser.php:397
 msgid "Status"
 msgstr "Состояние"
@@ -2365,8 +2365,8 @@ msgstr "Модулей запущено на сервере / Всего мод�
 #: ../../godmode/reporting/visual_console_builder.wizard.php:175
 #: ../../godmode/reporting/graph_builder.graph_editor.php:129
 #: ../../godmode/massive/massive_edit_modules.php:255
-#: ../../godmode/massive/massive_copy_modules.php:112
-#: ../../godmode/massive/massive_delete_modules.php:276
+#: ../../godmode/massive/massive_copy_modules.php:114
+#: ../../godmode/massive/massive_delete_modules.php:278
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:96
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:113
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:134
@@ -2399,7 +2399,7 @@ msgstr "Модулей запущено на сервере / Всего мод�
 #: ../../include/functions_reports.php:549
 #: ../../include/functions_reports.php:551
 #: ../../include/functions_reporting.php:2391
-#: ../../include/functions_reporting.php:5667
+#: ../../include/functions_reporting.php:5706
 #: ../../include/ajax/networkmap.ajax.php:104
 msgid "Modules"
 msgstr "Модули"
@@ -2464,7 +2464,7 @@ msgstr "Обновить Сервер"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1535
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1078
 #: ../../operation/gis_maps/ajax.php:240
-#: ../../include/functions_events.php:1909
+#: ../../include/functions_events.php:1917
 #: ../../include/functions_treeview.php:318
 msgid "IP Address"
 msgstr "IP адрес"
@@ -2562,7 +2562,7 @@ msgstr "Список элементов"
 #: ../../godmode/users/configure_user.php:384
 #: ../../godmode/massive/massive_delete_action_alerts.php:105
 #: ../../godmode/massive/massive_delete_alerts.php:156
-#: ../../godmode/massive/massive_delete_modules.php:96
+#: ../../godmode/massive/massive_delete_modules.php:98
 #: ../../godmode/snmpconsole/snmp_filters.php:76
 #: ../../godmode/snmpconsole/snmp_alert.php:277
 #: ../../godmode/setup/links.php:69 ../../godmode/setup/gis.php:57
@@ -2586,7 +2586,7 @@ msgstr "Список элементов"
 #: ../../operation/messages/message_list.php:73
 #: ../../operation/reporting/graph_viewer.php:34
 #: ../../operation/reporting/graph_viewer.php:41
-#: ../../operation/events/events.php:435
+#: ../../operation/events/events.php:443
 #: ../../operation/incidents/incident.php:60
 #: ../../operation/incidents/incident_detail.php:85
 #: ../../operation/incidents/incident_detail.php:114
@@ -2755,12 +2755,12 @@ msgstr "Фильтр:"
 #: ../../mobile/operation/groups.php:101 ../../mobile/operation/groups.php:102
 #: ../../mobile/operation/agents.php:35 ../../mobile/operation/modules.php:39
 #: ../../operation/netflow/nf_live_view.php:278
-#: ../../operation/agentes/status_monitor.php:360
+#: ../../operation/agentes/status_monitor.php:370
 #: ../../operation/agentes/estado_monitores.php:640
 #: ../../operation/agentes/estado_agente.php:178
 #: ../../operation/agentes/group_view.php:103 ../../operation/tree.php:628
-#: ../../include/functions_events.php:1416
-#: ../../include/functions_reporting.php:4377
+#: ../../include/functions_events.php:1424
+#: ../../include/functions_reporting.php:4415
 #: ../../include/functions_groups.php:768
 #: ../../include/functions_groups.php:770
 #: ../../include/functions_groups.php:771
@@ -2943,8 +2943,8 @@ msgstr "Просмотр журналов"
 #: ../../godmode/alerts/alert_list.php:323
 #: ../../godmode/massive/massive_edit_modules.php:222
 #: ../../godmode/massive/massive_edit_modules.php:246
-#: ../../godmode/massive/massive_delete_modules.php:243
-#: ../../godmode/massive/massive_delete_modules.php:267
+#: ../../godmode/massive/massive_delete_modules.php:245
+#: ../../godmode/massive/massive_delete_modules.php:269
 #: ../../godmode/setup/gis_step_2.php:154
 #: ../../godmode/modules/manage_network_templates_form.php:265
 #: ../../godmode/modules/manage_network_components.php:453
@@ -3005,14 +3005,15 @@ msgstr "Просмотр журналов"
 #: ../../mobile/operation/modules.php:38
 #: ../../operation/agentes/alerts_status.functions.php:47
 #: ../../operation/agentes/alerts_status.functions.php:53
-#: ../../operation/agentes/status_monitor.php:271
-#: ../../operation/agentes/status_monitor.php:332
-#: ../../operation/agentes/status_monitor.php:349
-#: ../../operation/agentes/status_monitor.php:367
-#: ../../operation/agentes/status_monitor.php:387
-#: ../../operation/agentes/status_monitor.php:405
-#: ../../operation/agentes/status_monitor.php:427
-#: ../../operation/agentes/status_monitor.php:430
+#: ../../operation/agentes/status_monitor.php:278
+#: ../../operation/agentes/status_monitor.php:339
+#: ../../operation/agentes/status_monitor.php:340
+#: ../../operation/agentes/status_monitor.php:359
+#: ../../operation/agentes/status_monitor.php:377
+#: ../../operation/agentes/status_monitor.php:397
+#: ../../operation/agentes/status_monitor.php:415
+#: ../../operation/agentes/status_monitor.php:437
+#: ../../operation/agentes/status_monitor.php:440
 #: ../../operation/agentes/estado_monitores.php:637
 #: ../../operation/agentes/networkmap.php:327
 #: ../../operation/agentes/networkmap.php:336
@@ -3020,14 +3021,14 @@ msgstr "Просмотр журналов"
 #: ../../operation/agentes/networkmap_list.php:72
 #: ../../operation/events/events_list.php:132
 #: ../../operation/events/events_list.php:377
-#: ../../operation/events/events_list.php:421
-#: ../../operation/events/events_list.php:423
-#: ../../operation/events/events_list.php:600
+#: ../../operation/events/events_list.php:430
+#: ../../operation/events/events_list.php:433
+#: ../../operation/events/events_list.php:610
 #: ../../operation/events/events_rss.php:77
-#: ../../operation/events/events.php:195 ../../operation/events/events.php:201
+#: ../../operation/events/events.php:203 ../../operation/events/events.php:209
 #: ../../operation/events/events.build_table.php:375
 #: ../../operation/events/export_csv.php:54
-#: ../../operation/events/events.build_query.php:96
+#: ../../operation/events/events.build_query.php:110
 #: ../../operation/gis_maps/render_view.php:128 ../../operation/tree.php:627
 #: ../../operation/snmpconsole/snmp_view.php:338
 #: ../../operation/snmpconsole/snmp_view.php:342
@@ -3036,7 +3037,7 @@ msgstr "Просмотр журналов"
 #: ../../operation/snmpconsole/snmp_view.php:368
 #: ../../operation/snmpconsole/snmp_view.php:459
 #: ../../extensions/agents_modules.php:77
-#: ../../include/functions_reporting.php:5589
+#: ../../include/functions_reporting.php:5628
 #: ../../include/functions_groups.php:577
 #: ../../include/functions_users.php:172 ../../include/functions_users.php:177
 #: ../../include/functions_graph.php:1905 ../../include/functions.php:720
@@ -3088,7 +3089,7 @@ msgstr "Свободный текст для поиска (*)"
 #: ../../godmode/admin_access_logs.php:68
 #: ../../godmode/events/event_edit_filter.php:217
 #: ../../mobile/operation/events.php:601
-#: ../../operation/events/events_list.php:431
+#: ../../operation/events/events_list.php:441
 msgid "Max. hours old"
 msgstr "Максимальный возраст (в часах)"
 
@@ -3098,8 +3099,8 @@ msgstr "Максимальный возраст (в часах)"
 #: ../../enterprise/include/functions_reporting_pdf.php:3691
 #: ../../enterprise/include/functions_reporting_pdf.php:3826
 #: ../../extensions/users_connected.php:78 ../../extensions/api_checker.php:90
-#: ../../include/functions_reporting.php:5864
-#: ../../include/functions_reporting.php:6008
+#: ../../include/functions_reporting.php:5903
+#: ../../include/functions_reporting.php:6047
 #: ../../include/functions_visual_map_editor.php:389
 msgid "IP"
 msgstr "IP"
@@ -3123,7 +3124,7 @@ msgstr "IP"
 #: ../../operation/integria_incidents/incident.tracking.php:23
 #: ../../extensions/users_connected.php:79
 #: ../../extensions/insert_data.php:170
-#: ../../include/functions_reporting.php:4170
+#: ../../include/functions_reporting.php:4208
 msgid "Date"
 msgstr "Дата"
 
@@ -3216,7 +3217,7 @@ msgstr "Вид"
 #: ../../godmode/alerts/alert_special_days.php:43
 #: ../../godmode/alerts/alert_list.php:291
 #: ../../godmode/alerts/alert_list.php:294
-#: ../../godmode/massive/massive_copy_modules.php:121
+#: ../../godmode/massive/massive_copy_modules.php:123
 #: ../../enterprise/godmode/services/services.service.php:253
 #: ../../enterprise/godmode/policies/policies.php:304
 #: ../../enterprise/godmode/alerts/alert_events_list.php:57
@@ -3249,7 +3250,7 @@ msgstr "Вид"
 #: ../../include/functions_reports.php:584
 #: ../../include/functions_reports.php:586
 #: ../../include/functions_reporting.php:2400
-#: ../../include/functions_reporting.php:4412
+#: ../../include/functions_reporting.php:4450
 #: ../../include/functions_graph.php:667
 #: ../../include/functions_graph.php:2830
 #: ../../include/functions_graph.php:3405
@@ -3296,7 +3297,7 @@ msgstr "Раздел"
 #: ../../include/functions_reports.php:599
 #: ../../include/functions_reports.php:600
 #: ../../include/functions_reports.php:602
-#: ../../include/functions_reporting.php:5790
+#: ../../include/functions_reporting.php:5829
 msgid "Inventory"
 msgstr "Опись"
 
@@ -3318,7 +3319,7 @@ msgstr "Агент плагинов"
 #: ../../operation/events/events.build_table.php:100
 #: ../../operation/snmpconsole/snmp_view.php:345
 #: ../../operation/snmpconsole/snmp_view.php:451
-#: ../../operation/snmpconsole/snmp_view.php:657
+#: ../../operation/snmpconsole/snmp_view.php:655
 #: ../../include/functions_events.php:42
 #: ../../include/functions_events.php:931
 msgid "Alert"
@@ -3330,17 +3331,17 @@ msgid "Gis"
 msgstr "гис"
 
 #: ../../godmode/agentes/configurar_agente.php:455
-#: ../../godmode/agentes/configurar_agente.php:1443
+#: ../../godmode/agentes/configurar_agente.php:1444
 msgid "SNMP Wizard"
 msgstr "Master SNMP"
 
 #: ../../godmode/agentes/configurar_agente.php:458
-#: ../../godmode/agentes/configurar_agente.php:1449
+#: ../../godmode/agentes/configurar_agente.php:1450
 msgid "SNMP Interfaces wizard"
 msgstr "Мастер интерфейсов SNMP"
 
 #: ../../godmode/agentes/configurar_agente.php:461
-#: ../../godmode/agentes/configurar_agente.php:1455
+#: ../../godmode/agentes/configurar_agente.php:1456
 msgid "WMI Wizard"
 msgstr "Мастер WMI"
 
@@ -3467,12 +3468,12 @@ msgstr "Модуль удален"
 msgid "copy of %s"
 msgstr "копия %s"
 
-#: ../../godmode/agentes/configurar_agente.php:1269
+#: ../../godmode/agentes/configurar_agente.php:1270
 #, php-format
 msgid "copy of %s (%d)"
 msgstr "копия %s (%d)"
 
-#: ../../godmode/agentes/configurar_agente.php:1301
+#: ../../godmode/agentes/configurar_agente.php:1302
 #: ../../godmode/agentes/modificar_agente.php:110
 #: ../../godmode/alerts/alert_list.php:199
 #: ../../godmode/users/user_list.php:207
@@ -3485,7 +3486,7 @@ msgstr "копия %s (%d)"
 msgid "Successfully enabled"
 msgstr "Успешно включено"
 
-#: ../../godmode/agentes/configurar_agente.php:1301
+#: ../../godmode/agentes/configurar_agente.php:1302
 #: ../../godmode/agentes/modificar_agente.php:110
 #: ../../godmode/alerts/alert_list.php:199
 #: ../../godmode/massive/massive_enable_disable_alerts.php:78
@@ -3497,7 +3498,7 @@ msgstr "Успешно включено"
 msgid "Could not be enabled"
 msgstr "Не удается включить"
 
-#: ../../godmode/agentes/configurar_agente.php:1315
+#: ../../godmode/agentes/configurar_agente.php:1316
 #: ../../godmode/agentes/modificar_agente.php:124
 #: ../../godmode/alerts/alert_list.php:215
 #: ../../godmode/users/user_list.php:202
@@ -3510,7 +3511,7 @@ msgstr "Не удается включить"
 msgid "Successfully disabled"
 msgstr "Успешно отключено"
 
-#: ../../godmode/agentes/configurar_agente.php:1315
+#: ../../godmode/agentes/configurar_agente.php:1316
 #: ../../godmode/agentes/modificar_agente.php:124
 #: ../../godmode/alerts/alert_list.php:215
 #: ../../godmode/massive/massive_enable_disable_alerts.php:96
@@ -3522,23 +3523,23 @@ msgstr "Успешно отключено"
 msgid "Could not be disabled"
 msgstr "Не удается отключить"
 
-#: ../../godmode/agentes/configurar_agente.php:1343
+#: ../../godmode/agentes/configurar_agente.php:1344
 #: ../../include/functions_api.php:5222
 msgid "Save by Pandora Console"
 msgstr "Сохранено на Pandora Console"
 
-#: ../../godmode/agentes/configurar_agente.php:1358
+#: ../../godmode/agentes/configurar_agente.php:1359
 #: ../../include/functions_api.php:5223
 msgid "Update by Pandora Console"
 msgstr "Обновлено Pandora Console"
 
-#: ../../godmode/agentes/configurar_agente.php:1371
+#: ../../godmode/agentes/configurar_agente.php:1372
 #: ../../include/functions_api.php:5224
 msgid "Insert by Pandora Console"
 msgstr "Вставлено Pandora Console"
 
-#: ../../godmode/agentes/configurar_agente.php:1422
-#: ../../godmode/agentes/configurar_agente.php:1432
+#: ../../godmode/agentes/configurar_agente.php:1423
+#: ../../godmode/agentes/configurar_agente.php:1433
 msgid "Invalid tab specified"
 msgstr "Указана неверная вкладка"
 
@@ -3576,7 +3577,7 @@ msgstr "ID"
 #: ../../operation/integria_incidents/incident_detail.php:283
 #: ../../operation/integria_incidents/incident.incident.php:99
 #: ../../operation/integria_incidents/incident.list.php:98
-#: ../../include/functions_events.php:2038
+#: ../../include/functions_events.php:2046
 #: ../../include/functions_reporting.php:1674
 msgid "Priority"
 msgstr "Приоритет"
@@ -3584,7 +3585,7 @@ msgstr "Приоритет"
 #: ../../godmode/agentes/agent_incidents.php:82
 #: ../../godmode/events/custom_events.php:104
 #: ../../godmode/events/custom_events.php:160
-#: ../../godmode/massive/massive_copy_modules.php:87
+#: ../../godmode/massive/massive_copy_modules.php:89
 #: ../../enterprise/meta/advanced/synchronizing.user.php:530
 #: ../../enterprise/meta/advanced/synchronizing.component.php:294
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:317
@@ -3600,8 +3601,8 @@ msgstr "Приоритет"
 #: ../../operation/integria_incidents/incident_detail.php:255
 #: ../../operation/integria_incidents/incident.incident.php:103
 #: ../../include/functions_events.php:46
-#: ../../include/functions_events.php:2011
-#: ../../include/functions_events.php:2101
+#: ../../include/functions_events.php:2019
+#: ../../include/functions_events.php:2109
 msgid "Source"
 msgstr "Источник"
 
@@ -3616,7 +3617,7 @@ msgstr "Источник"
 #: ../../operation/integria_incidents/incident_detail.php:237
 #: ../../operation/integria_incidents/incident.list.php:102
 #: ../../include/functions_events.php:48
-#: ../../include/functions_events.php:2189
+#: ../../include/functions_events.php:2197
 msgid "Owner"
 msgstr "Владелец"
 
@@ -3678,7 +3679,7 @@ msgstr "Рекурсия"
 #: ../../enterprise/operation/agentes/agent_inventory.php:85
 #: ../../enterprise/extensions/translate_string.php:260
 #: ../../general/ui/agents_list.php:80 ../../general/ui/agents_list.php:91
-#: ../../operation/agentes/status_monitor.php:437
+#: ../../operation/agentes/status_monitor.php:447
 #: ../../operation/agentes/estado_agente.php:172
 #: ../../operation/agentes/estado_agente.php:190
 #: ../../operation/search_results.php:131
@@ -3693,7 +3694,7 @@ msgstr "Поиск"
 #: ../../enterprise/meta/monitoring/wizard/wizard.agent.php:69
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:197
 #: ../../operation/agentes/estado_agente.php:199
-#: ../../operation/snmpconsole/snmp_view.php:490
+#: ../../operation/snmpconsole/snmp_view.php:493
 msgid "Create agent"
 msgstr "Создать агента"
 
@@ -3710,8 +3711,8 @@ msgstr "Создать агента"
 #: ../../operation/events/events.build_table.php:63
 #: ../../include/functions_events.php:35
 #: ../../include/functions_events.php:851
-#: ../../include/functions_reporting.php:5861
-#: ../../include/functions_reporting.php:6005
+#: ../../include/functions_reporting.php:5900
+#: ../../include/functions_reporting.php:6044
 #: ../../include/functions_treeview.php:300
 msgid "Agent name"
 msgstr "Название агента"
@@ -3730,7 +3731,7 @@ msgstr "R"
 #: ../../godmode/agentes/agent_manager.php:339
 #: ../../godmode/agentes/planned_downtime.list.php:233
 #: ../../godmode/agentes/module_manager.php:559
-#: ../../godmode/agentes/module_manager_editor_common.php:436
+#: ../../godmode/agentes/module_manager_editor_common.php:448
 #: ../../godmode/massive/massive_edit_modules.php:463
 #: ../../godmode/massive/massive_edit_agents.php:359
 #: ../../mobile/operation/agent.php:93
@@ -3768,8 +3769,8 @@ msgstr "\"Тихий\" режим"
 #: ../../operation/agentes/alerts_status.functions.php:50
 #: ../../operation/search_agents.php:90
 #: ../../extensions/update_manager/lib/libupdate_manager.php:814
-#: ../../include/functions_reporting.php:5887
-#: ../../include/functions_reporting.php:6027
+#: ../../include/functions_reporting.php:5926
+#: ../../include/functions_reporting.php:6066
 #: ../../include/functions_treeview.php:65
 #: ../../include/functions_treeview.php:312
 #: ../../include/functions_groups.php:1455
@@ -3929,7 +3930,7 @@ msgstr "Настроить время"
 #: ../../godmode/agentes/planned_downtime.editor.php:334
 #: ../../enterprise/include/functions_reporting_pdf.php:3581
 #: ../../enterprise/include/functions_reporting_pdf.php:3652
-#: ../../include/functions_reporting.php:2910
+#: ../../include/functions_reporting.php:2914
 msgid "From:"
 msgstr "От:"
 
@@ -3953,7 +3954,7 @@ msgstr "Формат времени в Pandora - часы(24 часа): мину
 
 #: ../../godmode/agentes/planned_downtime.editor.php:345
 #: ../../enterprise/include/functions_reporting_pdf.php:3653
-#: ../../include/functions_reporting.php:2911
+#: ../../include/functions_reporting.php:2915
 msgid "To:"
 msgstr "Куда:"
 
@@ -4085,7 +4086,7 @@ msgstr "Здесь нет запланированных простоев"
 #: ../../operation/agentes/ver_agente.php:432
 #: ../../operation/gis_maps/ajax.php:213 ../../operation/gis_maps/ajax.php:263
 #: ../../operation/search_users.php:47 ../../operation/search_agents.php:66
-#: ../../include/functions_events.php:1919
+#: ../../include/functions_events.php:1927
 #: ../../include/functions_treeview.php:348
 msgid "Last contact"
 msgstr "Последний контакт"
@@ -4185,10 +4186,10 @@ msgstr "Некоторые модули"
 #: ../../extensions/module_groups.php:43 ../../extensions/insert_data.php:162
 #: ../../include/functions_reporting.php:1723
 #: ../../include/functions_reporting.php:1834
-#: ../../include/functions_reporting.php:3246
-#: ../../include/functions_reporting.php:4472
-#: ../../include/functions_reporting.php:4998
-#: ../../include/functions_reporting.php:5297
+#: ../../include/functions_reporting.php:3250
+#: ../../include/functions_reporting.php:4510
+#: ../../include/functions_reporting.php:5036
+#: ../../include/functions_reporting.php:5335
 #: ../../include/functions_visual_map_editor.php:148
 msgid "Module"
 msgstr "Модули"
@@ -4351,8 +4352,8 @@ msgstr "Источник модуля"
 #: ../../godmode/gis_maps/configure_gis_map.php:426
 #: ../../godmode/alerts/alert_list.builder.php:55
 #: ../../godmode/alerts/alert_list.list.php:331
-#: ../../godmode/massive/massive_copy_modules.php:77
-#: ../../godmode/massive/massive_copy_modules.php:162
+#: ../../godmode/massive/massive_copy_modules.php:79
+#: ../../godmode/massive/massive_copy_modules.php:164
 #: ../../godmode/massive/massive_enable_disable_alerts.php:148
 #: ../../godmode/massive/massive_enable_disable_alerts.php:165
 #: ../../godmode/massive/massive_standby_alerts.php:149
@@ -4411,7 +4412,7 @@ msgstr "Источник модуля"
 #: ../../mobile/operation/modules.php:402
 #: ../../operation/agentes/exportdata.php:87
 #: ../../operation/agentes/exportdata.csv.php:77
-#: ../../operation/agentes/status_monitor.php:792
+#: ../../operation/agentes/status_monitor.php:802
 #: ../../operation/agentes/alerts_status.php:353
 #: ../../operation/agentes/alerts_status.php:423
 #: ../../operation/agentes/exportdata.excel.php:76
@@ -4429,12 +4430,12 @@ msgstr "Источник модуля"
 #: ../../include/functions_reporting.php:1833
 #: ../../include/functions_reporting.php:2179
 #: ../../include/functions_reporting.php:2390
-#: ../../include/functions_reporting.php:2602
-#: ../../include/functions_reporting.php:3245
-#: ../../include/functions_reporting.php:4471
-#: ../../include/functions_reporting.php:4696
-#: ../../include/functions_reporting.php:4997
-#: ../../include/functions_reporting.php:5296
+#: ../../include/functions_reporting.php:2604
+#: ../../include/functions_reporting.php:3249
+#: ../../include/functions_reporting.php:4509
+#: ../../include/functions_reporting.php:4734
+#: ../../include/functions_reporting.php:5035
+#: ../../include/functions_reporting.php:5334
 #: ../../include/functions_visual_map_editor.php:114
 msgid "Agent"
 msgstr "Агент"
@@ -4831,7 +4832,7 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:275
 #: ../../enterprise/godmode/alerts/alert_events_list.php:545
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:361
-#: ../../operation/events/events_list.php:441
+#: ../../operation/events/events_list.php:451
 #: ../../include/functions_visual_map_editor.php:263
 msgid "Advanced options"
 msgstr "Дополнительные параметры"
@@ -4846,7 +4847,7 @@ msgstr "Дополнительные параметры"
 #: ../../enterprise/meta/event/custom_events.php:83
 #: ../../operation/agentes/ver_agente.php:799
 #: ../../operation/agentes/ver_agente.php:914
-#: ../../include/functions_events.php:1929
+#: ../../include/functions_events.php:1937
 msgid "Custom fields"
 msgstr "Пользовательские поля"
 
@@ -5168,8 +5169,8 @@ msgstr "Сервис"
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:871
 #: ../../godmode/events/event_edit_filter.php:226
 #: ../../mobile/operation/events.php:451
-#: ../../operation/events/events_list.php:433
-#: ../../include/functions_events.php:2208
+#: ../../operation/events/events_list.php:443
+#: ../../include/functions_events.php:2216
 msgid "Repeated"
 msgstr "Повторенные"
 
@@ -5249,7 +5250,7 @@ msgstr "Нет доступных данных для показа"
 #: ../../enterprise/operation/agentes/policy_view.php:48
 #: ../../enterprise/extensions/resource_exportation/functions.php:17
 #: ../../enterprise/include/functions_policies.php:3386
-#: ../../operation/agentes/status_monitor.php:790
+#: ../../operation/agentes/status_monitor.php:800
 #: ../../operation/agentes/estado_monitores.php:286
 #: ../../operation/agentes/alerts_status.php:344
 #: ../../operation/agentes/alerts_status.php:383
@@ -5263,7 +5264,7 @@ msgstr "Правило"
 #: ../../enterprise/godmode/agentes/inventory_manager.php:220
 #: ../../enterprise/godmode/agentes/collection_manager.php:130
 #: ../../enterprise/operation/agentes/collection_view.php:62
-#: ../../operation/agentes/status_monitor.php:790
+#: ../../operation/agentes/status_monitor.php:800
 #: ../../operation/agentes/estado_monitores.php:286
 #: ../../operation/agentes/alerts_status.php:344
 #: ../../operation/agentes/alerts_status.php:383
@@ -5289,7 +5290,7 @@ msgid "S."
 msgstr "S."
 
 #: ../../godmode/agentes/module_manager.php:499
-#: ../../operation/agentes/status_monitor.php:834
+#: ../../operation/agentes/status_monitor.php:844
 #: ../../operation/agentes/estado_monitores.php:299
 msgid "Warn"
 msgstr "Предупреждение"
@@ -5538,11 +5539,11 @@ msgstr "Удалить модуль"
 #: ../../mobile/operation/modules.php:140
 #: ../../mobile/operation/modules.php:220
 #: ../../mobile/operation/modules.php:221
-#: ../../operation/agentes/status_monitor.php:373
+#: ../../operation/agentes/status_monitor.php:383
 #: ../../operation/agentes/networkmap.php:311
 #: ../../operation/agentes/ver_agente.php:571
 #: ../../extensions/agents_modules.php:75
-#: ../../include/functions_events.php:1968
+#: ../../include/functions_events.php:1976
 #: ../../include/functions_treeview.php:94
 msgid "Module group"
 msgstr "Группа модулей"
@@ -5550,7 +5551,7 @@ msgstr "Группа модулей"
 #: ../../godmode/agentes/module_manager_editor_common.php:223
 #: ../../godmode/massive/massive_edit_modules.php:395
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1372
-#: ../../operation/agentes/status_monitor.php:385
+#: ../../operation/agentes/status_monitor.php:395
 #: ../../include/functions_treeview.php:99
 msgid "Not assigned"
 msgstr "Не назначено"
@@ -5642,12 +5643,13 @@ msgstr "FF интервал"
 msgid "Module execution flip flop time interval (in secs)."
 msgstr "Модуль выполнения за интервал времени флип-флоп (в секундах)."
 
-#: ../../godmode/agentes/module_manager_editor_common.php:315
+#: ../../godmode/agentes/module_manager_editor_common.php:314
+#: ../../godmode/agentes/module_manager_editor_common.php:317
 #, php-format
 msgid "Agent interval x %s"
 msgstr "Агент интервал x %s"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:323
+#: ../../godmode/agentes/module_manager_editor_common.php:335
 #: ../../godmode/massive/massive_edit_modules.php:365
 #: ../../godmode/modules/manage_network_components_form_wmi.php:56
 #: ../../godmode/modules/manage_network_components_form_plugin.php:27
@@ -5656,52 +5658,52 @@ msgstr "Агент интервал x %s"
 msgid "Post process"
 msgstr "Заключительная обработка"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:327
+#: ../../godmode/agentes/module_manager_editor_common.php:339
 #: ../../godmode/modules/manage_network_components_form_common.php:138
 #: ../../enterprise/godmode/modules/configure_local_component.php:235
 #: ../../enterprise/include/functions_reporting_pdf.php:2796
 #: ../../enterprise/include/functions_reporting_xml.php:521
 #: ../../operation/reporting/reporting_xml.php:568
 #: ../../include/functions_reports.php:546
-#: ../../include/functions_reporting.php:3620
+#: ../../include/functions_reporting.php:3624
 #: ../../include/functions_graph.php:640
 #: ../../include/functions_graph.php:2822
 msgid "Min. Value"
 msgstr "Минимальное значение"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:330
+#: ../../godmode/agentes/module_manager_editor_common.php:342
 msgid "Any value below this number is discarted."
 msgstr "Любое значение ниже этого числа отбрасывается."
 
-#: ../../godmode/agentes/module_manager_editor_common.php:331
+#: ../../godmode/agentes/module_manager_editor_common.php:343
 #: ../../godmode/modules/manage_network_components_form_common.php:140
 #: ../../enterprise/godmode/modules/configure_local_component.php:240
 #: ../../enterprise/include/functions_reporting_pdf.php:2824
 #: ../../enterprise/include/functions_reporting_xml.php:507
 #: ../../operation/reporting/reporting_xml.php:554
 #: ../../include/functions_reports.php:544
-#: ../../include/functions_reporting.php:3593
+#: ../../include/functions_reporting.php:3597
 #: ../../include/functions_graph.php:640
 #: ../../include/functions_graph.php:2821
 msgid "Max. Value"
 msgstr "Максимальное значение"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:332
+#: ../../godmode/agentes/module_manager_editor_common.php:344
 msgid "Any value over this number is discarted."
 msgstr "Любое значение выше этого числа отбрасывается."
 
-#: ../../godmode/agentes/module_manager_editor_common.php:334
+#: ../../godmode/agentes/module_manager_editor_common.php:346
 #: ../../godmode/massive/massive_edit_modules.php:406
 msgid "Export target"
 msgstr "Контрольные цифры по экспорту"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:341
+#: ../../godmode/agentes/module_manager_editor_common.php:353
 #: ../../enterprise/godmode/policies/policy_modules.php:22
 #: ../../enterprise/godmode/policies/policy_modules.php:925
 msgid "Not needed"
 msgstr "Не требуется"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:345
+#: ../../godmode/agentes/module_manager_editor_common.php:357
 msgid ""
 "In case you use an Export server you can link this module and export data to "
 "one these."
@@ -5709,14 +5711,14 @@ msgstr ""
 "В случае, если вы используете сервер экспорта вы можете соединить этот "
 "модуль и данные экспорта в одно."
 
-#: ../../godmode/agentes/module_manager_editor_common.php:359
+#: ../../godmode/agentes/module_manager_editor_common.php:371
 #: ../../godmode/massive/massive_edit_modules.php:443
 #: ../../godmode/modules/manage_network_components_form_common.php:145
 #: ../../enterprise/godmode/modules/configure_local_component.php:147
 msgid "Throw unknown events"
 msgstr "Сбросить неизвестные события"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:363
+#: ../../godmode/agentes/module_manager_editor_common.php:375
 #: ../../godmode/massive/massive_edit_modules.php:412
 #: ../../godmode/modules/manage_network_components_form_common.php:142
 #: ../../enterprise/godmode/modules/configure_local_component.php:242
@@ -5728,8 +5730,8 @@ msgstr "Сбросить неизвестные события"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1480
 #: ../../enterprise/include/functions_reporting_pdf.php:3737
 #: ../../enterprise/include/functions_reporting_pdf.php:3876
-#: ../../include/functions_reporting.php:5915
-#: ../../include/functions_reporting.php:6066
+#: ../../include/functions_reporting.php:5954
+#: ../../include/functions_reporting.php:6105
 #: ../../include/functions_netflow.php:920
 #: ../../include/functions_netflow.php:929
 #: ../../include/functions_netflow.php:947
@@ -5741,82 +5743,82 @@ msgstr "Сбросить неизвестные события"
 msgid "Unit"
 msgstr "Единица"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:371
+#: ../../godmode/agentes/module_manager_editor_common.php:383
 #: ../../godmode/modules/manage_network_components_form_common.php:186
 #: ../../enterprise/godmode/modules/configure_local_component.php:333
 msgid "Tags available"
 msgstr "Свободные теги"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:425
+#: ../../godmode/agentes/module_manager_editor_common.php:437
 #: ../../godmode/modules/manage_network_components_form_common.php:193
 #: ../../enterprise/godmode/modules/configure_local_component.php:340
 msgid "Add tags to module"
 msgstr "Добавить теги к модулю"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:426
+#: ../../godmode/agentes/module_manager_editor_common.php:438
 #: ../../godmode/modules/manage_network_components_form_common.php:194
 #: ../../enterprise/godmode/modules/configure_local_component.php:342
 msgid "Delete tags to module"
 msgstr "Удалить теги модуля"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:428
+#: ../../godmode/agentes/module_manager_editor_common.php:440
 #: ../../godmode/modules/manage_network_components_form_common.php:196
 #: ../../enterprise/godmode/modules/configure_local_component.php:344
 msgid "Tags selected"
 msgstr "Теги выбраны"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:437
+#: ../../godmode/agentes/module_manager_editor_common.php:449
 msgid "The module still stores data but the alerts and events will be stop"
 msgstr ""
 "Модуль по-прежнему хранит данные, но оповещения и события будет останавливать"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:442
+#: ../../godmode/agentes/module_manager_editor_common.php:454
 #: ../../godmode/massive/massive_edit_modules.php:451
 #: ../../godmode/modules/manage_network_components_form_common.php:149
 #: ../../enterprise/godmode/modules/configure_local_component.php:290
 msgid "Critical instructions"
 msgstr "Критические инструкции"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:442
+#: ../../godmode/agentes/module_manager_editor_common.php:454
 #: ../../godmode/massive/massive_edit_modules.php:451
 #: ../../godmode/modules/manage_network_components_form_common.php:149
 #: ../../enterprise/godmode/modules/configure_local_component.php:291
 msgid "Instructions when the status is critical"
 msgstr "Инструкции, когда статус критический"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:446
+#: ../../godmode/agentes/module_manager_editor_common.php:458
 #: ../../godmode/massive/massive_edit_modules.php:455
 #: ../../godmode/modules/manage_network_components_form_common.php:153
 #: ../../enterprise/godmode/modules/configure_local_component.php:296
 msgid "Warning instructions"
 msgstr "Предупредительные инструкции"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:446
+#: ../../godmode/agentes/module_manager_editor_common.php:458
 #: ../../godmode/massive/massive_edit_modules.php:455
 #: ../../godmode/modules/manage_network_components_form_common.php:153
 #: ../../enterprise/godmode/modules/configure_local_component.php:297
 msgid "Instructions when the status is warning"
 msgstr "Инструкции, когда статус предостерегающий"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:450
+#: ../../godmode/agentes/module_manager_editor_common.php:462
 #: ../../godmode/massive/massive_edit_modules.php:459
 #: ../../godmode/modules/manage_network_components_form_common.php:157
 #: ../../enterprise/godmode/modules/configure_local_component.php:302
 msgid "Unknown instructions"
 msgstr "Неизвестные инструкции"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:450
+#: ../../godmode/agentes/module_manager_editor_common.php:462
 #: ../../godmode/massive/massive_edit_modules.php:459
 #: ../../godmode/modules/manage_network_components_form_common.php:157
 #: ../../enterprise/godmode/modules/configure_local_component.php:303
 msgid "Instructions when the status is unknown"
 msgstr "Инструкции, когда статус неизвестен"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:454
+#: ../../godmode/agentes/module_manager_editor_common.php:466
 msgid "Cron"
 msgstr "Крон"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:454
+#: ../../godmode/agentes/module_manager_editor_common.php:466
 msgid ""
 "If cron is set the module interval is ignored and the module runs on the "
 "specified date and time"
@@ -5824,30 +5826,30 @@ msgstr ""
 "Если крон, установленный модулем интервала игнорируется и модуль работает  "
 "по определенной дате и времени"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:458
+#: ../../godmode/agentes/module_manager_editor_common.php:470
 msgid "Timeout"
 msgstr "Время ожидания истекло"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:459
+#: ../../godmode/agentes/module_manager_editor_common.php:471
 msgid "Seconds that agent will wait for the execution of the module."
 msgstr "Секунды,которые агент будет ожидать для выполнения модуля."
 
-#: ../../godmode/agentes/module_manager_editor_common.php:461
+#: ../../godmode/agentes/module_manager_editor_common.php:473
 msgid "Retries"
 msgstr "Попытки"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:462
+#: ../../godmode/agentes/module_manager_editor_common.php:474
 msgid "Number of retries that the module will attempt to run."
 msgstr "Количество попыток для запуска модуля."
 
-#: ../../godmode/agentes/module_manager_editor_common.php:465
+#: ../../godmode/agentes/module_manager_editor_common.php:477
 #: ../../godmode/massive/massive_edit_modules.php:427
 #: ../../godmode/modules/manage_network_components_form_common.php:164
 #: ../../enterprise/godmode/modules/configure_local_component.php:312
 msgid "Category"
 msgstr "Категория"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:491
+#: ../../godmode/agentes/module_manager_editor_common.php:503
 #: ../../godmode/reporting/reporting_builder.item_editor.php:948
 #: ../../godmode/alerts/configure_alert_template.php:665
 #: ../../godmode/massive/massive_edit_modules.php:387
@@ -5870,14 +5872,14 @@ msgstr "Категория"
 #: ../../enterprise/include/functions_reporting_pdf.php:1590
 #: ../../operation/snmpconsole/snmp_view.php:439
 #: ../../include/functions_reporting.php:2252
-#: ../../include/functions_reporting.php:4474
-#: ../../include/functions_reporting.php:4999
-#: ../../include/functions_reporting.php:5299
+#: ../../include/functions_reporting.php:4512
+#: ../../include/functions_reporting.php:5037
+#: ../../include/functions_reporting.php:5337
 #: ../../include/functions_snmp_browser.php:368
 msgid "Value"
 msgstr "Значение"
 
-#: ../../godmode/agentes/module_manager_editor_common.php:498
+#: ../../godmode/agentes/module_manager_editor_common.php:510
 msgid "Add module macro"
 msgstr "Добавить модуль макроса"
 
@@ -5983,8 +5985,8 @@ msgstr "Назначить"
 #: ../../enterprise/include/functions_reporting_pdf.php:3869
 #: ../../mobile/operation/modules.php:407
 #: ../../mobile/operation/modules.php:620
-#: ../../operation/agentes/status_monitor.php:398
-#: ../../operation/agentes/status_monitor.php:805
+#: ../../operation/agentes/status_monitor.php:408
+#: ../../operation/agentes/status_monitor.php:815
 #: ../../operation/agentes/estado_monitores.php:292
 #: ../../include/functions_treeview.php:62
 msgid "Module name"
@@ -6098,8 +6100,8 @@ msgstr "Контактная информация доступна через th
 #: ../../operation/users/user_edit.php:291
 #: ../../operation/users/user_edit.php:469
 #: ../../operation/snmpconsole/snmp_view.php:379
-#: ../../operation/snmpconsole/snmp_view.php:587
-#: ../../operation/snmpconsole/snmp_view.php:609
+#: ../../operation/snmpconsole/snmp_view.php:585
+#: ../../operation/snmpconsole/snmp_view.php:607
 #: ../../extensions/api_checker.php:143 ../../include/functions_graph.php:1665
 #: ../../include/functions_graph.php:1801
 #: ../../include/functions_graph.php:1836
@@ -6154,7 +6156,7 @@ msgstr "Обслуживание базы данных"
 #: ../../godmode/db/db_refine.php:42 ../../godmode/db/db_refine.php:47
 #: ../../enterprise/meta/include/functions_ui_meta.php:754
 #: ../../include/functions_events.php:1115
-#: ../../include/functions_events.php:1373 ../../include/functions_ui.php:220
+#: ../../include/functions_events.php:1381 ../../include/functions_ui.php:220
 #: ../../include/functions.php:856
 msgid "Error"
 msgstr "Ошибка"
@@ -6164,7 +6166,7 @@ msgid "Maximum is equal to minimum"
 msgstr "Максимум равно минимуму"
 
 #: ../../godmode/db/db_refine.php:47
-#: ../../godmode/massive/massive_copy_modules.php:359
+#: ../../godmode/massive/massive_copy_modules.php:361
 #: ../../include/functions_agents.php:495
 msgid "No modules have been selected"
 msgstr "Модули не выбраны"
@@ -6221,8 +6223,8 @@ msgstr "Ошибка при удалении данных"
 #: ../../enterprise/include/functions_reporting_pdf.php:820
 #: ../../enterprise/include/functions_inventory.php:243
 #: ../../operation/agentes/gis_view.php:167
-#: ../../include/functions_reporting.php:4360
-#: ../../include/functions_reporting.php:4375
+#: ../../include/functions_reporting.php:4398
+#: ../../include/functions_reporting.php:4413
 msgid "Total"
 msgstr "Всего"
 
@@ -6703,7 +6705,7 @@ msgstr "Предметы"
 
 #: ../../godmode/reporting/map_builder.php:149
 #: ../../godmode/alerts/alert_actions.php:336
-#: ../../godmode/massive/massive_copy_modules.php:176
+#: ../../godmode/massive/massive_copy_modules.php:178
 #: ../../enterprise/godmode/policies/policies.php:328
 #: ../../enterprise/godmode/policies/policy_modules.php:888
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:183
@@ -6978,7 +6980,7 @@ msgstr "Переключить фильтр(ы)"
 #: ../../godmode/massive/massive_add_alerts.php:137
 #: ../../godmode/massive/massive_enable_disable_alerts.php:135
 #: ../../godmode/massive/massive_standby_alerts.php:136
-#: ../../godmode/massive/massive_delete_modules.php:289
+#: ../../godmode/massive/massive_delete_modules.php:291
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:83
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:111
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:132
@@ -7006,8 +7008,8 @@ msgstr "Переключить фильтр(ы)"
 #: ../../operation/search_results.php:68
 #: ../../extensions/agents_alerts.php:168
 #: ../../extensions/agents_modules.php:177
-#: ../../include/functions_reporting.php:4366
-#: ../../include/functions_reporting.php:5667
+#: ../../include/functions_reporting.php:4404
+#: ../../include/functions_reporting.php:5706
 #: ../../include/functions_groups.php:46
 #: ../../include/functions_groups.php:744
 #: ../../include/functions_groups.php:746
@@ -7202,7 +7204,7 @@ msgstr "Диапазон данных"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1471
 #: ../../enterprise/include/functions_reporting_csv.php:324
 #: ../../enterprise/include/functions_reporting_pdf.php:1556
-#: ../../include/functions_reporting.php:4948
+#: ../../include/functions_reporting.php:4986
 #: ../../include/functions_ui.php:1814 ../../include/functions_graph.php:676
 #: ../../include/functions_graph.php:677 ../../include/functions_graph.php:678
 #: ../../include/functions_graph.php:681
@@ -7235,7 +7237,7 @@ msgstr "Макс."
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1469
 #: ../../enterprise/include/functions_reporting_csv.php:324
 #: ../../enterprise/include/functions_reporting_pdf.php:1560
-#: ../../include/functions_reporting.php:4951
+#: ../../include/functions_reporting.php:4989
 #: ../../include/functions_ui.php:1814 ../../include/functions_graph.php:676
 #: ../../include/functions_graph.php:677 ../../include/functions_graph.php:678
 #: ../../include/functions_graph.php:681
@@ -7376,7 +7378,7 @@ msgstr "Последний"
 #: ../../include/functions_reports.php:424
 #: ../../include/functions_reports.php:499
 #: ../../include/functions_reports.php:501
-#: ../../include/functions_reporting.php:3155
+#: ../../include/functions_reporting.php:3159
 msgid "Custom graph"
 msgstr "Пользовательский график"
 
@@ -7395,7 +7397,7 @@ msgstr "Целевой сервер"
 #: ../../enterprise/include/functions_netflow_pdf.php:208
 #: ../../operation/reporting/reporting_xml.php:673
 #: ../../include/functions_reports.php:576
-#: ../../include/functions_reporting.php:3793
+#: ../../include/functions_reporting.php:3809
 msgid "Text"
 msgstr "Текст"
 
@@ -7486,7 +7488,7 @@ msgstr "Отображать"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:942
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1322
 #: ../../enterprise/include/functions_reporting_pdf.php:1565
-#: ../../include/functions_reporting.php:4956
+#: ../../include/functions_reporting.php:4994
 #: ../../include/functions_graph.php:676 ../../include/functions_graph.php:677
 #: ../../include/functions_graph.php:678 ../../include/functions_graph.php:681
 #: ../../include/functions_graph.php:1182
@@ -7545,9 +7547,9 @@ msgstr "Не равно (!=)"
 #: ../../enterprise/include/functions_reporting_pdf.php:3130
 #: ../../enterprise/include/functions_reporting_pdf.php:3454
 #: ../../enterprise/include/functions_services.php:1176
-#: ../../include/functions_reporting.php:3425
-#: ../../include/functions_reporting.php:3504
-#: ../../include/functions_reporting.php:3552
+#: ../../include/functions_reporting.php:3429
+#: ../../include/functions_reporting.php:3508
+#: ../../include/functions_reporting.php:3556
 #: ../../include/functions_db.php:1074
 msgid "OK"
 msgstr "Ок"
@@ -7556,7 +7558,7 @@ msgstr "Ок"
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:215
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1341
 #: ../../enterprise/include/functions_reporting_pdf.php:3456
-#: ../../include/functions_reporting.php:3557
+#: ../../include/functions_reporting.php:3561
 msgid "Not OK"
 msgstr "Не ОК"
 
@@ -7596,15 +7598,15 @@ msgstr "Не утверждено"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:994
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1360
 #: ../../operation/snmpconsole/snmp_view.php:370
-#: ../../operation/snmpconsole/snmp_view.php:481
-#: ../../operation/snmpconsole/snmp_view.php:652
+#: ../../operation/snmpconsole/snmp_view.php:483
+#: ../../operation/snmpconsole/snmp_view.php:650
 #: ../../include/functions_events.php:838
-#: ../../include/functions_events.php:1628
-#: ../../include/functions_events.php:1634
-#: ../../include/functions_events.php:1638
-#: ../../include/functions_events.php:1643
-#: ../../include/functions_events.php:2656
-#: ../../include/functions_events.php:2660
+#: ../../include/functions_events.php:1636
+#: ../../include/functions_events.php:1642
+#: ../../include/functions_events.php:1646
+#: ../../include/functions_events.php:1651
+#: ../../include/functions_events.php:2684
+#: ../../include/functions_events.php:2688
 #: ../../include/functions_graph.php:2009 ../../include/functions_xml.php:127
 msgid "Validated"
 msgstr "Проверено"
@@ -7631,15 +7633,15 @@ msgstr "Проверено"
 #: ../../enterprise/include/functions_services.php:797
 #: ../../mobile/operation/groups.php:109 ../../mobile/operation/groups.php:110
 #: ../../mobile/operation/agents.php:33 ../../mobile/operation/modules.php:41
-#: ../../operation/agentes/status_monitor.php:362
+#: ../../operation/agentes/status_monitor.php:372
 #: ../../operation/agentes/estado_monitores.php:638
 #: ../../operation/agentes/estado_agente.php:180
 #: ../../operation/agentes/group_view.php:105
 #: ../../operation/gis_maps/render_view.php:129 ../../operation/tree.php:630
-#: ../../include/functions_events.php:1422
-#: ../../include/functions_reporting.php:4379
-#: ../../include/functions_reporting.php:5910
-#: ../../include/functions_reporting.php:6061
+#: ../../include/functions_events.php:1430
+#: ../../include/functions_reporting.php:4417
+#: ../../include/functions_reporting.php:5949
+#: ../../include/functions_reporting.php:6100
 #: ../../include/functions_ui.php:1814 ../../include/functions_groups.php:780
 #: ../../include/functions_groups.php:782
 #: ../../include/functions_groups.php:783
@@ -7673,15 +7675,15 @@ msgstr "Критический"
 #: ../../enterprise/include/functions_services.php:800
 #: ../../mobile/operation/groups.php:105 ../../mobile/operation/groups.php:106
 #: ../../mobile/operation/agents.php:36 ../../mobile/operation/modules.php:40
-#: ../../operation/agentes/status_monitor.php:361
+#: ../../operation/agentes/status_monitor.php:371
 #: ../../operation/agentes/estado_monitores.php:642
 #: ../../operation/agentes/estado_agente.php:179
 #: ../../operation/agentes/group_view.php:104
 #: ../../operation/gis_maps/render_view.php:130 ../../operation/tree.php:629
-#: ../../include/functions_events.php:1419
-#: ../../include/functions_reporting.php:4381
-#: ../../include/functions_reporting.php:5910
-#: ../../include/functions_reporting.php:6061
+#: ../../include/functions_events.php:1427
+#: ../../include/functions_reporting.php:4419
+#: ../../include/functions_reporting.php:5949
+#: ../../include/functions_reporting.php:6100
 #: ../../include/functions_ui.php:1814 ../../include/functions_groups.php:774
 #: ../../include/functions_groups.php:776
 #: ../../include/functions_groups.php:777
@@ -7788,8 +7790,8 @@ msgstr "итог"
 #: ../../enterprise/include/functions_reporting_pdf.php:1279
 #: ../../general/main_menu.php:26 ../../extensions/net_tools.php:95
 #: ../../extensions/api_checker.php:123
-#: ../../include/functions_reporting.php:4473
-#: ../../include/functions_reporting.php:5298
+#: ../../include/functions_reporting.php:4511
+#: ../../include/functions_reporting.php:5336
 #: ../../include/functions_menu.php:483
 msgid "Operation"
 msgstr "Действие"
@@ -8060,7 +8062,7 @@ msgstr "Пользовательские отчеты"
 #: ../../enterprise/dashboard/main_dashboard.php:65
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:131
 #: ../../operation/messages/message_list.php:57
-#: ../../operation/events/events.php:436
+#: ../../operation/events/events.php:444
 #: ../../operation/incidents/incident.php:61
 #: ../../operation/incidents/incident_detail.php:86
 #: ../../operation/incidents/incident_detail.php:115
@@ -8143,17 +8145,17 @@ msgstr "Успешное действие"
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:196
 #: ../../enterprise/dashboard/widgets/events_list.php:33
 #: ../../enterprise/meta/include/functions_events_meta.php:71
-#: ../../operation/events/events_list.php:417
+#: ../../operation/events/events_list.php:426
 #: ../../operation/events/events.build_table.php:89
 #: ../../include/functions_events.php:40
-#: ../../include/functions_reporting.php:2705
+#: ../../include/functions_reporting.php:2709
 msgid "Event type"
 msgstr "Тип события"
 
 #: ../../godmode/events/event_filter.php:92
 #: ../../godmode/events/event_edit_filter.php:187
 #: ../../enterprise/dashboard/widgets/events_list.php:43
-#: ../../operation/events/events_list.php:428
+#: ../../operation/events/events_list.php:438
 msgid "Event status"
 msgstr "Статус события"
 
@@ -8165,11 +8167,11 @@ msgstr "Статус события"
 #: ../../mobile/operation/events.php:355 ../../mobile/operation/events.php:356
 #: ../../mobile/operation/events.php:455 ../../mobile/operation/events.php:586
 #: ../../mobile/operation/events.php:587
-#: ../../operation/events/events_list.php:422
+#: ../../operation/events/events_list.php:432
 #: ../../operation/events/events.build_table.php:106
 #: ../../operation/snmpconsole/snmp_view.php:362
 #: ../../include/functions_events.php:841
-#: ../../include/functions_events.php:2223
+#: ../../include/functions_events.php:2231
 msgid "Severity"
 msgstr "Важность"
 
@@ -8197,7 +8199,7 @@ msgstr "Ответ успешно удален"
 msgid "Response cannot be deleted"
 msgstr "Ответ не может быть удален"
 
-#: ../../godmode/events/events.php:34 ../../operation/events/events.php:266
+#: ../../godmode/events/events.php:34 ../../operation/events/events.php:274
 #: ../../operation/users/user_edit.php:287
 #: ../../operation/users/user_edit.php:449
 msgid "Event list"
@@ -8230,10 +8232,10 @@ msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:177
 #: ../../mobile/operation/modules.php:43
-#: ../../operation/agentes/status_monitor.php:364
+#: ../../operation/agentes/status_monitor.php:374
 #: ../../operation/agentes/estado_agente.php:182
-#: ../../operation/events/events_list.php:420
-#: ../../include/functions_events.php:1379 ../../include/functions.php:888
+#: ../../operation/events/events_list.php:429
+#: ../../include/functions_events.php:1387 ../../include/functions.php:888
 msgid "Not normal"
 msgstr "Не нормальный"
 
@@ -8313,12 +8315,12 @@ msgstr "Выберите между пользователями с утверж
 
 #: ../../godmode/events/event_edit_filter.php:224
 #: ../../enterprise/godmode/setup/setup.php:82
-#: ../../operation/events/events_list.php:434
+#: ../../operation/events/events_list.php:444
 msgid "All events"
 msgstr "Все события"
 
 #: ../../godmode/events/event_edit_filter.php:225
-#: ../../operation/events/events_list.php:435
+#: ../../operation/events/events_list.php:445
 msgid "Group events"
 msgstr "События группы"
 
@@ -8360,7 +8362,7 @@ msgstr "Только предупреждающие события"
 #: ../../godmode/events/custom_events.php:147
 #: ../../enterprise/meta/include/functions_events_meta.php:50
 #: ../../include/functions_events.php:33
-#: ../../include/functions_events.php:1522
+#: ../../include/functions_events.php:1530
 msgid "Event id"
 msgstr "Событие ID"
 
@@ -8369,9 +8371,9 @@ msgstr "Событие ID"
 #: ../../enterprise/meta/include/functions_events_meta.php:53
 #: ../../include/functions_events.php:34
 #: ../../include/functions_events.php:848
-#: ../../include/functions_events.php:2174
+#: ../../include/functions_events.php:2182
 #: ../../include/functions_reporting.php:1616
-#: ../../include/functions_reporting.php:2704
+#: ../../include/functions_reporting.php:2708
 msgid "Event name"
 msgstr "Название события"
 
@@ -8387,7 +8389,7 @@ msgstr "Название события"
 #: ../../mobile/operation/modules.php:623
 #: ../../operation/agentes/exportdata.php:87
 #: ../../operation/agentes/exportdata.csv.php:77
-#: ../../operation/agentes/status_monitor.php:845
+#: ../../operation/agentes/status_monitor.php:855
 #: ../../operation/agentes/exportdata.excel.php:76
 #: ../../operation/messages/message_list.php:122
 #: ../../operation/search_modules.php:54 ../../operation/events/events.php:93
@@ -8397,11 +8399,11 @@ msgstr "Название события"
 #: ../../extensions/update_manager/lib/functions.ajax.php:549
 #: ../../include/functions_events.php:39
 #: ../../include/functions_events.php:854
-#: ../../include/functions_events.php:2179
+#: ../../include/functions_events.php:2187
 #: ../../include/functions_reporting.php:1618
 #: ../../include/functions_reporting.php:2498
-#: ../../include/functions_reporting.php:2605
-#: ../../include/functions_reporting.php:2708
+#: ../../include/functions_reporting.php:2607
+#: ../../include/functions_reporting.php:2712
 #: ../../include/functions_netflow.php:284 ../../include/ajax/events.php:454
 msgid "Timestamp"
 msgstr "Метка времени"
@@ -8421,9 +8423,9 @@ msgstr "Агент модуля"
 #: ../../enterprise/include/functions_reporting_pdf.php:2905
 #: ../../include/functions_events.php:43
 #: ../../include/functions_reporting.php:2496
-#: ../../include/functions_reporting.php:2603
-#: ../../include/functions_reporting.php:2706
-#: ../../include/functions_reporting.php:3251
+#: ../../include/functions_reporting.php:2605
+#: ../../include/functions_reporting.php:2710
+#: ../../include/functions_reporting.php:3255
 msgid "Criticity"
 msgstr "критичность"
 
@@ -8432,7 +8434,7 @@ msgstr "критичность"
 #: ../../enterprise/meta/include/functions_events_meta.php:83
 #: ../../operation/events/events.build_table.php:111
 #: ../../include/functions_events.php:44
-#: ../../include/functions_events.php:1660
+#: ../../include/functions_events.php:1668
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -8447,14 +8449,14 @@ msgstr "Комментарий"
 #: ../../enterprise/include/functions_reporting_pdf.php:3739
 #: ../../enterprise/include/functions_reporting_pdf.php:3878
 #: ../../mobile/operation/events.php:480
-#: ../../operation/agentes/status_monitor.php:412
+#: ../../operation/agentes/status_monitor.php:422
 #: ../../operation/events/events.build_table.php:116
 #: ../../operation/tree.php:531 ../../operation/tree.php:589
 #: ../../operation/tree.php:600 ../../operation/users/user_edit.php:382
 #: ../../include/functions_events.php:45
-#: ../../include/functions_events.php:2279
-#: ../../include/functions_reporting.php:5917
-#: ../../include/functions_reporting.php:6068
+#: ../../include/functions_events.php:2287
+#: ../../include/functions_reporting.php:5956
+#: ../../include/functions_reporting.php:6107
 #: ../../include/functions_treeview.php:132
 msgid "Tags"
 msgstr "Метки"
@@ -8463,7 +8465,7 @@ msgstr "Метки"
 #: ../../godmode/events/custom_events.php:161
 #: ../../enterprise/meta/include/functions_events_meta.php:92
 #: ../../include/functions_events.php:47
-#: ../../include/functions_events.php:2091
+#: ../../include/functions_events.php:2099
 msgid "Extra id"
 msgstr "Дополнительный id"
 
@@ -8480,9 +8482,9 @@ msgstr "ACK Отметка времени"
 #: ../../enterprise/meta/include/functions_events_meta.php:101
 #: ../../operation/events/events.build_table.php:136
 #: ../../include/functions_events.php:50
-#: ../../include/functions_events.php:2055
-#: ../../include/functions_events.php:2067
-#: ../../include/functions_events.php:2079
+#: ../../include/functions_events.php:2063
+#: ../../include/functions_events.php:2075
+#: ../../include/functions_events.php:2087
 msgid "Instructions"
 msgstr "Инструкции"
 
@@ -8568,7 +8570,7 @@ msgstr "Размер"
 
 #: ../../godmode/events/event_responses.editor.php:103
 #: ../../enterprise/extensions/cron/main.php:289
-#: ../../include/functions_events.php:1721
+#: ../../include/functions_events.php:1729
 msgid "Parameters"
 msgstr "Параметры"
 
@@ -8731,10 +8733,10 @@ msgstr "Сохранить уровень"
 #: ../../godmode/massive/massive_edit_modules.php:257
 #: ../../godmode/massive/massive_delete_alerts.php:202
 #: ../../godmode/massive/massive_add_alerts.php:155
-#: ../../godmode/massive/massive_copy_modules.php:82
-#: ../../godmode/massive/massive_delete_modules.php:246
-#: ../../godmode/massive/massive_delete_modules.php:270
-#: ../../godmode/massive/massive_delete_modules.php:278
+#: ../../godmode/massive/massive_copy_modules.php:84
+#: ../../godmode/massive/massive_delete_modules.php:248
+#: ../../godmode/massive/massive_delete_modules.php:272
+#: ../../godmode/massive/massive_delete_modules.php:280
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:81
 #: ../../enterprise/godmode/policies/policy_alerts.php:438
 #: ../../enterprise/godmode/policies/policy_alerts.php:442
@@ -8887,7 +8889,7 @@ msgstr "Конфигурация категорий"
 
 #: ../../godmode/category/category.php:47
 #: ../../godmode/alerts/alert_list.php:291
-#: ../../operation/events/events.php:337 ../../include/functions_html.php:650
+#: ../../operation/events/events.php:345 ../../include/functions_html.php:650
 msgid "List"
 msgstr "Список"
 
@@ -9006,8 +9008,8 @@ msgstr "Создать действие"
 #: ../../enterprise/include/functions_reporting_pdf.php:3733
 #: ../../enterprise/include/functions_reporting_pdf.php:3872
 #: ../../include/functions_reporting.php:2253
-#: ../../include/functions_reporting.php:5911
-#: ../../include/functions_reporting.php:6062
+#: ../../include/functions_reporting.php:5950
+#: ../../include/functions_reporting.php:6101
 msgid "Threshold"
 msgstr "Порог"
 
@@ -9066,7 +9068,7 @@ msgstr "Дабавить оповещение"
 #: ../../enterprise/include/functions_reporting_xml.php:1011
 #: ../../mobile/operation/groups.php:93 ../../mobile/operation/groups.php:94
 #: ../../mobile/operation/agents.php:37 ../../mobile/operation/modules.php:42
-#: ../../operation/agentes/status_monitor.php:363
+#: ../../operation/agentes/status_monitor.php:373
 #: ../../operation/agentes/estado_monitores.php:360
 #: ../../operation/agentes/estado_monitores.php:643
 #: ../../operation/agentes/estado_agente.php:181
@@ -9083,25 +9085,25 @@ msgstr "Дабавить оповещение"
 #: ../../operation/reporting/reporting_xml.php:1054
 #: ../../operation/reporting/reporting_xml.php:1066
 #: ../../operation/tree.php:631 ../../include/functions_reports.php:421
-#: ../../include/functions_events.php:1343
-#: ../../include/functions_events.php:2515
-#: ../../include/functions_reporting.php:3104
-#: ../../include/functions_reporting.php:3265
-#: ../../include/functions_reporting.php:3348
-#: ../../include/functions_reporting.php:3415
-#: ../../include/functions_reporting.php:3416
-#: ../../include/functions_reporting.php:3510
-#: ../../include/functions_reporting.php:3544
-#: ../../include/functions_reporting.php:3553
-#: ../../include/functions_reporting.php:3582
-#: ../../include/functions_reporting.php:3640
-#: ../../include/functions_reporting.php:3675
-#: ../../include/functions_reporting.php:4236
-#: ../../include/functions_reporting.php:4265
-#: ../../include/functions_reporting.php:4293
-#: ../../include/functions_reporting.php:4321
-#: ../../include/functions_reporting.php:4362
-#: ../../include/functions_reporting.php:4383
+#: ../../include/functions_events.php:1351
+#: ../../include/functions_events.php:2533
+#: ../../include/functions_reporting.php:3108
+#: ../../include/functions_reporting.php:3269
+#: ../../include/functions_reporting.php:3352
+#: ../../include/functions_reporting.php:3419
+#: ../../include/functions_reporting.php:3420
+#: ../../include/functions_reporting.php:3514
+#: ../../include/functions_reporting.php:3548
+#: ../../include/functions_reporting.php:3557
+#: ../../include/functions_reporting.php:3586
+#: ../../include/functions_reporting.php:3644
+#: ../../include/functions_reporting.php:3679
+#: ../../include/functions_reporting.php:4274
+#: ../../include/functions_reporting.php:4303
+#: ../../include/functions_reporting.php:4331
+#: ../../include/functions_reporting.php:4359
+#: ../../include/functions_reporting.php:4400
+#: ../../include/functions_reporting.php:4421
 #: ../../include/functions_visual_map.php:334
 #: ../../include/functions_visual_map.php:346
 #: ../../include/functions_visual_map.php:358
@@ -9355,8 +9357,8 @@ msgstr "Оповещение восстановления"
 #: ../../enterprise/include/functions_reporting_pdf.php:3711
 #: ../../enterprise/include/functions_reporting_pdf.php:3848
 #: ../../operation/agentes/estado_generalagente.php:250
-#: ../../include/functions_reporting.php:5885
-#: ../../include/functions_reporting.php:6025
+#: ../../include/functions_reporting.php:5924
+#: ../../include/functions_reporting.php:6064
 #: ../../include/functions_groups.php:1455
 msgid "Enabled"
 msgstr "Включено"
@@ -9581,7 +9583,7 @@ msgid "Alert control filter"
 msgstr "Фильтр по руководству оповещениями"
 
 #: ../../godmode/alerts/alert_list.list.php:368
-#: ../../godmode/massive/massive_copy_modules.php:101
+#: ../../godmode/massive/massive_copy_modules.php:103
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:121
 #: ../../enterprise/godmode/alerts/alert_events_list.php:375
 #: ../../enterprise/godmode/alerts/alert_events_rules.php:402
@@ -9630,11 +9632,11 @@ msgstr "Добавить действие"
 #: ../../mobile/operation/alerts.php:249
 #: ../../operation/agentes/group_view.php:106
 #: ../../operation/events/sound_events.php:77
-#: ../../operation/snmpconsole/snmp_view.php:536
+#: ../../operation/snmpconsole/snmp_view.php:535
 #: ../../extensions/agents_alerts.php:298
 #: ../../include/functions_events.php:1097
-#: ../../include/functions_events.php:1355
-#: ../../include/functions_reporting.php:2816
+#: ../../include/functions_events.php:1363
+#: ../../include/functions_reporting.php:2820
 #: ../../include/functions_ui.php:860 ../../include/functions_agents.php:1917
 #: ../../include/functions.php:850
 msgid "Alert fired"
@@ -9657,7 +9659,7 @@ msgstr "раз(а)"
 #: ../../enterprise/operation/agentes/policy_view.php:269
 #: ../../mobile/operation/alerts.php:253
 #: ../../extensions/agents_alerts.php:302
-#: ../../include/functions_reporting.php:2822
+#: ../../include/functions_reporting.php:2826
 #: ../../include/functions_ui.php:864
 msgid "Alert disabled"
 msgstr "Оповещение отключено"
@@ -9669,9 +9671,9 @@ msgstr "Оповещение отключено"
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1538
 #: ../../enterprise/operation/agentes/policy_view.php:273
 #: ../../mobile/operation/alerts.php:257
-#: ../../operation/snmpconsole/snmp_view.php:539
+#: ../../operation/snmpconsole/snmp_view.php:538
 #: ../../extensions/agents_alerts.php:306
-#: ../../include/functions_reporting.php:2761
+#: ../../include/functions_reporting.php:2765
 #: ../../include/functions_ui.php:868 ../../include/functions_agents.php:1920
 msgid "Alert not fired"
 msgstr "Оповещение не запущено"
@@ -10332,12 +10334,12 @@ msgstr "Успешно удалено (%s)"
 #: ../../godmode/massive/massive_delete_alerts.php:209
 #: ../../godmode/massive/massive_edit_agents.php:198
 #: ../../godmode/massive/massive_add_alerts.php:134
-#: ../../godmode/massive/massive_copy_modules.php:75
-#: ../../godmode/massive/massive_copy_modules.php:160
+#: ../../godmode/massive/massive_copy_modules.php:77
+#: ../../godmode/massive/massive_copy_modules.php:162
 #: ../../godmode/massive/massive_enable_disable_alerts.php:132
 #: ../../godmode/massive/massive_standby_alerts.php:133
 #: ../../godmode/massive/massive_add_action_alerts.php:134
-#: ../../godmode/massive/massive_delete_modules.php:271
+#: ../../godmode/massive/massive_delete_modules.php:273
 msgid "Group recursion"
 msgstr "Группа рекурсии"
 
@@ -10379,22 +10381,22 @@ msgid "Agents with templates"
 msgstr "Агенты с шаблонами"
 
 #: ../../godmode/massive/massive_edit_modules.php:212
-#: ../../godmode/massive/massive_delete_modules.php:233
+#: ../../godmode/massive/massive_delete_modules.php:235
 msgid "Selection mode"
 msgstr "Режим выбора"
 
 #: ../../godmode/massive/massive_edit_modules.php:213
-#: ../../godmode/massive/massive_delete_modules.php:234
+#: ../../godmode/massive/massive_delete_modules.php:236
 msgid "Select modules first"
 msgstr "Выберите сначала модули"
 
 #: ../../godmode/massive/massive_edit_modules.php:215
-#: ../../godmode/massive/massive_delete_modules.php:236
+#: ../../godmode/massive/massive_delete_modules.php:238
 msgid "Select agents first"
 msgstr "Выберите сначала агентов"
 
 #: ../../godmode/massive/massive_edit_modules.php:218
-#: ../../godmode/massive/massive_delete_modules.php:239
+#: ../../godmode/massive/massive_delete_modules.php:241
 #: ../../godmode/modules/manage_network_components_form_wmi.php:89
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:140
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1377
@@ -10402,53 +10404,53 @@ msgid "Module type"
 msgstr "Тип модуля"
 
 #: ../../godmode/massive/massive_edit_modules.php:227
-#: ../../godmode/massive/massive_delete_modules.php:248
+#: ../../godmode/massive/massive_delete_modules.php:250
 msgid "Select all modules of this type"
 msgstr "Выбрать все модули данного типа"
 
 #: ../../godmode/massive/massive_edit_modules.php:244
-#: ../../godmode/massive/massive_delete_modules.php:265
+#: ../../godmode/massive/massive_delete_modules.php:267
 msgid "Agent group"
 msgstr "Агент группы"
 
 #: ../../godmode/massive/massive_edit_modules.php:251
-#: ../../godmode/massive/massive_delete_modules.php:272
+#: ../../godmode/massive/massive_delete_modules.php:274
 msgid "Select all modules of this group"
 msgstr "Выбрать все модули этой группы"
 
 #: ../../godmode/massive/massive_edit_modules.php:259
-#: ../../godmode/massive/massive_delete_modules.php:280
+#: ../../godmode/massive/massive_delete_modules.php:282
 msgid "When select modules"
 msgstr "При выборе модулей"
 
 #: ../../godmode/massive/massive_edit_modules.php:262
-#: ../../godmode/massive/massive_delete_modules.php:282
+#: ../../godmode/massive/massive_delete_modules.php:284
 msgid "Show common agents"
 msgstr "Показать общие агенты"
 
 #: ../../godmode/massive/massive_edit_modules.php:263
-#: ../../godmode/massive/massive_delete_modules.php:282
+#: ../../godmode/massive/massive_delete_modules.php:284
 msgid "Show all agents"
 msgstr "Показать все агенты"
 
 #: ../../godmode/massive/massive_edit_modules.php:275
 #: ../../godmode/massive/massive_delete_alerts.php:220
 #: ../../godmode/massive/massive_add_alerts.php:146
-#: ../../godmode/massive/massive_delete_modules.php:294
+#: ../../godmode/massive/massive_delete_modules.php:296
 msgid "When select agents"
 msgstr "При выборе агентов"
 
 #: ../../godmode/massive/massive_edit_modules.php:278
 #: ../../godmode/massive/massive_delete_alerts.php:222
 #: ../../godmode/massive/massive_add_alerts.php:148
-#: ../../godmode/massive/massive_delete_modules.php:296
+#: ../../godmode/massive/massive_delete_modules.php:298
 msgid "Show common modules"
 msgstr "Показать общие модули"
 
 #: ../../godmode/massive/massive_edit_modules.php:279
 #: ../../godmode/massive/massive_delete_alerts.php:222
 #: ../../godmode/massive/massive_add_alerts.php:148
-#: ../../godmode/massive/massive_delete_modules.php:296
+#: ../../godmode/massive/massive_delete_modules.php:298
 msgid "Show all modules"
 msgstr "Показать все модули"
 
@@ -10567,24 +10569,24 @@ msgstr "Профили успешно добавлены"
 msgid "Profiles cannot be added"
 msgstr "Профили не могут быть добавлены"
 
-#: ../../godmode/massive/massive_copy_modules.php:104
+#: ../../godmode/massive/massive_copy_modules.php:106
 #: ../../enterprise/godmode/policies/policy_modules.php:872
 msgid "Copy modules"
 msgstr "Копировать модули"
 
-#: ../../godmode/massive/massive_copy_modules.php:109
+#: ../../godmode/massive/massive_copy_modules.php:111
 msgid "Copy alerts"
 msgstr "Копировать оповещения"
 
-#: ../../godmode/massive/massive_copy_modules.php:118
+#: ../../godmode/massive/massive_copy_modules.php:120
 msgid "No modules for this agent"
 msgstr "Нет модулей для этого агента"
 
-#: ../../godmode/massive/massive_copy_modules.php:137
+#: ../../godmode/massive/massive_copy_modules.php:139
 msgid "No alerts for this agent"
 msgstr "Нет оповещений для этого агента"
 
-#: ../../godmode/massive/massive_copy_modules.php:142
+#: ../../godmode/massive/massive_copy_modules.php:144
 #: ../../enterprise/godmode/policies/policy_modules.php:866
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:106
 #: ../../general/ui/agents_list.php:121
@@ -10592,7 +10594,7 @@ msgstr "Нет оповещений для этого агента"
 msgid "Loading"
 msgstr "Загрузка"
 
-#: ../../godmode/massive/massive_copy_modules.php:146
+#: ../../godmode/massive/massive_copy_modules.php:148
 #: ../../enterprise/meta/advanced/synchronizing.component.php:304
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:329
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:147
@@ -10601,20 +10603,20 @@ msgstr "Загрузка"
 msgid "Targets"
 msgstr "Цели"
 
-#: ../../godmode/massive/massive_copy_modules.php:170
+#: ../../godmode/massive/massive_copy_modules.php:172
 msgid "To agent(s)"
 msgstr "К агенту(ам)"
 
-#: ../../godmode/massive/massive_copy_modules.php:346
+#: ../../godmode/massive/massive_copy_modules.php:348
 #: ../../include/functions_agents.php:465
 msgid "No source agent to copy"
 msgstr "Нет источника агента для копирования"
 
-#: ../../godmode/massive/massive_copy_modules.php:354
+#: ../../godmode/massive/massive_copy_modules.php:356
 msgid "No operation selected"
 msgstr "Нет выбранной операции"
 
-#: ../../godmode/massive/massive_copy_modules.php:364
+#: ../../godmode/massive/massive_copy_modules.php:366
 #: ../../include/functions_agents.php:470
 msgid "No destiny agent(s) to copy"
 msgstr "Нет предназначенного агента(ов) для копирования"
@@ -10743,7 +10745,7 @@ msgstr "Пустые поля не будет обновляться"
 msgid "No module selected"
 msgstr "Модуль не выбран"
 
-#: ../../godmode/massive/massive_delete_modules.php:91
+#: ../../godmode/massive/massive_delete_modules.php:92
 msgid ""
 "There was an error deleting the modules, the operation has been cancelled"
 msgstr "Найдена ошибка при удалении модулей, операция была отменена"
@@ -10843,8 +10845,8 @@ msgstr "Генератор прерывания"
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:28
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:29
 #: ../../operation/snmpconsole/snmp_view.php:379
-#: ../../operation/snmpconsole/snmp_view.php:587
-#: ../../operation/snmpconsole/snmp_view.php:594
+#: ../../operation/snmpconsole/snmp_view.php:585
+#: ../../operation/snmpconsole/snmp_view.php:592
 msgid "Cold start (0)"
 msgstr "Холодный старт (0)"
 
@@ -10852,8 +10854,8 @@ msgstr "Холодный старт (0)"
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:29
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:30
 #: ../../operation/snmpconsole/snmp_view.php:379
-#: ../../operation/snmpconsole/snmp_view.php:587
-#: ../../operation/snmpconsole/snmp_view.php:597
+#: ../../operation/snmpconsole/snmp_view.php:585
+#: ../../operation/snmpconsole/snmp_view.php:595
 msgid "Warm start (1)"
 msgstr "Теплый старт (1)"
 
@@ -10861,8 +10863,8 @@ msgstr "Теплый старт (1)"
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:30
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:31
 #: ../../operation/snmpconsole/snmp_view.php:379
-#: ../../operation/snmpconsole/snmp_view.php:587
-#: ../../operation/snmpconsole/snmp_view.php:600
+#: ../../operation/snmpconsole/snmp_view.php:585
+#: ../../operation/snmpconsole/snmp_view.php:598
 msgid "Link down (2)"
 msgstr "Ссылка внизу (2)"
 
@@ -10870,8 +10872,8 @@ msgstr "Ссылка внизу (2)"
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:31
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:32
 #: ../../operation/snmpconsole/snmp_view.php:379
-#: ../../operation/snmpconsole/snmp_view.php:587
-#: ../../operation/snmpconsole/snmp_view.php:603
+#: ../../operation/snmpconsole/snmp_view.php:585
+#: ../../operation/snmpconsole/snmp_view.php:601
 msgid "Link up (3)"
 msgstr "Ссылка вверху (3)"
 
@@ -10879,8 +10881,8 @@ msgstr "Ссылка вверху (3)"
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:32
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:33
 #: ../../operation/snmpconsole/snmp_view.php:379
-#: ../../operation/snmpconsole/snmp_view.php:587
-#: ../../operation/snmpconsole/snmp_view.php:606
+#: ../../operation/snmpconsole/snmp_view.php:585
+#: ../../operation/snmpconsole/snmp_view.php:604
 msgid "Authentication failure (4)"
 msgstr "Ошибка проверки подлинности (4)"
 
@@ -11033,10 +11035,10 @@ msgstr "Последний запуск"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:765
 #: ../../enterprise/operation/services/services.service_map.php:96
-#: ../../operation/snmpconsole/snmp_view.php:669
+#: ../../operation/snmpconsole/snmp_view.php:667
 #: ../../extensions/agents_modules.php:304
 #: ../../extensions/module_groups.php:290
-#: ../../include/functions_reporting.php:5776
+#: ../../include/functions_reporting.php:5815
 msgid "Legend"
 msgstr "Легенда"
 
@@ -11244,7 +11246,7 @@ msgstr "Источник времени"
 #: ../../mobile/operation/events.php:106
 #: ../../operation/events/events_rss.php:145
 #: ../../operation/events/events.php:83 ../../include/functions_events.php:928
-#: ../../include/functions_events.php:1370
+#: ../../include/functions_events.php:1378
 #: ../../include/functions_graph.php:1484
 #: ../../include/functions_graph.php:1938
 #: ../../include/functions_graph.php:2257
@@ -12591,7 +12593,7 @@ msgstr "Агент для хранения данных"
 #: ../../enterprise/include/functions_reporting_xml.php:426
 #: ../../operation/reporting/reporting_xml.php:473
 #: ../../include/functions_reports.php:530
-#: ../../include/functions_reporting.php:3206
+#: ../../include/functions_reporting.php:3210
 msgid "S.L.A."
 msgstr "Соглашения об уровне обслуживания (SLA)"
 
@@ -13017,14 +13019,14 @@ msgstr "Управлять конфигурацией &gt; Новая"
 #: ../../mobile/operation/modules.php:624
 #: ../../operation/agentes/exportdata.php:87
 #: ../../operation/agentes/exportdata.csv.php:77
-#: ../../operation/agentes/status_monitor.php:837
+#: ../../operation/agentes/status_monitor.php:847
 #: ../../operation/agentes/gis_view.php:167
 #: ../../operation/agentes/estado_monitores.php:300
 #: ../../operation/agentes/exportdata.excel.php:76
 #: ../../operation/agentes/estado_agente.php:452
 #: ../../operation/search_modules.php:53 ../../extensions/insert_data.php:168
 #: ../../extensions/insert_data.php:169
-#: ../../include/functions_reporting.php:4168
+#: ../../include/functions_reporting.php:4206
 #: ../../include/functions_graph.php:2326
 #: ../../include/functions_netflow.php:307
 msgid "Data"
@@ -13116,7 +13118,7 @@ msgstr ""
 "сборника."
 
 #: ../../enterprise/godmode/agentes/collections.data.php:318
-#: ../../operation/snmpconsole/snmp_view.php:581
+#: ../../operation/snmpconsole/snmp_view.php:579
 msgid "Description:"
 msgstr "Описание:"
 
@@ -13593,7 +13595,7 @@ msgstr "Итого"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:143
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:190
-#: ../../include/functions_reporting.php:4576
+#: ../../include/functions_reporting.php:4614
 msgid "Rate"
 msgstr "Тариф"
 
@@ -13722,7 +13724,7 @@ msgstr "Не могут быть операции"
 #: ../../enterprise/include/functions_reporting_pdf.php:2217
 #: ../../enterprise/include/functions_reporting_xml.php:631
 #: ../../operation/reporting/reporting_xml.php:680
-#: ../../include/functions_reporting.php:3806
+#: ../../include/functions_reporting.php:3826
 msgid "SQL"
 msgstr "SQL"
 
@@ -14545,9 +14547,9 @@ msgstr "Ac."
 #: ../../operation/agentes/alerts_status.php:431
 #: ../../operation/agentes/alerts_status.php:462
 #: ../../operation/agentes/alerts_status.php:504
-#: ../../operation/snmpconsole/snmp_view.php:549
-#: ../../operation/snmpconsole/snmp_view.php:640
-#: ../../operation/snmpconsole/snmp_view.php:664
+#: ../../operation/snmpconsole/snmp_view.php:545
+#: ../../operation/snmpconsole/snmp_view.php:638
+#: ../../operation/snmpconsole/snmp_view.php:662
 msgid "Validate"
 msgstr "Подтверждать"
 
@@ -14602,7 +14604,7 @@ msgstr "Окно"
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:129
 #: ../../enterprise/include/functions_reporting_pdf.php:2610
 #: ../../include/functions_reporting.php:2493
-#: ../../include/functions_reporting.php:2707
+#: ../../include/functions_reporting.php:2711
 msgid "Count"
 msgstr "Подсчет"
 
@@ -15480,6 +15482,7 @@ msgstr ""
 "enter the generated license key and click on <b>Validate</b>."
 
 #: ../../enterprise/load_enterprise.php:411
+#: ../../include/functions_config.php:1108
 msgid ""
 "<strong style=\"font-size: 11pt\">This license has expired.</strong> "
 "<br><br>You can not get updates until you renew the license."
@@ -15554,9 +15557,9 @@ msgstr "производительность сервера"
 #: ../../enterprise/dashboard/widgets/tactical.php:43
 #: ../../operation/gis_maps/index.php:26
 #: ../../include/functions_reporting.php:1124
-#: ../../include/functions_reporting.php:4935
-#: ../../include/functions_reporting.php:5211
-#: ../../include/functions_reporting.php:5581
+#: ../../include/functions_reporting.php:4973
+#: ../../include/functions_reporting.php:5249
+#: ../../include/functions_reporting.php:5620
 msgid "Summary"
 msgstr "Сводка"
 
@@ -15574,12 +15577,12 @@ msgstr "Пожалуйста, настроить этот виджет пере�
 #: ../../enterprise/include/functions_reporting_pdf.php:857
 #: ../../mobile/operation/home.php:50
 #: ../../mobile/include/functions_web.php:24
-#: ../../operation/events/events.php:343 ../../operation/events/events.php:352
-#: ../../operation/events/events.php:373
+#: ../../operation/events/events.php:351 ../../operation/events/events.php:360
+#: ../../operation/events/events.php:381
 #: ../../include/functions_reports.php:591
 #: ../../include/functions_reports.php:593
 #: ../../include/functions_reports.php:595
-#: ../../include/functions_reporting.php:4425
+#: ../../include/functions_reporting.php:4463
 #: ../../include/functions_graph.php:663
 #: ../../include/functions_graph.php:2826
 #: ../../include/functions_graph.php:3401
@@ -15595,14 +15598,14 @@ msgid "Limit"
 msgstr "Лимит"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:44
-#: ../../include/functions_events.php:1445
-#: ../../include/functions_events.php:1464
+#: ../../include/functions_events.php:1453
+#: ../../include/functions_events.php:1472
 msgid "All event"
 msgstr "Все события"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:45
-#: ../../include/functions_events.php:1447
-#: ../../include/functions_events.php:1470
+#: ../../include/functions_events.php:1455
+#: ../../include/functions_events.php:1478
 msgid "Only validated"
 msgstr "Только утвержденные"
 
@@ -15803,10 +15806,10 @@ msgid "Show a defined custom graph"
 msgstr "Показать определенный график пользователя"
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:29
-#: ../../operation/agentes/status_monitor.php:831
+#: ../../operation/agentes/status_monitor.php:841
 #: ../../operation/agentes/estado_monitores.php:303
 #: ../../operation/search_modules.php:52
-#: ../../include/functions_events.php:1982
+#: ../../include/functions_events.php:1990
 msgid "Graph"
 msgstr "График"
 
@@ -15857,7 +15860,7 @@ msgstr "Источник группы пользователя"
 #: ../../enterprise/dashboard/dashboard_replicate.php:142
 #: ../../enterprise/dashboard/main_dashboard.php:273
 #: ../../enterprise/include/functions_networkmap_enterprise.php:275
-#: ../../operation/agentes/status_monitor.php:446 ../../operation/tree.php:640
+#: ../../operation/agentes/status_monitor.php:456 ../../operation/tree.php:640
 #: ../../operation/incidents/incident.php:221
 msgid "Show"
 msgstr "Показать"
@@ -15924,7 +15927,7 @@ msgstr "Полноэкранный режим"
 #: ../../enterprise/dashboard/main_dashboard.php:282
 #: ../../operation/reporting/graph_viewer.php:133
 #: ../../operation/reporting/reporting_viewer.php:96
-#: ../../operation/events/events.php:379
+#: ../../operation/events/events.php:387
 #: ../../operation/gis_maps/render_view.php:95
 #: ../../operation/visual_console/render_view.php:115
 #: ../../extensions/agents_alerts.php:95
@@ -16065,9 +16068,9 @@ msgstr "Агент и Монитор информации"
 #: ../../enterprise/include/functions_reporting_pdf.php:825
 #: ../../mobile/operation/groups.php:97 ../../mobile/operation/groups.php:98
 #: ../../mobile/operation/modules.php:44
-#: ../../operation/agentes/status_monitor.php:365
+#: ../../operation/agentes/status_monitor.php:375
 #: ../../operation/agentes/estado_agente.php:183
-#: ../../include/functions_reporting.php:4385
+#: ../../include/functions_reporting.php:4423
 #: ../../include/functions_groups.php:762
 #: ../../include/functions_groups.php:764
 #: ../../include/functions_groups.php:765
@@ -16076,7 +16079,7 @@ msgstr "Не инициализировано"
 
 #: ../../enterprise/meta/monitoring/tactical.php:84
 #: ../../enterprise/include/functions_reporting_pdf.php:841
-#: ../../include/functions_reporting.php:4406
+#: ../../include/functions_reporting.php:4444
 msgid "Defined"
 msgstr "Определено"
 
@@ -16085,11 +16088,11 @@ msgstr "Определено"
 #: ../../mobile/operation/alerts.php:38
 #: ../../operation/agentes/alerts_status.functions.php:48
 #: ../../operation/snmpconsole/snmp_view.php:176
-#: ../../operation/snmpconsole/snmp_view.php:658
+#: ../../operation/snmpconsole/snmp_view.php:656
 #: ../../include/functions_reporting.php:1726
 #: ../../include/functions_reporting.php:1837
 #: ../../include/functions_reporting.php:1976
-#: ../../include/functions_reporting.php:4408
+#: ../../include/functions_reporting.php:4446
 msgid "Fired"
 msgstr "Запущено"
 
@@ -16197,7 +16200,7 @@ msgid "No description available"
 msgstr "Описание недоступно"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:97
-#: ../../include/functions_events.php:1628 ../../include/functions_xml.php:125
+#: ../../include/functions_events.php:1636 ../../include/functions_xml.php:125
 msgid "New"
 msgstr "Новый"
 
@@ -16553,7 +16556,7 @@ msgid "Visual"
 msgstr "Визуальный"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:130
-#: ../../operation/events/events.php:716
+#: ../../operation/events/events.php:735
 msgid "Successfully delete"
 msgstr "Успешно удалено"
 
@@ -17534,7 +17537,7 @@ msgstr "Дата окончания"
 #: ../../enterprise/operation/inventory/inventory.php:249
 #: ../../enterprise/operation/agentes/agent_inventory.php:208
 #: ../../enterprise/include/functions_reporting_pdf.php:506
-#: ../../include/functions_reporting.php:5813
+#: ../../include/functions_reporting.php:5852
 msgid "No data found."
 msgstr "Данные не найдены."
 
@@ -17603,17 +17606,17 @@ msgid "Name: "
 msgstr "Имя: "
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:325
-#: ../../operation/agentes/status_monitor.php:900
+#: ../../operation/agentes/status_monitor.php:910
 msgid "(Adopt) "
 msgstr "(Принять) "
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:335
-#: ../../operation/agentes/status_monitor.php:910
+#: ../../operation/agentes/status_monitor.php:920
 msgid "(Unlinked) (Adopt) "
 msgstr "(Не связаны) (Принять) "
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:339
-#: ../../operation/agentes/status_monitor.php:914
+#: ../../operation/agentes/status_monitor.php:924
 msgid "(Unlinked) "
 msgstr "(Не связаны) "
 
@@ -17630,13 +17633,13 @@ msgstr "Политика: "
 #: ../../enterprise/include/functions_services.php:1100
 #: ../../mobile/operation/modules.php:421
 #: ../../mobile/operation/modules.php:439
-#: ../../operation/agentes/status_monitor.php:968
-#: ../../operation/agentes/status_monitor.php:986
+#: ../../operation/agentes/status_monitor.php:978
+#: ../../operation/agentes/status_monitor.php:996
 #: ../../operation/search_modules.php:108
 #: ../../operation/search_modules.php:128 ../../operation/tree.php:355
-#: ../../include/functions_reporting.php:5746
-#: ../../include/functions_modules.php:1497
-#: ../../include/functions_modules.php:1517
+#: ../../include/functions_reporting.php:5785
+#: ../../include/functions_modules.php:1522
+#: ../../include/functions_modules.php:1542
 msgid "CRITICAL"
 msgstr "КРИТИЧНО"
 
@@ -17649,13 +17652,13 @@ msgstr "КРИТИЧНО"
 #: ../../enterprise/include/functions_services.php:1104
 #: ../../mobile/operation/modules.php:425
 #: ../../mobile/operation/modules.php:444
-#: ../../operation/agentes/status_monitor.php:972
-#: ../../operation/agentes/status_monitor.php:991
+#: ../../operation/agentes/status_monitor.php:982
+#: ../../operation/agentes/status_monitor.php:1001
 #: ../../operation/search_modules.php:112
 #: ../../operation/search_modules.php:135 ../../operation/tree.php:359
-#: ../../include/functions_reporting.php:5749
-#: ../../include/functions_modules.php:1501
-#: ../../include/functions_modules.php:1521
+#: ../../include/functions_reporting.php:5788
+#: ../../include/functions_modules.php:1526
+#: ../../include/functions_modules.php:1546
 msgid "WARNING"
 msgstr "ВНИМАНИЕ"
 
@@ -17668,13 +17671,13 @@ msgstr "ВНИМАНИЕ"
 #: ../../enterprise/include/functions_services.php:1095
 #: ../../mobile/operation/modules.php:417
 #: ../../mobile/operation/modules.php:434
-#: ../../operation/agentes/status_monitor.php:964
-#: ../../operation/agentes/status_monitor.php:981
+#: ../../operation/agentes/status_monitor.php:974
+#: ../../operation/agentes/status_monitor.php:991
 #: ../../operation/search_modules.php:104
 #: ../../operation/search_modules.php:121 ../../operation/tree.php:363
-#: ../../include/functions_reporting.php:5743
-#: ../../include/functions_modules.php:1505
-#: ../../include/functions_modules.php:1513
+#: ../../include/functions_reporting.php:5782
+#: ../../include/functions_modules.php:1530
+#: ../../include/functions_modules.php:1538
 msgid "NORMAL"
 msgstr "НОРМАЛЬНЫЙ"
 
@@ -17693,16 +17696,16 @@ msgstr "НОРМАЛЬНЫЙ"
 #: ../../mobile/operation/modules.php:433
 #: ../../mobile/operation/modules.php:438
 #: ../../mobile/operation/modules.php:443
-#: ../../operation/agentes/status_monitor.php:980
-#: ../../operation/agentes/status_monitor.php:985
 #: ../../operation/agentes/status_monitor.php:990
+#: ../../operation/agentes/status_monitor.php:995
+#: ../../operation/agentes/status_monitor.php:1000
 #: ../../operation/search_modules.php:120
 #: ../../operation/search_modules.php:127
 #: ../../operation/search_modules.php:134 ../../operation/tree.php:351
-#: ../../include/functions_reporting.php:5752
-#: ../../include/functions_modules.php:1512
-#: ../../include/functions_modules.php:1516
-#: ../../include/functions_modules.php:1520
+#: ../../include/functions_reporting.php:5791
+#: ../../include/functions_modules.php:1537
+#: ../../include/functions_modules.php:1541
+#: ../../include/functions_modules.php:1545
 msgid "UNKNOWN"
 msgstr "НЕИЗВЕСТНЫЙ"
 
@@ -17718,15 +17721,15 @@ msgstr "НЕИЗВЕСТНЫЙ"
 #: ../../mobile/operation/modules.php:433
 #: ../../mobile/operation/modules.php:438
 #: ../../mobile/operation/modules.php:443
-#: ../../operation/agentes/status_monitor.php:980
-#: ../../operation/agentes/status_monitor.php:985
 #: ../../operation/agentes/status_monitor.php:990
+#: ../../operation/agentes/status_monitor.php:995
+#: ../../operation/agentes/status_monitor.php:1000
 #: ../../operation/search_modules.php:120
 #: ../../operation/search_modules.php:127
 #: ../../operation/search_modules.php:134
-#: ../../include/functions_modules.php:1512
-#: ../../include/functions_modules.php:1516
-#: ../../include/functions_modules.php:1520
+#: ../../include/functions_modules.php:1537
+#: ../../include/functions_modules.php:1541
+#: ../../include/functions_modules.php:1545
 msgid "Last status"
 msgstr "Последний статус"
 
@@ -17762,7 +17765,7 @@ msgstr "Обычный экран"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:789
 #: ../../operation/agentes/networkmap.php:195
-#: ../../operation/events/events.php:261
+#: ../../operation/events/events.php:269
 #: ../../operation/snmpconsole/snmp_browser.php:87
 #: ../../operation/snmpconsole/snmp_view.php:53
 msgid "Full screen"
@@ -17804,7 +17807,7 @@ msgstr "Главний IP"
 
 #: ../../enterprise/operation/agentes/ver_agente.php:76
 #: ../../operation/agentes/ver_agente.php:433
-#: ../../include/functions_events.php:1924
+#: ../../include/functions_events.php:1932
 msgid "Last remote contact"
 msgstr "Последнее подключение"
 
@@ -18361,7 +18364,7 @@ msgstr "Проекционный график"
 #: ../../enterprise/include/functions_reporting_csv.php:235
 #: ../../enterprise/include/functions_reporting_pdf.php:449
 #: ../../include/functions_reports.php:535
-#: ../../include/functions_reporting.php:3079
+#: ../../include/functions_reporting.php:3083
 msgid "Prediction date"
 msgstr "Прогнозирование даты"
 
@@ -18370,7 +18373,7 @@ msgstr "Прогнозирование даты"
 #: ../../enterprise/include/functions_reporting_xml.php:1033
 #: ../../operation/reporting/reporting_xml.php:1088
 #: ../../include/functions_reports.php:603
-#: ../../include/functions_reporting.php:5821
+#: ../../include/functions_reporting.php:5860
 msgid "Inventory changes"
 msgstr "Изменения инвентаризации"
 
@@ -18382,15 +18385,15 @@ msgstr "% Лимит"
 #: ../../enterprise/include/functions_reporting_pdf.php:2892
 #: ../../enterprise/include/functions_reporting_xml.php:430
 #: ../../operation/reporting/reporting_xml.php:477
-#: ../../include/functions_reporting.php:3236
+#: ../../include/functions_reporting.php:3240
 msgid "There are no SLAs defined"
 msgstr "Нет установленных  SLA"
 
 #: ../../enterprise/include/functions_reporting_csv.php:375
 #: ../../enterprise/include/functions_reporting_pdf.php:3049
 #: ../../enterprise/include/functions_reporting_pdf.php:3133
-#: ../../include/functions_reporting.php:3430
-#: ../../include/functions_reporting.php:3507
+#: ../../include/functions_reporting.php:3434
+#: ../../include/functions_reporting.php:3511
 msgid "Fail"
 msgstr "Сбой"
 
@@ -18433,14 +18436,14 @@ msgstr "МИН. Значение"
 
 #: ../../enterprise/include/functions_reporting_csv.php:538
 #: ../../include/functions_reports.php:552
-#: ../../include/functions_reporting.php:3651
-#: ../../include/functions_reporting.php:4566
-#: ../../include/functions_reporting.php:4606
+#: ../../include/functions_reporting.php:3655
+#: ../../include/functions_reporting.php:4604
+#: ../../include/functions_reporting.php:4644
 msgid "Summatory"
 msgstr "Сумма"
 
 #: ../../enterprise/include/functions_reporting_csv.php:613
-#: ../../include/functions_reporting.php:3865
+#: ../../include/functions_reporting.php:3890
 msgid "Illegal query"
 msgstr "Незаконный запрос"
 
@@ -18449,7 +18452,7 @@ msgstr "Незаконный запрос"
 #: ../../enterprise/include/functions_reporting_xml.php:981
 #: ../../operation/reporting/reporting_xml.php:1036
 #: ../../include/functions_reports.php:519
-#: ../../include/functions_reporting.php:4220
+#: ../../include/functions_reporting.php:4258
 msgid "TTRT"
 msgstr "TTRT - целевое время оборота маркера"
 
@@ -18458,7 +18461,7 @@ msgstr "TTRT - целевое время оборота маркера"
 #: ../../enterprise/include/functions_reporting_xml.php:993
 #: ../../operation/reporting/reporting_xml.php:1048
 #: ../../include/functions_reports.php:521
-#: ../../include/functions_reporting.php:4248
+#: ../../include/functions_reporting.php:4286
 msgid "TTO"
 msgstr "Офис Передачи технологий (ТТО)"
 
@@ -18467,7 +18470,7 @@ msgstr "Офис Передачи технологий (ТТО)"
 #: ../../enterprise/include/functions_reporting_xml.php:1005
 #: ../../operation/reporting/reporting_xml.php:1060
 #: ../../include/functions_reports.php:523
-#: ../../include/functions_reporting.php:4277
+#: ../../include/functions_reporting.php:4315
 msgid "MTBF"
 msgstr "Наработка на отказ (MTBF)"
 
@@ -18517,7 +18520,7 @@ msgstr "Последние события за 8 часов"
 #: ../../enterprise/include/functions_reporting_csv.php:725
 #: ../../enterprise/include/functions_reporting_pdf.php:802
 #: ../../include/functions_reports.php:559
-#: ../../include/functions_reporting.php:4343
+#: ../../include/functions_reporting.php:4381
 msgid "Group report"
 msgstr "Отчет группы"
 
@@ -18526,23 +18529,23 @@ msgstr "Отчет группы"
 #: ../../enterprise/include/functions_reporting_xml.php:1017
 #: ../../operation/reporting/reporting_xml.php:1072
 #: ../../include/functions_reports.php:525
-#: ../../include/functions_reporting.php:4305
+#: ../../include/functions_reporting.php:4343
 msgid "MTTR"
 msgstr "среднее время восстановления (MTTR)"
 
 #: ../../enterprise/include/functions_reporting_csv.php:804
 #: ../../enterprise/include/functions_reporting_csv.php:925
 #: ../../enterprise/include/functions_reporting_csv.php:1073
-#: ../../include/functions_reporting.php:4463
-#: ../../include/functions_reporting.php:4653
-#: ../../include/functions_reporting.php:4988
-#: ../../include/functions_reporting.php:5287
+#: ../../include/functions_reporting.php:4501
+#: ../../include/functions_reporting.php:4691
+#: ../../include/functions_reporting.php:5026
+#: ../../include/functions_reporting.php:5325
 msgid "There are no Agent/Modules defined"
 msgstr "Здесь нет определенных Агентов/Модулей"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1020
 #: ../../enterprise/include/functions_reporting_pdf.php:1427
-#: ../../include/functions_reporting.php:5451
+#: ../../include/functions_reporting.php:5489
 msgid "Modules over or equal to"
 msgstr "Модули, превыщающие или равные"
 
@@ -18783,19 +18786,19 @@ msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:358
 #: ../../include/functions_reports.php:537
-#: ../../include/functions_reporting.php:3025
+#: ../../include/functions_reporting.php:3029
 msgid "Projection graph"
 msgstr "Проектирование графика"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:543
-#: ../../include/functions_reporting.php:5832
+#: ../../include/functions_reporting.php:5871
 msgid "No changes found."
 msgstr "Изменения не найдены."
 
 #: ../../enterprise/include/functions_reporting_pdf.php:572
 #: ../../extensions/agents_modules.php:119
 #: ../../include/functions_reports.php:564
-#: ../../include/functions_reporting.php:5597
+#: ../../include/functions_reporting.php:5636
 msgid "Agents/Modules"
 msgstr "Агенты/Модули"
 
@@ -18804,7 +18807,7 @@ msgid "There are no agents with modules."
 msgstr "Здесь нет агентов с модулями."
 
 #: ../../enterprise/include/functions_reporting_pdf.php:726
-#: ../../include/functions_reporting.php:5755
+#: ../../include/functions_reporting.php:5794
 msgid "ALERTS FIRED"
 msgstr "ОПОВЕЩЕНИЯ ЗАПУЩЕНЫ"
 
@@ -18814,36 +18817,36 @@ msgstr "Значение цветов:"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:758
 #: ../../extensions/agents_modules.php:305
-#: ../../include/functions_reporting.php:5777
+#: ../../include/functions_reporting.php:5816
 msgid "Orange cell when the module has fired alerts"
 msgstr "Оранжевая ячейка, когда модуль содержит запущенные оповещения"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:764
 #: ../../extensions/agents_modules.php:306
-#: ../../include/functions_reporting.php:5778
+#: ../../include/functions_reporting.php:5817
 msgid "Red cell when the module has a critical status"
 msgstr "Красная ячейка, когда модуль в критическо статусе"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:770
 #: ../../extensions/agents_modules.php:307
-#: ../../include/functions_reporting.php:5779
+#: ../../include/functions_reporting.php:5818
 msgid "Yellow cell when the module has a warning status"
 msgstr "Желтая ячейка, когда модуль в статусе Предупреждения"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:776
 #: ../../extensions/agents_modules.php:308
-#: ../../include/functions_reporting.php:5780
+#: ../../include/functions_reporting.php:5819
 msgid "Green cell when the module has a normal status"
 msgstr "Зеленая ячейка, когда модуль в нормальном статусе"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:782
 #: ../../extensions/agents_modules.php:309
-#: ../../include/functions_reporting.php:5781
+#: ../../include/functions_reporting.php:5820
 msgid "Grey cell when the module has an unknown status"
 msgstr "Серая ячейка, когда модуль в неизвестном статусе"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:854
-#: ../../include/functions_reporting.php:4421
+#: ../../include/functions_reporting.php:4459
 msgid "Last 8 hours"
 msgstr "Последние 8 часов"
 
@@ -18857,18 +18860,18 @@ msgstr "Здесь нет определенных Агентов/Модулей
 #: ../../enterprise/include/functions_reporting_pdf.php:1185
 #: ../../enterprise/include/functions_reporting_pdf.php:1537
 #: ../../enterprise/include/functions_reporting_pdf.php:1771
-#: ../../include/functions_reporting.php:4925
-#: ../../include/functions_reporting.php:5204
-#: ../../include/functions_reporting.php:5573
+#: ../../include/functions_reporting.php:4963
+#: ../../include/functions_reporting.php:5242
+#: ../../include/functions_reporting.php:5612
 msgid "Max Value"
 msgstr "Максимальное значение"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1190
 #: ../../enterprise/include/functions_reporting_pdf.php:1538
 #: ../../enterprise/include/functions_reporting_pdf.php:1772
-#: ../../include/functions_reporting.php:4922
-#: ../../include/functions_reporting.php:5202
-#: ../../include/functions_reporting.php:5571
+#: ../../include/functions_reporting.php:4960
+#: ../../include/functions_reporting.php:5240
+#: ../../include/functions_reporting.php:5610
 msgid "Min Value"
 msgstr "Минимальное значение"
 
@@ -18876,38 +18879,38 @@ msgstr "Минимальное значение"
 #: ../../enterprise/include/functions_reporting_pdf.php:1539
 #: ../../enterprise/include/functions_reporting_pdf.php:1773
 #: ../../enterprise/include/functions_reporting_pdf.php:3125
-#: ../../include/functions_reporting.php:3492
-#: ../../include/functions_reporting.php:4923
-#: ../../include/functions_reporting.php:5203
-#: ../../include/functions_reporting.php:5572
+#: ../../include/functions_reporting.php:3496
+#: ../../include/functions_reporting.php:4961
+#: ../../include/functions_reporting.php:5241
+#: ../../include/functions_reporting.php:5611
 msgid "Average Value"
 msgstr "Среднее значение"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1215
-#: ../../include/functions_reporting.php:5226
+#: ../../include/functions_reporting.php:5264
 msgid "Exception - Everything"
 msgstr "Исключения - Все"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1219
-#: ../../include/functions_reporting.php:5230
+#: ../../include/functions_reporting.php:5268
 #, php-format
 msgid "Exception - Modules over or equal to %s"
 msgstr "Исключения - Модули выше или равные %s"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1224
-#: ../../include/functions_reporting.php:5235
+#: ../../include/functions_reporting.php:5273
 #, php-format
 msgid "Exception - Modules under or equal to %s"
 msgstr "Исключения - Модули ниже или равные  %s"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1229
-#: ../../include/functions_reporting.php:5240
+#: ../../include/functions_reporting.php:5278
 #, php-format
 msgid "Exception - Modules under %s"
 msgstr "Исключения - Модули ниже  %s"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1234
-#: ../../include/functions_reporting.php:5245
+#: ../../include/functions_reporting.php:5283
 #, php-format
 msgid "Exception - Modules over %s"
 msgstr "Исключения - Модули выше %s"
@@ -18917,63 +18920,63 @@ msgid "Exception - Equal to"
 msgstr "Исключения - Равные"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1244
-#: ../../include/functions_reporting.php:5255
+#: ../../include/functions_reporting.php:5293
 #, php-format
 msgid "Exception - Not equal to %s"
 msgstr "Исключения - Не равные  %s"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1249
-#: ../../include/functions_reporting.php:5260
+#: ../../include/functions_reporting.php:5298
 msgid "Exception - Modules at normal status"
 msgstr "Исключения - Модули в нормальном статусе"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1253
-#: ../../include/functions_reporting.php:5264
+#: ../../include/functions_reporting.php:5302
 msgid "Exception - Modules at critical or warning status"
 msgstr "Исключения - Модули в критическом или предупреждающем статусе"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1420
-#: ../../include/functions_reporting.php:5444
+#: ../../include/functions_reporting.php:5482
 msgid "There are no"
 msgstr "Здесь нет"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1424
-#: ../../include/functions_reporting.php:5448
+#: ../../include/functions_reporting.php:5486
 msgid "Modules under those conditions"
 msgstr "Модули под  этими условиями"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1430
-#: ../../include/functions_reporting.php:5454
+#: ../../include/functions_reporting.php:5492
 msgid "Modules less or equal to"
 msgstr "Модули меньше или равные"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1433
-#: ../../include/functions_reporting.php:5457
+#: ../../include/functions_reporting.php:5495
 msgid "Modules less"
 msgstr "Модули, меньше"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1436
-#: ../../include/functions_reporting.php:5460
+#: ../../include/functions_reporting.php:5498
 msgid "Modules over"
 msgstr "Модули, выше"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1439
-#: ../../include/functions_reporting.php:5463
+#: ../../include/functions_reporting.php:5501
 msgid "Modules equal to"
 msgstr "Модули, равные"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1442
-#: ../../include/functions_reporting.php:5466
+#: ../../include/functions_reporting.php:5504
 msgid "Modules not equal to"
 msgstr "Модули, не равные"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1445
-#: ../../include/functions_reporting.php:5469
+#: ../../include/functions_reporting.php:5507
 msgid "Modules normal status"
 msgstr "Обычный статус модулей"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:1448
-#: ../../include/functions_reporting.php:5472
+#: ../../include/functions_reporting.php:5510
 msgid "Modules at critial or warning status"
 msgstr "Модули в критическом или предупреждающем статусе"
 
@@ -18989,16 +18992,16 @@ msgstr "Модули в критическом или предупреждающ
 #: ../../enterprise/include/functions_reporting_pdf.php:3113
 #: ../../include/functions_reporting.php:2083
 #: ../../include/functions_reporting.php:2159
-#: ../../include/functions_reporting.php:3484
-#: ../../include/functions_reporting.php:3736
-#: ../../include/functions_reporting.php:3759
-#: ../../include/functions_reporting.php:3782
-#: ../../include/functions_reporting.php:3967
-#: ../../include/functions_reporting.php:3990
-#: ../../include/functions_reporting.php:4013
-#: ../../include/functions_reporting.php:4036
-#: ../../include/functions_reporting.php:5159
-#: ../../include/functions_reporting.php:5551
+#: ../../include/functions_reporting.php:3488
+#: ../../include/functions_reporting.php:3749
+#: ../../include/functions_reporting.php:3773
+#: ../../include/functions_reporting.php:3797
+#: ../../include/functions_reporting.php:3999
+#: ../../include/functions_reporting.php:4023
+#: ../../include/functions_reporting.php:4047
+#: ../../include/functions_reporting.php:4071
+#: ../../include/functions_reporting.php:5197
+#: ../../include/functions_reporting.php:5590
 #: ../../include/functions_graph.php:1365
 #: ../../include/functions_graph.php:1430
 #: ../../include/functions_graph.php:1497
@@ -19011,7 +19014,7 @@ msgstr "прочее"
 #: ../../enterprise/include/functions_reporting_xml.php:934
 #: ../../operation/reporting/reporting_xml.php:965
 #: ../../include/functions_reports.php:550
-#: ../../include/functions_reporting.php:4144
+#: ../../include/functions_reporting.php:4182
 msgid "Serialize data"
 msgstr "Упорядоченные данные"
 
@@ -19019,7 +19022,7 @@ msgstr "Упорядоченные данные"
 #: ../../enterprise/include/functions_reporting_xml.php:922
 #: ../../operation/reporting/reporting_xml.php:953
 #: ../../include/functions_reports.php:578
-#: ../../include/functions_reporting.php:4121
+#: ../../include/functions_reporting.php:4157
 msgid "Import text from URL"
 msgstr "Импорт текста из URL"
 
@@ -19027,13 +19030,13 @@ msgstr "Импорт текста из URL"
 #: ../../enterprise/include/functions_reporting_xml.php:883
 #: ../../operation/reporting/reporting_xml.php:914
 #: ../../include/functions_reports.php:585
-#: ../../include/functions_reporting.php:4104
+#: ../../include/functions_reporting.php:4140
 msgid "Alert report agent"
 msgstr "Агент отчета оповещения"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2081
 #: ../../include/functions_reports.php:587
-#: ../../include/functions_reporting.php:4065
+#: ../../include/functions_reporting.php:4101
 msgid "Alert report group"
 msgstr "Группа отчета оповещения"
 
@@ -19041,7 +19044,7 @@ msgstr "Группа отчета оповещения"
 #: ../../enterprise/include/functions_reporting_xml.php:846
 #: ../../operation/reporting/reporting_xml.php:877
 #: ../../include/functions_reports.php:583
-#: ../../include/functions_reporting.php:4086
+#: ../../include/functions_reporting.php:4122
 msgid "Alert report module"
 msgstr "Модуль отчета оповещение"
 
@@ -19058,14 +19061,14 @@ msgid "There are no events for this module."
 msgstr "Здесь нет событий для этого модуля."
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2291
-#: ../../include/functions_reporting.php:3885
+#: ../../include/functions_reporting.php:3910
 msgid "User defined graph"
 msgstr "Определенный график пользователя"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2374
 #: ../../enterprise/include/functions_reporting_xml.php:680
 #: ../../operation/reporting/reporting_xml.php:729
-#: ../../include/functions_reporting.php:3917
+#: ../../include/functions_reporting.php:3942
 msgid "Group detailed event"
 msgstr "Группа подробных событий"
 
@@ -19074,29 +19077,29 @@ msgid "There are no events in group."
 msgstr "Здесь нет событий в группе"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2470
-#: ../../include/functions_reporting.php:3964
+#: ../../include/functions_reporting.php:3996
 msgid "Events by agent"
 msgstr "События по агенту"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2510
 #: ../../enterprise/include/functions_reporting_pdf.php:2693
-#: ../../include/functions_reporting.php:3733
-#: ../../include/functions_reporting.php:3987
+#: ../../include/functions_reporting.php:3746
+#: ../../include/functions_reporting.php:4020
 msgid "Events validated by user"
 msgstr "События, утвержденные пользователем"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2534
 #: ../../enterprise/include/functions_reporting_pdf.php:2717
-#: ../../include/functions_reporting.php:3756
-#: ../../include/functions_reporting.php:4010
+#: ../../include/functions_reporting.php:3770
+#: ../../include/functions_reporting.php:4044
 msgid "Events by criticity"
 msgstr "Events by criticity"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2558
 #: ../../enterprise/include/functions_reporting_pdf.php:2741
 #: ../../operation/events/event_statistics.php:65
-#: ../../include/functions_reporting.php:3779
-#: ../../include/functions_reporting.php:4033
+#: ../../include/functions_reporting.php:3794
+#: ../../include/functions_reporting.php:4068
 msgid "Amount events validated"
 msgstr "Количество утвержденных событий"
 
@@ -19112,7 +19115,7 @@ msgstr "Здесь нет Событий."
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2614
 #: ../../include/functions_reporting.php:2497
-#: ../../include/functions_reporting.php:2604
+#: ../../include/functions_reporting.php:2606
 msgid "Val. by"
 msgstr "Утв. по"
 
@@ -19120,38 +19123,38 @@ msgstr "Утв. по"
 #: ../../mobile/operation/events.php:250
 #: ../../operation/events/events.build_table.php:181
 #: ../../include/functions_events.php:869
-#: ../../include/functions_events.php:2238
-#: ../../include/functions_reporting.php:2526
-#: ../../include/functions_reporting.php:2623
+#: ../../include/functions_events.php:2246
+#: ../../include/functions_reporting.php:2528
+#: ../../include/functions_reporting.php:2627
 #: ../../include/ajax/events.php:435
 msgid "New event"
 msgstr "Новое событие"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2632
 #: ../../mobile/operation/events.php:120 ../../mobile/operation/events.php:254
-#: ../../mobile/operation/events.php:782 ../../operation/events/events.php:538
-#: ../../operation/events/events.php:563 ../../operation/events/events.php:564
-#: ../../operation/events/events.php:780 ../../operation/events/events.php:785
-#: ../../operation/events/events.php:786
+#: ../../mobile/operation/events.php:782 ../../operation/events/events.php:549
+#: ../../operation/events/events.php:578 ../../operation/events/events.php:579
+#: ../../operation/events/events.php:799 ../../operation/events/events.php:804
+#: ../../operation/events/events.php:805
 #: ../../operation/events/events.build_table.php:185
 #: ../../include/functions_events.php:873
-#: ../../include/functions_events.php:2242
-#: ../../include/functions_reporting.php:2530
-#: ../../include/functions_reporting.php:2627
+#: ../../include/functions_events.php:2250
+#: ../../include/functions_reporting.php:2532
+#: ../../include/functions_reporting.php:2631
 #: ../../include/ajax/events.php:439
 msgid "Event validated"
 msgstr "Событие подтверждено"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2636
-#: ../../mobile/operation/events.php:258 ../../operation/events/events.php:596
-#: ../../operation/events/events.php:630 ../../operation/events/events.php:631
-#: ../../operation/events/events.php:790 ../../operation/events/events.php:804
-#: ../../operation/events/events.php:805
+#: ../../mobile/operation/events.php:258 ../../operation/events/events.php:611
+#: ../../operation/events/events.php:649 ../../operation/events/events.php:650
+#: ../../operation/events/events.php:809 ../../operation/events/events.php:823
+#: ../../operation/events/events.php:824
 #: ../../operation/events/events.build_table.php:189
 #: ../../include/functions_events.php:877
-#: ../../include/functions_events.php:2246
-#: ../../include/functions_reporting.php:2534
-#: ../../include/functions_reporting.php:2631
+#: ../../include/functions_events.php:2254
+#: ../../include/functions_reporting.php:2536
+#: ../../include/functions_reporting.php:2635
 #: ../../include/ajax/events.php:443
 msgid "Event in process"
 msgstr "Событие активно"
@@ -19166,7 +19169,7 @@ msgstr "Блок суммирования"
 #: ../../enterprise/include/functions_reporting_xml.php:493
 #: ../../operation/reporting/reporting_xml.php:540
 #: ../../include/functions_reports.php:542
-#: ../../include/functions_reporting.php:3563
+#: ../../include/functions_reporting.php:3567
 #: ../../include/functions_graph.php:640
 #: ../../include/functions_graph.php:2821
 msgid "Avg. Value"
@@ -19178,8 +19181,8 @@ msgstr "Информация"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2903
 #: ../../enterprise/include/functions_reporting_pdf.php:3127
-#: ../../include/functions_reporting.php:3249
-#: ../../include/functions_reporting.php:3501
+#: ../../include/functions_reporting.php:3253
+#: ../../include/functions_reporting.php:3505
 msgid "SLA Compliance"
 msgstr "SLA Соответствие"
 
@@ -19188,9 +19191,9 @@ msgstr "SLA Соответствие"
 #: ../../enterprise/include/functions_reporting_pdf.php:3004
 #: ../../enterprise/include/functions_reporting_pdf.php:3005
 #: ../../enterprise/include/functions_reporting_pdf.php:3065
-#: ../../include/functions_reporting.php:3262
-#: ../../include/functions_reporting.php:3339
-#: ../../include/functions_reporting.php:3435
+#: ../../include/functions_reporting.php:3266
+#: ../../include/functions_reporting.php:3343
+#: ../../include/functions_reporting.php:3439
 msgid "Inside limits"
 msgstr "Внутренние лимиты"
 
@@ -19199,9 +19202,9 @@ msgstr "Внутренние лимиты"
 #: ../../enterprise/include/functions_reporting_pdf.php:3008
 #: ../../enterprise/include/functions_reporting_pdf.php:3009
 #: ../../enterprise/include/functions_reporting_pdf.php:3072
-#: ../../include/functions_reporting.php:3263
-#: ../../include/functions_reporting.php:3345
-#: ../../include/functions_reporting.php:3442
+#: ../../include/functions_reporting.php:3267
+#: ../../include/functions_reporting.php:3349
+#: ../../include/functions_reporting.php:3446
 #: ../../include/functions_graph.php:1505
 #: ../../include/functions_graph.php:1552
 #: ../../include/graphs/functions_gd.php:165
@@ -19214,14 +19217,14 @@ msgstr "Кончились лимиты"
 #: ../../enterprise/include/functions_reporting_pdf.php:3000
 #: ../../enterprise/include/functions_reporting_pdf.php:3001
 #: ../../enterprise/include/functions_reporting_pdf.php:3069
-#: ../../include/functions_reporting.php:3264
-#: ../../include/functions_reporting.php:3342
-#: ../../include/functions_reporting.php:3439
+#: ../../include/functions_reporting.php:3268
+#: ../../include/functions_reporting.php:3346
+#: ../../include/functions_reporting.php:3443
 msgid "On the edge"
 msgstr "На краю"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3030
-#: ../../include/functions_reporting.php:3248
+#: ../../include/functions_reporting.php:3252
 msgid "SLA Limit"
 msgstr "Разрешение SLA"
 
@@ -19237,7 +19240,7 @@ msgstr "Модуль:"
 #: ../../enterprise/include/functions_reporting_xml.php:265
 #: ../../operation/reporting/reporting_xml.php:316
 #: ../../include/functions_reports.php:496
-#: ../../include/functions_reporting.php:3113
+#: ../../include/functions_reporting.php:3117
 msgid "Simple baseline graph"
 msgstr "Простой базовый график"
 
@@ -19245,7 +19248,7 @@ msgstr "Простой базовый график"
 #: ../../enterprise/include/functions_reporting_xml.php:475
 #: ../../operation/reporting/reporting_xml.php:522
 #: ../../include/functions_reports.php:548
-#: ../../include/functions_reporting.php:3525
+#: ../../include/functions_reporting.php:3529
 msgid "Monitor report"
 msgstr "Отчет по мониторам"
 
@@ -19288,7 +19291,7 @@ msgstr "Период: "
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3642
 #: ../../operation/agentes/ver_agente.php:899
-#: ../../include/functions_reporting.php:2899
+#: ../../include/functions_reporting.php:2903
 #: ../../include/functions_treeview.php:142
 msgid "Last data"
 msgstr "Последние данные"
@@ -19300,8 +19303,8 @@ msgstr "Агент конфигурации"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3690
 #: ../../enterprise/include/functions_reporting_pdf.php:3825
-#: ../../include/functions_reporting.php:5863
-#: ../../include/functions_reporting.php:6007
+#: ../../include/functions_reporting.php:5902
+#: ../../include/functions_reporting.php:6046
 msgid "SO"
 msgstr "SO"
 
@@ -19420,13 +19423,13 @@ msgstr "Журнал коллектора"
 #: ../../enterprise/include/functions_reporting_xml.php:191
 #: ../../operation/reporting/reporting_xml.php:246
 #: ../../include/functions_reports.php:494
-#: ../../include/functions_reporting.php:2980
+#: ../../include/functions_reporting.php:2984
 msgid "Simple graph"
 msgstr "Простой график"
 
 #: ../../enterprise/include/functions_reporting_xml.php:546
 #: ../../operation/reporting/reporting_xml.php:593
-#: ../../include/functions_reporting.php:3687
+#: ../../include/functions_reporting.php:3691
 msgid "Agent detailed event"
 msgstr "Подробное событие агента"
 
@@ -19798,7 +19801,7 @@ msgstr "Все (Подключены)"
 #: ../../mobile/operation/alerts.php:39
 #: ../../operation/agentes/alerts_status.functions.php:49
 #: ../../operation/snmpconsole/snmp_view.php:176
-#: ../../operation/snmpconsole/snmp_view.php:660
+#: ../../operation/snmpconsole/snmp_view.php:658
 msgid "Not fired"
 msgstr "Не запущено"
 
@@ -19865,12 +19868,12 @@ msgstr "Детали события"
 
 #: ../../mobile/operation/events.php:435
 #: ../../operation/events/events.build_table.php:52
-#: ../../include/functions_events.php:2169
+#: ../../include/functions_events.php:2177
 msgid "Event ID"
 msgstr "ID события"
 
 #: ../../mobile/operation/events.php:463
-#: ../../include/functions_events.php:2257
+#: ../../include/functions_events.php:2265
 msgid "Acknowledged by"
 msgstr "Признано"
 
@@ -19959,7 +19962,7 @@ msgid "Time compare (Overlapped)"
 msgstr "Время сравнения (Перекрывающееся)"
 
 #: ../../mobile/operation/module_graph.php:406
-#: ../../operation/agentes/stat_win.php:329
+#: ../../operation/agentes/stat_win.php:330
 msgid "Show unknown graph"
 msgstr "Показать неизвестный график"
 
@@ -19974,7 +19977,7 @@ msgstr "Интервал времени (в часах)"
 #: ../../mobile/operation/module_graph.php:432
 #: ../../operation/agentes/exportdata.php:262
 #: ../../operation/agentes/graphs.php:73
-#: ../../operation/agentes/stat_win.php:259
+#: ../../operation/agentes/stat_win.php:260
 msgid "Begin date"
 msgstr "Начальная дата"
 
@@ -19996,9 +19999,9 @@ msgid "Filter Modules by %s"
 msgstr "Фильтр Модулей по %s"
 
 #: ../../mobile/operation/modules.php:413
-#: ../../operation/agentes/status_monitor.php:960
+#: ../../operation/agentes/status_monitor.php:970
 #: ../../operation/search_modules.php:100
-#: ../../include/functions_modules.php:1493
+#: ../../include/functions_modules.php:1518
 msgid "NOT INIT"
 msgstr "НЕ ИНИЦ"
 
@@ -20416,7 +20419,7 @@ msgstr "Маркер"
 msgid "Sound Events"
 msgstr "Звуковые события"
 
-#: ../../operation/menu.php:262 ../../operation/events/events.php:362
+#: ../../operation/menu.php:262 ../../operation/events/events.php:370
 msgid "Sound Alerts"
 msgstr "Звуковые Оповещения"
 
@@ -20508,7 +20511,7 @@ msgid "Make sure nfdump version 1.6.8 or newer is installed!"
 msgstr "Убедитесь, что версия 1.6.8 nfdump никогда не устанавливалась!"
 
 #: ../../operation/netflow/nf_live_view.php:140
-#: ../../operation/events/events_list.php:723
+#: ../../operation/events/events_list.php:733
 msgid "Error creating filter"
 msgstr "Ошибка при создании фильтра"
 
@@ -20521,7 +20524,7 @@ msgid "Filter updated successfully"
 msgstr "Фильтр обновлен успешно"
 
 #: ../../operation/netflow/nf_live_view.php:159
-#: ../../operation/events/events_list.php:796
+#: ../../operation/events/events_list.php:806
 msgid "Error updating filter"
 msgstr "Ошибка при обновлении фильтра"
 
@@ -20537,13 +20540,13 @@ msgstr "Подключение"
 #: ../../operation/events/events_list.php:186
 #: ../../operation/events/events_list.php:248
 #: ../../operation/events/events_list.php:250
-#: ../../operation/events/events_list.php:459
+#: ../../operation/events/events_list.php:469
 msgid "Load filter"
 msgstr "Загрузить фильтр"
 
 #: ../../operation/netflow/nf_live_view.php:291
-#: ../../operation/events/events_list.php:734
-#: ../../operation/events/events_list.php:803
+#: ../../operation/events/events_list.php:744
+#: ../../operation/events/events_list.php:813
 msgid "none"
 msgstr "ни один"
 
@@ -20634,23 +20637,23 @@ msgid "Agent access rate (24h)"
 msgstr "Скорость доступа агента (24 часа)"
 
 #: ../../operation/agentes/graphs.php:77
-#: ../../operation/agentes/stat_win.php:266
+#: ../../operation/agentes/stat_win.php:267
 msgid "Zoom factor"
 msgstr "Фактор увеличения"
 
 #: ../../operation/agentes/graphs.php:86
-#: ../../operation/agentes/stat_win.php:278
+#: ../../operation/agentes/stat_win.php:279
 #: ../../operation/reporting/graph_viewer.php:163
 msgid "Time range"
 msgstr "Период времени"
 
 #: ../../operation/agentes/graphs.php:90
-#: ../../operation/agentes/stat_win.php:284
+#: ../../operation/agentes/stat_win.php:285
 msgid "Show events"
 msgstr "Показывать события"
 
 #: ../../operation/agentes/graphs.php:92
-#: ../../operation/agentes/stat_win.php:301
+#: ../../operation/agentes/stat_win.php:302
 msgid "Show alerts"
 msgstr "Показывать угрозы"
 
@@ -20712,19 +20715,19 @@ msgstr ""
 msgid "Monitor view"
 msgstr "Обзор монитора"
 
-#: ../../operation/agentes/status_monitor.php:353
+#: ../../operation/agentes/status_monitor.php:363
 msgid "Monitor status"
 msgstr "Статус монитора"
 
-#: ../../operation/agentes/status_monitor.php:413
+#: ../../operation/agentes/status_monitor.php:423
 msgid "Only it is show tags in use."
 msgstr "Только эти показанные теги используются."
 
-#: ../../operation/agentes/status_monitor.php:422
+#: ../../operation/agentes/status_monitor.php:432
 msgid "No tags"
 msgstr "Нет тегов"
 
-#: ../../operation/agentes/status_monitor.php:1107
+#: ../../operation/agentes/status_monitor.php:1117
 msgid "This group doesn't have any monitor"
 msgstr "Эта группа не имеет монитора"
 
@@ -20865,7 +20868,7 @@ msgid "Dinamic view"
 msgstr "Просмотр динамики"
 
 #: ../../operation/agentes/networkmap.php:218
-#: ../../extensions/system_info.php:335
+#: ../../extensions/system_info.php:332
 msgid "No selected"
 msgstr "Не выбрано"
 
@@ -20910,24 +20913,24 @@ msgstr "работать только с этим фильтром для люб
 msgid "There was a problem locating the source of the graph"
 msgstr "Обнаружена проблема обнаружения источника графа"
 
-#: ../../operation/agentes/stat_win.php:209
+#: ../../operation/agentes/stat_win.php:210
 msgid "Pandora FMS Graph configuration menu"
 msgstr "Меню конфигурации Графа Pandora FMS"
 
-#: ../../operation/agentes/stat_win.php:211
+#: ../../operation/agentes/stat_win.php:212
 msgid "Please, make your changes and apply with the <i>Reload</i> button"
 msgstr ""
 "Пожалуйста внесите свои изменения и подтвердите, нажав <i>Перезагрузка</i>"
 
-#: ../../operation/agentes/stat_win.php:244
+#: ../../operation/agentes/stat_win.php:245
 msgid "Refresh time"
 msgstr "Время обновления"
 
-#: ../../operation/agentes/stat_win.php:251
+#: ../../operation/agentes/stat_win.php:252
 msgid "Avg. Only"
 msgstr "Только усредненное"
 
-#: ../../operation/agentes/stat_win.php:295
+#: ../../operation/agentes/stat_win.php:296
 msgid ""
 "Show events is disabled because this Pandora node is set the event "
 "replication."
@@ -20935,24 +20938,24 @@ msgstr ""
 "Показать события, которые отключены поскольку этот узел Pandora установлен "
 "случаем репликации."
 
-#: ../../operation/agentes/stat_win.php:307
+#: ../../operation/agentes/stat_win.php:308
 msgid "Show event graph"
 msgstr "Показать событие графика"
 
-#: ../../operation/agentes/stat_win.php:317
-#: ../../operation/agentes/stat_win.php:323
+#: ../../operation/agentes/stat_win.php:318
+#: ../../operation/agentes/stat_win.php:324
 msgid "Time compare"
 msgstr "Сравнить время"
 
-#: ../../operation/agentes/stat_win.php:317
+#: ../../operation/agentes/stat_win.php:318
 msgid "Overlapped"
 msgstr "Перекрыты"
 
-#: ../../operation/agentes/stat_win.php:323
+#: ../../operation/agentes/stat_win.php:324
 msgid "Separated"
 msgstr "Разделены"
 
-#: ../../operation/agentes/stat_win.php:352
+#: ../../operation/agentes/stat_win.php:353
 msgid "Reload"
 msgstr "Перезагрузить"
 
@@ -21225,18 +21228,18 @@ msgid "Show events graph"
 msgstr "Показать события графика"
 
 #: ../../operation/events/events_list.php:180
-#: ../../operation/events/events_list.php:461
+#: ../../operation/events/events_list.php:471
 msgid "No filter loaded"
 msgstr "Нет загруженного фильтра"
 
 #: ../../operation/events/events_list.php:182
-#: ../../operation/events/events_list.php:464
+#: ../../operation/events/events_list.php:474
 msgid "Filter loaded"
 msgstr "Фильтр загружен"
 
 #: ../../operation/events/events_list.php:184
 #: ../../operation/events/events_list.php:217
-#: ../../operation/events/events_list.php:457
+#: ../../operation/events/events_list.php:467
 msgid "Save filter"
 msgstr "Сохранить фильтр"
 
@@ -21248,23 +21251,23 @@ msgstr "Новый фильтр"
 msgid "Overwrite filter"
 msgstr "Переписать фильтр"
 
-#: ../../operation/events/events_list.php:480
+#: ../../operation/events/events_list.php:490
 msgid "Event control filter"
 msgstr "Фильтр контроля событий"
 
-#: ../../operation/events/events_list.php:693
+#: ../../operation/events/events_list.php:703
 msgid "Filter name cannot be left blank"
 msgstr "Имя фильтра не может быть пустым"
 
-#: ../../operation/events/events_list.php:727
+#: ../../operation/events/events_list.php:737
 msgid "Filter created"
 msgstr "Фильтр создан"
 
-#: ../../operation/events/events_list.php:793
+#: ../../operation/events/events_list.php:803
 msgid "Filter updated"
 msgstr "Фильтр загружен"
 
-#: ../../operation/events/events_list.php:1129
+#: ../../operation/events/events_list.php:1139
 msgid "Events generated -by agent-"
 msgstr "События, сгенерированные - агентом-"
 
@@ -21276,62 +21279,62 @@ msgstr ""
 "Просмотр событий отключен из-за события репликации. Для получения "
 "дополнительной информации, пожалуйста, свяжитесь с администратором"
 
-#: ../../operation/events/events.php:271
+#: ../../operation/events/events.php:279
 msgid "History event list"
 msgstr "Список истории событий"
 
-#: ../../operation/events/events.php:276
+#: ../../operation/events/events.php:284
 msgid "RSS Events"
 msgstr "RSS События"
 
-#: ../../operation/events/events.php:281
+#: ../../operation/events/events.php:289
 msgid "Marquee display"
 msgstr "Отображение \"Бегущая строка\""
 
-#: ../../operation/events/events.php:286
+#: ../../operation/events/events.php:294
 msgid "Export to CSV file"
 msgstr "Эксорт в файл CSV"
 
-#: ../../operation/events/events.php:290 ../../operation/events/events.php:329
+#: ../../operation/events/events.php:298 ../../operation/events/events.php:337
 msgid "Sound events"
 msgstr "Звуковые события"
 
-#: ../../operation/events/events.php:333
+#: ../../operation/events/events.php:341
 msgid "History"
 msgstr "История"
 
-#: ../../operation/events/events.php:373
+#: ../../operation/events/events.php:381
 msgid "Main event view"
 msgstr "Просмотр главных событий"
 
-#: ../../operation/events/events.php:391
+#: ../../operation/events/events.php:399
 msgid "No events selected"
 msgstr "Нет выбранных событий"
 
-#: ../../operation/events/events.php:417
+#: ../../operation/events/events.php:425
 msgid "Successfully validated"
 msgstr "Успешно подтверждено"
 
-#: ../../operation/events/events.php:418 ../../operation/events/events.php:684
-#: ../../operation/events/events.php:836
+#: ../../operation/events/events.php:426 ../../operation/events/events.php:703
+#: ../../operation/events/events.php:855
 msgid "Could not be validated"
 msgstr "Не может быть подтверждено"
 
-#: ../../operation/events/events.php:422
+#: ../../operation/events/events.php:430
 msgid "Successfully set in process"
 msgstr "Успешно настроено в процессе"
 
-#: ../../operation/events/events.php:423
+#: ../../operation/events/events.php:431
 msgid "Could not be set in process"
 msgstr "Активные настройки не могут быть удалены"
 
-#: ../../operation/events/events.php:621 ../../operation/events/events.php:625
-#: ../../operation/events/events.php:795 ../../operation/events/events.php:799
+#: ../../operation/events/events.php:640 ../../operation/events/events.php:644
+#: ../../operation/events/events.php:814 ../../operation/events/events.php:818
 #: ../../operation/events/events.build_table.php:522
 msgid "Is not allowed delete events in process"
 msgstr "Нельзя удалить активное событие"
 
-#: ../../operation/events/events.php:719
+#: ../../operation/events/events.php:738
 msgid "Error deleting event"
 msgstr "Ошибка при удалении события"
 
@@ -21362,13 +21365,13 @@ msgid "Validate event"
 msgstr "Подтвердить событие"
 
 #: ../../operation/events/events.build_table.php:517
-#: ../../include/functions_events.php:1668
-#: ../../include/functions_events.php:1670
+#: ../../include/functions_events.php:1676
+#: ../../include/functions_events.php:1678
 msgid "Delete event"
 msgstr "Удалить событие"
 
 #: ../../operation/events/events.build_table.php:530
-#: ../../operation/snmpconsole/snmp_view.php:554
+#: ../../operation/snmpconsole/snmp_view.php:550
 msgid "Show more"
 msgstr "Показать подробнее"
 
@@ -21551,7 +21554,7 @@ msgid "This user doesn't have any assigned profile/group"
 msgstr "У этого пользователя нет назначенного профиля/ группы"
 
 #: ../../operation/extensions.php:64 ../../extensions/net_tools.php:110
-#: ../../include/functions_events.php:1703
+#: ../../include/functions_events.php:1711
 msgid "Execute"
 msgstr "Выполнение"
 
@@ -21731,10 +21734,10 @@ msgid "Search value"
 msgstr "Поисковое значение"
 
 #: ../../operation/snmpconsole/snmp_view.php:369
-#: ../../operation/snmpconsole/snmp_view.php:478
-#: ../../operation/snmpconsole/snmp_view.php:654
-#: ../../include/functions_events.php:2657
-#: ../../include/functions_events.php:2663
+#: ../../operation/snmpconsole/snmp_view.php:480
+#: ../../operation/snmpconsole/snmp_view.php:652
+#: ../../include/functions_events.php:2685
+#: ../../include/functions_events.php:2691
 msgid "Not validated"
 msgstr "Не проверено"
 
@@ -21746,23 +21749,23 @@ msgstr "Поиск по какому-либо алфавитно-цифрово�
 msgid "Search by trap type"
 msgstr "Поиск по типу прерывания"
 
-#: ../../operation/snmpconsole/snmp_view.php:496
+#: ../../operation/snmpconsole/snmp_view.php:499
 msgid "View agent details"
 msgstr "Просмотреть агент деталей"
 
-#: ../../operation/snmpconsole/snmp_view.php:563
+#: ../../operation/snmpconsole/snmp_view.php:561
 msgid "Custom data:"
 msgstr "Данные клиента:"
 
-#: ../../operation/snmpconsole/snmp_view.php:575
+#: ../../operation/snmpconsole/snmp_view.php:573
 msgid "OID:"
 msgstr "OID:"
 
-#: ../../operation/snmpconsole/snmp_view.php:612
+#: ../../operation/snmpconsole/snmp_view.php:610
 msgid "Type:"
 msgstr "Тип:"
 
-#: ../../operation/snmpconsole/snmp_view.php:630
+#: ../../operation/snmpconsole/snmp_view.php:628
 msgid "No matching traps found"
 msgstr "Соответствующих трапов не найдено"
 
@@ -22381,19 +22384,19 @@ msgstr "Отправлено"
 msgid "VNC view"
 msgstr "Просмотр VNC"
 
-#: ../../extensions/system_info.php:151 ../../extensions/pandora_logs.php:33
+#: ../../extensions/system_info.php:148 ../../extensions/pandora_logs.php:33
 msgid "Cannot find file"
 msgstr "Не удается найти файл"
 
-#: ../../extensions/system_info.php:156
+#: ../../extensions/system_info.php:153
 msgid "Cannot read file"
 msgstr "Не удается прочитать файл"
 
-#: ../../extensions/system_info.php:256 ../../extensions/system_info.php:619
+#: ../../extensions/system_info.php:253 ../../extensions/system_info.php:616
 msgid "System Info"
 msgstr "Информация о системе"
 
-#: ../../extensions/system_info.php:259
+#: ../../extensions/system_info.php:256
 msgid ""
 "This extension can run as PHP script in a shell for extract more "
 "information, but it must be run as root or across sudo. For example: <i>sudo "
@@ -22404,7 +22407,7 @@ msgstr ""
 "судо. Например: <i>sudo php "
 "/var/www/pandora_console/extensions/system_info.php -d -s -c</i>"
 
-#: ../../extensions/system_info.php:262 ../../extensions/pandora_logs.php:74
+#: ../../extensions/system_info.php:259 ../../extensions/pandora_logs.php:74
 msgid ""
 "This tool is used just to view your Pandora FMS system logfiles directly "
 "from console"
@@ -22412,38 +22415,38 @@ msgstr ""
 "Этот инструмент используется только для просмотра ваших Pandora FMS файлов "
 "системного журнала непосредственно из консоли"
 
-#: ../../extensions/system_info.php:271 ../../extensions/system_info.php:274
-#: ../../extensions/system_info.php:303
+#: ../../extensions/system_info.php:268 ../../extensions/system_info.php:271
+#: ../../extensions/system_info.php:300
 msgid "Pandora Diagnostic info"
 msgstr "Pandora диагностическая информация"
 
-#: ../../extensions/system_info.php:278 ../../extensions/system_info.php:281
-#: ../../extensions/system_info.php:309
+#: ../../extensions/system_info.php:275 ../../extensions/system_info.php:278
+#: ../../extensions/system_info.php:306
 msgid "System info"
 msgstr "Системная информация"
 
-#: ../../extensions/system_info.php:285 ../../extensions/system_info.php:288
-#: ../../extensions/system_info.php:313
+#: ../../extensions/system_info.php:282 ../../extensions/system_info.php:285
+#: ../../extensions/system_info.php:310
 msgid "Log Info"
 msgstr "Информация журнала"
 
-#: ../../extensions/system_info.php:291 ../../extensions/system_info.php:292
+#: ../../extensions/system_info.php:288 ../../extensions/system_info.php:289
 msgid "Number lines of log"
 msgstr "Число линий журнала"
 
-#: ../../extensions/system_info.php:295
+#: ../../extensions/system_info.php:292
 msgid "Generate file"
 msgstr "Создайте файл"
 
-#: ../../extensions/system_info.php:328
+#: ../../extensions/system_info.php:325
 msgid "download here"
 msgstr "загрузить здесь"
 
-#: ../../extensions/system_info.php:331
+#: ../../extensions/system_info.php:328
 msgid "File:"
 msgstr "Файл:"
 
-#: ../../extensions/system_info.php:332
+#: ../../extensions/system_info.php:329
 msgid "Location:"
 msgstr "Место нахождения:"
 
@@ -22460,7 +22463,7 @@ msgid "DB interface"
 msgstr "интерфейс базы данных"
 
 #: ../../extensions/agents_modules.php:169
-#: ../../include/functions_reporting.php:5661
+#: ../../include/functions_reporting.php:5700
 msgid "There are no agents with modules"
 msgstr "здесь нет агентов с модулями"
 
@@ -23063,7 +23066,7 @@ msgid "Going to unknown"
 msgstr "Перейти к неизвестному"
 
 #: ../../include/functions_events.php:1077
-#: ../../include/functions_events.php:1358 ../../include/functions.php:851
+#: ../../include/functions_events.php:1366 ../../include/functions.php:851
 msgid "Alert recovered"
 msgstr "Оповещение восстановлено"
 
@@ -23101,12 +23104,12 @@ msgid "New agent created"
 msgstr "Новый агент создан"
 
 #: ../../include/functions_events.php:1109
-#: ../../include/functions_events.php:1376
+#: ../../include/functions_events.php:1384
 msgid "Configuration change"
 msgstr "Конфигурационные изменения"
 
 #: ../../include/functions_events.php:1112
-#: ../../include/functions_events.php:1361 ../../include/functions.php:852
+#: ../../include/functions_events.php:1369 ../../include/functions.php:852
 msgid "Alert ceased"
 msgstr "Оповещение прекращено"
 
@@ -23114,27 +23117,27 @@ msgstr "Оповещение прекращено"
 msgid "Unknown type:"
 msgstr "Неизвестный тип:"
 
-#: ../../include/functions_events.php:1346 ../../include/functions.php:845
+#: ../../include/functions_events.php:1354 ../../include/functions.php:845
 msgid "Monitor Critical"
 msgstr "Монитор Критического"
 
-#: ../../include/functions_events.php:1349 ../../include/functions.php:846
+#: ../../include/functions_events.php:1357 ../../include/functions.php:846
 msgid "Monitor Warning"
 msgstr "Монитор Предупреждения"
 
-#: ../../include/functions_events.php:1352 ../../include/functions.php:847
+#: ../../include/functions_events.php:1360 ../../include/functions.php:847
 msgid "Monitor Normal"
 msgstr "Монитор Обычного"
 
-#: ../../include/functions_events.php:1364 ../../include/functions.php:853
+#: ../../include/functions_events.php:1372 ../../include/functions.php:853
 msgid "Alert manual validation"
 msgstr "Подтверждение руководства оповещений"
 
-#: ../../include/functions_events.php:1367 ../../include/functions.php:854
+#: ../../include/functions_events.php:1375 ../../include/functions.php:854
 msgid "Recon host detected"
 msgstr "Хост рекона определен"
 
-#: ../../include/functions_events.php:1410
+#: ../../include/functions_events.php:1418
 #: ../../include/functions_graph.php:1833
 #: ../../include/functions_graph.php:2181
 #: ../../include/functions_graph.php:2182
@@ -23144,106 +23147,106 @@ msgstr "Хост рекона определен"
 msgid "Maintenance"
 msgstr "Управление"
 
-#: ../../include/functions_events.php:1413
+#: ../../include/functions_events.php:1421
 #: ../../include/functions_graph.php:2185
 #: ../../include/functions_graph.php:2186 ../../include/functions.php:684
 #: ../../include/functions.php:881 ../../include/functions.php:915
 msgid "Informational"
 msgstr "Информационное"
 
-#: ../../include/functions_events.php:1446
-#: ../../include/functions_events.php:1467
+#: ../../include/functions_events.php:1454
+#: ../../include/functions_events.php:1475
 msgid "Only new"
 msgstr "Только новые"
 
-#: ../../include/functions_events.php:1448
-#: ../../include/functions_events.php:1473
+#: ../../include/functions_events.php:1456
+#: ../../include/functions_events.php:1481
 msgid "Only in process"
 msgstr "Только активные"
 
-#: ../../include/functions_events.php:1449
-#: ../../include/functions_events.php:1476
+#: ../../include/functions_events.php:1457
+#: ../../include/functions_events.php:1484
 msgid "Only not validated"
 msgstr "Только не подтвержденные"
 
-#: ../../include/functions_events.php:1520
+#: ../../include/functions_events.php:1528
 msgid "Agent address"
 msgstr "Адрес агента"
 
-#: ../../include/functions_events.php:1521
+#: ../../include/functions_events.php:1529
 msgid "Agent id"
 msgstr "id агента"
 
-#: ../../include/functions_events.php:1598
+#: ../../include/functions_events.php:1606
 msgid "Change owner"
 msgstr "Изменить владельца"
 
-#: ../../include/functions_events.php:1622
+#: ../../include/functions_events.php:1630
 msgid "Change status"
 msgstr "Изменить статус"
 
-#: ../../include/functions_events.php:1628
-#: ../../include/functions_events.php:1634 ../../include/functions_xml.php:129
+#: ../../include/functions_events.php:1636
+#: ../../include/functions_events.php:1642 ../../include/functions_xml.php:129
 msgid "In process"
 msgstr "В процессе"
 
-#: ../../include/functions_events.php:1661
-#: ../../include/functions_events.php:2359
+#: ../../include/functions_events.php:1669
+#: ../../include/functions_events.php:2367
 msgid "Add comment"
 msgstr "Добавить комментарий"
 
-#: ../../include/functions_events.php:1680
+#: ../../include/functions_events.php:1688
 msgid "Custom responses"
 msgstr "Ответы пользователей"
 
-#: ../../include/functions_events.php:1893
+#: ../../include/functions_events.php:1901
 msgid "Agent details"
 msgstr "Агент деталей"
 
-#: ../../include/functions_events.php:1930
+#: ../../include/functions_events.php:1938
 msgid "View custom fields"
 msgstr "Просмотреть пользовательские поля"
 
-#: ../../include/functions_events.php:1947
+#: ../../include/functions_events.php:1955
 msgid "Module details"
 msgstr "Модуль деталь"
 
-#: ../../include/functions_events.php:1971
+#: ../../include/functions_events.php:1979
 msgid "No assigned"
 msgstr "Не назчначено"
 
-#: ../../include/functions_events.php:2005
+#: ../../include/functions_events.php:2013
 msgid "Alert details"
 msgstr "Детали оповещения"
 
-#: ../../include/functions_events.php:2016
-#: ../../include/functions_events.php:2020
+#: ../../include/functions_events.php:2024
+#: ../../include/functions_events.php:2028
 msgid "Go to data overview"
 msgstr "Просмотреть данные"
 
-#: ../../include/functions_events.php:2135
+#: ../../include/functions_events.php:2143
 #, php-format
 msgid "Invalid custom data: %s"
 msgstr "Недействительные пользовательские данные: %s"
 
-#: ../../include/functions_events.php:2181
+#: ../../include/functions_events.php:2189
 msgid "First event"
 msgstr "Первое событие"
 
-#: ../../include/functions_events.php:2181
+#: ../../include/functions_events.php:2189
 msgid "Last event"
 msgstr "Последнее событие"
 
-#: ../../include/functions_events.php:2292
+#: ../../include/functions_events.php:2300
 msgid "ID extra"
 msgstr "дополнительный ID"
 
-#: ../../include/functions_events.php:2353
+#: ../../include/functions_events.php:2361
 msgid "There are no comments"
 msgstr "здесь нет комментариев"
 
-#: ../../include/functions_events.php:2438
-#: ../../include/functions_reporting.php:2651
+#: ../../include/functions_events.php:2451
+#: ../../include/functions_reporting.php:2655
 msgid "Pandora System"
 msgstr "Система Pandora"
 
@@ -23380,8 +23383,8 @@ msgid "of total modules inited"
 msgstr "из всего запущенных модулей"
 
 #: ../../include/functions_reporting.php:1295
-#: ../../include/functions_reporting.php:6805
-#: ../../include/functions_reporting.php:6813
+#: ../../include/functions_reporting.php:6844
+#: ../../include/functions_reporting.php:6852
 #, php-format
 msgid "%d Fired alerts"
 msgstr "%d Запущенных оповещений"
@@ -23429,144 +23432,144 @@ msgid "N/A(*)"
 msgstr "нет данных(*)"
 
 #: ../../include/functions_reporting.php:2417
-#: ../../include/functions_reporting.php:4389
+#: ../../include/functions_reporting.php:4427
 msgid "Monitors"
 msgstr "Наблюдатели"
 
-#: ../../include/functions_reporting.php:2758
+#: ../../include/functions_reporting.php:2762
 msgid "Agent without data"
 msgstr "Агент без данных"
 
-#: ../../include/functions_reporting.php:2797
+#: ../../include/functions_reporting.php:2801
 #: ../../include/functions_agents.php:1933
 #: ../../include/functions_agents.php:1957
 msgid "At least one module in CRITICAL status"
 msgstr "Хотя бы один модуль в КРИТИЧЕСКОМ статусе"
 
-#: ../../include/functions_reporting.php:2801
+#: ../../include/functions_reporting.php:2805
 #: ../../include/functions_agents.php:1937
 #: ../../include/functions_agents.php:1961
 msgid "At least one module in WARNING status"
 msgstr "Хотя бы один модуль в статусе ПРЕДУПРЕЖДЕНИЯ"
 
-#: ../../include/functions_reporting.php:2805
+#: ../../include/functions_reporting.php:2809
 #: ../../include/functions_agents.php:1941
 #: ../../include/functions_agents.php:1965
 msgid "At least one module is in UKNOWN status"
 msgstr "Хотя бы один модуль в НЕИЗВЕСТНОМ статусе"
 
-#: ../../include/functions_reporting.php:2809
+#: ../../include/functions_reporting.php:2813
 #: ../../include/functions_agents.php:1944
 #: ../../include/functions_agents.php:1969
 msgid "All Monitors OK"
 msgstr "Все мониторы Ок"
 
-#: ../../include/functions_reporting.php:3247
+#: ../../include/functions_reporting.php:3251
 msgid "Max/Min Values"
 msgstr "Макс/Мин значения"
 
-#: ../../include/functions_reporting.php:3267
-#: ../../include/functions_reporting.php:3351
+#: ../../include/functions_reporting.php:3271
+#: ../../include/functions_reporting.php:3355
 msgid "Plannified downtime"
 msgstr "запланированный простой"
 
-#: ../../include/functions_reporting.php:3866
+#: ../../include/functions_reporting.php:3891
 msgid ""
 "Due security restrictions, there are some tokens or words you cannot use"
 msgstr ""
 "Ввиду ограничений безопасности, есть некоторые знаки или слова, которые вы "
 "не можете использовать"
 
-#: ../../include/functions_reporting.php:3867
+#: ../../include/functions_reporting.php:3892
 msgid "or"
 msgstr "или"
 
-#: ../../include/functions_reporting.php:4047
+#: ../../include/functions_reporting.php:4083
 msgid "Module detailed event"
 msgstr "Модуль детализированного события"
 
-#: ../../include/functions_reporting.php:4569
-#: ../../include/functions_reporting.php:4609
+#: ../../include/functions_reporting.php:4607
+#: ../../include/functions_reporting.php:4647
 msgid "Minimal"
 msgstr "Минимум"
 
-#: ../../include/functions_reporting.php:4572
-#: ../../include/functions_reporting.php:4612
+#: ../../include/functions_reporting.php:4610
+#: ../../include/functions_reporting.php:4650
 msgid "Maximun"
 msgstr "Максимум"
 
-#: ../../include/functions_reporting.php:4616
+#: ../../include/functions_reporting.php:4654
 msgid "Average"
 msgstr "Среднее"
 
-#: ../../include/functions_reporting.php:5056
+#: ../../include/functions_reporting.php:5094
 msgid "Insuficient data"
 msgstr "Недостаточные данные"
 
-#: ../../include/functions_reporting.php:5250
+#: ../../include/functions_reporting.php:5288
 #, php-format
 msgid "Exception - Equal to %s"
 msgstr "Исключение - Равно %s"
 
-#: ../../include/functions_reporting.php:5852
+#: ../../include/functions_reporting.php:5891
 msgid "Agent configuration: "
 msgstr "Агент конфигурации: "
 
-#: ../../include/functions_reporting.php:5901
-#: ../../include/functions_reporting.php:6050
+#: ../../include/functions_reporting.php:5940
+#: ../../include/functions_reporting.php:6089
 msgid " MODULES"
 msgstr " МОДУЛИ"
 
-#: ../../include/functions_reporting.php:5984
+#: ../../include/functions_reporting.php:6023
 msgid "Group configuration: "
 msgstr "Группа конфигурации: "
 
-#: ../../include/functions_reporting.php:6800
+#: ../../include/functions_reporting.php:6839
 #, php-format
 msgid "%d Total modules"
 msgstr "%d общее число модулей"
 
-#: ../../include/functions_reporting.php:6801
+#: ../../include/functions_reporting.php:6840
 #, php-format
 msgid "%d Normal modules"
 msgstr "%d Обычные модули"
 
-#: ../../include/functions_reporting.php:6802
+#: ../../include/functions_reporting.php:6841
 #, php-format
 msgid "%d Critical modules"
 msgstr "%d Критические модули"
 
-#: ../../include/functions_reporting.php:6803
+#: ../../include/functions_reporting.php:6842
 #, php-format
 msgid "%d Warning modules"
 msgstr "%d Предупреждающие модули"
 
-#: ../../include/functions_reporting.php:6804
+#: ../../include/functions_reporting.php:6843
 #, php-format
 msgid "%d Unknown modules"
 msgstr "%d Неизвестные модули"
 
-#: ../../include/functions_reporting.php:6808
+#: ../../include/functions_reporting.php:6847
 #, php-format
 msgid "%d Total agents"
 msgstr "%d Всего агентов"
 
-#: ../../include/functions_reporting.php:6809
+#: ../../include/functions_reporting.php:6848
 #, php-format
 msgid "%d Normal agents"
 msgstr "%d Обычные агенты"
 
-#: ../../include/functions_reporting.php:6810
+#: ../../include/functions_reporting.php:6849
 #, php-format
 msgid "%d Critical agents"
 msgstr "%d Критические агенты"
 
-#: ../../include/functions_reporting.php:6811
+#: ../../include/functions_reporting.php:6850
 #, php-format
 msgid "%d Warning agents"
 msgstr "%d предупреждающие агенты"
 
-#: ../../include/functions_reporting.php:6812
+#: ../../include/functions_reporting.php:6851
 #, php-format
 msgid "%d Unknown agents"
 msgstr "%d Неизвестные агенты"
@@ -24395,43 +24398,43 @@ msgstr "Включить пользователя."
 msgid "Disabled user."
 msgstr "Отключить пользователя."
 
-#: ../../include/functions_api.php:5682
+#: ../../include/functions_api.php:5695
 msgid "Delete user."
 msgstr "Удалить пользователя."
 
-#: ../../include/functions_api.php:5707
+#: ../../include/functions_api.php:5720
 msgid "Add user profile."
 msgstr "Добавить профиль пользователя."
 
-#: ../../include/functions_api.php:5736
+#: ../../include/functions_api.php:5749
 msgid "Delete user profile."
 msgstr "Удалить профиль пользователя."
 
-#: ../../include/functions_api.php:5822
+#: ../../include/functions_api.php:5835
 msgid "Correct module disable"
 msgstr "Правильное отключение модуля"
 
-#: ../../include/functions_api.php:5825
+#: ../../include/functions_api.php:5838
 msgid "Error disabling module"
 msgstr "Ошибка отключения модуля"
 
-#: ../../include/functions_api.php:5846
+#: ../../include/functions_api.php:5859
 msgid "Correct module enable"
 msgstr "Правильное подключение модуля"
 
-#: ../../include/functions_api.php:5849
+#: ../../include/functions_api.php:5862
 msgid "Error enabling module"
 msgstr "Ошибка подключения модуля"
 
-#: ../../include/functions_api.php:6503
+#: ../../include/functions_api.php:6516
 msgid "Error in agent enabling/disabling."
 msgstr "Ошибка агента включения/отключения."
 
-#: ../../include/functions_api.php:6507
+#: ../../include/functions_api.php:6520
 msgid "Enabled agent."
 msgstr "Включенный агент."
 
-#: ../../include/functions_api.php:6510
+#: ../../include/functions_api.php:6523
 msgid "Disabled agent."
 msgstr "Отключенный агент."
 
@@ -25647,27 +25650,27 @@ msgstr ""
 "Пожалуйста, измените пароль по умолчанию, потому что сообщает об общей "
 "уязвимости."
 
-#: ../../include/functions_config.php:1108
+#: ../../include/functions_config.php:1115
 msgid "Attachment directory is not writable by HTTP Server"
 msgstr "Прикреплённая директория недоступна для записи для HTTP сервера"
 
-#: ../../include/functions_config.php:1108
+#: ../../include/functions_config.php:1115
 msgid ""
 "Please check that the web server has write rights on the "
 "{HOMEDIR}/attachment directory"
 msgstr "Пожалуйста, проверьте, что имя веб-сервера написано правильно"
 
-#: ../../include/functions_config.php:1119
-#: ../../include/functions_config.php:1127
-#: ../../include/functions_config.php:1135
+#: ../../include/functions_config.php:1126
+#: ../../include/functions_config.php:1134
+#: ../../include/functions_config.php:1142
 msgid "Remote configuration directory is not writtable for the console"
 msgstr "Дистанционный каталог конфигурации не доступен для записи в консоли"
 
-#: ../../include/functions_config.php:1147
+#: ../../include/functions_config.php:1154
 msgid "Too much files in your tempora/attachment directory"
 msgstr "Слишком много файлов в приложениях  директория"
 
-#: ../../include/functions_config.php:1148
+#: ../../include/functions_config.php:1155
 msgid ""
 "There are too much files in attachment directory. This is not fatal, but you "
 "should consider cleaning up your attachment directory manually"
@@ -25675,15 +25678,15 @@ msgstr ""
 "Слишком много файлов во приложении директория. Это не критично, но вы должны "
 "рассмотреть очистку вашего приложения директория вручную"
 
-#: ../../include/functions_config.php:1148
+#: ../../include/functions_config.php:1155
 msgid "files"
 msgstr "файлы"
 
-#: ../../include/functions_config.php:1166
+#: ../../include/functions_config.php:1173
 msgid "Database maintance problem"
 msgstr "Проблема обслуживания базы данных"
 
-#: ../../include/functions_config.php:1167
+#: ../../include/functions_config.php:1174
 msgid ""
 "Your database is not well maintained. Seems that it have more than 48hr "
 "without a proper maintance. Please review Pandora FMS documentation about "
@@ -25695,11 +25698,11 @@ msgstr ""
 "документацией Pandora FMS о том, как выполнять этот процесс обслуживания В "
 "процессе (pandora_db.pl) и начать его как можно скорее"
 
-#: ../../include/functions_config.php:1175
+#: ../../include/functions_config.php:1182
 msgid "Default font doesnt exist"
 msgstr "Шрифт по умолчанию не существует"
 
-#: ../../include/functions_config.php:1176
+#: ../../include/functions_config.php:1183
 msgid ""
 "Your defined font doesnt exist or is not defined. Please check font "
 "parameters in your config"
@@ -25707,11 +25710,11 @@ msgstr ""
 "Установленный вами шрифт не существует или не определен. Пожалуйста, "
 "проверьте параметры шрифта в вашей конфигурации"
 
-#: ../../include/functions_config.php:1185
+#: ../../include/functions_config.php:1192
 msgid "Developer mode is enabled"
 msgstr "Режим разработчик включен"
 
-#: ../../include/functions_config.php:1186
+#: ../../include/functions_config.php:1193
 msgid ""
 "Your Pandora FMS has the \"develop_bypass\" mode enabled. This is a "
 "developer mode and should be disabled in a production system. This value is "
@@ -25721,15 +25724,15 @@ msgstr ""
 "должны быть отключен в производственной системе. Это значение записывается в "
 "главный файл index.php"
 
-#: ../../include/functions_config.php:1196
+#: ../../include/functions_config.php:1203
 msgid "Error first setup Open update"
 msgstr "Ошибка первой установки Открыть обновление"
 
-#: ../../include/functions_config.php:1205
+#: ../../include/functions_config.php:1212
 msgid "New update of Pandora Console"
 msgstr "Новое обновление Консоли Pandora"
 
-#: ../../include/functions_config.php:1206
+#: ../../include/functions_config.php:1213
 msgid ""
 "There is a new update please go to menu operation and into extensions <a "
 "style=\"font-weight:bold;\" "

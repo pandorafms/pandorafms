@@ -1,5 +1,10 @@
 2013-11-14  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/module_manager_editor_common.php: Change
+	interval message for policy data modules to improve usability
+
+2013-11-14  Sergio Martin <sergio.martin@artica.es>
+
 	* include/languages/ru.mo
 	include/languages/pt.po
 	include/languages/zh_TW.mo

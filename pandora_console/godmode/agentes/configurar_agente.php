@@ -961,6 +961,12 @@ if ($update_module) {
 		'disabled_types_event' => $disabled_types_event,
 		'module_macros' => $module_macros);
 	
+	// In local modules, the interval is updated by agent
+	$module_kind = (int) get_parameter ('moduletype');
+	if ($module_kind == MODULE_DATA) {
+		unset($values['module_interval']);
+	}
+
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;
 	}

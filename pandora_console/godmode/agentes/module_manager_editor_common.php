@@ -111,8 +111,6 @@ if (strstr($page, "policy_modules") === false && $id_agent_module) {
 
 $update_module_id = (int) get_parameter_get ('update_module');
 
-html_print_input_hidden ('moduletype', $moduletype);
-
 $table_simple->id = 'simple';
 $table_simple->width = '98%';
 $table_simple->class = 'databox_color';
@@ -331,6 +329,8 @@ else {
 	$table_advanced->colspan[2][1] = 2;
 	$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false);
 }
+
+$table_advanced->data[2][1] .= html_print_input_hidden ('moduletype', $moduletype, true);
 
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] = html_print_input_text ('post_process',

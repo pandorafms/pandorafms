@@ -1,3 +1,11 @@
+2013-11-14  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor_common.php: Fix module interval
+	updation in software modules. The interval of this kind of modules
+	only can be updated by server when agent reports
+	Interval #379
+
 2013-11-13 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_html.php: fixed the checks for duplicate images

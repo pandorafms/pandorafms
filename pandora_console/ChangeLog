@@ -1,3 +1,11 @@
+2013-11-14 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_html.php: fixed the images of metaconsole,
+	again.
+	
+	* include/functions_visual_map_editor.php: fixed the disabled
+	agents only show their modules when it is selected in the editor.
+
 2013-11-14  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: Change

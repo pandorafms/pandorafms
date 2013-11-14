@@ -1,3 +1,7 @@
+2013-11-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* main.cc: Quote the path to the service binary to avoid exploits.
+
 2013-11-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_factory.cc: Fixed a bug when a macro has

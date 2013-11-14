@@ -47,6 +47,7 @@ main (int argc, char *argv[]) {
 	unsigned int             pos;
 	bool                     process = false;
 	string 					 home;
+	string                   binary_path;
 
 	service = Pandora_Windows_Service::getInstance ();
 	service->setValues (Pandora::name, Pandora::display_name,
@@ -68,7 +69,13 @@ main (int argc, char *argv[]) {
 	for (int i = 1; i < argc; i++) {
 		if (_stricmp(argv[i], SERVICE_INSTALL_CMDLINE_PARAM) == 0) {
 			/* Install parameter */
-			service->install (Pandora::getPandoraInstallPath ().c_str ());
+
+			/* Quote the path to the service binary to avoid exploits */
+			binary_path = "\"";
+			binary_path += Pandora::getPandoraInstallPath ().c_str ();
+			binary_path += "\"";
+
+			service->install (binary_path.c_str());
 		
 			delete service;
 		

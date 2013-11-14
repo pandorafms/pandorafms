@@ -1,3 +1,9 @@
+2013-11-14 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* res/drawable-ldpi/config.png, res/drawable-ldpi/help.png,
+	res/drawable-ldpi/exit.png, res/drawable-ldpi/refresh.png: updated
+	the icons of app to new Pandora style, thanks Carla.
+
 2013-10-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* src/pandorafms/pandorafmsandroidconsole/Options.java,

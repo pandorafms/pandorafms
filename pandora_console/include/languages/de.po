@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-28 08:44+0100\n"
-"PO-Revision-Date: 2013-11-13 02:03+0000\n"
+"PO-Revision-Date: 2013-11-15 02:15+0000\n"
 "Last-Translator: Herwig Rogaar <h.rogaar@gmail.com>\n"
 "Language-Team: de <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-11-14 12:34+0000\n"
-"X-Generator: Launchpad (build 16820)\n"
+"X-Launchpad-Export-Date: 2013-11-15 10:23+0000\n"
+"X-Generator: Launchpad (build 16831)\n"
 "Language: \n"
 
 #: ../../godmode/agentes/agent_manager.php:286
@@ -12613,7 +12613,7 @@ msgstr "Überwachung"
 
 #: ../../enterprise/godmode/services/services.service.php:208
 msgid "Auto calculate"
-msgstr ""
+msgstr "Automatische Berechnung"
 
 #: ../../enterprise/godmode/services/services.service.php:223
 msgid "Agent to store data"
@@ -12631,11 +12631,11 @@ msgstr "S.L.A."
 
 #: ../../enterprise/godmode/services/services.service.php:243
 msgid "S.L.A. interval"
-msgstr ""
+msgstr "S.L.A.-Intervall"
 
 #: ../../enterprise/godmode/services/services.service.php:248
 msgid "S.L.A. limit"
-msgstr ""
+msgstr "S.L.A.-Limit"
 
 #: ../../enterprise/godmode/services/services.service.php:250
 msgid "Please set limit between 0 to 100."
@@ -12651,7 +12651,7 @@ msgstr "Kritische Servicewarnung"
 
 #: ../../enterprise/godmode/services/services.service.php:279
 msgid "SLA critical service alert"
-msgstr ""
+msgstr "SLA kritische Servicewarnung"
 
 #: ../../enterprise/godmode/services/services.elements.php:97
 #: ../../operation/search_maps.php:33
@@ -12712,19 +12712,19 @@ msgstr "Zuerst einen Agenten auswählen"
 
 #: ../../enterprise/godmode/services/services.elements.php:291
 msgid "Critical weight"
-msgstr ""
+msgstr "Kritisches Gewicht"
 
 #: ../../enterprise/godmode/services/services.elements.php:296
 msgid "Warning weight"
-msgstr ""
+msgstr "Warnendes Gewicht"
 
 #: ../../enterprise/godmode/services/services.elements.php:302
 msgid "Unknown weight"
-msgstr ""
+msgstr "Unbekanntes Gewicht"
 
 #: ../../enterprise/godmode/services/services.elements.php:307
 msgid "Ok weight"
-msgstr ""
+msgstr "Richtiges Gewicht"
 
 #: ../../enterprise/godmode/admin_access_logs.php:42
 msgid "Show extended info"
@@ -12824,6 +12824,8 @@ msgid ""
 "Name is missed. Please add a line with \"module_name yourmodulename\" to "
 "data configuration"
 msgstr ""
+"Fehlender Name. Bitte fügen Sie eine Zeile mit \"module_name "
+"yourmodulename\" zu der Datenkonfiguration hinzu"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:162
 #: ../../enterprise/godmode/modules/configure_local_component.php:277
@@ -12831,92 +12833,94 @@ msgid ""
 "Type is missed. Please add a line with \"module_type yourmoduletype\" to "
 "data configuration"
 msgstr ""
+"Fehlender Typ. Bitte fügen Sie eine Zeile mit \"module_type yourmoduletype\" "
+"zu der Datenkonfiguration hinzu"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:163
 #: ../../enterprise/godmode/modules/configure_local_component.php:278
 msgid "Type is wrong. Please set a correct type"
-msgstr ""
+msgstr "Falscher Typ. Bitte einen richtigen Typ festlegen"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:165
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:127
 #: ../../enterprise/godmode/modules/configure_local_component.php:280
 #: ../../enterprise/meta/include/functions_wizard_meta.php:562
 msgid "There is a line with a unknown token 'token_fail'."
-msgstr ""
+msgstr "Es gibt eine Zeile mit einem unbekannten Token 'token_fail'."
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:166
 #: ../../enterprise/godmode/modules/configure_local_component.php:281
 msgid "Error in the syntax, please check the data configuration."
-msgstr ""
+msgstr "Syntaxfehler, bitte prüfen Sie die Datenkonfiguration."
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:167
 #: ../../enterprise/godmode/modules/configure_local_component.php:282
 msgid "Data configuration are built correctly"
-msgstr ""
+msgstr "Die Datenkonfiguration ist korrekt erstellt"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:41
 msgid "Plug-in deleted succesfully"
-msgstr ""
+msgstr "Plugin erfolgreich gelöscht"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:41
 msgid "Plug-in cannot be deleted"
-msgstr ""
+msgstr "Plugin kann nicht gelöscht werden"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:47
 #: ../../enterprise/godmode/policies/policy_plugins.php:43
 msgid "Plug-in added succesfully"
-msgstr ""
+msgstr "Plugin erfolgreich hinzugefügt"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:47
 #: ../../enterprise/godmode/policies/policy_plugins.php:43
 msgid "Plug-in cannot be added"
-msgstr ""
+msgstr "Plugin kann nicht hinzugefügt werden"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:58
 msgid "Plug-in disabled succesfully"
-msgstr ""
+msgstr "Plugin erfolgreich deaktiviert"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:58
 msgid "Plug-in cannot be disabled"
-msgstr ""
+msgstr "Plugin kann nicht deaktiviert werden"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:69
 msgid "Plug-in enabled succesfully"
-msgstr ""
+msgstr "Plugin erfolgreich aktiviert"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:69
 msgid "Plug-in cannot be enabled"
-msgstr ""
+msgstr "Plugin kann nicht aktiviert werden"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:78
 #: ../../enterprise/godmode/policies/policy_plugins.php:52
 msgid "New plug-in"
-msgstr ""
+msgstr "Neues Plugin"
 
 #: ../../enterprise/godmode/agentes/plugins_manager.php:95
 #: ../../enterprise/godmode/policies/policy_plugins.php:68
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:57
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:81
 msgid "Successfully added inventory module"
-msgstr ""
+msgstr "Inventar-Modul erfolgreich hinzugefügt"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:60
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:85
 msgid "Error adding inventory module"
-msgstr ""
+msgstr "Fehler beim Hinzufügen des Inventar-Moduls"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:69
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:96
 msgid "Successfully deleted inventory module"
-msgstr ""
+msgstr "Inventar-Modul erfolgreich gelöscht"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:72
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:100
 msgid "Error deleting inventory module"
-msgstr ""
+msgstr "Fehler beim Löschen des Inventar-Moduls"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:80
 msgid "Successfully forced inventory module"
@@ -12930,13 +12934,13 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:141
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:83
 msgid "Successfully updated inventory module"
-msgstr ""
+msgstr "Inventar-Modul erfolgreich aktualisiert"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:111
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:145
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:87
 msgid "Error updating inventory module"
-msgstr ""
+msgstr "Fehler beim Aktualisieren des Inventar-Moduls"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:128
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:46
@@ -12947,7 +12951,7 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/inventory_manager.php:223
 #: ../../enterprise/meta/advanced/synchronizing.user.php:563
 msgid "Target"
-msgstr ""
+msgstr "Ziel"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:173
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:182
@@ -12979,7 +12983,7 @@ msgstr "1 Tag"
 #: ../../enterprise/godmode/agentes/inventory_manager.php:178
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:198
 msgid "7 days"
-msgstr ""
+msgstr "7 Tage"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:179
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:190
@@ -13000,7 +13004,7 @@ msgstr "1 Monat"
 #: ../../enterprise/godmode/agentes/inventory_manager.php:188
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:209
 msgid "Update all"
-msgstr ""
+msgstr "Alle aktualisieren"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:258
 #: ../../operation/servers/recon_view.php:81

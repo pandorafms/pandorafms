@@ -146,7 +146,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `tlanguage` WRITE;
-INSERT INTO `tlanguage` VALUES ('en_GB','English');
+INSERT INTO `tlanguage` VALUES ('en_GB','English (UK)');
 INSERT INTO `tlanguage` VALUES ('es','Español');
 INSERT INTO `tlanguage` VALUES ('ar','العربية');
 INSERT INTO `tlanguage` VALUES ('cs','Česky');
@@ -163,7 +163,7 @@ INSERT INTO `tlanguage` VALUES ('ru','Русский');
 INSERT INTO `tlanguage` VALUES ('sk','Slovenčina');
 INSERT INTO `tlanguage` VALUES ('tr','Türkçe');
 INSERT INTO `tlanguage` VALUES ('zh_CN','简化字');
-INSERT INTO `tlanguage` VALUES ('zh_TW','簡化字');
+INSERT INTO `tlanguage` VALUES ('ca','Catalan');
 
 UNLOCK TABLES;
 

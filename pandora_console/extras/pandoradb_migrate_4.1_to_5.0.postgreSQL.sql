@@ -1136,3 +1136,10 @@ ALTER TABLE "tnetwork_component" ALTER COLUMN "name" TYPE text NOT NULL;
 -- ---------------------------------------------------------------------
 
 DELETE FROM "tlanguage" WHERE "id_language" IN ('ast', 'eu', 'bn', 'bg', 'ca', 'da', 'et', 'fi', 'gl', 'he', 'hi', 'hu', 'ko', 'ms', 'mr', 'nb', 'ro', 'sl', 'sv', 'te', 'uk', 'vi');
+
+-- ---------------------------------------------------------------------
+-- Table tlanguage (15/11/2013)
+-- ---------------------------------------------------------------------
+DELETE FROM "tlanguage" WHERE "id_language" IN ('zh_TW');
+INSERT INTO "tlanguage" ("id_language", "name") VALUES ('ca','Catalan');
+UPDATE "tlanguage" SET "name" = 'English (UK)' WHERE "id_language" = 'en_GB';

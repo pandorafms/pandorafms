@@ -26,7 +26,7 @@ use PandoraFMS::Core;
 use PandoraFMS::Config;
 
 # version: define current version
-my $version = "4.1 PS131116";
+my $version = "4.1 PS131117";
 
 # Parameter
 my $param;

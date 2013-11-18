@@ -1,5 +1,11 @@
 2013-11-18  Sergio Martin <sergio.martin@artica.es>
 
+	* images/status_sets/default/server_ok.png: Change the
+	server OK status image to be the same style than 
+	server down. Incident #392
+
+2013-11-18  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_visual_map.php: Fixed status
 	of visual map items when have a fired alert for
 	incident #391

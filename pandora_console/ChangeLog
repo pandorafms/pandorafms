@@ -1,3 +1,9 @@
+2013-11-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php: Fixed status
+	of visual map items when have a fired alert for
+	incident #391
+
 2013-11-15  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

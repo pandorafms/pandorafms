@@ -111,9 +111,8 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 		// First group it's needed to retrieve its parent group
 		$first_group = reset(array_slice($user_groups, 0, 1));
 		$parent_group = $first_group['parent'];
-	
-		# Fix : Added new parameter to avoid bad behaviour in this function	
-		$user_groups_tree = groups_get_groups_tree_recursive($user_groups, $parent_group, 0, true);
+		
+		$user_groups_tree = groups_get_groups_tree_recursive($user_groups, $parent_group);
 	}
 	$fields = array();
 	

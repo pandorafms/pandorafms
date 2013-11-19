@@ -1,3 +1,10 @@
+2013-11-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/reporting/reporting_builder.php,
+	  include/functions_groups.php,
+	  include/functions_users.php: Reverted changes for TSOL. Will be merged
+	  after the 5.0SP1 release.
+
 2013-11-19 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/config_process.php: added lost line about the autorefresh.

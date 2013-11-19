@@ -1,3 +1,9 @@
+2013-11-19 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/config_process.php: added lost line about the autorefresh.
+	
+	* include/functions_html.php: re-fixed the images from metaconsole.
+
 2013-11-19  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events.build_query.php: Fixed a

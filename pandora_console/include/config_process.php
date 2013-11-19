@@ -219,6 +219,7 @@ $config['autorefresh_white_list'] = array(
 	'operation/snmpconsole/snmp_view',
 	'operation/agentes/networkmap',
 	'enterprise/operation/services/services',
+	'operation/visual_console/render_view',
 	'operation/events/events');
 	
 // Specific metaconsole autorefresh white list sections

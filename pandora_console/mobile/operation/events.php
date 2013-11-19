@@ -22,7 +22,7 @@ class Events {
 	private $free_search = '';
 	private $hours_old = 8;
 	private $status = 3;
-	private $type = "";
+	private $type = "all";
 	private $severity = -1;
 	private $filter = 0;
 	private $group = 0;
@@ -333,7 +333,7 @@ class Events {
 		
 		$this->type = $system->getRequest('type', __("Type"));
 		if ($this->type === __("Type")) {
-			$this->type = "";
+			$this->type = "all";
 		}
 		else {
 			$this->default = false;
@@ -576,16 +576,17 @@ class Events {
 						'name' => 'type',
 						'title' => __('Type'),
 						'label' => __('Type'),
-						'items' => get_event_types(),
+						'items' => array_merge(array("all" => __('All')), get_event_types()),
 						'selected' => $this->type
 						);
+					
 					$ui->formAddSelectBox($options);
 					
 					$options = array(
 						'name' => 'severity',
 						'title' => __('Severity'),
 						'label' => __('Severity'),
-						'items' => get_priorities(),
+						'items' => array("-1" => __('All')) + get_priorities(),
 						'selected' => $this->severity
 						);
 					$ui->formAddSelectBox($options);
@@ -1035,7 +1036,7 @@ class Events {
 				$(document).ready(function() {
 					$(window).bind(\"scroll\", function () {
 						if ($(this).scrollTop() + $(this).height()
-							>= ($(document).height() - 100)) {
+							>= ($(document).height() - 100) || true) {
 							
 							ajax_load_rows();
 						}

@@ -483,10 +483,11 @@ function groups_flatten_tree_groups($tree, $deep) {
  * @param array $groups The list of groups to create the treefield list.
  * @param integer $parent The id_group of parent actual scan branch.
  * @param integer $deep The level of profundity in the branch.
+ * @param boolean $for_select This flag will be true if this function is used for select group filter # Fix!
  *
  * @return array The treefield list of groups.
  */
-function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
+function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0, $for_select = false) {
 	$return = array();
 	
 	$tree = $groups;
@@ -494,6 +495,12 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
 		if ($group['id_grupo'] == 0) {
 			continue;
 		}
+
+		# Fix :  Don't execute this code if for_select = true
+		if (!$for_select){
+
+			$tree[$group['parent']]['hash_branch'] = 1;
+			$tree[$group['parent']]['branch'][$key] = &$tree[$key];
 		
 		// If the user has ACLs on a gruop but not in his father,
 		// we consider it as a son of group "all"
@@ -505,14 +512,17 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
 		$tree[$group['parent']]['branch'][$key] = &$tree[$key];
 		
 	}
-	
-	// Depends on the All group we give different format
-	if (isset($groups[0])) {
-		$tree = array($tree[0]);
-	}
-	else {
-		$tree = $tree[0]['branch'];
-	}
+
+	# Fix :  Don't execute this code if for_select = true
+	if (!$for_select){	
+		// Depends on the All group we give different format
+		if (isset($groups[0])) {
+			$tree = array($tree[0]);
+		}
+		else {
+			$tree = $tree[0]['branch'];
+		}
+	}	
 	
 	$return = groups_flatten_tree_groups($tree, 0);
 

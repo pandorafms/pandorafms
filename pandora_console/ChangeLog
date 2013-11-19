@@ -1,5 +1,10 @@
 2013-11-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_groups.php
+	  include/functions_users.php: Fix combo groups.
+
+2013-11-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/reporting/reporting_builder.php: Fix filter groups
 	of reports.
 

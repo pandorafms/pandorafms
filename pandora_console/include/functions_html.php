@@ -1641,7 +1641,6 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	
 	
 	// If metaconsole is activated and image doesn't exists try to search on normal console
-	
 	if (defined('METACONSOLE')) {
 		if (!$relative) {
 			if (strstr(getcwd(), 'enterprise/meta') === false) {
@@ -1657,7 +1656,14 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 				}
 			}
 			else {
-				if (!is_readable($src)) {
+				if ($src[0] !== '/') {
+					$src = '/' . $src;
+				}
+				
+				if (is_readable(getcwd() . $src)) {
+					$src = ui_get_full_url($src);
+				}
+				else if (!is_readable($src)) {
 					$src = ui_get_full_url('../../' . $src);
 				}
 			}
@@ -1672,7 +1678,6 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 			$src = ui_get_full_url($src);
 		}
 	}
-	
 	
 	// Only return src field of image
 	if ($return_src) {

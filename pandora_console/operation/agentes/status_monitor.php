@@ -97,8 +97,8 @@ $id_ag_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $ag_group);
 
 // Agent group selector
 if (!defined('METACONSOLE')) {
-	if ($ag_group > 0 && check_acl ($config["id_user"], $id_ag_group, "AR")) {
-		$sql_conditions_group = sprintf (" AND tagente.id_grupo = %d", $id_ag_group);
+	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
+		$sql_conditions_group = sprintf (" AND tagente.id_grupo = %d", $ag_group);
 	}
 	elseif ($user_groups != '') {
 		// User has explicit permission on group 1 ?
@@ -121,9 +121,7 @@ if (defined('METACONSOLE')) {
 			FROM tmodule_group WHERE name = '%s')", $modulegroup);	
 }
 else if ($modulegroup > -1) {
-	
-	$id_modulegroup = db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $modulegroup);
-	$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $id_modulegroup);
+	$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
 
 }
 
@@ -172,12 +170,11 @@ if ($tag_filter !== 0) {
 				WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
 			)";
 	}
-	else{	
-		$id_tag_filter = db_get_value('id_tag', 'ttag', 'name', $tag_filter);
+	else{
 		$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
 				FROM ttag_module
-				WHERE ttag_module.id_tag = " . $id_tag_filter . "
+				WHERE ttag_module.id_tag = " . $tag_filter . "
 			)";
 	
 	}

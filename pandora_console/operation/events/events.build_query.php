@@ -82,7 +82,7 @@ if ($event_type != "") {
 		$sql_post .= " AND event_type LIKE '%$event_type%' ";
 	}
 	elseif ($event_type == "not_normal") {
-		$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
+		$sql_post .= " AND (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
 	}
 	elseif ($event_type != "all") {
 		$sql_post .= " AND event_type = '" . $event_type."'";

@@ -1,3 +1,14 @@
+2013-11-19  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events.build_query.php: Fixed a
+	subquery OR condition for not normal type.
+
+	* operation/agentes/status_monitor.php: Fixed monitor
+	filter by group and tags
+
+	* mobile/operation/events.php: Fixed filter of events 
+	view in mobile console
+
 2013-11-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_groups.php

@@ -55,12 +55,7 @@ if ($idReport != 0) {
 	$edit = false;
 	switch ($type_access_selected) {
 		case 'group_view':
-			## Workaround for user without RW,RM flags that want to delete reports
-			$delete_report_wa = get_parameter('action', 'none');
-			if ($delete_report_wa === 'delete_report')
-				$edit = check_acl($config['id_user'], $report['id_group'], "RR");
-			else
-				$edit = check_acl($config['id_user'], $report['id_group'], "RW");
+			$edit = check_acl($config['id_user'], $report['id_group'], "RW");
 			break;
 		case 'group_edit':
 			$edit = check_acl($config['id_user'], $report['id_group_edit'], "RW");
@@ -341,17 +336,6 @@ switch ($action) {
 				'order' => 'name'
 			);
 		}
-
-		# Fix : group filter was not working
-		// Show only selected groups
-                if ($id_group > 0) {
-                        $group = array("$id_group" => $id_group);
-                	$filter['id_group'] = $id_group;
-		}
-                else {
-                        $group = false;
-                }
-
 		
 		// Filter normal and metaconsole reports
 		if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
@@ -362,7 +346,6 @@ switch ($action) {
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
 				'id_user', 'id_group'), $return_all_group, 'RR', $group);
-	
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
@@ -399,15 +382,6 @@ switch ($action) {
 				$table->size[$next] = '80px';
 				$table->style[$next] = 'text-align:center;';
 			
-			} 
-			## Workaround for users without RM flag that want to delete reports
-			elseif (check_acl ($config['id_user'], 0, "RR")) {
-
-                                $table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
-                                $table->size = array ();
-                                $table->size[$next] = '80px';
-                                $table->style[$next] = 'text-align:center;';
-
 			}
 			
 			foreach ($reports as $report) {
@@ -489,18 +463,13 @@ switch ($action) {
 					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 					$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
 					$data[$next] .= '</form>';
-				}
-
-                ## Workaround for users without RM flag that want to delete reports
-                if (check_acl ($config['id_user'], 0, "RR")) {
-		
+					
 					$data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 					$data[$next] .= html_print_input_hidden ('action','delete_report', true);
 					$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
 						true, array ('title' => __('Delete')));
 					$data[$next] .= '</form>';
-				
 				}
 				
 				array_push ($table->data, $data);
@@ -571,7 +540,6 @@ switch ($action) {
 						$private = 1;
 						break;
 				}
-				
 				if ($action == 'update') {
 					if ($reportName != "" && $idGroupReport != "") {
 						$new_values = array('name' => $reportName,
@@ -615,14 +583,13 @@ switch ($action) {
 							$metaconsole_report = 0;
 						
 						$start_url = ui_get_full_url(false, false, false, false);
-						$first_page = "&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;img&#x20;src=&quot;" . $start_url . "/images/logo_telefonica.jpg&quot;&#x20;alt=&quot;&quot;&#x20;width=&quot;800&quot;&#x20;/&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;xx-large;&quot;&gt;&#40;_REPORT_NAME_&#41;&lt;/span&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;large;&quot;&gt;&#40;_DATETIME_&#41;&lt;/span&gt;&lt;/p&gt;";
+						$first_page = "&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;img&#x20;src=&quot;" . $start_url . "/images/pandora_report_logo.png&quot;&#x20;alt=&quot;&quot;&#x20;width=&quot;800&quot;&#x20;/&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;xx-large;&quot;&gt;&#40;_REPORT_NAME_&#41;&lt;/span&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;large;&quot;&gt;&#40;_DATETIME_&#41;&lt;/span&gt;&lt;/p&gt;";
 						
 						$idOrResult = db_process_sql_insert('treport',
 							array('name' => $reportName,
 								'id_group' => $idGroupReport,
 								'description' => $description,
 								'first_page' => $first_page,
-								'custom_logo' => 'images/custom_logo/logo_telefonica_cabecera.jpg',
 								'private' => $private,
 								'id_group_edit' => $id_group_edit,
 								'id_user' => $config['id_user'],

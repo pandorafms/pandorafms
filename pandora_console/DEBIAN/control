@@ -1,5 +1,5 @@
 package: pandorafms-console
-Version: 4.1-131118
+Version: 4.1-131119
 Architecture: all
 Priority: optional
 Section: admin

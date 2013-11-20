@@ -122,7 +122,8 @@ if (defined('METACONSOLE')) {
 }
 else {
 	
-	ui_print_page_header (__("Groups defined in Pandora"), "images/group.png", false, "", true, "");
+	ui_print_page_header (__("Groups defined in Pandora"),
+		"images/group.png", false, "", true, "");
 	$sec = 'gagente';
 
 }
@@ -261,19 +262,39 @@ if (($delete_group) && (check_acl($config['id_user'], 0, "PM"))) {
 }
 db_clean_cache();
 $groups = users_get_groups_tree ($config['id_user'], "AR", true);
+
 $table->width = '98%';
 
 $groups_count = 0;
 $sons = array();
-foreach($groups as $k => $g) {
+foreach ($groups as $k => $g) {
 	if ($g['parent'] == 0) {
 		$groups_count++;
 	}
 	else if ($g['parent'] != 0) {
-		$sons[$g['parent']][] = $g;
-		unset($groups[$k]);
+		
+		//Check the group has the parent in the list
+		//else the group chage to hook in the all group
+		$found = false;
+		foreach ($groups as $check_g) {
+			if ($check_g['id_grupo'] == $g['parent']) {
+				$found = true;
+				break;
+			}
+		}
+		
+		
+		if ($found) {
+			$sons[$g['parent']][] = $g;
+			unset($groups[$k]);
+		}
+		else {
+			$groups_count++;
+		}
 	}
 }
+
+
 
 if (check_acl($config['id_user'], 0, "PM")) {
 	echo '<br />';
@@ -299,18 +320,20 @@ if (!empty($groups)) {
 	
 	$offset = (int)get_parameter('offset', 0);
 	$limit = $offset + $config['block_size'];
-
+	
+	
+	
 	$pagination = ui_pagination($groups_count,
 		false, 0, $config['block_size'], true, 'offset', false);
-		
+	
 	$n = -1;
 	$iterator = 0;
 	$branch_classes = array();
 	foreach ($groups as $group) {
 		$n++;
-
+		
 		// Only print the page range
-		if($n < $offset || $n >= $limit) {
+		if ($n < $offset || $n >= $limit) {
 			continue;
 		}
 		
@@ -325,9 +348,10 @@ if (!empty($groups)) {
 		}
 		$iterator++;
 		
-		groups_print_group_sons($group, $sons, $branch_classes, $groups_count, $table, $iterator, $symbolBranchs);
+		groups_print_group_sons($group, $sons, $branch_classes,
+			$groups_count, $table, $iterator, $symbolBranchs);
 	}
-
+	
 	echo $pagination;
 	
 	html_print_table ($table);

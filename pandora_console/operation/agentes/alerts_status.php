@@ -96,7 +96,7 @@ if ($idAgent != 0) {
 		echo "<h4 style='padding-top:0px !important;'>" .
 			__('Full list of alerts') . "</h4>";
 	}
-} 
+}
 else {
 	if (!check_acl ($config["id_user"], 0, "AR")) {
 		db_pandora_audit("ACL Violation","Trying to access alert view");

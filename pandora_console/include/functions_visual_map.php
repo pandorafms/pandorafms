@@ -844,10 +844,6 @@ function visual_map_get_status_element($layoutData) {
 					$id_agent = 0;
 				}
 				
-				if ($status == AGENT_MODULE_STATUS_CRITICAL_ALERT) {
-						$status = VISUAL_MAP_STATUS_CRITICAL_ALERT;
-				}
-				
 				if ($layoutData['id_metaconsole'] != 0) {
 					//Restore db connection
 					metaconsole_restore_db();
@@ -861,6 +857,10 @@ function visual_map_get_status_element($layoutData) {
 				break;
 			
 		}
+	}
+	
+	if ($status == AGENT_MODULE_STATUS_CRITICAL_ALERT) {
+			$status = VISUAL_MAP_STATUS_CRITICAL_ALERT;
 	}
 	
 	return $status;

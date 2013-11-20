@@ -1,5 +1,10 @@
 2013-11-20 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_ui.php: removed the hack for metaconsole, now
+	this hack fails because it is fixed the images in the metaconsole.
+
+2013-11-20 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_ui.php: removed the hack for metaconsole in the
 	"ui_toggle", now this hack fails because it is fixed the images in
 	the metaconsole.

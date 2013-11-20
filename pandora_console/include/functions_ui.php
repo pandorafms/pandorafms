@@ -183,10 +183,6 @@ function printSmallFont ($string, $return = true) {
  * @return string HTML code if return parameter is true.
  */
 function ui_print_message ($message, $class = '', $attributes = '', $return = false, $tag = 'h3') {
-	$hack_metaconsole = '';
-	if (defined('METACONSOLE'))
-		$hack_metaconsole = '../../';
-	
 	static $first_execution = true;
 	
 	$text_title = '';
@@ -239,7 +235,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 				break;
 		}
 		
-		$icon_image = $hack_metaconsole . $icon_image;
+		$icon_image = $icon_image;
 	}
 	
 	$id = 'info_box_' . uniqid();
@@ -252,7 +248,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 			<td class="icon" style="text-align: right; padding-right: 3px;">';
 	if (!$no_close_bool) {
 		$output .= '<a href="javascript: close_info_box(\'' . $id . '\')">' .
-			html_print_image($hack_metaconsole . 'images/blade.png', true) . '</a>';
+			html_print_image('images/blade.png', true) . '</a>';
 	}
 	
 	$output .= 	'</td>

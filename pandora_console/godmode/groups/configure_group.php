@@ -118,16 +118,32 @@ $table->data[1][1] .= '</span>';
 
 $table->data[2][0] = __('Parent');
 
+$acl_parent = true;
 if ($id_group) {
-	$table->data[2][1] = html_print_select_groups(false, "AR", true, 'id_parent', $id_parent,
-		'', '', '', true, false, true, '', false, false, false, $id_group);
+	
+	//The user can access to the parent, but she want to edit the group.
+	if (!check_acl($config['id_user'], $id_parent, "AR")) {
+		$acl_parent = false;
+		
+		$table->data[2][1] =
+			__('You have not access to the parent.') .
+			html_print_input_hidden('id_parent', $id_parent, true);
+	}
+	else {
+		$table->data[2][1] = html_print_select_groups(false, "AR", true,
+			'id_parent', $id_parent, '', '', '', true, false, true, '',
+			false, false, false, $id_group);
+	}
 }
 else {
 	$table->data[2][1] = html_print_select_groups(false, "AR", true, 'id_parent', $id_parent, '', '', '', true);
 }
-$table->data[2][1] .= ' <span id="parent_preview">';
-$table->data[2][1] .= html_print_image("images/groups_small/".groups_get_icon ($id_parent).".png", true); 
-$table->data[2][1] .= '</span>';
+
+if ($acl_parent) {
+	$table->data[2][1] .= ' <span id="parent_preview">';
+	$table->data[2][1] .= html_print_image("images/groups_small/".groups_get_icon ($id_parent).".png", true); 
+	$table->data[2][1] .= '</span>';
+}
 
 $table->data[3][0] = __('Alerts');
 $table->data[3][1] = html_print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);

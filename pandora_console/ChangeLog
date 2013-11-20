@@ -1,5 +1,10 @@
 2013-11-20  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/operation/events.php: Fix new events load condition
+	to be loaded only when down scroll
+
+2013-11-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_visual_map.php: Fixed visual console links
 	to other visual consoles when there are alert fired on them
 	for bug #391

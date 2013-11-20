@@ -1036,7 +1036,7 @@ class Events {
 				$(document).ready(function() {
 					$(window).bind(\"scroll\", function () {
 						if ($(this).scrollTop() + $(this).height()
-							>= ($(document).height() - 100) || true) {
+							>= ($(document).height() - 100)) {
 							
 							ajax_load_rows();
 						}

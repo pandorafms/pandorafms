@@ -1524,6 +1524,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		
 		return false;
 	}
+	
 	// If exists more registers than I can put in a page, calculate index markers
 	$index_counter = ceil ($count /$pagination); // Number of blocks of block_size with data
 	$index_page = ceil ($offset / $pagination) - (ceil ($block_limit / 2)); // block to begin to show data;
@@ -1918,25 +1919,21 @@ function ui_print_status_image ($type, $title = "", $return = false, $options = 
  */
 
 function ui_toggle($code, $name, $title = '', $hidden_default = true, $return = false) {
-	$hack_metaconsole = '';
-	if (defined('METACONSOLE'))
-		$hack_metaconsole = '../../';
-	
 	// Generate unique Id
 	$uniqid = uniqid('');
 	
 	// Options
 	if ($hidden_default) {
 		$style = 'display:none';
-		$image_a = html_print_image($hack_metaconsole . "images/down.png", true, false, true);
-		$image_b = html_print_image($hack_metaconsole . "images/go.png", true, false, true);
-		$original = $hack_metaconsole . "images/go.png";
+		$image_a = html_print_image("images/down.png", true, false, true);
+		$image_b = html_print_image("images/go.png", true, false, true);
+		$original = "images/go.png";
 	}
 	else {
 		$style = '';
-		$image_a = html_print_image($hack_metaconsole . "images/down.png", true, false, true);
-		$image_b = html_print_image($hack_metaconsole . "images/go.png", true, false, true);
-		$original = $hack_metaconsole . "images/down.png";
+		$image_a = html_print_image("images/down.png", true, false, true);
+		$image_b = html_print_image("images/go.png", true, false, true);
+		$original = "images/down.png";
 	}
 	
 	// Link to toggle

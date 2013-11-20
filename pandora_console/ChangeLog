@@ -1,5 +1,13 @@
 2013-11-20 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_ui.php: removed the hack for metaconsole in the
+	"ui_toggle", now this hack fails because it is fixed the images in
+	the metaconsole.
+	
+	* operation/agentes/alerts_status.php: cleaned source code style.
+
+2013-11-20 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/groups/configure_group.php, godmode/groups/group_list.php:
 	fixed the show and edit groups with the ACL of the user has not
 	access to the parent.

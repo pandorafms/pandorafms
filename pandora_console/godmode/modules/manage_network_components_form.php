@@ -428,7 +428,7 @@ $(document).ready (function () {
 		});
 	});
 	
-	if ($("#snmp_version").value == "3") {
+	if ($("#snmp_version").val() == "3") {
 		$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});
 		$("input[name=snmp3_auth_user]").removeAttr('disabled');
 		

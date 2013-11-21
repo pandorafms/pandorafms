@@ -1,5 +1,10 @@
 2013-11-21  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php: Fix the combo of user to assign an
+	event to one of them. Incident #409
+
+2013-11-21  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/modules/manage_network_components_form.php: Fixed jquery
 	code that broke the snmp3 fields when edit a snmp component
 	Incident #402

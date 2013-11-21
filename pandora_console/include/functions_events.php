@@ -1644,8 +1644,12 @@ function events_page_responses ($event) {
 		// Owner
 		$data = array();
 		$data[0] = __('Change owner');
-			
-		$users = groups_get_users(array_keys(users_get_groups(false, "EM", false)));
+		// Owner change can be done to users that belong to the event group with ER permission
+		$profiles_view_events = db_get_all_rows_filter('tperfil', array('event_view' => '1'), 'id_perfil');
+		foreach($profiles_view_events as $k => $v) {
+			$profiles_view_events[$k] = reset($v);
+		}
+		$users = groups_get_users($event['id_grupo'], array('id_perfil' => $profiles_view_events), true);
 		
 		foreach($users as $u) {
 			$owners[$u['id_user']] = $u['fullname'];

@@ -70,7 +70,7 @@ class Events {
 					
 					$events = array();
 					$end = 1;
-					foreach ($events_db as $event) {
+					foreach ($events_db as $event) {						
 						$end = 0;
 						$row = array();
 						$row[] = '
@@ -111,6 +111,7 @@ class Events {
 						$row[] = '<b class="ui-table-cell-label">' . __('Agent') . '</b>' .
 							$agent_name;
 						
+						/*
 						$status =
 							html_print_image ("mobile/images/" .
 								get_priority_class($event['criticity']) . ".png", true);
@@ -133,7 +134,16 @@ class Events {
 						$row[] = '<b class="ui-table-cell-label">' . __('Status') . '</b>' .
 							$status;
 						
+						*/
 						
+						if (!$this->readOnly) {
+							$row[] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' .
+										'<span style="position: relative; float: right; margin-right: 30px;">
+											<span class="ui-icon ui-icon-big ui-icon-arrow-r ui-icon-arrow-r-big ui-icon-shadow" style="position: absolute; left: 50%;">&nbsp;</span>
+										</span>' .
+										'</a>';
+						}
+						$row[] = get_priority_class ($event["criticity"]);
 						$events[$event['id_evento']] = $row;
 					}
 					
@@ -736,11 +746,12 @@ class Events {
 		$field_event_name = __('Event Name');
 		$field_timestamp = __('Timestamp');
 		$field_agent = __('Agent');
-		$field_status = __('Status');
+
 		$row_class = array();
 		foreach ($events_db as $event) {
-			$row_class[$event['id_evento']] = "events";
-			// . get_priority_class($event['criticity']);
+			$myclass = get_priority_class ($event["criticity"]);
+
+			$row_class[$event['id_evento']] = "events $myclass";
 			
 			$row = array();
 			if ($this->readOnly) {
@@ -774,26 +785,15 @@ class Events {
 					(string) agents_get_name($event["id_agente"]) . '</a>';
 			}
 			
-			$row[$field_status] =
-				html_print_image ("mobile/images/" .
-					get_priority_class($event['criticity']) . ".png", true);
-			$row[$field_status] .= "&nbsp;";
-			if ($event['estado'] == 1) {
-				$img_st = "images/tick.png";
-				$title_st = __('Event validated');
-				
-				$row[$field_status] .= html_print_image ($img_st, true, 
-					array ("class" => "image_status",
-						"width" => 16,
-						"height" => 16,
-						"title" => $title_st,
-						"id" => 'status_img_' . $event["id_evento"]));
+
+			if (!$this->readOnly) {
+				$row[' '] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' .
+							'<span class="button_layer">
+								<span class="ui-icon ui-icon-big ui-icon-arrow-r ui-icon-arrow-r-big ui-icon-shadow" style="position: absolute; left: 50%;">&nbsp;</span>
+							</span>' .
+							'</a>';
+				$row_class[' '] = "button_row";
 			}
-			else {
-				$row[$field_status] .= '';
-			}
-			
-			
 			
 			$events[$event['id_evento']] = $row;
 		}
@@ -812,6 +812,7 @@ class Events {
 			$table->id = 'list_events';
 			$table->setRowClass($row_class);
 			$table->importFromHash($events);
+			
 			if (!$return) {
 				$ui->contentAddHtml($table->getHTML());
 				
@@ -981,14 +982,14 @@ class Events {
 					else {
 						$.each(data.events, function(key, event) {
 							$(\"table#list_events tbody\").append(
-								\"<tr class='events'>\" +
+								\"<tr class='events \" + event[4] + \"'>\" +
 									\"<th class='head_vertical'></th>\" +
 									\"<td class='cell_0'>\" +
 										event[0] +
 									\"</td>\" +
 									\"<td>\" + event[1] + \"</td>\" +
 									\"<td>\" + event[2] + \"</td>\" +
-									\"<td>\" + event[3] + \"</td>\" +
+									\"<td class='button_row'>\" + event[3] + \"</td>\" +
 								\"</tr>\");
 							});
 						
@@ -1057,11 +1058,17 @@ class Events {
 			}
 			else {
 				$filters_to_serialize = array();
-			
-			
+				
+				if($this->severity == -1) {
+					$severity = __('All');
+				}
+				else {
+					$severity = get_priorities($this->severity);
+				}
+				
 				if (!$this->default_filters['severity']) {
 					$filters_to_serialize[] = sprintf(__("Severity: %s"),
-						get_priorities($this->severity));
+						$severity);
 				}
 				if (!$this->default_filters['group']) {
 					$groups = users_get_groups_for_select(
@@ -1070,9 +1077,17 @@ class Events {
 					$filters_to_serialize[] = sprintf(__("Group: %s"),
 						$groups[$this->group]);
 				}
+				
+				if($this->type == 'all') {
+					$type = __('All');
+				}
+				else {
+					$type = get_event_types($this->type);
+				}
+				
 				if (!$this->default_filters['type']) {
 					$filters_to_serialize[] = sprintf(__("Type: %s"),
-						get_event_types($this->type));
+						$type);
 				}
 				if (!$this->default_filters['status']) {
 					$filters_to_serialize[] = sprintf(__("Status: %s"),

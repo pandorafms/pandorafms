@@ -773,6 +773,25 @@ class Table {
 		}
 	}
 	
+	public function importFromHashEvents($data) {
+		foreach ($data as $id => $row) {
+			$table_row = array();
+			
+			foreach ($row as $key => $value) {
+				if (!in_array($key, $this->head)) {
+					//$this->head[] = $key;
+				}
+				
+				//$cell_key = array_search($key, $this->head);
+				
+				//$table_row[$cell_key] = $value;
+				$table_row[$key] = $value;
+			}
+			
+			$this->rows[$id] = $table_row;
+		}
+	}
+	
 	public function setClass($class = '') {
 		$this->class_table = $class;
 	}
@@ -833,7 +852,7 @@ class Table {
 				$html .= "<th class='head_vertical'>" . $key . "</th>\n";
 			}
 			else {
-				$html .= "<th class='head_vertical'></th>\n";
+				$html .= "<th class='head_vertical' style='font-size: 0px'></th>\n";
 			}
 			foreach ($row as $key_cell => $cell) {
 				$html .= "<td class='cell_" . $key_cell . "'>" . $cell . "</td>\n";

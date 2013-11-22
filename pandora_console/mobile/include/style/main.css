@@ -414,10 +414,6 @@ table#list_events th {
 }
 */
 
-#list_events a {
-	color: #333333 !important;
-}
-
 @media screen and (max-width: 35em) {
 	/* Hide the title of event name */
 	#list_events tbody tr.events td.cell_0 b.ui-table-cell-label {
@@ -443,10 +439,6 @@ table#list_events th {
 .grey {
 	color: #808080;
 	font-weight: bold;
-}
-
-.cell_0 a {
-	color: #000000 !important;
 }
 
 @media screen and (max-width: 25em) {
@@ -697,7 +689,8 @@ li.ui-btn {
 
 @media screen and (max-width: 25em) {
 	.ui-table th, .ui-table td {
-		padding: 0px !important;
+		padding: 3px !important;
+		padding-left: 3px;
 	}
 }
 /*END----------Fix the tons of air between the rows in small table----*/
@@ -723,3 +716,20 @@ li.ui-btn {
 	display:block !important;
 }
 /*END----------Fix to avoid clicks under loading message--------------*/
+
+
+.button_layer {
+	position: relative;
+	float: right;
+	padding-right: 60px;
+	height: 30px;
+}
+
+.ui-icon-big {
+	width: 28px !important;
+	height: 28px !important;
+}
+
+.ui-icon-arrow-r-big {
+	background-position: -103px 4px !important;
+}

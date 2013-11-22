@@ -1,3 +1,10 @@
+2013-11-22  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/operation/events.php
+	mobile/include/style/main.css
+	mobile/include/ui.class.php: Improve events view
+	of mobile console
+
 2013-11-22 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/gis_maps/ajax.php: fixed the get size of icons for

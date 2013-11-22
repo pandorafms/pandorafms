@@ -182,7 +182,12 @@ switch ($opt) {
 				$row['nombre'] = '';
 			
 			$icon = gis_get_agent_icon_map($row['tagente_id_agente'], true, $status);
-			$icon_size = getimagesize($icon);
+			if ($icon[0] !== '/') {
+				$icon_size = getimagesize($config['homedir'] . "/" . $icon);
+			}
+			else {
+				$icon_size = getimagesize($config['homedir'] . $icon);
+			}
 			$icon_width = $icon_size[0];
 			$icon_height = $icon_size[1];
 			

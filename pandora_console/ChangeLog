@@ -1,3 +1,8 @@
+2013-11-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/gis_maps/ajax.php: fixed the get size of icons for
+	the public gis map.
+
 2013-11-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php: Fix the combo of user to assign an

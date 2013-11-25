@@ -352,7 +352,7 @@ sub get_agent_status ($$$) {
 		# AGENT_MODULE_STATUS_CRITICAL_ALERT
 		# AGENT_MODULE_STATUS_CRITICAL_BAD
 		# AGENT_MODULE_STATUS_WARNING
-		# AGENT_MODULE_STATUS_UNKNOW
+		# AGENT_MODULE_STATUS_UNKNOWN
 		# AGENT_MODULE_STATUS_NORMAL
 		if ($m_status == 4) {
 			$module_status = 4;
@@ -365,7 +365,7 @@ sub get_agent_status ($$$) {
 				if ($m_status == 2) {
 					$module_status = 2;
 				}
-				else {
+				elsif ($module_status != 2) {
 					if ($m_status == 0) {
 						$module_status = 0;
 					}

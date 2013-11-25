@@ -78,13 +78,13 @@ public class Options extends Activity {
 		// Connection
 		EditText text = (EditText) findViewById(R.id.url);
 		text.setText(preferences.getString("url",
-				"http://192.168.70.133/pandora_console"));
+				"http://firefly.artica.es/pandora_demo"));
 		text = (EditText) findViewById(R.id.user);
-		text.setText(preferences.getString("user", "admin"));
+		text.setText(preferences.getString("user", "demo"));
 		text = (EditText) findViewById(R.id.password);
-		text.setText(preferences.getString("password", "pandora"));
+		text.setText(preferences.getString("password", "demo"));
 		text = (EditText) findViewById(R.id.api_password);
-		text.setText(preferences.getString("api_password", ""));
+		text.setText(preferences.getString("api_password", "m1gu3l"));
 		text = (EditText) findViewById(R.id.timeout_connections);
 		text.setText(Integer.toString(preferences.getInt("timeout_connections", 10)));
 		

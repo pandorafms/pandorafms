@@ -730,6 +730,43 @@ li.ui-btn {
 	height: 28px !important;
 }
 
-.ui-icon-arrow-r-big {
-	background-position: -103px 4px !important;
+.events td {
+	min-height: 35px;
+}
+
+@media screen and (max-width: 25em)
+{
+	.events .cell_3, .events .button_row {
+		display: none;
+	}
+	
+	.events .cell_0 a.event_name {
+		width: 87%;
+		float: left;
+	}
+}
+
+@media screen and (min-width: 25em)
+{
+	.events .cell_0 .event_link{
+		display: none;
+	}
+	
+	.events td {
+		height: 35px;
+	}
+}
+
+.cell_event_name {
+	padding-bottom: 10px;
+	font-weight: bold;
+}
+
+.ui-icon-eye {
+	background-image: url(../../images/eye.png) !important;
+	background-position: center;
+}
+
+span.nobold * {
+	font-weight: normal;
 }

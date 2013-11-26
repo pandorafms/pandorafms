@@ -1,3 +1,13 @@
+2013-11-26  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/operation/events.php
+	mobile/include/style/main.css: Improve events layout
+	and fix events validation 
+	
+	* include/functions_events.php
+	include/functions_api.php: Fix event validation from API
+	and delete deprecated function
+
 2013-11-26  KIKUCHI Koichiro <koichiro@rworks.jp>
 
 	* extensions/insert_data.php: Use UTF-8 for output XML encoding.

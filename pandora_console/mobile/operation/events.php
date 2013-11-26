@@ -72,11 +72,27 @@ class Events {
 					$end = 1;
 					foreach ($events_db as $event) {						
 						$end = 0;
+						
+						$details_button = '';
+						$open_link = '';
+						$close_link = '';
+						
+						if (!$this->readOnly) {
+							/*
+							$details_button = '<a href="javascript: openDetails(' . $event['id_evento'] . ')" class="event_link">' .
+											'<span style="position: relative; float: right; margin-right: 30px;">
+												<span class="ui-icon ui-icon-big ui-icon-eye ui-icon-eye ui-icon-shadow" style="position: absolute; left: 50%;">&nbsp;</span>
+											</span>' .
+											'</a>';
+							*/
+						
+							$open_link = '<a href="javascript: openDetails(' . $event['id_evento'] . ')"><div style="height:100%;width:100%">';
+							$close_link = '</div></a>';										
+						}
+						
 						$row = array();
-						$row[] = '
-						<b class="ui-table-cell-label">' . __('Event Name') . '</b>
-						<a class="ui-link" href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
-							io_safe_output($event['evento']) . '</a>';
+						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Event Name') . '</b>' . io_safe_output($event['evento']) . $details_button . $close_link;
+						
 						/*
 						switch ($event['estado']) {
 							case 0:
@@ -99,50 +115,22 @@ class Events {
 								"title" => $title_st,
 								"id" => 'status_img_' . $event["id_evento"]));
 						*/
-						$row[] = '<b class="ui-table-cell-label">' . __('Timestamp') . '</b>' .
-							ui_print_timestamp ($event['timestamp_rep'], true);
+						
+						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Timestamp') . '</b>' .
+							ui_print_timestamp ($event['timestamp_rep'], true) . $close_link;
 						
 						if ($event["id_agente"] == 0) {
 							$agent_name = __('System');
 						}
 						else {
-							$agent_name = ui_print_agent_name ($event["id_agente"], true);
-						}
-						$row[] = '<b class="ui-table-cell-label">' . __('Agent') . '</b>' .
-							$agent_name;
-						
-						/*
-						$status =
-							html_print_image ("mobile/images/" .
-								get_priority_class($event['criticity']) . ".png", true);
-						$status .= "&nbsp;";
-						if ($event['estado'] == 1) {
-							$img_st = "images/tick.png";
-							$title_st = __('Event validated');
-							
-							$status .= html_print_image ($img_st, true, 
-								array ("class" => "image_status",
-									"width" => 16,
-									"height" => 16,
-									"title" => $title_st,
-									"id" => 'status_img_' . $event["id_evento"]));
-						}
-						else {
-							$status .= '';
+							$agent_name = '<span class="nobold">' . ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, '', '', false, false) . '</span>';
 						}
 						
-						$row[] = '<b class="ui-table-cell-label">' . __('Status') . '</b>' .
-							$status;
+						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Agent') . '</b>' .
+							$agent_name . $close_link;
 						
-						*/
+						$row[] = $details_button;
 						
-						if (!$this->readOnly) {
-							$row[] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' .
-										'<span style="position: relative; float: right; margin-right: 30px;">
-											<span class="ui-icon ui-icon-big ui-icon-arrow-r ui-icon-arrow-r-big ui-icon-shadow" style="position: absolute; left: 50%;">&nbsp;</span>
-										</span>' .
-										'</a>';
-						}
 						$row[] = get_priority_class ($event["criticity"]);
 						$events[$event['id_evento']] = $row;
 					}
@@ -289,7 +277,7 @@ class Events {
 					
 					$id_event = $system->getRequest('id_event', 0);
 					
-					if (events_validate_event($id_event)) {
+					if (events_change_status($id_event, EVENT_VALIDATE)) {
 						echo json_encode(array('correct' => 1));
 					}
 					else {
@@ -493,6 +481,7 @@ class Events {
 				</tbody>
 			</table>
 			<?php
+			
 			$options['content_text'] = ob_get_clean();
 			$options_button = array(
 				'text' => __('Validate'),
@@ -513,9 +502,7 @@ class Events {
 				<h3 style="color: #ff0000;">' . __('Fail validate') . '</h3></div>';
 			
 			$options['button_close'] = false;
-			
-			
-			
+						
 		$ui->addDialog($options);
 			$options['type'] = 'hidden';
 			
@@ -750,17 +737,28 @@ class Events {
 		$row_class = array();
 		foreach ($events_db as $event) {
 			$myclass = get_priority_class ($event["criticity"]);
+			
+			$details_button = '';
+			$open_link = '';
+			$close_link = '';
 
+			if (!$this->readOnly) {
+				/*
+				$details_button = '<a href="javascript: openDetails(' . $event['id_evento'] . ')" class="event_link">' .
+								'<span style="position: relative; float: right; margin-right: 30px;">
+									<span class="ui-icon ui-icon-big ui-icon-eye ui-icon-eye ui-icon-shadow" style="position: absolute; left: 50%;">&nbsp;</span>
+								</span>' .
+								'</a>';
+				*/
+			
+				$open_link = '<a href="javascript: openDetails(' . $event['id_evento'] . ')"><div style="height:100%;width:100%">';
+				$close_link = '</div></a>';										
+			}
+			
 			$row_class[$event['id_evento']] = "events $myclass";
 			
 			$row = array();
-			if ($this->readOnly) {
-				$row[$field_event_name] = io_safe_output($event['evento']);
-			}
-			else {
-				$row[$field_event_name] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
-					io_safe_output($event['evento']) . '</a>';
-			}
+			$row[$field_event_name] = $open_link . io_safe_output($event['evento']) . $details_button . $close_link;
 			/*
 			switch ($event['estado']) {
 				case 0:
@@ -778,22 +776,21 @@ class Events {
 			}
 			*/
 			
-			$row[$field_timestamp] = ui_print_timestamp ($event['timestamp_rep'], true);
+			$row[$field_timestamp] = $open_link . ui_print_timestamp ($event['timestamp_rep'], true) . $close_link;
+			
+			if ($event["id_agente"] == 0) {
+				$agent_name = __('System');
+			}
+			else {
+				$agent_name = '<span class="nobold">' . ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, '', '', false, false) . '</span>';
+			}
 			
 			if ($this->columns['agent']) {
-				$row[$field_agent] = '<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $event["id_agente"] . '">' .
-					(string) agents_get_name($event["id_agente"]) . '</a>';
+				$row[$field_agent] = $open_link . $agent_name . $close_link;
 			}
 			
 
-			if (!$this->readOnly) {
-				$row[' '] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' .
-							'<span class="button_layer">
-								<span class="ui-icon ui-icon-big ui-icon-arrow-r ui-icon-arrow-r-big ui-icon-shadow" style="position: absolute; left: 50%;">&nbsp;</span>
-							</span>' .
-							'</a>';
-				$row_class[' '] = "button_row";
-			}
+			$row[' '] = $details_button;
 			
 			$events[$event['id_evento']] = $row;
 		}
@@ -882,6 +879,8 @@ class Events {
 										.html(event[\"group\"]);
 									$(\"#detail_event_dialog .cell_event_tags\")
 										.html(event[\"tags\"]);
+									$(\"#detail_event_dialog .cell_agent\")
+										.html(event[\"agent\"]);
 									
 									//The link to module graph
 									$(\".event_module_graph\").hide();

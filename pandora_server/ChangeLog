@@ -1,3 +1,11 @@
+2013-11-26  KIKUCHI koichiro <koichiro@rworks.jp>
+
+	* util/pandora_remote_agent.sh: Added "-e" option to be able to
+	 specify character encoding of the output XML. Also added PID
+	 number to the output file name to avoid race conditions.
+
+	Merged from: trunk
+ 
 2013-10-28  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Added exeptions in safe_input

@@ -1,5 +1,11 @@
 2013-11-26  KIKUCHI koichiro <koichiro@rworks.jp>
 
+	* util/pandora_remote_agent.sh: Added "-e" option to be able to
+	 specify character encoding of the output XML. Also added PID
+	 number to the output file name to avoid race conditions.
+ 
+2013-11-26  KIKUCHI koichiro <koichiro@rworks.jp>
+
 	* lib/PandoraFMS/DB.pm: Fixed get_agent_status to return warning status
 	 correctly.
 

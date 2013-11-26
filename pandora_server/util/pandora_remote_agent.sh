@@ -17,6 +17,7 @@ function help {
 	echo -e "Syntax:" 
 	echo -e "\t-a agent		Agent name as will be presented in the output XML"
 	echo -e "\t-f scriptfile 	        Script file to execute. It must generate the XML for modules itself"
+	echo -e "\t-e encoding		Character encoding of the agent name and scriptfile output (default: $ENCODING)"
 	echo -e "\t-h			This help"
 	echo ""
 	exit
@@ -30,7 +31,7 @@ fi
 AGENT=""
 SCRIPTFILE=""
 
-while getopts ":h:a:f:" optname
+while getopts ":h:a:f:e:" optname
   do
     case "$optname" in
       "h")
@@ -41,7 +42,10 @@ while getopts ":h:a:f:" optname
 	;;
       "f")
 		SCRIPTFILE=$OPTARG
-        ;;
+	;;
+      "e")
+		ENCODING=$OPTARG
+	;;
        ?)
 		help
 		;;
@@ -70,7 +74,7 @@ TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 SERIAL=`date +"%s"`
 
 # File names
-DATA=$TEMP/$AGENT.$SERIAL.data
+DATA=$TEMP/$AGENT.$$.$SERIAL.data
 
 # Makes data packet
 echo "<?xml version=\"1.0\" encoding=\"$ENCODING\"?> " > $DATA

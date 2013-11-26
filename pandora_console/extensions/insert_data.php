@@ -86,11 +86,6 @@ function mainInsertData() {
 			$agent = db_get_row_filter('tagente', array('nombre' => $id_agent));
 			$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
 			
-			$date2 = str_replace('-', '/', $date);
-			$time2 = DATE(TIME_FORMAT, strtotime($time));
-			
-			$date_xml = $date2 . ' ' . $time2;
-			
 			$done = 0;
 			$errors = 0;
 			if ($csv !== false) {
@@ -109,7 +104,7 @@ function mainInsertData() {
 				}
 			}
 			else {
-				$result = createXMLData($agent, $agentModule, $date_xml, $data);
+				$result = createXMLData($agent, $agentModule, $date . ' ' . $time, $data);
 				
 				if ($result) {
 					$done++;

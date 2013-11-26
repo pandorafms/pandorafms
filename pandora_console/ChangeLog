@@ -1,3 +1,8 @@
+2013-11-26  KIKUCHI Koichiro <koichiro@rworks.jp>
+
+	* extensions/insert_data.php: Fixed a date time format used for
+	 single data insertion.
+
 2013-11-23  Junichi Satoh  <junichi@rworks.jp>
 	
 	* include/help/ja/help_visual_console_editor_editor_tab.php: Added

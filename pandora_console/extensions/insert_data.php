@@ -23,7 +23,7 @@ include_once($config['homedir'] . "/include/functions.php");
 function createXMLData($agent, $agentModule, $time, $data) {
 	global $config;
 	
-	$xmlTemplate = "<?xml version='1.0' encoding='ISO-8859-1'?>
+	$xmlTemplate = "<?xml version='1.0' encoding='UTF-8'?>
 		<agent_data description='' group='' os_name='%s' " .
 		" os_version='%s' interval='%d' version='%s' timestamp='%s' agent_name='%s' timezone_offset='%d'>
 			<module>

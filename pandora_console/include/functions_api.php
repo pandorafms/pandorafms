@@ -5180,7 +5180,7 @@ function api_set_validate_events($id_event, $trash1, $other, $return_type, $user
 	$event = events_get_event ($id_event);
 	alerts_agent_module_standby ($event['id_alert_am'], 0);
 	
-	$result = events_validate_event ($id_event, false, 1);
+	$result = events_change_status ($id_event, EVENT_VALIDATE);
 	
 	if ($result) {
 		if (!empty($text)) {

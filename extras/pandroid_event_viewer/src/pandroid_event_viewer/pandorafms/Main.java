@@ -337,9 +337,7 @@ public class Main extends Activity {
 
 				buttonSaveAsFilterWatcher.setEnabled(true);
 				buttonSearch.setEnabled(true);
-				
-				Log.e("CACA", "CACA " + buttonSearch.isEnabled());
-				
+								
 				buttonDeleteProfile.setEnabled(true);
 				buttonSaveProfile.setEnabled(true);
 			}

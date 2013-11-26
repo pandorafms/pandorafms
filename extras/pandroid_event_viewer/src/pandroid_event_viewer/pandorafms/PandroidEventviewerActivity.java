@@ -565,7 +565,10 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				Activity.MODE_PRIVATE);
 		String api_version = preferences.getString("api_version", "");
 		
-		if (api_version.equals("v5.0")) {
+		// Get the short form of the version. I.E. "v5" for "v5.0SP1"
+		String[] api_version_short = api_version.split("\\.");
+		
+		if (api_version_short[0].equals("v5")) {
 			this.getEvents_v50(lines);
 		}
 		else {

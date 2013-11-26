@@ -1,3 +1,9 @@
+2013-11-26  Sergio Martin <sergio.martin@artica.es>
+
+	* pandroid_event_viewer/src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java
+	pandroid_event_viewer/src/pandroid_event_viewer/pandorafms/Main.java: Clean old debug messages
+	and fix version detection for use new API functions on SP1
+
 2013-11-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_vars.sh: Added console dirs to auto-create OUM packages.

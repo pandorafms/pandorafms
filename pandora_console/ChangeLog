@@ -1,3 +1,17 @@
+2013-11-27  Sergio Martin <sergio.martin@artica.es>
+
+	* images/hourglass_dark.png
+	images/star_white.png
+	images/star_dark.png
+	images/hourglass_white.png
+	images/tick_dark.png
+	images/tick_white.png
+	mobile/include/style/main.css
+	mobile/operation/agent.php
+	mobile/operation/events.php: Improvements in event 
+	viewer of mobile console after fix some conflictive 
+	code
+
 2013-11-27  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_modules.php: Fixed that some multibyte characters

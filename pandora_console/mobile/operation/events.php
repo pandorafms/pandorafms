@@ -73,63 +73,48 @@ class Events {
 					foreach ($events_db as $event) {						
 						$end = 0;
 						
-						$details_button = '';
+						switch ($event['estado']) {
+							case 0:
+								$img_st = "images/star_white.png";
+								break;
+							case 1:
+								$img_st = "images/tick_white.png";
+								break;
+							case 2:
+								$img_st = "images/hourglass_white.png";
+								break;
+						}
+						
+						if($event['criticity'] == EVENT_CRIT_WARNING) {
+							$img_st = str_replace("white.png", "dark.png", $img_st);
+						}
+
+						$status_icon = html_print_image($img_st, true);
+						
 						$open_link = '';
 						$close_link = '';
 						
-						if (!$this->readOnly) {
-							/*
-							$details_button = '<a href="javascript: openDetails(' . $event['id_evento'] . ')" class="event_link">' .
-											'<span style="position: relative; float: right; margin-right: 30px;">
-												<span class="ui-icon ui-icon-big ui-icon-eye ui-icon-eye ui-icon-shadow" style="position: absolute; left: 50%;">&nbsp;</span>
-											</span>' .
-											'</a>';
-							*/
-						
+						if (!$this->readOnly) {	
 							$open_link = '<a href="javascript: openDetails(' . $event['id_evento'] . ')"><div style="height:100%;width:100%">';
 							$close_link = '</div></a>';										
 						}
 						
 						$row = array();
-						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Event Name') . '</b>' . io_safe_output($event['evento']) . $details_button . $close_link;
-						
-						/*
-						switch ($event['estado']) {
-							case 0:
-								$img_st = "images/star.png";
-								$title_st = __('New event');
-								break;
-							case 1:
-								$img_st = "images/tick.png";
-								$title_st = __('Event validated');
-								break;
-							case 2:
-								$img_st = "images/hourglass.png";
-								$title_st = __('Event in process');
-								break;
-						}
-						$row[] = html_print_image ($img_st, true, 
-							array ("class" => "image_status",
-								"width" => 16,
-								"height" => 16,
-								"title" => $title_st,
-								"id" => 'status_img_' . $event["id_evento"]));
-						*/
-						
-						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Timestamp') . '</b>' .
-							ui_print_timestamp ($event['timestamp_rep'], true) . $close_link;
-						
+						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Event Name') . '</b>' . io_safe_output($event['evento']) . $close_link;
+												
 						if ($event["id_agente"] == 0) {
 							$agent_name = __('System');
 						}
 						else {
-							$agent_name = '<span class="nobold">' . ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, '', '', false, false) . '</span>';
+							$agent_name = '<span class="nobold">' . ui_print_agent_name ($event["id_agente"], true, 'agent_small', '', false, '', '', false, false) . '</span>';
 						}
+
+						$row_1 = $open_link;
+						$row_1 .= '<span class="events_agent"><b class="ui-table-cell-label">' . __('Agent') . '</b>' . $agent_name . '</span>';
+						$row_1 .= '<span class="events_timestamp">' . $status_icon . '<br>' . ui_print_timestamp ($event['timestamp_rep'], true) . '</span>';
+						$row_1 .= $close_link;
 						
-						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Agent') . '</b>' .
-							$agent_name . $close_link;
-						
-						$row[] = $details_button;
+						$row[] = $row_1;
 						
 						$row[] = get_priority_class ($event["criticity"]);
 						$events[$event['id_evento']] = $row;
@@ -513,7 +498,7 @@ class Events {
 		$ui->addDialog($options);
 		
 		
-		$ui->createDefaultHeader(__("PandoraFMS: Events"),
+		$ui->createDefaultHeader(__("Events"),
 				$ui->createHeaderButton(
 					array('icon' => 'back',
 						'pos' => 'left',
@@ -726,77 +711,8 @@ class Events {
 		$events_db = $listEvents['events'];
 		$total_events = $listEvents['total'];
 		
-		if (empty($events_db))
-			$events_db = array();
-		
-		$events = array();
-		$field_event_name = __('Event Name');
-		$field_timestamp = __('Timestamp');
-		$field_agent = __('Agent');
-
-		$row_class = array();
-		foreach ($events_db as $event) {
-			$myclass = get_priority_class ($event["criticity"]);
-			
-			$details_button = '';
-			$open_link = '';
-			$close_link = '';
-
-			if (!$this->readOnly) {
-				/*
-				$details_button = '<a href="javascript: openDetails(' . $event['id_evento'] . ')" class="event_link">' .
-								'<span style="position: relative; float: right; margin-right: 30px;">
-									<span class="ui-icon ui-icon-big ui-icon-eye ui-icon-eye ui-icon-shadow" style="position: absolute; left: 50%;">&nbsp;</span>
-								</span>' .
-								'</a>';
-				*/
-			
-				$open_link = '<a href="javascript: openDetails(' . $event['id_evento'] . ')"><div style="height:100%;width:100%">';
-				$close_link = '</div></a>';										
-			}
-			
-			$row_class[$event['id_evento']] = "events $myclass";
-			
-			$row = array();
-			$row[$field_event_name] = $open_link . io_safe_output($event['evento']) . $details_button . $close_link;
-			/*
-			switch ($event['estado']) {
-				case 0:
-					$img_st = "images/star.png";
-					$title_st = __('New event');
-					break;
-				case 1:
-					$img_st = "images/tick.png";
-					$title_st = __('Event validated');
-					break;
-				case 2:
-					$img_st = "images/hourglass.png";
-					$title_st = __('Event in process');
-					break;
-			}
-			*/
-			
-			$row[$field_timestamp] = $open_link . ui_print_timestamp ($event['timestamp_rep'], true) . $close_link;
-			
-			if ($event["id_agente"] == 0) {
-				$agent_name = __('System');
-			}
-			else {
-				$agent_name = '<span class="nobold">' . ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, '', '', false, false) . '</span>';
-			}
-			
-			if ($this->columns['agent']) {
-				$row[$field_agent] = $open_link . $agent_name . $close_link;
-			}
-			
-
-			$row[' '] = $details_button;
-			
-			$events[$event['id_evento']] = $row;
-		}
-		
 		$ui = Ui::getInstance();
-		if (empty($events)) {
+		if (empty($events_db)) {
 			if (!$return) {
 				$ui->contentAddHtml('<p style="color: #ff0000;">' . __('No events') . '</p>');
 			}
@@ -805,22 +721,19 @@ class Events {
 			}
 		}
 		else {
+			// Create an empty table to be filled from ajax
 			$table = new Table();
 			$table->id = 'list_events';
-			$table->setRowClass($row_class);
-			$table->importFromHash($events);
 			
 			if (!$return) {
 				$ui->contentAddHtml($table->getHTML());
 				
-				if ($system->getPageSize() < $total_events) {
-					$ui->contentAddHtml('<div id="loading_rows">' .
-							html_print_image('images/spinner.gif', true) .
-							' ' . __('Loading...') .
-						'</div>');
-					
-					$this->addJavascriptAddBottom();
-				}
+				$ui->contentAddHtml('<div id="loading_rows">' .
+						html_print_image('images/spinner.gif', true) .
+						' ' . __('Loading...') .
+					'</div>');
+				
+				$this->addJavascriptAddBottom();
 				
 				$this->addJavascriptDialog();
 			}
@@ -972,7 +885,7 @@ class Events {
 		
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 				var load_more_rows = 1;
-				var page = 1;
+				var page = 0;
 				
 				function add_rows(data) {
 					if (data.end) {
@@ -981,14 +894,11 @@ class Events {
 					else {
 						$.each(data.events, function(key, event) {
 							$(\"table#list_events tbody\").append(
-								\"<tr class='events \" + event[4] + \"'>\" +
-									\"<th class='head_vertical'></th>\" +
+								\"<tr class='events \" + event[2] + \"'>\" +
 									\"<td class='cell_0'>\" +
 										event[0] +
 									\"</td>\" +
 									\"<td>\" + event[1] + \"</td>\" +
-									\"<td>\" + event[2] + \"</td>\" +
-									\"<td class='button_row'>\" + event[3] + \"</td>\" +
 								\"</tr>\");
 							});
 						
@@ -1002,7 +912,7 @@ class Events {
 				
 				function ajax_load_rows() {
 					if (load_more_rows) {
-						
+
 						load_more_rows = 0;
 						
 						postvars = {};
@@ -1023,7 +933,7 @@ class Events {
 							postvars,
 							function (data) {
 								add_rows(data);
-								
+
 								//For large screens load the new events
 								if (document.documentElement.scrollHeight == document.documentElement.clientHeight) {
 									ajax_load_rows();

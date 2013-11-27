@@ -730,19 +730,19 @@ li.ui-btn {
 	height: 28px !important;
 }
 
-.events td {
-	min-height: 35px;
-}
-
 @media screen and (max-width: 25em)
 {
-	.events .cell_3, .events .button_row {
+	.events .status_row {
 		display: none;
 	}
 	
 	.events .cell_0 a.event_name {
 		width: 87%;
 		float: left;
+	}
+	
+	.events_agent {
+		min-width: 50%;
 	}
 }
 
@@ -755,6 +755,15 @@ li.ui-btn {
 	.events td {
 		height: 35px;
 	}
+	
+	.events_agent {
+		float: left;
+		margin-right: 15px;
+	}
+}
+
+.events .cell_0 img {
+	margin-right: 5px;
 }
 
 .cell_event_name {
@@ -769,4 +778,19 @@ li.ui-btn {
 
 span.nobold * {
 	font-weight: normal;
+}
+
+.events_timestamp {
+	font-size: 10px;
+	float: right;
+	text-align: right;
+	line-height: 1.1em;
+}
+
+.events_agent {
+	float: left;
+}
+
+.events_agent b.ui-table-cell-label {
+	display: block !important;
 }

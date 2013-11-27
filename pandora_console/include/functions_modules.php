@@ -427,7 +427,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	}
 	
 	// Check for non valid characters in module name
-	if (strpbrk(io_safe_output($name), '¡¿÷ºª') !==  false) {
+	if (mb_ereg_match('[\xc2\xa1\xc2\xbf\xc3\xb7\xc2\xba\xc2\xaa]', io_safe_output($name)) !== false) {
 		return ERR_GENERIC;
 	}
 	

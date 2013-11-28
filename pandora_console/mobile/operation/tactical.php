@@ -49,12 +49,12 @@ class Tactical {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Tactical"),
+		$ui->createDefaultHeader(__("Tactical view"),
 				$ui->createHeaderButton(
 					array('icon' => 'back',
 						'pos' => 'left',
 						'text' => __('Back'),
-						'href' => 'index.php')));
+						'href' => 'index.php?page=home')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentBeginGrid('responsive');

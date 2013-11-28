@@ -37,7 +37,7 @@ class Home {
 					'text' => __('Logout'),
 					'href' => 'index.php?action=logout'));
 		}
-		$ui->createHeader(__("PandoraFMS: Home"), $left_button);
+		$ui->createHeader(__("Home"), $left_button);
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->beginForm("index.php?page=agents");
@@ -52,7 +52,7 @@ class Home {
 			//List of buttons
 			$options = array('icon' => 'gear',
 					'pos' => 'right',
-					'text' => __('Tactical'),
+					'text' => __('Tactical view'),
 					'href' => 'index.php?page=tactical');
 			$ui->contentAddHtml($ui->createButton($options));
 			$options = array('icon' => 'info',

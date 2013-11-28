@@ -1,3 +1,19 @@
+2013-11-28  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/include/style/main.css
+	mobile/operation/networkmap.php
+	mobile/operation/home.php
+	mobile/operation/modules.php
+	mobile/operation/alerts.php
+	mobile/operation/networkmaps.php
+	mobile/operation/agent.php
+	mobile/operation/groups.php
+	mobile/operation/agents.php
+	mobile/operation/events.php
+	mobile/operation/tactical.php: General improvements
+	in mobile console. Cut some large strings, style fixes,
+	back button path fix to iPhone app...
+
 2013-11-27  Sergio Martin <sergio.martin@artica.es>
 
 	* images/hourglass_dark.png

@@ -147,12 +147,12 @@ class Alerts {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Alerts"),
+		$ui->createDefaultHeader(__("Alerts"),
 			$ui->createHeaderButton(
 					array('icon' => 'back',
 						'pos' => 'left',
 						'text' => __('Back'),
-						'href' => 'index.php')));
+						'href' => 'index.php?page=home')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$filter_title = sprintf(__('Filter Alerts by %s'),
@@ -286,6 +286,7 @@ class Alerts {
 		}
 		else {
 			$tableHTML = new Table();
+			$tableHTML->id = 'list_alerts';
 			$tableHTML->importFromHash($table);
 			if (!$return) {
 				$ui->contentAddHtml($tableHTML->getHTML());

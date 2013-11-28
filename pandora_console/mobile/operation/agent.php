@@ -69,7 +69,7 @@ class Agent {
 			$agent_name = (string) agents_get_name ($this->id);
 			
 			$ui->createDefaultHeader(
-				sprintf(__("PandoraFMS: %s"), $agent_name),
+				sprintf('%s', $agent_name),
 				$ui->createHeaderButton(
 					array('icon' => 'back',
 						'pos' => 'left',

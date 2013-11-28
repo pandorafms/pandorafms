@@ -177,12 +177,12 @@ class Modules {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Modules"),
+		$ui->createDefaultHeader(__("Modules"),
 			$ui->createHeaderButton(
 				array('icon' => 'back',
 					'pos' => 'left',
 					'text' => __('Back'),
-					'href' => 'index.php')));
+					'href' => 'index.php?page=home')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$filter_title = sprintf(__('Filter Modules by %s'),
@@ -397,16 +397,17 @@ class Modules {
 			$modules = array();
 			foreach ($modules_db as $module) {
 				$row = array();
+				
+				$row[0] = $row[__('Module name')] =
+					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Module') . ' </span>' .
+					$module['module_name'];
+					
 				if ($this->columns['agent']) {
-					$row[0] = $row[__('Agent name')] =
+					$row[2] = $row[__('Agent name')] =
 						'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
 						'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $module["id_agent"] . '">' . $module['agent_name'] . '</a>' .
 						'</span>';
 				}
-				
-				$row[2] = $row[__('Module name')] =
-					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Module') . ' </span>' .
-					$module['module_name'];
 				if ($module['utimestamp'] == 0 && (($module['module_type'] < 21 ||
 					$module['module_type'] > 23) && $module['module_type'] != 100)) {
 					$row[5] = $row[__('Status')] = ui_print_status_image(STATUS_MODULE_NO_DATA,
@@ -616,8 +617,8 @@ class Modules {
 											$.each(data.modules, function(key, module) {
 												$(\"table#list_Modules tbody\").append(\"<tr>\" +
 														\"<th class='head_vertical'></th>\" +
-														\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[0] + \"</td>\" +
-														\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[2] + \"</td>\" +
+														\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[0] + \"</td>\" +
+														\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[2] + \"</td>\" +
 														\"<td class='cell_2'><b class='ui-table-cell-label'>" . __('Status') . "</b>\" + module[5] + \"</td>\" +
 														\"<td class='cell_3'><b class='ui-table-cell-label'>" . __('Interval') . "</b>\" + module[4] + \"</td>\" +
 														\"<td class='cell_4'><b class='ui-table-cell-label'>" . __('Timestamp') . "</b>\" + module[6] + \"</td>\" +

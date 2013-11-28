@@ -81,7 +81,7 @@ class Networkmap {
 		
 		$ui->createPage();
 		$ui->createDefaultHeader(
-			sprintf(__("PandoraFMS: Networkmap %s"),
+			sprintf("%s",
 			$this->network_map['name']),
 			$ui->createHeaderButton(
 				array('icon' => 'back',

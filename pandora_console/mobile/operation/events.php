@@ -503,7 +503,7 @@ class Events {
 					array('icon' => 'back',
 						'pos' => 'left',
 						'text' => __('Back'),
-						'href' => 'index.php')));
+						'href' => 'index.php?page=home')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");

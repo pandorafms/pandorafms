@@ -57,11 +57,11 @@ class Groups {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->createDefaultHeader(__("PandoraFMS: Groups"), $ui->createHeaderButton(
+		$ui->createDefaultHeader(__("Groups"), $ui->createHeaderButton(
 					array('icon' => 'back',
 						'pos' => 'left',
 						'text' => __('Back'),
-						'href' => 'index.php')));
+						'href' => 'index.php?page=home')));
 		$ui->showFooter(false);
 		$ui->beginContent();
 			

@@ -1,3 +1,8 @@
+2013-11-30  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_treeview.php: Fixed tree expansion failure in
+	module based tree view when module name includes some symbols.
+
 2013-11-28  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/include/style/main.css

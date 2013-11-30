@@ -1012,7 +1012,11 @@ function treeview_getData ($type) {
 				break;
 			default:
 			case 'module':
-				$id = str_replace(array(' ','#','/'), array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_', '_articapandora_'.ord('/').'_pandoraartica_'),io_safe_output($item['nombre']));
+				$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
+				$id = io_safe_output($item['nombre']);
+				for ($i = 0; $i < strlen($symbols); $i++) {
+					$id = str_replace(substr($symbols, $i, 1), '_articapandora_'.ord(substr($symbols, $i, 1)).'_pandoraartica_', $id);
+				}
 				$module_name = $item['nombre'];
 				$list[$key]['_id_'] = $id;
 				$list[$key]['_name_'] = io_safe_output($module_name);
@@ -1160,7 +1164,11 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 			//example:
 			//"Load_articapandora_32_pandoraartica_Average"
 			//result -> "Load Average"
-			$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_','_articapandora_'.ord('/').'_pandoraartica_'),array(' ','#','/'),$id);
+			$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
+			$name = $id;
+			for ($i = 0; $i < strlen($symbols); $i++) {
+				$name = str_replace('_articapandora_'.ord(substr($symbols, $i, 1)).'_pandoraartica_', substr($symbols, $i, 1), $name);
+			}
 			
 			$name = io_safe_input(io_safe_output($name));
 			
@@ -1264,7 +1272,11 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 			break;
 		default:
 		case 'module':
-			$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_','_articapandora_'.ord('/').'_pandoraartica_'),array(' ','#','/'),$id_father);
+			$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
+			$name = id_father;
+			for ($i = 0; $i < strlen($symbols); $i++) {
+				$name = str_replace('_articapandora_'.ord(substr($symbols, $i, 1)).'_pandoraartica_', substr($symbols, $i, 1), $name);
+			}	
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$sql = 'SELECT * 

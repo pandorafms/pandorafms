@@ -1,3 +1,8 @@
+2013-12-01  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_modules.php: Corrected agent counting by module
+	group.
+
 2013-11-30  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/tree.php, operation/agentes/datos_agente.php,

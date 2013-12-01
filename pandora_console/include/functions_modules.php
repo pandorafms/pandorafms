@@ -1655,10 +1655,11 @@ function modules_agents_warning ($module_name) {
 
 function modules_group_agent_unknown ($module_group) {
 	
-	return db_get_sql ("SELECT COUNT(*)
+	return db_get_sql ("SELECT COUNT(DISTINCT tagente.id_agente)
 		FROM tagente, tagente_modulo
 		WHERE tagente.id_agente=tagente_modulo.id_agente
 			AND critical_count=0 AND warning_count=0
+			AND tagente.disabled = 0
 			AND unknown_count>0 AND id_module_group = $module_group");
 }
 
@@ -1666,10 +1667,11 @@ function modules_group_agent_unknown ($module_group) {
 
 function modules_group_agent_ok ($module_group) {
 	
-	return db_get_sql ("SELECT COUNT(*)
+	return db_get_sql ("SELECT COUNT(DISTINCT tagente.id_agente)
 		FROM tagente, tagente_modulo
 		WHERE tagente.id_agente=tagente_modulo.id_agente
 			AND normal_count = total_count
+			AND tagente.disabled = 0
 			AND id_module_group = $module_group");
 }
 
@@ -1677,9 +1679,10 @@ function modules_group_agent_ok ($module_group) {
 
 function modules_group_agent_critical ($module_group) {
 	
-	return db_get_sql ("SELECT COUNT(*)
+	return db_get_sql ("SELECT COUNT(DISTINCT tagente.id_agente)
 		FROM tagente, tagente_modulo
 		WHERE tagente.id_agente=tagente_modulo.id_agente
+			AND tagente.disabled = 0
 			AND critical_count > 0 AND id_module_group = $module_group");
 }
 
@@ -1687,10 +1690,11 @@ function modules_group_agent_critical ($module_group) {
 
 function modules_group_agent_warning ($module_group) {
 	
-	return db_get_sql ("SELECT COUNT(*)
+	return db_get_sql ("SELECT COUNT(DISTINCT tagente.id_agente)
 		FROM tagente, tagente_modulo
 		WHERE tagente.id_agente=tagente_modulo.id_agente
 			AND critical_count = 0 AND warning_count > 0
+			AND tagente.disabled = 0
 			AND id_module_group = $module_group");
 }
 

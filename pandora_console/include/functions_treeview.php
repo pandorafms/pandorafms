@@ -1273,7 +1273,7 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 		default:
 		case 'module':
 			$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
-			$name = id_father;
+			$name = $id_father;
 			for ($i = 0; $i < strlen($symbols); $i++) {
 				$name = str_replace('_articapandora_'.ord(substr($symbols, $i, 1)).'_pandoraartica_', substr($symbols, $i, 1), $name);
 			}	

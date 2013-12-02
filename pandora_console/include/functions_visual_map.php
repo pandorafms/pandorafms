@@ -1516,7 +1516,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				if (strstr($label_simple_value, '(_VALUE_)') === false) {
 					//OLD MODE
-					$label_simple_value .= '</strong>';
+					$label_simple_value .= $value . '</strong>';
 				}
 				else {
 					//NEW MODE WITH MACRO (_VALUE_)

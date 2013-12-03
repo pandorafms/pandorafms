@@ -1,4 +1,10 @@
-2013-12-01  Junichi Satoh  <junichi@rworks.jp>
+2013-12-03  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_treeview.php: Fixed sql error in tag tab.
+
+	* ChangeLog: Fixed date in my previous commit.
+
+2013-12-02  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_treeview.php: Fixed tree expansion failure
 	by module.

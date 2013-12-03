@@ -203,6 +203,80 @@ sub pandora_snmptrapd {
 
 				# custom_type, custom_value is not used since 4.0 version, all custom data goes on custom_oid
 				$custom_oid = $data;
+				
+				#Trap forwarding
+				if ($pa_config->{'snmp_forward_trap'}==1) {
+					my $trap_data_string = "";
+
+					#We loop through all the custom data of the received trap, creating the $trap_data_string string to forward the trap properly
+					while ($data =~ /([\.\d]+)\s=\s([^:]+):\s([\S ]+)/g) {
+						my ($trap_data, $trap_type, $trap_value) = ($1, $2, $3);
+						if ($trap_type eq "INTEGER") {
+							#FIX for translated traps from IF-MIB.txt MIB
+							$trap_value =~ s/\D//g;
+							$trap_data_string = $trap_data_string . "$trap_data i $trap_value ";
+						}
+						elsif ($trap_type eq "UNSIGNED"){
+							$trap_data_string = $trap_data_string . "$trap_data u $trap_value ";
+						}
+						elsif ($trap_type eq "COUNTER32"){
+							$trap_data_string = $trap_data_string . "$trap_data c $trap_value ";
+						}
+						elsif ($trap_type eq "STRING"){
+							$trap_data_string = $trap_data_string . "$trap_data s $trap_value ";
+						}
+						elsif ($trap_type eq "HEX STRING"){
+							$trap_data_string = $trap_data_string . "$trap_data x $trap_value ";
+						}
+						elsif ($trap_type eq "DECIMAL STRING"){
+							$trap_data_string = $trap_data_string . "$trap_data d $trap_value ";
+						}
+						elsif ($trap_type eq "NULLOBJ"){
+							$trap_data_string = $trap_data_string . "$trap_data n $trap_value ";
+						}
+						elsif ($trap_type eq "OBJID"){
+							$trap_data_string = $trap_data_string . "$trap_data o $trap_value ";
+						}
+						elsif ($trap_type eq "TIMETICKS"){
+							$trap_data_string = $trap_data_string . "$trap_data t $trap_value ";
+						}
+						elsif ($trap_type eq "IPADDRESS"){
+							$trap_data_string = $trap_data_string . "$trap_data a $trap_value ";
+						}
+						elsif ($trap_type eq "BITS"){
+							$trap_data_string = $trap_data_string . "$trap_data b $trap_value ";
+						}
+					}
+
+					#We distinguish between the three different kinds of SNMP forwarding
+					if ($pa_config->{'snmp_forward_version'} eq '3') {
+						system("snmptrap -v $pa_config->{'snmp_forward_version'} -n \"\" -a $pa_config->{'snmp_forward_authProtocol'} -A $pa_config->{'snmp_forward_authPassword'} -x $pa_config->{'snmp_forward_privProtocol'} -X $pa_config->{'snmp_forward_privPassword'} -l $pa_config->{'snmp_forward_secLevel'} -u $pa_config->{'snmp_forward_secName'} -e $pa_config->{'snmp_forward_engineid'} $pa_config->{'snmp_forward_ip'} '' $oid $trap_data_string");
+					}
+					elsif ($pa_config->{'snmp_forward_version'} eq '2' || $pa_config->{'snmp_forward_version'} eq '2c') {
+						system("snmptrap -v 2c -n \"\" -c $pa_config->{'snmp_forward_community'} $pa_config->{'snmp_forward_ip'} '' $oid $trap_data_string");
+					}
+					elsif ($pa_config->{'snmp_forward_version'} eq '1') {
+						#Because of tne SNMP v1 protocol, we must perform additional steps for creating the trap
+						my $value_sending = "";
+						my $type_sending = "";
+
+						if ($value eq ''){
+							$value_sending = "\"\"";
+						}
+						else {
+							$value_sending = $value;
+							$value_sending =~ s/[\$#@~!&*()\[\];.,:?^ `\\\/]+//g;
+						}
+						if ($type eq ''){
+							$type_sending = "\"\"";
+						}
+						else{
+							$type_sending = $type;
+						}
+
+						system("snmptrap -v 1 -c $pa_config->{'snmp_forward_community'} $pa_config->{'snmp_forward_ip'} $oid \"\" $type_sending $value_sending \"\" $trap_data_string");
+					}
+				}
 
 				# Insert the trap into the DB
 				if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $self->getServerID (), $dbh]))) {

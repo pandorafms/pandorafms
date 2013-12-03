@@ -308,6 +308,20 @@ sub pandora_load_config {
 	$pa_config->{"agentaccess"} = 1; 
 	# -------------------------------------------------------------------------
 	
+	#SNMP Forwarding tokens
+	$pa_config->{"snmp_forward_trap"}=0;
+	$pa_config->{"snmp_forward_secName"}= '';
+	$pa_config->{"snmp_forward_engineid"}= '';
+	$pa_config->{"snmp_forward_authProtocol"}= '';
+	$pa_config->{"snmp_forward_authPassword"}= '';
+	$pa_config->{"snmp_forward_community"}= 'public';
+	$pa_config->{"snmp_forward_privProtocol"}= '';
+	$pa_config->{"snmp_forward_privPassword"}= '';
+	$pa_config->{"snmp_forward_secLevel"}= '';
+	$pa_config->{"snmp_forward_version"}= 2;
+	$pa_config->{"snmp_forward_ip"}= '';
+	
+	
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){

@@ -1,3 +1,9 @@
+2013-12-03  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/modules/manage_network_components_form.php: Fixed
+	snmp v3 credentials missing in network components editor
+	merged from trunk
+
 2013-11-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/OpenLayers/OpenLayers.js: Fix layer

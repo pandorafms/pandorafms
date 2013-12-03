@@ -311,7 +311,7 @@ function type_change () {
 }
 
 $(document).ready (function () {
-	if ($("#snmp_version").value == "3"){
+	if ($("#snmp_version").val() == "3"){
 		$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});			
 		$("input[name=snmp3_auth_user]").attr("disabled", false);		
 		
@@ -413,8 +413,8 @@ $(document).ready (function () {
 		}
 	});	
 
-	$("#type"). change(function () {
-		if ($("#snmp_version").value == "3") {
+	$("#type").change(function () {
+		if ($("#snmp_version").val() == "3") {
 			$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});			
 			$("input[name=snmp3_auth_user]").attr("disabled", false);		
 			

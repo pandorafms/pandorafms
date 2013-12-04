@@ -18,7 +18,6 @@ package pandroid_event_viewer.pandorafms;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;

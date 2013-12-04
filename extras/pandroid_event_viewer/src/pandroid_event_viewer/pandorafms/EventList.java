@@ -731,7 +731,7 @@ public class EventList extends ListActivity {
 			}
 			else if (type.equals("recon_host_detected")) {
 				return_var = getApplicationContext().getString(
-					R.string.system_str);
+					R.string.recon_str);
 			}
 			else if (type.equals("new_agent")) {
 				return_var = getApplicationContext().getString(

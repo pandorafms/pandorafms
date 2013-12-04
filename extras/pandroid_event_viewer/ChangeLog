@@ -1,3 +1,15 @@
+2013-12-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/About.java: removed the
+	unused import.
+	
+	* src/pandroid_event_viewer/pandorafms/EventList.java,
+	res/values-ja/strings.xml, res/values/strings.xml,
+	res/values-es/strings.xml: fixed the text to show when the
+	event is a recon.
+	
+	* AndroidManifest.xml: incremented the version.
+
 2013-11-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* res/values/strings.xml,

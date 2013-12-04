@@ -526,30 +526,9 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			id_group, severity, status, eventSearch, eventTag, timestamp,
 			pagination, offset, false, false);
 		Log.d(TAG, "List of events: " + return_api);
-		Pattern pattern = Pattern
-			.compile("Unable to process XML data file '(.*)'");
-		Matcher matcher;
+		
 		String filename;
-
-		boolean endReplace = false;
-		int i22 = 0;
-		while (!endReplace) {
-			Log.i(TAG + " getEvents - loop", i22 + "");
-			i22++;
-			matcher = pattern.matcher(return_api);
-
-			if (matcher.find()) {
-				filename = matcher.group(1);
-				return_api = return_api
-					.replaceFirst(
-						"Unable to process XML data file[^\n]*\n[^\n]*line 187 thread .*\n",
-						"Bad XML: " + filename);
-			}
-			else {
-				endReplace = true;
-			}
-		}
-
+		
 		Log.i(TAG + " getEvents - return_api", return_api);
 
 		String[] lines = return_api.split("\n");

@@ -50,6 +50,10 @@ if ($id_agent == -2) {
 			break;
 		default:
 			$id_agent = agents_get_agent_id($text_agent);
+			// If agent doesn't exist, don't return results
+			if ($id_agent == 0) {
+				$id_agent = -2;
+			}
 			break;
 	}
 }

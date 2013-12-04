@@ -1,3 +1,8 @@
+2013-12-04  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events_list.php: Fixed agent filter
+	when put an agent that not exist. Incident #430
+
 2013-12-03  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/modules/manage_network_components_form.php: Fixed

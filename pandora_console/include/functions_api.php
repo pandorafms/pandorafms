@@ -130,9 +130,17 @@ function returnData($returnType, $data, $separator = ';') {
 					}
 					else {
 						if (!empty($data['data'])) {
-							foreach($data['data'] as $dataContent) {
+							foreach ($data['data'] as $dataContent) {
 								$clean = array_map("array_apply_io_safe_output", $dataContent);
-								echo implode($separator, $clean) . "\n";
+								foreach ($clean as $k => $v) {
+									$clean[$k] = str_replace("\r", "\n", $clean[$k]);
+									$clean[$k] = str_replace("\n", " ", $clean[$k]);
+									$clean[$k] = strip_tags($clean[$k]);
+									$clean[$k] = str_replace(';',' ',$clean[$k]);
+								}
+								$row = implode($separator, $clean);
+								
+								echo $row . "\n";
 							}
 						}
 					}

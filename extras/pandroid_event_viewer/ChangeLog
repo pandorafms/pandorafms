@@ -1,5 +1,14 @@
 2013-12-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/EventList.java,
+	src/pandroid_event_viewer/pandorafms/Main.java: fixed java
+	warnings.
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java:
+	fixed the hack for old pandoras.
+
+2013-12-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/About.java: removed the
 	unused import.
 	

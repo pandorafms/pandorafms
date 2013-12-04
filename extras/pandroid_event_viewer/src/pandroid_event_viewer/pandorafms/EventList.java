@@ -26,7 +26,6 @@ import java.util.Date;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -78,7 +77,7 @@ public class EventList extends ListActivity {
 	public PandroidEventviewerActivity object;
 	private BroadcastReceiver onBroadcast;
 	public Dialog creatingIncidentDialog;
-	private Context context = this;
+	
 	private View currentElement;
 
 	@Override

@@ -69,6 +69,7 @@
 	<string name="going_down_warning_str">Cayendo a advertencia</string>
 	<string name="alert_fired_str">Alerta lanzada</string>
 	<string name="new_agent_str">Agente nuevo creado</string>
+	<string name="recon_str">Host detectado por Recontask</string>
 	<string name="unknown_str">Tipo desconocido:</string>
 	<string name="unknown_event_str">Evento desconocido</string>
 	<string name="validate_event_label_str">Evento validado</string>

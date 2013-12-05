@@ -956,6 +956,8 @@ class Events {
 	}
 	
 	private function filterEventsGetString() {
+		global $system;
+	
 		if ($this->default) {
 			return __("(Default)");
 		}

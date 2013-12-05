@@ -219,7 +219,7 @@ class Networkmap {
 					return;
 				}
 				$ui->contentAddHtml('<div style="width: auto; overflow-x: auto; text-align: center;">');
-				$ui->contentAddHtml('<img src="' . $url_img . '" />');
+				$ui->contentAddHtml('<img width="500px" src="' . $url_img . '" />');
 				$ui->contentAddHtml('</div>');
 			}
 			else {

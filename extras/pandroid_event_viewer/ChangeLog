@@ -1,5 +1,10 @@
 2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/Main.java: fixed to check the
+	pandora version for 4 series, this is for to hidden the tag filter.
+
+2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/API.java: fixed the offset
 	parameter for the api.
 

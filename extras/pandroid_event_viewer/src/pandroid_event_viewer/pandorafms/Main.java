@@ -54,6 +54,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -93,12 +94,6 @@ public class Main extends Activity {
 		final SharedPreferences preferences = getSharedPreferences(
 			this.getString(R.string.const_string_preferences),
 			Activity.MODE_PRIVATE);
-
-		if (preferences.getString("api_version", "")
-			.equals(VERSION_4_0_2_LABEL)) {
-			
-			version402 = true;
-		}
 
 		setContentView(R.layout.main);
 		final Button buttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
@@ -278,14 +273,31 @@ public class Main extends Activity {
 	public void onResume() {
 		super.onResume();
 		
+		final SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		
 		Log.i(TAG, "Getting groups and tags");
 		GetGroupsAsyncTask task_group =  new GetGroupsAsyncTask();
 		task_group.execute();
 		
+		// Get the short form of the version. I.E. "v4" for "v4.01" and others
+		// 4 versions
+		String api_version = preferences.getString("api_version", "");
+		String[] api_version_short = api_version.split("\\.");
+		
+		if (api_version_short[0].equals("v4")) {
+			version402 = true;
+		}
+		
 		if (version402) {
 			((EditText) findViewById(R.id.tag_text))
-					.setVisibility(View.VISIBLE);
+					.setVisibility(View.GONE);
 			((Spinner) findViewById(R.id.tag)).setVisibility(View.GONE);
+			
+			((TextView) findViewById(R.id.tag_textview))
+				.setVisibility(View.GONE);
+			
 		}
 		else {
 			new GetTagsAsyncTask().execute();

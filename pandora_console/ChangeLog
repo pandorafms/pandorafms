@@ -1,3 +1,8 @@
+2013-12-05  Dario Rodriguez <dario@artica.es>
+
+        * mobile/operation/modules.php: Fixed a style bug related to
+        filter explanation update on module search on mobile console.
+
 2013-12-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the get events when not found the

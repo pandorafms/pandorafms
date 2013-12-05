@@ -1,3 +1,9 @@
+2013-12-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the get events when not found the
+	agent, before it returned the systems events, now it returns empty
+	list.
+
 2013-12-04 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the function "returnData" for

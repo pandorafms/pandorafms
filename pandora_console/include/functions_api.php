@@ -3189,7 +3189,7 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	$success = enterprise_hook('policies_create_module',
-		array($other['data'][0], $id, 1, $values, false)); 
+		array($other['data'][0], $id, 1, $values, false));
 	
 	if ($success)
 		//returnData('string', array('type' => 'string', 'data' => __('Data module added to policy. Is necessary to apply the policy in order to changes take effect.')));		
@@ -4093,7 +4093,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 		returnError('error_create_group', __('Error in group creation. Icon_name cannot be left blank.'));
 		return;
 	}
-
+	
 	$safe_other_data = io_safe_input($other['data']);
 
 	if ($safe_other_data[1] != "") {
@@ -5382,12 +5382,43 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 		$pagination = $filter['limit'];
 	if (isset($filter['offset']))
 		$offset = $filter['offset'];
+	
+	
+	$id_group = (int)$filter['id_group'];
+	
+	$user_groups = users_get_groups ($user_in_db, "IR");
+	$user_id_groups = array();
+	if (!empty($user_groups))
+		$user_id_groups = array_keys ($groups);
+	
+	$is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $user_in_db);
+	
 	if (isset($filter['id_group'])) {
-		$id_group = $filter['id_group'];
-		//A little hack to make the query fetch all groups and not only "All" (with id=0)
-		if ($id_group == 0)
-			$id_group = -1;
+		//The admin can see all groups
+		if ($is_admin) {
+			if (($id_group !== -1) && ($id_group !== 0))
+				$id_groups = array($id_group);
+		}
+		else {
+			if (empty($id_group)) {
+				$id_groups = $user_id_groups;
+			}
+			else {
+				if (in_array($id_group, $user_id_groups)) {
+					$id_groups = array($id_group);
+				}
+				else {
+					$id_groups = array();
+				}
+			}
+		}
 	}
+	else {
+		if (!$is_admin) {
+			$id_groups = $user_id_groups;
+		}
+	}
+	
 	if (isset($filter['tag']))
 		$tag = $filter['tag'];
 	if (isset($filter['event_type']))
@@ -5405,28 +5436,17 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	//TODO MOVE THIS CODE AND THE CODE IN pandora_console/operation/events/events_list.php
 	//to a function.
 	
-	$groups = users_get_groups ($user_in_db, "IR");
-	$id_groups_user = array();
-	if (!empty($groups))
-		$id_groups_user = array_keys ($groups);
-	$is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $user_in_db);
+	
 	
 	$sql_post = '';
 	
-	if (($id_group == -1) || ($id_group == 0)) {
-		if (!empty($groups)) {
-			$sql_post = " AND id_grupo IN (".implode (",", $id_groups_user).")";
-		}
-		else if ($is_admin) {
-			$sql_post = " AND 1 = 0";
-		}
+	if (!empty($id_groups)) {
+		$sql_post = " AND id_grupo IN (".implode (",", $id_groups).")";
 	}
 	else {
-		if (array_search($id_group, $id_groups_user) !== false) {
-			$sql_post = " AND id_grupo = " . $id_group;
-		}
-		else {
-			$sql_post = " AND 1 = 0";
+		//The admin can see all groups
+		if (!$is_admin) {
+			$sql_post = " AND 1=0";
 		}
 	}
 	
@@ -5611,8 +5631,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	else if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
 	}
-	
+	//html_debug_print($filter, true);
 	$result = db_get_all_rows_sql ($sql);
+	//html_debug_print($sql, true);
 	
 	if (($result !== false) && (!$filter['total']) && (!$filter['more_criticity'])) {
 		//Add the description and image
@@ -5649,6 +5670,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 		}
 	}
 	
+	//html_debug_print($result);
 	
 	$data['type'] = 'array';
 	$data['data'] = $result;

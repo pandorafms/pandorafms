@@ -1,3 +1,9 @@
+2013-12-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the get events filtered by group.
+	
+	MERGED FROM THE BRANCH PANDORA_4
+
 2013-12-05  Dario Rodriguez <dario@artica.es>
 
 	* mobile/operation/networkmap.php: Fixed a bug width

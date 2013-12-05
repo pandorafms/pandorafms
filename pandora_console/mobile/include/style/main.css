@@ -739,3 +739,27 @@ span.nobold * {
 #list_Modules *, #list_agents *, #list_alerts *, #list_networkmaps * {
 	color: #222;
 }
+
+DIV.legend>DIV {
+        width: 100% !important;
+        opacity: 0.65 !important;
+}
+
+DIV.nodata_text {
+        padding: 5px 12px 0px 68px;
+        font-weight: bold;
+        color: #C1C1C1;
+        text-transform: uppercase;
+        display: table-cell;
+        vertical-align: middle;
+        text-align: left;
+}
+
+DIV.nodata_container {
+        width:150px;
+        height:100px;
+        background-repeat:no-repeat;
+        background-position: center;
+        margin: auto auto;
+        display: table;
+}

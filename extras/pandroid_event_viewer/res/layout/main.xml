@@ -182,6 +182,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:paddingRight="5dip"
+                    android:id="@+id/tag_textview"
                     android:text="@string/tag_label_str" />
 
                 <EditText

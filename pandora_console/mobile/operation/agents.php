@@ -31,7 +31,6 @@ class Agents {
 		$this->list_status = array(
 			-1 => __('All'),
 			AGENT_MODULE_STATUS_CRITICAL_BAD => __('Critical'),
-			AGENT_MODULE_STATUS_CRITICAL_ALERT => __('Alert'),
 			AGENT_MODULE_STATUS_NORMAL => __('Normal'),
 			AGENT_MODULE_STATUS_WARNING => __('Warning'),
 			AGENT_MODULE_STATUS_UNKNOWN => __('Unknown'));

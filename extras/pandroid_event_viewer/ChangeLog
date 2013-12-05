@@ -1,5 +1,10 @@
 2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/Main.java: setted the
+	standar style for group and tag dropbox.
+
+2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/Options.java: fixed the save
 	state of check in background, before it run but didn't show.
 	

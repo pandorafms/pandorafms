@@ -298,6 +298,7 @@ public class API {
 			" Status: " + String.valueOf(filterStatus) +
 			" Description: " +
 			" Pagination: " + Integer.toString(20) +
+			" Offset: " + Long.toString(offset) +
 			" Count/Show: " + totalStr +
 			" Group ID: " + Integer.toString(idGroup) +
 			" Tag: " + filterTag
@@ -316,7 +317,7 @@ public class API {
 				filterEventSearch, // The free search in the text event
 									// description.
 				Integer.toString(20), // The pagination of list events
-				Long.toString(0), // The offset of list events
+				Long.toString(offset), // The offset of list events
 				totalStr, // Count or show
 				Integer.toString(idGroup), // Group ID
 				filterTag }); // Tag

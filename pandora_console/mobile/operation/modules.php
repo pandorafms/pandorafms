@@ -667,6 +667,11 @@ class Modules {
 				$filters_to_serialize[] = sprintf(__("Free Search: %s"),
 					$this->free_search);
 			}
+			if (!$this->default_filters['tag']) {
+				$tag_name = tags_get_name($this->tag); 
+                                $filters_to_serialize[] = sprintf(__("Tag: %s"),
+                                        $tag_name);
+                        }
 			
 			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
 			

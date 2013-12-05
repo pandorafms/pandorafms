@@ -1,5 +1,8 @@
 2013-12-05  Dario Rodriguez <dario@artica.es>
 
+	* mobile/operation/modules.php: Added default value for tag
+	filter and added "All" option to modules group and tag filters
+
         * mobile/operation/modules.php: Fixed a style bug related to
         filter explanation update on module search on mobile console.
 

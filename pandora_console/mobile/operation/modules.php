@@ -108,7 +108,8 @@ class Modules {
 		$this->default_filters['group'] = true;
 		$this->default_filters['status'] = true;
 		$this->default_filters['free_search'] = true;
-		
+		$this->default_filters['tag'] = true;
+	
 		$this->free_search = $system->getRequest('free_search', '');
 		if ($this->free_search != '') {
 			$this->default = false;
@@ -153,6 +154,7 @@ class Modules {
 		}
 		else {
 			$this->default = false;
+			$this->default_filters['tag'] = false;
 		}
 	}
 	
@@ -215,6 +217,9 @@ class Modules {
 						FROM tmodule_group
 						ORDER BY name");
 					$module_groups = io_safe_output($module_groups);
+					
+					array_unshift($module_groups, array("id_mg" => 0, "name" => __("All")));
+
 					$options = array(
 						'name' => 'module_group',
 						'title' => __('Module group'),
@@ -227,6 +232,9 @@ class Modules {
 					$ui->formAddSelectBox($options);
 					
 					$tags = tags_get_user_tags();
+					
+					array_unshift($tags, __("All"));
+					
 					$options = array(
 						'name' => 'tag',
 						'title' => __('Tag'),

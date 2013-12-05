@@ -1,5 +1,10 @@
 2013-12-05  Dario Rodriguez <dario@artica.es>
 
+	* mobile/operation/module_graph.php: Fixed a problem with
+	module graph filter regarding to event and period filter.
+
+2013-12-05  Dario Rodriguez <dario@artica.es>
+
 	* mobile/operation/modules.php: Added default value for tag
 	filter and added "All" option to modules group and tag filters
 

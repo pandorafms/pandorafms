@@ -56,7 +56,8 @@ class ModuleGraph {
 		$this->graph_type = return_graphtype($this->module["id_tipo_modulo"]);
 		
 		$period_hours = $system->getRequest('period_hours', false);
-		if ($period_hours === false) {
+		
+		if ($period_hours == false) {
 			$this->period = SECONDS_1DAY;
 		}
 		else {
@@ -95,6 +96,9 @@ class ModuleGraph {
 	}
 	
 	public function ajax($parameter2 = false) {
+		
+		global $config;
+		
 		$system = System::getInstance();
 		
 		if (!$this->correct_acl) {

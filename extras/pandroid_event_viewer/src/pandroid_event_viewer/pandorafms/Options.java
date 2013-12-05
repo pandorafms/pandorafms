@@ -88,6 +88,9 @@ public class Options extends Activity {
 		text = (EditText) findViewById(R.id.timeout_connections);
 		text.setText(Integer.toString(preferences.getInt("timeout_connections", 10)));
 		
+		CheckBox cb = (CheckBox) findViewById(R.id.background_service_on);
+		cb.setChecked(preferences.getBoolean("background_service", false));
+		
 		
 		Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -108,7 +111,6 @@ public class Options extends Activity {
 		int key_seconds = this.timeout2arrayKey(preferences.getInt("timeout_connections", 10));
 		combo.setSelection(key_seconds);
 		
-		((CheckBox) findViewById(R.id.background_service_on)).setChecked(true);
 		final Button button = (Button) findViewById(R.id.update_options);
 		button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -124,7 +126,7 @@ public class Options extends Activity {
 
 		// Notification
 		boolean vibration = preferences.getBoolean("vibration", true);
-		CheckBox cb = (CheckBox) findViewById(R.id.vibration_on);
+		cb = (CheckBox) findViewById(R.id.vibration_on);
 		cb.setChecked(vibration);
 		boolean led = preferences.getBoolean("led", false);
 		cb = (CheckBox) findViewById(R.id.led_flash_on);
@@ -286,9 +288,12 @@ public class Options extends Activity {
 		editorPreferences.putInt("timeout_connections",
 				arrayKey2timeout(combo.getSelectedItemPosition()));
 		
+		CheckBox cb = (CheckBox) findViewById(R.id.background_service_on);
+		editorPreferences.putBoolean("background_service", cb.isChecked());
+		
 
 		// Notification settings
-		CheckBox cb = (CheckBox) findViewById(R.id.vibration_on);
+		cb = (CheckBox) findViewById(R.id.vibration_on);
 		editorPreferences.putBoolean("vibration", cb.isChecked());
 		cb = (CheckBox) findViewById(R.id.led_flash_on);
 		editorPreferences.putBoolean("led", cb.isChecked());

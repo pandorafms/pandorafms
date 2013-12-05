@@ -1,5 +1,12 @@
 2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/Options.java: fixed the save
+	state of check in background, before it run but didn't show.
+	
+	* res/layout/main.xml: added id for the tag.
+
+2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/Info.java,
 	src/pandroid_event_viewer/pandorafms/About.java: changed the url
 	of about.

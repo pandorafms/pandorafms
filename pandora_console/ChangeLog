@@ -6,6 +6,11 @@
 
 2013-12-05  Dario Rodriguez <dario@artica.es>
 
+	* mobile/operation/events.php: Fixed a bug loading events
+	filtergin by group when a group has no events.
+
+2013-12-05  Dario Rodriguez <dario@artica.es>
+
 	* mobile/operation/networkmap.php: Fixed a bug width
 	mobile network map.
 

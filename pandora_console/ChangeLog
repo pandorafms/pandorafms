@@ -1,3 +1,11 @@
+2013-12-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the get events when not found the
+	agent, before it returned the systems events, now it returns empty
+	list.
+	
+	MERGED FROM THE BRANCH PANDORA_4
+
 2013-12-05  Dario Rodriguez <dario@artica.es>
 
 	* mobile/operation/agents.php: Removed a filter option which 

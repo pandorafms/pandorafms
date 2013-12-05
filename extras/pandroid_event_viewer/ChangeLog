@@ -1,5 +1,11 @@
 2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/Info.java,
+	src/pandroid_event_viewer/pandorafms/About.java: changed the url
+	of about.
+
+2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/Main.java: fixed to check the
 	pandora version for 4 series, this is for to hidden the tag filter.
 

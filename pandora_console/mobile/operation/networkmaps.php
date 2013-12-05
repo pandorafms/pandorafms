@@ -179,7 +179,7 @@ class Networkmaps {
 			$row = array();
 			$row[__('Name')] = '<a class="ui-link" data-ajax="false" href="index.php?page=networkmap&id=' . $networkmap['id_networkmap'] . '">' . io_safe_output($networkmap['name']) . '</a>';
 			$row[__('Type')] = $networkmap['type'];
-			$row[__('Group')] = ui_print_group_icon($networkmap["id_group"], true);
+			$row[__('Group')] = ui_print_group_icon($networkmap["id_group"], true, "groups_small", "" , false);
 			$list[] = $row;
 		}
 		

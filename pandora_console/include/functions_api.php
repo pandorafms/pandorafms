@@ -133,16 +133,16 @@ function returnData($returnType, $data, $separator = ';') {
 					}
 					else {
 						if (!empty($data['data'])) {
-							foreach($data['data'] as $dataContent) {
+							foreach ($data['data'] as $dataContent) {
 								$clean = array_map("array_apply_io_safe_output", $dataContent);
-								foreach($clean as $k => $v) {
+								foreach ($clean as $k => $v) {
 									$clean[$k] = str_replace("\r", "\n", $clean[$k]);
 									$clean[$k] = str_replace("\n", " ", $clean[$k]);
 									$clean[$k] = strip_tags($clean[$k]);
 									$clean[$k] = str_replace(';',' ',$clean[$k]);
 								}
 								$row = implode($separator, $clean);
-		
+								
 								echo $row . "\n";
 							}
 						}
@@ -333,6 +333,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 			foreach($fields as $index => $field)
 				$fields[$index] = trim($field);
 		}
+		
 	}
 	else {
 		if (strlen($other['data']) == 0)
@@ -2939,7 +2940,7 @@ function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
 		}
 	}
 	
-	if ($total_alerts > $count_results){
+	if ($total_alerts > $count_results) {
 		$errors = $total_alerts - $count_results;	
 		returnError('error_validate_all_alerts', __('Error validate all alerts. Failed ' . $errors . '.'));
 	}
@@ -3932,7 +3933,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	 
+	
 	$result_update = enterprise_hook('policies_update_module', array($other['data'][0], $values, false)); 
 	
 	
@@ -4087,7 +4088,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 		returnError('error_create_group', __('Error in group creation. Group_name cannot be left blank.'));
 		return;
 	}
-
+	
 	if ($other['data'][0] == "") {
 		returnError('error_create_group', __('Error in group creation. Icon_name cannot be left blank.'));
 		return;
@@ -4103,7 +4104,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 			return;
 		}
 	}
-
+	
 	if ($safe_other_data[1] != "") {
 		$values = array(
 			'icon' => $safe_other_data[0],
@@ -4463,7 +4464,13 @@ function otherParameter2Filter($other, $return_as_array = false) {
 	$idAgent = null;
 	if (isset($other['data'][2]) && $other['data'][2] != '') {
 		$idAgent = agents_get_agent_id($other['data'][2]);
-		$filter['id_agente'] = $idAgent;
+		
+		if (!empty($idAgent)) {
+			$filter['id_agente'] = $idAgent;
+		}
+		else {
+			$filter['sql'] = "1=0";
+		}
 	}
 	
 	$idAgentModulo = null;
@@ -4583,7 +4590,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 			
 		}
 	}
-
+	
 	if (isset($other['data'][13]) && ($other['data'][13] != '')) { 
 		if ($return_as_array) {
 			$filter['id_group'] = $other['data'][13];
@@ -4592,7 +4599,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 			$filterString .= ' AND id_grupo =' . $other['data'][13];
 		}
 	}
-
+	
 	if (isset($other['data'][14]) && ($other['data'][14] != '')) {
 		
 		if ($return_as_array) {
@@ -4602,14 +4609,14 @@ function otherParameter2Filter($other, $return_as_array = false) {
 			$filterString .= " AND tags LIKE '%" . $other['data'][14]."%'";
 		}
 	}
-
+	
 	if (isset($other['data'][15]) && ($other['data'][15] != '')) {
 		if ($return_as_array) {
 			$filter['event_type'] = $other['data'][15];
 		}
 		else {
 			$event_type = $other['data'][15];
-
+			
 			if ($event_type == "not_normal") {
 				$filterString .= " AND ( event_type LIKE '%warning%'
 					OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
@@ -4618,9 +4625,9 @@ function otherParameter2Filter($other, $return_as_array = false) {
 				$filterString .= ' AND event_type LIKE "%' . $event_type . '%"';
 			}
 		}
-
+		
 	}
-
+	
 	if ($return_as_array) {
 		return $filter;
 	}
@@ -4725,6 +4732,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1) {
 		$idAgentModule = $id;
 		$data = $other['data'][0];
 		$time = $other['data'][1];
+		
 		if ($time == 'now') $time = time();
 		
 		$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
@@ -5493,6 +5501,11 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 		$sql_post .= " AND tags LIKE '%" . io_safe_input($tag) . "%'";
 	}
 	
+	//Inject the raw sql
+	if (isset($filter['sql'])) {
+		$sql_post .= " AND (" . $filter['sql'] . ") ";
+	}
+	
 	if ($group_rep == 0) {
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -5636,6 +5649,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 		}
 	}
 	
+	
 	$data['type'] = 'array';
 	$data['data'] = $result;
 	
@@ -5671,6 +5685,8 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = nul
 		return;
 	}
 	
+	
+	
 	if ($other['type'] == 'string') {
 		if ($other['data'] != '') {
 			returnError('error_parameter', 'Error in the parameters.');
@@ -5685,6 +5701,8 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = nul
 		
 		$filterString = otherParameter2Filter($other);
 	}
+	
+	
 	
 	$dataRows = db_get_all_rows_filter('tevento', $filterString);
 	$last_error = error_get_last();
@@ -6496,7 +6514,7 @@ function api_get_pandora_servers($trash1, $trash2, $other, $returnType) {
 }
 
 /**
- * Enable/disable agent given an id
+ * Enable/Disable agent given an id
  * 
  * @param string $id String Agent ID
  * @param $thrash2 not used.

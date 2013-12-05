@@ -335,6 +335,8 @@ public class Main extends Activity {
 				ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
 						getApplicationContext(),
 						android.R.layout.simple_spinner_item, pandoraGroups_list);
+				spinnerArrayAdapter
+					.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				combo.setAdapter(spinnerArrayAdapter);
 				
 				int index_combo = pandoraGroups_list.indexOf(pandoraGroups.get(object.id_group));
@@ -388,6 +390,8 @@ public class Main extends Activity {
 				ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
 						getApplicationContext(),
 						android.R.layout.simple_spinner_item, list);
+				spinnerArrayAdapter
+					.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				combo.setAdapter(spinnerArrayAdapter);
 				
 				SpinnerAdapter adapter = (SpinnerAdapter)combo.getAdapter();

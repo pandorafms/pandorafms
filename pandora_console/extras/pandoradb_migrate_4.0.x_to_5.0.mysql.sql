@@ -1154,3 +1154,9 @@ DELETE FROM `tlanguage` WHERE id_language IN ('ast', 'eu', 'bn', 'bg', 'ca', 'da
 DELETE FROM `tlanguage` WHERE id_language IN ('zh_TW');
 INSERT INTO `tlanguage` (`id_language`, `name`) VALUES ('ca','Catalan');
 UPDATE `tlanguage` SET `name` = 'English (UK)' WHERE `id_language` = 'en_GB';
+
+
+-- ---------------------------------------------------------------------
+-- Set the default style
+-- ---------------------------------------------------------------------
+UPDATE tconfig SET value = 'pandora' WHERE token = 'style';

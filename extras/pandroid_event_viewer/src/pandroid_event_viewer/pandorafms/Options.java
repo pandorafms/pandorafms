@@ -75,6 +75,7 @@ public class Options extends Activity {
 		SharedPreferences preferences = getSharedPreferences(
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
+		
 		// Connection
 		EditText text = (EditText) findViewById(R.id.url);
 		text.setText(preferences.getString("url",
@@ -84,7 +85,7 @@ public class Options extends Activity {
 		text = (EditText) findViewById(R.id.password);
 		text.setText(preferences.getString("password", "demo"));
 		text = (EditText) findViewById(R.id.api_password);
-		text.setText(preferences.getString("api_password", "m1gu3l"));
+		text.setText(preferences.getString("api_password", "1234"));
 		text = (EditText) findViewById(R.id.timeout_connections);
 		text.setText(Integer.toString(preferences.getInt("timeout_connections", 10)));
 		

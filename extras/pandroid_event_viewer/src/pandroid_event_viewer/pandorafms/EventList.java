@@ -19,8 +19,11 @@ package pandroid_event_viewer.pandorafms;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 import java.util.Date;
+import java.util.Map.Entry;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -28,6 +31,9 @@ import android.app.ListActivity;
 import android.app.TabActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -53,9 +59,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Activity where events are displayed.
@@ -223,12 +226,13 @@ public class EventList extends ListActivity {
 
 		return true;
 	}
-
+	
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		switch (id) {
 			case CREATE_INCIDENT_DIALOG:
 				final String group;
+				
 				creatingIncidentDialog = new Dialog(this);
 				creatingIncidentDialog.setContentView(R.layout.create_incident);
 				creatingIncidentDialog.setTitle(getString(R.string.create_incident));
@@ -236,6 +240,12 @@ public class EventList extends ListActivity {
 						.findViewById(R.id.incident_title);
 				final EditText descriptionEditText = (EditText) creatingIncidentDialog
 						.findViewById(R.id.incident_description);
+				
+				Log.e("onCreateDialog",
+						"Group: " + args.getString("group") +
+						"Title: " + args.getString("title") +
+						"Description: " + args.getString("description"));
+				
 				String temp = args.getString("title");
 	
 				if (temp != null) {
@@ -253,6 +263,7 @@ public class EventList extends ListActivity {
 				else {
 					group = "";
 				}
+				
 				creatingIncidentDialog.findViewById(R.id.incident_create_button)
 						.setOnClickListener(new OnClickListener() {
 	
@@ -266,6 +277,8 @@ public class EventList extends ListActivity {
 											.getText().toString();
 									new SetNewIncidentAsyncTask().execute(title,
 											description, group);
+									
+									removeDialog(CREATE_INCIDENT_DIALOG);
 								}
 								else {
 									Toast.makeText(getApplicationContext(),
@@ -274,6 +287,21 @@ public class EventList extends ListActivity {
 								}
 							}
 						});
+				
+				
+				creatingIncidentDialog.setOnDismissListener(
+						new OnDismissListener() {
+							
+							@Override
+							public void onDismiss(DialogInterface dialog) {
+								removeDialog(CREATE_INCIDENT_DIALOG);
+							}
+						}
+						);
+				
+				
+				
+				
 				return creatingIncidentDialog;
 		}
 		return null;
@@ -568,7 +596,8 @@ public class EventList extends ListActivity {
 							    comments = comments + mJsonObject.getString("action") + " by " + mJsonObject.getString("id_user") + "\n";
 							    comments = comments + "\"" + mJsonObject.getString("comment") + "\"" + "\n\n";
 							}			
-						} catch  (Exception e) {
+						}
+						catch  (Exception e) {
 							// If comment is not stored as JSON (old format), clean it and show it as stored
 							item.user_comment = item.user_comment.replaceAll("^-- ", "\n");
 							item.user_comment = item.user_comment.replaceAll(" --$", "\n");
@@ -633,7 +662,7 @@ public class EventList extends ListActivity {
 					button = (Button) viewEventExtended
 							.findViewById(R.id.validate_button_extended);
 					if (item.status == -1) {
-						// For unknow events
+						// For unknown events
 						button.setVisibility(Button.GONE);
 						text = (TextView) viewEventExtended
 							.findViewById(R.id.validate_event_label);
@@ -642,8 +671,8 @@ public class EventList extends ListActivity {
 					}
 					else if (item.status != 1) {
 						currentElement = view;
-						OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate(
-							item.id_event);
+						OnClickListenerButtonValidate clickListener =
+							new OnClickListenerButtonValidate(item.id_event);
 						button.setOnClickListener(clickListener);
 						text = (TextView) viewEventExtended
 							.findViewById(R.id.validate_event_label);
@@ -657,8 +686,11 @@ public class EventList extends ListActivity {
 									b.putString("group", item.group_name);
 									b.putString("title", item.event);
 									b.putString("description", "");
+									
 									showDialog(CREATE_INCIDENT_DIALOG, b);
-									Log.e("TEST", "TEST");
+									Log.e("CREATE_INCIDENT",
+										"Group: " + item.group_name +
+										"Title: " + item.event);
 								}
 							});
 					}

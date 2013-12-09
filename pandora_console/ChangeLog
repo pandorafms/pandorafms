@@ -1,5 +1,11 @@
 2013-12-09  Sergio Martin <sergio.martin@artica.es>
 
+	* include/styles/pandora.css: Fix styles in group view
+	for groups without states where letters were not visible
+	Incident: 432
+
+2013-12-09  Sergio Martin <sergio.martin@artica.es>
+
 	* extras/pandoradb_migrate_4.1_to_5.0.postgreSQL.sql
 	extras/pandoradb_migrate_4.1_to_5.0.mysql.sql
 	extras/pandoradb_migrate_4.1_to_5.0.oracle.sql

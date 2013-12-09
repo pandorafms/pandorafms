@@ -2293,7 +2293,7 @@ div.cellBig {
 
 
 tr.group_view_data, .group_view_data {
-	color: #fff;
+	color: #003a3a;
 }
 
 tr.group_view_crit, .group_view_crit {
@@ -2320,6 +2320,7 @@ a.group_view_warn {
 
 tr.group_view_alrm, .group_view_alrm {
 	background-color: #FF8800;
+	color: #FFF;
 }
 
 tr.group_view_unk, .group_view_unk {

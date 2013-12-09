@@ -19,7 +19,6 @@ package pandroid_event_viewer.pandorafms;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Date;
 

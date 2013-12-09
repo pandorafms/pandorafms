@@ -1,3 +1,9 @@
+2013-12-09  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java,
+	src/pandroid_event_viewer/pandorafms/Main.java: fixed Java warnings.
+
 2013-12-05  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/Main.java: setted the

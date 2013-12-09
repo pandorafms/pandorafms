@@ -132,7 +132,7 @@ public class Core {
 	static volatile public String memoryStatus = defaultMemoryStatus;
 	static volatile public String passwordCheck = defaultPasswordCheck;
 	static volatile public String DeviceUpTimeReport = defaultDeviceUpTimeReport;
-	static volatile public String InventoryReport = defaultRoamingReport;
+	static volatile public String InventoryReport = defaultInventoryReport;
 	static volatile public String HelloSignalReport = defaultHelloSignalReport;
 	static volatile public String RoamingReport = defaultRoamingReport;
 	static volatile public String NotificationCheck = defaultNotificationCheck;

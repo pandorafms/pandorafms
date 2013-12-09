@@ -1,5 +1,9 @@
 2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/src/pandroid/agent/Core.java: fixed the copy & paste bug.
+
+2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile: moved the all code of android to this folder.
 	
 	* tablet: copy the mobile coded to tablet to starting to developer

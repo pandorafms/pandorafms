@@ -1,5 +1,13 @@
 2013-12-09  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* src/pandroid_event_viewer/pandorafms/EventList.java: fixed the
+	incident dialog when two times.
+	
+	* src/pandroid_event_viewer/pandorafms/Options.java: updated the
+	api password for the pandora_demo in firefly.
+
+2013-12-09  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
 	src/pandroid_event_viewer/pandorafms/EventList.java,
 	src/pandroid_event_viewer/pandorafms/Main.java: fixed Java warnings.

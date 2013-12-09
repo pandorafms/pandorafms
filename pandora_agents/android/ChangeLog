@@ -1,3 +1,10 @@
+2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile: moved the all code of android to this folder.
+	
+	* tablet: copy the mobile coded to tablet to starting to developer
+	the version for android tablets.
+
 2013-08-08 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* src/pandroid/agent/PandroidAgentListener.java,

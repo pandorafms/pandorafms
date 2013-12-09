@@ -22,8 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -40,6 +38,8 @@ import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
+
+
 public class PandroidEventviewerActivity extends TabActivity implements
 		Serializable {
 	private static String TAG = "PandroidEventviewerActivity";
@@ -526,8 +526,6 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			id_group, severity, status, eventSearch, eventTag, timestamp,
 			pagination, offset, false, false);
 		Log.d(TAG, "List of events: " + return_api);
-		
-		String filename;
 		
 		Log.i(TAG + " getEvents - return_api", return_api);
 

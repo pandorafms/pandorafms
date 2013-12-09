@@ -69,7 +69,7 @@ public class Main extends Activity {
 	private static String PROFILE_PREFIX = "profile:";
 	private static String DEFAULT_PROFILE_NAME = "Default";
 	private static String DEFAULT_PROFILE = "0|3||||0|6";
-	private static String VERSION_4_0_2_LABEL = "v4.0.2";
+	
 	private PandroidEventviewerActivity object = null;
 	public Map<Integer, String> pandoraGroups;
 	public List<String> pandoraGroups_list;

@@ -1,3 +1,7 @@
+2013-12-09  Mario Pulido  <mario.pulido@artica.es>
+
+        * bin/util/df_percent.vbs: Bug fixes wrong values.
+
 2013-11-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* main.cc: Quote the path to the service binary to avoid exploits.

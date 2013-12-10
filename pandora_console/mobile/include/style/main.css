@@ -508,12 +508,14 @@ table#list_events th {
 		padding-left: 10px;
 	}
 	
-	#list_Modules_Embedded .cell_3,
+	#list_Modules_Embedded .cell_3 {
+		display: none !important
+	}
 	#list_Modules_Embedded .cell_4 {
 		display: inline !important;
 		float: none !important;
 	}
-	
+
 	#list_Modules_Embedded .cell_0 .ui-table-cell-label,
 	#list_Modules_Embedded .cell_1 .ui-table-cell-label,
 	#list_Modules_Embedded .cell_3 .ui-table-cell-label,

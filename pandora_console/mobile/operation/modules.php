@@ -407,11 +407,10 @@ class Modules {
 				$row = array();
 				
 				$row[0] = $row[__('Module name')] =
-					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Module') . ' </span>' .
-					$module['module_name'];
+                                        '<span class="data">'.$module['module_name']."</span>";
 					
 				if ($this->columns['agent']) {
-					$row[2] = $row[__('Agent name')] =
+					$row[1] = $row[__('Agent name')] =
 						'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
 						'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $module["id_agent"] . '">' . $module['agent_name'] . '</a>' .
 						'</span>';
@@ -454,7 +453,7 @@ class Modules {
 							break;
 					}
 				}
-				
+			
 				$row[4] = $row[__('Interval')] =
 					($module['module_interval'] == 0) ? human_time_description_raw($module['agent_interval']) : human_time_description_raw($module['module_interval']);
 				

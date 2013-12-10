@@ -1,5 +1,9 @@
 2013-08-10 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* tablet/*: updated the tablet version.
+
+2013-08-10 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/AndroidManifest.xml: update the version number, and added
 	tiny hack to make diferent apk for google market.
 

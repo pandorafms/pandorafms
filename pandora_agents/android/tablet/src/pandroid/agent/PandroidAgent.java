@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.TelephonyManager;
 import android.widget.TabHost;
 
 
@@ -67,15 +66,6 @@ public class PandroidAgent extends TabActivity {
 			Core.alarmEnabled = true;
 			//new Intent(this, EventReceiver.class);
 		}
-
-		//Check whether device has a sim card, phone without a sim card present
-		//return SIM_STATE_ABSENT but tablets only return SIM_STATE_UNKNOWN
-		String serviceName = Context.TELEPHONY_SERVICE;
-		TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
-		String hasSim = ""+(telephonyManager.getSimState() != TelephonyManager.SIM_STATE_UNKNOWN);
-		if(hasSim.equals("true"))
-			hasSim = ""+(telephonyManager.getSimState() != TelephonyManager.SIM_STATE_ABSENT);
-		Core.hasSim = Boolean.parseBoolean(hasSim);
 
 
 		//Create layout with 2 tabs

@@ -42,7 +42,7 @@ public class Core {
 	//					  DEFAULT CONFIGURATION MODULES					//
 	//																	//
 
-	static volatile public String defaultServerAddr = "firefly.artica.es";  //master address
+	static volatile public String defaultServerAddr = "192.168.70.182";  //master address
 	static volatile public String defaultServerPort = "41121";
 	static volatile public int defaultInterval = 300;
 	static volatile public String defaultAgentName = "pandroid";
@@ -58,24 +58,6 @@ public class Core {
 	static volatile public String defaultHelloSignalReport = "enabled"; // "disabled" or "enabled"
 	static volatile public String defaultNotificationCheck = "enabled"; // "disabled" or "enabled"
 
-	static volatile public boolean defaultHasSim = false;
-
-	//hasSim values
-
-	static volatile public String defaultSimIDReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultNetworkOperatorReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultNetworkTypeReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultPhoneTypeReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultSignalStrengthReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultReceivedSMSReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultSentSMSReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultIncomingCallsReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultMissedCallsReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultOutgoingCallsReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultBytesReceivedReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultBytesSentReport = "enabled"; // "disabled" or "enabled"
-	static volatile public String defaultRoamingReport = "enabled"; // "disabled" or "enabled"
-
 
 	//																	//
 	//						DEFAULT MODULE VALUES						//
@@ -89,22 +71,6 @@ public class Core {
 	static volatile public int defaultContactError = 0;
 	static volatile public long defaultUpTime = 0;
 	static volatile public int defaultHelloSignal = 2;
-
-
-	//hasSim values
-	static volatile public String defaultSimID = "";
-	static volatile public String defaultNetworkOperator = "";
-	static volatile public String defaultNetworkType = "";
-	static volatile public String defaultPhoneType = "";
-	static volatile public int defaultSignalStrength = 0;
-	static volatile public int defaultSMSReceived = 0;
-	static volatile public int defaultSMSSent = 0;
-	static volatile public int defaultIncomingCalls = 0;
-	static volatile public int defaultMissedCalls = 0;
-	static volatile public int defaultOutgoingCalls = 0;
-	static volatile public long defaultReceiveBytes = 0;
-	static volatile public long defaultTransmitBytes = 0;
-	static volatile public int defaultRoaming = 0;
 
 
 	static volatile public String defaultPassword = "";
@@ -132,26 +98,9 @@ public class Core {
 	static volatile public String memoryStatus = defaultMemoryStatus;
 	static volatile public String passwordCheck = defaultPasswordCheck;
 	static volatile public String DeviceUpTimeReport = defaultDeviceUpTimeReport;
-	static volatile public String InventoryReport = defaultRoamingReport;
+	static volatile public String InventoryReport = defaultInventoryReport;
 	static volatile public String HelloSignalReport = defaultHelloSignalReport;
-	static volatile public String RoamingReport = defaultRoamingReport;
 	static volatile public String NotificationCheck = defaultNotificationCheck;
-
-	//hasSim values
-
-	static volatile public boolean hasSim = defaultHasSim;
-	static volatile public String simIDReport = defaultSimIDReport;
-	static volatile public String NetworkOperatorReport = defaultNetworkOperatorReport;
-	static volatile public String NetworkTypeReport = defaultNetworkTypeReport;
-	static volatile public String PhoneTypeReport = defaultPhoneTypeReport;
-	static volatile public String SignalStrengthReport = defaultSignalStrengthReport;
-	static volatile public String ReceivedSMSReport = defaultReceivedSMSReport;
-	static volatile public String SentSMSReport = defaultSentSMSReport;
-	static volatile public String IncomingCallsReport = defaultIncomingCallsReport;
-	static volatile public String MissedCallsReport = defaultMissedCallsReport;
-	static volatile public String OutgoingCallsReport = defaultOutgoingCallsReport;
-	static volatile public String BytesReceivedReport = defaultBytesReceivedReport;
-	static volatile public String BytesSentReport = defaultBytesSentReport;
 
 	static volatile public String password = defaultPassword;
 
@@ -169,26 +118,10 @@ public class Core {
 	static volatile public long totalRamKb = defaultRam;
 	static volatile public long upTime = defaultUpTime;
 	static volatile public int helloSignal = defaultHelloSignal;
-	static volatile public int roaming = defaultRoaming;
 
 
 	static volatile public long lastContact = CONST_INVALID_CONTACT;
 	static volatile public int contactError = CONST_CONTACT_ERROR;
-	static volatile public String simID = defaultSimID;
-
-	//hasSim values
-
-	static volatile public int SMSReceived = defaultSMSReceived;
-	static volatile public int SMSSent = defaultSMSSent;
-	static volatile public String networkOperator = defaultNetworkOperator;
-	static volatile public String networkType = defaultNetworkType;
-	static volatile public String phoneType = defaultPhoneType;
-	static volatile public int signalStrength = defaultSignalStrength;
-	static volatile public int incomingCalls = defaultIncomingCalls;
-	static volatile public int missedCalls = defaultMissedCalls;
-	static volatile public int outgoingCalls = defaultOutgoingCalls;
-	static volatile public long receiveBytes = defaultReceiveBytes;
-	static volatile public long transmitBytes = defaultTransmitBytes;
 
 	public Core() {
 
@@ -249,24 +182,6 @@ public class Core {
 		helloSignal = agentPreferences.getInt("helloSignal", defaultHelloSignal);
 		contactError = agentPreferences.getInt("contactError", defaultContactError);
 
-
-
-		//hasSim values
-
-		simID = agentPreferences.getString("simID", defaultSimID);
-		networkOperator = agentPreferences.getString("networkOperator", defaultNetworkOperator);
-		networkType = agentPreferences.getString("networkType", defaultNetworkType);
-		phoneType = agentPreferences.getString("phoneType", defaultPhoneType);
-		signalStrength = agentPreferences.getInt("signalStrength", defaultSignalStrength);
-		SMSReceived = agentPreferences.getInt("SMSReceived", defaultSMSReceived);
-		SMSSent = agentPreferences.getInt("SMSSent", defaultSMSSent);
-		incomingCalls = agentPreferences.getInt("incomingCalls", defaultIncomingCalls);
-		missedCalls = agentPreferences.getInt("missedCalls", defaultMissedCalls);
-		outgoingCalls = agentPreferences.getInt("outgoingCalls", defaultOutgoingCalls);
-		receiveBytes = agentPreferences.getLong("receiveBytes", defaultReceiveBytes);
-		transmitBytes = agentPreferences.getLong("transmitBytes", defaultTransmitBytes);
-		roaming = agentPreferences.getInt("roaming", defaultRoaming);
-
 	}// end loadLastValues
 
 	static synchronized public void loadConf(Context context) {
@@ -297,50 +212,57 @@ public class Core {
 		password = agentPreferences.getString("password", defaultPassword);
 		passwordCheck = agentPreferences.getString("passwordCheck", defaultPasswordCheck);
 		NotificationCheck = agentPreferences.getString("NotificationCheck", defaultNotificationCheck);
-		hasSim = agentPreferences.getBoolean("hasSim", defaultHasSim);
-		//hasSim values
-
-		simIDReport = agentPreferences.getString("simIDReport", defaultSimIDReport);
-		NetworkOperatorReport = agentPreferences.getString("NetworkOperatorReport", defaultNetworkOperatorReport);
-		NetworkTypeReport = agentPreferences.getString("NetworkTypeReport", defaultNetworkTypeReport);
-		PhoneTypeReport = agentPreferences.getString("PhoneTypeReport", defaultPhoneTypeReport);
-		SignalStrengthReport = agentPreferences.getString("SignalStrengthReport", defaultSignalStrengthReport);
-		ReceivedSMSReport = agentPreferences.getString("ReceivedSMSReport", defaultReceivedSMSReport);
-		SentSMSReport = agentPreferences.getString("SentSMSReport", defaultSentSMSReport);
-		IncomingCallsReport = agentPreferences.getString("IncomingCallsReport", defaultIncomingCallsReport);
-		MissedCallsReport = agentPreferences.getString("MissedCallsReport", defaultMissedCallsReport);
-		OutgoingCallsReport = agentPreferences.getString("OutgoingCallsReport", defaultOutgoingCallsReport);
-		BytesReceivedReport = agentPreferences.getString("BytesReceivedReport", defaultBytesReceivedReport);
-		BytesSentReport = agentPreferences.getString("BytesSentReport", defaultBytesSentReport);
-		RoamingReport = agentPreferences.getString("RoamingReport", defaultRoamingReport);
 
 
 
 	}// end loadConf
 
 	static synchronized public boolean updateConf(Context context) {
-		return updateConf(context, serverAddr, serverPort, interval, agentName, bufferSize, mobileWebURL,
-				taskStatus, task, taskHumanName, gpsStatus, BatteryLevelReport, memoryStatus, upTime, DeviceUpTimeReport,
-				InventoryReport, helloSignal, HelloSignalReport, password, passwordCheck, hasSim, simID, simIDReport, 
-				networkOperator, NetworkOperatorReport, networkType, NetworkTypeReport, phoneType,  PhoneTypeReport, 
-				signalStrength, SignalStrengthReport, SMSReceived,  ReceivedSMSReport, SMSSent, SentSMSReport,
-				incomingCalls,  IncomingCallsReport, missedCalls,  MissedCallsReport, outgoingCalls, OutgoingCallsReport, 
-				receiveBytes, BytesReceivedReport,  transmitBytes, BytesSentReport, RoamingReport, roaming,  
+		return updateConf(context,
+				serverAddr,
+				serverPort,
+				interval,
+				agentName,
+				bufferSize,
+				mobileWebURL,
+				taskStatus,
+				task,
+				taskHumanName,
+				gpsStatus,
+				BatteryLevelReport,
+				memoryStatus,
+				upTime,
+				DeviceUpTimeReport,
+				InventoryReport,
+				helloSignal,
+				HelloSignalReport,
+				password,
+				passwordCheck,
 				NotificationCheck 
 				);
 
 	}// end updateConf
 
-	static synchronized public boolean updateConf(Context context, String _serverAddr,
-			String _serverPort, int _interval, String _agentName, long _bufferSize, String _mobileWebURL, 
-			String _taskStatus, String _task, String _taskHumanName, String _gpsStatus, String _BatteryLevelReport,
-			String _memoryStatus, long _upTime, String _DeviceUpTimeReport, String _InventoryReport, int _helloSignal,
-			String _HelloSignalReport, String _password,  String _passwordCheck, boolean _hasSim, String _simID, String _simIDReport,
-			String _networkOperator, String _NetworkOperatorReport, String _networkType, String _NetworkTypeReport, String _phoneType, 
-			String _PhoneTypeReport, int _signalStrength, String _SignalStrengthReport, int _smsReceived, String _ReceivedSMSReport,
-			int _smsSent, String _SentSMSReport, int _incomingCalls, String _IncomingCallsReport, int _missedCalls, String _MissedCallsReport, 
-			int _outgoingCalls, String _OutgoingCallsReport, long _receiveBytes, String _BytesReceivedReport, long _transmitBytes,
-			String _BytesSentReport, String _RoamingReport, int _roaming, 
+	static synchronized public boolean updateConf(Context context,
+			String _serverAddr,
+			String _serverPort,
+			int _interval,
+			String _agentName,
+			long _bufferSize,
+			String _mobileWebURL, 
+			String _taskStatus,
+			String _task,
+			String _taskHumanName,
+			String _gpsStatus,
+			String _BatteryLevelReport,
+			String _memoryStatus,
+			long _upTime,
+			String _DeviceUpTimeReport,
+			String _InventoryReport,
+			int _helloSignal,
+			String _HelloSignalReport,
+			String _password,
+			String _passwordCheck,
 			String _NotificationCheck  ) {
 
 		if (con == null) {
@@ -371,36 +293,6 @@ public class Core {
 		editor.putString("HelloSignalReport", _HelloSignalReport); 
 		editor.putString("password", _password);
 		editor.putString("passwordCheck", _passwordCheck);
-		editor.putBoolean("hasSim", _hasSim);
-
-		//hasSim values
-		editor.putString("simID", _simID);
-		editor.putString("simIDReport", _simIDReport);
-		editor.putString("networkOperator", _networkOperator);
-		editor.putString("NetworkOperatorReport", _NetworkOperatorReport); 
-		editor.putString("networkType", _networkType);
-		editor.putString("NetworkTypeReport", _NetworkTypeReport); 
-		editor.putString("phoneType", _phoneType);
-		editor.putString("PhoneTypeReport", _PhoneTypeReport); 
-		editor.putInt("signalStrength", _signalStrength);
-		editor.putString("SignalStrengthReport", _SignalStrengthReport);
-		editor.putInt("SMSReceived", _smsReceived);
-		editor.putString("ReceivedSMSReport", _ReceivedSMSReport);
-		editor.putInt("SMSSent", _smsSent);
-		editor.putString("SentSMSReport", _SentSMSReport);
-		editor.putInt("incomingCalls", _incomingCalls);
-		editor.putString("IncomingCallsReport", _IncomingCallsReport); 
-		editor.putInt("missedCalls", _missedCalls);
-		editor.putString("MissedCallsReport", _MissedCallsReport); 
-		editor.putInt("outgoingCalls", _outgoingCalls);
-		editor.putString("OutgoingCallsReport", _OutgoingCallsReport); 
-		editor.putLong("receiveBytes", _receiveBytes);
-		editor.putString("BytesReceivedReport", _BytesReceivedReport); 
-		editor.putLong("transmitBytes", _transmitBytes);
-		editor.putString("BytesSentReport", _BytesSentReport); 
-		editor.putString("RoamingReport", _RoamingReport);
-		editor.putInt("roaming", _roaming);
-		editor.putString("NotificationCheck", _NotificationCheck);
 
 
 		if (editor.commit()) {

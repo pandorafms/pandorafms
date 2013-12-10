@@ -1,3 +1,13 @@
+2013-12-10  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/EventList.java: fixed Java
+	warning.
+	
+	* res/drawable-ldpi/config.png, res/drawable-ldpi/about.png: changed
+	the icons to green icons, thanks Carla.
+	
+	* AndroidManifest.xml: incremented the version number.
+
 2013-12-09  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/EventList.java: fixed the

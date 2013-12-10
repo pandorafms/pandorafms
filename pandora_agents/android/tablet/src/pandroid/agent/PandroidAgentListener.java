@@ -40,13 +40,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
-import android.database.Cursor;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.TrafficStats;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,9 +52,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
-import android.telephony.PhoneStateListener;
-import android.telephony.SignalStrength;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -378,7 +372,7 @@ public class PandroidAgentListener extends Service {
 		String latitude = getSharedData("PANDROID_DATA", "latitude", "181", "float");
 		String longitude = getSharedData("PANDROID_DATA", "longitude", "181", "float");
 
-		if(!latitude.equals("181.0") && !longitude.equals("181.0")) {
+		if (!latitude.equals("181.0") && !longitude.equals("181.0")) {
 			gpsData = " latitude='" + latitude + "' longitude='" + longitude + "'";
 		}
 
@@ -410,36 +404,10 @@ public class PandroidAgentListener extends Service {
 		String upTime = getSharedData("PANDROID_DATA", "upTime", ""+Core.defaultUpTime, "long");
 		String helloSignal = getSharedData("PANDROID_DATA", "helloSignal", ""+Core.defaultHelloSignal, "integer");
 		
-		String SimID = getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
-		String networkOperator  = getSharedData("PANDROID_DATA", "networkOperator", Core.defaultNetworkOperator, "string");
-		String networkType = getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
-		String phoneType = getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
-		String signalStrength = getSharedData("PANDROID_DATA", "signalStrength", ""+Core.defaultSignalStrength, "integer");
-		String SMSReceived = getSharedData("PANDROID_DATA", "SMSReceived", ""+Core.defaultSMSReceived, "integer");
-		String SMSSent = getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
-		String incomingCalls = getSharedData("PANDROID_DATA", "incomingCalls", ""+Core.defaultIncomingCalls, "integer");
-		String missedCalls = getSharedData("PANDROID_DATA", "missedCalls", ""+Core.defaultMissedCalls, "integer");
-		String outgoingCalls = getSharedData("PANDROID_DATA", "outgoingCalls", ""+Core.defaultOutgoingCalls, "integer");
-		String receiveBytes = getSharedData("PANDROID_DATA", "receiveBytes", ""+Core.defaultReceiveBytes, "long");
-		String transmitBytes = getSharedData("PANDROID_DATA", "transmitBytes", ""+Core.defaultTransmitBytes, "long");
-		String roaming = getSharedData("PANDROID_DATA", "roaming", ""+Core.defaultRoaming, "integer");
 		
-		String simIDReport = getSharedData("PANDROID_DATA", "simIDReport", Core.defaultSimIDReport, "string");
 		String DeviceUpTimeReport = getSharedData("PANDROID_DATA", "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport, "string");
-		String NetworkOperatorReport = getSharedData("PANDROID_DATA", "NetworkOperatorReport", Core.defaultNetworkOperatorReport, "string");
-		String NetworkTypeReport = getSharedData("PANDROID_DATA", "NetworkTypeReport", Core.defaultNetworkTypeReport, "string");
-		String PhoneTypeReport = getSharedData("PANDROID_DATA", "PhoneTypeReport", Core.defaultPhoneTypeReport, "string");
-		String SignalStrengthReport = getSharedData("PANDROID_DATA", "SignalStrengthReport", Core.defaultSignalStrengthReport, "string");
-		String ReceivedSMSReport = getSharedData("PANDROID_DATA", "ReceivedSMSReport", Core.defaultReceivedSMSReport, "string");
-		String SentSMSReport = getSharedData("PANDROID_DATA", "SentSMSReport", Core.defaultSentSMSReport, "string");
-		String IncomingCallsReport = getSharedData("PANDROID_DATA", "IncomingCallsReport", Core.defaultIncomingCallsReport, "string");
-		String MissedCallsReport = getSharedData("PANDROID_DATA", "MissedCallsReport", Core.defaultMissedCallsReport, "string");
-		String OutgoingCallsReport = getSharedData("PANDROID_DATA", "OutgoingCallsReport", Core.defaultOutgoingCallsReport, "string");
-		String BytesReceivedReport = getSharedData("PANDROID_DATA", "BytesReceivedReport", Core.defaultBytesReceivedReport, "string");
-		String BytesSentReport = getSharedData("PANDROID_DATA", "BytesSentReport", Core.defaultBytesSentReport, "string");
 		String HelloSignalReport = getSharedData("PANDROID_DATA", "HelloSignalReport", Core.defaultHelloSignalReport, "string");
 		String BatteryLevelReport = getSharedData("PANDROID_DATA", "BatteryLevelReport", Core.defaultBatteryLevelReport, "string");
-		String RoamingReport = getSharedData("PANDROID_DATA", "RoamingReport", Core.defaultRoamingReport, "string");
 		String InventoryReport = getSharedData("PANDROID_DATA", "InventoryReport", Core.defaultInventoryReport, "string");
 
 		if (InventoryReport.equals("enabled"))
@@ -483,35 +451,6 @@ public class PandroidAgentListener extends Service {
 
 		if (HelloSignalReport.equals("enabled"))
 			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
-
-		if (Core.hasSim){
-			if (simIDReport.equals("enabled"))
-				buffer += buildmoduleXML("simID", "The Sim ID.", "generic_data_string", SimID);
-			if (NetworkOperatorReport.equals("enabled"))
-				buffer += buildmoduleXML("networkOperator","Currently registered network operator", "generic_data_string", networkOperator);
-			if (NetworkTypeReport.equals("enabled"))
-				buffer += buildmoduleXML("networkType","Current network type", "generic_data_string", networkType);
-			if (PhoneTypeReport.equals("enabled"))
-				buffer += buildmoduleXML("phoneType","Phone type", "generic_data_string", phoneType);
-			if (SignalStrengthReport.equals("enabled"))
-				buffer += buildmoduleXML("signalStrength","Signal strength (dB)", "generic_data_string", signalStrength);
-			if (ReceivedSMSReport.equals("enabled"))
-				buffer += buildmoduleXML("SMSReceived","Number of SMS received", "generic_data", SMSReceived);
-			if (SentSMSReport.equals("enabled"))
-				buffer += buildmoduleXML("SMSSent","Number of SMS sent", "generic_data", SMSSent);
-			if (IncomingCallsReport.equals("enabled"))
-				buffer += buildmoduleXML("incomingCalls","Incoming calls", "generic_data", incomingCalls);
-			if (MissedCallsReport.equals("enabled"))
-				buffer += buildmoduleXML("missedCalls","Missed calls", "generic_data", missedCalls);
-			if (OutgoingCallsReport.equals("enabled"))
-				buffer += buildmoduleXML("outgoingCalls","Outgoing calls", "generic_data", outgoingCalls);
-			if (BytesReceivedReport.equals("enabled"))
-				buffer += buildmoduleXML("receiveBytes","Bytes received(mobile)", "generic_data", receiveBytes);
-			if (BytesSentReport.equals("enabled"))
-				buffer += buildmoduleXML("transmitBytes","Bytes transmitted(mobile)", "generic_data", transmitBytes);
-			if (RoamingReport.equals("enabled"))
-				buffer += buildmoduleXML("roaming","Device is roaming", "generic_data", roaming);
-		}// end if sim card
 
 
 
@@ -742,7 +681,7 @@ public class PandroidAgentListener extends Service {
 		batteryLevel();
 		String gpsStatus = getSharedData("PANDROID_DATA", "gpsStatus", Core.defaultGpsStatus, "string");
 
-		if(gpsStatus.equals("enabled")) {
+		if (gpsStatus.equals("enabled")) {
 			Log.d("PANDROID AGENT", "ENABLED");
 			gpsLocation();
 		}
@@ -756,19 +695,6 @@ public class PandroidAgentListener extends Service {
 		getTaskStatus();
 		getMemoryStatus();
 		getUpTime();
-
-		if(Core.hasSim)
-		{
-			getSimID();
-			getNetworkOperator();
-			getSMSSent();
-			getNetworkType();
-			getPhoneType();
-			getSignalStrength();
-			getCalls();
-			getDataBytes();
-			getRoaming();
-		}
 	}
 
 	private void getMemoryStatus() {
@@ -827,19 +753,7 @@ public class PandroidAgentListener extends Service {
 		}
 		putSharedData("PANDROID_DATA", "taskRun", run, "string");
 	}//end getTaskStatus
-
-	/**
-	 * 	Retrieves the simID of the device if available
-	 */
-	private void getSimID(){
-
-		String simID = getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
-
-		String serviceName = Context.TELEPHONY_SERVICE;
-		TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
-		simID = telephonyManager.getSimSerialNumber();
-		putSharedData("PANDROID_DATA", "simID", simID, "string");
-	}
+	
 	/**
 	 * 	Retrieves the time in seconds since the device was switched on
 	 */
@@ -849,235 +763,6 @@ public class PandroidAgentListener extends Service {
 		if(upTime != 0)
 			putSharedData("PANDROID_DATA", "upTime", ""+upTime, "long");
 	}
-	/**
-	 * 	Retrieve currently registered network operator, i.e. vodafone, movistar, etc...
-	 */
-	private void getNetworkOperator(){
-		String networkOperator = Core.defaultNetworkOperator;
-		String serviceName = Context.TELEPHONY_SERVICE;
-		TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
-		networkOperator = telephonyManager.getNetworkOperatorName();
-
-		if(networkOperator != null)
-			putSharedData("PANDROID_DATA", "networkOperator", networkOperator, "string");
-	}
-	/**
-	 *  Retrieves the number of sent sms messages using the android messaging app only
-	 */
-	private void getSMSSent(){
-
-		String SMSSent = ""+Core.defaultSMSSent;
-		SMSSent = getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
-		Uri allMessages = Uri.parse("content://sms/sent");
-		Cursor c = getContentResolver().query(allMessages, null, null, null, null);
-		int totalMessages = 0;
-
-		while (c.moveToNext()) 
-		{
-			String messageBody = c.getString(c.getColumnIndex("body"));
-			long messageLength = messageBody.length();
-			double numberOfMessages = messageLength / 160.0;
-			double numberOfMessagesRoundedUp = Math.ceil(numberOfMessages);
-			totalMessages = (int) (totalMessages + numberOfMessagesRoundedUp);
-		}
-
-		c.close();
-
-		SMSSent =""+ totalMessages;
-
-		if(SMSSent != null)
-			putSharedData("PANDROID_DATA", "SMSSent", SMSSent, "integer");
-
-	}// end getSMSSent
-	/**
-	 *  Retrieve the type of data network currently connected to, i.e. edge, gprs, etc...
-	 */
-	private void getNetworkType()
-	{
-		String networkType = Core.defaultNetworkType;
-		TelephonyManager tM = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		int nT = tM.getNetworkType();
-
-		switch (nT)
-		{
-			case 0:
-				networkType = "Unknown";
-				break;
-			case 1:
-				networkType = "GPRS";
-				break;
-			case 2:
-				networkType = "EDGE";
-				break;
-			case 3:
-				networkType = "UMTS";
-				break;
-			case 4:
-				networkType = "CDMA";
-				break;
-			case 5:
-				networkType = "EVDO rev. 0";
-				break;
-			case 6:
-				networkType = "EVDO rev. A";
-				break;
-			case 7:
-				networkType = "1xRTT";
-				break;
-			case 8:
-				networkType = "HSDPA";
-				break;
-			case 9:
-				networkType = "HSUPA";
-				break;
-			case 10:
-				networkType = "HSPA";
-				break;
-			case 11:
-				networkType = "iDen";
-				break;
-			case 12:
-				networkType = "EVDO rev. B";
-				break;
-			case 13:
-				networkType = "LTE";
-				break;
-			case 14:
-				networkType = "eHRPD";
-				break;      
-			case 15:
-				networkType = "HSPA+";
-				break;          
-		}
-		if(networkType != null)
-			putSharedData("PANDROID_DATA", "networkType", networkType, "string");
-
-	}// end getNetworkType
-
-	/**
-	 *  Retrieve the type of mobile network currently conncected to, i.e. gms, cdma, etc...
-	 */
-	private void getPhoneType()
-	{
-		String phoneType = Core.defaultPhoneType;
-		TelephonyManager tM = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		int pT = tM.getPhoneType();
-
-		switch (pT)
-		{
-		case 0: 
-			phoneType = "none";
-			break;
-		case 1: 
-			phoneType = "GSM";
-			break;
-		case 2: 
-			phoneType = "CDMA";
-			break;
-		case 3: 
-			phoneType = "SIP";
-			break;
-		}
-		if(phoneType != null)
-			putSharedData("PANDROID_DATA", "phoneType", phoneType, "string");
-	}// end getPhoneType
-
-	/**
-	 *  Retrieves the number of incoming, missed and outgoing calls
-	 */
-	private void getCalls()
-	{
-		Cursor c = getApplicationContext().getContentResolver().query(android.provider.CallLog.Calls.CONTENT_URI, null, null, null, null);
-		c.moveToFirst();
-		int typeColumn = c.getColumnIndex(android.provider.CallLog.Calls.TYPE);
-		int incoming = 0;
-		int outgoing = 0;
-		int missed = 0;
-
-		if(c.isFirst()){
-
-			while (c.isAfterLast() == false) {
-				int callType = c.getInt(typeColumn);
-
-				switch(callType){                    
-				case android.provider.CallLog.Calls.INCOMING_TYPE:
-					incoming++;
-					break;
-				case android.provider.CallLog.Calls.MISSED_TYPE:
-					missed++;
-					break;
-				case android.provider.CallLog.Calls.OUTGOING_TYPE:
-					outgoing++;
-					break;
-				}
-				c.moveToNext();
-			}
-
-			putSharedData("PANDROID_DATA", "incomingCalls", ""+incoming, "integer");
-			putSharedData("PANDROID_DATA", "missedCalls", ""+missed, "integer");
-			putSharedData("PANDROID_DATA", "outgoingCalls", ""+outgoing, "integer");
-		}
-
-		c.close();
-	}// end getCalls
-	/**
-	 *  Retrieves the current cell signal strength in dB
-	 */
-	private void getSignalStrength()
-	{	
-		TelephonyManager telephone 	= 	(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		signalListener phoneState 	= 	new signalListener();
-		telephone.listen(phoneState ,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-	}
-
-	private class signalListener extends PhoneStateListener
-	{
-		@Override
-		public void onSignalStrengthsChanged(SignalStrength signalStrength)
-		{
-			super.onSignalStrengthsChanged(signalStrength);
-			String signalStrengthValue = ""+Core.defaultSignalStrength;
-			if (signalStrength.isGsm()) {
-				if (signalStrength.getGsmSignalStrength() != 99)
-					signalStrengthValue =""+ (signalStrength.getGsmSignalStrength() * 2 - 113);
-				else
-					signalStrengthValue =""+ (signalStrength.getGsmSignalStrength());
-			}
-			else{
-				signalStrengthValue ="" + (signalStrength.getCdmaDbm());
-			}
-			putSharedData("PANDROID_DATA", "signalStrength", signalStrengthValue, "integer");
-		}
-	};
-	/**
-	 *  Retrieves the number of sent/received bytes using the mobile network
-	 */
-	private void getDataBytes()
-	{
-
-		long receiveBytes = TrafficStats.getMobileRxBytes();
-		long transmitBytes = TrafficStats.getMobileTxBytes();
-
-		if (receiveBytes != TrafficStats.UNSUPPORTED && transmitBytes != TrafficStats.UNSUPPORTED) 
-		{
-			putSharedData("PANDROID_DATA", "receiveBytes", ""+receiveBytes, "long" );
-			putSharedData("PANDROID_DATA", "transmitBytes", ""+transmitBytes, "long" );
-		}
-	}
-	/**
-	 * Retrieves whether the device is currently connected to a roaming network
-	 */
-	private void getRoaming()
-	{
-		TelephonyManager telephone 	= 	(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		boolean roaming = telephone.isNetworkRoaming();
-
-		if(roaming)
-			putSharedData("PANDROID_DATA", "roaming", "1", "integer" );
-		else
-			putSharedData("PANDROID_DATA", "roaming", "0", "integer" );
-	}
-
 
 	private void putSharedData(String preferenceName, String tokenName, String data, String type) {
 

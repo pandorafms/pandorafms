@@ -36,10 +36,7 @@ public class Status  extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if(Core.hasSim)
-			setContentView(R.layout.status);
-		else
-			setContentView(R.layout.statusnosim);
+		setContentView(R.layout.statusnosim);
 
 		//        Core.loadLastValues(getApplicationContext());
 		//        showLastValues();
@@ -51,10 +48,7 @@ public class Status  extends Activity {
 	public void onResume(){
 		super.onResume();
 
-		if(Core.hasSim)
-			setContentView(R.layout.status);
-		else
-			setContentView(R.layout.statusnosim);
+		setContentView(R.layout.statusnosim);
 
 		new GetLastValuesAsyncTask().execute();
 
@@ -244,82 +238,6 @@ public class Status  extends Activity {
 		if (Core.upTime != 0) {
 			textView.setText("" + Core.upTime+" "+ getString(R.string.seconds));
 		}
-
-		//Only set values if sim present
-		//if no sim these views aren't present as different layout is loaded
-		if (Core.hasSim) {
-			// simID
-			textView = (TextView)findViewById(R.id.sim_id_value);
-			textView.setText("");
-			textView.setText("" + Core.simID);
-
-			// networkOperator
-			textView = (TextView)findViewById(R.id.network_operator_value);
-			textView.setText("");
-			if (Core.networkOperator != null) {
-				textView.setText("" + Core.networkOperator);
-			}
-
-			// networkType
-			textView = (TextView)findViewById(R.id.network_type_value);
-			textView.setText("");
-			if (Core.networkType != null) {
-				textView.setText("" + Core.networkType);
-			}
-
-			// phoneType
-			textView = (TextView)findViewById(R.id.phone_type_value);
-			textView.setText("");
-            if(Core.phoneType != null)
-				textView.setText("" + Core.phoneType);
-
-			// signalStrength
-			textView = (TextView)findViewById(R.id.signal_strength_value);
-			textView.setText("");
-			if(Core.signalStrength != 0)
-				textView.setText("" + Core.signalStrength+"dB");
-
-			// SMSReceived
-			textView = (TextView)findViewById(R.id.sms_received_value);
-			textView.setText("");
-			textView.setText("" + Core.SMSReceived);
-
-			// SMSSent
-			textView = (TextView)findViewById(R.id.sms_sent_value);
-			textView.setText("");
-			textView.setText("" + Core.SMSSent);
-
-			// incomingCalls
-			textView = (TextView)findViewById(R.id.incoming_calls_value);
-			textView.setText("");
-			textView.setText("" + Core.incomingCalls);
-
-			// missedCalls
-			textView = (TextView)findViewById(R.id.missed_calls_value);
-			textView.setText("");
-			textView.setText("" + Core.missedCalls);
-
-			// outgoingCalls
-			textView = (TextView)findViewById(R.id.outgoing_calls_value);
-			textView.setText("");
-			textView.setText("" + Core.outgoingCalls);
-
-			// receiveBytes
-			textView = (TextView)findViewById(R.id.receive_bytes_value);
-			textView.setText("");
-			textView.setText("" + Core.receiveBytes);
-
-			// transmiteBytes
-			textView = (TextView)findViewById(R.id.transmit_bytes_value);
-			textView.setText("");
-			textView.setText("" + Core.transmitBytes);
-
-			// roaming
-			textView = (TextView)findViewById(R.id.roaming_value);
-			textView.setText("");
-			textView.setText("" + Core.roaming);
-
-		}//end simID if
 
 	}
 

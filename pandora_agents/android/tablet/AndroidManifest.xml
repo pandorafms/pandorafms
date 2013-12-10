@@ -16,26 +16,27 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pandroid.agent"
-    android:versionCode="103"
+    android:versionCode="2002"
     android:versionName="3.0" >
+    
+    <supports-screens
+        android:smallScreens="false"
+        android:normalScreens="false"
+        android:largeScreens="true"
+        android:xlargeScreens="true" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.BATTERY_STATS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature android:name="android.hardware.sensor.light" />
     <uses-feature android:name="android.hardware.location" />
 	
-	<uses-sdk android:minSdkVersion="8" />
+	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19" />
 
     <application
 		android:allowBackup="true"
@@ -82,12 +83,5 @@
             android:name=".Help"
             android:label="@string/help_str"
             android:theme="@android:style/Theme.Dialog" />
-
-        <receiver android:name=".SMSBroadcastReceiver" >
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" >
-                </action>
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>

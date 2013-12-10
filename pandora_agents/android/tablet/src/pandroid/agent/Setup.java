@@ -69,25 +69,22 @@ public class Setup extends Activity {
 	public void onResume() {
 		super.onResume();
 
-		if(Core.hasSim)
-			setContentView(R.layout.setup);
-		else
-			setContentView(R.layout.setupnosim);
+		setContentView(R.layout.setupnosim);
 
 		loadViews();
 		loadInBackgroundProcessInExecution();
 		setButtonEvents();
 
 
-		if(Core.password.equals(Core.defaultPassword))
+		if (Core.password.equals(Core.defaultPassword))
 		{
 			if(Core.passwordCheck.equals("enabled"))
 				passwordChoose();
 		}
 		else{
 			LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-			View view=inflater.inflate(R.layout.setup, null);
-			RelativeLayout setup = (RelativeLayout)view.findViewById(R.id.setup);
+			View view=inflater.inflate(R.layout.setupnosim, null);
+			RelativeLayout setup = (RelativeLayout)view.findViewById(R.id.setupnosim);
 			setContentView(setup);
 			setup.setVisibility(RelativeLayout.INVISIBLE);
 			enterPass();
@@ -372,101 +369,6 @@ public class Setup extends Activity {
 		else
 			Core.HelloSignalReport = "disabled";
 
-		// Only retrieve these values if a sim card is present
-		if (Core.hasSim) {
-
-			// simIDReport
-			checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
-			if (checkBox.isChecked())
-				Core.simIDReport = "enabled";
-			else
-				Core.simIDReport = "disabled";
-
-			// networkOperatorReport
-			checkBox = (CheckBox) findViewById(R.id.checkNetworkOperatorReport);
-			if (checkBox.isChecked())
-				Core.NetworkOperatorReport = "enabled";
-			else
-				Core.NetworkOperatorReport = "disabled";
-
-			// networkTypeReport
-			checkBox = (CheckBox) findViewById(R.id.checkNetworkTypeReport);
-			if (checkBox.isChecked())
-				Core.NetworkTypeReport = "enabled";
-			else
-				Core.NetworkTypeReport = "disabled";
-
-			// phoneTypeReport
-			checkBox = (CheckBox) findViewById(R.id.checkPhoneTypeReport);
-			if (checkBox.isChecked())
-				Core.PhoneTypeReport = "enabled";
-			else
-				Core.PhoneTypeReport = "disabled";
-
-			// signalStrengthReport
-			checkBox = (CheckBox) findViewById(R.id.checkSignalStrengthReport);
-			if (checkBox.isChecked())
-				Core.SignalStrengthReport = "enabled";
-			else
-				Core.SignalStrengthReport = "disabled";
-
-			// receivedSMSReport
-			checkBox = (CheckBox) findViewById(R.id.checkReceivedSMSReport);
-			if (checkBox.isChecked())
-				Core.ReceivedSMSReport = "enabled";
-			else
-				Core.ReceivedSMSReport = "disabled";
-
-			// sentSMSReport
-			checkBox = (CheckBox) findViewById(R.id.checkSentSMSReport);
-			if (checkBox.isChecked())
-				Core.SentSMSReport = "enabled";
-			else
-				Core.SentSMSReport = "disabled";
-
-			// incomingCallsReport
-			checkBox = (CheckBox) findViewById(R.id.checkIncomingCallsReport);
-			if (checkBox.isChecked())
-				Core.IncomingCallsReport = "enabled";
-			else
-				Core.IncomingCallsReport = "disabled";
-
-			// missedCallsReport
-			checkBox = (CheckBox) findViewById(R.id.checkMissedCallsReport);
-			if (checkBox.isChecked())
-				Core.MissedCallsReport = "enabled";
-			else
-				Core.MissedCallsReport = "disabled";
-
-			// outgoingCallsReport
-			checkBox = (CheckBox) findViewById(R.id.checkOutgoingCallsReport);
-			if (checkBox.isChecked())
-				Core.OutgoingCallsReport = "enabled";
-			else
-				Core.OutgoingCallsReport = "disabled";
-
-			// bytesReceivedReport
-			checkBox = (CheckBox) findViewById(R.id.checkBytesReceivedReport);
-			if (checkBox.isChecked())
-				Core.BytesReceivedReport = "enabled";
-			else
-				Core.BytesReceivedReport = "disabled";
-
-			// bytesSentReport
-			checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
-			if (checkBox.isChecked())
-				Core.BytesSentReport = "enabled";
-			else
-				Core.BytesSentReport = "disabled";
-
-			// roamingReport
-			checkBox = (CheckBox) findViewById(R.id.checkRoamingReport);
-			if (checkBox.isChecked())
-				Core.RoamingReport = "enabled";
-			else
-				Core.RoamingReport = "disabled";
-		}// end if sim card
-
 		// update saved values with new ones retrieved from view
 		Core.updateConf(getApplicationContext());
 	}
@@ -531,62 +433,6 @@ public class Setup extends Activity {
 		// helloSignalReport
 		checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
 		checkBox.setChecked(Core.HelloSignalReport.equals("enabled"));
-
-		// Only retrieve these values if a sim card is present
-		if (Core.hasSim) {
-
-			// simIDReport
-			checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
-			checkBox.setChecked(Core.simIDReport.equals("enabled"));
-
-			// networkOperatorReport
-			checkBox = (CheckBox) findViewById(R.id.checkNetworkOperatorReport);
-			checkBox.setChecked(Core.NetworkOperatorReport.equals("enabled"));
-
-			// networkTypeReport
-			checkBox = (CheckBox) findViewById(R.id.checkNetworkTypeReport);
-			checkBox.setChecked(Core.NetworkTypeReport.equals("enabled"));
-
-			// phoneTypeReport
-			checkBox = (CheckBox) findViewById(R.id.checkPhoneTypeReport);
-			checkBox.setChecked(Core.PhoneTypeReport.equals("enabled"));
-
-			// signalStrengthReport
-			checkBox = (CheckBox) findViewById(R.id.checkSignalStrengthReport);
-			checkBox.setChecked(Core.SignalStrengthReport.equals("enabled"));
-
-			// receivedSMSReport
-			checkBox = (CheckBox) findViewById(R.id.checkReceivedSMSReport);
-			checkBox.setChecked(Core.ReceivedSMSReport.equals("enabled"));
-
-			// sentSMSReport
-			checkBox = (CheckBox) findViewById(R.id.checkSentSMSReport);
-			checkBox.setChecked(Core.SentSMSReport.equals("enabled"));
-
-			// incomingCallsReport
-			checkBox = (CheckBox) findViewById(R.id.checkIncomingCallsReport);
-			checkBox.setChecked(Core.IncomingCallsReport.equals("enabled"));
-
-			// missedCallsReport
-			checkBox = (CheckBox) findViewById(R.id.checkMissedCallsReport);
-			checkBox.setChecked(Core.MissedCallsReport.equals("enabled"));
-
-			// outgoingCallsReport
-			checkBox = (CheckBox) findViewById(R.id.checkOutgoingCallsReport);
-			checkBox.setChecked(Core.OutgoingCallsReport.equals("enabled"));
-
-			// bytesReceivedReport
-			checkBox = (CheckBox) findViewById(R.id.checkBytesReceivedReport);
-			checkBox.setChecked(Core.BytesReceivedReport.equals("enabled"));
-
-			// bytesSentReport
-			checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
-			checkBox.setChecked(Core.BytesSentReport.equals("enabled"));
-
-			// roamingReport
-			checkBox = (CheckBox) findViewById(R.id.checkRoamingReport);
-			checkBox.setChecked(Core.RoamingReport.equals("enabled"));
-		}//end if sim card
 
 	}
 
@@ -742,26 +588,15 @@ public class Setup extends Activity {
 						im.hideSoftInputFromWindow(text.getWindowToken(), 0);
 						dialog.dismiss();
 
-						if(Core.hasSim){
-							LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-							View view=inflater.inflate(R.layout.setup, null);
-							RelativeLayout setup = (RelativeLayout)view.findViewById(R.id.setup);
-							setContentView(setup);
-							loadViews();
-							loadInBackgroundProcessInExecution();
-							setButtonEvents();
-							setup.setVisibility(RelativeLayout.VISIBLE);
-						}
-						else{
-							LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-							View view=inflater.inflate(R.layout.setupnosim, null);
-							RelativeLayout setupnosim = (RelativeLayout)view.findViewById(R.id.setupnosim);
-							setContentView(setupnosim);
-							loadViews();
-							loadInBackgroundProcessInExecution();
-							setButtonEvents();
-							setupnosim.setVisibility(RelativeLayout.VISIBLE);
-						}
+						
+						LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+						View view=inflater.inflate(R.layout.setupnosim, null);
+						RelativeLayout setupnosim = (RelativeLayout)view.findViewById(R.id.setupnosim);
+						setContentView(setupnosim);
+						loadViews();
+						loadInBackgroundProcessInExecution();
+						setButtonEvents();
+						setupnosim.setVisibility(RelativeLayout.VISIBLE);
 					}
 					else
 					{

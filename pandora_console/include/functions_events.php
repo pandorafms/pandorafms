@@ -547,7 +547,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment', $m
 	if (is_array($id_event)) {
 		$first_event = reset($id_event);
 	}
-	$event_comments = db_get_value('user_comment', 'tevento', 'id_evento', $first_event);
+	$event_comments = db_get_value('user_comment', $event_table, 'id_evento', $first_event);
 	$event_comments_array = array();
 	
 	if ($event_comments == '') {
@@ -2258,6 +2258,9 @@ function events_page_comments ($event) {
 	
 	// If comments are not stored in json, the format is old
 	$event_comments_array = json_decode($event_comments, true);
+	
+	// Show the comments more recent first
+	$event_comments_array = array_reverse($event_comments_array);
 	
 	if (is_null($event_comments_array)) {
 		$comments_format = 'old';

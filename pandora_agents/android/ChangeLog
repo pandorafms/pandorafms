@@ -1,3 +1,8 @@
+2013-08-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/AndroidManifest.xml: update the version number, and added
+	tiny hack to make diferent apk for google market.
+
 2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/src/pandroid/agent/Core.java: fixed the copy & paste bug.

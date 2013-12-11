@@ -247,6 +247,8 @@ public class Setup extends Activity {
 
 			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
 					R.layout.spinner, listProcessHuman);
+			spinnerArrayAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			combo.setAdapter(spinnerArrayAdapter);
 
 			combo.setSelection(position);
@@ -650,12 +652,13 @@ public class Setup extends Activity {
 
 				try
 				{
-					if(TextUtils.isEmpty(createpass_password))
+					if (TextUtils.isEmpty(createpass_password))
 					{
 						Core.password = Core.defaultPassword;
 						Core.updateConf(getApplicationContext());
+						getApplicationContext();
 						//TODO
-						InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+						InputMethodManager im = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 						im.hideSoftInputFromWindow(text.getWindowToken(), 0);
 						dialog.dismiss();
 
@@ -666,19 +669,20 @@ public class Setup extends Activity {
 
 						return;
 					}
-					else if(createpass_password.length() < 6) 
+					else if (createpass_password.length() < 6) 
 					{ 
 						text.setError(getString(R.string.password_length)); 
 						text2.setError(getString(R.string.password_length)); 
 						return; 
 					}
 
-					else if(createpass_password.equals(createpass_password2))
+					else if (createpass_password.equals(createpass_password2))
 					{
 						Core.password = createpass_password;
 						Core.updateConf(getApplicationContext());
+						getApplicationContext();
 						//TODO
-						InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+						InputMethodManager im = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 						im.hideSoftInputFromWindow(text.getWindowToken(), 0);
 
 						dialog.dismiss();
@@ -737,8 +741,9 @@ public class Setup extends Activity {
 				{
 					if(password.equals(Core.password))
 					{
+						getApplicationContext();
 						//TODO
-						InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+						InputMethodManager im = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 						im.hideSoftInputFromWindow(text.getWindowToken(), 0);
 						dialog.dismiss();
 

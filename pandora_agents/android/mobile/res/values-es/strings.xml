@@ -63,7 +63,7 @@
 		un señal de saludo para monotrorizar instalaciones de pandroid, un inventario con información de todos los apps instalados. También
 		datos de moviles, la ID del sim, número de SMS enviados/recibidos, número de llamadas entrantes/perdidas/recibidas, el nombre del operador
 		y el tipo, el tipo de móvil, la potencia de señal, el número de bytes enviados/recibidos por la red móvil.
-		 El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
+		 El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.com&quot;&gt;http://pandorafms.com&lt;/a&gt;&lt;/p&gt;
 	</string>
 	<string name="start">Iniciar</string>
 	<string name="correct_start">Conexion con éxito</string>

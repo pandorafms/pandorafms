@@ -1,3 +1,10 @@
+2013-12-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/flot/pandora.flot.js: Add one decimal
+	to pie graphs to don't lose so much precision when 
+	percentages are rounded
+	Incident #407
+
 2013-12-10  Dario Rodriguez <dario@artica.es>
 
 	* mobile/operation/modules.php,

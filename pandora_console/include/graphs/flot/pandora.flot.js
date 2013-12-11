@@ -33,7 +33,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 			formatter: function(label, series) {
 				return '<div style="font-size:' + font_size + 'pt;' +
 					'text-align:center;padding:2px;color:white;">' +
-						label + '<br/>' + Math.round(series.percent) + '%</div>';
+						label + '<br/>' + series.percent.toFixed(1) + '%</div>';
 			},
 			background: {
 				opacity: 0.5,

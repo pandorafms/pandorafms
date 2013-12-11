@@ -245,6 +245,10 @@ public class Setup extends Activity {
 			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
 					R.layout.spinner, listProcessHuman);
 			combo.setAdapter(spinnerArrayAdapter);
+			
+			spinnerArrayAdapter
+				.setDropDownViewResource(R.layout.simple_spinner_item);
+			
 
 			combo.setSelection(position);
 

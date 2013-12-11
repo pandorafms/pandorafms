@@ -1,5 +1,13 @@
 2013-12-11 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/src/pandroid/agent/Setup.java,
+	mobile/res/layout/simple_spinner_item.xml,
+	tablet/src/pandroid/agent/Setup.java,
+	tablet/res/layout/simple_spinner_item.xml: changed the color of
+	dropbox list for the check process.
+
+2013-12-11 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* tablet/AndroidManifest.xml, tablet/src/pandroid/agent/Core.java:
 	fixed the options button and notification icon for tablets.
 

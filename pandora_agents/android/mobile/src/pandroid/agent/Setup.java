@@ -251,6 +251,9 @@ public class Setup extends Activity {
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			combo.setAdapter(spinnerArrayAdapter);
 
+			spinnerArrayAdapter
+				.setDropDownViewResource(R.layout.simple_spinner_item);
+			
 			combo.setSelection(position);
 
 			ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_task_anim);

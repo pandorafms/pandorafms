@@ -313,6 +313,7 @@ public class Core {
 		editor.putString("HelloSignalReport", _HelloSignalReport); 
 		editor.putString("password", _password);
 		editor.putString("passwordCheck", _passwordCheck);
+		editor.putString("NotificationCheck", _NotificationCheck);
 		
 		editor.putLong("receiveBytes", _receiveBytes);
 		editor.putString("BytesReceivedReport", _BytesReceivedReport); 

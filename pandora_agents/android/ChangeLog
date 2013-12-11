@@ -1,3 +1,13 @@
+2013-08-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/src/pandroid/agent/Setup.java,
+	mobile/res/drawable-mdpi/help.png,
+	mobile/res/drawable-mdpi/about.png,
+	mobile/res/values-es/strings.xml, mobile/res/layout/about.xml,
+	tablet/res/drawable-mdpi/help.png,
+	tablet/res/drawable-mdpi/about.png, tablet/res/layout/about.xml,
+	tablet/res/values-es/strings.xml: some changes.
+
 2013-08-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* tablet/*: updated the tablet version.

@@ -368,6 +368,20 @@ public class Setup extends Activity {
 			Core.HelloSignalReport = "enabled";
 		else
 			Core.HelloSignalReport = "disabled";
+		
+		// bytesReceivedReport
+		checkBox = (CheckBox) findViewById(R.id.checkBytesReceivedReport);
+		if (checkBox.isChecked())
+			Core.BytesReceivedReport = "enabled";
+		else
+			Core.BytesReceivedReport = "disabled";
+
+		// bytesSentReport
+		checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
+		if (checkBox.isChecked())
+			Core.BytesSentReport = "enabled";
+		else
+			Core.BytesSentReport = "disabled";
 
 		// update saved values with new ones retrieved from view
 		Core.updateConf(getApplicationContext());
@@ -429,6 +443,14 @@ public class Setup extends Activity {
 		// inventoryReport
 		checkBox = (CheckBox) findViewById(R.id.checkInventoryReport);
 		checkBox.setChecked(Core.InventoryReport.equals("enabled"));
+		
+		// bytesReceivedReport
+		checkBox = (CheckBox) findViewById(R.id.checkBytesReceivedReport);
+		checkBox.setChecked(Core.BytesReceivedReport.equals("enabled"));
+
+		// bytesSentReport
+		checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
+		checkBox.setChecked(Core.BytesSentReport.equals("enabled"));
 
 		// helloSignalReport
 		checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);

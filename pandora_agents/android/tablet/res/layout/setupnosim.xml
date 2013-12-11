@@ -188,6 +188,22 @@
                     android:text="@string/uptimeReport"
                     android:textColor="#bbbbbb"
                     android:textSize="14sp" />
+                
+                <CheckBox
+                    android:id="@+id/checkBytesReceivedReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/BytesReceivedReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14sp" />
+
+                <CheckBox
+                    android:id="@+id/checkBytesSentReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/BytesSentReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14sp" />
 
                 <CheckBox
                     android:id="@+id/checkInventoryReport"

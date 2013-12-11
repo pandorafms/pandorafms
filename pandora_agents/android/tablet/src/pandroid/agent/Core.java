@@ -57,7 +57,8 @@ public class Core {
 	static volatile public String defaultInventoryReport = "disabled"; // "disabled" or "enabled"
 	static volatile public String defaultHelloSignalReport = "enabled"; // "disabled" or "enabled"
 	static volatile public String defaultNotificationCheck = "enabled"; // "disabled" or "enabled"
-
+	static volatile public String defaultBytesReceivedReport = "enabled"; // "disabled" or "enabled"
+	static volatile public String defaultBytesSentReport = "enabled"; // "disabled" or "enabled"
 
 	//																	//
 	//						DEFAULT MODULE VALUES						//
@@ -71,6 +72,9 @@ public class Core {
 	static volatile public int defaultContactError = 0;
 	static volatile public long defaultUpTime = 0;
 	static volatile public int defaultHelloSignal = 2;
+	
+	static volatile public long defaultReceiveBytes = 0;
+	static volatile public long defaultTransmitBytes = 0;
 
 
 	static volatile public String defaultPassword = "";
@@ -122,6 +126,11 @@ public class Core {
 
 	static volatile public long lastContact = CONST_INVALID_CONTACT;
 	static volatile public int contactError = CONST_CONTACT_ERROR;
+	
+	static volatile public String BytesReceivedReport = defaultBytesReceivedReport;
+	static volatile public String BytesSentReport = defaultBytesSentReport;
+	static volatile public long receiveBytes = defaultReceiveBytes;
+	static volatile public long transmitBytes = defaultTransmitBytes;
 
 	public Core() {
 
@@ -181,6 +190,9 @@ public class Core {
 		upTime = agentPreferences.getLong("upTime", Core.defaultUpTime);
 		helloSignal = agentPreferences.getInt("helloSignal", defaultHelloSignal);
 		contactError = agentPreferences.getInt("contactError", defaultContactError);
+		
+		receiveBytes = agentPreferences.getLong("receiveBytes", defaultReceiveBytes);
+		transmitBytes = agentPreferences.getLong("transmitBytes", defaultTransmitBytes);
 
 	}// end loadLastValues
 
@@ -238,7 +250,11 @@ public class Core {
 				HelloSignalReport,
 				password,
 				passwordCheck,
-				NotificationCheck 
+				NotificationCheck,
+				receiveBytes,
+				BytesReceivedReport, 
+				transmitBytes,
+				BytesSentReport 
 				);
 
 	}// end updateConf
@@ -263,7 +279,11 @@ public class Core {
 			String _HelloSignalReport,
 			String _password,
 			String _passwordCheck,
-			String _NotificationCheck  ) {
+			String _NotificationCheck,
+			long _receiveBytes,
+			String _BytesReceivedReport,
+			long _transmitBytes,
+			String _BytesSentReport) {
 
 		if (con == null) {
 			con = context;
@@ -293,6 +313,11 @@ public class Core {
 		editor.putString("HelloSignalReport", _HelloSignalReport); 
 		editor.putString("password", _password);
 		editor.putString("passwordCheck", _passwordCheck);
+		
+		editor.putLong("receiveBytes", _receiveBytes);
+		editor.putString("BytesReceivedReport", _BytesReceivedReport); 
+		editor.putLong("transmitBytes", _transmitBytes);
+		editor.putString("BytesSentReport", _BytesSentReport); 
 
 
 		if (editor.commit()) {

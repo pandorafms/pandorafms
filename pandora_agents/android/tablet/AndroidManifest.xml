@@ -16,7 +16,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pandroid.agent"
-    android:versionCode="2002"
+    android:versionCode="2003"
     android:versionName="3.0" >
     
     <supports-screens
@@ -36,7 +36,7 @@
     <uses-feature android:name="android.hardware.sensor.light" />
     <uses-feature android:name="android.hardware.location" />
 	
-	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19" />
+	<uses-sdk android:minSdkVersion="8" />
 
     <application
 		android:allowBackup="true"

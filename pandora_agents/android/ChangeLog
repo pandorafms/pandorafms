@@ -1,5 +1,10 @@
 2013-12-11 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* tablet/AndroidManifest.xml, tablet/src/pandroid/agent/Core.java:
+	fixed the options button and notification icon for tablets.
+
+2013-12-11 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* tablet/src/pandroid/agent/PandroidAgentListener.java,
 	tablet/src/pandroid/agent/Core.java,
 	tablet/src/pandroid/agent/Setup.java,

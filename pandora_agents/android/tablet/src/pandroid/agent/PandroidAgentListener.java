@@ -44,6 +44,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.TrafficStats;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -405,10 +406,16 @@ public class PandroidAgentListener extends Service {
 		String helloSignal = getSharedData("PANDROID_DATA", "helloSignal", ""+Core.defaultHelloSignal, "integer");
 		
 		
+		String receiveBytes = getSharedData("PANDROID_DATA", "receiveBytes", ""+Core.defaultReceiveBytes, "long");
+		String transmitBytes = getSharedData("PANDROID_DATA", "transmitBytes", ""+Core.defaultTransmitBytes, "long");
+		
 		String DeviceUpTimeReport = getSharedData("PANDROID_DATA", "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport, "string");
 		String HelloSignalReport = getSharedData("PANDROID_DATA", "HelloSignalReport", Core.defaultHelloSignalReport, "string");
 		String BatteryLevelReport = getSharedData("PANDROID_DATA", "BatteryLevelReport", Core.defaultBatteryLevelReport, "string");
 		String InventoryReport = getSharedData("PANDROID_DATA", "InventoryReport", Core.defaultInventoryReport, "string");
+		
+		String BytesReceivedReport = getSharedData("PANDROID_DATA", "BytesReceivedReport", Core.defaultBytesReceivedReport, "string");
+		String BytesSentReport = getSharedData("PANDROID_DATA", "BytesSentReport", Core.defaultBytesSentReport, "string");
 
 		if (InventoryReport.equals("enabled"))
 		{
@@ -452,6 +459,11 @@ public class PandroidAgentListener extends Service {
 		if (HelloSignalReport.equals("enabled"))
 			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
 
+		
+		if (BytesReceivedReport.equals("enabled"))
+			buffer += buildmoduleXML("receiveBytes","Bytes received", "generic_data", receiveBytes);
+		if (BytesSentReport.equals("enabled"))
+			buffer += buildmoduleXML("transmitBytes","Bytes transmitted", "generic_data", transmitBytes);
 
 
 		buffer += "</agent_data>";
@@ -695,6 +707,8 @@ public class PandroidAgentListener extends Service {
 		getTaskStatus();
 		getMemoryStatus();
 		getUpTime();
+		
+		getDataBytes();
 	}
 
 	private void getMemoryStatus() {
@@ -873,6 +887,21 @@ public class PandroidAgentListener extends Service {
 		nMgr.cancel(notifyId);
 	}
 
+	/**
+	 *  Retrieves the number of sent/received bytes using the mobile network
+	 */
+	private void getDataBytes()
+	{
+
+		long receiveBytes = TrafficStats.getTotalRxBytes();
+		long transmitBytes = TrafficStats.getTotalTxBytes();
+
+		if (receiveBytes != TrafficStats.UNSUPPORTED && transmitBytes != TrafficStats.UNSUPPORTED) 
+		{
+			putSharedData("PANDROID_DATA", "receiveBytes", ""+receiveBytes, "long" );
+			putSharedData("PANDROID_DATA", "transmitBytes", ""+transmitBytes, "long" );
+		}
+	}
 
 
 	//    ///////////////////////////////////////////

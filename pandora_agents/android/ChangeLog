@@ -1,4 +1,19 @@
-2013-08-11 Miguel de Dios <miguel.dedios@artica.es>
+2013-12-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* tablet/src/pandroid/agent/PandroidAgentListener.java,
+	tablet/src/pandroid/agent/Core.java,
+	tablet/src/pandroid/agent/Setup.java,
+	tablet/res/layout/setupnosim.xml: added modules for to check the
+	bytes send and receive.
+	
+	* mobile/res/drawable-xhdpi/about.png,
+	mobile/res/drawable-xhdpi/help.png,
+	mobile/res/drawable-hdpi/help.png,
+	mobile/res/drawable-hdpi/about.png,
+	mobile/res/drawable-ldpi/help.png,
+	mobile/res/drawable-ldpi/about.png: update the icons, thanks Carla.
+
+2013-12-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/src/pandroid/agent/Setup.java,
 	mobile/res/drawable-mdpi/help.png,
@@ -8,20 +23,20 @@
 	tablet/res/drawable-mdpi/about.png, tablet/res/layout/about.xml,
 	tablet/res/values-es/strings.xml: some changes.
 
-2013-08-10 Miguel de Dios <miguel.dedios@artica.es>
+2013-12-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* tablet/*: updated the tablet version.
 
-2013-08-10 Miguel de Dios <miguel.dedios@artica.es>
+2013-12-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/AndroidManifest.xml: update the version number, and added
 	tiny hack to make diferent apk for google market.
 
-2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
+2013-12-09 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/src/pandroid/agent/Core.java: fixed the copy & paste bug.
 
-2013-08-09 Miguel de Dios <miguel.dedios@artica.es>
+2013-12-09 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile: moved the all code of android to this folder.
 	

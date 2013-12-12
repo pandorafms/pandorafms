@@ -404,10 +404,10 @@ $label = base64_decode(get_parameter('label', ''));
 				return false;
 			}).click(function() {
 				if (show_overview) {
-					window.resizeTo(width_window, height_window + 15);
+					window.resizeTo(width_window + 20, height_window + 50);
 				}
 				else {
-					window.resizeTo(width_window, height_window + 100);
+					window.resizeTo(width_window + 20, height_window + 200);
 				}
 				show_overview = !show_overview;
 				

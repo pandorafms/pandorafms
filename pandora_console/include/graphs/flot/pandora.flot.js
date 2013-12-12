@@ -812,9 +812,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 					dataset = plot.getData();
 				}
 				
-				var timenewpos = dataset[0].xaxis.p2c(pos.x)+plot.offset().left;
+				var timenewpos = dataset[0].xaxis.p2c(pos.x)+$('.yAxis>div').eq(0).width();
 				
-				var canvaslimit = plot.offset().left + plot.width();
+				var canvaslimit = plot.width();
 				
 				if (timesize+timenewpos > canvaslimit) {
 					$('#timestamp_'+graph_id).css('left', timenewpos - timesize);
@@ -966,7 +966,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		var parent_height;
 		$('#menu_overview_'+graph_id).click(function() {
 			$('#overview_'+graph_id).toggle();
-			adjust_menu(graph_id, plot, parent_height);
+			//adjust_menu(graph_id, plot, parent_height);
 		});
 		
 		$('#menu_threshold_'+graph_id).click(function() {
@@ -1024,6 +1024,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	if (water_mark) {
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
+	
+	adjust_menu(graph_id, plot, parent_height);
 }
 
 function adjust_menu(graph_id, plot, parent_height) {
@@ -1044,9 +1046,14 @@ function adjust_menu(graph_id, plot, parent_height) {
 		overview_height = parseInt($('#overview_'+graph_id).css('height').split('px')[0]) + parseInt($('#overview_'+graph_id).css('margin-top').split('px')[0]);
 	}
 	
-	$('#menu_'+graph_id).css('top',
-		(-parent_height+legend_height-overview_height-7)+'px');
+	var menu_height = '25';
+
+	if($('#menu_'+graph_id).height() != undefined || $('#menu_'+graph_id).height() < 20) {
+		menu_height = $('#menu_'+graph_id).height();
+	}
 	
+	$('#menu_'+graph_id).css('top', (($('#'+graph_id).offset().top-menu_height-15)+'px'));
+	$('#legend_'+graph_id).css('width',plot.width());
 	$('#menu_'+graph_id).css('left',plot.width()-$('#menu_'+graph_id).width() + 10);
 	$('#menu_'+graph_id).show();
 }

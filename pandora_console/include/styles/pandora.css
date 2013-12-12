@@ -2775,3 +2775,36 @@ div#agent_wizard_subtabs {
 #code_license_dialog a {
 	text-decoration: underline;
 }
+
+/* GRAPHS CSS */
+
+.parent_graph {
+	position: relative;
+}
+
+.menu_graph, .timestamp_graph {
+	position: absolute !important;
+}
+
+.menu_graph {
+	-moz-border-top-right-radius: 6px;
+	-webkit-border-top-right-radius: 6px;
+	border-top-right-radius: 6px;
+	-moz-border-top-left-radius: 6px;
+	-webkit-border-top-left-radius: 6px;
+	border-top-left-radius: 6px;
+}
+
+.legend_graph {
+	margin: 0px;
+	padding: 0px;
+	text-align: left;
+}
+
+.legendColorBox * {
+	font-size: 0px;
+	padding: 0px 4px;
+	overflow: visible !important;
+}
+
+

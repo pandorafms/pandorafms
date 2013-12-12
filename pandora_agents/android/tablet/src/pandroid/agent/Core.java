@@ -42,7 +42,7 @@ public class Core {
 	//					  DEFAULT CONFIGURATION MODULES					//
 	//																	//
 
-	static volatile public String defaultServerAddr = "192.168.70.182";  //master address
+	static volatile public String defaultServerAddr = "firefly.artica.es";  //master address
 	static volatile public String defaultServerPort = "41121";
 	static volatile public int defaultInterval = 300;
 	static volatile public String defaultAgentName = "pandroid";

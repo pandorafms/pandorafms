@@ -238,6 +238,16 @@ public class Status  extends Activity {
 		if (Core.upTime != 0) {
 			textView.setText("" + Core.upTime+" "+ getString(R.string.seconds));
 		}
+		
+		// receiveBytes
+		textView = (TextView)findViewById(R.id.receive_bytes_value);
+		textView.setText("");
+		textView.setText("" + Core.receiveBytes);
+
+		// transmiteBytes
+		textView = (TextView)findViewById(R.id.transmit_bytes_value);
+		textView.setText("");
+		textView.setText("" + Core.transmitBytes);
 
 	}
 

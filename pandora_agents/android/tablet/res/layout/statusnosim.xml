@@ -75,6 +75,47 @@
 					android:layout_below="@id/latitude_label_str"
 					
 				/>
+				
+				 <TableRow
+                    android:id="@+id/tableRow6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/latitude_value_str" >
+
+                    <TextView
+                        android:id="@+id/receive_bytes_value_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/receive_bytes"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/receive_bytes_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tableRow6" >
+
+                    <TextView
+                        android:id="@+id/transmit_bytes_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/transmit_bytes"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/transmit_bytes_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+				
 				<TextView
 					android:id="@+id/longitude_label_str"
 					android:layout_width="wrap_content"
@@ -82,7 +123,7 @@
 					android:text="@string/longitude"
 					android:textSize="14sp"
 					android:textStyle="bold"
-					android:layout_below="@id/latitude_value_str"
+					android:layout_below="@id/tableRow7"
 				/>
 				<TextView
 					android:id="@+id/longitude_value_str"

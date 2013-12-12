@@ -1,3 +1,9 @@
+2013-12-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* res/drawable-ldpi/refresh.png, res/drawable-ldpi/config.png,
+	res/drawable-ldpi/help.png, res/drawable-ldpi/exit.png: updated the
+	icons for the option menu, thanks Carla.
+
 2013-11-14 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* res/drawable-ldpi/config.png, res/drawable-ldpi/help.png,

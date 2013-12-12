@@ -1,3 +1,16 @@
+2013-12-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* tablet/src/pandroid/agent/Core.java,
+	tablet/src/pandroid/agent/Status.java.
+	tablet/res/layout/statusnosim.xml,
+	tablet/res/layout/simple_spinner_item.xml,
+	mobile/res/layout/simple_spinner_item.xml: some changes.
+
+2013-12-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* tablet/src/pandroid/agent/Core.java: set firefly as the default
+	server address.
+
 2013-12-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/src/pandroid/agent/Setup.java,

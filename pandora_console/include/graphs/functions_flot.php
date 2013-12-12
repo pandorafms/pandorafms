@@ -126,12 +126,12 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$graph_id = uniqid('graph_');
 	
 	// Parent layer
-	$return = "<div>";
+	$return = "<div class='parent_graph' style='width: ".$width."px;'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<p id='legend_$graph_id' style='font-size:".$font_size."pt'></p>";
-	$return .= "<div id='timestamp_$graph_id' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
+	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
+	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
-	$return .= "<div id='overview_$graph_id' style='display:none; margin-left:0px; margin-top:20px; width: ".$width."px; height:50px;'></div>";
+	$return .= "<div id='overview_$graph_id' class='overview_graph' style='display:none; margin-left:0px; margin-top:20px; width: ".$width."px; height:50px;'></div>";
 	
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
@@ -226,8 +226,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 			$nbuttons++;
 		}
 		
-		$menu_width = 25 * $nbuttons + 8;
-		$return .= "<div id='menu_$graph_id' style='display:none; text-align:center; width:".$menu_width."px; position:relative; border: solid 1px #666; border-bottom: 0px; padding: 4px 4px 4px 4px'>
+		$menu_width = 25 * $nbuttons + 15;
+		$return .= "<div id='menu_$graph_id' class='menu_graph' style='display:none; text-align:center; width:".$menu_width."px; border: solid 1px #666; border-bottom: 0px; padding: 4px 4px 4px 4px'>
 			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 		if ($threshold) {
 			$return .= "<a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";

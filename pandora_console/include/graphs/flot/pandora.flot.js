@@ -1048,7 +1048,7 @@ function adjust_menu(graph_id, plot, parent_height) {
 	
 	var menu_height = '25';
 
-	if($('#menu_'+graph_id).height() != undefined || $('#menu_'+graph_id).height() < 20) {
+	if($('#menu_'+graph_id).height() != undefined && $('#menu_'+graph_id).height() > 20) {
 		menu_height = $('#menu_'+graph_id).height();
 	}
 	

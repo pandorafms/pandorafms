@@ -1,3 +1,10 @@
+2013-12-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* src/pandorafms/pandorafmsandroidconsole/ConnectionCustomToast.java:
+	cleaned source code style.
+	
+	* res/drawable-ldpi/pandorafms_logo.png: update the icon.
+
 2013-12-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* res/drawable-ldpi/refresh.png, res/drawable-ldpi/config.png,

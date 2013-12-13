@@ -78,5 +78,5 @@ fi
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
 
-%defattr(770,pandora,%{httpd_group})
+%defattr(-,pandora,%{httpd_group},770)
 /var/spool/pandora/data_in

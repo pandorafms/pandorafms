@@ -83,5 +83,5 @@ rm -Rf %{prefix}/pandora_console
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
 
-%defattr(770,pandora,www)
+%defattr(-,pandora,www,770)
 /var/spool/pandora

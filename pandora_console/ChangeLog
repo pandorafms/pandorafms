@@ -1,5 +1,11 @@
 2013-12-13  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/operation/events.php, mobile/operation/modules.php,
+	mobile/operation/agents.php: fixed the scroll of list for old
+	browser in android mobiles devices.
+
+2013-12-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/graphs/flot/pandora.flot.js: Fixed wrong
 	condition of minimum height of menu.
 	Incident #417

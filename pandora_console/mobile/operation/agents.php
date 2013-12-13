@@ -354,9 +354,9 @@ class Agents {
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 				var load_more_rows = 1;
 				var page = 1;
-				$(document).ready(function() {
-					$(window).bind(\"scroll\", function () {
-						
+				
+				function custom_scroll() {
+					
 						if (load_more_rows) {
 							if ($(this).scrollTop() + $(this).height()
 								>= ($(document).height() - 100)) {
@@ -404,6 +404,15 @@ class Agents {
 									\"json\");
 							}
 						}
+				}
+				
+				$(document).ready(function() {
+					$(window).bind(\"scroll\", function () {
+						custom_scroll();
+					});
+					
+					$(window).on(\"touchmove\", function(event) {
+						custom_scroll();
 					});
 				});
 			</script>");

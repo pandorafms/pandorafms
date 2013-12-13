@@ -593,54 +593,62 @@ class Modules {
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 				var load_more_rows = 1;
 				var page = 1;
+				
+				function custom_scroll() {
+					if (load_more_rows) {
+						if ($(this).scrollTop() + $(this).height()
+							>= ($(document).height() - 100)) {
+							
+							load_more_rows = 0;
+							
+							postvars = {};
+							postvars[\"action\"] = \"ajax\";
+							postvars[\"parameter1\"] = \"modules\";
+							postvars[\"parameter2\"] = \"get_modules\";
+							postvars[\"group\"] = $(\"select[name='group']\").val();
+							postvars[\"status\"] = $(\"select[name='status']\").val();
+							postvars[\"type\"] = $(\"select[name='module_group']\").val();
+							postvars[\"tag\"] = $(\"select[name='tag']\").val();
+							postvars[\"free_search\"] = $(\"input[name='free_search']\").val();
+							postvars[\"page\"] = page;
+							page++;
+							
+							$.post(\"index.php\",
+								postvars,
+								function (data) {
+									if (data.end) {
+										$(\"#loading_rows\").hide();
+									}
+									else {
+										$.each(data.modules, function(key, module) {
+											$(\"table#list_Modules tbody\").append(\"<tr>\" +
+													\"<th class='head_vertical'></th>\" +
+													\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[0] + \"</td>\" +
+													\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[2] + \"</td>\" +
+													\"<td class='cell_2'><b class='ui-table-cell-label'>" . __('Status') . "</b>\" + module[5] + \"</td>\" +
+													\"<td class='cell_3'><b class='ui-table-cell-label'>" . __('Interval') . "</b>\" + module[4] + \"</td>\" +
+													\"<td class='cell_4'><b class='ui-table-cell-label'>" . __('Timestamp') . "</b>\" + module[6] + \"</td>\" +
+													\"<td class='cell_5'><b class='ui-table-cell-label'>" . __('Data') . "</b>\" + module[7] + \"</td>\" +
+												\"</tr>\");
+											});
+										
+										load_more_rows = 1;
+									}
+									
+									
+								},
+								\"json\");
+						}
+					}
+				}
+				
 				$(document).ready(function() {
 					$(window).bind(\"scroll\", function () {
-						
-						if (load_more_rows) {
-							if ($(this).scrollTop() + $(this).height()
-								>= ($(document).height() - 100)) {
-								
-								load_more_rows = 0;
-								
-								postvars = {};
-								postvars[\"action\"] = \"ajax\";
-								postvars[\"parameter1\"] = \"modules\";
-								postvars[\"parameter2\"] = \"get_modules\";
-								postvars[\"group\"] = $(\"select[name='group']\").val();
-								postvars[\"status\"] = $(\"select[name='status']\").val();
-								postvars[\"type\"] = $(\"select[name='module_group']\").val();
-								postvars[\"tag\"] = $(\"select[name='tag']\").val();
-								postvars[\"free_search\"] = $(\"input[name='free_search']\").val();
-								postvars[\"page\"] = page;
-								page++;
-								
-								$.post(\"index.php\",
-									postvars,
-									function (data) {
-										if (data.end) {
-											$(\"#loading_rows\").hide();
-										}
-										else {
-											$.each(data.modules, function(key, module) {
-												$(\"table#list_Modules tbody\").append(\"<tr>\" +
-														\"<th class='head_vertical'></th>\" +
-														\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[0] + \"</td>\" +
-														\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[2] + \"</td>\" +
-														\"<td class='cell_2'><b class='ui-table-cell-label'>" . __('Status') . "</b>\" + module[5] + \"</td>\" +
-														\"<td class='cell_3'><b class='ui-table-cell-label'>" . __('Interval') . "</b>\" + module[4] + \"</td>\" +
-														\"<td class='cell_4'><b class='ui-table-cell-label'>" . __('Timestamp') . "</b>\" + module[6] + \"</td>\" +
-														\"<td class='cell_5'><b class='ui-table-cell-label'>" . __('Data') . "</b>\" + module[7] + \"</td>\" +
-													\"</tr>\");
-												});
-											
-											load_more_rows = 1;
-										}
-										
-										
-									},
-									\"json\");
-							}
-						}
+						custom_scroll();
+					});
+					
+					$(window).on(\"touchmove\", function(event) {
+						custom_scroll();
 					});
 				});
 			</script>");

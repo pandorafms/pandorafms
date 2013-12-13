@@ -70,7 +70,7 @@ class Events {
 					
 					$events = array();
 					$end = 1;
-					foreach ($events_db as $event) {						
+					foreach ($events_db as $event) {
 						$end = 0;
 						
 						switch ($event['estado']) {
@@ -88,27 +88,27 @@ class Events {
 						if($event['criticity'] == EVENT_CRIT_WARNING) {
 							$img_st = str_replace("white.png", "dark.png", $img_st);
 						}
-
+						
 						$status_icon = html_print_image($img_st, true);
 						
 						$open_link = '';
 						$close_link = '';
 						
-						if (!$this->readOnly) {	
+						if (!$this->readOnly) {
 							$open_link = '<a href="javascript: openDetails(' . $event['id_evento'] . ')"><div style="height:100%;width:100%">';
-							$close_link = '</div></a>';										
+							$close_link = '</div></a>';
 						}
 						
 						$row = array();
 						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Event Name') . '</b>' . io_safe_output($event['evento']) . $close_link;
-												
+						
 						if ($event["id_agente"] == 0) {
 							$agent_name = __('System');
 						}
 						else {
 							$agent_name = '<span class="nobold">' . ui_print_agent_name ($event["id_agente"], true, 'agent_small', '', false, '', '', false, false) . '</span>';
 						}
-
+						
 						$row_1 = $open_link;
 						$row_1 .= '<span class="events_agent"><b class="ui-table-cell-label">' . __('Agent') . '</b>' . $agent_name . '</span>';
 						$row_1 .= '<span class="events_timestamp">' . $status_icon . '<br>' . ui_print_timestamp ($event['timestamp_rep'], true) . '</span>';
@@ -912,7 +912,7 @@ class Events {
 				
 				function ajax_load_rows() {
 					if (load_more_rows) {
-
+						
 						load_more_rows = 0;
 						
 						postvars = {};
@@ -933,7 +933,7 @@ class Events {
 							postvars,
 							function (data) {
 								add_rows(data);
-
+								
 								//For large screens load the new events
 								if (document.documentElement.scrollHeight == document.documentElement.clientHeight) {
 									ajax_load_rows();
@@ -944,14 +944,24 @@ class Events {
 				}
 				
 				$(document).ready(function() {
+					ajax_load_rows();
+					
 					$(window).bind(\"scroll\", function () {
-						if ($(this).scrollTop() + $(this).height()
+						custom_scroll();
+					});
+					
+					$(window).on(\"touchmove\", function(event) {
+						custom_scroll();
+					});
+				});
+				
+				function custom_scroll() {
+					if ($(this).scrollTop() + $(this).height()
 							>= ($(document).height() - 100)) {
 							
 							ajax_load_rows();
 						}
-					});
-				});
+				}
 			</script>");
 	}
 	

@@ -1,5 +1,11 @@
 2013-12-13 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* res/drawable-ldpi/icon_logo_pandorafms.png,
+	res/drawable-ldpi/pandorafms_logo.png, ic_launcher-web.png: updated
+	the icons, thanks Carla.
+
+2013-12-13 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* AndroidManifest.xml: changed the android version support for to
 	show the option button.
 

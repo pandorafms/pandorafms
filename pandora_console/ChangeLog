@@ -1,3 +1,10 @@
+2013-12-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora.js: Added auto scroll
+	and resizable attributes to module graphs pop up
+	to improve usability with zoomed graphs.
+	Incident: #417
+
 2013-12-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_flot.php

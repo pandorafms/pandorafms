@@ -1,5 +1,10 @@
 2013-12-13 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* AndroidManifest.xml: changed the android version support for to
+	show the option button.
+
+2013-12-13 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* src/pandorafms/pandorafmsandroidconsole/ConnectionCustomToast.java:
 	cleaned source code style.
 	

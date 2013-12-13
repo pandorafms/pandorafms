@@ -47,7 +47,7 @@ public class ConnectionCustomToast extends Activity {
 	}
 	
 	@Override
-	public void onWindowFocusChanged(boolean hasFocus){
+	public void onWindowFocusChanged(boolean hasFocus) {
 		loadAnimation.start();
 	}
 }

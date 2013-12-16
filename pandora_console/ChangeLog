@@ -1,3 +1,10 @@
+2013-12-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_gis.php
+	include/javascript/openlayers.pandora.js
+	include/styles/pandora.css: Remove our zoom in google maps
+	on GIS view to use googles one. Incident #448
+
 2013-12-13  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/operation/events.php, mobile/operation/modules.php,

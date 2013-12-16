@@ -2807,4 +2807,8 @@ div#agent_wizard_subtabs {
 	overflow: visible !important;
 }
 
+/* GIS CSS */
 
+.olLayerDiv {
+	z-index: 102 !important;
+}

@@ -116,6 +116,7 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 				break;
 			case 'Gmap':
 				echo "baselayer['gmap_type'] = '" . $baselayer['gmap_type'] . "';";
+				echo "controlsList.splice(controlsList.indexOf('PanZoomBar'), 1);";
 				break;
 		}
 		

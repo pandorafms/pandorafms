@@ -1,5 +1,11 @@
 2013-12-16  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php: Added criticity subquery to
+	events grouped query to fix bad criticity bug.
+	Incident: #406
+
+2013-12-16  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_gis.php: Disable more controls
 	from the google maps in GIS to fix arrows controls
 

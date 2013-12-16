@@ -1,3 +1,8 @@
+2013-12-16 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* res/values/strings.xml, res/values-es/strings.xml,
+	res/values-ja/strings.xml: update the names of Pandora.
+
 2013-12-13 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* res/drawable-ldpi/icon_logo_pandorafms.png,

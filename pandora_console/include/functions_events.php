@@ -133,7 +133,8 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
 						MIN(utimestamp) AS timestamp_rep_min,
 						(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
-						(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
+						(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario,
+						(SELECT criticity FROM tevento WHERE id_evento = MAX(te.id_evento)) AS criticity
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
@@ -153,7 +154,8 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
 						MIN(utimestamp) AS timestamp_rep_min,
 						(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
-						(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
+						(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario,
+						(SELECT criticity FROM tevento WHERE id_evento = MAX(te.id_evento)) AS criticity
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra" . $groupby_extra . "
@@ -180,7 +182,8 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 					LISTAGG(id_evento, '') AS similar_ids,
 					MIN(utimestamp) AS timestamp_rep_min,
 					(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
-					(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
+					(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario,
+					(SELECT criticity FROM tevento WHERE id_evento = MAX(te.id_evento)) AS criticity
 					FROM $table te
 					WHERE 1=1 " . $sql_post . " 
 					GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b 
@@ -191,7 +194,6 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 			}
 			break;
 	}
-	
 	
 	//Extract the events by filter (or not) from db
 	$events = db_get_all_rows_sql ($sql);

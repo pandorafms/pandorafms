@@ -705,6 +705,17 @@ li.ui-btn {
 	}
 }
 
+/* For tablets */
+@media screen and (min-width: 800px)
+{
+	.ui-content>.ui-btn {
+		width: 21%;
+		display: inline-block;
+		margin: 4px 10px;
+		height: 35px;
+	}
+}
+
 .events .cell_0 img {
 	margin-right: 5px;
 }
@@ -768,5 +779,5 @@ DIV.nodata_container {
 
 /* JQuery Mobile responsive hack to tables with */
 .ui-table-reflow.ui-responsive {
-	display: table;
+	display: table !important;
 }

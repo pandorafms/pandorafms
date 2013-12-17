@@ -1,3 +1,8 @@
+2013-12-17  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/include/style/main.css: Add a responsive design hack to
+	mobile console to increase tables with to 100% in tablet devices
+
 2013-12-16  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php: Added criticity subquery to

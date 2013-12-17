@@ -765,3 +765,8 @@ DIV.nodata_container {
         margin: auto auto;
         display: table;
 }
+
+/* JQuery Mobile responsive hack to tables with */
+.ui-table-reflow.ui-responsive {
+	display: table;
+}

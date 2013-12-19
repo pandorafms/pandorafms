@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "4.1.1 PS131218";
+my $version = "4.1.1 PS131219";
 
 # Pandora server configuration
 my %conf;

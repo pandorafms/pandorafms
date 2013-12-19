@@ -239,31 +239,38 @@ ui_require_javascript_file('pandora_modules');
 function type_change () {
 	// type 1-4 - Generic_xxxxxx
 	if ((document.component.type.value > 0) && (document.component.type.value < 5)) {
-		document.component.snmp_oid.style.background="#ddd";
-		document.component.snmp_oid.disabled=true;
-		document.component.snmp_community.style.background="#ddd";
-		document.component.snmp_community.disabled=true;
-		document.component.tcp_send.style.background="#ddd";
-		document.component.tcp_send.disabled=true;
-		document.component.tcp_rcv.style.background="#ddd";
-		document.component.tcp_rcv.disabled=true;
-		document.component.tcp_port.style.background="#ddd";
-		document.component.tcp_port.disabled=true;
+		$("input[name=snmp_oid]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp_oid]").attr("disabled", true);
 		
-		document.component.snmp_version.style.background="#ddd";
-		document.component.snmp_version.disabled=true;
-		document.component.snmp3_auth_user.style.background="#ddd";
-		document.component.snmp3_auth_user.disabled=true;
-		document.component.snmp3_auth_pass.background="#ddd";
-		document.component.snmp3_auth_pass.disabled=true;
-		document.component.snmp3_privacy_method.style.background="#ddd";
-		document.component.snmp3_privacy_method.disabled=true;
-		document.component.snmp3_privacy_pass.style.background="#ddd";
-		document.component.snmp3_privacy_pass.disabled=true;
-		document.component.snmp3_auth_method.style.background="#ddd";
-		document.component.snmp3_auth_method.disabled=true;
-		document.component.snmp3_security_level.style.background="#ddd";
-		document.component.snmp3_security_level.disabled=true;
+		$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp_community]").attr("disabled", true);
+		
+		$("input[name=tcp_send]").css({backgroundColor: '#ddd'});
+		$("input[name=tcp_send]").attr("disabled", true);
+		
+		$("input[name=tcp_rcv]").css({backgroundColor: '#ddd'});
+		$("input[name=tcp_rcv]").attr("disabled", true);
+		
+		$("input[name=tcp_port]").css({backgroundColor: '#ddd'});
+		$("input[name=tcp_port]").attr("disabled", true);
+		
+		$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp3_auth_user]").attr("disabled", true);
+		
+		$("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp3_auth_pass]").attr("disabled", true);
+		
+		$("#snmp3_privacy_method").css({backgroundColor: '#ddd'});
+		$("#snmp3_privacy_method").attr("disabled", true);
+		
+		$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp3_privacy_pass]").attr("disabled", true);
+		
+		$("#snmp3_auth_method").css({backgroundColor: '#ddd'});
+		$("#snmp3_auth_method").attr("disabled", true);
+		
+		$("#snmp3_security_level").css({backgroundColor: '#ddd'});
+		$("#snmp3_security_level").attr("disabled", true);
 	}
 	// type 15-18- SNMP
 	if ((document.component.type.value > 14) && (document.component.type.value < 19 )) { 

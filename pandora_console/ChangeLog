@@ -1,3 +1,8 @@
+2013-12-19  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/modules/manage_network_components_form.php: Fixed WMI 
+	components form fails due to bad javascript code for incident #462
+
 2013-12-17  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/include/style/main.css: Add important attribute to 

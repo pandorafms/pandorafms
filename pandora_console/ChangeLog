@@ -1,5 +1,10 @@
 2013-12-19  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_visual_map.php: Fixed string simple 
+	values in visual console for incident #463
+
+2013-12-19  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/modules/manage_network_components_form.php: Fixed WMI 
 	components form fails due to bad javascript code for incident #462
 

@@ -944,7 +944,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	$lines = array ();
 	
 	foreach ($layout_datas as $layout_data) {
-		
 		//Check the items are from disabled or pending delete modules
 		if ($layout_data['id_agente_modulo'] != 0 &&
 			(($layout_data['type'] != LABEL)
@@ -1390,8 +1389,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				//TODO: change interface to add a period parameter, now is set to 1 day
 				switch ($layout_data['type']) {
 					case SIMPLE_VALUE:
-						
-						
 						//Metaconsole db connection
 						if ($layout_data['id_metaconsole'] != 0) {
 							$connection = db_get_row_filter ('tmetaconsole_setup',
@@ -1410,8 +1407,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							metaconsole_restore_db();
 						}
 						
+						// If the value is a string, dont format it
+						if (!is_string($value)) {
+							$value = format_for_graph($value, 2);
+						}
 						
-						$value = format_for_graph($value, 2);
 						if (!empty($unit_text))
 							$value .= " " . $unit_text;
 						break;

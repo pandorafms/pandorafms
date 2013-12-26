@@ -117,7 +117,11 @@ if ($correctLogin) {
 	}
 }
 else {
-	db_pandora_audit("API access Failed", $no_login_msg, $user, $ipOrigin);
+	// TODO: Implement a new switch in config to enable / disable
+	// ACL auth failure: if enabled and have lots of traffic can produce millions
+	// of records and a considerable OVERHEAD in the system :(
+	
+	//db_pandora_audit("API access Failed", $no_login_msg, $user, $ipOrigin);
 	sleep (15);
 	
 	//Protection on DoS attacks

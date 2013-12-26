@@ -1,3 +1,8 @@
+2013-12-26  Sancho Lerena <slerena@artica.es>
+	
+	* include/api.php: Avoid to store API auth failure in
+	session log to avoid DoS due high volume of transactions.
+
 2013-12-19  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php: Fixed string simple 

@@ -1455,7 +1455,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 	my $number_last_day_month = month_have_days($month, $year);
 	
 	#my $time = $local_time->hms;
-	my $time = $var_localtime[2] . ":" . $var_localtime[1] . ":" . $var_localtime[0];
+	my $time = sprintf("%02d:%02d:%02d", $var_localtime[2], $var_localtime[1], $var_localtime[0]);
 	
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
@@ -1543,7 +1543,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 	my $number_last_day_month = month_have_days($month, $year);
 	
 	#my $time = $local_time->hms;
-	my $time = $var_localtime[2] . ":" . $var_localtime[1] . ":" . $var_localtime[0];
+	my $time = sprintf("%02d:%02d:%02d", $var_localtime[2], $var_localtime[1], $var_localtime[0]);
 	
 	#With this stop the planned downtime for 31 (or 30) day in months
 	#  with less days.
@@ -1631,7 +1631,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 	my $number_day_week = $var_localtime[6];
 	
 	#my $time = $local_time->hms;
-	my $time = $var_localtime[2] . ":" . $var_localtime[1] . ":" . $var_localtime[0];
+	my $time = sprintf("%02d:%02d:%02d", $var_localtime[2], $var_localtime[1], $var_localtime[0]);
 	
 	my $found = 0;
 	
@@ -1732,7 +1732,7 @@ sub pandora_planned_downtime_weekly_stop($$) {
 	my $number_day_week = $var_localtime[6];
 	
 	#my $time = $local_time->hms;
-	my $time = $var_localtime[2] . ":" . $var_localtime[1] . ":" . $var_localtime[0];
+	my $time = sprintf("%02d:%02d:%02d", $var_localtime[2], $var_localtime[1], $var_localtime[0]);
 	
 	my $found = 0;
 	

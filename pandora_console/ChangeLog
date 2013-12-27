@@ -1,5 +1,10 @@
 2013-12-27 Hirofumi Kosaka <kosaka@rworks.jp>
 
+	* include/functions_api.php: Added 'plugin_macros' and
+	'module_macros' to the return column of tree_agents API.
+
+2013-12-27 Hirofumi Kosaka <kosaka@rworks.jp>
+
 	* include/functions_api.php: Added 'module_macros' parameter
 	to api_set_create_*_modules, api_set_update_*_module, and so
 	on. Also added 'macros' parameter to plugin module functions.

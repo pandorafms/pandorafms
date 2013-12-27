@@ -96,7 +96,7 @@ then
 
 	if [ $DATABASE == 1 ]
 	then
-		mysqldump -u $DBUSER -p$DBPASS -h $DBHOST $DBNAME > pandorafms_backup_$TIMESTAMP.sql
+		mysqldump -u $DBUSER -p$DBPASS --max_allowed_packet=32M -h $DBHOST $DBNAME > pandorafms_backup_$TIMESTAMP.sql
 		tar cvzfh pandorafms_backup_$TIMESTAMP.tar.gz pandorafms_backup_$TIMESTAMP.sql $PANDORAPATH/* /etc/pandora /var/spool/pandora/data_in --exclude .data 2> /dev/null > /dev/null
 	else
 		tar cvzhf pandorafms_backup_$TIMESTAMP.tar.gz $PANDORAPATH/* /etc/pandora /var/spool/pandora/data_in --exclude .data 2> /dev/null > /dev/null	

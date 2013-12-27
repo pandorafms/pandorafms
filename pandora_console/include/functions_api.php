@@ -429,6 +429,8 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 		'module_last_execution_try',
 		'module_status_changes',
 		'module_last_status',
+		'module_plugin_macros',
+		'module_macros',
 		
 		'alert_id_agent_module',
 		'alert_id_alert_template',
@@ -546,7 +548,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 		'module_max_critical' => 'max_critical as module_max_critical',
 		'module_str_critical' => 'str_critical as module_str_critical',
 		'module_min_ff_event' => 'min_ff_event as module_min_ff_event',
-		'module_delete_pending' => 'delete_pending as module_delete_pending');
+		'module_delete_pending' => 'delete_pending as module_delete_pending',
+		'module_plugin_macros' => 'macros as module_plugin_macros',
+		'module_macros' => 'module_macros as module_macros');
 	
 	/* module related field mappings 2/2 (output field => column for 'tagente_estado') */
 	
@@ -696,6 +700,11 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 				
 				foreach ($modules as &$module) {
 					$module['type_row']  = 'module';
+
+					if( $module['module_macros'] ) {
+						$module['module_macros'] = base64_decode( $module['module_macros']);
+					}
+
 					$returnVar[] = $module;
 					
 					if ( strlen($alert_additional_columns) <= 0 ) {

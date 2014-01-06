@@ -1826,17 +1826,17 @@ Update planned downtimes.
 sub pandora_planned_downtime ($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	pandora_planned_downtime_disabled_once_start($pa_config, $dbh);
 	pandora_planned_downtime_disabled_once_stop($pa_config, $dbh);
+	pandora_planned_downtime_disabled_once_start($pa_config, $dbh);
 	
-	pandora_planned_downtime_quiet_once_start($pa_config, $dbh);
 	pandora_planned_downtime_quiet_once_stop($pa_config, $dbh);
+	pandora_planned_downtime_quiet_once_start($pa_config, $dbh);
 	
-	pandora_planned_downtime_monthly_start($pa_config, $dbh);
 	pandora_planned_downtime_monthly_stop($pa_config, $dbh);
+	pandora_planned_downtime_monthly_start($pa_config, $dbh);
 	
-	pandora_planned_downtime_weekly_start($pa_config, $dbh);
 	pandora_planned_downtime_weekly_stop($pa_config, $dbh);
+	pandora_planned_downtime_weekly_start($pa_config, $dbh);
 }
 
 ########################################################################

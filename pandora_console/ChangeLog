@@ -1,3 +1,10 @@
+2014-01-07  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/networkmap.php: fixed the save the font size in
+	the networkmaps.
+	
+	Fixes: #2408
+
 2013-12-27 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Added 'plugin_macros' and

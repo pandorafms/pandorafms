@@ -234,14 +234,30 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 			html_print_image("images/delete_mc.png", true, array ("title" => __('Delete map'))) .'</a>');
 	
 		$buttons['savemap'] = array('active' => $activeTab == false,
-		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
-			&amp;tab='.$activeTab.'&amp;save_networkmap=1&amp;name='.$name.'&amp;group='.$group.'
-			&amp;layout='.$layout.'&amp;nooverlap='.$nooverlap.'&amp;simple='.$simple.'&amp;regen='.$regen.'
-			&amp;zoom='.$zoom.'&amp;ranksep='.$ranksep.'&amp;fontsize='.$font_size.'&amp;depth='.$depth.'
-			&amp;modwithalerts='.$modwithalerts.'&amp;text_filter='.$text_filter.
-			'&amp;dont_show_subgroups='.$dont_show_subgroups.'&amp;hidepolicymodules='.$hidepolicymodules.'
-			&amp;module_group='.$module_group.'&amp;pure='.$pure.'&amp;hidden_options='.(int)$hidden_options.'
-			&amp;show_snmp_modules='.(int)$show_snmp_modules.'">' . 
+		'text' => '<a href="index.php?sec=network&amp;' .
+			'sec2=operation/agentes/networkmap&amp;' .
+			'id_networkmap=' . $id_networkmap . '&amp;' .
+			'save_networkmap=1&amp;' .
+			'tab=' . $activeTab . '&amp;' .
+			'save_networkmap=1&amp;' .
+			'name=' . $name . '&amp;' .
+			'group=' . $group . '&amp;' .
+			'layout=' . $layout . '&amp;' .
+			'nooverlap=' . $nooverlap . '&amp;' .
+			'simple=' . $simple . '&amp;' .
+			'regen=' . $regen . '&amp;' .
+			'zoom=' . $zoom . '&amp;' .
+			'ranksep=' . $ranksep . '&amp;' .
+			'font_size=' . $font_size . '&amp;' .
+			'depth=' . $depth . '&amp;' .
+			'modwithalerts=' . $modwithalerts . '&amp;' .
+			'text_filter=' . $text_filter . '&amp;' .
+			'dont_show_subgroups=' . $dont_show_subgroups . '&amp;' .
+			'hidepolicymodules=' . $hidepolicymodules . '&amp;' .
+			'module_group=' . $module_group . '&amp;' .
+			'pure=' . $pure . '&amp;' .
+			'hidden_options=' . (int)$hidden_options . '&amp;' .
+			'show_snmp_modules=' . (int)$show_snmp_modules . '">' . 
 			html_print_image("images/save_mc.png", true, array ("title" => __('Save map'))) .'</a>');
 	}
 }

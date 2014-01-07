@@ -1,5 +1,12 @@
 2014-01-07  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/planned_downtime.list.php: fixed the manual stop
+	of planned downtime.
+	
+	Fixes: #479 (Integria locally)
+
+2014-01-07  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/networkmap.php: fixed the save the font size in
 	the networkmaps.
 	

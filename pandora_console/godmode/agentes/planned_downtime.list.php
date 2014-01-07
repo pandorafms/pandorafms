@@ -26,6 +26,7 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 }
 
 require_once ('include/functions_users.php');
+require_once ('include/functions_events.php');
 
 // Header
 ui_print_page_header(

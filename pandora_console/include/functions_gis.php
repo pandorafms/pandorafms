@@ -966,6 +966,7 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	
 	$agent_name = agents_get_name($agent_id);
 	
+	$clean_agent_name = $agent_name;
 	//Avoid the agents with characters that fails the div.
 	$agent_name = md5($agent_name);
 	
@@ -1028,7 +1029,7 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	
 	
 	gis_add_agent_point("layer_for_agent_" . $agent_name,
-		$agent_name, $agentPositionLatitude, $agentPositionLongitude,
+		$clean_agent_name, $agentPositionLatitude, $agentPositionLongitude,
 		$agent_icon, $agent_icon_width, $agent_icon_height, $agent_id,
 		$status, 'point_agent_info');
 	

@@ -212,9 +212,15 @@ config_check();
 					$table->data[0][9] .= '</a>';
 				}
 				
+				
+				
 				// Search bar
 				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
-				$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+				if (strlen($config['search_keywords']) == 0)
+					$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+				else
+					$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
+				
 				$search_bar .= '<input type="text" id="keywords" name="keywords"';
 				if (!isset($config['search_keywords']))
 					$search_bar .= "value='" . __("Enter keywords to search") . "'";

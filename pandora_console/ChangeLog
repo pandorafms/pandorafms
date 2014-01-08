@@ -1,5 +1,10 @@
 2014-01-08  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* general/header.php: fixed the empty action with trying to write
+	some thing in the global search field when it is search anything.
+
+2014-01-08  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_gis.php: fixed the agent name label.
 	
 	Fixes: #2401

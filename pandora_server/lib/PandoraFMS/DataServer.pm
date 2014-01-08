@@ -482,7 +482,7 @@ sub process_xml_data ($$$$$) {
 				next unless defined ($data->{'value'});
 							
 				$module_data->{'data'} = $data->{'value'};
-				my $data_timestamp = get_tag_value ($module_data, 'timestamp', $timestamp);
+				my $data_timestamp = get_tag_value ($data, 'timestamp', $timestamp);
 				process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name,
 									 $module_type, $interval, $data_timestamp, $dbh);
 			}

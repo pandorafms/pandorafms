@@ -1,5 +1,11 @@
 2014-01-08  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_gis.php: fixed the agent name label.
+	
+	Fixes: #2401
+
+2014-01-08  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_gis.php: fixed with a dirty hack the bug about
 	the google maps with own old version of openlayer.
 

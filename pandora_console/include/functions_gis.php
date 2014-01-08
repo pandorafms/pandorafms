@@ -116,7 +116,6 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 				break;
 			case 'Gmap':
 				echo "baselayer['gmap_type'] = '" . $baselayer['gmap_type'] . "';";
-				echo "controlsList = [];";
 				break;
 		}
 		
@@ -127,6 +126,30 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 		baselayerList, controlsList)";
 	
 	echo "</script>";
+	
+	?>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			setInterval(
+		function() {
+				
+				$("img")
+					.filter(function() { return this.src.match(/mapcnt3/);})
+					.css('display', 'none');
+					
+				$("img")
+					.filter(function() { return this.src.match(/cb_scout2/);})
+					.css('display', 'none');
+				
+				$(".gm-style-mtc").css('display', 'none');
+			}
+		
+		,3000);
+		});
+		
+		
+	</script>
+	<?php
 }
 
 function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null, $public_console = 0, $id_map = 0) {

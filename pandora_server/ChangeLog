@@ -1,3 +1,8 @@
+2014-01-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Fixed a typo that prevented timestamps in
+	  datalists from being read. Fixes bug #2404.
+
 2014-01-06  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Fixed that planned downtime is disabled

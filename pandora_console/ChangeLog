@@ -1,3 +1,8 @@
+2014-01-09  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/servers/plugin.php: Fixed that unexpected strings are set
+	in parameter macro fields when multi-byte characters are entered.
+
 2014-01-08  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* general/header.php: fixed the empty action with trying to write

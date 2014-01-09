@@ -1001,9 +1001,16 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	}
 	
 	if ($gmap_layer === true) {
-		?>
-		<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
-		<?php
+		if (https_is_running()) {
+?>
+	<script type="text/javascript" src="https://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
+<?php
+		}
+		else {
+?>
+	<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
+<?php
+		}
 	}
 	
 	gis_print_map($agent_name . "_agent_map", $defaultMap['zoom_level'],

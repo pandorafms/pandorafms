@@ -1,3 +1,13 @@
+2014-01-09  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions.php: added function "https_is_running".
+	
+	* include/functions_gis.php, operation/gis_maps/render_view.php,
+	operation/gis_maps/public_console.php, godmode/setup/gis_step_2.php:
+	fixed the urls for google maps when it is running in https mode.
+	
+	Fixes: #2403
+
 2014-01-09  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/servers/plugin.php: Fixed that unexpected strings are set

@@ -406,7 +406,7 @@ else {
 			$i++;
 		}
 		
-		$macros = json_encode($macros);
+		$macros = io_json_mb_encode($macros);
 		
 		$values = array(
 			'name' => $plugin_name,  
@@ -460,7 +460,7 @@ else {
 			$i++;
 		}
 		
-		$macros = json_encode($macros);
+		$macros = io_json_mb_encode($macros);
 		
 		$values = array(
 			'name' => $plugin_name,

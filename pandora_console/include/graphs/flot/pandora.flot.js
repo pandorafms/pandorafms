@@ -965,8 +965,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_'+graph_id).click(function() {
-			$('#overview_'+graph_id).toggle();
-			//adjust_menu(graph_id, plot, parent_height);
+			if ( $('#overview_'+graph_id).css('visibility') == 'hidden' )
+				$('#overview_'+graph_id).css('visibility','visible');
+			else
+				$('#overview_'+graph_id).css('visibility','hidden');
 		});
 		
 		$('#menu_threshold_'+graph_id).click(function() {

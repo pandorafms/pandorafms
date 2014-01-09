@@ -68,6 +68,17 @@ require_once('functions_io.php');
 //	}
 //}
 
+function https_is_running() {
+	if (isset ($_SERVER['HTTPS'])
+		&& ($_SERVER['HTTPS'] === true
+		|| $_SERVER['HTTPS'] == 'on')) {
+		
+		return true;
+	}
+	
+	return false;
+}
+
 /**
  * Cleans an object or an array and casts all values as integers
  *

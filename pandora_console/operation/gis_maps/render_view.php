@@ -72,10 +72,18 @@ if ($confMap !== false) {
 		}
 	}
 }
+
 if ($gmap_layer === true) {
+	if (https_is_running()) {
+?>
+	<script type="text/javascript" src="https://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
+<?php
+	}
+	else {
 ?>
 	<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
 <?php
+	}
 }
 
 $controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition', 'layerSwitcher');

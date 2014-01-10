@@ -1,3 +1,10 @@
+2014-01-10  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_visual_map.php: fixed the show simple values in
+	the visualconsole editor from the old Pandora versions.
+	
+	Fixes: #2407
+
 2014-01-09  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/flot/pandora.flot.js

@@ -1249,6 +1249,64 @@ function config_check () {
 			}
 		}
 	}
+	
+	// PHP configuration values
+	$PHPupload_max_filesize = config_return_in_bytes(ini_get('upload_max_filesize'));
+	$PHPmax_input_time = ini_get('max_input_time');
+	$PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
+	$PHPmax_execution_time = ini_get('max_execution_time');
+	
+	if ($PHPmax_input_time !== '-1') {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_info_message(
+			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'max_input_time'),
+			'message' => sprintf(__('Recommended value is %s'), '-1 (' . __('Unlimited') . ')') . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	}
+	
+	if ($PHPmax_execution_time !== '0') {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_info_message(
+			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'max_execution_time'),
+			'message' => sprintf(__('Recommended value is: %s'), '0 (' . __('Unlimited') . ')') . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	}
+	
+	$PHPupload_max_filesize_min = config_return_in_bytes('800M');
+	
+	if ($PHPupload_max_filesize < $PHPupload_max_filesize_min) {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_info_message(
+			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'upload_max_filesize'),
+			'message' => sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '800M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	}
+	
+	$PHPmemory_limit_min = config_return_in_bytes('500M');
+	
+	if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_info_message(
+			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'upload_max_filesize'),
+			'message' => sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '500M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	}
+}
+
+function config_return_in_bytes($val) {
+	$val = trim($val);
+	$last = strtolower($val[strlen($val)-1]);
+	switch($last) {
+		// The 'G' modifier is available since PHP 5.1.0
+		case 'g':
+			$val *= 1024;
+		case 'm':
+			$val *= 1024;
+		case 'k':
+			$val *= 1024;
+	}
+
+	return $val;
 }
 
 ?>

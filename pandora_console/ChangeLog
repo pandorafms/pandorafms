@@ -1,3 +1,9 @@
+2014-01-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_flot.php: fix unecessary space under the
+	area graphs when menu is not setted. If is setted, this space is
+	for the overview graph. Incident #499
+
 2014-01-10  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php: fixed the show simple values in

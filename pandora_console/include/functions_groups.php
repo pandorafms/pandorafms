@@ -705,7 +705,7 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 	// Group name
 	$group_cell = __('Group');
 	$row[$group_cell] = $group['prefix'];
-	$row[$group_cell] .= "<a href='index.php?page=agents&id_group=" . $id_group . "'>";
+	$row[$group_cell] .= "<a href='index.php?page=agents&group=" . $id_group . "'>";
 	$row[$group_cell] .= ui_print_group_icon ($id_group, true, "groups_small", '', false);
 	$row[$group_cell] .= ui_print_truncate_text($group['name']);
 	$row[$group_cell] .= "</a>";
@@ -749,43 +749,43 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 	}
 	
 	$row[__('Agents')] = "<a class='link_count' href='index.php?" .
-		"page=agents&id_group=" . $id_group . "'>";
+		"page=agents&group=" . $id_group . "'>";
 	$row[__('Agents')] .= $data["total_agents"];
 	$row[__('Agents')] .= "</a>";
 	
 	// Agents unknown
 	$row[__('Agents unknown')] = "<a class='link_count' href='index.php?" .
-		"page=agents&id_group=" . $id_group . "&status=" . AGENT_STATUS_UNKNOWN . "'>";
+		"page=agents&group=" . $id_group . "&status=" . AGENT_STATUS_UNKNOWN . "'>";
 	$row[__('Agents unknown')] .= $data["agents_unknown"];
 	$row[__('Agents unknown')] .= "</a>";
 	
 	// Monitors Unknown
 	$row[__('Unknown')] = "<a class='link_count' href='index.php?" .
-		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
+		"page=modules&group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
 	$row[__('Unknown')] .= $data["monitor_unknown"];
 	$row[__('Unknown')] .= "</a>";
 	
 	// Monitors Not Init
 	$row[__('Not init')] = "<a class='link_count' href='index.php?" .
-		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
+		"page=modules&group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
 	$row[__('Not init')] .= $data["monitor_not_init"];
 	$row[__('Not init')] .= "</a>";
 	
 	// Monitors OK
 	$row[__('Normal')] = "<a class='link_count' href='index.php?" .
-		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
+		"page=modules&group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
 	$row[__('Normal')] .= $data["monitor_ok"];
 	$row[__('Normal')] .= "</a>";
 	
 	// Monitors Warning
 	$row[__('Warning')] = "<a class='link_count' href='index.php?" .
-		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
+		"page=modules&group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
 	$row[__('Warning')] .= $data["monitor_warning"];
 	$row[__('Warning')] .= "</a>";
 	
 	// Monitors Critical
 	$row[__('Critical')] = "<a class='link_count' href='index.php?" .
-		"page=modules&id_group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
+		"page=modules&group=" . $id_group . "&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
 	$row[__('Critical')] .= $data["monitor_critical"];
 	$row[__('Critical')] .= "</a>";
 	

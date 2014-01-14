@@ -1287,7 +1287,7 @@ function config_check () {
 	if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_info_message(
-			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'upload_max_filesize'),
+			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'memory_limit'),
 			'message' => sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '500M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
 			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}

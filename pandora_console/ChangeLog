@@ -1,5 +1,10 @@
 2014-01-14  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_config.php: Fixed a warning message on
+	PHP configuration advise. For Sourceforge ticket #2409
+
+2014-01-14  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_groups.php: Fix group parameter in links
 	of groups view on mobile console. Incident #491
 

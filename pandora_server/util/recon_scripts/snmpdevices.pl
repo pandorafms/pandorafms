@@ -241,9 +241,17 @@ foreach $addr_item (@net_addr_list) {
 				next;
 			}
 
-			# Check if the agent exists
-			my $agent_id = get_agent_id($dbh, $host_name);
+			my $agent_id;
 			
+			# Does the host already exist?
+			my $agent = get_agent_from_addr ($dbh, $addr);
+			if (defined ($agent)) {
+				$agent_id = $agent->{'id_agente'};
+			}
+			else {
+				$agent_id = get_agent_id($dbh, $host_name);
+			}
+		
 			# If the agent doesnt exist we create it
 			if($agent_id == -1) {
 				# Create a new agent

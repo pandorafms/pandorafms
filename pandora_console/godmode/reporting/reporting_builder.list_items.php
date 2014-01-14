@@ -36,7 +36,7 @@ if ($config ['metaconsole'] == 1 and defined('METACONSOLE')) {
 }
 else {
 	//FORM FILTER
-	switch ($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
 			$rows = db_get_all_rows_sql('
@@ -314,7 +314,9 @@ foreach ($items as $item) {
 	}
 	
 	if ($item['id_agent'] == 0) {
-		$is_inventory_item = $item['type'] == 'inventory' || $item['type'] == 'inventory_changes';
+		$is_inventory_item =
+			$item['type'] == 'inventory' || $item['type'] == 'inventory_changes';
+		
 		// Due to SLA or top N or general report items
 		if (!$is_inventory_item && ($item['id_agent_module'] == '' || $item['id_agent_module'] == 0)) {
 			$row[2] = '';
@@ -325,7 +327,7 @@ foreach ($items as $item) {
 			if ($is_inventory_item) {
 				$external_source = json_decode($item['external_source'], true);
 				$agents = $external_source['id_agents'];
-				$modules = $external_source['id_agents'];
+				$modules = $external_source['inventory_modules'];
 				
 				$agent_name_db = array();
 				foreach ($agents as $a) {
@@ -333,12 +335,7 @@ foreach ($items as $item) {
 				}
 				$agent_name_db = implode('<br>',$agent_name_db);
 				
-				$module_name_db = array();
-				foreach ($modules as $m) {
-					$module_name_raw = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $m));
-					$module_name_db[] = ui_print_truncate_text(io_safe_output($module_name_raw), 'module_small');
-				}
-				$module_name_db = implode('<br>',$module_name_db);
+				$module_name_db = implode('<br>',$modules);
 			}
 			else {
 				$agent_name_db = agents_get_name(agents_get_agent_id_by_module_id($item['id_agent_module']));

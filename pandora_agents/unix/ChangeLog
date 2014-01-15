@@ -1,3 +1,8 @@
+2014-01-15  Sergio Martin <sergio.martin@artica.es>
+
+	* pandora_revent: Update unix agent pandora_revent script
+	to be compatible with api function of last version. Incident #347
+
 2013-11-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Completely integrated plug-ins with modules.

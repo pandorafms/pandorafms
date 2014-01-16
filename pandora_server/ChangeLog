@@ -1,3 +1,8 @@
+2014-01-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Allow intervals to infinity when configuring
+	  alert actions.
+
 2014-01-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_server: Prevent the thread that executes periodic tasks

@@ -1156,15 +1156,11 @@ function alerts_add_alert_agent_module_action ($id_alert_template_module, $id_al
 		$max = 0;
 		$min = 0;
 		if (isset ($options['fires_max']))
-			$max = (int) $options['fires_max'];
+			$values['fires_max'] = $options['fires_max'];
 		if (isset ($options['fires_min']))
-			$min = (int) $options['fires_min'];
+			$values['fires_min'] = $options['fires_min'];
 		if (isset ($options['module_action_threshold']))
-			$values['module_action_threshold'] =
-				(int) $options['module_action_threshold'];
-		
-		$values['fires_max'] = max ($max, $min);
-		$values['fires_min'] = min ($max, $min);
+			$values['module_action_threshold'] = (int) $options['module_action_threshold'];
 	}
 	
 	switch ($config["dbtype"]) {

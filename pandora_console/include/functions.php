@@ -537,6 +537,150 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 }
 
 /** 
+ * INTERNAL (use ui_print_timestamp for output): Transform an amount of time in seconds into a human readable
+ * strings of minutes, hours or days. Used in alert views.
+ * 
+ * @param int $seconds Seconds elapsed time
+ * @param int $exactly If it's true, return the exactly human time
+ * @param string $units The type of unit, by default 'large'.
+ * 
+ * @return string A human readable translation of minutes.
+ */
+function human_time_description_alerts ($seconds, $exactly = false, $units = 'tiny') {
+	switch ($units) {
+		case 'large':
+			$secondsString = __('seconds');
+			$daysString = __('days');
+			$monthsString = __('months');
+			$yearsString = __('years');
+			$minutesString = __('minutes');
+			$hoursString = __('hours');
+			$nowString = __('Now');
+			break;
+		case 'tiny':
+			$secondsString = __('s');
+			$daysString = __('d');
+			$monthsString = __('M');
+			$yearsString = __('Y');
+			$minutesString = __('m');
+			$hoursString = __('h');
+			$nowString = __('N');
+			break;
+	}
+	
+	if (empty ($seconds)) {
+		return $nowString; 
+		// slerena 25/03/09
+		// Most times $seconds is empty is because last contact is current date
+		// Put here "uknown" or N/A or something similar is not a good idea
+	}
+	
+	if ($exactly) {
+		$returnDate = '';
+		
+		$years = floor($seconds / 31104000);
+		
+		if ($years != 0) {
+			$seconds = $seconds - ($years * 31104000);
+			
+			$returnDate .= "$years $yearsString ";
+		}
+		
+		$months = floor($seconds / 2592000);
+		
+		if ($months != 0) {
+			$seconds = $seconds - ($months * 2592000);
+			
+			$returnDate .= "$months $monthsString ";
+		}
+		
+		$days = floor($seconds / 86400);
+		
+		if ($days != 0) {
+			$seconds = $seconds - ($days * 86400);
+			
+			$returnDate .= "$days $daysString ";
+		}
+		
+		$returnTime = '';
+		
+		$hours = floor($seconds / 3600);
+		
+		if ($hours != 0) {
+			$seconds = $seconds - ($hours * 3600);
+			
+			$returnTime .= "$hours $hoursString ";
+		}
+		
+		$mins = floor($seconds / 60);
+		
+		if ($mins != 0) {
+			$seconds = $seconds - ($mins * 60);
+			
+			if ($hours == 0) {
+				$returnTime .= "$mins $minutesString ";
+			}
+			else {
+				$returnTime = sprintf("%02d",$hours) . "$hoursString" .
+					sprintf("%02d",$mins) . "$minutesString";
+			}
+		}
+		
+		if ($seconds != 0) {
+			if ($hours == 0) {
+				$returnTime .= "$seconds $secondsString ";
+			}
+			else {
+				$returnTime = sprintf("%02d",$hours) . "$hoursString" .
+					sprintf("%02d",$mins) . "$minutesString" .
+					sprintf("%02d",$seconds) . "$secondsString";
+			}
+		}
+		
+		$return = ' ';
+		
+		if ($returnDate != '') {
+			$return = $returnDate;
+		}
+		
+		if ($returnTime != '') {
+			$return .= $returnTime;
+		}
+		
+		if ($return == ' ') {
+			return $nowString; 
+		}
+		else {
+			return $return;
+		}
+		
+	}
+	
+	if ($seconds < 60)
+		return format_numeric ($seconds, 0)." " . $secondsString;
+	
+	if ($seconds < 3600) {
+		$minutes = floor($seconds / 60);
+		$seconds = $seconds % 60;
+		if ($seconds == 0)
+			return $minutes.' ' . $minutesString;
+		$seconds = sprintf ("%02d", $seconds);
+		return $minutes.' '. $minutesString . ' ' .$seconds.' ' . $secondsString;
+	}
+	
+	if ($seconds < 86400)
+		return format_numeric ($seconds / 3600, 0)." " . $hoursString;
+	
+	if ($seconds < 2592000)
+		return format_numeric ($seconds / 86400, 0) . " " . $daysString;
+	
+	if ($seconds < 15552000)
+		return format_numeric ($seconds / 2592000, 0)." ". $monthsString;
+	
+	return "+6 " . $monthsString;
+}
+
+/** 
  * @deprecated Get current time minus some seconds. (Do your calculations yourself on unix timestamps)
  * 
  * @param int $seconds Seconds to substract from current time.

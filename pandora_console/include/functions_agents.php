@@ -1644,6 +1644,9 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			$nodes = db_get_all_rows_filter(
 				"tnetworkmap_enterprise_nodes",
 				array("id_agent" => $id_agent));
+			if (empty($nodes)) {
+				$nodes = array();
+			}
 			
 			foreach ($nodes as $node) {
 				db_process_delete_temp ("tnetworkmap_enterprise_relation_nodes",
@@ -1696,12 +1699,12 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 					$agent_md5 = md5 ($agent_name, false);
 					
 					// Agent remote configuration editor
-					$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
+					$file_name = $config["remote_config"] . "/conf/" . $agent_md5 . ".conf";
 					
 					$error = !@unlink ($file_name);
 					
 					if (!$error) {
-						$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
+						$file_name = $config["remote_config"] . "/md5/" . $agent_md5 . ".md5";
 						$error = !@unlink ($file_name);
 					}
 					

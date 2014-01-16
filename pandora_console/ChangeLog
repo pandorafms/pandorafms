@@ -1,3 +1,8 @@
+2014-01-16  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* general/header.php: fixed the PHP notices about the var
+	$search_keywords.
+
 2014-01-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/alerts/alert_list.list.php,

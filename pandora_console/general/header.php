@@ -216,10 +216,15 @@ config_check();
 				
 				// Search bar
 				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
-				if (strlen($config['search_keywords']) == 0)
+				if (!isset($config['search_keywords'])) {
 					$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
-				else
-					$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
+				}
+				else {
+					if (strlen($config['search_keywords']) == 0)
+						$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+					else
+						$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
+				}
 				
 				$search_bar .= '<input type="text" id="keywords" name="keywords"';
 				if (!isset($config['search_keywords']))

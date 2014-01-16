@@ -616,8 +616,9 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 					AND talert_actions.id_alert_command = talert_commands.id
 					AND talert_template_module_actions.id_alert_template_module = ?
 					AND ((fires_min = 0 AND fires_max = 0)
-					OR (? >= fires_min AND ? <= fires_max))', 
-					$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
+					OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
+					OR (fires_min > fires_max AND ? >= fires_min))', 
+					$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
 
 		# Get default action
 		if ($#actions < 0) {
@@ -634,8 +635,9 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 					AND talert_actions.id_alert_command = talert_commands.id
 					AND tevent_alert_action.id_event_alert = ?
 					AND ((fires_min = 0 AND fires_max = 0)
-					OR (? >= fires_min AND ? <= fires_max))', 
-					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'});
+					OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
+					OR (fires_min > fires_max AND ? >= fires_min))', 
+					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});
 					
 		# Get default action
 		if ($#actions < 0) {

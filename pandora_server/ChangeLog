@@ -1,3 +1,10 @@
+2014-01-16  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* DEBIAN/make_deb_package.sh: added the patch made by
+	Carlos Cesario, thanks.
+	
+	Fixes: #2410
+
 2014-01-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Allow intervals to infinity when configuring

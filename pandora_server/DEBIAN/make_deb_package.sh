@@ -98,6 +98,7 @@ then
 	
 	rm -f temp_package/usr/share/pandora_server/util/PandoraFMS
 	rm -f temp_package/usr/share/pandora_server/bin/PandoraFMS
+	rm -f temp_package/usr/share/pandora_server/util/recon_scripts/PandoraFMS
 
 	cp -R DEBIAN temp_package/
 	chmod 755 -R temp_package/DEBIAN

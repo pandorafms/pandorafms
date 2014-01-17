@@ -134,12 +134,15 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 						MIN(utimestamp) AS timestamp_rep_min,
 						(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
 						(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario,
-						(SELECT criticity FROM tevento WHERE id_evento = MAX(te.id_evento)) AS criticity
+						(SELECT id_agente FROM tevento WHERE id_evento = MAX(te.id_evento)) id_agente,
+						(SELECT criticity FROM tevento WHERE id_evento = MAX(te.id_evento)) AS criticity,
+						(SELECT ack_utimestamp FROM tevento WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
 					ORDER BY timestamp_rep DESC LIMIT " . $offset . "," . $pagination;
 			}
+			
 			break;
 		case "postgresql":
 			if ($total) {
@@ -155,7 +158,9 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 						MIN(utimestamp) AS timestamp_rep_min,
 						(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
 						(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario,
-						(SELECT criticity FROM tevento WHERE id_evento = MAX(te.id_evento)) AS criticity
+						(SELECT id_agente FROM tevento WHERE id_evento = MAX(te.id_evento)) id_agente,
+						(SELECT criticity FROM tevento WHERE id_evento = MAX(te.id_evento)) AS criticity,
+						(SELECT ack_utimestamp FROM tevento WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra" . $groupby_extra . "

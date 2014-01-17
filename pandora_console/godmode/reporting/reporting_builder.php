@@ -336,6 +336,17 @@ switch ($action) {
 				'order' => 'name'
 			);
 		}
+
+		# Fix : group filter was not working
+		// Show only selected groups
+        if ($id_group > 0) {
+        	$group = array("$id_group" => $id_group);
+           	$filter['id_group'] = $id_group;
+		}
+        else {
+            $group = false;
+        }
+
 		
 		// Filter normal and metaconsole reports
 		if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
@@ -346,6 +357,7 @@ switch ($action) {
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
 				'id_user', 'id_group'), $return_all_group, 'RR', $group);
+	
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';

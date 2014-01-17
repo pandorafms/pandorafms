@@ -1489,12 +1489,13 @@ function events_get_event_filter ($id_filter, $filter = false, $fields = false) 
 /**
  *  Get a event filters in select format.
  *
+ * @param boolean If event filters are used for manage/view operations (non admin users can see group ALL for manage) # Fix
  * @return array A event filter matching id and filter or false.
  */
-function events_get_event_filter_select(){
+function events_get_event_filter_select($manage = true){
 	global $config;
 	
-	$user_groups = users_get_groups ($config['id_user'], "EW", true, true);
+	$user_groups = users_get_groups ($config['id_user'], "EW", $manage, true);
 	if(empty($user_groups)) {
 		return array();
 	}

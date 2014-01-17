@@ -208,7 +208,8 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$data[0] = __('Filter name') . '<br>';
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
 	$data[1] = __('Filter group') . '<br>';
-	$data[1] .= html_print_select_groups($config["id_user"], "ER", true, 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
+	# Fix : Only admin users can see group ALL
+	$data[1] .= html_print_select_groups($config["id_user"], "ER", users_can_manage_group_all(), 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 
@@ -223,7 +224,10 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$data = array();
 	$table->rowid[3] = 'update_filter_row1';
 	$data[0] = __("Overwrite filter") . '<br>';
-	$data[0] .= html_print_select ($filters, "overwrite_filter", '', '', '', 0, true);
+	# Fix  : Only admin user can see filters of group ALL for update
+	$_filters_update = events_get_event_filter_select(false);
+
+	$data[0] .= html_print_select ($_filters_update, "overwrite_filter", '', '', '', 0, true);
 	$data[1] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
 	$table->data[] = $data;
 	$table->rowclass[] = '';

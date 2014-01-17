@@ -218,7 +218,10 @@ $table->data[9][0] = '<b>' . __('Max. hours old') . '</b>';
 $table->data[9][1] = html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
 
 $table->data[10][0] = '<b>' . __('User ack.') . '</b>'. ' ' . ui_print_help_tip (__('Choose between the users who have validated an event. '), true);
-$users = users_get_info ();
+
+# Fix : Only admin user can see all users 
+$users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+
 $table->data[10][1] = html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
 
 $repeated_sel[0] = __("All events");
@@ -236,7 +239,9 @@ if(empty($tag_without)) {
 	$tag_without = array();
 }
 
-$tags = tags_search_tag(false, false, true);
+# Fix : only admin users can see all tags
+$tags = tags_get_user_tags($config['id_user'], 'ER');
+
 $tags_select_with = array();
 $tags_select_without = array();
 $tag_with_temp = array();

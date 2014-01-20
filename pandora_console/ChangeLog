@@ -1,3 +1,10 @@
+2014-01-20  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/include/user.class.php,
+	mobile/include/system.class.php: fixed SQL injection.
+	
+	Issue found by Lincoln, a member of Corelan Team
+
 2014-01-17 Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Fixed group filter in report

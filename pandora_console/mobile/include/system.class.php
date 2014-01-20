@@ -62,6 +62,18 @@ class System {
 		return $return;
 	}
 	
+	public function safeOutput($value) {
+		require_once($this->getConfig('homedir') . '/include/functions_io.php');
+		
+		return io_safe_output($value);
+	}
+	
+	public function safeInput($value) {
+		require_once($this->getConfig('homedir') . '/include/functions_io.php');
+		
+		return io_safe_input($value);
+	}
+	
 	public function getConfig($name, $default = null) {
 		if (!isset($this->config[$name])) {
 			return $default;

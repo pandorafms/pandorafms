@@ -87,16 +87,19 @@ class User {
 		
 		if (($user == null) && ($password == null)) {
 			$user = $system->getRequest('user', null);
+			$user = $system->safeInput($user);
 			$password = $system->getRequest('password', null);
 		}
 		
 		if (!empty($user) && !empty($password)) {
 			if (process_user_login($user, $password) !== false) {
+				
 				$this->logged = true;
 				$this->user = $user;
 				$this->errorLogin = false;
 			}
 			else {
+				
 				$this->logged = false;
 				$this->errorLogin = true;
 			}

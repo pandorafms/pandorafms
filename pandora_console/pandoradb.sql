@@ -611,7 +611,7 @@ CREATE TABLE IF NOT EXISTS `tmodule_group` (
 CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`id_nc` int(10) unsigned NOT NULL auto_increment,
 	`name` text NOT NULL,
-	`description` varchar(250) default NULL,
+	`description` TEXT NOT NULL,
 	`id_group` int(6) NOT NULL default '1',
 	`type` smallint(6) NOT NULL default '6',
 	`max` bigint(20) NOT NULL default '0',

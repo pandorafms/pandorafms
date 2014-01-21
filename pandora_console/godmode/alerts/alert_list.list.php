@@ -334,7 +334,7 @@ if (! $id_agente) {
 	$table->size[1] = '25%';
 	$table->size[2] = '25%';
 	$table->size[3] = '1%';
-	$table->size[4] = '10%';
+	$table->size[4] = '12%';
 	
 /*	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[4] = '8%';
@@ -644,6 +644,13 @@ foreach ($simple_alerts as $alert) {
 		}
 		$data[4] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
 		$data[4] .= html_print_input_hidden ('delete_alert', 1, true);
+		$data[4] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+		$data[4] .= '</form>';
+	}
+	
+	if(check_acl ($config['id_user'], $agent_group, "LM")) {
+		$data[4] .= '<form class="view_alert_form" method="post" style="display: inline;" action="index.php?sec=galertas&sec2=godmode/alerts/alert_view">';
+		$data[4] .= html_print_input_image ('view_alert', 'images/eye.png', 1, '', true, array('title' => __('View alert advanced details')));
 		$data[4] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 		$data[4] .= '</form>';
 	}

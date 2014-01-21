@@ -1,3 +1,12 @@
+2014-01-21  Sergio Martin <sergio.martin@artica.es>
+
+	* images/long_arrow.png
+	godmode/alerts/alert_view.php
+	godmode/alerts/alert_list.list.php
+	include/styles/pandora.css: Added an advanced alert view
+	with details, triggering conditions, actions escalation and
+	actions fields including triggering, recovering and command preview
+
 2014-01-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql: Changed the type of tnetwork_component.description to

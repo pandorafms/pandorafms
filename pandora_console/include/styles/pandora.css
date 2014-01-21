@@ -1541,6 +1541,10 @@ table.databox {
 	color: #fff;
 }
 
+.databox th input, .databox th textarea, .databox th select, .databox th select option {
+	color: #222 !important;
+}
+
 .tabletitle {
 	background: url(../../images/header_blackout.png) no-repeat;
 }
@@ -2811,4 +2815,25 @@ div#agent_wizard_subtabs {
 
 .olLayerDiv {
 	z-index: 102 !important;
+}
+
+/* Alert view */
+
+table.alert_days th, table.alert_time th{
+	height: 30px;
+	vertical-align: middle;
+}
+
+td.used_field {
+	#border: solid #6EB432;
+	background: #6EB432 !important;
+	color: #FFFFFF;
+}
+
+td.unused_field {
+	color: #888;
+}
+
+td.empty_field {
+	background: url('../../images/long_arrow.png') no-repeat 100% center;
 }

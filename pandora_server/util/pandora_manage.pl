@@ -594,7 +594,7 @@ sub pandora_get_planned_downtime_id ($$) {
 # log wrapper
 ###############################################################################
 sub print_log ($) {
-	my $msg = $@;
+	my ($msg) = @_;
 
 	print $msg;					# show message
 

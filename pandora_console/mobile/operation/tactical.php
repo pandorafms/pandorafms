@@ -61,30 +61,48 @@ class Tactical {
 				$data = reporting_get_group_stats();
 				$data['mobile'] = true;
 				
-				$formatted_data = reporting_get_stats_indicators($data, 200, 10, false);
+				$formatted_data = reporting_get_stats_indicators($data, 100, 10, false);
+				$formatted_data_untiny = reporting_get_stats_indicators($data, 140, 15, false);
 				
-				$overview = '<table>
+				$overview = '<table class="tactical_bars">
 						<tr>
 							<td>' . $formatted_data['server_health']['title'] . '</td>
-							<td>' . $formatted_data['server_health']['graph'] . '</td>
+							<td class="tiny tactical_bar">' . $formatted_data['server_health']['graph'] . '</td>
+						</tr>
+						<tr class="untiny tactical_bar">
+							<td>' . $formatted_data_untiny['server_health']['graph'] . '</td>
 						</tr>
 						<tr>
 							<td>' . $formatted_data['monitor_health']['title'] . '</td>
-							<td>' . $formatted_data['monitor_health']['graph'] . '</td>
+							<td class="tiny tactical_bar">' . $formatted_data['monitor_health']['graph'] . '</td>
+						</tr>
+						<tr class="untiny tactical_bar">
+							<td>' . $formatted_data_untiny['monitor_health']['graph'] . '</td>
 						</tr>
 						<tr>
 							<td>' . $formatted_data['module_sanity']['title'] . '</td>
-							<td>' . $formatted_data['module_sanity']['graph'] . '</td>
+							<td class="tiny tactical_bar">' . $formatted_data['module_sanity']['graph'] . '</td>
+						</tr>
+						<tr class="untiny tactical_bar">
+							<td>' . $formatted_data_untiny['module_sanity']['graph'] . '</td>
 						</tr>
 						<tr>
 							<td>' . $formatted_data['alert_level']['title'] . '</td>
-							<td>' . $formatted_data['alert_level']['graph'] . '</td>
+							<td class="tiny tactical_bar">' . $formatted_data['alert_level']['graph'] . '</td>
+						</tr>
+						<tr class="untiny tactical_bar">
+							<td>' . $formatted_data_untiny['alert_level']['graph'] . '</td>
 						</tr>
 					</table>';
+								
+				$agents_monitors = reporting_get_stats_agents_monitors($data);
+				$alerts_stats = reporting_get_stats_alerts($data);
+
+				$overview .= "<br />\n" . $agents_monitors;
+				$overview .= "<br />\n" . $alerts_stats;
 				
-				$ui->contentGridAddCell($overview);
-				
-				$formatted_data = reporting_get_stats_alerts($data);
+				$ui->contentGridAddCell($overview, 'tactical1');
+
 				ob_start();
 				$links = array();
 				$links['monitor_critical'] = "index.php?page=modules&status=1";
@@ -92,11 +110,15 @@ class Tactical {
 				$links['monitor_ok'] = "index.php?page=modules&status=0";
 				$links['monitor_unknown'] = "index.php?page=modules&status=3";
 				$links['monitor_not_init'] = "index.php?page=modules&status=5";
-				$formatted_data .= reporting_get_stats_modules_status($data, 250, 150, $links) . "<br />\n" .
-					reporting_get_stats_agents_monitors($data);
+				$modules_status_untiny = reporting_get_stats_modules_status($data, 230, 150, $links);
+				$modules_status_tiny = reporting_get_stats_modules_status($data, 175, 100, $links);				
+				//$formatted_data = $alerts_stats . "<br />\n";
+				$formatted_data = "<div class='tiny'>" . $modules_status_untiny . "</div>";
+				$formatted_data .= "<div class='untiny'>" . $modules_status_tiny . "</div>";
+				//$formatted_data .= "<br />\n" . $agents_monitors;
 				$graph_js = ob_get_clean();
 				$formatted_data = $graph_js . $formatted_data;
-				$ui->contentGridAddCell($formatted_data, 'tactical');
+				$ui->contentGridAddCell($formatted_data, 'tactical2');
 			$ui->contentEndGrid();
 			
 			$this->getLastActivity();
@@ -155,10 +177,9 @@ class Tactical {
 					break;
 			}
 			
-			$data[__("User")] = '<strong>' . $session_id_usuario . '</strong>';
 			$data[__("Action")] = ui_print_session_action_icon ($session['accion'], true);
-			$data[__("Action")] .= $session['accion'];
-			$data[__("Date")] =  human_time_comparation($session['utimestamp']);
+			$data[__("User")] =  $session_id_usuario;
+			$data[__("Date")] =  human_time_comparation($session['utimestamp'], 'tiny');
 			$data[__("Source IP")] = $session_ip_origen;
 			$data[__("Description")] = io_safe_output ($session['descripcion']);
 			

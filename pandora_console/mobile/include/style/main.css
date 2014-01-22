@@ -29,16 +29,37 @@ label, input, .ui-btn-inner {
 
 
 /*INIT----------Tactical styles-----------------------------------------*/
-#tactical * {
-	font-size: 14px !important;
+#tactical1 *, #tactical2 * {
+	font-size: 12px !important;
 }
 
-#tactical a {
-	font-size: 25px !important;
+#tactical1 a, #tactical2 a {
+	font-size: 18px !important;
+}
+
+legend {
+	margin-bottom: 5px;
+}
+
+.ui-body-d {
+	border-radius: 0.6em 0.6em 0.6em 0.6em !important;
+}
+
+.ui-btn-up-c {
+	font-weight: normal !important;
+	text-shadow: none !important; 
 }
 /*END-----------Tactical styles-----------------------------------------*/
 
+#status_pie {
+	position: relative;
+	width: 100%;
+}
 
+#outter_status_pie {
+	position: relative;
+	text-align: center;
+}
 
 /*INIT----------Groups styles-----------------------------------------*/
 .group_view tr {
@@ -370,16 +391,39 @@ table#list_events th {
 
 /*INIT-----------Agents styles----------------------------------------*/
 .red, .redb, .redi, .error {
-	color: #CC0000;
+	background: #CC0000 !important;
 }
 
 .green {
-	color: #5A8629;
+	background: #5A8629 !important;
+}
+
+.orange {
+	background: #ffa300 !important;
+}
+
+.yellow {
+	background: #F3C500 !important;
 }
 
 .grey {
-	color: #808080;
+	background: #808080 !important;
 	font-weight: bold;
+}
+
+.green, .orange, .yellow, .red, .grey, .agents_tiny_stats span {
+	text-shadow: none;
+	color: white !important;
+	padding: 1px 3px;
+	border-radius: 2px;
+}
+
+.agents_tiny_stats span {
+	background: #222;
+}
+
+.agents_tiny_stats * {
+	font-size: 12px !important;
 }
 
 @media screen and (max-width: 25em) {
@@ -687,6 +731,15 @@ li.ui-btn {
 	.events_agent {
 		min-width: 50%;
 	}
+	
+	.untiny {
+		display: none;
+	}
+	
+	
+	.agents_tiny_stats, .agents_last_contact {
+		float: right;
+	}
 }
 
 @media screen and (min-width: 25em)
@@ -703,17 +756,44 @@ li.ui-btn {
 		float: left;
 		margin-right: 15px;
 	}
+	
+	.tiny {
+		display: none;
+	}
 }
 
+/* For mobiles */
+@media screen and (max-width: 800px)
+{
+	.ui-content>.ui-btn {
+		margin: 10px 7px;
+		height: 30px;
+		padding-top: 3px;
+	}
+}
 /* For tablets */
 @media screen and (min-width: 800px)
 {
 	.ui-content>.ui-btn {
-		width: 21%;
+		width: 31%;
 		display: inline-block;
-		margin: 4px 10px;
-		height: 35px;
+		margin: 8px 5px;
+		height: 40px;
+		padding-top: 8px;
 	}
+}
+
+table.tactical_bars {
+	width: 100%;
+}
+
+.tactical_bar {
+	text-align: center;
+	margin-bottom: 4px;
+}
+
+.ui-bar, .ui-body {
+	margin: 5px;
 }
 
 .events .cell_0 img {

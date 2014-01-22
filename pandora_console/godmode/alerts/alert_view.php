@@ -517,8 +517,14 @@ else {
 			$data[0] .= '<br><span style="font-size: xx-small;font-style:italic;">(' . sprintf(__("Field %s"), $fieldn) . ')</span>';
 			$data[1] = $firing_fields[$kaction]['value'][$field];
 			$data[2] = $template[$field . '_recovery'];
-			$data[3] = empty($template[$field . '_recovery']) && !empty($firing_fields[$kaction]['value'][$field]) ? '[RECOVER]' . $firing_fields[$kaction]['value'][$field] : $template[$field . '_recovery'];
 			
+			// Field1 doesnt exist on recovery fields. Will be added on future
+			if($fieldn == 1) {
+				$data[3] = $firing_fields[$kaction]['value'][$field];
+			}
+			else {
+				$data[3] = empty($template[$field . '_recovery']) && !empty($firing_fields[$kaction]['value'][$field]) ? '[RECOVER]' . $firing_fields[$kaction]['value'][$field] : $template[$field . '_recovery'];
+			}
 			$first_level = $firing_fields[$kaction]['value'][$field];
 			$second_level = $template[$field . '_recovery'];
 			if (!empty($second_level) || !empty($first_level)) {

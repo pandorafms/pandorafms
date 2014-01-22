@@ -266,7 +266,7 @@ class Agents {
 			$img_alert = agents_tree_view_alert_img ($agent["fired_count"]);
 			
 			
-			$row[0] = $row[__('Agent')] =
+			$row[0] = $row[__('Agent')] = '<span class="tiny" style="margin-right: 5px;">' . $img_status . '</span>' . 
 				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . io_safe_output($agent['nombre']) . '</a>';
 			//~ $row[1] = $row[__('Description')] = '<span class="small">' .
 				//~ ui_print_truncate_text($agent["description"], 'description', false, true) .
@@ -284,24 +284,21 @@ class Agents {
 				$img_alert;
 			
 			$row[7] = $row[__('Modules')] =
-				'<span class="show_collapside" style="display: none; vertical-align: top;">' .
-					$img_status . '</span>' . '&nbsp;' .
-					'<span class="show_collapside" style="display: none; vertical-align: middle;">' . $img_alert . '</span>' .
-				'<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('M.') . ' </span>' .
-				reporting_tiny_stats($agent, true);
+				'<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">' . __('Modules') . ' </span>' .
+				'<span class="agents_tiny_stats">' . reporting_tiny_stats($agent, true) . ' </span>';
 			
 			$last_time = strtotime ($agent["ultimo_contacto"]);
 			$now = time ();
 			$diferencia = $now - $last_time;
-			$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));
+			$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size: 12px; margin-left: 20px;', 'units' => 'tiny'));
 			$style = '';
 			if ($diferencia > ($agent["intervalo"] * 2))
 				$row[8] = $row[__('Last contact')] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
 			else
 				$row[8] = $row[__('Last contact')] = $time;
 			
-			$row[8] = $row[__('Last contact')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('L.') . ' </span>' .
-				$row[__('Last contact')];
+			$row[8] = $row[__('Last contact')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">' . __('Last contact') . ' </span>' .
+				'<span class="agents_last_contact">' . $row[__('Last contact')] . '</span>';
 			
 			if (!$ajax) {
 				unset($row[0]);

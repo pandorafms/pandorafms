@@ -1110,6 +1110,49 @@ function modules_get_monitors_in_group ($id_group) {
 }
 
 /**
+ * Get all the modules defined in an group.
+ *
+ * @param int $id_group Group id to get all the modules.
+ *
+ * @return array An array with all the modules defined in the group (tagente_modulo).
+ */
+function modules_get_modules_in_group ($id_group) {
+	global $config;
+	
+	if ($id_group <= 0) {
+		//We select all groups the user has access to if it's 0 or -1
+		global $config;
+		$id_group = array_keys (users_get_groups ($config['id_user']));
+	}
+	
+	if (is_array ($id_group)) {
+		$id_group = implode (",",$id_group);
+	}
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT `tagente_modulo`.*
+				FROM `tagente_modulo`, `ttipo_modulo`, `tagente`
+				WHERE `id_tipo_modulo` = `id_tipo` 
+					AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente` 
+					AND `tagente`.`id_grupo` IN (%s)
+				ORDER BY `tagente`.`nombre`", $id_group);
+			break;
+		case "postgresql":
+		case "oracle":
+			$sql = sprintf ("SELECT tagente_modulo.*
+				FROM tagente_modulo, ttipo_modulo, tagente
+				WHERE id_tipo_modulo = id_tipo 
+					AND tagente.id_agente = tagente_modulo.id_agente 
+					AND tagente.id_grupo IN (%s)
+				ORDER BY tagente.nombre", $id_group);
+			break;
+	}
+	
+	return db_get_all_rows_sql ($sql);
+}
+
+/**
  * Get all the monitors defined in an agent.
  *
  * @param int $id_agent Agent id to get all the monitors.

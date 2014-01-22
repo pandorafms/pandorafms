@@ -1,3 +1,8 @@
+2013-01-22 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* util/pandora_manage.pl: Fixed that pandora_manage.pl had failed to write
+	logs using with pandora_log().
+
 2014-01-16  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* DEBIAN/make_deb_package.sh: added the patch made by

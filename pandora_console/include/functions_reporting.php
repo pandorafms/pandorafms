@@ -4966,15 +4966,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
 			}
 			//Get all the related data
-			$sql = sprintf("select id_agent_module, server_name
-				from treport_content_item
-				where id_report_content = %d", $content['id_rc']);
+			$sql = sprintf("SELECT id_agent_module, server_name
+				FROM treport_content_item
+				WHERE id_report_content = %d", $content['id_rc']);
 			
 			$tops = db_process_sql ($sql);
 			
@@ -5000,6 +5000,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			//Get data of all agents (before to slide to N values)
 			$data_top = array();
+			
 			foreach ($tops as $key => $row) {
 				
 				//Metaconsole connection
@@ -5014,7 +5015,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$ag_name = modules_get_agentmodule_agent_name($row ['id_agent_module']); 
 				$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
-				$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $row ['id_agent_module']); 
+				$unit = db_get_value('unit', 'tagente_modulo',
+					'id_agente_modulo', $row ['id_agent_module']); 
 				
 				
 				switch ($top_n) {

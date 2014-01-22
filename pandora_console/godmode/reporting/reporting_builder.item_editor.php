@@ -915,11 +915,14 @@ html_print_input_hidden('id_item', $idItem);
 			<td>
 				<?php
 				echo __('Ascending');
-				html_print_radio_button ('radiobutton_order_uptodown', 2, '', $order_uptodown);
+				html_print_radio_button ('radiobutton_order_uptodown',
+					REPORT_ITEM_ORDER_BY_ASCENDING, '', $order_uptodown);
 				echo __('Descending');
-				html_print_radio_button ('radiobutton_order_uptodown', 1, '', $order_uptodown);
+				html_print_radio_button ('radiobutton_order_uptodown',
+					REPORT_ITEM_ORDER_BY_DESCENDING, '', $order_uptodown);
 				echo __('By agent name');
-				html_print_radio_button ('radiobutton_order_uptodown', 3, '', $order_uptodown);
+				html_print_radio_button ('radiobutton_order_uptodown',
+					REPORT_ITEM_ORDER_BY_AGENT_NAME, '', $order_uptodown);
 				?>
 			</td>
 		</tr>

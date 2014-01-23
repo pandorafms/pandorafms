@@ -1,3 +1,13 @@
+2014-01-23  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.editor.js,
+	include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php: fixes the bug for
+	the simple values positions and the enable links in the static
+	graph.
+	
+	Incidents: #536 and #535 from local tracker
+
 2014-01-22  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_view.php: Add exception

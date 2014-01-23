@@ -451,7 +451,16 @@ function loadFieldsFromDB(item) {
 						$("input[name=label]").val(val);
 					}
 					
-					if (key == 'enable_link') $("input[name=enable_link]").val(val);
+					if (key == 'enable_link') {
+						if (val == "1") {
+							$("input[name=enable_link]")
+								.prop("checked", true);
+						}
+						else {
+							$("input[name=enable_link]")
+								.prop("checked", false);
+						}
+					}
 					
 					if (key == 'image') {
 						//Load image preview

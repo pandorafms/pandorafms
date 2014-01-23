@@ -210,7 +210,7 @@ function visual_map_print_item($layoutData) {
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
 			$io_safe_output_text = io_safe_output($text);
-			echo '<div id="' . $id . '" class="item simple_value" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item simple_value" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo $io_safe_output_text;
 			
 			//Metaconsole db connection

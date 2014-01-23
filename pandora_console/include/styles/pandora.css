@@ -2482,6 +2482,21 @@ span#plugin_description {
 .visual_font_size_72pt, .visual_font_size_72pt > em, .visual_font_size_72pt > strong {
 	font-size: 72pt;
 }
+.resize_visual_font_size_8pt, .resize_visual_font_size_8pt > em, .resize_visual_font_size_8pt > strong {
+	font-size: 4pt;
+}
+.resize_visual_font_size_14pt, .resize_visual_font_size_14pt > em , .resize_visual_font_size_14pt > strong {
+	font-size: 7pt;
+}
+.resize_visual_font_size_24pt, .resize_visual_font_size_24pt > em, .resize_visual_font_size_24pt > strong {
+	font-size: 12pt;
+}
+.resize_visual_font_size_36pt, .resize_visual_font_size_36pt > em, .resize_visual_font_size_36pt > strong {
+	font-size: 18pt;
+}
+.resize_visual_font_size_72pt, .resize_visual_font_size_72pt > em, .resize_visual_font_size_72pt > strong {
+	font-size: 36pt;
+}
 
 /*SIDEBAR*/
 .menu_sidebar {

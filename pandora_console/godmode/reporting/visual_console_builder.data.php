@@ -78,8 +78,9 @@ $table->data[1][0] = __('Group:');
 $groups = users_get_groups ($config['id_user'], 'RW');
 
 $own_info = get_user_info($config['id_user']);
-// Only display group "All" if user is administrator or has "PM" privileges
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+// Only display group "All" if user is administrator
+// or has "RW" privileges
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "RW"))
 	$display_all_group = true;
 else
 	$display_all_group = false;

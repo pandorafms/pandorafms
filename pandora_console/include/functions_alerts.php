@@ -1817,4 +1817,208 @@ function alerts_get_alert_special_day ($id_special_day) {
 	
 	return db_get_row ('talert_special_days', 'id', $id_special_day);
 }
+
+/**
+ * Get number of alert fired that an action is executed. Only fot non default alerts
+ * 
+ * @param mixed action
+ * 
+ * @return mixed array with numeric indexes and 0|1 values for not executing or executing. 
+ * Returned 'everytime' for always situations
+ * Returned $escalation['greater_than'] = VALUE for 'min - infinite' situations
+ */
+function alerts_get_action_escalation($action) {
+	$escalation = array();
+	
+	if ($action['fires_min'] == 0 && $action['fires_max'] == 0) {
+		$escalation = 'everytime';
+	}
+	else if($action['fires_min'] == $action['fires_max']) {
+		for($i=1;$i<$action['fires_min'];$i++) {
+			$escalation[$i] = 0;
+		}
+		$escalation[$action['fires_max']] = 1;
+	}
+	else if($action['fires_min'] < $action['fires_max']) {
+		for($i=1;$i<=$action['fires_max'];$i++) {
+			if ($i <= $action['fires_min']) {
+				$escalation[$i] = 0;
+			}
+			else {
+				$escalation[$i] = 1;
+			}
+		}
+	}
+	else if($action['fires_min'] > $action['fires_max']) {
+		$escalation['greater_than'] = $action['fires_min'];
+	}
+	
+	return $escalation;
+}
+
+
+/**
+ * Get escalation of all the actions
+ * 
+ * @param mixed Actions of an alert
+ * @param mixed Default action of an alert
+ * 
+ * @return mixed Actions array including the default action and the escalation of each action
+ */
+function alerts_get_actions_escalation($actions, $default_action = 0) {
+	$escalation = array();
+	foreach($actions as $kaction => $action) {
+		$escalation[$kaction] = alerts_get_action_escalation($action);
+	}
+	
+	$default_escalation = alerts_get_default_action_escalation($default_action, $escalation);
+	$escalation = array(0 => $default_escalation) + $escalation;
+		
+	$escalation = alerts_normalize_actions_escalation($escalation);
+	
+	// Join the actions with the default action
+	$actions = array(0 => $default_action) + $actions;
+	
+	// Add the escalation values to the actions array
+	foreach(array_keys($actions) as $kaction) {
+		$actions[$kaction]['escalation'] = $escalation[$kaction];
+	}
+	
+	return $actions;
+}
+
+/**
+ * Get escalation of default action. A default action will be executed when the alert is fired and
+ * no other action is executed
+ * 
+ * @param mixed Default action of the alert
+ * @param mixed Escalation of all the other actions
+ * 
+ * @return mixed Array with the escalation of the default alert
+ */
+function alerts_get_default_action_escalation($default_action, $escalation) {
+	if ($default_action === 0) {
+		return array();
+	}
+	
+	$busy_times = array();
+	$busy_greater_than = -1;
+	foreach($escalation as $action_escalation) {
+		if ($action_escalation == 'everytime') {
+			return 'never';
+		}
+		else if (isset($action_escalation['greater_than'])) {
+			if ($busy_greater_than == -1 || $action_escalation['greater_than'] < $busy_greater_than) {
+				$busy_greater_than = $action_escalation['greater_than'];
+			}
+		}
+		else {
+			foreach($action_escalation as $k => $v) {
+				if (!isset($busy_times[$k])) {
+					$busy_times[$k] = 0;
+				}
+				
+				$busy_times[$k] += $v;
+			}
+		}
+	}
+	
+	// Set to 1 the busy executions
+	// Set to 2 the min - infinite situations
+	foreach($busy_times as $k => $v) {
+		if ($k == ($busy_greater_than + 1)) {
+			$busy_times[$k] = 2;
+		}
+		else if ($k > ($busy_greater_than + 1)) {
+			unset($busy_times[$k]);
+		}
+		else if ($v > 1) {
+			$busy_times[$k] = 1;
+		}
+	}
+	
+	// Set as default execution the not busy times
+	$default_escalation = array();
+	foreach($busy_times as $k => $v) {
+		// Last element
+		if ($k == count($busy_times)) {
+			switch($v) {
+				case 0:
+					$default_escalation[$k] = 1;
+					$default_escalation[$k+1] = 2;
+					break;
+				case 1:
+					$default_escalation[$k] = 0;
+					$default_escalation[$k+1] = 2;
+					break;
+				case 2:
+					break;
+			}
+		}
+		else {
+			switch($v) {
+				case 0:
+					$default_escalation[$k] = 1;
+					break;
+				case 1:
+					$default_escalation[$k] = 0;
+					break;
+			}
+		}
+	}
+	
+	return $default_escalation;
+}
+
+/**
+ * Normalize escalation to have same number of elements setting all 
+ * of them the same number of elements
+ * 
+ * @param mixed Escalation of the alerts
+ * 
+ * @return mixed Escalation of the alerts with same number of elements
+ * */
+function alerts_normalize_actions_escalation($escalation) {
+	$max_elements = 0;
+
+	foreach($escalation as $k => $v) {
+		if (isset($v['greater_than'])) {
+			$escalation[$k] = array();
+			for($i=1;$i<=$v['greater_than'];$i++) {
+				$escalation[$k][$i] = 0;
+			}
+			$escalation[$k][$v['greater_than']+1] = 2;
+		}
+		
+		$n = count($escalation[$k]);
+		if ($n > $max_elements) {
+			$max_elements = $n;
+		}
+	}
+	
+	foreach($escalation as $k => $v) {
+		if ($v == 'always') {
+			$escalation[$k] = array_fill(1, $max_elements, 1);
+			$escalation[$k][$max_elements+1] = 1;
+		}
+		else if ($v == 'never') {
+			$escalation[$k] = array_fill(1, ($max_elements), 0);
+		}
+		else {	
+			$fill_value = 0;
+			for($i=1;$i<=($max_elements+1);$i++) {
+				if (!isset($escalation[$k][$i])) {
+					$escalation[$k][$i] = $fill_value;
+				}
+				else if ($escalation[$k][$i] == 2) {
+					$fill_value = 1;
+					$escalation[$k][$i] = $fill_value;
+				}
+			}
+		}
+	}
+		
+	return $escalation;
+}
+
 ?>

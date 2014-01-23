@@ -1,3 +1,10 @@
+2014-01-23  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_view.php
+	include/styles/pandora.css
+	include/functions_alerts.php: Fix escalation errors, added action
+	threshold information, encapsulate code to avoid future headaches.
+
 2014-01-23  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php,

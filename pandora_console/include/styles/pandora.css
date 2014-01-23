@@ -2834,10 +2834,15 @@ div#agent_wizard_subtabs {
 
 /* Alert view */
 
-table.alert_days th, table.alert_time th{
+table.alert_days th, table.alert_time th, table.alert_escalation th{
 	height: 30px;
 	vertical-align: middle;
 }
+
+table.alert_escalation th img {
+	width: 18px;
+}
+
 
 td.used_field {
 	#border: solid #6EB432;

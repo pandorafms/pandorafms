@@ -41,7 +41,7 @@ if ($default_action != 0) {
 	$default_action = alerts_get_alert_action($default_action);
 	$default_action['name'] .= '  ' . '(' . __('Default') . ')';
 	$default_action['default'] = 1;
-	$actions[0] = $default_action;
+	$default_action['module_action_threshold'] = '0';
 }
 
 // Header
@@ -205,9 +205,7 @@ $table_days->head[3] = __('Thu');
 $table_days->head[4] = __('Fri');
 $table_days->head[5] = __('Sat');
 $table_days->head[6] = __('Sun');
-$table_days->data[0][0] = $table_days->data[0][1] = $table_days->data[0][2] = 
-	$table_days->data[0][3] = $table_days->data[0][4] = $table_days->data[0][5] = 
-	$table_days->data[0][6] = html_print_image('images/blade.png', true);
+$table_days->data[0] = array_fill(0, 7, html_print_image('images/blade.png', true));
 
 $days = array();
 if ($template['monday']) {
@@ -291,7 +289,7 @@ unset($table_time);
 $table_conditions->data[] = $data;
 
 $data[0] = __('Use special days list');
-$data[1] = $alert['special_day'] == 1 ? __('Yes') : __('No');
+$data[1] = (isset($alert['special_day']) && $alert['special_day'] == 1) ? __('Yes') : __('No');
 $table_conditions->data[] = $data;
 
 $data[0] = __('Time threshold');
@@ -321,6 +319,66 @@ $table->data[0][1] = html_print_table($table_conditions, true);
 html_print_table($table);
 unset($table);
 
+$actions = alerts_get_actions_escalation($actions, $default_action);
+
+// ESCALATION
+$table->class = 'alert_list databox alternate alert_escalation';
+$table->width = '98%';
+$table->size = array ();
+$table->head = array();
+$table->data = array();
+$table->styleTable = 'text-align: center;';
+
+echo '<div class="firing_action_all" style="width: 100%;">';
+$table->head[0] = __('Actions');
+$table->style[0] = 'font-weight: bold; text-align: left;';
+
+if (count($actions) == 1 && isset($actions[0])) {
+	$table->head[1] = __('Every time that the alert is fired');
+	$table->data[0][0] = $actions[0]['name'];
+	$table->data[0][1] = html_print_image('images/tick.png', true);
+}
+else {
+	foreach($actions as $kaction => $action) {
+		$table->data[$kaction][0] = $action['name'];
+		if($kaction == 0) {
+			$table->data[$kaction][0] .= ui_print_help_tip(__('The default actions will be executed every time that the alert is fired and no other action is executed'), true);
+		}
+		
+		foreach($action['escalation'] as $k => $v) {
+			if ($v > 0) {
+				$table->data[$kaction][$k] = html_print_image('images/tick.png', true);
+			}
+			else {
+				$table->data[$kaction][$k] = html_print_image('images/blade.png', true);
+			}
+			
+			if (count($table->head) <= count($action['escalation'])) {
+				if ($k == count($action['escalation'])) {
+					$table->head[$k] = '>#' . ($k-1);
+				}
+				else {
+					$table->head[$k] = '#' . $k;
+				}
+			}			
+		}
+		
+		$action_threshold = $action['module_action_threshold'] > 0 ? $action['module_action_threshold'] : $action['action_threshold'];
+		
+		if ($action_threshold == 0) {
+			$table->data[$kaction][$k+1] = __('No');
+		}
+		else {
+			$table->data[$kaction][$k+1] = human_time_description_raw ($action_threshold, true, 'tiny');
+		}
+		
+		$table->head[$k+1] = __('Threshold') .  '<span style="float: right;">' . ui_print_help_icon ('action_threshold', true) . '</span>';
+	}
+}
+
+html_print_table($table);
+unset($table);
+echo '</div>'; // ESCALATION TABLE
 
 $table->class = 'alert_list databox';
 $table->width = '98%';
@@ -329,14 +387,18 @@ $table->head = array();
 $table->data = array();
 $table->rowstyle[1] = 'font-weight: bold;';
 
+if ($default_action != 0) {
+	$actions_select[0] = $default_action['name'];
+}
+
 foreach($actions as $kaction => $action) {
 	$actions_select[$kaction] = $action['name'];
 }
 
-$table->data[0][0] = __('Select the desired action and mode to see the Escalation and Firing/Recovery fields for this action');
+$table->data[0][0] = __('Select the desired action and mode to see the Firing/Recovery fields for this action');
 $table->colspan[0][0] = 2;
 
-$table->data[1][0] = __('Action') . '<br>' . html_print_select($actions_select, 'firing_action_select', -1, '', 'Select', -1, true, false, false);
+$table->data[1][0] = __('Action') . '<br>' . html_print_select($actions_select, 'firing_action_select', -1, '', __('Select the action'), -1, true, false, false);
 
 $modes = array();
 $modes['firing'] = __('Firing');
@@ -346,57 +408,6 @@ $table->data[1][1] = '<div class="action_details" style="display: none;">' . __(
 
 html_print_table($table);
 unset($table);
-
-// ESCALATION
-foreach($actions as $kaction => $action) {
-	$style = 'width: 100%; display:none;';
-
-	echo '<div class="firing_action firing_action_' . $kaction . ' action_details" style="' . $style . '">';
-	$table->class = 'alert_list databox alternate';
-	$table->width = '98%';
-	$table->size = array ();
-	$table->head = array();
-	$table->data = array();
-	$table->styleTable = 'text-align: center;';
-	
-	$table->title = __('Escalation') . ui_print_help_tip(__('Escalation is the alert firing times when the action is executed. I.E.: The 2 first alert firing times.'), true);
-	
-	if ($action['fires_min'] == 0 && $action['fires_max'] == 0) {
-		if (isset($action['default'])) {
-			$table->head[0] = __('Every time that the alert is fired and no other action is executed');
-		}
-		else {
-			$table->head[0] = __('Every time that the alert is fired');
-		}
-		$table->data[0][0] = html_print_image('images/tick.png', true);
-	}
-	else if ($action['fires_min'] == $action['fires_max']) {
-		$table->head[0] = '< #' . ($action['fires_min']);
-		$table->data[0][0] = html_print_image('images/blade.png', true);
-		$table->head[1] = '#' . ($action['fires_min']);
-		$table->data[0][1] = html_print_image('images/tick.png', true);
-	}
-	else if ($action['fires_min'] > 0){
-		$table->head[0] = '< #' . ($action['fires_min'] + 1);
-		$table->data[0][0] = html_print_image('images/blade.png', true);
-	}
-
-	for ($i=$action['fires_min'];$i<$action['fires_max'];$i++) {
-		$table->head[$i] = '#' . ($i+1);
-		$table->data[0][$i] = html_print_image('images/tick.png', true);
-	}
-	
-	if (!isset($action['default']) && ($action['fires_min'] != 0 || $action['fires_max'] != 0)) {
-		$table->head[$i+1] = '> #' . ($i);
-		$table->data[0][$i+1] = html_print_image('images/blade.png', true);
-	}
-	
-	
-	html_print_table($table);
-	unset($table);
-	echo '</div>'; // Escalation table
-}
-
 
 $table->class = 'alert_list databox alternate';
 $table->width = '98%';
@@ -453,12 +464,7 @@ foreach ($actions as $kaction => $action) {
 		}
 		$table->data[] = $data;
 		
-		if ($kaction == $action_selected) {
-			$table->rowstyle[] = '';
-		}
-		else {
-			$table->rowstyle[] = 'display: none;';
-		}
+		$table->rowstyle[] = 'display: none;';
 		
 		$table->rowclass[] = 'firing_action firing_action_' . $kaction;
 		
@@ -516,7 +522,7 @@ else {
 			}
 			$data[0] .= '<br><span style="font-size: xx-small;font-style:italic;">(' . sprintf(__("Field %s"), $fieldn) . ')</span>';
 			$data[1] = $firing_fields[$kaction]['value'][$field];
-			$data[2] = $template[$field . '_recovery'];
+			$data[2] = $field == 'field1' ? '' : $template[$field . '_recovery'];
 			
 			// Field1 doesnt exist on recovery fields. Will be added on future
 			if($fieldn == 1) {
@@ -526,7 +532,7 @@ else {
 				$data[3] = empty($template[$field . '_recovery']) && !empty($firing_fields[$kaction]['value'][$field]) ? '[RECOVER]' . $firing_fields[$kaction]['value'][$field] : $template[$field . '_recovery'];
 			}
 			$first_level = $firing_fields[$kaction]['value'][$field];
-			$second_level = $template[$field . '_recovery'];
+			$second_level = $field == 'field1' ? '' : $template[$field . '_recovery'];
 			if (!empty($second_level) || !empty($first_level)) {
 				if (empty($second_level)) {
 					$table->cellclass[count($table->data)][1] = 'used_field';
@@ -573,9 +579,10 @@ $('#firing_action_select').change(function() {
 	
 
 	$('.firing_action').hide();
-	$('.firing_action_' + $(this).val()).show();
-	
-	$('#modes').trigger('change');
+	if($(this).val() != -1) {
+		$('.firing_action_' + $(this).val()).show();
+		$('#modes').trigger('change');
+	}
 });
 
 $('#modes').change(function() {

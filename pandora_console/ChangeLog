@@ -1,5 +1,13 @@
 2014-01-23  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map.php,
+	include/styles/pandora.css: fixed the font sizes for the visualmaps
+	embedmed into a dash
+	
+	Incident: #537 from local tacker.
+
+2014-01-23  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_visual_map.php: fixed the links of icons in
 	the visualconsole.
 
@@ -28,6 +36,11 @@
 	graph.
 	
 	Incidents: #536 and #535 from local tracker
+2014-01-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php,
+	include/styles/pandora.css: fixed the font sizes for the visualmaps
+	embedmed into a dashboard.
 
 2014-01-22  Sergio Martin <sergio.martin@artica.es>
 

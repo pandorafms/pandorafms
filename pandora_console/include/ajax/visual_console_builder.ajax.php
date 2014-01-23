@@ -576,6 +576,7 @@ switch ($action) {
 		$values['label_color'] = $label_color;
 		$values['parent_item'] = $parent;
 		$values['no_link_color'] = 1;
+		$values['enable_link'] = $enable_link;
 		
 		switch ($type) {
 			case 'module_graph':

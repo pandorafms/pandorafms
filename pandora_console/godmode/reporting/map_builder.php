@@ -157,9 +157,10 @@ $table->align[2] = 'center';
 $table->align[3] = 'center';
 $table->align[4] = 'center';
 
-// Only display maps of "All" group if user is administrator or has "PM" privileges, otherwise show only maps of user group
+// Only display maps of "All" group if user is administrator
+// or has "RR" privileges, otherwise show only maps of user group
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "RR"))
 	$maps = visual_map_get_user_layouts ();	
 else
 	$maps = visual_map_get_user_layouts ($config['id_user'], false, false, false);

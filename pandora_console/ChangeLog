@@ -1,5 +1,10 @@
 2014-01-23  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map.php: fixed the links of icons in
+	the visualconsole.
+
+2014-01-23  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/visual_console/render_view.php: re-added the countdown
 	widget for visualmaps in fullscreen.
 	

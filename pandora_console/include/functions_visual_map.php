@@ -928,19 +928,24 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		}
 		
 		if (defined('METACONSOLE')) {
-			$backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
-				$config['homeurl'] . 'images/console/background/'.io_safe_input ($layout["background"]);
+			$backgroundImage =
+				'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+				$config['homeurl'] . 'images/console/background/' .
+				io_safe_input ($layout["background"]);
 		}
 		else {
 			html_debug_print($config, true);
-			$backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
-				$config['homedir'] . '/images/console/background/'.io_safe_input ($layout["background"]);
+			$backgroundImage =
+				'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+				$config['homedir'] . '/images/console/background/' .
+				io_safe_input ($layout["background"]);
 		}
 	}
 	else {
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
-		$backgroundImage = $metaconsole_hack . 'images/console/background/'.io_safe_input ($layout["background"]);
+		$backgroundImage = $metaconsole_hack . 'images/console/background/' .
+			io_safe_input ($layout["background"]);
 	}
 	
 	if (defined('METACONSOLE')) {
@@ -954,10 +959,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			position:relative;
 			width:'.$mapWidth.'px;
 			height:'.$mapHeight.'px;">';
-	echo "<img src='" . ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
+	echo "<img src='" .
+		ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
 	
 	
-	$layout_datas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
+	$layout_datas = db_get_all_rows_field_filter('tlayout_data',
+		'id_layout', $id_layout);
 	if (empty($layout_datas))
 		$layout_datas = array();
 	
@@ -1256,6 +1263,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$endTagA = false;
 				if ($show_links) {
+					html_debug_print($layout_data['label'], true);
+					$url_icon = "";
 					if ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
 						if (empty($layout_data['id_metaconsole'])) {
@@ -1267,15 +1276,28 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						}
 						$endTagA = true;
 					}
-					elseif (preg_match('/^(http:\/\/)((.)+)$/i', $layout_data['label'])) {
+					elseif (preg_match('/<a.*href=["\'](.*)["\']>/', $layout_data['label'], $matches)) {
 						// Link to an URL
-						echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="' . $layout_data['label'] .'">';
-						$endTagA = true;
+						if ($layout_data['enable_link']) {
+							$url_icon = strip_tags($matches[1]);
+							
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="' . $url_icon .'">';
+							$endTagA = true;
+						}
+					}
+					elseif (preg_match('/^.*(http:\/\/)((.)+).*$/i', $layout_data['label'])) {
+						// Link to an URL
+						if ($layout_data['enable_link']) {
+							$url_icon = strip_tags($layout_data['label']);
+							
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="' . $url_icon .'">';
+							$endTagA = true;
+						}
 					}
 				}
 				
 				$img_style = array ();
-				$img_style["title"] = $layout_data["label"];
+				$img_style["title"] = strip_tags($layout_data["label"]);
 				
 				if (!empty ($layout_data["width"])) {
 					$img_style["width"] = $layout_data["width"];

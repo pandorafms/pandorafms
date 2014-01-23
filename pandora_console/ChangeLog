@@ -1,5 +1,12 @@
 2014-01-23  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/visual_console/render_view.php: re-added the countdown
+	widget for visualmaps in fullscreen.
+	
+	Incident: #539 from local tacker.
+
+2014-01-23  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/map_builder.php,
 	godmode/reporting/visual_console_builder.data.php: fixed the access
 	to user with operator read or and operator write in all group into

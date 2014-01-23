@@ -132,6 +132,82 @@ else {
 
 visual_map_print_visual_map ($id_layout);
 
+if ($config["pure"]) {
+	$values = array ();
+	$values[5] = human_time_description_raw (5);
+	$values[30] = human_time_description_raw (30);
+	$values[SECONDS_1MINUTE] = human_time_description_raw(SECONDS_1MINUTE);
+	$values[SECONDS_2MINUTES] = human_time_description_raw(SECONDS_2MINUTES);
+	$values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
+	$values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
+	$values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
+	
+	$table->width = '90%';
+	$table->data = array ();
+	$table->style = array ();
+	$table->style[2] = 'text-align: center';
+	$table->data[0][0] = __('Autorefresh time');
+	
+	$table->data[0][1] = html_print_select ($values, 'refr', $refr, '', 'N/A', 0, true, false, false);
+	$table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
+	$table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
+	
+	echo '<div style="height:30px">&nbsp;</div>';
+	
+	if ($refr > 0) {
+		echo '<div id="countdown"><br /></div>';
+	}
+	
+	echo '<div style="height:30px">&nbsp;</div>';
+	
+	echo '<form method="post">';
+	html_print_input_hidden ('pure', $config["pure"]);
+	html_print_input_hidden ('id', $id_layout);
+	html_print_table ($table);
+	echo '</form>';
+	echo '</div>';
+	
+	
+	ui_require_jquery_file ('countdown');
+	ui_require_css_file ('countdown');
+	?>
+	<script language="javascript" type="text/javascript">
+	/* <![CDATA[ */
+	$(document).ready (function () {
+		$("#refr").change(function () {
+			$("#hidden-vc_refr").val($("#refr option:selected").val());
+		});
+		
+		<?php
+		if ($refr > 0) {
+		?>
+			t = new Date();
+			t.setTime (t.getTime() + <?php echo $refr * 1000; ?>);
+			$("#countdown").countdown(
+				{
+					until: t,
+					format: 'MS',
+					description: '<?php echo __('Until refresh'); ?>',
+					onExpiry: function () {
+							href = "<?php
+							$url = ui_get_full_url();
+							$url = preg_replace("/&refr=.*&/", "&", $url);
+							echo $url;
+							?>";
+							href = href + "&refr=<?php echo $refr;?>";
+							$(document).attr ("location", href);
+						}
+				}
+			);
+		
+		<?php
+		}
+		?>
+	});
+	/* ]]> */
+	</script>
+	<?php
+}
 
 
 if ($config["pure"] && ((int)get_parameter('refr', 0)) != 0) {

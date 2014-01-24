@@ -22,8 +22,5 @@ rpmbuild -ba $PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise
 # Enterprise server
 rpmbuild -ba $PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec || exit 1
 
-# Updatemanager keygen
-rpmbuild -ba $CODEHOME_ENT/updatemanager/keygen/pandora/pandora_keygen.spec || exit 1
-
 exit 0
 

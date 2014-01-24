@@ -1938,32 +1938,37 @@ function alerts_get_default_action_escalation($default_action, $escalation) {
 			$busy_times[$k] = 1;
 		}
 	}
+	
+	// Fill gaps from last busy to greater than
+	if ($busy_greater_than != -1) {
+		for($i=(count($busy_times)+1);$i<=$busy_greater_than;$i++) {
+			$busy_times[$i] = 0;
+		}
+		$busy_times[$i] = 2;
+	}
 
 	// Set as default execution the not busy times
 	$default_escalation = array();
 	foreach($busy_times as $k => $v) {
+		switch($v) {
+			case 0:
+				$default_escalation[$k] = 1;
+				break;
+			default:
+				$default_escalation[$k] = 0;
+				break;
+		}
+		
 		// Last element
 		if ($k == count($busy_times)) {
 			switch($v) {
-				case 0:
-					$default_escalation[$k] = 1;
-					$default_escalation[$k+1] = 2;
-					break;
-				case 1:
-					$default_escalation[$k] = 0;
-					$default_escalation[$k] = 2;
-					break;
 				case 2:
+					if ($default_escalation[$k] == 0) {
+						unset($default_escalation[$k]);
+					}
 					break;
-			}
-		}
-		else {
-			switch($v) {
-				case 0:
-					$default_escalation[$k] = 1;
-					break;
-				case 1:
-					$default_escalation[$k] = 0;
+				default:
+					$default_escalation[$k+1] = 1;
 					break;
 			}
 		}
@@ -1993,7 +1998,7 @@ function alerts_get_default_action_escalation($default_action, $escalation) {
  * */
 function alerts_normalize_actions_escalation($escalation) {
 	$max_elements = 0;
-
+	$any_greater_than = false;
 	foreach($escalation as $k => $v) {
 		if (is_array($v) && isset($v['greater_than'])) {
 			$escalation[$k] = array();
@@ -2001,6 +2006,7 @@ function alerts_normalize_actions_escalation($escalation) {
 				$escalation[$k][$i] = 0;
 			}
 			$escalation[$k][$v['greater_than']] = 2;
+			$any_greater_than = true;
 		}
 		
 		$n = count($escalation[$k]);
@@ -2009,7 +2015,7 @@ function alerts_normalize_actions_escalation($escalation) {
 		}
 	}
 
-	if ($max_elements == 1) {
+	if ($max_elements == 1 || !$any_greater_than) {
 		$nelements = $max_elements;
 	}
 	else {

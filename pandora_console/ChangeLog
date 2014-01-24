@@ -1,5 +1,10 @@
 2014-01-24  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_alerts.php: Fix forgotten cases on
+	actions escalation
+
+2014-01-24  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/alerts/alert_list.list.php
 	godmode/alerts/alert_view.php
 	include/styles/pandora.css

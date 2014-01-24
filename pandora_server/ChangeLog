@@ -1,3 +1,7 @@
+2014-01-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Updated copyright information.
+
 2013-01-22 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* util/pandora_manage.pl: Fixed that pandora_manage.pl had failed to write

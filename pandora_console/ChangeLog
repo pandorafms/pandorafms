@@ -1,3 +1,12 @@
+2014-01-24  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_view.php
+	include/styles/pandora.css
+	include/functions_alerts.php: Fix some bugs when 
+	doesnt exist an action with min-infinite situation.
+	Some visual fixes
+
 2014-01-23  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_view.php

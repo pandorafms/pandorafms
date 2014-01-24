@@ -355,7 +355,12 @@ else {
 			
 			if (count($table->head) <= count($action['escalation'])) {
 				if ($k == count($action['escalation'])) {
-					$table->head[$k] = '>#' . ($k-1);
+					if($k == 1) {
+						$table->head[$k] = __('Every time that the alert is fired');
+					}
+					else { 
+						$table->head[$k] = '>#' . ($k-1);
+					}
 				}
 				else {
 					$table->head[$k] = '#' . $k;
@@ -372,7 +377,7 @@ else {
 			$table->data[$kaction][$k+1] = human_time_description_raw ($action_threshold, true, 'tiny');
 		}
 		
-		$table->head[$k+1] = __('Threshold') .  '<span style="float: right;">' . ui_print_help_icon ('action_threshold', true) . '</span>';
+		$table->head[$k+1] = __('Threshold') .  '<span style="float: right;">' . ui_print_help_icon ('action_threshold', true, '', 'images/header_help.png') . '</span>';
 	}
 }
 

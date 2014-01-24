@@ -448,6 +448,7 @@ foreach ($simple_alerts as $alert) {
 	if ($default_action != "") {
 		$data[2] .= "<tr><td><ul class='action_list'><li>";
 		$data[2] .= db_get_sql ("SELECT name FROM talert_actions WHERE id = $default_action") . ' <em>(' . __('Default') . ')</em>';
+		$data[2] .= ui_print_help_tip(__('The default actions will be executed every time that the alert is fired and no other action is executed'), true);
 		$data[2] .= "</li></ul></td>";
 		$data[2] .= "<td></td>";
 		$data[2] .= "</tr>";

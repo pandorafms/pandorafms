@@ -32,9 +32,6 @@ cd $PANDHOME_ENT/pandora_console && tar zcvf $RPMHOME/SOURCES/pandorafms_console
 # Enterprise server
 cd $PANDHOME_ENT/pandora_server/ && tar zcvf $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz --exclude \.svn  PandoraFMS-Enterprise || exit 1
 
-# Updatemanager keygen
-cd $CODEHOME_ENT/updatemanager/keygen && tar cvzf $RPMHOME/SOURCES/pandorafms_keygen-$KEYGEN_VERSION.tar.gz --exclude .svn --exclude keygen --exclude keygen.i386.static --exclude pandora_keygen.spec pandora || exit 1
-
 # Create symlinks needed to build RPM packages
 if [ "$1" == "nightly" ]; then
 	ln -s $RPMHOME/SOURCES/pandorafms_console-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_console-$VERSION.tar.gz || exit 1

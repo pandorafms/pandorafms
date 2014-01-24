@@ -1,3 +1,10 @@
+2014-01-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_rpm.sh,
+	  build_rpm_redhat.sh,
+	  build_src.sh: Remove the keygen from the build scripts (it is not used
+	  anymore).
+
 2013-11-26  Sergio Martin <sergio.martin@artica.es>
 
 	* pandroid_event_viewer/src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java

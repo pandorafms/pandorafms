@@ -1873,9 +1873,9 @@ function alerts_get_actions_escalation($actions, $default_action = 0) {
 	
 	$default_escalation = alerts_get_default_action_escalation($default_action, $escalation);
 	$escalation = array(0 => $default_escalation) + $escalation;
-		
-	$escalation = alerts_normalize_actions_escalation($escalation);
 	
+	$escalation = alerts_normalize_actions_escalation($escalation);
+
 	// Join the actions with the default action
 	$actions = array(0 => $default_action) + $actions;
 	
@@ -1926,17 +1926,19 @@ function alerts_get_default_action_escalation($default_action, $escalation) {
 	// Set to 1 the busy executions
 	// Set to 2 the min - infinite situations
 	foreach($busy_times as $k => $v) {
-		if ($k == ($busy_greater_than + 1)) {
-			$busy_times[$k] = 2;
-		}
-		else if ($k > ($busy_greater_than + 1)) {
-			unset($busy_times[$k]);
+		if ($busy_greater_than != -1) {
+			if ($k == ($busy_greater_than + 1)) {
+				$busy_times[$k] = 2;
+			}
+			else if ($k > ($busy_greater_than + 1)) {
+				unset($busy_times[$k]);
+			}
 		}
 		else if ($v > 1) {
 			$busy_times[$k] = 1;
 		}
 	}
-	
+
 	// Set as default execution the not busy times
 	$default_escalation = array();
 	foreach($busy_times as $k => $v) {
@@ -1949,7 +1951,7 @@ function alerts_get_default_action_escalation($default_action, $escalation) {
 					break;
 				case 1:
 					$default_escalation[$k] = 0;
-					$default_escalation[$k+1] = 2;
+					$default_escalation[$k] = 2;
 					break;
 				case 2:
 					break;
@@ -1963,6 +1965,17 @@ function alerts_get_default_action_escalation($default_action, $escalation) {
 				case 1:
 					$default_escalation[$k] = 0;
 					break;
+			}
+		}
+	}
+	
+	if (empty($busy_times)) {
+		if ($busy_greater_than == -1) {
+			$default_escalation = 'everytime';
+		}
+		else {
+			for($i=1;$i<=$busy_greater_than;$i++) {
+				$default_escalation[$i] = 1;
 			}
 		}
 	}
@@ -1982,12 +1995,12 @@ function alerts_normalize_actions_escalation($escalation) {
 	$max_elements = 0;
 
 	foreach($escalation as $k => $v) {
-		if (isset($v['greater_than'])) {
+		if (is_array($v) && isset($v['greater_than'])) {
 			$escalation[$k] = array();
-			for($i=1;$i<=$v['greater_than'];$i++) {
+			for($i=1;$i<$v['greater_than'];$i++) {
 				$escalation[$k][$i] = 0;
 			}
-			$escalation[$k][$v['greater_than']+1] = 2;
+			$escalation[$k][$v['greater_than']] = 2;
 		}
 		
 		$n = count($escalation[$k]);
@@ -1995,24 +2008,31 @@ function alerts_normalize_actions_escalation($escalation) {
 			$max_elements = $n;
 		}
 	}
+
+	if ($max_elements == 1) {
+		$nelements = $max_elements;
+	}
+	else {
+		$nelements = $max_elements+1;
+	}
 	
 	foreach($escalation as $k => $v) {
-		if ($v == 'always') {
-			$escalation[$k] = array_fill(1, $max_elements, 1);
-			$escalation[$k][$max_elements+1] = 1;
+		if ($v == 'everytime') {
+			$escalation[$k] = array_fill(1, $nelements, 1);
+			$escalation[$k][$max_elements] = 2;
 		}
 		else if ($v == 'never') {
-			$escalation[$k] = array_fill(1, ($max_elements), 0);
+			$escalation[$k] = array_fill(1, $nelements, 0);
 		}
 		else {	
 			$fill_value = 0;
-			for($i=1;$i<=($max_elements+1);$i++) {
+			for($i=1;$i<=$nelements;$i++) {
 				if (!isset($escalation[$k][$i])) {
 					$escalation[$k][$i] = $fill_value;
 				}
 				else if ($escalation[$k][$i] == 2) {
 					$fill_value = 1;
-					$escalation[$k][$i] = $fill_value;
+					$escalation[$k][$i] = 0;
 				}
 			}
 		}

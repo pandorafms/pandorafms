@@ -1250,7 +1250,7 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = f
 	foreach ($alerts as $id) {
 		$alert = alerts_get_alert_agent_module ($id);
 		$agent_id = modules_get_agentmodule_agent ($alert["id_agent_module"]);
-		$group_id = agents_get_agentmodule_group ($agent_id);
+		$group_id = agents_get_agent_group ($agent_id);
 		$critical_instructions = db_get_value('critical_instructions', 'tagente_modulo', 'id_agente_modulo', $agent_id);
 		$warning_instructions = db_get_value('warning_instructions', 'tagente_modulo', 'id_agente_modulo', $agent_id);
 		$unknown_instructions = db_get_value('unknown_instructions', 'tagente_modulo', 'id_agente_modulo', $agent_id);

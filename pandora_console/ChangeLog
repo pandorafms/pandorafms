@@ -1,5 +1,10 @@
 2014-01-27  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php: Fixed metaconsole event
+	colors for incident #526
+
+2014-01-27  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_alerts.php: Fixed the group of the 
 	event generated when validate an alert manually
 

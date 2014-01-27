@@ -414,7 +414,8 @@ $params = implode(',',
 		'str_critical',
 		'quiet',
 		'critical_inverse',
-		'warning_inverse'));
+		'warning_inverse',
+		'id_policy_module'));
 
 $where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);
 
@@ -643,6 +644,10 @@ foreach ($modules as $module) {
 	}
 	else {
 		$data[4] = human_time_description_raw($agent_interval);
+	}
+	
+	if ($module['id_modulo'] == MODULE_DATA && $module['id_policy_module'] != 0) {
+		$data[4] .= ui_print_help_tip(__('The policy modules of data type will only update their intervals when policy is applied.'), true);
 	}
 	
 	$data[5] = ui_print_truncate_text($module['descripcion'], 'description', false);

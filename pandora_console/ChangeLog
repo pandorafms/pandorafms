@@ -1,3 +1,11 @@
+2014-01-27  Sergio Martin <sergio.martin@artica.es
+
+	* godmode/agentes/module_manager.php
+	godmode/agentes/module_manager_editor_common.php: Help tip added
+	near interval info of the data policy modules interval on module
+	list and form. This tip war about that this interal only will be
+	updated on policy application. Incident #379
+
 2014-01-27  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php: Fixed metaconsole event

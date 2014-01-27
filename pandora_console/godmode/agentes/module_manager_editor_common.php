@@ -321,6 +321,9 @@ if ($moduletype == MODULE_DATA) {
 		$table_advanced->data[2][1] = sprintf(__('Default') . ': 1' , $interval_factor) . ui_print_help_icon ('module_interval_factor', true);
 		$table_advanced->data[2][1] .= html_print_input_hidden('module_interval', $interval_factor, true);
 	}
+	else if ($module['id_policy_module'] != 0) {
+		$table_advanced->data[2][1] .= ui_print_help_tip(__('The policy modules of data type will only update their intervals when policy is applied.'), true);
+	}
 	
 	// If it is a non policy form, the module_interval will not provided and will 
 	// be taken the agent interval (this code is at configurar_agente.php)

@@ -1,5 +1,11 @@
 2014-01-28  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/operation/events.php: Improve the method of
+	detection if first event list loaded is on the 
+	window limits. 
+
+2014-01-28  Sergio Martin <sergio.martin@artica.es>
+
 	* mobile/operation/events.php: Fix event loading when
 	the screen is bigger than the initial list height
 

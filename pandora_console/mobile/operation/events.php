@@ -935,7 +935,9 @@ class Events {
 								add_rows(data);
 								
 								//For large screens load the new events
-								if (document.documentElement.scrollHeight <= document.documentElement.clientHeight) {
+								//Check if the end of the event list tables is in the client limits
+								var table_end = $('#list_events').offset().top + $('#list_events').height();
+								if (table_end < document.documentElement.clientHeight) {
 									ajax_load_rows();
 								}
 

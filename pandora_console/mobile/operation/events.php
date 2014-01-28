@@ -935,9 +935,10 @@ class Events {
 								add_rows(data);
 								
 								//For large screens load the new events
-								if (document.documentElement.scrollHeight == document.documentElement.clientHeight) {
+								if (document.documentElement.scrollHeight <= document.documentElement.clientHeight) {
 									ajax_load_rows();
 								}
+
 							},
 							\"json\");
 					}

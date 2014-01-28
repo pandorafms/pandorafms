@@ -1,5 +1,10 @@
 2014-01-28  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/operation/events.php: Fix event loading when
+	the screen is bigger than the initial list height
+
+2014-01-28  Sergio Martin <sergio.martin@artica.es>
+
 	* include/languages/ca.mo
 	include/languages/tr.mo
 	include/languages/de.mo

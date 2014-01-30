@@ -1,3 +1,20 @@
+2014-01-30  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/gis_maps/ajax.php: Fixed broken agent
+	icons when autorefresh on gis maps
+
+	* mobile/operation/groups.php
+	mobile/operation/events.php
+	mobile/include/style/main.css
+	mobile/include/ui.class.php
+	mobile/include/user.class.php: More aesthetic and 
+	responsible improvements on mobile console
+
+	* include/functions_graph.php
+	include/constants.php: Added more colors to the
+	graph color collection to support more graphics in 
+	a combined graphs
+
 2014-01-28  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/operation/events.php: Improve the method of

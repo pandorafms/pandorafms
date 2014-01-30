@@ -192,7 +192,7 @@ switch ($opt) {
 			$icon_height = $icon_size[1];
 			
 			$agents[$row['tagente_id_agente']] = array(
-				'icon_path' => $icon,
+				'icon_path' => $config["homeurl"] . '/' . $icon,
 				'icon_width' => $icon_width,
 				'icon_height' => $icon_height,
 				'name' => $row['nombre'],

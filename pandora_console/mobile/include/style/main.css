@@ -8,7 +8,7 @@ body {
 	direction: ltr;
 	display: block;
 	font-family: Arial,Helvetica,sans-serif;
-	font-size: 12px !important;
+	font-size: 12px;
 	margin: 0;
 	text-align: left;
 	vertical-align: top;
@@ -22,11 +22,9 @@ body {
 	font-size: 14px !important;
 }
 
-label, input, .ui-btn-inner {
-	font-size: 12px !important;
+.ui-btn-inner {
+	font-weight: bold;
 }
-
-
 
 /*INIT----------Tactical styles-----------------------------------------*/
 #tactical1 *, #tactical2 * {
@@ -242,13 +240,46 @@ tr.group_view_data, .group_view_data {
 }
 
 tr.events {
-	border-bottom: 3px solid white !important;
+	border-bottom: 6px solid #f7f7f7 !important;
 	font-size: 12px !important;
 }
 
 table#list_events th {
 	font-size: 12px !important;
 	font-weight: bolder !important;
+	border: 0px;
+}
+
+table.alternate tr:nth-child(odd) td, table.alternate tr:nth-child(odd) th{
+	background-color: #ffffff;
+}
+table.alternate tr:nth-child(even) td, table.alternate tr:nth-child(eveny) th{
+	background-color: #e4e5e4;
+}
+
+table.pandora_responsive {
+	width: 100%;
+}
+
+table.pandora_responsive td, table.pandora_responsive th{
+	padding: 4px;
+}
+
+table.event_details img{
+	margin-left: 4px;
+}
+
+table.event_details td{
+	height: 14px;
+}
+
+table.event_details td.cell_event_name {
+	font-size: 14px;
+}
+
+#validate_button {
+	margin: 10px auto;
+	display: block;
 }
 
 /*
@@ -763,16 +794,20 @@ li.ui-btn {
 }
 
 /* For mobiles */
-@media screen and (max-width: 800px)
+@media screen and (max-width: 750px)
 {
 	.ui-content>.ui-btn {
 		margin: 10px 7px;
 		height: 30px;
 		padding-top: 3px;
 	}
+	
+	label, input, .ui-btn-inner {
+		font-size: 12px !important;
+	}
 }
 /* For tablets */
-@media screen and (min-width: 800px)
+@media screen and (min-width: 750px)
 {
 	.ui-content>.ui-btn {
 		width: 31%;
@@ -781,7 +816,40 @@ li.ui-btn {
 		height: 40px;
 		padding-top: 8px;
 	}
+	
+	label, input, .ui-btn-inner {
+		font-size: 16px !important;
+		padding-top: 6px !important;
+	}
+	
+	.ui-header .ui-title {
+		font-size: 18px !important;
+	}
+	
+	* {
+		font-size: 18px;
+	}
 }
+
+#login_container {
+	width: 60%;
+	margin: 0 auto;
+	max-width: 300px;
+}
+
+#logout_dialog-button_close {
+	display: block;
+	margin: 15px auto;
+}
+
+#login_container #login_btn-container {
+	margin-top: 30px;
+}
+
+#login_container input, #login_container .ui-btn-text{
+	font-size: 16px !important;
+}
+
 
 table.tactical_bars {
 	width: 100%;

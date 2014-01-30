@@ -139,6 +139,11 @@ define('COL_GRAPH5', '#6BD8DD');
 define('COL_GRAPH6', '#F49B31');
 define('COL_GRAPH7', '#999999');
 define('COL_GRAPH8', '#F2B8C1');
+define('COL_GRAPH9', '#C4E8C1');
+define('COL_GRAPH10', '#C1DBE5');
+define('COL_GRAPH11', '#C9C1e0');
+define('COL_GRAPH12', '#F45B95');
+define('COL_GRAPH13', '#E83128');
 
 
 /* The styles */

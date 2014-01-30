@@ -145,6 +145,7 @@ class User {
 		}
 		if ($this->logout_action) {
 			
+			$options['dialog_id'] = 'logout_dialog';
 			$options['type'] = 'onStart';
 			$options['title_text'] = __('Login out');
 			$options['content_text'] = __('Your session is over. Please close your browser window to close this Pandora session.');
@@ -158,6 +159,7 @@ class User {
 				html_print_image ("images/pandora_login.png",
 					true, array ("alt" => "logo", "border" => 0)) .
 					'</div>');
+			$ui->contentAddHtml('<div id="login_container">');
 			$ui->beginForm();
 			$ui->formAddHtml(html_print_input_hidden('action', 'login', true));
 			$options = array(
@@ -177,10 +179,12 @@ class User {
 			$options = array(
 				'value' => __('Login'),
 				'icon' => 'star',
-				'icon_pos' => 'right'
+				'icon_pos' => 'right',
+				'name' => 'login_btn'
 				);
 			$ui->formAddSubmitButton($options);
 			$ui->endForm();
+			$ui->contentAddHtml('</div>');
 		$ui->endContent();
 		$ui->showPage();
 		

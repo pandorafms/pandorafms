@@ -71,7 +71,10 @@ class Groups {
 					$ui->contentAddHtml('
 						<style type="text/css">
 							.ui-icon-group_' . $count . ' {
-								background: url("' . $group['group_icon'] . '") no-repeat scroll 0 0 transparent !important;
+								background: url("' . $group['group_icon'] . '") no-repeat scroll 0 0 #F3F3F3 !important;
+								width: 24px;
+								height: 24px;
+								margin-top: -12px !important;
 							}
 						</style>
 						');

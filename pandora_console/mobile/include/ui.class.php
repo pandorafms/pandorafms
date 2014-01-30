@@ -402,7 +402,7 @@ class Ui {
 			$options['id'] = 'text-' . $options['name'];
 		}
 		
-		$html = "<div>\n";
+		$html = "<div id='" . $options['name'] . "-container' >\n";
 		$html .= "<fieldset data-role='controlgroup'>\n";
 		if (!empty($options['label'])) {
 			$html .= "<label for='" . $options['id'] . "'>" . $options['label'] . "</label>\n";
@@ -605,7 +605,7 @@ class Ui {
 		$dialogHtml .= "<div id='" . $content_id . "' class='" . $content_class . "' data-role='content'>\n";
 		$dialogHtml .= $content_text;
 		if ($button_close) {
-			$dialogHtml .= "<a data-role='button' href='#main_page'>";
+			$dialogHtml .= "<a data-role='button' href='#main_page' id='" . $dialog_id . "-button_close'>";
 			if (empty($button_text)) {
 				$dialogHtml .= __('Close');
 			}

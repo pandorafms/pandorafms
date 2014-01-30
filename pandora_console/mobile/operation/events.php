@@ -137,6 +137,9 @@ class Events {
 								html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) .
 								'</a>';
 						}
+						else {
+							$event['module_graph_link'] = '<i>' . __('N/A') . '</i>';
+						}
 						
 						if ($event['id_agente'] > 0) {
 							$event['agent'] = "<a style='color: black;'" .
@@ -144,6 +147,9 @@ class Events {
 								$event['id_agente'] . "'>" .								
 								agents_get_name($event['id_agente']) .
 								"</a>";
+						}
+						else {
+							$event['agent'] = '<i>' . __('N/A') . '</i>';
 						}
 						
 						$event['evento'] = io_safe_output($event['evento']);
@@ -161,7 +167,9 @@ class Events {
 							$event["owner_user"] = $user_owner;
 						}
 						
-						$event["event_type"] = events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
+						$event["event_type"] = events_print_type_description($event["event_type"], true);
+						$event["event_type"] .= ' ';
+						$event["event_type"] .= events_print_type_img ($event["event_type"], true);
 						
 						if (!isset($group_rep))
 							$group_rep = 0;
@@ -204,14 +212,13 @@ class Events {
 								$img_sev = "images/status_sets/default/severity_major.png";
 								break;
 						}
-						
-						$event["criticity"] = html_print_image ($img_sev, true, 
+
+						$event["criticity"] = ' ' . $event_criticity;
+						$event["criticity"] .= html_print_image ($img_sev, true, 
 							array ("class" => "image_status",
 								"width" => 12,
 								"height" => 12,
-								"title" => $event_criticity));
-						$event["criticity"] .= ' ' . $event_criticity;
-						
+								"title" => $event_criticity));						
 						
 						if ($event['estado'] == 1) {
 							$user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
@@ -229,7 +236,7 @@ class Events {
 						// Get Status
 						switch ($event['estado']) {
 							case 0:
-								$img_st = "images/star.png";
+								$img_st = "images/star_dark.png";
 								$title_st = __('New event');
 								break;
 							case 1:
@@ -241,10 +248,12 @@ class Events {
 								$title_st = __('Event in process');
 								break;
 						}
-						$event["status"] = html_print_image($img_st,true).' '.$title_st;
+						$event["status"] = $title_st;
+						$event["status"] .= ' ';
+						$event["status"] .= html_print_image($img_st,true);
 						
-						$event["group"] = ui_print_group_icon ($event["id_grupo"], true);
-						$event["group"] .= groups_get_name ($event["id_grupo"]);
+						$event["group"] = groups_get_name ($event["id_grupo"], true);
+						$event["group"] .= ui_print_group_icon ($event["id_grupo"], true);
 						
 						$event["tags"] = tags_get_tags_formatted($event["tags"]);
 						if (empty($event["tags"])) {
@@ -409,7 +418,7 @@ class Events {
 			//Content
 			ob_start();
 			?>
-			<table class="pandora_responsive">
+			<table class="pandora_responsive alternate event_details">
 				<tbody>
 					<tr class="event_name">
 						<td class="cell_event_name" colspan="2"></td>
@@ -796,11 +805,7 @@ class Events {
 										.html(event[\"agent\"]);
 									
 									//The link to module graph
-									$(\".event_module_graph\").hide();
-									if (event[\"id_agentmodule\"] != \"0\") {
-										$(\".event_module_graph\").show();
-										$(\".cell_module_graph\").html(event[\"module_graph_link\"]);
-									}
+									$(\".cell_module_graph\").html(event[\"module_graph_link\"]);
 									
 									$(\"#event_id\").val(id_event);
 									

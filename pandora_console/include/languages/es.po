@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-01-27 17:47+0100\n"
-"PO-Revision-Date: 2014-01-28 09:22+0000\n"
+"PO-Revision-Date: 2014-01-30 15:14+0000\n"
 "Last-Translator: Zarzuelo <Unknown>\n"
 "Language-Team: Español; Castellano <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-01-28 10:44+0000\n"
-"X-Generator: Launchpad (build 16914)\n"
+"X-Launchpad-Export-Date: 2014-01-30 15:16+0000\n"
+"X-Generator: Launchpad (build 16916)\n"
 "Language: \n"
 
 #: ../../operation/search_main.php:48
@@ -4510,12 +4510,12 @@ msgstr "Protocolo"
 #: ../../operation/netflow/nf_live_view.php:349
 #: ../../godmode/netflow/nf_edit_form.php:213
 msgid "Src Ip Address"
-msgstr "Dirección Src Ip"
+msgstr "Dirección Orig Ip"
 
 #: ../../operation/netflow/nf_live_view.php:349
 #: ../../godmode/netflow/nf_edit_form.php:213
 msgid "Dst Ip Address"
-msgstr "Dirección Src Ip"
+msgstr "Dirección Dst Ip"
 
 #: ../../operation/netflow/nf_live_view.php:352
 #: ../../godmode/netflow/nf_edit_form.php:217
@@ -23934,7 +23934,7 @@ msgstr "15 minutos"
 #: ../../include/functions_netflow.php:846
 #: ../../include/functions_netflow.php:879
 msgid "30 mins"
-msgstr "10 minutos"
+msgstr "30 minutos"
 
 #: ../../include/functions_netflow.php:853
 #: ../../include/functions_netflow.php:886
@@ -24008,11 +24008,11 @@ msgstr "Ip de destino"
 
 #: ../../include/functions_netflow.php:1340
 msgid "Src IP"
-msgstr "IP Src"
+msgstr "IP Orig"
 
 #: ../../include/functions_netflow.php:1342
 msgid "Src port"
-msgstr "Puerto Src"
+msgstr "Puerto Orig"
 
 #: ../../include/ajax/networkmap.ajax.php:107
 #: ../../include/ajax/networkmap.ajax.php:164

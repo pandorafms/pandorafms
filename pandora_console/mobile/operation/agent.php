@@ -65,6 +65,7 @@ class Agent {
 		$system = System::getInstance();
 		
 		$ui->createPage();
+		
 		if ($this->id != 0) {
 			$agent_name = (string) agents_get_name ($this->id);
 			
@@ -109,20 +110,22 @@ class Agent {
 					if (!empty($addresses)) {
 						$ip .= ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>',$addresses), true);
 					}
+					$ip .= '<br />';
 					
-					$last_contant = '<b>' . __('Last contact') . ' / ' . __('Remote') . '</b>&nbsp;'
-						.ui_print_timestamp ($this->agent["ultimo_contacto"], true);
+					$last_contact = __('Last contact') . ' / ' . __('Remote') . '<b>:&nbsp;'
+						.ui_print_timestamp ($this->agent["ultimo_contacto"], true) . '</b><br />';
 					
 					$description =
-						empty($agent["comentarios"]) ? '<em>' . __('N/A') . '</em>' : $this->agent["comentarios"];
+						empty($agent["comentarios"]) ? '' : $this->agent["comentarios"] . '<br />';
 					
 					
-					
-					$html = ui_print_group_icon ($this->agent["id_grupo"], true) . '&nbsp;&nbsp;';
-					$html .= $agent_name . '<br />';
-					$html .= $ip . '<br />';
-					$html .= $last_contant . '<br />';
-					$html .= $description . '<br />';
+					$html = '<div class="agent_details">';
+					$html .= ui_print_group_icon ($this->agent["id_grupo"], true) . '&nbsp;&nbsp;';
+					$html .= '<span class="agent_name">' . $agent_name . '</span><br />';
+					$html .= $ip;
+					$html .= $last_contact;
+					$html .= $description;
+					$html .= '</div>';
 					
 				$ui->contentGridAddCell($html);
 					ob_start();
@@ -132,6 +135,7 @@ class Agent {
 					$html .= "<b>" . __('Events (24h)') . "</b><br />";
 					$html .= graph_graphic_agentevents(
 						$this->id, 250, 15, 86400, ui_get_full_url(false), true);
+					$html .= '<br><br>';
 				$ui->contentGridAddCell($html);
 				$ui->contentEndGrid();
 				
@@ -153,12 +157,10 @@ class Agent {
 				$ui->contentEndCollapsible();
 				
 				$events = new Events();
-				$filters = array('id_agent' => $this->id);
-				$events->setFilters($filters);
-				$events->disabledColumns(array('agent'));
-				$events->setReadOnly();
 				$ui->contentBeginCollapsible(sprintf(__('Last %s Events'), $system->getPageSize()));
-				$ui->contentCollapsibleAddItem($events->listEventsHtml(0, true));
+				$tabledata = $events->listEventsHtml(0, true, 'last_agent_events');
+				$ui->contentCollapsibleAddItem($tabledata['table']);
+				$ui->contentCollapsibleAddItem($events->putEventsTableJS($this->id));
 				$ui->contentEndCollapsible();
 			}
 		$ui->endContent();

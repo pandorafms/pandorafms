@@ -407,12 +407,12 @@ class Modules {
 				$row = array();
 				
 				$row[0] = $row[__('Module name')] =
-                                        '<span class="data">'.$module['module_name']."</span>";
+                                        '<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false)."</span>";
 					
 				if ($this->columns['agent']) {
 					$row[1] = $row[__('Agent name')] =
 						'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
-						'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $module["id_agent"] . '">' . $module['agent_name'] . '</a>' .
+						'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $module["id_agent"] . '">' . ui_print_truncate_text($module['agent_name'], 50, false) . '</a>' .
 						'</span>';
 				}
 				if ($module['utimestamp'] == 0 && (($module['module_type'] < 21 ||
@@ -454,8 +454,8 @@ class Modules {
 					}
 				}
 			
-				$row[4] = $row[__('Interval')] =
-					($module['module_interval'] == 0) ? human_time_description_raw($module['agent_interval']) : human_time_description_raw($module['module_interval']);
+				$row[__('Interval')] =
+					($module['module_interval'] == 0) ? human_time_description_raw($module['agent_interval'], false, 'tiny') : human_time_description_raw($module['module_interval'], false, 'tiny');
 				
 				$row[4] = $row[__('Interval')] = '<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Interval.') . ' </span>' .
 					$row[__('Interval')] .
@@ -463,8 +463,8 @@ class Modules {
 				
 				
 				$row[6] = $row[__('Timestamp')] =
-					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">&nbsp;' . __('Last update.') . ' </span>' .
-					ui_print_timestamp($module["utimestamp"], true) . '</span>';
+					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Last update.') . ' </span>' .
+					ui_print_timestamp($module["utimestamp"], true, array('units' => 'tiny')) . '</span>';
 				if (is_numeric($module["datos"])) {
 					$output = format_numeric($module["datos"]);
 					
@@ -624,7 +624,7 @@ class Modules {
 											$(\"table#list_Modules tbody\").append(\"<tr>\" +
 													\"<th class='head_vertical'></th>\" +
 													\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[0] + \"</td>\" +
-													\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[2] + \"</td>\" +
+													\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[1] + \"</td>\" +
 													\"<td class='cell_2'><b class='ui-table-cell-label'>" . __('Status') . "</b>\" + module[5] + \"</td>\" +
 													\"<td class='cell_3'><b class='ui-table-cell-label'>" . __('Interval') . "</b>\" + module[4] + \"</td>\" +
 													\"<td class='cell_4'><b class='ui-table-cell-label'>" . __('Timestamp') . "</b>\" + module[6] + \"</td>\" +

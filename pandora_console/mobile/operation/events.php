@@ -59,7 +59,17 @@ class Events {
 		else {
 			switch ($parameter2) {
 				case 'get_events':
-					$this->eventsGetFilters();
+					if ($system->getRequest('agent_events', '0') == 1) {
+						$this->disabledColumns(array('agent'));
+						$filters = array('id_agent' => $system->getRequest('id_agent', 0));
+						$this->setFilters($filters);
+						$this->setReadOnly();
+						$this->eventsGetFilters();
+					}
+					else {
+						$this->eventsGetFilters();
+					}
+					
 					$page = $system->getRequest('page', 0);
 					
 					$system = System::getInstance();
@@ -85,7 +95,7 @@ class Events {
 								break;
 						}
 						
-						if($event['criticity'] == EVENT_CRIT_WARNING) {
+						if($event['criticity'] == EVENT_CRIT_WARNING || $event['criticity'] == EVENT_CRIT_MAINTENANCE ) {
 							$img_st = str_replace("white.png", "dark.png", $img_st);
 						}
 						
@@ -100,7 +110,7 @@ class Events {
 						}
 						
 						$row = array();
-						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Event Name') . '</b>' . io_safe_output($event['evento']) . $close_link;
+						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Event Name') . '</b><div class="event_name">' . io_safe_output($event['evento']) . '</div>' . $close_link;
 						
 						if ($event["id_agente"] == 0) {
 							$agent_name = __('System');
@@ -365,12 +375,15 @@ class Events {
 		if ($this->filter > 0) {
 			$this->loadPresetFilter();
 		}
+		
+		$this->limit = $system->getRequest('limit', -1);
 	}
 	
 	public function setFilters($filters) {
 		if (isset($filters['id_agent'])) {
 			$this->id_agent = $filters['id_agent'];
 		}
+		
 		if (isset($filters['all_events'])) {
 			$this->all_events = $filters['all_events'];
 		}
@@ -700,10 +713,17 @@ class Events {
 		}
 		//--------------------------------------------------------------
 		
-		
+		if (isset($this->limit) && $this->limit != -1) {
+			$offset = 0;
+			$pagination = $this->limit;
+		}
+		else {
+			$offset = $page * $system->getPageSize();
+			$pagination = $system->getPageSize();
+		}
 		
 		$events_db = events_get_events_grouped($sql_post,
-			$page * $system->getPageSize(), $system->getPageSize(), false, false);
+			$offset, $pagination, false, false);
 		if (empty($events_db)) {
 			$events_db = array();
 		}
@@ -713,7 +733,7 @@ class Events {
 		return array('events' => $events_db, 'total' => $total_events);
 	}
 	
-	public function listEventsHtml($page = 0, $return = false) {
+	public function listEventsHtml($page = 0, $return = false, $id_table = 'list_events') {			
 		$system = System::getInstance();
 		
 		$listEvents = $this->getListEvents($page);
@@ -732,7 +752,7 @@ class Events {
 		else {
 			// Create an empty table to be filled from ajax
 			$table = new Table();
-			$table->id = 'list_events';
+			$table->id = $id_table;
 			
 			if (!$return) {
 				$ui->contentAddHtml($table->getHTML());
@@ -747,9 +767,17 @@ class Events {
 				$this->addJavascriptDialog();
 			}
 			else {
-				return $table->getHTML();
+				$this->addJavascriptAddBottom();
+
+				return array('table' => $table->getHTML(), 'data' => $events_db);
 			}
 		}
+	}
+	
+	public function putEventsTableJS($id_agent) {
+		return "<script type=\"text/javascript\">
+					ajax_load_latest_agent_events(" . $id_agent . ", 10);
+				</script>";
 	}
 	
 	private function addJavascriptDialog() {
@@ -891,14 +919,13 @@ class Events {
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 				var load_more_rows = 1;
 				var page = 0;
-				
-				function add_rows(data) {
+				function add_rows(data, table_id) {
 					if (data.end) {
 						$(\"#loading_rows\").hide();
 					}
 					else {
 						$.each(data.events, function(key, event) {
-							$(\"table#list_events tbody\").append(
+							$(\"table#\"+table_id+\" tbody\").append(
 								\"<tr class='events \" + event[2] + \"'>\" +
 									\"<td class='cell_0'>\" +
 										event[0] +
@@ -917,7 +944,6 @@ class Events {
 				
 				function ajax_load_rows() {
 					if (load_more_rows) {
-						
 						load_more_rows = 0;
 						
 						postvars = {};
@@ -937,30 +963,48 @@ class Events {
 						$.post(\"index.php\",
 							postvars,
 							function (data) {
-								add_rows(data);
-								
-								//For large screens load the new events
-								//Check if the end of the event list tables is in the client limits
-								var table_end = $('#list_events').offset().top + $('#list_events').height();
-								if (table_end < document.documentElement.clientHeight) {
-									ajax_load_rows();
+								add_rows(data, 'list_events');
+												
+								if($('#list_events').offset() != undefined) {
+									//For large screens load the new events
+									//Check if the end of the event list tables is in the client limits
+									var table_end = $('#list_events').offset().top + $('#list_events').height();
+									if (table_end < document.documentElement.clientHeight) {
+										ajax_load_rows();
+									}
 								}
-
 							},
 							\"json\");
 					}
 				}
 				
+				function ajax_load_latest_agent_events(id_agent, limit) {
+					postvars = {};
+					postvars[\"action\"] = \"ajax\";
+					postvars[\"parameter1\"] = \"events\";
+					postvars[\"parameter2\"] = \"get_events\";
+					postvars[\"agent_events\"] = \"1\";
+					postvars[\"id_agent\"] = id_agent;
+					postvars[\"limit\"] = limit;
+					
+					$.post(\"index.php\",
+						postvars,
+						function (data) {
+							add_rows(data, 'last_agent_events');
+						},
+						\"json\");
+				}
+				
 				$(document).ready(function() {
-					ajax_load_rows();
-					
-					$(window).bind(\"scroll\", function () {
-						custom_scroll();
-					});
-					
-					$(window).on(\"touchmove\", function(event) {
-						custom_scroll();
-					});
+						ajax_load_rows();
+						
+						$(window).bind(\"scroll\", function () {
+							custom_scroll();
+						});
+						
+						$(window).on(\"touchmove\", function(event) {
+							custom_scroll();
+						});
 				});
 				
 				function custom_scroll() {

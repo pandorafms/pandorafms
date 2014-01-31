@@ -258,7 +258,7 @@ class Alerts {
 			}
 			
 			$row = array();
-			if ($this->columns['agent']) {
+			if (isset($this->columns['agent']) && $this->columns['agent']) {
 				$row[__('Agent')] = sprintf($disabled_style,
 					'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $alert['id_agente'] . '">' . io_safe_output($alert['agent_name'])) . '</a>';
 			}

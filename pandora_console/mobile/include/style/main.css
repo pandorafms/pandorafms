@@ -1,5 +1,6 @@
 * {
 	text-decoration: none !important;
+	font-size: 12px;
 }
 
 body {
@@ -8,7 +9,6 @@ body {
 	direction: ltr;
 	display: block;
 	font-family: Arial,Helvetica,sans-serif;
-	font-size: 12px;
 	margin: 0;
 	text-align: left;
 	vertical-align: top;
@@ -27,12 +27,14 @@ body {
 }
 
 /*INIT----------Tactical styles-----------------------------------------*/
+/* Common */
 #tactical1 *, #tactical2 * {
-	font-size: 12px !important;
+	font-weight: bold;
 }
 
 #tactical1 a, #tactical2 a {
-	font-size: 18px !important;
+	font-weight: bold;
+	color: #222;
 }
 
 legend {
@@ -46,6 +48,24 @@ legend {
 .ui-btn-up-c {
 	font-weight: normal !important;
 	text-shadow: none !important; 
+}
+
+/* For mobiles */
+@media screen and (max-width: 750px)
+{
+	#tactical1 *, #tactical2 * {
+		font-size: 12px;
+	}
+	#tactical1 a, #tactical2 a {
+		font-size: 18px;
+	}
+}
+/* For tablets */
+@media screen and (min-width: 750px)
+{
+	#tactical1 a, #tactical2 a {
+		font-size: 25px !important;
+	}
 }
 /*END-----------Tactical styles-----------------------------------------*/
 
@@ -248,6 +268,14 @@ table#list_events th {
 	font-size: 12px !important;
 	font-weight: bolder !important;
 	border: 0px;
+}
+
+div.graph {
+	margin: 0 auto;
+}
+
+.tickLabels * {
+	font-size: 10px !important;
 }
 
 table.alternate tr:nth-child(odd) td, table.alternate tr:nth-child(odd) th{
@@ -457,6 +485,15 @@ table.event_details td.cell_event_name {
 	font-size: 12px !important;
 }
 
+.agent_details {
+	line-height: 25px;
+}
+
+.agent_name {
+	font-weight: bold;
+	font-size: 14px;
+}
+
 @media screen and (max-width: 25em) {
 	#list_agents .cell_2 .ui-table-cell-label,
 	#list_agents .cell_3 .ui-table-cell-label,
@@ -571,6 +608,11 @@ table.event_details td.cell_event_name {
 
 #list_Modules .cell_5 a {
 	color: #000000 !important;
+}
+
+#list_Modules .module_name {
+	font-size: 15px;
+	font-weight: bold;
 }
 
 @media screen and (max-width: 25em) {
@@ -827,7 +869,11 @@ li.ui-btn {
 	}
 	
 	* {
-		font-size: 18px;
+		font-size: 18px !important;
+	}
+
+	.event_name {
+		font-size: 18px !important;
 	}
 }
 
@@ -837,9 +883,9 @@ li.ui-btn {
 	max-width: 300px;
 }
 
-#logout_dialog-button_close {
-	display: block;
-	margin: 15px auto;
+.event_name {
+	font-size: 15px;
+	font-weight: bold;
 }
 
 #login_container #login_btn-container {

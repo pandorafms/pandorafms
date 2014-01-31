@@ -1,3 +1,19 @@
+2014-01-31  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/operation/agent.php
+	mobile/operation/events.php
+	mobile/operation/modules.php
+	mobile/operation/alerts.php
+	mobile/include/style/main.css
+	include/functions.php: Fixed last 10 events on
+	agent view and improve usability and styles
+
+2014-01-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/languages/es.po
+	include/languages/es.mo: Update some spanish
+	bad translations
+
 2014-01-30  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/gis_maps/ajax.php: Fixed broken agent

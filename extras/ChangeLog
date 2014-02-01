@@ -1,3 +1,8 @@
+2014-02-01  Sancho Lerena <slerena@artica.es>
+
+	* fedora_official_specs: Added new directory to maintain the official specs
+	for fedora/centos/EPEL. Not yet official, but going on...
+
 2014-01-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_rpm.sh,

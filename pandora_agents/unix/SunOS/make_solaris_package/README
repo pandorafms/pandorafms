@@ -4,9 +4,9 @@ To make the Solaris package, execute:
 
    ./make_solaris_package.sh
 
-It works with x86/SPARC Solaris 9 or 10.
+It works with x86/SPARC Solaris 9,10 or 11.
 
 The package file, named "PandoraFMS-agent-X.X.X.pkg", will be created.
-You can install it to Solaris 9 or 10 like this:
+You can install it to Solaris 9,10 or 11 like this:
 
   pkgadd -d ./PandoraFMS-agent-X.X.X.pkg

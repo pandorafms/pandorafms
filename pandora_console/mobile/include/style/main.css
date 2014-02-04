@@ -41,10 +41,6 @@ legend {
 	margin-bottom: 5px;
 }
 
-.ui-body-d {
-	border-radius: 0.6em 0.6em 0.6em 0.6em !important;
-}
-
 .ui-btn-up-c {
 	font-weight: normal !important;
 	text-shadow: none !important; 
@@ -160,7 +156,7 @@ tr.group_view_alrm, .group_view_alrm {
 }
 .ui-btn-up-group_view_alrm, .ui-btn-hover-group_view_alrm {
 	background-color: #F7931E;
-	color: #111;
+	color: #FFF;
 	border: 1px solid #111111;
 	font-weight: bold;
 	text-shadow: none;
@@ -211,12 +207,40 @@ tr.group_view_data, .group_view_data {
 	display: inline !important;
 }
 
-.list_groups .link_count.ui-link-inherit {
-	margin-top: -5px;
+
+.list_groups .number_count, .list_groups .name_count {
 	position: absolute;
-	right: 10px;
 	top: 0;
 }
+
+.list_groups .number_count {
+	right: 10px;
+}
+
+.list_groups .name_count {
+	left: 10px;
+}
+
+.list_groups .name_count img {
+	float: left;
+	margin-right: 10px;
+}
+
+/* For mobiles */
+@media screen and (max-width: 750px)
+{
+	.list_groups .name_count img {
+		margin-top: -7px;
+	}
+}
+/* For tablets */
+@media screen and (min-width: 750px)
+{
+	.list_groups .name_count img {
+		margin-top: -3px;
+	}
+}
+
 /*END-----------Groups styles-----------------------------------------*/
 
 
@@ -493,6 +517,15 @@ table.event_details td.cell_event_name {
 	font-weight: bold;
 	font-size: 14px;
 }
+	
+#list_agents .cell_0 img {
+	float: left;
+}
+
+#list_agents td {
+	height: 35px;
+	padding-top: 20px;
+}
 
 @media screen and (max-width: 25em) {
 	#list_agents .cell_2 .ui-table-cell-label,
@@ -726,7 +759,7 @@ table.event_details td.cell_event_name {
 
 
 
-ul.ui-listview li.ui-btn div.ui-btn-inner div.ui-btn-text {
+ul.ui-listview li.ui-btn div.ui-btn-inner div.ui-btn-text a {
 	padding-top: 5px;
 	padding-left: 5px;
 }
@@ -835,6 +868,16 @@ li.ui-btn {
 	}
 }
 
+/* Common */
+
+.ui-li>.ui-btn-inner {
+	background: white;
+}
+
+.groups_sublist li {
+	border-radius: 0px;
+}
+
 /* For mobiles */
 @media screen and (max-width: 750px)
 {
@@ -846,6 +889,11 @@ li.ui-btn {
 	
 	label, input, .ui-btn-inner {
 		font-size: 12px !important;
+	}
+	
+	.list_groups .ui-btn-inner {
+		padding-top: 15px !important;
+		height: 20px !important;	
 	}
 }
 /* For tablets */
@@ -862,6 +910,11 @@ li.ui-btn {
 	label, input, .ui-btn-inner {
 		font-size: 16px !important;
 		padding-top: 6px !important;
+	}
+	
+	.list_groups .ui-btn-inner {
+		padding-top: 20px !important;
+		height: 35px !important;	
 	}
 	
 	.ui-header .ui-title {

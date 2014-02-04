@@ -83,39 +83,46 @@ class Groups {
 						'data-iconpos="right" data-role="collapsible" ' .
 						'data-collapsed="true" data-theme="' . $group['status'] . '" data-content-theme="d">');
 					$ui->contentAddHtml('<h4>' . $group['group_name'] . '</h4>');
-					$ui->contentAddHtml('<ul data-role="listview">');
-					$ui->contentAddHtml('<li>' .
-						__('Agents') .
-						' ' . $group[__('Agents')] .
-						'</li>');
-					$ui->contentAddHtml('<li>' .
-						__('Agents unknown') .
-						' ' . $group[__('Agents unknown')] .
-						'</li>');
-					$ui->contentAddHtml('<li>' .
-						__('Unknown') .
-						' ' . $group[__('Unknown')] .
-						'</li>');
-					$ui->contentAddHtml('<li>' .
-						__('Not init') .
-						' ' . $group[__('Not init')] .
-						'</li>');
-					$ui->contentAddHtml('<li>' .
-						__('Normal') .
-						' ' . $group[__('Normal')] .
-						'</li>');
-					$ui->contentAddHtml('<li>' .
-						__('Warning') .
-						' ' . $group[__('Warning')] .
-						'</li>');
-					$ui->contentAddHtml('<li>' .
-						__('Critical') .
-						' ' . $group[__('Critical')] .
-						'</li>');
-					$ui->contentAddHtml('<li>' .
-						__('Alerts fired') .
-						' ' . $group[__('Alerts fired')] .
-						'</li>');
+					$ui->contentAddHtml('<ul data-role="listview" class="groups_sublist">');
+					
+					foreach ($group['counts'] as $k => $v) {
+						if($v == 0) {
+							$group['counts'][$k] = '-';
+						}
+					}
+					
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Agents')] . '">' .
+						'<span class="name_count">' . html_print_image('images/agent.png', true) . __('Total agents') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Agents')] . '</span>' .
+						'</a></li>');
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Agents unknown')] . '">' .
+						'<span class="name_count">' . html_print_image('images/agent_unknown.png', true) . __('Agents unknown') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Agents unknown')] . '</span>' .
+						'</a></li>');
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Unknown')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_unknown.png', true) . __('Unknown modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Unknown')] . '</span>' .
+						'</a></li>');
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Not init')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_notinit.png', true) . __('Not init modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Not init')] . '</span>' .
+						'</a></li>');
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Normal')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_ok.png', true) . __('Normal modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Normal')] . '</span>' .
+						'</a></li>');
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Warning')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_warning.png', true) . __('Warning modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Warning')] . '</span>' .
+						'</a></li>');
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Critical')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_critical.png', true) . __('Critical modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Critical')] . '</span>' .
+						'</a></li>');
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Alerts fired')] . '">' .
+						'<span class="name_count">' . html_print_image('images/bell_error.png', true) . __('Alerts fired') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Alerts fired')] . '</span>' .
+						'</a></li>');
 					$ui->contentAddHtml('</ul>');
 					$ui->contentAddHtml('</div>');
 					

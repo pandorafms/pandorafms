@@ -1,3 +1,11 @@
+2014-02-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php
+	mobile/operation/tactical.php
+	mobile/operation/groups.php
+	mobile/include/style/main.css: Improve mobile
+	console. Especially groups view
+
 2014-01-31  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/operation/agent.php

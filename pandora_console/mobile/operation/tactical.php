@@ -68,30 +68,22 @@ class Tactical {
 						<tr>
 							<td>' . $formatted_data['server_health']['title'] . '</td>
 							<td class="tiny tactical_bar">' . $formatted_data['server_health']['graph'] . '</td>
-						</tr>
-						<tr class="untiny tactical_bar">
-							<td>' . $formatted_data_untiny['server_health']['graph'] . '</td>
+							<td class="untiny tactical_bar">' . $formatted_data_untiny['server_health']['graph'] . '</td>
 						</tr>
 						<tr>
 							<td>' . $formatted_data['monitor_health']['title'] . '</td>
 							<td class="tiny tactical_bar">' . $formatted_data['monitor_health']['graph'] . '</td>
-						</tr>
-						<tr class="untiny tactical_bar">
-							<td>' . $formatted_data_untiny['monitor_health']['graph'] . '</td>
+							<td class="untiny tactical_bar">' . $formatted_data_untiny['monitor_health']['graph'] . '</td>
 						</tr>
 						<tr>
 							<td>' . $formatted_data['module_sanity']['title'] . '</td>
 							<td class="tiny tactical_bar">' . $formatted_data['module_sanity']['graph'] . '</td>
-						</tr>
-						<tr class="untiny tactical_bar">
-							<td>' . $formatted_data_untiny['module_sanity']['graph'] . '</td>
+							<td class="untiny tactical_bar">' . $formatted_data_untiny['module_sanity']['graph'] . '</td>
 						</tr>
 						<tr>
 							<td>' . $formatted_data['alert_level']['title'] . '</td>
 							<td class="tiny tactical_bar">' . $formatted_data['alert_level']['graph'] . '</td>
-						</tr>
-						<tr class="untiny tactical_bar">
-							<td>' . $formatted_data_untiny['alert_level']['graph'] . '</td>
+							<td class="untiny tactical_bar">' . $formatted_data_untiny['alert_level']['graph'] . '</td>
 						</tr>
 					</table>';
 								

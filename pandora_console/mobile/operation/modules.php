@@ -412,7 +412,7 @@ class Modules {
 				if ($this->columns['agent']) {
 					$row[1] = $row[__('Agent name')] =
 						'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
-						'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $module["id_agent"] . '">' . ui_print_truncate_text($module['agent_name'], 50, false) . '</a>' .
+						ui_print_truncate_text($module['agent_name'], 50, false) .
 						'</span>';
 				}
 				if ($module['utimestamp'] == 0 && (($module['module_type'] < 21 ||
@@ -513,8 +513,7 @@ class Modules {
 					'<span style="display: none;" class="show_collapside">' . $row[__('Status')] . '&nbsp;&nbsp;</span>' .
 					'<a data-ajax="false" class="ui-link" ' .
 						'href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '&id_agent=' . $this->id_agent . '">' .
-						'<span style="vertical-align: 30%;">' . html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) . '</span>' .
-					'&nbsp;' . $output . '</a>' . '</span>';
+					$output . '</a>' . '</span>';
 				
 				if (!$ajax) {
 					if ($this->columns['agent']) {
@@ -633,6 +632,7 @@ class Modules {
 											});
 										
 										load_more_rows = 1;
+										refresh_link_listener()
 									}
 									
 									
@@ -651,6 +651,18 @@ class Modules {
 						custom_scroll();
 					});
 				});
+				
+				//Set link on entire row
+				function refresh_link_listener() {
+					$('#list_Modules tr').click( function() {
+						var link = $(this).find('a').attr('href');
+						if (link != undefined) {
+							window.location = $(this).find('a').attr('href');
+						}
+					});
+				}
+				
+				refresh_link_listener();
 			</script>");
 	}
 	

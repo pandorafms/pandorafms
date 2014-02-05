@@ -1,3 +1,20 @@
+2014-02-05  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/operation/events.php
+	mobile/operation/tactical.php
+	mobile/operation/networkmap.php
+	mobile/operation/modules.php
+	mobile/operation/alerts.php
+	mobile/operation/networkmaps.php
+	mobile/operation/agents.php
+	mobile/include/style/main.css: A lot of improvements
+	on the mobile console. Simplified views, more big tapping
+	areas, etc.
+
+	* include/functions_visual_map.php: Fix alert fired
+	module when is in warning status in builder view of
+	visual consoles. Incident #559
+
 2014-02-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_groups.php

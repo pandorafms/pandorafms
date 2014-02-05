@@ -505,10 +505,6 @@ table.event_details td.cell_event_name {
 	background: #222;
 }
 
-.agents_tiny_stats * {
-	font-size: 12px !important;
-}
-
 .agent_details {
 	line-height: 25px;
 }
@@ -520,6 +516,11 @@ table.event_details td.cell_event_name {
 	
 #list_agents .cell_0 img {
 	float: left;
+}
+
+#list_agents td:hover, #list_networkmaps td:hover,
+#list_events td:hover, #list_Modules td:hover {
+	cursor: pointer;
 }
 
 #list_agents td {
@@ -584,8 +585,47 @@ table.event_details td.cell_event_name {
 	#list_agents .cell_6 .show_collapside {
 		display: inline !important;
 	}
+	
+	.agents_tiny_stats * {
+		font-size: 12px !important;
+	}
+}
+
+/* For mobiles */
+@media screen and (max-width: 750px)
+{
+	.agents_tiny_stats * {
+		font-size: 12px !important;
+	}
+}
+/* For tablets */
+@media screen and (min-width: 750px)
+{
+	.agents_tiny_stats * {
+		font-size: 17px !important;
+	}
 }
 /*END-----------Agents styles-----------------------------------------*/
+
+
+
+/*INIT-----------Alerts styles---------------------------------------*/
+
+#list_alerts td {
+	height: 35px;
+	padding-top: 20px;
+}
+
+/*END-----------Alerts styles---------------------------------------*/
+
+/*INIT-----------Alerts styles---------------------------------------*/
+
+#list_networkmaps td {
+	height: 35px;
+	padding-top: 20px;
+}
+
+/*END-----------Alerts styles---------------------------------------*/
 
 
 
@@ -600,12 +640,6 @@ table.event_details td.cell_event_name {
 	#list_Modules .cell_5 .ui-table-cell-label,
 	#list_Modules .cell_6 .ui-table-cell-label {
 		padding-left: 10px;
-	}
-	
-	#list_Modules .cell_3,
-	#list_Modules .cell_4 {
-		display: inline !important;
-		float: none !important;
 	}
 	
 	#list_Modules .cell_0 .ui-table-cell-label,
@@ -646,6 +680,15 @@ table.event_details td.cell_event_name {
 #list_Modules .module_name {
 	font-size: 15px;
 	font-weight: bold;
+}
+
+#list_Modules td {
+	height: 35px;
+	padding-top: 20px;
+}
+
+#list_Modules .cell_5 img {
+	float: left;
 }
 
 @media screen and (max-width: 25em) {
@@ -965,6 +1008,10 @@ table.tactical_bars {
 
 .events .cell_0 img {
 	margin-right: 5px;
+}
+
+.cell_0 {
+	max-width: 500px;
 }
 
 .cell_event_name {

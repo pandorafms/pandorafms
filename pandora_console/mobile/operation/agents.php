@@ -273,7 +273,7 @@ class Agents {
 				//~ '</span>';
 			
 			$row[2] = $row[__('OS')] = ui_print_os_icon ($agent["id_os"], false, true);
-			$row[3] = $row[__('Group')] = ui_print_group_icon ($agent["id_grupo"], true);
+			$row[3] = $row[__('Group')] = ui_print_group_icon ($agent["id_grupo"], true, "groups_small", '', false);
 			//~ $row[4] = $row[__('Interval')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('I.') . ' </span>' .
 				//~ '<span style="vertical-align: 0%;">' . human_time_description_raw($agent["intervalo"]) . '</span>';
 			
@@ -394,6 +394,7 @@ class Agents {
 												});
 											
 											load_more_rows = 1;
+											refresh_link_listener();
 										}
 										
 										
@@ -412,6 +413,18 @@ class Agents {
 						custom_scroll();
 					});
 				});
+				
+				//Set link on entire row
+				function refresh_link_listener() {
+					$('#list_agents tr').click( function() {
+						var link = $(this).find('a').attr('href');
+						if (link != undefined) {
+							window.location = $(this).find('a').attr('href');
+						}
+					});
+				}
+				
+				refresh_link_listener();
 			</script>");
 	}
 	

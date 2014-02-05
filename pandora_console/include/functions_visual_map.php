@@ -778,7 +778,7 @@ function visual_map_get_image_status_element($layoutData) {
 				break;
 			case 4:
 				//Critical (ALERT)
-				$img .= "_bad.png";
+				$img = "4" . $img . "_bad.png";
 				break;
 			case 0:
 				//Normal (OK)
@@ -787,6 +787,10 @@ function visual_map_get_image_status_element($layoutData) {
 			case 2:
 				//Warning
 				$img .= "_warning.png";
+				break;
+			case 10:
+				//Warning (ALERT)
+				$img = "4" . $img . "_warning.png";
 				break;
 			case 3:
 				//Unknown
@@ -847,7 +851,6 @@ function visual_map_get_status_element($layoutData) {
 					$real_status = db_get_row ("tagente_estado", "id_agente_modulo", $layoutData["id_agente_modulo"]);	
 					
 					if ($real_status['estado'] == 2) {
-						
 						//This module has an alert fired and warning status
 						$status = VISUAL_MAP_STATUS_WARNING_ALERT;
 					}
@@ -934,7 +937,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				io_safe_input ($layout["background"]);
 		}
 		else {
-			html_debug_print($config, true);
 			$backgroundImage =
 				'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
 				$config['homedir'] . '/images/console/background/' .
@@ -1269,7 +1271,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$endTagA = false;
 				if ($show_links) {
-					html_debug_print($layout_data['label'], true);
 					$url_icon = "";
 					if ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map

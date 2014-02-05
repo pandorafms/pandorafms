@@ -101,16 +101,8 @@ class Events {
 						
 						$status_icon = html_print_image($img_st, true);
 						
-						$open_link = '';
-						$close_link = '';
-						
-						if (!$this->readOnly) {
-							$open_link = '<a href="javascript: openDetails(' . $event['id_evento'] . ')"><div style="height:100%;width:100%">';
-							$close_link = '</div></a>';
-						}
-						
 						$row = array();
-						$row[] = $open_link . '<b class="ui-table-cell-label">' . __('Event Name') . '</b><div class="event_name">' . io_safe_output($event['evento']) . '</div>' . $close_link;
+						$row[] = '<b class="ui-table-cell-label">' . __('Event Name') . '</b><a href="javascript: openDetails(' . $event['id_evento'] . ')"><div class="event_name">' . io_safe_output($event['evento']) . '</div></a>';
 						
 						if ($event["id_agente"] == 0) {
 							$agent_name = __('System');
@@ -119,10 +111,8 @@ class Events {
 							$agent_name = '<span class="nobold">' . ui_print_agent_name ($event["id_agente"], true, 'agent_small', '', false, '', '', false, false) . '</span>';
 						}
 						
-						$row_1 = $open_link;
-						$row_1 .= '<span class="events_agent"><b class="ui-table-cell-label">' . __('Agent') . '</b>' . $agent_name . '</span>';
-						$row_1 .= '<span class="events_timestamp">' . $status_icon . '<br>' . ui_print_timestamp ($event['timestamp_rep'], true) . '</span>';
-						$row_1 .= $close_link;
+						$row_1 = '<span class="events_agent"><b class="ui-table-cell-label">' . __('Agent') . '</b>' . $agent_name . '</span>';
+						$row_1 .= '<span class="events_timestamp">' . $status_icon . '<br>' . ui_print_timestamp ($event['timestamp_rep'], true, array('units' => 'tiny')) . '</span>';
 						
 						$row[] = $row_1;
 						
@@ -910,6 +900,18 @@ class Events {
 							}
 						});
 				}
+				
+				//Set link on entire row
+				function refresh_link_listener() {
+					$('#list_events tr').click( function() {
+						var link = $(this).find('a').attr('href');
+						if (link != undefined) {
+							window.location = $(this).find('a').attr('href');
+						}
+					});
+				}
+				
+				refresh_link_listener();
 			</script>");
 	}
 	
@@ -939,6 +941,7 @@ class Events {
 						//$(\"table#list_events\").table().table('refresh');
 						
 						load_more_rows = 1;
+						refresh_link_listener();
 					}
 				}
 				

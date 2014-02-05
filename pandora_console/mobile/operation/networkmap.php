@@ -203,7 +203,6 @@ class Networkmap {
 					fwrite ($fh, $graph);
 					$cmd = $filter . " -Tcmapx -o" . $filename_map." -Tpng -o".$filename_img." ".$filename_dot;
 					$result = system ($cmd);
-					html_debug_print($cmd, true);
 					fclose ($fh);
 					//unlink ($filename_dot);
 				}
@@ -219,7 +218,7 @@ class Networkmap {
 					return;
 				}
 				$ui->contentAddHtml('<div style="width: auto; overflow-x: auto; text-align: center;">');
-				$ui->contentAddHtml('<img width="500px" src="' . $url_img . '" />');
+				$ui->contentAddHtml('<img style="width: 90%;" src="' . $url_img . '" />');
 				$ui->contentAddHtml('</div>');
 			}
 			else {

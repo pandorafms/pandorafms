@@ -50,40 +50,45 @@ class Home {
 			$ui->endForm();
 			
 			//List of buttons
-			$options = array('icon' => 'gear',
+			$options = array('icon' => 'tactical_view',
 					'pos' => 'right',
 					'text' => __('Tactical view'),
 					'href' => 'index.php?page=tactical');
 			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'info',
+			$options = array('icon' => 'events',
 					'pos' => 'right',
 					'text' => __('Events'),
 					'href' => 'index.php?page=events');
 			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'arrow-u',
+			$options = array('icon' => 'groups',
 					'pos' => 'right',
 					'text' => __('Groups'),
 					'href' => 'index.php?page=groups');
 			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'alert',
+			$options = array('icon' => 'alerts',
 					'pos' => 'right',
 					'text' => __('Alerts'),
 					'href' => 'index.php?page=alerts');
 			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'grid',
+			$options = array('icon' => 'agents',
 					'pos' => 'right',
 					'text' => __('Agents'),
 					'href' => 'index.php?page=agents');
 			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'check',
+			$options = array('icon' => 'modules',
 					'pos' => 'right',
 					'text' => __('Modules'),
 					'href' => 'index.php?page=modules');
 			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'star',
+			$options = array('icon' => 'network_maps',
 					'pos' => 'right',
 					'text' => __('Networkmaps'),
 					'href' => 'index.php?page=networkmaps');
+			$ui->contentAddHtml($ui->createButton($options));
+			$options = array('icon' => 'visual_console',
+					'pos' => 'right',
+					'text' => __('Visual consoles'),
+					'href' => 'index.php?page=visualmaps');
 			$ui->contentAddHtml($ui->createButton($options));
 		$ui->endContent();
 		$ui->showPage();

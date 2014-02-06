@@ -474,23 +474,23 @@ table.event_details td.cell_event_name {
 
 /*INIT-----------Agents styles----------------------------------------*/
 .red, .redb, .redi, .error {
-	background: #CC0000 !important;
+	background: #FF4040 !important;
 }
 
 .green {
-	background: #5A8629 !important;
+	background: #6EB432 !important;
 }
 
 .orange {
-	background: #ffa300 !important;
+	background: #FF8800 !important;
 }
 
 .yellow {
-	background: #F3C500 !important;
+	background: #F2D400 !important;
 }
 
 .grey {
-	background: #808080 !important;
+	background: #AAAAAA !important;
 	font-weight: bold;
 }
 
@@ -506,7 +506,11 @@ table.event_details td.cell_event_name {
 }
 
 .agent_details {
-	line-height: 25px;
+	line-height: 35px;
+}
+
+.agent_details img {
+	float: left;
 }
 
 .agent_name {
@@ -516,16 +520,24 @@ table.event_details td.cell_event_name {
 	
 #list_agents .cell_0 img {
 	float: left;
+	margin-right: 3px;
 }
 
 #list_agents td:hover, #list_networkmaps td:hover,
-#list_events td:hover, #list_Modules td:hover {
+#list_events td:hover, #list_Modules td:hover,
+#list_visualmaps td:hover {
 	cursor: pointer;
 }
 
 #list_agents td {
 	height: 35px;
 	padding-top: 20px;
+}
+
+.agents_tiny_stats_tactical {
+	display: block; 
+	text-align: center; 
+	width: 100%;
 }
 
 @media screen and (max-width: 25em) {
@@ -618,16 +630,86 @@ table.event_details td.cell_event_name {
 
 /*END-----------Alerts styles---------------------------------------*/
 
-/*INIT-----------Alerts styles---------------------------------------*/
+/*INIT-----------Network maps styles---------------------------------------*/
 
 #list_networkmaps td {
 	height: 35px;
 	padding-top: 20px;
 }
 
-/*END-----------Alerts styles---------------------------------------*/
+/*END-----------Network maps styles---------------------------------------*/
 
+/*INIT-----------Visual maps styles---------------------------------------*/
 
+#list_visualmaps td {
+	height: 35px;
+	padding-top: 20px;
+}
+
+#rendered_visual_map div {
+	color: #003a3a;
+	text-shadow: none !important;
+}
+
+#rendered_visual_map {
+	text-align: center;
+}
+
+/* For mobiles */
+@media screen and (max-width: 750px)
+{
+	#rendered_visual_map div {
+		font-size: 6pt !important;
+	}
+}
+/* For tablets */
+@media screen and (min-width: 750px)
+{
+	#rendered_visual_map div {
+		font-size: 8pt !important;
+	}
+}
+
+/* For mobiles */
+@media screen and (max-width: 750px)
+{
+	.resize_visual_font_size_8pt * {
+		font-size: 4pt !important;
+	}
+	.resize_visual_font_size_14pt * {
+		font-size: 6pt !important;
+	}
+	.resize_visual_font_size_24pt * {
+		font-size: 10pt !important;
+	}
+	.resize_visual_font_size_36pt * {
+		font-size: 14pt !important;
+	}
+	.resize_visual_font_size_72pt * {
+		font-size: 27pt !important;
+	}
+}
+/* For tablets */
+@media screen and (min-width: 750px)
+{
+	.resize_visual_font_size_8pt * {
+		font-size: 4pt !important;
+	}
+	.resize_visual_font_size_14pt * {
+		font-size: 7pt !important;
+	}
+	.resize_visual_font_size_24pt * {
+		font-size: 12pt !important;
+	}
+	.resize_visual_font_size_36pt * {
+		font-size: 18pt !important;
+	}
+	.resize_visual_font_size_72pt * {
+		font-size: 36pt !important;
+	}
+}
+
+/*END-----------Visual maps styles---------------------------------------*/
 
 /*INIT-----------Modules styles---------------------------------------*/
 @media screen and (max-width: 25em) {
@@ -1019,9 +1101,92 @@ table.tactical_bars {
 	font-weight: bold;
 }
 
-.ui-icon-eye {
-	background-image: url(../../images/eye.png) !important;
+/*INIT-----------Icons styles---------------------------------------*/
+
+.ui-icon-tactical_view {
+	background-image: url(../../../images/op_monitoring.png) !important;
+}
+
+.ui-icon-events {
+	background-image: url(../../../images/op_events.png) !important;
+}
+
+.ui-icon-groups {
+	background-image: url(../../../images/group.png) !important;
+}
+
+.ui-icon-alerts {
+	background-image: url(../../../images/op_alerts.png) !important;
+}
+
+.ui-icon-agents {
+	background-image: url(../../../images/agent_mc.png) !important;
+}
+
+.ui-icon-modules {
+	background-image: url(../../../images/brick.png) !important;
+}
+
+.ui-icon-network_maps {
+	background-image: url(../../../images/op_network.png) !important;
+}
+
+.ui-icon-visual_console {
+	background-image: url(../../../images/visual_console.png) !important;
+}
+
+.ui-icon-tactical_view, .ui-icon-events,
+.ui-icon-groups, .ui-icon-alerts,
+.ui-icon-agents, .ui-icon-modules,
+.ui-icon-network_maps, .ui-icon-visual_console {
+	background-color: #333 !important;
 	background-position: center;
+	border-radius: 15px !important;
+	-webkit-border-radius: 15px !important;
+}
+
+#login_btn-container .ui-icon {
+	background-color: #333 !important;
+	border-radius: 15px !important;
+	-webkit-border-radius: 15px !important;
+}
+
+/* For mobiles */
+@media screen and (max-width: 750px)
+{
+	.ui-icon-tactical_view, .ui-icon-events,
+	.ui-icon-groups, .ui-icon-alerts,
+	.ui-icon-agents, .ui-icon-modules,
+	.ui-icon-network_maps, .ui-icon-visual_console {
+		width: 22px !important;
+		height: 22px !important;
+		margin-top: -13px !important;
+		background-size: 16px 16px;
+	}
+}
+/* For tablets */
+@media screen and (min-width: 750px)
+{
+	.ui-icon-tactical_view, .ui-icon-events,
+	.ui-icon-groups, .ui-icon-alerts,
+	.ui-icon-agents, .ui-icon-modules,
+	.ui-icon-network_maps, .ui-icon-visual_console {
+		width: 32px !important;
+		height: 32px !important;
+		margin-top: -17px !important;
+	}
+}
+
+/*END-----------Network maps styles---------------------------------------*/
+
+#logout_dialog-button_close {
+	display: block;
+	margin: 0 auto;
+	margin-top: 20px;
+}
+
+.ui-btn-active {
+	background: #6db431 !important;
 }
 
 span.nobold * {
@@ -1043,7 +1208,7 @@ span.nobold * {
 	display: block !important;
 }
 
-#list_Modules *, #list_agents *, #list_alerts *, #list_networkmaps * {
+#list_Modules *, #list_agents *, #list_alerts *, #list_networkmaps *, #list_visualmaps * {
 	color: #222;
 }
 

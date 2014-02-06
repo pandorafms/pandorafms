@@ -178,7 +178,7 @@ class User {
 			$ui->formAddInputPassword($options);
 			$options = array(
 				'value' => __('Login'),
-				'icon' => 'star',
+				'icon' => 'arrow-r',
 				'icon_pos' => 'right',
 				'name' => 'login_btn'
 				);

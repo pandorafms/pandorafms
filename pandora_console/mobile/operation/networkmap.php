@@ -82,7 +82,7 @@ class Networkmap {
 		$ui->createPage();
 		$ui->createDefaultHeader(
 			sprintf("%s",
-			$this->network_map['name']),
+			$this->networkmap['name']),
 			$ui->createHeaderButton(
 				array('icon' => 'back',
 					'pos' => 'left',

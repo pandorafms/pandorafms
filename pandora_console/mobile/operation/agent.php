@@ -120,7 +120,7 @@ class Agent {
 					
 					
 					$html = '<div class="agent_details">';
-					$html .= ui_print_group_icon ($this->agent["id_grupo"], true) . '&nbsp;&nbsp;';
+					$html .= ui_print_group_icon ($this->agent["id_grupo"], true, "groups_small", "", false) . '&nbsp;&nbsp;';
 					$html .= '<span class="agent_name">' . $agent_name . '</span><br />';
 					$html .= $ip;
 					$html .= $last_contact;
@@ -132,10 +132,12 @@ class Agent {
 					$html = graph_agent_status ($this->id, 160, 160, true);
 					$graph_js = ob_get_clean();
 					$html = $graph_js . $html;
+					unset($this->agent['fired_count']);
+					$html .= '<span class="agents_tiny_stats agents_tiny_stats_tactical">' . reporting_tiny_stats($this->agent, true) . ' </span><br>';
 					$html .= "<b>" . __('Events (24h)') . "</b><br />";
 					$html .= graph_graphic_agentevents(
 						$this->id, 250, 15, 86400, ui_get_full_url(false), true);
-					$html .= '<br><br>';
+					$html .= '<br>';
 				$ui->contentGridAddCell($html);
 				$ui->contentEndGrid();
 				

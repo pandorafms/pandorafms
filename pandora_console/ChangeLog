@@ -1,3 +1,19 @@
+2014-02-06  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/index.php
+	mobile/operation/visualmap.php
+	mobile/operation/visualmaps.php
+	mobile/operation/networkmap.php
+	mobile/operation/home.php
+	mobile/operation/agent.php
+	mobile/include/style/main.css
+	mobile/include/user.class.php: Added visual
+	consoles in mobile console. Improve the apparience with
+	new icons (pandora ones), better layout, etc.
+
+	* godmode/reporting/map_builder.php: Fix type
+	in gettext function
+
 2014-02-06  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/languages/ja.po, include/languages/ja.mo: Updated

@@ -166,7 +166,7 @@ else
 	$maps = visual_map_get_user_layouts ($config['id_user'], false, false, false);
 
 if (!$maps) {
-	echo '<div class="nf">'.('No maps defined').'</div>';
+	echo '<div class="nf">'.__('No maps defined').'</div>';
 }
 else {
 	foreach ($maps as $map) {

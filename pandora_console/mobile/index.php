@@ -36,6 +36,8 @@ require_once('operation/module_graph.php');
 require_once('operation/agent.php');
 require_once('operation/networkmaps.php');
 require_once('operation/networkmap.php');
+require_once('operation/visualmaps.php');
+require_once('operation/visualmap.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 
 $system = System::getInstance();
@@ -77,6 +79,10 @@ switch ($action) {
 			case 'module_graph':
 				$module_graph = new ModuleGraph();
 				$module_graph->ajax($parameter2);
+				break;
+			case 'visualmap':
+				$visualmap = new Visualmap();
+				$visualmap->ajax($parameter2);
 				break;
 		}
 		return;
@@ -151,6 +157,14 @@ switch ($action) {
 			case 'networkmap':
 				$networkmap = new Networkmap();
 				$networkmap->show();
+				break;
+			case 'visualmaps':
+				$visualmaps = new Visualmaps();
+				$visualmaps->show();
+				break;
+			case 'visualmap':
+				$visualmap = new Visualmap();
+				$visualmap->show();
 				break;
 		}
 		break;

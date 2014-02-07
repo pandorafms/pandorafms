@@ -882,9 +882,14 @@ function visual_map_get_status_element($layoutData) {
 		}
 	}
 	
-	if ($status == AGENT_MODULE_STATUS_CRITICAL_ALERT) {
+	switch ($status) {
+		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 			$status = VISUAL_MAP_STATUS_CRITICAL_ALERT;
-	}
+			break;
+		case AGENT_MODULE_STATUS_WARNING_ALERT:
+			$status = VISUAL_MAP_STATUS_WARNING_ALERT;
+			break;
+	}	
 	
 	return $status;
 }

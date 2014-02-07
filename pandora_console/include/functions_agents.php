@@ -1552,6 +1552,10 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	if (is_int(array_search(AGENT_MODULE_STATUS_CRITICAL_ALERT, $modules_status))) {
 		return AGENT_MODULE_STATUS_CRITICAL_ALERT;
 	}
+	// Checking if any module has alert fired
+	elseif (is_int(array_search(AGENT_MODULE_STATUS_WARNING_ALERT, $modules_status))) {
+		return AGENT_MODULE_STATUS_WARNING_ALERT;
+	}
 	// Checking if any module has critical status
 	elseif (is_int(array_search(AGENT_MODULE_STATUS_CRITICAL_BAD, $modules_status))) {
 		return AGENT_MODULE_STATUS_CRITICAL_BAD;

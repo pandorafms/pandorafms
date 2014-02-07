@@ -1331,30 +1331,40 @@ function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = f
 		$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
 		
 		if (metaconsole_connect($server) == NOERR) {
-			
+			$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+
 			if (!$without_alerts) {
 				$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
 				if ($times_fired > 0) {
-					return AGENT_MODULE_STATUS_CRITICAL_ALERT; // Alert fired
+					switch($status_row['estado']) {
+						case AGENT_STATUS_WARNING:
+							return AGENT_MODULE_STATUS_WARNING_ALERT; // Alert fired in warning
+							break;
+						case AGENT_STATUS_CRITICAL:
+							return AGENT_MODULE_STATUS_CRITICAL_ALERT; // Alert fired in critical
+							break;
+					}
 				}
 			}
-			
-			$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
-			
 		}
 		metaconsole_restore_db();
 	}
 	else {
-		
+		$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
 		
 		if (!$without_alerts) {
 			$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
 			if ($times_fired > 0) {
-				return AGENT_MODULE_STATUS_CRITICAL_ALERT; // Alert fired
+				switch($status_row['estado']) {
+					case AGENT_STATUS_WARNING:
+						return AGENT_MODULE_STATUS_WARNING_ALERT; // Alert fired in warning
+						break;
+					case AGENT_STATUS_CRITICAL:
+						return AGENT_MODULE_STATUS_CRITICAL_ALERT; // Alert fired in critical
+						break;
+				}
 			}
 		}
-		
-		$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
 	}
 	
 	return $status_row['estado'];

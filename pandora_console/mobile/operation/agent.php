@@ -189,8 +189,6 @@ class Agent {
 					}
 				}
 				
-				set_same_heigth();
-				
 				$( window ).resize(function() {
 					if ($('.ui-block-a').css('float') == 'none') {
 						$('.agent_graphs').height('auto');
@@ -200,7 +198,12 @@ class Agent {
 						set_same_heigth();
 					}
 				});
+									
+				if ($('.ui-block-a').css('float') != 'none') {
+					set_same_heigth();
+				}
 			});
+			
 			</script>");
 			
 		$ui->endContent();

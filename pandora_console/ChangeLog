@@ -1,5 +1,16 @@
 2014-02-07  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_visual_map.php
+	include/functions_modules.php
+	include/functions_agents.php
+	include/constants.php: Add code to new "status"
+	Warning fired in visual maps
+		
+	* mobile/operation/agent.php: Fix first time charge
+	of code that set same size to both boxes in agent view
+
+2014-02-07  Sergio Martin <sergio.martin@artica.es>
+
 	* mobile/operation/networkmaps.php
 	mobile/operation/agent.php
 	mobile/include/style/main.css

@@ -1,3 +1,13 @@
+2014-02-07  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/operation/networkmaps.php
+	mobile/operation/agent.php
+	mobile/include/style/main.css
+	mobile/include/ui.class.php
+	mobile/include/user.class.php
+	mobile/images/pandora_mobile_console.png: Improve
+	network map ACLs and more usability/aesthetic issues
+
 2014-02-06  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/index.php

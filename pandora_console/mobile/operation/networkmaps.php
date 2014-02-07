@@ -163,8 +163,12 @@ class Networkmaps {
 		// Order by type field
 		$where['order'] = 'type';
 		
-		if ($this->group != '0')
+		if ($this->group != '0') {
 			$where['id_group'] = $this->group;
+		}
+		else {
+			$where['id_group'] = array_keys(users_get_groups());
+		}
 		
 		if ($this->type != '0')
 			$where['type'] = $this->type;
@@ -176,6 +180,9 @@ class Networkmaps {
 		}
 		$list = array();
 		foreach ($network_maps as $networkmap) {
+			// If enterprise not loaded then skip this code
+			if ($networkmap['type'] == 'policies' and (!defined('PANDORA_ENTERPRISE')))
+				continue;
 			$row = array();
 			$row[__('Name')] = '<a class="ui-link" data-ajax="false" href="index.php?page=networkmap&id=' . $networkmap['id_networkmap'] . '">' . io_safe_output($networkmap['name']) . '</a>';
 			$row[__('Type')] = $networkmap['type'];

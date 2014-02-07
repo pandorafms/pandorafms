@@ -123,7 +123,7 @@ class Ui {
 		$this->header = array();
 		$this->header['button_left'] = '';
 		$this->header['button_right'] = '';
-		$this->header['title'] = __('Pandora FMS mobile');
+		$this->header['title'] = '';
 		$this->endHeader = false;
 	}
 	

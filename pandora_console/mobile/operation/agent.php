@@ -112,11 +112,16 @@ class Agent {
 					}
 					$ip .= '<br />';
 					
-					$last_contact = __('Last contact') . ' / ' . __('Remote') . '<b>:&nbsp;'
-						.ui_print_timestamp ($this->agent["ultimo_contacto"], true) . '</b><br />';
+					$last_contact = '<b>' . __('Last contact') . '</b>:&nbsp;'
+						.ui_print_timestamp ($this->agent["ultimo_contacto"], true) . '<br />';
 					
-					$description =
-						empty($agent["comentarios"]) ? '' : $this->agent["comentarios"] . '<br />';
+					$description = '<b>' . __('Description') . ':</b><br>';
+					if (empty($agent["comentarios"])) {
+						$description .= '<i>' . __('N/A') . '</i>';
+					}
+					else {
+						$description .= $this->agent["comentarios"];
+					}
 					
 					
 					$html = '<div class="agent_details">';
@@ -129,15 +134,18 @@ class Agent {
 					
 				$ui->contentGridAddCell($html);
 					ob_start();
-					$html = graph_agent_status ($this->id, 160, 160, true);
+					$html = '<div class="agent_graphs">';
+					$html .= "<b>" . __('Modules by status') . "</b><br />";
+					$html .= graph_agent_status ($this->id, 160, 160, true);
 					$graph_js = ob_get_clean();
 					$html = $graph_js . $html;
 					unset($this->agent['fired_count']);
 					$html .= '<span class="agents_tiny_stats agents_tiny_stats_tactical">' . reporting_tiny_stats($this->agent, true) . ' </span><br>';
-					$html .= "<b>" . __('Events (24h)') . "</b><br />";
+					$html .= "<b>" . __('Events (24h)') . "</b><br /><br />";
 					$html .= graph_graphic_agentevents(
 						$this->id, 250, 15, 86400, ui_get_full_url(false), true);
 					$html .= '<br>';
+					$html .= '</div>';
 				$ui->contentGridAddCell($html);
 				$ui->contentEndGrid();
 				
@@ -165,6 +173,36 @@ class Agent {
 				$ui->contentCollapsibleAddItem($events->putEventsTableJS($this->id));
 				$ui->contentEndCollapsible();
 			}
+			
+		$ui->contentAddHtml("<script type=\"text/javascript\">
+			$(document).ready(function(){
+				function set_same_heigth() {
+					//Set same height to boxes
+					var max_height = 0;
+					if ($('.agent_details').height() > $('.agent_graphs').height()) {
+						max_height = $('.agent_details').height();
+						$('.agent_graphs').height(max_height);
+					}
+					else {
+						max_height = $('.agent_graphs').height();
+						$('.agent_details').height(max_height);
+					}
+				}
+				
+				set_same_heigth();
+				
+				$( window ).resize(function() {
+					if ($('.ui-block-a').css('float') == 'none') {
+						$('.agent_graphs').height('auto');
+						$('.agent_details').height('auto');
+					}
+					else {
+						set_same_heigth();
+					}
+				});
+			});
+			</script>");
+			
 		$ui->endContent();
 		$ui->showPage();
 	}

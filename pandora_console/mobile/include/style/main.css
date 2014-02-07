@@ -1020,6 +1020,11 @@ li.ui-btn {
 		padding-top: 15px !important;
 		height: 20px !important;	
 	}
+	
+	.login_logo img {
+		width: 185px;
+		margin-bottom: 10px;
+	}
 }
 /* For tablets */
 @media screen and (min-width: 750px)
@@ -1052,6 +1057,11 @@ li.ui-btn {
 
 	.event_name {
 		font-size: 18px !important;
+	}
+	
+	.login_logo img {
+		width: 300px;
+		margin-bottom: 20px;
 	}
 }
 

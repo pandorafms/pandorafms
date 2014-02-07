@@ -155,8 +155,8 @@ class User {
 		$ui->createHeader();
 		$ui->showFooter(false);
 		$ui->beginContent();
-			$ui->contentAddHtml('<div style="text-align: center;">' .
-				html_print_image ("images/pandora_login.png",
+			$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
+				html_print_image ("mobile/images/pandora_mobile_console.png",
 					true, array ("alt" => "logo", "border" => 0)) .
 					'</div>');
 			$ui->contentAddHtml('<div id="login_container">');

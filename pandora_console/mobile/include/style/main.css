@@ -1256,6 +1256,14 @@ DIV.nodata_container {
         display: table;
 }
 
+#free_search-container a {
+	margin-right: 5px;
+}
+
+#free_search-container span.ui-btn-inner {
+	height: 10px;
+}
+
 /* JQuery Mobile responsive hack to tables with */
 .ui-table-reflow.ui-responsive {
 	display: table !important;

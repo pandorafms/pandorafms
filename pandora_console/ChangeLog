@@ -1,5 +1,10 @@
 2014-02-10  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/include/style/main.css: Fix style of the close
+	button of global search control
+
+2014-02-10  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_groups.php: Fixed total agents
 	count for group All
 

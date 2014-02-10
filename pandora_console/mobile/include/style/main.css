@@ -912,10 +912,27 @@ li.ui-btn {
 	border-bottom: 1px solid grey !important;
 }
 
+#list_events .head_horizontal {
+	border-bottom: 0px solid white !important;
+}
+
+.cell_0 {
+	border-top: solid 1px #666;
+	margin-top: 4px;
+}
+
+#list_events .cell_0 {
+	border: 0px;
+}
+
 @media screen and (max-width: 25em) {
 	.ui-table th, .ui-table td {
 		padding: 3px !important;
 		padding-left: 3px;
+	}
+	
+	.head_vertical {
+		display: none !important;
 	}
 }
 /*END----------Fix the tons of air between the rows in small table----*/
@@ -1257,11 +1274,12 @@ DIV.nodata_container {
 }
 
 #free_search-container a {
-	margin-right: 5px;
+	margin-right: 2px;
+	margin-top: -12px;
 }
 
 #free_search-container span.ui-btn-inner {
-	height: 10px;
+	height: 7px;
 }
 
 /* JQuery Mobile responsive hack to tables with */

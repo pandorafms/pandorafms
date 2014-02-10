@@ -1,5 +1,13 @@
 2014-02-10  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/operation/agents.php
+	mobile/operation/events.php
+	mobile/include/style/main.css
+	mobile/include/ui.class.php: More visual improvements
+	on mobile console
+
+2014-02-10  Sergio Martin <sergio.martin@artica.es>
+
 	* mobile/include/style/main.css: Fix style of the close
 	button of global search control
 

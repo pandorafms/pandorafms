@@ -267,7 +267,7 @@ class Agents {
 			
 			
 			$row[0] = $row[__('Agent')] = '<span class="tiny" style="margin-right: 5px;">' . $img_status . '</span>' . 
-				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . io_safe_output($agent['nombre']) . '</a>';
+				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . ui_print_truncate_text(io_safe_output($agent['nombre']), 30, false) . '</a>';
 			//~ $row[1] = $row[__('Description')] = '<span class="small">' .
 				//~ ui_print_truncate_text($agent["description"], 'description', false, true) .
 				//~ '</span>';

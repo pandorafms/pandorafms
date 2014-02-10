@@ -570,7 +570,7 @@ class Modules {
 				}
 				
 				$table = new Table();
-				$table->id = 'list_Modules';
+				$table->id = 'list_agent_Modules';
 				
 				$table->importFromHash($listModules['modules']);
 				

@@ -102,12 +102,14 @@ class Tactical {
 				$links['monitor_ok'] = "index.php?page=modules&status=0";
 				$links['monitor_unknown'] = "index.php?page=modules&status=3";
 				$links['monitor_not_init'] = "index.php?page=modules&status=5";
+				/*
 				$modules_status_untiny = reporting_get_stats_modules_status($data, 230, 150, $links);
-				$modules_status_tiny = reporting_get_stats_modules_status($data, 175, 100, $links);				
-				//$formatted_data = $alerts_stats . "<br />\n";
+				$modules_status_tiny = reporting_get_stats_modules_status($data, 175, 100, $links);
 				$formatted_data = "<div class='tiny'>" . $modules_status_untiny . "</div>";
 				$formatted_data .= "<div class='untiny'>" . $modules_status_tiny . "</div>";
-				//$formatted_data .= "<br />\n" . $agents_monitors;
+				*/
+				$modules_status = reporting_get_stats_modules_status($data, 230, 150, $links);
+				$formatted_data = "<div>" . $modules_status . "</div>";
 				$graph_js = ob_get_clean();
 				$formatted_data = $graph_js . $formatted_data;
 				$ui->contentGridAddCell($formatted_data, 'tactical2');
@@ -120,6 +122,40 @@ class Tactical {
 				$table->importFromHash($this->getLastActivity());
 				$ui->contentCollapsibleAddItem($table->getHTML());
 			$ui->contentEndCollapsible();
+			$ui->contentAddHtml("<script type=\"text/javascript\">
+			$(document).ready(function(){
+				function set_same_heigth() {
+					//Set same height to boxes
+					var max_height = 0;
+					if ($('#tactical1').height() > $('#tactical2').height()) {
+						max_height = $('#tactical1').height();
+						$('#tactical2').height(max_height);
+					}
+					else {
+						max_height = $('#tactical2').height();
+						$('#tactical1').height(max_height);
+					}
+				}
+				
+				// Detect orientation change to refresh dinamic content
+				$(window).on({
+					orientationchange: function(e) {
+						// Keep same height on boxes
+						if ($('.ui-block-b').css('float') == 'none') {
+							$('#tactical1').height('auto');
+							$('#tactical2').height('auto');
+						}
+						else {
+							set_same_heigth();
+						}
+					}
+				});
+									
+				if ($('.ui-block-b').css('float') != 'none') {
+					set_same_heigth();
+				}
+			});			
+			</script>");
 		$ui->endContent();
 		$ui->showPage();
 	}

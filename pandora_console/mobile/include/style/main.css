@@ -1207,6 +1207,9 @@ DIV.nodata_container {
 	height: 7px;
 }
 
+.ui-icon-delete {
+	margin-top: -3px !important;
+}
 /* JQuery Mobile responsive hack to tables with */
 .ui-table-reflow.ui-responsive {
 	display: table !important;

@@ -1,5 +1,10 @@
 2014-02-10  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/include/style/main.css: Fix ugly close dialog
+	button
+
+2014-02-10  Sergio Martin <sergio.martin@artica.es>
+
 	* mobile/include/style/main.css
 	mobile/index.php
 	mobile/operation/visualmap.php

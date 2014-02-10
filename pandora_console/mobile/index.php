@@ -72,6 +72,10 @@ switch ($action) {
 				$agents = new Agents();
 				$agents->ajax($parameter2);
 				break;
+			case 'agent':
+				$agent = new Agent();
+				$agent->ajax($parameter2);
+				break;
 			case 'modules':
 				$modules = new Modules();
 				$modules->ajax($parameter2);

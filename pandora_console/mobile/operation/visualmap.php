@@ -101,7 +101,7 @@ class Visualmap {
 		$ui->contentAddHtml($rendered_map);
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 				function ajax_load_map() {
-					//$('#rendered_visual_map').html('<img src=\"images/spinner.gif\">);
+					$('#rendered_visual_map').html('<div style=\"text-align: center\"> " . __('Loading...') . "<br /><img src=\"images/ajax-loader.gif\" /></div>');
 					
 					var map_max_width = window.innerWidth * 0.90;
 					var map_max_height = (window.innerHeight - 47) * 0.90;
@@ -134,8 +134,11 @@ class Visualmap {
 				
 				ajax_load_map();
 				
-				$( window ).resize(function() {
-					ajax_load_map();
+				// Detect orientation change to refresh dinamic content
+				$(window).on({
+					orientationchange: function(e) {
+						ajax_load_map();
+					}
 				});
 			</script>");
 		$ui->endContent();

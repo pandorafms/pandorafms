@@ -277,7 +277,9 @@ class ModuleGraph {
 		<script type="text/javascript">
 			$(document).bind('ready', function() {
 				function load_graph() {
-					$("#graph_content")
+					$("#loading_graph").show();
+					
+					$("#graph_content").html($('#loading_graph').html())
 						.height(($(window).height()
 							- $(".ui-header").height()
 							- $(".ui-collapsible").height()
@@ -288,8 +290,12 @@ class ModuleGraph {
 				
 				load_graph();
 				
-				$( window ).resize(function() {
-					load_graph();
+				// Detect orientation change to refresh dinamic content
+				$(window).on({
+					orientationchange: function(e) {
+						// Reload dinamic content
+						load_graph();
+					}
 				});
 			});
 			
@@ -455,7 +461,7 @@ class ModuleGraph {
 				$html = $ui->getEndForm();
 				$ui->contentCollapsibleAddItem($html);
 			$ui->contentEndCollapsible();
-			$ui->contentAddHtml('<div id="graph_content" style="display: none; width: 100%; height: 100%;"></div>
+			$ui->contentAddHtml('<div id="graph_content" style="display: none; width: 100%; height: 100%; text-align: center;"></div>
 				<div id="loading_graph" style="width: 100%; text-align: center;">' . __('Loading...') . '<br /><img src="images/ajax-loader.gif" /></div>
 				<div id="error_graph" style="display: none; color: red; width: 100%; text-align: center;">' . __('Error get the graph') . '</div>');
 			$ui->contentAddHtml($this->javascript_code());

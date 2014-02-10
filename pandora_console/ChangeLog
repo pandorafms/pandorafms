@@ -1,5 +1,17 @@
 2014-02-10  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/include/style/main.css
+	mobile/index.php
+	mobile/operation/visualmap.php
+	mobile/operation/tactical.php
+	mobile/operation/module_graph.php
+	mobile/operation/modules.php
+	mobile/operation/agent.php: More improvements on
+	visual styles in mobile console. Layouts, adaption
+	of graphs dinamically to the screen using ajax, etc.
+
+2014-02-10  Sergio Martin <sergio.martin@artica.es>
+
 	* mobile/operation/agents.php
 	mobile/operation/events.php
 	mobile/include/style/main.css

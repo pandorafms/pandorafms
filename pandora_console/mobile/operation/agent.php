@@ -60,6 +60,25 @@ class Agent {
 		$home->show($error);
 	}
 	
+	
+	public function ajax($parameter2 = false) {
+		$system = System::getInstance();
+
+		if (!$this->correct_acl) {
+			return;
+		}
+		else {
+			switch ($parameter2) {
+				case 'render_events_bar':
+					$agent_id = $system->getRequest('agent_id', '0');
+					$width = $system->getRequest('width', '400');
+					graph_graphic_agentevents(
+						$this->id, $width, 30, 86400, ui_get_full_url(false));
+					exit;
+			}
+		}
+	 }
+	
 	private function show_agent() {
 		$ui = Ui::getInstance();
 		$system = System::getInstance();
@@ -132,7 +151,7 @@ class Agent {
 					$html .= $description;
 					$html .= '</div>';
 					
-				$ui->contentGridAddCell($html);
+				$ui->contentGridAddCell($html, 'agent_details');
 					ob_start();
 					$html = '<div class="agent_graphs">';
 					$html .= "<b>" . __('Modules by status') . "</b><br />";
@@ -142,11 +161,10 @@ class Agent {
 					unset($this->agent['fired_count']);
 					$html .= '<span class="agents_tiny_stats agents_tiny_stats_tactical">' . reporting_tiny_stats($this->agent, true) . ' </span><br>';
 					$html .= "<b>" . __('Events (24h)') . "</b><br /><br />";
-					$html .= graph_graphic_agentevents(
-						$this->id, 250, 15, 86400, ui_get_full_url(false), true);
+					$html .= '<div id="events_bar"></div>';
 					$html .= '<br>';
 					$html .= '</div>';
-				$ui->contentGridAddCell($html);
+				$ui->contentGridAddCell($html, 'agent_graphs');
 				$ui->contentEndGrid();
 				
 				
@@ -187,7 +205,7 @@ class Agent {
 					
 		$ui->contentAddLinkListener('last_agent_events');
 		$ui->contentAddLinkListener('list_events');
-		$ui->contentAddLinkListener('list_Modules');
+		$ui->contentAddLinkListener('list_agent_Modules');
 
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 			$(document).ready(function(){
@@ -203,16 +221,6 @@ class Agent {
 						$('.agent_details').height(max_height);
 					}
 				}
-				
-				$( window ).resize(function() {
-					if ($('.ui-block-a').css('float') == 'none') {
-						$('.agent_graphs').height('auto');
-						$('.agent_details').height('auto');
-					}
-					else {
-						set_same_heigth();
-					}
-				});
 									
 				if ($('.ui-block-a').css('float') != 'none') {
 					set_same_heigth();
@@ -220,7 +228,46 @@ class Agent {
 				
 				$('.ui-collapsible').bind('expand', function () {
 					refresh_link_listener_last_agent_events();
-					refresh_link_listener_list_Modules();
+					refresh_link_listener_list_agent_Modules();
+				});
+				
+				function ajax_load_events_bar() {
+					$('#events_bar').html('<div style=\"text-align: center\"> " . __('Loading...') . "<br /><img src=\"images/ajax-loader.gif\" /></div>');
+					
+					var bar_width = $('.agent_graphs').width() * 0.9;
+
+					postvars = {};
+					postvars[\"action\"] = \"ajax\";
+					postvars[\"parameter1\"] = \"agent\";
+					postvars[\"parameter2\"] = \"render_events_bar\";
+					postvars[\"agent_id\"] = \"" . $this->id . "\";
+					postvars[\"width\"] = bar_width;
+					$.post(\"index.php\",
+						postvars,
+						function (data) {
+							$('#events_bar').html(data);
+						},
+						\"html\");
+				}
+				
+				ajax_load_events_bar();
+				
+				// Detect orientation change to refresh dinamic content
+				$(window).on({
+					orientationchange: function(e) {
+						// Refresh events bar
+						ajax_load_events_bar();
+						
+						// Keep same height on boxes
+						if ($('.ui-block-a').css('float') == 'none') {
+							$('.agent_graphs').height('auto');
+							$('.agent_details').height('auto');
+						}
+						else {
+							set_same_heigth();
+						}
+					  
+					}
 				});
 			});			
 			</script>");

@@ -177,7 +177,10 @@ tr.group_view_unk, .group_view_unk {
 	text-shadow: none;
 }
 
-
+.ui-btn-active:visited, .ui-btn-active:hover, .ui-btn-active a.ui-link-inherit {
+	color: #888 !important;
+	text-shadow: none !important;
+}
 
 tr.group_view_data, .group_view_data {
 	color: #000000 !important;
@@ -525,7 +528,7 @@ table.event_details td.cell_event_name {
 
 #list_agents td:hover, #list_networkmaps td:hover,
 #list_events td:hover, #list_Modules td:hover,
-#list_visualmaps td:hover {
+#list_visualmaps td:hover, #last_agent_events td:hover {
 	cursor: pointer;
 }
 
@@ -889,6 +892,10 @@ ul.ui-listview li.ui-btn div.ui-btn-inner div.ui-btn-text a {
 	padding-left: 5px;
 }
 
+.ui-btn-inner {
+	border: 0px solid #000!important;
+}
+
 li.ui-btn {
 	margin-bottom: 4px !important;
 	margin-top: 4px !important;
@@ -963,11 +970,6 @@ li.ui-btn {
 		min-width: 50%;
 	}
 	
-	.untiny {
-		display: none;
-	}
-	
-	
 	.agents_tiny_stats, .agents_last_contact {
 		float: right;
 	}
@@ -986,10 +988,6 @@ li.ui-btn {
 	.events_agent {
 		float: left;
 		margin-right: 15px;
-	}
-	
-	.tiny {
-		display: none;
 	}
 }
 
@@ -1024,6 +1022,10 @@ li.ui-btn {
 	.login_logo img {
 		width: 185px;
 		margin-bottom: 10px;
+	}
+	
+	.untiny {
+		display: none;
 	}
 }
 /* For tablets */
@@ -1062,6 +1064,10 @@ li.ui-btn {
 	.login_logo img {
 		width: 300px;
 		margin-bottom: 20px;
+	}
+	
+	.tiny {
+		display: none;
 	}
 }
 
@@ -1193,6 +1199,10 @@ table.tactical_bars {
 	display: block;
 	margin: 0 auto;
 	margin-top: 20px;
+}
+
+.ui-btn-active * {
+	color: #FFF !important;
 }
 
 .ui-btn-active {

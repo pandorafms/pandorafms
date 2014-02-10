@@ -734,18 +734,11 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 		echo "</td>";
 	}
 	
-	
-	
 	// Total agents
 	if ($id_group != 0) {
 		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
 			FROM tagente 
 			WHERE id_grupo = $id_group AND disabled = 0");
-	}
-	else {
-		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
-			FROM tagente 
-			WHERE disabled = 0");
 	}
 	
 	// Total agents
@@ -938,18 +931,11 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	//of this groups and its children. It was done to print empty fathers of children groups.
 	//We need to recalculate the total agents for this group here to get only the total agents
 	//for this group. Of course the group All (0) is a special case.
-	
-	$data["total_agents"];
-	
+		
 	if ($id_group != 0) {
 		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
 			FROM tagente 
 			WHERE id_grupo = $id_group AND disabled = 0");
-	}
-	else {
-		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
-			FROM tagente 
-			WHERE disabled = 0");
 	}
 	
 	echo $data["total_agents"];

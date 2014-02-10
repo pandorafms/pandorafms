@@ -199,16 +199,8 @@ class Networkmaps {
 			$table->importFromHash($list);
 			$ui->contentAddHtml($table->getHTML());
 		}
-		
-		$ui->contentAddHtml("<script type=\"text/javascript\">
-				//Set link on entire row
-				$('#list_networkmaps tr').click( function() {
-					var link = $(this).find('a').attr('href');
-					if (link != undefined) {
-						window.location = $(this).find('a').attr('href');
-					}
-				});
-			</script>");
+				
+		$ui->contentAddLinkListener('list_networkmaps');
 	}
 	
 	private function filterNetworkmapsGetString() {

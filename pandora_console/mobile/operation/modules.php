@@ -338,6 +338,12 @@ class Modules {
 				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";
 		}
 		
+		if ($this->status != AGENT_MODULE_STATUS_NOT_INIT) { //When filter is not "not init"
+			// Not show not init modules. It's only operation view
+			$sql_conditions .= " AND (tagente_estado.utimestamp != 0
+				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))";
+		}
+				
 		if ($this->tag > 0) {
 			$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
@@ -564,7 +570,7 @@ class Modules {
 				}
 				
 				$table = new Table();
-				$table->id = 'list_Modules_Embedded';
+				$table->id = 'list_Modules';
 				
 				$table->importFromHash($listModules['modules']);
 				
@@ -584,6 +590,8 @@ class Modules {
 				}
 			}
 		}
+		
+		$ui->contentAddLinkListener('list_Modules');
 	}
 	
 	private function addJavascriptAddBottom() {
@@ -632,7 +640,7 @@ class Modules {
 											});
 										
 										load_more_rows = 1;
-										refresh_link_listener()
+										refresh_link_listener_list_Modules()
 									}
 									
 									
@@ -651,18 +659,6 @@ class Modules {
 						custom_scroll();
 					});
 				});
-				
-				//Set link on entire row
-				function refresh_link_listener() {
-					$('#list_Modules tr').click( function() {
-						var link = $(this).find('a').attr('href');
-						if (link != undefined) {
-							window.location = $(this).find('a').attr('href');
-						}
-					});
-				}
-				
-				refresh_link_listener();
 			</script>");
 	}
 	

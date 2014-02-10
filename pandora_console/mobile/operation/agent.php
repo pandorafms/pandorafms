@@ -167,13 +167,28 @@ class Agent {
 				$ui->contentEndCollapsible();
 				
 				$events = new Events();
+				$events->addJavascriptDialog();
+				
+				$options = $events->get_event_dialog_options();
+				$ui->addDialog($options);
+				
+				$options = $events->get_event_dialog_error_options($options);
+				$ui->addDialog($options);
+				
+				$ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");
+				$ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' style='display:none;'>detail_event_dialog_error_hook</a>");
+			
 				$ui->contentBeginCollapsible(sprintf(__('Last %s Events'), $system->getPageSize()));
 				$tabledata = $events->listEventsHtml(0, true, 'last_agent_events');
 				$ui->contentCollapsibleAddItem($tabledata['table']);
 				$ui->contentCollapsibleAddItem($events->putEventsTableJS($this->id));
 				$ui->contentEndCollapsible();
 			}
-			
+					
+		$ui->contentAddLinkListener('last_agent_events');
+		$ui->contentAddLinkListener('list_events');
+		$ui->contentAddLinkListener('list_Modules');
+
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 			$(document).ready(function(){
 				function set_same_heigth() {
@@ -202,8 +217,12 @@ class Agent {
 				if ($('.ui-block-a').css('float') != 'none') {
 					set_same_heigth();
 				}
-			});
-			
+				
+				$('.ui-collapsible').bind('expand', function () {
+					refresh_link_listener_last_agent_events();
+					refresh_link_listener_list_Modules();
+				});
+			});			
 			</script>");
 			
 		$ui->endContent();

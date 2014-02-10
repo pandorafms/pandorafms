@@ -690,7 +690,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$show_alerts = false, $avg_only = 0, $pure = false,
 	$date = 0, $unit = '', $baseline = 0, $return_data = 0,
 	$show_title = true, $only_image = false, $homeurl = '', $ttl = 1,
-	$projection = false, $adapt_key = '', $compare = false, $show_unknown = false) {
+	$projection = false, $adapt_key = '', $compare = false, $show_unknown = false, 
+	$menu = true) {
 	
 	global $config;
 	global $graphic_type;
@@ -781,19 +782,19 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
-			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str).
+			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str, $menu).
 			'<br>'.
 			area_graph($flash_chart, $chart_prev, $width, $height/2, $color_prev, $legend_prev,
 			$long_index_prev, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
-			$series_type_prev, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str);
+			$series_type_prev, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str, $menu);
 	}
 	else {
 		// Color commented not to restrict serie colors
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
-			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str);
+			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str, $menu);
 	}
 }
 
@@ -2879,7 +2880,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $compare = false, $show_unknown = false) {
+	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $compare = false, 
+	$show_unknown = false, $menu = true) {
 	
 	global $config;
 	global $graphic_type;
@@ -2958,20 +2960,20 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark,
 			$config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
-			$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str).
+			$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str, $menu).
 			'<br>'.
 			area_graph($flash_chart, $chart_prev, $width, $height/2, $color_prev, $legend_prev,
 			$long_index_prev, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark,
 			$config['fontpath'], $config['font_size'], $unit, 1, $series_type_prev, 
-			$chart_extra_data_prev, 0, 0, $adapt_key, false, $series_suffix_str);
+			$chart_extra_data_prev, 0, 0, $adapt_key, false, $series_suffix_str, $menu);
 	}
 	else {
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark,
 			$config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
-			$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str);
+			$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str, $menu);
 	}
 }
 
@@ -3181,7 +3183,7 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
  */
 function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $ttl = 1) {
+	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $ttl = 1, $menu = true) {
 	global $config;
 	global $graphic_type;
 	global $max_value;
@@ -3433,8 +3435,8 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color,
 		$legend, array(), '', "", $unit, $homeurl,
-		$water_mark,
-		$config['fontpath'], $config['font_size'], $unit, 1, array(), array(), 0, 0, $adapt_key, true);
+		$water_mark, $config['fontpath'], $config['font_size'], $unit, 
+		1, array(),	array(), 0, 0, $adapt_key, true, '', $menu);
 }
 
 /**

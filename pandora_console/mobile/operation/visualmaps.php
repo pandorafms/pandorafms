@@ -148,15 +148,7 @@ class Visualmaps {
 			$ui->contentAddHtml($table->getHTML());
 		}
 		
-		$ui->contentAddHtml("<script type=\"text/javascript\">
-				//Set link on entire row
-				$('#list_visualmaps tr').click( function() {
-					var link = $(this).find('a').attr('href');
-					if (link != undefined) {
-						window.location = $(this).find('a').attr('href');
-					}
-				});
-			</script>");
+		$ui->contentAddLinkListener('list_visualmaps');
 	}
 }
 ?>

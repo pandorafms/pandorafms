@@ -406,107 +406,124 @@ class Events {
 		$home->show($error);
 	}
 	
+	public function get_event_dialog_error_options($options) {
+		$options['type'] = 'hidden';
+			
+		$options['dialog_id'] = 'detail_event_dialog_error';
+		$options['title_text'] = __('ERROR: Event detail');
+		$options['content_text'] = '<span style="color: #ff0000;">' .
+			__('Error connecting to DB pandora.') . '</span>';
+			
+		return $options;
+	}
+	
+	public function get_event_dialog_options() {
+		$ui = Ui::getInstance();
+
+		$options['type'] = 'hidden';
+		
+		$options['dialog_id'] = 'detail_event_dialog';
+		
+		$options['title_close_button'] = true;
+		$options['title_text'] = __('Event detail');
+
+		//Content
+		ob_start();
+		?>
+		<table class="pandora_responsive alternate event_details">
+			<tbody>
+				<tr class="event_name">
+					<td class="cell_event_name" colspan="2"></td>
+				</tr>
+				<tr class="event_id">
+					<th><?php echo __('Event ID');?></th>
+					<td class="cell_event_id"></td>
+				</tr>
+				<tr class="event_timestamp">
+					<th><?php echo __('Timestamp');?></th>
+					<td class="cell_event_timestamp"></td>
+				</tr>
+				<tr class="event_owner">
+					<th><?php echo __('Owner');?></th>
+					<td class="cell_event_owner"></td>
+				</tr>
+				<tr class="event_type">
+					<th><?php echo __('Type');?></th>
+					<td class="cell_event_type"></td>
+				</tr>
+				<tr class="event_repeated">
+					<th><?php echo __('Repeated');?></th>
+					<td class="cell_event_repeated"></td>
+				</tr>
+				<tr class="event_severity">
+					<th><?php echo __('Severity');?></th>
+					<td class="cell_event_severity"></td>
+				</tr>
+				<tr class="event_status">
+					<th><?php echo __('Status');?></th>
+					<td class="cell_event_status"></td>
+				</tr>
+				<tr class="event_acknowledged_by">
+					<th><?php echo __('Acknowledged by');?></th>
+					<td class="cell_event_acknowledged_by"></td>
+				</tr>
+				<tr class="event_group">
+					<th><?php echo __('Group');?></th>
+					<td class="cell_event_group"></td>
+				</tr>
+				</tr>
+				<tr class="event_module_graph">
+					<th><?php echo __('Module Graph');?></th>
+					<td class="cell_module_graph"></td>
+				</tr>
+				<tr class="event_agent">
+					<th><?php echo __('Agent');?></th>
+					<td class="cell_agent"></td>
+				</tr>
+				<tr class="event_tags">
+					<th><?php echo __('Tags');?></th>
+					<td class="cell_event_tags"></td>
+				</tr>
+			</tbody>
+		</table>
+		<?php
+		
+		$options['content_text'] = ob_get_clean();
+		
+		$options_button = array(
+				'text' => __('Validate'),
+				'id' => 'validate_button',
+				'href' => 'javascript: validateEvent();');
+		$options['content_text'] .= $ui->createButton($options_button);
+		$options_hidden = array(
+			'id' => 'event_id',
+			'value' => 0,
+			'type' => 'hidden'
+			);
+		$options['content_text'] .= $ui->getInput($options_hidden);
+		$options['content_text'] .= '<div id="validate_button_loading" style="display: none; text-align: center;">
+			<img src="images/ajax-loader.gif" /></div>';
+		$options['content_text'] .= '<div id="validate_button_correct" style="display: none; text-align: center;">
+			<h3>' . __('Sucessful validate') . '</h3></div>';
+		$options['content_text'] .= '<div id="validate_button_fail" style="display: none; text-align: center;">
+			<h3 style="color: #ff0000;">' . __('Fail validate') . '</h3></div>';
+		
+		$options['button_close'] = false;
+		
+		return $options;
+	}
+	
 	private function show_events() {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
 		
-			$options['type'] = 'hidden';
-			
-			$options['dialog_id'] = 'detail_event_dialog';
-			
-			$options['title_close_button'] = true;
-			$options['title_text'] = __('Event detail');
-			
-			//Content
-			ob_start();
-			?>
-			<table class="pandora_responsive alternate event_details">
-				<tbody>
-					<tr class="event_name">
-						<td class="cell_event_name" colspan="2"></td>
-					</tr>
-					<tr class="event_id">
-						<th><?php echo __('Event ID');?></th>
-						<td class="cell_event_id"></td>
-					</tr>
-					<tr class="event_timestamp">
-						<th><?php echo __('Timestamp');?></th>
-						<td class="cell_event_timestamp"></td>
-					</tr>
-					<tr class="event_owner">
-						<th><?php echo __('Owner');?></th>
-						<td class="cell_event_owner"></td>
-					</tr>
-					<tr class="event_type">
-						<th><?php echo __('Type');?></th>
-						<td class="cell_event_type"></td>
-					</tr>
-					<tr class="event_repeated">
-						<th><?php echo __('Repeated');?></th>
-						<td class="cell_event_repeated"></td>
-					</tr>
-					<tr class="event_severity">
-						<th><?php echo __('Severity');?></th>
-						<td class="cell_event_severity"></td>
-					</tr>
-					<tr class="event_status">
-						<th><?php echo __('Status');?></th>
-						<td class="cell_event_status"></td>
-					</tr>
-					<tr class="event_acknowledged_by">
-						<th><?php echo __('Acknowledged by');?></th>
-						<td class="cell_event_acknowledged_by"></td>
-					</tr>
-					<tr class="event_group">
-						<th><?php echo __('Group');?></th>
-						<td class="cell_event_group"></td>
-					</tr>
-					</tr>
-					<tr class="event_module_graph">
-						<th><?php echo __('Module Graph');?></th>
-						<td class="cell_module_graph"></td>
-					</tr>
-					<tr class="event_agent">
-						<th><?php echo __('Agent');?></th>
-						<td class="cell_agent"></td>
-					</tr>
-					<tr class="event_tags">
-						<th><?php echo __('Tags');?></th>
-						<td class="cell_event_tags"></td>
-					</tr>
-				</tbody>
-			</table>
-			<?php
-			
-			$options['content_text'] = ob_get_clean();
-			$options_button = array(
-				'text' => __('Validate'),
-				'id' => 'validate_button',
-				'href' => 'javascript: validateEvent();');
-			$options['content_text'] .= $ui->createButton($options_button);
-			$options_hidden = array(
-				'id' => 'event_id',
-				'value' => 0,
-				'type' => 'hidden'
-				);
-			$options['content_text'] .= $ui->getInput($options_hidden);
-			$options['content_text'] .= '<div id="validate_button_loading" style="display: none; text-align: center;">
-				<img src="images/ajax-loader.gif" /></div>';
-			$options['content_text'] .= '<div id="validate_button_correct" style="display: none; text-align: center;">
-				<h3>' . __('Sucessful validate') . '</h3></div>';
-			$options['content_text'] .= '<div id="validate_button_fail" style="display: none; text-align: center;">
-				<h3 style="color: #ff0000;">' . __('Fail validate') . '</h3></div>';
-			
-			$options['button_close'] = false;
-						
+		$options = $this->get_event_dialog_options();
+				
 		$ui->addDialog($options);
-			$options['type'] = 'hidden';
+		
+		$options = $this->get_event_dialog_error_options($options);
 			
-			$options['dialog_id'] = 'detail_event_dialog_error';
-			$options['title_text'] = __('ERROR: Event detail');
-			$options['content_text'] = '<span style="color: #ff0000;">' .
-				__('Error connecting to DB pandora.') . '</span>';
 		$ui->addDialog($options);
 		
 		
@@ -762,6 +779,8 @@ class Events {
 				return array('table' => $table->getHTML(), 'data' => $events_db);
 			}
 		}
+		
+		$ui->contentAddLinkListener('list_events');
 	}
 	
 	public function putEventsTableJS($id_agent) {
@@ -770,7 +789,7 @@ class Events {
 				</script>";
 	}
 	
-	private function addJavascriptDialog() {
+	public function addJavascriptDialog() {
 		$ui = Ui::getInstance();
 		
 		$ui->contentAddHtml("
@@ -900,18 +919,6 @@ class Events {
 							}
 						});
 				}
-				
-				//Set link on entire row
-				function refresh_link_listener() {
-					$('#list_events tr').click( function() {
-						var link = $(this).find('a').attr('href');
-						if (link != undefined) {
-							window.location = $(this).find('a').attr('href');
-						}
-					});
-				}
-				
-				refresh_link_listener();
 			</script>");
 	}
 	
@@ -941,7 +948,7 @@ class Events {
 						//$(\"table#list_events\").table().table('refresh');
 						
 						load_more_rows = 1;
-						refresh_link_listener();
+						refresh_link_listener_list_events();
 					}
 				}
 				

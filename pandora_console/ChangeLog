@@ -1,3 +1,21 @@
+2014-02-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php: Fixed total agents
+	count for group All
+
+	* include/functions_graph.php
+	mobile/operation/module_graph.php
+	mobile/operation/modules.php
+	mobile/operation/networkmaps.php
+	mobile/operation/agent.php
+	mobile/operation/agents.php
+	mobile/operation/events.php
+	mobile/operation/tactical.php
+	mobile/operation/visualmaps.php
+	mobile/include/ui.class.php
+	mobile/include/style/main.css: A lot of fixes
+	and improvements in mobile console
+
 2014-02-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php

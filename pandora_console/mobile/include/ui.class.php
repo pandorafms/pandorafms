@@ -711,6 +711,26 @@ class Ui {
 		echo "</html>";
 		ob_end_flush();
 	}
+	
+	// Add a listener to set a link when a row of a table is clicked. 
+	// The target link will be the first <a> tag found into the row
+	public function contentAddLinkListener ($table_name) {
+		$this->contentAddHtml("<script type=\"text/javascript\">
+			//Set link on entire row
+			function refresh_link_listener_" . $table_name . "() {
+				$('#" . $table_name . " tr').click( function() {
+					var link = $(this).find('a').attr('href');
+					if (link != undefined) {
+						window.location = $(this).find('a').attr('href');
+					}
+				});
+			}
+			$(document).ready(function(){
+				refresh_link_listener_" . $table_name . "();
+			});
+		</script>");
+	}
+	
 	//
 	//
 }

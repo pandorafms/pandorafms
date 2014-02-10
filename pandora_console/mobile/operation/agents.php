@@ -343,6 +343,7 @@ class Agents {
 				$this->addJavascriptAddBottom();
 			}
 		}
+		$ui->contentAddLinkListener('list_agents');
 	}
 	
 	private function addJavascriptAddBottom() {
@@ -394,7 +395,7 @@ class Agents {
 												});
 											
 											load_more_rows = 1;
-											refresh_link_listener();
+											refresh_link_listener_list_agents();
 										}
 										
 										
@@ -413,18 +414,6 @@ class Agents {
 						custom_scroll();
 					});
 				});
-				
-				//Set link on entire row
-				function refresh_link_listener() {
-					$('#list_agents tr').click( function() {
-						var link = $(this).find('a').attr('href');
-						if (link != undefined) {
-							window.location = $(this).find('a').attr('href');
-						}
-					});
-				}
-				
-				refresh_link_listener();
 			</script>");
 	}
 	

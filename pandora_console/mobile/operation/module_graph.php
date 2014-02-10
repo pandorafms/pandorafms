@@ -135,8 +135,6 @@ class ModuleGraph {
 						$time_compare = 'overlapped';
 					}
 					
-					
-					
 					ob_start();
 					switch ($this->graph_type) {
 						case 'boolean':
@@ -156,7 +154,7 @@ class ModuleGraph {
 								$urlImage,
 								'adapter_' . $this->graph_type,
 								$time_compare,
-								$this->unknown_graph);
+								$this->unknown_graph, false);
 							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events(
@@ -189,7 +187,7 @@ class ModuleGraph {
 								1,
 								false,
 								'adapter_' . $this->graph_type,
-								$time_compare, $this->unknown_graph);
+								$time_compare, $this->unknown_graph, false);
 							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,
@@ -213,7 +211,9 @@ class ModuleGraph {
 								$date,
 								false,
 								$urlImage,
-								'adapter_' . $this->graph_type);
+								'adapter_' . $this->graph_type,
+								1,
+								false);
 							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,
@@ -276,13 +276,21 @@ class ModuleGraph {
 		?>
 		<script type="text/javascript">
 			$(document).bind('ready', function() {
-				$("#graph_content")
-					.height(($(window).height()
-						- $(".ui-header").height()
-						- $(".ui-collapsible").height()
-						- 55) + "px");
+				function load_graph() {
+					$("#graph_content")
+						.height(($(window).height()
+							- $(".ui-header").height()
+							- $(".ui-collapsible").height()
+							- 55) + "px").width($(".ui-collapsible").width() + "px");
+					
+					ajax_get_graph($("#id_module").val());
+				}
 				
-				ajax_get_graph($("#id_module").val());
+				load_graph();
+				
+				$( window ).resize(function() {
+					load_graph();
+				});
 			});
 			
 			function ajax_get_graph(id) {

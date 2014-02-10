@@ -849,7 +849,7 @@ class Table {
 		$html .= "<thead>\n";
 		$html .= "<tr>\n";
 		//Empty head for white space between rows in the responsive vertical layout
-		$html .= "<th></th>\n";
+		$html .= "<th class='head_horizontal'></th>\n";
 		foreach ($this->head as $head) {
 			$html .= "<th class='head_horizontal'>" . $head . "</th>\n";
 		}

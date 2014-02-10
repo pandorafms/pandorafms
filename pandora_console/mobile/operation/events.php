@@ -111,7 +111,7 @@ class Events {
 							$agent_name = '<span class="nobold">' . ui_print_agent_name ($event["id_agente"], true, 'agent_small', '', false, '', '', false, false) . '</span>';
 						}
 						
-						$row_1 = '<span class="events_agent"><b class="ui-table-cell-label">' . __('Agent') . '</b>' . $agent_name . '</span>';
+						$row_1 = '<span class="events_agent">' . $agent_name . '</span>';
 						$row_1 .= '<span class="events_timestamp">' . $status_icon . '<br>' . ui_print_timestamp ($event['timestamp_rep'], true, array('units' => 'tiny')) . '</span>';
 						
 						$row[] = $row_1;

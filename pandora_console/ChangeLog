@@ -1,3 +1,15 @@
+2014-02-11  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/operation/agent.php
+	mobile/operation/events.php
+	mobile/operation/home.php
+	mobile/operation/modules.php
+	mobile/operation/alerts.php
+	mobile/include/style/main.css: Improve user feedback
+	with warnings when no modules or events found, and
+	drawing in the header the id user logged (only in home
+	screen)
+
 2014-02-10  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/include/style/main.css: Fix ugly close dialog

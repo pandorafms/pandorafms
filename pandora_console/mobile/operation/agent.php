@@ -159,7 +159,9 @@ class Agent {
 					$graph_js = ob_get_clean();
 					$html = $graph_js . $html;
 					unset($this->agent['fired_count']);
-					$html .= '<span class="agents_tiny_stats agents_tiny_stats_tactical">' . reporting_tiny_stats($this->agent, true) . ' </span><br>';
+					if ($this->agent['total_count'] > 0) {
+						$html .= '<span class="agents_tiny_stats agents_tiny_stats_tactical">' . reporting_tiny_stats($this->agent, true) . ' </span><br>';
+					}
 					$html .= "<b>" . __('Events (24h)') . "</b><br /><br />";
 					$html .= '<div id="events_bar"></div>';
 					$html .= '<br>';
@@ -246,6 +248,9 @@ class Agent {
 						postvars,
 						function (data) {
 							$('#events_bar').html(data);
+							if ($('.ui-block-a').css('float') != 'none') {
+								set_same_heigth();
+							}
 						},
 						\"html\");
 				}
@@ -269,6 +274,10 @@ class Agent {
 					  
 					}
 				});
+										
+				if ($('.ui-block-a').css('float') != 'none') {
+					set_same_heigth();
+				}
 			});			
 			</script>");
 			

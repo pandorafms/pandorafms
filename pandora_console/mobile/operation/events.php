@@ -95,7 +95,9 @@ class Events {
 								break;
 						}
 						
-						if($event['criticity'] == EVENT_CRIT_WARNING || $event['criticity'] == EVENT_CRIT_MAINTENANCE ) {
+						if($event['criticity'] == EVENT_CRIT_WARNING || 
+						$event['criticity'] == EVENT_CRIT_MAINTENANCE ||
+						$event['criticity'] == EVENT_CRIT_MINOR) {
 							$img_st = str_replace("white.png", "dark.png", $img_st);
 						}
 						
@@ -742,42 +744,30 @@ class Events {
 	
 	public function listEventsHtml($page = 0, $return = false, $id_table = 'list_events') {			
 		$system = System::getInstance();
-		
-		$listEvents = $this->getListEvents($page);
-		$events_db = $listEvents['events'];
-		$total_events = $listEvents['total'];
-		
 		$ui = Ui::getInstance();
-		if (empty($events_db)) {
-			if (!$return) {
-				$ui->contentAddHtml('<p style="color: #ff0000;">' . __('No events') . '</p>');
-			}
-			else {
-				return '<p style="color: #ff0000;">' . __('No events') . '</p>';
-			}
+
+		// Create an empty table to be filled from ajax
+		$table = new Table();
+		$table->id = $id_table;
+		
+		$no_events = '<p id="empty_advice_events" class="empty_advice" style="display: none;">' . __('No events') . '</p>';
+
+		if (!$return) {
+			$ui->contentAddHtml($table->getHTML());
+			
+			$ui->contentAddHtml('<div id="loading_rows">' .
+					html_print_image('images/spinner.gif', true) .
+					' ' . __('Loading...') .
+				'</div>' . $no_events);
+			
+			$this->addJavascriptAddBottom();
+			
+			$this->addJavascriptDialog();
 		}
 		else {
-			// Create an empty table to be filled from ajax
-			$table = new Table();
-			$table->id = $id_table;
-			
-			if (!$return) {
-				$ui->contentAddHtml($table->getHTML());
-				
-				$ui->contentAddHtml('<div id="loading_rows">' .
-						html_print_image('images/spinner.gif', true) .
-						' ' . __('Loading...') .
-					'</div>');
-				
-				$this->addJavascriptAddBottom();
-				
-				$this->addJavascriptDialog();
-			}
-			else {
-				$this->addJavascriptAddBottom();
+			$this->addJavascriptAddBottom();
 
-				return array('table' => $table->getHTML(), 'data' => $events_db);
-			}
+			return array('table' => $table->getHTML() . $no_events, 'data' => $events_db);
 		}
 		
 		$ui->contentAddLinkListener('list_events');
@@ -983,6 +973,10 @@ class Events {
 										ajax_load_rows();
 									}
 								}
+								
+								if (data.events.length == 0 && page == 1) {
+									$('#empty_advice_events').show();
+								}
 							},
 							\"json\");
 					}
@@ -1001,6 +995,10 @@ class Events {
 						postvars,
 						function (data) {
 							add_rows(data, 'last_agent_events');
+							if (data.events.length == 0) {
+								$('#last_agent_events').css('visibility', 'hidden');
+								$('#empty_advice_events').show();
+							}
 						},
 						\"json\");
 				}

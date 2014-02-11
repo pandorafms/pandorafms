@@ -37,7 +37,13 @@ class Home {
 					'text' => __('Logout'),
 					'href' => 'index.php?action=logout'));
 		}
-		$ui->createHeader(__("Home"), $left_button);
+
+		$user_logged = '';
+		if (isset($config['id_user'])) {
+			$user_logged = '<span id="user_logged">' . $config['id_user'] . '</span>';
+		}
+		
+		$ui->createHeader(__("Home") . $user_logged, $left_button);
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->beginForm("index.php?page=agents");

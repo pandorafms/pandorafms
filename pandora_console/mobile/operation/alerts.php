@@ -275,7 +275,7 @@ class Alerts {
 		
 		$ui = UI::getInstance();
 		if (empty($table)) {
-			$html = '<p style="color: #ff0000;">' . __('No alerts') . '</p>';
+			$html = '<p class="empty_advice">' . __('No alerts') . '</p>';
 			if (!$return) {
 				$ui->contentAddHtml($html);
 			}

@@ -43,7 +43,7 @@ class Home {
 			$user_logged = '<span id="user_logged">' . $config['id_user'] . '</span>';
 		}
 		
-		$ui->createHeader(__("Home") . $user_logged, $left_button);
+		$ui->createHeader(__("Home"), $left_button, $user_logged);
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->beginForm("index.php?page=agents");

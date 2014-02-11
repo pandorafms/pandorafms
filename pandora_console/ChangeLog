@@ -1,5 +1,14 @@
 2014-02-11  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/index.php
+	mobile/operation/tactical.php
+	mobile/operation/home.php: Change the tactical 
+	view to load dinamically the graph to be adapted
+	to the layout when change device orientation. Fix
+	id_user info on title
+
+2014-02-11  Sergio Martin <sergio.martin@artica.es>
+
 	* mobile/operation/agent.php
 	mobile/operation/events.php
 	mobile/operation/home.php

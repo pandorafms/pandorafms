@@ -1,5 +1,10 @@
 2014-02-11  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/operation/events.php: Inverse the order
+	of the shown events to show them from newer to older
+
+2014-02-11  Sergio Martin <sergio.martin@artica.es>
+
 	* mobile/index.php
 	mobile/operation/tactical.php
 	mobile/operation/home.php: Change the tactical 

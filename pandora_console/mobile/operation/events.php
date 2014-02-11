@@ -924,7 +924,7 @@ class Events {
 					}
 					else {
 						$.each(data.events, function(key, event) {
-							$(\"table#\"+table_id+\" tbody\").append(
+							$(\"table#\"+table_id+\" tbody\").prepend(
 								\"<tr class='events \" + event[2] + \"'>\" +
 									\"<td class='cell_0'>\" +
 										event[0] +

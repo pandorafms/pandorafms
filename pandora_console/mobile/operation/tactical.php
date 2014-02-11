@@ -38,6 +38,31 @@ class Tactical {
 		}
 	}
 	
+	public function ajax($parameter2 = false) {
+		$system = System::getInstance();
+
+		if (!$this->correct_acl) {
+			return;
+		}
+		else {
+			switch ($parameter2) {
+				case 'render_status_pie':
+					$links = $system->getRequest('links', '');
+					$data = $system->getRequest('data', '');
+					$width = $system->getRequest('width', 230);
+					
+					$max_width = 399;
+					
+					if($width > $max_width) {
+						$width = $max_width;
+					}
+					
+					echo reporting_get_stats_modules_status(json_decode($data, true), $width, $width/2, json_decode($links, true));
+					exit;
+			}
+		}
+	 }
+	
 	private function show_fail_acl() {
 		$error['title_text'] = __('You don\'t have access to this page');
 		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
@@ -102,14 +127,12 @@ class Tactical {
 				$links['monitor_ok'] = "index.php?page=modules&status=0";
 				$links['monitor_unknown'] = "index.php?page=modules&status=3";
 				$links['monitor_not_init'] = "index.php?page=modules&status=5";
-				/*
+				
 				$modules_status_untiny = reporting_get_stats_modules_status($data, 230, 150, $links);
-				$modules_status_tiny = reporting_get_stats_modules_status($data, 175, 100, $links);
-				$formatted_data = "<div class='tiny'>" . $modules_status_untiny . "</div>";
-				$formatted_data .= "<div class='untiny'>" . $modules_status_tiny . "</div>";
-				*/
-				$modules_status = reporting_get_stats_modules_status($data, 230, 150, $links);
-				$formatted_data = "<div>" . $modules_status . "</div>";
+				$modules_status_tiny = reporting_get_stats_modules_status($data, 185, 110, $links);
+				$formatted_data = "<div id='status_pie'></div>";
+				$formatted_data .= html_print_div (array('id' => 'status_pie_links','content' => json_encode($links), 'hidden' => '1'), true);
+				$formatted_data .= html_print_div (array('id' => 'status_pie_data','content' => json_encode($data), 'hidden' => '1'), true);
 				$graph_js = ob_get_clean();
 				$formatted_data = $graph_js . $formatted_data;
 				$ui->contentGridAddCell($formatted_data, 'tactical2');
@@ -127,19 +150,43 @@ class Tactical {
 				function set_same_heigth() {
 					//Set same height to boxes
 					var max_height = 0;
-					if ($('#tactical1').height() > $('#tactical2').height()) {
+					if ($('#tactical1').height() > $('#tactical2 .tactical_set').height()) {
 						max_height = $('#tactical1').height();
-						$('#tactical2').height(max_height);
+						$('#tactical2 .tactical_set').height(max_height);
 					}
 					else {
-						max_height = $('#tactical2').height();
+						max_height = $('#tactical2 .tactical_set').height();
 						$('#tactical1').height(max_height);
 					}
+				}
+				
+				function ajax_load_status_pie() {
+					$('#status_pie').html('<div style=\"text-align: center\"> " . __('Loading...') . "<br /><img src=\"images/ajax-loader.gif\" /></div>');
+					
+					var pie_width = $('#tactical2').width() * 0.9;
+
+					postvars = {};
+					postvars[\"action\"] = \"ajax\";
+					postvars[\"parameter1\"] = \"tactical\";
+					postvars[\"parameter2\"] = \"render_status_pie\";
+					postvars[\"links\"] = $('#status_pie_links').html();
+					postvars[\"data\"] = $('#status_pie_data').html();
+					postvars[\"width\"] = pie_width;
+					$.post(\"index.php\",
+						postvars,
+						function (data) {
+							$('#status_pie').html(data);
+							set_same_heigth();
+						},
+						\"html\");
 				}
 				
 				// Detect orientation change to refresh dinamic content
 				$(window).on({
 					orientationchange: function(e) {
+						// Refresh events bar
+						ajax_load_status_pie();
+						
 						// Keep same height on boxes
 						if ($('.ui-block-b').css('float') == 'none') {
 							$('#tactical1').height('auto');
@@ -154,6 +201,8 @@ class Tactical {
 				if ($('.ui-block-b').css('float') != 'none') {
 					set_same_heigth();
 				}
+				
+				ajax_load_status_pie();
 			});			
 			</script>");
 		$ui->endContent();

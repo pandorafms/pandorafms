@@ -773,13 +773,23 @@ table.event_details td.cell_event_name {
 	font-weight: bold;
 }
 
-#list_Modules td {
+#list_Modules td, #list_agent_Modules td {
 	height: 35px;
 	padding-top: 20px;
 }
 
 #list_Modules .cell_5 img {
 	float: left;
+}
+
+#user_logged {
+	position: absolute;
+	font-size: 11px !important;
+	right: 10px;
+	top: 8px;
+	background: url(../../../images/header_user.png) no-repeat right;
+	padding-right: 20px;
+	line-height: 20px;
 }
 
 @media screen and (max-width: 25em) {
@@ -1187,6 +1197,7 @@ DIV.nodata_text {
         display: table-cell;
         vertical-align: middle;
         text-align: left;
+        font-size: 14px !important;
 }
 
 DIV.nodata_container {
@@ -1194,7 +1205,7 @@ DIV.nodata_container {
         height:100px;
         background-repeat:no-repeat;
         background-position: center;
-        margin: auto auto;
+        margin: 15px auto;
         display: table;
 }
 
@@ -1210,6 +1221,12 @@ DIV.nodata_container {
 .ui-icon-delete {
 	margin-top: -3px !important;
 }
+
+.empty_advice {
+	color: #ff0000;
+	margin-top: 5px !important;
+}
+
 /* JQuery Mobile responsive hack to tables with */
 .ui-table-reflow.ui-responsive {
 	display: table !important;

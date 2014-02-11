@@ -548,9 +548,12 @@ class Modules {
 		//$ui->debug($listModules, true);
 		
 		if ($listModules['total'] == 0) {
-			$html = '<p style="color: #ff0000;">' . __('No modules') . '</p>';
+			$html = '<p class="empty_advice">' . __('No modules') . '</p>';
 			if (!$return) {
 				$ui->contentAddHtml($html);
+			}
+			else {
+				return $html;
 			}
 		}
 		else {

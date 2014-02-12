@@ -767,7 +767,7 @@ class Events {
 		else {
 			$this->addJavascriptAddBottom();
 
-			return array('table' => $table->getHTML() . $no_events, 'data' => $events_db);
+			return array('table' => $table->getHTML() . $no_events);
 		}
 		
 		$ui->contentAddLinkListener('list_events');
@@ -923,19 +923,17 @@ class Events {
 						$(\"#loading_rows\").hide();
 					}
 					else {
+						var new_rows = \"\";
 						$.each(data.events, function(key, event) {
-							$(\"table#\"+table_id+\" tbody\").prepend(
-								\"<tr class='events \" + event[2] + \"'>\" +
+							new_rows = \"<tr class='events \" + event[2] + \"'>\" +
 									\"<td class='cell_0'>\" +
 										event[0] +
 									\"</td>\" +
 									\"<td>\" + event[1] + \"</td>\" +
-								\"</tr>\");
+								\"</tr>\" + new_rows;
 							});
-						
-						//$.mobile.changePage();
-						//$(document).page();
-						//$(\"table#list_events\").table().table('refresh');
+							
+						$(\"table#\"+table_id+\" tbody\").append(new_rows);
 						
 						load_more_rows = 1;
 						refresh_link_listener_list_events();

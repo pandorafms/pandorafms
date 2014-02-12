@@ -1,3 +1,10 @@
+2014-02-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* src/pandorafms/pandorafmsandroidconsole/PandoraWebView.java: fixed
+	the access with passwords or users with non-ascii characters.
+	
+	* AndroidManifest.xml: update the version.
+
 2013-12-16 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* res/values/strings.xml, res/values-es/strings.xml,

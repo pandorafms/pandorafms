@@ -24,6 +24,9 @@ GNU General Public License for more details.
 
 package pandorafms.pandorafmsandroidconsole;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import pandorafms.pandorafmsandroidconsole.R;
 import pandorafms.pandorafmsandroidconsole.Help;
 
@@ -56,7 +59,19 @@ public class PandoraWebView extends Activity {
 		
 		String url_pandora = preferences.getString("url_pandora", "http://firefly.artica.es/pandora_demo/mobile");
 		String user = preferences.getString("user", "demo");
+		try {
+			user = URLEncoder.encode(user, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String password = preferences.getString("password", "demo");
+		try {
+			password = URLEncoder.encode(password, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		WebView myWebView = (WebView) findViewById(R.id.webview);
 		WebSettings webSettings = myWebView.getSettings();
@@ -140,8 +155,20 @@ public class PandoraWebView extends Activity {
 					Activity.MODE_PRIVATE);
 				
 				String url_pandora = preferences.getString("url_pandora", "");
-				String user = preferences.getString("user", "");
-				String password = preferences.getString("password", "");
+				String user = preferences.getString("user", "demo");
+				try {
+					user = URLEncoder.encode(user, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				String password = preferences.getString("password", "demo");
+				try {
+					password = URLEncoder.encode(password, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				WebView myWebView = (WebView) findViewById(R.id.webview);
 				myWebView.loadUrl(url_pandora + "/index.php?action=login&password=" + password + "&user=" + user);

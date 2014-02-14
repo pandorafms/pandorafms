@@ -1,3 +1,11 @@
+2014-02-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_tags.php: Fixed several bugs with
+        ACL propagation and ACL tags.
+
+	* include/functions_graph.php: Implemented ACL tags in
+	graph_event_module function.
+
 2014-02-12  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/operation/events.php: Fix order of the event 

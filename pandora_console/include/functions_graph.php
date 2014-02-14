@@ -1463,6 +1463,10 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	global $config;
 	global $graphic_type;
+
+	// Fix: tag filters implemented! for tag functionality groups have to be all user_groups (propagate ACL funct!)
+	$groups = users_get_groups($config["id_user"]);
+	$tags_condition = tags_get_acl_tags($config['id_user'], array_keys($groups), 'ER', 'event_condition', 'AND');
 	
 	$data = array ();
 	$max_items = 6;
@@ -1472,8 +1476,8 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 			$sql = sprintf ('SELECT COUNT(id_evento) AS count_number,
 					id_agentmodule
 				FROM tevento
-				WHERE tevento.id_agente = %d
-				GROUP BY id_agentmodule ORDER BY count_number DESC LIMIT %d', $id_agent, $max_items);
+				WHERE tevento.id_agente = %d %s
+				GROUP BY id_agentmodule ORDER BY count_number DESC LIMIT %d', $id_agent, $tags_condition, $max_items);
 			break;
 		case "oracle":
 			$sql = sprintf ('SELECT COUNT(id_evento) AS count_number,

@@ -780,8 +780,10 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 			$condition .= ' ( ';
 		
 		// Group condition (The module belongs to an agent of the group X)
-		if (!array_key_exists(0, array_keys($acltags))) {
-			$group_condition = sprintf('%sid_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = %d)', $modules_table, $group_id);
+		// Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition		
+		if (!array_key_exists(0, $acltags)) {
+			// Fix: get all groups recursively (Acl proc func!)
+			$group_condition = sprintf('%sid_agente IN (SELECT id_agente FROM tagente WHERE id_grupo IN (%s))', $modules_table, implode(',', array_values(groups_get_id_recursive($group_id))));
 		}
 		else {
 			//Avoid the user profiles with all group access.
@@ -823,10 +825,16 @@ function tags_get_acl_tags_event_condition($acltags) {
 	// Get all tags of the system
 	$all_tags = tags_get_all_tags(false);
 	
+	// Fix : Will have all groups  retrieved (also propagated ones)
+	$_groups_not_in = '';
+	
 	foreach ($acltags as $group_id => $group_tags) {
 		// Group condition (The module belongs to an agent of the group X)
-		$group_condition = sprintf('id_grupo = %d',$group_id);
+		// Fix : Get all groups (children also, Propagate ACL func!)
+		$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id))));
+		$_groups_not_in .= implode(',', array_values(groups_get_id_recursive($group_id))) . ','; 
 		
+
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = '';
 		foreach ($group_tags as $tag) {
@@ -862,7 +870,9 @@ function tags_get_acl_tags_event_condition($acltags) {
 	}
 	
 	if (!empty($condition)) {
-		$condition = sprintf("\n((%s) OR id_grupo NOT IN (%s))", $condition, implode(',',array_keys($acltags)));
+		// Fix : Also add events of other groups (taking care of propagate ACLs func!)
+		if (!empty($_groups_not_in))
+			$condition = sprintf("\n((%s) OR id_grupo NOT IN (%s))", $condition, rtrim($_groups_not_in, ','));
 	}
 	
 	return $condition;
@@ -1004,31 +1014,64 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 		return true;
 	}
 
-	if($id_group > 0) {
-		if(isset($acls[$id_group])) {
-			foreach($tags as $tag) {
-				$tag = tags_get_id($tag);
+	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
+	if (is_array($id_group)) {
 
-				if(in_array($tag, $acls[$id_group])) {
-					return true;
+		foreach ($id_group  as $group) {
+
+			if($group > 0) {
+                        	if(isset($acls[$group])) {
+                                	foreach($tags as $tag) {
+                                        	$tag = tags_get_id($tag);
+
+                                        	if(in_array($tag, $acls[$group])) {
+                                                	return true;
+                                        	}
+                                	}
+                        	}
+                        	else {
+                                	return false;
+                        	}
+			} else {
+                        	foreach($acls as $acl_tags) {
+                                	foreach($tags as $tag) {
+                                        	$tag = tags_get_id($tag);
+                                        	if(in_array($tag, $acl_tags)) {
+                                                	return true;
+                                        	}
+                                	}
+                        	}
+               		}
+
+                }
+
+	} else {
+		if($id_group > 0) {
+			if(isset($acls[$id_group])) {
+				foreach($tags as $tag) {
+					$tag = tags_get_id($tag);
+
+					if(in_array($tag, $acls[$id_group])) {
+						return true;
+					}
 				}
+			}
+			else {
+				return false;
 			}
 		}
 		else {
-			return false;
-		}
-	}
-	else {
-		foreach($acls as $acl_tags) {
-			foreach($tags as $tag) {
-				$tag = tags_get_id($tag);
-				if(in_array($tag, $acl_tags)) {
-					return true;
+			foreach($acls as $acl_tags) {
+				foreach($tags as $tag) {
+					$tag = tags_get_id($tag);
+					if(in_array($tag, $acl_tags)) {
+						return true;
+					}
 				}
 			}
 		}
-	}
-	
+	}	
+
 	return false;
 }
 ?>

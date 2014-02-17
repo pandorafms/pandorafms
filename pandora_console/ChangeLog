@@ -1,3 +1,8 @@
+2014-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+        * operation/agentes/status_monitor.php: Fixed tag combo,
+        now only shows user tags not all.
+
 2014-02-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_tags.php: Fixed several bugs with

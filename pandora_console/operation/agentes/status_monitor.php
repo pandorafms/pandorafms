@@ -300,12 +300,21 @@ if (defined('METACONSOLE')) {
 		// Get all info for filters of all nodes
 		$modules_temp = db_get_all_rows_sql($sql);
 		
-		$tags_temp = db_get_all_rows_sql('
-			SELECT name, name
-			FROM ttag
-				WHERE id_tag IN (SELECT ttag_module.id_tag
-					FROM ttag_module)');
+		# Fix : only user tags have to be shown in these component
+		$_tags = tags_get_user_tags();
+
 		
+		if (!empty($_tags)) {
+
+			foreach ($_tags as $_tag) {
+
+				$tags_temp[]['name'] = $_tag;
+
+			}
+
+		}
+		
+
 		$rows_temp = db_get_all_rows_sql("SELECT distinct name
 			FROM tmodule_group
 			ORDER BY name");

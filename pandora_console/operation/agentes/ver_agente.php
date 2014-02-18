@@ -431,7 +431,18 @@ if (is_ajax ()) {
 		
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
-		
+	
+			# Fix : Only show agents with module with tags of user profile
+			$_user_tags = tags_get_user_tags($config['id_user'], 'RR');
+
+			$_sql_post = '';
+			if ($_user_tags !== false) {
+
+				$_tags = implode(',', array_keys($_user_tags));
+
+				$_sql_post .= ' AND tagente_modulo.id_agente_modulo IN (SELECT a.id_agente_modulo FROM tagente_modulo a, ttag_module b WHERE a.id_agente_modulo=b.id_agente_modulo AND b.id_tag IN (' . $_tags . ')) ';
+
+			}
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion,
 				tagente_modulo.nombre
@@ -440,6 +451,9 @@ if (is_ajax ()) {
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.disabled = 0 
 				AND tagente_estado.estado = 1', $id_agent);
+
+		$sql .= $_sql_post;
+
 		if ($metaconsole) {
 			if (metaconsole_connect($server) != NOERR) {
 				return;

@@ -1,3 +1,8 @@
+2014-02-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/ver_agente.php: Fixed agent tooltip
+	for metaconsole networkmap. Now check ACL tags are checked.
+
 2014-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
         * operation/agentes/status_monitor.php: Fixed tag combo,

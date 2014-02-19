@@ -1,3 +1,8 @@
+2014-02-19  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor_common.php: added lost id
+	of module, because the user needs for example the api calls.
+
 2014-02-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/ver_agente.php: Fixed agent tooltip

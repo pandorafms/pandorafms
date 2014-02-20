@@ -55,7 +55,7 @@ if ($create_field) {
 /* Update field */
 if ($update_field) {
 	/*Check if name field is empty*/
-	if( $name != "") {
+	if ( $name != "") {
 		$values = array('name' => $name, 'display_on_front' => $display_on_front);
 		
 		$result = db_process_sql_update('tagent_custom_fields', $values, array('id_field' => $id_field));
@@ -87,12 +87,14 @@ $fields = db_get_all_fields_in_table('tagent_custom_fields');
 $table->width = '98%';
 if ($fields) {
 	$table->head = array ();
-	$table->head[0] = __('Field');
-	$table->head[1] = __('Display on front').ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
-	$table->head[2] = __('Actions');
+	$table->head[0] = __('ID');
+	$table->head[1] = __('Field');
+	$table->head[2] = __('Display on front').ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
+	$table->head[3] = __('Actions');
 	$table->align = array ();
-	$table->align[1] = 'center';
+	$table->align[0] = 'right';
 	$table->align[2] = 'center';
+	$table->align[3] = 'center';
 	$table->data = array ();
 }
 else {
@@ -101,25 +103,29 @@ else {
 
 if ($fields === false) $fields = array();
 
+
 foreach ($fields as $field) {
 	
-	$data[0] = '<b>'.$field['name'].'</b>';
+	$data[0] = $field['id_field'];
 	
-	if($field['display_on_front']) {
-		$data[1] = html_print_image('images/tick.png', true);
+	$data[1] = '<b>'.$field['name'].'</b>';
+	
+	if ($field['display_on_front']) {
+		$data[2] = html_print_image('images/tick.png', true);
 	}
 	else {
-		$data[1] = html_print_image('images/delete.png', true);
+		$data[2] = html_print_image('images/delete.png', true);
 	}
 	
-	$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0')) . '</a>';
-	$data[2] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "title" => __('Delete'), "border" => '0')) . '</a>';
+	$data[3] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0')) . '</a>';
+	$data[3] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "title" => __('Delete'), "border" => '0')) . '</a>';
 	
 	array_push ($table->data, $data);
 }
 
-if($fields)
+if ($fields) {
 	html_print_table ($table);
+}
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

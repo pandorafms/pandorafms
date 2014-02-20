@@ -1,3 +1,8 @@
+2014-02-20  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/fields_manager.php: added the id column in the
+	list of fields because it is needed in some api calls.
+
 2014-02-19  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor_common.php: added lost id

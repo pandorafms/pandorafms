@@ -1,144 +1,105 @@
-#
-# spec file for package pandorafms-agent
-#
-# Pandora FMS Linux Agent
-# Copyright (c) 2014 Sancho Lerena
-# Licensed under GPL2 terms.
-# Please send bugfixes or comments to slerena@gmail.com
-
-#
-%define name        pandorafms-agent
-%define version     5.0
-%define release     140201.sp3
-
-Summary:            Linux agent monitoring for Pandora FMS
-Name:               %{name}
-Version:            %{version}
-Release:            %{release}
-License:            GPL
-Vendor:             ArticaST <http://www.artica.es>
-Source0:            %{name}-%{version}.tar.gz
-URL:                http://pandorafms.com
-Group:              System/Monitoring
-Packager:           Sancho Lerena <slerena@gmail.es>
-Prefix:             /usr/share
-BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
-BuildArch:          noarch
-Requires(pre):      /bin/sed /bin/grep /usr/sbin/useradd
-Requires:           coreutils unzip
-AutoReq:            0
-Provides:           %{name}-%{version}
+Name: pandorafms-agent
+Version: 5.0
+Release: 140223.sp3%{?dist}
+Summary: Host/service/network agent for Pandora FMS monitoring system
+License: GPLv2
+Vendor: Artica <http://www.artica.es>
+Source: http://code.pandorafms.com/static_download/pandorafms_agent_unix-5.0SP3.tar.gz
+#Source: %{name}-%{version}.tar.gz
+#Source0: http://code.pandorafms.com/static_download/pandorafms_agent_unix-5.0SP3.tar.gz
+URL: http://pandorafms.com
+Group: Applications/System
+#Prefix: /usr/share
+#BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
+BuildArch: noarch
+Requires(pre): /bin/sed /bin/grep 
+Requires(pre): shadow-utils
+Requires: coreutils unzip
+Requires(preun): initscripts, chkconfig
+Requires(post): initscripts, chkconfig
+Requires(postun): initscripts
 
 %description
-Pandora FMS agent for unix. Pandora FMS is an OpenSource full-featured monitoring software.
+Pandora FMS agent for unix. Pandora FMS is a full-featured monitoring software.
 
 %prep
-rm -rf $RPM_BUILD_ROOT
-
 %setup -q -n unix
-
 %build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_agent/
-mkdir -p $RPM_BUILD_ROOT/usr/bin/
-mkdir -p $RPM_BUILD_ROOT/usr/sbin/
-mkdir -p $RPM_BUILD_ROOT/etc/pandora/
-mkdir -p $RPM_BUILD_ROOT/etc/init.d/
-mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
-mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
-cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_exec $RPM_BUILD_ROOT/usr/bin/
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/pandora_agent.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/tentacle_client.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
-# Checking old config file (if exists)
-if [ -f /etc/pandora/pandora_agent.conf ] ; then
-	mv /etc/pandora/pandora_agent.conf /etc/pandora/pandora_agent.conf.backup
-fi
+rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/bin/
+mkdir -p %{buildroot}/etc/pandora/
+mkdir -p %{buildroot}/etc/init.d/
+mkdir -p %{buildroot}/var/log/pandora/
+mkdir -p %{buildroot}/usr/share/man/man1/
 
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent.conf $RPM_BUILD_ROOT/usr/share/pandora_agent/pandora_agent.conf.rpmnew
+install -m 0755 pandora_agent %{buildroot}%{_bindir}/pandora_agent
+install -m 0755 pandora_agent_exec %{buildroot}%{_bindir}/pandora_agent_exec
+install -m 0755 tentacle_client %{buildroot}%{_bindir}/tentacle_client
+install -m 0755 pandora_agent_daemon %{buildroot}/etc/init.d/pandora_agent_daemon
+install -m 0644 man/man1/pandora_agent.1.gz %{buildroot}/usr/share/man/man1/pandora_agent.1.gz
+install -m 0644 man/man1/tentacle_client.1.gz %{buildroot}/usr/share/man/man1/tentacle_client.1.gz
+install -m 0600 Linux/pandora_agent.conf %{buildroot}/etc/pandora/pandora_agent.conf
+install -d -m 0755 %{buildroot}/etc/pandora/plugins
+install -d -m 0755 %{buildroot}/etc/pandora/collections
 
-if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec ] ; then
-	rm $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec
-fi
+# Copying all plugins inside plugin directory and set 755 perms on them
+cp plugins/* %{buildroot}/etc/pandora/plugins
+chmod 755 %{buildroot}/etc/pandora/plugins/*
 
 %clean
-rm -Rf $RPM_BUILD_ROOT
+rm -Rf %{buildroot}
 
 %pre
 getent passwd pandora >/dev/null || \
-	/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
+	/usr/sbin/useradd -d /etc/pandora -s /bin/false -M -g 0 pandora
 exit 0
 
 %post
-if [ ! -d /etc/pandora ] ; then
-	mkdir -p /etc/pandora
-fi
 
-if [ ! -f /usr/share/pandora_agent/pandora_agent.conf ] ; then
-	cp /usr/share/pandora_agent/pandora_agent.conf.rpmnew /usr/share/pandora_agent/pandora_agent.conf
+if [ $1 -eq 1 ]; then
+	# Initial installation. Needed to start pandora agent
+	mkdir -p /var/spool/pandora/data_out
+	/sbin/chkconfig --add pandora_agent_daemon
+	/sbin/chkconfig pandora_agent_daemon on
 fi
-
-if [ ! -f /etc/pandora/pandora_agent.conf ] ; then
-	ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
-else
-	ln -s /usr/share/pandora_agent/pandora_agent.conf.rpmnew /etc/pandora/pandora_agent.conf.rpmnew
-fi
-
-if [ ! -e /etc/pandora/plugins ]; then
-	ln -s /usr/share/pandora_agent/plugins /etc/pandora
-fi
-
-if [ ! -e /etc/pandora/collections ]; then
-	ln -s /usr/share/pandora_agent/collections /etc/pandora
-fi
-
-mkdir -p /var/spool/pandora/data_out
-/sbin/chkconfig --add pandora_agent_daemon
-/sbin/chkconfig pandora_agent_daemon on
 
 %preun
 
-# Upgrading
-if [ "$1" = "1" ]; then
-	exit 0
+# package removal, not upgrade 
+if [ $1 -eq 0  ]; then
+	/sbin/chkconfig --del pandora_agent_daemon 
+	/etc/init.d/pandora_agent_daemon stop
+	/usr/sbin/userdel pandora
+	rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
 fi
-
-/sbin/chkconfig --del pandora_agent_daemon 
-/etc/init.d/pandora_agent_daemon stop
-rm /etc/init.d/pandora_agent_daemon
-/usr/sbin/userdel pandora
-rm -Rf /etc/pandora/pandora_agent.conf
-rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
-rm -Rf /usr/share/pandora_agent
-rm -Rf /usr/share/man/man1/pandora_agent.1.gz
-rm -Rf /usr/share/man/man1/tentacle_client.1.gz
-exit 0
 
 %files
 %defattr(750,pandora,root)
 /usr/bin/pandora_agent
 /usr/bin/pandora_agent_exec
+/usr/bin/tentacle_client
+/etc/init.d/pandora_agent_daemon
 
 %defattr(-,pandora,root,770)
 /var/log/pandora/
 
-%defattr(755,pandora,root)
-/usr/bin/tentacle_client
-/etc/init.d/pandora_agent_daemon
-%docdir %{prefix}/pandora_agents/docs
-%{prefix}/pandora_agent
+%defattr(600,pandora,root)
+/etc/pandora/pandora_agent.conf
+/etc/pandora/collections
+/etc/pandora/plugins
 
-%defattr(644,pandora,root)
+%config /etc/pandora/pandora_agent.conf
+
+%doc
 /usr/share/man/man1/pandora_agent.1.gz
 /usr/share/man/man1/tentacle_client.1.gz
 
 %changelog
-* Sat Feb 01 2014 - slerena@gmail.com
+* Sun Feb 23 2014 Sancho Lerena <slerena at gmail.com> - 5.0
+- Several changes on SPEC to comply with Fedora standards. This one pass rpmlint
+
+* Sat Feb 01 2014 Sancho Lerena <slerena at gmail.com> - 5.0
 - First version, after re-re-re-reading the fedora contributor guidelines :)

@@ -1,3 +1,7 @@
+2014-02-24  Sancho Lerena <slerena@artica.es>
+
+	* pandorafms-agent.spec: Lots of changes to adapt spec to fedora standards.
+
 2014-02-01  Sancho Lerena <slerena@artica.es>
 
 	* fedora_official_specs: Added new directory to maintain the official specs

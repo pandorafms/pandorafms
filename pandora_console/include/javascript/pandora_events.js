@@ -353,8 +353,13 @@ function perform_response(target) {
 		timeout: 10000,
 		dataType: 'html',
 		success: function (data) {
-			var out = data.replace(/[\n|\r]/g, "<br>");
-			$('#response_out').html(out);
+			if (data == '') {
+				$('#response_out').html('<i>No output</i>');
+			}
+			else {
+				var out = data.replace(/[\n|\r]/g, "<br>");
+				$('#response_out').html(out);
+			}
 			$('#response_loading_command').hide();
 			$('#re_exec_command').show();
 		}

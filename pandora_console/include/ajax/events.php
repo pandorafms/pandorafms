@@ -132,7 +132,7 @@ if ($perform_event_response) {
 			$timeout_bin = '/usr/bin/timeout';
 			break;
 	}
-	echo system($timeout_bin . ' 10 '.io_safe_output($command).' 2>&1');
+	echo system($timeout_bin . ' 9 '.io_safe_output($command).' 2>&1');
 	
 	return;
 }

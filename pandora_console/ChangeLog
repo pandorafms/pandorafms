@@ -1,3 +1,10 @@
+2014-02-25  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_events.js
+	include/ajax/events.php: Change command timeouts in responses
+	from 10 to 9 seconds to avoid problems in certain systems. Add
+	little feedback when command reach timeout time
+
 2014-02-20  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/fields_manager.php: added the id column in the

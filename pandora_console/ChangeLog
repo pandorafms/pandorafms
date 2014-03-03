@@ -1,6 +1,8 @@
 2014-03-03  Miguel de Dios <miguel.dedios@artica.es>
 	
-	* include/functions_api.php: fixed the call get
+	* include/functions_api.php: fixed the call "get_total_modules" now
+	it does not count the pending delete modules. And thanks Cucumber for
+	to the advise.
 
 2014-02-25  Sergio Martin <sergio.martin@artica.es>
 

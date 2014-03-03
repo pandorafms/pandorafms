@@ -1,3 +1,7 @@
+2014-03-03  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the call get
+
 2014-02-25  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_events.js

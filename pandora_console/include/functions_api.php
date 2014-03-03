@@ -6096,7 +6096,7 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType) {
 	
 	$sql = "SELECT COUNT(*)
 		FROM tagente_modulo
-		WHERE id_module_group=$id_group";
+		WHERE id_module_group=$id_group AND delete_pending = 0";
 	
 	$total = db_get_value_sql($sql);
 	

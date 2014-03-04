@@ -33,7 +33,7 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host.png"></td>
 </tr>
 <tr>
-<td>Con agente asignado<br><br>Eventos activados</td>
+<td>Con agente asignado<br><br>Eventos desactivados</td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent.png"></td>
 </tr>

@@ -1,5 +1,10 @@
 2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_api.php: fixed the function "api_get_policies".
+	Thanks Cucumber.
+
+2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_api.php: fixed the function
 	"api_get_tactical_view". Thanks Cucumber.
 

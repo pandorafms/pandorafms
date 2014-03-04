@@ -1,3 +1,10 @@
+2014-03-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/es/help_ipam.php: Added spanish IPAM help
+
+	* include/styles/pandora.css: Little fix on help 
+	styles changing size to h3 tag
+
 2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the function "api_get_policies".

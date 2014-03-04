@@ -239,6 +239,10 @@ div#main_help div.databox h3, div#main_help div.databox h2 {
 	font-family: sans-serif, verdana;
 }
 
+div#main_help div.databox h3 {
+	font-size: 12px;
+}
+
 div#main_help a.footer, div#main_help span  {
 	color: #999;
 }

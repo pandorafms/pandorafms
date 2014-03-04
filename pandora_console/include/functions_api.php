@@ -132,8 +132,11 @@ function returnData($returnType, $data, $separator = ';') {
 					}
 					else {
 						if (!empty($data['data'])) {
+							
 							foreach ($data['data'] as $dataContent) {
+								
 								$clean = array_map("array_apply_io_safe_output", $dataContent);
+								
 								foreach ($clean as $k => $v) {
 									$clean[$k] = str_replace("\r", "\n", $clean[$k]);
 									$clean[$k] = str_replace("\n", " ", $clean[$k]);
@@ -792,6 +795,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 	$agentName = $id;
 	$idAgent[0] = agents_get_agent_id($agentName);
+	
 	if (!agents_delete_agent ($idAgent, true))
 		returnError('error_delete', 'Error in delete operation.');
 	else
@@ -3332,7 +3336,8 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
  */
 function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == "") {
-		returnError('error_update_plugin_module_policy', __('Error updating plugin module in policy. Id_policy cannot be left blank.'));
+		returnError('error_update_plugin_module_policy',
+			__('Error updating plugin module in policy. Id_policy cannot be left blank.'));
 		return;
 	}
 	
@@ -3346,24 +3351,29 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
 	
 	if ($module_policy === false) {
-		returnError('error_updating_plugin_module_policy', __('Error updating plugin module in policy. Module doesn\'t exists.'));
+		returnError('error_updating_plugin_module_policy',
+			__('Error updating plugin module in policy. Module doesn\'t exists.'));
 		return;
 	}
 	
 	if ($module_policy[0]['id_module'] != 4) {
-		returnError('error_updating_plugin_module_policy', __('Error updating plugin module in policy. Module type is not network type.'));
+		returnError('error_updating_plugin_module_policy',
+			__('Error updating plugin module in policy. Module type is not network type.'));
 		return;
 	}
 	
-	$fields_plugin_module = array('id','disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 
-						 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'snmp_community',
-						 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description', 'id_plugin', 'plugin_user',
-						 'plugin_pass', 'plugin_parameter');
+	$fields_plugin_module = array('id','disabled', 'id_module_group',
+		'min_warning', 'max_warning', 'str_warning', 'min_critical', 
+		'max_critical', 'str_critical', 'min_ff_event', 'history_data',
+		'tcp_port', 'snmp_community', 'snmp_oid', 'module_interval',
+		'post_process', 'min', 'max', 'custom_id', 'description',
+		'id_plugin', 'plugin_user', 'plugin_pass', 'plugin_parameter');
 	
 	$cont = 0;
 	foreach ($fields_plugin_module as $field) {
-		if ($other['data'][$cont] != "" and $field != 'id'){
+		if ($other['data'][$cont] != "" and $field != 'id') {
 			$values[$field] = $other['data'][$cont];
+			
 		}
 		
 		$cont++;
@@ -3861,7 +3871,7 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 		$date, '', 0, 0,true,
 		false, $homeurl, $ttl);
 	
-	// Extract url of the image from img tag			
+	// Extract url of the image from img tag
 	preg_match("/src='([^']*)'/i",$image, $match);
 	
 	if(empty($match[1])) {

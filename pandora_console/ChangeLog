@@ -1,3 +1,11 @@
+2014-03-04  Sancho Lerena <slerena@artica.es>
+
+        * en/help_ipam.php: Added translation for IPAM help.
+
+        * e?/help_pcap_filter.php: Added small sample.
+
+        * es/help_ipam.php: Some adittions.
+
 2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the function "get_module_name".

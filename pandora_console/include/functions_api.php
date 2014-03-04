@@ -3602,7 +3602,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	foreach ($fields_plugin_module as $field) {
 		if ($other['data'][$cont] != "" and $field != 'id') {
 			$values[$field] = $other['data'][$cont];
-
+			
 			if( $field === 'macros' ) {
 				$values[$field] = base64_decode($values[$field]);
 			}
@@ -6403,17 +6403,25 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 // http://localhost/pandora_console/include/api.php?op=get&op2=tactical_view&apipass=1234&user=admin&pass=pandora
 function api_get_tactical_view($trash1, $trash2, $trash3, $returnType) {
 	$tactical_info = reporting_get_group_stats();
-	$i = 0;
-	foreach ($tactical_info as $key => $data) {
-		if ($i == 0)
-			$result = $key.': '.$data.'<br>';
-		else
-			$result .= $key.': '.$data.'<br>'; 
-		
-		$i++;
-	}
 	
-	$data = array('type' => 'string', 'data' => $result);
+	switch ($returnType) {
+		case 'string':
+			$i = 0;
+			foreach ($tactical_info as $key => $data) {
+				if ($i == 0)
+					$result = $key . ': ' . $data . '<br>';
+				else
+					$result .= $key . ': ' . $data . '<br>'; 
+				
+				$i++;
+			}
+			
+			$data = array('type' => 'string', 'data' => $result);
+			break;
+		case 'csv':
+			$data = array('type' => 'array', 'data' => array($tactical_info));
+			break;
+	}
 	
 	returnData($returnType, $data);
 	return;

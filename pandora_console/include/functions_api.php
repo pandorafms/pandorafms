@@ -6157,14 +6157,18 @@ function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 // http://localhost/pandora_console/include/api.php?op=get&op2=module_name&id=20&apipass=1234&user=admin&pass=pandora
 function api_get_module_name($id_module, $trash1, $trash2, $returnType) {
 	
-	$sql = sprintf('SELECT name FROM tmodule WHERE id_module = %d', $id_module);
-	$value = db_get_value_sql($sql);	
+	$sql = sprintf('SELECT nombre
+		FROM tagente_modulo
+		WHERE id_agente_modulo = %d', $id_module);
+	
+	$value = db_get_value_sql($sql);
+	
 	if ($value === false) {
 		returnError('id_not_found', $returnType);
 	}
 	
 	$data = array('type' => 'string', 'data' => $value);
-
+	
 	returnData($returnType, $data);
 }
 

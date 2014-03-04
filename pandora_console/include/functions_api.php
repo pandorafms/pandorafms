@@ -1016,14 +1016,14 @@ function api_get_policies($thrash1, $thrash2, $other, $thrash3) {
 	$where = '';
 	
 	if ($other['data'][0] != "") {
-		$where .= ' AND id_agent = ' . $other['data'][0];
+		$where .= ' AND pol_agents.id_agent = ' . $other['data'][0];
 		
 		$sql = sprintf("SELECT policy.id, name, id_agent
-			FROM tpolicies policy, tpolicy_agents pol_agents 
-			WHERE policy.id = pol_agents.id %s", $where);
+			FROM tpolicies AS policy, tpolicy_agents AS pol_agents 
+			WHERE policy.id = pol_agents.id_policy %s", $where);
 	}
 	else {
-		$sql = "SELECT id, name FROM tpolicies policy";
+		$sql = "SELECT id, name FROM tpolicies AS policy";
 	}
 	
 	$policies = db_get_all_rows_sql($sql);

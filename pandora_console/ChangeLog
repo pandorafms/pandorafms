@@ -1,5 +1,12 @@
 2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_api.php: fixed the function "api_get_policies".
+	Thanks Cucumber.
+	
+	MERGED FROM THE TRUNK
+
+2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_api.php: some fixes backport from the trunk.
 	Thanks Cucumber.
 

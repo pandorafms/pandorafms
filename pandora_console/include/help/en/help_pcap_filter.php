@@ -19,6 +19,11 @@ host 192.168.0.1
 dst host 192.168.0.1
 </pre>
 
+<li>Avoid traffic with origin at 192.168.1.240:</li>
+<pre>
+not src host 192.168.1.240
+</pre>
+
 <li>Capture traffic from 192.168.0.0/24:</li>
 <pre>
 src net 192.168.0.0/24

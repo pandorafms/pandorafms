@@ -3,16 +3,18 @@
  * @package Include/help/en
  */
 ?>
-<h1>IP Address Management (IPAM)</h1>
+<h1>Gestión de asignación de direcciones IP (IPAM)</h1>
 <br>
-Con la extensión IPAM podremos descubrir los hosts de una subred y detectectar sus cambios de disponibilidad (respuesta) o nombre. Además podremos detectar su sistema operativo.
+Con la extensión IPAM podremos descubrir los hosts de una subred y detectar sus cambios de disponibilidad (si responden a ping o no) o nombre de host (obtenido mediante dns). Además podremos detectar su sistema operativo. La extensión de IPAM utiliza un recon script (dependiente del recon server) para realizar toda la lógica que hay por debajo. La gestión de IP's es <i>independiente</i> de que tenga o no agentes instalados en esas máquinas o un agente con monitores remotos sobre esa IP. Opcionalmente puede "asociar" un agente a la IP y gestionar esa IP, pero no afecta a la monitorización que esté realizando.
 
-<h2>Reconocimiento</h2>
-Podemos configurar una subred para que se ejecute cada cierto tiempo el reconocimiento de sus direcciones o bien solo se haga manualmente.<br><br>
+<h2>Detección de IP's</h2>
+Podemos configurar una red (mediante una red y una máscara de red) para que se ejecute cada cierto tiempo el reconocimiento de sus direcciones o bien que únicamente se haga manualmente. Este mecanismo utiliza por debajo el recon server, pero lo gestiona automáticamente. <br><br>
+
 En ambos casos podremos forzar el reconocimiento y observar el porcentaje completado en la barra de progreso.
 
 <h2>Vistas</h2>
-La operación y administración de las direcciones de una subred están separadas en dos tipos de vistas.
+La operación y administración de las direcciones de una subred están separadas en dos tipos de vistas: Vistas de iconos y vista de edición.
+
 <h3>Vista de iconos</h3>
 Con esta vista veremos información de la subred, incluyendo estadísticas del porcentaje y número de direcciones usadas (marcadas como administradas).<br><br>
 Además podremos exportar la lista a formato Excel (CSV)<br><br>
@@ -62,7 +64,7 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 </tr>
 </table>
 <br><br>
-Cada dirección tendrá en la parte inferior derecha un enlace para editarla, si disponemos de privilegios suficientes. Así mismo, en la parte inferior izquierda, tendrá un iconito del sistema operativo asociado. 
+Cada dirección tendrá en la parte inferior derecha un enlace para editarla, si disponemos de privilegios suficientes. Así mismo, en la parte inferior izquierda, tendrá un pequeño icono indicando el sistema operativo asociado. 
 En el caso de las direcciones desactivadas, el icono del sistema operativo se verá sustituido por el siguiente icono:<br><br><img src="../images/delete.png" style="width:18px;"><br><br>
 Si hacemos click en el icono principal, se abrirá una ventana modal con toda la información de la IP, incluyendo agente y sistema operativo asociados, configuración y el seguimiento de cuando se creó, editó por el usuario o fue chequeado por el servidor por última vez. En esta vista también se podrá hacer un ping a dicha dirección*.<br><br>
 <b>* El ping se realiza desde la máquina donde esté instalada la consola de Pandora FMS.</b>
@@ -93,8 +95,8 @@ Otros campos que podemos modificar son:
 <ul>
 <li>- Activar los eventos de una dirección. Cuando la disponibilidad de estas direcciones cambie (deje de responder o vuelva a hacerlo) o su nombre cambie, se generará un evento. <br><br>
 <b>Cuando una dirección se crea la primera vez, siempre generará un evento.</b><br><br></li>
-<li>- Marcar como administrada una dirección. Estas direcciónes serán las que reconocemos como asignadas en nuestra red. Podremos filtrar las IPs para solamente mostrar las que tengamos marcadas como administradas.<br><br></li>
-<li>- Deshabilitar. Las Ips deshabilitadas no serán chequeadas por el script de reconocimiento.<br><br></li>
+<li>- Marcar como <i>administrada</i> una dirección. Estas direcciónes serán las que reconocemos como asignadas en nuestra red. Podremos filtrar las IPs para solamente mostrar las que tengamos marcadas como administradas.<br><br></li>
+<li>- Deshabilitar. Las IPs deshabilitadas no serán chequeadas por el script de reconocimiento.<br><br></li>
 <li>- Comentarios. Un campo libre para añadir los comentarios que deseemos a cada dirección.</li>
 </ul>
 

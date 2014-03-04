@@ -229,7 +229,7 @@ function io_safe_output($value, $utf8 = true)
 	$valueHtmlEncode = str_replace("&lt;", '<', $valueHtmlEncode);
 	
 	//Replace the html entitie of > for the char
-	$valueHtmlEncode = str_replace("&gt;", '>', $valueHtmlEncode);			
+	$valueHtmlEncode = str_replace("&gt;", '>', $valueHtmlEncode);
 	
 	//Revert html entities to chars
 	for ($i=0;$i<33;$i++) {

@@ -1,5 +1,9 @@
 2014-03-04  Sergio Martin <sergio.martin@artica.es>
 
+	* include/help/es/help_ipam.php: Typo fix in ipam text
+
+2014-03-04  Sergio Martin <sergio.martin@artica.es>
+
 	* include/help/es/help_ipam.php: Added spanish IPAM help
 
 	* include/styles/pandora.css: Little fix on help 

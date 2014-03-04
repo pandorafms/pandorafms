@@ -133,8 +133,11 @@ function returnData($returnType, $data, $separator = ';') {
 					}
 					else {
 						if (!empty($data['data'])) {
+							
 							foreach ($data['data'] as $dataContent) {
+								
 								$clean = array_map("array_apply_io_safe_output", $dataContent);
+								
 								foreach ($clean as $k => $v) {
 									$clean[$k] = str_replace("\r", "\n", $clean[$k]);
 									$clean[$k] = str_replace("\n", " ", $clean[$k]);
@@ -5249,7 +5252,7 @@ function api_get_gis_agent($id_agent, $trash1, $tresh2, $return_type, $user_in_d
 	
 	if ($agent_gis_data) {
 		returnData($return_type,
-			array('type' => 'array', 'data' => $agent_gis_data));
+			array('type' => 'array', 'data' => array($agent_gis_data)));
 	}
 	else {
 		returnError('Error.');

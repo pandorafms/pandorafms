@@ -1,3 +1,10 @@
+2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the function "api_get_gis_agent".
+	Thanks Cucumber.
+	
+	* include/functions_io.php: cleaned source code style.
+
 2014-03-03  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the call "get_total_modules" now

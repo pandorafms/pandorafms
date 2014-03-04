@@ -1,3 +1,8 @@
+2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the function "get_module_name".
+	Thanks Cucumber.
+
 2014-03-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/help/es/help_ipam.php: Typo fix in ipam text

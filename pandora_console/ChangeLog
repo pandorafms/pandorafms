@@ -1,3 +1,8 @@
+2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: some fixes backport from the trunk.
+	Thanks Cucumber.
+
 2014-02-20  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/fields_manager.php: added the id column in the

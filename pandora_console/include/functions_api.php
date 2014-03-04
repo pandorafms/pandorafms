@@ -133,8 +133,11 @@ function returnData($returnType, $data, $separator = ';') {
 					}
 					else {
 						if (!empty($data['data'])) {
+							
 							foreach ($data['data'] as $dataContent) {
+								
 								$clean = array_map("array_apply_io_safe_output", $dataContent);
+								
 								foreach ($clean as $k => $v) {
 									$clean[$k] = str_replace("\r", "\n", $clean[$k]);
 									$clean[$k] = str_replace("\n", " ", $clean[$k]);
@@ -5249,7 +5252,7 @@ function api_get_gis_agent($id_agent, $trash1, $tresh2, $return_type, $user_in_d
 	
 	if ($agent_gis_data) {
 		returnData($return_type,
-			array('type' => 'array', 'data' => $agent_gis_data));
+			array('type' => 'array', 'data' => array($agent_gis_data)));
 	}
 	else {
 		returnError('Error.');
@@ -6096,7 +6099,7 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType) {
 	
 	$sql = "SELECT COUNT(*)
 		FROM tagente_modulo
-		WHERE id_module_group=$id_group";
+		WHERE id_module_group=$id_group AND delete_pending = 0";
 	
 	$total = db_get_value_sql($sql);
 	
@@ -6400,17 +6403,25 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 // http://localhost/pandora_console/include/api.php?op=get&op2=tactical_view&apipass=1234&user=admin&pass=pandora
 function api_get_tactical_view($trash1, $trash2, $trash3, $returnType) {
 	$tactical_info = reporting_get_group_stats();
-	$i = 0;
-	foreach ($tactical_info as $key => $data) {
-		if ($i == 0)
-			$result = $key.': '.$data.'<br>';
-		else
-			$result .= $key.': '.$data.'<br>'; 
-		
-		$i++;
-	}
 	
-	$data = array('type' => 'string', 'data' => $result);
+	switch ($returnType) {
+		case 'string':
+			$i = 0;
+			foreach ($tactical_info as $key => $data) {
+				if ($i == 0)
+					$result = $key . ': ' . $data . '<br>';
+				else
+					$result .= $key . ': ' . $data . '<br>'; 
+				
+				$i++;
+			}
+			
+			$data = array('type' => 'string', 'data' => $result);
+			break;
+		case 'csv':
+			$data = array('type' => 'array', 'data' => array($tactical_info));
+			break;
+	}
 	
 	returnData($returnType, $data);
 	return;

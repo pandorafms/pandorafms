@@ -317,7 +317,17 @@ CREATE TABLE "talert_actions" (
 	"field9" text NOT NULL default '',
 	"field10" text NOT NULL default '',
 	"id_group" BIGINT NOT NULL default 0,
-	"action_threshold" BIGINT NOT NULL default 0
+	"action_threshold" BIGINT NOT NULL default 0,
+	"field1_recovery" text NOT NULL default '',
+	"field2_recovery" text NOT NULL default '',
+	"field3_recovery" text NOT NULL default '',
+	"field4_recovery" text NOT NULL default '',
+	"field5_recovery" text NOT NULL default '',
+	"field6_recovery" text NOT NULL default '',
+	"field7_recovery" text NOT NULL default '',
+	"field8_recovery" text NOT NULL default '',
+	"field9_recovery" text NOT NULL default '',
+	"field10_recovery" text NOT NULL default ''
 );
 
 CREATE TYPE type_talert_templates_alert_template AS ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always');
@@ -355,6 +365,7 @@ CREATE TABLE "talert_templates" (
 	"saturday" SMALLINT default 1,
 	"sunday" SMALLINT default 1,
 	"recovery_notify" SMALLINT default 0,
+	"field1_recovery" text NOT NULL default '',
 	"field2_recovery" text NOT NULL default '',
 	"field3_recovery" text NOT NULL default '',
 	"field4_recovery" text NOT NULL default '',

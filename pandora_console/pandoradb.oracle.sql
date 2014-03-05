@@ -342,7 +342,17 @@ CREATE TABLE talert_actions (
 	field9 CLOB default '',
 	field10 CLOB default '',
 	id_group NUMBER(19, 0) default 0 NOT NULL,
-	action_threshold NUMBER(19, 0) default 0 NOT NULL
+	action_threshold NUMBER(19, 0) default 0 NOT NULL,
+	field1_recovery CLOB NOT NULL default '',
+	field2_recovery CLOB NOT NULL default '',
+	field3_recovery CLOB NOT NULL default '',
+	field4_recovery CLOB NOT NULL default '',
+	field5_recovery CLOB NOT NULL default '',
+	field6_recovery CLOB NOT NULL default '',
+	field7_recovery CLOB NOT NULL default '',
+	field8_recovery CLOB NOT NULL default '',
+	field9_recovery CLOB NOT NULL default '',
+	field10_recovery CLOB NOT NULL default ''
 );
 
 CREATE SEQUENCE talert_actions_s INCREMENT BY 1 START WITH 1;
@@ -387,6 +397,7 @@ CREATE TABLE talert_templates (
 	saturday NUMBER(5, 0) default 1,
 	sunday NUMBER(5, 0) default 1,
 	recovery_notify NUMBER(5, 0) default 0,
+	field1_recovery CLOB NOT NULL default '',
 	field2_recovery CLOB NOT NULL default '',
 	field3_recovery CLOB NOT NULL default '',
 	field4_recovery CLOB NOT NULL default '',

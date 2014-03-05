@@ -2852,6 +2852,11 @@ td.used_field {
 	#border: solid #6EB432;
 	background: #6EB432 !important;
 	color: #FFFFFF;
+	font-weight: bold;
+}
+
+td.overrided_field {
+	color: #666;
 }
 
 td.unused_field {
@@ -2860,4 +2865,8 @@ td.unused_field {
 
 td.empty_field {
 	background: url('../../images/long_arrow.png') no-repeat 100% center;
+}
+
+#table_macros textarea {
+	width: 96%;
 }

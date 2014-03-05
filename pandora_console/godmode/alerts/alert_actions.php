@@ -151,6 +151,8 @@ if ($create_action) {
 	for($i=1;$i<=10;$i++) {
 		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
 		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
+		$values['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i.'_recovery_value');
+		$info_fields .= ' Field'.$i.'Recovery: ' . $values['field'.$i.'_recovery'];
 	}
 
 	$values['id_group'] = (string) get_parameter ('group');
@@ -228,6 +230,8 @@ if ($update_action) {
 	for ($i = 1; $i <= 10; $i++) {
 		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
 		$info_fields .= ' Field1: ' . $values['field'.$i];
+		$values['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i.'_recovery_value');
+		$info_fields .= ' Field'.$i.'Recovery: ' . $values['field'.$i.'_recovery'];
 	}
 	
 	$values['name'] = $name;

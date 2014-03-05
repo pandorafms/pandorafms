@@ -433,9 +433,11 @@ $table->head[2] = __('Action fields') . ui_print_help_tip(__('Triggering fields 
 $table->head[3] = __('Executed on firing') . ui_print_help_tip(__('Fields used on execution when the alert is fired'), true);
 
 $firing_fields = array();
+
 foreach ($actions as $kaction => $action) {
 	$command = alerts_get_alert_command($action['id_alert_command']);
 	$command_preview = $command['command'];
+	$firing_fields[$kaction] = $action;
 	$firing_fields[$kaction]['command'] = $command['command'];
 	
 	$descriptions = json_decode($command['fields_descriptions'], true);
@@ -504,18 +506,20 @@ else {
 	$table->head = array();
 	$table->data = array();
 	$table->style[0] = 'width: 100px;';
-	$table->style[1] = 'width: 30%;';
-	$table->style[2] = 'width: 30%;';
-	$table->style[3] = 'font-weight: bold; width: 30%;';
+	$table->style[1] = 'width: 25%;';
+	$table->style[2] = 'width: 25%;';
+	$table->style[3] = 'width: 25%;';
+	$table->style[3] = 'font-weight: bold; width: 25%;';
 	$table->title = __('Recovering fields') . ui_print_help_tip(__('Fields passed to the command executed by this action when the alert is recovered'), true);
 
 	$table->head[0] = __('Field') . ui_print_help_tip(__('Fields configured on the command associated to the action'), true);
 	$table->head[1] = __('Firing fields') . ui_print_help_tip(__('Fields used on execution when the alert is fired'), true);
 	$table->head[2] = __('Template recovery fields') . ui_print_help_tip(__('Recovery fields configured in alert template'), true);
-	$table->head[3] = __('Executed on recovery') . ui_print_help_tip(__('Fields used on execution when the alert is recovered'), true);
-	$table->style[3] = 'font-weight: bold;';
+	$table->head[3] = __('Action recovery fields') . ui_print_help_tip(__('Recovery fields configured in alert action'), true);
+	$table->head[4] = __('Executed on recovery') . ui_print_help_tip(__('Fields used on execution when the alert is recovered'), true);
+	$table->style[4] = 'font-weight: bold;';
 
-	foreach($firing_fields as $kaction => $firing) {		
+	foreach($firing_fields as $kaction => $firing) {
 		$data = array();
 		$command_preview = $firing_fields[$kaction]['command'];
 		$fieldn = 1;
@@ -527,33 +531,44 @@ else {
 			}
 			$data[0] .= '<br><span style="font-size: xx-small;font-style:italic;">(' . sprintf(__("Field %s"), $fieldn) . ')</span>';
 			$data[1] = $firing_fields[$kaction]['value'][$field];
-			$data[2] = $field == 'field1' ? '' : $template[$field . '_recovery'];
+			$data[2] = $template[$field . '_recovery'];
+			$data[3] = $firing_fields[$kaction][$field . '_recovery'];
+			$data[4] = '';
 			
-			// Field1 doesnt exist on recovery fields. Will be added on future
-			if($fieldn == 1) {
-				$data[3] = $firing_fields[$kaction]['value'][$field];
-			}
-			else {
-				$data[3] = empty($template[$field . '_recovery']) && !empty($firing_fields[$kaction]['value'][$field]) ? '[RECOVER]' . $firing_fields[$kaction]['value'][$field] : $template[$field . '_recovery'];
-			}
-			$first_level = $firing_fields[$kaction]['value'][$field];
-			$second_level = $field == 'field1' ? '' : $template[$field . '_recovery'];
-			if (!empty($second_level) || !empty($first_level)) {
-				if (empty($second_level)) {
-					$table->cellclass[count($table->data)][1] = 'used_field';
-					$table->cellclass[count($table->data)][2] = 'empty_field';
+			$first_level = $data[1];
+			$second_level = $data[2];
+			$third_level = $data[3];
+			if (!empty($third_level) || !empty($second_level) || !empty($first_level)) {
+				if (!empty($third_level)) {
+					$table->cellclass[count($table->data)][1] = 'overrided_field';
+					$table->cellclass[count($table->data)][2] = 'overrided_field';
+					$table->cellclass[count($table->data)][3] = 'used_field';
+					
+					$data[4] = $data[3];
 				}
-				else {
+				else if (!empty($second_level)) {
 					$table->cellclass[count($table->data)][1] = 'overrided_field';
 					$table->cellclass[count($table->data)][2] = 'used_field';
+					$table->cellclass[count($table->data)][3] = 'empty_field';
+					
+					$data[4] = $data[2];
+				}
+				else {
+					$table->cellclass[count($table->data)][1] = 'used_field';
+					$table->cellclass[count($table->data)][2] = 'empty_field';
+					$table->cellclass[count($table->data)][3] = 'empty_field';
+					
+					// All fields but field1 will have [RECOVER] prefix if no recovery fields are configured
+					$data[4] = $fieldn == 1 ? $data[1] : '[RECOVER]' . $data[1];
 				}
 			}
 			$table->data[] = $data;
+			unset($data);
 			
 			$table->rowclass[] = 'firing_action firing_action_' . $kaction;
 			
 			if ($command_preview != 'Internal type') {
-				$command_preview = str_replace('_'.$field.'_', $data[3], $command_preview);
+				$command_preview = str_replace('_'.$field.'_', $data[4], $command_preview);
 			}
 			$fieldn++;
 		}

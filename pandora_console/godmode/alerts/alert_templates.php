@@ -139,10 +139,10 @@ if ($update_template) {
 	$recovery_notify = (bool) get_parameter ('recovery_notify');
 	
 	$fields_recovery = array();
-	for($i=2;$i<=10;$i++) {
-		$fields_recovery['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i);
+	for($i=1;$i<=10;$i++) {
+		$values['field'.$i] = (string) get_parameter ('field'.$i);
+		$values['field'.$i.'_recovery'] = $recovery_notify ? (string) get_parameter ('field'.$i.'_recovery') : '';
 	}
-	$values = $fields_recovery;
 	$values['recovery_notify'] = $recovery_notify;
 	$result = alerts_update_alert_template ($id, $values);
 	

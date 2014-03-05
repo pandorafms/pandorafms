@@ -34,7 +34,7 @@ Addresses will be shown as icons, large or small. This icons will render the fol
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host.png"></td>
 </tr>
 <tr>
-<td>With assigned agent<br><br>Events activated</td>
+<td>With assigned agent<br><br>Events disabled</td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent.png"></td>
 </tr>

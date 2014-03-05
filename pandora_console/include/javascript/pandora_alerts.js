@@ -2,7 +2,7 @@ var original_command = "";
 
 function parse_alert_command (command) {
 	var nfield = 1;
-	$('.fields').each(function() {
+	$('.' + classs).each(function() {
 		// Only render values different from ''
 		if ($(this).val() == '') {
 			return;
@@ -18,6 +18,7 @@ function parse_alert_command (command) {
 
 function render_command_preview (original_command) {
 	$("#textarea_command_preview").text (parse_alert_command (original_command));
+	$("#textarea_command_recovery_preview").text (parse_alert_command (original_command, 'recovery'));
 }
 
 function render_command_description (command_description) {

@@ -89,6 +89,7 @@ $table->size[0] = '20%';
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
+$table->colspan[0][1] = 2;
 
 $table->data[1][0] = __('Group');
 
@@ -100,6 +101,7 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else
 	$display_all_group = false;
 $table->data[1][1] = html_print_select_groups(false, "LW", $display_all_group, 'group', $group, '', '', 0, true);
+$table->colspan[1][1] = 2;
 
 $table->data[2][0] = __('Command');
 $table->data[2][1] = html_print_select_from_sql ('SELECT id, name
@@ -113,18 +115,33 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$table->data[2][1] .= '</a>';
 }
 $table->data[2][1] .= '<div id="command_description" style=""></div>';
+$table->colspan[2][1] = 2;
+
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
 $table->data[3][1] .= ' ' . __('seconds') . ui_print_help_icon ('action_threshold', true);
-$table->data[4][0] = __('Command preview');
-$table->data[4][1] = html_print_textarea ('command_preview', 10, 30, '',
+$table->colspan[3][1] = 2;
+
+$table->data[4][0] = '';
+$table->data[4][1] = __('Firing');
+$table->data[4][2] = __('Recovery');
+$table->cellstyle[4][1] = 'font-weight: bold;';
+$table->cellstyle[4][2] = 'font-weight: bold;';
+
+$table->data[5][0] = __('Command preview');
+$table->data[5][1] = html_print_textarea ('command_preview', 5, 30, '',
 	'disabled="disabled"', true);
-$row = 5;
+$table->data[5][2] = html_print_textarea ('command_recovery_preview', 5, 30, '',
+	'disabled="disabled"', true);
+
+$row = 6;
 for ($i = 1; $i <= 10; $i++) {
 	$table->data['field'.$i][0] = html_print_image('images/spinner.gif',true);
 	$table->data['field'.$i][1] = html_print_image('images/spinner.gif',true);
+	$table->data['field'.$i][2] = html_print_image('images/spinner.gif',true);
 	// Store the value in a hidden to keep it on first execution
-	$table->data['field'.$i][1] .= html_print_input_hidden('field'.$i.'_value', isset($action['field'.$i]) ? $action['field'.$i] : '', true);
+	$table->data['field'.$i][1] .= html_print_input_hidden('field'.$i.'_value', !empty($action['field'.$i]) ? $action['field'.$i] : '', true);
+	$table->data['field'.$i][2] .= html_print_input_hidden('field'.$i.'_recovery_value', !empty($action['field'.$i.'_recovery']) ? $action['field'.$i.'_recovery'] : '', true);
 }
 
 echo '<form method="post" action="index.php?sec=' . $sec . '&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
@@ -199,12 +216,18 @@ $(document).ready (function () {
 				
 				for (i = 1; i <= 10; i++) {
 					var old_value = '';
+					var old_recovery_value = '';
 					var field_row = data["fields_rows"][i];
 					
 					// Only keep the value if is provided from hidden (first time)
 					if (($("[name=field" + i + "_value]").attr('id'))
 						== ("hidden-field" + i + "_value")) {
 						old_value = $("[name=field" + i + "_value]").val();
+					}
+					
+					if (($("[name=field" + i + "_recovery_value]").attr('id'))
+						== ("hidden-field" + i + "_recovery_value")) {
+						old_recovery_value = $("[name=field" + i + "_recovery_value]").val();
 					}
 					
 					// If the row is empty, hide de row
@@ -214,6 +237,7 @@ $(document).ready (function () {
 					else {
 						$('#table_macros-field' + i).replaceWith(field_row);
 						$("[name=field" + i + "_value]").val(old_value);
+						$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
 						
 						
 						// Add help hint only in first field
@@ -233,6 +257,9 @@ $(document).ready (function () {
 				render_command_preview(original_command);
 				
 				$(".fields").keyup (function() {
+					render_command_preview(original_command);
+				});
+				$(".fields_recovery").keyup (function() {
 					render_command_preview(original_command);
 				});
 			},

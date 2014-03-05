@@ -1,3 +1,30 @@
+2014-03-05  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/javascript/pandora_alerts.js
+	extras/pandoradb_migrate_4.1_to_5.0.postgreSQL.sql
+	extras/pandoradb_migrate_4.1_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.1_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	extras/check_other_languages.sh
+	extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql
+	extras/network_components.postgreSQL.sql
+	extras/network_components.oracle.sql
+	extras/network_components.mysql.sql
+	godmode/alerts/alert_actions.php
+	godmode/alerts/alert_commands.php
+	godmode/alerts/alert_view.php
+	godmode/alerts/configure_alert_template.php
+	godmode/alerts/alert_templates.php
+	godmode/alerts/configure_alert_action.php: Clean sql scripts,
+	reorganise the alert template creation interface, add field1 
+	to template recovery fields and add action recovery fields. 
+	Ticket #501
+
 2014-03-04  Sancho Lerena <slerena@artica.es>
 
         * en/help_ipam.php: Added translation for IPAM help.

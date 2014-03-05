@@ -93,10 +93,13 @@ if (is_ajax ()) {
 				}
 				
 				$ffield = html_print_select($fields_value_select, 'field'.$i.'_value', '', '', '', 0, true, false, false);
+				$rfield = html_print_select($fields_value_select, 'field'.$i.'_recovery_value', '', '', '', 0, true, false, false);
 			}
 			else {
 				$ffield = html_print_textarea ('field'.$i.'_value', 1, 1, '', 'style="min-height:40px" class="fields"', true);
+				$rfield = html_print_textarea ('field'.$i.'_recovery_value', 1, 1, '', 'style="min-height:40px" class="fields_recovery"', true);
 			}
+				
 			
 			// The empty descriptions will be ignored
 			if ($fdesc == '') {
@@ -110,6 +113,9 @@ if (is_ajax ()) {
 						</td>
 						<td class="datos">
 							' . $ffield . '
+						</td>
+						<td class="datos recovery_col">
+							' . $rfield . '
 						</td>
 					</tr>';
 			}

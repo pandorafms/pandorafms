@@ -144,12 +144,12 @@ function print_alert_template_steps ($step, $id) {
 	if ($id) {
 		echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&pure='.$pure.'">';
 		echo __('Step') . ' 1 &raquo; ';
-		echo '<span>' . __('Conditions') . '</span>';
+		echo '<span>' . __('General') . '</span>';
 		echo '</a>';
 	}
 	else {
 		echo __('Step') . ' 1 &raquo; ';
-		echo '<span>' . __('Conditions') . '</span>';
+		echo '<span>' . __('General') . '</span>';
 	}
 	echo '</li>';
 	
@@ -164,12 +164,12 @@ function print_alert_template_steps ($step, $id) {
 	if ($id) {
 		echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=2&pure='.$pure.'">';
 		echo __('Step').' 2 &raquo; ';
-		echo '<span>'.__('Firing').'</span>';
+		echo '<span>'.__('Conditions').'</span>';
 		echo '</a>';
 	}
 	else {
 		echo __('Step').' 2 &raquo; ';
-		echo '<span>'.__('Firing').'</span>';
+		echo '<span>'.__('Conditions').'</span>';
 	}
 	echo '</li>';
 	
@@ -184,12 +184,12 @@ function print_alert_template_steps ($step, $id) {
 	if ($id) {
 		echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
 		echo __('Step').' 3 &raquo; ';
-		echo '<span>'.__('Recovery').'</span>';
+		echo '<span>'.__('Advanced fields').'</span>';
 		echo '</a>';
 	}
 	else {
 		echo __('Step').' 3 &raquo; ';
-		echo '<span>'.__('Recovery').'</span>';
+		echo '<span>'.__('Advanced fields').'</span>';
 	}
 	
 	echo '</ol>';
@@ -216,24 +216,14 @@ function update_template ($step) {
 	if ($step == 1) {
 		$name = (string) get_parameter ('name');
 		$description = (string) get_parameter ('description');
-		$type = (string) get_parameter ('type');
-		$value = (string) html_entity_decode (get_parameter ('value'));
-		$max = (float) get_parameter ('max');
-		$min = (float) get_parameter ('min');
-		$matches = (bool) get_parameter ('matches_value');
 		$wizard_level = (string) get_parameter ('wizard_level');
 		$priority = (int) get_parameter ('priority');
 		$id_group = get_parameter ("id_group");
 		$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
 		
 		$values = array ('name' => $name,
-			'type' => $type,
 			'description' => $description,
-			'value' => $value,
-			'max_value' => $max,
-			'min_value' => $min,
 			'id_group' => $id_group,
-			'matches_value' => $matches,
 			'priority' => $priority,
 			'wizard_level' => $wizard_level);
 		
@@ -255,6 +245,11 @@ function update_template ($step) {
 		$threshold = (int) get_parameter ('threshold');
 		$max_alerts = (int) get_parameter ('max_alerts');
 		$min_alerts = (int) get_parameter ('min_alerts');
+		$type = (string) get_parameter ('type');
+		$value = (string) html_entity_decode (get_parameter ('value'));
+		$max = (float) get_parameter ('max');
+		$min = (float) get_parameter ('min');
+		$matches = (bool) get_parameter ('matches_value');
 		
 		$default_action = (int) get_parameter ('default_action');
 		if (empty ($default_action)) {
@@ -273,12 +268,12 @@ function update_template ($step) {
 			'time_threshold' => $threshold,
 			'id_alert_action' => $default_action,
 			'max_alerts' => $max_alerts,
-			'min_alerts' => $min_alerts);
-		
-		$fields = array();
-		for($i=1;$i<=10;$i++) {
-			$values['field'.$i] = $fields[$i] = (string) get_parameter ('field'.$i);
-		}
+			'min_alerts' => $min_alerts,
+			'type' => $type,
+			'value' => $value,
+			'max_value' => $max,
+			'min_value' => $min,
+			'matches_value' => $matches);
 		
 		// Different datetimes format for oracle
 		switch ($config['dbtype']) {
@@ -297,11 +292,11 @@ function update_template ($step) {
 	}
 	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
-		$fields_recovery = array();
-		for($i=2;$i<=10;$i++) {
-			$fields_recovery['field'.$i] = (string) get_parameter ('field'.$i);
+		for($i=1;$i<=10;$i++) {
+			$values['field'.$i] = (string) get_parameter ('field'.$i);
+			$values['field'.$i.'_recovery'] = $recovery_notify ? (string) get_parameter ('field'.$i.'_recovery') : '';
 		}
-		$values = $fields_recovery;
+		
 		$values['recovery_notify'] = $recovery_notify;
 		
 		$result = alerts_update_alert_template ($id, $values);
@@ -350,6 +345,9 @@ $fields = array();
 for ($i = 1; $i <= 10; $i++) {
 	$fields[$i] = '';
 }
+for ($i = 1; $i <= 10; $i++) {
+	$fields_recovery[$i] = '';
+}
 $priority = 1;
 $min_alerts = 0;
 $max_alerts = 1;
@@ -364,7 +362,7 @@ $wizard_level = 'nowizard';
 if ($create_template) {
 	$name = (string) get_parameter ('name');
 	$description = (string) get_parameter ('description');
-	$type = (string) get_parameter ('type');
+	$type = (string) get_parameter ('type', 'critical');
 	$value = (string) get_parameter ('value');
 	$max = (float) get_parameter ('max');
 	$min = (float) get_parameter ('min');
@@ -454,7 +452,7 @@ if ($id && ! $create_template) {
 	$recovery_notify = $template['recovery_notify'];
 	
 	$fields_recovery = array();
-	for ($i = 2; $i <= 10; $i++) {
+	for ($i = 1; $i <= 10; $i++) {
 		$fields_recovery[$i] = $template['field'.$i.'_recovery'];
 	}
 
@@ -520,24 +518,6 @@ if ($step == 2) {
 	$table->data[3][3] = html_print_input_text ('max_alerts', $max_alerts, '',
 		5, 7, true);
 	
-	$table->colspan['fields_switch'][0] = 4;
-	$table->data['fields_switch'][0] = '<a href="javascript:toggle_fields();">'.__('Advanced fields management').' '.html_print_image('images/down.png',true).'</a>';
-	
-	for ($i = 1; $i <= 10; $i++) {
-		if (isset($template[$name])) {
-			$value = $template[$name];
-		}
-		else {
-			$value = '';
-		}
-		
-		$table->colspan['field'.$i][1] = 3;
-		$table->rowclass['field'.$i] = 'row_field';
-		
-		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true);
-		$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
-	}
-	
 	$table->data[4][0] = __('Default action');
 	$usr_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM', true)));
 	switch ($config['dbtype']){
@@ -559,30 +539,92 @@ if ($step == 2) {
 			'default_action', $default_action, '', __('None'), 0,
 			true, false, false) .
 		ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
+	
+	$table->data[5][0] = __('Condition type');
+	$table->data[5][1] = html_print_select (alerts_get_alert_templates_types (), 'type',
+		$type, '', __('Select'), 0, true, false, false);
+	$table->data[5][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
+	$table->data[5][1] .= '&nbsp;'.html_print_checkbox ('matches_value', 1, $matches, true);
+	$table->data[5][1] .= html_print_label (__('Trigger when matches the value'),
+		'checkbox-matches_value', true);
+	$table->data[5][1] .= '</span>';
+	$table->colspan[5][1] = 3;
+
+	$table->data['value'][0] = __('Value');
+	$table->data['value'][1] = html_print_input_text ('value', $value, '',
+		35, 255, true);
+	$table->data['value'][1] .= '&nbsp;<span id="regex_ok">';
+	$table->data['value'][1] .= html_print_image ('images/suc.png', true,
+		array ('style' => 'display:none',
+			'id' => 'regex_good',
+			'title' => __('The regular expression is valid'),
+			'width' => '20px'));
+	$table->data['value'][1] .= html_print_image ('images/err.png', true,
+		array ('style' => 'display:none',
+			'id' => 'regex_bad',
+			'title' => __('The regular expression is not valid'),
+			'width' => '20px'));
+	$table->data['value'][1] .= '</span>';
+	$table->colspan['value'][1] = 3;
+
+	//Min first, then max, that's more logical
+	$table->data['min'][0] = __('Min.');
+	$table->data['min'][1] = html_print_input_text ('min', $min, '', 5, 255, true);
+	$table->colspan['min'][1] = 3;
+
+	$table->data['max'][0] = __('Max.');
+	$table->data['max'][1] = html_print_input_text ('max', $max, '', 5, 255, true);
+	$table->colspan['max'][1] = 3;
+
+	$table->data['example'][1] = ui_print_alert_template_example ($id, true, false);
+	$table->colspan['example'][1] = 4;
 }
 else if ($step == 3) {
+	$table->style[0] = 'font-weight: bold; vertical-align: top';
+	$table->style[1] = 'font-weight: bold; vertical-align: top';
+	$table->style[2] = 'font-weight: bold; vertical-align: top';
+	$table->size = array ();
+	$table->size[0] = '20%';
+
 	/* Alert recover */
 	if (! $recovery_notify) {
-		$table->rowstyle = array ();
-		$table->rowstyle['field2'] = 'display:none;';
-		$table->rowstyle['field3'] = 'display:none';
-		$table->rowstyle['field4'] = 'display:none';
-		$table->rowstyle['field5'] = 'display:none';
-		$table->rowstyle['field6'] = 'display:none';
-		$table->rowstyle['field7'] = 'display:none';
-		$table->rowstyle['field8'] = 'display:none';
-		$table->rowstyle['field9'] = 'display:none';
-		$table->rowstyle['field10'] = 'display:none';
+		$table->cellstyle['label_fields'][2] = 'display:none;';
+		$table->cellstyle['field1'][2] = 'display:none;';
+		$table->cellstyle['field2'][2] = 'display:none;';
+		$table->cellstyle['field3'][2] = 'display:none;';
+		$table->cellstyle['field4'][2] = 'display:none;';
+		$table->cellstyle['field5'][2] = 'display:none;';
+		$table->cellstyle['field6'][2] = 'display:none;';
+		$table->cellstyle['field7'][2] = 'display:none;';
+		$table->cellstyle['field8'][2] = 'display:none;';
+		$table->cellstyle['field9'][2] = 'display:none;';
+		$table->cellstyle['field10'][2] = 'display:none;';
 	}
 	$table->data[0][0] = __('Alert recovery');
 	$values = array (false => __('Disabled'), true => __('Enabled'));
 	$table->data[0][1] = html_print_select ($values,
 		'recovery_notify', $recovery_notify, '', '', '', true, false,
 		false);
+	$table->colspan[0][1] = 2;
 	
-	for($i=2;$i<=10;$i++) {
-	$table->data['field'.$i][0] = sprintf(__('Field %s'), $i). ui_print_help_icon ('alert_macros', true);
-	$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields_recovery[$i]) ? $fields_recovery[$i] : '', 'style="min-height:40px" class="fields"', true);
+	$table->data['label_fields'][0] = '';
+	$table->data['label_fields'][1] = __('Firing fields');
+	$table->data['label_fields'][2] = __('Recovery fields');
+		
+	for ($i = 1; $i <= 10; $i++) {
+		if (isset($template[$name])) {
+			$value = $template[$name];
+		}
+		else {
+			$value = '';
+		}
+		
+		//$table->rowclass['field'.$i] = 'row_field';
+		
+		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true);
+		$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
+		// Recovery
+		$table->data['field'.$i][2] = html_print_textarea ('field'.$i.'_recovery', 1, 1, isset($fields_recovery[$i]) ? $fields_recovery[$i] : '', 'style="min-height:40px" class="fields"', true);
 	}
 }
 else {
@@ -652,41 +694,6 @@ else {
 	else {
 		$table->data[2][1] .= html_print_input_hidden('wizard_level',$wizard_level,true);
 	}
-	
-	$table->data[4][0] = __('Condition type');
-	$table->data[4][1] = html_print_select (alerts_get_alert_templates_types (), 'type',
-		$type, '', __('Select'), 0, true, false, false);
-	$table->data[4][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
-	$table->data[4][1] .= '&nbsp;'.html_print_checkbox ('matches_value', 1, $matches, true);
-	$table->data[4][1] .= html_print_label (__('Trigger when matches the value'),
-		'checkbox-matches_value', true);
-	$table->data[4][1] .= '</span>';
-	
-	$table->data['value'][0] = __('Value');
-	$table->data['value'][1] = html_print_input_text ('value', $value, '',
-		35, 255, true);
-	$table->data['value'][1] .= '&nbsp;<span id="regex_ok">';
-	$table->data['value'][1] .= html_print_image ('images/suc.png', true,
-		array ('style' => 'display:none',
-			'id' => 'regex_good',
-			'title' => __('The regular expression is valid'),
-			'width' => '20px'));
-	$table->data['value'][1] .= html_print_image ('images/err.png', true,
-		array ('style' => 'display:none',
-			'id' => 'regex_bad',
-			'title' => __('The regular expression is not valid'),
-			'width' => '20px'));
-	$table->data['value'][1] .= '</span>';
-	
-	//Min first, then max, that's more logical
-	$table->data['min'][0] = __('Min.');
-	$table->data['min'][1] = html_print_input_text ('min', $min, '', 5, 255, true);
-	
-	$table->data['max'][0] = __('Max.');
-	$table->data['max'][1] = html_print_input_text ('max', $max, '', 5, 255, true);
-	
-	$table->data['example'][1] = ui_print_alert_template_example ($id, true, false);
-	$table->colspan['example'][1] = 2;
 }
 
 /* If it's the last step it will redirect to template lists */
@@ -821,7 +828,7 @@ function toggle_fields() {
 
 $(document).ready (function () {
 <?php
-if ($step == 1) {
+if ($step == 2) {
 ?>
 	$("input#text-value").keyup (render_example);
 	$("input#text-max").keyup (render_example);
@@ -949,10 +956,7 @@ if ($step == 1) {
 	});
 	
 	$("#text-value").keyup (check_regex);
-<?php
-}
-elseif ($step == 2) {
-?>
+	
 	$('#text-time_from, #text-time_to').timepicker({
 		showSecond: true,
 		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -981,10 +985,10 @@ elseif ($step == 3) {
 ?>
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {
-			$("#template-field2, #template-field3, #template-field4, #template-field5, #template-field6, #template-field7, #template-field8, #template-field9, #template-field10").show ();
+			$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").show ();
 		}
 		else {
-			$("#template-field2, #template-field3, #template-field4, #template-field5, #template-field6, #template-field7, #template-field8, #template-field9, #template-field10").hide ();
+			$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").hide ();
 		}
 	});
 <?php

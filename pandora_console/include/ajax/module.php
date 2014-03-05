@@ -16,6 +16,7 @@
 
 global $config;
 
+
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 enterprise_include_once ('include/functions_metaconsole.php');
@@ -32,11 +33,6 @@ if ($get_plugin_macros) {
 	echo json_encode($macros);
 	return;
 }
-
-ui_require_jquery_file ("ui-timepicker-addon");
-// This script is included manually to be included after jquery and avoid error
-echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language(), false, false, false) . '"></script>';
-ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 
 $search_modules = get_parameter('search_modules');
 
@@ -60,6 +56,13 @@ if ($search_modules) {
 $get_module_detail = get_parameter ('get_module_detail', 0);
 
 if ($get_module_detail) {
+	
+	ui_require_jquery_file ("ui-timepicker-addon");
+	// This script is included manually to be included after jquery and avoid error
+	echo '<script type="text/javascript" src="' .
+		ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' .
+		get_user_language(), false, false, false) . '"></script>';
+	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 	
 	$module_id = get_parameter ('id_module');
 	$period = get_parameter ("period", 86400);

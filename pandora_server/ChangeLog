@@ -1,3 +1,9 @@
+2014-03-05  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Add action recovery fields to the
+	recovery logic in alerts.
+	Ticket #501
+
 2014-01-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Updated copyright information.

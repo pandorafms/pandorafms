@@ -732,28 +732,58 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
 	} else {
 		$field1 = $alert->{'field1'} ne "" ? $alert->{'field1'} : $action->{'field1'};
-                $field2 = $alert->{'field2'} ne "" ? $alert->{'field2'} : $action->{'field2'};
-                $field3 = $alert->{'field3'} ne "" ? $alert->{'field3'} : $action->{'field3'};
-                $field4 = $action->{'field4'} ne "" ? $action->{'field4'} : $alert->{'field4'};
-                $field5 = $action->{'field5'} ne "" ? $action->{'field5'} : $alert->{'field5'};
-                $field6 = $action->{'field6'} ne "" ? $action->{'field6'} : $alert->{'field6'};
-                $field7 = $action->{'field7'} ne "" ? $action->{'field7'} : $alert->{'field7'};
-                $field8 = $action->{'field8'} ne "" ? $action->{'field8'} : $alert->{'field8'};
-                $field9 = $action->{'field9'} ne "" ? $action->{'field9'} : $alert->{'field9'};
-                $field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
+		$field2 = $alert->{'field2'} ne "" ? $alert->{'field2'} : $action->{'field2'};
+		$field3 = $alert->{'field3'} ne "" ? $alert->{'field3'} : $action->{'field3'};
+		$field4 = $action->{'field4'} ne "" ? $action->{'field4'} : $alert->{'field4'};
+		$field5 = $action->{'field5'} ne "" ? $action->{'field5'} : $alert->{'field5'};
+		$field6 = $action->{'field6'} ne "" ? $action->{'field6'} : $alert->{'field6'};
+		$field7 = $action->{'field7'} ne "" ? $action->{'field7'} : $alert->{'field7'};
+		$field8 = $action->{'field8'} ne "" ? $action->{'field8'} : $alert->{'field8'};
+		$field9 = $action->{'field9'} ne "" ? $action->{'field9'} : $alert->{'field9'};
+		$field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == 0) {
-		$field2 = $alert->{'field2_recovery'} ne "" ? $alert->{'field2_recovery'} : ($field2 ne "" ? "[RECOVER]" . $field2 : "");
-		$field3 = $alert->{'field3_recovery'} ne "" ? $alert->{'field3_recovery'} : ($field3 ne "" ? "[RECOVER]" . $field3 : "");
-		$field4 = $alert->{'field4_recovery'} ne "" ? $alert->{'field4_recovery'} : ($field4 ne "" ? "[RECOVER]" . $field4 : "");
-		$field5 = $alert->{'field5_recovery'} ne "" ? $alert->{'field5_recovery'} : ($field5 ne "" ? "[RECOVER]" . $field5 : "");
-		$field6 = $alert->{'field6_recovery'} ne "" ? $alert->{'field6_recovery'} : ($field6 ne "" ? "[RECOVER]" . $field6 : "");
-		$field7 = $alert->{'field7_recovery'} ne "" ? $alert->{'field7_recovery'} : ($field7 ne "" ? "[RECOVER]" . $field7 : "");
-		$field8 = $alert->{'field8_recovery'} ne "" ? $alert->{'field8_recovery'} : ($field8 ne "" ? "[RECOVER]" . $field8 : "");
-		$field9 = $alert->{'field9_recovery'} ne "" ? $alert->{'field9_recovery'} : ($field9 ne "" ? "[RECOVER]" . $field9 : "");
-		$field10 = $alert->{'field10_recovery'} ne "" ? $alert->{'field10_recovery'} : ($field10 ne "" ? "[RECOVER]" . $field10 : "");
+		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined
+		$field1 = $alert->{'field1_recovery'} ne "" ? $alert->{'field1_recovery'} : $field1;
+		$field1 = $action->{'field1_recovery'} ne "" ? $action->{'field1_recovery'} : $field1;
+
+		$field2 = $field2 ne "" ? "[RECOVER]" . $field2 : "";
+		$field2 = $alert->{'field2_recovery'} ne "" ? $alert->{'field2_recovery'} : $field2;
+		$field2 = $action->{'field2_recovery'} ne "" ? $action->{'field2_recovery'} : $field2;
+
+		$field3 = $field3 ne "" ? "[RECOVER]" . $field3 : "";
+		$field3 = $alert->{'field3_recovery'} ne "" ? $alert->{'field3_recovery'} : $field3;
+		$field3 = $action->{'field3_recovery'} ne "" ? $action->{'field3_recovery'} : $field3;
+
+		$field4 = $field4 ne "" ? "[RECOVER]" . $field4 : "";
+		$field4 = $alert->{'field4_recovery'} ne "" ? $alert->{'field4_recovery'} : $field4;
+		$field4 = $action->{'field4_recovery'} ne "" ? $action->{'field4_recovery'} : $field4;
+
+		$field5 = $field5 ne "" ? "[RECOVER]" . $field5 : "";
+		$field5 = $alert->{'field5_recovery'} ne "" ? $alert->{'field5_recovery'} : $field5;
+		$field5 = $action->{'field5_recovery'} ne "" ? $action->{'field5_recovery'} : $field5;
+
+		$field6 = $field6 ne "" ? "[RECOVER]" . $field6 : "";
+		$field6 = $alert->{'field6_recovery'} ne "" ? $alert->{'field6_recovery'} : $field6;
+		$field6 = $action->{'field6_recovery'} ne "" ? $action->{'field6_recovery'} : $field6;
+
+		$field7 = $field7 ne "" ? "[RECOVER]" . $field7 : "";
+		$field7 = $alert->{'field7_recovery'} ne "" ? $alert->{'field7_recovery'} : $field7;
+		$field7 = $action->{'field7_recovery'} ne "" ? $action->{'field7_recovery'} : $field7;
+
+		$field8 = $field8 ne "" ? "[RECOVER]" . $field8 : "";
+		$field8 = $alert->{'field8_recovery'} ne "" ? $alert->{'field8_recovery'} : $field8;
+		$field8 = $action->{'field8_recovery'} ne "" ? $action->{'field8_recovery'} : $field8;
+
+		$field9 = $field9 ne "" ? "[RECOVER]" . $field9 : "";
+		$field9 = $alert->{'field9_recovery'} ne "" ? $alert->{'field9_recovery'} : $field9;
+		$field9 = $action->{'field9_recovery'} ne "" ? $action->{'field9_recovery'} : $field9;
+
+		$field10 = $field10 ne "" ? "[RECOVER]" . $field10 : "";
+		$field10 = $alert->{'field10_recovery'} ne "" ? $alert->{'field10_recovery'} : $field10;
+		$field10 = $action->{'field10_recovery'} ne "" ? $action->{'field10_recovery'} : $field10;
 	}
 
 	$field1 = decode_entities ($field1);

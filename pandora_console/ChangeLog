@@ -1,5 +1,14 @@
 2014-03-05  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql: Add recovery fields in actions 
+	table and recovery field1 in template table in creation
+	scripts of 5.1.
+	Ticket #501
+
+2014-03-05  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css
 	include/javascript/pandora_alerts.js
 	extras/pandoradb_migrate_4.1_to_5.0.postgreSQL.sql

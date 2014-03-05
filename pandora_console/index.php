@@ -158,7 +158,7 @@ if ($change_pass == 1) {
 $searchPage = false;
 $search = get_parameter_get("head_search_keywords");
 if (strlen($search) > 0) {
-	$config['search_keywords'] = trim(get_parameter('keywords'));
+	$config['search_keywords'] = io_safe_input(trim(io_safe_output(get_parameter('keywords'))));
 	// If not search category providad, we'll use an agent search
 	$config['search_category'] = get_parameter('search_category', 'all');
 	if (($config['search_keywords'] != 'Enter keywords to search') && (strlen($config['search_keywords']) > 0))

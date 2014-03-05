@@ -1,5 +1,12 @@
 2014-03-05  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* index.php, operation/search_results.php: fixed the global search
+	when the text to search end with whitespace.
+	
+	Incident: #605
+
+2014-03-05  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/ajax/module.php: fixed the ajax calls for to get json
 	data.
 	

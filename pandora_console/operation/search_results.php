@@ -26,8 +26,9 @@ $searchMaps = $searchReports = $searchGraphs = check_acl($config["id_user"], 0, 
 $searchMain = true;
 
 $arrayKeywords = explode('&#x20;', $config['search_keywords']);
+
 $temp = array();
-foreach ($arrayKeywords as $keyword){
+foreach ($arrayKeywords as $keyword) {
 	// Remember, $keyword is already pass a safeinput filter.
 	array_push($temp, "%" . $keyword . "%");
 }

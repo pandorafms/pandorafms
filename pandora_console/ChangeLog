@@ -1,3 +1,9 @@
+2014-03-05  Sergio Martin <sergio.martin@artica.es>
+
+	* images/automatic.png
+	images/manual.png
+	images/calculator.png: Add missed images for IPAM
+
 2014-03-05  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* index.php, operation/search_results.php: fixed the global search

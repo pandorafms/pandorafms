@@ -23,7 +23,8 @@ if ($search_modules) {
 	$filter = get_parameter('q', '') . '%';
 	$other_filter = json_decode(io_safe_output(get_parameter('other_filter')), true);
 	
-	$modules = agents_get_modules($id_agents, false, (array('nombre' => $filter) + $other_filter));
+	$modules = agents_get_modules($id_agents, false,
+		(array('nombre' => $filter) + $other_filter));
 	
 	if ($modules === false) $modules = array();
 	$modules = array_unique($modules);

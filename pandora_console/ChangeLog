@@ -1,3 +1,9 @@
+2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/snapshot_view.php: fixed the lost scrollbars.
+	
+	MERGED FROM THE TRUNK
+
 2014-03-04  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the function "api_get_policies".

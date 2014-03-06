@@ -5100,6 +5100,33 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						' - ' . 
 						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
 					
+					
+					
+					//Dirty hack, maybe I am going to apply a job in Apple
+					//https://www.imperialviolet.org/2014/02/22/applebug.html
+					$item_name_key_pie = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_pie_graph[$item_name_key_pie])) {
+							$item_name_key_pie .= ' ';
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					$item_name_key_hbar = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_hbar[$item_name_key_hbar])) {
+							$item_name_key_hbar = ' ' . $item_name_key_hbar;
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					
+					
+					
 					$data_hbar[$item_name]['g'] = $dt; 
 					$data_pie_graph[$item_name] = $dt;
 					
@@ -5122,9 +5149,38 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				foreach ($agent_name as $an) {
 					$item_name = '';
 					$item_name =
-						ui_print_truncate_text($agent_name[$i], $truncate_size, false, true, false, "...") .
+						ui_print_truncate_text($agent_name[$i],
+							$truncate_size, false, true, false, "...") .
 						' - ' . 
-						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
+						ui_print_truncate_text($module_name[$i],
+							$truncate_size, false, true, false, "...");
+					
+					
+					
+					//Dirty hack, maybe I am going to apply a job in Apple
+					//https://www.imperialviolet.org/2014/02/22/applebug.html
+					$item_name_key_pie = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_pie_graph[$item_name_key_pie])) {
+							$item_name_key_pie .= ' ';
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					$item_name_key_hbar = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_hbar[$item_name_key_hbar])) {
+							$item_name_key_hbar = ' ' . $item_name_key_hbar;
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					
+					
 					
 					$data_pie_graph[$item_name] = $data_top[$i];
 					$data_hbar[$item_name]['g'] = $data_top[$i];

@@ -183,20 +183,19 @@ if ($config["pure"]) {
 		?>
 			t = new Date();
 			t.setTime (t.getTime() + <?php echo $refr * 1000; ?>);
-			$("#countdown").countdown(
-				{
+			$("#countdown").countdown({
 					until: t,
 					format: 'MS',
 					description: '<?php echo __('Until refresh'); ?>',
 					onExpiry: function () {
-							href = "<?php
-							$url = ui_get_full_url();
-							$url = preg_replace("/&refr=.*&/", "&", $url);
-							echo $url;
-							?>";
-							href = href + "&refr=<?php echo $refr;?>";
-							$(document).attr ("location", href);
-						}
+						href = "<?php
+						$url = ui_get_full_url();
+						$url = preg_replace("/&refr=.*&/", "&", $url);
+						echo $url;
+						?>";
+						href = href + "&refr=<?php echo $refr;?>";
+						$(document).attr ("location", href);
+					}
 				}
 			);
 		

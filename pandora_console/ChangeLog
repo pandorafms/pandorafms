@@ -1,5 +1,15 @@
 2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map.php,
+	operation/visual_console/render_view.php: cleaned source code style.
+	
+	* include/functions_reporting.php: fixed the legend for the graphs
+	into the topn element report.
+	
+	Incident: #597
+
+2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/snapshot_view.php: fixed the lost scrollbars.
 
 2014-03-06  Sergio Martin <sergio.martin@artica.es>

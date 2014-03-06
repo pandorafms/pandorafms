@@ -1,13 +1,17 @@
 var original_command = "";
 
-function parse_alert_command (command) {
+function parse_alert_command (command, classs) {
+	classs = 'field';
+	if (classs == 'recovery') {
+		classs = 'field_recovery';
+	}
 	var nfield = 1;
 	$('.' + classs).each(function() {
 		// Only render values different from ''
 		if ($(this).val() == '') {
 			return;
 		}
-		var field = '_field' + nfield+'_';
+		var field = '_field' + nfield + '_';
 		nfield++;
 		var regex = new RegExp(field,"gi");
 		command = command.replace (regex, $(this).val());
@@ -17,7 +21,7 @@ function parse_alert_command (command) {
 }
 
 function render_command_preview (original_command) {
-	$("#textarea_command_preview").text (parse_alert_command (original_command));
+	$("#textarea_command_preview").text (parse_alert_command (original_command, ''));
 	$("#textarea_command_recovery_preview").text (parse_alert_command (original_command, 'recovery'));
 }
 

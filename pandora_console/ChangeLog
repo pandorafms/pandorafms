@@ -1,3 +1,9 @@
+2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/snapshot_view.php: fixed the lost scrollbars.
+	
+	MERGED FROM THE TRUNK
+
 2014-03-05  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* index.php: fixed the global search when the text to search end

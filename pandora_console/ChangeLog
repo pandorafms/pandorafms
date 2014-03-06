@@ -1,3 +1,8 @@
+2014-03-06  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_alerts.js: Added missed code
+	in action recovery fields feature
+
 2014-03-05  Sergio Martin <sergio.martin@artica.es>
 
 	* include/help/en/help_ipam.php: Fix typo

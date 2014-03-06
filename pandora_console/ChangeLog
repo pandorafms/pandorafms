@@ -1,5 +1,14 @@
 2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_reporting.php: fixed the legend for the graphs
+	into the topn element report.
+	
+	Incident: #597
+	
+	MERGED FROM THE TRUNK
+
+2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/snapshot_view.php: fixed the lost scrollbars.
 	
 	MERGED FROM THE TRUNK

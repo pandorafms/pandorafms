@@ -264,7 +264,7 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($interval_data, $previous_data);
 		}
-	
+		
 		// Get next data
 		$next_data = modules_get_next_data ($id_agent_module, $date);
 		if ($next_data !== false) {
@@ -2510,7 +2510,7 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 			array_push ($events, $event);
 		}
 	}
-
+	
 	if ($events)
 	foreach ($events as $eventRow) {
 		foreach ($eventRow as $k => $event) {
@@ -3269,9 +3269,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data_graph[__('Unknown')] = 0;
 			
 			$data_graph[__('Plannified downtime')] = 0;
-					
+			
 			$urlImage = ui_get_full_url(false, true, false, false);
-
+			
 			$sla_failed = false;
 			$total_SLA = 0;
 			$total_result_SLA = 'ok';
@@ -3335,6 +3335,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						continue;
 					}
 				}
+				
 				
 				//Fill the array data_graph for the pie graph
 				if ($sla_value === false) {
@@ -3628,7 +3629,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[$next_row][0] = 3;
-
+			
 			$data = array ();
 			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 			
@@ -3796,7 +3797,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[$next_row][0] = 3;
-
+			
 			$table2->class = 'databox';
 			$table2->width = '100%';
 			
@@ -3901,7 +3902,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				ui_print_truncate_text(
 					groups_get_name($content['id_group'], true),
 				60, false));
-				
+			
 			$next_row = 1;
 			
 			// Put description at the end of the module (if exists)
@@ -3934,9 +3935,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_event_critical,
 				$filter_event_warning,
 				$filter_event_no_validated);
-			if(!empty($data[0])) {
+			if (!empty($data[0])) {
 				array_push ($table->data, $data);
-								
+				
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 			}
@@ -4795,6 +4796,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							continue;
 						}
 					}
+					
 					switch ($generals[$i]['operation']) {
 						case 'sum':
 							$min = reporting_get_agentmodule_data_sum ($generals[$i]['id_agent_module'], $content['period'], $report["datetime"]);
@@ -5100,6 +5102,33 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						' - ' . 
 						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
 					
+					
+					
+					//Dirty hack, maybe I am going to apply a job in Apple
+					//https://www.imperialviolet.org/2014/02/22/applebug.html
+					$item_name_key_pie = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_pie_graph[$item_name_key_pie])) {
+							$item_name_key_pie .= ' ';
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					$item_name_key_hbar = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_hbar[$item_name_key_hbar])) {
+							$item_name_key_hbar = ' ' . $item_name_key_hbar;
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					
+					
+					
 					$data_hbar[$item_name]['g'] = $dt; 
 					$data_pie_graph[$item_name] = $dt;
 					
@@ -5122,9 +5151,38 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				foreach ($agent_name as $an) {
 					$item_name = '';
 					$item_name =
-						ui_print_truncate_text($agent_name[$i], $truncate_size, false, true, false, "...") .
+						ui_print_truncate_text($agent_name[$i],
+							$truncate_size, false, true, false, "...") .
 						' - ' . 
-						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
+						ui_print_truncate_text($module_name[$i],
+							$truncate_size, false, true, false, "...");
+					
+					
+					
+					//Dirty hack, maybe I am going to apply a job in Apple
+					//https://www.imperialviolet.org/2014/02/22/applebug.html
+					$item_name_key_pie = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_pie_graph[$item_name_key_pie])) {
+							$item_name_key_pie .= ' ';
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					$item_name_key_hbar = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_hbar[$item_name_key_hbar])) {
+							$item_name_key_hbar = ' ' . $item_name_key_hbar;
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					
+					
 					
 					$data_pie_graph[$item_name] = $data_top[$i];
 					$data_hbar[$item_name]['g'] = $data_top[$i];
@@ -5543,7 +5601,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[3][0] = 3;
 			$table->cellstyle[3][0] = 'text-align: center;';
-
+			
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,
@@ -5770,7 +5828,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table_data .= "</table>";
 			
 			$table_data .= "<div class='legend_basic' style='width: 96%'>";
-
+			
 			$table_data .= "<table>";
 			$table_data .= "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
 			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module has fired alerts") . "</td></tr>";
@@ -6548,7 +6606,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -6851,9 +6909,9 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 	
 	foreach ($stats as $stat) {
 		$params = array('id' => 'forced_title_' . $stat['name'] . '_' . $uniq_id, 
-						'class' => 'forced_title_layer', 
-						'content' => $stat['title'],
-						'hidden' => true);
+			'class' => 'forced_title_layer', 
+			'content' => $stat['title'],
+			'hidden' => true);
 		$out .= html_print_div($params, true);
 	}
 	

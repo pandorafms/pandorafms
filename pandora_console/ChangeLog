@@ -1,3 +1,7 @@
+2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/snapshot_view.php: fixed the lost scrollbars.
+
 2014-03-06  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_alerts.js: Added missed code

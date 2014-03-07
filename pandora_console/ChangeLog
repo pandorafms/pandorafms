@@ -1,3 +1,9 @@
+2014-03-07  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/status_monitor.php,
+	operation/agentes/estado_monitores.php: added the snapshot feature
+	in the view of monitors.
+
 2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php,

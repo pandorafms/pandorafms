@@ -302,19 +302,19 @@ if (defined('METACONSOLE')) {
 		
 		# Fix : only user tags have to be shown in these component
 		$_tags = tags_get_user_tags();
-
+		
 		
 		if (!empty($_tags)) {
-
+			
 			foreach ($_tags as $_tag) {
-
+				
 				$tags_temp[]['name'] = $_tag;
-
+				
 			}
-
+			
 		}
 		
-
+		
 		$rows_temp = db_get_all_rows_sql("SELECT distinct name
 			FROM tmodule_group
 			ORDER BY name");
@@ -497,11 +497,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectAgentNameUp = $selected;
-				$order = array('field' => 'tagente.nombre', 'order' => 'ASC');
+				$order = array('field' => 'tagente.nombre',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectAgentNameDown = $selected;
-				$order = array('field' => 'tagente.nombre', 'order' => 'DESC');
+				$order = array('field' => 'tagente.nombre',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -509,11 +511,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectTypeUp = $selected;
-				$order = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'ASC');
+				$order = array(
+					'field' => 'tagente_modulo.id_tipo_modulo',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectTypeDown = $selected;
-				$order = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'DESC');
+				$order = array(
+					'field' => 'tagente_modulo.id_tipo_modulo',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -521,11 +527,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectModuleNameUp = $selected;
-				$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+				$order = array(
+					'field' => 'tagente_modulo.nombre',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectModuleNameDown = $selected;
-				$order = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+				$order = array(
+					'field' => 'tagente_modulo.nombre',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -533,11 +543,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectIntervalUp = $selected;
-				$order = array('field' => 'tagente_modulo.module_interval', 'order' => 'ASC');
+				$order = array(
+					'field' => 'tagente_modulo.module_interval',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectIntervalDown = $selected;
-				$order = array('field' => 'tagente_modulo.module_interval', 'order' => 'DESC');
+				$order = array(
+					'field' => 'tagente_modulo.module_interval',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -545,11 +559,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectStatusUp = $selected;
-				$order = array('field' => 'tagente_estado.estado', 'order' => 'ASC');
+				$order = array(
+					'field' => 'tagente_estado.estado',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectStatusDown = $selected;
-				$order = array('field' => 'tagente_estado.estado', 'order' => 'DESC');
+				$order = array(
+					'field' => 'tagente_estado.estado',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -557,11 +575,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectDataUp = $selected;
-				$order = array('field' => 'tagente_estado.datos', 'order' => 'ASC');
+				$order = array(
+					'field' => 'tagente_estado.datos',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectDataDown = $selected;
-				$order = array('field' => 'tagente_estado.datos', 'order' => 'DESC');
+				$order = array(
+					'field' => 'tagente_estado.datos',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -569,11 +591,15 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectTimestampUp = $selected;
-				$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
+				$order = array(
+					'field' => 'tagente_estado.utimestamp',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectTimestampDown = $selected;
-				$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
+				$order = array(
+					'field' => 'tagente_estado.utimestamp',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -592,7 +618,8 @@ switch ($sortField) {
 		$selectDataDown = '';
 		$selectTimestampUp = '';
 		$selectTimestampDown = '';
-		$order = array('field' => 'tagente.nombre',
+		$order = array(
+			'field' => 'tagente.nombre',
 			'order' => 'ASC');
 		break;
 }
@@ -966,14 +993,20 @@ foreach ($result as $row) {
 		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
 	}
 	if ($row["tags"] != "") {
-		$data[3] .= html_print_image('/images/tag_red.png', true, array('title' => $row["tags"], 'style' => 'width: 20px; margin-left: 3px;'));
+		$data[3] .= html_print_image('/images/tag_red.png', true,
+			array(
+				'title' => $row["tags"],
+				'style' => 'width: 20px; margin-left: 3px;'));
 	}
 	
 /*
 	$data[4] = ui_print_truncate_text($row['tags'], 'agent_small', false, true, true, '[&hellip;]', 'font-size:7pt;');
 */
 	
-	$data[5] = ($row['module_interval'] == 0) ? human_time_description_raw($row['agent_interval']) : human_time_description_raw($row['module_interval']);
+	$data[5] = ($row['module_interval'] == 0) ?
+		human_time_description_raw($row['agent_interval'])
+		:
+		human_time_description_raw($row['module_interval']);
 	
 	if ($row['utimestamp'] == 0 && (($row['module_type'] < 21 ||
 		$row['module_type'] > 23) && $row['module_type'] != 100)) {
@@ -1060,46 +1093,67 @@ foreach ($result as $row) {
 			$module_value = io_safe_output($row["datos"]);
 		}
 		
-		$sub_string = substr(io_safe_output($row["datos"]), 0, 12);
-		if ($module_value == $sub_string) {
-			$salida = $module_value;
+		$is_snapshot = is_snapshot_data ( $module_value );
+		
+		if (($config['command_snapshot']) && ($is_snapshot)) {
+			$handle = "snapshot" . "_" . $row["id_agente_modulo"];
+			$url = 'include/procesos.php?agente=' . $row["id_agente_modulo"];
+			$win_handle = dechex(crc32($handle));
+			
+			$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
+				"id=" . $row["id_agente_modulo"] .
+				"&refr=" . $row["current_interval"] .
+				"&label=" . $row["nombre"] . "','" . $win_handle . "', 700,480)"; 
+			
+			$salida = '<a href="javascript:' . $link . '">' .
+				html_print_image("images/default_list.png", true,
+					array("border" => '0',
+						"alt" => "",
+						"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
 		}
 		else {
-			//Fixed the goliat sends the strings from web
-			//without HTML entities
-			if ($is_web_content_string) {
-				$sub_string = substr($row["datos"], 0, 12);
-			}
-			else {
-				//Fixed the data from Selenium Plugin
-				if ($module_value != strip_tags($module_value)) {
-					$module_value = io_safe_input($module_value);
-					$sub_string = substr($row["datos"], 0, 12);
-				}
-				else {
-					$sub_string = substr(io_safe_output($row["datos"]),0, 12);
-				}
-			}
 			
-			
-			
+			$sub_string = substr(io_safe_output($row["datos"]), 0, 12);
 			if ($module_value == $sub_string) {
 				$salida = $module_value;
 			}
 			else {
-				$salida = "<span " .
-					"id='hidden_value_module_" . $row["id_agente_modulo"] . "'
-					style='display: none;'>" .
-					$module_value .
-					"</span>" . 
-					"<span " .
-					"id='value_module_" . $row["id_agente_modulo"] . "'
-					title='" . $module_value . "' " .
-					"style='white-space: nowrap;'>" . 
-					'<span id="value_module_text_' . $row["id_agente_modulo"] . '">' .
-						$sub_string . '</span> ' .
-					"<a href='javascript: toggle_full_value(" . $row["id_agente_modulo"] . ")'>" .
-						html_print_image("images/rosette.png", true) . "</a>" . "</span>";
+				//Fixed the goliat sends the strings from web
+				//without HTML entities
+				if ($is_web_content_string) {
+					$sub_string = substr($row["datos"], 0, 12);
+				}
+				else {
+					//Fixed the data from Selenium Plugin
+					if ($module_value != strip_tags($module_value)) {
+						$module_value = io_safe_input($module_value);
+						$sub_string = substr($row["datos"], 0, 12);
+					}
+					else {
+						$sub_string = substr(io_safe_output($row["datos"]),0, 12);
+					}
+				}
+				
+				
+				
+				if ($module_value == $sub_string) {
+					$salida = $module_value;
+				}
+				else {
+					$salida = "<span " .
+						"id='hidden_value_module_" . $row["id_agente_modulo"] . "'
+						style='display: none;'>" .
+						$module_value .
+						"</span>" . 
+						"<span " .
+						"id='value_module_" . $row["id_agente_modulo"] . "'
+						title='" . $module_value . "' " .
+						"style='white-space: nowrap;'>" . 
+						'<span id="value_module_text_' . $row["id_agente_modulo"] . '">' .
+							$sub_string . '</span> ' .
+						"<a href='javascript: toggle_full_value(" . $row["id_agente_modulo"] . ")'>" .
+							html_print_image("images/rosette.png", true) . "</a>" . "</span>";
+				}
 			}
 		}
 	}

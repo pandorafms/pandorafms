@@ -1,3 +1,10 @@
+2014-03-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_reporting.php: sla reports with sla 
+	completion equal to 100 are ok, not "inside limits".
+
+	MERGED FROM TRUNK
+
 2014-03-07  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/agentes/status_monitor.php,

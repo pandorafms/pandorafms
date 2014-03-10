@@ -126,12 +126,12 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$graph_id = uniqid('graph_');
 	
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: ".$width."px;'>";
+	$return = "<div class='parent_graph' style='width: " . $width . "px;'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
 	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
-	if($menu) {
+	if ($menu) {
 		$height = 100;
 	}
 	else {

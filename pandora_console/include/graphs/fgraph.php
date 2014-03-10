@@ -219,7 +219,24 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if ($flash_chart) {
-		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str, $menu);
+		return flot_area_simple_graph(
+			$chart_data,
+			$width,
+			$height,
+			$color,
+			$legend,
+			$long_index,
+			$homeurl,
+			$unit,
+			$water_mark_url,
+			$series_type,
+			$chart_extra_data,
+			$yellow_threshold,
+			$red_threshold,
+			$adapt_key,
+			$force_integer,
+			$series_suffix_str,
+			$menu);
 	}
 	else {
 		$graph = array();

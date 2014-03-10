@@ -60,13 +60,17 @@ $table->size[1] = '80%';
 $table->style[0] = 'font-weight: bolder; text-align: right;';
 $table->style[1] = '';
 
+$table->valign[0] = 'top';
+
 $table->data[0][0] = __('Modules');
 $listModules = array();
 foreach ($modules as $id => $module) {
 	$checked = false;
 	if (isset($modulesChecked[$id]))
 		$checked = (bool) $modulesChecked[$id];
-	$listModules[] = '<span style="white-space: nowrap;">' . html_print_checkbox('modules[' .  $id . ']', 1, $checked, true) . ' ' . $module . '</span>';
+	$listModules[] = '<span style="white-space: nowrap;">' .
+		html_print_checkbox('modules[' .  $id . ']', 1, $checked, true, false, '', true) .
+		' ' . $module . '</span>';
 }
 $table->data[0][1] = implode(' ', $listModules);
 
@@ -112,7 +116,9 @@ else
 
 foreach ($modulesChecked as $idModuleShowGraph => $value) {
 	echo "<h4>" . $modules[$idModuleShowGraph] . '</h4>';
+	
 	$unit = modules_get_unit ($idModuleShowGraph);
+	
 	echo grafico_modulo_sparse($idModuleShowGraph, $period, $draw_events, $width, $height,
 		$modules[$idModuleShowGraph], null, $draw_alerts, $avg_only, false, $date, $unit);
 }

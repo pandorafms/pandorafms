@@ -239,20 +239,27 @@ ui_require_javascript_file('pandora_modules');
 function type_change () {
 	// type 1-4 - Generic_xxxxxx
 	if ((document.component.type.value > 0) && (document.component.type.value < 5)) {
-		$("input[name=snmp_oid]").css({backgroundColor: '#ddd'});
-		$("input[name=snmp_oid]").attr("disabled", true);
 		
 		$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
 		$("input[name=snmp_community]").attr("disabled", true);
 		
-		$("input[name=tcp_send]").css({backgroundColor: '#ddd'});
-		$("input[name=tcp_send]").attr("disabled", true);
-		
 		$("input[name=tcp_rcv]").css({backgroundColor: '#ddd'});
 		$("input[name=tcp_rcv]").attr("disabled", true);
 		
-		$("input[name=tcp_port]").css({backgroundColor: '#ddd'});
-		$("input[name=tcp_port]").attr("disabled", true);
+		<?php
+		if ($id_component_type != MODULE_WMI) { 
+		?>
+			$("input[name=snmp_oid]").css({backgroundColor: '#ddd'});
+			$("input[name=snmp_oid]").attr("disabled", true);
+			
+			$("input[name=tcp_send]").css({backgroundColor: '#ddd'});
+			$("input[name=tcp_send]").attr("disabled", true);
+			
+			$("input[name=tcp_port]").css({backgroundColor: '#ddd'});
+			$("input[name=tcp_port]").attr("disabled", true);
+		<?php
+		}
+		?>
 		
 		$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});
 		$("input[name=snmp3_auth_user]").attr("disabled", true);

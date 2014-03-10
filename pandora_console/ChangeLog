@@ -1,3 +1,13 @@
+2014-03-10  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/pandora_snmp_browser.js,
+	include/functions_snmp_browser.php: cleaned source code style.
+	
+	* godmode/agentes/module_manager_editor_network.php: fixed the
+	javascript include for policies.
+	
+	Incident: #616
+
 2014-03-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
         * include/functions_reporting.php: sla reports with sla

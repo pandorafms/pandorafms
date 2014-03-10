@@ -3263,10 +3263,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$data_graph = array ();
+			$data_horin_graph = array();
 			$data_graph[__('Inside limits')] = 0;
 			$data_graph[__('Out of limits')] = 0;
 			$data_graph[__('On the edge')] = 0;
 			$data_graph[__('Unknown')] = 0;
+			$data_horin_graph[__('Inside limits')] = 0;
+            $data_horin_graph[__('Out of limits')] = 0;
+            $data_horin_graph[__('On the edge')] = 0;
+            $data_horin_graph[__('Unknown')] = 0;
 			
 			$data_graph[__('Plannified downtime')] = 0;
 					
@@ -3341,6 +3346,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data_graph[__('Unknown')]++;
 					$data_horin_graph[__('Unknown')]['g']++;
 				}
+				# Fix : 100% accurance is 'inside limits' although 10% was not overrun
+				else if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) ) {
+					$data_graph[__('Inside limits')]++;
+					$data_horin_graph[__('Inside limits')]['g']++;
+				}
 				else if ($sla_value <= ($sla['sla_limit']+10) && $sla_value >= ($sla['sla_limit']-10)) {
 					$data_graph[__('On the edge')]++;
 					$data_horin_graph[__('On the edge')]['g']++;
@@ -3393,7 +3403,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 						
 						// Print icon with status including edge
-						if ($sla_value > ($sla['sla_limit'] + $edge_interval)) {
+						# Fix : 100% accurance is 'inside limits' although 10% was not overrun
+						if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) || ($sla_value > ($sla['sla_limit'] + $edge_interval))) {
 							$data[6] = html_print_image('images/status_sets/default/severity_normal.png',true,array('title'=>__('Inside limits')));
 						}
 						elseif (($sla_value <= $sla['sla_limit'] + $edge_interval)

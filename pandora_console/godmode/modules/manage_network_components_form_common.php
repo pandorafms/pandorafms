@@ -173,7 +173,7 @@ else {
 
 $table->data[$next_row][0] =  __('Tags');
 
-if($tags == '') {
+if ($tags == '') {
 	$tags_condition_not = '1 = 1';
 	$tags_condition_in = '1 = 0';
 }

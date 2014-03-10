@@ -1,5 +1,15 @@
 2014-03-10  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/modules/manage_network_components_form.php: fixed the
+	fields for wmi that was disabled.
+	
+	Incident: #637
+	
+	* godmode/modules/manage_network_components_form_common.php,
+	godmode/modules/manage_network_components_form_wmi.php: 
+
+2014-03-10  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/graphs/flot/pandora.flot.js: fixed the position of buttons
 	in the flot area graphs when the graphs are in other pages than
 	stat win.

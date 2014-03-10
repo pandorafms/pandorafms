@@ -1012,8 +1012,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		// Adjust the menu image on top of the plot
 		// If there is no legend we increase top-padding to make space to the menu
 		if (legends.length == 0) {
-			$('#menu_'+graph_id).parent().css('padding-top',$('#menu_'+graph_id).css('height'));	
+			$('#menu_' + graph_id).parent().css('padding-top',
+				$('#menu_' + graph_id).css('height'));
 		}
+		
 		// Add bottom margin in the legend
 		// Estimated height of 24 (works fine with this data in all browsers)
 		menu_height = 24;
@@ -1049,15 +1051,22 @@ function adjust_menu(graph_id, plot, parent_height) {
 	}
 	
 	var menu_height = '25';
-
-	if($('#menu_'+graph_id).height() != undefined && $('#menu_'+graph_id).height() > 20) {
+	
+	if ($('#menu_'+graph_id).height() != undefined && $('#menu_'+graph_id).height() > 20) {
 		menu_height = $('#menu_'+graph_id).height();
 	}
 	
-	$('#menu_'+graph_id).css('top', (($('#'+graph_id).offset().top-menu_height-15)+'px'));
-	$('#legend_'+graph_id).css('width',plot.width());
-	$('#menu_'+graph_id).css('left',plot.width()-$('#menu_'+graph_id).width() + 10);
-	$('#menu_'+graph_id).show();
+	offset_between_graph_and_div_graph_container = $('#' + graph_id).offset().top -
+		$('#' + graph_id).parent().offset().top;
+	$('#menu_' + graph_id)
+		.css('top',
+			((offset_between_graph_and_div_graph_container - menu_height - 5) + 'px'));
+	
+	$('#legend_' + graph_id).css('width',plot.width());
+	
+	$('#menu_' + graph_id)
+		.css('left',plot.width() - $('#menu_'+graph_id).width() + 10);
+	$('#menu_' + graph_id).show();
 }
 
 function set_watermark(graph_id, plot, watermark_src) {

@@ -1,5 +1,16 @@
 2014-03-10  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/graphs/flot/pandora.flot.js: fixed the position of buttons
+	in the flot area graphs when the graphs are in other pages than
+	stat win.
+	
+	Incident: #560
+	
+	* operation/agentes/graphs.php, include/graphs/fgraph.php,
+	include/graphs/functions_flot.php: cleaned source code style.
+
+2014-03-10  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/pandora_snmp_browser.js,
 	include/functions_snmp_browser.php: cleaned source code style.
 	

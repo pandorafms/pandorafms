@@ -778,7 +778,7 @@ function visual_map_get_image_status_element($layoutData) {
 				break;
 			case 4:
 				//Critical (ALERT)
-				$img = "4" . $img . "_bad.png";
+				$img = $img . "_bad.png";
 				break;
 			case 0:
 				//Normal (OK)
@@ -790,7 +790,7 @@ function visual_map_get_image_status_element($layoutData) {
 				break;
 			case 10:
 				//Warning (ALERT)
-				$img = "4" . $img . "_warning.png";
+				$img = $img . "_warning.png";
 				break;
 			case 3:
 				//Unknown
@@ -1014,11 +1014,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			$layout_data_parent = db_get_row_filter('tlayout_data',
 				array('id' => $layout_data["parent_item"]));
 			
-			$status_parent = visual_map_get_status_element($layout_data_parent);
+			$status_parent =
+				visual_map_get_status_element($layout_data_parent);
 			
 			$line['id'] = $layout_data['id'];
-			$line['node_begin'] = 'layout-data-'.$layout_data["parent_item"];
-			$line['node_end'] = 'layout-data-'.$layout_data["id"];
+			$line['node_begin'] = 'layout-data-' . $layout_data["parent_item"];
+			$line['node_end'] = 'layout-data-' . $layout_data["id"];
 			switch ($status_parent) {
 				default:
 				case VISUAL_MAP_STATUS_UNKNOWN:
@@ -1037,8 +1038,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			}
 			array_push ($lines, $line);
 		}
-		
-		
 		
 		// *************************************************************
 		// Get STATUS of current object

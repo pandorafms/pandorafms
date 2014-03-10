@@ -1,3 +1,8 @@
+2014-03-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+        * include/functions_reporting.php: sla reports with sla
+        completion equal to 100 are ok, not "inside limits".
+
 2014-03-09  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_ipam.php: Added japanese ipam help file.

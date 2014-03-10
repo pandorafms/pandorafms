@@ -14,8 +14,13 @@
 // GNU General Public License for more details.
 
 global $config;
+
 require_once($config['homedir'] . "/include/functions_snmp_browser.php");
-ui_require_javascript_file ('pandora_snmp_browser');
+?>
+<script type="text/javascript" src="include/javascript/pandora_snmp_browser.js"></script>
+<?php
+//This line does not run with the dinamic loader editor in policies.
+//ui_require_javascript_file ('pandora_snmp_browser');
 
 // Save some variables for javascript functions
 html_print_input_hidden ('ajax_url', ui_get_full_url("ajax.php"), false);
@@ -185,7 +190,8 @@ $data[1] = html_print_select(array('MD5' => __('MD5'), 'SHA' => __('SHA')), 'snm
 $data[2] = __('Security level');
 $data[3] = html_print_select(array('noAuthNoPriv' => __('Not auth and not privacy method'),
 	'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'snmp3_security_level', $snmp3_security_level, '', '', '', true);
-if ($snmp_version != 3) $table_simple->rowstyle['field_snmpv3_row3'] = 'display: none;';
+if ($snmp_version != 3)
+	$table_simple->rowstyle['field_snmpv3_row3'] = 'display: none;';
 push_table_simple($data, 'field_snmpv3_row3');
 
 snmp_browser_print_container (false, '100%', '60%', 'none');
@@ -245,13 +251,13 @@ $(document).ready (function () {
 	});
 	$('#snmp_version').change(function() {
 		$('#snmp_browser_version').val($(this).val());
-
+		
 		// Display or collapse the SNMP browser's v3 options
 		checkSNMPVersion ();
 	});
 	$('#snmp_browser_version').change(function() {
 		$('#snmp_version').val($(this).val());
-
+		
 		// Display or collapse the SNMP v3 options in the main window
 		if ($(this).val() == "3") {
 			$("#simple-field_snmpv3_row1").attr("style", "");
@@ -319,7 +325,7 @@ function snmpBrowserWindow () {
 	$('#snmp3_browser_auth_pass').val($('#snmp3_auth_pass').val());
 	$('#snmp3_browser_privacy_method').val($('#snmp3_privacy_method').val());
 	$('#snmp3_browser_privacy_pass').val($('#snmp3_privacy_pass').val());
-		
+	
 	$("#snmp_browser_container").show().dialog ({
 		title: '',
 		resizable: true,

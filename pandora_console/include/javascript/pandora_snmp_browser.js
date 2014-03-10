@@ -1,19 +1,19 @@
 // Load the SNMP tree via AJAX
 function snmpBrowse () {
-
+	
 	// Empty the SNMP tree
 	$("#snmp_browser").html('');
-
+	
 	// Hide the data div
 	hideOIDData();
-
+	
 	// Reset previous searches
 	$("#search_results").css('display', 'none');
 	$("#hidden-search_count").val(-1);
 	
 	// Show the spinner
 	$("#spinner").css('display', '');
-
+	
 	// Read the target IP and community
 	var target_ip = $('#text-target_ip').val();
 	var community = $('#text-community').val();
@@ -42,7 +42,7 @@ function snmpBrowse () {
 		"action=" + "snmptree",
 		"page=operation/snmpconsole/snmp_browser"
 	];
-
+	
 	// Browse!
 	jQuery.ajax ({
 		data: params.join ("&"),
@@ -63,7 +63,7 @@ function snmpBrowse () {
 
 // Expand or collapse an SNMP tree node
 function toggleTreeNode(node) {
-
+	
 	var display = $("#ul_" + node).css('display');
 	var src = $("#anchor_" + node).children("img").attr('src');
 	
@@ -81,7 +81,7 @@ function toggleTreeNode(node) {
 
 // Expand an SNMP tree node
 function expandTreeNode(node) {
-
+	
 	if (node == 0) {
 		return;
 	}
@@ -97,7 +97,7 @@ function expandTreeNode(node) {
 
 // Expand an SNMP tree node
 function collapseTreeNode(node) {
-
+	
 	if (node == 0) {
 		return;
 	}
@@ -113,7 +113,7 @@ function collapseTreeNode(node) {
 
 // Expand all tree nodes
 function expandAll(node) {
-
+	
 	$('#snmp_browser').find('ul').each ( function () {
 		var id = $(this).attr('id').substr(3);
 		expandTreeNode (id);

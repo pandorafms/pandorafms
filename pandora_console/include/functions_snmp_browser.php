@@ -446,7 +446,12 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table->data[0][2] .= html_print_input_text ('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
 	
 	$table->data[0][3] = '<strong>' . __('Version') . '</strong>';
-	$table->data[0][3] .= html_print_select (array ('1' => 'v. 1', '2' => 'v. 2', '2c' => 'v. 2c', '3' => 'v. 3'), 'snmp_browser_version', '', 'checkSNMPVersion();', '', '', true, false, false, '');
+	$table->data[0][3] .= html_print_select (
+		array ('1' => 'v. 1',
+			'2' => 'v. 2',
+			'2c' => 'v. 2c',
+			'3' => 'v. 3'),
+		'snmp_browser_version', '', 'checkSNMPVersion();', '', '', true, false, false, '');
 	$table->cellstyle[0][3] = 'width: 15px;';
 	
 	$table->data[0][4] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search"', true);

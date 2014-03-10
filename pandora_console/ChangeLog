@@ -1,5 +1,11 @@
 2014-03-10  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map.php: fixed images of static graphs.
+	
+	Incident: #571
+
+2014-03-10  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/modules/manage_network_components_form.php: fixed the
 	fields for wmi that was disabled.
 	

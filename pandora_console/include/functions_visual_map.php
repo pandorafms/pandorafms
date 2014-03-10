@@ -778,7 +778,7 @@ function visual_map_get_image_status_element($layoutData) {
 				break;
 			case 4:
 				//Critical (ALERT)
-				$img = "4" . $img . "_bad.png";
+				$img = $img . "_bad.png";
 				break;
 			case 0:
 				//Normal (OK)
@@ -790,7 +790,7 @@ function visual_map_get_image_status_element($layoutData) {
 				break;
 			case 10:
 				//Warning (ALERT)
-				$img = "4" . $img . "_warning.png";
+				$img = $img . "_warning.png";
 				break;
 			case 3:
 				//Unknown

@@ -1,5 +1,14 @@
 2014-03-11  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/pandora_modules.js: fixed the javascript to
+	load the WMI query in the form to edit the module.
+	
+	Incident: #598
+	
+	MERGED FROM THE TRUNK
+
+2014-03-11  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/estado_monitores.php: fixed the length of module
 	name in the agent view.
 	

@@ -8,23 +8,27 @@ function configure_modules_form () {
 		if (id_modules_icmp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2, tr#advanced-tcp_send, tr#advanced-tcp_receive").hide ();
 			$("#text-tcp_port").attr ("disabled", "1");
-		} else if (id_modules_snmp.in_array (this.value)) {
+		}
+		else if (id_modules_snmp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2").show ();
 			$("tr#advanced-tcp_send, tr#advanced-tcp_receive").hide ();
 			$("#text-tcp_port").removeAttr ("disabled");
-		} else if (id_modules_tcp.in_array (this.value)) {
+		}
+		else if (id_modules_tcp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2").hide ();
 			$("tr#advanced-tcp_send, tr#advanced-tcp_receive").show ();
 			$("#text-tcp_port").removeAttr ("disabled");
 		}
 	});
 	
-	$("#local_component_group").change (function () {
 	
+	$("#local_component_group").change (function () {
+		
 		var $select = $("#local_component").hide ();
 		$("#component").hide ();
-		if (this.value == 0)
+		if (this.value == 0) {
 			return;
+		}
 		$("#component_loading").show ();
 		$(".error, #no_component").hide ();
 		$("option[value!=0]", $select).remove ();
@@ -52,14 +56,14 @@ function configure_modules_form () {
 			},
 			"json"
 		);
-	
 		}
 	);
 	
 	
 	$("#local_component").change (function () {
-		if (this.value == 0)
+		if (this.value == 0) {
 			return;
+		}
 		$("#component_loading").show ();
 		$(".error").hide ();
 		jQuery.post ("ajax.php",
@@ -69,7 +73,6 @@ function configure_modules_form () {
 			},
 			function (data, status) {
 				configuration_data = js_html_entity_decode (data['data']);
-				
 				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
 				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
 				$("#textarea_configuration_data").attr ("value", configuration_data);
@@ -115,6 +118,7 @@ function configure_modules_form () {
 		);
 	});
 	
+	
 	$("#network_component").change (function () {
 		if (this.value == 0)
 			return;
@@ -132,17 +136,21 @@ function configure_modules_form () {
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
 				// Workaround to update the advanced select control from html and ajax
-				if(typeof 'period_select_module_interval_update' == 'function') {
+				if (typeof 'period_select_module_interval_update' == 'function') {
 					period_select_module_interval_update(data["module_interval"]);
 				}
 				else {
 					period_select_update('module_interval', data["module_interval"]);
 				}
 				$("#text-tcp_port").attr ("value", data["tcp_port"]);
-				$("#textarea_tcp_send").attr ("value", js_html_entity_decode (data["tcp_send"]));
-				$("#textarea_tcp_rcv").attr ("value", js_html_entity_decode (data["tcp_rcv"]));
-				$("#text-snmp_community").attr ("value", js_html_entity_decode (data["snmp_community"]));
-				$("#text-snmp_oid").attr ("value", js_html_entity_decode (data["snmp_oid"])).show ();
+				$("#textarea_tcp_send")
+					.attr ("value", js_html_entity_decode (data["tcp_send"]));
+				$("#textarea_tcp_rcv")
+					.attr ("value", js_html_entity_decode (data["tcp_rcv"]));
+				$("#text-snmp_community")
+					.attr ("value", js_html_entity_decode (data["snmp_community"]));
+				$("#text-snmp_oid")
+					.val( js_html_entity_decode (data["snmp_oid"]));
 				$("#oid, img#edit_oid").hide ();
 				$("#id_module_group option[value="+data["id_module_group"]+"]").select (1);
 				$("#max_timeout").attr ("value", data["max_timeout"]);
@@ -317,7 +325,7 @@ function configure_modules_form () {
 			$("#message").showMessage (no_plugin_lang);
 			return false;
 		}
-
+		
 		moduletype = $("#hidden-moduletype").val ();
 		if (moduletype == 5) {
 			if ($("#prediction_module").val () == null) {
@@ -351,7 +359,7 @@ function configure_modules_form () {
 		return true;
 	});
 	
-	if(typeof $("#prediction_id_group").pandoraSelectGroupAgent == 'function') {
+	if (typeof $("#prediction_id_group").pandoraSelectGroupAgent == 'function') {
 		$("#prediction_id_group").pandoraSelectGroupAgent ({
 			agentSelect: "select#prediction_id_agent",
 			callbackBefore: function () {
@@ -369,7 +377,7 @@ function configure_modules_form () {
 		});
 	}
 	
-	if(typeof $("#prediction_id_agent").pandoraSelectAgentModule == 'function') {
+	if (typeof $("#prediction_id_agent").pandoraSelectAgentModule == 'function') {
 		$("#prediction_id_agent").pandoraSelectAgentModule ({
 			moduleSelect: "select#prediction_module"
 		});

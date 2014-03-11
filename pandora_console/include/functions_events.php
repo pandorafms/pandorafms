@@ -1899,14 +1899,7 @@ function events_page_details ($event, $server = "") {
 		// Module name
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
-		if (can_user_access_node ()) {
-			$data[1] = '<b><a href="' . $serverstring . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data'.$hashstring.'">';
-			$data[1] .= $module['nombre'];
-			$data[1] .= '</b></a>';
-		}
-		else {
-			$data[1] = $module['nombre'];
-		}
+		$data[1] = $module['nombre'];
 		$table_details->data[] = $data;
 		
 		// Module group

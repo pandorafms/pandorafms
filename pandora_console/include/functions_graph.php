@@ -290,6 +290,8 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		$event_value = 0;
 		$alert_value = 0;
 		$unknown_value = 0;
+		// Is the first point of a unknown interval
+		$first_unknown = false;
 		
 		$event_ids = array();
 		$alert_ids = array();
@@ -304,6 +306,9 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			if ($show_unknown) {
 				if ($events[$event_i]['event_type'] == 'going_unknown') {
+					if ($is_unknown == false) {
+						$first_unknown = true;
+					}
 					$is_unknown = true;
 				}
 				else if (substr ($events[$event_i]['event_type'], 0, 5) == 'going') {
@@ -313,7 +318,10 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			$event_i++;
 		}
 		
-		if ($is_unknown) {
+		// In some cases, can be marked as known because a recovery event
+		// was found in same interval. For this cases first_unknown is 
+		// checked too
+		if ($is_unknown || $first_unknown) {
 			$unknown_value++;
 		}
 		
@@ -378,18 +386,6 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			$chart[$timestamp]['alert'.$series_suffix] += $alert_value;
 			$series_type['alert'.$series_suffix] = 'points';
 		}
-		if ($show_unknown) {
-			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
-				$chart[$timestamp]['unknown'.$series_suffix] = 0;
-			}
-			
-			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
-			$series_type['unknown'.$series_suffix] = 'area';
-		}
-		
-		if ($is_unknown) {
-			$total = $interval_max = $interval_min = $previous_data = 0;
-		}
 		
 		if ($count > 0) {
 			if ($avg_only) {
@@ -424,6 +420,15 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 					$chart[$timestamp]['min'.$series_suffix] = $previous_data;
 				}
 			}
+		}
+		
+		if ($show_unknown) {
+			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
+				$chart[$timestamp]['unknown'.$series_suffix] = 0;
+			}
+			
+			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
+			$series_type['unknown'.$series_suffix] = 'area';
 		}
 		
 		//$chart[$timestamp]['count'] = 0;
@@ -667,10 +672,6 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
 		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix_str];
 	}
-	if ($show_unknown) {
-		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
-		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
-	}
 	
 	if (!$avg_only) {
 		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
@@ -683,6 +684,11 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	/*if ($baseline) {
 		$legend['baseline'.$series_suffix] = __('Baseline');
 	}*/
+	
+	if ($show_unknown) {
+		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
+		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
+	}
 }
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
@@ -2622,6 +2628,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$previous_data = 0;
 	}
 	
+	$max_value = 0;
+	
 	// Calculate chart data
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
@@ -2655,6 +2663,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$alert_value = 0;
 		$unknown_value = 0;
 		$is_unknown = false;
+		// Is the first point of a unknown interval
+		$first_unknown = false;
 		
 		$event_ids = array();
 		$alert_ids = array();
@@ -2671,6 +2681,9 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 			if ($show_unknown) {
 				if ($events[$k]['event_type'] == 'going_unknown') {
+					if ($is_unknown == false) {
+						$first_unknown = true;
+					}
 					$is_unknown = true;
 				}
 				else if (substr ($events[$k]['event_type'], 0, 5) == 'going') {
@@ -2680,10 +2693,11 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$k++;
 		}
 		
-		if (isset($is_unknown)) {
-			if ($is_unknown) {
-				$unknown_value++;
-			}
+		// In some cases, can be marked as known because a recovery event
+		// was found in same interval. For this cases first_unknown is 
+		// checked too
+		if ($is_unknown || $first_unknown) {
+			$unknown_value++;
 		}
 		
 		// Set the title and time format
@@ -2709,8 +2723,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$timestamp = $timestamp_short;
 		/////////////////////////////////////////////////////////////////
 		
-		if ($is_unknown) {
-			$total = 0;
+		if ($total > $max_value) {
+			$max_value = $total;
 		}
 		
 		if ($show_events) {
@@ -2728,14 +2742,6 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			
 			$chart[$timestamp]['alert'.$series_suffix] += $alert_value;
 			$series_type['alert'.$series_suffix] = 'points';
-		}
-		if ($show_unknown) {
-			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
-				$chart[$timestamp]['unknown'.$series_suffix] = 0;
-			}
-			
-			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
-			$series_type['unknown'.$series_suffix] = 'area';
 		}
 		
 		//The order filling the array is very important to get the same colors
@@ -2780,6 +2786,14 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 		}
 		
+		if ($show_unknown) {
+			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
+				$chart[$timestamp]['unknown'.$series_suffix] = 0;
+			}
+			
+			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
+			$series_type['unknown'.$series_suffix] = 'area';
+		}
 		
 		//Boolean graph doesn't have min!!!
 		/*if (!$avg_only) {
@@ -2848,10 +2862,6 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
 		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix];
 	}
-	if ($show_unknown) {
-		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
-		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix];
-	}
 	
 	if (!$avg_only) {
 		//Boolean graph doesn't have max!!!
@@ -2864,6 +2874,11 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
 	
 	}
+	
+	if ($show_unknown) {
+		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
+		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix];
+	}
 	//$legend['baseline'.$series_suffix] = __('Baseline').$series_suffix_str;
 	/////////////////////////////////////////////////////////////////////////////////////////
 	if ($show_events) {
@@ -2872,14 +2887,13 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	if ($show_alerts) {
 		$color['alert'.$series_suffix] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
 	}
-	if ($show_unknown) {
-		$color['unknown'.$series_suffix] = array('border' => '#999999', 'color' => '#999999', 'alpha' => 50);
-	}
 	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['sum'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	$color['min'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
+	if ($show_unknown) {
+		$color['unknown'.$series_suffix] = array('border' => '#999999', 'color' => '#999999', 'alpha' => 50);
+	}
 	//$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
-	
 }
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,

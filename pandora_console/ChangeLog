@@ -1,3 +1,13 @@
+2014-03-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Change the unknown mode
+	to dont set data to 0 when is unknown and to not ignore
+	unknown periods when are too short. Fixed events, alerts
+	and unknown graphs in boolean graphs too.
+
+	* include/functions_events.php: Delete useless link
+	to deprecated url in events details (module link)
+
 2014-03-11  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_html.php: fixed the PHP warning in the function

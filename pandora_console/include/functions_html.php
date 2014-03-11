@@ -1176,6 +1176,8 @@ function html_get_predefined_table ($model = 'transparent', $columns = 4) {
 	switch($model) {
 		case 'transparent':
 		default:
+			$table = new stdClass();
+			
 			$table->class = "none";
 			$table->cellpadding = 0;
 			$table->cellspacing = 0;

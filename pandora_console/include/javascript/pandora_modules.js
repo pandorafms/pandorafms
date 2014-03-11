@@ -249,10 +249,14 @@ function configure_modules_form () {
 					period_select_update('module_interval', data["module_interval"]);
 				}
 				$("#text-tcp_port").attr ("value", data["tcp_port"]);
-				$("#textarea_tcp_send").attr ("value", js_html_entity_decode (data["tcp_send"]));
-				$("#textarea_tcp_rcv").attr ("value", js_html_entity_decode (data["tcp_rcv"]));
-				$("#text-snmp_community").attr ("value", js_html_entity_decode (data["snmp_community"]));
-				$("#text-snmp_oid").attr ("value", js_html_entity_decode (data["snmp_oid"])).show ();
+				$("#textarea_tcp_send")
+					.attr ("value", js_html_entity_decode (data["tcp_send"]));
+				$("#textarea_tcp_rcv")
+					.attr ("value", js_html_entity_decode (data["tcp_rcv"]));
+				$("#text-snmp_community")
+					.attr ("value", js_html_entity_decode (data["snmp_community"]));
+				$("#text-snmp_oid")
+					.val( js_html_entity_decode (data["snmp_oid"]));
 				$("#oid, img#edit_oid").hide ();
 				$("#id_module_group").val (data["id_module_group"]);
 				$("#max_timeout").attr ("value", data["max_timeout"]);

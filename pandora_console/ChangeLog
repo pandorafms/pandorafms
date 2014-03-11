@@ -1,3 +1,10 @@
+2014-03-11  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/estado_monitores.php: fixed the length of module
+	name in the agent view.
+	
+	Incident: #608
+
 2014-03-10  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php: fixed images of static graphs.

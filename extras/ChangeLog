@@ -1,3 +1,7 @@
+2014-03-11  Mario Pulido <mario.pulido@artica.es>
+
+	* aditional_rpmspec/nfdump-1.6.8p1-1.redhat.spec: Add spec to create nfdump rpms.
+
 2014-02-24  Sancho Lerena <slerena@artica.es>
 
 	* pandorafms-agent.spec: Lots of changes to adapt spec to fedora standards.

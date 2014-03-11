@@ -401,12 +401,16 @@ foreach ($modules as $module) {
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
 		$data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "", "title" => __('Edit'))) . '</a>';
 	
+	
+	
+	
 	$data[3] = "";
 	if ($module['quiet']) {
-		$data[3] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""))
+		$data[3] .= html_print_image("images/dot_green.disabled.png", true,
+			array("border" => '0', "title" => __('Quiet'), "alt" => ""))
 			. "&nbsp;";
 	}
-	$data[3] .= ui_print_string_substr ($module["nombre"], 30, true);
+	$data[3] .= ui_print_truncate_text($module["nombre"], 'module_medium');
 	if (!empty($module["extended_info"])) {
 		if ($module["extended_info"] != "") {
 			$data[3] .= ui_print_help_tip ($module["extended_info"], true, '/images/comments.png');
@@ -418,6 +422,10 @@ foreach ($modules as $module) {
 		$data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
 		html_print_image("images/tag_red.png", true, array("id" => 'tag-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';
 	}
+	
+	
+	
+	
 	$data[4] = ui_print_string_substr ($module["descripcion"], 60, true, 8);
 	
 	
@@ -593,10 +601,12 @@ echo "<h4 style='padding-top:0px !important;'>" .
 print_form_filter_monitors($id_agente, $status_filter_monitor, $status_text_monitor);
 if (empty ($table->data)) {
 	if ($filter_monitors) {
-		echo '<div class="nf">' . __('Any monitors aren\'t with this filter.') . '</div>';
+		echo '<div class="nf">' .
+			__('Any monitors aren\'t with this filter.') . '</div>';
 	}
 	else {
-		echo '<div class="nf">' . __('This agent doesn\'t have any active monitors.') . '</div>';
+		echo '<div class="nf">' .
+			__('This agent doesn\'t have any active monitors.') . '</div>';
 	}
 }
 else {

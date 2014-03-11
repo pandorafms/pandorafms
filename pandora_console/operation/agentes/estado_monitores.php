@@ -163,12 +163,14 @@ switch ($config["dbtype"]) {
 			SELECT *
 			FROM tagente_estado,
 				(SELECT *
-					FROM tagente_modulo
-					WHERE id_agente = %d AND disabled = 0 AND delete_pending = 0) tagente_modulo 
-				LEFT JOIN tmodule_group ON tagente_modulo.id_module_group = tmodule_group.id_mg 
+				FROM tagente_modulo
+				WHERE id_agente = %d AND delete_pending = 0
+					AND disabled = 0) tagente_modulo 
+			LEFT JOIN tmodule_group
+				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND %s
-				tagente_estado.utimestamp != 0  
+				tagente_estado.utimestamp != 0
 			ORDER BY tagente_modulo.id_module_group , %s  %s",
 			$id_agente, $extra_sql, $order['field'], $order['order']);
 		break;
@@ -184,7 +186,7 @@ switch ($config["dbtype"]) {
 				LEFT JOIN tmodule_group
 				ON tmodule_group.id_mg = tagente_modulo.id_module_group
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.id_agente = %d 
+				AND tagente_modulo.id_agente = %d
 				AND tagente_modulo.delete_pending = 0
 				AND tagente_modulo.disabled = 0
 				AND tagente_estado.utimestamp != 0 
@@ -192,6 +194,8 @@ switch ($config["dbtype"]) {
 			", $id_agente, $order['field'], $order['order']);
 		break;
 }
+
+
 $modules = db_get_all_rows_sql ($sql);
 if (empty ($modules)) {
 	$modules = array ();
@@ -205,10 +209,10 @@ $table->data = array ();
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
-$table->head[0] = "<span title='" . __('Force execution') . "'>".__('F.')."</span>";
+$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-	$table->head[1] = "<span title='" . __('Policy') . "'>".__('P.')."</span>";
+	$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 }
 
 $table->head[2] = __('Type') . ' ' .
@@ -230,10 +234,13 @@ $table->head[9] = __('Last contact') . ' ' .
 	'<a href="' . $url . '&sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
 	'<a href="' . $url . '&sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
-$table->align = array("left","left","center","left","left","center");
+$table->align = array("left", "left", "center", "left", "left", "center");
 
 $last_modulegroup = 0;
 $rowIndex = 0;
+
+
+
 foreach ($modules as $module) {
 	//The code add the row of 1 cell with title of group for to be more organice the list.
 	
@@ -248,6 +255,8 @@ foreach ($modules as $module) {
 		$last_modulegroup = $module["id_module_group"];
 	}
 	//End of title of group
+	
+	
 	
 	$data = array ();
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
@@ -312,9 +321,12 @@ foreach ($modules as $module) {
 	$data[2] = servers_show_type ($module['id_modulo']) . '&nbsp;';
 	
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
-	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
-	  
-	$data[3] = ui_print_string_substr ($module["nombre"], 30, true);
+		$data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
+	
+	
+	
+	
+	$data[3] = ui_print_truncate_text($module["nombre"], 'module_medium');
 	if (!empty($module["extended_info"])) {
 		if ($module["extended_info"] != "") {
 			$data[3] .= ui_print_help_tip ($module["extended_info"], true, '/images/comments.png');
@@ -326,9 +338,16 @@ foreach ($modules as $module) {
 		$data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
 		html_print_image("images/tag_red.png", true, array("id" => 'tag-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';
 	}
+	
+	
+	
+	
 	$data[4] = ui_print_string_substr ($module["descripcion"], 60, true, 8);
 	
-	modules_get_status($module['id_agente_modulo'], $module['estado'], $module['datos'], $status, $title);
+	
+	
+	modules_get_status($module['id_agente_modulo'], $module['estado'],
+		$module['datos'], $status, $title);
 	
 	$data[5] = ui_print_status_image($status, $title, true);
 	
@@ -336,17 +355,35 @@ foreach ($modules as $module) {
 	if ($module["id_tipo_modulo"] == 24) {
 		// log4x
 		switch($module["datos"]) {
-			case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
-			case 20: $salida = "DEBUG"; $style="font-weight:bold; color:darkgreen;"; break;
-			case 30: $salida = "INFO";  $style="font-weight:bold; color:darkgreen;"; break;
-			case 40: $salida = "WARN";  $style="font-weight:bold; color:darkorange;"; break;
-			case 50: $salida = "ERROR"; $style="font-weight:bold; color:red;"; break;
-			case 60: $salida = "FATAL"; $style="font-weight:bold; color:red;"; break;
+			case 10:
+				$salida = "TRACE";
+				$style="font-weight:bold; color:darkgreen;";
+				break;
+			case 20:
+				$salida = "DEBUG";
+				$style="font-weight:bold; color:darkgreen;";
+				break;
+			case 30:
+				$salida = "INFO";
+				$style="font-weight:bold; color:darkgreen;";
+				break;
+			case 40:
+				$salida = "WARN";
+				$style="font-weight:bold; color:darkorange;";
+				break;
+			case 50:
+				$salida = "ERROR";
+				$style="font-weight:bold; color:red;";
+				break;
+			case 60:
+				$salida = "FATAL";
+				$style="font-weight:bold; color:red;";
+				break;
 		}
 		$salida = "<span style='$style'>$salida</span>";
 	}
 	else {
-		if (is_numeric($module["datos"])){
+		if (is_numeric($module["datos"])) {
 			$salida = format_numeric($module["datos"]);
 			
 			// Show units ONLY in numeric data types
@@ -373,38 +410,43 @@ foreach ($modules as $module) {
                 	//	$link ="winopeng('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."',$win_handle)";
 		//		$salida = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 			
-			} else {	
+			}
+			else {
 				$sub_string = substr(io_safe_output($module["datos"]),0, 12);
 				
 				if ($module_value == $sub_string) {
 					$salida = $module_value;
 				}
 				else {
-					$salida = "<span id='value_module_" . $module["id_agente_modulo"] . "'
-					title='".$module_value."' style='white-space: nowrap;'>" . 
-					'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
-					"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</span>";
+					$salida = "<span " .
+						"id='value_module_" . $module["id_agente_modulo"] . "'
+						title='" . $module_value . "' " .
+						"style='white-space: nowrap;'>" . 
+						'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' .
+							$sub_string . '</span> ' .
+						"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" .
+							html_print_image("images/rosette.png", true) . "" . "</span>";
 				}
 			}
 		}
 	}
-
+	
 	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]);
-
+	
 	$data[7] = $salida;
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
-
+	
 	$data[8] = " ";
-	if ($module['history_data'] == 1){
+	if ($module['history_data'] == 1) {
 		$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
-
+		
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".base64_encode($module["nombre"])."&amp;refresh=600','day_".$win_handle."')";
-
+		
 	//	if ($nombre_tipo_modulo != "log4x")
-			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
+		$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 		$data[8] .= "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
 	}
 	
@@ -423,18 +465,20 @@ foreach ($modules as $module) {
 
 ?>
 <script type="text/javascript">
-function toggle_full_value(id) {
-	value_title = $("#value_module_" + id).attr('title');
-	
-	$("#value_module_" + id).attr('title', $("#value_module_text_" + id).html());
-
-	$("#value_module_text_" + id).html(value_title);
-}
+	function toggle_full_value(id) {
+		value_title = $("#value_module_" + id).attr('title');
+		
+		$("#value_module_" + id).attr('title', $("#value_module_text_" + id).html());
+		
+		$("#value_module_text_" + id).html(value_title);
+	}
 </script>
 <?php
 
+
 if (empty ($table->data)) {
-	echo '<div class="nf">'.__('This agent doesn\'t have any active monitors').'</div>';
+	echo '<div class="nf">' .
+		__('This agent doesn\'t have any active monitors').'</div>';
 }
 else {
 	echo "<h4 style='padding-top:0px !important;'>".__('Full list of monitors')."</h4>";
@@ -451,12 +495,12 @@ ui_require_jquery_file ('cluetip');
 <script type="text/javascript">
 /* <![CDATA[ */
 	$("a.tag_details").cluetip ({
-		arrows: true,
-		attribute: 'href',
-		cluetipClass: 'default'
-	}).click (function () {
-		return false;
-	});
-
+			arrows: true,
+			attribute: 'href',
+			cluetipClass: 'default'
+		})
+		.click (function () {
+			return false;
+		});
 /* ]]> */
 </script>

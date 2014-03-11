@@ -22,17 +22,17 @@
 /**
  * Include the usual functions
  */
-require_once ($config["homedir"]."/include/functions.php");
-require_once ($config["homedir"]."/include/functions_db.php");
-require_once ($config["homedir"]."/include/functions_agents.php");
+require_once($config["homedir"] . "/include/functions.php");
+require_once($config["homedir"] . "/include/functions_db.php");
+require_once($config["homedir"] . "/include/functions_agents.php");
 include_once($config["homedir"] . "/include/functions_groups.php");
-require_once ('functions_graph.php');
+require_once($config["homedir"] . '/include/functions_graph.php');
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
 include_once($config['homedir'] . '/include/functions_users.php');
-enterprise_include_once ('include/functions_metaconsole.php');
-enterprise_include_once ('include/functions_inventory.php');
+enterprise_include_once('include/functions_metaconsole.php');
+enterprise_include_once('include/functions_inventory.php');
 include_once($config['homedir'] . "/include/functions_forecast.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 
@@ -51,7 +51,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
@@ -155,7 +155,7 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
@@ -182,7 +182,7 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($interval_data, $previous_data);
 		}
-	
+		
 		// Get next data
 		$next_data = modules_get_next_data ($id_agent_module, $date);
 		if ($next_data !== false) {
@@ -843,18 +843,18 @@ function reporting_get_group_stats ($id_group = 0) {
 	if ($id_group == 0) {
 		$id_group = array_keys (users_get_groups ($config['id_user'], "AR", false));
 	}
-
-	// -------------------------------------------------------------------
+	
+	// -----------------------------------------------------------------
 	// Server processed stats. NOT realtime (taken from tgroup_stat)
-	// -------------------------------------------------------------------
-	if ($config["realtimestats"] == 0){
-
+	// -----------------------------------------------------------------
+	if ($config["realtimestats"] == 0) {
+		
 		if (!is_array($id_group)){
 			$my_group = $id_group;
 			$id_group = array();
 			$id_group[0] = $my_group;
 		}
-
+		
 		foreach ($id_group as $group){
 			$group_stat = db_get_all_rows_sql ("SELECT *
 				FROM tgroup_stat, tgrupo
@@ -874,23 +874,25 @@ function reporting_get_group_stats ($id_group = 0) {
 			$data["total_agents"] += $group_stat[0]["agents"];
 			$data["agents_unknown"] += $group_stat[0]["agents_unknown"];
 			$data["utimestamp"] = $group_stat[0]["utimestamp"];
+			
+			
 		}
-
+		
 	// -------------------------------------------------------------------
 	// Realtime stats, done by PHP Console
 	// -------------------------------------------------------------------
 	}
 	else {
-
+		
 		if (!is_array($id_group)){
 			$my_group = $id_group;
 			$id_group = array();
 			$id_group[0] = $my_group;
 		}
-
-		foreach ($id_group as $group){
-
-
+		
+		foreach ($id_group as $group) {
+			
+			
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$data["agents_unknown"] += db_get_sql ("SELECT COUNT(*)
@@ -1073,6 +1075,9 @@ function reporting_get_group_stats ($id_group = 0) {
 					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
 					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo AND times_fired > 0");
 		}
+		
+		
+		
 		/*
 		 Monitor health (percentage)
 		 Data health (percentage)
@@ -1084,44 +1089,48 @@ function reporting_get_group_stats ($id_group = 0) {
 		 
 		 */
 	}
-
+	
 	if ($data["monitor_unknown"] > 0 && $data["monitor_checks"] > 0) {
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_unknown"] / ($data["monitor_checks"] / 100)), 1);
-	} else {
+	}
+	else {
 		$data["monitor_health"] = 100;
 	}
-
+	
 	if ($data["monitor_not_init"] > 0 && $data["monitor_checks"] > 0) {
 		$data["module_sanity"] = format_numeric (100 - ($data["monitor_not_init"] / ($data["monitor_checks"] / 100)), 1);
-	} else {
+	}
+	else {
 		$data["module_sanity"] = 100;
 	}
-
-	if (isset($data["alerts"])){
+	
+	if (isset($data["alerts"])) {
 		if ($data["monitor_alerts_fired"] > 0 && $data["alerts"] > 0) {
 			$data["alert_level"] = format_numeric (100 - ($data	["monitor_alerts_fired"] / ($data["alerts"] / 100)), 1);
-		} else {
+		}
+		else {
 			$data["alert_level"] = 100;
 		}
 	} 
- 	else {
+	else {
 		$data["alert_level"] = 100;
 		$data["alerts"] = 0;
 	}
-
+	
 	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_warning"];
-
+	
 	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
 		$data["global_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
-	} else {
+	}
+	else {
 		$data["global_health"] = 100;
 	}
-
+	
 	$data["server_sanity"] = format_numeric (100 - $data["module_sanity"], 1);
-
+	
 	return ($data);
-
 }
+
 
 /** 
  * Get an event reporting table.
@@ -1169,6 +1178,7 @@ function reporting_event_reporting ($id_group, $period, $date = 0, $return = fal
 	
 	if (empty ($return))
 		html_print_table ($table);
+	
 	return $table;
 }
 
@@ -2432,9 +2442,9 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	
 	if (!check_acl ($config["id_user"], $return["agent_group"], "AR")) {
 		return $return;
-	} 
+	}
 	
-	if($filter != ''){
+	if ($filter != '') {
 		$filter = 'AND ';
 	}
 	
@@ -2508,7 +2518,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	}
 	
 	return $return;
-}	
+}
 
 /**
  *  This is the callback sorting function for SLA values descending
@@ -2578,9 +2588,9 @@ function reporting_header_content($mini, $content, $report, &$table, $title = fa
 	if ($period !== false && $content['period'] > 0) {
 		$data[] = $sizh . $period . $sizhfin;
 	}
-	else if($content['period'] == 0) {
+	else if ($content['period'] == 0) {
 		$es = json_decode($content['external_source'], true);
-		if($es['date'] == 0) {
+		if ($es['date'] == 0) {
 			$date = __('Last data');
 		}
 		else {
@@ -2671,18 +2681,17 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if (preg_match ("/string/", $moduletype_name)) {
 
 				$urlImage = ui_get_full_url(false, false, false, false);
-					
+				
 				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
 					false, $sizgraph_w, $sizgraph_h, '', '', false, 1, false,
 					$report["datetime"], true, $urlImage);
-								
-			}	
+				
+			}
 			else {
-			
+				
 				$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 					false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 					$report["datetime"], '', 0, 0, true, true);
-			
 			}
 			
 			array_push ($table->data, $data);
@@ -2791,7 +2800,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 				$report["datetime"], '', true, 0, true, true);
-				
+			
 			/*$data[0] = 	graphic_combined_module(
 				$modules,
 				$weights,
@@ -2804,7 +2813,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$graph["stacked"],
 				$report["datetime"]);	*/
-				
+			
 			array_push ($table->data, $data);
 			
 			break;
@@ -2881,7 +2890,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[0][1] = 2;
 			$next_row = 1;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 				$data_desc = array();
@@ -2955,19 +2964,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
 				
+				
 				//Do not show right modules if 'only_display_wrong' is active
 				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
 				
 				$sla_showed[] = $sla;
 				$sla_showed_values[] = $sla_value;
+				
 			}
 			
 			// SLA items sorted descending ()
-			if ($content['top_n'] == 2){
+			if ($content['top_n'] == 2) {
 				arsort($sla_showed_values);
 			}
 			// SLA items sorted ascending
-			else if ($content['top_n'] == 1){
+			else if ($content['top_n'] == 1) {
 				asort($sla_showed_values);
 			}
 			
@@ -3017,6 +3028,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data_horin_graph[__('Out of limits')]['g']++;
 				}
 				
+				
 				$total_SLA += $sla_value;
 				
 				if ($show_table) {
@@ -3048,10 +3060,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 						
 						// Print icon with status including edge
-						if ($sla_value > $sla['sla_limit']+$edge_interval) {
+						if ($sla_value > ($sla['sla_limit'] + $edge_interval)) {
 							$data[6] = html_print_image('images/status_sets/default/severity_normal.png',true,array('title'=>__('Inside limits')));
 						}
-						elseif ($sla_value <= $sla['sla_limit']+$edge_interval && $sla_value >= $sla['sla_limit']-$edge_interval) {
+						elseif (($sla_value <= $sla['sla_limit'] + $edge_interval)
+							&& ($sla_value >= $sla['sla_limit'] - $edge_interval)) {
 							$data[6] = html_print_image('images/status_sets/default/severity_warning.png',true,array('title'=>__('On the edge')));
 						}
 						else {
@@ -3143,7 +3156,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			//RUNNING
 			
 			// Put description at the end of the module (if exists)
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$table->colspan[1][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
@@ -3158,6 +3171,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			else {
 				$monitor_value = format_numeric ($monitor_value);
 			}
+			
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 			$data[0] .= $monitor_value.' % ' . html_print_image("images/b_green.png", true, array("height" => "32", "width" => "32")) . '</p>';
 			if ($monitor_value !== __('Unknown')) {
@@ -3243,6 +3257,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			$table->colspan[1][0] = 2;
+			
 			$value = reporting_get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
 			if ($value === false) {
@@ -3263,6 +3278,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			//RUNNING
 			
+			
 			// Put description at the end of the module (if exists)
 			$table->colspan[0][0] = 2;
 			if ($content["description"] != "") {
@@ -3270,6 +3286,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
 			}
+			
 			
 			$data = array ();
 			$table->colspan[1][0] = 2;
@@ -3291,6 +3308,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			reporting_header_content($mini, $content, $report, $table, __('Text'),
 				"", "");
 			
+			
 			if ($content["description"] != ""){
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
@@ -3310,7 +3328,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
+				
 			}
+			
 			
 			$table2->class = 'databox';
 			$table2->width = '100%';
@@ -3341,7 +3361,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// Do a security check on SQL coming from the user
 			$sql = check_sql ($sql);
 			
-			if($sql != '') {
+			if ($sql != '') {
 				$result = db_get_all_rows_sql($sql);
 				if ($result === false) {
 					$result = array();
@@ -3371,16 +3391,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'sql_graph_pie':
 		case 'sql_graph_vbar':
 		case 'sql_graph_hbar':
+			
 			reporting_header_content($mini, $content, $report, $table, __('User defined graph') . " (".__($content["type"])  .")",
 				"", "");
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[0][0] = 2;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
 			}
+			
 			
 			$table2->class = 'databox';
 			$table2->width = '100%';
@@ -3403,6 +3425,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				ui_print_truncate_text(
 					groups_get_name($content['id_group'], true),
 				60, false));
+			
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
@@ -3744,6 +3767,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data_desc);
 			}
 			
+			
 			$table2->class = 'databox';
 			$table2->width = '100%';
 			
@@ -3924,7 +3948,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// Get events of the last 8 hours
 			$events = events_get_group_events ($content['id_group'], 28800, $report['datetime']);
 			
-			reporting_header_content($mini, $content, $report, $table, __('Group report').': "'.$group_name.'"');
+			
+			reporting_header_content($mini, $content, $report, $table,
+				__('Group report').': "'.$group_name.'"');
 			
 			$table->colspan[1][0] = 3;
 			
@@ -4099,16 +4125,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								array_multisort($data_avg, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
 								break;
 						}
-						$i=0;
+						
+						
+						$i = 0;
 						foreach ($data_avg as $d) {
 							$data = array();
 							$data[0] = $agent_name[$i];
 							$data[1] = $module_name[$i];
+							
+							
 							if ($d === false) {
 								$data[2] = '--';
 							}
 							else {
-							$data[2] = format_for_graph($d, 2) . " " . $units[$i];
+							$data[2] = format_for_graph($d, 2) . " " .
+								$units[$i];
 							}
 							array_push ($table1->data, $data);
 							$i++;
@@ -4116,17 +4147,23 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 					//Order by agent name
 					elseif ($order_uptodown == 3) {
-						array_multisort($agent_name, SORT_ASC, $data_avg, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+						array_multisort($agent_name, SORT_ASC,
+							$data_avg, SORT_ASC, $module_name, SORT_ASC,
+							$id_agent_module,
+							SORT_ASC);
 						$i=0;
 						foreach ($agent_name as $a) {
 							$data = array();
 							$data[0] = $agent_name[$i];
 							$data[1] = $module_name[$i];
+							
 							if ($data_avg[$i] === false) {
 								$data[2] = '--';
 							}
 							else {
-								$data[2] = format_for_graph($data_avg[$i], 2) . " " . $units[$i];
+								$data[2] =
+									format_for_graph($data_avg[$i], 2)
+									. " " . $units[$i];
 							}
 							array_push ($table1->data, $data);
 							$i++;
@@ -4141,9 +4178,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				//1 means group by agent
 				case 1:
 					//Get the data
-					$sql_data = sprintf("SELECT id_agent_module, server_name
+					$sql_data = sprintf("SELECT id_agent_module,
+							server_name
 						FROM treport_content_item
-						where id_report_content = %d", $content['id_rc']);
+						WHERE id_report_content = %d",
+						$content['id_rc']);
 					$generals = db_process_sql ($sql_data);
 					
 					if ($generals === false) {
@@ -4167,14 +4206,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							}
 						}
 						
-						$ag_name = modules_get_agentmodule_agent_name ($general ['id_agent_module']);
+						$ag_name = modules_get_agentmodule_agent_name(
+							$general ['id_agent_module']);
 						if (!in_array ($ag_name, $agent_list)) {
 							array_push ($agent_list, $ag_name);
 						}
-						$mod_name = modules_get_agentmodule_name ($general ['id_agent_module']);
+						
+						$mod_name = modules_get_agentmodule_name(
+							$general ['id_agent_module']);
 						if (!in_array ($mod_name, $modules_list)) {
 							array_push ($modules_list, $mod_name);
 						}
+						
 						
 						//Restore dbconnection
 						if (($config ['metaconsole'] == 1) && $server_name != '') {
@@ -4189,7 +4232,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table2->style[0] = 'text-align: left';
 					$i = 1;
 					foreach ($modules_list as $m) {
-						$table2->head[$i] = ui_print_truncate_text($m, 'module_small', false);
+						$table2->head[$i] =
+							ui_print_truncate_text($m, 'module_small', false);
 						$table2->style[$i] = 'text-align: center';
 						$i++;
 					}
@@ -4214,7 +4258,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								$module_name = modules_get_agentmodule_name ($g['id_agent_module']);
 								$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $g['id_agent_module']);
 								$found = false;
-								if (strcmp($a, $agent_name) == 0 && strcmp($m, $module_name) == 0) {
+								if (strcmp($a, $agent_name) == 0
+									&& strcmp($m, $module_name) == 0) {
 									$value_avg = reporting_get_agentmodule_data_average($g['id_agent_module'], $content['period']);
 									
 									if ($value_avg === false) {
@@ -4247,6 +4292,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					array_push ($table->data, $data);
 					break;
 			}
+			
 			if ($content['show_resume'] && count($generals) > 0) {
 				
 				//Get the first valid value and assign it to $min & $max
@@ -4266,12 +4312,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$min = reporting_get_agentmodule_data_average($generals[$i]['id_agent_module'], $content['period']);
 					$i++;
 					
+					
 					//Restore dbconnection
 					if (($config ['metaconsole'] == 1) && $server_name != '') {
 						metaconsole_restore_db();
 					}
 				}
 				while ($min === false && $i < count($generals));
+				
 				$max = $min;
 				$avg = 0;
 				$length = 0;
@@ -4304,7 +4352,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 					
 					//Restore dbconnection
-					if (($config ['metaconsole'] == 1) && $server_name != '') {
+					if (($config ['metaconsole'] == 1)
+						&& $server_name != '') {
 						metaconsole_restore_db();
 					}
 				}
@@ -4315,13 +4364,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$avg = $avg / $length;
 				}
 				
-				
 				unset($table_summary);
-				
 				$table_summary->width = '99%';
 				
 				$table_summary->data = array ();
 				$table_summary->head = array ();
+				
+				
 				$table_summary->head[0] = __('Min Value');
 				$table_summary->head[1] = __('Average Value');
 				$table_summary->head[2] = __('Max Value');
@@ -4331,11 +4380,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table_summary->data[0][2] = format_for_graph($max,2);
 				
 				$table->colspan[3][0] = 3;
-				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
+				array_push ($table->data,
+					array('<b>' . __('Summary') . '</b>'));
 				$table->colspan[4][0] = 3;
-				array_push ($table->data, array(html_print_table($table_summary, true)));
+				array_push ($table->data,
+					array(html_print_table($table_summary, true)));
 			}
 			break;
+		
+		
 		case 'top_n':
 			$top_n = $content['top_n'];
 			
@@ -4356,7 +4409,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			reporting_header_content($mini, $content, $report, $table,
-				__('Top').' '.$content['top_n_value'] . '<br>' . $type_top_n);
+				__('Top') . ' '.$content['top_n_value'] . '<br>' . $type_top_n);
 			
 			$order_uptodown = $content['order_uptodown'];
 			
@@ -4368,15 +4421,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
 			}
 			//Get all the related data
-			$sql = sprintf("select id_agent_module, server_name
-				from treport_content_item
-				where id_report_content = %d", $content['id_rc']);
+			$sql = sprintf("SELECT id_agent_module, server_name
+				FROM treport_content_item
+				WHERE id_report_content = %d", $content['id_rc']);
 			
 			$tops = db_process_sql ($sql);
 			
@@ -4402,6 +4455,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			//Get data of all agents (before to slide to N values)
 			$data_top = array();
+			
 			foreach ($tops as $key => $row) {
 				
 				//Metaconsole connection
@@ -4416,7 +4470,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$ag_name = modules_get_agentmodule_agent_name($row ['id_agent_module']); 
 				$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
-				$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $row ['id_agent_module']); 
+				$unit = db_get_value('unit', 'tagente_modulo',
+					'id_agente_modulo', $row ['id_agent_module']); 
 				
 				
 				switch ($top_n) {
@@ -4502,6 +4557,33 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						' - ' . 
 						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
 					
+					
+					
+					//Dirty hack, maybe I am going to apply a job in Apple
+					//https://www.imperialviolet.org/2014/02/22/applebug.html
+					$item_name_key_pie = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_pie_graph[$item_name_key_pie])) {
+							$item_name_key_pie .= ' ';
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					$item_name_key_hbar = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_hbar[$item_name_key_hbar])) {
+							$item_name_key_hbar = ' ' . $item_name_key_hbar;
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					
+					
+					
 					$data_hbar[$item_name]['g'] = $dt; 
 					$data_pie_graph[$item_name] = $dt;
 					
@@ -4524,9 +4606,38 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				foreach ($agent_name as $an) {
 					$item_name = '';
 					$item_name =
-						ui_print_truncate_text($agent_name[$i], $truncate_size, false, true, false, "...") .
+						ui_print_truncate_text($agent_name[$i],
+							$truncate_size, false, true, false, "...") .
 						' - ' . 
-						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
+						ui_print_truncate_text($module_name[$i],
+							$truncate_size, false, true, false, "...");
+					
+					
+					
+					//Dirty hack, maybe I am going to apply a job in Apple
+					//https://www.imperialviolet.org/2014/02/22/applebug.html
+					$item_name_key_pie = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_pie_graph[$item_name_key_pie])) {
+							$item_name_key_pie .= ' ';
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					$item_name_key_hbar = $item_name;
+					$exist_key = true;
+					while ($exist_key) {
+						if (isset($data_hbar[$item_name_key_hbar])) {
+							$item_name_key_hbar = ' ' . $item_name_key_hbar;
+						}
+						else {
+							$exist_key = false;
+						}
+					}
+					
+					
 					
 					$data_pie_graph[$item_name] = $data_top[$i];
 					$data_hbar[$item_name]['g'] = $data_top[$i];
@@ -4554,9 +4665,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[3][0] = 3;
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
+				
 				$data[0] = pie3d_graph(false, $data_pie_graph,
 					$sizgraph_w, $sizgraph_h, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']); 
+					$config['fontpath'], $config['font_size']);
+				
 				
 				array_push ($table->data, $data);
 				//Display bars graph
@@ -4564,7 +4677,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table->style[0] .= 'text-align:center';
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w,
+					$height, array(), array(), "", "", true,
+					"", $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
 				
 				array_push ($table->data, $data);
 			}
@@ -4634,6 +4749,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$title_exeption .= ' - '.__('Modules at critical or warning status');
 					break;
 			}
+			
 			reporting_header_content($mini, $content, $report, $table, $title_exeption);
 			
 			// Put description at the end of the module (if exists)
@@ -4644,7 +4760,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data_desc);
 			}
 			//Get all the related data
-			$sql = sprintf("SELECT id_agent_module, server_name
+			$sql = sprintf("
+				SELECT id_agent_module, server_name
 				FROM treport_content_item
 				WHERE id_report_content = %d", $content['id_rc']);
 			
@@ -4708,13 +4825,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$ag_name = modules_get_agentmodule_agent_name ($exc ['id_agent_module']);
 				$mod_name = modules_get_agentmodule_name ($exc ['id_agent_module']);
-				$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $exc ['id_agent_module']);
+				$unit = db_get_value('unit', 'tagente_modulo',
+					'id_agente_modulo', $exc['id_agent_module']);
 				
 				$value = reporting_get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
 				if ($value !== false) {
 					if ($value > $max) $max = $value;
 					if ($value < $min) $min = $value;
 					$avg += $value;
+					
+					//Skips
 					switch ($exception_condition) {
 						//Display everything
 						case 0:
@@ -4748,6 +4868,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							}
 							break;
 					}
+					
 					$i++;
 					$data_exceptions[] = $value;
 					$id_agent_module[] = $exc['id_agent_module'];
@@ -4761,10 +4882,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 			}
 			//$i <= 0 means that there are no rows on the table, therefore no modules under the conditions defined.
-			if ($i<=0) {
+			if ($i <= 0) {
 				$data = array ();
 				$table->colspan[2][0] = 3;
 				$data[0] = __('There are no');
+				
 				switch ($exception_condition) {
 					case 1:
 						$data[0] .= ' '.__('Modules over or equal to').' '.$exception_condition_value;
@@ -4782,6 +4904,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$data[0] .= ' '.__('Modules under those conditions');
 						break;
 				}
+				
+				
 				array_push ($table->data, $data);
 				break;
 			}
@@ -4806,13 +4930,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				if ($order_uptodown == 1 || $order_uptodown == 2) {
-					$j=0;
+					$j = 0;
 					$data_pie_graph = array();
 					$data_hbar = array();
 					foreach ($data_exceptions as $dex) {
 						$data_hbar[$agent_name[$j]]['g'] = $dex;
 						$data_pie_graph[$agent_name[$j]] = $dex;
-						if  ($show_graph == 0 || $show_graph == 1) {
+						if ($show_graph == 0 || $show_graph == 1) {
 							$data = array();
 							$data[0] = $agent_name[$j];
 							$data[1] = $module_name[$j];
@@ -4823,13 +4947,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 				else if ($order_uptodown == 0 || $order_uptodown == 3) {
-					$j=0;
+					$j = 0;
 					$data_pie_graph = array();
 					$data_hbar = array();
 					foreach ($agent_name as $an) {
 						$data_hbar[$an]['g'] = $data_exceptions[$j];
 						$data_pie_graph[$an] = $data_exceptions[$j];
-						if  ($show_graph == 0 || $show_graph == 1) {
+						if ($show_graph == 0 || $show_graph == 1) {
 							$data = array();
 							$data[0] = $an;
 							$data[1] = $module_name[$j];
@@ -4858,7 +4982,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 				//Display bars graph
 				$table->colspan[4][0] = 3;
-				$height = count($data_pie_graph)*20+35;
+				$height = count($data_pie_graph) * 20 + 35;
 				$data = array();
 				
 				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
@@ -4951,7 +5075,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$filter_groups = array ('offset' => (int) $offset,
 				'limit' => (int) $config['block_size']);
 				
-			if($id_group > 0) {
+			if ($id_group > 0) {
 				$filter_groups['id_grupo'] = $id_group;
 			}
 			
@@ -5067,7 +5191,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 					}
 					
-					if(!$match) {
+					if (!$match) {
 						$table_data .= "<td style='background-color: #DDD;'></td>";
 					}
 				}
@@ -5122,7 +5246,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$table->colspan[1][0] = 2;
 			$table->colspan[2][0] = 2;
-			if($description != '') {
+			if ($description != '') {
 				$data[0] = $description;
 				array_push ($table->data, $data);
 			}
@@ -5157,7 +5281,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[1][0] = 2;
 			
-			if($description != '') {
+			if ($description != '') {
 				$data[0] = $description;
 				array_push ($table->data, $data);
 			}

@@ -1,3 +1,12 @@
+2014-03-11  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/estado_monitores.php: fixed the length of module
+	name in the agent view.
+	
+	Incident: #608
+	
+	MERGED FROM THE TRUNK
+
 2014-03-06  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/agentes/snapshot_view.php: fixed the lost scrollbars.

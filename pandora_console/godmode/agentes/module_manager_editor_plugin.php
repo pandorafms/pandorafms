@@ -87,13 +87,14 @@ if (!empty($macros)) {
 		$data[1] = html_print_input_text($m['macro'], $m['value'], '', 100, 255, true);
 		$table_simple->colspan['macro'.$m['macro']][1] = 3;
 		$table_simple->rowclass['macro'.$m['macro']] = 'macro_field';
-
+		
 		push_table_simple ($data, 'macro'.$m['macro']);
 	}
 }
 
 ?>
 <script type="text/javascript">
+var load_module_component = false;
 function changePluginSelect() {
 	jQuery.post ("ajax.php",
 		{"page" : "godmode/servers/plugin",
@@ -107,5 +108,10 @@ function changePluginSelect() {
 	
 	load_plugin_macros_fields('simple-macro');
 	forced_title_callback();
+	
+	//For to avoid the deletion of macros in the code
+	//$("#network_component").change (function () {
+	//In the file pandora_modules.js
+	load_module_component = true;
 }
 </script>

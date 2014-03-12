@@ -111,7 +111,8 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
 	//If duplicate names exist, it will start numbering. Otherwise it won't
 	if (isset ($idcounter[$name])) {
 		$idcounter[$name]++;
-	} else {
+	}
+	else {
 		$idcounter[$name] = 0;
 	}
 	
@@ -188,7 +189,7 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
  * @param array Array with dropdown values. Example: $fields["value"] = "label"
  * @param string Select form name
  * @param variant Current selected value. Can be a single value or an
- * array of selected values (in combination with multiple)
+ *        array of selected values (in combination with multiple)
  * @param string Javascript onChange code.
  * @param string Label when nothing is selected.
  * @param variant Value when nothing is selected
@@ -200,9 +201,11 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_select_groups($id_user = false, $privilege = "AR", $returnAllGroup = true,
-	$name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
+function html_print_select_groups($id_user = false, $privilege = "AR",
+	$returnAllGroup = true, $name, $selected = '', $script = '',
+	$nothing = '', $nothing_value = 0, $return = false,
+	$multiple = false, $sort = true, $class = '', $disabled = false,
+	$style = false, $option_style = false, $id_group = false) {
 	global $config;
 		
 	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, true);
@@ -233,8 +236,9 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
 	}
 	
-	$output = html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value,
-		$return, $multiple, false, $class, $disabled, $style, $option_style);
+	$output = html_print_select ($fields, $name, $selected, $script,
+		$nothing, $nothing_value, $return, $multiple, false, $class,
+		$disabled, $style, $option_style);
 	
 	if ($return) {
 		return $output;

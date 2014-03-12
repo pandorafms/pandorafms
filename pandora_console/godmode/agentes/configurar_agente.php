@@ -822,6 +822,9 @@ if ($create_module) {
 	}
 	
 	$id_module = (int) get_parameter ('id_module');
+	if ($id_module == 5) {
+		$prediction_module = 1;
+	}
 	
 	switch ($config["dbtype"]) {
 		case "oracle":

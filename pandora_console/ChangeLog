@@ -1,3 +1,10 @@
+2014-03-12  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/configurar_agente.php: fixed for opensource
+	version the prediction modules.
+	
+	MERGED FROM THE TRUNK
+
 2014-03-11  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/pandora_modules.js: fixed the javascript to

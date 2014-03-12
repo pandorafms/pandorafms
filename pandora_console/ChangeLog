@@ -1,3 +1,11 @@
+2014-03-12  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor_plugin.php,
+	include/javascript/pandora_modules.js: fixed the automagic deletion
+	of macros when load a component.
+	
+	Incident: #654
+
 2014-03-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Change the unknown mode

@@ -224,7 +224,7 @@ function configure_modules_form () {
 	});
 	
 	network_component_group_change_event();
-
+	
 	$("#network_component").change (function () {
 		if (this.value == 0)
 			return;
@@ -327,8 +327,11 @@ function configure_modules_form () {
 					}
 				}
 				
-				// Delete macro fields
-				$('.macro_field').remove();
+				if (!load_module_component) {
+					// Delete macro fields
+					$('.macro_field').remove();
+				}
+				load_module_component = false;
 				
 				$('#hidden-macros').val('');
 				

@@ -1,5 +1,12 @@
 2014-03-12  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/configurar_agente.php: fixed for opensource
+	version the prediction modules.
+	
+	MERGED FROM THE TRUNK
+
+2014-03-12  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/module_manager_editor_plugin.php,
 	include/javascript/pandora_modules.js: fixed the automagic deletion
 	of macros when load a component.

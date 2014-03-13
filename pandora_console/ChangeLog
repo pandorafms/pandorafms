@@ -1,3 +1,10 @@
+2014-03-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php
+	include/ajax/visual_console_builder.ajax.php: Fix wrong
+	alerts status in warning without alerts elements. Fix alerts 
+	status broken by miguel in previous commits to fix ajax load,
+
 2014-03-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_netflow.php: Improved version detection. Some distros

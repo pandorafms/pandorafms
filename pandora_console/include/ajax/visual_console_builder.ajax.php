@@ -285,6 +285,9 @@ switch ($action) {
 		
 		$return = array();
 		$return['image'] = visual_map_get_image_status_element($layoutData);
+		if (substr($return['image'],0,1) == '4') {
+			$return['image'] = substr_replace($return['image'], '', 0,1);
+		}
 		echo json_encode($return);
 		break;
 	

@@ -1,3 +1,12 @@
+2014-03-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php
+	include/ajax/visual_console_builder.ajax.php: Fix wrong
+	alerts status in warning without alerts elements. Fix alerts 
+	status broken by miguel in previous commits to fix ajax load,
+
+	MERGED FROM TRUNK
+
 2014-03-13  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php: fixed the link of other visual

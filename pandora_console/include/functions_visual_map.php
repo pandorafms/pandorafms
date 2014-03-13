@@ -778,7 +778,7 @@ function visual_map_get_image_status_element($layoutData) {
 				break;
 			case 4:
 				//Critical (ALERT)
-				$img = $img . "_bad.png";
+				$img = "4" . $img . "_bad.png";
 				break;
 			case 0:
 				//Normal (OK)
@@ -790,7 +790,7 @@ function visual_map_get_image_status_element($layoutData) {
 				break;
 			case 10:
 				//Warning (ALERT)
-				$img = $img . "_warning.png";
+				$img = "4" . $img . "_warning.png";
 				break;
 			case 3:
 				//Unknown
@@ -848,12 +848,7 @@ function visual_map_get_status_element($layoutData) {
 					$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
 					
 					//We need to get the diference between warning and critical alerts!!!
-					$real_status = db_get_row ("tagente_estado", "id_agente_modulo", $layoutData["id_agente_modulo"]);	
-					
-					if ($real_status['estado'] == 2) {
-						//This module has an alert fired and warning status
-						$status = VISUAL_MAP_STATUS_WARNING_ALERT;
-					}
+					$real_status = db_get_row ("tagente_estado", "id_agente_modulo", $layoutData["id_agente_modulo"]);
 				
 				//Status for a whole agent, if agente_modulo was == 0
 				}

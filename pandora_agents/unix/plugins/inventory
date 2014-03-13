@@ -63,7 +63,7 @@ sub get_module_data ($$$$) {
 sub get_file_system($$) {
 	my ($name, $modules) = @_;
 
-	my @fileSystems = `df -h | tail -n +2`; #remove the titles of columns
+	my @fileSystems = `df -hP | tail -n +2`; #remove the titles of columns
 
 	foreach my $row (@fileSystems) {
 		next unless ($row =~ /^(\S+)\s+\S+\s+(\S+)\s+(\S+)\s+\S+\s+(\S+)/);

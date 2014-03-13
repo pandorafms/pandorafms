@@ -1,3 +1,11 @@
+2014-03-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_netflow.php: Improved version detection. Some distros
+	  append alphanumeric character to the version number.
+
+	* include/functions_reporting.php: Fixed SLA bars. Unknown intervals were
+	  not properly computed.
+
 2014-03-13  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php: fixed the link of other visual

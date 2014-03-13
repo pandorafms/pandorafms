@@ -1371,7 +1371,7 @@ function netflow_check_nfdump_binary ($nfdump_binary) {
 	
 	$matches = array();
 	foreach ($output as $line) {
-		if (preg_match ('/Version:\s*(\d+)\.(\d+)\.(\d+)/', $line, $matches) === 1) {
+		if (preg_match ('/Version:[^\d]+(\d+)\.(\d+)\.(\d+)/', $line, $matches) === 1) {
 			if ($matches[1] < 1) {
 				return 2;
 			}

@@ -58,15 +58,17 @@ $table->data['name'][1] = html_print_input_text('name', $reportName,
 
 $table->data['group'][0] = __('Group');
 
-$write_groups = users_get_groups_for_select(false, "RW", users_can_manage_group_all(), true, false, 'id_grupo');
-	
+$write_groups = users_get_groups_for_select(false, "RW",
+	users_can_manage_group_all(), true, false, 'id_grupo');
+
 // If the report group is not among the RW groups (special permission) we add it
 if (!isset($write_groups[$idGroupReport])) {
 	$write_groups[$idGroupReport] = groups_get_name($idGroupReport);
 }
 
-$table->data['group'][1] = html_print_select ($write_groups, 'id_group', $idGroupReport, false, '', '', true);
-	
+$table->data['group'][1] = html_print_select($write_groups, 'id_group',
+	$idGroupReport, false, '', '', true);
+
 if ($report_id_user == $config['id_user'] ||
 	is_user_admin ($config["id_user"])) {
 	//S/he is the creator of report (or admin) and s/he can change the access.
@@ -78,7 +80,7 @@ if ($report_id_user == $config['id_user'] ||
 		ui_print_help_tip(__('For example, you want a report that the people of "All" groups can see but you want to edit only for you or your group.'), true);
 	$table->data['access'][1] = html_print_select ($type_access, 'type_access',
 		$type_access_selected, 'change_type_access(this)', '', 0, true);
-
+	
 	$style = "display: none;";
 	if ($type_access_selected == 'group_edit')
 		$style = "";

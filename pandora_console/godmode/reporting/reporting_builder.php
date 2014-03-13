@@ -336,17 +336,17 @@ switch ($action) {
 				'order' => 'name'
 			);
 		}
-
+		
 		# Fix : group filter was not working
 		// Show only selected groups
-        if ($id_group > 0) {
-        	$group = array("$id_group" => $id_group);
-           	$filter['id_group'] = $id_group;
+		if ($id_group > 0) {
+			$group = array("$id_group" => $id_group);
+			$filter['id_group'] = $id_group;
 		}
-        else {
-            $group = false;
-        }
-
+		else {
+			$group = false;
+		}
+		
 		
 		// Filter normal and metaconsole reports
 		if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
@@ -357,7 +357,7 @@ switch ($action) {
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
 				'id_user', 'id_group'), $return_all_group, 'RR', $group);
-	
+		
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
@@ -389,7 +389,8 @@ switch ($action) {
 				$table->head[$next] = __('Group');
 				$table->align[$next] = 'center';
 				$next++;
-				$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
+				$table->head[$next] = '<span title="Operations">' .
+					__('Op.') . '</span>';
 				$table->size = array ();
 				$table->size[$next] = '80px';
 				$table->style[$next] = 'text-align:center;';
@@ -398,7 +399,7 @@ switch ($action) {
 			
 			foreach ($reports as $report) {
 				
-				if (!is_user_admin ($config["id_user"])){
+				if (!is_user_admin ($config["id_user"])) {
 					if ($report["private"] && $report["id_user"] != $config['id_user'])
 						if (!check_acl ($config["id_user"], $report["id_group"], "RR"))
 							continue;
@@ -448,40 +449,65 @@ switch ($action) {
 				
 				$type_access_selected = reports_get_type_access($report);
 				$edit = false;
+				$delete = false;
+				
 				switch ($type_access_selected) {
 					case 'group_view':
-						$edit = check_acl($config['id_user'], $report['id_group'], "RW") && users_can_manage_group_all($report["id_group"]);
+						$edit = check_acl($config['id_user'],
+							$report['id_group'], "RW")
+							&&
+							users_can_manage_group_all($report["id_group"], "RW");
+						
+						$delete = check_acl($config['id_user'],
+							$report['id_group'], "RM")
+							&&
+							users_can_manage_group_all($report["id_group"], "RM");
 						break;
 					case 'group_edit':
-						$edit = check_acl($config['id_user'], $report['id_group_edit'], "RW") && users_can_manage_group_all($report["id_group_edit"]);
+						$edit = check_acl($config['id_user'],
+							$report['id_group_edit'], "RW")
+							&&
+							users_can_manage_group_all($report["id_group_edit"], "RW");
+						
+						$delete = check_acl($config['id_user'],
+							$report['id_group_edit'], "RM")
+							&&
+							users_can_manage_group_all($report["id_group_edit"], "RM");
 						break;
 					case 'user_edit':
 						if ($config['id_user'] == $report['id_user'] ||
-							is_user_admin ($config["id_user"]))
+							is_user_admin ($config["id_user"])) {
 							$edit = true;
+							$delete = true;
+						}
 						break;
 				}
 				
-				
-				if ($edit) {
+				if ($edit || $delete) {
 					if (!isset($table->head[$next])) {
 						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
 						$table->size = array ();
 						$table->size[$next] = '80px';
 						$table->style[$next] = 'text-align:center;';
 					}
-				
-					$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
-					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
-					$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
-					$data[$next] .= '</form>';
 					
-					$data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
-					$data[$next] .= html_print_input_hidden ('action','delete_report', true);
-					$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
-						true, array ('title' => __('Delete')));
-					$data[$next] .= '</form>';
+					if ($edit) {
+						$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
+						$data[$next] .= html_print_input_hidden('id_report',
+							$report['id_report'], true);
+						$data[$next] .= html_print_input_image('edit',
+							'images/config.png', 1, '', true, array ('title' => __('Edit')));
+						$data[$next] .= '</form>';
+					}
+					
+					if ($delete) {
+						$data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+						$data[$next] .= html_print_input_hidden ('action','delete_report', true);
+						$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
+							true, array ('title' => __('Delete')));
+						$data[$next] .= '</form>';
+					}
 				}
 				
 				array_push ($table->data, $data);
@@ -499,7 +525,7 @@ switch ($action) {
 		}
 		
 		enterprise_hook('close_meta_frame');
-
+		
 		return;
 		break;
 	case 'new':

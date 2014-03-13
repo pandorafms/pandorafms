@@ -368,6 +368,7 @@ sub pandora_compactdb ($$) {
 	my %count_hash;
 	my %id_agent_hash;
 	my %value_hash;
+	my %module_proc_hash;
 	
 	return if ($conf->{'_days_compact'} == 0 || $conf->{'_step_compact'} < 1);
 	
@@ -417,6 +418,20 @@ sub pandora_compactdb ($$) {
 			# Get interval data
 			foreach my $data (@data) {
 				my $id_module = $data->{'id_agente_modulo'};
+				if (! defined($module_proc_hash{$id_module})) {
+					my $module_type = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
+
+					# Mark proc modules.
+					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31) {
+						$module_proc_hash{$id_module} = 1;
+					}
+					else {
+						$module_proc_hash{$id_module} = 0;
+					}
+				}
+
+				# Skip proc modules!
+				next if ($module_proc_hash{$id_module} == 1);
 
 				if (! defined($value_hash{$id_module})) {
 					$value_hash{$id_module} = 0;

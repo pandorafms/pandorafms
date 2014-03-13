@@ -679,7 +679,6 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		array ('id_agentmodule' => $id_agent_module,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
-			"event_type" => 'going_unknown',
 			'order' => 'utimestamp ASC'),
 		array ('id_evento', 'evento', 'timestamp', 'utimestamp', 'event_type'));
 	
@@ -688,9 +687,27 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	
 	// Add unknown periods to data
-	foreach($events_unknown as $eu) {
-		$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
-		$interval_data_indexed[$eu['utimestamp']]['status'] = 4;
+	for ($i = 0; isset($events_unknown[$i]); $i++) {
+		$eu = $events_unknown[$i];
+
+		if ($eu['event_type'] == 'going_unknown') {
+			$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
+			$interval_data_indexed[$eu['utimestamp']]['status'] = 4;
+
+			// Search the corresponding recovery event.
+			for ($j = $i+1; isset($events_unknown[$j]); $j++) {
+				$eu = $events_unknown[$j];
+
+				if ($eu['event_type'] != 'going_unknown' && substr ($eu['event_type'], 0, 5) == 'going') {
+					$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
+					$interval_data_indexed[$eu['utimestamp']]['status'] = 6;
+					
+					// Do not process read events again.
+					$i = $j;
+					break;
+				}
+			}
+		}
 	}
 	
 	// Get the last event before inverval to know if graph start on unknown
@@ -707,21 +724,35 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	//------------------------------------------------------------------
 	
 	//-----------------Set limits of the interval-----------------------
+	// Get previous data (This adds the first data if the begin of module data is after the begin time interval)
+	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false ) {
+		$previous_value = $previous_data['datos'];
+		if ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
+				(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
+			$previous_known_status = 2;
+		}
+		elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
+			$previous_known_status = 1;
+		}
+		elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
+			$previous_known_status = 3;
+		}
+	}
+
 	// If the starting of the graph is unknown we set it
 	if ($start_unknown) {
 		$interval_data_indexed[$datelimit]['data'] = 0;
 		$interval_data_indexed[$datelimit]['status'] = 4;
 	}
 	else {
-		// Get previous data (This adds the first data if the begin of module data is after the begin time interval)
-		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-		
 		if ($previous_data !== false ) {
 			$interval_data_indexed[$datelimit]['data'] = $previous_data['datos'];
 		}
 		else { // If there are not data befor interval set unknown
 			$interval_data_indexed[$datelimit]['data'] = 0;
 			$interval_data_indexed[$datelimit]['status'] = 4;
+			$previous_known_status = 1; // Assume the module was in normal status if there is no previous data.
 		}
 	}
 	
@@ -832,10 +863,15 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	foreach ($interval_data_indexed as $utimestamp => $data) {
 		$change = false;
 		$value = $data['data'];
-		//~ $value = $data['datos'];
-		//$utimestamp = $data['utimestamp'];
-		if (isset($data['status'])) { // 4 for the Unknown value amd 5 for planned downtime
-			$status = $data['status'];
+		if (isset($data['status'])) {
+			// Leaving unkown status.
+			if ($data['status'] == 6) {
+				$status = $previous_known_status;
+			}
+			// 4 unknown, 5 planned downtime.
+			else {
+				$status = $data['status'];
+			}
 		}
 		elseif ((($value > ($min_value - $percent)) && ($value < ($min_value + $percent))) || 
 				(($value > ($max_value - $percent)) && ($value < ($max_value + $percent)))) { //2 when value is within the edges
@@ -855,6 +891,11 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			$i++;
 			$previous_status = $status;
 			$previous_utimestamp = $utimestamp;
+		}
+		
+		// Save the last known status.
+		if ($status <= 3) {
+			$previous_known_status = $status;
 		}
 	}
 	if ($change == false) {

@@ -1,3 +1,7 @@
+2014-03-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Do not compact proc modules.
+
 2014-03-13  Mario Pulido <mario.pulido@artica.es>
 
 	* pandora_server.redhat.spec: Added netflow directory

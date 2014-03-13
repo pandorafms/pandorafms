@@ -1,3 +1,7 @@
+2014-03-13  Mario Pulido <mario.pulido@artica.es>
+
+	* plugins/inventory: Distributions compatibility
+
 2014-02-03  Mario Pulido <mario.pulido@artica.es>	
 
 	* SunOS/make_solaris_package/README: Update compatible SunOS versions

@@ -1,3 +1,7 @@
+2014-03-13  Mario Pulido <mario.pulido@artica.es>
+
+	* pandora_server.redhat.spec: Added netflow directory
+
 2014-03-13  Vanessa Gil <vanessa.gil@artica.es>
 
 	* lib/PandoraFMS/Core.pm

@@ -1197,31 +1197,41 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	$output = '';
 	
+	$config_refr = -1;
+	if (isset($config["refr"]))
+		$config_refr = $config["refr"];
+	
 	// If user is logged or displayed view is the public view of visual console
-	if ($config["refr"] > 0 && (isset($config['id_user']) || $vc_public_view == 1)) {
-		if ($config['enable_refr'] || $GET['sec2'] == "operation/agentes/estado_agente" || $GET['sec2'] == "operation/agentes/tactical"||
-		$_GET['sec2'] == "operation/agentes/group_view" || $_GET['sec2'] == 'operation/events/events' ||
-		$_GET['sec2'] == "enterprise/dashboard/main_dashboard") {
+	if ($config_refr > 0 &&
+		(isset($config['id_user']) || $vc_public_view == 1)) {
+		
+		if ($config['enable_refr'] ||
+			$_GET['sec2'] == "operation/agentes/estado_agente" ||
+			$_GET['sec2'] == "operation/agentes/tactical"||
+			$_GET['sec2'] == "operation/agentes/group_view" ||
+			$_GET['sec2'] == 'operation/events/events' ||
+			$_GET['sec2'] == "enterprise/dashboard/main_dashboard") {
 			
 			$query = ui_get_url_refresh (false);
-			$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL=' . $query . '" />';
+			$output .= '<meta http-equiv="refresh" content="' . 
+				$config_refr . '; URL=' . $query . '" />';
 			
 		}
 	}
 	$output .= "\n\t";
 	$output .= '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
-	<meta http-equiv="expires" content="never" />
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<meta http-equiv="Content-Style-Type" content="text/css" />
-	<meta name="resource-type" content="document" />
-	<meta name="distribution" content="global" />
-	<meta name="author" content="Sancho Lerena" />
-	<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others" />
-	<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
-	<meta name="robots" content="index, follow" />
-	<link rel="icon" href="images/pandora.ico" type="image/ico" />
-	<link rel="shortcut icon" href="images/pandora.ico" type="image/x-icon" />
-	<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
+		<meta http-equiv="expires" content="never" />
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />
+		<meta name="resource-type" content="document" />
+		<meta name="distribution" content="global" />
+		<meta name="author" content="Sancho Lerena" />
+		<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others" />
+		<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
+		<meta name="robots" content="index, follow" />
+		<link rel="icon" href="images/pandora.ico" type="image/ico" />
+		<link rel="shortcut icon" href="images/pandora.ico" type="image/x-icon" />
+		<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 	
 	if ($config["language"] != "en") {
 		//Load translated strings - load them last so they overload all the objects
@@ -1287,7 +1297,7 @@ function ui_process_page_head ($string, $bitfield) {
 		$config['css'] = array_merge (array (
 			"common" => "include/styles/common.css", 
 			"menu" => "include/styles/menu.css", 
-			$config['style'] => "include/styles/".$config['style'].".css"), $config['css']);
+			$config['style'] => "include/styles/" . $config['style'] . ".css"), $config['css']);
 	}
 	
 	// Add the jquery UI styles CSS
@@ -1631,31 +1641,30 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
  */
 function ui_print_session_action_icon ($action, $return = false) {
 	$key_icon = array(
-			'acl' => 'images/delete.png', 
-			'agent' => 'images/agent.png', 
-			'module' => 'images/module.png',
-			'alert' => 'images/bell.png',
-			'incident' => 'images/default_list.png',
-			'logon' => 'images/house.png',
-			'logoff' => 'images/house.png',
-			'massive' => 'images/config.png',
-			'hack' => 'images/application_edit.png',
-			'event' => 'images/lightning_go.png',
-			'policy' => 'images/policies.png',
-			'report' => 'images/reporting.png',
-			'file collection' => 'images/collection_col.png',
-			'user' => 'images/user_green.png',
-			'password' => 'images/lock.png',
-			'session' => 'images/heart_col.png',
-			'snmp' => 'images/snmp.png',
-			'command' => 'images/bell.png',
-			'category' => 'images/category_col.png',
-			'dashboard' => 'images/dashboard_col.png',
-			'api' => 'images/eye.png',
-			'db' => 'images/database.png',
-			'setup' => 'images/cog.png'
-			);
-			
+		'acl' => 'images/delete.png', 
+		'agent' => 'images/agent.png', 
+		'module' => 'images/module.png',
+		'alert' => 'images/bell.png',
+		'incident' => 'images/default_list.png',
+		'logon' => 'images/house.png',
+		'logoff' => 'images/house.png',
+		'massive' => 'images/config.png',
+		'hack' => 'images/application_edit.png',
+		'event' => 'images/lightning_go.png',
+		'policy' => 'images/policies.png',
+		'report' => 'images/reporting.png',
+		'file collection' => 'images/collection_col.png',
+		'user' => 'images/user_green.png',
+		'password' => 'images/lock.png',
+		'session' => 'images/heart_col.png',
+		'snmp' => 'images/snmp.png',
+		'command' => 'images/bell.png',
+		'category' => 'images/category_col.png',
+		'dashboard' => 'images/dashboard_col.png',
+		'api' => 'images/eye.png',
+		'db' => 'images/database.png',
+		'setup' => 'images/cog.png');
+	
 	$output = '';
 	foreach($key_icon as $key => $icon) {
 		if (stristr($action, $key) !== false) {

@@ -130,7 +130,7 @@ sub process_module($$$$$){
 
 	my $iterations = ($target_days * 24 * 60 * 60) / $target_interval;
 
-	print " [D] ID_AgenteMoludo $id_agentemodulo Interval $target_interval ModuleName $target_name Days $target_days Agent $agent->{'nombre'} \n";
+	print " [D] ID_AgenteModulo $id_agentemodulo Interval $target_interval ModuleName $target_name Days $target_days Agent $agent->{'nombre'} \n";
 
 	my $modules_processed=0;
 	my $modules_processed_total=0;

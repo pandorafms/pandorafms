@@ -4043,7 +4043,8 @@ Get a list of module tags in the format: |tag|tag| ... |tag|
 sub pandora_get_module_tags ($$$) {
 	my ($pa_config, $dbh, $id_agentmodule) = @_;
 	
-	my @tags = get_db_rows ($dbh, 'SELECT ' . db_concat('ttag.name', 'ttag.url') . ' name_url FROM ttag, ttag_module
+	#~ my @tags = get_db_rows ($dbh, 'SELECT ' . db_concat('ttag.name', 'ttag.url') . ' name_url FROM ttag, ttag_module
+	my @tags = get_db_rows ($dbh, 'SELECT ttag.name,ttag.url name_url FROM ttag, ttag_module
 	                               WHERE ttag.id_tag = ttag_module.id_tag
 	                               AND ttag_module.id_agente_modulo = ?', $id_agentmodule);
 	

@@ -964,8 +964,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			text-align:center;
 			z-index: 0;
 			position:relative;
-			width:'.$mapWidth.'px;
-			height:'.$mapHeight.'px;">';
+			width:' . $mapWidth . 'px;
+			height:' . $mapHeight . 'px;">';
 	echo "<img src='" .
 		ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
 	
@@ -1151,7 +1151,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
 						if (empty($layout_data['id_metaconsole'])) {
-							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							echo '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						}
 						else {
 							$pure = get_parameter('pure', 0);

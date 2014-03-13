@@ -1,5 +1,12 @@
 2014-03-13  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map.php: fixed the link of other visual
+	map when it is in a public visual console.
+	
+	Incident: #658
+
+2014-03-13  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* general/shortcut_bar.php, include/functions_ui.php: fixed the
 	PHP warnings.
 

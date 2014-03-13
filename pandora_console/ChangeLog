@@ -1,5 +1,10 @@
 2014-03-13  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* general/shortcut_bar.php, include/functions_ui.php: fixed the
+	PHP warnings.
+
+2014-03-13  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/reporting_builder.main.php,
 	godmode/reporting/reporting_builder.php,
 	include/functions_users.php: fixed the access to the report with the

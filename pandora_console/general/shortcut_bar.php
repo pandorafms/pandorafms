@@ -19,8 +19,9 @@ global $config;
 // Login check
 check_login ();
 
+require_once("include/functions_reporting.php");
+
 if (is_ajax()) {
-	require_once("include/functions_reporting.php");
 	
 	$save_item_shorcut  = get_parameter("save_item_shorcut", 0);
 	
@@ -112,6 +113,8 @@ if (is_ajax()) {
 	
 	return;
 }
+
+
 $shortcut_state = db_get_value_filter('shortcut', 'tusuario', array('id_user' => $config['id_user']));
 
 // If shortcut bar is disabled return to index.php

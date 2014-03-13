@@ -41,7 +41,6 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 		$sub["godmode/agentes/planned_downtime.list"]["text"] = __('Scheduled downtime');
 		
 		if (check_acl ($config["id_user"], 0, "PM")) {
-			$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
 			$sub["godmode/agentes/fields_manager"]["text"] = __('Manage custom fields');
 		}
 		enterprise_hook('agents_submenu');
@@ -96,6 +95,10 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/category/category"]["subsecs"] = "godmode/category/edit_category";
 	
 	$sub["godmode/modules/module_list"]["text"] = __('Module types');
+	
+	if (check_acl ($config["id_user"], 0, "PM")) {
+		$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
+	}
 	
 	$menu_godmode["gmodules"]["sub"] = $sub;
 }

@@ -188,9 +188,9 @@ if (!empty($groups)) {
 	foreach ($groups as $id_group ) {
 		$data = array ();
 		$data[0] = 	$id_group["id_mg"];
-		$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group=' . $id_group["id_mg"].'">' .
+		$data[1] = '<strong><a href="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group&id_group=' . $id_group["id_mg"].'">' .
 			ui_print_truncate_text($id_group["name"], GENERIC_SIZE_TEXT).'</a></strong>';
-		$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
+		$data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 		
 		array_push ($table->data, $data);
 	}
@@ -201,7 +201,7 @@ else {
 	echo "<div class='nf'>".__('There are no defined module groups')."</div>";
 }
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group">';
+echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button (__('Create module group'), 'crt', false, 'class="sub next"');
 echo '</div>';

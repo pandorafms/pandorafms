@@ -65,7 +65,7 @@ $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);
 
 
 echo'</span>';
-echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/modu_group_list">';
+echo '<form name="grupo" method="post" action="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_group) {

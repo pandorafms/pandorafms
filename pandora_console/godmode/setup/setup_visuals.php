@@ -82,6 +82,41 @@ $table->data[$row][1] = html_print_input_text ('graph_color3', $config["graph_co
 
 $row++;
 
+$table->data[$row][0] = __('Graph color #4');
+$table->data[$row][1] = html_print_input_text ('graph_color4', $config["graph_color4"], '', 8, 8, true);
+
+$row++;
+
+$table->data[$row][0] = __('Graph color #5');
+$table->data[$row][1] = html_print_input_text ('graph_color5', $config["graph_color5"], '', 8, 8, true);
+
+$row++;
+
+$table->data[$row][0] = __('Graph color #6');
+$table->data[$row][1] = html_print_input_text ('graph_color6', $config["graph_color6"], '', 8, 8, true);
+
+$row++;
+
+$table->data[$row][0] = __('Graph color #7');
+$table->data[$row][1] = html_print_input_text ('graph_color7', $config["graph_color7"], '', 8, 8, true);
+
+$row++;
+
+$table->data[$row][0] = __('Graph color #8');
+$table->data[$row][1] = html_print_input_text ('graph_color8', $config["graph_color8"], '', 8, 8, true);
+
+$row++;
+
+$table->data[$row][0] = __('Graph color #9');
+$table->data[$row][1] = html_print_input_text ('graph_color9', $config["graph_color9"], '', 8, 8, true);
+
+$row++;
+
+$table->data[$row][0] = __('Graph color #10');
+$table->data[$row][1] = html_print_input_text ('graph_color10', $config["graph_color10"], '', 8, 8, true);
+
+$row++;
+
 $table->data[$row][0] = __('Graphic resolution (1-low, 5-high)');
 $table->data[$row][1] = html_print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
 
@@ -284,6 +319,13 @@ $(document).ready (function () {
 	$("#form_setup #text-graph_color1").attachColorPicker();
 	$("#form_setup #text-graph_color2").attachColorPicker();
 	$("#form_setup #text-graph_color3").attachColorPicker();
+	$("#form_setup #text-graph_color4").attachColorPicker();
+	$("#form_setup #text-graph_color5").attachColorPicker();
+	$("#form_setup #text-graph_color6").attachColorPicker();
+	$("#form_setup #text-graph_color7").attachColorPicker();
+	$("#form_setup #text-graph_color8").attachColorPicker();
+	$("#form_setup #text-graph_color9").attachColorPicker();
+	$("#form_setup #text-graph_color10").attachColorPicker();
 	
 	$("#button-interval_del_btn").click( function()  {
 		var interval_selected = $('#intervals option:selected').val();

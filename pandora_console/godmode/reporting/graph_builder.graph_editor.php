@@ -98,11 +98,12 @@ if(count($module_array) > 0){
 		echo modules_get_agentmodule_name ($module_array[$a])."</td>";
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<table><tr>";
-		$new_weight = $weight_array[$a]-0.125;
-		echo "<td align='center'><a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".html_print_image('images/down.png', true, array ('title' => __('Decrease Weight')))."</a></td>";
-		echo "<td align='center'>$weight_array[$a]</td>";
-		$new_weight = $weight_array[$a]+0.125;
-		echo "<td align='center'><a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&weight=".$new_weight."&id=". $id ."&graph=" . $idgs_array[$a] . "'>".html_print_image('images/up.png', true, array ('title' => __('Increase Weight')))."</a></td>";
+
+		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&id=". $id ."&graph=" . $idgs_array[$a] . "'>";
+		html_print_input_text ('weight', $weight_array[$a], '', 20, 10, false, false);
+		html_print_submit_button ('Ok', 'btn', false, '', false);
+		echo "</form>";
+		
 		echo "</tr></table>";
 		echo "</td>";
 		echo "<td class='$tdcolor' align='center'>";

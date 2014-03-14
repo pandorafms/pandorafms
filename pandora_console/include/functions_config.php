@@ -367,6 +367,20 @@ function config_update_config () {
 						$error_update[] = __('Graph color (avg)');
 					if (!config_update_value ('graph_color3', (string) get_parameter ('graph_color3')))
 						$error_update[] = __('Graph color (max)');
+					if (!config_update_value ('graph_color4', (string) get_parameter ('graph_color4')))
+						$error_update[] = __('Graph color #4');
+					if (!config_update_value ('graph_color5', (string) get_parameter ('graph_color5')))
+						$error_update[] = __('Graph color #5');
+					if (!config_update_value ('graph_color6', (string) get_parameter ('graph_color6')))
+						$error_update[] = __('Graph color #6');
+					if (!config_update_value ('graph_color7', (string) get_parameter ('graph_color7')))
+						$error_update[] = __('Graph color #7');
+					if (!config_update_value ('graph_color8', (string) get_parameter ('graph_color8')))
+						$error_update[] = __('Graph color #8');
+					if (!config_update_value ('graph_color9', (string) get_parameter ('graph_color9')))
+						$error_update[] = __('Graph color #9');
+					if (!config_update_value ('graph_color10', (string) get_parameter ('graph_color10')))
+						$error_update[] = __('Graph color #10');
 					if (!config_update_value ('graph_res', (int) get_parameter ('graph_res')))
 						$error_update[] = __('Graphic resolution (1-low, 5-high)');
 					$style = (string) get_parameter ('style');

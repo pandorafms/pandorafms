@@ -41,8 +41,9 @@ $free_search_string = (string) get_parameter ("free_search_string", '');
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
 $trap_type = (int) get_parameter ('trap_type', -1);
+$group_by = (int) get_parameter('group_by', 0);
 
-$url = "index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset . "&trap_type=" . $trap_type;
+$url = "index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset . "&trap_type=" . $trap_type ."&group_by=" .$group_by;
 
 
 if ($config["pure"]) {
@@ -310,6 +311,10 @@ else if ($trap_type != -1){
 	$whereSubquery .= ' AND type = ' . $trap_type;
 }
 
+if ($group_by) {
+	$where_without_group = $whereSubquery;
+	$whereSubquery .= ' GROUP BY source,oid';
+}
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = sprintf($sql, $whereSubquery, $offset, $pagination);
@@ -379,6 +384,10 @@ $table->data[4][1] = '<strong>'.__('Type').'</strong>' . ui_print_help_tip(__('S
 $trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 $table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
 
+$table->data[4][3] = '<strong>'.__('Group by OID/IP').'</strong>';
+$table->data[4][4] .= __('Yes').'&nbsp;'.html_print_radio_button ('group_by', 1, '', $group_by, true).'&nbsp;&nbsp;';
+$table->data[4][4] .= __('No').'&nbsp;'.html_print_radio_button ('group_by', 0, '', $group_by, true);
+
 $filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.((int)get_parameter('refr', 0)).'&pure='.$config["pure"].'">';
 $filter .= html_print_table($table, true);
 $filter .= '<div style="width: ' . $table->width . '; text-align: right;">';
@@ -391,11 +400,15 @@ ui_toggle($filter, __('Toggle filter(s)'));
 unset ($table);
 
 // Prepare index for pagination
+/*
 $trapcount = db_get_sql ("
 	SELECT COUNT(id_trap)
 	FROM ttrap " .
 	$whereSubquery);
-
+*/
+	
+$trapcount = count($traps);
+	
 $url_snmp = "index.php?" .
 	"sec=snmpconsole&" .
 	"sec2=operation/snmpconsole/snmp_view&" .
@@ -407,6 +420,7 @@ $url_snmp = "index.php?" .
 	"search_string=" . $search_string . "&" .
 	"refr=" . ((int)get_parameter('refr', 0)) . "&" .
 	"pure=" . $config["pure"] . "&" .
+	"group_by=" . $group_by . "&" .
 	"search_string=" . $search_string;
 
 $urlPagination = $url_snmp . "&pagination=" . $pagination . "&offset=" . $offset;
@@ -610,6 +624,38 @@ if ($traps !== false) {
 			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Type:') . '</td><td align="left">' . $desc_trap_type . '</td></tr>';
 		}
 		
+		if ($group_by) {
+			$sql = "SELECT * FROM ttrap $where_without_group
+					AND oid='".$trap['oid']."' 
+					AND `source`='".$trap['source']."'";
+			$group_traps = db_get_all_rows_sql($sql);
+			$count_group_traps = count($group_traps);
+			
+			$sql = "SELECT `timestamp` FROM ttrap $where_without_group
+					AND oid='".$trap['oid']."' 
+					AND `source`='".$trap['source']."'
+					ORDER BY `timestamp` DESC";		
+			$last_trap = db_get_value_sql($sql);
+			
+			$sql = "SELECT `timestamp` FROM ttrap $where_without_group
+					AND oid='".$trap['oid']."' 
+					AND `source`='".$trap['source']."'
+					ORDER BY `timestamp` ASC";
+			$first_trap = db_get_value_sql($sql);
+			
+			$string .= '<tr>
+					<td align="left" valign="top">' . '<b>' . __('Count:') . '</td>
+					<td align="left">' . $count_group_traps . '</td>
+				</tr>';
+			$string .= '<tr>
+					<td align="left" valign="top">' . '<b>' . __('First trap:') . '</td>
+					<td align="left">' . $first_trap . '</td>
+				</tr>';
+			$string .= '<tr>
+					<td align="left" valign="top">' . '<b>' . __('Last trap:') . '</td>
+					<td align="left">' . $last_trap . '</td>
+				</tr>';
+		}
 		$string .=  '</table>';
 		
 		$data = array($string); //$data = array($trap['description']);

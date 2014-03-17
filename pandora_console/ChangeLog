@@ -1,5 +1,12 @@
 2014-03-17  Vanessa Gil <vanessa.gil@artica.es>
 	
+	* pandoradb.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.mysql.sql
+	  godmode/agentes/configurar_agente.php: Fixed bug:
+	'post_process' out of range.
+
+2014-03-17  Vanessa Gil <vanessa.gil@artica.es>
+	
 	* operation/snmpconsole/snmp_view.php: Added 'group by
 	OID/IP' to SNMP traps.	
 

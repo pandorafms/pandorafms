@@ -607,7 +607,7 @@ function add_macro_field(macro, row_model_id) {
 	$('#'+row_id).show();
 }
 
-function load_plugin_macros_fields(row_model_id, id_agent_module) {
+function load_plugin_macros_fields(row_model_id) {
 	// Get plugin macros when selected and load macros fields
 	var id_plugin = $('#id_plugin').val();
 	
@@ -615,7 +615,7 @@ function load_plugin_macros_fields(row_model_id, id_agent_module) {
 	params.push("page=include/ajax/module");
 	params.push("get_plugin_macros=1");
 	params.push("id_plugin=" + id_plugin);
-	params.push("id_agent_module=" + id_agent_module);
+	
 	jQuery.ajax ({
 		data: params.join ("&"),
 		type: 'POST',

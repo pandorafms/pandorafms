@@ -24,7 +24,6 @@ enterprise_include_once ('include/functions_metaconsole.php');
 $get_plugin_macros = get_parameter('get_plugin_macros');
 if ($get_plugin_macros) {
 	$id_plugin = get_parameter('id_plugin', 0);
-	$id_agent_module = get_parameter('id_agent_module', 0);
 	
 	$plugin_macros = db_get_value('macros', 'tplugin', 'id',
 		$id_plugin);

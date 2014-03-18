@@ -108,15 +108,3 @@ if (!empty($macros)) {
 		load_module_component = true;
 	}
 </script>
-<?php
-if (isset($module)) {
-	?>
-	<script type="text/javascript">
-		var id_agent_module = <?php echo $module['id_agente_modulo']; ?>;
-		$(document).ready(function() {
-			load_plugin_macros_fields('simple-macro', id_agent_module);
-		});
-	</script>
-	<?php
-}
-?>

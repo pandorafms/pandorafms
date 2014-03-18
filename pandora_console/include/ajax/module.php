@@ -23,10 +23,13 @@ enterprise_include_once ('include/functions_metaconsole.php');
 
 $get_plugin_macros = get_parameter('get_plugin_macros');
 if ($get_plugin_macros) {
-	$plugin_macros = db_get_value('macros','tplugin','id',get_parameter('id_plugin',0));
+	$id_plugin = get_parameter('id_plugin', 0);
+	$id_agent_module = get_parameter('id_agent_module', 0);
+	
+	$plugin_macros = db_get_value('macros', 'tplugin', 'id',
+		$id_plugin);
 	
 	$macros = array();
-	
 	$macros['base64'] = base64_encode($plugin_macros);
 	$macros['array'] = json_decode($plugin_macros,true);
 	
@@ -35,7 +38,6 @@ if ($get_plugin_macros) {
 }
 
 $search_modules = get_parameter('search_modules');
-
 if ($search_modules) {
 	$id_agents = json_decode(io_safe_output(get_parameter('id_agents')));
 	$filter = get_parameter('q', '') . '%';

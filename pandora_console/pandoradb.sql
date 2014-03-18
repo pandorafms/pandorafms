@@ -296,6 +296,7 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 	`trap_type` int(11) NOT NULL default '-1',
 	`single_value` varchar(255) default '', 
 	`position` int(10) unsigned NOT NULL default '0',
+	`id_group` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_as`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -47,3 +47,8 @@ CREATE TABLE IF NOT EXISTS tmodule_relationship (
 CREATE SEQUENCE tmodule_relationship_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_relationship REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_relationship_s.nextval INTO :NEW.ID FROM dual; END;;
+
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp`
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_snmp ADD (id_group NUMBER(10, 0) default 0 NOT NULL);

@@ -44,3 +44,8 @@ CREATE TABLE "tmodule_relationship" (
 		ON DELETE CASCADE,
 	"disable_update" SMALLINT NOT NULL default 0
 );
+
+-- ---------------------------------------------------------------------
+-- Table "talert_snmp"
+-- ---------------------------------------------------------------------
+ALTER TABLE "talert_snmp" ADD COLUMN "id_group" INTEGER NOT NULL default 0;

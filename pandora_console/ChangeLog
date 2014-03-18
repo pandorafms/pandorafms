@@ -1,3 +1,10 @@
+2014-03-18  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	include/ajax/module.php, include/javascript/pandora_modules.js:
+	fixed the save module plugin server from the component.
+
 2014-03-18  Alejandro Gallardo <alejandro.gallardo@artica.es>
 
 	* pandoradb.data.oracle.sql,

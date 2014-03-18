@@ -94,24 +94,17 @@ if (!empty($macros)) {
 
 ?>
 <script type="text/javascript">
-var load_module_component = false;
-function changePluginSelect() {
-	jQuery.post ("ajax.php",
-		{"page" : "godmode/servers/plugin",
-		"get_plugin_description" : 1,
-		"id_plugin" : $("#id_plugin").val()
-		},
-		function (data, status) {
-			$("#plugin_description").html(data);
-		}
-	);
+	var load_module_component = false;
 	
-	load_plugin_macros_fields('simple-macro');
-	forced_title_callback();
-	
-	//For to avoid the deletion of macros in the code
-	//$("#network_component").change (function () {
-	//In the file pandora_modules.js
-	load_module_component = true;
-}
+	function changePluginSelect() {
+		
+		load_plugin_description($("#id_plugin").val());
+		load_plugin_macros_fields('simple-macro');
+		forced_title_callback();
+		
+		//For to avoid the deletion of macros in the code
+		//$("#network_component").change (function () {
+		//In the file pandora_modules.js
+		load_module_component = true;
+	}
 </script>

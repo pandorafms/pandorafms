@@ -790,15 +790,15 @@ if ($update_module || $create_module) {
 	if (!empty($macros)) {
 		$macros = json_decode(base64_decode($macros), true);
 		
-		foreach($macros as $k => $m) {
+		foreach ($macros as $k => $m) {
 			$macros[$k]['value'] = get_parameter($m['macro'], '');
 		}
 		
 		$macros = json_encode($macros);
 		
-		$conf_array = explode("\n",$configuration_data);
-		foreach($conf_array as $line) {
-			if(preg_match("/^module_name\s*(.*)/", $line, $match)) {
+		$conf_array = explode("\n", $configuration_data);
+		foreach ($conf_array as $line) {
+			if (preg_match("/^module_name\s*(.*)/", $line, $match)) {
 				$new_configuration_data .= "module_name $name\n";
 			}
 			// We delete from conf all the module macros starting with _field

@@ -43,6 +43,18 @@ $offset = (int) get_parameter ('offset',0);
 $trap_type = (int) get_parameter ('trap_type', -1);
 $group_by = (int) get_parameter('group_by', 0);
 
+$user_groups = users_get_groups ($config['id_user'],"AR", false);
+$str_user_groups = '';
+$i = 0;
+foreach ($user_groups as $id=>$name) {
+	if ($i == 0) {
+		$str_user_groups .= $id;
+	} else {
+		$str_user_groups .= ','.$id;
+	}
+	$i++;
+}
+
 $url = "index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset . "&trap_type=" . $trap_type ."&group_by=" .$group_by;
 
 
@@ -128,6 +140,11 @@ switch ($config["dbtype"]) {
 		$sql = sprintf ("
 			SELECT *
 			FROM ttrap
+			WHERE `source` IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					)
+			OR `source`=''
 			ORDER BY timestamp DESC
 			LIMIT %d,%d",$offset,$pagination);
 		break;
@@ -135,8 +152,13 @@ switch ($config["dbtype"]) {
 		$sql = sprintf ("
 			SELECT *
 			FROM ttrap
+			WHERE `source` IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					)
+			OR `source`=''
 			ORDER BY timestamp DESC
-			LIMIT %d OFFSET %d", $pagination, $offset);
+			LIMIT %d OFFSET %d",$pagination, $offset);
 		break;
 	case "oracle":
 		$set = array();
@@ -145,13 +167,24 @@ switch ($config["dbtype"]) {
 		$sql = sprintf ("
 			SELECT *
 			FROM ttrap
+			WHERE `source` IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					)
+			OR `source`=''
 			ORDER BY timestamp DESC");
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }
+
 $traps = db_get_all_rows_sql ($sql);
 // All traps 
-$all_traps = db_get_all_rows_sql ("SELECT DISTINCT source FROM ttrap");
+$all_traps = db_get_all_rows_sql ("SELECT DISTINCT source FROM ttrap 
+								WHERE `source` IN (
+											SELECT direccion FROM tagente
+											WHERE id_grupo IN ($str_user_groups)
+										)
+								OR `source`=''");
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {
@@ -188,27 +221,41 @@ foreach ($all_traps as $trap) {
 //Make query to extract traps of DB.
 switch ($config["dbtype"]) {
 	case "mysql":
-		$sql = "
-			SELECT *
-			FROM ttrap %s
+		$sql = "SELECT *
+			FROM ttrap
+			WHERE `source` IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					)
+			OR `source`='' %s
 			ORDER BY timestamp DESC
 			LIMIT %d,%d";
 		break;
 	case "postgresql":
-		$sql = "
-			SELECT *
-			FROM ttrap %s
+		$sql = "SELECT *
+			FROM ttrap
+			WHERE source IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					)
+			OR source='' %s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
 		break;
 	case "oracle":
-		$sql = "
-			SELECT *
-			FROM ttrap %s
-			ORDER BY timestamp DESC"; 
+		$sql = "SELECT *
+			FROM ttrap
+			WHERE source IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					)
+			OR source='' %s
+			ORDER BY timestamp DESC
+			LIMIT %d OFFSET %d";
 		break;
 }
-$whereSubquery = 'WHERE 1=1';
+//$whereSubquery = 'WHERE 1=1';
+$whereSubquery = '';
 
 if ($filter_agent != '') {
 	switch ($config["dbtype"]) {
@@ -479,6 +526,7 @@ $table->style[7] = "background: #F3F3F3; color: #111 !important;";
 // Skip offset records
 $idx = 0;
 if ($traps !== false) {
+
 	foreach ($traps as $trap) {
 		$data = array ();
 		if (empty($trap["description"])){
@@ -513,7 +561,7 @@ if ($traps !== false) {
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
 			$data[1] .= '<strong>'.$agent["nombre"].'</strong></a>';
 		}
-	
+
 		//OID
 		$table->cellclass[$idx][2] = get_priority_class ($severity);
 		$data[2] = '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . (empty($trap["oid"]) ? __('N/A') : $trap["oid"]) .'</a>';
@@ -558,15 +606,24 @@ if ($traps !== false) {
 		if (empty ($trap["status"]) && check_acl ($config["id_user"], 0, "IW")) {
 			$data[7] .= '<a href="' . $url_snmp . '&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a> ';
 		}
-		if (check_acl ($config["id_user"], 0, "IM")) {
-			$data[7] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
+		if ($trap['source'] == '') {
+			$is_admin = db_get_value('is_admin', 'tusuario', 'id_user',$config['id_user']);
+			if ($is_admin) {
+				$data[7] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
+			}
+		} else {
+			$agent_trap_group = db_get_value('id_grupo', 'tagente', 'nombre', $trap['source']);
+			if ((check_acl ($config["id_user"], $agent_trap_group, "AW"))) {
+				$data[7] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
+			}
 		}
+
 		$data[7] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
                 $data[7] .= enterprise_hook ('editor_link', array ($trap));
 
 		
 		$data[8] = html_print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
-	
+
 		array_push ($table->data, $data);
 		
 		//Hiden file for description
@@ -623,23 +680,26 @@ if ($traps !== false) {
 			}
 			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Type:') . '</td><td align="left">' . $desc_trap_type . '</td></tr>';
 		}
-		
+			
 		if ($group_by) {
-			$sql = "SELECT * FROM ttrap $where_without_group
+			$sql = "SELECT * FROM ttrap WHERE 1=1 
+					$where_without_group
 					AND oid='".$trap['oid']."' 
-					AND `source`='".$trap['source']."'";
+					AND source='".$trap['source']."'";
 			$group_traps = db_get_all_rows_sql($sql);
 			$count_group_traps = count($group_traps);
 			
-			$sql = "SELECT `timestamp` FROM ttrap $where_without_group
+			$sql = "SELECT timestamp FROM ttrap WHERE 1=1 
+					$where_without_group
 					AND oid='".$trap['oid']."' 
-					AND `source`='".$trap['source']."'
+					AND source='".$trap['source']."'
 					ORDER BY `timestamp` DESC";		
 			$last_trap = db_get_value_sql($sql);
 			
-			$sql = "SELECT `timestamp` FROM ttrap $where_without_group
+			$sql = "SELECT timestamp FROM ttrap WHERE 1=1
+					$where_without_group
 					AND oid='".$trap['oid']."' 
-					AND `source`='".$trap['source']."'
+					AND source='".$trap['source']."'
 					ORDER BY `timestamp` ASC";
 			$first_trap = db_get_value_sql($sql);
 			
@@ -655,6 +715,7 @@ if ($traps !== false) {
 					<td align="left" valign="top">' . '<b>' . __('Last trap:') . '</td>
 					<td align="left">' . $last_trap . '</td>
 				</tr>';
+
 		}
 		$string .=  '</table>';
 		

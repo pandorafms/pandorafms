@@ -91,6 +91,7 @@ if ($save_alert || $modify_alert) {
 	$trap_type = (int) get_parameter ("trap_type", -1);
 	$single_value = (string) get_parameter ("single_value"); 
 	$position = (int) get_parameter ("position"); 
+	$group = (int) get_parameter ("group"); 
 	
 	if ($time_threshold == -1) {
 		$time_threshold = $time_other;
@@ -129,7 +130,8 @@ if ($save_alert || $modify_alert) {
 			'_snmp_f10_' => $custom_oid_data_10,
 			'trap_type' => $trap_type,
 			'single_value' => $single_value,
-			'position' => $position);
+			'position' => $position,
+			'id_group' => $group);
 		
 		$result = db_process_sql_insert('talert_snmp', $values);
 		
@@ -156,7 +158,7 @@ if ($save_alert || $modify_alert) {
 			_snmp_f4_ = '%s', _snmp_f5_ = '%s', _snmp_f6_ = '%s',
 			_snmp_f7_ = '%s', _snmp_f8_ = '%s', _snmp_f9_ = '%s',
 			_snmp_f10_ = '%s', trap_type = %d, single_value = '%s',
-			position = '%s' 
+			position = '%s', id_group ='%s'
 			WHERE id_as = %d",
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
 			$al_field4, $al_field5, $al_field6, $al_field7, $al_field8,
@@ -166,8 +168,8 @@ if ($save_alert || $modify_alert) {
 			$custom_oid_data_3, $custom_oid_data_4, $custom_oid_data_5,
 			$custom_oid_data_6, $custom_oid_data_7, $custom_oid_data_8,
 			$custom_oid_data_9, $custom_oid_data_10, $trap_type, $single_value,
-			$position, $id_as);
-		
+			$position, $group, $id_as);
+	
 		$result = db_process_sql ($sql);
 		
 		if (!$result) {
@@ -220,6 +222,7 @@ if ($update_alert) {
 	$trap_type = $alert["trap_type"];
 	$single_value = $alert["single_value"]; 
 	$position = $alert["position"];
+	$group = $alert["id_group"];
 }
 elseif ($create_alert) {
 	// Variable init
@@ -256,6 +259,7 @@ elseif ($create_alert) {
 	$trap_type = -1;
 	$single_value = '';
 	$position = 0;
+	$group = 0;
 }
 
 // Header
@@ -305,6 +309,18 @@ if ($multiple_delete) {
 	}
 }
 
+$user_groups = users_get_groups($config['id_user'],"AR", true);
+$str_user_groups = '';
+$i = 0;
+foreach ($user_groups as $id=>$name) {
+	if ($i == 0) {
+		$str_user_groups .= $id;
+	} else {
+		$str_user_groups .= ','.$id;
+	}
+	$i++;
+}
+
 // Alert form
 if ($create_alert || $update_alert) {
 //if (isset ($_GET["update_alert"])) {
@@ -350,6 +366,11 @@ if ($create_alert || $update_alert) {
 	// SNMP Agent
 	echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
 	html_print_input_text ("source_ip", $source_ip, '', 20);
+	echo '</td></tr>';
+	
+	// Group
+	echo '<tr id="tr-group"><td class="datos2">'.__('Group').'</td><td class="datos2">';
+	html_print_select ($user_groups, "group", $group);
 	echo '</td></tr>';
 	
 	// Trap type
@@ -610,8 +631,8 @@ else {
 			"priority_filter=" . $priority_filter . "&" .
 			"offset=" . $offset;
 	}
-	
-	$where_sql = ' 1 = 1';
+
+	//$where_sql = ' 1 = 1';
 	if ($trap_type_filter != SNMP_TRAP_TYPE_NONE) {
 		$where_sql .= ' AND `trap_type` = ' . $trap_type_filter;
 	}
@@ -638,10 +659,9 @@ else {
 			OR `description` LIKE '%" . $free_search . "%')";
 	}
 	
-	$count = db_get_value_sql('SELECT COUNT(*)
-		FROM talert_snmp WHERE' . $where_sql);
-	
-	
+	$count = db_get_value_sql("SELECT COUNT(*)
+		FROM talert_snmp WHERE id_group IN ($str_user_groups) " . $where_sql);
+		
 	$result = array();
 	
 	//Overview
@@ -653,8 +673,9 @@ else {
 		ui_pagination ($count, $url_pagination);
 		
 		$where_sql .= ' LIMIT ' . $config['block_size'] . ' OFFSET ' . $offset;
-		$result = db_get_all_rows_sql('SELECT *
-			FROM talert_snmp WHERE' . $where_sql);
+		$result = db_get_all_rows_sql("SELECT *
+			FROM talert_snmp 
+			WHERE id_group IN ($str_user_groups) " . $where_sql);
 	}
 	
 	$table = new stdClass();

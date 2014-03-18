@@ -289,7 +289,8 @@ CREATE TABLE "talert_snmp" (
 	"_snmp_f10_" text DEFAULT '',
 	"trap_type" INTEGER NOT NULL DEFAULT '-1',
 	"single_value" varchar(255) DEFAULT '',
-	"position" INTEGER NOT NULL default 0
+	"position" INTEGER NOT NULL default 0,
+	"id_group" INTEGER NOT NULL default 0
 );
 
 CREATE TABLE "talert_commands" (

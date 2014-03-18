@@ -57,3 +57,8 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	FOREIGN KEY (`module_b`) REFERENCES tagente_modulo(`id_agente_modulo`)
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp`
+-- ---------------------------------------------------------------------
+ALTER TABLE `talert_snmp` ADD COLUMN `id_group` int(10) unsigned NOT NULL default '0';

@@ -311,6 +311,101 @@ foreach ($fields as $field) {
 
 // END: TABLE DATA BUILD
 
+// START: TABLE INTERFACES
+
+$columns = array(
+		"id_agente_modulo",
+		"nombre",
+		"descripcion",
+		"ip_target"
+	);
+$filter = array(
+		"id_agente" => $id_agente,
+		"id_tipo_modulo" => (int)db_get_value("id_tipo", "ttipo_modulo", "nombre", "remote_snmp_proc")
+	);
+$modules = agents_get_modules ($id_agent, $columns, $filter);
+
+if (! empty($modules)) {
+	$table_interface = new stdClass();
+	$table_interface->id = 'agent_interface_info';
+	$table_interface->class = 'databox';
+	$table_interface->width = '100%';
+	$table_interface->style = array();
+	$table_interface->style[1] = 'width: 30px;';
+	$table_interface->head = array();
+	$options = array(
+			"class" => "closed",
+			"style" => "vertical-align:middle; cursor:pointer;"
+		);
+	$table_interface->head[0] = html_print_image("images/go.png", true, $options) . "&nbsp;&nbsp;";
+	$table_interface->head[0] .= '<span style="vertical-align: middle;">' . __('Interface information') .' (SNMP)</span>';
+	$table_interface->head_colspan = array();
+	$table_interface->head_colspan[0] = 4;
+	$table_interface->data = array();
+
+	foreach ($modules as $key => $module) {
+
+		// Trying to get the interface name from the module name
+		if (preg_match ("/_(\w+)/" , (string)$module['nombre'], $matches)) {
+			if ($matches[1]) {
+				$interface_name = $matches[1];
+
+				$module_id = $module['id_agente_modulo'];
+				$db_status = modules_get_agentmodule_status($module_id);
+				$module_value = modules_get_last_value ($module_id);
+				modules_get_status($module_id, $db_status, $module_value, $status, $title);
+				$status = ui_print_status_image($status, $title, true);
+
+				$ip_target = "--";
+				// Trying to get something like an IP from the description
+				if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/" , (string)$module['ip_target'], $matches)) {
+					if ($matches[0]) {
+						$ip_target = $matches[0];
+					}
+				}
+				$description = "--";
+				// Trying to get something like a mac from the description
+				if (preg_match ("/([0-9a-f]{1,2}[\.:-]){5}([0-9a-f]{1,2})/i" , (string)$module['descripcion'], $matches)) {
+					if ($matches[0]) {
+						$description = $matches[0];
+					}
+				}
+
+				$data = array();
+				$data[0] = "<strong>" . $interface_name . "</strong>";
+				$data[1] = $status;
+				$data[2] = $ip_target;
+				$data[3] = $description;
+				$table_interface->data[] = $data;
+			}
+		}
+	}
+	unset($modules);
+
+	// This javascript piece of code is used to make expandible the body of the table
+	?>
+	<script type="text/javascript">
+		$(document).ready (function () {
+			$("#agent_interface_info").find("tbody").hide();
+			$("#agent_interface_info").find("thead").click (function () {
+				var arrow = $("#agent_interface_info").find("thead").find("img");
+				if (arrow.hasClass("closed")) {
+					arrow.removeClass("closed");
+					arrow.prop("src", "images/down.png");
+					$("#agent_interface_info").find("tbody").show();
+				} else {
+					arrow.addClass("closed");
+					arrow.prop("src", "images/go.png");
+					$("#agent_interface_info").find("tbody").hide();
+				}
+			});
+		});
+	</script>
+	<?php
+}
+
+// END: TABLE INTERFACES
+
 $table = null;
 $table->id = 'agent_details';
 $table->width = '98%';
@@ -321,8 +416,30 @@ $table->style = array_fill(0, 3, 'vertical-align: top;');
 
 $data = array();
 $data[0] = html_print_table($table_agent, true);
-$data[1] = html_print_table($table_contact, true) . '<br>';
-$data[1] .= empty($table_data->data) ? '' : html_print_table($table_data, true);
+$data[0] .= '<fieldset class="databox" style="position: static;">
+				<legend style="text-align:left; color: #666;">' . 
+					__('Events (24h)') . 
+				'</legend>' . 
+				'<div style="margin: auto; text-align:center; width: 300px;">' .
+				graph_graphic_agentevents ($id_agente, 300, 15, 86400, '', true) . 
+				'</div>' . 
+			'</fieldset>';
+
+// ACCESS RATE GRAPH
+if ($config["agentaccess"]) {
+	$data[0] .= '<fieldset class="databox" style="position: static;">
+					<legend style="text-align:left; color: #666;">' . 
+						__('Agent access rate (24h)') . 
+					'</legend>' . 
+					'<div style="margin: auto; text-align:center; width: 300px;">' .
+					graphic_agentaccess($id_agente, 300, 100, 86400, true) . 
+					'</div>' . 
+				'</fieldset>';
+}
+
+$data[1] = html_print_table($table_contact, true);
+$data[1] .= empty($table_data->data) ? '' : '<br>' . html_print_table($table_data, true);
+$data[1] .= !isset($table_interface) ? '' : '<br>' . html_print_table($table_interface, true);
 
 $table->rowspan[0][1] = 2;
 
@@ -334,32 +451,7 @@ $data[2] .= '</div>';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
-$data = array();
-$data[0] = '<fieldset class="databox" style="position: static;">
-				<legend style="text-align:left; color: #666;">' . 
-					__('Events (24h)') . 
-				'</legend>' . 
-				'<div style="margin: auto; text-align:center; width: 300px;">' .
-				graph_graphic_agentevents ($id_agente, 300, 15, 86400, '', true) . 
-				'</div>' . 
-				'</fieldset>';
-
-// ACCESS RATE GRAPH
-if ($config["agentaccess"]) {
-	$data[0] .= '<fieldset class="databox" style="position: static;">
-					<legend style="text-align:left; color: #666;">' . 
-						__('Agent access rate (24h)') . 
-					'</legend>' . 
-					'<div style="margin: auto; text-align:center; width: 300px;">' .
-					graphic_agentaccess($id_agente, 300, 100, 86400, true) . 
-					'</div>' . 
-					'</fieldset>';
-}
-
 $table->cellstyle[1][0] = 'text-align:center;';
-
-$table->data[] = $data;
-$table->rowclass[] = '';
 
 html_print_table($table);
 unset($table);

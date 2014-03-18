@@ -562,6 +562,18 @@ CREATE TABLE "tmodule_group" (
 	"name" varchar(150) NOT NULL default ''
 );
 
+-- ----------------------------------------------------------------------
+-- Table `tmodule_relationship`
+-- ----------------------------------------------------------------------
+CREATE TABLE "tmodule_relationship" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"module_a" INTEGER NOT NULL REFERENCES tagente_modulo("id_agente_modulo")
+		ON DELETE CASCADE,
+	"module_b" INTEGER NOT NULL REFERENCES tagente_modulo("id_agente_modulo")
+		ON DELETE CASCADE,
+	"disable_update" SMALLINT NOT NULL default 0
+);
+
 -- ---------------------------------------------------------------------
 -- Table `tnetwork_component`
 -- ---------------------------------------------------------------------

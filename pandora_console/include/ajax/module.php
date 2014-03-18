@@ -18,6 +18,7 @@ global $config;
 
 
 include_once($config['homedir'] . "/include/functions_agents.php");
+include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 enterprise_include_once ('include/functions_metaconsole.php');
 
@@ -51,11 +52,17 @@ if ($search_modules) {
 	$modules = io_safe_output($modules);
 	
 	echo json_encode($modules);
+	return;
 }
 
 $get_module_detail = get_parameter ('get_module_detail', 0);
 
 if ($get_module_detail) {
+
+	ui_require_jquery_file ("ui-timepicker-addon");
+	// This script is included manually to be included after jquery and avoid error
+	echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language(), false, false, false) . '"></script>';
+	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 	
 	ui_require_jquery_file ("ui-timepicker-addon");
 	// This script is included manually to be included after jquery and avoid error
@@ -329,4 +336,68 @@ if ($get_module_detail) {
 	
 	return;
 }
+
+$get_module_autocomplete_input = (bool) get_parameter('get_module_autocomplete_input');
+if ($get_module_autocomplete_input) {
+	$id_agent = (int) get_parameter("id_agent");
+
+	ob_clean();
+	if ($id_agent > 0) {
+		html_print_autocomplete_modules('autocomplete_module_name', '', array($id_agent));
+		return;
+	}
+	return;
+}
+
+$add_module_relation = (bool) get_parameter('add_module_relation');
+if ($add_module_relation) {
+	$result = false;
+	$id_module_a = (int) get_parameter("id_module_a");
+	$id_module_b = (int) get_parameter("id_module_b");
+
+	if ($id_module_a < 1) {
+		$name_module_a = get_parameter("name_module_a", "");
+		if ($name_module_a) {
+			$id_module_a = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_a);
+		} else {
+			echo json_encode($result);
+			return;
+		}
+	}
+	if ($id_module_b < 1) {
+		$name_module_b = get_parameter("name_module_b", "");
+		if ($name_module_b) {
+			$id_module_b = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_b);
+		} else {
+			echo json_encode($result);
+			return;
+		}
+	}
+	if ($id_module_a > 0 && $id_module_b > 0) {
+		$result = modules_add_relation($id_module_a, $id_module_b);
+	}
+	echo json_encode($result);
+	return;
+}
+
+$remove_module_relation = (bool) get_parameter('remove_module_relation');
+if ($remove_module_relation) {
+	$id_relation = (int) get_parameter("id_relation");
+	if ($id_relation > 0) {
+		$result = (bool) modules_delete_relation($id_relation);
+	}
+	echo json_encode($result);
+	return;
+}
+
+$change_module_relation_updates = (bool) get_parameter('change_module_relation_updates');
+if ($change_module_relation_updates) {
+	$id_relation = (int) get_parameter("id_relation");
+	if ($id_relation > 0) {
+		$result = (bool) modules_change_relation_lock($id_relation);
+	}
+	echo json_encode($result);
+	return;
+}
+
 ?>

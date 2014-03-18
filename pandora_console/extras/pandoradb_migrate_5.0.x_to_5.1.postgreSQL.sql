@@ -31,3 +31,16 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 
 UPDATE "tconfig" SET "value"='#FFFF00' WHERE "token"='graph_color2';
 UPDATE "tconfig" SET "value"='#FF6600' WHERE "token"='graph_color3';
+
+/* 2014/03/18 */
+-- ----------------------------------------------------------------------
+-- Table `tmodule_relationship`
+-- ----------------------------------------------------------------------
+CREATE TABLE "tmodule_relationship" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"module_a" INTEGER NOT NULL REFERENCES tagente_modulo("id_agente_modulo")
+		ON DELETE CASCADE,
+	"module_b" INTEGER NOT NULL REFERENCES tagente_modulo("id_agente_modulo")
+		ON DELETE CASCADE,
+	"disable_update" SMALLINT NOT NULL default 0
+);

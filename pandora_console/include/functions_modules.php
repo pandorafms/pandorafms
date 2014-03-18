@@ -1763,4 +1763,145 @@ function modules_get_module_macros_json ($macro_names, $macro_values) {
 	return base64_encode(json_encode ($module_macros));
 }
 
+/**
+ * Returns the relations between modules.
+ *
+ * @param array Optional assoc array with parameters.
+ * (int) id_agent
+ * (int) id_module
+ * (bool) disabled_update
+ * (string) modules_type: The type of the two modules
+ *
+ * @return mixed Array with relations between modules. False if there were no data.
+ */
+function modules_get_relations ($params = array()) {
+
+	$id_agent = 0;
+	if (isset($params['id_agent'])) {
+		$id_agent = $params['id_agent'];
+	}
+
+	$id_module = 0;
+	if (isset($params['id_module'])) {
+		$id_module = $params['id_module'];
+	}
+	
+	$disabled_update = -1;
+	if (isset($params['disabled_update'])) {
+		$disabled_update = (int) $params['disabled_update'];
+		if ($disabled_update > 1) {
+			$disabled_update = 1;
+		}
+	}
+
+	$modules_type = "";
+	if (isset($params['modules_type'])) {
+		$modules_type = $params['modules_type'];
+	}
+
+	$sql = "SELECT DISTINCT tmr.id, tmr.module_a, tmr.module_b, tmr.disable_update
+			FROM tmodule_relationship AS tmr, tagente_modulo AS tam, tagente AS ta, ttipo_modulo AS ttm
+			WHERE ";
+
+	$agent_filter = "";
+	if ($id_agent > 0) {
+		$agent_filter = sprintf("AND ta.id_agente = %d", $id_agent);
+	}
+	$module_a_filter = "";
+	$module_b_filter = "";
+	if ($id_module > 0) {
+		$module_a_filter = sprintf("AND tmr.module_a = %d", $id_module);
+		$module_b_filter = sprintf("AND tmr.module_b = %d", $id_module);
+	}
+	$disabled_update_filter = "";
+	if ($disabled_update >= 0) {
+		$disabled_update_filter = sprintf("AND tmr.disable_update = %d", $disabled_update);
+	}
+	$modules_type_filter = "";
+	if ($modules_type != "") {
+		$modules_type_filter = sprintf("AND (tam.id_tipo_modulo = ttm.id_tipo AND ttm.nombre = '%s')", $modules_type);
+	}
+
+	$sql .= "( (tmr.module_a = tam.id_agente_modulo
+					$module_a_filter)
+				OR (tmr.module_b = tam.id_agente_modulo
+					$module_b_filter) )
+				AND tam.id_agente = ta.id_agente
+					$agent_filter
+				$disabled_update_filter
+				$modules_type_filter";
+
+	return db_get_all_rows_sql($sql);
+}
+
+/**
+ * Check if a relation already exists.
+ *
+ * @param int First module id.
+ * @param int Second module id.
+ *
+ * @return bool True if the relation exists, false otherwise.
+ */
+function modules_relation_exists ($id_module_a, $id_module_b) {
+	$sql = sprintf("SELECT id
+					FROM tmodule_relationship
+					WHERE (module_a = %d AND module_b = %d)
+						OR (module_b = %d AND module_a = %d)",
+					$id_module_a, $id_module_b, $id_module_a, $id_module_b);
+
+	return (bool) db_get_row_sql($sql);
+}
+
+/**
+ * Change the 'disabled_update' value of a relation row.
+ *
+ * @param int Relation id.
+ *
+ * @return bool True if the 'disabled_update' changes to 1, false otherwise.
+ */
+function modules_add_relation ($id_module_a, $id_module_b) {
+	$result = false;
+
+	if (!modules_relation_exists($id_module_a, $id_module_b) && $id_module_a > 0 && $id_module_b > 0) {
+		$values = array(
+				'module_a' => $id_module_a,
+				'module_b' => $id_module_b
+			);
+		$result = db_process_sql_insert('tmodule_relationship', $values);
+	}
+
+	return $result;
+}
+
+/**
+ * Change the 'disabled_update' value of a relation row.
+ *
+ * @param int Relation id.
+ *
+ * @return bool True if the 'disabled_update' changes to 1, false otherwise.
+ */
+function modules_delete_relation ($id_relation) {
+	$result = db_process_sql_delete('tmodule_relationship', array('id' => $id_relation));
+
+	return $result;
+}
+
+/**
+ * Change the 'disabled_update' value of a relation row.
+ *
+ * @param int Relation id.
+ *
+ * @return bool True if the 'disabled_update' changes to 1, false otherwise.
+ */
+function modules_change_relation_lock ($id_relation) {
+	$old_value = (int) db_get_value('disable_update', 'tmodule_relationship', 'id', $id_relation);
+	$new_value = $old_value === 1 ? 0 : 1;
+	
+	$result = db_process_sql_update('tmodule_relationship',
+									array('disable_update' => $new_value),
+									array('id' => $id_relation));
+
+	return ($result !== false ? $new_value : $old_value);
+}
+
 ?>

@@ -1,3 +1,42 @@
+2014-03-18  Alejandro Gallardo <alejandro.gallardo@artica.es>
+
+	* pandoradb.data.oracle.sql,
+	  pandoradb.data.postgreSQL.sql,
+	  pandoradb.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql:
+	Added the table "tmodule_relationship".
+
+	* operation/agentes/estado_generalagente.php: Added a
+	new table to show the network interfaces of the agent.
+	Minor fixes.
+
+	* include/styles/pandora.css: Added properties for the
+	class transparent'.
+
+	* include/ajax/module.php: Fixed an error and added code
+	to retrieve a module autocomplete input or add, remove
+	or update a module relation via ajax.
+
+	* include/functions_modules.php: Added the functions
+	"modules_get_relations", "modules_relation_exists",
+	"modules_add_relation", "modules_delete_relation" and
+	"modules_change_relation_lock".
+	
+	* godmode/agentes/module_manager_editor_common.php:
+	Added a table and control to show, add or delete
+	relations with other modules. Added the javascript
+	functions "change_modules_autocomplete_input",
+	"add_new_relation", "change_lock_relation" and
+	"delete_relation".
+
+	* godmode/agentes/module_manager_editor.php: Added a
+	line to show the module relations table and control.
+
+	* godmode/agentes/module_manager_editor_network.php:
+	Minor fix.
+
 2014-03-17  Vanessa Gil <vanessa.gil@artica.es>
 	
 	* pandoradb.sql

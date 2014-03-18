@@ -38,15 +38,18 @@ my $version = "5.1dev PS140318";
 # Pandora server configuration
 my %conf;
 
-my $BIG_OPERATION_STEP = 100; # Long operations are divided in XX steps for performance
-my $SMALL_OPERATION_STEP = 1000; # Each long operations has a LIMIT of SMALL_OPERATION_STEP to avoid locks. 
-                                 #Increate to 3000~5000 in fast systems decrease to 500 or 250 on systems with locks
+# Long operations are divided in XX steps for performance
+my $BIG_OPERATION_STEP = 100;
+# Each long operations has a LIMIT of SMALL_OPERATION_STEP to avoid locks. 
+#Increate to 3000~5000 in fast systems decrease to 500 or 250 on systems with locks
+my $SMALL_OPERATION_STEP = 1000;
+
 # FLUSH in each IO 
 $| = 1;
 
-###############################################################################
+########################################################################
 # Print the given message with a preceding timestamp.
-###############################################################################
+########################################################################
 sub log_message ($$;$) {
 	my ($source, $message, $eol) = @_;
 	
@@ -55,44 +58,47 @@ sub log_message ($$;$) {
 	
 	if ($source eq '') {
 		print $message;
-	} else {
+	}
+	else {
 		print strftime("%H:%M:%S", localtime()) . ' [' . $source . '] ' . $message . $eol;
 	}
 }
 
-###############################################################################
+########################################################################
 # Delete old data from the database.
-###############################################################################
+########################################################################
 sub pandora_purgedb ($$) {
 	my ($conf, $dbh) = @_;
-
+	
 	# 1) Obtain last value for date limit
 	# 2) Delete all elements below date limit
 	# 3) Insert last value in date_limit position
-
- 	# Calculate limit for deletion, today - $conf->{'_days_purge'}
-
+	
+	# Calculate limit for deletion, today - $conf->{'_days_purge'}
+	
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	my $ulimit_access_timestamp = time() - 86400;
 	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
-
+	
 	# Delete old numeric data
 	pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
-
-    # Delete extended session data
-    if (enterprise_load (\%conf) != 0) {
-        db_do ($dbh, "DELETE FROM tsesion_extended WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion );");
-        log_message ('PURGE', 'Deleting old extended session data.');
-    }
-
-    # Delete inventory data, only if enterprise is enabled
-    # We use the same value than regular data purge interval
+	
+	# Delete extended session data
+	if (enterprise_load (\%conf) != 0) {
+		db_do ($dbh, "DELETE FROM tsesion_extended
+			WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion );");
+		
+		log_message ('PURGE', 'Deleting old extended session data.');
+	}
+	
+	# Delete inventory data, only if enterprise is enabled
+	# We use the same value than regular data purge interval
 	my $first_mark;
 	my $total_time;
 	my $purge_steps;
 	my $purge_count;
-
-    if (enterprise_load (\%conf) != 0) {
+	
+	if (enterprise_load (\%conf) != 0) {
 
         log_message ('PURGE', 'Deleting old inventory data.');
 
@@ -140,7 +146,8 @@ sub pandora_purgedb ($$) {
 		} else {
 			log_message ('PURGE', 'No data to purge in tagente_datos_log4x.');
 		}
-	} else {
+	}
+	else {
 		log_message ('PURGE', 'No data in tagente_datos_log4x.');
 	}
 
@@ -262,6 +269,8 @@ sub pandora_purgedb ($$) {
 		log_message ('PURGE', "No agent access data.");
 	}
 	
+	
+	
 	# Purge the reports
    	if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
 	    defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
@@ -280,22 +289,29 @@ sub pandora_purgedb ($$) {
 		db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
 	}
 	
+	
+	
 	# Delete old netflow data
 	log_message ('PURGE', "Deleting old netflow data.");
 	if (! defined ($conf->{'_netflow_path'}) || ! -d $conf->{'_netflow_path'}) {
 		log_message ('!', "Netflow data directory does not exist, skipping.");
-	} elsif (! -x $conf->{'_netflow_nfexpire'}) {
+	}
+	elsif (! -x $conf->{'_netflow_nfexpire'}) {
 		log_message ('!', "Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping.");
-	} else {
+	}
+	else {
 		`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -e "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
 	}
-
+	
+	
+	
 	# Delete old log data
 	log_message ('PURGE', "Deleting old log data.");
 	if (! defined ($conf->{'_log_dir'}) || ! -d $conf->{'_log_dir'}) {
 		log_message ('!', "Log data directory does not exist, skipping.");
-	} elsif ($conf->{'_log_max_lifetime'} != 0) {
-
+	}
+	elsif ($conf->{'_log_max_lifetime'} != 0) {
+		
 		# Calculate the limit date
 		my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time() - $conf->{'_log_max_lifetime'} * 86400); 
 		
@@ -314,15 +330,15 @@ sub pandora_purgedb ($$) {
 		
 		# Set the per-depth limits
 		my $limits = [$year, $mon, $mday, $hour];
-
+		
 		# Purge the log dir
 		pandora_purge_log_dir ($conf->{'_log_dir'}, $limits);
 	}
 }
 
-###############################################################################
+########################################################################
 # Recursively delete old log files by sub directory.
-###############################################################################
+########################################################################
 sub pandora_purge_log_dir ($$;$) {
 	my ($dir, $limits, $depth) = @_;
 	
@@ -471,16 +487,16 @@ sub pandora_compactdb ($$) {
 	}
 }
 
-##############################################################################
+########################################################################
 # Check command line parameters.
-##############################################################################
+########################################################################
 sub pandora_init ($) {
 	my $conf = shift;
-
+	
 	log_message ('', "\nPandora FMS DB Tool $version Copyright (c) 2004-2009 Artica ST\n");
 	log_message ('', "This program is Free Software, licensed under the terms of GPL License v2\n");
 	log_message ('', "You can download latest versions and documentation at http://www.pandorafms.org\n\n");
-
+	
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
 	
@@ -508,14 +524,14 @@ sub pandora_init ($) {
 			$conf->{'_force'} = 1;
 		}
 	}
-
+	
 	help_screen () if ($conf->{'_pandora_path'} eq '');
 }
 
 
-##############################################################################
+########################################################################
 # Read external configuration file.
-##############################################################################
+########################################################################
 sub pandora_load_config ($) {
 	my $conf = shift;
 
@@ -614,88 +630,148 @@ sub pandora_checkdb_integrity {
 ###############################################################################
 sub pandora_checkdb_consistency {
 	my $dbh = shift;
-
-	# 1. Check for modules that do not have tagente_estado but have tagente_module
-
+	
+	#-------------------------------------------------------------------
+	# 1. Check for modules that do not have tagente_estado but have
+	#    tagente_module
+	#-------------------------------------------------------------------
+	
 	log_message ('CHECKDB', "Deleting non-init data.");
-	my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo,id_agente FROM tagente_estado WHERE estado = 4');
+	my @modules = get_db_rows ($dbh,
+		'SELECT id_agente_modulo, id_agente
+		FROM tagente_estado
+		WHERE estado = 4');
+	
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
-
+		my $id_agente = $module->{'id_agente'};
+		
 		# Skip policy modules
-		my $is_policy_module = enterprise_hook ('is_policy_module', [$dbh, $id_agente_modulo]);
+		my $is_policy_module = enterprise_hook('is_policy_module',
+			[$dbh, $id_agente_modulo]);
 		next if (defined($is_policy_module) && $is_policy_module);
-
+		
 		# Skip if agent is disabled
-		my $is_agent_disabled = get_db_value ($dbh, 'SELECT disabled FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+		my $is_agent_disabled = get_db_value ($dbh,
+			'SELECT disabled
+			FROM tagente
+			WHERE id_agente = ?', $module->{'id_agente'});
 		next if (defined($is_agent_disabled) && $is_agent_disabled);
-
+		
 		# Skip if module is disabled
-		my $is_module_disabled = get_db_value ($dbh, 'SELECT disabled FROM tagente_modulo WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+		my $is_module_disabled = get_db_value ($dbh,
+			'SELECT disabled
+			FROM tagente_modulo
+			WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 		next if (defined($is_module_disabled) && $is_module_disabled);
-
+		
+		
+		#---------------------------------------------------------------
 		# Delete the module
-		db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agente_modulo);
-
+		#---------------------------------------------------------------
+		db_do ($dbh, 'UPDATE tagente
+			SET notinit_count = notinit_count - 1
+			WHERE id_agente = ?', $id_agente);
+		
+		db_do ($dbh,
+			'DELETE FROM tagente_modulo
+			WHERE id_agente_modulo = ?', $id_agente_modulo);
+		
 		# Do a nanosleep here for 0,001 sec
 		usleep (100000);
-
+		
 		# Delete any alerts associated to the module
-		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
+		db_do ($dbh,
+			'DELETE FROM talert_template_modules
+			WHERE id_agent_module = ?', $id_agente_modulo);
 	}
-
-	log_message ('CHECKDB', "Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days).");
-	if (defined ($conf{'_days_delete_unknown'}) && $conf{'_days_delete_unknown'} > 0) {
-		my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND estado = 3 AND utimestamp < UNIX_TIMESTAMP() - ?', 86400 * $conf{'_days_delete_unknown'});
+	
+	log_message ('CHECKDB',
+		"Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days).");
+	
+	if (defined($conf{'_days_delete_unknown'}) && $conf{'_days_delete_unknown'} > 0) {
+		my @modules = get_db_rows($dbh,
+			'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente
+			FROM tagente_modulo, tagente_estado
+			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+				AND estado = 3
+				AND utimestamp < UNIX_TIMESTAMP() - ?',
+			86400 * $conf{'_days_delete_unknown'});
+		
 		foreach my $module (@modules) {
 			my $id_agente_modulo = $module->{'id_agente_modulo'};
-	
+			
 			# Skip policy modules
-			my $is_policy_module = enterprise_hook ('is_policy_module', [$dbh, $id_agente_modulo]);
+			my $is_policy_module = enterprise_hook('is_policy_module',
+				[$dbh, $id_agente_modulo]);
 			next if (defined($is_policy_module) && $is_policy_module);
-	
+			
 			# Delete the module
-			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);
+			db_do ($dbh,
+				'DELETE FROM tagente_modulo
+				WHERE disabled = 0
+					AND id_agente_modulo = ?', $id_agente_modulo);
 			
 			# Delete any alerts associated to the module
-			db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ? AND NOT EXISTS (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente_modulo = ?)', $id_agente_modulo, $id_agente_modulo);
-
+			db_do ($dbh, 'DELETE FROM talert_template_modules
+				WHERE id_agent_module = ?
+					AND NOT EXISTS (SELECT id_agente_modulo
+						FROM tagente_modulo
+						WHERE id_agente_modulo = ?)',
+				$id_agente_modulo, $id_agente_modulo);
+			
 			# Do a nanosleep here for 0,001 sec
 			usleep (100000);
 		}
 	}
-	log_message ('CHECKDB', "Checking database consistency (Missing status).");
-
+	log_message ('CHECKDB',
+		"Checking database consistency (Missing status).");
+	
 	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
 		my $id_agente = $module->{'id_agente'};
-
+		
 		# check if exist in tagente_estado and create if not
-		my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_estado WHERE id_agente_modulo = ?', $id_agente_modulo);
+		my $count = get_db_value ($dbh,
+			'SELECT COUNT(*)
+			FROM tagente_estado
+			WHERE id_agente_modulo = ?', $id_agente_modulo);
 		next if (defined ($count) && $count > 0);
-
-		db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente_modulo, 0, '1970-01-01 00:00:00', 1, $id_agente, '1970-01-01 00:00:00', 0, 0, 0, 0);
-		log_message ('CHECKDB', "Inserting module $id_agente_modulo in state table.");
+		
+		db_do ($dbh,
+			'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente_modulo, 0, '1970-01-01 00:00:00', 1, $id_agente, '1970-01-01 00:00:00', 0, 0, 0, 0);
+		log_message ('CHECKDB',
+			"Inserting module $id_agente_modulo in state table.");
 	}
-
-	log_message ('CHECKDB', "Checking database consistency (Missing module).");
-	# 2. Check for modules in tagente_estado that do not have tagente_modulo, if there is any, delete it
-
+	
+	log_message ('CHECKDB',
+		"Checking database consistency (Missing module).");
+	
+	#-------------------------------------------------------------------
+	# 2. Check for modules in tagente_estado that do not have
+	#    tagente_modulo, if there is any, delete it
+	#-------------------------------------------------------------------
+	
 	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_estado');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
-
+		
 		# check if exist in tagente_estado and create if not
-		my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agente_modulo);
+		my $count = get_db_value ($dbh,
+			'SELECT COUNT(*)
+			FROM tagente_modulo
+			WHERE id_agente_modulo = ?', $id_agente_modulo);
 		next if (defined ($count) && $count > 0);
-	
-		db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $id_agente_modulo);
-
+		
+		db_do ($dbh, 'DELETE FROM tagente_estado
+			WHERE id_agente_modulo = ?', $id_agente_modulo);
+		
 		# Do a nanosleep here for 0,001 sec
 		usleep (100000);
-
-		log_message ('CHECKDB', "Deleting non-existing module $id_agente_modulo in state table.");
+		
+		log_message ('CHECKDB',
+			"Deleting non-existing module $id_agente_modulo in state table.");
 	}
 }
 
@@ -805,7 +881,8 @@ pandora_load_config (\%conf);
 # Load enterprise module
 if (enterprise_load (\%conf) == 0) {
 	log_message ('', " [*] Pandora FMS Enterprise module not available.\n\n");
-} else {
+}
+else {
 	log_message ('', " [*] Pandora FMS Enterprise module loaded.\n\n");
 }
 

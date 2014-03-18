@@ -231,9 +231,10 @@ function configure_modules_form () {
 		$("#component_loading").show ();
 		$(".error").hide ();
 		jQuery.post ("ajax.php",
-			{"page" : "godmode/agentes/module_manager_editor",
-			"get_module_component" : 1,
-			"id_module_component" : this.value
+			{
+				"page" : "godmode/agentes/module_manager_editor",
+				"get_module_component" : 1,
+				"id_module_component" : this.value
 			},
 			function (data, status) {
 				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
@@ -330,10 +331,11 @@ function configure_modules_form () {
 				if (!load_module_component) {
 					// Delete macro fields
 					$('.macro_field').remove();
+					$('#hidden-macros').val('');
 				}
 				load_module_component = false;
 				
-				$('#hidden-macros').val('');
+				
 				
 				// If exist macros, load the fields
 				if (data["macros"] != '' && data["macros"] != null) {
@@ -612,7 +614,8 @@ function load_plugin_macros_fields(row_model_id) {
 	var params = [];
 	params.push("page=include/ajax/module");
 	params.push("get_plugin_macros=1");
-	params.push("id_plugin="+id_plugin);
+	params.push("id_plugin=" + id_plugin);
+	
 	jQuery.ajax ({
 		data: params.join ("&"),
 		type: 'POST',
@@ -634,6 +637,19 @@ function load_plugin_macros_fields(row_model_id) {
 			}
 		}
 	});
+}
+
+function load_plugin_description(id_plugin) {
+	jQuery.post ("ajax.php",
+		{
+			"page" : "godmode/servers/plugin",
+			"get_plugin_description" : 1,
+			"id_plugin" : id_plugin
+		},
+		function (data, status) {
+			$("#plugin_description").html(data);
+		}
+	);
 }
 
 // Show the modal window of a module

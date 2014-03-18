@@ -125,7 +125,7 @@ push_table_simple ($data, 'snmp_2');
 $data = array ();
 $data[0] = __('TCP send') . ' ' . ui_print_help_icon ("tcp_send", true);
 $data[1] = html_print_textarea ('tcp_send', 2, 65, $tcp_send, $disabledTextBecauseInPolicy, true);
-$table_advanced->colspan['tcp_send'][1] = 3;
+$table_simple->colspan['tcp_send'][1] = 3;
 
 push_table_simple ($data, 'tcp_send');
 

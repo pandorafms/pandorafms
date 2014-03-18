@@ -667,6 +667,25 @@ CREATE SEQUENCE tmodule_group_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tmodule_group_inc BEFORE INSERT ON tmodule_group REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_group_s.nextval INTO :NEW.ID_MG FROM dual; END;;
 
+-- ----------------------------------------------------------------------
+-- Table `tmodule_relationship`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS tmodule_relationship (
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	module_a NUMBER(10, 0) NOT NULL REFERENCES tagente_modulo(id_agente_modulo)
+		ON DELETE CASCADE,
+	module_b NUMBER(10, 0) NOT NULL REFERENCES tagente_modulo(id_agente_modulo)
+		ON DELETE CASCADE,
+	disable_update NUMBER(1, 0) default 0 NOT NULL
+);
+
+CREATE SEQUENCE tmodule_relationship_s INCREMENT BY 1 START WITH 1;
+
+CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_relationship REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_relationship_s.nextval INTO :NEW.ID FROM dual; END;;
+
+-- ----------------------------------------------------------------------
+-- Table `tnetwork_component`
+-- ----------------------------------------------------------------------
 CREATE TABLE tnetwork_component (
 	id_nc NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name CLOB NOT NULL,

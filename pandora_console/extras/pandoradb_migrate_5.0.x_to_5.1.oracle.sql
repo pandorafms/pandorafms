@@ -30,3 +30,20 @@ INSERT INTO tconfig (token, value) VALUES ('graph_color10', '#6666FF');
 
 UPDATE tconfig SET value='#FFFF00' WHERE token='graph_color2';
 UPDATE tconfig SET value='#FF6600' WHERE token='graph_color3';
+
+/* 2014/03/18 */
+-- ----------------------------------------------------------------------
+-- Table `tmodule_relationship`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS tmodule_relationship (
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	module_a NUMBER(10, 0) NOT NULL REFERENCES tagente_modulo(id_agente_modulo)
+		ON DELETE CASCADE,
+	module_b NUMBER(10, 0) NOT NULL REFERENCES tagente_modulo(id_agente_modulo)
+		ON DELETE CASCADE,
+	disable_update NUMBER(1, 0) default 0 NOT NULL
+);
+
+CREATE SEQUENCE tmodule_relationship_s INCREMENT BY 1 START WITH 1;
+
+CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_relationship REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_relationship_s.nextval INTO :NEW.ID FROM dual; END;;

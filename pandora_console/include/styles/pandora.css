@@ -1234,6 +1234,13 @@ div.title_line {
 	width: 762px;
 }
 
+.transparent {
+	filter:alpha(opacity=50);
+	-moz-opacity: 0.5;
+	opacity: 0.5;
+	-khtml-opacity: 0.5;
+}
+
 #menu_tab_frame {
 	background:#FAFAFA;
 }

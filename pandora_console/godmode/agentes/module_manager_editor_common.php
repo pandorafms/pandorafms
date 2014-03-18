@@ -519,6 +519,106 @@ $macro_count++;
 
 html_print_input_hidden ('module_macro_count', $macro_count);
 
+/* Advanced form part */
+// Add relationships
+$table_new_relations = new stdClass();
+$table_new_relations->id = 'module_new_relations';
+$table_new_relations->width = '98%';
+$table_new_relations->class = 'databox_color';
+$table_new_relations->data = array ();
+$table_new_relations->style = array ();
+$table_new_relations->style[0] = 'width: 10%; font-weight: bold;';
+$table_new_relations->style[1] = 'width: 25%; text-align: center;';
+$table_new_relations->style[2] = 'width: 10%; font-weight: bold;';
+$table_new_relations->style[3] = 'width: 25%; text-align: center;';
+$table_new_relations->style[4] = 'width: 30%; text-align: center;';
+
+$table_new_relations->data[0][0] = __('Agent');
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'autocomplete_agent_name';
+$params['use_hidden_input_idagent'] = true;
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
+$params['javascript_function_action_after_select_js_call'] = 'change_modules_autocomplete_input();';
+$table_new_relations->data[0][1] = ui_print_agent_autocomplete_input($params);
+$table_new_relations->data[0][2] = __('Module');
+$table_new_relations->data[0][3] = "<div id='module_autocomplete'></div>";
+$table_new_relations->data[0][4] = html_print_button (__('Add relationship'), 'add_relation', false, 'javascript: add_new_relation();', 'class="sub add"', true);
+$table_new_relations->data[0][4] .= "&nbsp;&nbsp;<div id='add_relation_status' style='display: inline;'></div>";
+
+// Relationship list
+$table_relations = new stdClass();
+$table_relations->id = 'module_relations';
+$table_relations->width = '98%';
+$table_relations->class = 'databox';
+$table_relations->head = array ();
+$table_relations->data = array ();
+$table_relations->rowstyle = array ();
+$table_relations->rowstyle[-1] = 'display: none;';
+$table_relations->style = array ();
+$table_relations->style[2] = 'width: 10%; text-align: center;';
+$table_relations->style[3] = 'width: 10%; text-align: center;';
+
+$table_relations->head[0] = __('Agent');
+$table_relations->head[1] = __('Module');
+$table_relations->head[2] = __('Changes');
+$table_relations->head[3] = __('Delete');
+
+// Create an invisible row to use their html to add new rows
+$table_relations->data[-1][0] = "";
+$table_relations->data[-1][1] = "";
+$table_relations->data[-1][2] = '<a id="disable_updates_button" class="transparent" href="">' . html_print_image('images/lock.png', true) . '</a>';
+$table_relations->data[-1][3] = '<a id="delete_relation_button" href="">' . html_print_image('images/cross.png', true) . '</a>';
+
+$module_relations = modules_get_relations(array('id_module' => $id_agent_module));
+if (!$module_relations) {
+	$module_relations = array();
+}
+
+$relations_count = 0;
+foreach ($module_relations as $key => $module_relation) {
+
+	if ($module_relation['module_a'] == $id_agent_module) {
+		$module_id = $module_relation['module_b'];
+		$agent_id = modules_give_agent_id_from_module_id ($module_relation['module_b']);
+	} else {
+		$module_id = $module_relation['module_a'];
+		$agent_id = modules_give_agent_id_from_module_id ($module_relation['module_a']);
+	}
+
+	$agent_name = ui_print_agent_name ($agent_id, true);
+
+	$module_name = modules_get_agentmodule_name($module_id);
+	if (empty($module_name) || $module_name == 'false') {
+		$module_name = $module_id;
+	}
+
+	if ($module_relation['disable_update']) {
+		$disabled_update_class = "";
+	} else {
+		$disabled_update_class = "transparent";
+	}
+
+	// Agent name
+	$table_relations->data[$relations_count][0] = $agent_name;
+	// Module name
+	$table_relations->data[$relations_count][1] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $agent_id .
+			"&tab=module&edit_module=1&id_agent_module=" . $module_id . "'>" .
+			ui_print_truncate_text($module_name, 'module_medium', true, true, true, '[&hellip;]') . "</a>";
+	// Lock relationship updates
+	$table_relations->data[$relations_count][2] = '<a id="disable_updates_button" class="' . $disabled_update_class . '"
+												href="javascript: change_lock_relation(' . $relations_count . ', ' . $module_relation['id'] . ');">'
+												 . html_print_image('images/lock.png', true) . '</a>';
+	// Delete relationship
+	$table_relations->data[$relations_count][3] = '<a id="delete_relation_button" href="javascript: delete_relation(' . $relations_count . ', ' . $module_relation['id'] . ');">'
+												 . html_print_image('images/cross.png', true) . '</a>';
+	$relations_count++;
+}
+
+html_print_input_hidden ('module_relations_count', $relations_count);
+
 ui_require_jquery_file('json');
 
 ?>
@@ -589,6 +689,14 @@ $(document).ready (function () {
 	});
 	
 	$("#id_module_type").trigger('change');
+
+	// Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
+	$("#text-autocomplete_agent_name").keydown(function(event){
+		if(event.keyCode == 13) { // key code 13 is the enter button
+			event.preventDefault();
+		}
+	});
+
 });
 
 // Add a new module macro
@@ -615,6 +723,198 @@ function delete_macro (num) {
 	
 	// Do not decrease the macro counter or new macros may overlap existing ones!
 }
+
+
+/* Relationship javascript */
+
+// Change the modules autocomplete input depending on the result of the agents autocomplete input
+function change_modules_autocomplete_input () {
+	var id_agent = parseInt($("#hidden-autocomplete_id_agent").val());
+	var module_autocomplete = $("#module_autocomplete");
+	var load_icon = '<?php html_print_image ("images/spinner.gif", false) ?>';
+	var error_icon = '<?php html_print_image ("images/error_red.png", false) ?>';
+
+	if (!module_autocomplete.hasClass('working')) {
+		module_autocomplete.addClass('working');
+		module_autocomplete.html(load_icon);
+
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			dataType: "html",
+			data: {
+				page: "include/ajax/module",
+				get_module_autocomplete_input: true,
+				id_agent: id_agent
+			},
+			success: function (data) {
+				module_autocomplete.removeClass('working');
+				if (data) {
+					module_autocomplete.html(data);
+					// Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
+					$("#text-autocomplete_module_name").keydown(function(event){
+						if(event.keyCode == 13) { // key code 13 is the enter button
+							event.preventDefault();
+						}
+					});
+				} else {
+					module_autocomplete.html(error_icon);
+				}
+			},
+			error: function (data) {
+				module_autocomplete.removeClass('working');
+				module_autocomplete.html(error_icon);
+			}
+		});
+	}
+}
+
+// Add a new relation
+function add_new_relation () {
+	var module_a_id = parseInt($("#hidden-id_agent_module").val());
+	var module_b_name = $("#text-autocomplete_module_name").val();
+	var agent_b_name = $("#text-autocomplete_agent_name").val();
+	var hiddenRow = $("#module_relations--1");
+	var button = $("#button-add_relation");
+	var iconPlaceholder = $("#add_relation_status");
+	var load_icon = '<?php html_print_image ("images/spinner.gif", false, array("style"=>"vertical-align:middle;")) ?>';
+	var suc_icon = '<?php html_print_image ("images/ok.png", false, array("style"=>"vertical-align:middle;")) ?>';
+	var error_icon = '<?php html_print_image ("images/error_red.png", false, array("style"=>"vertical-align:middle;")) ?>';
+
+	if (!button.hasClass('working')) {
+		button.addClass('working');
+		iconPlaceholder.html(load_icon);
+
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			dataType: "json",
+			data: {
+				page: "include/ajax/module",
+				add_module_relation: true,
+				id_module_a: module_a_id,
+				name_module_b: module_b_name
+			},
+			success: function (data) {
+				button.removeClass('working');
+				if (data === false) {
+					iconPlaceholder.html(error_icon);
+					setTimeout( function() { iconPlaceholder.html(''); }, 2000);
+				} else {
+					iconPlaceholder.html(suc_icon);
+					setTimeout( function() { iconPlaceholder.html(''); }, 2000);
+					
+					// Add the new row
+					var relationsCount = parseInt($("#hidden-module_relations_count").val());
+
+					var rowClass = "datos";
+					if (relationsCount % 2 != 0) {
+						rowClass = "datos2";
+					}
+
+					var rowHTML = '<tr id="module_relations-' + relationsCount + '" class="' + rowClass + '">' +
+										'<td id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
+										'<td id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
+										'<td id="module_relations-' + relationsCount + '-2" style="width: 10%; text-align: center;">' +
+											'<a id="disable_updates_button" class="transparent" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
+												'<?php echo html_print_image("images/lock.png", true); ?>' +
+											'</a>' +
+										'</td>' +
+										'<td id="module_relations-' + relationsCount + '-3" style="width: 10%; text-align: center;">' +
+											'<a id="delete_relation_button" href="javascript: delete_relation(' + relationsCount + ', ' + data +  ');">' +
+												'<?php echo html_print_image("images/cross.png", true); ?>' +
+											'</a>' +
+										'</td>' +
+									'</tr>';
+					$("#module_relations").find("tbody").append(rowHTML);
+
+					$("#hidden-module_relations_count").val(relationsCount + 1);
+					$("#text-autocomplete_module_name").val('');
+				}
+			},
+			error: function (data) {
+				button.removeClass('working');
+				iconPlaceholder.html(error_icon);
+				setTimeout( function() { iconPlaceholder.html(''); }, 2000);
+			}
+		});
+	}
+}
+
+// Delete an existing relation
+function change_lock_relation (num_row, id_relation) {
+	var row = $("#module_relations-" + num_row);
+	var button = row.find("#disable_updates_button");
+	var oldSrc = button.find("img").prop("src");
+	var isEnabled = button.hasClass('transparent');
+
+	if (row.length > 0 && !button.hasClass('working')) {
+		button.addClass('working');
+		button.removeClass('transparent');
+		button.find("img").prop("src", 'images/spinner.gif');
+
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			dataType: "json",
+			data: {
+				page: "include/ajax/module",
+				change_module_relation_updates: true,
+				id_relation: id_relation
+			},
+			success: function (data) {
+				if (data === false) {
+					button.addClass('transparent');
+				}
+				button.removeClass('working');
+				button.find("img").prop("src", oldSrc);
+			},
+			error: function (data) {
+				if (isEnabled) {
+					button.addClass('transparent');
+				}
+				button.removeClass('working');
+				button.find("img").prop("src", oldSrc);
+			}
+		});
+	}
+}
+
+// Delete an existing relation
+function delete_relation (num_row, id_relation) {
+	var row = $("#module_relations-" + num_row);
+	var button = row.find("#delete_relation_button");
+	var oldSrc = button.find("img").prop("src");
+
+	if (row.length > 0 && !button.hasClass('working')) {
+		button.addClass('working');
+		button.find("img").prop("src", 'images/spinner.gif');
+
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			dataType: "json",
+			data: {
+				page: "include/ajax/module",
+				remove_module_relation: true,
+				id_relation: id_relation
+			},
+			success: function (data) {
+				button.removeClass('working');
+				button.find("img").prop("src", oldSrc);
+				if (data === true) {
+					row.remove();
+				}
+			},
+			error: function (data) {
+				button.removeClass('working');
+				button.find("img").prop("src", oldSrc);
+			}
+		});
+	}
+}
+
+/* End of relationship javascript */
 
 /* ]]> */
 </script>

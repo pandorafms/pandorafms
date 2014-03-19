@@ -22,17 +22,61 @@ if (is_ajax ()) {
 	
 	if ($get_tag_tooltip) {
 		$id_agente_modulo = (int) get_parameter ('id_agente_modulo');
-		if ($id_agente_modulo === false)
+		if ($id_agente_modulo == false)
 			return;
 		$tags = tags_get_module_tags($id_agente_modulo);
 		
 		if ($tags === false)
 			$tags = array();
 		
-		echo '<h3> Tag\'s information </h3>';
+		echo '<h3>' . __("Tag's information") . '</h3>';
 		foreach ($tags as $tag) {
 			echo tags_get_name($tag).'<br>';
 		}
+		
+		return;
+	}
+
+	$get_relations_tooltip = (bool) get_parameter ('get_relations_tooltip', 0);
+	
+	if ($get_relations_tooltip) {
+		$id_agente_modulo = (int) get_parameter ('id_agente_modulo');
+		if ($id_agente_modulo == false)
+			return;
+		$id_agente = modules_get_agentmodule_agent($id_agente_modulo);
+		
+		$params = array(
+			'id_agent' => $id_agente,
+			'id_module' => $id_agente_modulo
+		);
+		$relations = modules_get_relations($params);
+		
+		if (empty($relations))
+			return;
+
+		$table_relations = new stdClass();
+		$table_relations->id = 'module_' . $id_agente_modulo . '_relations';
+		$table_relations->width = '98%';
+		$table_relations->class = 'databox';
+		$table_relations->style = array();
+		$table_relations->style[0] = 'font-weight: bold;';
+		$table_relations->style[2] = 'font-weight: bold;';
+		$table_relations->head = array();
+		$table_relations->head[0] = __("Relationship information");
+		$table_relations->head_colspan[0] = 4;
+		$table_relations->data = array();
+
+		foreach ($relations as $relation) {
+			$data = array();
+			$data[0] = __('Agent');
+			$data[1] = ui_print_agent_name ($id_agente, true);
+			$data[2] = __('Module');
+			$data[3] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente
+				&id_agente=$id_agente&tab=module&edit_module=1&id_agent_module=$id_agente_modulo'>" .
+				ui_print_truncate_text(modules_get_agentmodule_name($id_agente_modulo), 'module_medium', true, true, true, '[&hellip;]') . "</a>";
+			$table_relations->data[] = $data;
+		}
+		html_print_table($table_relations);
 		
 		return;
 	}
@@ -42,7 +86,7 @@ if (is_ajax ()) {
 if (!isset ($id_agente)) {
 	//This page is included, $id_agente should be passed to it.
 	db_pandora_audit("HACK Attempt",
-		"Trying to get to monitor list without id_agent passed");
+		"Trying to get the monitor list without id_agent passed");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -423,7 +467,12 @@ foreach ($modules as $module) {
 		html_print_image("images/tag_red.png", true, array("id" => 'tag-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';
 	}
 	
+	//Adds relations context information
 	
+	if (modules_relation_exists($module['id_agente_modulo'])) {
+		$data[3] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
+		html_print_image("images/link2.png", true, array("id" => 'relations-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';
+	}
 	
 	
 	$data[4] = ui_print_string_substr ($module["descripcion"], 60, true, 8);
@@ -634,11 +683,19 @@ ui_require_jquery_file ('cluetip');
 /* <![CDATA[ */
 	$("a.tag_details").cluetip ({
 			arrows: true,
+			clickThrough: false,
 			attribute: 'href',
 			cluetipClass: 'default'
-		})
-		.click (function () {
-			return false;
+		});
+	$("a.relations_details").cluetip ({
+			width: 500,
+			arrows: true,
+			clickThrough: false,
+			attribute: 'href',
+			cluetipClass: 'default',
+			sticky: true,
+			mouseOutClose: 'both',
+			closeText: '<?php html_print_image("images/cancel.png") ?>'
 		});
 /* ]]> */
 </script>

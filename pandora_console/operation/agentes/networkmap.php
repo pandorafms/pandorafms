@@ -113,6 +113,7 @@ if ($save_networkmap || $update_networkmap) {
 	$module_group = (int) get_parameter ('module_group', 0);
 	$center = (int) get_parameter ('center', 0);
 	$name = (string) get_parameter ('name', $activeTab);
+	$l2_network = (int) get_parameter ('l2_network', 0);
 	
 	if ($save_networkmap) {
 		$result = networkmap_update_networkmap($id_networkmap,
@@ -133,7 +134,8 @@ if ($save_networkmap || $update_networkmap) {
 				'text_filter' => $text_filter,
 				'dont_show_subgroups' => $dont_show_subgroups,
 				'center' => $center, 
-				'show_snmp_modules' => (int)$show_snmp_modules));
+				'show_snmp_modules' => (int)$show_snmp_modules,
+				'l2_network' => (int)$l2_network));
 		
 		$message = ui_print_result_message ($result,
 			__('Network map saved successfully'),
@@ -177,6 +179,7 @@ if (!$update_networkmap && !$save_networkmap && $id_networkmap != 0) {
 	$center = $networkmap_data['center'];
 	$name = $networkmap_data['name'];
 	$activeTab = $networkmap_data['type'];
+	$l2_network = $networkmap_data['l2_network'];
 }
 
 if ($recenter_networkmap) {
@@ -257,7 +260,8 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 			'module_group=' . $module_group . '&amp;' .
 			'pure=' . $pure . '&amp;' .
 			'hidden_options=' . (int)$hidden_options . '&amp;' .
-			'show_snmp_modules=' . (int)$show_snmp_modules . '">' . 
+			'show_snmp_modules=' . (int)$show_snmp_modules . '&amp;' .
+			'l2_network=' . (int)$l2_network . '">' . 
 			html_print_image("images/save_mc.png", true, array ("title" => __('Save map'))) .'</a>');
 	}
 }
@@ -400,11 +404,6 @@ if ($pure == "1") {
 	
 }
 
-if ($nooverlap == 1) {
-	$table->data[1][] = __('Distance between nodes') . '&nbsp;' .
-		html_print_input_text ('ranksep', $ranksep, __('Separation between elements in the map (in Non-overlap mode)'), 3, 4, true);
-}
-
 if ($activeTab != 'dinamic') {
 	$table->data[1][] = __('Font') . '&nbsp;' .
 		html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
@@ -417,6 +416,16 @@ if ($activeTab == 'groups') {
 		ui_print_help_tip(__('Only run with it is filter for any group'), true) .
 		'&nbsp;' .
 		html_print_checkbox ('dont_show_subgroups', '1', $dont_show_subgroups, true);
+}
+
+if ($activeTab == 'topology') {
+	$table->data[2][] = __('L2 network interfaces') . '&nbsp;' .
+		html_print_checkbox ('l2_network', '1', $l2_network, true);
+}
+
+if ($nooverlap == 1) {
+	$table->data[2][] = __('Distance between nodes') . '&nbsp;' .
+		html_print_input_text ('ranksep', $ranksep, __('Separation between elements in the map (in Non-overlap mode)'), 3, 4, true);
 }
 
 $options_form .= html_print_input_hidden('update_networkmap',1, true) .

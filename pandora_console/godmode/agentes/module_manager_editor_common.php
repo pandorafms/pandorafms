@@ -563,7 +563,7 @@ $table_relations->style[3] = 'width: 10%; text-align: center;';
 
 $table_relations->head[0] = __('Agent');
 $table_relations->head[1] = __('Module');
-$table_relations->head[2] = __('Changes');
+$table_relations->head[2] = __('Changes'). ui_print_help_tip(__("Activate this to prevent the relation from being updated or deleted"), true);
 $table_relations->head[3] = __('Delete');
 
 // Create an invisible row to use their html to add new rows

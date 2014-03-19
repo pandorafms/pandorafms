@@ -50,6 +50,7 @@ CREATE TABLE "tmodule_relationship" (
 -- ---------------------------------------------------------------------
 ALTER TABLE "talert_snmp" ADD COLUMN "id_group" INTEGER NOT NULL default 0;
 
+/* 2014/03/19 */
 -- ---------------------------------------------------------------------
 -- Table "talert_snmp"
 -- ---------------------------------------------------------------------
@@ -63,3 +64,5 @@ ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f17_" text DEFAULT '';
 ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f18_" text DEFAULT '';
 ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f19_" text DEFAULT '';
 ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f20_" text DEFAULT '';
+
+ALTER TABLE "tnetwork_map" ADD COLUMN "l2_network" SMALLINT NOT NULL default 0;

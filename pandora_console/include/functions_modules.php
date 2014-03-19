@@ -1838,16 +1838,38 @@ function modules_get_relations ($params = array()) {
  * Check if a relation already exists.
  *
  * @param int First module id.
- * @param int Second module id.
+ * @param mixed (Optional) int The second module id. array The module ids filter.
  *
  * @return bool True if the relation exists, false otherwise.
  */
-function modules_relation_exists ($id_module_a, $id_module_b) {
-	$sql = sprintf("SELECT id
-					FROM tmodule_relationship
-					WHERE (module_a = %d AND module_b = %d)
-						OR (module_b = %d AND module_a = %d)",
-					$id_module_a, $id_module_b, $id_module_a, $id_module_b);
+function modules_relation_exists ($id_module, $id_module_other = false) {
+
+	if ($id_module_other === false) {
+
+		$sql = sprintf("SELECT id
+						FROM tmodule_relationship
+						WHERE module_a = %d
+							OR module_b = %d",
+						$id_module, $id_module);
+
+	} elseif (is_array($id_module_other)) {
+
+		$ids_other = 0;
+		if (!empty($id_module_other)) {
+			$ids_other = implode(",", $id_module_other);
+		}
+		$sql = sprintf("SELECT id
+						FROM tmodule_relationship
+						WHERE (module_a = %d AND module_b IN (%s))
+							OR (module_b = %d AND module_a IN (%s))",
+						$id_module, $ids_other, $id_module, $ids_other);
+	} else {
+		$sql = sprintf("SELECT id
+						FROM tmodule_relationship
+						WHERE (module_a = %d AND module_b = %d)
+							OR (module_b = %d AND module_a = %d)",
+						$id_module, $id_module_other, $id_module, $id_module_other);
+	}
 
 	return (bool) db_get_row_sql($sql);
 }

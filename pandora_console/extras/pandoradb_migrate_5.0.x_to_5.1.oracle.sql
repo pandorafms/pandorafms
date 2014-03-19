@@ -53,6 +53,7 @@ CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_rela
 -- ---------------------------------------------------------------------
 ALTER TABLE talert_snmp ADD (id_group NUMBER(10, 0) default 0 NOT NULL);
 
+/* 2014/03/19 */
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`
 -- ---------------------------------------------------------------------
@@ -66,3 +67,5 @@ ALTER TABLE talert_snmp ADD (_snmp_f17_ CLOB default '');
 ALTER TABLE talert_snmp ADD (_snmp_f18_ CLOB default '');
 ALTER TABLE talert_snmp ADD (_snmp_f19_ CLOB default '');
 ALTER TABLE talert_snmp ADD (_snmp_f20_ CLOB default '');
+
+ALTER TABLE tnetwork_map ADD (l2_network NUMBER(1, 0) default 0 NOT NULL);

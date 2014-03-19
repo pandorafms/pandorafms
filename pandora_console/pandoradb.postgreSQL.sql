@@ -1407,7 +1407,8 @@ CREATE TABLE "tnetwork_map" (
 	"show_groups" INTEGER NOT NULL default 0,
 	"id_agent" INTEGER NOT NULL default 0,
 	"server_name" VARCHAR(100)  NOT NULL,
-	"show_modulegroup" INTEGER NOT NULL default 0
+	"show_modulegroup" INTEGER NOT NULL default 0,
+	"l2_network" SMALLINT NOT NULL default 0
 );
 
 ------------------------------------------------------------------------

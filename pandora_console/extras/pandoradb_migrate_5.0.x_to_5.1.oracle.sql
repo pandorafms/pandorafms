@@ -52,3 +52,17 @@ CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_rela
 -- Table `talert_snmp`
 -- ---------------------------------------------------------------------
 ALTER TABLE talert_snmp ADD (id_group NUMBER(10, 0) default 0 NOT NULL);
+
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp`
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_snmp ADD (_snmp_f11_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f12_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f13_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f14_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f15_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f16_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f17_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f18_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f19_ CLOB default '');
+ALTER TABLE talert_snmp ADD (_snmp_f20_ CLOB default '');

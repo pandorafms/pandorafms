@@ -88,6 +88,16 @@ if ($save_alert || $modify_alert) {
 	$custom_oid_data_8 = (string) get_parameter ("custom_oid_data_8");
 	$custom_oid_data_9 = (string) get_parameter ("custom_oid_data_9");
 	$custom_oid_data_10 = (string) get_parameter ("custom_oid_data_10");
+	$custom_oid_data_11 = (string) get_parameter ("custom_oid_data_11");
+	$custom_oid_data_12 = (string) get_parameter ("custom_oid_data_12");
+	$custom_oid_data_13 = (string) get_parameter ("custom_oid_data_13");
+	$custom_oid_data_14 = (string) get_parameter ("custom_oid_data_14");
+	$custom_oid_data_15 = (string) get_parameter ("custom_oid_data_15");
+	$custom_oid_data_16 = (string) get_parameter ("custom_oid_data_16");
+	$custom_oid_data_17 = (string) get_parameter ("custom_oid_data_17");
+	$custom_oid_data_18 = (string) get_parameter ("custom_oid_data_18");
+	$custom_oid_data_19 = (string) get_parameter ("custom_oid_data_19");
+	$custom_oid_data_20 = (string) get_parameter ("custom_oid_data_20");
 	$trap_type = (int) get_parameter ("trap_type", -1);
 	$single_value = (string) get_parameter ("single_value"); 
 	$position = (int) get_parameter ("position"); 
@@ -128,6 +138,16 @@ if ($save_alert || $modify_alert) {
 			'_snmp_f8_' => $custom_oid_data_8,
 			'_snmp_f9_' => $custom_oid_data_9,
 			'_snmp_f10_' => $custom_oid_data_10,
+			'_snmp_f11_' => $custom_oid_data_11,
+			'_snmp_f12_' => $custom_oid_data_12,
+			'_snmp_f13_' => $custom_oid_data_13,
+			'_snmp_f14_' => $custom_oid_data_14,
+			'_snmp_f15_' => $custom_oid_data_15,
+			'_snmp_f16_' => $custom_oid_data_16,
+			'_snmp_f17_' => $custom_oid_data_17,
+			'_snmp_f18_' => $custom_oid_data_18,
+			'_snmp_f19_' => $custom_oid_data_19,
+			'_snmp_f20_' => $custom_oid_data_20,
 			'trap_type' => $trap_type,
 			'single_value' => $single_value,
 			'position' => $position,
@@ -157,8 +177,11 @@ if ($save_alert || $modify_alert) {
 			_snmp_f1_ = '%s', _snmp_f2_ = '%s', _snmp_f3_ = '%s',
 			_snmp_f4_ = '%s', _snmp_f5_ = '%s', _snmp_f6_ = '%s',
 			_snmp_f7_ = '%s', _snmp_f8_ = '%s', _snmp_f9_ = '%s',
-			_snmp_f10_ = '%s', trap_type = %d, single_value = '%s',
-			position = '%s', id_group ='%s'
+			_snmp_f10_ = '%s', _snmp_f11_ = '%s', _snmp_f12_ = '%s',
+			_snmp_f13_ = '%s', _snmp_f14_ = '%s', _snmp_f15_ = '%s',
+			_snmp_f16_ = '%s', _snmp_f17_ = '%s', _snmp_f18_ = '%s',
+			_snmp_f19_ = '%s', _snmp_f20_ = '%s', trap_type = %d, 
+			single_value = '%s', position = '%s', id_group ='%s'
 			WHERE id_as = %d",
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
 			$al_field4, $al_field5, $al_field6, $al_field7, $al_field8,
@@ -167,8 +190,11 @@ if ($save_alert || $modify_alert) {
 			$max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2,
 			$custom_oid_data_3, $custom_oid_data_4, $custom_oid_data_5,
 			$custom_oid_data_6, $custom_oid_data_7, $custom_oid_data_8,
-			$custom_oid_data_9, $custom_oid_data_10, $trap_type, $single_value,
-			$position, $group, $id_as);
+			$custom_oid_data_9, $custom_oid_data_10, $custom_oid_data_11, 
+			$custom_oid_data_12, $custom_oid_data_13, $custom_oid_data_14,
+			$custom_oid_data_15, $custom_oid_data_16, $custom_oid_data_17,
+			$custom_oid_data_18, $custom_oid_data_19, $custom_oid_data_20,
+			$trap_type, $single_value, $position, $group, $id_as);
 	
 		$result = db_process_sql ($sql);
 		
@@ -219,6 +245,16 @@ if ($update_alert) {
 	$custom_oid_data_8 = $alert["_snmp_f8_"];
 	$custom_oid_data_9 = $alert["_snmp_f9_"];
 	$custom_oid_data_10 = $alert["_snmp_f10_"];
+	$custom_oid_data_11 = $alert["_snmp_f11_"];
+	$custom_oid_data_12 = $alert["_snmp_f12_"];
+	$custom_oid_data_13 = $alert["_snmp_f13_"];
+	$custom_oid_data_14 = $alert["_snmp_f14_"];
+	$custom_oid_data_15 = $alert["_snmp_f15_"];
+	$custom_oid_data_16 = $alert["_snmp_f16_"];
+	$custom_oid_data_17 = $alert["_snmp_f17_"];
+	$custom_oid_data_18 = $alert["_snmp_f18_"];
+	$custom_oid_data_19 = $alert["_snmp_f19_"];
+	$custom_oid_data_20 = $alert["_snmp_f20_"];
 	$trap_type = $alert["trap_type"];
 	$single_value = $alert["single_value"]; 
 	$position = $alert["position"];
@@ -256,6 +292,16 @@ elseif ($create_alert) {
 	$custom_oid_data_8 = '';
 	$custom_oid_data_9 = '';
 	$custom_oid_data_10 = '';
+	$custom_oid_data_11 = '';
+	$custom_oid_data_12 = '';
+	$custom_oid_data_13 = '';
+	$custom_oid_data_14 = '';
+	$custom_oid_data_15 = '';
+	$custom_oid_data_16 = '';
+	$custom_oid_data_17 = '';
+	$custom_oid_data_18 = '';
+	$custom_oid_data_19 = '';
+	$custom_oid_data_20 = '';
 	$trap_type = -1;
 	$single_value = '';
 	$position = 0;
@@ -453,6 +499,66 @@ if ($create_alert || $update_alert) {
 	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #10');
 	echo '</td><td class="datos">';
 	html_print_input_text ("custom_oid_data_10", $custom_oid_data_10, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #11
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #11');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_11", $custom_oid_data_11, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #12
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #12');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_12", $custom_oid_data_12, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #13
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #13');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_13", $custom_oid_data_13, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #14
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #14');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_14", $custom_oid_data_14, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #15
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #15');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_15", $custom_oid_data_15, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #16
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #16');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_16", $custom_oid_data_16, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #17
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #17');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_17", $custom_oid_data_17, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #18
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #18');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_18", $custom_oid_data_18, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #19
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #19');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_19", $custom_oid_data_19, '', 60);
+	echo '</td></tr>';
+	
+	//  Custom OID/Data #20
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #20');
+	echo '</td><td class="datos">';
+	html_print_input_text ("custom_oid_data_20", $custom_oid_data_20, '', 60);
 	echo '</td></tr>';
 	
 	//Button

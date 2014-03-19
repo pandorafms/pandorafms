@@ -41,20 +41,32 @@ $free_search_string = (string) get_parameter ("free_search_string", '');
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
 $trap_type = (int) get_parameter ('trap_type', -1);
+$refr = (int)get_parameter("refr", 0);
 
-$url = "index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset . "&trap_type=" . $trap_type;
+$url = "index.php?sec=estado&" .
+	"sec2=operation/snmpconsole/snmp_view&" .
+	"filter_agent=" . $filter_agent . "&" .
+	"filter_oid=" . $filter_oid . "&" .
+	"filter_severity=" . $filter_severity . "&" .
+	"filter_fired=" . $filter_fired . "&" .
+	"search_string=" . $search_string . "&" .
+	"free_search_string=" . $free_search_string . "&" .
+	"pagination=" . $pagination . "&" .
+	"offset=" . $offset . "&" .
+	"trap_type=" . $trap_type;
 
 
 if ($config["pure"]) {
-	$link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
+	$link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=' . $refr . '">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
 }
 else {
 	// Fullscreen
-	$link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=0">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
+	$link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=' . $refr . '">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
 }
 
 // Header
-ui_print_page_header (__("SNMP Console"), "images/op_snmp.png", false, "", false, array($link));
+ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
+	"", false, array($link));
 
 // OPERATIONS
 

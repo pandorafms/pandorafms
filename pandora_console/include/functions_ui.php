@@ -1206,11 +1206,12 @@ function ui_process_page_head ($string, $bitfield) {
 		(isset($config['id_user']) || $vc_public_view == 1)) {
 		
 		if ($config['enable_refr'] ||
-			$_GET['sec2'] == "operation/agentes/estado_agente" ||
-			$_GET['sec2'] == "operation/agentes/tactical"||
-			$_GET['sec2'] == "operation/agentes/group_view" ||
+			$_GET['sec2'] == 'operation/agentes/estado_agente' ||
+			$_GET['sec2'] == 'operation/agentes/tactical' ||
+			$_GET['sec2'] == 'operation/agentes/group_view' ||
 			$_GET['sec2'] == 'operation/events/events' ||
-			$_GET['sec2'] == "enterprise/dashboard/main_dashboard") {
+			$_GET['sec2'] == 'operation/snmpconsole/snmp_view' ||
+			$_GET['sec2'] == 'enterprise/dashboard/main_dashboard') {
 			
 			$query = ui_get_url_refresh (false);
 			$output .= '<meta http-equiv="refresh" content="' . 

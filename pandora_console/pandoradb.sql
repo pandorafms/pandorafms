@@ -1488,6 +1488,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
 	`id_agent` INT  NOT NULL DEFAULT 0,
 	`server_name` VARCHAR(100)  NOT NULL,
 	`show_modulegroup` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`l2_network` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

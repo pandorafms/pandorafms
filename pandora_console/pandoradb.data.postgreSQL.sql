@@ -191,12 +191,11 @@ COMMIT WORK;
 BEGIN WORK;
 LOCK TABLE "tlink";
 INSERT INTO "tlink" VALUES 
-(1,'Pandora FMS Manual','https://openideas.info/wiki/index.php?title=Pandora'),
-(2,'Pandora FMS','http://pandorafms.org'),
+(1,'Pandora FMS Manual','http://wiki.pandorafms.com/?title=Pandora'),
+(2,'Pandora FMS','http://pandorafms.com'),
 (3,'Report a bug','https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852'),
 (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855'),
-(5,'Module library','http://pandorafms.org/?sec=community&amp;sec2=repository&amp;lng=es'),
-(6,'Commercial support','http://pandorafms.com');
+(5,'Module library','http://pandorafms.com/pandora/repository/en');
 COMMIT WORK;
 SELECT setval('tlink_id_link_seq', (SELECT (SELECT MAX(id_link) FROM tlink)));
 

@@ -1,3 +1,32 @@
+2014-03-19  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* pandoradb_data.sql,
+	  pandoradb.data.oracle.sql,
+	  pandoradb.data.postgreSQL.sql: Deleted an old link
+	and updated the link to the Pandora FMS documentation.
+
+	* pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql:
+	Added the column "l2_network" to the table "tnetwork_map".
+
+	* godmode/agentes/module_manager_editor_common.php:
+	Added a help tip to a column of relations.
+
+	* include/functions_modules.php: Improved the function
+	"modules_relation_exists".
+
+	* operation/agentes/networkmap.topology.php,
+	  include/functions_networkmap.php,
+	  operation/agentes/networkmap.php: Added a new option
+	to show the relations between the agents interfaces.
+
+	* operation/agentes/estado_monitores.php: Added a tooltip
+	to show the relations of a monitor in the monitor list.
+
 2014-03-19  Vanessa Gil <vanessa.gil@artica.es>
 	
 	* pandoradb.oracle.sql

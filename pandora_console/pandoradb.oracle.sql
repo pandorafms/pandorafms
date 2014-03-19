@@ -1589,7 +1589,8 @@ CREATE TABLE tnetwork_map (
 	show_modules NUMBER(10, 0) default 0 NOT NULL,
 	id_agent NUMBER(10, 0) default 0 NOT NULL,
 	server_name VARCHAR(100)  NOT NULL,
-	show_modulegroup NUMBER(10, 0) default 0 NOT NULL
+	show_modulegroup NUMBER(10, 0) default 0 NOT NULL,
+	l2_network NUMBER(1, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;

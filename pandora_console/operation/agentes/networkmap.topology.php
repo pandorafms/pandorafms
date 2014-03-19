@@ -39,7 +39,7 @@ if (!isset($text_filter)) {
 $graph = networkmap_generate_dot(__('Pandora FMS'), $group, $simple,
 	$font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen,
 	$pure, $id_networkmap, $show_snmp_modules, true, true,
-	$text_filter);
+	$text_filter, $l2_network);
 
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));

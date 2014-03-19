@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 -- ---------------------------------------------------------------------
 ALTER TABLE `talert_snmp` ADD COLUMN `id_group` int(10) unsigned NOT NULL default '0';
 
+/* 2014/03/19 */
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`
 -- ---------------------------------------------------------------------
@@ -76,3 +77,5 @@ ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f17_` text;
 ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f18_` text;
 ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f19_` text;
 ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f20_` text;
+
+ALTER TABLE `tnetwork_map` ADD COLUMN `l2_network` tinyint(1) unsigned NOT NULL default '0';

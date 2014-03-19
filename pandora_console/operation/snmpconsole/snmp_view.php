@@ -41,7 +41,8 @@ $free_search_string = (string) get_parameter ("free_search_string", '');
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
 $trap_type = (int) get_parameter ('trap_type', -1);
-$group_by = (int) get_parameter('group_by', 0);
+$group_by = (int)get_parameter('group_by', 0);
+$refr = (int)get_parameter("refr", 0);
 
 $user_groups = users_get_groups ($config['id_user'],"AR", false);
 $str_user_groups = '';
@@ -55,19 +56,31 @@ foreach ($user_groups as $id=>$name) {
 	$i++;
 }
 
-$url = "index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&free_search_string=".$free_search_string."&pagination=".$pagination."&offset=".$offset . "&trap_type=" . $trap_type ."&group_by=" .$group_by;
+$url = "index.php?sec=estado&" .
+	"sec2=operation/snmpconsole/snmp_view&" .
+	"filter_agent=" . $filter_agent . "&" .
+	"filter_oid=" . $filter_oid . "&" .
+	"filter_severity=" . $filter_severity . "&" .
+	"filter_fired=" . $filter_fired . "&" .
+	"search_string=" . $search_string . "&" .
+	"free_search_string=" . $free_search_string . "&" .
+	"pagination=" . $pagination . "&" .
+	"offset=" . $offset . "&" .
+	"trap_type=" . $trap_type . "&" .
+	"group_by=" .$group_by;
 
 
 if ($config["pure"]) {
-	$link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
+	$link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=' . $refr . '">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
 }
 else {
 	// Fullscreen
-	$link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=0">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
+	$link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=' . $refr . '">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
 }
 
 // Header
-ui_print_page_header (__("SNMP Console"), "images/op_snmp.png", false, "", false, array($link));
+ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
+	"", false, array($link));
 
 // OPERATIONS
 
@@ -561,7 +574,7 @@ if ($traps !== false) {
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
 			$data[1] .= '<strong>'.$agent["nombre"].'</strong></a>';
 		}
-
+		
 		//OID
 		$table->cellclass[$idx][2] = get_priority_class ($severity);
 		$data[2] = '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . (empty($trap["oid"]) ? __('N/A') : $trap["oid"]) .'</a>';
@@ -623,7 +636,7 @@ if ($traps !== false) {
 
 		
 		$data[8] = html_print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
-
+		
 		array_push ($table->data, $data);
 		
 		//Hiden file for description
@@ -680,7 +693,7 @@ if ($traps !== false) {
 			}
 			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Type:') . '</td><td align="left">' . $desc_trap_type . '</td></tr>';
 		}
-			
+		
 		if ($group_by) {
 			$sql = "SELECT * FROM ttrap WHERE 1=1 
 					$where_without_group

@@ -1,5 +1,23 @@
 2014-03-20  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* images/group_green.disabled.png, images/group_green.png,
+	extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql,
+	extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql,
+	extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/agentes/configurar_agente.php, include/styles/pandora.css,
+	include/functions_networkmap.php, include/functions_agents.php,
+	include/functions_visual_map_editor.php,
+	include/functions_modules.php, include/functions_groups.php,
+	include/constants.php, include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php, pandoradb.sql,
+	pandoradb.postgreSQL.sql, pandoradb.oracle.sql: added the feature to
+	show the item for groups in visualmap.
+	
+	Incident: #671
+
+2014-03-20  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/snmpconsole/snmp_alert.php,
 	godmode/alerts/alert_list.list.php,
 	godmode/agentes/agent_manager.php,

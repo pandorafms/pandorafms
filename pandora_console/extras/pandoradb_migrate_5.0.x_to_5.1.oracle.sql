@@ -69,3 +69,8 @@ ALTER TABLE talert_snmp ADD (_snmp_f19_ CLOB default '');
 ALTER TABLE talert_snmp ADD (_snmp_f20_ CLOB default '');
 
 ALTER TABLE tnetwork_map ADD (l2_network NUMBER(1, 0) default 0 NOT NULL);
+
+-- ---------------------------------------------------------------------
+-- Table `tlayout_data`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tlayout_data` ADD COLUMN id_group NUMBER(10, 0) default 0 NOT NULL;

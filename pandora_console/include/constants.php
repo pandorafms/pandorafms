@@ -157,13 +157,14 @@ define('AGENT_MODULE_STATUS_CRITICAL_BAD', 1);
 define('AGENT_MODULE_STATUS_CRITICAL_ALERT', 100);
 define('AGENT_MODULE_STATUS_NO_DATA', 4);
 define('AGENT_MODULE_STATUS_NORMAL', 0);
+define('AGENT_MODULE_STATUS_NORMAL_ALERT', 300);
 define('AGENT_MODULE_STATUS_NOT_NORMAL', 6);
 define('AGENT_MODULE_STATUS_WARNING', 2);
 define('AGENT_MODULE_STATUS_WARNING_ALERT', 200);
 define('AGENT_MODULE_STATUS_UNKNOWN', 3);
 define('AGENT_MODULE_STATUS_NOT_INIT', 5);
 
-/* Agent module status */
+/* Agent status */
 define('AGENT_STATUS_ALL', -1);
 define('AGENT_STATUS_CRITICAL', 1);
 define('AGENT_STATUS_NORMAL', 0);
@@ -172,7 +173,6 @@ define('AGENT_STATUS_NOT_NORMAL', 6);
 define('AGENT_STATUS_UNKNOWN', 3);
 define('AGENT_STATUS_ALERT_FIRED', 4);
 define('AGENT_STATUS_WARNING', 2);
-
 
 
 /* Visual maps contants */
@@ -188,6 +188,7 @@ define('SIMPLE_VALUE_MIN', 7);
 define('SIMPLE_VALUE_AVG', 8);
 define('PERCENTILE_BUBBLE', 9);
 define('SERVICE', 10); //Enterprise Item.
+define('GROUP_ITEM', 11);
 //Some styles
 define('MIN_WIDTH',300);
 define('MIN_HEIGHT',120);

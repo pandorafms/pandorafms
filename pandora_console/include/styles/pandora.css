@@ -1001,6 +1001,13 @@ input.service_min[disabled] {
 	background: #fefefe url(../../images/box.disabled.png) no-repeat center !important;
 }
 
+input.group_item_min {
+	background: #fefefe url(../../images/group_green.png) no-repeat center !important;
+}
+input.group_item_min[disabled] {
+	background: #fefefe url(../../images/group_green.disabled.png) no-repeat center !important;
+}
+
 div#cont {
 	position: fixed;
 	max-height: 320px;

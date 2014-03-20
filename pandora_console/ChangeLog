@@ -1,3 +1,17 @@
+2014-03-20  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/snmpconsole/snmp_alert.php,
+	godmode/alerts/alert_list.list.php,
+	godmode/agentes/agent_manager.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/modificar_agente.php,
+	include/functions_reporting.php,
+	operation/agentes/estado_agente.php,
+	images/remote_configuration.png: added a tab for enterprise remote
+	configuration.
+	
+	Incident: #311
+
 2014-03-19  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* pandoradb_data.sql,

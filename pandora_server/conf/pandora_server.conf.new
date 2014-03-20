@@ -274,8 +274,8 @@ max_queue_files 500
 
 # Pandora FMS will restart after restart_delay seconds on critical errors.
 
-# restart 0
-# restart_delay 60
+restart 1 
+restart_delay 60
 
 # More information about GIS Setup in /usr/share/pandora_server/util/gis.README
 # Flag to activate GIS (positional information for agents and maps) 

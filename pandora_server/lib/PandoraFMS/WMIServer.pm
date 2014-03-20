@@ -159,11 +159,10 @@ sub data_consumer ($$) {
 	}
 
 	# WMI query
-	my $wmi_query = $module->{'snmp_oid'};
+	my $wmi_query = safe_output ($module->{'snmp_oid'});
 	$wmi_query =~ s/\"/\'/g;
 
 	$wmi_command .= ' //' . $module->{'ip_target'} . ' "' . $wmi_query . '"';
-	$wmi_command = safe_output ($wmi_command);
 	logger ($pa_config, "Executing AM # $module_id WMI command '$wmi_command'", 9);
 
 	# Execute command

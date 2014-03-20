@@ -75,47 +75,56 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			<?php
 			$form_items = array();
 			
-			/*
-			$form_items['label_row'] = array();
-			$form_items['label_row']['items'] = array();
-			$form_items['label_row']['html'] = '<td align="left" style="">' . __('Label') .'</td>
-				<td align="left" style="">'. html_print_input_text ('label', '', '', 20, 200, true) .'</td>';
-			*/
 			
 			$form_items['label_row'] = array();
-			$form_items['label_row']['items'] = array('label', 'static_graph',
-				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'icon');
+			$form_items['label_row']['items'] = array('label',
+				'static_graph',
+				'percentile_bar',
+				'percentile_item',
+				'module_graph',
+				'simple_value',
+				'datos',
+				'icon',
+				'group_item');
 			$form_items['label_row']['html'] = '<td align="left" valign="top" style="">' . __('Label') .'</td>
 				<td align="left" style="">'. html_print_input_text ('label', '', '', 20, 200, true) .'</td>';
 			
 			
 			$form_items['image_row'] = array();
-			$form_items['image_row']['items'] = array('static_graph', 'icon', 'datos');
+			$form_items['image_row']['items'] = array('static_graph',
+				'icon',
+				'datos',
+				'group_item');
 			$form_items['image_row']['html'] = '<td align="left">' . __('Image') . '</td>
 				<td align="left">'. html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '', true) .'</td>';
 			
 			
 			$form_items['enable_link_row'] = array();
-			$form_items['enable_link_row']['items'] = array('static_graph',
-				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'icon');
+			$form_items['enable_link_row']['items'] = array(
+				'static_graph',
+				'percentile_bar',
+				'percentile_item',
+				'module_graph',
+				'simple_value',
+				'datos',
+				'icon',
+				'group_item');
 			$form_items['enable_link_row']['html'] = '<td align="left" style="">' . __('Enable link') .'</td>
 				<td align="left" style="">'. html_print_checkbox('enable_link', '', 'enable_link', true) .'</td>';
 			
 			
 			$form_items['preview_row'] = array();
-			$form_items['preview_row']['items'] = array('static_graph', 'datos icon');
+			$form_items['preview_row']['items'] = array('static_graph',
+				'datos icon',
+				'group_item');
 			$form_items['preview_row']['html'] = '<td align="left" colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>';
+			
 			
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'datos');
 			$form_items['agent_row']['html'] = '<td align="left">' . __('Agent') . '</td>';
-			
-			
-			
 			$params = array();
 			$params['return'] = true;
 			$params['show_helptip'] = true;
@@ -143,13 +152,28 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'</td>';
 			
 			
-			
 			$form_items['module_row'] = array();
 			$form_items['module_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'datos');
 			$form_items['module_row']['html'] = '<td align="left">' . __('Module') . '</td>
-				<td align="left">'. html_print_select (array(), 'module', '', '', __('Any'), 0, true) . '</td>';
+				<td align="left">' . html_print_select (array(), 'module', '', '', __('Any'), 0, true) . '</td>';
+			
+			$own_info = get_user_info($config['id_user']);
+			if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "PM"))
+				$return_all_group = false;
+			else
+				$return_all_group = true;
+			$form_items['group_row'] = array();
+			$form_items['group_row']['items'] = array('group_item');
+			$form_items['group_row']['html'] = '<td align="left">' .
+					__('Group') .
+				'</td>
+				<td align="left">' .
+					html_print_select_groups(false, "AR",
+						$return_all_group, 'group', '', '', '', 0,
+						true) .
+				'</td>';
 			
 			
 			$form_items['process_value_row'] = array();
@@ -359,6 +383,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
 		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
 		visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
+		visual_map_print_button_editor('group_item', __('Group'), 'left', false, 'group_item_min', true);
 		
 		enterprise_hook("enterprise_visual_map_editor_print_toolbox");
 		

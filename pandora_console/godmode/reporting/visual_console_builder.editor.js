@@ -103,6 +103,7 @@ function update_button_palette_callback() {
 			
 			idElement = 0;
 			break;
+		case 'group_item':
 		case 'static_graph':
 			$("#text_" + idItem).html(values['label']);
 			
@@ -219,6 +220,7 @@ function readFields() {
 	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
 	values['value_show'] = $("input[name=value_show]:checked").val();
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
+	values['id_group'] = $("select[name=group]").val();
 	
 	if (metaconsole != 0) {
 		values['metaconsole'] = 1;
@@ -245,6 +247,7 @@ function create_button_palette_callback() {
 	//VALIDATE DATA
 	var validate = true;
 	switch (creationItem) {
+		case 'group_item':
 		case 'static_graph':
 			if ((values['label'] == '') && (values['image'] == '')) {
 				alert($("#message_alert_no_label_no_image").html());
@@ -332,6 +335,7 @@ function toggle_item_palette() {
 		activeToolboxButton('label', true);
 		activeToolboxButton('icon', true);
 		activeToolboxButton('percentile_item', true);
+		activeToolboxButton('group_item', true);
 		
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -355,6 +359,7 @@ function toggle_item_palette() {
 		activeToolboxButton('label', false);
 		activeToolboxButton('icon', false);
 		activeToolboxButton('percentile_item', false);
+		activeToolboxButton('group_item', false);
 		
 		activeToolboxButton('edit_item', false);
 		activeToolboxButton('delete_item', false);
@@ -539,6 +544,10 @@ function loadFieldsFromDB(item) {
 						}
 					}
 					
+					if (key == 'id_group') {
+						$("select[name=group]").val(val);
+					}
+					
 					if (metaconsole != 0) {
 						if (key == 'id_agent') {
 							$("#hidden-agent").val(val);
@@ -637,6 +646,9 @@ function hiddenFields(item) {
 	
 	$("#module_row").css('display', 'none');
 	$("#module_row."  + item).css('display', '');
+	
+	$("#group_row").css('display', 'none');
+	$("#group_row."  + item).css('display', '');
 	
 	$("#process_value_row").css('display', 'none');
 	$("#process_value_row."  + item).css('display', '');
@@ -1036,6 +1048,7 @@ function createItem(type, values, id_data) {
 	}
 	
 	switch (type) {
+		case 'group_item':
 		case 'static_graph':
 			if ((values['width'] == 0) && (values['height'] == 0)) {
 				sizeStyle = '';
@@ -1048,7 +1061,8 @@ function createItem(type, values, id_data) {
 			
 			var element_status= null;
 			var parameter = Array();
-			parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+			parameter.push ({name: "page",
+				value: "include/ajax/visual_console_builder.ajax"});
 			parameter.push ({name: "get_element_status", value: "1"});
 			parameter.push ({name: "id_element", value: id_data});
 			
@@ -1088,8 +1102,17 @@ function createItem(type, values, id_data) {
 				}
 			});
 			
+			switch (type) {
+				case 'group_item':
+					class_type = "group_item";
+					break;
+				case 'static_graph':
+					class_type = "static_graph";
+					break;
+			}
+			
 			item = $('<div id="' + id_data
-				+ '" class="item static_graph" '
+				+ '" class="item ' + class_type + '" '
 				+ 'style="color: ' + values['label_color']
 				+ '; text-align: center; position: absolute; display: inline-block; '
 				+ sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
@@ -1264,6 +1287,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 	}
 	
 	switch (type) {
+		case 'group_item':
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
 				&& (event != 'dragstop')) {
@@ -1591,6 +1615,14 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('group_item')) {
+				creationItem = null;
+				selectedItem = 'group_item';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('percentile_item')) {
 				creationItem = null;
 				selectedItem = 'percentile_item';
@@ -1660,6 +1692,9 @@ function eventsItems(drag) {
 			selectedItem = null;
 			if ($(event.target).hasClass('static_graph')) {
 				selectedItem = 'static_graph';
+			}
+			if ($(event.target).hasClass('group_item')) {
+				selectedItem = 'group_item';
 			}
 			if ($(event.target).hasClass('percentile_item')) {
 				selectedItem = 'percentile_item';
@@ -1821,7 +1856,11 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'icon';
 			toggle_item_palette();
 			break;
-			
+		case 'group_item':
+			toolbuttonActive = creationItem = 'group_item';
+			toggle_item_palette();
+			break;
+		
 		case 'edit_item':
 			toggle_item_palette();
 			break;
@@ -1848,6 +1887,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('label', false);
 				activeToolboxButton('icon', false);
 				activeToolboxButton('service', false);
+				activeToolboxButton('group_item', false);
 				
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -1875,6 +1915,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('simple_value', true);
 				activeToolboxButton('label', true);
 				activeToolboxButton('icon', true);
+				activeToolboxButton('group_item', true);
 			}
 			break;
 		case 'save_visualmap':
@@ -1917,6 +1958,7 @@ function showPreview(image) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	switch (toolbuttonActive) {
+		case 'group_item':
 		case 'static_graph':
 			showPreviewStaticGraph(image);
 			break;

@@ -275,7 +275,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	if ($agents === false)
 		//return false;
 		$agents = array();
-
+	
 	// Open Graph
 	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);
 	

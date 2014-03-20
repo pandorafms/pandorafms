@@ -382,7 +382,7 @@ if ($id_agente) {
 					'tab=remote_configuration&amp;' .
 					'id_agente=' . $id_agente . '&amp;' .
 					'disk_conf=' . $agent_md5 . '">' 
-				. html_print_image ("images/book_edit.png", true,
+				. html_print_image ("images/remote_configuration.png", true,
 					array("title" =>__('Remote configuration')))
 				. '</a>';
 			if ($tab == 'remote_configuration')

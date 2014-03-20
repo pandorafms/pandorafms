@@ -67,6 +67,7 @@ $server_name = get_parameter('server_name', null);
 $server_id = (int)get_parameter('server_id', 0);
 $id_agent = get_parameter('id_agent', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
+$id_group = (int)get_parameter('id_group', 0);
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
@@ -165,9 +166,6 @@ switch ($action) {
 				$returnValue = db_get_sql ('SELECT datos
 					FROM tagente_estado
 					WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
-				
-				//html_debug_print($value_show);
-				//html_debug_print($layoutData);
 				
 				if (($layoutData['type'] == PERCENTILE_BAR) ||
 					($layoutData['type'] == PERCENTILE_BUBBLE)) {
@@ -368,6 +366,9 @@ switch ($action) {
 					$values['label_color'] = $label_color;
 				}
 				switch($type) {
+					case 'group_item':
+						$values['id_group'] = $id_group;
+						break;
 					case 'module_graph':
 						if ($height_module_graph !== null) {
 							$values['height'] = $height_module_graph;
@@ -445,6 +446,7 @@ switch ($action) {
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':
+			case 'group_item':
 			case 'module_graph':
 			case 'simple_value':
 			case 'label':
@@ -606,6 +608,13 @@ switch ($action) {
 				$values['width'] = $width;
 				$values['height'] = $height;
 				break;
+			case 'group_item':
+				$values['type'] = GROUP_ITEM;
+				$values['image'] = $image;
+				$values['width'] = $width;
+				$values['height'] = $height;
+				$values['id_group'] = $id_group;
+				breaK;
 			case 'simple_value':
 				//This allows min, max and avg process in a simple value
 				$values['type'] = visual_map_get_simple_value_type($process_simple_value);
@@ -681,7 +690,8 @@ switch ($action) {
 
 /* visual map element status check  */
 if ($get_element_status) {
-	$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+	$layoutData = db_get_row_filter('tlayout_data',
+		array('id' => $id_element));
 	
 	$res = visual_map_get_status_element($layoutData);
 	

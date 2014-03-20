@@ -1062,7 +1062,8 @@ CREATE TABLE "tlayout_data" (
 	"label_color" varchar(20) DEFAULT '',
 	"no_link_color" SMALLINT NOT NULL default 0,
 	"enable_link" SMALLINT NOT NULL default 1,
-	"id_metaconsole" INTEGER NOT NULL default 0
+	"id_metaconsole" INTEGER NOT NULL default 0,
+	"id_group" INTEGER NOT NULL default 0
 );
 
 -- ---------------------------------------------------------------------

@@ -541,32 +541,21 @@ function groups_get_status ($id_group = 0) {
 	}
 	
 	// Status is 0 for normal, 1 for critical, 2 for warning and 3/-1 for unknown. 4 for fired alerts
-	
-	// Checking if any agent has fired alert (4)
-	if (is_int(array_search(4,$agents_status))) {
-		return 4;
+	if (is_int(array_search(AGENT_STATUS_ALERT_FIRED, $agents_status))) {
+		return AGENT_STATUS_ALERT_FIRED;
 	}
-	// Checking if any agent has critical status (1)
-	elseif (is_int(array_search(1,$agents_status))) {
-		return 1;
+	elseif (is_int(array_search(AGENT_STATUS_CRITICAL, $agents_status))) {
+		return AGENT_STATUS_CRITICAL;
 	}
-	// Checking if any agent has warning status (2)
-	elseif (is_int(array_search(2,$agents_status))) {
-		return 2;
+	elseif (is_int(array_search(AGENT_STATUS_WARNING, $agents_status))) {
+		return AGENT_STATUS_WARNING;
 	}
-	// Checking if any agent has unknown status (-1)
-	elseif (is_int(array_search(-1,$agents_status))) {
-		return -1;
-	}
-	// Checking if any agents module has unknown status (3)
-	elseif (is_int(array_search(3,$agents_status))) {
-		return 3;
+	elseif (is_int(array_search(AGENT_STATUS_UNKNOWN, $agents_status))) {
+		return AGENT_STATUS_UNKNOWN;
 	}
 	else {
-		return 0;
+		return AGENT_STATUS_NORMAL;
 	}
-	
-	return $status;
 }
 
 /**
@@ -931,7 +920,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	//of this groups and its children. It was done to print empty fathers of children groups.
 	//We need to recalculate the total agents for this group here to get only the total agents
 	//for this group. Of course the group All (0) is a special case.
-		
+	
 	if ($id_group != 0) {
 		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
 			FROM tagente 

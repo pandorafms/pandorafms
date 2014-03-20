@@ -1498,7 +1498,7 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		$all_modules = db_get_all_rows_filter('tagente_modulo',
 			$filter_modules, 'id_agente_modulo'); 
 		
-		$result_modules = array(); 
+		$result_modules = array();
 		// Skip non init modules
 		foreach ($all_modules as $module) {
 			if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
@@ -1559,6 +1559,10 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	// Checking if any module has critical status
 	elseif (is_int(array_search(AGENT_MODULE_STATUS_CRITICAL_BAD, $modules_status))) {
 		return AGENT_MODULE_STATUS_CRITICAL_BAD;
+	}
+	// Checking if any module has critical status
+	elseif (is_int(array_search(AGENT_MODULE_STATUS_NORMAL_ALERT, $modules_status))) {
+		return AGENT_STATUS_ALERT_FIRED;
 	}
 	// Checking if any module has warning status
 	elseif (is_int(array_search(AGENT_MODULE_STATUS_WARNING,$modules_status))) {

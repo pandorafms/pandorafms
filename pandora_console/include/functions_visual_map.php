@@ -122,6 +122,31 @@ function visual_map_print_item($layoutData) {
 			echo "</div>";
 			break;
 		
+		case GROUP_ITEM:
+			if ($layoutData['image'] != null) {
+				$img = visual_map_get_image_status_element($layoutData);
+				if (substr($img,0,1) == '4') {
+					$borderStyle ='border: 2px solid #ffa300;';
+					$img = substr_replace($img, '', 0,1);
+				}
+			}
+			
+			if (($width != 0) && ($height != 0)) {
+				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
+				$imageSize = 'width="' . $width . '" height="' . $height . '"';
+			}
+			echo '<div id="' . $id . '" class="item group_item" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
+			if ($layoutData['image'] != null) {
+				if (($width != 0) && ($height != 0)) 
+					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
+				else
+					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
+				echo '<br />';
+			}
+			echo io_safe_output($text);
+			echo "</div>";
+			break;
+		
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
 			//Metaconsole db connection
@@ -868,6 +893,29 @@ function visual_map_get_status_element($layoutData) {
 				}
 				break;
 			
+			case GROUP_ITEM:
+				$group_status = groups_get_status($layoutData['id_group']);
+				
+				switch ($group_status) {
+					case AGENT_STATUS_ALERT_FIRED:
+						return VISUAL_MAP_STATUS_CRITICAL_ALERT;
+						break;
+					case AGENT_STATUS_CRITICAL:
+						return VISUAL_MAP_STATUS_CRITICAL_BAD;
+						break;
+					case AGENT_STATUS_WARNING:
+						return VISUAL_MAP_STATUS_WARNING;
+						break;
+					case AGENT_STATUS_UNKNOWN:
+						return VISUAL_MAP_STATUS_UNKNOWN;
+						break;
+					case AGENT_STATUS_NORMAL:
+					default:
+						return VISUAL_MAP_STATUS_NORMAL;
+						break;
+				}
+				break;
+			
 			default:
 				//If it's a graph, a progress bar or a data tag, ALWAYS report status OK
 				//(=0) to avoid confussions here.
@@ -884,7 +932,7 @@ function visual_map_get_status_element($layoutData) {
 		case AGENT_MODULE_STATUS_WARNING_ALERT:
 			$status = VISUAL_MAP_STATUS_WARNING_ALERT;
 			break;
-	}	
+	}
 	
 	return $status;
 }
@@ -1066,6 +1114,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		}
 		
 		switch ($layout_data['type']) {
+			case GROUP_ITEM:
 			case STATIC_GRAPH:
 				if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD)
 					$z_index = 3;

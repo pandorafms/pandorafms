@@ -43,9 +43,9 @@ ALTER TABLE tgraph_source MODIFY COLUMN `weight` float(8,3) NOT NULL DEFAULT 0;
 ALTER TABLE `pandora`.`tagente_modulo` MODIFY COLUMN `post_process` DOUBLE  DEFAULT NULL;
 
 /* 2014/03/18 */
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`module_a` int(10) unsigned NOT NULL,
@@ -79,3 +79,8 @@ ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f19_` text;
 ALTER TABLE `talert_snmp` ADD COLUMN `_snmp_f20_` text;
 
 ALTER TABLE `tnetwork_map` ADD COLUMN `l2_network` tinyint(1) unsigned NOT NULL default '0';
+
+-- ---------------------------------------------------------------------
+-- Table `tlayout_data`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tlayout_data` ADD COLUMN `id_group` INTEGER UNSIGNED NOT NULL default 0;

@@ -195,7 +195,7 @@ if ($save_alert || $modify_alert) {
 			$custom_oid_data_15, $custom_oid_data_16, $custom_oid_data_17,
 			$custom_oid_data_18, $custom_oid_data_19, $custom_oid_data_20,
 			$trap_type, $single_value, $position, $group, $id_as);
-	
+		
 		$result = db_process_sql ($sql);
 		
 		if (!$result) {
@@ -737,7 +737,7 @@ else {
 			"priority_filter=" . $priority_filter . "&" .
 			"offset=" . $offset;
 	}
-
+	
 	//$where_sql = ' 1 = 1';
 	if ($trap_type_filter != SNMP_TRAP_TYPE_NONE) {
 		$where_sql .= ' AND `trap_type` = ' . $trap_type_filter;
@@ -767,7 +767,7 @@ else {
 	
 	$count = db_get_value_sql("SELECT COUNT(*)
 		FROM talert_snmp WHERE id_group IN ($str_user_groups) " . $where_sql);
-		
+	
 	$result = array();
 	
 	//Overview

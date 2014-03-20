@@ -128,13 +128,6 @@ if (!$new_agent) {
 	}
 }
 
-$disk_conf = (bool) get_parameter ('disk_conf');
-
-if ($disk_conf) {
-	require ("agent_disk_conf_editor.php");
-	return;
-}
-
 $disk_conf_delete = (bool) get_parameter ('disk_conf_delete');
 // Agent remote configuration DELETE
 if ($disk_conf_delete) {
@@ -174,11 +167,18 @@ if (!$new_agent) {
 			$agent_name = io_safe_output($agent_name);
 			$agent_md5 = md5 ($agent_name, false);
 			
-			$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
+			$table->data[0][1] .= '&nbsp;&nbsp;' .
+				'<a href="index.php?' .
+					'sec=gagente&amp;' .
+					'sec2=godmode/agentes/configurar_agente&amp;' .
+					'tab=remote_configuration&amp;' .
+					'id_agente=' . $id_agente . '&amp;' .
+					'disk_conf=' . $agent_md5 . '">';
 			$table->data[0][1] .= html_print_image(
 				"images/application_edit.png",
 				true,
-				array ("border" => 0, "title" => __('This agent can be remotely configured')));
+				array("border" => 0,
+					"title" => __('This agent can be remotely configured')));
 			$table->data[0][1] .= '</a>' .
 				ui_print_help_tip (
 					__('You can remotely edit this agent configuration'), true);
@@ -286,7 +286,12 @@ if (!$new_agent) {
 		if (file_exists ($filename['md5'])) {
 			$table->data[3][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
 			// Delete remote configuration
-			$table->data[3][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
+			$table->data[3][1] .= '<a href="index.php?' .
+				'sec=gagente&amp;' .
+				'sec2=godmode/agentes/configurar_agente&amp;' .
+				'tab=main&amp;' .
+				'disk_conf_delete=1&amp;' .
+				'id_agente=' . $id_agente . '">';
 			$table->data[3][1] .= html_print_image(
 				"images/cross.png", true,
 				array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';

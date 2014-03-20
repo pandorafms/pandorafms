@@ -212,11 +212,16 @@ if ($create_agent) {
 			
 			$agent_created_ok = true;
 			
-			$info = 'Name: ' . $nombre_agente . ' IP: ' . $direccion_agente .
-				' Group: ' . $grupo . ' Interval: ' . $intervalo .
-				' Comments: ' . $comentarios . ' Mode: ' . $modo .
-				' ID_parent: ' . $id_parent . ' Server: ' . $server_name .
-				' ID os: ' . $id_os . ' Disabled: ' . $disabled .
+			$info = 'Name: ' . $nombre_agente .
+				' IP: ' . $direccion_agente .
+				' Group: ' . $grupo .
+				' Interval: ' . $intervalo .
+				' Comments: ' . $comentarios .
+				' Mode: ' . $modo .
+				' ID_parent: ' . $id_parent .
+				' Server: ' . $server_name .
+				' ID os: ' . $id_os .
+				' Disabled: ' . $disabled .
 				' Custom ID: ' . $custom_id .
 				' Cascade protection: '  . $cascade_protection . 
 				' Icon path: ' . $icon_path .
@@ -237,7 +242,6 @@ if ($create_agent) {
 // Show tabs
 $img_style = array ("class" => "top", "width" => 16);
 
-// TODO: Change to use ui_print_page_header
 if ($id_agente) {
 	
 	/* View tab */
@@ -299,7 +303,8 @@ if ($id_agente) {
 		$inventorytab = "";
 	
 	
-	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($id_agente));
+	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',
+		array($id_agente));
 	
 	if ($has_remote_conf === true) {
 		/* Plugins */
@@ -365,18 +370,56 @@ if ($id_agente) {
 	}
 	
 	if (check_acl ($config["id_user"], $group, "AW", $id_agente)) {
-		$onheader = array('view' => $viewtab,
-			'main' => $maintab,
-			'module' => $moduletab,
-			'alert' => $alerttab,
-			'template' => $templatetab,
-			'inventory' => $inventorytab,
-			'pluginstab' => $pluginstab,
-			'collection'=> $collectiontab,
-			'group' => $grouptab,
-			'gis' => $gistab,
-			'agent_wizard' => $agent_wizard);
+		if ($has_remote_conf) {
+			$agent_name = agents_get_name($id_agente);
+			$agent_name = io_safe_output($agent_name);
+			$agent_md5 = md5 ($agent_name, false);
 			
+			$remote_configuration_tab['text'] =
+				'<a href="index.php?' .
+					'sec=gagente&amp;' .
+					'sec2=godmode/agentes/configurar_agente&amp;' .
+					'tab=remote_configuration&amp;' .
+					'id_agente=' . $id_agente . '&amp;' .
+					'disk_conf=' . $agent_md5 . '">' 
+				. html_print_image ("images/book_edit.png", true,
+					array("title" =>__('Remote configuration')))
+				. '</a>';
+			if ($tab == 'remote_configuration')
+				$remote_configuration_tab['active'] = true;
+			else
+				$remote_configuration_tab['active'] = false;
+			
+			
+			$onheader = array('view' => $viewtab,
+				'separator' => "",
+				'main' => $maintab,
+				'remote_configuration' => $remote_configuration_tab,
+				'module' => $moduletab,
+				'alert' => $alerttab,
+				'template' => $templatetab,
+				'inventory' => $inventorytab,
+				'pluginstab' => $pluginstab,
+				'collection'=> $collectiontab,
+				'group' => $grouptab,
+				'gis' => $gistab,
+				'agent_wizard' => $agent_wizard);
+		}
+		else {
+			$onheader = array('view' => $viewtab,
+				'separator' => "",
+				'main' => $maintab,
+				'module' => $moduletab,
+				'alert' => $alerttab,
+				'template' => $templatetab,
+				'inventory' => $inventorytab,
+				'pluginstab' => $pluginstab,
+				'collection'=> $collectiontab,
+				'group' => $grouptab,
+				'gis' => $gistab,
+				'agent_wizard' => $agent_wizard);
+		}
+		
 		// Only if the agent has incidents associated show incidents tab
 		if ($total_incidents) {
 			$onheader['incident'] = $incidenttab;
@@ -449,6 +492,9 @@ if ($id_agente) {
 		case "incident":
 			$tab_description = '- ' . __('Incidents');
 			break;
+		case "remote_configuration":
+			$tab_description = '- ' . __('Remote configuration');
+			break;
 		case "agent_wizard":
 			switch(get_parameter('wizard_section')) {
 				case 'snmp_explorer':
@@ -475,12 +521,14 @@ if ($id_agente) {
 			break;
 	}
 	
-	ui_print_page_header (agents_get_name ($id_agente) .
-		' ' . $tab_description, "images/setup.png", false, $help_header , true, $onheader);
+	ui_print_page_header (
+		agents_get_name ($id_agente) . ' ' . $tab_description,
+		"images/setup.png", false, $help_header , true, $onheader);
 }
 else {
 	// Create agent 
-	ui_print_page_header (__('Agent manager'), "images/bricks.png", false, "create_agent", true);
+	ui_print_page_header (__('Agent manager'), "images/bricks.png",
+		false, "create_agent", true);
 }
 
 $delete_conf_file = (bool) get_parameter('delete_conf_file');
@@ -594,7 +642,8 @@ if ($update_agent) { // if modified some agent paramenter
 	
 	
 	foreach ($field_values as $key => $value) {
-		$old_value = db_get_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agente, 'id_field' => $key));
+		$old_value = db_get_all_rows_filter('tagent_custom_data',
+			array('id_agent' => $id_agente, 'id_field' => $key));
 		
 		if ($old_value === false) {
 			// Create custom field if not exist
@@ -741,7 +790,7 @@ if ($update_module || $create_module) {
 	// where are very big and PHP uses scientific notation, p.e:
 	// 1.23E-10 is 0.000000000123
 	
-	$post_process = get_parameter ('post_process', 0);
+	$post_process = (string) get_parameter ('post_process', 0.0);
 	$prediction_module = 0;
 	$max_timeout = (int) get_parameter ('max_timeout');
 	$max_retries = (int) get_parameter ('max_retries');
@@ -790,15 +839,15 @@ if ($update_module || $create_module) {
 	if (!empty($macros)) {
 		$macros = json_decode(base64_decode($macros), true);
 		
-		foreach ($macros as $k => $m) {
+		foreach($macros as $k => $m) {
 			$macros[$k]['value'] = get_parameter($m['macro'], '');
 		}
 		
 		$macros = json_encode($macros);
 		
-		$conf_array = explode("\n", $configuration_data);
-		foreach ($conf_array as $line) {
-			if (preg_match("/^module_name\s*(.*)/", $line, $match)) {
+		$conf_array = explode("\n",$configuration_data);
+		foreach($conf_array as $line) {
+			if(preg_match("/^module_name\s*(.*)/", $line, $match)) {
 				$new_configuration_data .= "module_name $name\n";
 			}
 			// We delete from conf all the module macros starting with _field
@@ -822,7 +871,8 @@ if ($update_module || $create_module) {
 	
 	enterprise_hook ('get_service_synthetic_parameters');
 	
-	$agent_name = (string) get_parameter('agent_name',agents_get_name ($id_agente));
+	$agent_name = (string) get_parameter('agent_name',
+		agents_get_name($id_agente));
 	
 	$snmp_community = (string) get_parameter ('snmp_community');
 	$snmp_oid = (string) get_parameter ('snmp_oid');
@@ -895,7 +945,7 @@ if ($update_module || $create_module) {
 	//Set the event type that can show.
 	$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
 	$disabled_types_event = json_encode($disabled_types_event);
-
+	
 	$module_macro_names = (array) get_parameter('module_macro_names', array());
 	$module_macro_values = (array) get_parameter('module_macro_values', array());
 	$module_macros = modules_get_module_macros_json ($module_macro_names, $module_macro_values);
@@ -1413,6 +1463,9 @@ switch ($tab) {
 	case "incident":
 		require("agent_incidents.php");
 		break;
+	case "remote_configuration":
+		enterprise_include("godmode/agentes/agent_disk_conf_editor.php");
+		break;
 	case "extension":
 		$found = false;
 		foreach($config['extensions'] as $extension) {
@@ -1470,46 +1523,46 @@ echo '</ul>';
 echo '</div>';
 ?>
 <script type="text/javascript">
-var wizard_tab_showed = 0;
-
-/* <![CDATA[ */
-$(document).ready (function () {
-	// Control the tab and subtab hover. When mouse leave one, 
-	// check if is hover the other before hide the subtab
-	$('.agent_wizard_tab').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
+	/* <![CDATA[ */
+	var wizard_tab_showed = 0;
 	
-	$('#agent_wizard_subtabs').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
-});
-
-// Set the position and width of the subtab
-function agent_wizard_tab_setup() {		
-	$('#agent_wizard_subtabs').css('left', $('.agent_wizard_tab').offset().left)
-	$('#agent_wizard_subtabs').css('top', $('.agent_wizard_tab').offset().top + $('.agent_wizard_tab').height() + 4)
-	$('#agent_wizard_subtabs').css('width', $('.agent_wizard_tab').width() + 6)
-}
-
-function agent_wizard_tab_show() {
-	agent_wizard_tab_setup();
-	wizard_tab_showed = wizard_tab_showed + 1;
+	$(document).ready (function () {
+		// Control the tab and subtab hover. When mouse leave one, 
+		// check if is hover the other before hide the subtab
+		$('.agent_wizard_tab').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
+		
+		$('#agent_wizard_subtabs').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
+	});
 	
-	if(wizard_tab_showed == 1) {
-		$('#agent_wizard_subtabs').show("fast");
+	// Set the position and width of the subtab
+	function agent_wizard_tab_setup() {		
+		$('#agent_wizard_subtabs').css('left', $('.agent_wizard_tab').offset().left)
+		$('#agent_wizard_subtabs').css('top', $('.agent_wizard_tab').offset().top + $('.agent_wizard_tab').height() + 4)
+		$('#agent_wizard_subtabs').css('width', $('.agent_wizard_tab').width() + 6)
 	}
-}
-
-function agent_wizard_tab_hide() {
-	wizard_tab_showed = wizard_tab_showed - 1;
-
-	setTimeout(function() {
-		if(wizard_tab_showed <= 0) {
-			$('#agent_wizard_subtabs').hide("fast");
+	
+	function agent_wizard_tab_show() {
+		agent_wizard_tab_setup();
+		wizard_tab_showed = wizard_tab_showed + 1;
+		
+		if(wizard_tab_showed == 1) {
+			$('#agent_wizard_subtabs').show("fast");
 		}
-	},500);
-}
-
-$(window).resize(function() {
-	agent_wizard_tab_setup();
-});
-
-/* ]]> */
+	}
+	
+	function agent_wizard_tab_hide() {
+		wizard_tab_showed = wizard_tab_showed - 1;
+		
+		setTimeout(function() {
+			if(wizard_tab_showed <= 0) {
+				$('#agent_wizard_subtabs').hide("fast");
+			}
+		},500);
+	}
+	
+	$(window).resize(function() {
+		agent_wizard_tab_setup();
+	});
+	
+	/* ]]> */
 </script>

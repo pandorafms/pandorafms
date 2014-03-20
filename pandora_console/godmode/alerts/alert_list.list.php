@@ -41,18 +41,18 @@ else {
 }
 
 // Table for filter controls
-$form_filter = '<form method="post" action="index.php?sec='.$sec.'&amp;sec2=godmode/alerts/alert_list&amp;refr=' . ((int)get_parameter('refr', 0)) . '&amp;pure='.$config["pure"].'">';
+$form_filter = '<form method="post" action="index.php?sec=' . $sec . '&amp;sec2=godmode/alerts/alert_list&amp;refr=' . ((int)get_parameter('refr', 0)) . '&amp;pure='.$config["pure"].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />\n";
 $form_filter .= '<table style="width: 98%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
 $form_filter .= "<tr>\n";
-$form_filter .= "<td>".__('Template name')."</td><td>";
+$form_filter .= "<td>" . __('Template name') . "</td><td>";
 $form_filter .= html_print_input_text ('template_name', $templateName, '', 12, 255, true);
 $form_filter .= "</td>\n";
 $temp = agents_get_agents();
 $arrayAgents = array();
 
 # Avoid empty arrays, warning messages are UGLY !
-if ($temp){
+if ($temp) {
 	foreach ($temp as $agentElement) {
 		$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
 	}
@@ -137,7 +137,7 @@ $form_filter .= "</table>\n";
 $form_filter .= "</form>\n";
 
 echo "<br>";
-ui_toggle($form_filter,__('Alert control filter'), __('Toggle filter(s)'));
+ui_toggle($form_filter, __('Alert control filter'), __('Toggle filter(s)'));
 
 $simple_alerts = array();
 
@@ -313,7 +313,7 @@ if (!$id_agente) {
 else {
 	$url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente=' . $id_agente;
 }
-	
+
 $table->class = 'alert_list databox';
 $table->width = '98%';
 $table->size = array ();
@@ -375,8 +375,8 @@ $iterator = 0;
 
 foreach ($simple_alerts as $alert) {
 	if ($alert['disabled']) {
-		 $table->rowstyle[$iterator] = 'font-style: italic; color: #aaaaaa;';
-		 $table->style[$iterator][1] = 'font-style: italic; color: #aaaaaa;';
+		$table->rowstyle[$iterator] = 'font-style: italic; color: #aaaaaa;';
+		$table->style[$iterator][1] = 'font-style: italic; color: #aaaaaa;';
 	}
 	
 	if ($rowPair)
@@ -385,9 +385,9 @@ foreach ($simple_alerts as $alert) {
 		$table->rowclass[$iterator] = 'rowOdd';
 	$rowPair = !$rowPair;
 	$iterator++;
-
+	
 	$data = array ();
-
+	
 	if (! $id_agente) {
 		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
 		
@@ -395,7 +395,7 @@ foreach ($simple_alerts as $alert) {
 		
 		$data[0] = '';
 		
-		if(check_acl ($config['id_user'], $agent_group, "AW")) {
+		if (check_acl ($config['id_user'], $agent_group, "AW")) {
 			$main_tab = 'main';
 		}
 		else {
@@ -410,7 +410,7 @@ foreach ($simple_alerts as $alert) {
 		$data[0] .= ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]', 'display:block;font-size: 7.2pt');
 		if ($alert['disabled'])
 			$data[0] .= '</span>';
-			
+		
 		$data[0] .= '</a>';
 	}
 	else {
@@ -421,7 +421,7 @@ foreach ($simple_alerts as $alert) {
 	$data[1] = ui_print_truncate_text($module_name, 'module_medium', false, true, true, '[&hellip;]', 'display:block;font-size: 7.2pt') . '<br>';
 	
 	$template_group = db_get_value('id_group', 'talert_templates', 'id', $alert['id_alert_template']);
-
+	
 	// The access to the template manage page is necessary have LW permissions on template group
 	if(check_acl ($config['id_user'], $template_group, "LW")) {
 		$data[1] .= "<a href='index.php?sec=".$sec."&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
@@ -433,7 +433,7 @@ foreach ($simple_alerts as $alert) {
 		href="'.ui_get_full_url(false,false,false,false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">';
 		$data[1] .= html_print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help"));
 	$data[1] .= '</a> ';
-		
+	
 	if(check_acl ($config['id_user'], $template_group, "LW")) {
 		$data[1] .= "</a>";
 	}
@@ -453,7 +453,7 @@ foreach ($simple_alerts as $alert) {
 		$data[2] .= "<td></td>";
 		$data[2] .= "</tr>";
 	}
-
+	
 	foreach ($actions as $action_id => $action) {
 		$data[2] .= "<tr>";
 			$data[2] .= "<td>";
@@ -519,7 +519,7 @@ foreach ($simple_alerts as $alert) {
 				$data[2] .= '<table class="databox_color" style="width:100%">';
 					$data[2] .= html_print_input_hidden ('add_action', 1, true);
 					$data[2] .= html_print_input_hidden ('id_alert_module', $alert['id'], true);
-		
+					
 					if (! $id_agente) {
 						$data[2] .= '<tr class="datos2">';
 							$data[2] .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
@@ -569,7 +569,7 @@ foreach ($simple_alerts as $alert) {
 			$data[2] .= '</form>';
 		$data[2] .= '</div>';
 	}
-
+	
 	$status = STATUS_ALERT_NOT_FIRED;
 	$title = "";
 	
@@ -614,7 +614,7 @@ foreach ($simple_alerts as $alert) {
 		$data[4] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 		$data[4] .= '</form>';
 	}
-
+	
 	// To access to policy page is necessary have AW permissions in the agent
 	if(check_acl ($config['id_user'], $agent_group, "AW")) {
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -623,7 +623,7 @@ foreach ($simple_alerts as $alert) {
 				$data[4] .= '';
 			else {
 				$img = 'images/policies.png';
-					
+				
 				$data[4] .= '&nbsp;&nbsp;<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' . 
 					html_print_image($img, true, array('title' => $policyInfo['name'])) .
 					'</a>';
@@ -658,11 +658,11 @@ foreach ($simple_alerts as $alert) {
 	array_push ($table->data, $data);
 }
 
-if (isset($data)){
+if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('No alerts defined')."</div>";
+	echo "<div class='nf'>" . __('No alerts defined') . "</div>";
 }
 
 // Create alert button
@@ -673,7 +673,7 @@ if (isset($dont_display_alert_create_bttn))
 		$display_create = false;
 
 if ($display_create && check_acl ($config['id_user'], 0, "LW")){
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
 	html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
 	echo '</form>';
@@ -771,19 +771,19 @@ function show_advance_options_action(id_alert) {
 
 function show_add_action(id_alert) {
 	$("#add_action-div-" + id_alert).hide ()
-			.dialog ({
-				resizable: true,
-				draggable: true,
-				title: '<?php echo __('Add action'); ?>',
-				modal: true,
-				overlay: {
-					opacity: 0.5,
-					background: "black"
-				},
-				width: 500,
-				height: 300
-			})
-			.show ();
+		.dialog ({
+			resizable: true,
+			draggable: true,
+			title: '<?php echo __('Add action'); ?>',
+			modal: true,
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			},
+			width: 500,
+			height: 300
+		})
+		.show ();
 }
 
 /* ]]> */

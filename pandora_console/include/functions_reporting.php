@@ -1423,11 +1423,12 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			$id_group[0] = $my_group;
 		}
 		
-		foreach ($id_group as $group){
+		foreach ($id_group as $group) {
 			$group_stat = db_get_all_rows_sql ("SELECT *
 				FROM tgroup_stat, tgrupo
 				WHERE tgrupo.id_grupo = tgroup_stat.id_group AND tgroup_stat.id_group = $group
 				ORDER BY nombre");
+			
 			$data["monitor_checks"] += $group_stat[0]["modules"];
 			$data["monitor_not_init"] += $group_stat[0]["non-init"];
 			$data["monitor_unknown"] += $group_stat[0]["unknown"];
@@ -1453,7 +1454,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			// Get Agents Unknown
 			$data["agent_unknown"] += groups_agent_unknown($group);
 			// Get Agents Not init
-			$data["agent_not_init"] += groups_agent_not_init($group);			
+			$data["agent_not_init"] += groups_agent_not_init($group);
 			
 		}
 		
@@ -1484,7 +1485,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 					array_push($covered_groups, $sub['id_grupo']);
 					array_push($group_array, $sub['id_grupo']);
 				}
-			
+				
 			}
 			
 			// Add id of this group to create the clause
@@ -1531,7 +1532,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 				
 				// Get monitor WARNING, except disabled and non-init
 				$data["monitor_warning"] += groups_monitor_warning ($group_array);
-			
+				
 				// Get monitor UNKNOWN, except disabled and non-init
 				$data["monitor_unknown"] += groups_monitor_unknown ($group_array);
 				
@@ -1545,7 +1546,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 				
 				// Get TOTAL agents in a group
 				$data["total_agents"] += groups_total_agents ($group_array);
-			
+				
 				// Get TOTAL non-init modules, except disabled ones and async modules
 				$data["total_not_init"] += $data["monitor_not_init"];
 			

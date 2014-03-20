@@ -1,3 +1,9 @@
+2014-03-20  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/WMIServer.pm: Move WMI query safe_output 
+	function to before the quotes ssubstitution to fix
+	any WMI component with double quotes and WMI Wizard
+
 2014-03-18  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* util/pandora_db.pl: fixed the notinit_count in the agents after

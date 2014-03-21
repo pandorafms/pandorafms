@@ -244,6 +244,10 @@ switch ($activeTab) {
 				$item_per_agent = get_parameter ("item_per_agent", 0);
 				$id_server = (int)get_parameter('servers', 0);
 				
+				$kind_relationship = (int)get_parameter('kind_relationship',
+					VISUAL_MAP_WIZARD_PARENTS_NONE);
+				$item_in_the_map = (int)get_parameter('item_in_the_map', 0);
+				
 				$message = '';
 				
 				if (($width == 0) && ($height == 0) && ($type == MODULE_GRAPH)) {
@@ -273,7 +277,9 @@ switch ($activeTab) {
 						$label_type,
 						$type,
 						$enable_link,
-						$id_server);
+						$id_server,
+						$kind_relationship,
+						$item_in_the_map);
 						
 					$statusProcessInDB = array('flag' => true,
 						'message' => $message);
@@ -328,7 +334,9 @@ switch ($activeTab) {
 								$label_type,
 								$type,
 								$enable_link,
-								$id_server);
+								$id_server,
+								$kind_relationship,
+								$item_in_the_map);
 						}
 						else {
 							$id_modules = array();
@@ -378,7 +386,9 @@ switch ($activeTab) {
 								$label_type,
 								$type,
 								$enable_link,
-								$id_server);
+								$id_server,
+								$kind_relationship,
+								$item_in_the_map);
 						}
 						$statusProcessInDB = array('flag' => true, 'message' => $message);
 					}

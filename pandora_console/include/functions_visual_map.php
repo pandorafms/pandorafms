@@ -1132,8 +1132,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
 				if ($show_links) {
-					if (!empty($layout_data['id_agent'])
-						&& empty($layout_data['id_layout_linked'])) {
+					if ((!empty($layout_data['id_agent'])
+						&& empty($layout_data['id_layout_linked']))
+						|| ($layout_data['type'] == GROUP_ITEM)) {
 						
 						if ($layout_data['enable_link']
 							&& can_user_access_node()) {
@@ -1148,7 +1149,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 										'prediction_module' => 1));
 							}
 							
-							if (!empty($id_service)) {
+							if ($layout_data['type'] == GROUP_ITEM) {
+								$url = $config['homeurl'] .
+									'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=' .
+									$layout_data['id_group'];
+							}
+							else if (!empty($id_service)) {
 								//Link to an service page
 								if (empty($layout_data['id_metaconsole'])) {
 									$url = $config['homeurl'] .

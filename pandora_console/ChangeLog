@@ -1,3 +1,8 @@
+2014-03-21  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_visual_map.php: uploaded the lost changes in the
+	code for to make the link in the group item.
+
 2014-03-20  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* images/group_green.disabled.png, images/group_green.png,

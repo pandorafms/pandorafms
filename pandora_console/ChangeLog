@@ -1,5 +1,10 @@
 2014-03-21  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/constants.php: added lost constant for
+	"SERVICE_STATUS_ALERT".
+
+2014-03-21  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/visual_console_builder.wizard.php,
 	godmode/reporting/visual_console_builder.php, include/constants.php,
 	include/functions_visual_map.php: added the feature to set the

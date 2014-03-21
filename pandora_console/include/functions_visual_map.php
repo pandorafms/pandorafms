@@ -499,7 +499,8 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
 function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
 	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = true,
-	$id_server = 0) {
+	$id_server = 0, $kind_relationship = VISUAL_MAP_WIZARD_PARENTS_NONE,
+	$item_in_the_map = 0) {
 	
 	if (empty ($id_modules)) {
 		$return = ui_print_error_message (__('No modules selected'), '', true);
@@ -593,6 +594,13 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 				break;
 		}
 		
+		$parent_item = 0;
+		switch ($kind_relationship) {
+			case VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP:
+				$parent_item = $item_in_the_map;
+				break;
+		}
+		
 		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
@@ -607,7 +615,8 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 			'height' => $value_height,
 			'label_color' => '#000000',
 			'enable_link' => $enable_link,
-			'id_metaconsole' => $id_server);
+			'id_metaconsole' => $id_server,
+			'parent_item' => $parent_item);
 		
 		db_process_sql_insert ('tlayout_data', $values);
 		
@@ -634,7 +643,8 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
 	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = 1,
-	$id_server = 0) {
+	$id_server = 0, $kind_relationship = VISUAL_MAP_WIZARD_PARENTS_NONE,
+	$item_in_the_map = 0) {
 	
 	global $config;
 	
@@ -648,6 +658,16 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 	$error = false;
 	$pos_y = 10;
 	$pos_x = 10;
+	
+	$relationship = true;
+	$relationships_agents = array();
+	//Check if the set a none relationship
+	if (($kind_relationship == VISUAL_MAP_WIZARD_PARENTS_NONE) ||
+		($kind_relationship == VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP &&
+		$item_in_the_map = 0)) {
+		
+		$relationship = false;
+	}
 	
 	foreach ($id_agents as $id_agent) {
 		if ($pos_x > 600) {
@@ -722,6 +742,15 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 			metaconsole_restore_db();
 		}
 		
+		$parent_item = 0;
+		if ($relationship) {
+			switch ($kind_relationship) {
+				case VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP:
+					$parent_item = $item_in_the_map;
+					break;
+			}
+		}
+		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
 			'pos_x' => $pos_x,
@@ -735,14 +764,55 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 			'height' => $value_height,
 			'label_color' => '#000000',
 			'enable_link' => $enable_link,
-			'id_metaconsole' => $id_server);
+			'id_metaconsole' => $id_server,
+			'parent_item' => $parent_item);
 		
-		db_process_sql_insert ('tlayout_data', $values);
+		$id_item = db_process_sql_insert ('tlayout_data', $values);
+		
+		if ($relationship) {
+			switch ($kind_relationship) {
+				case VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP:
+					
+					if (!isset($relationships_agents[$id_agent])) {
+						$relationships_agents[$id_agent]['id_layout_data_parent'] = $id_item;
+						$relationships_agents[$id_agent]['id_layout_data_children'] = array();
+					}
+					else {
+						$relationships_agents[$id_agent]['id_layout_data_parent'] = $id_item;
+					}
+					
+					$agent_id_parent = db_get_value('id_parent', 'tagente',
+						'id_agente', $id_agent);
+					
+					//Check in the group of new items is the father
+					if (array_search($agent_id_parent, $id_agents) !== false) {
+						if (isset($relationships_agents[$agent_id_parent])) {
+							$relationships_agents[$agent_id_parent]['id_layout_data_children'][] = $id_item;
+						}
+						else {
+							$relationships_agents[$agent_id_parent] = array();
+							$relationships_agents[$agent_id_parent]['id_layout_data_parent'] = null;
+							$relationships_agents[$agent_id_parent]['id_layout_data_children'] = array();
+							$relationships_agents[$agent_id_parent]['id_layout_data_children'][] = $id_item;
+						}
+					}
+					break;
+			}
+		}
 		
 		$pos_x = $pos_x + $range;
 	}
 	
-	$return = ui_print_success_message (__('Agents successfully added to layout'), '', true);
+	foreach ($relationships_agents as $relationship_item) {
+		foreach ($relationship_item['id_layout_data_children'] as $children) {
+			db_process_sql_update('tlayout_data',
+				array('parent_item' => $relationship_item['id_layout_data_parent']),
+				array('id' => $children));
+		}
+	}
+	
+	$return = ui_print_success_message(
+		__('Agents successfully added to layout'), '', true);
 	
 	return $return;
 }

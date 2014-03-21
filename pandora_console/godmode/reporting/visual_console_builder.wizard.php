@@ -83,26 +83,30 @@ $type_list = array(
 $table->rowstyle["all_0"] = 'display: none;';
 $table->data["all_0"][0] = __('Type');
 $table->colspan["all_0"][1] = "3";
-$table->data["all_0"][1] = html_print_select ($type_list, 'type', '', 'hidden_rows()', '', '', true, false, false);
+$table->data["all_0"][1] = html_print_select ($type_list, 'type', '',
+	'hidden_rows()', '', '', true, false, false);
 
 
 $table->rowstyle["staticgraph"] = 'display: none;';
 $table->data["staticgraph"][0] = __('Image');
 $table->colspan["staticgraph"][1] = "3";
-$table->data["staticgraph"][1] = html_print_select ($images_list, 'image', '', '', '', '', true);
+$table->data["staticgraph"][1] = html_print_select($images_list,
+	'image', '', '', '', '', true);
 
 
 $table->rowstyle["all_1"] = 'display: none;';
 $table->data["all_1"][0] = __('Range between elements (px)');
 $table->colspan["all_1"][1] = "3";
-$table->data["all_1"][1] = html_print_input_text ('range', 50, '', 5, 5, true);
+$table->data["all_1"][1] = html_print_input_text('range', 50, '', 5, 5, true);
+
 
 $table->rowstyle["staticgraph_modulegraph"] = 'display: none;';
 $table->data["staticgraph_modulegraph"][0] = __('Size (px)');
 $table->colspan["staticgraph_modulegraph"][1] = "3";
 $table->data["staticgraph_modulegraph"][1] = __('Width').': ' .
 	html_print_input_text ('width', 0, '', 5, 5, true);
-$table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' . __('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
+$table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' .
+	__('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
 
 
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';
@@ -117,7 +121,8 @@ $table->data["simplevalue"][0] = __('Process');
 $table->data["simplevalue"][1] = html_print_select (
 	array (PROCESS_VALUE_MIN => __('Min value'), 
 	PROCESS_VALUE_MAX => __('Max value'),
-	PROCESS_VALUE_AVG => __('Avg value')), 'process_value', PROCESS_VALUE_AVG, '', __('None'), PROCESS_VALUE_NONE, true);
+	PROCESS_VALUE_AVG => __('Avg value')), 'process_value',
+	PROCESS_VALUE_AVG, '', __('None'), PROCESS_VALUE_NONE, true);
 
 
 $table->rowstyle["percentileitem_1"] = 'display: none;';
@@ -135,14 +140,19 @@ $table->data["percentileitem_2"][1] =
 $table->rowstyle["percentileitem_3"] = 'display: none;';
 $table->data["percentileitem_3"][0] = __('Type');
 $table->data["percentileitem_3"][1] =
-	html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
-	html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', 'style="float: left;"', true);
+	html_print_radio_button_extended('type_percentile', 'percentile',
+		('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
+	html_print_radio_button_extended('type_percentile', 'bubble',
+		('Bubble'), 'percentile', false, '', 'style="float: left;"', true);
 
 
 $table->rowstyle["percentileitem_4"] = 'display: none;';
 $table->data["percentileitem_4"][0] = __('Value to show');
-$table->data["percentileitem_4"][1] = html_print_radio_button_extended('value_show', 'percent', ('Percent'), 'value', false, '', 'style="float: left;"', true) .
-	html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', 'style="float: left;"', true);
+$table->data["percentileitem_4"][1] = html_print_radio_button_extended(
+	'value_show', 'percent', ('Percent'), 'value', false, '',
+	'style="float: left;"', true) .
+	html_print_radio_button_extended('value_show', 'value', ('Value'),
+		'value', false, '', 'style="float: left;"', true);
 
 
 if (defined('METACONSOLE')) {
@@ -163,17 +173,26 @@ $table->data["all_3"][1] = html_print_select_groups(
 $table->rowstyle["all_one_item_per_agent"] = 'display: none';
 $table->data["all_one_item_per_agent"][0] = __('One item per agent');
 $table->colspan["all_one_item_per_agent"][1] = "3";
-$table->data["all_one_item_per_agent"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('item_per_agent', 1, '', '', false, 'item_per_agent_change(1)', '', true).'&nbsp;&nbsp;';
-$table->data["all_one_item_per_agent"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)', '', true);
-$table->data["all_one_item_per_agent"][1] .= html_print_input_hidden ('item_per_agent_test', 0, true);
+$table->data["all_one_item_per_agent"][1] = __('Yes') . 
+	'&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button_extended('item_per_agent', 1, '', '', false,
+		'item_per_agent_change(1)', '', true).'&nbsp;&nbsp;';
+$table->data["all_one_item_per_agent"][1] .= __('No') .
+	'&nbsp;&nbsp;&nbsp;' . html_print_radio_button_extended(
+		'item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)', '', true);
+$table->data["all_one_item_per_agent"][1] .= html_print_input_hidden(
+	'item_per_agent_test', 0, true);
 
 
 $table->rowstyle["all_4"] = 'display: none;';
 $table->data["all_4"][0] = __('Agents');
-$table->data["all_4"][1] = html_print_select (agents_get_group_agents (0, false, "none", false, true),
+$table->data["all_4"][1] = html_print_select(
+	agents_get_group_agents(0, false, "none", false, true),
 	'id_agents[]', 0, false, '', '', true, true);
-$table->data["all_4"][2] = ' <span style="vertical-align: top;">' . __('Modules') . '</span>';
-$table->data["all_4"][3] = html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
+$table->data["all_4"][2] = ' <span style="vertical-align: top;">' .
+	__('Modules') . '</span>';
+$table->data["all_4"][3] = html_print_select (array (), 'module[]', 0,
+	false, __('None'), -1, true, true);
 
 
 $table->rowstyle["all_6"] = 'display: none;';
@@ -183,13 +202,38 @@ $label_type = array ('agent_module' => __('Agent - Module'),
 	'agent' => __('Agent'),
 	'none' => __('None'));
 $table->colspan["all_6"][1] = "3";
-$table->data["all_6"][1] = html_print_select ($label_type, 'label_type', 'agent_module', '', '', '', true);
+$table->data["all_6"][1] = html_print_select ($label_type, 'label_type',
+	'agent_module', '', '', '', true);
 
 
 $table->data["all_7"][0] = __('Enable link agent');
 $table->colspan["all_7"][1] = "3";
-$table->data["all_7"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 1, '', 1, false, '', '', true).'&nbsp;&nbsp;';
-$table->data["all_7"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 0, '', 1, false, '', '', true);
+$table->data["all_7"][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button_extended('enable_link', 1, '', 1, false, '', '', true) .
+	'&nbsp;&nbsp;';
+$table->data["all_7"][1] .= __('No') . '&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button_extended('enable_link', 0, '', 1, false, '', '', true);
+
+
+$parents = visual_map_get_items_parents($visualConsole["id"]);
+if (empty($parents))
+	$parents = array();
+$table->data["all_8"][0] = __('Set Parent');
+$table->data["all_8"][1] = html_print_select(
+	array (VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP => __('Item created in the visualmap'),
+	VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP => __('Use the agents relationship (from selected agents)')), 'kind_relationship',
+	0, '', __('None'), VISUAL_MAP_WIZARD_PARENTS_NONE, true);
+$table->data["all_8"][2] = '<span id="parent_column_2_item_in_visual_map">' .
+	__('Item in the map') . '</span>' .
+	'<span id="parent_column_2_relationship">' .
+	ui_print_help_tip(
+		__('The parent relationships in Pandora will be drawn in the map.'), true) .
+	'</span>';
+$table->data["all_8"][3] = '<span id="parent_column_3_item_in_visual_map">' .
+	html_print_select($parents, 'item_in_the_map', 0, '',
+		__('None'), 0, true) . '</span>';
+
+
 
 if (defined('METACONSOLE')) {
 	$pure = get_parameter('pure', 0);
@@ -318,6 +362,35 @@ $(document).ready (function () {
 		echo "metaconsole_init();";
 	}
 	?>
+	
+	$("select[name='kind_relationship']").change(function() {
+	
+		if ($("input[name='item_per_agent']:checked").val() == "0") {
+			$("select[name='kind_relationship'] option[value=<?php echo VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP; ?>]")
+				.attr('disabled', true)
+		}
+		
+		switch ($("select[name='kind_relationship']").val()) {
+			case "<?php echo VISUAL_MAP_WIZARD_PARENTS_NONE; ?>":
+				$("#parent_column_2_item_in_visual_map").hide();
+				$("#parent_column_3_item_in_visual_map").hide();
+				$("#parent_column_2_relationship").hide();
+				break;
+			case "<?php echo VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP; ?>":
+				$("#parent_column_2_relationship").hide();
+				$("#parent_column_2_item_in_visual_map").show();
+				$("#parent_column_3_item_in_visual_map").show();
+				break;
+			case "<?php echo VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP; ?>":
+				$("#parent_column_2_item_in_visual_map").hide();
+				$("#parent_column_3_item_in_visual_map").hide();
+				$("#parent_column_2_relationship").show();
+				break;
+		}
+	});
+	//Force in the load
+	$("select[name='kind_relationship']").trigger('change');
+	item_per_agent_change(0);
 });
 
 function check_fields() {
@@ -343,7 +416,8 @@ function hidden_rows() {
 	$("tr", "#wizard_table").hide(); //Hide all in the form table
 	
 	//Show the id ".*-all_.*"
-	$("tr", "#wizard_table").filter(function () {return /^wizard_table\-all.*/.test(this.id); }).show();
+	$("tr", "#wizard_table")
+		.filter(function () {return /^wizard_table\-all.*/.test(this.id); }).show();
 	
 	switch ($("#type").val()) {
 		case "<?php echo STATIC_GRAPH;?>":
@@ -365,6 +439,9 @@ function item_per_agent_change(itemPerAgent) {
 	
 	// Disable Module select
 	if (itemPerAgent == 1) {
+		$("select[name='kind_relationship'] option[value=<?php echo VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP; ?>]")
+			.attr('disabled', false);
+		
 		$('#module').empty();
 		$('#module').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr("value", -1));
 		$('#module').attr('disabled', true);
@@ -375,6 +452,14 @@ function item_per_agent_change(itemPerAgent) {
 		$('#hidden-item_per_agent_test').val(1);
 	}
 	else {
+		if ($("select[name='kind_relationship']").val() == <?php echo VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP; ?>) {
+			$("select[name='kind_relationship']").val(
+				<?php echo VISUAL_MAP_WIZARD_PARENTS_NONE; ?>);
+		}
+		$("select[name='kind_relationship'] option[value=<?php echo VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP; ?>]")
+			.attr('disabled', true);
+		
+		
 		$('#module').removeAttr('disabled');
 		$('#hidden-item_per_agent_test').val(0);
 		$('#label_type').empty();
@@ -387,25 +472,12 @@ function item_per_agent_change(itemPerAgent) {
 }
 
 function metaconsole_init() {
-	/*
-	var count_servers = $("#servers option").length;
-	var count_groups = $("#groups option").length;
-	
-	if (count_servers > 1) {
-		servers = $("#servers option");
-		value = $(servers[1]).val();
-		
-		$("#servers option[value=" + value + "]").attr('selected', 'true');
-	}
-	
-	if (count_groups > 1) {
-		groups = $("#groups option");
-		value = $(groups[1]).val();
-		
-		$("#groups option[value=" + value + "]").attr('selected', 'true');
-	}
-	*/
-	
 	$("#groups").trigger('change');
 }
 </script>
+<style type="text/css">
+	select[name='kind_relationship'] option[disabled='disabled'] {
+		color: red;
+		text-decoration: line-through;
+	}
+</style>

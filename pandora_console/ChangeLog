@@ -1,3 +1,8 @@
+2014-03-24  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* operation/agentes/estado_monitores.php: Fixed an error
+	on the monitor relationship tooltip.
+
 2014-03-24  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/massive/massive_edit_agents.php,

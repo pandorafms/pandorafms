@@ -71,6 +71,7 @@ if (is_ajax ()) {
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		// Ids of agents to be include in the SQL clause as id_agent IN ()
 		$filter_agents_json = (string) get_parameter ('filter_agents_json', '');
+		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			db_pandora_audit("ACL Violation",
@@ -89,7 +90,11 @@ if (is_ajax ()) {
 			$filter['string'] = $search;
 		}
 		
-		$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
+		if ($status_agents != AGENT_STATUS_ALL) {
+			$filter['status'] = $status_agents;
+		}
+		
+		$agents = agents_get_group_agents($id_group, $filter, "none", false, $recursion);
 		
 		// Add keys prefix
 		if ($keys_prefix !== "") {

@@ -820,6 +820,36 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 			unset ($search["name"]);
 		}
 		
+		if (isset($search['status'])) {
+			switch ($search['status']) {
+				case AGENT_STATUS_NORMAL:
+					$search_sql .=
+						" AND normal_count = total_count";
+					break;
+				case AGENT_STATUS_WARNING:
+					$search_sql .=
+						" AND critical_count = 0 AND warning_count > 0";
+					break;
+				case AGENT_STATUS_CRITICAL:
+					$search_sql .=
+						" AND critical_count > 0";
+					break;
+				case AGENT_STATUS_UNKNOWN:
+					$search_sql .=
+						" AND critical_count = 0 AND warning_count = 0
+							AND unknown_count > 0";
+					break;
+				case AGENT_STATUS_NOT_NORMAL:
+					$search_sql .= " AND normal_count <> total_count";
+					break;
+				case AGENT_STATUS_NOT_INIT:
+					$search_sql .= " AND notinit_count = total_count";
+					break;
+			}
+			unset($search['status']);
+		}
+		
+		
 		if (! empty ($search)) {
 			$search_sql .= ' AND '.db_format_array_where_clause_sql ($search);
 		}

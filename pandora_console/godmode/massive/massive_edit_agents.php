@@ -198,14 +198,26 @@ $table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
-$table->data[1][0] = __('Agents');
-$table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= html_print_image('images/spinner.png', true);
-$table->data[1][0] .= '</span>';
+
+$status_list = array ();
+$status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
+$status_list[AGENT_STATUS_WARNING] = __('Warning');
+$status_list[AGENT_STATUS_CRITICAL] = __('Critical');
+$status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
+$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
+$table->data[1][0] = __('Status');
+$table->data[1][1] = html_print_select($status_list, 'status_agents', 'selected',
+	'', __('All'), AGENT_STATUS_ALL, true);
+
+$table->data[2][0] = __('Agents');
+$table->data[2][0] .= '<span id="agent_loading" class="invisible">';
+$table->data[2][0] .= html_print_image('images/spinner.png', true);
+$table->data[2][0] .= '</span>';
 $enabled_agents = agents_get_group_agents ($id_group, array('disabled' => 0), "none");
 $all_agents = agents_get_group_agents ($id_group, array('disabled' => 1), "none") + $enabled_agents;
 
-$table->data[1][1] = html_print_select ($all_agents,
+$table->data[2][1] = html_print_select ($all_agents,
 	'id_agents[]', 0, false, '', '', true, true);
 
 echo '<form method="post" id="form_agent" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents">';
@@ -463,7 +475,14 @@ $(document).ready (function () {
 	
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
+		status_agents: function () {
+				return $("#status_agents").val();
+			},
 		recursion: function() {return recursion}
+	});
+	
+	$("#status_agents").change(function() {
+		$("#id_group").trigger("change");
 	});
 	
 	$("#id_group").pandoraSelectGroupAgentDisabled ({

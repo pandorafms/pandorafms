@@ -67,13 +67,20 @@ if (is_ajax ()) {
 		$table_relations->data = array();
 
 		foreach ($relations as $relation) {
+			if ($relation['module_a'] == $id_agente_modulo) {
+				$id_module = $relation['module_b'];
+			} else {
+				$id_module = $relation['module_a'];
+			}
+			$id_agent = modules_get_agentmodule_agent($id_module);
+
 			$data = array();
 			$data[0] = __('Agent');
-			$data[1] = ui_print_agent_name ($id_agente, true);
+			$data[1] = ui_print_agent_name ($id_agent, true);
 			$data[2] = __('Module');
 			$data[3] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente
-				&id_agente=$id_agente&tab=module&edit_module=1&id_agent_module=$id_agente_modulo'>" .
-				ui_print_truncate_text(modules_get_agentmodule_name($id_agente_modulo), 'module_medium', true, true, true, '[&hellip;]') . "</a>";
+				&id_agente=$id_agent&tab=module&edit_module=1&id_agent_module=$id_module'>" .
+				ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_medium', true, true, true, '[&hellip;]') . "</a>";
 			$table_relations->data[] = $data;
 		}
 		html_print_table($table_relations);
@@ -474,7 +481,6 @@ foreach ($modules as $module) {
 	}
 	
 	//Adds relations context information
-	
 	if (modules_relation_exists($module['id_agente_modulo'])) {
 		$data[3] .= ' <a class="relations_details" href="ajax.php?page=operation/agentes/estado_monitores&get_relations_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
 		html_print_image("images/link2.png", true, array("id" => 'relations-details-'.$module['id_agente_modulo'], "class" => "img_help")) . '</a> ';

@@ -52,7 +52,8 @@ if (is_ajax ()) {
 		if ($id_group > 0) {
 			$groups = array($id_group);
 			if ($recursion) {
-				$groups = array_merge($groups, groups_get_id_recursive($id_group, true));
+				$groups = array_merge($groups,
+					groups_get_id_recursive($id_group, true));
 			}
 		}
 		else {
@@ -61,13 +62,14 @@ if (is_ajax ()) {
 			$groups = array_keys($groups_orig);
 		}
 		
-		$filter = " WHERE id_grupo IN (". implode(',', $groups) .") ORDER BY nombre ASC";
+		$filter = " WHERE id_grupo IN (" . implode(',', $groups) . ")
+			ORDER BY nombre ASC";
 		$agents = db_get_all_rows_sql("SELECT id_agente, nombre
 			FROM tagente" . $filter);
 		
 		// Add keys prefix
 		if ($keys_prefix !== "") {
-			foreach($agents as $k => $v) {
+			foreach ($agents as $k => $v) {
 				$agents[$keys_prefix . $k] = $v;
 				unset($agents[$k]);
 			}
@@ -689,7 +691,8 @@ if ($flag !== '') {
 	if ($flag == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
 		$id_agent_module = get_parameter('id_agente_modulo');
 		
-		db_process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente_modulo' => $id_agent_module));
+		db_process_sql_update('tagente_modulo',
+			array('flag' => 1), array('id_agente_modulo' => $id_agent_module));
 	}
 }
 // Check for Network FLAG change request

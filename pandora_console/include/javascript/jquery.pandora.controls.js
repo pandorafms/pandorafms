@@ -2,12 +2,13 @@
 	var dummyFunc = function () {
 		return true;
 	};
-
+	
 	var _pandoraSelectGroupAgent = function (disabled) {
 		var that = this;
-
+		
 		this.defaults = {
 			agentSelect: "select#id_agent",
+			status_agents: -1,
 			recursion: 0,
 			filter_agents_json: "",
 			loading: "#agent_loading",
@@ -18,22 +19,22 @@
 			debug: false,
 			disabled: disabled || false,
 		};
-
+		
 		/* public methods */
 		this.construct = function (settings) {
 			return this.each (function() {
 				this.config = {};
-
+				
 				this.config = $.extend (this.config, that.defaults, settings);
 				var config = this.config;
-
+				
 				$(this).change (function () {
 					var $select = $(config.agentSelect).disable ();
 					$(config.loading).show ();
 					$("option[value!=0]", $select).remove ();
 					if (! config.callbackBefore (this))
 						return;
-
+					
 					var opts = {
 						"page" : "godmode/groups/group_list",
 						"get_group_agents" : 1,
@@ -41,17 +42,18 @@
 						"recursion" : config.recursion,
 						"filter_agents_json" : config.filter_agents_json,
 						"disabled" : config.disabled ? 1 : 0,
+						"status_agents" : config.status_agents,
 						// Add a key prefix to avoid auto sorting in js object conversion
 						"keys_prefix" : "_"
 					};
-
+					
 					jQuery.post ("ajax.php",
 						opts,
 						function (data, status) {
 							jQuery.each (data, function (id, value) {
 								// Remove keys_prefix from the index
 								id = id.substring(1);
-								if (id !== 'keycount'){
+								if (id !== 'keycount') {
 									config.callbackPre ();
 									option = $("<option></option>")
 										.attr ("value", id)
@@ -137,7 +139,7 @@
 						);
 					});
 				});
-
+				
 			};
 		}
 	});
@@ -162,7 +164,7 @@
 					this.config = $.extend (this.config, $.pandoraSelectAgentAlert.defaults, settings);
 					
 					var config = this.config;
-
+					
 					$(this).change (function () {
 						var $select = $(config.alertSelect).disable ();
 						$(config.loading).show ();
@@ -212,7 +214,7 @@
 					this.config = $.extend (this.config, $.pandoraSelectOS.defaults, settings);
 					
 					var config = this.config;
-
+					
 					$(this).change (function () {
 						var id_os = this.value;
 						
@@ -259,7 +261,7 @@
 					this.config = $.extend (this.config, $.pandoraSelectGroupIcon.defaults, settings);
 					
 					var config = this.config;
-
+					
 					$(this).change (function () {
 						var id_group = this.value;
 						

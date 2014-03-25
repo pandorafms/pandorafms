@@ -94,7 +94,8 @@ if (is_ajax ()) {
 			$filter['status'] = $status_agents;
 		}
 		
-		$agents = agents_get_group_agents($id_group, $filter, "none", false, $recursion);
+		$agents = agents_get_group_agents($id_group, $filter, "none",
+			false, $recursion);
 		
 		// Add keys prefix
 		if ($keys_prefix !== "") {

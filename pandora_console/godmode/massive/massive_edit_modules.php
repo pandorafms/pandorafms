@@ -77,7 +77,7 @@ if ($update) {
 		if ($force == 'type') {
 			$condition = '';
 			if ($module_type != 0)
-				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
+				$condition = ' AND t2.id_tipo_modulo = ' . $module_type;
 			
 			$agents_ = db_get_all_rows_sql('
 				SELECT DISTINCT(t1.id_agente)
@@ -103,9 +103,11 @@ if ($update) {
 			}
 		}
 		else if ($force == 'group') {
-			$agents_ = array_keys (agents_get_group_agents ($group_select, false, "none"));
+			$agents_ = array_keys(agents_get_group_agents($group_select,
+				false, "none"));
 			foreach ($agents_ as $id_agent) {
-				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
+				$module_name = db_get_all_rows_filter('tagente_modulo',
+					array('id_agente' => $id_agent),'nombre');
 				if ($module_name == false) {
 					$module_name = array();
 				}
@@ -210,22 +212,30 @@ $snmp_versions['3'] = 'v. 3';
 $table->width = '99%';
 $table->data = array ();
 
-$table->data[0][0] = __('Selection mode');
-$table->data[0][1] = __('Select modules first').' '.html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
-$table->data[0][2] = '';
-$table->data[0][3] = __('Select agents first').' '.html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 
-$table->rowclass[1] = 'select_modules_row';
-$table->data[1][0] = __('Module type');
-$table->data[1][0] .= '<span id="module_loading" class="invisible">';
-$table->data[1][0] .= html_print_image('images/spinner.png', true);
-$table->data[1][0] .= '</span>';
+
+$table->data['selection_mode'][0] = __('Selection mode');
+$table->data['selection_mode'][1] = __('Select modules first') . ' ' .
+	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data['selection_mode'][2] = '';
+$table->data['selection_mode'][3] = __('Select agents first') . ' ' .
+	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+
+
+
+
+$table->rowclass['form_modules_1'] = 'select_modules_row';
+$table->data['form_modules_1'][0] = __('Module type');
+$table->data['form_modules_1'][0] .= '<span id="module_loading" class="invisible">';
+$table->data['form_modules_1'][0] .= html_print_image('images/spinner.png', true);
+$table->data['form_modules_1'][0] .= '</span>';
 $types[0] = __('All');
-$table->colspan[1][1] = 2;
-$table->data[1][1] = html_print_select ($types,
+$table->colspan['form_modules_1'][1] = 2;
+$table->data['form_modules_1'][1] = html_print_select ($types,
 	'module_type', '', false, __('Select'), -1, true, false, true);
 
-$table->data[1][3] = __('Select all modules of this type').' '.html_print_checkbox_extended ("force_type", 'type', '', '', false, '', 'style="margin-right: 40px;"', true);
+$table->data['form_modules_1'][3] = __('Select all modules of this type') . ' ' .
+	html_print_checkbox_extended ("force_type", 'type', '', '', false, '', 'style="margin-right: 40px;"', true);
 
 $modules = array ();
 if ($module_type != '') {
@@ -241,47 +251,73 @@ foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];
 }
 
-$table->rowclass[2] = 'select_agents_row';
-$table->data[2][0] = __('Agent group');
+
+
+$table->rowclass['form_agents_1'] = 'select_agents_row';
+$table->data['form_agents_1'][0] = __('Agent group');
 $groups = groups_get_all(true);
 $groups[0] = __('All');
-$table->colspan[2][1] = 2;
-$table->data[2][1] = html_print_select ($groups, 'groups_select',
-	'', true, __('Select'), -1, true, false, true).
-	' '.__('Group recursion').' '.html_print_checkbox ("recursion", 1, false, true, false);
-$table->data[2][3] = __('Select all modules of this group').' '.html_print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
+$table->colspan['form_agents_1'][1] = 2;
+$table->data['form_agents_1'][1] = html_print_select ($groups, 'groups_select',
+	'', true, __('Select'), -1, true, false, true) .
+	' ' . __('Group recursion') . ' ' .
+	html_print_checkbox ("recursion", 1, false, true, false);
+$table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' .
+	html_print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
 
-$table->rowstyle[3] = 'vertical-align: top;';
-$table->rowclass[3] = 'select_modules_row select_modules_row_2';
-$table->data[3][0] = __('Modules');
-$table->data[3][1] = html_print_select ($modules, 'module_name[]',
+
+
+$table->rowstyle['form_modules_2'] = 'vertical-align: top;';
+$table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
+$table->data['form_modules_2'][0] = __('Modules');
+$table->data['form_modules_2'][1] = html_print_select ($modules, 'module_name[]',
 	$module_name, false, __('Select'), -1, true, true, true);
-
-$table->data[3][2] = __('When select modules');
-$table->data[3][2] .= '<br>';
-$table->data[3][2] .= html_print_select (
+$table->data['form_modules_2'][2] = __('When select modules');
+$table->data['form_modules_2'][2] .= '<br>';
+$table->data['form_modules_2'][2] .= html_print_select (
 	array('common' => __('Show common agents'),
 		'all' => __('Show all agents')),
 	'agents_selection_mode',
 	'common', false, '', '', true);
-$table->data[3][3] = html_print_select (array(), 'agents[]',
+$table->data['form_modules_2'][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false);
 
-$table->rowstyle[4] = 'vertical-align: top;';
-$table->rowclass[4] = 'select_agents_row select_agents_row_2';
-$table->data[4][0] = __('Agents');
-$table->data[4][1] = html_print_select ($agents, 'id_agents[]',
+
+
+$table->rowclass['form_agents_2'] = 'select_agents_row';
+$table->data['form_agents_2'][0] = __('Status');
+$table->colspan['form_agents_2'][1] = 2;
+$status_list = array ();
+$status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
+$status_list[AGENT_STATUS_WARNING] = __('Warning');
+$status_list[AGENT_STATUS_CRITICAL] = __('Critical');
+$status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
+$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
+$table->data['form_agents_2'][1] = html_print_select($status_list,
+	'status_agents', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
+$table->data['form_agents_2'][3] = '';
+
+
+
+
+$table->rowstyle['form_agents_3'] = 'vertical-align: top;';
+$table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_3'][0] = __('Agents');
+$table->data['form_agents_3'][1] = html_print_select ($agents, 'id_agents[]',
 	$agents_id, false, '', '', true, true, false);
 
-$table->data[4][2] = __('When select agents');
-$table->data[4][2] .= '<br>';
-$table->data[4][2] .= html_print_select (
+$table->data['form_agents_3'][2] = __('When select agents');
+$table->data['form_agents_3'][2] .= '<br>';
+$table->data['form_agents_3'][2] .= html_print_select (
 	array('common' => __('Show common modules'),
 		'all' => __('Show all modules')),
 	'modules_selection_mode',
 	'common', false, '', '', true);
-$table->data[4][3] = html_print_select (array(), 'module[]',
+$table->data['form_agents_3'][3] = html_print_select (array(), 'module[]',
 	$modules_select, false, '', '', true, true, false);
+
+
 
 
 $table->data['edit1'][0] = __('Warning status');
@@ -787,20 +823,25 @@ $(document).ready (function () {
 			
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
-				"get_agents_group_json" : 1,
-				"recursion" : $("#checkbox-recursion").attr ("checked") ? 1 : 0,
-				"id_group" : this.value,
+					"get_agents_group_json" : 1,
+					"recursion" : $("#checkbox-recursion").attr ("checked") ? 1 : 0,
+					"id_group" : this.value,
+				status_agents: function () {
+					return $("#status_agents").val();
+				},
 				// Add a key prefix to avoid auto sorting in js object conversion
 				"keys_prefix" : "_"
 				},
 				function (data, status) {
 					$("#id_agents").html('');
 					
-					jQuery.each (data, function (id, value) {
+					jQuery.each (data, function(id, value) {
 						// Remove keys_prefix from the index
 						id = id.substring(1);
 						
-						option = $("<option></option>").attr ("value", value["id_agente"]).html (value["nombre"]);
+						option = $("<option></option>")
+							.attr("value", value["id_agente"])
+							.html(value["nombre"]);
 						$("#id_agents").append (option);
 					});
 				},
@@ -808,6 +849,10 @@ $(document).ready (function () {
 			);
 		}
 	);
+	
+	$("#status_agents").change(function() {
+		$("#groups_select").trigger("change");
+	});
 });
 /* ]]> */
 </script>

@@ -61,13 +61,8 @@ $table->data = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold';
-$table->size = array ();
-$table->size[0] = '10%';
-$table->size[1] = '30%';
-$table->size[2] = '10%';
-$table->size[3] = '10%';
-$table->size[4] = '10%';
-$table->size[5] = '30%';
+$table->style[4] = 'font-weight: bold';
+$table->style[6] = 'font-weight: bold';
 
 /* Source selection */
 $table->id = 'source_table';
@@ -76,11 +71,21 @@ $table->data[0][1] = html_print_select_groups(false, "AR", true, 'source_id_grou
 	false, '', '', true);
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("source_recursion", 1, $source_recursion, true, false);
-$table->data[0][4] = __('Agent');
-$table->data[0][4] .= ' <span id="source_agent_loading" class="invisible">';
-$table->data[0][4] .= html_print_image ("images/spinner.png", true);
-$table->data[0][4] .= '</span>';
-$table->data[0][5] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
+$status_list = array ();
+$status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
+$status_list[AGENT_STATUS_WARNING] = __('Warning');
+$status_list[AGENT_STATUS_CRITICAL] = __('Critical');
+$status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
+$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
+$table->data[0][4] = __('Status');
+$table->data[0][5] = html_print_select($status_list,
+	'status_agents_source', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
+$table->data[0][6] = __('Agent');
+$table->data[0][6] .= ' <span id="source_agent_loading" class="invisible">';
+$table->data[0][6] .= html_print_image ("images/spinner.png", true);
+$table->data[0][6] .= '</span>';
+$table->data[0][7] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
 echo '<form action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=copy_modules" id="manage_config_form" method="post">';
@@ -149,6 +154,8 @@ echo '<legend><span>'.__('Targets').'</span></legend>';
 html_print_table ($table);
 echo '</fieldset>';
 
+
+
 /* Destiny selection */
 $table->id = 'destiny_table';
 $table->data = array ();
@@ -157,27 +164,41 @@ $table->size[1] = '30%';
 $table->size[2] = '20%';
 $table->size[3] = '30%';
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select ($groups, 'destiny_id_group', $destiny_id_group,
-	false, '', '', true);
+$table->data[0][1] = html_print_select ($groups, 'destiny_id_group',
+	$destiny_id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
-$table->data[0][3] = html_print_checkbox ("destiny_recursion", 1, $destiny_recursion, true, false);
-$table->data[1][0] = __('Agent');
-$table->data[1][0] .= '<span id="destiny_agent_loading" class="invisible">';
-$table->data[1][0] .= html_print_image ("images/spinner.png", true);
-$table->data[1][0] .= '</span>';
-$table->data[1][1] = html_print_select (agents_get_group_agents ($destiny_id_group, false, "none"),
+$table->data[0][3] = html_print_checkbox ("destiny_recursion", 1,
+	$destiny_recursion, true, false);
+$status_list = array ();
+$status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
+$status_list[AGENT_STATUS_WARNING] = __('Warning');
+$status_list[AGENT_STATUS_CRITICAL] = __('Critical');
+$status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
+$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
+$table->data[1][0] = __('Status');
+$table->data[1][1] = html_print_select($status_list,
+	'status_agents_destiny', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
+$table->data[2][0] = __('Agent');
+$table->data[2][0] .= '<span id="destiny_agent_loading" class="invisible">';
+$table->data[2][0] .= html_print_image ("images/spinner.png", true);
+$table->data[2][0] .= '</span>';
+$table->data[2][1] = html_print_select (agents_get_group_agents ($destiny_id_group, false, "none"),
 	'destiny_id_agent[]', 0, false, '', '', true, true);
 
-echo '<fieldset id="fieldset_destiny"'.($source_id_agent ? '' : ' class="invisible"').'>';
-echo '<legend><span>'.__('To agent(s)').'</span></legend>';
+echo '<fieldset id="fieldset_destiny"' .
+	($source_id_agent ? '' : ' class="invisible"') . '>';
+echo '<legend><span>' . __('To agent(s)') . '</span></legend>';
 html_print_table ($table);
 echo '</fieldset>';
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 html_print_input_hidden ('do_operation', 1);
 html_print_submit_button (__('Copy'), 'go', false, 'class="sub wand"');
 echo '</div>';
 echo '</form>';
+
+
 
 echo '<h3 class="error invisible" id="message">&nbsp;</h3>';
 
@@ -196,8 +217,17 @@ $(document).ready (function () {
 	
 	$("#source_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#source_id_agent",
-		recursion: function() {return source_recursion},
+		recursion: function() {
+			return source_recursion
+		},
+		status_agents: function () {
+			return $("#status_agents_source").val();
+		},
 		loading: "#source_agent_loading"
+	});
+	
+	$("#status_agents_source").change(function() {
+		$("#source_id_group").trigger("change");
 	});
 	
 	var destiny_recursion;
@@ -209,6 +239,9 @@ $(document).ready (function () {
 	$("#destiny_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#destiny_id_agent",
 		recursion: function() {return destiny_recursion},
+		status_agents: function () {
+			return $("#status_agents_destiny").val();
+		},
 		loading: "#destiny_agent_loading",
 		callbackPost: function (id, value, option) {
 			if ($("#source_id_agent").fieldValue ().in_array (id)) {
@@ -216,6 +249,10 @@ $(document).ready (function () {
 				$(option).hide ();
 			}
 		}
+	});
+	
+	$("#status_agents_destiny").change(function() {
+		$("#destiny_id_group").trigger("change");
 	});
 	
 	$("#source_id_agent").change (function () {

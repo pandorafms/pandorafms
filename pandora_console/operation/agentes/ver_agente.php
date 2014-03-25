@@ -48,6 +48,7 @@ if (is_ajax ()) {
 		$recursion = (int) get_parameter ('recursion', 0);
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
+		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
 		
 		if ($id_group > 0) {
 			$groups = array($id_group);
@@ -62,8 +63,34 @@ if (is_ajax ()) {
 			$groups = array_keys($groups_orig);
 		}
 		
-		$filter = " WHERE id_grupo IN (" . implode(',', $groups) . ")
-			ORDER BY nombre ASC";
+		
+		$filter = " WHERE id_grupo IN (" . implode(',', $groups) . ") ";
+		switch ($status_agents) {
+			case AGENT_STATUS_NORMAL:
+				$filter .=
+					" AND normal_count = total_count";
+				break;
+			case AGENT_STATUS_WARNING:
+				$filter .=
+					" AND critical_count = 0 AND warning_count > 0";
+				break;
+			case AGENT_STATUS_CRITICAL:
+				$filter .=
+					" AND critical_count > 0";
+				break;
+			case AGENT_STATUS_UNKNOWN:
+				$filter .=
+					" AND critical_count = 0 AND warning_count = 0
+						AND unknown_count > 0";
+				break;
+			case AGENT_STATUS_NOT_NORMAL:
+				$filter .= " AND normal_count <> total_count";
+				break;
+			case AGENT_STATUS_NOT_INIT:
+				$filter .= " AND notinit_count = total_count";
+				break;
+		}
+		$filter .= " ORDER BY nombre ASC";
 		$agents = db_get_all_rows_sql("SELECT id_agente, nombre
 			FROM tagente" . $filter);
 		
@@ -114,7 +141,7 @@ if (is_ajax ()) {
 			WHERE t1.id_agente = t2.id_agente
 				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')';
 		
-		if($selection_mode == 'common') {
+		if ($selection_mode == 'common') {
 			$sql .= 'AND (
 					SELECT count(t3.nombre)
 					FROM tagente t3, tagente_modulo t4

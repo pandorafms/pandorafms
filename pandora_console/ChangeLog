@@ -1,3 +1,15 @@
+2014-03-24  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/massive/massive_edit_modules.php,
+	godmode/massive/massive_edit_agents.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/massive/massive_copy_modules.php,
+	godmode/groups/group_list.php, operation/agentes/ver_agente.php:
+	implement the filter by agent status in the other massive
+	operations.
+	
+	Incident: #669
+
 2014-03-24  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* operation/agentes/estado_monitores.php: Fixed an error

@@ -36,7 +36,7 @@ if (is_ajax ()) {
 	if ($get_n_conf_files) {
 		$id_agents = get_parameter('id_agents');
 		$cont = 0;
-		foreach($id_agents as $id_agent) {
+		foreach ($id_agents as $id_agent) {
 			$name = agents_get_name($id_agent);
 			$agent_md5 = md5($name);
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5"))
@@ -47,8 +47,8 @@ if (is_ajax ()) {
 	}
 }
 
-$update_agents = get_parameter ('update_agents', 0);
-$recursion = get_parameter ('recursion');
+$update_agents = get_parameter('update_agents', 0);
+$recursion = get_parameter('recursion');
 
 if ($update_agents) {
 	$values = array();
@@ -59,7 +59,7 @@ if ($update_agents) {
 	if (get_parameter ('id_os', '') != -1)
 		$values['id_os'] = get_parameter ('id_os');
 	if (get_parameter ('id_parent', '') != '')
-		$values['id_parent'] = agents_get_agent_id(get_parameter ('id_parent'));
+		$values['id_parent'] = agents_get_agent_id(get_parameter('id_parent'));
 	if (get_parameter ('server_name', '') != -1)
 		$values['server_name'] = get_parameter ('server_name');
 	if (get_parameter ('description', '') != '')
@@ -103,8 +103,10 @@ if ($update_agents) {
 		$n_deleted = 0;
 		foreach ($id_agents as $id_agent) {
 			$agent_md5 = md5(agents_get_name($id_agent));
-			@unlink ($config["remote_config"]."/md5/".$agent_md5.".md5");
-			$result = @unlink ($config["remote_config"]."/conf/".$agent_md5.".conf");
+			@unlink($config["remote_config"] .
+				"/md5/" . $agent_md5 . ".md5");
+			$result = @unlink($config["remote_config"] .
+				"/conf/" . $agent_md5 . ".conf");
 			
 			$n_deleted += (int)$result;
 		}
@@ -119,7 +121,7 @@ if ($update_agents) {
 		
 		
 		ui_print_result_message ($n_deleted > 0,
-			__('Configuration files deleted successfully').'('.$n_deleted.')',
+			__('Configuration files deleted successfully') . '(' . $n_deleted . ')',
 			__('Configuration files cannot be deleted'));
 	}
 	
@@ -138,16 +140,18 @@ if ($update_agents) {
 		
 		// Update Custom Fields
 		foreach ($fields as $field) {
-			if (get_parameter_post ('customvalue_'.$field['id_field'], '') != '') {
+			if (get_parameter_post ('customvalue_' . $field['id_field'], '') != '') {
 				$key = $field['id_field'];
-				$value = get_parameter_post ('customvalue_'.$field['id_field'], '');
+				$value = get_parameter_post ('customvalue_' . $field['id_field'], '');
 				
 				$old_value = db_get_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agent, 'id_field' => $key));
 				
 				if ($old_value === false) {
 					// Create custom field if not exist
 					$result = db_process_sql_insert ('tagent_custom_data',
-						array('id_field' => $key,'id_agent' => $id_agent, 'description' => $value));
+						array('id_field' => $key,
+							'id_agent' => $id_agent,
+							'description' => $value));
 				}
 				else {
 					$result = db_process_sql_update ('tagent_custom_data',
@@ -172,7 +176,7 @@ if ($update_agents) {
 	
 	
 	ui_print_result_message ($result !== false,
-		__('Agents updated successfully').'('.$n_edited.')',
+		__('Agents updated successfully') . '(' . $n_edited . ')',
 		__('Agents cannot be updated'));
 }
 $id_group = 0;
@@ -193,10 +197,11 @@ $table->size[3] = '35%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
-	false, '', '', true);
+$table->data[0][1] = html_print_select_groups(false, "AR", true,
+	'id_group', $id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
-$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
+$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion,
+	true, false);
 
 
 $status_list = array ();

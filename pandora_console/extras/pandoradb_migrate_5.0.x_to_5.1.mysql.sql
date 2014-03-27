@@ -84,3 +84,27 @@ ALTER TABLE `tnetwork_map` ADD COLUMN `l2_network` tinyint(1) unsigned NOT NULL 
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tlayout_data` ADD COLUMN `id_group` INTEGER UNSIGNED NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp`
+-- ---------------------------------------------------------------------
+ALTER TABLE `talert_snmp` ADD COLUMN `order_1` int(10) unsigned NOT NULL default 1;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_2` int(10) unsigned NOT NULL default 2;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_3` int(10) unsigned NOT NULL default 3;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_4` int(10) unsigned NOT NULL default 4;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_5` int(10) unsigned NOT NULL default 5;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_6` int(10) unsigned NOT NULL default 6;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_7` int(10) unsigned NOT NULL default 7;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_8` int(10) unsigned NOT NULL default 8;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_9` int(10) unsigned NOT NULL default 9;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_10` int(10) unsigned NOT NULL default 10;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_1` int(10) unsigned NOT NULL default 11;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_2` int(10) unsigned NOT NULL default 12;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_3` int(10) unsigned NOT NULL default 13;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_4` int(10) unsigned NOT NULL default 14;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_5` int(10) unsigned NOT NULL default 15;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_6` int(10) unsigned NOT NULL default 16;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_7` int(10) unsigned NOT NULL default 17;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_8` int(10) unsigned NOT NULL default 18;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_9` int(10) unsigned NOT NULL default 19;
+ALTER TABLE `talert_snmp` ADD COLUMN `order_10` int(10) unsigned NOT NULL default 20;

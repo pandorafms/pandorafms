@@ -317,7 +317,27 @@ CREATE TABLE talert_snmp (
 	trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL,
 	single_value VARCHAR2(255) DEFAULT '',
 	"position" NUMBER(10, 0) default 0 NOT NULL,
-	id_group NUMBER(10, 0) default 0 NOT NULL
+	id_group NUMBER(10, 0) default 0 NOT NULL,
+	order_1 NUMBER(10, 0) default 1 NOT NULL ,
+	order_2 NUMBER(10, 0) default 2 NOT NULL ,
+	order_3 NUMBER(10, 0) default 3 NOT NULL ,
+	order_4 NUMBER(10, 0) default 4 NOT NULL ,
+	order_5 NUMBER(10, 0) default 5 NOT NULL ,
+	order_6 NUMBER(10, 0) default 6 NOT NULL ,
+	order_7 NUMBER(10, 0) default 7 NOT NULL ,
+	order_8 NUMBER(10, 0) default 8 NOT NULL ,
+	order_9 NUMBER(10, 0) default 9 NOT NULL ,
+	order_10 NUMBER(10, 0) default 10 NOT NULL ,
+	order_11 NUMBER(10, 0) default 11 NOT NULL ,
+	order_12 NUMBER(10, 0) default 12 NOT NULL ,
+	order_13 NUMBER(10, 0) default 13 NOT NULL ,
+	order_14 NUMBER(10, 0) default 14 NOT NULL ,
+	order_15 NUMBER(10, 0) default 15 NOT NULL ,
+	order_16 NUMBER(10, 0) default 16 NOT NULL ,
+	order_17 NUMBER(10, 0) default 17 NOT NULL ,
+	order_18 NUMBER(10, 0) default 18 NOT NULL ,
+	order_19 NUMBER(10, 0) default 19 NOT NULL ,
+	order_20 NUMBER(10, 0) default 20 NOT NULL 
 );
 
 CREATE SEQUENCE talert_snmp_s INCREMENT BY 1 START WITH 1;

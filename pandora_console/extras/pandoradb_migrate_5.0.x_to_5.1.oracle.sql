@@ -74,3 +74,27 @@ ALTER TABLE tnetwork_map ADD (l2_network NUMBER(1, 0) default 0 NOT NULL);
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tlayout_data` ADD COLUMN id_group NUMBER(10, 0) default 0 NOT NULL;
+
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp`
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_snmp ADD (order_1 NUMBER(10, 0) default 1 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_2 NUMBER(10, 0) default 2 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_3 NUMBER(10, 0) default 3 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_4 NUMBER(10, 0) default 4 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_5 NUMBER(10, 0) default 5 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_6 NUMBER(10, 0) default 6 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_7 NUMBER(10, 0) default 7 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_8 NUMBER(10, 0) default 8 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_9 NUMBER(10, 0) default 9 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_10 NUMBER(10, 0) default 10 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_11 NUMBER(10, 0) default 11 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_12 NUMBER(10, 0) default 12 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_13 NUMBER(10, 0) default 13 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_14 NUMBER(10, 0) default 14 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_15 NUMBER(10, 0) default 15 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_16 NUMBER(10, 0) default 16 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_17 NUMBER(10, 0) default 17 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_18 NUMBER(10, 0) default 18 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_19 NUMBER(10, 0) default 19 NOT NULL);
+ALTER TABLE talert_snmp ADD (order_20 NUMBER(10, 0) default 20 NOT NULL);

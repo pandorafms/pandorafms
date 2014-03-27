@@ -98,6 +98,27 @@ if ($save_alert || $modify_alert) {
 	$custom_oid_data_18 = (string) get_parameter ("custom_oid_data_18");
 	$custom_oid_data_19 = (string) get_parameter ("custom_oid_data_19");
 	$custom_oid_data_20 = (string) get_parameter ("custom_oid_data_20");
+	$order_1 = (int) get_parameter ("order_1", 1);
+	$order_2 = (int) get_parameter ("order_2", 2);
+	$order_3 = (int) get_parameter ("order_3", 3);
+	$order_4 = (int) get_parameter ("order_4", 4);
+	$order_5 = (int) get_parameter ("order_5", 5);
+	$order_6 = (int) get_parameter ("order_6", 6);
+	$order_7 = (int) get_parameter ("order_7", 7);
+	$order_8 = (int) get_parameter ("order_8", 8);
+	$order_9 = (int) get_parameter ("order_9", 9);
+	$order_10 = (int) get_parameter ("order_10", 10);
+	$order_11 = (int) get_parameter ("order_11", 11);
+	$order_12 = (int) get_parameter ("order_12", 12);
+	$order_13 = (int) get_parameter ("order_13", 13);
+	$order_14 = (int) get_parameter ("order_14", 14);
+	$order_15 = (int) get_parameter ("order_15", 15);
+	$order_16 = (int) get_parameter ("order_16", 16);
+	$order_17 = (int) get_parameter ("order_17", 17);
+	$order_18 = (int) get_parameter ("order_18", 18);
+	$order_19 = (int) get_parameter ("order_19", 19);
+	$order_20 = (int) get_parameter ("order_20", 20);
+	
 	$trap_type = (int) get_parameter ("trap_type", -1);
 	$single_value = (string) get_parameter ("single_value"); 
 	$position = (int) get_parameter ("position"); 
@@ -148,6 +169,26 @@ if ($save_alert || $modify_alert) {
 			'_snmp_f18_' => $custom_oid_data_18,
 			'_snmp_f19_' => $custom_oid_data_19,
 			'_snmp_f20_' => $custom_oid_data_20,
+			'order_1' => $order_1,
+			'order_2' => $order_2,
+			'order_3' => $order_3,
+			'order_4' => $order_4,
+			'order_5' => $order_5,
+			'order_6' => $order_6,
+			'order_7' => $order_7,
+			'order_8' => $order_8,
+			'order_9' => $order_9,
+			'order_10' => $order_10,
+			'order_11' => $order_11,
+			'order_12' => $order_12,
+			'order_13' => $order_13,
+			'order_14' => $order_14,
+			'order_15' => $order_15,
+			'order_16' => $order_16,
+			'order_17' => $order_17,
+			'order_18' => $order_18,
+			'order_19' => $order_19,
+			'order_20' => $order_20,
 			'trap_type' => $trap_type,
 			'single_value' => $single_value,
 			'position' => $position,
@@ -180,7 +221,14 @@ if ($save_alert || $modify_alert) {
 			_snmp_f10_ = '%s', _snmp_f11_ = '%s', _snmp_f12_ = '%s',
 			_snmp_f13_ = '%s', _snmp_f14_ = '%s', _snmp_f15_ = '%s',
 			_snmp_f16_ = '%s', _snmp_f17_ = '%s', _snmp_f18_ = '%s',
-			_snmp_f19_ = '%s', _snmp_f20_ = '%s', trap_type = %d, 
+			_snmp_f19_ = '%s', _snmp_f20_ = '%s', order_1 = '%d',
+			order_2 = '%d', order_3 = '%d', order_4 = '%d',
+			order_5 = '%d', order_6 = '%d', order_7 = '%d',
+			order_8 = '%d', order_9 = '%d', order_10 = '%d',
+			order_11 = '%d', order_12 = '%d', order_13 = '%d',
+			order_14 = '%d', order_15 = '%d', order_16 = '%d',
+			order_17 = '%d', order_18 = '%d', order_19 = '%d',
+			order_20 = '%d', trap_type = %d, 
 			single_value = '%s', position = '%s', id_group ='%s'
 			WHERE id_as = %d",
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
@@ -194,6 +242,10 @@ if ($save_alert || $modify_alert) {
 			$custom_oid_data_12, $custom_oid_data_13, $custom_oid_data_14,
 			$custom_oid_data_15, $custom_oid_data_16, $custom_oid_data_17,
 			$custom_oid_data_18, $custom_oid_data_19, $custom_oid_data_20,
+			$order_1, $order_2, $order_3, $order_4, $order_5, 
+			$order_6, $order_7, $order_8, $order_9, $order_10, 
+			$order_11, $order_12, $order_13, $order_14, $order_15, 
+			$order_16, $order_17, $order_18, $order_19, $order_20, 
 			$trap_type, $single_value, $position, $group, $id_as);
 		
 		$result = db_process_sql ($sql);
@@ -255,6 +307,26 @@ if ($update_alert) {
 	$custom_oid_data_18 = $alert["_snmp_f18_"];
 	$custom_oid_data_19 = $alert["_snmp_f19_"];
 	$custom_oid_data_20 = $alert["_snmp_f20_"];
+	$order_1 = $alert["order_1"];
+	$order_2 = $alert["order_2"];
+	$order_3 = $alert["order_3"];
+	$order_4 = $alert["order_4"];
+	$order_5 = $alert["order_5"];
+	$order_6 = $alert["order_6"];
+	$order_7 = $alert["order_7"];
+	$order_8 = $alert["order_8"];
+	$order_9 = $alert["order_9"];
+	$order_10 = $alert["order_10"];
+	$order_11 = $alert["order_11"];
+	$order_12 = $alert["order_12"];
+	$order_13 = $alert["order_13"];
+	$order_14 = $alert["order_14"];
+	$order_15 = $alert["order_15"];
+	$order_16 = $alert["order_16"];
+	$order_17 = $alert["order_17"];
+	$order_18 = $alert["order_18"];
+	$order_19 = $alert["order_19"];
+	$order_20 = $alert["order_20"];
 	$trap_type = $alert["trap_type"];
 	$single_value = $alert["single_value"]; 
 	$position = $alert["position"];
@@ -302,6 +374,26 @@ elseif ($create_alert) {
 	$custom_oid_data_18 = '';
 	$custom_oid_data_19 = '';
 	$custom_oid_data_20 = '';
+	$order_1 = 1;
+	$order_2 = 2;
+	$order_3 = 3;
+	$order_4 = 4;
+	$order_5 = 5;
+	$order_6 = 6;
+	$order_7 = 7;
+	$order_8 = 8;
+	$order_9 = 9;
+	$order_10 = 10;
+	$order_11 = 11;
+	$order_12 = 12;
+	$order_13 = 13;
+	$order_14 = 14;
+	$order_15 = 15;
+	$order_16 = 16;
+	$order_17 = 17;
+	$order_18 = 18;
+	$order_19 = 19;
+	$order_20 = 20;
 	$trap_type = -1;
 	$single_value = '';
 	$position = 0;
@@ -430,134 +522,174 @@ if ($create_alert || $update_alert) {
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #1
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #1');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo ui_print_help_icon ("field_match_snmp", true);
 	
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_1", $order_1, '', 4);
 	html_print_input_text ("custom_oid_data_1", $custom_oid_data_1, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #2
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #2');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_2", $order_2, '', 4);
 	html_print_input_text ("custom_oid_data_2", $custom_oid_data_2, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #3
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #3');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_3", $order_3, '', 4);
 	html_print_input_text ("custom_oid_data_3", $custom_oid_data_3, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #4
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #4');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_4", $order_4, '', 4);
 	html_print_input_text ("custom_oid_data_4", $custom_oid_data_4, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #5
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #5');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_5", $order_5, '', 4);
 	html_print_input_text ("custom_oid_data_5", $custom_oid_data_5, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #6
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #6');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_6", $order_6, '', 4);
 	html_print_input_text ("custom_oid_data_6", $custom_oid_data_6, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #7
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #7');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_7", $order_7, '', 4);
 	html_print_input_text ("custom_oid_data_7", $custom_oid_data_7, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #8
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #8');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_8", $order_8, '', 4);
 	html_print_input_text ("custom_oid_data_8", $custom_oid_data_8, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #9
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #9');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_9", $order_9, '', 4);
 	html_print_input_text ("custom_oid_data_9", $custom_oid_data_9, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #10
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #10');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_10", $order_10, '', 4);
 	html_print_input_text ("custom_oid_data_10", $custom_oid_data_10, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #11
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #11');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_11", $order_11, '', 4);
 	html_print_input_text ("custom_oid_data_11", $custom_oid_data_11, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #12
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #12');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_12", $order_12, '', 4);
 	html_print_input_text ("custom_oid_data_12", $custom_oid_data_12, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #13
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #13');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_13", $order_13, '', 4);
 	html_print_input_text ("custom_oid_data_13", $custom_oid_data_13, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #14
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #14');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_14", $order_14, '', 4);
 	html_print_input_text ("custom_oid_data_14", $custom_oid_data_14, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #15
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #15');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_15", $order_15, '', 4);
 	html_print_input_text ("custom_oid_data_15", $custom_oid_data_15, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #16
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #16');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_16", $order_16, '', 4);
 	html_print_input_text ("custom_oid_data_16", $custom_oid_data_16, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #17
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #17');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_17", $order_17, '', 4);
 	html_print_input_text ("custom_oid_data_17", $custom_oid_data_17, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #18
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #18');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_18", $order_18, '', 4);
 	html_print_input_text ("custom_oid_data_18", $custom_oid_data_18, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #19
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #19');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_19", $order_19, '', 4);
 	html_print_input_text ("custom_oid_data_19", $custom_oid_data_19, '', 60);
 	echo '</td></tr>';
 	
 	//  Custom OID/Data #20
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data #20');
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
 	echo '</td><td class="datos">';
+	echo '#';
+	html_print_input_text ("order_20", $order_20, '', 4);
 	html_print_input_text ("custom_oid_data_20", $custom_oid_data_20, '', 60);
 	echo '</td></tr>';
 	
@@ -590,11 +722,21 @@ if ($create_alert || $update_alert) {
 	// Hidden div with help hint to fill with javascript
 	html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
 	
+/*
 	for ($i = 1; $i <= 10; $i++) {
 		echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
 		echo '<td class="datos">' . html_print_image('images/spinner.gif',true);
 		html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
 		echo '</td></tr>';
+	}
+*/
+	for ($i = 1; $i <= 10; $i++) {
+		echo '<tr id="table_macros-field'.$i.'">';
+		//echo '<td class="datos" valign="top">'.html_print_image('images/spinner.gif',true).'</td>';
+		//echo '<td class="datos">' . html_print_image('images/spinner.gif',true).'</td>';
+		//html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
+		//echo '</td></tr>';
+		echo '</tr>';
 	}
 	
 	// Max / Min alerts

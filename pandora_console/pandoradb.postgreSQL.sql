@@ -300,7 +300,27 @@ CREATE TABLE "talert_snmp" (
 	"trap_type" INTEGER NOT NULL DEFAULT '-1',
 	"single_value" varchar(255) DEFAULT '',
 	"position" INTEGER NOT NULL default 0,
-	"id_group" INTEGER NOT NULL default 0
+	"id_group" INTEGER NOT NULL default 0,
+	"order_1" INTEGER NOT NULL default 1,
+	"order_2" INTEGER NOT NULL default 2,
+	"order_3" INTEGER NOT NULL default 3,
+	"order_4" INTEGER NOT NULL default 4,
+	"order_5" INTEGER NOT NULL default 5,
+	"order_6" INTEGER NOT NULL default 6,
+	"order_7" INTEGER NOT NULL default 7,
+	"order_8" INTEGER NOT NULL default 8,
+	"order_9" INTEGER NOT NULL default 9,
+	"order_10" INTEGER NOT NULL default 10,
+	"order_11" INTEGER NOT NULL default 11,
+	"order_12" INTEGER NOT NULL default 12,
+	"order_13" INTEGER NOT NULL default 13,
+	"order_14" INTEGER NOT NULL default 14,
+	"order_15" INTEGER NOT NULL default 15,
+	"order_16" INTEGER NOT NULL default 16,
+	"order_17" INTEGER NOT NULL default 17,
+	"order_18" INTEGER NOT NULL default 18,
+	"order_19" INTEGER NOT NULL default 19,
+	"order_20" INTEGER NOT NULL default 20,
 );
 
 CREATE TABLE "talert_commands" (

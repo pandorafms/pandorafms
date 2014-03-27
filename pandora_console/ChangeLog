@@ -1,3 +1,22 @@
+2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.mysql.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.oracle.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.postgreSQL.sql
+	  godmode/snmpconsole/snmp_alert.php
+	  operation/snmpconsole/snmp_view.php: Add fields 'order_x'
+	to SNMP Traps.
+	
+	* images/help/custom_oid.png
+	  images/help/custom_oid2.png
+	  images/help/trap.png: Added images.
+
+	* include/help/en/help_field_match_snmp.php
+	  include/help/es/help_field_match_snmp.php: Changed help. 
+
 2014-03-24  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/massive/massive_edit_modules.php,

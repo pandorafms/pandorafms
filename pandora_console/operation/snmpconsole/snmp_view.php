@@ -31,12 +31,9 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
 
 // Read parameters
-$filter_agent = (string) get_parameter ("filter_agent", '');
-$filter_oid = (string) get_parameter ("filter_oid", '');
 $filter_severity = (int) get_parameter ("filter_severity", -1);
 $filter_fired = (int) get_parameter ("filter_fired", -1);
 $filter_status = (int) get_parameter ("filter_status", 0);
-$search_string = (string) get_parameter ("search_string", '');
 $free_search_string = (string) get_parameter ("free_search_string", '');
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
@@ -58,11 +55,8 @@ foreach ($user_groups as $id=>$name) {
 
 $url = "index.php?sec=estado&" .
 	"sec2=operation/snmpconsole/snmp_view&" .
-	"filter_agent=" . $filter_agent . "&" .
-	"filter_oid=" . $filter_oid . "&" .
 	"filter_severity=" . $filter_severity . "&" .
 	"filter_fired=" . $filter_fired . "&" .
-	"search_string=" . $search_string . "&" .
 	"free_search_string=" . $free_search_string . "&" .
 	"pagination=" . $pagination . "&" .
 	"offset=" . $offset . "&" .
@@ -148,69 +142,6 @@ if (isset ($_POST["updatebt"])) {
 	}
 }
 
-switch ($config["dbtype"]) {
-	case "mysql":
-		$sql = sprintf ("
-			SELECT *
-			FROM ttrap
-			WHERE `source` IN (
-					SELECT direccion FROM tagente
-					WHERE id_grupo IN ($str_user_groups)
-					)
-			OR `source`=''
-			ORDER BY timestamp DESC
-			LIMIT %d,%d",$offset,$pagination);
-		break;
-	case "postgresql":
-		$sql = sprintf ("
-			SELECT *
-			FROM ttrap
-			WHERE `source` IN (
-					SELECT direccion FROM tagente
-					WHERE id_grupo IN ($str_user_groups)
-					)
-			OR `source`=''
-			ORDER BY timestamp DESC
-			LIMIT %d OFFSET %d",$pagination, $offset);
-		break;
-	case "oracle":
-		$set = array();
-		$set['limit'] = $pagination;
-		$set['offset'] = $offset;
-		$sql = sprintf ("
-			SELECT *
-			FROM ttrap
-			WHERE `source` IN (
-					SELECT direccion FROM tagente
-					WHERE id_grupo IN ($str_user_groups)
-					)
-			OR `source`=''
-			ORDER BY timestamp DESC");
-		$sql = oracle_recode_query ($sql, $set);
-		break;
-}
-
-$traps = db_get_all_rows_sql ($sql);
-// All traps 
-$all_traps = db_get_all_rows_sql ("SELECT DISTINCT source FROM ttrap 
-								WHERE `source` IN (
-											SELECT direccion FROM tagente
-											WHERE id_grupo IN ($str_user_groups)
-										)
-								OR `source`=''");
-
-if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
-	for ($i=0; $i < count($traps); $i++) {
-		unset($traps[$i]['rnum']);
-	}
-}
-
-// No traps 
-if (empty ($traps)) {
-	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
-	return;
-}
-
 $table->width = '90%';
 $table->size = array ();
 $table->size[0] = '120px';
@@ -236,33 +167,31 @@ switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT *
 			FROM ttrap
-			WHERE `source` IN (
+			WHERE (`source` IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					)
-			OR `source`='' %s
+					) OR `source`='') %s
 			ORDER BY timestamp DESC
 			LIMIT %d,%d";
 		break;
 	case "postgresql":
 		$sql = "SELECT *
 			FROM ttrap
-			WHERE source IN (
+			WHERE (source IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					)
-			OR source='' %s
+					) OR source='') %s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
 		break;
 	case "oracle":
 		$sql = "SELECT *
 			FROM ttrap
-			WHERE source IN (
+			WHERE (source IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
 					)
-			OR source='' %s
+			OR source='') %s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
 		break;
@@ -270,56 +199,9 @@ switch ($config["dbtype"]) {
 //$whereSubquery = 'WHERE 1=1';
 $whereSubquery = '';
 
-if ($filter_agent != '') {
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$whereSubquery .= ' AND source LIKE "' . $filter_agent . '"';
-			break;
-		case "postgresql":
-		case "oracle":
-			$whereSubquery .= ' AND source LIKE \'' . $filter_agent . '\'';
-			break;
-	}
-}
-
-if ($filter_oid != '') {
-	//Test if install the enterprise to search oid in text or oid field in ttrap.
-	if ($config['enterprise_installed']) {
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$whereSubquery .= ' AND (text LIKE "' . $filter_oid . '" OR oid LIKE "' . $filter_oid . '")';
-				break;
-			case "postgresql":
-			case "oracle":
-				$whereSubquery .= ' AND (text LIKE \'' . $filter_oid . '\' OR oid LIKE \'' . $filter_oid . '\')';
-				break;
-		}
-	}
-	else {
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$whereSubquery .= ' AND oid LIKE "' . $filter_oid . '"';
-				break;
-			case "postgresql":
-			case "oracle":
-				$whereSubquery .= ' AND oid LIKE \'' . $filter_oid . '\'';
-				break;
-		}
-	}
-}
 if ($filter_fired != -1)
 	$whereSubquery .= ' AND alerted = ' . $filter_fired;
-if ($search_string != '') {
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$whereSubquery .= ' AND value LIKE "%' . $search_string . '%"';
-			break;
-		case "postgresql":
-		case "oracle":
-			$whereSubquery .= ' AND value LIKE \'%' . $search_string . '%\'';
-			break;
-	}
-}
+
 if ($free_search_string != '') {
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -392,27 +274,22 @@ switch ($config["dbtype"]) {
 
 $traps = db_get_all_rows_sql($sql);
 
+// No traps 
+if (empty ($traps)) {
+	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
+	return;
+}
+
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i=0; $i < count($traps); $i++) {
 		unset($traps[$i]['rnum']);
 	}
 }
 
-// Agent select
-$table->data[0][0] = '<strong>'.__('Agent').'</strong>';
-$table->data[0][1] = html_print_select ($agents, 'filter_agent', $filter_agent, 'javascript:this.form.submit();', __('All'), '', true);
-
-// OID select
-$table->data[0][2] = '<strong>'.__('OID').'</strong>';
-$table->data[0][3] = html_print_select ($oids, 'filter_oid', $filter_oid, 'javascript:this.form.submit();', __('All'), '', true);
 
 // Alert status select
 $table->data[1][0] = '<strong>'.__('Alert').'</strong>';
 $table->data[1][1] = html_print_select ($alerted, "filter_fired", $filter_fired, 'javascript:this.form.submit();', __('All'), '-1', true);
-
-// String search_string
-$table->data[1][2] = '<strong>'.__('Search value').'</strong>';
-$table->data[1][3] = html_print_input_text ('search_string', $search_string, '', 40, 0, true);
 
 // Block size for pagination select
 $table->data[2][0] = '<strong>'.__('Block size for pagination').'</strong>';
@@ -424,8 +301,8 @@ $paginations[500] = 500;
 $table->data[2][1] = html_print_select ($paginations, "pagination", $pagination, 'this.form.submit();', __('Default'), $config["block_size"], true);
 
 // Severity select
-$table->data[2][2] = '<strong>'.__('Severity').'</strong>';
-$table->data[2][3] = html_print_select ($severities, 'filter_severity', $filter_severity, 'this.form.submit();', __('All'), -1, true);
+$table->data[1][2] = '<strong>'.__('Severity').'</strong>';
+$table->data[1][3] = html_print_select ($severities, 'filter_severity', $filter_severity, 'this.form.submit();', __('All'), -1, true);
 
 // Status
 $table->data[3][0] = '<strong>'.__('Status').'</strong>';
@@ -436,17 +313,17 @@ $status_array[1] = __('Validated');
 $table->data[3][1] = html_print_select ($status_array, 'filter_status', $filter_status, 'this.form.submit();', '', '', true);
 
 // Free search (search by all alphanumeric fields)
-$table->data[3][3] = '<strong>'.__('Free search').'</strong>' . ui_print_help_tip(__('Search by any alphanumeric field in the trap'), true);
-$table->data[3][4] = html_print_input_text ('free_search_string', $free_search_string, '', 40, 0, true);
+$table->data[2][3] = '<strong>'.__('Free search').'</strong>' . ui_print_help_tip(__('Search by any alphanumeric field in the trap'), true);
+$table->data[2][4] = html_print_input_text ('free_search_string', $free_search_string, '', 40, 0, true);
 
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other)
 $table->data[4][1] = '<strong>'.__('Type').'</strong>' . ui_print_help_tip(__('Search by trap type'), true);
 $trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 $table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
 
-$table->data[4][3] = '<strong>'.__('Group by OID/IP').'</strong>';
-$table->data[4][4] .= __('Yes').'&nbsp;'.html_print_radio_button ('group_by', 1, '', $group_by, true).'&nbsp;&nbsp;';
-$table->data[4][4] .= __('No').'&nbsp;'.html_print_radio_button ('group_by', 0, '', $group_by, true);
+$table->data[3][3] = '<strong>'.__('Group by OID/IP').'</strong>';
+$table->data[3][4] .= __('Yes').'&nbsp;'.html_print_radio_button ('group_by', 1, '', $group_by, true).'&nbsp;&nbsp;';
+$table->data[3][4] .= __('No').'&nbsp;'.html_print_radio_button ('group_by', 0, '', $group_by, true);
 
 $filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.((int)get_parameter('refr', 0)).'&pure='.$config["pure"].'">';
 $filter .= html_print_table($table, true);
@@ -460,28 +337,18 @@ ui_toggle($filter, __('Toggle filter(s)'));
 unset ($table);
 
 // Prepare index for pagination
-/*
-$trapcount = db_get_sql ("
-	SELECT COUNT(id_trap)
-	FROM ttrap " .
-	$whereSubquery);
-*/
-	
 $trapcount = count($traps);
 	
 $url_snmp = "index.php?" .
 	"sec=snmpconsole&" .
 	"sec2=operation/snmpconsole/snmp_view&" .
-	"filter_agent=" . $filter_agent . "&" .
-	"filter_oid=" . $filter_oid . "&" .
 	"filter_severity=" . $filter_severity . "&" .
 	"filter_fired=" . $filter_fired . "&" .
 	"filter_status=" . $filter_status . "&" .
-	"search_string=" . $search_string . "&" .
 	"refr=" . ((int)get_parameter('refr', 0)) . "&" .
 	"pure=" . $config["pure"] . "&" .
 	"group_by=" . $group_by . "&" .
-	"search_string=" . $search_string;
+	"free_search_string=" . $free_search_string;
 
 $urlPagination = $url_snmp . "&pagination=" . $pagination . "&offset=" . $offset;
 
@@ -510,31 +377,37 @@ $table->head[2] = __('OID');
 $table->align[2] = "center";
 $table->size[2] = '18%';
 
-$table->head[3] = __('Value');
-$table->align[3] = "center";
-$table->size[3] = '10%';
+if ($group_by) {
+	$table->head[3] = __('Count');
+	$table->align[3] = "center";
+	$table->size[3] = '5%';
+}
 
-$table->head[4] = __('User ID');
+$table->head[4] = __('Value');
 $table->align[4] = "center";
 $table->size[4] = '10%';
 
-$table->head[5] = __('Timestamp');
+$table->head[5] = __('User ID');
 $table->align[5] = "center";
 $table->size[5] = '10%';
 
-$table->head[6] = __('Alert');
+$table->head[6] = __('Timestamp');
 $table->align[6] = "center";
-$table->size[6] = '5%';
+$table->size[6] = '10%';
 
-$table->head[7] = __('Action');
+$table->head[7] = __('Alert');
 $table->align[7] = "center";
-$table->size[7] = '10%';
+$table->size[7] = '5%';
 
-$table->head[8] = html_print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
+$table->head[8] = __('Action');
 $table->align[8] = "center";
-$table->size[8] = '5%';
+$table->size[8] = '10%';
 
-$table->style[7] = "background: #F3F3F3; color: #111 !important;";
+$table->head[9] = html_print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
+$table->align[9] = "center";
+$table->size[9] = '5%';
+
+$table->style[8] = "background: #F3F3F3; color: #111 !important;";
 
 // Skip offset records
 $idx = 0;
@@ -579,63 +452,74 @@ if ($traps !== false) {
 		$table->cellclass[$idx][2] = get_priority_class ($severity);
 		$data[2] = '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . (empty($trap["oid"]) ? __('N/A') : $trap["oid"]) .'</a>';
 		
+		//Count
+		if ($group_by) {
+			$sql = "SELECT * FROM ttrap WHERE 1=1 
+					$where_without_group
+					AND oid='".$trap['oid']."' 
+					AND source='".$trap['source']."'";
+			$group_traps = db_get_all_rows_sql($sql);
+			$count_group_traps = count($group_traps);
+			$table->cellclass[$idx][3] = get_priority_class ($severity);
+			$data[3] = '<strong>'.$count_group_traps.'</strong></a>';
+		}
 		//Value
-		$table->cellclass[$idx][3] = get_priority_class ($severity);
+		$table->cellclass[$idx][4] = get_priority_class ($severity);
 		if (empty ($trap["value"])) {
-			$data[3] = __('N/A');
+			$data[4] = __('N/A');
 		}
 		else {
-			$data[3] = ui_print_truncate_text($trap["value"], GENERIC_SIZE_TEXT, false);
+			$data[4] = ui_print_truncate_text($trap["value"], GENERIC_SIZE_TEXT, false);
 		}
 		
 		//User
-		$table->cellclass[$idx][4] = get_priority_class ($severity);
+		$table->cellclass[$idx][5] = get_priority_class ($severity);
 		if (!empty ($trap["status"])) {
-			$data[4] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
+			$data[5] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
 			if (!empty($trap["id_usuario"]))
-				$data[4] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
+				$data[5] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
 		}
 		else {
-			$data[4] = '--';
+			$data[5] = '--';
 		}
 		
 		// Timestamp
-		$table->cellclass[$idx][5] = get_priority_class ($severity);
-		$data[5] = '<span title="'.$trap["timestamp"].'">';
-		$data[5] .= ui_print_timestamp ($trap["timestamp"], true);
-		$data[5] .= '</span>';
+		$table->cellclass[$idx][6] = get_priority_class ($severity);
+		$data[6] = '<span title="'.$trap["timestamp"].'">';
+		$data[6] .= ui_print_timestamp ($trap["timestamp"], true);
+		$data[6] .= '</span>';
 		
 		// Use alert severity if fired
 		if (!empty ($trap["alerted"])) {
-			$data[6] = html_print_image("images/pixel_yellow.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert fired'))); 		
+			$data[7] = html_print_image("images/pixel_yellow.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert fired'))); 		
 		}
 		else {
-			$data[6] = html_print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert not fired')));
+			$data[7] = html_print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert not fired')));
 		}
 		
 		//Actions
-		$data[7] = "";
+		$data[8] = "";
 		
 		if (empty ($trap["status"]) && check_acl ($config["id_user"], 0, "IW")) {
-			$data[7] .= '<a href="' . $url_snmp . '&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a> ';
+			$data[8] .= '<a href="' . $url_snmp . '&check='.$trap["id_trap"].'">' . html_print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a> ';
 		}
 		if ($trap['source'] == '') {
 			$is_admin = db_get_value('is_admin', 'tusuario', 'id_user',$config['id_user']);
 			if ($is_admin) {
-				$data[7] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
+				$data[8] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
 			}
 		} else {
 			$agent_trap_group = db_get_value('id_grupo', 'tagente', 'nombre', $trap['source']);
 			if ((check_acl ($config["id_user"], $agent_trap_group, "AW"))) {
-				$data[7] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
+				$data[8] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
 			}
 		}
 
-		$data[7] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
-                $data[7] .= enterprise_hook ('editor_link', array ($trap));
+		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
+                $data[8] .= enterprise_hook ('editor_link', array ($trap));
 
 		
-		$data[8] = html_print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
+		$data[9] = html_print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
 		
 		array_push ($table->data, $data);
 		
@@ -644,11 +528,24 @@ if ($traps !== false) {
 			<tr>
 				<td align="left" valign="top" width="15%" ><b>' . __('Custom data:') . '</b></td>
 				<td align="left" >';
-				
-		// Print binding vars separately
-		$binding_vars = explode ("\t", $trap['oid_custom']);
-		foreach ($binding_vars as $var) {
-			$string .= $var . "<br/>";
+		
+		if ($group_by) {
+			$new_url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&" .
+			"filter_severity=" . $filter_severity . "&" .
+			"filter_fired=" . $filter_fired . "&" .
+			"filter_status=" . $filter_status . "&" .
+			"refr=" . ((int)get_parameter('refr', 0)) . "&" .
+			"pure=" . $config["pure"] . "&" .
+			"group_by=0&" .
+			"free_search_string=" . $free_search_string;
+			
+			$string .= '<a href='.$new_url.'>'.__('See more details').'</a>';
+		} else {	
+			// Print binding vars separately
+			$binding_vars = explode ("\t", $trap['oid_custom']);
+			foreach ($binding_vars as $var) {
+				$string .= $var . "<br/>";
+			}
 		}
 		
 		$string .= '</td>

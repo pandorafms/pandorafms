@@ -40,6 +40,7 @@ if (is_ajax ()) {
 	$get_alert_command = (bool) get_parameter ('get_alert_command');
 	if ($get_alert_command) {
 		$id = (int) get_parameter ('id', 0);
+		$get_recovery_fields = (int)  get_parameter('get_recovery_fields', 1);
 		
 		// If command ID is not provided, check for action id
 		if ($id == 0) {
@@ -107,17 +108,13 @@ if (is_ajax ()) {
 			}
 			else {
 				$fields_rows[$i] =
-					'<tr id="table_macros-field' . $i . '" class="datos">
-						<td style="font-weight:bold;width:20%" class="datos">
-							' . $fdesc . '
-						</td>
-						<td class="datos">
-							' . $ffield . '
-						</td>
-						<td class="datos recovery_col">
-							' . $rfield . '
-						</td>
-					</tr>';
+					'<tr id="table_macros-field' . $i . '" class="datos">';
+				$fields_rows[$i] .=	'<td style="font-weight:bold;width:20%" class="datos">' . $fdesc . '</td>';
+				$fields_rows[$i] .=	'<td class="datos">' . $ffield . '</td>';
+				if ($get_recovery_fields) {
+					$fields_rows[$i] .=	'<td class="datos recovery_col">' . $rfield . '</td>';
+				}
+				$fields_rows[$i] .=	'</tr>';
 			}
 		}
 		

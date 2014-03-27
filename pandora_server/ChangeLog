@@ -1,3 +1,8 @@
+2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Can change
+	order in varbinds.
+
 2014-03-20  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf.new,

@@ -1,3 +1,33 @@
+2014-03-27  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_config.php,
+	  godmode/setup/setup_visuals.php,
+	  general/login_page.php: Now is possible to select a
+	custom login background in the setup visuals section.
+
+	* images/backgrounds/default_4.0-stripes.gif,
+	  images/backgrounds/default_4.0.jpg,
+	  images/backgrounds/default_5.0.png,
+	  images/backgrounds/flowers.jpg,
+	  images/backgrounds/grass.jpg,
+	  images/backgrounds/tiles.jpg,
+	  images/backgrounds/wall.jpg,
+	  images/backgrounds/wood.jpg: Added new images to use
+	it as custom login backgrounds.
+
+	* images/backgrounds/background1.jpg,
+	  images/backgrounds/background2.jpg,
+	  images/backgrounds/background3.jpg,
+	  images/backgrounds/background4.jpg,
+	  images/backgrounds/background5.jpg,
+	  images/backgrounds/background6.jpg,
+	  images/backgrounds/background7.jpg,
+	  images/backgrounds/background8.jpg,
+	  images/backgrounds/background9.jpg,
+	  images/backgrounds/background10.jpg,
+	  images/backgrounds/background_red.jpg: Delete some
+	VERY old images.
+
 2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
 	
 	* images/help/custom_oid2.png: Changed image.

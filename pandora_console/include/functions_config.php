@@ -402,6 +402,8 @@ function config_update_config () {
 						$error_update[] = __('Interactive charts');
 					if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
 						$error_update[] = __('Custom logo');
+					if (!config_update_value ('login_background', (string) get_parameter ('login_background')))
+						$error_update[] = __('Login background');
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
 					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))

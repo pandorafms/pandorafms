@@ -28,11 +28,11 @@
 	<img src="../images/help/trap.png" width='520' height='220'>
 </tr>
 <tr>
-	<p>La alerta generada, un evento de auditoria tiene este texto:
+	<p>La alerta generada, un evento de auditoria tiene este texto:</p>
 
-SNMP Alert of 192.168.5.2 with OID .1.3.6.1.4.1.2789.2005
-Binding 1: “uno” Binding 3: “tres” Binding 5: “cinco” Binding 7: “siete”
+<p>SNMP Alert of 192.168.5.2 with OID .1.3.6.1.4.1.2789.2005
+Varbind 1: “cien” Varbind 3: “tres” Varbind 5: “veinte” Varbind 7: “sesenta”</p>
 
-De esta manera, si el trap tiene 200 variables, se pueden usar hasta 20 filtros de variables (bindings) y tomar el valor de hasta 20 variables, independientemente si están en la posición 10, 50, o 170.</p>
+<p>De esta manera, si el trap tiene 200 variables, se pueden usar hasta 20 filtros de variables (Varbinds) y tomar el valor de hasta 20 variables, independientemente si están en la posición 10, 50, o 170.</p>
 </tr>
 </table>

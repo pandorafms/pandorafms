@@ -1,5 +1,13 @@
 2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
 	
+	* extras/pandoradb_migrate_5.0_to_5.1.mysql.sql:
+	Fixed error with 'talert_snmp' order fields.
+
+	* include/help/en/help_field_match_snmp.php
+	  include/help/es/help_field_match_snmp.php: Changed help.
+
+2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
+	
 	* pandoradb.oracle.sql
 	  pandoradb.postgreSQL.sql
 	  pandoradb.sql

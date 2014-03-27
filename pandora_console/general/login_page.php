@@ -54,7 +54,12 @@ if (!empty ($page) && !empty ($sec)) {
 		$url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 	}
 }
-echo '<div id="login_body"></div>';
+// Overrides the default background with the defined by the user
+if (!empty($config['login_background'])) {
+	$background_url = ui_get_full_url("images/backgrounds/") . $config['login_background'];
+	$login_body_style = "style=\"background-image: url('$background_url');\"";
+}
+echo '<div id="login_body" ' . $login_body_style . '></div>';
 echo '<div id="login_outer">';
 echo '<div class="databox_login" id="login">';
 echo '<div id="login_inner">';

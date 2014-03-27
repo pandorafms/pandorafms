@@ -211,6 +211,17 @@ $table->data[$row][1] = html_print_select (list_files ('images/custom_logo', "pn
 
 $row++;
 
+$table->data[$row][0] = __('Login background') . ui_print_help_tip(__('You can place your custom images into the folder images/backgrounds/'), true);
+$backgrounds_list_jpg = list_files("images/backgrounds", "jpg", 1, 0);
+$backgrounds_list_gif = list_files("images/backgrounds", "gif", 1, 0);
+$backgrounds_list_png = list_files("images/backgrounds", "png", 1, 0);
+$backgrounds_list = array_merge($backgrounds_list_jpg, $backgrounds_list_png);
+$backgrounds_list = array_merge($backgrounds_list, $backgrounds_list_gif);
+asort($backgrounds_list);
+$table->data[$row][1] = html_print_select ($backgrounds_list, 'login_background', $config["login_background"], '', __('Default'), '', true);
+
+$row++;
+
 $values = array ();
 $values[5] = human_time_description_raw (5);
 $values[30] = human_time_description_raw (30);

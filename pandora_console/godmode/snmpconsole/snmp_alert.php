@@ -1080,6 +1080,10 @@ $(document).ready (function () {
 			value: this.value
 		});
 		
+		values.push ({
+			name: "get_recovery_fields",
+			value: "0"
+		});
 		jQuery.get (
 			<?php
 			echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'";

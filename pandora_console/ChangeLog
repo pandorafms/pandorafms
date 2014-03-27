@@ -1,3 +1,9 @@
+2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* godmode/alerts/alert_commands.php
+	  godmode/snmpconsole/snmp_alert.php: Fixed
+	bug:load recovery fields of alert actions.
+
 2014-03-27  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_config.php,

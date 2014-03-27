@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-01-27 17:47+0100\n"
-"PO-Revision-Date: 2014-01-30 15:14+0000\n"
-"Last-Translator: Zarzuelo <Unknown>\n"
+"PO-Revision-Date: 2014-03-11 09:10+0000\n"
+"Last-Translator: Miguel de Dios <tres.14159@gmail.com>\n"
 "Language-Team: Español; Castellano <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-01-30 15:16+0000\n"
-"X-Generator: Launchpad (build 16916)\n"
+"X-Launchpad-Export-Date: 2014-03-27 12:39+0000\n"
+"X-Generator: Launchpad (build 16967)\n"
 "Language: \n"
 
 #: ../../operation/search_main.php:48
@@ -4499,7 +4499,7 @@ msgstr ""
 #: ../../operation/netflow/nf_live_view.php:347
 #: ../../godmode/netflow/nf_edit_form.php:212
 msgid "Aggregate by"
-msgstr "Añadido por"
+msgstr "Agregado por"
 
 #: ../../operation/netflow/nf_live_view.php:349
 #: ../../godmode/netflow/nf_edit_form.php:213
@@ -13205,7 +13205,7 @@ msgstr "El archivo de la colección es mayor que el límite"
 
 #: ../../enterprise/godmode/agentes/collections.php:125
 msgid "Success: recreate file"
-msgstr "Éxito: error al volver a crear el archivo"
+msgstr "Éxito: al volver a crear el archivo"
 
 #: ../../enterprise/godmode/agentes/collections.php:128
 msgid "Error: recreate file "

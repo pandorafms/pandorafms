@@ -70,10 +70,14 @@ class gettext_reader {
   function readint() {
       if ($this->BYTEORDER == 0) {
         // low endian
-        return array_shift(unpack('V', $this->STREAM->read(4)));
+		$_var=unpack('V', $this->STREAM->read(4));
+		return array_shift($_var);
+        //return array_shift(unpack('V', $this->STREAM->read(4)));
       } else {
         // big endian
-        return array_shift(unpack('N', $this->STREAM->read(4)));
+		$_var=unpack('N', $this->STREAM->read(4));
+		return array_shift($_var);
+        //return array_shift(unpack('N', $this->STREAM->read(4)));
       }
     }
 

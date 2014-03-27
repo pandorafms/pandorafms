@@ -1,3 +1,11 @@
+2014-03-27  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/gettext.php: fixed the PHP warnings.
+	
+	Incident: #656
+	
+	MERGED FROM THE TRUNK
+
 2014-03-19  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/snmpconsole/snmp_view.php,

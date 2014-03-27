@@ -1,5 +1,9 @@
 2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
 	
+	* images/help/custom_oid2.png: Changed image.
+
+2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
+	
 	* extras/pandoradb_migrate_5.0_to_5.1.mysql.sql:
 	Fixed error with 'talert_snmp' order fields.
 

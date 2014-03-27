@@ -31,7 +31,7 @@
 	<p>La alerta generada, un evento de auditoria tiene este texto:</p>
 
 <p>SNMP Alert of 192.168.5.2 with OID .1.3.6.1.4.1.2789.2005
-Varbind 1: “cien” Varbind 3: “tres” Varbind 5: “veinte” Varbind 7: “sesenta”</p>
+Varbind 100: “cien” Varbind 3: “tres” Varbind 20: “veinte” Varbind 60: “sesenta”</p>
 
 <p>De esta manera, si el trap tiene 200 variables, se pueden usar hasta 20 filtros de variables (Varbinds) y tomar el valor de hasta 20 variables, independientemente si están en la posición 10, 50, o 170.</p>
 </tr>

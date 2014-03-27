@@ -1,3 +1,9 @@
+2014-03-27  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/gettext.php: fixed the PHP warnings.
+	
+	Incident: #656
+
 2014-03-27  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ca.mo

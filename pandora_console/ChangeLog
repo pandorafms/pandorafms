@@ -1,3 +1,10 @@
+2014-03-28  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php: set the zeroes values in the boolean
+	graph as zeroes values.
+	
+	Incident: #665
+
 2014-03-28 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/map_builder.php

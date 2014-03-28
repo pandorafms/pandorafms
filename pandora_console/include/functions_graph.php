@@ -2752,21 +2752,32 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		
 		// Data and zeroes (draw a step)
 		if ($zero == 1 && $count > 0) {
-			if ($avg_only) {
-				$chart[$timestamp]['sum'.$series_suffix] = $total;
-			}
-			else {
-				$chart[$timestamp]['sum'.$series_suffix] = $total;
-				$chart[$timestamp + 1] = array ('sum'.$series_suffix => 0,
-					//'count' => 0,
-					//'timestamp_bottom' => $timestamp,
-					//'timestamp_top' => $timestamp + $interval,
-					'min'.$series_suffix => 0,
-					'max'.$series_suffix => 0,
-					'event'.$series_suffix => $event_value,
-					'alert'.$series_suffix => $alert_value);
-			}
+			
+			//New code set 0 if there is a 0
+			//Please check the incident #665
+			//http://192.168.50.2/integria/index.php?sec=incidents&sec2=operation/incidents/incident_dashboard_detail&id=665
+			
+			
+			$chart[$timestamp]['sum'.$series_suffix] = 0;
 			$previous_data = 0;
+			
+			//Old code that make a AVG
+			
+			//~ if ($avg_only) {
+				//~ $chart[$timestamp]['sum'.$series_suffix] = $total;
+			//~ }
+			//~ else {
+				//~ $chart[$timestamp]['sum'.$series_suffix] = $total;
+				//~ $chart[$timestamp + 1] = array ('sum'.$series_suffix => 0,
+					//~ //'count' => 0,
+					//~ //'timestamp_bottom' => $timestamp,
+					//~ //'timestamp_top' => $timestamp + $interval,
+					//~ 'min'.$series_suffix => 0,
+					//~ 'max'.$series_suffix => 0,
+					//~ 'event'.$series_suffix => $event_value,
+					//~ 'alert'.$series_suffix => $alert_value);
+			//~ }
+			//~ $previous_data = 0;
 		}
 		else if ($zero == 1) { // Just zeros
 			$chart[$timestamp]['sum'.$series_suffix] = 0;

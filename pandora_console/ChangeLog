@@ -1,3 +1,12 @@
+2014-03-28  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_gis.php, operation/agentes/gis_view.php: fixed
+	the GIS view for agents.
+	
+	Incident: #611
+	
+	BACKPORTED FROM THE BRANCH PANDORA_5
+
 2014-03-27  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/gettext.php: fixed the PHP warnings.

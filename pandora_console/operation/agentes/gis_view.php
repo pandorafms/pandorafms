@@ -33,7 +33,7 @@ ui_require_javascript_file('openlayers.pandora');
 /* Get the parameters */
 $period = get_parameter ("period", 86400);
 $agentId = get_parameter('id_agente');
-$agent_name = agents_get_name($agentId); 
+$agent_name = agents_get_name($id_agente); 
 $agentData = gis_get_data_last_position_agent($id_agente);
 
 //Avoid the agents with characters that fails the div.
@@ -49,10 +49,19 @@ foreach ($_GET as $key => $value) {
 echo "<div style='margin-bottom: 30px;'></div>";
 
 /* Map with the current position */
-echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 39em;\"></div>";
-if (!gis_get_agent_map($agentId, "500px", "98%", true, true, $period)) {
-	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
+echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
+
+if (!gis_get_agent_map($id_agente, "500px", "98%", true, true, $period)) {
+	echo "<br /><div class='nf'>" . __("There is no default map. Please go to the setup for to set a default map.") . "</div>";
+	echo "<script type='text/javascript'>
+		$(document).ready(function() {
+			$('#" . $agent_name . "_agent_map').hide();
+		});
+		</script>";
 }
+
+
+
 
 switch ($config["dbtype"]) {
 	case "mysql":

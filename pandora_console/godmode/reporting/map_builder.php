@@ -144,8 +144,9 @@ $table->head[0] = __('Map name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Items');
 
-//Only for IW flag
-if (check_acl ($config['id_user'], 0, "IW")) {
+// Fix: IW was the old ACL for report editing, now is RW
+//Only for RW flag
+if (check_acl ($config['id_user'], 0, "RW")) {
 	$table->head[3] = __('Copy');
 	$table->head[4] = __('Delete');
 }
@@ -185,7 +186,8 @@ else {
 		$data[1] = ui_print_group_icon ($map['id_group'], true);
 		$data[2] = db_get_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
 		
-		if (check_acl ($config['id_user'], 0, "IW")) {
+		// Fix: IW was the old ACL for report editing, now is RW
+		if (check_acl ($config['id_user'], 0, "RW")) {
 			
 			if (!defined('METACONSOLE')) {
 				$data[3] = '<a class="copy_visualmap" href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
@@ -210,8 +212,9 @@ else {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 }
 
-//Only for IW flag
-if (check_acl ($config['id_user'], 0, "IW")) {
+// Fix: IW was the old ACL to check for report editing, now is RW
+//Only for RW flag
+if (check_acl ($config['id_user'], 0, "RW")) {
 	if (!defined('METACONSOLE'))
 		echo '<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
 	else {		

@@ -321,7 +321,8 @@ $menu_operation["workspace"]["sub"] = $sub;
 
 //End Workspace
 
-if (check_acl ($config['id_user'], 0, "IR")) {
+// Fix: Netflow interfaces have to check RR ACL
+if (check_acl ($config['id_user'], 0, "RR")) {
 	if ($config['activate_netflow']) {
 		$menu_operation["netf"]["text"] = __('Netflow Live View');
 		$menu_operation["netf"]["sec2"] = "operation/netflow/nf_live_view";

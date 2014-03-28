@@ -24,7 +24,8 @@ include_once ($config['homedir'] . "/include/functions_groups.php");
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "IW")) {
+// Fix: Netflow have to check RW ACL
+if (! check_acl ($config["id_user"], 0, "RW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ($config['homedir'] . "/general/noaccess.php");
@@ -179,7 +180,8 @@ $table->data[0][1] = html_print_input_text ('name', $name, false, 20, 80, true);
 
 $own_info = get_user_info ($config['id_user']);
 $table->data[1][0] = '<b>'.__('Group').'</b>';
-$table->data[1][1] = html_print_select_groups($config['id_user'], "IW",
+// Fix: Netflow filters have to check RW ACL
+$table->data[1][1] = html_print_select_groups($config['id_user'], "RW",
 	$own_info['is_admin'], 'assign_group', $assign_group, '', '', -1, true,
 	false, false);
 

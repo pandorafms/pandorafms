@@ -1,5 +1,14 @@
 2014-03-28  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_gis.php: set a white background for the
+	label of mouse position.
+	
+	Incident: #583
+	
+	MERGED FROM THE TRUNK
+
+2014-03-28  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_gis.php, operation/agentes/gis_view.php: fixed
 	the GIS view for agents.
 	

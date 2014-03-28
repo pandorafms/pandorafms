@@ -142,6 +142,7 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 					.css('display', 'none');
 				
 				$(".gm-style-mtc").css('display', 'none');
+				$(".olControlMousePosition").css("background", "white");
 			}
 		
 		,3000);

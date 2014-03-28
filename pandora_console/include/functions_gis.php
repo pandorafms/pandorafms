@@ -360,8 +360,10 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null, $publ
 										'point_agent_info', status,
 										agentDataGIS['id_parent']);
 									
-									//TODO: Optimize, search a new position to call for all agent in the layer and or optimice code into function.
-									js_refreshParentLines();
+									if (!agentView) {
+										//TODO: Optimize, search a new position to call for all agent in the layer and or optimice code into function.
+										js_refreshParentLines();
+									}
 								}
 							}
 						}
@@ -947,8 +949,11 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 			AND t2.default_map_connection = 1
 			AND t3.id_tmap_connection = t2.tgis_map_connection_id_tmap_connection");
 	
-	if ($defaultMap === false)
+	
+	
+	if ($defaultMap === false) {
 		return false;
+	}
 	
 	$defaultMap = $defaultMap[0];
 	
@@ -1016,7 +1021,7 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	gis_print_map($agent_name . "_agent_map", $defaultMap['zoom_level'],
 		$defaultMap['initial_latitude'],
 		$defaultMap['initial_longitude'], $baselayers, $controls);
-		
+	
 	gis_make_layer("layer_for_agent_" . $agent_name);
 	
 	$agent_icon = gis_get_agent_icon_map($agent_id, true);

@@ -41,49 +41,57 @@ if (enterprise_installed()) {
 }
 $table->data[0][1] = html_print_select ($auth_methods, 'auth', $config['auth'], 'show_selected_rows ();', '', 0, true);
 
-$table->data[1][0] = __('Autocreate remote users');
-$table->data[1][1] = __('Yes').'&nbsp;'.html_print_radio_button_extended ('autocreate_remote_users', 1, '', $config['autocreate_remote_users'], false, 'enable_profile_options ();', '', true).'&nbsp;&nbsp;';
-$table->data[1][1] .= __('No').'&nbsp;'.html_print_radio_button_extended ('autocreate_remote_users', 0, '', $config['autocreate_remote_users'], false, 'enable_profile_options ();', '', true);
+$table->data[1][0] = __('Fallback to local authentication') . ui_print_help_tip(__("Enable this option if you want to fallback to local authentication when remote (ldap etc...) authentication failed."), true);
+$table->data[1][1] = __('Yes').'&nbsp;'.html_print_radio_button ('fallback_local_auth', 1, '', $config['fallback_local_auth'], true).'&nbsp;&nbsp;';
+$table->data[1][1] .= __('No').'&nbsp;'.html_print_radio_button ('fallback_local_auth', 0, '', $config['fallback_local_auth'], true);
+
+$table->data[2][0] = __('Autocreate remote users');
+$table->data[2][1] = __('Yes').'&nbsp;'.html_print_radio_button_extended ('autocreate_remote_users', 1, '', $config['autocreate_remote_users'], false, 'enable_profile_options ();', '', true).'&nbsp;&nbsp;';
+$table->data[2][1] .= __('No').'&nbsp;'.html_print_radio_button_extended ('autocreate_remote_users', 0, '', $config['autocreate_remote_users'], false, 'enable_profile_options ();', '', true);
 $table->rowstyle[1] = $config['auth'] != 'mysql' ? '' : 'display: none;';
-$table->data[2][0] = __('Autocreate profile');
+$table->data[3][0] = __('Autocreate profile');
 $profile_list = profile_get_profiles ();
 if ($profile_list === false) {
 	$profile_list = array ();
 }
-$table->data[2][1] = html_print_select ($profile_list, 'default_remote_profile', $config['default_remote_profile'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
-$table->data[3][0] = __('Autocreate profile group');
-$table->data[3][1] = html_print_select_groups ($config['id_user'], "AR", true, 'default_remote_group', $config['default_remote_group'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
-$table->data[4][0] = __('Autocreate blacklist') . ui_print_help_icon ('autocreate_blacklist', true);
-$table->data[4][1] = html_print_input_text ('autocreate_blacklist', $config['autocreate_blacklist'], '', 60, 100, true);
+$table->data[3][1] = html_print_select ($profile_list, 'default_remote_profile', $config['default_remote_profile'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
+$table->data[4][0] = __('Autocreate profile group');
+$table->data[4][1] = html_print_select_groups ($config['id_user'], "AR", true, 'default_remote_group', $config['default_remote_group'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
+$table->data[5][0] = __('Autocreate blacklist') . ui_print_help_icon ('autocreate_blacklist', true);
+$table->data[5][1] = html_print_input_text ('autocreate_blacklist', $config['autocreate_blacklist'], '', 60, 100, true);
 for ($i = 1; $i <= 4; $i++) {
 	$table->rowstyle[$i] = $config['auth'] != 'mysql' ? '' : 'display: none;';
 	$table->rowclass[$i] = 'remote';
 }
 
-$table->data[5][0] = __('LDAP server');
-$table->data[5][1] = html_print_input_text ('ldap_server', $config['ldap_server'], '', 30, 100, true);
-$table->data[6][0] = __('LDAP port');
-$table->data[6][1] = html_print_input_text ('ldap_port', $config['ldap_port'], '', 10, 100, true);
-$table->data[7][0] = __('LDAP version');
+$table->data[6][0] = __('LDAP server');
+$table->data[6][1] = html_print_input_text ('ldap_server', $config['ldap_server'], '', 30, 100, true);
+$table->data[7][0] = __('LDAP port');
+$table->data[7][1] = html_print_input_text ('ldap_port', $config['ldap_port'], '', 10, 100, true);
+$table->data[8][0] = __('LDAP version');
 $ldap_versions = array (1 => 'LDAPv1', 2 => 'LDAPv2', 3 => 'LDAPv3');
-$table->data[7][1] = html_print_select ($ldap_versions, 'ldap_version', $config['ldap_version'], '', '', 0, true);
-$table->data[8][0] = __('Start TLS');
-$table->data[8][1] = __('Yes').'&nbsp;'.html_print_radio_button ('ldap_start_tls', 1, '', $config['ldap_start_tls'], true).'&nbsp;&nbsp;';
-$table->data[8][1] .= __('No').'&nbsp;'.html_print_radio_button ('ldap_start_tls', 0, '', $config['ldap_start_tls'], true);
-$table->data[9][0] = __('Base DN');
-$table->data[9][1] = html_print_input_text ('ldap_base_dn', $config['ldap_base_dn'], '', 60, 100, true);
-$table->data[10][0] = __('Login attribute');
-$table->data[10][1] = html_print_input_text ('ldap_login_attr', $config['ldap_login_attr'], '', 60, 100, true);
+$table->data[8][1] = html_print_select ($ldap_versions, 'ldap_version', $config['ldap_version'], '', '', 0, true);
+$table->data[9][0] = __('Start TLS');
+$table->data[9][1] = __('Yes').'&nbsp;'.html_print_radio_button ('ldap_start_tls', 1, '', $config['ldap_start_tls'], true).'&nbsp;&nbsp;';
+$table->data[9][1] .= __('No').'&nbsp;'.html_print_radio_button ('ldap_start_tls', 0, '', $config['ldap_start_tls'], true);
+$table->data[10][0] = __('Base DN');
+$table->data[10][1] = html_print_input_text ('ldap_base_dn', $config['ldap_base_dn'], '', 60, 100, true);
+$table->data[11][0] = __('Login attribute');
+$table->data[11][1] = html_print_input_text ('ldap_login_attr', $config['ldap_login_attr'], '', 60, 100, true);
 
 // Hide LDAP configuration options
-for ($i = 5; $i <= 10; $i++) {
+for ($i = 2; $i <= 11; $i++) {
 	$table->rowstyle[$i] = $config['auth'] == 'ldap' ? '' : 'display: none;';
 	$table->rowclass[$i] = 'ldap';
 }
 
+// Hide fallback option when local authentication is selected.
+$table->rowstyle[1] = $config['auth'] == 'mysql' ? 'display: none;' : '';
+$table->rowclass[1] = 'remote';
+
 // Add enterprise authentication options
 if (enterprise_installed()) {
-	add_enterprise_auth_options($table, 11);
+	add_enterprise_auth_options($table, 12);
 }
 
 echo '<form id="form_setup" method="post">';

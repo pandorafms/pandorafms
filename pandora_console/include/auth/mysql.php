@@ -80,155 +80,173 @@ function process_user_login ($login, $pass, $api = false) {
 	
 	// Always authenticate admins against the local database
 	if (strtolower ($config["auth"]) == 'mysql' || is_user_admin ($login)) {
-		// Connect to Database
-		switch ($config["dbtype"]) {
-			case "mysql":
-				if (!$api) {
-					$sql = sprintf ("SELECT `id_user`, `password`
-						FROM `tusuario`
-						WHERE `id_user` = '%s' AND `not_login` = 0
-							AND `disabled` = 0", $login);
-				}
-				else {
-					$sql = sprintf ("SELECT `id_user`, `password`
-						FROM `tusuario`
-						WHERE `id_user` = '%s'
-							AND `disabled` = 0", $login);
-				}
-				break;
-			case "postgresql":
-				if (!$api) {
-					$sql = sprintf ('SELECT "id_user", "password"
-						FROM "tusuario"
-						WHERE "id_user" = \'%s\' AND "not_login" = 0
-							AND "disabled" = 0', $login);
-				}
-				else {
-					$sql = sprintf ('SELECT "id_user", "password"
-						FROM "tusuario"
-						WHERE "id_user" = \'%s\'
-							AND "disabled" = 0', $login);
-				}
-				break;
-			case "oracle":
-				if (!$api) {
-					$sql = sprintf ('SELECT id_user, password
-						FROM tusuario
-						WHERE id_user = \'%s\' AND not_login = 0
-							AND disabled = 0', $login);
-				}
-				else {
-					$sql = sprintf ('SELECT id_user, password
-						FROM tusuario
-						WHERE id_user = \'%s\'
-							AND disabled = 0', $login);
-				}
-				break;
-		}
-		$row = db_get_row_sql ($sql);
-		
-		//Check that row exists, that password is not empty and that password is the same hash
-		if ($row !== false && $row["password"] !== md5 ("")
-			&& $row["password"] == md5 ($pass)) {
-			// Login OK
-			// Nick could be uppercase or lowercase (select in MySQL
-			// is not case sensitive)
-			// We get DB nick to put in PHP Session variable,
-			// to avoid problems with case-sensitive usernames.
-			// Thanks to David Muñiz for Bug discovery :)
-			return $row["id_user"];
-		}
-		else {
-			if (!user_can_login($login)) {
-				$mysql_cache["auth_error"] = "User only can use the API.";
-				$config["auth_error"] = "User only can use the API.";
-			}
-			else {
-				$mysql_cache["auth_error"] = "User not found in database or incorrect password";
-				$config["auth_error"] = "User not found in database or incorrect password";
-			}
-		}
-		
-		return false;
+		return process_user_login_local ($login, $pass, $api);
 	}
 	else {
-		// Remote authentication
-		switch ($config["auth"]) {
-			// LDAP
-			case 'ldap':
-				if (ldap_process_user_login ($login, $pass) === false) {
-					$config["auth_error"] = "User not found in database or incorrect password";
-					return false;
-				}
-				break;
-			
-			// Active Directory
-			case 'ad':
-				if (enterprise_hook ('ad_process_user_login', array ($login, $pass)) === false) {
-					$config["auth_error"] = "User not found in database or incorrect password";
-					return false;
-				}
-				break;
-			
-			// Remote Pandora FMS
-			case 'pandora':
-				if (enterprise_hook ('remote_pandora_process_user_login', array ($login, $pass)) === false) {
-					$config["auth_error"] = "User not found in database or incorrect password";
-					return false;
-				}
-				break;
-			
-			// Remote Babel Enterprise
-			case 'babel':
-				if (enterprise_hook ('remote_babel_process_user_login', array ($login, $pass)) === false) {
-					$config["auth_error"] = "User not found in database or incorrect password";
-					return false;
-				}
-				break;
-			
-			// Remote Integria
-			case 'integria':
-				if (enterprise_hook ('remote_integria_process_user_login', array ($login, $pass)) === false) {
-					$config["auth_error"] = "User not found in database or incorrect password";
-					return false;
-				}
-				break;
-			
-			// Unknown authentication method
-			default:
-				$config["auth_error"] = "User not found in database or incorrect password";
-				return false;
-				break;
+		$login_remote = process_user_login_remote ($login, $pass, $api);
+		if ($login_remote == false && $config['fallback_local_auth'] == '1') {
+			return process_user_login_local ($login, $pass, $api);
 		}
-		
-		// Authentication ok, check if the user exists in the local database
-		if (is_user ($login)) {
-			if (!user_can_login($login)) {
-				return false;
+		else {
+			return $login_remote;
+		}
+	}
+
+	return false;
+}
+
+function process_user_login_local ($login, $pass, $api = false) {
+	global $config, $mysql_cache;
+
+	// Connect to Database
+	switch ($config["dbtype"]) {
+		case "mysql":
+			if (!$api) {
+				$sql = sprintf ("SELECT `id_user`, `password`
+					FROM `tusuario`
+					WHERE `id_user` = '%s' AND `not_login` = 0
+						AND `disabled` = 0", $login);
 			}
-			
-			return $login;
+			else {
+				$sql = sprintf ("SELECT `id_user`, `password`
+					FROM `tusuario`
+					WHERE `id_user` = '%s'
+						AND `disabled` = 0", $login);
+			}
+			break;
+		case "postgresql":
+			if (!$api) {
+				$sql = sprintf ('SELECT "id_user", "password"
+					FROM "tusuario"
+					WHERE "id_user" = \'%s\' AND "not_login" = 0
+						AND "disabled" = 0', $login);
+			}
+			else {
+				$sql = sprintf ('SELECT "id_user", "password"
+					FROM "tusuario"
+					WHERE "id_user" = \'%s\'
+						AND "disabled" = 0', $login);
+			}
+			break;
+		case "oracle":
+			if (!$api) {
+				$sql = sprintf ('SELECT id_user, password
+					FROM tusuario
+					WHERE id_user = \'%s\' AND not_login = 0
+						AND disabled = 0', $login);
+			}
+			else {
+				$sql = sprintf ('SELECT id_user, password
+					FROM tusuario
+					WHERE id_user = \'%s\'
+						AND disabled = 0', $login);
+			}
+			break;
+	}
+	$row = db_get_row_sql ($sql);
+	
+	//Check that row exists, that password is not empty and that password is the same hash
+	if ($row !== false && $row["password"] !== md5 ("")
+		&& $row["password"] == md5 ($pass)) {
+		// Login OK
+		// Nick could be uppercase or lowercase (select in MySQL
+		// is not case sensitive)
+		// We get DB nick to put in PHP Session variable,
+		// to avoid problems with case-sensitive usernames.
+		// Thanks to David Muñiz for Bug discovery :)
+		return $row["id_user"];
+	}
+	else {
+		if (!user_can_login($login)) {
+			$mysql_cache["auth_error"] = "User only can use the API.";
+			$config["auth_error"] = "User only can use the API.";
 		}
-		
-		// The user does not exist and can not be created
-		if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted ($login)) {
-			$config["auth_error"] = "Ooops User not found in database or incorrect password";
-			return false;
-		}
-		
-		// Create the user in the local database
-		if (create_user ($login, $pass, array ('fullname' => $login, 'comments' => 'Imported from ' . $config['auth'])) === false) {
+		else {
+			$mysql_cache["auth_error"] = "User not found in database or incorrect password";
 			$config["auth_error"] = "User not found in database or incorrect password";
-			return false;
 		}
-		
-		profile_create_user_profile ($login, $config['default_remote_profile'], $config['default_remote_group']);	
-		return $login;
 	}
 	
 	return false;
 }
 
+function process_user_login_remote ($login, $pass, $api = false) {
+	global $config, $mysql_cache;
+
+	// Remote authentication
+	switch ($config["auth"]) {
+		// LDAP
+		case 'ldap':
+			if (ldap_process_user_login ($login, $pass) === false) {
+				$config["auth_error"] = "User not found in database or incorrect password";
+				return false;
+			}
+			break;
+			
+		// Active Directory
+		case 'ad':
+			if (enterprise_hook ('ad_process_user_login', array ($login, $pass)) === false) {
+				$config["auth_error"] = "User not found in database or incorrect password";
+				return false;
+			}
+			break;
+		
+		// Remote Pandora FMS
+		case 'pandora':
+			if (enterprise_hook ('remote_pandora_process_user_login', array ($login, $pass)) === false) {
+				$config["auth_error"] = "User not found in database or incorrect password";
+				return false;
+			}
+			break;
+		
+		// Remote Babel Enterprise
+		case 'babel':
+			if (enterprise_hook ('remote_babel_process_user_login', array ($login, $pass)) === false) {
+				$config["auth_error"] = "User not found in database or incorrect password";
+				return false;
+			}
+			break;
+		
+		// Remote Integria
+		case 'integria':
+			if (enterprise_hook ('remote_integria_process_user_login', array ($login, $pass)) === false) {
+				$config["auth_error"] = "User not found in database or incorrect password";
+				return false;
+			}
+			break;
+		
+		// Unknown authentication method
+		default:
+			$config["auth_error"] = "User not found in database or incorrect password";
+			return false;
+			break;
+	}
+	
+	// Authentication ok, check if the user exists in the local database
+	if (is_user ($login)) {
+		if (!user_can_login($login)) {
+			return false;
+		}
+		
+		return $login;
+	}
+	
+	// The user does not exist and can not be created
+	if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted ($login)) {
+		$config["auth_error"] = "Ooops User not found in database or incorrect password";
+		return false;
+	}
+	
+	// Create the user in the local database
+	if (create_user ($login, $pass, array ('fullname' => $login, 'comments' => 'Imported from ' . $config['auth'])) === false) {
+		$config["auth_error"] = "User not found in database or incorrect password";
+		return false;
+	}
+	
+	profile_create_user_profile ($login, $config['default_remote_profile'], $config['default_remote_group']);	
+	return $login;
+}
+	
 /** 
  * Checks if a user is administrator.
  * 

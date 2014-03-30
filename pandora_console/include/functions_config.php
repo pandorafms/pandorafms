@@ -280,6 +280,8 @@ function config_update_config () {
 						$error_update[] = __('Base DN');
 					if (!config_update_value ('ldap_login_attr', get_parameter ('ldap_login_attr')))
 						$error_update[] = __('Login attribute');
+					if (!config_update_value ('fallback_local_auth', get_parameter ('fallback_local_auth')))
+						$error_update[] = __('Fallback to local authentication');
 					
 					if (!config_update_value ('rpandora_server', get_parameter ('rpandora_server')))
 						$error_update[] = __('Pandora FMS host');
@@ -882,6 +884,10 @@ function config_process_config () {
 	
 	if (!isset ($config['ldap_login_attr'])) {
 		config_update_value ( 'ldap_login_attr', 'uid');
+	}
+
+	if (!isset ($config['fallback_local_auth'])) {
+		config_update_value ( 'fallback_local_auth', '0');
 	}
 	
 	if (!isset ($config['ad_server'])) {

@@ -1,3 +1,9 @@
+2014-03-30  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_config.php, include/auth/mysql.php,
+	godmode/setup/setup_auth.php: Added the feature to fallback to local
+	authentication when remote authentication is failed.
+
 2014-03-28  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php: set the zeroes values in the boolean

@@ -1,3 +1,11 @@
+2014-03-31  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/agent_conf_gis.php,
+	operation/agentes/gis_view.php: changed the style to message of
+	error to set the standar style of new Pandora.
+	
+	MERGED FROM THE TRUNK
+
 2014-03-28  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php: set the zeroes values in the boolean

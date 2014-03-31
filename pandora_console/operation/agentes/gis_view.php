@@ -52,7 +52,7 @@ echo "<div style='margin-bottom: 30px;'></div>";
 echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 
 if (!gis_get_agent_map($id_agente, "500px", "98%", true, true, $period)) {
-	echo "<br /><div class='nf'>" . __("There is no default map. Please go to the setup for to set a default map.") . "</div>";
+	ui_print_error_message(__("There is no default map. Please go to the setup for to set a default map."));
 	echo "<script type='text/javascript'>
 		$(document).ready(function() {
 			$('#" . $agent_name . "_agent_map').hide();

@@ -37,13 +37,19 @@ $agent_name = md5($agent_name);
 echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 
 if (!gis_get_agent_map($id_agente, "500px", "98%", false)) {
-	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
+	ui_print_error_message(__("There is no default map. Please go to the setup for to set a default map."));
+	echo "<script type='text/javascript'>
+		$(document).ready(function() {
+			$('#" . $agent_name . "_agent_map').hide();
+		});
+		</script>";
 } 
 
 if ($agentData === false) {
 	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
 }
-echo "<div class='warn'>" .__("Warning: When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") . "</div>";
+echo "<div class='warn'>" .
+	__("Warning: When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") . "</div>";
 
 $table->width = '85%';
 $table->data = array();
@@ -88,62 +94,62 @@ function validateFormFields() {
 	latitude = $('input[name=latitude]').val();
 	altitude = $('input[name=altitude]').val();
 	valid = true;
-
+	
 	$('input[name=longitude]').css('background', '#ffffff');
 	$('input[name=latitude]').css('background', '#ffffff');
 	$('input[name=altitude]').css('background', '#ffffff');
- 
+	
 	//Validate longitude
 	if ((jQuery.trim(longitude).length == 0) ||
 		isNaN(parseFloat(longitude))) {
 		$('input[name=longitude]').css('background', '#cc0000');
-
+		
 		valid = false;
 	}
-
+	
 	//Validate latitude
 	if ((jQuery.trim(latitude).length == 0) ||
 		isNaN(parseFloat(latitude))) {
 		$('input[name=latitude]').css('background', '#cc0000');
-
+		
 		valid = false;
 	}
-
+	
 	//Validate altitude
 	if ((jQuery.trim(altitude).length == 0) ||
 		isNaN(parseFloat(altitude))) {
 		$('input[name=altitude]').css('background', '#cc0000');
-
+		
 		valid = false;
 	}
-
+	
 	if (valid) return true;
 	else return false;
 }
 
 $(document).ready (
-		function () { 
-			function changePositionAgent(e) {
-				var lonlat = map.getLonLatFromViewPortPx(e.xy);
-				var layer = map.getLayersByName("layer_for_agent_<?php echo $agent_name ?>");
-
-				layer = layer[0];
-				feature = layer.features[0];
-
-				lonlat.transform(map.getProjectionObject(), map.displayProjection); //transform the lonlat in object proyection to "standar proyection"
-
-				$('input[name=latitude]').val(lonlat.lat);
-				$('input[name=longitude]').val(lonlat.lon);
-
-				if ($('input[name=altitude]').val().length == 0)
-					$('input[name=altitude]').val(0)
-
-				setIgnoreGISDataEnabled();
-				
-				//return to no-standar the proyection for to move
-				feature.move(lonlat.transform(map.displayProjection, map.getProjectionObject()));
-			}
+	function () { 
+		function changePositionAgent(e) {
+			var lonlat = map.getLonLatFromViewPortPx(e.xy);
+			var layer = map.getLayersByName("layer_for_agent_<?php echo $agent_name ?>");
 			
-			js_activateEvents(changePositionAgent);
-		});
+			layer = layer[0];
+			feature = layer.features[0];
+			
+			lonlat.transform(map.getProjectionObject(), map.displayProjection); //transform the lonlat in object proyection to "standar proyection"
+			
+			$('input[name=latitude]').val(lonlat.lat);
+			$('input[name=longitude]').val(lonlat.lon);
+			
+			if ($('input[name=altitude]').val().length == 0)
+				$('input[name=altitude]').val(0)
+			
+			setIgnoreGISDataEnabled();
+			
+			//return to no-standar the proyection for to move
+			feature.move(lonlat.transform(map.displayProjection, map.getProjectionObject()));
+		}
+		
+		js_activateEvents(changePositionAgent);
+	});
 </script>

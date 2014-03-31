@@ -11,6 +11,14 @@
 
 2014-03-31  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php: fixed the status color
+	of the percentile bars and bubbles.
+	
+	Incident: #555
+
+2014-03-31  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/servers/plugin.php: fixed the plugins server without
 	parameters.
 	

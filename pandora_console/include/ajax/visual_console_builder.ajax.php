@@ -167,9 +167,6 @@ switch ($action) {
 					FROM tagente_estado
 					WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 				
-				//html_debug_print($value_show);
-				//html_debug_print($layoutData);
-				
 				if (($layoutData['type'] == PERCENTILE_BAR) ||
 					($layoutData['type'] == PERCENTILE_BUBBLE)) {
 					if ($value_show == 'value') {
@@ -206,9 +203,9 @@ switch ($action) {
 		
 		// Single object
 		}
-		elseif (($layoutData["type"] == 0)
-					|| ($layoutData["type"] == 3)
-					|| ($layoutData["type"] == 4)) {
+		elseif (($layoutData["type"] == STATIC_GRAPH)
+					|| ($layoutData["type"] == PERCENTILE_BAR)
+					|| ($layoutData["type"] == LABEL)) {
 			// Status for a simple module
 			if ($layoutData['id_agente_modulo'] != 0) {
 				$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
@@ -682,7 +679,8 @@ switch ($action) {
 
 /* visual map element status check  */
 if ($get_element_status) {
-	$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+	$layoutData = db_get_row_filter('tlayout_data',
+		array('id' => $id_element));
 	
 	$res = visual_map_get_status_element($layoutData);
 	

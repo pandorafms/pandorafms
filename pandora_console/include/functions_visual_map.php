@@ -122,6 +122,7 @@ function visual_map_print_item($layoutData) {
 			echo "</div>";
 			break;
 		
+		
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
 			//Metaconsole db connection
@@ -569,6 +570,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 		}
 		
 		
+		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
 			'pos_x' => $pos_x,
@@ -623,6 +625,7 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 	$error = false;
 	$pos_y = 10;
 	$pos_x = 10;
+	
 	
 	foreach ($id_agents as $id_agent) {
 		if ($pos_x > 600) {
@@ -697,6 +700,7 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 			metaconsole_restore_db();
 		}
 		
+		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
 			'pos_x' => $pos_x,
@@ -717,7 +721,9 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 		$pos_x = $pos_x + $range;
 	}
 	
-	$return = ui_print_success_message (__('Agents successfully added to layout'), '', true);
+	
+	$return = ui_print_success_message(
+		__('Agents successfully added to layout'), '', true);
 	
 	return $return;
 }
@@ -831,6 +837,8 @@ function visual_map_get_status_element($layoutData) {
 	else {
 		switch ($layoutData["type"]) {
 			case STATIC_GRAPH:
+			case PERCENTILE_BAR:
+			case PERCENTILE_BUBBLE:
 				if ($layoutData['id_metaconsole'] != 0) {
 					//Metaconsole db connection
 					$connection = db_get_row_filter ('tmetaconsole_setup',
@@ -867,6 +875,7 @@ function visual_map_get_status_element($layoutData) {
 					metaconsole_restore_db();
 				}
 				break;
+			
 			
 			default:
 				//If it's a graph, a progress bar or a data tag, ALWAYS report status OK

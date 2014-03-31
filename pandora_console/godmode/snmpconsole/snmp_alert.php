@@ -41,6 +41,32 @@ $save_alert = (bool)get_parameter('save_alert', false);
 $modify_alert = (bool)get_parameter('modify_alert', false);
 $delete_alert = (bool)get_parameter('delete_alert', false);
 $multiple_delete = (bool)get_parameter('multiple_delete', false);
+$add_action = get_parameter('addbutton', '');
+$delete_action = get_parameter('delete_action', 0);
+
+if ($add_action == "Add") {
+	$values['id_alert_snmp'] = get_parameter('id_alert_snmp');
+	$values['alert_type'] = get_parameter('alert_type');
+	$values['al_field1'] = get_parameter('field1_value');
+	$values['al_field2'] = get_parameter('field2_value');
+	$values['al_field3'] = get_parameter('field3_value');
+	$values['al_field4'] = get_parameter('field4_value');
+	$values['al_field5'] = get_parameter('field5_value');
+	$values['al_field6'] = get_parameter('field6_value');
+	$values['al_field7'] = get_parameter('field7_value');
+	$values['al_field8'] = get_parameter('field8_value');
+	$values['al_field9'] = get_parameter('field9_value');
+	$values['al_field10'] = get_parameter('field10_value');
+
+	$result = db_process_sql_insert('talert_snmp_action', $values);
+}
+
+if ($delete_action) {
+
+	$action_id = get_parameter('action_id');
+	
+	$result = db_process_sql_delete('talert_snmp_action', array('id'=>$action_id));
+}
 
 if ($update_alert || $modify_alert) {
 	ui_print_page_header(__('SNMP Console')." &raquo; ".__('Update alert'),
@@ -722,21 +748,11 @@ if ($create_alert || $update_alert) {
 	// Hidden div with help hint to fill with javascript
 	html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
 	
-/*
 	for ($i = 1; $i <= 10; $i++) {
 		echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
 		echo '<td class="datos">' . html_print_image('images/spinner.gif',true);
 		html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
 		echo '</td></tr>';
-	}
-*/
-	for ($i = 1; $i <= 10; $i++) {
-		echo '<tr id="table_macros-field'.$i.'">';
-		//echo '<td class="datos" valign="top">'.html_print_image('images/spinner.gif',true).'</td>';
-		//echo '<td class="datos">' . html_print_image('images/spinner.gif',true).'</td>';
-		//html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
-		//echo '</td></tr>';
-		echo '</tr>';
 	}
 	
 	// Max / Min alerts
@@ -776,16 +792,6 @@ if ($create_alert || $update_alert) {
 	
 	// Alert type (e-mail, event etc.)
 	echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
-	
-	$fields = array ();
-	$result = db_get_all_rows_in_table ('talert_actions', "name");
-	if ($result === false) {
-		$result = array ();
-	}
-	
-	foreach ($result as $row) {
-		$fields[$row["id"]] = $row["name"];
-	}
 	
 	switch ($config['dbtype']) {
 		case "mysql":
@@ -961,7 +967,7 @@ else {
 	$table->align[7] = 'center';
 	
 	$table->head[8] = __('Action');
-	$table->size[8] = "80px";
+	$table->size[8] = "90px";
 	$table->align[8] = 'center';
 	
 	$table->head[9] = html_print_checkbox ("all_delete_box", "1", false, true);
@@ -977,9 +983,24 @@ else {
 			"sec2=godmode/snmpconsole/snmp_alert&" .
 			"id_alert_snmp=" . $row["id_as"] ."&" .
 			"update_alert=1";
-		
-		$data[1] = '<a href="' . $url . '">' .
+		$data[1] = '<table>';
+		$data[1] .= '<tr>';
+		$data[1] .= '<a href="' . $url . '">' .
 			alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
+		$other_actions = db_get_all_rows_filter('talert_snmp_action', array('id_alert_snmp'=>$row['id_as']));
+		$data[1] .= '</tr>';
+		
+		if ($other_actions != false) {
+			foreach ($other_actions as $action) {
+				$data[1] .= '<tr>';
+				$data[1] .= '<td>'. alerts_get_alert_action_name ($action["alert_type"]).'</td>';
+				$data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'"> '  .
+					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a> </td>';
+				$data[1] .= '</tr>';
+			}
+		} 
+		$data[1] .= '</table>';
+		
 		$data[2] = $row["agent"];
 		$data[3] = $row["oid"];
 		$data[4] = $row["custom_oid"];
@@ -999,9 +1020,13 @@ else {
 			'update_alert=1&'.
 			'id_alert_snmp='.$row["id_as"].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
-			'&nbsp;&nbsp;<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
+			'<a href="javascript:show_add_action_snmp(\'' . $row['id_as'] . '\');">' .
+			html_print_image('images/add.png', true, array('title' => __("Add action"))) .
+			'</a>' .
+			'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
 			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
-		
+
+			
 		$data[9] = html_print_checkbox_extended("delete_ids[]",
 			$row['id_as'], false, false, false, 'class="chk_delete"', true);
 		
@@ -1010,6 +1035,74 @@ else {
 		
 		$table->rowclass[$idx] = get_priority_class ($row["priority"]);
 	}
+	
+	# DIALOG ADD MORE ACTIONS
+	echo '<div id="add_action_snmp-div" style="display:none;text-align:left">';
+
+		echo '<form id="add_action_form" method="post">';
+			echo '<table class="databox_color" style="width:100%">';
+				echo '<tr>';
+					echo '<td class="datos2" style="font-weight:bold;padding:6px;">';
+						echo __('ID Alert SNMP');
+					echo '</td>';
+					echo '<td class="datos">';
+						html_print_input_text('id_alert_snmp', '', '', 3,10,false,true);
+					echo '</td>';
+				echo '</tr>';
+				echo '<tr class="datos2">';
+					echo '<td class="datos2" style="font-weight:bold;padding:6px;">';
+						echo __('Action');
+					echo '</td>';
+					echo '<td class="datos2">';
+
+						switch ($config['dbtype']) {
+							case "mysql":
+							case "postgresql":
+								html_print_select_from_sql(
+									'SELECT id, name
+									FROM talert_actions
+									ORDER BY name',
+									"alert_type", $alert_type, '', '', 0, false, false, false);
+								break;
+							case "oracle":
+								html_print_select_from_sql(
+									'SELECT id, dbms_lob.substr(name,4000,1) as name
+									FROM talert_actions
+									ORDER BY dbms_lob.substr(name,4000,1)',
+									"alert_type", $alert_type, '', '', 0, false, false, false);
+								break;
+						}
+					echo '</td>';
+				echo '</tr>';
+				
+				$al = array(
+				'al_field1' => $al_field1,
+				'al_field2' => $al_field2,
+				'al_field3' => $al_field3,
+				'al_field4' => $al_field4,
+				'al_field5' => $al_field5,
+				'al_field6' => $al_field6,
+				'al_field7' => $al_field7,
+				'al_field8' => $al_field8,
+				'al_field9' => $al_field9,
+				'al_field10' => $al_field10);
+				
+				for ($i = 1; $i <= 10; $i++) {
+					echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
+					echo '<td class="datos">' . html_print_image('images/spinner.gif',true);
+					html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
+					echo '</td>';
+					echo '</tr>';
+				}
+				
+				html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
+
+			echo '</table>';
+			echo html_print_submit_button (__('Add'), 'addbutton', false, array('class' => "sub next", 'style' => "float:right"), true);
+		echo '</form>';
+	echo '</div>';
+	# END DIALOG ADD MORE ACTIONS
+		
 	
 	if (!empty ($table->data)) {
 		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
@@ -1040,6 +1133,7 @@ else {
 	
 	unset ($table);
 }
+
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -1065,8 +1159,7 @@ $(document).ready (function () {
 	});
 	
 	$("#alert_type").change (function () {
-		values = Array ();
-		
+		values = Array ();		
 		values.push ({
 			name: "page",
 			value: "godmode/alerts/alert_commands"
@@ -1107,8 +1200,7 @@ $(document).ready (function () {
 						$('#table_macros-field' + i).hide();
 					}
 					else {
-						$('#table_macros-field' + i)
-							.replaceWith(data["fields_rows"][i]);
+						$('#table_macros-field' + i).replaceWith(data["fields_rows"][i]);
 						
 						// The row provided has a predefined class. We delete it
 						$('#table_macros-field' + i)
@@ -1138,5 +1230,25 @@ $(document).ready (function () {
 	
 	// Charge the fields of the action 
 	$("#alert_type").trigger('change');
-}); 
+
+});
+
+function show_add_action_snmp(id_alert_snmp) {
+	
+	$("#add_action_snmp-div").hide()
+		.dialog ({
+			resizable: true,
+			draggable: true,
+			title: '<?php echo __('Add action '); ?>',
+			modal: true,
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			},
+			width: 550,
+			height: 400
+		})
+		.show ();
+		$("#text-id_alert_snmp").val(id_alert_snmp);
+}
 </script>

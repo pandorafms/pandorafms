@@ -98,3 +98,22 @@ ALTER TABLE talert_snmp ADD (order_17 NUMBER(10, 0) default 17 NOT NULL);
 ALTER TABLE talert_snmp ADD (order_18 NUMBER(10, 0) default 18 NOT NULL);
 ALTER TABLE talert_snmp ADD (order_19 NUMBER(10, 0) default 19 NOT NULL);
 ALTER TABLE talert_snmp ADD (order_20 NUMBER(10, 0) default 20 NOT NULL);
+
+-- ---------------------------------------------------------------------
+-- Table talert_snmp_action
+-- ---------------------------------------------------------------------
+CREATE TABLE  talert_snmp_action (
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_alert_snmp NUMBER(10, 0) NOT NULL default 0,
+	alert_type NUMBER(2, 0) NOT NULL default 0,
+	al_field1 CLOB default '' NOT NULL,
+	al_field2 CLOB default '' NOT NULL,
+	al_field3 CLOB default '' NOT NULL,
+	al_field4 CLOB default '' NOT NULL,
+	al_field5 CLOB default '' NOT NULL,
+	al_field6 CLOB default '' NOT NULL,
+	al_field7 CLOB default '' NOT NULL,
+	al_field8 CLOB default '' NOT NULL,
+	al_field9 CLOB default '' NOT NULL,
+	al_field10 CLOB default '' NOT NULL
+);

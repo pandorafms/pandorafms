@@ -346,7 +346,7 @@ if (! empty($modules)) {
 	foreach ($modules as $key => $module) {
 
 		// Trying to get the interface name from the module name
-		if (preg_match ("/_(\w+)/" , (string)$module['nombre'], $matches)) {
+		if (preg_match ("/_(.+)$/", (string)$module['nombre'], $matches)) {
 			if ($matches[1]) {
 				$interface_name = $matches[1];
 
@@ -358,14 +358,16 @@ if (! empty($modules)) {
 
 				$ip_target = "--";
 				// Trying to get something like an IP from the description
-				if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/" , (string)$module['ip_target'], $matches)) {
+				if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", (string)$module['descripcion'], $matches) ||
+					preg_match ("/(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:?)|\2))(?4){5}((?4){2}|(25[0-5]|
+						(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i", (string)$module['descripcion'], $matches)) {
 					if ($matches[0]) {
 						$ip_target = $matches[0];
 					}
 				}
 				$description = "--";
 				// Trying to get something like a mac from the description
-				if (preg_match ("/([0-9a-f]{1,2}[\.:-]){5}([0-9a-f]{1,2})/i" , (string)$module['descripcion'], $matches)) {
+				if (preg_match ("/([0-9a-f]{1,2}[\.:-]){5}([0-9a-f]{1,2})/i", (string)$module['descripcion'], $matches)) {
 					if ($matches[0]) {
 						$description = $matches[0];
 					}

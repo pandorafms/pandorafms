@@ -328,7 +328,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				$node_count ++;
 
 				// Try to get the interface name
-				if (preg_match ("/_(\w+)/" , (string)$module['nombre'], $matches)) {
+				if (preg_match ("/_(.+)$/" , (string)$module['nombre'], $matches)) {
 					if ($matches[1]) {
 						$module['nombre'] = $matches[1];
 					}
@@ -393,16 +393,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 	}
 	
-	// Create a central node if orphan nodes exist
-	if (count ($orphans) || empty ($nodes)) {
-		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
-	}
-	
-	// Define edges for orphan nodes
-	foreach (array_keys($orphans) as $node) {
-		$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
-	}
-
 	// Define edges for the module interfaces relations
 	if ($l2_network) {
 		// Get the remote_snmp_proc relations
@@ -416,6 +406,18 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			if (isset($modules_node_ref[$module_a]) && isset($modules_node_ref[$module_b])) {
 				$graph .= networkmap_create_edge ($modules_node_ref[$module_a], $modules_node_ref[$module_b], $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
 			}
+		}
+	}
+	// Define edges for the orphan nodes
+	else {
+		// Create a central node if orphan nodes exist
+		if (count ($orphans) || empty ($nodes)) {
+			$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
+		}
+		
+		// Define edges for orphan nodes
+		foreach (array_keys($orphans) as $node) {
+			$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
 		}
 	}
 	

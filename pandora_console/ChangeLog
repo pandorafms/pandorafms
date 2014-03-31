@@ -1,3 +1,14 @@
+2014-03-31  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.mysql.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.oracle.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.postgreSQL.sql
+	  godmode/snmpconsole/snmp_alert.php: Add more actions
+	to snmp alerts.
+
 2014-03-31  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/servers/plugin.php: fixed the plugins server without

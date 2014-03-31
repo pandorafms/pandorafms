@@ -1881,3 +1881,22 @@ CREATE SEQUENCE tupdate_journal_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tupdate_journal_inc BEFORE INSERT ON tupdate_journal REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_journal_s.nextval INTO :NEW.ID FROM dual; END;;
 CREATE OR REPLACE TRIGGER tupdate_journal_update AFTER UPDATE OF ID ON tupdate FOR EACH ROW BEGIN UPDATE tupdate_journal SET ID = :NEW.ID WHERE ID = :OLD.ID; END;;
 
+
+-- ---------------------------------------------------------------------
+-- Table talert_snmp_action
+-- ---------------------------------------------------------------------
+CREATE TABLE  talert_snmp_action (
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_alert_snmp NUMBER(10, 0) NOT NULL default 0,
+	alert_type NUMBER(2, 0) NOT NULL default 0,
+	al_field1 CLOB default '' NOT NULL,
+	al_field2 CLOB default '' NOT NULL,
+	al_field3 CLOB default '' NOT NULL,
+	al_field4 CLOB default '' NOT NULL,
+	al_field5 CLOB default '' NOT NULL,
+	al_field6 CLOB default '' NOT NULL,
+	al_field7 CLOB default '' NOT NULL,
+	al_field8 CLOB default '' NOT NULL,
+	al_field9 CLOB default '' NOT NULL,
+	al_field10 CLOB default '' NOT NULL
+);

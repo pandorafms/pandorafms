@@ -108,3 +108,23 @@ ALTER TABLE `talert_snmp` ADD COLUMN `order_17` int(10) unsigned NOT NULL defaul
 ALTER TABLE `talert_snmp` ADD COLUMN `order_18` int(10) unsigned NOT NULL default 18;
 ALTER TABLE `talert_snmp` ADD COLUMN `order_19` int(10) unsigned NOT NULL default 19;
 ALTER TABLE `talert_snmp` ADD COLUMN `order_20` int(10) unsigned NOT NULL default 20;
+
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp_action`
+-- ---------------------------------------------------------------------
+CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_snmp` int(10) unsigned NOT NULL default '0',
+	`alert_type` int(2) unsigned NOT NULL default '0',
+	`al_field1` text NOT NULL,
+	`al_field2` text NOT NULL,
+	`al_field3` text NOT NULL,
+	`al_field4` text NOT NULL,
+	`al_field5` text NOT NULL,
+	`al_field6` text NOT NULL,
+	`al_field7` text NOT NULL,
+	`al_field8` text NOT NULL,
+	`al_field9` text NOT NULL,
+	`al_field10` text NOT NULL,
+	PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

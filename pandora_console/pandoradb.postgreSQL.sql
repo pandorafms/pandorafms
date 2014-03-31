@@ -1643,3 +1643,21 @@ CREATE TABLE "tupdate_journal" (
 	"id_update" INTEGER default 0 REFERENCES "tupdate"("id") ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+-- ---------------------------------------------------------------------
+-- Table talert_snmp_action
+-- ---------------------------------------------------------------------
+CREATE TABLE  "talert_snmp_action" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"id_alert_snmp" INTEGER default 0,
+	"alert_type" INTEGER default 0,
+	"al_field1" TEXT default '',
+	"al_field2" TEXT default '',
+	"al_field3" TEXT default '',
+	"al_field4" TEXT default '',
+	"al_field5" TEXT default '',
+	"al_field6" TEXT default '',
+	"al_field7" TEXT default '',
+	"al_field8" TEXT default '',
+	"al_field9" TEXT default '',
+	"al_field10" TEXT default ''
+);

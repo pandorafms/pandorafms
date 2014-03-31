@@ -204,9 +204,9 @@ switch ($action) {
 		
 		// Single object
 		}
-		elseif (($layoutData["type"] == 0)
-					|| ($layoutData["type"] == 3)
-					|| ($layoutData["type"] == 4)) {
+		elseif (($layoutData["type"] == STATIC_GRAPH)
+					|| ($layoutData["type"] == PERCENTILE_BAR)
+					|| ($layoutData["type"] == LABEL)) {
 			// Status for a simple module
 			if ($layoutData['id_agente_modulo'] != 0) {
 				$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);

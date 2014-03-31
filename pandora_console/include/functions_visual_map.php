@@ -926,6 +926,8 @@ function visual_map_get_status_element($layoutData) {
 	else {
 		switch ($layoutData["type"]) {
 			case STATIC_GRAPH:
+			case PERCENTILE_BAR:
+			case PERCENTILE_BUBBLE:
 				if ($layoutData['id_metaconsole'] != 0) {
 					//Metaconsole db connection
 					$connection = db_get_row_filter ('tmetaconsole_setup',

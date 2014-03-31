@@ -2965,7 +2965,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				);
 			}
 			
-
 			# Execute alert
 			my $action = get_db_single_row ($dbh, 'SELECT *
 							FROM talert_actions, talert_commands
@@ -2988,6 +2987,58 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 			db_do ($dbh, 'UPDATE ttrap SET alerted = 1, priority = ? WHERE id_trap = ?',
 				$alert->{'priority'}, $trap_id);
+				
+			# MORE ACTIONS
+			my @more_actions_snmp;
+			@more_actions_snmp = get_db_rows ($dbh,'SELECT * FROM talert_snmp_action WHERE id_alert_snmp = ?',
+					$alert->{'id_as'});
+					
+			foreach my $other_alert (@more_actions_snmp) {
+				my $other_action = get_db_single_row ($dbh, 'SELECT *
+					FROM talert_actions, talert_commands
+					WHERE talert_actions.id_alert_command = talert_commands.id
+					AND talert_actions.id = ?', $other_alert->{'alert_type'});
+				my %alert_action = (
+					'snmp_alert' => 1,
+					'name' => '',
+					'agent' => 'N/A',
+					'alert_data' => 'N/A',
+					'id_agent_module' => 0,
+					'id_template_module' => 0,
+					'field1' => $other_alert->{'al_field1'},
+					'field2' => $other_alert->{'al_field2'},
+					'field3' => $other_alert->{'al_field3'},
+					'field4' => $other_alert->{'al_field4'},
+					'field5' => $other_alert->{'al_field5'},
+					'field6' => $other_alert->{'al_field6'},
+					'field7' => $other_alert->{'al_field7'},
+					'field8' => $other_action->{'al_field8'},
+					'field9' => $other_alert->{'al_field9'},
+					'field10' => $other_alert->{'al_field10'},
+					'description' => '',
+					'times_fired' => $times_fired,
+					'time_threshold' => 0,
+					'id' => $other_alert->{'alert_type'},
+					'priority' => $alert->{'priority'},
+				);
+
+				pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert_action, 1, $other_action, undef, $dbh, $timestamp, \%macros) if (defined ($other_action));
+					
+				# Generate an event, ONLY if our alert action is different from generate an event.
+				if ($other_action->{'id_alert_command'} != 3){
+					pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+						0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
+				}
+
+				# Update alert status
+				db_do ($dbh, 'UPDATE talert_snmp SET times_fired = ?, last_fired = ?, internal_counter = ? WHERE id_as = ?',
+					$times_fired, $timestamp, $internal_counter, $alert->{'id_as'});
+
+				db_do ($dbh, 'UPDATE ttrap SET alerted = 1, priority = ? WHERE id_trap = ?',
+					$alert->{'priority'}, $trap_id);
+			}
+			#~ END MORE ACTIONS
+
 		} else {
 			$internal_counter++;
 			if ($internal_counter < $min_alerts){

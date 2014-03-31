@@ -1,5 +1,12 @@
 2014-03-31  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/servers/plugin.php: fixed the plugins server without
+	parameters.
+	
+	Incident: #703
+
+2014-03-31  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/agent_conf_gis.php,
 	operation/agentes/gis_view.php: changed the style to message of
 	error to set the standar style of new Pandora.

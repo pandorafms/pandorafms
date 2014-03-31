@@ -134,6 +134,8 @@ if ($filemanager) {
 // END FILEMANAGER
 // =====================================================================
 
+
+// =====================================================================
 // SHOW THE FORM
 // =====================================================================
 
@@ -147,16 +149,18 @@ if (($create != "") OR ($view != "")) {
 	}
 	else {
 		if ($create != "")
-			ui_print_page_header (__('Plugin creation'), "images/gm_servers.png", false, "plugin_definition", true);
+			ui_print_page_header(__('Plugin creation'),
+				"images/gm_servers.png", false, "plugin_definition", true);
 		else {
-			ui_print_page_header (__('Plugin update'), "images/gm_servers.png", false, "plugin_definition", true);
+			ui_print_page_header(__('Plugin update'),
+				"images/gm_servers.png", false, "plugin_definition", true);
 		}
 	}
-
+	
 	enterprise_hook('open_meta_frame');
-
+	
 	if ($create == "") {
-		$plugin_id = get_parameter ("view","");
+		$plugin_id = get_parameter ("view", "");
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&update_plugin=$plugin_id&pure=" . $config['pure'] . "'>";
 	}
 	else {
@@ -184,7 +188,7 @@ if (($create != "") OR ($view != "")) {
 	$data[1] = html_print_select ($fields, "form_plugin_type", $form_plugin_type, '', '', 0, true);
 	$table->data['plugin_type'] = $data;
 	$table->colspan['plugin_type'][1] = 3;
-
+	
 	$data[0] = __('Max. timeout').ui_print_help_tip (__('This value only will be applied if is minor than the server general configuration plugin timeout').'. <br><br>'.__('If you set a 0 seconds timeout, the server plugin timeout will be used'), true);
 	$data[1] = html_print_extended_select_for_time ('form_max_timeout', $form_max_timeout, '', '', '0', false, true);
 	$data[2] = __('Max. retries');
@@ -251,11 +255,11 @@ if (($create != "") OR ($view != "")) {
 	$data[0] = __('Command preview');
 	$data[1] = '<div id="command_preview" style="font-style:italic"></div>';
 	$table->data['plugin_preview'] = $data;
-
+	
 	echo '<fieldset style="width:96%"><legend>'.__('Command').'</legend>';
 	html_print_table($table);
 	echo '</fieldset>';
-
+	
 	$data = array();
 	
 	$table->data = array ();
@@ -306,11 +310,11 @@ if (($create != "") OR ($view != "")) {
 		}
 		
 		$table->data['plugin_'.$next_name_number] = $datam;
-
+		
 		$next_name_number++;
 		
 		$table->colspan['plugin_'.$next_name_number][1] = 3;
-
+		
 		$datam = array ();
 		$datam[0] = __('Help')."<span style='font-weight: normal'> ($macro_name)</span><br><br><br>";
 		$tadisabled = $locked === true ? ' disabled' : '';
@@ -438,7 +442,7 @@ else {
 		$plugin_max_retries = get_parameter ("form_max_retries", "");
 		$plugin_execute = get_parameter ("form_execute", "");
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
-		$plugin_parameters = get_parameter ("form_parameters", "0");
+		$plugin_parameters = get_parameter ("form_parameters", "");
 		
 		// Get macros
 		$i = 1;
@@ -513,7 +517,8 @@ else {
 		echo "<th>" . __('Name') . "</th>";
 		echo "<th>" . __('Type') . "</th>";
 		echo "<th>" . __('Command') . "</th>";
-		echo "<th style='width:70px;'>" . '<span title="Operations">' . __('Op.') . '</span>' . "</th>";
+		echo "<th style='width:70px;'>" .
+			'<span title="Operations">' . __('Op.') . '</span>' . "</th>";
 		$color = 0;
 		
 		foreach ($rows as $row) {
@@ -562,45 +567,45 @@ ui_require_javascript_file('pandora_modules');
 ?>
 
 <script type="text/javascript">
-
-$(document).ready(function() {
-	function update_preview() {
-		var command = $('#form_execute').val();
-		var parameters = $('#form_parameters').val();
-		
-		var i = 1;
-		
-		while(1) {
-			if($('#text-field'+i+'_value').val() == undefined) {
-				break;
+	$(document).ready(function() {
+		function update_preview() {
+			var command = $('#form_execute').val();
+			var parameters = $('#form_parameters').val();
+			
+			var i = 1;
+			
+			while (1) {
+				if ($('#text-field' + i + '_value').val() == undefined) {
+					break;
+				}
+				
+				if ($('#text-field'+i+'_value').val() != '') {
+					parameters = parameters
+						.replace('_field' + i + '_',
+							$('#text-field' + i + '_value').val());
+				}
+				
+				i++;
 			}
 			
-			if($('#text-field'+i+'_value').val() != '') {
-				parameters = parameters.replace('_field'+i+'_',$('#text-field'+i+'_value').val());
-			}
-			
-			i++;
+			$('#command_preview').html(command+' '+parameters);
 		}
 		
-		$('#command_preview').html(command+' '+parameters);
-	}
-	
-	update_preview();
-	
-	$('.command_component').keyup(function() {
 		update_preview();
+		
+		$('.command_component').keyup(function() {
+			update_preview();
+		});
+		
 	});
-
-});
-
-<?php 
-if($locked) {
-	?>
-	$('.command_advanced_conf').click(function() {
-		alert('<?php echo __("The plugin command cannot be updated because some modules or components are using the plugin."); ?>');
-	});
+	
+	<?php 
+	if ($locked) {
+		?>
+		$('.command_advanced_conf').click(function() {
+			alert('<?php echo __("The plugin command cannot be updated because some modules or components are using the plugin."); ?>');
+		});
 	<?php
 	}
-?>
-
+	?>
 </script>

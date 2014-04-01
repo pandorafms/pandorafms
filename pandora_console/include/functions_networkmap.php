@@ -281,21 +281,18 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	
 	// Parse agents
 	$nodes = array ();
-	$node_count = 1;
 	
-	// Add node
+	// Add node refs
 	$node_ref = array();
-	foreach ($agents as $agent) {
-		// Add node
-		$node_ref[$agent['id_agente']] = $node_count;
-		$node_count++;
-	}
-
 	$modules_node_ref = array();
 
-	$node_count = 1;
+	$node_count = 0;
 	
 	foreach ($agents as $agent) {
+		$node_count++;
+
+		$node_ref[$agent['id_agente']] = $node_count;
+
 		// Save node parent information to define edges later
 		if ($agent['id_parent'] != "0" && array_key_exists($agent['id_parent'], $node_ref)) {
 			$parents[$node_count] = $node_ref[$agent['id_parent']];
@@ -305,7 +302,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 		
 		$agent['id_node'] = $node_count;
-		
 		$agent['type'] = 'agent';
 		
 		// Add node
@@ -315,7 +311,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 
 			$filter = array();
 			$filter['disabled'] = 0;
-			$filter['id_tipo_modulo'] = 18; // Filter by remote_snmp_proc type
 			
 			// Get agent modules data
 			$modules = agents_get_modules ($agent['id_agente'], '*', $filter, true, false);
@@ -325,7 +320,14 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			// Parse modules
 			foreach ($modules as $key => $module) {
 
+				if ($module['id_tipo_modulo'] != 18 && (!$l2_network || $module['id_tipo_modulo'] != 6)) {
+					continue;
+				}
+
 				$node_count ++;
+				$modules_node_ref[$module['id_agente_modulo']] = $node_count;
+				$module['id_node'] = $node_count;
+				$module['type'] = 'module';
 
 				// Try to get the interface name
 				if (preg_match ("/_(.+)$/" , (string)$module['nombre'], $matches)) {
@@ -337,23 +339,36 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				// Save node parent information to define edges later
 				$parents[$node_count] = $module['parent'] = $agent['id_node'];
 				
-				$modules_node_ref[$module['id_agente_modulo']] = $module['id_node'] = $node_count;
-
-				$module['type'] = 'module';
 				// Add node
 				$nodes[$node_count] = $module;
 			}
 		}
-		$node_count++;
 	}
 
 	// Drop the modules without a partner if l2_network is true
 	// and the snmp interfaces token is false
-	if ($l2_network && ! $show_snmp_modules) {
+	if ($l2_network) {
 		foreach ($modules_node_ref as $id_module => $node_count) {
 			if (! modules_relation_exists($id_module, array_keys($modules_node_ref))) {
-				unset($nodes[$node_count]);
-				unset($parents[$node_count]);
+				if ($show_snmp_modules) {
+					$module_type = modules_get_agentmodule_type($id_module);
+					if ($module_type != 18) {
+						unset($nodes[$node_count]);
+						unset($orphans[$node_id]);
+						unset($parents[$node_count]);
+					}
+				} else {
+					unset($nodes[$node_count]);
+					unset($orphans[$node_id]);
+					unset($parents[$node_count]);
+				}
+			} else {
+				$module_type = modules_get_agentmodule_type($id_module);
+				if ($module_type != 18) {
+					unset($nodes[$node_count]);
+					unset($orphans[$node_id]);
+					unset($parents[$node_count]);
+				}
 			}
 		}
 	}
@@ -396,15 +411,34 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	// Define edges for the module interfaces relations
 	if ($l2_network) {
 		// Get the remote_snmp_proc relations
-		$relations = modules_get_relations(array('modules_type' => 'remote_snmp_proc'));
+		$relations = modules_get_relations();
 		if ($relations === false)
 			$relations = array();
 		foreach ($relations as $key => $relation) {
 			$module_a = $relation['module_a'];
+			$module_a_type = modules_get_agentmodule_type($module_a);
+			$agent_a = modules_get_agentmodule_agent($module_a);
 			$module_b = $relation['module_b'];
+			$module_b_type = modules_get_agentmodule_type($module_b);
+			$agent_b = modules_get_agentmodule_agent($module_b);
 
-			if (isset($modules_node_ref[$module_a]) && isset($modules_node_ref[$module_b])) {
-				$graph .= networkmap_create_edge ($modules_node_ref[$module_a], $modules_node_ref[$module_b], $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+			if ($module_a_type == 18 && $module_b_type == 18) {
+				if (isset($modules_node_ref[$module_a]) && isset($modules_node_ref[$module_b])) {
+					$graph .= networkmap_create_edge ($modules_node_ref[$module_a], $modules_node_ref[$module_b], $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+				}
+			} elseif ($module_a_type == 6 && $module_b_type == 6) {
+				if (isset($node_ref[$agent_a]) && isset($node_ref[$agent_b])) {
+					$graph .= networkmap_create_edge ($node_ref[$agent_a], $node_ref[$agent_b], $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+				}
+
+			} elseif ($module_a_type == 6 && $module_b_type == 18) {
+				if (isset($node_ref[$agent_a]) && isset($modules_node_ref[$module_b])) {
+					$graph .= networkmap_create_edge ($node_ref[$agent_a], $modules_node_ref[$module_b], $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+				}
+			} elseif ($module_b_type == 6 && $module_a_type == 18) {
+				if (isset($node_ref[$agent_b]) && isset($modules_node_ref[$module_a])) {
+					$graph .= networkmap_create_edge ($node_ref[$agent_b], $modules_node_ref[$module_a], $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+				}
 			}
 		}
 	}

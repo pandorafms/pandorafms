@@ -1,3 +1,10 @@
+2014-03-01  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_modules.php, operation/agentes/exportdata.php:
+	fixed the export data from modules with string data.
+	
+	Incident: #707
+
 2014-04-01  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_networkmap.php: Modified the L2

@@ -41,10 +41,12 @@ $agentName = get_parameter_post ('agent', 0);
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
-		$agents = agents_get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
+		$agents = agents_get_agents(
+			array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
 		break;
 	case "oracle":
-		$agents = agents_get_agents (array('nombre LIKE \'%' . $agentName . '%\''), array ('id_agente'));
+		$agents = agents_get_agents(
+			array('nombre LIKE \'%' . $agentName . '%\''), array ('id_agente'));
 		break;
 }
 $agent = $agents[0]['id_agente'];
@@ -65,8 +67,8 @@ if (!empty ($export_btn) && !empty ($module)) {
 	
 	
 	//Convert start time and end time to unix timestamps
-	$start = strtotime ($start_date." ".$start_time);
-	$end = strtotime ($end_date." ".$end_time);
+	$start = strtotime ($start_date . " " . $start_time);
+	$end = strtotime ($end_date . " " . $end_time);
 	$period = $end - $start;
 	$data = array ();
 	
@@ -84,7 +86,13 @@ if (!empty ($export_btn) && !empty ($module)) {
 		case "avg":
 		default:
 			//HTML output - don't style or use XHTML just in case somebody needs to copy/paste it. (Office doesn't handle <thead> and <tbody>)
-			$datastart = '<table style="width:98%;"><tr><th>'.__('Agent').'</th><th>'.__('Module').'</th><th>'.__('Data').'</th><th>'.__('Timestamp').'</th></tr>';
+			$datastart = '<table style="width:98%;">' .
+				'<tr>' .
+					'<th>' . __('Agent') . '</th>' .
+					'<th>' . __('Module') . '</th>' .
+					'<th>' . __('Data') . '</th>' .
+					'<th>' .__('Timestamp') . '</th>' .
+				'</tr>';
 			$rowstart = '<tr><td style="text-align: center">';
 			$divider = '</td><td style="text-align: center">';
 			$rowend = '</td></tr>';
@@ -116,6 +124,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 				while ($work_end <= $end) {
 					
 					$data = array (); // Reinitialize array for each module chunk
+					
 					if ($export_type == "avg") {
 						$arr = array ();
 						$arr["data"] = reporting_get_agentmodule_data_average ($selected, $work_period, $work_end);
@@ -129,7 +138,9 @@ if (!empty ($export_btn) && !empty ($module)) {
 						array_push ($data, $arr);
 					}
 					else {
-						$data_single = modules_get_agentmodule_data ($selected, $work_period, $work_end);
+						$data_single = modules_get_agentmodule_data(
+							$selected, $work_period, $work_end);
+						
 						if (!empty ($data_single)) {
 							$data = array_merge ($data, $data_single);
 						}

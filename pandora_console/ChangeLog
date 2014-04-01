@@ -1,3 +1,8 @@
+2014-04-01  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_networkmap.php: Modified the L2
+	network interfaces.
+
 2014-03-31  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_networkmap.php: Updated the function

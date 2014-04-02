@@ -1,3 +1,13 @@
+2014-04-02  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* godmode/menu.php
+	  godmode/agentes/planned_downtime.editor.php
+	  operation/menu.php: Changed 'Scheduled downtime'
+	from Administration to Operation.
+	Added help in scheduled downtime form.
+	Changed 'Update manager' from Operation->Extensions
+	to Administration->Setup.
+
 2014-04-02  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/modules/manage_network_components.php,

@@ -64,6 +64,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	if ($config['log_collector'] == 1) {
 		enterprise_hook ('log_collector_menu');
 	}
+	
+	$sub["godmode/agentes/planned_downtime.list"]["text"] = __('Scheduled downtime');
 		
 	$menu_operation["estado"]["sub"] = $sub;
 	//End of view agents
@@ -366,6 +368,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			
 			//Check if was displayed inside other menu
 			if ($extension["operation_menu"]["fatherId"] == '') {
+				if ($extension_menu['name'] == 'Update manager') {
+					continue;
+				}
 				$sub[$extension_menu["sec2"]]["text"] = $extension_menu["name"];
 				$sub[$extension_menu["sec2"]]["refr"] = 0;
 			}

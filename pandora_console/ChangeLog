@@ -1,3 +1,10 @@
+2014-04-02  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/search_results.php, operation/search_users.getdata.php:
+	fixed the count of user in the global search main page.
+	
+	Incident: #710
+
 2014-04-02  Vanessa Gil <vanessa.gil@artica.es>
 	
 	* godmode/menu.php

@@ -26,10 +26,11 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 $create_network_from_module = get_parameter('create_network_from_module');
+$create_network_from_snmp_browser = get_parameter('create_network_from_snmp_browser', 0);
 $pure = get_parameter('pure', 0);
 
 if ($create_network_from_module) {
-
+	
 	$id_agentmodule = get_parameter('create_module_from');
 	$data_module = db_get_row_filter('tagente_modulo', array ('id_agente_modulo' => $id_agentmodule));
 	
@@ -75,6 +76,7 @@ $id_component_type = (int) get_parameter ('id_component_type');
 if ($create_network_from_module) {
 	$id_component_type = 2;
 }
+
 
 if (isset ($id)) {
 	$component = network_components_get_network_component ((int) $id);
@@ -130,7 +132,8 @@ if (isset ($id)) {
 			$snmp3_security_level = $component["custom_string_3"];
 		}
 	}
-	elseif (isset ($new_component) && $new_component) {
+	elseif (isset ($new_component) && $new_component && !$create_network_from_snmp_browser) {
+		
 		$name = "";
 		$snmp_oid = "";
 		$description = "";
@@ -177,6 +180,9 @@ if (isset ($id)) {
 	}
 }
 
+if ($create_network_from_snmp_browser) {
+}
+
 /**
  * $id_component_type has these values:
  * 6 - Module WMI
@@ -189,18 +195,24 @@ if (isset ($id)) {
 
 if ($id_component_type == 6) {
 	$categories = array (0, 1, 2);
-	require ($config['homedir'] . "/godmode/modules/manage_network_components_form_common.php");
-	require ($config['homedir'] . "/godmode/modules/manage_network_components_form_wmi.php");
+	require ($config['homedir'] .
+		"/godmode/modules/manage_network_components_form_common.php");
+	require ($config['homedir'] .
+		"/godmode/modules/manage_network_components_form_wmi.php");
 }
 else if ($id_component_type == 4) {
 	$categories = array (0, 1, 2);
-	require ($config['homedir'] . "/godmode/modules/manage_network_components_form_common.php");
-	require ($config['homedir'] . "/godmode/modules/manage_network_components_form_plugin.php");
+	require ($config['homedir'] .
+		"/godmode/modules/manage_network_components_form_common.php");
+	require ($config['homedir'] .
+		"/godmode/modules/manage_network_components_form_plugin.php");
 }
 else if ($id_component_type == 2 || $create_network_from_module) {
 	$categories = array (3, 4, 5);
-	require ($config['homedir'] . "/godmode/modules/manage_network_components_form_common.php");
-	require ($config['homedir'] . "/godmode/modules/manage_network_components_form_network.php");
+	require ($config['homedir'] .
+		"/godmode/modules/manage_network_components_form_common.php");
+	require ($config['homedir'] .
+		"/godmode/modules/manage_network_components_form_network.php");
 }
 else {
 	return;

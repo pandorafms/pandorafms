@@ -1,3 +1,14 @@
+2014-04-02  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/modules/manage_network_components.php,
+	godmode/modules/manage_network_components_form.php,
+	godmode/agentes/configurar_agente.php,
+	include/functions_snmp_browser.php,
+	operation/snmpconsole/snmp_browser.php: implemented the feature to
+	create a network component from snmp browser.
+	
+	Incident: #684
+
 2014-04-01  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_modules.php, operation/agentes/exportdata.php:

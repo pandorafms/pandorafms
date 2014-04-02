@@ -6643,4 +6643,46 @@ function api_set_enable_disable_agent ($id, $thrash2, $other, $thrash3) {
 	}
 }
 
+function api_set_pagerduty_webhook($type, $matchup_path, $tresh2, $return_type) {
+	global $config;
+
+	$pagerduty_data = json_decode(file_get_contents('php://input'), true);
+
+	foreach($pagerduty_data['messages'] as $pm) {
+		$incident = $pm['data']['incident'];
+		$incident_type = $pm['type'];
+		// incident.acknowledge
+		// incident.resolve
+		// incident.trigger
+
+		switch($type) {
+			case 'alert':
+				// Get all the alerts that the user can see
+				$id_groups = array_keys(users_get_groups($config["id_user"], 'AR', false));
+				$alerts = get_group_alerts($id_groups);
+
+				// When an alert is resolved, the Pandoras alert will be validated
+				if ($incident_type != 'incident.resolve') {
+					break;
+				}
+
+				$alert_id = 0;
+				foreach($alerts as $al) {
+	    				$key = file_get_contents($matchup_path . '/.pandora_pagerduty_id_' . $al['id']);
+					if ($key == $incident['incident_key']) {
+						$alert_id = $al['id'];
+						break;
+					}
+				}
+
+				if ($alert_id != 0) {
+					alerts_validate_alert_agent_module($alert_id);
+				}
+				break;
+			case 'event':
+				break;
+		}
+	}
+}
+
 ?>

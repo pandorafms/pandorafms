@@ -38,7 +38,9 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 		enterprise_hook("duplicate_confi_submenu");
 		
 		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
+/*
 		$sub["godmode/agentes/planned_downtime.list"]["text"] = __('Scheduled downtime');
+*/
 		
 		if (check_acl ($config["id_user"], 0, "PM")) {
 			$sub["godmode/agentes/fields_manager"]["text"] = __('Manage custom fields');
@@ -217,6 +219,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	enterprise_hook ('enterprise_acl_submenu');
 	enterprise_hook ('skins_submenu');
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
+	
+	$sub["extensions/update_manager"]["text"] = __('Update manager');
 	
 	$menu_godmode["gsetup"]["sub"] = $sub;
 }

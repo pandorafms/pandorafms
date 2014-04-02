@@ -150,21 +150,14 @@ if ($searchUsers) {
 			unset($users);
 		}
 		
-		if (!$users_id) {
-			$user_condition = "";
-		}
-		else {
-			// Condition with the visible agents
-			$user_condition = " AND id_user IN (\"".implode('","',$users_id)."\")";
-		}
 		
 		$sql = "SELECT COUNT(id_user) AS count FROM tusuario
-			WHERE (fullname LIKE '%" . $stringSearchSQL . "%' OR
+			WHERE id_user LIKE '%" . $stringSearchSQL . "%' OR
+				fullname LIKE '%" . $stringSearchSQL . "%' OR
 				firstname LIKE '%" . $stringSearchSQL . "%' OR
 				lastname LIKE '%" . $stringSearchSQL . "%' OR
 				middlename LIKE '%" . $stringSearchSQL . "%' OR
-				email LIKE '%" . $stringSearchSQL . "%')".$user_condition;
-		
+				email LIKE '%" . $stringSearchSQL . "%'";
 		$totalUsers = db_get_value_sql($sql);
 	}
 	else {

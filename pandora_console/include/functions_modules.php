@@ -1254,7 +1254,8 @@ function modules_get_moduletypes ($type = "all", $rows = "nombre") {
 		return array_merge (range (1,4), range (19,24));
 	}
 	
-	$sql = sprintf ("SELECT id_tipo, %s FROM ttipo_modulo", implode (",", $rows));
+	$sql = sprintf ("SELECT id_tipo, %s
+		FROM ttipo_modulo", implode (",", $rows));
 	$result = db_get_all_rows_sql ($sql);
 	if ($result === false) {
 		return $return;
@@ -1331,8 +1332,9 @@ function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = f
 		$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
 		
 		if (metaconsole_connect($server) == NOERR) {
-			$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
-
+			$status_row = db_get_row ("tagente_estado",
+				"id_agente_modulo", $id_agentmodule);
+			
 			if (!$without_alerts) {
 				$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
 				if ($times_fired > 0) {
@@ -1350,11 +1352,15 @@ function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = f
 		metaconsole_restore_db();
 	}
 	else {
-		$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+		$status_row = db_get_row ("tagente_estado",
+			"id_agente_modulo", $id_agentmodule);
 		
 		if (!$without_alerts) {
-			$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
+			$times_fired = db_get_value ('SUM(times_fired)',
+				'talert_template_modules', 'id_agent_module', $id_agentmodule);
+			
 			if ($times_fired > 0) {
+				
 				switch($status_row['estado']) {
 					case AGENT_STATUS_WARNING:
 						return AGENT_MODULE_STATUS_WARNING_ALERT; // Alert fired in warning
@@ -1473,18 +1479,49 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  * @return array The module value and the timestamp
  */
 function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0) {
+	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
+		$id_agent_module);
+	
 	if ($date < 1) {
 		$date = get_system_time ();
 	}
 	
 	$datelimit = $date - $period;
 	
-	$sql = sprintf ("SELECT datos AS data, utimestamp
-		FROM tagente_datos
-		WHERE id_agente_modulo = %d
-			AND utimestamp > %d AND utimestamp <= %d
-		ORDER BY utimestamp ASC",
-	$id_agent_module, $datelimit, $date);
+	switch ($module['id_tipo_modulo']) {
+		//generic_data_string
+		case 3:
+		//remote_tcp_string
+		case 10:
+		//remote_snmp_string
+		case 17:
+		//async_string
+		case 23:
+			$sql = sprintf ("SELECT datos AS data, utimestamp
+				FROM tagente_datos_string
+				WHERE id_agente_modulo = %d
+					AND utimestamp > %d AND utimestamp <= %d
+				ORDER BY utimestamp ASC",
+			$id_agent_module, $datelimit, $date);
+			break;
+		//log4x
+		case 24:
+			$sql = sprintf ("SELECT datos AS data, utimestamp
+				FROM tagente_datos_log4x
+				WHERE id_agente_modulo = %d
+					AND utimestamp > %d AND utimestamp <= %d
+				ORDER BY utimestamp ASC",
+			$id_agent_module, $datelimit, $date);
+			break;
+		default:
+			$sql = sprintf ("SELECT datos AS data, utimestamp
+				FROM tagente_datos
+				WHERE id_agente_modulo = %d
+					AND utimestamp > %d AND utimestamp <= %d
+				ORDER BY utimestamp ASC",
+			$id_agent_module, $datelimit, $date);
+			break;
+	}
 	
 	$values = db_get_all_rows_sql ($sql, true, false);
 	

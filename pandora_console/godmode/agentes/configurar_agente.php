@@ -1311,7 +1311,7 @@ if ($delete_module) { // DELETE agent module !
 }
 
 // MODULE DUPLICATION
-// =================
+// ==================
 if (!empty($duplicate_module)) { // DUPLICATE agent module !
 	$id_duplicate_module = $duplicate_module;
 	

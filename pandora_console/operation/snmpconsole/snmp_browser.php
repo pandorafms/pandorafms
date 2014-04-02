@@ -60,7 +60,8 @@ if (is_ajax()) {
 			$target_oid, $snmp_version, $snmp3_auth_user,
 			$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
 			$snmp3_privacy_method, $snmp3_privacy_pass);
-		snmp_browser_print_oid ($oid, $custom_action);
+		snmp_browser_print_oid ($oid, $custom_action, false, $community,
+			$snmp_version);
 		return;
 	}
 	

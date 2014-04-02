@@ -303,7 +303,8 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
 		else {
 			$snmptranslate_bin = $config['snmptranslate'];
 		}
-		exec ($snmptranslate_bin . " -Td " .  escapeshellarg($oid), $translate_output);
+		exec ($snmptranslate_bin . " -Td " .  escapeshellarg($oid),
+			$translate_output);
 		foreach ($translate_output as $line) {
 			if (preg_match ('/SYNTAX\s+(.*)/', $line, $matches) == 1) {
 				$oid_data['syntax'] = $matches[1];
@@ -347,7 +348,9 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
  * 
  * @return string The OID data.
  */
-function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = false) {
+function snmp_browser_print_oid ($oid = array(), $custom_action = '',
+	$return = false, $community = '', $snmp_version = 1) {
+	
 	$output = '';
 	
 	// OID information table
@@ -361,20 +364,21 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = 
 		}
 	}
 	
-	$table->data[0][0] = '<strong>'.__('OID').'</strong>';
+	$table->data[0][0] = '<strong>' . __('OID') . '</strong>';
 	$table->data[0][1] = $oid['oid'];
-	$table->data[1][0] = '<strong>'.__('Numeric OID').'</strong>';
-	$table->data[1][1] = '<span id="snmp_selected_oid">' . $oid['numeric_oid'] . '</span>';
-	$table->data[2][0] = '<strong>'.__('Value').'</strong>';
+	$table->data[1][0] = '<strong>' . __('Numeric OID') . '</strong>';
+	$table->data[1][1] = '<span id="snmp_selected_oid">' .
+		$oid['numeric_oid'] . '</span>';
+	$table->data[2][0] = '<strong>' . __('Value') . '</strong>';
 	$table->data[2][1] = $oid['value'];
 	$i = 3;
 	if (isset ($oid['type'])) {
-		$table->data[$i][0] = '<strong>'.__('Type').'</strong>';
+		$table->data[$i][0] = '<strong>' . __('Type') . '</strong>';
 		$table->data[$i][1] = $oid['type'];
 		$i++;
 	}
 	if (isset ($oid['description'])) {
-		$table->data[$i][0] = '<strong>'.__('Description').'</strong>';
+		$table->data[$i][0] = '<strong>' . __('Description') . '</strong>';
 		$table->data[$i][1] = $oid['description'];
 		$i++;
 	}
@@ -412,6 +416,31 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = 
 	}
 	
 	$output .= html_print_table($table, true);
+	
+	$url = "index.php?" .
+		"sec=gmodules&" .
+		"sec2=godmode/modules/manage_network_components";
+	
+	$output .= '<form style="text-align: center;" method="post" action="' . $url . '">';
+	$output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
+	$output .= html_print_input_hidden('id_component_type', 2, true);
+	$output .= html_print_input_hidden('type', 17, true);
+	$name = '';
+	if (!empty($oid['oid'])) {
+		$name = $oid['oid'];
+	}
+	$output .= html_print_input_hidden('name', $name, true);
+	$description = '';
+	if (!empty($oid['description'])) {
+		$description = $oid['description'];
+	}
+	$output .= html_print_input_hidden('description', $description, true);
+	$output .= html_print_input_hidden('snmp_oid', $oid['numeric_oid'], true);
+	$output .= html_print_input_hidden('snmp_community', $community, true);
+	$output .= html_print_input_hidden('snmp_version', $snmp_version, true);
+	$output .= html_print_submit_button(__('Create network component'),
+		'', false, '', true);
+	$output .= '</form>';
 	
 	if ($return) {
 		return $output;

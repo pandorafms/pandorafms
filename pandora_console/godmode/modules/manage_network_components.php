@@ -127,6 +127,7 @@ $duplicate_network_component = (bool) get_parameter ('duplicate_network_componen
 $delete_multiple = (bool) get_parameter('delete_multiple');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $create_network_from_module = (bool) get_parameter ('create_network_from_module', 0);
+$create_network_from_snmp_browser = (bool)get_parameter('create_network_from_snmp_browser', 0);
 
 if ($duplicate_network_component) {
 	$source_id = (int) get_parameter ('source_id');
@@ -153,6 +154,8 @@ if ($create_component) {
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name',
 		$name);
 	
+	//remote_snmp = 15
+	//remote_snmp_proc = 18
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -168,7 +171,9 @@ if ($create_component) {
 	
 	if ($name && !$name_check) {
 		
-		$id = network_components_create_network_component ($name, $type, $id_group, 
+		$id = network_components_create_network_component ($name,
+			$type,
+			$id_group, 
 			array ('description' => $description,
 				'module_interval' => $module_interval,
 				'max' => $max,
@@ -297,7 +302,8 @@ if ($update_component) {
 		$result = '';
 	}
 	if ($result === false || !$result) {
-		db_pandora_audit("Module management", "Fail try to update network component #$id");
+		db_pandora_audit("Module management",
+			"Fail try to update network component #$id");
 		ui_print_error_message (__('Could not be updated'));
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
@@ -315,10 +321,12 @@ if ($delete_component) {
 	$result = network_components_delete_network_component ($id);
 	
 	if ($result) {
-		db_pandora_audit( "Module management", "Delete network component #$id");
+		db_pandora_audit( "Module management",
+			"Delete network component #$id");
 	}
 	else {
-		db_pandora_audit( "Module management", "Fail try to delete network component #$id");
+		db_pandora_audit( "Module management",
+			"Fail try to delete network component #$id");
 	}
 	
 	ui_print_result_message ($result,
@@ -340,10 +348,12 @@ if ($multiple_delete) {
 	
 	$str_ids = implode (',', $ids);
 	if ($result) {
-		db_pandora_audit( "Module management", "Multiple delete network component: $str_ids");
+		db_pandora_audit( "Module management",
+			"Multiple delete network component: $str_ids");
 	}
 	else {
-		db_pandora_audit( "Module management", "Fail try to delete network component: $str_ids");
+		db_pandora_audit( "Module management",
+			"Fail try to delete network component: $str_ids");
 	}
 	
 	ui_print_result_message ($result,
@@ -353,8 +363,9 @@ if ($multiple_delete) {
 	$id = 0;
 }
 
-if ($id || $new_component || $create_network_from_module) {
-	include_once ($config['homedir'] . '/godmode/modules/manage_network_components_form.php');
+if ($id || $new_component || $create_network_from_module || $create_network_from_snmp_browser) {
+	include_once ($config['homedir'] .
+		'/godmode/modules/manage_network_components_form.php');
 	return;
 }
 
@@ -490,7 +501,8 @@ $table->head[3] = __('Description');
 $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
 $table->head[6] = __('Action') .
-	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+	html_print_checkbox('all_delete', 0, false, true, false,
+		'check_all_checkboxes();');
 $table->size = array ();
 $table->size[1] = '75px';
 $table->size[6] = '80px';
@@ -504,22 +516,28 @@ foreach ($components as $component) {
 		$component['max'] = $component['min'] = __('N/A');
 	}
 	
-	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
+	$data[0] = '<a href="index.php?sec=' . $sec . '&' .
+		'sec2=godmode/modules/manage_network_components&' .
+		'id=' . $component['id_nc'] . '&pure=' . $pure . '">';
 	$data[0] .= io_safe_output($component['name']);
 	$data[0] .= '</a>';
 	$data[1] = ui_print_moduletype_icon ($component['type'], true);
 	switch ($component['id_modulo']) {
 		case MODULE_NETWORK:
-			$data[1] .= html_print_image('images/network.png', true, array('title' => __('Network module')));
+			$data[1] .= html_print_image('images/network.png', true,
+				array('title' => __('Network module')));
 			break;
 		case MODULE_WMI:
-			$data[1] .= html_print_image('images/wmi.png', true, array('title' => __('WMI module')));
+			$data[1] .= html_print_image('images/wmi.png', true,
+				array('title' => __('WMI module')));
 			break;
 		case MODULE_PLUGIN:
-			$data[1] .= html_print_image('images/plugin.png', true, array('title' => __('Plug-in module')));
+			$data[1] .= html_print_image('images/plugin.png', true,
+				array('title' => __('Plug-in module')));
 			break;
 	}
-	$data[3] = "<span style='font-size: 8px'>". mb_strimwidth (io_safe_output($component['description']), 0, 60, "...") . "</span>";
+	$data[3] = "<span style='font-size: 8px'>".
+		mb_strimwidth (io_safe_output($component['description']), 0, 60, "...") . "</span>";
 	$data[4] = network_components_get_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
 	
@@ -528,7 +546,7 @@ foreach ($components as $component) {
 		html_print_image('images/copy.png', true, array('alt' => __('Duplicate'), 'title' => __('Duplicate'))) . '</a>';
 	$data[6] .= '<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . 
-		'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >' . 
+		'" onclick="if (! confirm (\'' . __('Are you sure?') . '\')) return false" >' . 
 		html_print_image('images/cross.png', true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>' .
 		html_print_checkbox_extended ('delete_multiple[]', $component['id_nc'], false, false, '', 'class="check_delete"', true);
 	
@@ -546,11 +564,12 @@ if (isset($data)) {
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>" . __('There are no defined network components') . "</div>";
+	echo "<div class='nf'>" .
+		__('There are no defined network components') . "</div>";
 }
 
-echo '<form method="post" action="'.$url.'">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<form method="post" action="' . $url . '">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 html_print_input_hidden ('new_component', 1);
 html_print_select (array(
 	2 => __('Create a new network component'),

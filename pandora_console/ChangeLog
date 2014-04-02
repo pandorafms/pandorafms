@@ -1,3 +1,8 @@
+2014-04-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_api.php: Added new API function to validate
+	alerts from PagerDuty notification service
+
 2014-04-02  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/search_results.php, operation/search_users.getdata.php:

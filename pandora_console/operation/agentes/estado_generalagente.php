@@ -323,7 +323,7 @@ $filter = array(
 		"id_agente" => $id_agente,
 		"id_tipo_modulo" => (int)db_get_value("id_tipo", "ttipo_modulo", "nombre", "remote_snmp_proc")
 	);
-$modules = agents_get_modules ($id_agent, $columns, $filter);
+$modules = agents_get_modules ($id_agente, $columns, $filter);
 
 if (! empty($modules)) {
 	$table_interface = new stdClass();

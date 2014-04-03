@@ -322,7 +322,7 @@ if ($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 		$policy_info = policies_info_module_policy($id_agent_module);
 		$policy_id = $policy_info['id_policy'];
 		
-		if($relink_policy && policies_get_policy_queue_status ($policy_id) == STATUS_IN_QUEUE_APPLYING) {
+		if ($relink_policy && policies_get_policy_queue_status ($policy_id) == STATUS_IN_QUEUE_APPLYING) {
 			ui_print_error_message(__('This policy is applying and cannot be modified'));
 		}
 		else {
@@ -428,18 +428,22 @@ echo '<h3 id="message" class="error invisible"></h3>';
 echo '<form method="post" id="module_form">';
 html_print_table ($table_simple);
 
-ui_toggle(html_print_table ($table_advanced, true), __('Advanced options'));
-ui_toggle(html_print_table ($table_macros, true), __('Module macros') . ui_print_help_icon ('module_macros', true));
-ui_toggle(html_print_table ($table_new_relations, true) . html_print_table ($table_relations, true), __('Module relations'));
+ui_toggle(html_print_table ($table_advanced, true),
+	__('Advanced options'));
+ui_toggle(html_print_table ($table_macros, true),
+	__('Module macros') . ui_print_help_icon ('module_macros', true));
+ui_toggle(html_print_table ($table_new_relations, true) .
+	html_print_table ($table_relations, true), __('Module relations'));
 
 
 // Submit
 echo '<div class="action-buttons" style="width: '.$table_simple->width.'">';
 if ($id_agent_module) {
-	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-	html_print_input_hidden ('update_module', 1);
-	html_print_input_hidden ('id_agent_module', $id_agent_module);
-	html_print_input_hidden ('id_module_type', $id_module_type);
+	html_print_submit_button(__('Update'), 'updbutton', false,
+		'class="sub upd"');
+	html_print_input_hidden('update_module', 1);
+	html_print_input_hidden('id_agent_module', $id_agent_module);
+	html_print_input_hidden('id_module_type', $id_module_type);
 	
 	if ($config['enterprise_installed'] && $remote_conf) {
 		?>
@@ -450,7 +454,8 @@ if ($id_agent_module) {
 	}
 }
 else {
-	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+	html_print_submit_button (__('Create'), 'crtbutton', false,
+		'class="sub wand"');
 	html_print_input_hidden ('id_module', $moduletype);
 	html_print_input_hidden ('create_module', 1);
 	

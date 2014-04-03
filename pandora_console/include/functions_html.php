@@ -1895,7 +1895,10 @@ function html_html2rgb($htmlcolor)
  * 
  * @return mixed If the $return is true, return the output as string.
  */
-function html_print_autocomplete_modules($name = 'module', $default = '', $id_agents = false, $ACL = true, $scriptResult = '', $filter = array(), $return = false) {
+function html_print_autocomplete_modules($name = 'module',
+	$default = '', $id_agents = false, $ACL = true, $scriptResult = '',
+	$filter = array(), $return = false) {
+	
 	global $config;
 	
 	if ($id_agents === false) {
@@ -1904,10 +1907,13 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 			$groups = users_get_groups($config['id_user'], "AW", false);
 			$groups = array_keys($groups);
 			
-			$agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
+			$agents = db_get_all_rows_sql('SELECT id_agente
+				FROM tagente
+				WHERE id_grupo IN (' . implode(',', $groups) . ')');
 		}
 		else {
-			$agents = db_get_all_rows_sql('SELECT id_agente FROM tagente');
+			$agents = db_get_all_rows_sql('SELECT id_agente
+				FROM tagente');
 		}
 		
 		if ($agents === false) $agents = array();
@@ -1941,6 +1947,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	
 	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
 		array('style' => 'background: url(images/input_module.png) no-repeat right;'));
+	html_print_input_hidden($name . "_hidden", 0);
 	ui_print_help_tip(__('Type at least two characters to search the module.'), false);
 	
 	$javascript_ajax_page =
@@ -1977,9 +1984,23 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 								timeout: 10000,
 								dataType: "json",
 								success: function (data) {
-										response(data);
+										temp = [];
+										$.each(data, function (id, module) {
+												temp.push({
+													'value' : id,
+													'label' : module});
+										});
+										
+										response(temp);
 									}
 								});
+						},
+					select: function( event, ui ) {
+							$("input[name='<?php echo $name; ?>_hidden']")
+								.val(ui.item.value);
+							
+							$("#text-<?php echo $name; ?>").val( ui.item.label );
+							return false;
 						}
 					}
 				);

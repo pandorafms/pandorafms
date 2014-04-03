@@ -579,41 +579,46 @@ if (!$module_relations) {
 
 $relations_count = 0;
 foreach ($module_relations as $key => $module_relation) {
-
+	
 	if ($module_relation['module_a'] == $id_agent_module) {
 		$module_id = $module_relation['module_b'];
 		$agent_id = modules_give_agent_id_from_module_id ($module_relation['module_b']);
-	} else {
+	}
+	else {
 		$module_id = $module_relation['module_a'];
 		$agent_id = modules_give_agent_id_from_module_id ($module_relation['module_a']);
 	}
-
+	
 	$agent_name = ui_print_agent_name ($agent_id, true);
-
+	
 	$module_name = modules_get_agentmodule_name($module_id);
 	if (empty($module_name) || $module_name == 'false') {
 		$module_name = $module_id;
 	}
-
+	
 	if ($module_relation['disable_update']) {
 		$disabled_update_class = "";
-	} else {
+	}
+	else {
 		$disabled_update_class = "transparent";
 	}
-
+	
 	// Agent name
 	$table_relations->data[$relations_count][0] = $agent_name;
 	// Module name
-	$table_relations->data[$relations_count][1] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $agent_id .
-			"&tab=module&edit_module=1&id_agent_module=" . $module_id . "'>" .
-			ui_print_truncate_text($module_name, 'module_medium', true, true, true, '[&hellip;]') . "</a>";
+	$table_relations->data[$relations_count][1] =
+		"<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $agent_id .
+		"&tab=module&edit_module=1&id_agent_module=" . $module_id . "'>" .
+		ui_print_truncate_text($module_name, 'module_medium', true, true, true, '[&hellip;]') . "</a>";
 	// Lock relationship updates
-	$table_relations->data[$relations_count][2] = '<a id="disable_updates_button" class="' . $disabled_update_class . '"
-												href="javascript: change_lock_relation(' . $relations_count . ', ' . $module_relation['id'] . ');">'
-												 . html_print_image('images/lock.png', true) . '</a>';
+	$table_relations->data[$relations_count][2] =
+		'<a id="disable_updates_button" class="' . $disabled_update_class .
+		'"href="javascript: change_lock_relation(' . $relations_count . ', ' . $module_relation['id'] . ');">' .
+		html_print_image('images/lock.png', true) . '</a>';
 	// Delete relationship
-	$table_relations->data[$relations_count][3] = '<a id="delete_relation_button" href="javascript: delete_relation(' . $relations_count . ', ' . $module_relation['id'] . ');">'
-												 . html_print_image('images/cross.png', true) . '</a>';
+	$table_relations->data[$relations_count][3] =
+		'<a id="delete_relation_button" href="javascript: delete_relation(' . $relations_count . ', ' . $module_relation['id'] . ');">' .
+		html_print_image('images/cross.png', true) . '</a>';
 	$relations_count++;
 }
 
@@ -640,6 +645,7 @@ $(document).ready (function () {
 			}
 		});
 	});
+	
 	$("#left").click (function () {
 		jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
 				tag_name = $(value).html();
@@ -654,6 +660,7 @@ $(document).ready (function () {
 				}
 		});
 	});
+	
 	$("#submit-updbutton").click(function () {
 		$('#id_tag_selected option').map(function(){
 			$(this).attr('selected','selected');
@@ -733,11 +740,11 @@ function change_modules_autocomplete_input () {
 	var module_autocomplete = $("#module_autocomplete");
 	var load_icon = '<?php html_print_image ("images/spinner.gif", false) ?>';
 	var error_icon = '<?php html_print_image ("images/error_red.png", false) ?>';
-
+	
 	if (!module_autocomplete.hasClass('working')) {
 		module_autocomplete.addClass('working');
 		module_autocomplete.html(load_icon);
-
+		
 		$.ajax({
 			type: "POST",
 			url: "ajax.php",
@@ -772,6 +779,7 @@ function change_modules_autocomplete_input () {
 // Add a new relation
 function add_new_relation () {
 	var module_a_id = parseInt($("#hidden-id_agent_module").val());
+	var module_b_id = parseInt($("#hidden-autocomplete_module_name_hidden").val());
 	var module_b_name = $("#text-autocomplete_module_name").val();
 	var agent_b_name = $("#text-autocomplete_agent_name").val();
 	var hiddenRow = $("#module_relations--1");
@@ -780,11 +788,12 @@ function add_new_relation () {
 	var load_icon = '<?php html_print_image ("images/spinner.gif", false, array("style"=>"vertical-align:middle;")) ?>';
 	var suc_icon = '<?php html_print_image ("images/ok.png", false, array("style"=>"vertical-align:middle;")) ?>';
 	var error_icon = '<?php html_print_image ("images/error_red.png", false, array("style"=>"vertical-align:middle;")) ?>';
-
+	
+	
 	if (!button.hasClass('working')) {
 		button.addClass('working');
 		iconPlaceholder.html(load_icon);
-
+		
 		$.ajax({
 			type: "POST",
 			url: "ajax.php",
@@ -793,6 +802,7 @@ function add_new_relation () {
 				page: "include/ajax/module",
 				add_module_relation: true,
 				id_module_a: module_a_id,
+				id_module_b: module_b_id,
 				name_module_b: module_b_name
 			},
 			success: function (data) {
@@ -800,18 +810,19 @@ function add_new_relation () {
 				if (data === false) {
 					iconPlaceholder.html(error_icon);
 					setTimeout( function() { iconPlaceholder.html(''); }, 2000);
-				} else {
+				}
+				else {
 					iconPlaceholder.html(suc_icon);
 					setTimeout( function() { iconPlaceholder.html(''); }, 2000);
 					
 					// Add the new row
 					var relationsCount = parseInt($("#hidden-module_relations_count").val());
-
+					
 					var rowClass = "datos";
 					if (relationsCount % 2 != 0) {
 						rowClass = "datos2";
 					}
-
+					
 					var rowHTML = '<tr id="module_relations-' + relationsCount + '" class="' + rowClass + '">' +
 										'<td id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
 										'<td id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +

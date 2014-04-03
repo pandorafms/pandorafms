@@ -1,3 +1,10 @@
+2014-04-03  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_common.php,
+	include/ajax/module.php, include/functions_html.php: fixed the
+	relationship between modules.
+
 2014-04-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* images/os_icons/so_router.png,

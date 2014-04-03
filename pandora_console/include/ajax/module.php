@@ -344,7 +344,8 @@ if ($get_module_autocomplete_input) {
 
 	ob_clean();
 	if ($id_agent > 0) {
-		html_print_autocomplete_modules('autocomplete_module_name', '', array($id_agent));
+		html_print_autocomplete_modules(
+			'autocomplete_module_name', '', array($id_agent));
 		return;
 	}
 	return;
@@ -355,12 +356,13 @@ if ($add_module_relation) {
 	$result = false;
 	$id_module_a = (int) get_parameter("id_module_a");
 	$id_module_b = (int) get_parameter("id_module_b");
-
+	
 	if ($id_module_a < 1) {
 		$name_module_a = get_parameter("name_module_a", "");
 		if ($name_module_a) {
 			$id_module_a = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_a);
-		} else {
+		}
+		else {
 			echo json_encode($result);
 			return;
 		}
@@ -369,7 +371,8 @@ if ($add_module_relation) {
 		$name_module_b = get_parameter("name_module_b", "");
 		if ($name_module_b) {
 			$id_module_b = (int) db_get_value('id_agente_modulo', 'tagente_modulo', 'nombre', $name_module_b);
-		} else {
+		}
+		else {
 			echo json_encode($result);
 			return;
 		}
@@ -377,6 +380,7 @@ if ($add_module_relation) {
 	if ($id_module_a > 0 && $id_module_b > 0) {
 		$result = modules_add_relation($id_module_a, $id_module_b);
 	}
+	
 	echo json_encode($result);
 	return;
 }
@@ -387,6 +391,7 @@ if ($remove_module_relation) {
 	if ($id_relation > 0) {
 		$result = (bool) modules_delete_relation($id_relation);
 	}
+	
 	echo json_encode($result);
 	return;
 }

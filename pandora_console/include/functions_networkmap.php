@@ -316,19 +316,19 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			$modules = agents_get_modules ($agent['id_agente'], '*', $filter, true, false);
 			if ($modules === false)
 				$modules = array();
-
+			
 			// Parse modules
 			foreach ($modules as $key => $module) {
-
+				
 				if ($module['id_tipo_modulo'] != 18 && (!$l2_network || $module['id_tipo_modulo'] != 6)) {
 					continue;
 				}
-
+				
 				$node_count ++;
 				$modules_node_ref[$module['id_agente_modulo']] = $node_count;
 				$module['id_node'] = $node_count;
 				$module['type'] = 'module';
-
+				
 				// Try to get the interface name
 				if (preg_match ("/_(.+)$/" , (string)$module['nombre'], $matches)) {
 					if ($matches[1]) {
@@ -354,19 +354,21 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 					$module_type = modules_get_agentmodule_type($id_module);
 					if ($module_type != 18) {
 						unset($nodes[$node_count]);
-						unset($orphans[$node_id]);
+						unset($orphans[$node_count]);
 						unset($parents[$node_count]);
 					}
-				} else {
+				}
+				else {
 					unset($nodes[$node_count]);
-					unset($orphans[$node_id]);
+					unset($orphans[$node_count]);
 					unset($parents[$node_count]);
 				}
-			} else {
+			}
+			else {
 				$module_type = modules_get_agentmodule_type($id_module);
 				if ($module_type != 18) {
 					unset($nodes[$node_count]);
-					unset($orphans[$node_id]);
+					unset($orphans[$node_count]);
 					unset($parents[$node_count]);
 				}
 			}

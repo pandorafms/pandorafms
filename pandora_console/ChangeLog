@@ -1,5 +1,9 @@
 2014-04-03  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_networkmap.php: fixed the PHP warning.
+
+2014-04-03  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/module_manager_editor.php,
 	godmode/agentes/module_manager_editor_common.php,
 	include/ajax/module.php, include/functions_html.php: fixed the

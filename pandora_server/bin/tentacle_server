@@ -61,7 +61,7 @@ use warnings;
 use Getopt::Std;
 use IO::Select;
 use Thread::Semaphore;
-use POSIX ":sys_wait_h";
+use POSIX qw(:sys_wait_h strftime);
 
 my $t_libwrap_installed = eval { require Authen::Libwrap } ? 1 : 0;
 
@@ -76,10 +76,6 @@ my $SOCKET_MODULE =
 	eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
       : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
       : die $@;
-
-if ($SOCKET_MODULE eq 'IO::Socket::INET') {
-	print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
-}
 
 # Program version
 our $VERSION = '0.4.0';
@@ -173,6 +169,10 @@ my $t_use_libwrap = 0;
 my $t_program_name = $0;
 $t_program_name =~ s/.*\///g;
 
+# logfile name and it's file handle
+my $t_logfile;
+my $t_logfile_handle;
+
 ################################################################################
 ## SUB print_help
 ## Print help screen.
@@ -192,6 +192,7 @@ sub print_help {
 	print ("\t-h\t\tShow help.\n");
 	print ("\t-i\t\tFilters.\n");
 	print ("\t-k key\t\tOpenSSL private key file.\n");
+	print ("\t-l file\t\tPath to the log file. Only used in daemon mode.\n");
 	print ("\t-m size\t\tMaximum file size in bytes (default ${t_max_size}b).\n");
 	print ("\t-o\t\tEnable file overwrite.\n");
 	print ("\t-p port\t\tPort to listen on (default $t_port).\n");
@@ -221,9 +222,13 @@ sub daemonize {
 
 	open (STDIN, '/dev/null') || error ("Cannot read /dev/null: $!.");
 
-	# Do not be verbose when running as a daemon
-	open (STDOUT, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
-	open (STDERR, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
+	if ($t_logfile) {
+		open_logfile();
+	} else {
+		# Do not be verbose when running as a daemon
+		open (STDOUT, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
+		open (STDERR, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
+	}
 
 	# Fork
 	$pid = fork ();
@@ -235,6 +240,14 @@ sub daemonize {
 	if ($pid != 0) {
 		exit;
 	}
+	$SIG{TERM} = \&stop_server;
+	$SIG{HUP} = sub {
+		print_log ("SIGHUP received.");
+		if ($t_logfile_handle) {
+			close($t_logfile_handle);
+			open_logfile();
+		}
+	};
 
 	# Child
 	POSIX::setsid () || error ("Cannot start a new session: $!.");
@@ -271,7 +284,7 @@ sub parse_options {
 	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:c:de:f:hi:k:m:op:qr:s:t:vwx:b:g:T', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:c:de:f:hi:k:l:m:op:qr:s:t:vwx:b:g:T', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -467,6 +480,10 @@ sub parse_options {
 			error ("Authen::Libwrap is not installed.");
 		}
 	}
+
+	if (defined ($opts{'l'})) {
+		$t_logfile = $opts{'l'};
+	}
 }
 
 ################################################################################
@@ -510,6 +527,11 @@ sub open_proxy {
 ################################################################################
 sub start_server {
 
+	# Show IPv6 status
+	if ($SOCKET_MODULE eq 'IO::Socket::INET') {
+		print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
+	}
+
 	my $t_server_socket;
 
 	foreach my $t_address (@t_addresses) {
@@ -526,8 +548,9 @@ sub start_server {
 			print_log ("Cannot open socket for address $t_address on port $t_port: $!.");
 			next;
 		}
-
-		print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
+		my $msg = "Server listening on $t_address port $t_port";
+		$msg .= " (press <ctr-c> to stop)" unless $t_daemon;
+		print_log ($msg);
 	
 		# Say message if tentacle proxy is enable
 		if (defined ($t_proxy_ip)) {
@@ -607,6 +630,18 @@ sub close_proxy {
 }
 
 ################################################################################
+## SUB open_logfile
+## open logfile and assign log file handle to STDOUT and STDERR
+################################################################################
+sub open_logfile {
+	if ($t_logfile) {
+		open ($t_logfile_handle, '>>', $t_logfile) || error ("Cannot open log file: $t_logfile: $!.");
+		open (STDOUT, '>&', $t_logfile_handle) || error ("Cannot dup log file handle: $!.");
+		open (STDERR, '>&', $t_logfile_handle) || error ("Cannot dup log file handle: $!.");
+	}
+}
+
+################################################################################
 ## SUB stop_server
 ## Close the server socket.
 ################################################################################
@@ -616,6 +651,9 @@ sub stop_server {
 		$t_server_socket->close ();
 	}
 	print_log ("Server going down");
+	if ($t_logfile_handle) {
+		close($t_logfile_handle);
+	}
 	
 	exit 0;
 }
@@ -1028,13 +1066,24 @@ sub send_file {
 ################################################################################
 
 ################################################################################
+## SUB format_log
+## format log message
+################################################################################
+sub format_log {
+	return strftime("%Y-%m-%d %H:%M:%S ", localtime())
+		. $t_program_name. ' [' . $$ . ']: ' . $_[0];
+}
+
+################################################################################
 ## SUB print_log
 ## Print log messages.
 ################################################################################
 sub print_log {
 
 	if ($t_log == 1) {
-		print (STDOUT "[log] $_[0]\n");
+		my $msg = "[log] $_[0]\n";
+		$msg = format_log($msg) if ($t_logfile_handle);
+		print (STDOUT $msg);
 	}
 }
 
@@ -1045,7 +1094,9 @@ sub print_log {
 sub error {
 
 	if ($t_quiet == 0) {
-		print (STDERR "[err] $_[0]\n");
+		my $msg = "[err] $_[0]\n";
+		$msg = format_log($msg) if ($t_logfile_handle);
+		print (STDERR $msg);
 	}
 
 	exit 1;
@@ -1432,11 +1483,6 @@ if ($#ARGV != -1) {
 	exit 1;
 }
 
-# Show IPv6 status
-if ($SOCKET_MODULE eq 'IO::Socket::INET') {
-	print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
-}
-
 # Run as daemon?
 if ($t_daemon == 1 && $^O ne 'MSWin32') {
 	daemonize ();
@@ -1493,6 +1539,8 @@ __END__
 =item	I<-i>			B<Filters>.
 
 =item	I<-k key>		B<OpenSSL private key> file.
+
+=item	I<-l file>		Path to the B<log file>. Only used in daemon mode.
 
 =item	I<-m size>		B<Maximum file size> in bytes (default I<2000000b>).
 

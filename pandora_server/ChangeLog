@@ -1,5 +1,10 @@
 2014-04-03  Ramon Novoa  <rnovoa@artica.es>
 
+	* util/recon_scripts/snmp-recon.pl: Remove the symbolic labels from
+	  enumeration values.
+
+2014-04-03  Ramon Novoa  <rnovoa@artica.es>
+
 	* util/recon_scripts/snmp-recon.pl: Fixed a typo.
 
 2014-04-03  Koichiro KIKUCHI <koichiro@rworks.jp>

@@ -125,7 +125,9 @@ INSERT INTO `tconfig_os` VALUES
 (13,'Sensor',' Pandora FMS Hardware Agent (Sensor)','network.png'),
 (14,'Embedded','Embedded device running a Pandora FMS agent','embedded.png'),
 (15,'Android','Android agent','android.png'),
-(16, 'VMware', 'VMware Architecture', 'so_vmware.png');
+(16, 'VMware', 'VMware Architecture', 'so_vmware.png'),
+(17, 'Router', 'Generic router', 'so_router.png'),
+(18, 'Switch', 'Generic switch', 'so_switch.png');
 UNLOCK TABLES;
 
 
@@ -998,6 +1000,8 @@ INSERT INTO `trecon_script` VALUES (1,'SNMP&#x20;Recon&#x20;Script','This&#x20;s
 
 INSERT INTO `trecon_script` VALUES
 (2,'IMPI Recon', 'Specific Pandora FMS Intel DCM Discovery (c) Artica ST 2011 <info@artica.es> Usage: ./ipmi-recon.pl <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2> <custom_field3> * custom_field1 = network. i.e.: 192.168.100.0/24 * custom_field2 = username * custom_fiedl3 = password ', '/usr/share/pandora_server/util/recon_scripts/ipmi-recon.pl');
+
+INSERT INTO `trecon_script` VALUES (4,'SNMP&#x20;L2&#x20;Recon','Pandora&#x20;FMS&#x20;SNMP&#x20;Recon&#x20;Plugin&#x20;for&#x20;level&#x20;2&#x20;network&#x20;topology&#x20;discovery.&#x0d;&#x0a;&#40;c&#41;&#x20;Artica&#x20;ST&#x20;2014&#x20;&lt;info@artica.es&gt;&#x0d;&#x0a;&#x0d;&#x0a;Usage:&#x0d;&#x0a;&#x0d;&#x0a;&#x20;&#x20;&#x20;./snmp-recon.pl&#x20;&lt;task_id&gt;&#x20;&lt;group_id&gt;&#x20;&lt;create_incident&gt;&#x20;&lt;custom_field1&gt;&#x20;&lt;custom_field2&gt;&#x20;[custom_field3]&#x20;[custom_field4]&#x0d;&#x0a;&#x0d;&#x0a;&#x20;*&#x20;custom_field1&#x20;=&#x20;comma&#x20;separated&#x20;list&#x20;of&#x20;networks&#x20;&#40;i.e.:&#x20;192.168.1.0/24,192.168.2.0/24&#41;&#x0d;&#x0a;&#x20;*&#x20;custom_field2&#x20;=&#x20;comma&#x20;separated&#x20;list&#x20;of&#x20;snmp&#x20;communities&#x20;to&#x20;try.&#x0d;&#x0a;&#x20;*&#x20;custom_field3&#x20;=&#x20;a&#x20;router&#x20;in&#x20;the&#x20;network.&#x20;Optional&#x20;but&#x20;recommended.&#x0d;&#x0a;&#x0d;&#x0a;&#x20;*&#x20;custom_field4&#x20;=&#x20;set&#x20;to&#x20;-a&#x20;to&#x20;add&#x20;all&#x20;network&#x20;interfaces&#x20;&#40;by&#x20;default&#x20;only&#x20;interfaces&#x20;that&#x20;are&#x20;up&#x20;are&#x20;added&#41;.&#x0d;&#x0a;&#x0d;&#x0a;&#x20;Additional&#x20;information:&#x0d;&#x0a;When&#x20;the&#x20;script&#x20;is&#x20;called&#x20;from&#x20;a&#x20;recon&#x20;task&#x20;the&#x20;task_id,&#x20;group_id&#x20;and&#x20;create_incident&#x20;parameters&#x20;are&#x20;automatically&#x20;filled&#x20;by&#x20;the&#x20;Pandora&#x20;FMS&#x20;Server.','/usr/share/pandora_server/util/recon_scripts/snmp-recon.pl');
 
 INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `execute`, `plugin_type`, `macros`, `parameters`) VALUES (1,'IPMI&#x20;Plugin','Plugin&#x20;to&#x20;get&#x20;IPMI&#x20;monitors&#x20;from&#x20;a&#x20;IPMI&#x20;Device.',0,'/usr/share/pandora_server/util/plugin/ipmi-plugin.pl',0,'{"1":{"macro":"_field1_","desc":"Target&#x20;IP","help":"","value":""},"2":{"macro":"_field2_","desc":"Username","help":"","value":""},"3":{"macro":"_field3_","desc":"Password","help":"","value":""}}','-h&#x20;_field1_-u&#x20;_field2_-p&#x20;_field3_');
 

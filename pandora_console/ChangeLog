@@ -1,3 +1,14 @@
+2014-04-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* images/networkmap/so_router.png,
+	  images/networkmap/so_switch.png,
+	  images/os_icons/so_router.png,
+	  images/os_icons/so_switch.png: Added to repository. Icons for L2 network
+	  maps.
+
+	* pandoradb.sql,
+	  ppandoradb_data.sql: Added the Recon SNMP L2 network discovery script.
+
 2014-04-03  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/agentes/estado_generalagente.php: fixed the $id_agente

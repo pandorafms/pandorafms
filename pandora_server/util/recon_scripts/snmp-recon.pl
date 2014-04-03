@@ -163,7 +163,7 @@ sub responds_to_snmp($) {
 	my ($target) = @_;
 
 	foreach my $community (@SNMP_COMMUNITIES) {
-		`snmpwalk -t0.1 -v1 -On -c $community $target .0 2>/dev/null`;
+		`snmpwalk -t0.1 -v1 -On -Oe -c $community $target .0 2>/dev/null`;
 		if ($? == 0) {
 			$COMMUNITIES{$target} = $community;
 			return $community;
@@ -180,7 +180,7 @@ sub snmp_get($$$) {
 	my ($target, $community, $oid) = @_;
 	my @output;
 
-	@output = `snmpwalk -t0.1 -v1 -On -c $community $target $oid 2>/dev/null`;
+	@output = `snmpwalk -t0.1 -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
 	return @output;
 }
 

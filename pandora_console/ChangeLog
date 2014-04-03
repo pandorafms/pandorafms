@@ -1,5 +1,13 @@
 2014-04-03  Ramon Novoa  <rnovoa@artica.es>
 
+	* images/os_icons/so_router.png,
+	  images/os_icons/so_router_small.png
+	  imagesimages/os_icons/so_switch.png
+	  imagesimages/os_icons/so_switch_small.png: Updated icons for generic
+	  switches and routers.
+
+2014-04-03  Ramon Novoa  <rnovoa@artica.es>
+
 	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql,
 	  extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql,
 	  extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql: Updated the migration

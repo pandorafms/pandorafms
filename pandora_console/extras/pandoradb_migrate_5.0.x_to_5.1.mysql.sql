@@ -38,6 +38,12 @@ UPDATE tconfig SET `value`='#FF6600' WHERE `token`='graph_color3';
 ALTER TABLE tgraph_source MODIFY COLUMN `weight` float(8,3) NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------
+-- Table `tconfig_os`
+-- ---------------------------------------------------------------------
+INSERT INTO `tconfig_os` VALUES (17, 'Router', 'Generic router', 'so_router.png');
+INSERT INTO `tconfig_os` VALUES (18, 'Switch', 'Generic switch', 'so_switch.png');
+
+-- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
 -- ---------------------------------------------------------------------
 ALTER TABLE `pandora`.`tagente_modulo` MODIFY COLUMN `post_process` DOUBLE  DEFAULT NULL;

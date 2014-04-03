@@ -32,6 +32,12 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 UPDATE "tconfig" SET "value"='#FFFF00' WHERE "token"='graph_color2';
 UPDATE "tconfig" SET "value"='#FF6600' WHERE "token"='graph_color3';
 
+-- ---------------------------------------------------------------------
+-- Table "tconfig_os"
+-- ---------------------------------------------------------------------
+INSERT INTO "tconfig_os" VALUES (17, 'Router', 'Generic router', 'so_router.png');
+INSERT INTO "tconfig_os" VALUES (18, 'Switch', 'Generic switch', 'so_switch.png');
+
 /* 2014/03/18 */
 -- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`

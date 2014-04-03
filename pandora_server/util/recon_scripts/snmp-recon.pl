@@ -662,7 +662,7 @@ sub create_pandora_agent($) {
 	# Add found IP addresses to the agent.
 	foreach my $ip_addr (keys(%{$VISITED_DEVICES{$device}->{'addr'}})) {
 		my $addr_id = get_addr_id ($DBH, $ip_addr);
-		add_address ($DBH, $ip_addr) unless ($addr_id > 0);
+		$addr_id = add_address ($DBH, $ip_addr) unless ($addr_id > 0);
 		next unless ($addr_id > 0);
 
 		# Assign the new address to the agent
@@ -854,7 +854,7 @@ if ($#SUBNETS >= 0) {
 
 # Find routers.
 message("[1/6] Searching for routers...");
-if ($ROUTER ne '') {
+if (defined($ROUTER) && $ROUTER ne '') {
 	next_hop_discovery($ROUTER);
 }
 update_recon_task($DBH, $TASK_ID, 15);

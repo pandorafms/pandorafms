@@ -163,7 +163,7 @@ sub responds_to_snmp($) {
 	my ($target) = @_;
 
 	foreach my $community (@SNMP_COMMUNITIES) {
-		`snmpwalk -t0.1 -v1 -On -Oe -c $community $target .0 2>/dev/null`;
+		`snmpwalk -r2 -t0.1 -v1 -On -Oe -c $community $target .0 2>/dev/null`;
 		if ($? == 0) {
 			$COMMUNITIES{$target} = $community;
 			return $community;
@@ -180,7 +180,7 @@ sub snmp_get($$$) {
 	my ($target, $community, $oid) = @_;
 	my @output;
 
-	@output = `snmpwalk -t0.1 -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
+	@output = `snmpwalk -r2 -t0.1 -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
 	return @output;
 }
 
@@ -833,6 +833,7 @@ $CREATE_INCIDENT = $ARGV[2]; # Defined by user
 @SUBNETS = split(',', $ARGV[3]);
 @SNMP_COMMUNITIES = split(',', $ARGV[4]) if defined($ARGV[4]);
 $ROUTER = $ARGV[5] if defined($ARGV[5]);
+$ALLIFACES = $ARGV[6] if defined($ARGV[6]);
 $ALLIFACES = $ARGV[6] if defined($ARGV[6]);
 
 # Read config file

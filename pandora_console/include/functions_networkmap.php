@@ -308,12 +308,13 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$nodes[$node_count] = $agent;
 		
 		if ($l2_network || $show_snmp_modules) {
-
+			
 			$filter = array();
 			$filter['disabled'] = 0;
 			
 			// Get agent modules data
-			$modules = agents_get_modules ($agent['id_agente'], '*', $filter, true, false);
+			$modules = agents_get_modules($agent['id_agente'], '*',
+				$filter, true, true);
 			if ($modules === false)
 				$modules = array();
 			

@@ -1,3 +1,8 @@
+2014-04-04  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_networkmap.php: fixed the networkmap L2 with
+	unknown modules. Thanks Alex.
+
 2014-04-03  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_networkmap.php: fixed the PHP warning.

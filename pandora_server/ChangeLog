@@ -1,5 +1,10 @@
 2014-04-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* util/recon_scripts/snmp-recon.pl: Do not load MIB files (DISPLAY-HINTS may
+	  cause MAC addresses to be displayed in a different format).
+
+2014-04-04  Ramon Novoa  <rnovoa@artica.es>
+
 	* util/recon_scripts/snmp-recon.pl: Lowered the number of retries.
 
 2014-04-03  Ramon Novoa  <rnovoa@artica.es>

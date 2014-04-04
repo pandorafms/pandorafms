@@ -163,7 +163,7 @@ sub responds_to_snmp($) {
 	my ($target) = @_;
 
 	foreach my $community (@SNMP_COMMUNITIES) {
-		`snmpwalk -r2 -t0.1 -v1 -On -Oe -c $community $target .0 2>/dev/null`;
+		`snmpwalk -M/dev/null -r2 -t0.1 -v1 -On -Oe -c $community $target .0 2>/dev/null`;
 		if ($? == 0) {
 			$COMMUNITIES{$target} = $community;
 			return $community;
@@ -180,7 +180,7 @@ sub snmp_get($$$) {
 	my ($target, $community, $oid) = @_;
 	my @output;
 
-	@output = `snmpwalk -r2 -t0.1 -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
+	@output = `snmpwalk -M/dev/null -r2 -t0.1 -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
 	return @output;
 }
 
@@ -836,8 +836,9 @@ $ROUTER = $ARGV[5] if defined($ARGV[5]);
 $ALLIFACES = $ARGV[6] if defined($ARGV[6]);
 $ALLIFACES = $ARGV[6] if defined($ARGV[6]);
 
-# Read config file
+# Read config filea and start logging.
 pandora_load_config(\%CONF);
+pandora_start_log(\%CONF);
 
 # Connect to the DB
 $DBH = db_connect ('mysql', $CONF{'dbname'}, $CONF{'dbhost'}, $CONF{'dbport'}, $CONF{'dbuser'}, $CONF{'dbpass'});
@@ -928,5 +929,7 @@ foreach my $device (values(%VISITED_DEVICES)) {
 	}
 }
 
-delete_unused_connections(\%CONF, $DBH, $TASK_ID,\%CONNECTIONS);
+# Do not delete unused connections unless at least one connection has been found
+# (prevents the script from deleting connections if there has been a network outage).
+delete_unused_connections(\%CONF, $DBH, $TASK_ID,\%CONNECTIONS) if (scalar(keys(%CONNECTIONS)) > 0);
 

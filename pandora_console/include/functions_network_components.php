@@ -222,7 +222,8 @@ function network_components_get_groups ($id_module_components = 0, $localCompone
 		$level++;
 		$tmp = $id_parent;
 		$id_parent = (int) $group['id_sg'];
-		$childs = network_components_get_groups ($id_module_components, $localComponent);
+		$childs = network_components_get_groups($id_module_components,
+			$localComponent);
 		$id_parent = $tmp;
 		$level--;
 		
@@ -240,7 +241,7 @@ function network_components_get_groups ($id_module_components = 0, $localCompone
 						break;
 					case "oracle":
 						$count = db_get_value_filter ('count(*)', 'tlocal_component',
-						array ('id_network_component_group' => (int) $group['id_sg']));						
+						array ('id_network_component_group' => (int) $group['id_sg']));
 						break;
 				}
 				if ($count > 0)
@@ -262,12 +263,12 @@ function network_components_get_groups ($id_module_components = 0, $localCompone
 						case "postgresql":
 							$count = db_get_value_filter ('COUNT(*)', 'tnetwork_component',
 							array ('id_group' => (int) $group['id_sg'],
-							'id_modulo' => $id_module_components));
+								'id_modulo' => $id_module_components));
 							break;
 						case "oracle":
 							$count = db_get_value_filter ('count(*)', 'tnetwork_component',
 							array ('id_group' => (int) $group['id_sg'],
-							'id_modulo' => $id_module_components));
+								'id_modulo' => $id_module_components));
 							break;
 					}
 					if ($count > 0)

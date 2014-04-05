@@ -1,3 +1,8 @@
+2014-04-05  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandoradb_data.sql, pandoradb.data.oracle.sql,
+        pandoradb.data.postgreSQL.sql: Fixed typo.
+
 2014-04-02  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/search_results.php, operation/search_users.getdata.php:

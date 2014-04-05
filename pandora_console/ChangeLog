@@ -1,3 +1,8 @@
+2014-04-05  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandoradb_data.sql, pandoradb.data.oracle.sql,
+	pandoradb.data.postgreSQL.sql: Fixed typo.
+
 2014-04-04  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_network_components.php: some cleans into the

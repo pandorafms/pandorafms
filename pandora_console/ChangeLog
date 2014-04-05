@@ -1,5 +1,9 @@
 2014-04-05  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/help/ja/help_field_match_snmp.php: Updated help.
+
+2014-04-05  Junichi Satoh  <junichi@rworks.jp>
+
 	* pandoradb_data.sql, pandoradb.data.oracle.sql,
 	pandoradb.data.postgreSQL.sql: Fixed typo.
 

@@ -969,7 +969,8 @@ CREATE TABLE "treport" (
 	"custom_font" varchar(200) default NULL,
 	"id_template" BIGINT NOT NULL default 0,
 	"id_group_edit" BIGINT NOT NULL default 0,
-	"metaconsole" SMALLINT DEFAULT 0
+	"metaconsole" SMALLINT DEFAULT 0,
+	"non_interactive" SMALLINT DEFAULT 0
 );
 
 -- -----------------------------------------------------

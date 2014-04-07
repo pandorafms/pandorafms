@@ -1,3 +1,21 @@
+2014-04-07  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* pandoradb.oracle.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.mysql.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.oracle.sql
+	  extras/pandoradb_migrate_5.0_to_5.1.postgreSQL.sql
+	  godmode/reporting/reporting_builder.main.php
+	  godmode/reporting/reporting_builder.php: Add scheduled
+	reports.
+
+	* images/csv_disabled.png
+	  images/html_disabled.png
+	  images/pdf_disabled.png
+	  images/xml_disabled.png
+	  images/schedule_report.png: Added images.
+
 2014-04-05  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_field_match_snmp.php: Updated help.

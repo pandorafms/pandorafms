@@ -47,6 +47,33 @@ $idReport = get_parameter('id_report', 0);
 $offset = get_parameter('offset', 0);
 $idItem = get_parameter('id_item', 0);
 $pure = get_parameter('pure',0);
+$schedule_report = get_parameter('schbutton', '');
+
+if ($schedule_report != '') {
+	
+	$id_user_task = 1;
+	$scheduled = 'no';
+	$date = date(DATE_FORMAT);
+	$time = date(TIME_FORMAT);
+	$parameters[0] = get_parameter('id_schedule_report');
+	//$parameters[1] = db_get_value('schedule_email', 'treport', 'id_report', $id_report);
+	$parameters[1] = get_parameter('schedule_email');
+	$parameters['first_execution'] = strtotime ($date.' '.$time);
+	
+	$values = array(
+		'id_usuario' => $config['id_user'],
+		'id_user_task' => $id_user_task,
+		'args' => serialize ($parameters),
+		'scheduled' => $scheduled,
+		'flag_delete' => 1);
+//html_debug_print($values, "/home/vanessa/code/pandora-code/pandora_console/logDebug.txt");		
+	$result = db_process_sql_insert('tuser_task_scheduled', $values);
+	
+	ui_print_result_message ($result,
+				__('Your report has been planned, and the system will email you a PDF with the report as soon as its finished'),
+				__('An error has ocurred'));
+	echo '<br>';
+}
 
 //Other Checks for the edit the reports
 if ($idReport != 0) {
@@ -356,7 +383,7 @@ switch ($action) {
 		
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
-				'id_user', 'id_group'), $return_all_group, 'RR', $group);
+				'id_user', 'id_group', 'non_interactive'), $return_all_group, 'RR', $group);
 		
 		$table->width = '0px';
 		if (sizeof ($reports)) {
@@ -376,7 +403,7 @@ switch ($action) {
 			$next = 4;
 			//Calculate dinamically the number of the column
 			if (enterprise_hook ('load_custom_reporting_1') !== ENTERPRISE_NOT_HOOK) {
-				$next = 6;
+				$next = 7;
 			}
 			
 			//Admin options only for RM flag
@@ -420,15 +447,20 @@ switch ($action) {
 				
 				$data[1] = $report['description'];
 				
-				$data[2] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure.'">' .
-					html_print_image("images/html.png", true, array('title' => __('HTML view'))) . '</a>';
-				$data[3] = '<a href="'. ui_get_full_url(false, false, false, false) . 'ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/xml.png", true, array('title' => __('Export to XML'))) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
+				if (!$report['non_interactive']) {
+					$data[2] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure.'">' .
+						html_print_image("images/html.png", true, array('title' => __('HTML view'))) . '</a>';
+					$data[3] = '<a href="'. ui_get_full_url(false, false, false, false) . 'ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/xml.png", true, array('title' => __('Export to XML'))) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
+				} else {
+					$data[2] =  html_print_image("images/html_disabled.png", true);
+					$data[3] =  html_print_image("images/xml_disabled.png", true);
+				}
 				
 				
 				//Calculate dinamically the number of the column
 				$next = 4;
 				if (enterprise_hook ('load_custom_reporting_2') !== ENTERPRISE_NOT_HOOK) {
-					$next = 6;
+					$next = 7;
 				}
 				
 				
@@ -560,6 +592,7 @@ switch ($action) {
 				$type_access_selected = get_parameter('type_access', 'group_view');
 				$id_group_edit_param = (int)get_parameter('id_group_edit', 0);
 				$report_id_user = get_parameter('report_id_user');
+				$non_interactive = get_parameter('non_interactive', 0);
 				
 				// Pretty font by default for pdf
 				$custom_font = 'FreeSans.ttf';
@@ -584,7 +617,8 @@ switch ($action) {
 							'id_group' => $idGroupReport,
 							'description' => $description,
 							'private' => $private,
-							'id_group_edit' => $id_group_edit);
+							'id_group_edit' => $id_group_edit,
+							'non_interactive' => $non_interactive);
 						
 						
 						$report = db_get_row_filter('treport',
@@ -632,7 +666,8 @@ switch ($action) {
 								'id_group_edit' => $id_group_edit,
 								'id_user' => $config['id_user'],
 								'metaconsole' => $metaconsole_report,
-								'custom_font' => $custom_font));
+								'custom_font' => $custom_font,
+								'non_interactive' => $non_interactive));
 						if ($idOrResult !== false)
 							db_pandora_audit( "Report management", "Create report #$idOrResult");
 						else
@@ -1134,6 +1169,7 @@ switch ($action) {
 		$type_access_selected = reports_get_type_access($report);
 		$id_group_edit = $report['id_group_edit'];
 		$report_id_user = $report['id_user'];
+		$non_interactive = $report['non_interactive'];
 		break;
 	case 'delete':
 		$idItem = get_parameter('id_item');

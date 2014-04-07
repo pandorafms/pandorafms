@@ -123,3 +123,8 @@ CREATE TABLE  talert_snmp_action (
 	al_field9 CLOB default '' NOT NULL,
 	al_field10 CLOB default '' NOT NULL
 );
+
+-- ---------------------------------------------------------------------
+-- Table treport
+-- ---------------------------------------------------------------------
+ALTER TABLE treport ADD (non_interactive NUMBER(5, 0) default 0 NOT NULL);

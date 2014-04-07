@@ -1097,7 +1097,8 @@ CREATE TABLE treport (
 	custom_font VARCHAR2(200) default NULL,
 	id_template NUMBER(10, 0) default 0 NOT NULL,
 	id_group_edit NUMBER(19, 0) default 0 NOT NULL,
-	metaconsole NUMBER(5, 0) DEFAULT 0
+	metaconsole NUMBER(5, 0) DEFAULT 0,
+	non_interactive NUMBER(5, 0) default 0 NOT NULL
 );
 CREATE SEQUENCE treport_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER treport_inc BEFORE INSERT ON treport REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_s.nextval INTO :NEW.ID_REPORT FROM dual; END treport_inc;;

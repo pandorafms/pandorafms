@@ -134,3 +134,8 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
 	`al_field10` text NOT NULL,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `treport`
+-- ---------------------------------------------------------------------
+ALTER TABLE `treport` ADD COLUMN `non_interactive` tinyint(1) UNSIGNED NOT NULL default 0;

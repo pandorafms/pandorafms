@@ -96,3 +96,8 @@ CREATE TABLE  "talert_snmp_action" (
 	"al_field9" TEXT default '',
 	"al_field10" TEXT default ''
 );
+
+-- ---------------------------------------------------------------------
+-- Table treport
+-- ---------------------------------------------------------------------
+ALTER TABLE "treport" ADD COLUMN "non_interactive" SMALLINT DEFAULT 0;

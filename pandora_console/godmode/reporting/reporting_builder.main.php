@@ -91,6 +91,11 @@ if ($report_id_user == $config['id_user'] ||
 		</span>';
 }
 
+if ($enterpriseEnable) {
+	$table->data['interactive_report'][0] = __('Non interactive report');
+	$table->data['interactive_report'][1] =__('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('non_interactive', 1, '', $non_interactive, true) .'&nbsp;&nbsp;';
+	$table->data['interactive_report'][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('non_interactive', 0, '', $non_interactive, true);
+}
 
 $table->data['description'][0] = __('Description');
 $table->data['description'][1] = html_print_textarea('description', 5, 15, $description, '', true);

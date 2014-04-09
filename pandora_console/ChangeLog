@@ -1,3 +1,19 @@
+2014-04-09  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* extensions/files_repo/files_repo_get_file.php: Added file
+	to download files from files_repo extension via public links.
+
+	* extensions/files_repo/sql/files_repo.sql,
+	  extensions/files_repo/sql/files_repo.oracle.sql,
+	  extensions/files_repo/sql/files_repo.postgreSQL.sql: Added
+	the new column 'hash'.
+
+	* extensions/files_repo/functions_files_repo.php,
+	  extensions/files_repo/files_repo_list.php,
+	  extensions/files_repo/files_repo_form.php,
+	  extensions/files_repo.php: Now an user can make the files
+	public and get the public download links. Error fixes.
+
 2014-04-08  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions.php: Added the functions

@@ -14,6 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+
 global $config;
 
 $full_extensions_dir = $config['homedir'].DIRECTORY_SEPARATOR.EXTENSIONS_DIR.DIRECTORY_SEPARATOR;
@@ -67,16 +68,30 @@ if (!empty($files)) {
 		$data[1] = $file['description']; // Description
 		$data[2] = ui_format_filesize($file['size']); // Size
 		$data[3] = date('F j, Y - H:m', $file['mtime']); // Last modification
-		$data[4] = "<a href=\"$url\" target=\"_blank\">";
+
+		// Public URL
+		if (!empty($file['hash'])) {
+			$public_url = ui_get_full_url(EXTENSIONS_DIR . "/files_repo/files_repo_get_file.php?file=" . $file['hash']);
+			$message = __('Copy to clipboard') . ": Ctrl+C -> Enter";
+			$action = "window.prompt('$message', '$public_url');";
+			$data[4] .= "<a href=\"javascript:;\" onclick=\"$action\">";
+			$data[4] .= html_print_image('images/world.png', true, array('title' => __('Public link'))); // Public link image
+			$data[4] .= "</a> ";
+		}
+
+		$data[4] .= "<a href=\"$url\" target=\"_blank\">";
 		$data[4] .= html_print_image('images/download.png', true, array('title' => __('Download'))); // Download image
 		$data[4] .= "</a>";
+
 		if ($manage) {
-			$url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo&file_id=$file_id");
-			$data[4] .= " <a href=\"$url\">";
+
+			$config_url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo&file_id=$file_id");
+			$data[4] .= " <a href=\"$config_url\">";
 			$data[4] .= html_print_image('images/config.png', true, array('title' => __('Edit'))); // Edit image
 			$data[4] .= "</a>";
-			$url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo&delete=1&file_id=$file_id");
-			$data[4] .= " <a href=\"$url\" onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\">";
+
+			$delete_url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo&delete=1&file_id=$file_id");
+			$data[4] .= " <a href=\"$delete_url\" onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\">";
 			$data[4] .= html_print_image('images/cross.png', true, array('title' => __('Delete'))); // Delete image
 			$data[4] .= "</a>";
 		}

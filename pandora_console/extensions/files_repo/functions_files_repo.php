@@ -70,6 +70,11 @@ function files_repo_check_file_acl ($file_id, $user_id = false, $file_groups = f
 			$file_groups = array();
 		}
 	}
+
+	if (in_array(0, $file_groups)) {
+		return true;
+	}
+
 	if (!$user_groups) {
 		$user_groups = users_get_groups ($user_id, false, true);
 		if (empty($user_groups)) {
@@ -150,6 +155,7 @@ function files_repo_get_files ($filter = false, $count = false) {
 		// Last modification time in unix timestamp
 		$data['mtime'] = filemtime($data['location']);
 		$data['groups'] = $file_groups;
+		$data['hash'] = $file['hash'];
 		$files_data[$file['id']] = $data;
 	}
 
@@ -160,7 +166,7 @@ function files_repo_get_files ($filter = false, $count = false) {
 	return $files_data;
 }
 
-function files_repo_add_file ($file_input_name = "upfile", $description = "", $groups = array()) {
+function files_repo_add_file ($file_input_name = "upfile", $description = "", $groups = array(), $public = false) {
 	global $config;
 
 	$attachment_path = realpath($config['attachment_store']);
@@ -183,9 +189,16 @@ function files_repo_add_file ($file_input_name = "upfile", $description = "", $g
 			$filename = mb_substr($filename, 0, 200, "UTF-8");
 		}
 
+		$hash = "";
+		if ($public) {
+			$hash = md5(time() . $config['dbpass']);
+			$hash = mb_substr($hash, 0, 8, "UTF-8");
+		}
+
 		$values = array(
 				'name' => $filename,
-				'description' => $description
+				'description' => $description,
+				'hash' => $hash
 			);
 		$file_id = db_process_sql_insert('tfiles_repo', $values);
 
@@ -224,14 +237,23 @@ function files_repo_add_file ($file_input_name = "upfile", $description = "", $g
 	return $result;
 }
 
-function files_repo_update_file ($file_id, $description = "", $groups = array()) {
+function files_repo_update_file ($file_id, $description = "", $groups = array(), $public = false) {
 	global $config;
 
 	$result = array();
 	$result["status"] = false;
 	$result["message"] = "";
 
-	$values = array('description' => $description);
+	$hash = "";
+	if ($public) {
+		$hash = md5(time() . $config['dbpass']);
+		$hash = mb_substr($hash, 0, 8, "UTF-8");
+	}
+
+	$values = array(
+			'description' => $description,
+			'hash' => $hash
+		);
 	$filter = array('id' => $file_id);
 	$res = db_process_sql_update('tfiles_repo', $values, $filter);
 	if ($res !== false) {

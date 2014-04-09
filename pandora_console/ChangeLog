@@ -1,3 +1,8 @@
+2014-04-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql: Added the SNMP L2
+	  recon script to the migration script.
+
 2014-04-09  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* extensions/files_repo/files_repo_get_file.php: Added file

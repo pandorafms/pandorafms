@@ -63,19 +63,25 @@ function pandora_files_repo_uninstall () {
 		case "mysql":
 			db_process_sql ('DROP TABLE `tfiles_repo_group`');
 			db_process_sql ('DROP TABLE `tfiles_repo`');
+			db_process_sql ('DELETE FROM `tconfig`
+							 WHERE `token` LIKE "files_repo_%"');
 			break;
 		case "postgresql":
 			db_process_sql ('DROP TABLE `tfiles_repo_group`');
 			db_process_sql ('DROP TABLE `tfiles_repo`');
+			db_process_sql ('DELETE FROM "tconfig"
+							 WHERE "token" LIKE \'files_repo_%\'');
 			break;
 		case "oracle":
 			db_process_sql ('DROP TABLE `tfiles_repo_group`');
 			db_process_sql ('DROP TABLE `tfiles_repo`');
+			db_process_sql ('DELETE FROM tconfig
+							 WHERE token LIKE \'files_repo_%\'');
 			break;
 	}
 
-	$full_extensions_dir = $config['homedir'].DIRECTORY_SEPARATOR.EXTENSIONS_DIR.DIRECTORY_SEPARATOR;
-	delete_dir($full_extensions_dir."files_repo");
+	if (!empty($config['attachment_store']))
+		delete_dir($config['attachment_store'].DIRECTORY_SEPARATOR."files_repo");
 }
 
 function pandora_files_repo_godmode () {
@@ -126,6 +132,7 @@ function pandora_files_repo_godmode () {
 	// File add or update
 	if ( $add_file || ($update_file && $file_id > 0) ) {
 		$groups = get_parameter ("groups", array());
+		$public = (bool) get_parameter ("public");
 		$description = io_safe_output((string) get_parameter ("description"));
 		if (mb_strlen($description, "UTF-8") > 200) {
 			$description = mb_substr($description, 0, 200, "UTF-8");
@@ -133,9 +140,9 @@ function pandora_files_repo_godmode () {
 		$description = io_safe_input($description);
 
 		if ($add_file) {
-			$result = files_repo_add_file("upfile", $description, $groups);
+			$result = files_repo_add_file("upfile", $description, $groups, $public);
 		} elseif ($update_file) {
-			$result = files_repo_update_file($file_id, $description, $groups);
+			$result = files_repo_update_file($file_id, $description, $groups, $public);
 			$file_id = 0;
 		}
 		if ($result['status'] == false) {
@@ -200,6 +207,7 @@ extensions_add_main_function('pandora_files_repo_operation');
 extensions_add_godmode_menu_option(__('Files repository manager'), 'PM', null, null, "v1r1");
 extensions_add_godmode_function('pandora_files_repo_godmode');
 
+//pandora_files_repo_uninstall();
 pandora_files_repo_install();
 
 ?>

@@ -1554,7 +1554,7 @@ function html_print_radio_button ($name, $value, $label = '', $checkedvalue = ''
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_checkbox_extended ($name, $value, $checked, $disabled, $script, $attributes, $return = false) {
+function html_print_checkbox_extended ($name, $value, $checked, $disabled, $script, $attributes, $return = false, $id='') {
 	static $idcounter = array ();
 	
 	//If duplicate names exist, it will start numbering. Otherwise it won't
@@ -1565,10 +1565,14 @@ function html_print_checkbox_extended ($name, $value, $checked, $disabled, $scri
 		$idcounter[$name] = 0;
 	}
 	
-	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+	$id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
 	
 	$output = '<input name="'.$name.'" type="checkbox" value="'.$value.'" '. ($checked ? 'checked="checked"': '');
-	$output .= ' id="checkbox-'.$id.'"';
+	if ($id == '') {
+		$output .= ' id="checkbox-'.$id_aux.'"';
+	} else {
+		$output .= ' '.$id.'"';
+	}
 	
 	if ($script != '') {
 		$output .= ' onclick="'. $script . '"';

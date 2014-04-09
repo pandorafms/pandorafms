@@ -474,13 +474,15 @@ function new_macro(prefix) {
 	$('#delete_macro_button').show();
 	
 	var next_row = parseInt($('#next_row').html());
-	
-	$('#next_row').html(next_row + 2);
-	var nrow1 = next_row - 2;
-	var nrow2 = next_row - 1;
-	var nrow3 = next_row;
-	var nrow4 = next_row + 1;
-	
+		
+	$('#next_row').html(next_row + 3);
+	var nrow1 = next_row - 3;
+	var nrow2 = next_row - 2;
+	var nrow3 = next_row - 1;
+	var nrow4 = next_row;
+	var nrow5 = next_row + 1;
+	var nrow6 = next_row + 2;
+
 	var next_number = parseInt($('#next_macro').html());
 	$('#next_macro').html(next_number + 1);
 	var current_number = next_number - 1;
@@ -488,67 +490,90 @@ function new_macro(prefix) {
 	// Clone two last rows
 	var $row1 = $('#' + prefix + nrow1).clone(true);
 	var $row2 = $('#' + prefix + nrow2).clone(true);
+	var $row3 = $('#' + prefix + nrow3).clone(true);
 	
 	// Change the tr ID
-	$row1.attr('id',prefix + (nrow3));
-	$row2.attr('id',prefix + (nrow4));
+	$row1.attr('id',prefix + (nrow4));
+	$row2.attr('id',prefix + (nrow5));
+	$row3.attr('id',prefix + (nrow6));
 	// Change the td ID
 	$row1.find('td').attr('id', changeTdId);
 	$row2.find('td').attr('id', changeTdId);
+	$row3.find('td').attr('id', changeTdId);
 	
 	// Insert after last field
-	$row2.insertAfter('#' + prefix + nrow2);
-	$row1.insertAfter('#' + prefix + nrow2);
+	$row3.insertAfter('#' + prefix + nrow3);
+	$row2.insertAfter('#' + prefix + nrow3);
+	$row1.insertAfter('#' + prefix + nrow3);
 	
 	// Change labels
 	for(i = 0; i <= 3; i++) {
-		var label1 = $("#" + prefix + nrow3 + "-" + i).html();
+		var label1 = $("#" + prefix + nrow4 + "-" + i).html();
 		var exp_reg = new RegExp('field' + current_number, 'g'); 
 		label1 = label1.replace(exp_reg,'field' + next_number);
-		$("#" + prefix + nrow3 + "-" + i).html(label1);
+		$("#" + prefix + nrow4 + "-" + i).html(label1);
 	}
 	
 	for(i = 0; i <= 1; i++) {
-		var label2 = $("#" + prefix + nrow4 + "-" + i).html();
+		var label2 = $("#" + prefix + nrow5 + "-" + i).html();
 		var exp_reg = new RegExp('field' + current_number, 'g'); 
 		label2 = label2.replace(exp_reg,'field' + next_number);
-		$("#" + prefix + nrow4 + "-" + i).html(label2);
+		$("#" + prefix + nrow5 + "-" + i).html(label2);
+	}
+	
+	for(i = 0; i <= 1; i++) {
+		var label3 = $("#" + prefix + nrow6 + "-" + i).html();
+		var exp_reg = new RegExp('field' + current_number, 'g'); 
+		label3 = label3.replace(exp_reg,'field' + next_number);
+		$("#" + prefix + nrow6 + "-" + i).html(label3);
 	}
 	
 	// Empty the text inputs
 	$('#text-field' + next_number + '_desc').val('');
 	$('#text-field' + next_number + '_help').val('');
 	$('#text-field' + next_number + '_value').val('');
+	$('#radio-field' + next_number + '_hide').val(0);
 	
 	function changeTdId() {
 		switch(this.id) {
 			case prefix + (nrow1) + '-0':
-				return prefix + (nrow3) + '-0';
-				break;
-			case prefix + (nrow1) + '-1':
-				return prefix + (nrow3) + '-1';
-				break;
-			case prefix + (nrow1) + '-2':
-				return prefix + (nrow3) + '-2';
-				break;
-			case prefix + (nrow1) + '-3':
-				return prefix + (nrow3) + '-3';
-				break;
-			case prefix + (nrow2) + '-0':
 				return prefix + (nrow4) + '-0';
 				break;
-			case prefix + (nrow2) + '-1':
+			case prefix + (nrow1) + '-1':
 				return prefix + (nrow4) + '-1';
 				break;
-			case prefix + (nrow2) + '-2':
+			case prefix + (nrow1) + '-2':
 				return prefix + (nrow4) + '-2';
 				break;
-			case prefix + (nrow2) + '-3':
+			case prefix + (nrow1) + '-3':
 				return prefix + (nrow4) + '-3';
 				break;
+			case prefix + (nrow2) + '-0':
+				return prefix + (nrow5) + '-0';
+				break;
+			case prefix + (nrow2) + '-1':
+				return prefix + (nrow5) + '-1';
+				break;
+			case prefix + (nrow2) + '-2':
+				return prefix + (nrow5) + '-2';
+				break;
+			case prefix + (nrow2) + '-3':
+				return prefix + (nrow5) + '-3';
+				break;
+			case prefix + (nrow3) + '-0':
+				return prefix + (nrow6) + '-0';
+				break;
+			case prefix + (nrow3) + '-1':
+				return prefix + (nrow6) + '-1';
+				break;
+			case prefix + (nrow3) + '-2':
+				return prefix + (nrow6) + '-2';
+				break;
+			case prefix + (nrow3) + '-3':
+				return prefix + (nrow6) + '-3';
+				break;
 		}
-	}
-	
+	}	
 }
 
 function add_macro_field(macro, row_model_id) {
@@ -556,7 +581,10 @@ function add_macro_field(macro, row_model_id) {
 	// Change the carriage returns by html returns <br> in help
 	var macro_help = macro['help'].replace(/&#x0d;/g,"<br>");
 	var macro_macro = macro['macro'];
-	var macro_value =  $('<div />').html(macro['value']).text();;
+	var macro_value =  $('<div />').html(macro['value']).text();
+	var macro_hide = macro['hide'];
+
+	macro_value.type = 'password';
 	
 	var row_id = row_model_id + macro_macro;
 	
@@ -601,6 +629,9 @@ function add_macro_field(macro, row_model_id) {
 	// Change the text box id and value
 	$('#'+row_id).children().eq(1).children().attr('id','text-'+macro_macro);
 	$('#'+row_id).children().eq(1).children().attr('name',macro_macro);
+	if (macro['hide']) {
+		$('#'+row_id).children().eq(1).children().attr('type','password');
+	}
 	$('#'+row_id).children().eq(1).children().val(macro_value);
 	
 	

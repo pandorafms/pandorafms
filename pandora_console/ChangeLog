@@ -1,3 +1,12 @@
+2014-04-09  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* godmode/servers/plugin.php
+	  include/functions_html.php
+	  include/javascript/pandora_module.js: Possibility to 
+	hide the value of a macro.
+	  
+	* include/styles/pandora.css: Changed color alerts.
+
 2014-04-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql: Added the SNMP L2

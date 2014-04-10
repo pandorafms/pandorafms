@@ -700,6 +700,7 @@ switch ($action) {
 					case 'update':
 						$values = array();
 						$values['id_report'] = $idReport;
+						$values['name'] = (string) get_parameter('name');
 						$values['description'] = get_parameter('description');
 						$values['type'] = get_parameter('type', null);
 						// Added support for projection graphs, prediction date and SLA reports
@@ -904,6 +905,7 @@ switch ($action) {
 						$values = array();
 						$values['id_report'] = $idReport;
 						$values['type'] = get_parameter('type', null);
+						$values['name'] = (string) get_parameter('name');
 						$values['description'] = get_parameter('description');
 						// Support for projection graph, prediction date and SLA reports
 						// 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report
@@ -1484,10 +1486,6 @@ if ($enterpriseEnable) {
 		$resultOperationDB = $result;
 	}
 }
-
-		$buttons = array(
-			
-			);
 			
 $buttons = array(
 	'list_reports' => array('active' => false,

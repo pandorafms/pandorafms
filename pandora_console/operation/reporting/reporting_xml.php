@@ -210,6 +210,9 @@ foreach ($contents as $content) {
 	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
+	if (isset($content['name']) && !empty($content['name'])) {
+		$data["name"] = io_safe_output_xml($content["name"]);
+	}
 	
 	// Support for metaconsole
 	$server_name = $content ['server_name'];

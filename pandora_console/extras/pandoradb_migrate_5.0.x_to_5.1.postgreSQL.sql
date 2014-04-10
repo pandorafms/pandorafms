@@ -101,3 +101,6 @@ CREATE TABLE  "talert_snmp_action" (
 -- Table treport
 -- ---------------------------------------------------------------------
 ALTER TABLE "treport" ADD COLUMN "non_interactive" SMALLINT DEFAULT 0;
+
+/* 2014/04/10 */
+ALTER TABLE "treport_content" ADD COLUMN "name" varchar(150) NULL;

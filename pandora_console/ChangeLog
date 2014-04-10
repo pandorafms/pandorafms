@@ -1,3 +1,28 @@
+2014-04-10  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* pandoradb.sql,
+	  pandoradb.oracle.sql,
+	  pandoradb.postgreSQL.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql:
+	Added the column "name"to the table "treport_content".
+
+	* godmode/reporting/reporting_builder.item_editor.php,
+	  godmode/reporting/reporting_builder.php: Now is posible
+	to add a name to the report items.
+
+	* godmode/reporting/reporting_builder.list_items.php: Now
+	the list shows the name of the item or the description if
+	the name is empty.
+
+	* operation/reporting/reporting_xml.php,
+	  include/functions_reporting.php: Now the XML and common
+	reports show the item name if exists.
+
+	* extensions/files_repo/files_repo_list.php: Improved
+	the description.
+
 2014-04-09  Vanessa Gil <vanessa.gil@artica.es>
 	
 	* godmode/servers/plugin.php

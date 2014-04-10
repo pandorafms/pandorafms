@@ -128,3 +128,6 @@ CREATE TABLE  talert_snmp_action (
 -- Table treport
 -- ---------------------------------------------------------------------
 ALTER TABLE treport ADD (non_interactive NUMBER(5, 0) default 0 NOT NULL);
+
+/* 2014/04/10 */
+ALTER TABLE treport_content ADD (name VARCHAR2(150) default NULL);

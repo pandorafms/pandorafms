@@ -984,6 +984,7 @@ CREATE TABLE "treport_content" (
 	"type" varchar(30) default 'simple_graph',
 	"period" BIGINT NOT NULL default 0,
 	"order" BIGINT NOT NULL default 0,
+	"name" varchar(150) NULL,
 	"description" TEXT, 
 	"id_agent" BIGINT NOT NULL default 0,
 	"text" TEXT default NULL,

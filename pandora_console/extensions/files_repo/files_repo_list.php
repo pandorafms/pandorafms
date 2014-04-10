@@ -65,7 +65,7 @@ if (!empty($files)) {
 		$url = ui_get_full_url("include/get_file.php?file=$file_path&hash=$hash");
 
 		$data[0] = "<a href=\"$url\" target=\"_blank\">" . $file['name'] . "</a>"; // Name
-		$data[1] = $file['description']; // Description
+		$data[1] = ui_print_truncate_text($file['description'], 'description', true, true); // Description
 		$data[2] = ui_format_filesize($file['size']); // Size
 		$data[3] = date('F j, Y - H:m', $file['mtime']); // Last modification
 

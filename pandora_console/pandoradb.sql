@@ -1062,6 +1062,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`type` varchar(30) default 'simple_graph',
 	`period` int(11) NOT NULL default 0,
 	`order` int (11) NOT NULL default 0,
+	`name` varchar(150) NULL,
 	`description` mediumtext, 
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`text` TEXT,

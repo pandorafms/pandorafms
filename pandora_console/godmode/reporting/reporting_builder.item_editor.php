@@ -104,6 +104,7 @@ switch ($action) {
 	case 'new':
 		$actionParameter = 'save';
 		$type = get_parameter('type', 'SLA');
+		$name = '';
 		$description = null;
 		$sql = null;
 		$show_in_two_columns = 0;
@@ -129,6 +130,7 @@ switch ($action) {
 				$action = 'new';
 				
 				$type = 'SLA';
+				$name = '';
 				$description = null;
 				$sql = null;
 				$show_in_two_columns = 0;
@@ -157,6 +159,7 @@ switch ($action) {
 			$show_in_two_columns = $style['show_in_two_columns'];
 			$show_in_landscape = $style['show_in_landscape'];
 			$type = $item['type'];
+			$name = $item['name'];
 			
 			switch ($type) {
 				case 'avg_value':
@@ -472,6 +475,16 @@ html_print_input_hidden('id_item', $idItem);
 						echo __('Not valid');
 					echo '<input type="hidden" id="type" name="type" value="' . $type . '" />';
 				}
+				?>
+			</td>
+		</tr>
+		<tr id="row_name" style="" class="datos">
+			<td style="vertical-align: top;">
+				<?php echo __('Name'); ?>
+			</td>
+			<td style="">
+				<?php
+				html_print_input_text('name', $name, '', 80, 100);
 				?>
 			</td>
 		</tr>

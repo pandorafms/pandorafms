@@ -1,3 +1,12 @@
+2014-04-14  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_ui.php: Improved the function
+	"ui_get_url_refresh" to deal with arrays obtained from 
+	the parameters of get, post and custom sources.
+
+	* operation/agentes/status_monitor.php: Now is possible
+	to filter the modules by the agents custom fields.
+
 2014-04-10  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* pandoradb.sql,

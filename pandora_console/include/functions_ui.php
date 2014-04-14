@@ -2019,7 +2019,14 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
 			continue;
 		if (strstr ($key, 'delete'))
 			continue;
-		$url .= $key.'='.$value.'&';
+		if (is_array($value)) {
+			foreach ($value as $k => $v) {
+				$url .= $key."[".$k.']='.$v.'&';
+			}
+		}
+		else {
+			$url .= $key.'='.$value.'&';
+		}
 	}
 	
 	if ($add_post) {
@@ -2034,14 +2041,29 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
 				continue;
 			if (strstr ($key, 'delete'))
 				continue;
-			$url .= $key.'='.$value.'&';
+			if (is_array($value)) {
+				foreach ($value as $k => $v) {
+					$url .= $key."[".$k.']='.$v.'&';
+				}
+			}
+			else {
+				$url .= $key.'='.$value.'&';
+			}
+			
 		}
 	}
 	
 	foreach ($params as $key => $value) {
 		if ($value === false)
 			continue;
-		$url .= $key.'='.$value.'&';
+		if (is_array($value)) {
+			foreach ($value as $k => $v) {
+				$url .= $key."[".$k.']='.$v.'&';
+			}
+		}
+		else {
+			$url .= $key.'='.$value.'&';
+		}
 	}
 	
 	/* Removes final & */

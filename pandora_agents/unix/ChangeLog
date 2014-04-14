@@ -1,3 +1,8 @@
+2014-04-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* plugins/who.sh: Output some text when there are no users connected.
+	  Otherwise the module goes to unkown.
+
 2014-03-13  Mario Pulido <mario.pulido@artica.es>
 
 	* plugins/inventory: Distributions compatibility

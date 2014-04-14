@@ -1,8 +1,14 @@
+#!/bin/bash
 echo "<module>";
 echo "<name>who</name>";
-echo "<type>generic_data_string</type>";
+echo "<type>async_string</type>";
 echo "<data><![CDATA["
-who
+WHO=`who`
+if [ "$WHO" == "" ]; then
+	echo "None"
+else
+	echo $WHO
+fi
 echo "]]></data>"
 echo "</module>"
 

@@ -55,6 +55,15 @@ else {
 	$ag_group_metaconsole = $ag_group;
 }
 
+$ag_custom_fields = (array) get_parameter("ag_custom_fields", array());
+$ag_custom_fields_params = "";
+if (!empty($ag_custom_fields)) {
+	foreach ($ag_custom_fields as $id => $value) {
+		if (!empty($value))
+			$ag_custom_fields_params .= "&ag_custom_fields[$id]=$value";
+	}
+}
+
 $offset = (int) get_parameter ('offset', 0);
 $status = (int) get_parameter ('status', 4);
 $modulegroup = get_parameter ('modulegroup', -1);
@@ -73,7 +82,7 @@ if ($id_module) {
 	$ag_freestring = modules_get_agentmodule_agent_name($id_module);
 }
 
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . $sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . '">';
+echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . $sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
 
 enterprise_hook('open_meta_frame');
 
@@ -161,6 +170,25 @@ elseif ($status == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
 		AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";
 }
 
+// Filter by agent custom fields
+$sql_conditions_custom_fields = "";
+if (!empty($ag_custom_fields)) {
+
+	$cf_filter = array();
+	foreach ($ag_custom_fields as $field_id => $value) {
+		if (!empty($value)) {
+			$cf_filter[] = "(tagent_custom_data.id_field = $field_id 
+				AND tagent_custom_data.description LIKE '%$value%')";
+		}
+	}
+	if (!empty($cf_filter)) {
+		$sql_conditions_custom_fields = " AND tagente.id_agente IN (
+				SELECT tagent_custom_data.id_agent
+				FROM tagent_custom_data
+				WHERE " . implode(" AND ", $cf_filter) . ")";
+	}
+}
+
 //Filter by tag
 if ($tag_filter !== 0) {
 	if (defined('METACONSOLE')) {
@@ -194,8 +222,8 @@ if (is_numeric($sql_conditions_tags)) {
 }
 
 // Two modes of filter. All the filters and only ACLs filter
-$sql_conditions_all = $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_tags;
-$sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_tags;
+$sql_conditions_all = $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
+$sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
 
 // Get count to paginate
 if (!defined('METACONSOLE')) 
@@ -467,9 +495,40 @@ echo '<td valign="middle">';
 html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
 echo "</td>";
 
-
+echo "</tr>";
 
 echo "<tr>";
+
+$table_custom_fields = new stdClass();
+$table_custom_fields->class = 'databox';
+$table_custom_fields->width = '99%';
+$table_custom_fields->style = array();
+$table_custom_fields->style[0] = 'font-weight: bold; width: 150px;';
+$table_custom_fields->colspan = array();
+$table_custom_fields->data = array();
+
+$custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
+if ($custom_fields === false) $custom_fields = array();
+
+foreach ($custom_fields as $custom_field) {
+	$row = array();
+	$row[0] = $custom_field['name'];
+
+	$custom_field_value = $ag_custom_fields[$custom_field['id_field']];
+	if (empty($custom_field_value)) {
+		$custom_field_value = "";
+	}
+	$row[1] = html_print_input_text ("ag_custom_fields[".$custom_field['id_field']."]", $custom_field_value, '', 100, 300, true);
+
+	$table_custom_fields->data[] = $row;
+}
+
+echo '<td valign="middle" colspan=7>';
+ui_toggle(html_print_table($table_custom_fields, true), __('Agent custom fields'));
+echo "</td>";
+
+echo "<tr>";
+
 echo "</table>";
 echo "</form>";
 
@@ -826,7 +885,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = "100%";
+$table->width = "98%";
 $table->class = "databox";
 
 $table->head = array ();
@@ -839,21 +898,21 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 
 $table->head[1] = __('Agent'); 
 if (! defined ('METACONSOLE')) {
-	$table->head[1] .=' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=agent_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=agent_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentNameDown, "alt" => "down")) . '</a>';
+	$table->head[1] .=' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentNameDown, "alt" => "down")) . '</a>';
 }
 
 $table->head[2] = __('Type');
 if (! defined ('METACONSOLE')) {
-	$table->head[2] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
+	$table->head[2] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
 }
 $table->align[2] = "left";
 
 $table->head[3] = __('Module name'); 
 if (! defined ('METACONSOLE')) {
-	$table->head[3] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
+	$table->head[3] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
 }
 
 /*
@@ -862,16 +921,16 @@ $table->head[4] = __('Tags');
 
 $table->head[5] = __('Interval'); 
 if (! defined ('METACONSOLE')) {
-	$table->head[5] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
+	$table->head[5] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
 }
 
 $table->align[5] = "center";
 
 $table->head[6] = __('Status');
 if (! defined ('METACONSOLE')) {
-	$table->head[6] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
+	$table->head[6] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
 }
 
 $table->align[6] = "center";
@@ -884,16 +943,16 @@ $table->align[8] = "left";
 
 $table->head[9] = __('Data');
 if (! defined ('METACONSOLE')) {
-	$table->head[9] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
+	$table->head[9] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
 }
 
 $table->align[9] = "left";
 
 $table->head[10] = __('Timestamp');
 if (! defined ('METACONSOLE')) {
-	 $table->head[10] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=timestamp&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTimestampUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=timestamp&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTimestampDown, "alt" => "down")) . '</a>';
+	 $table->head[10] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=timestamp&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTimestampUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=timestamp&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTimestampDown, "alt" => "down")) . '</a>';
 }
 
 $table->align[10] = "right";

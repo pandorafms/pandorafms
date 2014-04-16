@@ -3018,7 +3018,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	else {
 		$agent_name = agents_get_name($content['id_agent']);
 	}
-
+	
 	$item_title = $content['name'];
 	
 	switch ($content["type"]) {
@@ -6371,7 +6371,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if ($description == '') {
 				$description = $filter['id_name'];
 			}
-
+			
 			if (empty($item_title)) {
 				$item_title = $description;
 			}

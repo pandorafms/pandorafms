@@ -101,7 +101,7 @@ function visual_map_print_item($layoutData) {
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData);
 				if (substr($img,0,1) == '4') {
-					$borderStyle ='border: 2px solid #ffa300;';
+					$borderStyle ='border: 2px solid ' . COL_ALERTFIRED . ';';
 					$img = substr_replace($img, '', 0,1);
 				}
 			}
@@ -126,7 +126,7 @@ function visual_map_print_item($layoutData) {
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData);
 				if (substr($img,0,1) == '4') {
-					$borderStyle ='border: 2px solid #ffa300;';
+					$borderStyle ='border: 2px solid ' . COL_ALERTFIRED . ';';
 					$img = substr_replace($img, '', 0,1);
 				}
 			}
@@ -1324,7 +1324,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$borderStyle = '';
 				if (substr($img,0,1) == '4') {
-					$img_style['border'] = '2px solid #ffa300;';
+					$img_style['border'] = '2px solid ' . COL_ALERTFIRED .';';
 					$img = substr_replace($img, '', 0,1);
 				}
 				

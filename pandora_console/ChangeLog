@@ -1,5 +1,17 @@
 2014-04-16  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/d3.v3.4.5.js: added the last javascript
+	D3 library.
+	
+	* include/javascript/pandora_modules.js,
+	include/functions_visual_map.php, include/functions_networkmap.php,
+	include/functions_os.php, include/db/mysql.php,
+	include/functions_netflow.php, include/constants.php,
+	include/functions_reporting.php: standarized the color, now the
+	code uses the colors constant.
+
+2014-04-16  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_networkmap.php: cleaned source code and killed
 	some unicorns and magic numbers, now there is some constants.
 

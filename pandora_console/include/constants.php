@@ -281,7 +281,7 @@ define ('MODULE_PREDICTION_SYNTHETIC', 3);
 define ('MODULE_PREDICTION_NETFLOW', 4);
 
 /* SNMP CONSTANTS */
-define ('SNMP_DIR_MIBS', "attachment/mibs");
+define('SNMP_DIR_MIBS', "attachment/mibs");
 define('SNMP_TRAP_TYPE_NONE', -1);
 define('SNMP_TRAP_TYPE_COLD_START',	0);
 define('SNMP_TRAP_TYPE_WARM_START', 1);

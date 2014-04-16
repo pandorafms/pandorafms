@@ -35,7 +35,7 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 		return false;
 	}
 	
-	mysql_select_db($db, $connect_id);	
+	mysql_select_db($db, $connect_id);
 	return $connect_id;
 }
 

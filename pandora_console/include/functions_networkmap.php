@@ -809,19 +809,19 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $me
 	// Set node status
 	switch ($status) {
 		case 0: 
-			$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = COL_NORMAL; // Normal monitor
 			break;
 		case 1:
-			$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = COL_CRITICAL; // Critical monitor
 			break;
 		case 2:
-			$status_color = '#FFE308'; // Warning monitor
+			$status_color = COL_WARNING; // Warning monitor
 			break;
 		case 4:
-			$status_color = '#FFA300'; // Alert fired
+			$status_color = COL_ALERTFIRED; // Alert fired
 			break;
 		default:
-			$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = COL_UNKNOWN; // Unknown monitor
 			break;
 	}
 	
@@ -911,20 +911,20 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	// Set node status
 	switch ($status) {
 		case AGENT_STATUS_NORMAL: 
-			$status_color = '#8DFF1D';
+			$status_color = COL_NORMAL;
 			break;
 		case AGENT_STATUS_CRITICAL:
-			$status_color = '#FF1D1D';
+			$status_color = COL_CRITICAL;
 			break;
 		case AGENT_STATUS_WARNING:
-			$status_color = '#FFE308';
+			$status_color = COL_WARNING;
 			break;
 		case AGENT_STATUS_ALERT_FIRED:
-			$status_color = '#FFA300';
+			$status_color = COL_ALERTFIRED;
 			break;
 		default:
 			//Unknown monitor
-			$status_color = '#BBBBBB';
+			$status_color = COL_UNKNOWN;
 			break;
 	}
 	
@@ -1013,19 +1013,19 @@ function networkmap_create_module_group_node ($module_group, $simple = 0, $font_
 	// Set node status
 	switch ($module_group['status']) {
 		case 0:
-			$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = COL_NORMAL; // Normal monitor
 			break;
 		case 1:
-			$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = COL_CRITICAL; // Critical monitor
 			break;
 		case 2:
-			$status_color = '#FFE308'; // Warning monitor
+			$status_color = COL_WARNING; // Warning monitor
 			break;
 		case 4:
-			$status_color = '#FFA300'; // Alert fired
+			$status_color = COL_ALERTFIRED; // Alert fired
 			break;
 		default:
-			$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = COL_UNKNOWN; // Unknown monitor
 			break;
 	}
 	
@@ -1090,19 +1090,19 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 	// Set node status
 	switch ($status) {
 		case AGENT_MODULE_STATUS_NORMAL:
-			$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = COL_NORMAL; // Normal monitor
 			break;
 		case AGENT_MODULE_STATUS_CRITICAL_BAD:
-			$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = COL_CRITICAL; // Critical monitor
 			break;
 		case AGENT_MODULE_STATUS_WARNING:
-			$status_color = '#FFE308'; // Warning monitor
+			$status_color = COL_WARNING; // Warning monitor
 			break;
 		case AGENT_STATUS_ALERT_FIRED:
-			$status_color = '#FFA300'; // Alert fired
+			$status_color = COL_ALERTFIRED; // Alert fired
 			break;
 		default:
-			$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = COL_UNKNOWN; // Unknown monitor
 			break;
 	}
 	

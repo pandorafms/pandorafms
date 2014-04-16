@@ -474,7 +474,7 @@ function new_macro(prefix) {
 	$('#delete_macro_button').show();
 	
 	var next_row = parseInt($('#next_row').html());
-		
+	
 	$('#next_row').html(next_row + 3);
 	var nrow1 = next_row - 3;
 	var nrow2 = next_row - 2;
@@ -482,7 +482,7 @@ function new_macro(prefix) {
 	var nrow4 = next_row;
 	var nrow5 = next_row + 1;
 	var nrow6 = next_row + 2;
-
+	
 	var next_number = parseInt($('#next_macro').html());
 	$('#next_macro').html(next_number + 1);
 	var current_number = next_number - 1;
@@ -573,7 +573,7 @@ function new_macro(prefix) {
 				return prefix + (nrow6) + '-3';
 				break;
 		}
-	}	
+	}
 }
 
 function add_macro_field(macro, row_model_id) {
@@ -583,7 +583,7 @@ function add_macro_field(macro, row_model_id) {
 	var macro_macro = macro['macro'];
 	var macro_value =  $('<div />').html(macro['value']).text();
 	var macro_hide = macro['hide'];
-
+	
 	macro_value.type = 'password';
 	
 	var row_id = row_model_id + macro_macro;

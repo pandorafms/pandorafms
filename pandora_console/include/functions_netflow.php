@@ -353,7 +353,7 @@ function netflow_summary_table ($data) {
 	
 	$table->style[0] = 'font-weight: bold; padding: 6px';
 	$table->style[1] = 'padding: 6px';
-
+	
 	$data = array();
 	$data[] = __('Total flows');
 	$data[] = format_numeric ($data['totalflows']);
@@ -557,7 +557,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 	if (($aggregate != 'none') && (empty($values['data']))) {
 		return array();
 	}
-
+	
 	return $values;
 }
 

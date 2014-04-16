@@ -3189,7 +3189,7 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 		$flash_chart = false;
 	}
 	
-	return pie3d_graph($flash_chart, $values, 320, 200,
+	return pie3d_graph($flash_chart, $values, 370, 200,
 		__('Other'), $config['homeurl'], $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size'], $ttl);
 }

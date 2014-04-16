@@ -1,3 +1,8 @@
+2014-04-16  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_networkmap.php: cleaned source code and killed
+	some unicorns and magic numbers, now there is some constants.
+
 2014-04-16  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* godmode/setup/setup_netflow.php: Added a radio buttons

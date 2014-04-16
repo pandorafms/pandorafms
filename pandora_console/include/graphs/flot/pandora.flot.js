@@ -65,6 +65,12 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 				clickable: true
 			}
 		};
+
+		if (width < 400) {
+			conf_pie.legend.labelFormatter = function(label, series) {
+					return label + " (" + series.percent.toFixed(1) + "%)";
+				}
+		}
 	
 	switch (legend_position) {
 		case 'bottom':
@@ -73,9 +79,8 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 			else
 				offset = - (width / 5);
 			conf_pie.series.pie.radius = 1 / 2.5;
-			conf_pie.series.pie.offset = 
 			conf_pie.series.pie.offset = {top: offset};
-			conf_pie.legend.position = "s";
+			conf_pie.legend.position = "se";
 			break;
 		case 'right':
 		case 'inner':

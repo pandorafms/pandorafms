@@ -1,3 +1,23 @@
+2014-04-16  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/setup/setup_netflow.php: Added a radio buttons
+	to activate or deactivate the name resolution for ip addresses.
+
+	* include/functions_config.php: Added the name resolution by
+	if to the funcion "config_update_config".
+
+	* include/functions_graph.php: Added 50px to the width of the
+	pie of the function "graph_netflow_aggregate_pie".
+
+	* include/functions_netflow.php: Improved the styles of the
+	netflow report tables.
+
+	* include/graphs/flot/pandora.flot.js: Now the legend items
+	show the percentage when the pie labels are hidden.
+
+	* pandora_console/include/graphs/functions_d3.php,
+	  pandora_console/include/graphs/pandora.d3.js: Added files.
+
 2014-04-14  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_ui.php: Improved the function

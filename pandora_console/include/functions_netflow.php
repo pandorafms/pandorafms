@@ -218,8 +218,8 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	$table->head = array ();
 	$table->head[0] = '<b>' . netflow_format_aggregate ($aggregate) . '</b>';
 	$table->head[1] = '<b>' . netflow_format_unit ($unit) . '</b>';
-	$table->style[0] = 'border: 1px solid black; padding: 4px';
-	$table->style[1] = 'border: 1px solid black; padding: 4px';
+	$table->style[0] = 'padding: 6px';
+	$table->style[1] = 'padding: 6px';
 
 	while (isset ($data[$j])) {
 		$agg = $data[$j]['agg'];
@@ -276,7 +276,7 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 	
 	$values = array();
 	$table->size = array ('60%');
-	$table->class = 'databox_grid';
+	$table->class = 'databox';
 	$table->cellspacing = 0;
 	$table->data = array();
 	
@@ -346,25 +346,43 @@ function netflow_summary_table ($data) {
 	global $nfdump_date_format;
 	
 	$values = array();
-	$table->size = array ('50%');
+	$table->size = array('50%');
 	$table->cellspacing = 0;
 	$table->class = 'databox';
 	$table->data = array();
 	
-	$table->style[0] = 'border: 1px solid black;padding: 4px';
-	$table->style[1] = 'border: 1px solid black;padding: 4px';
-	$table->data[0][0] = '<b>'.__('Total flows').'</b>';
-	$table->data[0][1] = format_numeric ($data['totalflows']);
-	$table->data[1][0] = '<b>'.__('Total bytes').'</b>';
-	$table->data[1][1] = format_numeric ($data['totalbytes']);
-	$table->data[2][0] = '<b>'.__('Total packets').'</b>';
-	$table->data[2][1] = format_numeric ($data['totalpackets']);
-	$table->data[3][0] = '<b>'.__('Average bits per second'). '</b>';
-	$table->data[3][1] = format_numeric ($data['avgbps']);
-	$table->data[4][0] = '<b>'.__('Average packets per second').'</b>';
-	$table->data[4][1] = format_numeric ($data['avgpps']);
-	$table->data[5][0] = '<b>'.__('Average bytes per packet').'</b>';
-	$table->data[5][1] = format_numeric ($data['avgbpp']);
+	$table->style[0] = 'font-weight: bold; padding: 6px';
+	$table->style[1] = 'padding: 6px';
+
+	$data = array();
+	$data[] = __('Total flows');
+	$data[] = format_numeric ($data['totalflows']);
+	$table->data[] = $data;
+	
+	$data = array();
+	$data[] = __('Total bytes');
+	$data[] = format_numeric ($data['totalbytes']);
+	$table->data[] = $data;
+	
+	$data = array();
+	$data[] = __('Total packets');
+	$data[] = format_numeric ($data['totalpackets']);
+	$table->data[] = $data;
+	
+	$data = array();
+	$data[] = __('Average bits per second');
+	$data[] = format_numeric ($data['avgbps']);
+	$table->data[] = $data;
+	
+	$data = array();
+	$data[] = __('Average packets per second');
+	$data[] = format_numeric ($data['avgpps']);
+	$table->data[] = $data;
+	
+	$data = array();
+	$data[] = __('Average bytes per packet');
+	$data[] = format_numeric ($data['avgbpp']);
+	$table->data[] = $data;
 	
 	$html = html_print_table ($table, true);
 	
@@ -539,7 +557,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 	if (($aggregate != 'none') && (empty($values['data']))) {
 		return array();
 	}
-	
+
 	return $values;
 }
 

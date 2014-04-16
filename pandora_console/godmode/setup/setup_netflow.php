@@ -17,9 +17,7 @@
 
 global $config;
 
-//include_once("include/functions_graph.php");
 include_once("include/functions_ui.php");
-//ui_require_javascript_file ('calendar');
 
 check_login ();
 
@@ -60,6 +58,10 @@ $table->data[6][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('ne
 $table->data[6][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_disable_custom_lvfilters', 0, '', $config["netflow_disable_custom_lvfilters"], true).'&nbsp;&nbsp;';
 $table->data[7][0] = '<b>' . __('Netflow max lifetime') . '</b>'.ui_print_help_tip (__("Sets the maximum lifetime for netflow data in days."), true);
 $table->data[7][1] = html_print_input_text ('netflow_max_lifetime', $config['netflow_max_lifetime'], false, 50, 200, true);
+$table->data[8][0] = '<b>' . __('Name resolution for IP address') . '</b>' .
+	ui_print_help_tip (__("Resolve the IP addresses to get their hostnames."), true);
+$table->data[8][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_get_ip_hostname', 1, '', $config["netflow_get_ip_hostname"], true).'&nbsp;&nbsp;';
+$table->data[8][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_get_ip_hostname', 0, '', $config["netflow_get_ip_hostname"], true).'&nbsp;&nbsp;';
 
 echo '<form id="netflow_setup" method="post">';
 
@@ -72,9 +74,3 @@ echo '<div class="action-buttons" style="width:98%;">';
 echo '</div></form>';
 
 ?>
-
-<script type="text/javascript">
-	$(document).ready (function () {
-		$("textarea").TextAreaResizer ();
-	});
-</script>

@@ -479,6 +479,8 @@ function config_update_config () {
 					$error_update[] = __('Disable custom live view filters');
 				if (!config_update_value ('netflow_max_lifetime', (int) get_parameter ('netflow_max_lifetime')))
 					$error_update[] = __('Netflow max lifetime');
+				if (!config_update_value ('netflow_get_ip_hostname', (int) get_parameter ('netflow_get_ip_hostname')))
+					$error_update[] = __('Name resolution for IP address');
 				break;
 			case 'log':
 				if (!config_update_value ('log_dir', get_parameter('log_dir')))

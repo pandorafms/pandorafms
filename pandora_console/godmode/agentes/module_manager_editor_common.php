@@ -182,7 +182,7 @@ if (!$edit) {
 	}
 	
 	$table_simple->data[1][1] = '<em>'.modules_get_moduletype_description ($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
-	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(json_encode($type_names_hash)),true);
+	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
 else {
 	if (isset($id_module_type)) {
@@ -215,7 +215,7 @@ else {
 		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
 	}
 	
-	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(json_encode($type_names_hash)),true);
+	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
 
 $table_simple->data[1][2] = __('Module group');

@@ -1,3 +1,13 @@
+2014-04-19  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/agentes/agent_manager.php,
+	godmode/agentes/agent_wizard.snmp_explorer.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_common.php: Replaced
+	json_encode() with io_json_mb_encode() to avoid invalid encoding
+	with multi-byte characters.
+
 2014-04-16  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/d3.v3.4.5.js: added the last javascript

@@ -843,7 +843,7 @@ if ($update_module || $create_module) {
 			$macros[$k]['value'] = get_parameter($m['macro'], '');
 		}
 		
-		$macros = json_encode($macros);
+		$macros = io_json_mb_encode($macros);
 		
 		$conf_array = explode("\n",$configuration_data);
 		foreach($conf_array as $line) {
@@ -944,7 +944,7 @@ if ($update_module || $create_module) {
 	$throw_unknown_events = (bool)get_parameter('throw_unknown_events', false);
 	//Set the event type that can show.
 	$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
-	$disabled_types_event = json_encode($disabled_types_event);
+	$disabled_types_event = io_json_mb_encode($disabled_types_event);
 	
 	$module_macro_names = (array) get_parameter('module_macro_names', array());
 	$module_macro_values = (array) get_parameter('module_macro_values', array());
@@ -1066,7 +1066,7 @@ if ($update_module) {
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		
 		db_pandora_audit("Agent management",
-			"Updated module '$name' for agent ".$agent["nombre"], false, false, json_encode($values));
+			"Updated module '$name' for agent ".$agent["nombre"], false, false, io_json_mb_encode($values));
 	}
 }
 
@@ -1189,7 +1189,7 @@ if ($create_module) {
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Added module '$name' for agent ".$agent["nombre"], false, true, json_encode($values));
+			"Added module '$name' for agent ".$agent["nombre"], false, true, io_json_mb_encode($values));
 	}
 }
 

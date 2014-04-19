@@ -33,7 +33,7 @@ if (is_ajax ()) {
 			!network_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
 		
 		
-		echo json_encode ($component);
+		echo io_json_mb_encode ($component);
 		return;
 	}
 	
@@ -47,7 +47,7 @@ if (is_ajax ()) {
 				'order' => 'name ASC'),
 			array ('id_nc', 'name'));
 		
-		echo json_encode ($components);
+		echo io_json_mb_encode ($components);
 		return;
 	}
 	
@@ -60,7 +60,7 @@ if (is_ajax ()) {
 			array('id_network_component_group' => $id_module_group),
 			array('id', 'name'));
 		
-		echo json_encode($localComponents);
+		echo io_json_mb_encode($localComponents);
 		return;
 	}
 	
@@ -93,7 +93,7 @@ if (is_ajax ()) {
 		$component['throw_unknown_events'] =
 			!local_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
 		
-		echo json_encode ($component);
+		echo io_json_mb_encode ($component);
 		return;
 	}
 	
@@ -123,7 +123,7 @@ if (is_ajax ()) {
 			1, "", $snmp_port);
 		
 		if ($snmpwalk === false) {
-			echo json_encode ($snmpwalk);
+			echo io_json_mb_encode ($snmpwalk);
 			return;
 		}
 		
@@ -133,7 +133,7 @@ if (is_ajax ()) {
 			$result[$id] = substr ($value, 0, 55);
 		}
 		asort ($result);
-		echo json_encode ($result);
+		echo io_json_mb_encode ($result);
 		return;
 	}
 	

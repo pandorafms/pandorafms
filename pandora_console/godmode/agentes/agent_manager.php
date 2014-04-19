@@ -49,7 +49,7 @@ if (is_ajax ()) {
 				'ip' => io_safe_output($agent['direccion']));
 		}
 		
-		echo json_encode($data);
+		echo io_json_mb_encode($data);
 		
 		return;
 	}
@@ -86,7 +86,7 @@ if (is_ajax ()) {
 			$oid_snmp = array();
 		}
 		
-		echo json_encode($out);
+		echo io_json_mb_encode($out);
 	}
 	
 	return;

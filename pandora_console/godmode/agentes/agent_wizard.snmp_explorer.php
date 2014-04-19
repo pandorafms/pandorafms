@@ -442,7 +442,7 @@ if ($create_modules) {
 						}
 					}
 					
-					$module_values['macros'] = json_encode($macros);
+					$module_values['macros'] = io_json_mb_encode($macros);
 					
 					unset($module_values['snmp_community']); //snmp_community
 					unset($module_values['ip_target']); //ip_target
@@ -488,7 +488,7 @@ if ($create_modules) {
 				}
 			}
 			
-			$module_values['macros'] = json_encode($macros);
+			$module_values['macros'] = io_json_mb_encode($macros);
 			
 			unset($module_values['snmp_community']); //snmp_community
 			unset($module_values['ip_target']); //ip_target
@@ -528,7 +528,7 @@ if ($create_modules) {
 				}
 			}
 			
-			$module_values['macros'] = json_encode($macros);
+			$module_values['macros'] = io_json_mb_encode($macros);
 			
 			unset($module_values['snmp_community']); //snmp_community
 			unset($module_values['ip_target']); //ip_target

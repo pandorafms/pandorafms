@@ -1,3 +1,10 @@
+2014-04-22  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_migrate_recon_scripts.pl
+	lib/PandoraFMS/ReconServer.pm: Add compatibility for the new
+	fields system (macros) of the recon scripts to the recon server.
+	Add migrate script from old format to new one
+
 2014-04-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/recon_scripts/snmp-recon.pl: Do not load MIB files (DISPLAY-HINTS may

@@ -26,6 +26,7 @@ use Thread::Semaphore;
 
 use IO::Socket::INET;
 use POSIX qw(strftime ceil);
+use JSON qw(decode_json encode_json);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -482,13 +483,21 @@ sub exec_recon_script ($$$) {
 	logger($pa_config, 'Executing recon script ' . safe_output($script->{'name'}), 10);
 	
 	my $command = safe_output($script->{'script'});
-	my $field1 = safe_output($task->{'field1'}); 
-	my $field2 = safe_output($task->{'field2'});
-	my $field3 = safe_output($task->{'field3'}); 
-	my $field4 = safe_output($task->{'field4'});
+	
+	my $macros = safe_output($task->{'macros'});
+	my $decoded_macros = decode_json ($macros);
+	
+	my $macros_parameters = '';
+	
+	# Add module macros as parameter
+	if(ref($decoded_macros) eq "HASH") {
+		while (my ($i, $m) = each (%{$decoded_macros})) {
+			$macros_parameters = $macros_parameters . ' "' . $m->{"value"} . '"';
+		}
+	}
 	
 	if (-x $command) {
-		`$command $task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $field1 $field2 $field3 $field4`;
+		`$command $task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $macros_parameters`;
 	} else {
 		logger ($pa_config, "Cannot execute recon task command $command.");
 	}

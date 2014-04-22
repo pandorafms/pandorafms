@@ -800,6 +800,7 @@ CREATE TABLE IF NOT EXISTS `trecon_script` (
 	`name` varchar(100) default '',
 	`description` TEXT,
 	`script` varchar(250) default '',
+	`macros` TEXT,
 	PRIMARY KEY  (`id_recon_script`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -831,6 +832,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`parent_detection` tinyint(1) unsigned default '0',
 	`parent_recursion` tinyint(1) unsigned default '0',
 	`disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	`macros` TEXT,
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

@@ -840,7 +840,8 @@ CREATE TABLE trecon_script (
 	id_recon_script NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) default '',
 	description CLOB default NULL,
-	script VARCHAR2(250) default ''
+	script VARCHAR2(250) default '',
+	macros CLOB default ''
 );
 
 CREATE SEQUENCE trecon_script_s INCREMENT BY 1 START WITH 1;
@@ -871,7 +872,8 @@ CREATE TABLE trecon_task (
 	resolve_names NUMBER(5, 0) default 1 NOT NULL,
 	parent_detection NUMBER(5, 0) default 1 NOT NULL,
 	parent_recursion NUMBER(5, 0) default 1 NOT NULL,
-	disabled NUMBER(5, 0) default 1 NOT NULL
+	disabled NUMBER(5, 0) default 1 NOT NULL,
+	macros CLOB default ''
 );
 CREATE INDEX trecon_task_id_rec_serv_idx ON trecon_task(id_recon_server);
 

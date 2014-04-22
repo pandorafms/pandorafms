@@ -283,7 +283,7 @@ if (($create != "") OR ($view != "")) {
 		$macro_name_name = 'field'.$i.'_macro';
 		$macro_name = '_field'.$i.'_';
 		$macro_hide_value_name = 'field'.$i.'_hide';
-		$macro_hide_value_value = 1;
+		$macro_hide_value_value = 0;
 		
 		if(isset($macros[$i]['desc'])) {
 			$macro_desc_value = $macros[$i]['desc'];
@@ -295,6 +295,10 @@ if (($create != "") OR ($view != "")) {
 		
 		if(isset($macros[$i]['value'])) {
 			$macro_value_value = $macros[$i]['value'];
+		}
+		
+		if(isset($macros[$i]['hide'])) {
+			$macro_hide_value_value = $macros[$i]['hide'];
 		}
 		
 		$datam = array ();
@@ -318,11 +322,13 @@ if (($create != "") OR ($view != "")) {
 		$table->colspan['plugin_'.$next_name_number][1] = 3;
 		
 		$datam = array ();
-		$datam[0] = __('Hide value');
-		$datam[1] = html_print_checkbox_extended ($macro_hide_value_name, $macro_hide_value_value, 0, 0, '', array('class' => 'command_advanced_conf'), true, 'checkbox-'.$macro_hide_value_name);
+		$datam[0] = __('Hide value') . ui_print_help_tip(__('This field will show up as dots like a password'), true);
+		$datam[1] = html_print_checkbox_extended ($macro_hide_value_name, 1, $macro_hide_value_value, 0, '', array('class' => 'command_advanced_conf'), true, 'checkbox-'.$macro_hide_value_name);
 
 		$table->data['plugin_'.$next_name_number] = $datam;
 		$next_name_number++;
+		
+		$table->colspan['plugin_'.$next_name_number][1] = 3;
 
 		$datam = array ();
 		$datam[0] = __('Help')."<span style='font-weight: normal'> ($macro_name)</span><br><br><br>";
@@ -411,11 +417,14 @@ else {
 			$desc = (string)get_parameter ('field'.$i.'_desc');
 			$help = (string)get_parameter ('field'.$i.'_help');
 			$value = (string)get_parameter ('field'.$i.'_value');
+			$hide = get_parameter ('field'.$i.'_hide');
 			
 			$macros[$i]['macro'] = $macro;
 			$macros[$i]['desc'] = $desc;
 			$macros[$i]['help'] = $help;
 			$macros[$i]['value'] = $value;
+			$macros[$i]['hide'] = $hide;
+
 			$i++;
 		}
 		

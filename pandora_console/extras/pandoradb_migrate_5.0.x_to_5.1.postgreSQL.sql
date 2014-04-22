@@ -104,3 +104,10 @@ ALTER TABLE "treport" ADD COLUMN "non_interactive" SMALLINT DEFAULT 0;
 
 /* 2014/04/10 */
 ALTER TABLE "treport_content" ADD COLUMN "name" varchar(150) NULL;
+
+/* 2014/04/11 */
+-- ---------------------------------------------------------------------
+-- Table `trecon_script` and `trecon_task`
+-- ---------------------------------------------------------------------
+ALTER TABLE "trecon_script" ADD COLUMN "macros" TEXT default '';
+ALTER TABLE "trecon_task" ADD COLUMN "macros" TEXT default '';

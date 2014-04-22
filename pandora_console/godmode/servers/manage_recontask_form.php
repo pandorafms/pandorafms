@@ -39,6 +39,22 @@ if (is_ajax ()) {
 		
 		return;
 	}
+	
+	$get_recon_script_macros = get_parameter('get_recon_script_macros');
+	if ($get_recon_script_macros) {
+		$id_recon_script = get_parameter('id', 0);
+		
+		$recon_script_macros = db_get_value('macros', 'trecon_script', 'id_recon_script',
+			$id_recon_script);
+		
+		$macros = array();
+		$macros['base64'] = base64_encode($recon_script_macros);
+		$macros['array'] = json_decode($recon_script_macros,true);
+		
+		echo json_encode($macros);
+		return;
+	}
+
 	return;
 }
 
@@ -86,6 +102,7 @@ if (isset ($_GET["update"]) or (isset($_GET["crt"]))) {
 		$resolve_names = $row["resolve_names"];
 		$parent_detection = $row["parent_detection"];
 		$parent_recursion = $row["parent_recursion"];
+		$macros = $row["macros"];
 	}
 }
 elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
@@ -119,6 +136,7 @@ elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
 		$resolve_names = 0;
 		$parent_detection = 1;
 		$parent_recursion = 5;
+		$macros = '';
 	}
 }
 
@@ -126,6 +144,7 @@ elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
 ui_print_page_header (__('Manage recontask'), "", false, "recontask", true);
 
 
+$table->id='table_recon';
 $table->width='98%';
 $table->cellspacing=4;
 $table->cellpadding=4;
@@ -190,6 +209,7 @@ $table->data[5][1] = html_print_select_from_sql ('SELECT id_np, name FROM tnetwo
 $table->data[6][0] = "<b>".__('Recon script');
 $table->data[6][1] = html_print_select_from_sql ('SELECT id_recon_script, name FROM trecon_script', 
 	"id_recon_script", $id_recon_script, 'get_explanation_recon_script($(\'#id_recon_script\').val())', '', '', true);
+$table->data[6][1] .= $data[1] .= html_print_input_hidden('macros',base64_encode($macros),true);
 
 
 // OS
@@ -223,27 +243,43 @@ $table->data[11][0] = "<b>".__('SNMP Default community');
 $table->data[11][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
 
 
+$explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id_recon_script);
+		
 $table->data[12][0] = "<b>" . __('Explanation') . "</b>";
 $table->data[12][1] = "<span id='spinner_layour' style='display: none;'>" . html_print_image ("images/spinner.gif", true) .
-"</span>" . html_print_textarea('explanation', 4, 60, '', 'style="width: 388px;"', true);
+"</span>" . html_print_textarea('explanation', 4, 60, $explanation, 'style="width: 388px;"', true);
 
+// A hidden "model row" to clone it from javascript to add fields dynamicly
+$data = array ();
+$data[0] = 'macro_desc';
+$data[0] .= ui_print_help_tip ('macro_help', true);
+$data[1] = html_print_input_text ('macro_name', 'macro_value', '', 100, 255, true);
+$table->colspan['macro_field'][1] = 3;
+$table->rowstyle['macro_field'] = 'display:none';
+$table->data['macro_field'] = $data;
 
-// Field1
-$table->data[13][0] = "<b>".__('Script field #1').ui_print_help_tip(__("several networks separated by comma. For example: 192.168.100.0/24,192.168.50.0/24"), true);
-$table->data[13][1] =  html_print_input_text ('field1', $field1, '', 40, 0, true);
-
-// Field2
-$table->data[14][0] = "<b>".__('Script field #2').ui_print_help_tip(__("several communities separated by comma. For example: snmp_community,public,private "), true);
-$table->data[14][1] =  html_print_input_text ('field2', $field2, '', 40, 0, true);
-
-// Field3
-$table->data[15][0] = "<b>".__('Script field #3');
-$table->data[15][1] =  html_print_input_text ('field3', $field3, '', 40, 0, true);
-
-// Field4
-$table->data[16][0] = "<b>".__('Script field #4');
-$table->data[16][1] =  html_print_input_text ('field4', $field4, '', 40, 0, true);
-
+// If there are $macros, we create the form fields
+if (!empty($macros)) {
+	$macros = json_decode($macros, true);
+	
+	foreach ($macros as $k => $m) {
+		$data = array ();
+		$data[0] = "<b>" . $m['desc'] . "</b>";
+		if (!empty($m['help'])) {
+			$data[0] .= ui_print_help_tip ($m['help'], true);
+		}
+		if($m['hide']) {
+			$data[1] = html_print_input_password($m['macro'], $m['value'], '', 100, 255, true);
+		}
+		else {
+			$data[1] = html_print_input_text($m['macro'], $m['value'], '', 100, 255, true);
+		}
+		$table->colspan['macro'.$m['macro']][1] = 3;
+		$table->rowclass['macro'.$m['macro']] = 'macro_field';
+		
+		$table->data['macro'.$m['macro']] = $data;
+	}
+}
 
 // Comments
 $table->data[17][0] = "<b>".__('Comments');
@@ -276,6 +312,8 @@ else
 echo "</div>";
 
 echo "</form>";
+
+ui_require_javascript_file ('pandora_modules');
 
 ?>
 <script type="text/javascript">
@@ -317,6 +355,35 @@ function get_explanation_recon_script(id) {
 			$("#textarea_explanation").val(data);
 		}
 	);
+	
+	var params = [];
+	params.push("page=godmode/servers/manage_recontask_form");
+	params.push("get_recon_script_macros=1");
+	params.push("id=" + id);
+	
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: action = get_php_value('absolute_homeurl') + "ajax.php",
+		async: false,
+		timeout: 10000,
+		dataType: 'json',
+		success: function (data) {
+			// Delete all the macro fields
+			$('.macro_field').remove();
+			
+			if (data['array'] != null) {
+				$('#hidden-macros').val(data['base64']);
+				jQuery.each (data['array'], function (i, macro) {
+					if (macro['desc'] != '') {
+						add_macro_field(macro, 'table_recon-macro');
+					}
+				});
+			}
+			
+			forced_title_callback();
+		}
+	});
 }
 /* ]]> */
 </script>

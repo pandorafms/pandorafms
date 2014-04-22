@@ -131,3 +131,10 @@ ALTER TABLE treport ADD (non_interactive NUMBER(5, 0) default 0 NOT NULL);
 
 /* 2014/04/10 */
 ALTER TABLE treport_content ADD (name VARCHAR2(150) default NULL);
+
+/* 2014/04/11 */
+-- ---------------------------------------------------------------------
+-- Table `trecon_script` and `trecon_task`
+-- ---------------------------------------------------------------------
+ALTER TABLE trecon_script ADD (macros CLOB default '' NOT NULL);
+ALTER TABLE trecon_task ADD (macros CLOB default '' NOT NULL);

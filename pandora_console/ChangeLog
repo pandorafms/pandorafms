@@ -1,3 +1,23 @@
+2014-04-22  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql
+	godmode/agentes/module_manager_editor_plugin.php
+	godmode/servers/plugin.php
+	godmode/servers/manage_recontask.php
+	godmode/servers/manage_recontask_form.php
+	godmode/servers/recon_script.php
+	pandoradb_data.sql
+	include/javascript/pandora_modules.js
+	pandoradb.sql: Changed the recon scripts parameters to
+	dynamic fields like plugin macros. 
+	Fixed some plugin macros bugs in the new hide parameter
+
 2014-04-21 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* godmode/massive/massive_enable_disable_alerts.php,

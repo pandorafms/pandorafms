@@ -461,13 +461,15 @@ function delete_macro(prefix) {
 	}
 	var next_row = parseInt($('#next_row').html());
 	$('#next_macro').html(next_number-1);
-	$('#next_row').html(next_row-2);
+	$('#next_row').html(next_row-3);
 	
-	var nrow1 = next_row - 2;
-	var nrow2 = next_row - 1;
+	var nrow1 = next_row - 3;
+	var nrow2 = next_row - 2;
+	var nrow3 = next_row - 1;
 	
 	var $row1 = $('#'+prefix+nrow1).remove();
 	var $row2 = $('#'+prefix+nrow2).remove();
+	var $row3 = $('#'+prefix+nrow3).remove();
 }
 
 function new_macro(prefix) {

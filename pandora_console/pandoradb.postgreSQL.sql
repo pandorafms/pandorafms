@@ -737,7 +737,8 @@ CREATE TABLE "trecon_script" (
 	"id_recon_script" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(100) default '',
 	"description" TEXT default NULL,
-	"script" varchar(250) default ''
+	"script" varchar(250) default '',
+	"macros" TEXT NOT NULL default ''
 );
 
 -- ---------------------------------------------------------------------
@@ -767,7 +768,8 @@ CREATE TABLE "trecon_task" (
 	"resolve_names" SMALLINT NOT NULL default 1,
 	"parent_detection" SMALLINT NOT NULL default 1,
 	"parent_recursion" SMALLINT NOT NULL default 1,
-	"disabled" SMALLINT NOT NULL default 1
+	"disabled" SMALLINT NOT NULL default 1,
+	"macros" TEXT NOT NULL default ''
 );
 CREATE INDEX "trecon_task_id_recon_server_idx" ON "trecon_task"("id_recon_server");
 

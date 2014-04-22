@@ -94,6 +94,19 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$resolve_names = (int) get_parameter ("resolve_names", 0);
 	$parent_detection = (int) get_parameter ("parent_detection", 0);
 	$parent_recursion = (int) get_parameter ("parent_recursion", 1);
+	
+	// Get macros
+	$macros = (string) get_parameter ('macros');
+	
+	if (!empty($macros)) {
+		$macros = json_decode(base64_decode($macros), true);
+		
+		foreach($macros as $k => $m) {
+			$macros[$k]['value'] = get_parameter($m['macro'], '');
+		}
+	}
+	
+	$macros = json_encode($macros);
 }
 
 // --------------------------------
@@ -122,7 +135,8 @@ if (isset($_GET["update"])) {
 		'os_detect' => $os_detect,
 		'resolve_names' => $resolve_names,
 		'parent_detection' => $parent_detection,
-		'parent_recursion' => $parent_recursion
+		'parent_recursion' => $parent_recursion,
+		'macros' => $macros
 		);
 		
 	$where = array('id_rt' => $id);
@@ -175,7 +189,8 @@ if (isset($_GET["create"])) {
 		'os_detect' => $os_detect,
 		'resolve_names' => $resolve_names,
 		'parent_detection' => $parent_detection,
-		'parent_recursion' => $parent_recursion
+		'parent_recursion' => $parent_recursion,
+		'macros' => $macros
 		);
 	
 	$reason = "";

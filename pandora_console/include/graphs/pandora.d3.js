@@ -13,7 +13,14 @@
 // GNU General Public License for more details.
 
 
-// https://github.com/fzaninotto/DependencyWheel
+// The recipient is the selector of the html element
+// The elements is an array with the names of the wheel elements
+// The matrix must be a 2 dimensional array with a row and a column for each element
+// Ex:
+// elements = ["a", "b", "c"];
+// matrix = [[0, 0, 2],		// a[a => a, a => b, a => c]
+//			 [5, 0, 1],		// b[b => a, b => b, b => c]
+// 			 [2, 3, 0]];	// c[c => a, c => b, c => c]
 function chordDiagram (recipient, elements, matrix, unit, width) {
 
 	d3.chart = d3.chart || {};
@@ -52,8 +59,7 @@ function chordDiagram (recipient, elements, matrix, unit, width) {
 					.outerRadius(radius + 20);
 
 				var fill = function(d) {
-					if (d.index === 0) return '#ccc';
-					return "hsl(" + parseInt(((elements[d.index][0].charCodeAt() - 97) / 26) * 360, 10) + ",90%,70%)";
+					return "hsl(" + parseInt((d.index / 26) * 360, 10) + ",80%,70%)";
 				};
 
 				// Returns an event handler for fading a given chord group.
@@ -133,14 +139,93 @@ function chordDiagram (recipient, elements, matrix, unit, width) {
 					.style("opacity", 1);
 
 				// Add an elaborate mouseover title for each chord.
-				gEnter.selectAll("path.chord").append("title").text(function(d) {
-					return elements[d.source.index]
-						+ " → " + elements[d.target.index]
-						+ ": " + d.source.value + " " + unit
-						+ "\n" + elements[d.target.index]
-						+ " → " + elements[d.source.index]
-						+ ": " + d.target.value + " " + unit;
-				});
+				gEnter.selectAll("path.chord")
+					.on("mouseover", over_user)
+					.on("mouseout", out_user)
+					.on("mousemove", move_tooltip);
+
+				function move_tooltip(d) {
+					x = d3.event.pageX + 10;
+					y = d3.event.pageY + 10;
+					
+					$("#tooltip").css('left', x + 'px');
+					$("#tooltip").css('top', y + 'px');
+				}
+				
+				function over_user(d) {
+					id = d.id;
+					
+					$("#" + id).css('border', '1px solid black');
+					$("#" + id).css('z-index', '1');
+					
+					show_tooltip(d);
+				}
+				
+				function out_user(d) {
+					id = d.id;
+					
+					$("#" + id).css('border', '');
+					$("#" + id).css('z-index', '');
+					
+					hide_tooltip();
+				}
+
+				function create_tooltip(d, x, y) {
+					if ($("#tooltip").length == 0) {
+						$(recipient)
+							.append($("<div></div>")
+							.attr('id', 'tooltip')
+							.html(
+								elements[d.source.index]
+								+ " → "
+								+ elements[d.target.index]
+								+ ": <b>" + d.source.value.toFixed(2) + " " + unit + "</b>"
+								+ "<br>"
+								+ elements[d.target.index]
+								+ " → "
+								+ elements[d.source.index]
+								+ ": <b>" + d.target.value.toFixed(2) + " " + unit + "</b>"
+							));
+					}
+					else {
+						$("#tooltip").html(
+							elements[d.source.index]
+							+ " → "
+							+ elements[d.target.index]
+							+ ": <b>" + d.source.value.toFixed(2) + " " + unit + "</b>"
+							+ "<br>"
+							+ elements[d.target.index]
+							+ " → "
+							+ elements[d.source.index]
+							+ ": <b>" + d.target.value.toFixed(2) + " " + unit + "</b>"
+						);
+					}
+					
+					$("#tooltip").attr('style', 'background: #fff;' +
+						'position: absolute;' +
+						'display: inline-block;' +
+						'width: auto;' +
+						'max-width: 500px;' +
+						'text-align: left;' +
+						'padding: 10px 10px 10px 10px;' +
+						'z-index: 2;' +
+						"-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);" +
+						"-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
+						"box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
+						'left: ' + x + 'px;' +
+						'top: ' + y + 'px;');
+				}
+				
+				function show_tooltip(d) {
+					x = d3.event.pageX + 10;
+					y = d3.event.pageY + 10;
+					
+					create_tooltip(d, x, y);
+				}
+				
+				function hide_tooltip() {
+					$("#tooltip").hide();
+				}
 			});
 		}
 
@@ -176,4 +261,397 @@ function chordDiagram (recipient, elements, matrix, unit, width) {
 			matrix: matrix
 		})
 		.call(chart);
+}
+
+// The recipient is the selector of the html element
+// The data must be a bunch of associative arrays like this
+// data = {
+// 	"name": "IP Traffic",
+//	"id": 0,
+// 	"children": [
+// 		{
+// 			"name": "192.168.1.1",
+//			"id": 1,
+// 			"children": [
+// 				{
+// 					"name": "HTTP",
+//					"id": 2,
+// 					"value": 33938
+// 				}
+// 			]
+// 		},
+// 		{
+// 			"name": "192.168.1.2",
+//			"id": 3,
+// 			"children": [
+// 				{
+// 					"name": "HTTP",
+//					"id": 4,
+// 					"value": 3938
+// 				},
+// 				{
+// 					"name": "FTP",
+//					"id": 5,
+// 					"value": 1312
+// 				}
+// 			]
+// 		}
+// 	]
+// };
+function treeMap(recipient, data, width, height) {
+
+	//var isIE = BrowserDetect.browser == 'Explorer';
+	var isIE = true;
+	var chartWidth = width;
+	var chartHeight = height;
+	if (width === 'auto') {
+		chartWidth = $(recipient).innerWidth();
+	}
+	if (height === 'auto') {
+		chartHeight = $(recipient).innerHeight();
+	}
+	var xscale = d3.scale.linear().range([0, chartWidth]);
+	var yscale = d3.scale.linear().range([0, chartHeight]);
+	var color = d3.scale.category10();
+	var headerHeight = 20;
+	var headerColor = "#555555";
+	var transitionDuration = 500;
+	var root;
+	var node;
+
+	var treemap = d3.layout.treemap()
+		.round(false)
+		.size([chartWidth, chartHeight])
+		.sticky(true)
+		.value(function(d) {
+			return d.value;
+		});
+
+	var chart = d3.select(recipient)
+		.append("svg:svg")
+		.attr("width", chartWidth)
+		.attr("height", chartHeight)
+		.append("svg:g");
+
+	node = root = data;
+	var nodes = treemap.nodes(root);
+
+	var children = nodes.filter(function(d) {
+		return !d.children;
+	});
+	var parents = nodes.filter(function(d) {
+		return d.children;
+	});
+
+	// create parent cells
+	var parentCells = chart.selectAll("g.cell.parent")
+		.data(parents, function(d) {
+			return d.id;
+		});
+	var parentEnterTransition = parentCells.enter()
+		.append("g")
+		.attr("class", "cell parent")
+		.on("click", function(d) {
+			zoom(node === d ? root : d);
+		});
+	parentEnterTransition.append("rect")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", headerHeight)
+		.style("fill", headerColor);
+	parentEnterTransition.append('foreignObject')
+		.attr("class", "foreignObject")
+		.append("xhtml:div")
+		.attr("class", "labelbody")
+		.append("div")
+		.attr("class", "label");
+	// update transition
+	var parentUpdateTransition = parentCells.transition().duration(transitionDuration);
+	parentUpdateTransition.select(".cell")
+		.attr("transform", function(d) {
+			return "translate(" + d.dx + "," + d.y + ")";
+		});
+	parentUpdateTransition.select("rect")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", headerHeight)
+		.style("fill", headerColor);
+	parentUpdateTransition.select(".foreignObject")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", headerHeight)
+		.select(".labelbody .label")
+		.text(function(d) {
+			return d.name;
+		});
+	// remove transition
+	parentCells.exit()
+		.remove();
+
+	// create children cells
+	var childrenCells = chart.selectAll("g.cell.child")
+		.data(children, function(d) {
+			return d.id;
+		});
+	// enter transition
+	var childEnterTransition = childrenCells.enter()
+		.append("g")
+		.attr("class", "cell child")
+		.on("mouseover", over_user)
+		.on("mouseout", out_user)
+		.on("mousemove", move_tooltip)
+		.on("click", function(d) {
+			zoom(node === d.parent ? root : d.parent);
+		});
+	childEnterTransition.append("rect")
+		.classed("background", true)
+		.style("fill", function(d) {
+			return color(d.name);
+		});
+	childEnterTransition.append('foreignObject')
+		.attr("class", "foreignObject")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", function(d) {
+			return Math.max(0.01, d.dy);
+		})
+		.append("xhtml:div")
+		.attr("class", "labelbody")
+		.append("div")
+		.attr("class", "label")
+		.text(function(d) {
+			return d.name;
+		});
+
+	if (isIE) {
+		childEnterTransition.selectAll(".foreignObject .labelbody .label")
+			.style("display", "none");
+	} else {
+		childEnterTransition.selectAll(".foreignObject")
+			.style("display", "none");
+	}
+
+	// update transition
+	var childUpdateTransition = childrenCells.transition().duration(transitionDuration);
+	childUpdateTransition.select(".cell")
+		.attr("transform", function(d) {
+			return "translate(" + d.x  + "," + d.y + ")";
+		});
+	childUpdateTransition.select("rect")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", function(d) {
+			return d.dy;
+		});
+	childUpdateTransition.select(".foreignObject")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", function(d) {
+			return Math.max(0.01, d.dy);
+		})
+		.select(".labelbody .label")
+		.text(function(d) {
+			return d.name;
+		});
+	// exit transition
+	childrenCells.exit()
+		.remove();
+
+	d3.select("select").on("change", function() {
+		treemap.value(this.value == "size" ? size : count)
+			.nodes(root);
+		zoom(node);
+	});
+
+	zoom(node);
+
+	function size(d) {
+		return d.size;
+	}
+
+	function count(d) {
+		return 1;
+	}
+
+	//and another one
+	function textHeight(d) {
+		var ky = chartHeight / d.dy;
+		yscale.domain([d.y, d.y + d.dy]);
+		return (ky * d.dy) / headerHeight;
+	}
+
+	function getRGBComponents (color) {
+		var r = color.substring(1, 3);
+		var g = color.substring(3, 5);
+		var b = color.substring(5, 7);
+		return {
+			R: parseInt(r, 16),
+			G: parseInt(g, 16),
+			B: parseInt(b, 16)
+		};
+	}
+
+	function idealTextColor (bgColor) {
+		var nThreshold = 105;
+		var components = getRGBComponents(bgColor);
+		var bgDelta = (components.R * 0.299) + (components.G * 0.587) + (components.B * 0.114);
+		return ((255 - bgDelta) < nThreshold) ? "#000000" : "#ffffff";
+	}
+
+	function zoom(d) {
+		treemap.padding([headerHeight/(chartHeight/d.dy), 0, 0, 0]).nodes(d);
+
+		// moving the next two lines above treemap layout messes up padding of zoom result
+		var kx = chartWidth  / d.dx;
+		var ky = chartHeight / d.dy;
+		var level = d;
+
+		xscale.domain([d.x, d.x + d.dx]);
+		yscale.domain([d.y, d.y + d.dy]);
+
+		if (node != level) {
+			if (isIE) {
+				chart.selectAll(".cell.child .foreignObject .labelbody .label")
+					.style("display", "none");
+			} else {
+				chart.selectAll(".cell.child .foreignObject")
+					.style("display", "none");
+			}
+		}
+
+		var zoomTransition = chart.selectAll("g.cell").transition().duration(transitionDuration)
+			.attr("transform", function(d) {
+				return "translate(" + xscale(d.x) + "," + yscale(d.y) + ")";
+			})
+			.each("end", function(d, i) {
+				if (!i && (level !== self.root)) {
+					chart.selectAll(".cell.child")
+						.filter(function(d) {
+							return d.parent === self.node; // only get the children for selected group
+						})
+						.select(".foreignObject .labelbody .label")
+						.style("color", function(d) {
+							return idealTextColor(color(d.parent.name));
+						});
+
+					if (isIE) {
+						chart.selectAll(".cell.child")
+							.filter(function(d) {
+								return d.parent === self.node; // only get the children for selected group
+							})
+							.select(".foreignObject .labelbody .label")
+							.style("display", "")
+					} else {
+						chart.selectAll(".cell.child")
+							.filter(function(d) {
+								return d.parent === self.node; // only get the children for selected group
+							})
+							.select(".foreignObject")
+							.style("display", "")
+					}
+				}
+			});
+
+		zoomTransition.select(".foreignObject")
+			.attr("width", function(d) {
+				return Math.max(0.01, kx * d.dx);
+			})
+			.attr("height", function(d) {
+				return d.children ? headerHeight: Math.max(0.01, ky * d.dy);
+			})
+			.select(".labelbody .label")
+			.text(function(d) {
+				return d.name;
+			});
+
+		// update the width/height of the rects
+		zoomTransition.select("rect")
+			.attr("width", function(d) {
+				return Math.max(0.01, kx * d.dx);
+			})
+			.attr("height", function(d) {
+				return d.children ? headerHeight : Math.max(0.01, ky * d.dy);
+			});
+
+		node = d;
+
+		if (d3.event) {
+			d3.event.preventDefault();
+		}
+	}
+
+	function position() {
+		this.style("left", function(d) { return d.x + "px"; })
+			.style("top", function(d) { return d.y + "px"; })
+			.style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+			.style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+	}
+	
+	function move_tooltip(d) {
+		x = d3.event.pageX + 10;
+		y = d3.event.pageY + 10;
+		
+		$("#tooltip").css('left', x + 'px');
+		$("#tooltip").css('top', y + 'px');
+	}
+	
+	function over_user(d) {
+		id = d.id;
+		
+		$("#" + id).css('border', '1px solid black');
+		$("#" + id).css('z-index', '1');
+		
+		show_tooltip(d);
+	}
+	
+	function out_user(d) {
+		id = d.id;
+		
+		$("#" + id).css('border', '');
+		$("#" + id).css('z-index', '');
+		
+		hide_tooltip();
+	}
+
+	function create_tooltip(d, x, y) {
+		if ($("#tooltip").length == 0) {
+			$(recipient)
+				.append($("<div></div>")
+				.attr('id', 'tooltip')
+				.html(d.tooltip_content));
+		}
+		else {
+			$("#tooltip").html(d.tooltip_content);
+		}
+		
+		$("#tooltip").attr('style', 'background: #fff;' +
+			'position: absolute;' +
+			'display: block;' +
+			'width: 200px;' +
+			'text-align: left;' +
+			'padding: 10px 10px 10px 10px;' +
+			'z-index: 2;' +
+			"-webkit-box-shadow: 7px 7px 5px rgba(50, 50, 50, 0.75);" +
+			"-moz-box-shadow:    7px 7px 5px rgba(50, 50, 50, 0.75);" +
+			"box-shadow:         7px 7px 5px rgba(50, 50, 50, 0.75);" +
+			'left: ' + x + 'px;' +
+			'top: ' + y + 'px;');
+	}
+	
+	function show_tooltip(d) {
+		x = d3.event.pageX + 10;
+		y = d3.event.pageY + 10;
+		
+		create_tooltip(d, x, y);
+	}
+	
+	function hide_tooltip() {
+		$("#tooltip").hide();
+	}
 }

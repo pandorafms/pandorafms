@@ -1,3 +1,14 @@
+2014-04-23  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* include/functions_ui.php
+	  include/ajax/module.php
+	  operation/tree.php
+	  operation/agentes/estado_monitores.php
+	  operation/agentes/status_monitor.php: Changed
+	data view of modules to popup.
+
+	* include/styles/menu.css: Changed style of menu.
+
 2014-04-22  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.postgreSQL.sql

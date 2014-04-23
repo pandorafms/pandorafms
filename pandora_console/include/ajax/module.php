@@ -331,7 +331,7 @@ if ($get_module_detail) {
 		ui_print_error_message(__('No available data to show'));
 	}
 	else {
-		ui_pagination($count, false, $offset);
+		ui_pagination ($count, false, $offset, 0, false, 'offset', true, 'binary_dialog');
 		html_print_table($table);
 	}
 	

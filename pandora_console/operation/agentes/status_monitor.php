@@ -1292,10 +1292,11 @@ ui_require_javascript_file('pandora_modules');
 	}
 	
 	function refresh_pagination_callback (module_id, id_agent, server_name) {
-		$(".pagination").click( function() {
+
+		$(".binary_dialog").click( function() {
 			var classes = $(this).attr('class');
 			classes = classes.split(' ');
-			var offset_class = classes[1];
+			var offset_class = classes[2];
 			offset_class = offset_class.split('_');
 			var offset = offset_class[1];
 		

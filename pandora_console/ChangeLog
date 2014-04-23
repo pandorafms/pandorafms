@@ -1,3 +1,9 @@
+2014-04-23  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* godmode/agentes/agent_wizard.snmp_explorer.php: Changed
+	'network_snmp_data' for 'network_snmp_data_inc' for module
+	types: Bytes read and Bytes written.
+
 2014-04-23  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* godmode/setup/setup_netflow.php: Added a prompt dialog

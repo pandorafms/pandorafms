@@ -346,8 +346,12 @@ if ($create_modules) {
 			// Split module data to get type, name, etc
 			$device_exploded = explode($separator, $device);
 			$device_name = $device_exploded[0];
-			$device_type = $device_exploded[1];
 			
+			$name_exploded = explode('-', $device_name);
+			$name = ltrim(html_entity_decode($name_exploded[1]));
+
+			$device_type = $device_exploded[1];
+		
 			// Delete type from device id
 			unset($device_exploded[0]);
 			unset($device_exploded[1]);
@@ -356,8 +360,12 @@ if ($create_modules) {
 			$device_id = implode($separator, $device_exploded);
 			
 			$values['descripcion'] = $devices_prefix_descriptions[$device_type];
-			
-			$values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
+	
+			if (($name == 'Bytes read') || ($name == 'Bytes written')) {
+				$values['id_tipo_modulo'] = modules_get_type_id('remote_snmp_inc');
+			} else {
+				$values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
+			}
 			
 			$values['snmp_oid'] = $devices_prefix_oids[$device_type] . $device_id;
 			
@@ -541,7 +549,7 @@ if ($create_modules) {
 				
 		$success_message = '';
 		$error_message = '';
-		
+	
 		if (count($results[NOERR]) > 0) {
 			$success_message .= sprintf(__('%s modules created succesfully'), count($results[NOERR])) . '<br>';
 		}
@@ -552,11 +560,13 @@ if ($create_modules) {
 			$error_message .= sprintf(__('%s modules already exist') . ': <br>&nbsp;&nbsp;* ' . implode('<br>&nbsp;&nbsp;* ', $results[ERR_EXIST]), count($results[ERR_EXIST])) . '<br>';
 		}
 		 
-		if (!empty($success_message)) {
-			ui_print_success_message($success_message);
-		}
 		if (!empty($error_message)) {
 			ui_print_error_message($error_message);
+		} else {
+			if (empty($success_message)) {
+				$success_message .= sprintf(__('Modules created succesfully')) . '<br>';
+			}
+			ui_print_success_message($success_message);
 		}
 	}				
 }

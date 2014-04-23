@@ -37,6 +37,11 @@ function include_javascript_d3 ($return = false) {
 function d3_relationship_graph ($elements, $matrix, $unit, $width = 700, $return = false) {
 	global $config;
 
+	if (is_array($elements))
+		$elements = json_encode($elements);
+	if (is_array($matrix))
+		$matrix = json_encode($matrix);
+
 	$output = "<div id=\"chord_diagram\"></div>";
 	$output .= include_javascript_d3(true); 
 	$output .= "<script language=\"javascript\" type=\"text/javascript\">
@@ -49,5 +54,67 @@ function d3_relationship_graph ($elements, $matrix, $unit, $width = 700, $return
 	return $output;
 }
 
+function d3_tree_map_graph ($data, $width = 700, $height = 700, $return = false) {
+	global $config;
+
+	if (is_array($data))
+		$data = json_encode($data);
+	
+	$output = "<div id=\"tree_map\"></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<style type=\"text/css\">
+					.cell>rect {
+						pointer-events: all;
+						cursor: pointer;
+						stroke: #EEEEEE;
+					}
+					
+					.chart {
+						display: block;
+						margin: auto;
+					}
+					
+					.parent .label {
+						color: #FFFFFF;
+						text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+						-webkit-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+						-moz-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+					}
+					
+					.labelbody {
+						text-align: center;
+						background: transparent;
+					}
+					
+					.label {
+						margin: 2px;
+						white-space: pre;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+						-webkit-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+						-moz-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+					}
+					
+					.child .label {
+						white-space: pre-wrap;
+						text-align: center;
+						text-overflow: ellipsis;
+					}
+					
+					.cell {
+						font-size: 11px;
+						cursor: pointer
+					}
+				</style>";
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					treeMap('#tree_map', $data, '$width', '$height');
+				</script>";
+
+	if (!$return)
+		echo $output;
+	
+	return $output;
+}
 
 ?>

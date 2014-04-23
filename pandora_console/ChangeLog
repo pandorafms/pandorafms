@@ -1,3 +1,24 @@
+2014-04-23  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/setup/setup_netflow.php: Added a prompt dialog
+	to warning about the time increase caused by the address
+	resolution.
+
+	* include/functions_graph.php: Added the functions
+	"graph_netflow_circular_mesh" and "graph_netflow_host_traffic".
+
+	* include/functions_netflow.php: Added the function
+	"netflow_get_record". Added IP address resolution. Added
+	two new netflow live view items: "host detailed traffic" and
+	"circular mesh". Error fixes on several functions.
+
+	* include/graphs/functions_d3.php: Added the function
+	"d3_tree_map_graph".
+	Improved the function "d3_relationship_graph".
+
+	* include/graphs/pandora.d3.js: Added the function "treeMap".
+	Improved the function "chordDiagram".
+
 2014-04-23  Vanessa Gil <vanessa.gil@artica.es>
 	
 	* include/functions_ui.php

@@ -3194,6 +3194,35 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 		$config['fontpath'], $config['font_size'], $ttl);
 }
 
+/**
+ * Print a circular graph with the data transmitted between IPs
+ */
+function graph_netflow_circular_mesh ($data, $unit, $radius = 700) {
+	global $config;
+
+	if (empty($data) || empty($data['elements']) || empty($data['matrix'])) {
+		return fs_error_image ();
+	}
+
+	include_once($config['homedir'] . "/include/graphs/functions_d3.php");
+
+	return d3_relationship_graph ($data['elements'], $data['matrix'], $unit, $radius, true);
+}
+
+/**
+ * Print a rescangular graph with the traffic of the ports for each IP
+ */
+function graph_netflow_host_traffic ($data, $unit, $width = 700, $height = 700) {
+	global $config;
+
+	if (empty ($data)) {
+		return fs_error_image ();
+	}
+
+	include_once($config['homedir'] . "/include/graphs/functions_d3.php");
+
+	return d3_tree_map_graph ($data, $width, $height, true);
+}
 
 /**
  * Draw a graph of Module string data of agent

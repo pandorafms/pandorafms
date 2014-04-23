@@ -25,6 +25,9 @@ enterprise_include_once ($config['homedir'] . '/enterprise/include/functions_met
 global $nfdump_date_format;
 $nfdump_date_format = 'Y/m/d.H:i:s';
 
+// Array to hold the hostnames
+$hostnames = array();
+
 /**
  * Selects all netflow filters (array (id_name => id_name)) or filters filtered
  *
@@ -354,35 +357,35 @@ function netflow_summary_table ($data) {
 	$table->style[0] = 'font-weight: bold; padding: 6px';
 	$table->style[1] = 'padding: 6px';
 	
-	$data = array();
-	$data[] = __('Total flows');
-	$data[] = format_numeric ($data['totalflows']);
-	$table->data[] = $data;
+	$row = array();
+	$row[] = __('Total flows');
+	$row[] = format_numeric ($data['totalflows']);
+	$table->data[] = $row;
 	
-	$data = array();
-	$data[] = __('Total bytes');
-	$data[] = format_numeric ($data['totalbytes']);
-	$table->data[] = $data;
+	$row = array();
+	$row[] = __('Total bytes');
+	$row[] = format_numeric ($data['totalbytes']);
+	$table->data[] = $row;
 	
-	$data = array();
-	$data[] = __('Total packets');
-	$data[] = format_numeric ($data['totalpackets']);
-	$table->data[] = $data;
+	$row = array();
+	$row[] = __('Total packets');
+	$row[] = format_numeric ($data['totalpackets']);
+	$table->data[] = $row;
 	
-	$data = array();
-	$data[] = __('Average bits per second');
-	$data[] = format_numeric ($data['avgbps']);
-	$table->data[] = $data;
+	$row = array();
+	$row[] = __('Average bits per second');
+	$row[] = format_numeric ($data['avgbps']);
+	$table->data[] = $row;
 	
-	$data = array();
-	$data[] = __('Average packets per second');
-	$data[] = format_numeric ($data['avgpps']);
-	$table->data[] = $data;
+	$row = array();
+	$row[] = __('Average packets per second');
+	$row[] = format_numeric ($data['avgpps']);
+	$table->data[] = $row;
 	
-	$data = array();
-	$data[] = __('Average bytes per packet');
-	$data[] = format_numeric ($data['avgbpp']);
-	$table->data[] = $data;
+	$row = array();
+	$row[] = __('Average bytes per packet');
+	$row[] = format_numeric ($data['avgbpp']);
+	$table->data[] = $row;
 	
 	$html = html_print_table ($table, true);
 	
@@ -457,10 +460,10 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 		$command .= ' -q -o csv';
 		
 		// Call nfdump
-		$agg_command = $command . " -s $aggregate/bytes -n $max -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+		$agg_command = $command . " -n $max -s $aggregate/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 		exec($agg_command, $string);
 		
-		// Reamove the first line
+		// Remove the first line
 		$string[0] = '';
 		
 		// Parse aggregates
@@ -505,6 +508,29 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 		$values = array ();
 	}
 	
+	// Address resolution start
+	if ($config['netflow_get_ip_hostname'] && ($aggregate == "srcip" || $aggregate == "dstip")) {
+		$get_hostnames = true;
+		global $hostnames;
+
+		$sources = array();
+		foreach ($values['sources'] as $source => $value) {
+			if (!isset($hostnames[$source])) {
+				$hostname = gethostbyaddr($source);
+				if ($hostname !== false) {
+					$hostnames[$source] = $hostname;
+					$source = $hostname;
+				}
+			}
+			else {
+				$source = $hostnames[$source];
+			}
+			$sources[$source] = $value;
+		}
+		$values['sources'] = $sources;
+	}
+	// Address resolution end
+
 	$interval_start = $start_date;
 	for ($i = 0; $i < $num_intervals; $i++, $interval_start+=$interval_length+1) {
 		$interval_end = $interval_start + $interval_length;
@@ -543,12 +569,29 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 			foreach ($values['sources'] as $source => $discard) {
 				$values['data'][$interval_start][$source] = 0;
 			}
+
 			$data = netflow_get_stats ($interval_start, $interval_end, $filter, $aggregate, $max, $unit, $connection_name);
 			foreach ($data as $line) {
+
+				// Address resolution start
+				if ($get_hostnames) {
+					if (!isset($hostnames[$line['agg']])) {
+						$hostname = gethostbyaddr($line['agg']);
+						if ($hostname !== false) {
+							$hostnames[$line['agg']] = $hostname;
+							$line['agg'] = $hostname;
+						}
+					}
+					else {
+						$line['agg'] = $hostnames[$line['agg']];
+					}
+				}
+				// Address resolution end
+
 				if (! isset ($values['sources'][$line['agg']])) {
 					continue;
 				}
-				
+
 				$values['data'][$interval_start][$line['agg']] = $line['data'];
 			}
 		}
@@ -574,7 +617,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
  * @return An array with netflow stats.
  */
 function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit, $connection_name = '') {
-	global $nfdump_date_format;
+	global $config, $nfdump_date_format;
 
 	// Requesting remote data
 	if (defined ('METACONSOLE') && $connection_name != '') {
@@ -586,7 +629,7 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 	$command = netflow_get_command ($filter);
 
 	// Execute nfdump
-	$command .= " -o csv -q -s $aggregate/bytes -n $max -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+	$command .= " -o csv -q -n $max -s $aggregate/bytes -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 	exec($command, $string);
 
 	if (! is_array($string)) {
@@ -617,6 +660,24 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 			$values[$i]['agg'] = $val[3];
 		}
 		else {
+
+			// Address resolution start
+			if ($config['netflow_get_ip_hostname'] && ($aggregate == "srcip" || $aggregate == "dstip")) {
+				global $hostnames;
+				
+				if (!isset($hostnames[$val[4]])) {
+					$hostname = gethostbyaddr($val[4]);
+					if ($hostname !== false) {
+						$hostnames[$val[4]] = $hostname;
+						$val[4] = $hostname;
+					}
+				}
+				else {
+					$val[4] = $hostnames[$val[4]];
+				}
+			}
+			// Address resolution end
+
 			$values[$i]['agg'] = $val[4];
 		}
 		if (! isset ($val[9])) {
@@ -675,7 +736,7 @@ function netflow_get_summary ($start_date, $end_date, $filter, $connection_name 
 	$command = netflow_get_command ($filter);
 
 	// Execute nfdump
-	$command .= " -o csv -s srcip/bytes -n 1 -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+	$command .= " -o csv -n 1 -s srcip/bytes -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 	exec($command, $string);
 
 	if (! is_array($string) || ! isset ($string[5])) {
@@ -699,6 +760,113 @@ function netflow_get_summary ($start_date, $end_date, $filter, $connection_name 
 }
 
 /**
+ * Returns a traffic record for the given period in an array.
+ *
+ * @param string start_date Period start date.
+ * @param string end_date Period end date.
+ * @param string filter Netflow filter.
+ * @param int max Maximum number of elements.
+ * @param string unit to show.
+ *
+ * @return An array with netflow stats.
+ */
+function netflow_get_record ($start_date, $end_date, $filter, $max, $unit) {
+	global $nfdump_date_format;
+	global $config;
+
+	// TIME_START = 0;
+	// TIME_END = 1;
+	// DURATION = 2;
+	// SOURCE_ADDRESS = 3;
+	// DESTINATION_ADDRESS = 4;
+	// SOURCE_PORT = 5;
+	// DESTINATION_PORT = 6;
+	// PROTOCOL = 7;
+	// INPUT_BYTES = 12;
+
+	// Get the command to call nfdump
+	$command = netflow_get_command($filter);
+
+	// Execute nfdump
+	$command .= " -q -o csv -n $max -s record/bytes -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+	exec($command, $result);
+
+	if (! is_array($result)) {
+		return array();
+	}
+
+	$values = array();
+	foreach ($result as $key => $line) {
+		$data = array();
+
+		$items = explode (',', $line);
+
+		$data['time_start'] = $items[0];
+		$data['time_end'] = $items[1];
+		$data['duration'] = $items[2] / 1000;
+		$data['source_address'] = $items[3];
+		$data['destination_address'] = $items[4];
+		$data['source_port'] = $items[5];
+		$data['destination_port'] = $items[6];
+		$data['protocol'] = $items[7];
+
+		switch ($unit){
+			case "megabytes":
+				$data['data'] = $items[12] / 1048576;
+				break;
+			case "megabytespersecond":
+				$data['data'] = $items[12] / 1048576 / $data['duration'];
+				break;
+			case "kilobytes":
+				$data['data'] = $items[12] / 1024;
+				break;
+			case "kilobytespersecond":
+				$data['data'] = $items[12] / 1024 / $data['duration'];
+				break;
+			default:
+			case "bytes":
+				$data['data'] = $items[12];
+				break;
+			case "bytespersecond":
+				$data['data'] = $items[12] / $data['duration'];
+				break;
+		}
+		$values[] = $data;
+	}
+	
+	// Address resolution start
+	if ($config['netflow_get_ip_hostname']) {
+		global $hostnames;
+
+		for ($i = 0; $i < count($values); $i++) {
+			if (!isset($hostnames[$values[$i]['source_address']])) {
+				$hostname = gethostbyaddr($values[$i]['source_address']);
+				if ($hostname !== false) {
+					$hostnames[$values[$i]['source_address']] = $hostname;
+					$values[$i]['source_address'] = $hostname;
+				}
+			}
+			else {
+				$values[$i]['source_address'] = $hostnames[$values[$i]['source_address']];
+			}
+			if (!isset($hostnames[$values[$i]['destination_address']])) {
+				$hostname = gethostbyaddr($values[$i]['destination_address']);
+				if ($hostname !== false) {
+					$hostnames[$values[$i]['destination_address']] = $hostname;
+					$values[$i]['destination_address'] = $hostname;
+				}
+			}
+			else {
+				$values[$i]['destination_address'] = $hostnames[$values[$i]['destination_address']];
+			}
+		}
+	}
+	// Address resolution end
+	
+	return $values;
+}
+
+/**
  * Returns the command needed to run nfdump for the given filter.
  *
  * @param array filter Netflow filter.
@@ -710,7 +878,7 @@ function netflow_get_command ($filter) {
 	global $config;
 	
 	// Build command
-	$command = io_safe_output ($config['netflow_nfdump']) . ' -N -Otstart';
+	$command = io_safe_output ($config['netflow_nfdump']) . ' -N';
 
 	// Netflow data path
 	if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
@@ -846,7 +1014,9 @@ function netflow_get_chart_types () {
 		'netflow_area' => __('Area graph'),
 		'netflow_pie_summatory' => __('Pie graph and Summary table'),
 		'netflow_statistics' => __('Statistics table'),
-		'netflow_data' => __('Data table'));
+		'netflow_data' => __('Data table'),
+		'netflow_mesh' => __('Circular mesh'),
+		'netflow_host_treemap' => __('Host detailed traffic'));
 }
 
 /**
@@ -1104,6 +1274,111 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					return netflow_summary_xml ($data_summary);
 					break;
 			}
+			break;
+		case 'netflow_mesh':
+			$netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit);
+
+			switch ($aggregate) {
+				case "srcport":
+				case "dstport":
+					$source_type = "source_port";
+					$destination_type = "destination_port";
+					break;
+				default:
+				case "dstip":
+				case "srcip":
+					$source_type = "source_address";
+					$destination_type = "destination_address";
+					break;
+			}
+
+			$data = array();
+			$data['elements'] = array();
+			$data['matrix'] = array();
+			foreach ($netflow_data as $record) {
+				if (!in_array($record[$source_type], $data['elements'])) {
+					$data['elements'][] = $record[$source_type];
+					$data['matrix'][] = array();
+				}
+				if (!in_array($record[$destination_type], $data['elements'])) {
+					$data['elements'][] = $record[$destination_type];
+					$data['matrix'][] = array();
+				}
+			}
+			
+			for ($i = 0; $i < count($data['matrix']); $i++) { 
+				$data['matrix'][$i] = array_fill(0, count($data['matrix']), 0);
+			}
+
+			foreach ($netflow_data as $record) {
+				$source_key = array_search($record[$source_type], $data['elements']);
+				$destination_key = array_search($record[$destination_type], $data['elements']);
+				if ($source_key !== false && $destination_key !== false) {
+					$data['matrix'][$source_key][$destination_key] += $record['data'];
+				}
+			}
+			
+			$html = "<div style=\"text-align:center;\">";
+			$html .= graph_netflow_circular_mesh ($data, netflow_format_unit($unit), 700);
+			$html .= "</div>";
+
+			return $html;
+			break;
+		case 'netflow_host_treemap':
+			$netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit);
+
+			switch ($aggregate) {
+				case "srcip":
+				case "srcport":
+					$address_type = "source_address";
+					$port_type = "source_port";
+					$type = __("Sent");
+					break;
+				default:
+				case "dstip":
+				case "dstport":
+					$address_type = "destination_address";
+					$port_type = "destination_port";
+					$type = __("Received");
+					break;
+			}
+			$data_aux = array();
+			foreach ($netflow_data as $record) {
+				$address = $record[$address_type];
+				$port = $record[$port_type];
+
+				if (!isset($data_aux[$address]))
+					$data_aux[$address] = array();
+
+				if (!isset($data_aux[$address][$port]))
+					$data_aux[$address][$port] = 0;
+
+				$data_aux[$address][$port] += $record['data'];
+			}
+
+			$id = -1;
+
+			$data = array();
+			$data['name'] = __("Host detailed traffic") . ": " . $type;
+			$data['children'] = array();
+
+			foreach ($data_aux as $address => $ports) {
+				$children = array();
+				$children['id'] = $id++;
+				$children['name'] = $address;
+				$children['children'] = array();
+				foreach ($ports as $port => $value) {
+					$children_data = array();
+					$children_data['id'] = $id++;
+					$children_data['name'] = $port;
+					$children_data['value'] = $value;
+					$children_data['tooltip_content'] = "$port: <b>" . format_numeric($value) . " " . netflow_format_unit($unit) . "</b>";
+					$children['children'][] = $children_data;
+				}
+				$data['children'][] = $children;
+			}
+
+			return graph_netflow_host_traffic ($data, netflow_format_unit($unit), 'auto', 400);
 			break;
 		default:
 			break;

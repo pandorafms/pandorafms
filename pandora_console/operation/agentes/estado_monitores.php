@@ -627,7 +627,8 @@ foreach ($modules as $module) {
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".base64_encode($module["nombre"])."&amp;refresh=600','day_".$win_handle."')";
 		
 		$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
-		$data[8] .= "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
+		$server_name = '';
+		$data[8] .= "<a href='javascript: show_module_detail_dialog(" . $module["id_agente_modulo"] . ", ". $id_agente.", \"" . $server_name . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 	}
 	
 	if ($module['estado'] == 3) {
@@ -689,6 +690,13 @@ unset ($table_data);
 
 ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');
+
+echo "<div id='module_details_dialog'></div>";
+ui_require_jquery_file ("ui-timepicker-addon");
+
+// This script is included manually to be included after jquery and avoid error
+echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language() . '.js', false, false, false) . '"></script>';
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 ?>
 
 <script type="text/javascript">
@@ -709,6 +717,86 @@ ui_require_jquery_file ('cluetip');
 			mouseOutClose: 'both',
 			closeText: '<?php html_print_image("images/cancel.png") ?>'
 		});
+		
+	// Show the modal window of an module
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+		
+		var server_name = '';
+		var extra_parameters = '';
+		if (period == -1) {
+
+			period = $('#period').val();
+		
+			var selection_mode = $('input[name=selection_mode]:checked').val();
+			var date_from = $('#text-date_from').val();
+			var time_from = $('#text-time_from').val();
+			var date_to = $('#text-date_to').val();
+			var time_to = $('#text-time_to').val();
+			
+			extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
+		}
+		
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period + extra_parameters,
+			dataType: "html",
+			success: function(data) {
+				$("#module_details_dialog").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						width: 650,
+						height: 500
+					})
+					.show ();
+					refresh_pagination_callback (module_id, id_agent, "");
+					datetime_picker_callback();
+					forced_title_callback();
+			}
+		});
+	}
+	function datetime_picker_callback() {
+
+		$("#text-time_from, #text-time_to").timepicker({
+			showSecond: true,
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'});
+			
+		$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+		
+		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+	}
+	datetime_picker_callback();
+	
+	function refresh_pagination_callback (module_id, id_agent, server_name) {
+		$(".binary_dialog").click( function() {
+
+			var classes = $(this).attr('class');
+			classes = classes.split(' ');
+			var offset_class = classes[2];
+			offset_class = offset_class.split('_');
+			var offset = offset_class[1];			
+
+			var period = $('#period').val();
+		
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			return false;
+		});
+	}
 /* ]]> */
 </script>
 <?php

@@ -1487,7 +1487,7 @@ function ui_process_page_body ($string, $bitfield) {
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
-function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false, $offset_name = 'offset', $print_total_items = true) {
+function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false, $offset_name = 'offset', $print_total_items = true, $other_class = '') {
 	global $config;
 	
 	if (empty ($pagination)) {
@@ -1517,7 +1517,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	if ($count <= $pagination) {
 		
 		if ($print_total_items) {
-			$output = '<div class="pagination">';
+			$output = "<div class='pagination $other_class'>";
 			//Show the count of items
 			$output .= sprintf(__('Total items: %s'), $count);
 			// End div and layout
@@ -1559,7 +1559,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	else
 		$inicio_pag = 0;
 	
-	$output = '<div class="pagination">';
+	$output = "<div class='pagination $other_class'>";
 	
 	//Show the count of items
 	if ($print_total_items) {
@@ -1568,13 +1568,23 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	}
 	
 	// Show GOTO FIRST button
-	$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.html_print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
+	if ($other_class == '') {
+		$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.html_print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
+	} else {
+		$output .= "<a class='pagination $other_class go_first' href='$url.&amp;$offset_name=0'>".html_print_image ("images/go_first.png", true, array ("class" => "bot"))."</a>&nbsp;";
+	}
+
 	// Show PREVIOUS button
 	if ($index_page > 0) {
 		$index_page_prev = ($index_page - (floor ($block_limit / 2))) * $pagination;
 		if ($index_page_prev < 0)
 			$index_page_prev = 0;
-		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.html_print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
+			
+		if ($other_class == '') {
+				$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.html_print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
+		} else {
+			$output .= "<a class='pagination $other_class go_rewind' href='$url &amp;$offset_name = $index_page_prev'>".html_print_image ("images/go_previous.png", true, array ("class" => "bot"))."</a>";
+		}
 	}
 	
 	// Draw blocks markers
@@ -1598,7 +1608,11 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		// it must be shown if not round to block limit)
 		$link_offset = $config['block_size'] * $i;
 		
-		$output .= '<a class="pagination offset_' . $link_offset . '" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
+		if ($other_class == '') {	
+				$output .= '<a class="pagination offset_' . $link_offset . '" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
+		} else {
+			$output .= "<a class='pagination $other_class offset_$link_offset' href='$url &amp;$offset_name=$inicio_bloque'>";
+		}
 		$output .= "[ $i ]";
 		
 		$output .= '</a></span>';
@@ -1610,7 +1624,12 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
 		if ($prox_bloque > $count)
 			$prox_bloque = ($count -1) - $pagination;
-		$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.html_print_image ("images/go_next.png", true, array ("class" => "bot")).'</a>';
+			
+		if ($other_class == '') {
+				$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.html_print_image ("images/go_next.png", true, array ("class" => "bot")).'</a>';
+		} else {
+			$output .= "<a class='pagination $other_class go_fastforward' href='$url&amp;$offset_name=$prox_bloque'>".html_print_image ("images/go_next.png", true, array ("class" => "bot"))."</a>";
+		}
 		$i = $index_counter;
 	}
 	// if exists more registers than i can put in a page (defined by $block_size config parameter)
@@ -1619,7 +1638,12 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	// as painted in last block (last integer block).	
 	if (($count - $pagination) > 0) {
 		$myoffset = floor (($count - 1) / $pagination) * $pagination;
-		$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.html_print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
+		
+		if ($other_class == '') {
+			$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.html_print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
+		} else {
+			$output .= "<a class='pagination $other_class go_last' href='$url&amp;$offset_name=$myoffset'>".html_print_image ("images/go_last.png", true, array ("class" => "bot"))."</a>";
+		}
 	}
 	
 	// End div and layout

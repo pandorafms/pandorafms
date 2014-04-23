@@ -111,8 +111,7 @@
 	margin: -20px 0px 0 0; /* Positions it back where it should be */
 	border-left: 1px;
 }
-.menu li.has_submenu.selected > img.toggle,
-.menu li:hover.has_submenu > img.toggle {
+.menu li.has_submenu > img.toggle{
 	visibility: visible;
 	z-index: 1; /* Positions it on top of the rest */
 }

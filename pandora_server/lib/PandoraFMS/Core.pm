@@ -208,6 +208,11 @@ our @EXPORT = qw(
 	load_module_macros
 	@ServerTypes
 	$EventStormProtection
+	pandora_create_custom_graph
+	pandora_insert_graph_source
+	pandora_delete_graph_source
+	pandora_delete_custom_graph
+	pandora_edit_custom_graph
 	);
 
 # Some global variables
@@ -4324,7 +4329,125 @@ sub load_module_macros ($$) {
 		}
 	}
 }
+
+##########################################################################
+# Create a custom graph
+##########################################################################
+sub pandora_create_custom_graph ($$$$$$$$$$) {
 	
+	my ($name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period,$dbh) = @_;
+	
+	my ($columns, $values) = db_insert_get_values ({'name' => safe_input($name),
+	                                                'id_user' => $user,
+													'description' => $description, 
+													'period' => $period,
+													'width' => $width,
+													'height' => $height,
+													'private' => 0,
+													'id_group' => $idGroup,
+													'events' => $events, 
+													'stacked' => $stacked
+	                                                });                           
+	                                                
+	my $graph_id = db_insert ($dbh, 'id_graph', "INSERT INTO tgraph $columns", @{$values});
+	
+	return $graph_id;
+}
+
+##########################################################################
+# Insert graph source
+##########################################################################
+sub pandora_insert_graph_source ($$$$) {
+	
+	my ($id_graph,$module,$weight,$dbh) = @_;
+	
+	my ($columns, $values) = db_insert_get_values ({'id_graph' => $id_graph,
+													'id_agent_module' => $module, 
+													'weight' => $weight
+	                                                });                           
+	                                                
+	my $source_id = db_insert ($dbh, 'id_gs', "INSERT INTO tgraph_source $columns", @{$values});
+	
+	return $source_id;
+}
+
+##########################################################################
+# Delete graph source
+##########################################################################
+sub pandora_delete_graph_source ($$;$) {
+	
+	my ($id_graph,$dbh,$id_module) = @_;
+	
+	my $result;
+	
+	if (defined ($id_module)) {
+		$result = db_do ($dbh, 'DELETE FROM tgraph_source 
+			WHERE id_graph = ?
+			AND id_agent_module = ?', $id_graph, $id_module);
+	} else {
+		$result = db_do ($dbh, 'DELETE FROM tgraph_source WHERE id_graph = ?', $id_graph);
+	}                                                
+	
+	return $result;
+}
+
+##########################################################################
+# Delete custom graph
+##########################################################################
+sub pandora_delete_custom_graph ($$) {
+
+	my ($id_graph,$dbh) = @_;              
+	                                                
+	my $result = db_do ($dbh, 'DELETE FROM tgraph WHERE id_graph = ?', $id_graph);
+	
+	return $result;
+}
+
+##########################################################################
+# Edit a custom graph
+##########################################################################
+
+sub pandora_edit_custom_graph ($$$$$$$$$$$) {
+	
+	my ($id_graph,$name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period,$dbh) = @_;
+	
+	my $graph = get_db_single_row ($dbh, 'SELECT * FROM tgraph
+											WHERE id_graph = ?', $id_graph);
+	if ($name eq '') {
+		$name = $graph->{'name'};
+	}
+	if ($description eq '') {
+		$description = $graph->{'description'};
+	}
+	if ($user eq '') {
+		$user = $graph->{'id_user'};
+	}
+	if ($period eq '') {
+		$period = $graph->{'period'};
+	}
+	if ($width eq '') {
+		$width = $graph->{'width'};
+	}
+	if ($height eq '') {
+		$height = $graph->{'height'};
+	}
+	if ($idGroup eq '') {
+		$idGroup = $graph->{'id_group'};
+	}
+	if ($events eq '') {
+		$events = $graph->{'events'};
+	}
+	if ($stacked eq '') {
+		$stacked = $graph->{'stacked'};
+	}
+	
+	my $res = db_do ($dbh, 'UPDATE tgraph SET name = ?, id_user = ?, description = ?, period = ?, width = ?,
+		height = ?, private = 0, id_group = ?, events = ?, stacked = ?
+		WHERE id_graph = ?',$name, $user, $description,$period, $width, $height, $idGroup, $events, $stacked, $id_graph);
+		
+	return $res;
+}
+
 # End of function declaration
 # End of defined Code
 

@@ -29,7 +29,7 @@ use PandoraFMS::Core;
 use PandoraFMS::Config;
 
 # version: define current version
-my $version = "5.1dev PS140423";
+my $version = "5.1dev PS140424";
 
 # save program name for logging
 my $progname = basename($0);

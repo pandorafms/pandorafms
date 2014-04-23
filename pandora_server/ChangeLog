@@ -1,3 +1,9 @@
+2014-04-23  Vanessa Gil <vanessa.gil@artica.es>
+
+	* lib/PandoraFMS/Core.pm
+	  util/pandora_manage.pl: Added functions
+	to CLI.
+
 2014-04-22  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_migrate_recon_scripts.pl

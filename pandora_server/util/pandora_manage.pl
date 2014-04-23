@@ -3638,6 +3638,26 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--set_event_storm_protection') {
 			param_check($ltotal, 1);
 			cli_set_event_storm_protection();
+		} 
+		elsif ($param eq '--create_custom_graph') {
+			param_check($ltotal, 11);
+			cli_create_custom_graph();
+		}
+		elsif ($param eq '--delete_custom_graph') {
+			param_check($ltotal, 1);
+			cli_delete_custom_graph();
+		}
+		elsif ($param eq '--edit_custom_graph') {
+			param_check($ltotal, 10);
+			cli_edit_custom_graph();
+		}
+		elsif ($param eq '--add_modules_to_graph') {
+			param_check($ltotal, 3);
+			cli_add_modules_to_graph();
+		}
+		elsif ($param eq '--delete_modules_to_graph') {
+			param_check($ltotal, 3);
+			cli_delete_modules_to_graph();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
@@ -3650,4 +3670,87 @@ sub pandora_manage_main ($$$) {
      print "\n[*] Successful execution. Exiting !\n\n";
 
     exit;
+}
+
+##############################################################################
+# Create a custom graph.
+# Related option: --create_custom_graph
+##############################################################################
+
+sub cli_create_custom_graph() {
+	
+	my ($name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period,$modules,$separator) = @ARGV[2..12];
+	
+	$separator = ($separator ne '') ? $separator : ';';
+	
+	my @module_array = split($separator, $modules);
+	
+	$description = ($description ne '') ? safe_input($description) : '';
+	$width = ($width ne '') ? $width : 550;
+	$height = ($height ne '') ? $height : 210;
+	$period = ($period ne '') ? $period : 86400;
+	$events = ($events ne '') ? $events : 0;
+	$stacked = ($stacked ne '') ? $stacked : 0;
+	$idGroup = ($idGroup ne '') ? $idGroup : 0;
+	
+	my $id_graph = pandora_create_custom_graph($name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period,$dbh);
+	
+	if ($id_graph != 0) { #~ insert source
+		if ($modules ne '') {
+			foreach my $module (@module_array) {
+				pandora_insert_graph_source($id_graph,$module,1,$dbh);
+			}
+		}
+	}
+}
+
+##############################################################################
+# Delete a custom graph.
+# Related option: --delete_custom_graph
+##############################################################################
+sub cli_delete_custom_graph () {
+	
+	my ($id_graph) = @ARGV[2];
+	
+	my $result = pandora_delete_graph_source($id_graph, $dbh);
+	
+	pandora_delete_custom_graph($id_graph, $dbh);
+}
+
+##############################################################################
+# Edit a custom graph.
+# Related option: --edit_custom_graph
+##############################################################################
+sub cli_edit_custom_graph() {
+	
+	my ($id_graph,$name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period) = @ARGV[2..12];
+
+	pandora_edit_custom_graph($id_graph,$name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period,$dbh);
+	
+}
+
+sub cli_add_modules_to_graph () {
+	
+	my ($id_graph,$modules,$separator) = @ARGV[2..4];
+	
+	$separator = ($separator ne '') ? $separator : ';';
+	
+	my @module_array = split($separator, $modules);
+	
+	foreach my $module (@module_array) {
+		pandora_insert_graph_source($id_graph,$module,1,$dbh);
+	}
+}
+
+sub cli_delete_modules_to_graph () {
+	
+	my ($id_graph,$modules,$separator) = @ARGV[2..4];
+	
+	$separator = ($separator ne '') ? $separator : ';';
+	
+	my @module_array = split($separator, $modules);
+	
+	foreach my $module (@module_array) {
+		pandora_delete_graph_source($id_graph, $dbh, $module);
+	}
 }

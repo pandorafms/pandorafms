@@ -2664,7 +2664,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	
 	# Write the event
 	print EVENT_FILE "$header\n" if (defined ($header));
-	print EVENT_FILE  "$agent_name,$group_name," . safe_output ($evento) . ",$timestamp,$event_status,$utimestamp,$event_type,$module_name,$alert_name,$severity,$comment,$module_tags,$source,$id_extra,$user_name,$critical_instructions,$warning_instructions,$unknown_instructions,$ack_utimestamp\n";
+	print EVENT_FILE  "$agent_name,".safe_output($group_name)."," . safe_output ($evento) . ",$timestamp,$event_status,$utimestamp,$event_type,".safe_output($module_name).",".safe_output($alert_name).",$severity,".safe_output($comment).",".safe_output($module_tags).",$source,$id_extra,$user_name,".safe_output($critical_instructions).",".safe_output($warning_instructions).",".safe_output($unknown_instructions).",$ack_utimestamp\n";
 	
 	close (EVENT_FILE);
 }

@@ -24,8 +24,8 @@ function pandora_files_repo_install () {
 		}
 	}
 
-	$full_extensions_dir = $config['homedir'].DIRECTORY_SEPARATOR.EXTENSIONS_DIR.DIRECTORY_SEPARATOR;
-	$full_sql_dir = $full_extensions_dir."files_repo".DIRECTORY_SEPARATOR."sql".DIRECTORY_SEPARATOR;
+	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
+	$full_sql_dir = $full_extensions_dir."files_repo/sql/";
 	
 	/* SQL installation */
 	switch ($config['dbtype']) {
@@ -81,7 +81,7 @@ function pandora_files_repo_uninstall () {
 	}
 
 	if (!empty($config['attachment_store']))
-		delete_dir($config['attachment_store'].DIRECTORY_SEPARATOR."files_repo");
+		delete_dir($config['attachment_store']."/files_repo");
 }
 
 function pandora_files_repo_godmode () {
@@ -115,8 +115,8 @@ function pandora_files_repo_godmode () {
 	// Header
 	ui_print_page_header (__("Files repository manager"), "images/extensions.png", false, "", true, $onheader);
 
-	$full_extensions_dir = $config['homedir'].DIRECTORY_SEPARATOR.EXTENSIONS_DIR.DIRECTORY_SEPARATOR;
-	require_once ($full_extensions_dir."files_repo".DIRECTORY_SEPARATOR."functions_files_repo.php");
+	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
+	require_once ($full_extensions_dir."files_repo/functions_files_repo.php");
 
 	// Directory files_repo check
 	if (!files_repo_check_directory(true)) {
@@ -159,11 +159,11 @@ function pandora_files_repo_godmode () {
 	}
 
 	// FORM
-	require ($full_extensions_dir."files_repo".DIRECTORY_SEPARATOR."files_repo_form.php");
+	require ($full_extensions_dir."files_repo/files_repo_form.php");
 	if (!$file_id) {
 		// LIST
 		$manage = true;
-		require ($full_extensions_dir."files_repo".DIRECTORY_SEPARATOR."files_repo_list.php");
+		require ($full_extensions_dir."files_repo/files_repo_list.php");
 	}
 }
 
@@ -189,8 +189,8 @@ function pandora_files_repo_operation () {
 	// Header
 	ui_print_page_header (__("Files repository"), "images/extensions.png", false, "", false, $onheader);
 
-	$full_extensions_dir = $config['homedir'].DIRECTORY_SEPARATOR.EXTENSIONS_DIR.DIRECTORY_SEPARATOR;
-	require_once ($full_extensions_dir."files_repo".DIRECTORY_SEPARATOR."functions_files_repo.php");
+	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
+	require_once ($full_extensions_dir."files_repo/functions_files_repo.php");
 
 	// Directory files_repo check
 	if (!files_repo_check_directory(true)) {
@@ -198,8 +198,8 @@ function pandora_files_repo_operation () {
 	}
 
 	// LIST
-	$full_extensions_dir = $config['homedir'].DIRECTORY_SEPARATOR.EXTENSIONS_DIR.DIRECTORY_SEPARATOR;
-	require ($full_extensions_dir."files_repo".DIRECTORY_SEPARATOR."files_repo_list.php");
+	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
+	require ($full_extensions_dir."files_repo/files_repo_list.php");
 }
 
 extensions_add_operation_menu_option(__('Files repository'), null, null, "v1r1");

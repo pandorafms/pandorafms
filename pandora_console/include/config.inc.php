@@ -38,6 +38,6 @@ error_reporting(E_ALL);
 // Display ALL errors
 // error_reporting(E_ERROR);
 
-$ownDir = dirname(__FILE__) . '/';
+$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 include ($ownDir . "config_process.php");
 ?>

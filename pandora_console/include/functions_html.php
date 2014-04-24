@@ -21,6 +21,7 @@
 
 if (!isset($config)) {
 	$working_dir = getcwd();
+	$working_dir = str_replace("\\", "/", $working_dir); // Windows compatibility
 	$levels = substr_count($working_dir, '/');
 	
 	for ($i = 0; $i < $levels; $i++) {

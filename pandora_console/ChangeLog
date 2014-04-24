@@ -1,3 +1,22 @@
+2014-04-24  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* install.php: Now the user path backslashes will be
+	replaced with slashes.
+
+	* extensions/files_repo.php,
+	  extensions/files_repo/files_repo_form.php,
+	  extensions/files_repo/files_repo_get_file.php,
+	  extensions/files_repo/files_repo_list.php,
+	  extensions/files_repo/functions_files_repo.php: Replaced
+	the 'DIRECTORY_SEPARATOR' var with slashes. Removed the
+	realpath functions.
+
+	* include/config.inc.php: Replaced the "owndir" final slash
+	with a 'DIRECTORY_SEPARATOR'.
+
+	* include/functions_html.php: Replaced the "$working_dir"
+	possible backslashes with slashes.
+
 2014-04-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/events/events.build_table.php: Fixed 

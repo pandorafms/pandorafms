@@ -17,8 +17,8 @@
 
 global $config;
 
-$full_extensions_dir = $config['homedir'].DIRECTORY_SEPARATOR.EXTENSIONS_DIR.DIRECTORY_SEPARATOR;
-require_once ($full_extensions_dir."files_repo".DIRECTORY_SEPARATOR."functions_files_repo.php");
+$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
+require_once ($full_extensions_dir."files_repo/functions_files_repo.php");
 
 $file = array();
 $file['name'] = '';

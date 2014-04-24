@@ -698,8 +698,10 @@ function install_step4() {
 			$url = $_POST["url"];
 		else
 			$url = "http://localhost";
-		if (isset($_POST["path"]))
+		if (isset($_POST["path"])) {
 			$path = $_POST["path"];
+			$path = str_replace("\\", "/", $path); // Windows compatibility
+		}
 		else
 			$path = "/var/www";
 	}

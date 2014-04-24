@@ -15,8 +15,7 @@
 // GNU General Public License for more details.
 
 
-$ds = DIRECTORY_SEPARATOR;
-require_once ("..".$ds."..".$ds."include".$ds."config.php");
+require_once ("../../include/config.php");
 
 $file_hash = (string) get_parameter('file');
 
@@ -45,15 +44,14 @@ if (!$check_hash) {
 }
 
 // Get the location
-$files_repo_path = $config['attachment_store'].$ds."files_repo";
-$location = $files_repo_path.$ds.$file['id']."_".$file['name'];
+$files_repo_path = $config['attachment_store']."/files_repo";
+$location = $files_repo_path."/".$file['id']."_".$file['name'];
 if (!file_exists($location) || !is_readable($location) || !is_file($location)) {
 	throw_error(5); // ERROR
 }
 
 // All checks are fine. Download the file!
 header('Content-type: aplication/octet-stream;');
-header('Content-type: ' . mime_content_type($location) . ';');
 header("Content-Length: " . filesize($location));
 header('Content-Disposition: attachment; filename="' . $file['name'] . '"');
 readfile($location);

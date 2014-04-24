@@ -18,8 +18,8 @@
 function files_repo_check_directory ($print_messages = false) {
 	global $config;
 
-	$attachment_path = realpath($config['attachment_store']);
-	$files_repo_path = $attachment_path.DIRECTORY_SEPARATOR."files_repo";
+	$attachment_path = $config['attachment_store'];
+	$files_repo_path = $attachment_path."/files_repo";
 
 	$result = false;
 	$messages = "";
@@ -127,7 +127,7 @@ function files_repo_get_files ($filter = false, $count = false) {
 	global $config;
 
 	// Don't use the realpath for the download links!
-	$files_repo_path = $config['attachment_store'].DIRECTORY_SEPARATOR."files_repo";
+	$files_repo_path = $config['attachment_store']."/files_repo";
 
 	$sql = "SELECT * FROM tfiles_repo " . db_format_array_where_clause_sql($filter, "AND", "WHERE");
 	$files = db_get_all_rows_sql($sql);
@@ -149,7 +149,7 @@ function files_repo_get_files ($filter = false, $count = false) {
 		$data = array();
 		$data['name'] = $file['name'];
 		$data['description'] = $file['description'];
-		$data['location'] = $files_repo_path.DIRECTORY_SEPARATOR.$file['id']."_".$data['name'];
+		$data['location'] = $files_repo_path."/".$file['id']."_".$data['name'];
 		// Size in bytes
 		$data['size'] = filesize($data['location']);
 		// Last modification time in unix timestamp
@@ -169,8 +169,8 @@ function files_repo_get_files ($filter = false, $count = false) {
 function files_repo_add_file ($file_input_name = "upfile", $description = "", $groups = array(), $public = false) {
 	global $config;
 
-	$attachment_path = realpath($config['attachment_store']);
-	$files_repo_path = $attachment_path.DIRECTORY_SEPARATOR."files_repo";
+	$attachment_path = $config['attachment_store'];
+	$files_repo_path = $attachment_path."/"."files_repo";
 
 	$result = array();
 	$result["status"] = false;
@@ -205,7 +205,7 @@ function files_repo_add_file ($file_input_name = "upfile", $description = "", $g
 		if ($file_id) {
 			
 			$file_tmp = $_FILES[$file_input_name]['tmp_name'];
-			$destination = $files_repo_path.DIRECTORY_SEPARATOR.$file_id."_".$filename;
+			$destination = $files_repo_path."/".$file_id."_".$filename;
 			
 			if (move_uploaded_file($file_tmp, $destination)) {
 
@@ -283,9 +283,9 @@ function files_repo_delete_file ($file_id) {
 	$filename = db_get_value("name", "tfiles_repo", "id", $file_id);
 
 	if ($filename) {
-		$attachment_path = realpath($config['attachment_store']);
-		$files_repo_path = $attachment_path.DIRECTORY_SEPARATOR."files_repo";
-		$location = $files_repo_path.DIRECTORY_SEPARATOR.$file_id."_".$filename;
+		$attachment_path = $config['attachment_store'];
+		$files_repo_path = $attachment_path."/files_repo";
+		$location = $files_repo_path."/".$file_id."_".$filename;
 
 		if (file_exists($location)) {
 			$result = false;

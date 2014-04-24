@@ -578,24 +578,29 @@ if (!empty ($table->data)) {
 		echo '<div style="width: 98%;" class="action-buttons">';
 		if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 			html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
+			// Fix: validated_selected JS function has to be included with the proper user ACLs 
+			?>
+			<script type="text/javascript">
+				function validate_selected() {
+					$(".chk_val").each(function() { 
+						if($(this).is(":checked")) {
+							validate_event_advanced($(this).val(),1);
+						}
+					});  
+				}
+			</script>
+			<?php			
 		}
 		if (!$readonly && tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
 			html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
 			?>
 			<script type="text/javascript">
-			function delete_selected() {
-				if(confirm('<?php echo __('Are you sure?'); ?>')) {
-					$("#hidden_delete_events").val(1);
-					$("#form_events").submit();
-				}
-			}
-			function validate_selected() {
-				$(".chk_val").each(function() { 
-					if($(this).is(":checked")) {
-						validate_event_advanced($(this).val(),1);
+				function delete_selected() {
+					if(confirm('<?php echo __('Are you sure?'); ?>')) {
+						$("#hidden_delete_events").val(1);
+						$("#form_events").submit();
 					}
-				});  
-			}
+				}
 			</script>
 			<?php
 		}

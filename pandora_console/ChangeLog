@@ -1,3 +1,8 @@
+2014-04-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/events/events.build_table.php: Fixed 
+	multiple validation of events in event list view.
+
 2014-04-23  Vanessa Gil <vanessa.gil@artica.es>
 	
 	* godmode/agentes/agent_wizard.snmp_explorer.php: Changed

@@ -35,6 +35,7 @@ if (isset($config['filemanager']['message'])) {
 }
 
 $directory = (string) get_parameter ('directory', SNMP_DIR_MIBS);
+$directory = str_replace("\\", "/", $directory);
 
 /* Add custom directories here */
 $fallback_directory = "attachment/mibs";

@@ -1650,12 +1650,13 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	// If metaconsole is activated and image doesn't exists try to search on normal console
 	if (defined('METACONSOLE')) {
 		if (!$relative) {
-			if (strstr(getcwd(), 'enterprise/meta') === false) {
+			$working_dir = str_replace("\\", "/", getcwd()); // Windows compatibility
+			if (strstr($working_dir, 'enterprise/meta') === false) {
 				if ($src[0] !== '/') {
 					$src = '/' . $src;
 				}
 				
-				if (!is_readable(getcwd() . '/enterprise/meta' . $src)) {
+				if (!is_readable($working_dir . '/enterprise/meta' . $src)) {
 					$src = ui_get_full_url('../..' . $src);
 				}
 				else {
@@ -1667,7 +1668,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 					$src = '/' . $src;
 				}
 				
-				if (is_readable(getcwd() . $src)) {
+				if (is_readable($working_dir . $src)) {
 					$src = ui_get_full_url($src);
 				}
 				else if (!is_readable($src)) {

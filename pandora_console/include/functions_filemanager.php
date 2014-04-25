@@ -149,9 +149,9 @@ if ($upload_file) {
 	if (isset ($_FILES['file']) && $_FILES['file']['name'] != "") {
 		$filename = $_FILES['file']['name'];
 		$filesize = $_FILES['file']['size'];
-		$real_directory = (string) get_parameter('real_directory');
-		$directory = (string) get_parameter ('directory');
-		$umask = (string)get_parameter('umask', '');
+		$real_directory = io_safe_output((string) get_parameter('real_directory'));
+		$directory = io_safe_output((string) get_parameter ('directory'));
+		$umask = io_safe_output((string) get_parameter('umask', ''));
 		
 		$hash = get_parameter('hash', '');
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
@@ -277,7 +277,9 @@ if ($upload_zip) {
 		$filename = $_FILES['file']['name'];
 		$filesize = $_FILES['file']['size'];
 		$real_directory = (string) get_parameter('real_directory');
+		$real_directory = io_safe_output($real_directory);
 		$directory = (string) get_parameter ('directory');
+		$directory = io_safe_output($directory);
 		
 		$hash = get_parameter('hash', '');
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
@@ -386,6 +388,9 @@ if ($delete_file) {
  * @param string $dir The dir to deletete
  */
 function filemanager_delete_directory($dir) {
+	// Windows compatibility
+	$dir = str_replace("\\", "/", $dir);
+
 	if ($handle = opendir($dir)) {
 		while (false !== ($file = readdir($handle))) {
 			if (($file != ".") && ($file != "..")) {
@@ -416,6 +421,10 @@ function filemanager_delete_directory($dir) {
  */
 function filemanager_read_recursive_dir($dir, $relative_path = '') {
 	$return = array();
+
+	// Windows compatibility
+	$dir = str_replace("\\", "/", $dir);
+	$relative_path = str_replace("\\", "/", $relative_path);
 	
 	if ($handle = opendir($dir))
 	{
@@ -449,6 +458,11 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
  */
 function filemanager_file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false, $url_file = '', $download_button = false, $umask = '') {
 	global $config;
+
+	// Windows compatibility
+	$real_directory = str_replace("\\", "/", $real_directory);
+	$relative_directory = str_replace("\\", "/", $relative_directory);
+	$father = str_replace("\\", "/", $father);
 	
 	$hack_metaconsole = '';
 	if (defined('METACONSOLE'))
@@ -589,6 +603,8 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	}
 	
 	foreach ($files as $fileinfo) {
+
+		$fileinfo['realpath'] = str_replace("\\", "/", $fileinfo['realpath']);
 		$relative_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $fileinfo['realpath']);
 		
 		$data = array ();
@@ -645,7 +661,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'] . $config['dbpass']), true);
 			$data[4] .= html_print_input_hidden ('delete_file', 1, true);
 			
-			$relative_dir = str_replace($config['homedir'], '', dirname($fileinfo['realpath']));
+			$relative_dir = str_replace($config['homedir'], '', str_replace("\\", "/", dirname($fileinfo['realpath'])));
 			if ($relative_dir[0] == '/') {
 				$relative_dir = substr($relative_dir, 1);
 			}
@@ -703,6 +719,10 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
  */
 function filemanager_box_upload_file_complex($real_directory, $relative_directory, $url = '') {
 	global $config;
+
+	// Windows compatibility
+	$real_directory = str_replace("\\", "/", $real_directory);
+	$relative_directory = str_replace("\\", "/", $relative_directory);
 	
 	$table->width = '100%';
 	
@@ -741,6 +761,10 @@ function filemanager_box_upload_file_complex($real_directory, $relative_director
  */
 function filemanager_box_upload_file_explorer($real_directory, $relative_directory, $url = '') {
 	global $config;
+
+	// Windows compatibility
+	$real_directory = str_replace("\\", "/", $real_directory);
+	$relative_directory = str_replace("\\", "/", $relative_directory);
 	
 	$table->width = '50%';
 	
@@ -777,6 +801,10 @@ function filemanager_box_upload_file_explorer($real_directory, $relative_directo
  */
 function filemanager_box_upload_zip_explorer($real_directory, $relative_directory, $url = '') {
 	global $config;
+
+	// Windows compatibility
+	$real_directory = str_replace("\\", "/", $real_directory);
+	$relative_directory = str_replace("\\", "/", $relative_directory);
 	
 	$table->width = '60%';
 	
@@ -813,6 +841,10 @@ function filemanager_box_upload_zip_explorer($real_directory, $relative_director
  */
 function filemanager_box_create_text_explorer($real_directory, $relative_directory, $url = '') {
 	global $config;
+
+	// Windows compatibility
+	$real_directory = str_replace("\\", "/", $real_directory);
+	$relative_directory = str_replace("\\", "/", $relative_directory);
 	
 	$table->width = '60%';
 	
@@ -880,6 +912,8 @@ function filemanager_get_available_directories () {
  * operate.
  */
 function filemanager_is_available_directory ($dirname) {
+
+	$dirname = str_replace("\\", "/", $dirname); // Windows compatibility
 	$dirs = filemanager_get_available_directories ();
 	
 	return isset ($dirs[$dirname]);
@@ -894,6 +928,9 @@ function filemanager_is_available_directory ($dirname) {
  * @param bool Wheter the directory is writeable or not.
  */
 function filemanager_is_writable_dir ($dirpath, $force = false) {
+
+	$dirname = str_replace("\\", "/", $dirname); // Windows compatibility
+
 	if (filemanager_is_available_directory (basename ($dirpath)))
 		return is_writable ($dirpath);
 	if (filemanager_is_writable_dir (realpath ($dirpath.'/..')))
@@ -916,6 +953,7 @@ function filemanager_get_file_info ($filepath) {
 	global $config;
 	
 	$realpath = realpath ($filepath);
+	$filepath = str_replace("\\", "/", $filepath); // Windows compatibility
 	
 	$info = array ('mime' => MIME_UNKNOWN,
 		'mime_extend' => mime_content_type ($filepath),
@@ -959,6 +997,9 @@ function filemanager_get_file_info ($filepath) {
  * @param bool Wheter the directory is writeable or not.
  */
 function filemanager_list_dir ($dirpath) {
+
+	$dirpath = str_replace("\\", "/", $dirpath); // Windows compatibility
+
 	$files = array ();
 	$dirs = array ();
 	$dir = opendir ($dirpath);

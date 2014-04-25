@@ -3731,7 +3731,8 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 	//set_error_handler("myErrorHandler");
 	
 	grafico_modulo_log4x_trace(__LINE__);
-	set_include_path(get_include_path() . PATH_SEPARATOR . getcwd() . "/../../include");
+	$ds = DIRECTORY_SEPARATOR;
+	set_include_path(get_include_path() . PATH_SEPARATOR . getcwd() . $ds."..".$ds."..".$ds."include");
 	
 	require_once 'Image/Graph.php';
 	

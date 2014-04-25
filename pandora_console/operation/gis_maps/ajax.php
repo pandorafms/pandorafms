@@ -14,7 +14,8 @@
 // GNU General Public License for more details.
 
 // Load global vars
-if (file_exists(getcwd() . '/include/config.php')) {
+$working_dir = str_replace("\\", "/", getcwd()); // Windows compatibility
+if (file_exists($working_dir . '/include/config.php')) {
 	require_once ("include/config.php");
 }
 else {

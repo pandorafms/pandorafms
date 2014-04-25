@@ -35,6 +35,7 @@ if (isset($config['filemanager']['message'])) {
 }
 
 $directory = (string) get_parameter ('directory', "/");
+$directory = str_replace("\\", "/", $directory);
 
 // A miminal security check to avoid directory traversal
 if (preg_match ("/\.\./", $directory))

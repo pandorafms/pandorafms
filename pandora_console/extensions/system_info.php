@@ -617,6 +617,7 @@ if (!isset($argv)) {
 }
 else {
 	$dir = dirname($_SERVER['PHP_SELF']);
+	$dir = str_replace("\\", "/", $dir); // Windows compatibility
 	if (file_exists($dir . "/../include/config.php"))
 		include $dir . "/../include/config.php";
 	

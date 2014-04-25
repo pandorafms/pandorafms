@@ -1,3 +1,23 @@
+2014-04-25  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* extensions/system_info.php,
+	  godmode/servers/plugin.php,
+	  godmode/setup/file_manager.php,
+	  include/config_process.php,
+	  include/functions_filemanager.php,
+	  include/functions_html.php,
+	  operation/gis_maps/ajax.php,
+	  operation/snmpconsole/snmp_mib_uploader.php: Replaced
+	the possible backslashes with slashes in the directories
+	path.
+
+	* include/functions_graph.php: Modified the function
+	"grafico_modulo_log4x" to adapt the 'set_include_path' to
+	Windows.
+
+	* include/get_file.php: Now the file name comes from the
+	function "basename".
+
 2014-04-24  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* install.php: Now the user path backslashes will be

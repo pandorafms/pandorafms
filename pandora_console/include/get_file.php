@@ -35,9 +35,6 @@ $file = get_parameter('file', null);
 
 $file = base64_decode($file);
 
-$chunks = explode('/', $file); 
-$nameFile = end($chunks);
-
 $hash = get_parameter('hash', null);
 
 $testHash = md5($file . $config['dbpass']);
@@ -59,7 +56,7 @@ else if (!empty($file) && !empty($hash)) {
 		header('Content-type: aplication/octet-stream;');
 		header('Content-type: ' . mime_content_type($file) . ';');
 		header("Content-Length: " . filesize($file));
-		header('Content-Disposition: attachment; filename="' . $nameFile . '"');
+		header('Content-Disposition: attachment; filename="' . basename($file) . '"');
 		readfile($file);
 	}
 }

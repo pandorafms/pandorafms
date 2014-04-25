@@ -69,6 +69,7 @@ else {
 $config['start_time'] = microtime (true);
 
 $ownDir = dirname(__FILE__) . '/';
+$ownDir = str_replace("\\", "/", $ownDir);
 
 //Set by default the MySQL connection for DB, because in older Pandora have not
 //this token in the config.php

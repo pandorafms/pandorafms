@@ -88,6 +88,7 @@ if ($filemanager) {
 	$fallback_directory = "attachment/plugin";
 	
 	$directory = (string) get_parameter ('directory', $fallback_directory);
+	$directory = str_replace("\\", "/", $directory);
 	
 	// A miminal security check to avoid directory traversal
 	if (preg_match ("/\.\./", $directory))

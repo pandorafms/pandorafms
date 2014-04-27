@@ -27,6 +27,7 @@ use Thread::Semaphore;
 use POSIX qw(strftime);
 use HTML::Entities;
 use JSON qw(decode_json);
+use Encode qw(encode_utf8);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -177,7 +178,7 @@ sub data_consumer ($$) {
 	eval {
 		if ($module->{'macros'} ne '') {
 			logger ($pa_config, "Decoding json macros from # $module_id plugin command '$command'", 10);
-			my $macros = decode_json($module->{'macros'});
+			my $macros = decode_json(encode_utf8($module->{'macros'}));
 			my %macros = %{$macros};
 			if(ref($macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))

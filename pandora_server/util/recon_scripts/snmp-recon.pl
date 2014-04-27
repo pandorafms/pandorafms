@@ -28,14 +28,28 @@ my $ALLIFACES = '';
 my %ARP_CACHE;
 
 # Default configuration values.
-my %CONF = (
-			'nmap' => '/usr/bin/nmap',
-            'pandora_path' => '/etc/pandora/pandora_server.conf',
-            'ping_retries' => 1,
-            'ping_timeout' => 2,
-            'PID' => '',
-			'quiet' => 1,
-);
+my $OSNAME = $^O;
+my %CONF;
+
+if ($OSNAME eq "freebsd") {
+	%CONF = (
+		'nmap' => '/usr/local/bin/nmap',
+		'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
+		'ping_retries' => 1,
+		'ping_timeout' => 2,
+		'PID' => '',
+		'quiet' => 1,
+	);
+} else {
+	%CONF = (
+		'nmap' => '/usr/bin/nmap',
+		'pandora_path' => '/etc/pandora/pandora_server.conf',
+		'ping_retries' => 1,
+		'ping_timeout' => 2,
+		'PID' => '',
+		'quiet' => 1,
+	);
+}
 
 # Connections between devices.
 my %CONNECTIONS;

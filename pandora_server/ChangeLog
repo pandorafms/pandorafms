@@ -1,3 +1,8 @@
+2014-04-27  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/PluginServer.pm: Fixed plugin execution failure
+	when multibyte characters are used in plugins macros.
+
 2014-04-24  Vanessa Gil <vanessa.gil@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Removed entities

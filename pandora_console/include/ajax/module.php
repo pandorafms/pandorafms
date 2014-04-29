@@ -406,4 +406,17 @@ if ($change_module_relation_updates) {
 	return;
 }
 
+$get_id_tag = (bool) get_parameter('get_id_tag', 0);
+if ($get_id_tag) {
+	$tag_name = get_parameter('tag_name');
+
+	if ($tag_name) {
+		$tag_id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
+	} else {
+		$tag_id = 0;
+	}
+	
+	echo $tag_id;
+	return;
+}
 ?>

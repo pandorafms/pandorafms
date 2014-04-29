@@ -1,3 +1,8 @@
+2014-04-29  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/ajax/module.php: Add function to get
+	id tag.
+
 2014-04-29  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_api.php: Added new API functions to manage

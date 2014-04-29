@@ -6685,4 +6685,171 @@ function api_set_pagerduty_webhook($type, $matchup_path, $tresh2, $return_type) 
 	}
 }
 
+/**
+ * Get special days, and print all the result like a csv.
+ *
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, but only <csv_separator> is available.
+ * @param $thrash3 Don't use.
+ *
+ * example:
+ *  api.php?op=get&op2=special_days&other=,;
+ *
+ */
+function api_get_special_days($thrash1, $thrash2, $other, $thrash3) {
+
+	if (!isset($other['data'][0]))
+		$separator = ';'; // by default
+	else
+		$separator = $other['data'][0];
+
+	$filter = false;
+
+	$special_days = @db_get_all_rows_filter ('talert_special_days', $filter);
+
+	if ($special_days !== false) {
+		$data['type'] = 'array';
+		$data['data'] = $special_days;
+	}
+
+	 if (!$special_days) {
+		returnError('error_get_special_days', __('Error getting special_days.'));
+	}
+	 else {
+		returnData('csv', $data, $separator);
+	}
+}
+
+/**
+ * Create a special day. And return the id if new special day.
+ *
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <special_day>;<same_day>;<description>;<id_group>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * @param $thrash3 Don't use
+ *
+ * example:
+ *  api.php?op=set&op2=create_special_day&other=2014-05-03|sunday|text|0&other_mode=url_encode_separator_|
+ *
+ */
+function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+	$special_day = $other['data'][0];
+	$same_day = $other['data'][1];
+	$description = $other['data'][2];
+	$idGroup = $other['data'][3];
+
+        $check_id_special_day = db_get_value ('id', 'talert_special_days', 'date', $special_day);
+  
+	if ($check_id_special_day) {
+		returnError('error_create_special_day', __('Error creating special day. Specified day already exists.'));
+		return;
+        }
+
+	if (!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $special_day)) {
+		returnError('error_create_special_day', __('Error creating special day. Invalid date format.'));
+		return;
+	}
+
+	$values = array(
+		'description' => $other['data'][2],
+                'id_group' => $other['data'][3],
+        );
+
+	$idSpecialDay = alerts_create_alert_special_day($special_day, $same_day, $values);
+
+	if (is_error($idSpecialDay)) {
+		returnError('error_create_special_day', __('Error in creation special day.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $idSpecialDay));
+	}
+}
+
+/**
+ * Update a special day. And return a message with the result of the operation.
+ *
+ * @param string $id Id of the special day to update.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <special_day>;<same_day>;<description>;<id_group>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * @param $thrash3 Don't use
+ *
+ * example:
+ *  api.php?op=set&op2=update_special_day&id=1&other=2014-05-03|sunday|text|0&other_mode=url_encode_separator_|
+ *
+ */
+function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3) {
+        global $config;
+        $special_day = $other['data'][0];
+        $same_day = $other['data'][1];
+        $description = $other['data'][2];
+        $idGroup = $other['data'][3];
+
+	if ($id_special_day == "") {
+		returnError('error_update_special_day', __('Error updating special day. Id cannot be left blank.'));
+		return;
+        }
+        
+	$check_id_special_day = db_get_value ('id', 'talert_special_days', 'id', $id_special_day);
+   
+        if (!$check_id_special_day) {
+		returnError('error_update_special_day', __('Error updating special day. Id doesn\'t exists.'));
+		return;
+	}
+
+	if (!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $special_day)) {
+		returnError('error_update_special_day', __('Error updating special day. Invalid date format.'));
+		return;	
+	}
+ 
+        $return = db_process_sql_update('talert_special_days',
+                array('date' => $special_day,
+                        'same_day' => $same_day,
+                        'description' => $description,
+                        'id_group' => $idGroup),
+                array('id' => $id_special_day));
+
+        returnData('string',
+                array('type' => 'string', 'data' => (int)((bool)$return)));
+}
+
+/**
+ * Delete a special day. And return a message with the result of the operation.
+ *
+ * @param string $id Id of the special day to delete.
+ * @param $thrash2 Don't use.
+ * @param $thrash3 Don't use.
+ * @param $thrash4 Don't use.
+ *
+ * example:
+ *  api.php?op=set&op2=delete_special_day&id=1
+ *
+ */
+function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash4)
+ {
+	if ($id_special_day == "") {
+		returnError('error_update_special_day', __('Error deleting special day. Id cannot be left blank.'));
+		return;
+	}
+
+	$check_id_special_day = db_get_value ('id', 'talert_special_days', 'id', $id_special_day);
+
+	if (!$check_id_special_day) {
+		returnError('error_delete_special_day', __('Error deleting special day. Id doesn\'t exists.'));
+		return;
+	}
+
+	$return = alerts_delete_alert_special_day ($id_special_day);
+
+	if (is_error($return)) {
+		returnError('error_delete_special_day', __('Error in deletion special day.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $return));
+	}
+}
+
 ?>

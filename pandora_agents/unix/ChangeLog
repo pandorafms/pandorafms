@@ -1,3 +1,9 @@
+2014-04-30  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/postinst,
+	DEBIAN/make_deb_package.sh: Solved problem with plugins in agent distribution
+	on Debian. 
+
 2014-04-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* plugins/who.sh: Output some text when there are no users connected.

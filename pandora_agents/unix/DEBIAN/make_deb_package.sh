@@ -66,10 +66,11 @@ cp Linux/pandora_agent.conf temp_package/etc/pandora/
 
 cp -aRf man/man1/* temp_package/usr/share/man/man1/
 
-#Disabled, now the package overwrite the previous files.
-##Create a temp file for to update files of plugins dir but don't crush dir.
-##cp -aRf temp_package/usr/share/pandora_agent/plugins temp_package/tmp
-##rm -rf temp_package/usr/share/pandora_agent/plugins/*
+
+# Relocate plugins to the final dir and delete 
+mv temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
+
+echo "Official plugins are placed on /etc/pandora/plugins" > temp_package/usr/share/pandora_agent/plugins/README
 
 echo "Remove the SVN files and other temp files."
 for item in `find temp_package`

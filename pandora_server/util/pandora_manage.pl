@@ -19,6 +19,7 @@ use HTML::Entities;		# Encode or decode strings with HTML entities
 use File::Basename;
 use JSON qw(encode_json);
 use MIME::Base64;
+use Encode qw(decode);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -124,6 +125,10 @@ sub help_screen{
 	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
 	help_screen_line('--update_alert_template', "<template_name> <field_to_change> \n\t  <new_value>", 'Update a field of an alert template');
 	help_screen_line('--validate_all_alerts', '', 'Validate all the alerts');
+	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
+	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
+	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
+
 	print "\nUSERS:\n\n" unless $param ne '';
     help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
     help_screen_line('--delete_user', '<user_name>', 'Delete user');
@@ -583,6 +588,59 @@ sub pandora_get_planned_downtime_id ($$) {
 
 	return defined ($downtime_id) ? $downtime_id : -1;
 }
+
+##########################################################################
+## Create a special day from hash
+##########################################################################
+sub pandora_create_special_day_from_hash ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+
+ 	logger($pa_config, "Creating special_day '$parameters->{'date'}'", 10);
+
+	my $template_id = db_process_insert($dbh, 'id', 'talert_special_days', $parameters);
+
+	return $template_id;
+}
+
+##########################################################################
+## Update a special day from hash
+##########################################################################
+sub pandora_update_special_day_from_hash ($$$$) {
+	my ($parameters, $where_column, $where_value, $dbh) = @_;
+	
+	my $special_day_id = db_process_update($dbh, 'talert_special_days', $parameters, $where_column, $where_value);
+	return $special_day_id;
+}
+
+##########################################################################
+## SUB get_special_day_id(id)
+## Return the special day id, given "special_day"
+##########################################################################
+sub pandora_get_special_day_id ($$) {
+	my ($dbh, $special_day) = @_;
+	
+	my $special_day_id = get_db_value ($dbh, "SELECT id FROM talert_special_days WHERE date = ?", safe_input($special_day));
+
+	return defined ($special_day_id) ? $special_day_id : -1;
+}
+
+##########################################################################
+## Delete a special day.
+##########################################################################
+sub pandora_delete_special_day ($$) {
+	my ($dbh, $date) = @_;
+
+	# Delete the special_day
+	my $return = db_do ($dbh, 'DELETE FROM talert_special_days WHERE date = ?', safe_input($date));
+        
+	if($return eq '0E0') {
+		return -1;
+	}
+	else {
+		return 0;
+	}
+}
+
 
 ###############################################################################
 ###############################################################################
@@ -3353,6 +3411,118 @@ sub pandora_get_network_component_id($$) {
 	return defined ($nc_id) ? $nc_id : -1;
 }
 
+##############################################################################
+# Create special day
+# Related option: --create_special_day
+##############################################################################
+
+sub cli_create_special_day() {
+	my ($special_day, $same_day, $description, $group_name) = @ARGV[2..5];
+	my $special_day_exists = pandora_get_special_day_id ($dbh, $special_day);
+	non_exist_check($special_day_exists,'special day',$special_day);
+
+	my $group_id = 0;
+	
+	# If group name is not defined, we assign group All (0)
+	if(defined($group_name)) {
+		$group_id = get_group_id($dbh, decode('UTF-8', $group_name));
+		exist_check($group_id,'group',$group_name);
+	}
+	else {
+		$group_name = 'All';
+	}
+
+	if ($special_day !~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
+		print_log "[ERROR] '$special_day' is invalid date format.\n\n";
+		$param = '--create_special_day';
+		help_screen ();
+		exit 1;
+	}
+	if ($same_day !~ /monday|tuesday|wednesday|thursday|friday|saturday|sunday/) {
+		print_log "[ERROR] '$same_day' is invalid day.\n\n";
+		$param = '--create_special_day';
+		help_screen ();
+		exit 1;
+	}
+	
+	my %parameters;
+	
+	$parameters{'date'} = $special_day;
+	$parameters{'same_day'} = $same_day;
+	$parameters{'description'} = decode('UTF-8', $description);
+	$parameters{'id_group'} = $group_id;
+
+	pandora_create_special_day_from_hash ($conf, \%parameters, $dbh);
+}
+
+##############################################################################
+# Update a special day.
+# Related option: --update_special_day
+##############################################################################
+
+sub cli_update_special_day() {
+	my ($special_day,$field,$new_value) = @ARGV[2..4];
+	
+	my $special_day_id = pandora_get_special_day_id ($dbh, $special_day);
+	exist_check($special_day_id,'special day',$special_day);
+	
+	if($field eq 'date') {
+		if ($new_value !~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
+			print_log "[ERROR] '$new_value' is invalid date format.\n\n";
+			$param = '--update_special_day';
+			help_screen ();
+			exit 1;
+		}
+	}
+	elsif($field eq 'same_day') {
+		if ($new_value !~ /monday|tuesday|wednesday|thursday|friday|saturday|sunday/) {
+			print_log "[ERROR] '$new_value' is invalid day.\n\n";
+			$param = '--update_special_day';
+			help_screen ();
+			exit 1;
+		}
+	}
+	elsif($field eq 'description') {
+		$new_value = decode('UTF-8', $new_value);
+	}
+	elsif($field eq 'group') {
+		my $group_id = 0;
+
+		$group_id = get_group_id($dbh, decode('UTF-8', $new_value));
+		exist_check($group_id,'group',$new_value);
+
+		$new_value = $group_id;
+		$field = 'id_group';
+	}
+	else {
+		print_log "[ERROR] Field '$field' doesnt exist\n\n";
+		exit;
+	}
+		
+	print_log "[INFO] Updating field '$field' in special day '$special_day'\n\n";
+	
+	my $update;
+	
+	$update->{$field} = $new_value;
+	
+	pandora_update_special_day_from_hash ($update, 'id', $special_day_id, $dbh);
+}
+
+##############################################################################
+# Delete a special_day.
+# Related option: --delete_special_day
+##############################################################################
+
+sub cli_delete_special_day() {
+	my $special_day = @ARGV[2];
+	
+	print_log "[INFO] Deleting special day '$special_day' \n\n";
+	
+	my $result = pandora_delete_special_day($dbh,$special_day);
+	exist_check($result,'special day',$special_day);
+}
+
+
 ###############################################################################
 ###############################################################################
 # MAIN
@@ -3658,6 +3828,18 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--delete_modules_to_graph') {
 			param_check($ltotal, 3);
 			cli_delete_modules_to_graph();
+		}
+		elsif ($param eq '--create_special_day') {
+			param_check($ltotal, 4);
+			cli_create_special_day();
+		}
+		elsif ($param eq '--update_special_day') {
+			param_check($ltotal, 3);
+			cli_update_special_day();
+		}
+		elsif ($param eq '--delete_special_day') {
+			param_check($ltotal, 1);
+			cli_delete_special_day();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

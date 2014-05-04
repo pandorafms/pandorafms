@@ -1,3 +1,9 @@
+2014-05-04  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/agentes/planned_downtime.list.php: Merged from trunk.
+	Fixed unexpected agent deletion that is not associated with the
+	planned downtime which is deleted.
+
 2014-04-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
         * operation/events/events.build_table.php: Fixed 

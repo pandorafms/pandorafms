@@ -172,9 +172,7 @@ if ($stop_downtime) {
 if ($delete_downtime) {
 	$result = db_process_sql_delete('tplanned_downtime', array('id' => $id_downtime));
 	
-	$result2 = db_process_sql_delete('tplanned_downtime_agents', array('id' => $id_downtime));
-	
-	if (($result === false) OR ($result2 === false)) {
+	if ($result === false) {
 		ui_print_error_message(__('Not deleted. Error deleting data'));
 	}
 	else {

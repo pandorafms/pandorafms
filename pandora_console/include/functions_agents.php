@@ -1484,7 +1484,11 @@ function agents_get_status_from_counts($agent) {
 		!isset($agent['total_count'])) {
 		return -1;
 	}
-	
+
+	# Juanma (05/05/2014) Fix:  This status is not init! 0 modules or all not init
+	if ($agent['notinit_count'] == $agent['total_count']) {
+		return AGENT_MODULE_STATUS_NOT_INIT;
+	}	
 	if ($agent['critical_count'] > 0) {
 		return AGENT_MODULE_STATUS_CRITICAL_BAD;
 	}

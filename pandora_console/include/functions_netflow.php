@@ -1168,7 +1168,9 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 				if ($interval_length != 0) {
 					$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 				}
+				$html .= "<div style='max-width: 1000px; overflow: auto;'>";
 				$html .= netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit);
+				$html .= "</div>";
 				
 				return $html;
 			}

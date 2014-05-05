@@ -1544,8 +1544,10 @@ function events_page_responses ($event) {
 		foreach($profiles_view_events as $k => $v) {
 			$profiles_view_events[$k] = reset($v);
 		}
-		$users = groups_get_users($event['id_grupo'], array('id_perfil' => $profiles_view_events), true);
-		
+		// Juanma (05/05/2014) Fix : Propagate ACL hell!
+		$_user_groups = array_keys(users_get_groups($config['id_user'], 'ER', users_can_manage_group_all()));
+		$users = groups_get_users($_user_groups, array('id_perfil' => $profiles_view_events), true, true);
+
 		foreach($users as $u) {
 			$owners[$u['id_user']] = $u['fullname'];
 		}

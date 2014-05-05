@@ -23,7 +23,7 @@ require_once ("include/functions_agents.php");
 require_once ($config["homedir"] . '/include/functions_graph.php');
 include_graphs_dependencies();
 require_once ($config['homedir'] . '/include/functions_groups.php');
-
+require_once ($config['homedir'] .'/include/functions_incidents.php');
 
 check_login ();
 
@@ -311,6 +311,49 @@ foreach ($fields as $field) {
 
 // END: TABLE DATA BUILD
 
+// START: TABLE INCIDENTS
+
+$last_incident = db_get_row_sql("SELECT * FROM tincidencia
+		WHERE estado IN (0,1)
+		AND id_agent=$id_agente
+		ORDER BY actualizacion DESC");
+		
+if ($last_incident != false) {
+	
+	$table_incident->id = 'agent_incident_main';
+	$table_incident->width = '100%';
+	$table_incident->cellspacing = 4;
+	$table_incident->cellpadding = 4;
+	$table_incident->class = 'databox';
+	$table_incident->style[0] = 'width: 30%;';
+	$table_incident->style[1] = 'width: 70%;';
+
+	$table_incident->head[0] = ' <span>' . '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$last_incident["id_incidencia"].'">' .__('Active incident on this agent') .'</a>'. '</span>';
+	$table_incident->head_colspan[0] = 2;
+
+	$data = array();
+	$data[0] = '<b>' . __('Author') . '</b>';
+	$data[1] = $last_incident["id_creator"];
+	$table_incident->data[] = $data;
+	
+	$data = array();
+	$data[0] = '<b>' . __('Title') . '</b>';
+	$data[1] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$last_incident["id_incidencia"].'">' .$last_incident["titulo"].'</a>';
+	$table_incident->data[] = $data;
+	
+	$data = array();
+	$data[0] = '<b>' . __('Timestamp') . '</b>';
+	$data[1] = $last_incident["inicio"];
+	$table_incident->data[] = $data;
+	
+	$data = array();
+	$data[0] = '<b>' . __('Priority') . '</b>';
+	$data[1] = incidents_print_priority_img ($last_incident["prioridad"], true);
+	$table_incident->data[] = $data;
+	
+}
+// END: TABLE INCIDENTS
+
 // START: TABLE INTERFACES
 
 $columns = array(
@@ -441,6 +484,7 @@ if ($config["agentaccess"]) {
 
 $data[1] = html_print_table($table_contact, true);
 $data[1] .= empty($table_data->data) ? '' : '<br>' . html_print_table($table_data, true);
+$data[1] .= !isset($table_incident) ? '' : '<br>' . html_print_table($table_incident, true);
 $data[1] .= !isset($table_interface) ? '' : '<br>' . html_print_table($table_interface, true);
 
 $table->rowspan[0][1] = 2;

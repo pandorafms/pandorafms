@@ -380,6 +380,37 @@ foreach my $server (@Servers) {
 	$server->upEvent ();
 }
 
+# Check if the Data Server has too many threads 
+if ($Config{'dataserver_threads'} > 5) {
+	logger (\%Config, "[W] Server " . $Config{'servername'} . " have configured " . $Config{'dataserver_threads'}
+		. " threads for the data server. You should not use more than 5 threads for this server", 1);
+	print_message (\%Config, " [W] Server " . $Config{'servername'} . " have configured " . $Config{'dataserver_threads'}
+		. " threads for the data server. You should not use more than 5 threads for this server", 1);
+	pandora_event (\%Config, "Server " . $Config{'servername'} . " have configured "
+		. $Config{'dataserver_threads'} . " threads for the data server", 0, 0, 3, 0, 0, 'system', 0, $DBH);
+}
+
+# Check if the Pandora Server has too many threads 
+my $totalThreads = 0;
+foreach my $server (@Servers) {
+	$totalThreads += $server->getNumThreads ();
+}
+if ($totalThreads > 40) {
+	logger (\%Config, '[W] Server ' . $Config{'servername'} . ' have configured a total of ' . $totalThreads
+		. ' threads. This setup is not recommended, you should reduce the number of total threads below 40', 1);
+	print_message (\%Config, ' [W] Server ' . $Config{'servername'} . ' have configured a total of ' . $totalThreads
+		. ' threads. This setup is not recommended, you should reduce the number of total threads below 40', 1);
+	pandora_event (\%Config, 'Server ' . $Config{'servername'} . ' have configured a total of ' . $totalThreads
+		. ' threads', 0, 0, 3, 0, 0, 'system', 0, $DBH);
+}
+
+# Check if the log verbosity is set to 10
+if ($Config{'verbosity'} == 10) {
+	logger (\%Config, '[W] Log verbosity is set to 10. This will degrade the server performance. Please set to a lower value ASAP', 1);
+	print_message (\%Config, ' [W] Log verbosity is set to 10. This will degrade the server performance. Please set to a lower value ASAP', 1);
+	pandora_event (\%Config, 'Log verbosity is set to 10. This will degrade the server performance', 0, 0, 1, 0, 0, 'system', 0, $DBH);
+}
+
 # Main loop
 my $time_ref = time ();
 while (1) {

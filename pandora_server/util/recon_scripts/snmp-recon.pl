@@ -708,7 +708,7 @@ sub create_pandora_agent($) {
 		my $ip = get_if_ip($device, $COMMUNITIES{$device}, $if_index);
 		my $if_desc = ($mac ne '' ? "MAC $mac " : '') . ($ip ne '' ? "IP $ip" : '');
 
-		# Check wether the module already exists.
+		# Check whether the module already exists.
 		my $module_id = get_agent_module_id($DBH, "if_${if_name}", $agent_id);
 		next if ($module_id > 0);
 	

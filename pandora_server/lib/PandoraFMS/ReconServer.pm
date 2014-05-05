@@ -133,7 +133,6 @@ sub data_consumer ($$) {
 
 	# Is it a recon script?
 	if (defined ($task->{'id_recon_script'}) && ($task->{'id_recon_script'} != 0)) {
-		logger($pa_config, 'Executing recon script ' . safe_output($task->{'name'}) . '.', 10);
 		exec_recon_script ($pa_config, $dbh, $task);
 		return;
 	} else {
@@ -505,6 +504,7 @@ sub exec_recon_script ($$$) {
 	# Notify this recon task is ended
 	update_recon_task ($dbh, $task->{'id_rt'}, -1);
 	
+	logger($pa_config, 'Done executing recon script ' . safe_output($script->{'name'}), 10);
 	return 0;
 }
 

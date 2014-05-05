@@ -1,3 +1,8 @@
+2014-05-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	  pandoradb_data.sql: Added a new OS for satellite agents.
+
 2014-05-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
         * include/functions_agents.php

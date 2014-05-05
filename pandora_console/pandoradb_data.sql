@@ -110,7 +110,7 @@ UNLOCK TABLES;
 --
 
 LOCK TABLES `tconfig_os` WRITE;
-INSERT INTO `tconfig_os` VALUES 
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES 
 (1,'Linux','Linux: All versions','so_linux.png'),
 (2,'Solaris','Sun Solaris','so_solaris.png'),
 (3,'AIX','IBM AIX','so_aix.png'),
@@ -127,7 +127,8 @@ INSERT INTO `tconfig_os` VALUES
 (15,'Android','Android agent','android.png'),
 (16, 'VMware', 'VMware Architecture', 'so_vmware.png'),
 (17, 'Router', 'Generic router', 'so_router.png'),
-(18, 'Switch', 'Generic switch', 'so_switch.png');
+(18, 'Switch', 'Generic switch', 'so_switch.png'),
+(19, 'Satellite', 'Satellite agent', 'so_other.png');
 UNLOCK TABLES;
 
 

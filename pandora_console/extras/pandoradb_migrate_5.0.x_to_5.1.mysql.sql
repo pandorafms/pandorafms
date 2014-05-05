@@ -156,3 +156,9 @@ ALTER TABLE `treport_content` ADD COLUMN `name` varchar(150) NULL;
 -- ---------------------------------------------------------------------
 ALTER TABLE `trecon_script` ADD COLUMN `macros` TEXT;
 ALTER TABLE `trecon_task` ADD COLUMN `macros` TEXT;
+
+/* 2014/05/05 */
+-- ---------------------------------------------------------------------
+-- Table `tlink`
+-- ---------------------------------------------------------------------
+UPDATE `tlink` SET `link`='http://wiki.pandorafms.com/?title=Pandora' WHERE `name`='Pandora FMS Manual';

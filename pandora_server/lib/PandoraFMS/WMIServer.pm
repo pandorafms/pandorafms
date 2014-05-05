@@ -147,13 +147,16 @@ sub data_consumer ($$) {
 	if (defined ($module->{'plugin_pass'}) && $module->{'plugin_pass'} ne "") {
 		$wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"%"' . $module->{'plugin_pass'} . '"';
 	}
-	else {
+	elsif (defined ($module->{'plugin_user'}) && $module->{'plugin_user'} ne "") {
 		$wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"';
+	}
+	else {
+		$wmi_command = $pa_config->{'wmi_client'} . ' -N';
 	}
 	
 	# Use a custom namespace
 	my $namespace = $module->{'tcp_send'};
-	if ($namespace ne '') {
+	if (defined($namespace) && $namespace ne '') {
 		$namespace =~ s/\"/\'/g;
 		$wmi_command .= ' --namespace="' . $namespace . '"';
 	}

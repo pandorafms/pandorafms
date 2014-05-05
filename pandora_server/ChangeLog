@@ -1,3 +1,8 @@
+2014-05-05  Alejandro Gallardo <alejandro.gallardo@artica.es>
+
+	* bin/pandora_server: Added checks and warnings for
+	too many threads and verbosity 10.
+
 2014-05-03  Junichi Satoh <junichi@rworks.jp>
 
 	* util/pandora_manage.pl: Added new CLI functions to manage special

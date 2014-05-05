@@ -1,3 +1,12 @@
+2014-05-05  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/realtime_graphs
+	extensions/realtime_graphs/ajax.php
+	extensions/realtime_graphs/realtime_graphs.css
+	extensions/realtime_graphs/realtime_graphs.js
+	extensions/realtime_graphs.php: Added real time graphs 
+	extension for ticket #736
+
 2014-05-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql

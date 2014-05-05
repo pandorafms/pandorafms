@@ -1,0 +1,76 @@
+<?php
+
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2014 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+require_once ('../../include/functions_html.php');
+
+$graph = $_POST['graph'];
+$graph_title = $_POST['graph_title'];
+$refresh = $_POST['refresh'];
+
+switch($graph) {
+	case 'cpu_load':
+		$data = exec("top -bn 2 -d 0.01 | grep '^Cpu' | tail -n 1 | awk '{print $2+$4+$6}'");
+		break;
+	case 'pending_packets':
+		$data = exec("find /var/spool/pandora/data_in/*.data | wc -l");
+		break;
+	case 'disk_io_wait':
+		$data = exec("vmstat 1 3 | tail -1 | awk '{ print $16 }'");
+		break;
+	case 'mysql_load':
+		$data = exec("ps aux | grep mysqld | grep -v safe | grep -v grep | awk '{ print $3 }'");
+		break;
+	case 'apache_load':
+		$data = exec("ps aux | grep apache2 | grep -v safe | grep -v grep | awk '{ print $3 }'");
+		break;
+	case 'server_load':
+		$data = exec("ps aux | grep pandora_server | grep -v grep | awk '{print $3}'");
+		break;
+	case 'snmp_interface':
+		$snmp_address = $_POST['snmp_address'];
+		$snmp_community = $_POST['snmp_community'];
+		$snmp_ver = $_POST['snmp_ver'];
+		$snmp_oid = $_POST['snmp_oid'];
+		
+		if (empty($snmp_address) || empty($snmp_oid)) {
+			$data = 0;
+		}
+		else {
+			$data = get_snmpwalk($snmp_address, $snmp_ver, $snmp_community, '', '', '', '', '', '', 0, $snmp_oid);
+			$data_index = array_keys($data);
+			$graph_title = $data_index[0];
+			if (!empty($data)) {
+				$data_array = explode(' ', reset($data));
+				if (count($data_array) > 1) {
+					$data = $data_array[1];
+				}
+			}
+		}
+		break;
+	default:
+		$data = 0;
+}
+
+if (empty($data)) {
+	$data = 0;
+}
+
+$graph_title .= ' (' . $refresh/1000 . ' ' . __('Seconds') . ')';
+echo '{
+    "label": "' . $graph_title . '",
+    "data": [["' . time() . '", ' . $data . ']]
+}';
+?>

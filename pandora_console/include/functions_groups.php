@@ -590,10 +590,11 @@ function groups_get_id ($group_name, $returnAllGroup = false) {
  * @param int $id_group The group id to look for
  * @param mixed filter array
  * @param bool True if users with all permissions in the group are retrieved 
+ * @param bool Is id_group an array or not #Fix
  *
  * @return array An array with all the users or an empty array
  */
-function groups_get_users ($id_group, $filter = false, $return_user_all = false) {
+function groups_get_users ($id_group, $filter = false, $return_user_all = false, $_is_array = false) {
 	global $config;
 	
 	if (! is_array ($filter))
@@ -602,8 +603,14 @@ function groups_get_users ($id_group, $filter = false, $return_user_all = false)
 	$filter['id_grupo'] = $id_group;
 	
 	$result_a = array();
-	if (!is_array($id_group) && !empty($id_group)) {
+	// Juanma (05/05/2014) Fix: Check for number/array id_group variable
+	if ($_is_array && is_array($id_group) && !empty($id_group)) {
 		$result_a = db_get_all_rows_filter ("tusuario_perfil", $filter);
+	} else {
+		if (!is_array($id_group) && !empty($id_group)) {
+			$result_a = db_get_all_rows_filter ("tusuario_perfil", $filter);
+		}
+	
 	}
 	
 	$result_b = array();

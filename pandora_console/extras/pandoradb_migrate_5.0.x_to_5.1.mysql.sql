@@ -40,8 +40,10 @@ ALTER TABLE tgraph_source MODIFY COLUMN `weight` float(8,3) NOT NULL DEFAULT 0;
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
 -- ---------------------------------------------------------------------
-INSERT INTO `tconfig_os` VALUES (17, 'Router', 'Generic router', 'so_router.png');
-INSERT INTO `tconfig_os` VALUES (18, 'Switch', 'Generic switch', 'so_switch.png');
+INSERT INTO `tconfig_os` (`name`, `description`, icon_name`) VALUES ('Router', 'Generic router', 'so_router.png');
+INSERT INTO `tconfig_os` (`name`, `description`, icon_name`) VALUES ('Switch', 'Generic switch', 'so_switch.png');
+INSERT INTO `tconfig_os` (`name`, `description`, icon_name`) VALUES ('Satellite', 'Satellite agent', 'so_other.png');
+
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`

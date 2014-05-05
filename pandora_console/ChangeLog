@@ -1,3 +1,8 @@
+2014-05-05  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_netflow.php: Added an overflow
+	property to the data table when its width is too high.
+
 2014-05-05  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pandoradb_migrate_5.0.x_to_5.1.mysql.sql

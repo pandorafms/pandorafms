@@ -922,6 +922,10 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		case AGENT_STATUS_ALERT_FIRED:
 			$status_color = COL_ALERTFIRED;
 			break;
+		# Juanma (05/05/2014) Fix: Correct color for not init agents!
+		case AGENT_STATUS_NOT_INIT:
+			$status_color = COL_NOTINIT;
+			break;
 		default:
 			//Unknown monitor
 			$status_color = COL_UNKNOWN;

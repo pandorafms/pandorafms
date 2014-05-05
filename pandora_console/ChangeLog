@@ -1,3 +1,10 @@
+2014-05-05  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	  pandoradb_migrate_5.0.x_to_5.1.oracle.sql
+	  pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql: Changed
+	link 'Pandora FMS Manual'.
+
 2014-05-05  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/realtime_graphs

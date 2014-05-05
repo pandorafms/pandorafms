@@ -138,3 +138,9 @@ ALTER TABLE treport_content ADD (name VARCHAR2(150) default NULL);
 -- ---------------------------------------------------------------------
 ALTER TABLE trecon_script ADD (macros CLOB default '' NOT NULL);
 ALTER TABLE trecon_task ADD (macros CLOB default '' NOT NULL);
+
+/* 2014/05/05 */
+-- ---------------------------------------------------------------------
+-- Table tlink
+-- ---------------------------------------------------------------------
+UPDATE tlink SET link='http://wiki.pandorafms.com/?title=Pandora' WHERE name='Pandora FMS Manual';

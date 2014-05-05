@@ -184,7 +184,7 @@ COMMIT WORK;
 BEGIN WORK;
 LOCK TABLE "tlink";
 INSERT INTO "tlink" VALUES 
-(1,'Pandora FMS Manual','https://openideas.info/wiki/index.php?title=Pandora'),
+(1,'Pandora FMS Manual','http://wiki.pandorafms.com/?title=Pandora'),
 (2,'Pandora FMS','http://pandorafms.org'),
 (3,'Report a bug','https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852'),
 (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855'),

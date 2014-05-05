@@ -1,3 +1,16 @@
+2014-05-05  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+	  pandoradb.data.sql
+	  pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	  pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	  pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	  pandoradb_migrate_4.1_to_5.0.mysql.sql
+	  pandoradb_migrate_4.1_to_5.0.oracle.sql
+	  pandoradb_migrate_4.1_to_5.0.postgreSQL.sql: Changed link
+	'Pandora FMS Manual'.
+
 2014-05-04  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/agentes/planned_downtime.list.php: Merged from trunk.

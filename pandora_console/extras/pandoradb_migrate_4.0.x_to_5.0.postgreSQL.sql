@@ -1150,3 +1150,8 @@ UPDATE "tlanguage" SET "name" = 'English (UK)' WHERE "id_language" = 'en_GB';
 -- Set the default style
 UPDATE tconfig SET value = "pandora" WHERE token = "style";
 -- ---------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------
+-- Table tlink
+-- ---------------------------------------------------------------------
+UPDATE "tlink" SET "link"='http://wiki.pandorafms.com/?title=Pandora' WHERE "name"='Pandora FMS Manual';

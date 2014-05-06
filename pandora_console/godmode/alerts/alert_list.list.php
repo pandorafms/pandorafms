@@ -40,8 +40,15 @@ else {
 	$sec = 'galertas';
 }
 
+if ($id_agente) {
+	$sec2 = 'godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente;
+}
+else {
+	$sec2 = 'godmode/alerts/alert_list';
+}
+
 // Table for filter controls
-$form_filter = '<form method="post" action="index.php?sec=' . $sec . '&amp;sec2=godmode/alerts/alert_list&amp;refr=' . ((int)get_parameter('refr', 0)) . '&amp;pure='.$config["pure"].'">';
+$form_filter = '<form method="post" action="index.php?sec=' . $sec . '&amp;sec2=' . $sec2 . '&amp;refr=' . ((int)get_parameter('refr', 0)) . '&amp;pure='.$config["pure"].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />\n";
 $form_filter .= '<table style="width: 98%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
 $form_filter .= "<tr>\n";
@@ -295,11 +302,14 @@ switch ($sortField) {
 		break;
 }
 
+$form_params = '&template_name=' . $templateName . '&agent_name=' . $agentName . '&module_name=' . $moduleName . '&action_id=' . $actionID . '&field_content=' . $fieldContent. '&priority=' . $priority . '&enabledisable=' . $enabledisable . '&standby=' . $standby;
+$sort_params = '&sort_field=' . $sortField . '&sort=' . $sort;
+
 if ($id_agente) {
-	ui_pagination ($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente);
+	ui_pagination ($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente . $form_params . $sort_params);
 }
 else {
-	ui_pagination ($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&search=1' . '&template_name=' . $templateName . '&agent_name=' . $agentName . '&module_name=' . $moduleName . '&action_id=' . $actionID . '&field_content=' . $fieldContent. '&priority=' . $priority . '&enabledisable=' . $enabledisable . '&standby=' . $standby);
+	ui_pagination ($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list' . $form_params . $sort_params);
 }
 $simple_alerts = agents_get_alerts_simple (array_keys ($agents), false,
 	array ('offset' => (int) get_parameter ('offset'),
@@ -308,10 +318,10 @@ $simple_alerts = agents_get_alerts_simple (array_keys ($agents), false,
 $offset = get_parameter('offset');
 
 if (!$id_agente) {
-	$url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'&offset=' . $offset;
+	$url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'&offset=' . $offset . $form_params;
 }
 else {
-	$url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente=' . $id_agente;
+	$url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente=' . $id_agente . '&offset=' . $offset . $form_params;
 }
 
 $table->class = 'alert_list databox';
@@ -369,6 +379,8 @@ $table->valign[3] = 'middle';
 $table->valign[4] = 'middle';
 
 $table->data = array ();
+
+$url .= $sort_params;
 
 $rowPair = true;
 $iterator = 0;
@@ -492,7 +504,7 @@ foreach ($simple_alerts as $alert) {
 			// Is possible manage actions if have LW permissions in the agent group of the alert module
 			if (check_acl ($config['id_user'], $agent_group, "LW")) {
 				$data[2] .= "<td align='center'>";
-					$data[2] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
+					$data[2] .= '<form method="post" action="' . $url . '" class="delete_link" style="display: inline; vertical-align: -50%;">';
 					$data[2] .= html_print_input_image ('delete',
 						'images/cross.png', 1, 'padding:0px;', true,
 						array('title' => __('Delete')));
@@ -588,7 +600,7 @@ foreach ($simple_alerts as $alert) {
 	
 	$data[3] = ui_print_status_image($status, $title, true);
 	
-	$data[4] = '<form class="disable_alert_form" method="post" style="display: inline;">';
+	$data[4] = '<form class="disable_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 	if ($alert['disabled']) {
 		$data[4] .= html_print_input_image ('enable', 'images/lightbulb_off.png', 1, 'padding:0px', true);
 		$data[4] .= html_print_input_hidden ('enable_alert', 1, true);
@@ -602,7 +614,7 @@ foreach ($simple_alerts as $alert) {
 	
 	// To manage alert is necessary LW permissions in the agent group 
 	if(check_acl ($config['id_user'], $agent_group, "LW")) {
-		$data[4] .= '&nbsp;&nbsp;<form class="standby_alert_form" method="post" style="display: inline;">';
+		$data[4] .= '&nbsp;&nbsp;<form class="standby_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 		if (!$alert['standby']) {
 			$data[4] .= html_print_input_image ('standby_off', 'images/bell.png', 1, 'padding:0px;', true);
 			$data[4] .= html_print_input_hidden ('standbyon_alert', 1, true);
@@ -633,7 +645,7 @@ foreach ($simple_alerts as $alert) {
 	
 	// To manage alert is necessary LW permissions in the agent group 
 	if(check_acl ($config['id_user'], $agent_group, "LW")) {
-		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" method="post" style="display: inline;">';	
+		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';	
 		if ($alert['disabled']) {
 			$data[4] .= html_print_image('images/add.disabled.png',
 			true, array('title' => __("Add action")));

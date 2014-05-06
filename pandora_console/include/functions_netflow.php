@@ -509,6 +509,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 	}
 	
 	// Address resolution start
+	$get_hostnames = false;
 	if ($config['netflow_get_ip_hostname'] && ($aggregate == "srcip" || $aggregate == "dstip")) {
 		$get_hostnames = true;
 		global $hostnames;

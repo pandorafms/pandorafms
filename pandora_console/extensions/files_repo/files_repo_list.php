@@ -70,6 +70,7 @@ if (!empty($files)) {
 		$data[3] = date('F j, Y - H:m', $file['mtime']); // Last modification
 
 		// Public URL
+		$data[4] = "";
 		if (!empty($file['hash'])) {
 			$public_url = ui_get_full_url(EXTENSIONS_DIR . "/files_repo/files_repo_get_file.php?file=" . $file['hash']);
 			$message = __('Copy to clipboard') . ": Ctrl+C -> Enter";

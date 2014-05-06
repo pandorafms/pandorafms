@@ -1,3 +1,8 @@
+2014-05-06  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/alerts/alert_list.list.php: Now the form and
+	sort values are keeped.
+
 2014-05-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandora_console/include/functions_groups.php	

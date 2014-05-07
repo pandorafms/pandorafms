@@ -261,7 +261,9 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$filter['id_grupo'] = $group;
 		
 		$agents = agents_get_agents ($filter,
-			array ('id_grupo, nombre, id_os, id_parent, id_agente, normal_count, warning_count, critical_count, unknown_count, total_count, notinit_count'));
+			array ('id_grupo, nombre, id_os, id_parent, id_agente,
+				normal_count, warning_count, critical_count,
+				unknown_count, total_count, notinit_count'));
 	}
 	else if ($group == -666) {
 		$agents = false;
@@ -269,7 +271,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	else {
 		$agents = agents_get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_parent, id_agente, 
-				normal_count, warning_count, critical_count, unknown_count, total_count, notinit_count'));
+				normal_count, warning_count, critical_count,
+				unknown_count, total_count, notinit_count'));
 	}
 	
 	if ($agents === false)
@@ -277,7 +280,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$agents = array();
 	
 	// Open Graph
-	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);
+	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
+		$ranksep, $font_size);
 	
 	// Parse agents
 	$nodes = array ();
@@ -321,7 +325,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			// Parse modules
 			foreach ($modules as $key => $module) {
 				
-				if ($module['id_tipo_modulo'] != 18 && (!$l2_network || $module['id_tipo_modulo'] != 6)) {
+				if ($module['id_tipo_modulo'] != 18 &&
+					(!$l2_network || $module['id_tipo_modulo'] != 6)) {
 					continue;
 				}
 				

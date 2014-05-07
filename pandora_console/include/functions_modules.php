@@ -961,6 +961,40 @@ function modules_get_unit ($id_agente_modulo) {
 	return $unit = (string) db_get_value ('unit', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 }
 
+function modules_get_interfaces($id_agent, $fields_param = false) {
+	$return = array();
+	
+	$fields = $fields_param;
+	if ($fields !== false) {
+		if (is_array($fields)) {
+			$fields[] = 'id_tipo_modulo';
+		}
+	}
+	
+	$modules = db_get_all_rows_filter('tagente_modulo',
+		array('id_agente' => $id_agent), $fields);
+	
+	if (empty($modules))
+		$modules = array();
+	
+	foreach ($modules as $module) {
+		if ($module['id_tipo_modulo'] == 18 || $module['id_tipo_modulo'] == 6) {
+			
+			if ($fields_param !== false) {
+				if (is_array($fields_param)) {
+					if (in_array('id_tipo_modulo', $fields) !== false) {
+						unset($module['id_tipo_modulo']);
+					}
+				}
+			}
+			
+			$return[] = $module;
+		}
+	}
+	
+	return $return;
+}
+
 /**
  * Get all the times a monitor went down during a period.
  *

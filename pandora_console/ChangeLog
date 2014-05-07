@@ -1,3 +1,11 @@
+2014-05-07  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_ui.php, include/functions_networkmap.php: clean
+	source code style.
+	
+	* include/functions_modules.php: added function
+	"modules_get_interfaces".
+
 2014-05-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb_data.sql

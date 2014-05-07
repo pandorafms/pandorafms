@@ -1039,13 +1039,16 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 function ui_require_css_file ($name, $path = 'include/styles/') {
 	global $config;
 	
-	$filename = $path.$name.'.css';
+	$filename = $path . $name . '.css';
 	
 	if (! isset ($config['css']))
 		$config['css'] = array ();
+	
 	if (isset ($config['css'][$name]))
 		return true;
-	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
+	
+	if (! file_exists ($filename) &&
+		! file_exists ($config['homedir'] . '/' . $filename))
 		return false;
 	
 	$config['css'][$name] = $filename;

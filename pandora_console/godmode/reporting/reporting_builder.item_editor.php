@@ -640,7 +640,7 @@ html_print_input_hidden('id_item', $idItem);
 							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
 							?>
 						</td>
-						<td colspan="6"><?php html_print_input_text ('time_from', $time_from, '', 7, 7);?></td>
+						<td colspan="6"><?php html_print_input_text ('time_from', $time_from, '', 7, 8);?></td>
 					</tr>
 					<tr>
 						<td>
@@ -649,7 +649,7 @@ html_print_input_hidden('id_item', $idItem);
 							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
 							?>
 						</td>
-						<td colspan="6"><?php html_print_input_text ('time_to', $time_to, '', 7, 7);?></td>
+						<td colspan="6"><?php html_print_input_text ('time_to', $time_to, '', 7, 8);?></td>
 					</tr>
 				</table>
 			</td>

@@ -489,6 +489,10 @@ sub enterprise_load ($) {
 	
 	# Ops
 	return 0 if ($@);
+
+	# Initialize the enterprise module.
+	PandoraFMS::Enterprise::init($pa_config);
+
 	return 1;
 }
 

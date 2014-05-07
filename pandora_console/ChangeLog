@@ -1,3 +1,8 @@
+2014-05-07  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_visual_map.php: Now the linked
+	visual consoles are opened in another page.
+
 2014-05-07  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_ui.php, include/functions_networkmap.php: clean
@@ -50,6 +55,7 @@
           pandora_console/include/functions_events.php: Fixed bug
         in event viewer. A user could not be assigned himself as
         the owner of the event.
+
 2014-05-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
         * pandora_console/include/functions_groups.php

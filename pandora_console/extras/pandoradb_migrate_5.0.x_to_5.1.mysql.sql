@@ -164,3 +164,14 @@ ALTER TABLE `trecon_task` ADD COLUMN `macros` TEXT;
 -- Table `tlink`
 -- ---------------------------------------------------------------------
 UPDATE `tlink` SET `link`='http://wiki.pandorafms.com/?title=Pandora' WHERE `name`='Pandora FMS Manual';
+
+/* 2014/05/07 */
+-- ---------------------------------------------------------------------
+-- Table `tconfig`
+-- ---------------------------------------------------------------------
+INSERT INTO `tconfig` (`token`, `value`) VALUES 
+('custom_report_front', 0),
+('custom_report_front_font', 'FreeSans.ttf'),
+('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
+('custom_report_front_header', ''),
+('custom_report_front_footer', '');

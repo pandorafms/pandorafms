@@ -1,3 +1,17 @@
+2014-05-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb_data.sql
+	  include/functions_config.php
+	  extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql
+	  extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql
+	  extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	  pandoradb.data.postgreSQL.sql
+	  pandoradb.data.oracle.sql
+	  godmode/setup/setup_visuals.php	
+	  godmode/reporting/reporting_builder.php: New feature for
+	reports and report templates, user can customize report 
+	front page in setup.
+
 2014-05-07  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* godmode/agentes/planned_downtime.editor.php,

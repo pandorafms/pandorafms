@@ -24,6 +24,11 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 	return;
 }
 
+// FIX: this constant is declared to in godmode/reporting/reporting_builder.phps
+//Constant with fonts directory
+define ('_MPDF_TTFONTPATH', $config['homedir'] . '/include/fonts/');
+
+
 // Load enterprise extensions
 enterprise_include ('godmode/setup/setup_visuals.php');
 
@@ -297,6 +302,67 @@ $table->data[$row][1] = html_print_select($arraySelectIcon, "gis_default_icon", 
 
 $row++;
 
+// Juanma (07/05/2014) New feature: Table for custom front page for reports  
+
+$table->data[$row][0] = __('Custom report front page') . ui_print_help_tip(__('Custom report front page. It will be applied to all reports and templates by default.'), true);
+$table->data[$row][1] = html_print_checkbox('custom_report_front', 1, $config['custom_report_front'], true);
+
+$row++;
+
+$dirItems = scandir($config['homedir'] . '/images/custom_logo');
+
+foreach ($dirItems as $entryDir) {
+	if (strstr($entryDir, '.jpg') !== false) {
+		$customLogos['images/custom_logo/' . $entryDir] = $entryDir;
+	}
+}
+
+$_fonts = array();
+$dirFonts = scandir(_MPDF_TTFONTPATH);
+foreach ($dirFonts as $entryDir) {
+	if (strstr($entryDir, '.ttf') !== false) {
+		$_fonts[$entryDir] = $entryDir;
+	}
+}
+
+$table->data[$row][0] = __('Custom report front') . ' - ' . __('Font family');
+$table->data[$row][1] = html_print_select ($_fonts, 'custom_report_front_font', $config['custom_report_front_font'], false, __('Default'), '', true);
+
+$row++;
+
+$table->data[$row][0] =  __('Custom report front') . ' - ' . __('Custom logo') .
+	ui_print_help_tip(
+		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG) in upload tool in console."), true);
+$table->data[$row][1] = html_print_select ($customLogos, 'custom_report_front_logo', $config['custom_report_front_logo'], 'showPreview()', __('Default'), '', true);
+
+$row++;
+
+$table->data[$row][0] =  __('Custom report front') . ' - ' . 'Preview';
+if (empty($config['custom_report_front_logo'])) {
+	$config['custom_report_front_logo'] = 'images/pandora_logo_white.jpg';
+}
+$table->data[$row][1] = '<span id="preview_image">' . html_print_image ($config['custom_report_front_logo'], true) . '</span>';
+
+$row++;
+
+$table->data[$row][0] =  __('Custom report front') . ' - ' . __('Header');
+$table->data[$row][1] = html_print_textarea('custom_report_front_header', 5, 15,
+	$config['custom_report_front_header'], 'style="width: 38em;"', true);
+
+$row++;
+
+$table->data[$row][0] =  __('Custom report front') . ' - ' . __('First page');
+$table->data[$row][1] = html_print_textarea('custom_report_front_firstpage', 15, 15,
+	$config['custom_report_front_firstpage'], 'style="width: 38em; height: 20em;"', true);
+
+$row++;
+
+$table->data[$row][0] =  __('Custom report front') . ' - ' . __('Footer');
+$table->data[$row][1] = html_print_textarea('custom_report_front_footer', 5, 15,
+	$config['custom_report_front_footer'], 'style="width: 38em;"', true);
+
+$row++;
+
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
 html_print_table ($table);
@@ -324,8 +390,72 @@ function load_fonts() {
 	
 	return $fonts;
 }
+
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+
 ?>
 <script language="javascript" type="text/javascript">
+
+// Juanma (07/05/2014) New feature: Custom front page for reports  
+function display_custom_report_front (show) {
+		
+	if (show == true) {
+		$('#table2-32').show();
+		$('#table2-33').show();
+		$('#table2-34').show();
+		$('#table2-35').show();
+		$('#table2-36').show();
+		$('#table2-37').show();		
+	} else {
+		$('#table2-32').hide();
+		$('#table2-33').hide();
+		$('#table2-34').hide();
+		$('#table2-35').hide();
+		$('#table2-36').hide();
+		$('#table2-37').hide();
+	}
+	
+}
+
+function showPreview() {
+	var img_value = $('#custom_report_front_logo').val();
+	
+	jQuery.post (<?php echo "'" . ui_get_full_url(false, false, false, false) . "'" ?> + "/ajax.php",
+			{"page" : "<?php echo ENTERPRISE_DIR ?>/godmode/reporting/reporting_builder.template_advanced",
+			"get_image_path": "1",
+			"img_src" : img_value},
+			function (data, status) {
+				$("#preview_image").html(data);
+			}
+	);
+	
+}
+
+tinyMCE.init({
+	mode : "exact",
+	elements: "textarea_custom_report_front_header, textarea_custom_report_front_footer",
+	theme : "advanced",
+	theme_advanced_toolbar_location : "top",
+	theme_advanced_toolbar_align : "left",
+	theme_advanced_buttons1 : "bold,italic, |, cut, copy, paste, |, undo, redo",
+	theme_advanced_buttons2 : "",
+	theme_advanced_buttons3 : "",
+	theme_advanced_statusbar_location : "none"
+});
+
+tinyMCE.init({
+	mode : "exact",
+	elements: "textarea_custom_report_front_firstpage",
+	theme : "advanced",
+	theme_advanced_toolbar_location : "top",
+	theme_advanced_toolbar_align : "left",
+	theme_advanced_buttons1 : "bold,italic, |, image, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
+	theme_advanced_buttons2 : "",
+	theme_advanced_buttons3 : "",
+	convert_urls : false,
+	theme_advanced_statusbar_location : "none"
+});
+
 $(document).ready (function () {
 	$("#form_setup #text-graph_color1").attachColorPicker();
 	$("#form_setup #text-graph_color2").attachColorPicker();
@@ -347,6 +477,16 @@ $(document).ready (function () {
 	$("#button-interval_add_btn").click( function() {
 		$('#submit-update_button').trigger('click');
 	});
+	
+	// Juanma (06/05/2014) New feature: Custom front page for reports  
+	var custom_report = $('#checkbox-custom_report_front').prop('checked');
+	console.log(custom_report);
+	display_custom_report_front(custom_report);
+
+	$("#checkbox-custom_report_front").click( function()  {
+		var custom_report = $('#checkbox-custom_report_front').prop('checked');
+		display_custom_report_front(custom_report);
+	});		
 });
 
 function changeIcons() {

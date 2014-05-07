@@ -119,6 +119,11 @@ INSERT INTO tconfig (token, value) VALUES ('update_manager_installed', 1);
 INSERT INTO tconfig (token, value) VALUES ('num_files_attachment', 100);
 INSERT INTO tconfig (token, value) VALUES ('show_vc', 1);
 INSERT INTO tconfig (token, value) VALUES ('inventory_changes_blacklist', '1,2,20,21');
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front', 0);
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front_font', 'FreeSans.ttf');
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front_logo', 'images/pandora_logo_white.jpg');
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front_header', '');
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front_footer', '');
 COMMIT;
 END;;
 

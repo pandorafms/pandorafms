@@ -144,3 +144,13 @@ ALTER TABLE trecon_task ADD (macros CLOB default '' NOT NULL);
 -- Table tlink
 -- ---------------------------------------------------------------------
 UPDATE tlink SET link='http://wiki.pandorafms.com/?title=Pandora' WHERE name='Pandora FMS Manual';
+
+/* 2014/05/07 */
+-- ---------------------------------------------------------------------
+-- Table `tconfig`
+-- ---------------------------------------------------------------------
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front', 0);
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front_font', 'FreeSans.ttf');
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front_logo', 'images/pandora_logo_white.jpg');
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front_header', '');
+INSERT INTO tconfig (token, value) VALUES ('custom_report_front_footer', '');

@@ -1,3 +1,7 @@
+2014-05-08  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/servers/plugin.php: Removed 'max. retries'.
+
 2014-05-08  Koichiro KIKUCHI <koichiro@rworks.jp>
 
 	* godmode/agentes/agent_wizard.snmp_interfaces_explorer.php:

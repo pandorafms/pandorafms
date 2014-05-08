@@ -192,8 +192,7 @@ if (($create != "") OR ($view != "")) {
 	
 	$data[0] = __('Max. timeout').ui_print_help_tip (__('This value only will be applied if is minor than the server general configuration plugin timeout').'. <br><br>'.__('If you set a 0 seconds timeout, the server plugin timeout will be used'), true);
 	$data[1] = html_print_extended_select_for_time ('form_max_timeout', $form_max_timeout, '', '', '0', false, true);
-	$data[2] = __('Max. retries');
-	$data[3] = '<input type="text" name="form_max_retries" size=5 value="'.$form_max_retries.'">';
+
 	$table->data['plugin_timeout'] = $data;
 	
 	$data = array();
@@ -401,7 +400,6 @@ else {
 		$plugin_name = get_parameter ("form_name", "");
 		$plugin_description = get_parameter ("form_description", "");
 		$plugin_max_timeout = get_parameter ("form_max_timeout", "");
-		$plugin_max_retries = get_parameter ("form_max_retries", "");
 		$plugin_execute = get_parameter ("form_execute", "");
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
 		$parameters = get_parameter ("form_parameters", "");
@@ -435,7 +433,6 @@ else {
 			'name' => $plugin_name,  
 			'description' => $plugin_description, 
 			'max_timeout' => $plugin_max_timeout, 
-			'max_retries' => $plugin_max_retries, 
 			'execute' => $plugin_execute, 
 			'plugin_type' => $plugin_plugin_type,
 			'parameters' => $parameters,
@@ -458,7 +455,6 @@ else {
 		$plugin_name = get_parameter ("form_name", "");
 		$plugin_description = get_parameter ("form_description", "");
 		$plugin_max_timeout = get_parameter ("form_max_timeout", "");
-		$plugin_max_retries = get_parameter ("form_max_retries", "");
 		$plugin_execute = get_parameter ("form_execute", "");
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
 		$plugin_parameters = get_parameter ("form_parameters", "");
@@ -491,7 +487,6 @@ else {
 			'name' => $plugin_name,
 			'description' => $plugin_description,
 			'max_timeout' => $plugin_max_timeout,
-			'max_retries' => $plugin_max_retries,
 			'execute' => $plugin_execute,
 			'plugin_type' => $plugin_plugin_type,
 			'parameters' => $plugin_parameters,

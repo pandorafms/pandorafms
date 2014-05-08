@@ -51,7 +51,7 @@ if (is_ajax ()) {
 		$macros['base64'] = base64_encode($recon_script_macros);
 		$macros['array'] = json_decode($recon_script_macros,true);
 		
-		echo json_encode($macros);
+		echo io_json_mb_encode($macros);
 		return;
 	}
 

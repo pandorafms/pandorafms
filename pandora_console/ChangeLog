@@ -1,3 +1,10 @@
+2014-05-08  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* pandora_console/extensions/matrix_events/ajax.php,
+	  pandora_console/extensions/matrix_events.php: Added
+	files. New extension to see the latest events like if
+	you were the operator of the Nebuchadnezzar.
+
 2014-05-08  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* godmode/servers/plugin.php: Removed 'max. retries'.

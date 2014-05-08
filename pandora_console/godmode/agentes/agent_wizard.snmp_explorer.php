@@ -259,6 +259,20 @@ if ($snmpwalk) {
 			}
 		}
 	}
+	
+	// Other SNMP Data
+	$arrow = true;
+	foreach ($static_snmp_oids as $key=>$oid) {
+		$result = snmpget($ip_target, $snmp_community, $oid);
+		if ($result != false) {
+			$other_snmp_data[$key] = $static_snmp_descriptions[$key];
+		}
+	}
+	if (empty($other_snmp_data)) {
+		$arrow = false;
+		$other_snmp_data[0] = __('Remote system doesnt support host SNMP information');
+	}
+	
 }
 
 if ($create_modules) {
@@ -724,7 +738,7 @@ if (!$fail) {
 	
 	// SNMP data list
 	$table->data[2][0] .= '<div class="wizard_mode_form wizard_mode_snmpdata">';
-	$table->data[2][0] .= html_print_select ($static_snmp_descriptions, 'snmpdata', '', '',
+	$table->data[2][0] .= html_print_select ($other_snmp_data, 'snmpdata', '', '',
 		'', '', true, true, true, '', false, 'width: 300px;');
 	$table->data[2][0] .= '</div>';
 	
@@ -739,8 +753,9 @@ if (!$fail) {
 	// Temperatures arrow
 	$table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_temperatures wizard_mode_temperatures_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
 	// SNMP data arrow
-	$table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_snmpdata wizard_mode_snmpdata_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
-	
+	if ($arrow) {
+		$table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_snmpdata wizard_mode_snmpdata_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
+	}
 	$table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">' . html_print_image('images/cross.png', true, array('title' => __('Remove from modules list'))) . '</div>'; 
 	$table->cellstyle[2][1] .= 'vertical-align: middle; text-align: center;';
 

@@ -780,9 +780,9 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 			$condition .= ' ( ';
 		
 		// Group condition (The module belongs to an agent of the group X)
-		// Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition		
+		// Juanma (08/05/2014) Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition		
 		if (!array_key_exists(0, $acltags)) {
-			// Fix: get all groups recursively (Acl proc func!)
+			// Juanma (08/05/2014) Fix: get all groups recursively (Acl proc func!)
 			$group_condition = sprintf('%sid_agente IN (SELECT id_agente FROM tagente WHERE id_grupo IN (%s))', $modules_table, implode(',', array_values(groups_get_id_recursive($group_id))));
 		}
 		else {
@@ -825,16 +825,15 @@ function tags_get_acl_tags_event_condition($acltags) {
 	// Get all tags of the system
 	$all_tags = tags_get_all_tags(false);
 	
-	// Fix : Will have all groups  retrieved (also propagated ones)
+	// Juanma (08/05/2014) Fix : Will have all groups  retrieved (also propagated ones)
 	$_groups_not_in = '';
 	
 	foreach ($acltags as $group_id => $group_tags) {
 		// Group condition (The module belongs to an agent of the group X)
-		// Fix : Get all groups (children also, Propagate ACL func!)
+		// Juanma (08/05/2014) Fix : Get all groups (children also, Propagate ACL func!)
 		$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id))));
 		$_groups_not_in .= implode(',', array_values(groups_get_id_recursive($group_id))) . ','; 
 		
-
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = '';
 		foreach ($group_tags as $tag) {
@@ -870,7 +869,7 @@ function tags_get_acl_tags_event_condition($acltags) {
 	}
 	
 	if (!empty($condition)) {
-		// Fix : Also add events of other groups (taking care of propagate ACLs func!)
+		// Juanma (08/05/2014) Fix : Also add events of other groups (taking care of propagate ACLs func!)
 		if (!empty($_groups_not_in))
 			$condition = sprintf("\n((%s) OR id_grupo NOT IN (%s))", $condition, rtrim($_groups_not_in, ','));
 	}

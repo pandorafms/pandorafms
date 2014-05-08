@@ -1,3 +1,8 @@
+2014-05-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+        * include/functions_tags.php: Fixed ACL tags in complex
+        scenarios (profiles with groups, tags and propagation).
+
 2014-05-08  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/ver_agente.php

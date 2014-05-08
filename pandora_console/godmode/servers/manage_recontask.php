@@ -106,7 +106,7 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 		}
 	}
 	
-	$macros = json_encode($macros);
+	$macros = io_json_mb_encode($macros);
 }
 
 // --------------------------------

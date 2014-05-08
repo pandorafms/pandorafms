@@ -1,3 +1,10 @@
+2014-05-08  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/servers/manage_recontask.php,
+	godmode/servers/manage_recontask_form.php: Replaced json_encode()
+	with io_json_mb_encode() to avoid invalid encoding with multi-byte
+	characters.
+
 2014-05-07  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_visual_map.php: Now the linked

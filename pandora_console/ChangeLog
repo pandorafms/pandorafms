@@ -1,3 +1,10 @@
+2014-05-08  Koichiro KIKUCHI <koichiro@rworks.jp>
+
+	* godmode/agentes/agent_wizard.snmp_interfaces_explorer.php:
+	 (Re)added ifXTable support to the SNMP interface wizard.
+
+	MERGED FROM TRUNK.
+
 2014-05-08  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_visual_map.php: Now the linked

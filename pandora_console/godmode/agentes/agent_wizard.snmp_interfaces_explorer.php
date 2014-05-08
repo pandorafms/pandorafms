@@ -52,10 +52,12 @@ if ($snmpwalk) {
 	$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
 		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.2", $tcp_port);
-	
-	if ($snmpis === false) {
-		$snmpis = array();
-	}
+	// ifXTable is also used
+	$ifxitems = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
+		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.31.1.1", $tcp_port);
+
+	$snmpis = array_merge(($snmpis === false ? array() : $snmpis), ($ifxitems === false ? array() : $ifxitems));
 	
 	$interfaces = array();
 	

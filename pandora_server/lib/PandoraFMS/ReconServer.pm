@@ -27,6 +27,7 @@ use Thread::Semaphore;
 use IO::Socket::INET;
 use POSIX qw(strftime ceil);
 use JSON qw(decode_json encode_json);
+use Encode qw(encode_utf8);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -484,7 +485,11 @@ sub exec_recon_script ($$$) {
 	my $command = safe_output($script->{'script'});
 	
 	my $macros = safe_output($task->{'macros'});
-	my $decoded_macros = decode_json ($macros);
+
+	# \r and \n should be escaped for decode_json().
+	$macros =~ s/\n/\\n/g;
+	$macros =~ s/\r/\\r/g;
+	my $decoded_macros = decode_json (encode_utf8($macros));
 	
 	my $macros_parameters = '';
 	

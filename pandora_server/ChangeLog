@@ -1,3 +1,8 @@
+2014-05-08  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/ReconServer.pm: Fixed crash when macros help of
+	recon script contains \r, \n or multibyte characters.
+
 2014-05-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Added code to initialize the enterprise module.

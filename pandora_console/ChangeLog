@@ -1,9 +1,16 @@
+2014-05-08  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_visual_map.php: Now the linked
+	visual consoles are opened in another page.
+	
+	MERGED FROM TRUNK.
+
 2014-05-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_tags.php: Fixed ACL tags in complex
 	scenarios (profiles with groups, tags and propagation).
 
-	MERGED FRON TRUNK
+	MERGED FROM TRUNK
 
 2014-05-07  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
@@ -17,6 +24,8 @@
 	
 	* godmode/alerts/alert_list.list.php: Now the form and
 	sort values are keeped.
+
+	MERGED FROM TRUNK.
 
 2014-05-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 

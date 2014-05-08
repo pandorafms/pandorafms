@@ -146,6 +146,10 @@ INSERT INTO tconfig_os VALUES (12,'Web Server','Web Server/Application','network
 INSERT INTO tconfig_os VALUES (13,'Octopods','Octopods Pandora FMS Hardware Agent','network.png');
 INSERT INTO tconfig_os VALUES (14,'Embedded','Embedded device running a Pandora FMS agent','embedded.png');
 INSERT INTO tconfig_os VALUES (15,'Android','Android agent','android.png');
+INSERT INTO tconfig_os VALUES (16, 'VMware', 'VMware Architecture', 'so_vmware.png');
+INSERT INTO tconfig_os VALUES (17, 'Router', 'Generic router', 'so_router.png');
+INSERT INTO tconfig_os VALUES (18, 'Switch', 'Generic switch', 'so_switch.png');
+INSERT INTO tconfig_os VALUES (19, 'Satellite', 'Satellite agent', 'satellite.png');
 COMMIT;
 END;;
 

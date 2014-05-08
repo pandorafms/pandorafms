@@ -37,6 +37,7 @@ UPDATE "tconfig" SET "value"='#FF6600' WHERE "token"='graph_color3';
 -- ---------------------------------------------------------------------
 INSERT INTO "tconfig_os" VALUES (17, 'Router', 'Generic router', 'so_router.png');
 INSERT INTO "tconfig_os" VALUES (18, 'Switch', 'Generic switch', 'so_switch.png');
+INSERT INTO "tconfig_os" VALUES (19, 'Satellite', 'Satellite agent', 'satellite.png');
 
 /* 2014/03/18 */
 -- ----------------------------------------------------------------------

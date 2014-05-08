@@ -1,3 +1,23 @@
+2014-05-08  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/ver_agente.php
+	godmode/menu.php
+	godmode/massive/massive_operations.php
+	include/javascript/pandora.js: Add massive operation for
+	satellite agents threshold edition. This is the part on the 
+	open side that hooks with enterprise code.
+
+	* extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql
+	pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql: 
+	images/networkmap/satellite.png
+	images/os_icons/satellite_small.png
+	images/os_icons/satellite.png
+	images/op_satellite.png: Add icon to satellite OS
+
 2014-05-08  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/servers/manage_recontask.php,

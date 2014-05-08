@@ -271,7 +271,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 				});
 			if (selected != undefined)
 				$('#module').attr ('value', selected);
-			$('#module').css ("width", "auto");
+			
 			$('#module').css ("max-width", "");
 			
 			

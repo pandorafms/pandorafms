@@ -46,6 +46,8 @@ if (is_ajax ()) {
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
+		$custom_condition = get_parameter('custom_condition', '');
+
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
@@ -65,6 +67,8 @@ if (is_ajax ()) {
 		
 		
 		$filter = " WHERE id_grupo IN (" . implode(',', $groups) . ") ";
+		$filter .= io_safe_output($custom_condition);
+		
 		switch ($status_agents) {
 			case AGENT_STATUS_NORMAL:
 				$filter .=

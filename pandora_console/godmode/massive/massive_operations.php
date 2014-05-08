@@ -78,6 +78,14 @@ if ($snmp_options != ENTERPRISE_NOT_HOOK) {
 		array_merge($options_snmp, $snmp_options);
 }
 
+$options_satellite = array();
+$satellite_options = enterprise_hook('massive_satellite_options');
+
+if ($satellite_options != ENTERPRISE_NOT_HOOK) {
+	$options_satellite =
+		array_merge($options_satellite, $satellite_options);
+}
+
 if (in_array($option, array_keys($options_alerts))) {
 	$tab = 'massive_alerts';
 }
@@ -95,6 +103,9 @@ elseif (in_array($option, array_keys($options_policies))) {
 }
 elseif (in_array($option, array_keys($options_snmp))) {
 	$tab = 'massive_snmp';
+}
+elseif (in_array($option, array_keys($options_satellite))) {
+	$tab = 'massive_satellite';
 }
 else {
 	$option = '';
@@ -118,6 +129,9 @@ switch ($tab) {
 		break;
 	case 'massive_snmp':
 		$options = $options_snmp;
+		break;
+	case 'massive_satellite':
+		$options = $options_satellite;
 		break;
 }
 
@@ -153,6 +167,11 @@ $snmptab = enterprise_hook('massive_snmp_tab');
 
 if ($snmptab == ENTERPRISE_NOT_HOOK)
 	$snmptab = "";
+	
+$satellitetab = enterprise_hook('massive_satellite_tab');
+
+if ($satellitetab == ENTERPRISE_NOT_HOOK)
+	$satellitetab = "";
 
 
 $onheader = array();
@@ -164,6 +183,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 $onheader['massive_alerts'] = $alertstab;
 $onheader['policies'] = $policiestab;
 $onheader['snmp'] = $snmptab;
+$onheader['satellite'] = $satellitetab;
 
 ui_print_page_header(
 	__('Massive operations') . ' &raquo; '. $options[$option],

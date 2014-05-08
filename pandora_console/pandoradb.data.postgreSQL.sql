@@ -143,7 +143,11 @@ INSERT INTO "tconfig_os" VALUES
 (12,'Web Server','Web Server/Application','network.png'),
 (13,'Octopods','Octopods Pandora FMS Hardware Agent','network.png'),
 (14,'Embedded','Embedded device running a Pandora FMS agent','embedded.png'),
-(15,'Android','Android agent','android.png');
+(15,'Android','Android agent','android.png'),
+(16, 'VMware', 'VMware Architecture', 'so_vmware.png'),
+(17, 'Router', 'Generic router', 'so_router.png'),
+(18, 'Switch', 'Generic switch', 'so_switch.png'),
+(19, 'Satellite', 'Satellite agent', 'satellite.png');
 COMMIT WORK;
 SELECT setval('tconfig_os_id_os_seq', (SELECT (SELECT MAX(id_os) FROM tconfig_os)));
 

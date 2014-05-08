@@ -1,3 +1,9 @@
+2014-05-08  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* godmode/agentes/agent_wizard.snmp_explorer.php:
+	In 'Other SNMP data', check if the targer supports
+	these items.
+
 2014-05-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
         * include/functions_tags.php: Fixed ACL tags in complex

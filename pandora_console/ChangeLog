@@ -1,3 +1,12 @@
+2014-05-09  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* general/shortcut_bar.php: Updated the shortcut bar.
+
+	* include/styles/pandora.css: Added new styles for the
+	shortcut bar elements.
+	
+	MERGED FROM TRUNK.
+
 2014-05-08  Koichiro KIKUCHI <koichiro@rworks.jp>
 
 	* godmode/agentes/agent_wizard.snmp_interfaces_explorer.php:

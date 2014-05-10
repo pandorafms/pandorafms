@@ -1,5 +1,9 @@
 2014-05-10  Junichi Satoh  <junichi@rworks.jp>
 
+	* pandoradb.sql, pandoradb_data.sql: Fixed sql errors with MySQL5.6.
+
+2014-05-10  Junichi Satoh  <junichi@rworks.jp>
+
 	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql: Fixed a typo.
 
 2014-05-09  Alejandro Gallardo <alejandro.gallardo@artica.es>

@@ -18,7 +18,20 @@ use PandoraFMS::Config;
 use PandoraFMS::NmapParser;
 
 # Pandora FMS configuration hash.
-my %CONF = ('quiet' => 0,
+my $OSNAME = $^O;
+my %CONF;
+
+if ($OSNAME eq "freebsd") {
+	%CONF = ('quiet' => 0,
+			'verbosity' => 1,
+			'daemon' => 0,
+			'PID' => '',
+			'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
+			'ping_timeout' => 2,
+			'ping_retries' => 1,
+			'wmi_client' => '/usr/local/bin/wmic');
+} else {
+	%CONF = ('quiet' => 0,
 			'verbosity' => 1,
 			'daemon' => 0,
 			'PID' => '',
@@ -26,6 +39,7 @@ my %CONF = ('quiet' => 0,
 			'ping_timeout' => 2,
 			'ping_retries' => 1,
 			'wmi_client' => '/usr/bin/wmic');
+}
 
 # If set to 1 incidents will be created in the Pandora FMS Console.
 my $CREATE_INCIDENT;

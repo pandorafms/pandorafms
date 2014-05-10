@@ -27,7 +27,15 @@ my $pkg_timeout = 3; #Pkg ping timeout wait
 ##########################################################################
 # Code begins here, do not touch
 ##########################################################################
-my $pandora_conf = "/etc/pandora/pandora_server.conf";
+my $OSNAME = $^O;
+my $pandora_conf;
+
+if ($OSNAME eq "freebsd") {
+	$pandora_conf = "/usr/local/etc/pandora/pandora_server.conf";
+} else {
+	$pandora_conf = "/etc/pandora/pandora_server.conf";
+}
+
 my $task_id = $ARGV[0]; # Passed automatically by the server
 my $target_group = $ARGV[1]; # Defined by user
 my $create_incident = $ARGV[2]; # Defined by user

@@ -84,9 +84,9 @@ CREATE TABLE "tagente" (
 	"unknown_count" INTEGER NOT NULL default 0,
 	"notinit_count" INTEGER NOT NULL default 0,
 	"total_count" INTEGER NOT NULL default 0,
-	"fired_count" INTEGER NOT NULL default 0
+	"fired_count" INTEGER NOT NULL default 0,
 	"update_module_count" SMALLINT NOT NULL DEFAULT 1,
-	"update_alert_count" SMALLINT NOT NULL DEFAULT 1,
+	"update_alert_count" SMALLINT NOT NULL DEFAULT 1
 );
 CREATE INDEX "tagente_nombre_idx" ON "tagente"("nombre");
 CREATE INDEX "tagente_direccion_idx" ON "tagente"("direccion");
@@ -320,7 +320,7 @@ CREATE TABLE "talert_snmp" (
 	"order_17" INTEGER NOT NULL default 17,
 	"order_18" INTEGER NOT NULL default 18,
 	"order_19" INTEGER NOT NULL default 19,
-	"order_20" INTEGER NOT NULL default 20,
+	"order_20" INTEGER NOT NULL default 20
 );
 
 CREATE TABLE "talert_commands" (
@@ -612,7 +612,7 @@ CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced','nowi
 CREATE TABLE "tnetwork_component" (
 	"id_nc" SERIAL NOT NULL PRIMARY KEY,
 	"name" text NOT NULL,
-	"description" varchar(250) default NULL,
+	"description" text NOT NULL default '',
 	"id_group" INTEGER NOT NULL default 1,
 	"type" INTEGER NOT NULL default 6,
 	"max" BIGINT NOT NULL default 0,
@@ -1188,7 +1188,7 @@ CREATE TABLE "tplanned_downtime" (
 CREATE TABLE "tplanned_downtime_agents" (
 	"id" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_agent" BIGINT NOT NULL default 0,
-	"id_downtime" BIGINT NOT NULL REFERENCES tplanned_downtime("id")  ON DELETE CASCADE 
+	"id_downtime" BIGINT NOT NULL REFERENCES tplanned_downtime("id")  ON DELETE CASCADE, 
 	"all_modules" SMALLINT default 1
 );
 
@@ -1574,7 +1574,7 @@ CREATE TABLE "tpassword_history" (
 	"id_user" varchar(60) NOT NULL,
 	"password" varchar(45) default NULL,
 	"date_begin" BIGINT NOT NULL default 0,
-	"date_end" BIGINT NOT NULL default 0,
+	"date_end" BIGINT NOT NULL default 0
 );
 
 -- -----------------------------------------------------
@@ -1590,7 +1590,7 @@ CREATE TABLE IF NOT EXISTS "tevent_response" (
 	"modal_width" INTEGER NOT NULL DEFAULT 0,
 	"modal_height" INTEGER NOT NULL DEFAULT 0,
 	"new_window" INTEGER NOT NULL DEFAULT 0,
-	"params" TEXT,
+	"params" TEXT
 );
 
 -- ---------------------------------------------------------------------
@@ -1598,7 +1598,7 @@ CREATE TABLE IF NOT EXISTS "tevent_response" (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "tcategory" (
 	"id"  SERIAL NOT NULL PRIMARY KEY,
-	"name" varchar(600) NOT NULL default '',
+	"name" varchar(600) NOT NULL default ''
 );
 
 -- -----------------------------------------------------

@@ -1,5 +1,11 @@
 2014-05-11  Junichi Satoh  <junichi@rworks.jp>
 
+	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql: Changed the order
+	of 'ALTER TABLE' and 'INSERT INTO' for trecon_script to avoid error.
+	Added a missing column for trecon_script.
+
+2014-05-11  Junichi Satoh  <junichi@rworks.jp>
+
 	* install.php: Improved to adjust program paths in pandora db for
 	FreeBSD. All packages and configuration files except operating
 	system's base files are installed under /usr/local in FreeBSD.

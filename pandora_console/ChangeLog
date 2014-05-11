@@ -1,5 +1,10 @@
 2014-05-11  Junichi Satoh  <junichi@rworks.jp>
 
+	* pandoradb.postgreSQL.sql: Fixed that initial user (admin) cannot
+	be logged in.
+
+2014-05-11  Junichi Satoh  <junichi@rworks.jp>
+
 	* pandoradb.postgreSQL.sql, pandoradb.data.postgreSQL.sql: Fixed
 	sql errors.
 

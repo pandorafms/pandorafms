@@ -885,7 +885,7 @@ CREATE TABLE "tusuario" (
 	"block_size" INTEGER NOT NULL default 20,
 	"flash_chart" INTEGER NOT NULL default 1,
 	"id_skin" INTEGER NOT NULL DEFAULT 0,
-	"disabled" INTEGER NOT NULL default 1,
+	"disabled" INTEGER NOT NULL default 0,
 	"shortcut" SMALLINT DEFAULT 0,
 	"shortcut_data" text default '',
 	"section" varchar(255) NOT NULL DEFAULT '',

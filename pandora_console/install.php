@@ -389,6 +389,48 @@ function print_logo_status ($step, $step_total) {
 		</div>";
 }
 
+//
+// This function adjusts path settings in pandora db for FreeBSD.
+//
+// All packages and configuration files except operating system's base files
+// are installed under /usr/local in FreeBSD. So, path settings in pandora db
+// for some programs should be changed from the Linux default. 
+//
+function adjust_paths_for_freebsd($engine, $connection = false) {
+
+	$adjust_sql = array(
+			"update trecon_script set script = REPLACE(script,'/usr/share','/usr/local/share');",
+			"update tconfig set value = REPLACE(value,'/usr/bin','/usr/local/bin') where token='netflow_daemon' OR token='netflow_nfdump' OR token='netflow_nfexpire';",
+			"update talert_commands set command = REPLACE(command,'/usr/bin','/usr/local/bin');",
+			"update talert_commands set command = REPLACE(command,'/usr/share', '/usr/local/share');",
+			"update tplugin set execute = REPLACE(execute,'/usr/share','/usr/local/share');",
+			"update tevent_response set target = REPLACE(target,'/usr/share','/usr/local/share');"
+			);
+
+	for ($i = 0; $i < count ($adjust_sql); $i++) {
+		switch ($engine) {
+			case 'mysql':
+				$result = mysql_query($adjust_sql[$i]);
+				break;
+			case 'oracle':
+				//Delete the last semicolon from current query
+				$query = substr($adjust_sql[$i], 0, strlen($adjust_sql[$i]) - 1);
+				$sql = oci_parse($connection, $query);
+				$result = oci_execute($sql);
+				break;
+			case 'pgsql':
+				pg_send_query($connection, $adjust_sql[$i]);
+                                $result = pg_get_result($connection);
+				break;
+		}
+		if (!$result) {
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
 function install_step1() {
 	global $banner;
 	
@@ -748,6 +790,10 @@ function install_step4() {
 							
 							$step4 = parse_mysql_dump("pandoradb_data.sql");
 							check_generic ($step4, "Populating database");
+							if (PHP_OS == "FreeBSD") {
+								$step_freebsd = adjust_paths_for_freebsd ($engine);
+								check_generic ($step_freebsd, "Adjusting paths in database for FreeBSD");
+							}
 							
 							$random_password = random_name (8);
 							$host = 'localhost';
@@ -828,6 +874,12 @@ function install_step4() {
 						}
 						
 						check_generic ($step2, "Populating database");	
+
+						if (PHP_OS == "FreeBSD")
+ {
+							$step_freebsd = adjust_paths_for_freebsd ($engine, $connection);
+							check_generic ($step_freebsd, "Adjusting paths in database for FreeBSD");
+						}
 						
 						echo "<tr><td><div class='warn'>Please, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file and set database password.</div></tr></td>";
 						
@@ -888,7 +940,7 @@ function install_step4() {
 				case 'pgsql':
 					$step1 = $step2 = $step3 = $step4 = $step5 = $step6 = $step7 = 0;
 					
-					$connection = pg_connect("host='" . $dbhost . "' user='" . $dbuser . "' password='" . $dbpassword . "'");
+					$connection = pg_connect("host='" . $dbhost . "' dbname='postgres' user='" . $dbuser . "' password='" . $dbpassword . "'");
 					if ($connection === false) {
 						check_generic(0, "Connection with Database");
 					}
@@ -940,6 +992,12 @@ function install_step4() {
 						}
 						
 						check_generic ($step4, "Populating database");
+
+						if (PHP_OS == "FreeBSD")
+ {
+							$step_freebsd = adjust_paths_for_freebsd ($engine, $connection);
+							check_generic ($step_freebsd, "Adjusting paths in database for FreeBSD");
+						}
 						
 						if ($step4) {
 							$random_password = random_name (8);

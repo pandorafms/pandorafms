@@ -1,5 +1,14 @@
 2014-05-11  Junichi Satoh  <junichi@rworks.jp>
 
+	* install.php: Improved to adjust program paths in pandora db for
+	FreeBSD. All packages and configuration files except operating
+	system's base files are installed under /usr/local in FreeBSD.
+	So, path settings in pandora db for some programs should be changed
+	from the Linux default.
+	And, fixed database creation failure with PostgreSQL.
+
+2014-05-11  Junichi Satoh  <junichi@rworks.jp>
+
 	* pandoradb.postgreSQL.sql: Fixed that initial user (admin) cannot
 	be logged in.
 

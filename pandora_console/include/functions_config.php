@@ -1324,6 +1324,15 @@ function config_check () {
 	$PHPmax_input_time = ini_get('max_input_time');
 	$PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
 	$PHPmax_execution_time = ini_get('max_execution_time');
+	$PHPsafe_mode = ini_get('safe_mode');
+	
+	if ($PHPsafe_mode === '1') {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_info_message(
+			array('title' => sprintf(__("PHP safe mode is enabled. Some features may not properly work.")),
+			'message' => '<br><br>' . __('To disable, change it on your PHP configuration file (php.ini) and put safe_mode = Off (Dont forget restart apache process after changes)'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	}
 	
 	if ($PHPmax_input_time !== '-1') {
 		$config["alert_cnt"]++;

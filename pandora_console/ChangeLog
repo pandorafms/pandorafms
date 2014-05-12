@@ -1,3 +1,15 @@
+2014-05-12  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php
+	include/functions_reporting.php
+	include/functions_reports.php: Added SLA Monthly reports. Its
+	an enterprise feature, so here is only the code to hook it and
+	some forms logic
+
+	* include/functions_html.php: Add support to header styles in
+	html_print_table function. Used in SLA monthly reports
+
 2014-05-12  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* include/functions_config.php: Added alert in header

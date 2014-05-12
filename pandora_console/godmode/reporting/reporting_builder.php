@@ -743,6 +743,7 @@ switch ($action) {
 								$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
 								$values['text'] = $intervals;
 								break;
+							case 'SLA_monthly':
 							case 'SLA':
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('combo_sla_sort_options',0);

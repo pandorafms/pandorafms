@@ -119,6 +119,7 @@ switch ($action) {
 		// If we are creating a new report item then clean interface and display creation view
 		$type = get_parameter('type', 'SLA');
 		switch ($type) {
+			case 'SLA_monthly':
 			case 'SLA':
 			case 'top_n':
 			case 'exception':
@@ -204,6 +205,22 @@ switch ($action) {
 				case 'SLA':
 					$description = $item['description'];
 					$period = $item['period'];
+					$only_display_wrong = $item['only_display_wrong'];
+					$monday = $item['monday'];
+					$tuesday = $item['tuesday'];
+					$wednesday = $item['wednesday'];
+					$thursday = $item['thursday'];
+					$friday = $item['friday'];
+					$saturday = $item['saturday'];
+					$sunday = $item['sunday'];
+					$time_from = $item['time_from'];
+					$time_to = $item['time_to'];
+					$show_graph = $item['show_graph'];
+					// 'top_n' filed will be reused for SLA sort option
+					$sla_sorted_by = $item['top_n'];
+					break;
+				case 'SLA_monthly':
+					$description = $item['description'];
 					$only_display_wrong = $item['only_display_wrong'];
 					$monday = $item['monday'];
 					$tuesday = $item['tuesday'];
@@ -1863,6 +1880,13 @@ function chooseType() {
 			$("#row_working_time").show();
 			$("#row_only_display_wrong").show();
 			$("#row_show_graph").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_sort").show();
+			break;
+		case 'SLA_monthly':
+			$("#row_description").show();
+			$("#sla_list").show();
+			$("#row_working_time").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;

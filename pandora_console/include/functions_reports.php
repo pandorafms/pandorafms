@@ -528,7 +528,10 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 	
 	$types['SLA'] = array('optgroup' => __('SLA'),
 		'name' => __('S.L.A.'));
-	
+	if ($config['enterprise_installed']) {
+		$types['SLA_monthly'] = array('optgroup' => __('SLA'),
+			'name' => __('Monthly S.L.A.'));
+	}
 	
 	
 	$types['prediction_date'] = array('optgroup' => __('Forecasting'),

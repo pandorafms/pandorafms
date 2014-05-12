@@ -1197,6 +1197,7 @@ function html_get_predefined_table ($model = 'transparent', $columns = 4) {
  * @param object Object with several properties:
  *	$table->head - An array of heading names.
  *	$table->head_colspan - An array of colspans of each head column.
+ *	$table->headstyle - An array of styles of each head column.
  *	$table->align - An array of column alignments
  *	$table->valign - An array of column alignments
  *	$table->size - An array of column sizes
@@ -1400,8 +1401,12 @@ function html_print_table (&$table, $return = false) {
 				$headColspan = 'colspan = "' . $table->head_colspan[$key] . '"';
 			}
 			else $headColspan = '';
+			
+			if (isset ($table->headstyle[$key])) {
+				$headStyle = ' style = "' . $table->headstyle[$key] . '" ';
+			}
 	
-			$output .= '<th class="'.$table->headclass[$key].'" ' . $headColspan . ' scope="col">'. $heading .'</th>';
+			$output .= '<th class="'.$table->headclass[$key].'" ' . $headColspan . $headStyle . ' scope="col">'. $heading .'</th>';
 		}
 		$output .= '</tr></thead>'."\n";
 	}

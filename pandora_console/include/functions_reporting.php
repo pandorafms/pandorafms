@@ -3205,6 +3205,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			
 			break;
+		case 'SLA_monthly':
+			reporting_enterprise_sla_monthly($mini, $content, $report, $table, $item_title);
+			break;
 		case 3:
 		case 'SLA':
 			reporting_header_content($mini, $content, $report, $table, __('S.L.A.'));

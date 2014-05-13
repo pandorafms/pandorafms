@@ -1,3 +1,9 @@
+2014-05-13  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/servers/manage_recontask_form.php: Fix a field 
+	that wasnt hidden in recon server form when select recon
+	script mode.
+
 2014-05-12  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/reporting_builder.php

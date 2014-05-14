@@ -31,6 +31,7 @@ var refresh = parseInt($('#refresh').val());
 var incremental = $('#checkbox-incremental').is(':checked');
 var incremental_base = 0;
 var last_inc = 0;
+var to;
 
 refresh_graph();
 
@@ -86,14 +87,13 @@ function refresh_graph () {
 				if (serie.data[0][1] < 0) {
 					serie.data[0][1] = 0;
 				}
-
 			}
 			
 			data[0].data.push(serie.data[0]);
 			$.plot("#" + id, data, options);
 		}
 	});
-	window.setTimeout(refresh_graph, refresh);
+	to = window.setTimeout(refresh_graph, refresh);
 }
 
 $('#graph').change(function() {
@@ -101,7 +101,11 @@ $('#graph').change(function() {
 });
 
 $('#refresh').change(function() {
-	//refresh_graph();
+	var refresh = parseInt($('#refresh').val());
+
+	// Stop and start the Timeout
+	clearTimeout(to);
+	to = window.setTimeout(refresh_graph, refresh);
 });
 
 // Show the SNMP browser window
@@ -127,7 +131,7 @@ function snmpBrowserWindow () {
 			opacity: 0.5,
 			background: "black"
 		},
-		width: 730,
+		width: 780,
 		height: 430
 	});
 }

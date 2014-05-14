@@ -22,10 +22,10 @@ $refresh = $_POST['refresh'];
 
 switch($graph) {
 	case 'cpu_load':
-		$data = exec("top -bn 2 -d 0.01 | grep '^Cpu' | tail -n 1 | awk '{print $2+$4+$6}'");
+		$data = exec("top -bn 2 -d 0.01 | grep '^Cpu' | tail -n 1 | awk '{ print $2+$4+$6 }'");
 		break;
 	case 'pending_packets':
-		$data = exec("find /var/spool/pandora/data_in/*.data | wc -l");
+		$data = exec("ls /var/spool/pandora/data_in/ | wc -l");
 		break;
 	case 'disk_io_wait':
 		$data = exec("vmstat 1 3 | tail -1 | awk '{ print $16 }'");
@@ -34,10 +34,10 @@ switch($graph) {
 		$data = exec("ps aux | grep mysqld | grep -v safe | grep -v grep | awk '{ print $3 }'");
 		break;
 	case 'apache_load':
-		$data = exec("ps aux | grep apache2 | grep -v safe | grep -v grep | awk '{ print $3 }'");
+		$data = exec("ps aux | grep apache2 | grep -v safe | grep -v grep | awk '{ sum+=$3 } END { print sum }'");
 		break;
 	case 'server_load':
-		$data = exec("ps aux | grep pandora_server | grep -v grep | awk '{print $3}'");
+		$data = exec("ps aux | grep pandora_server | grep -v grep | awk '{ print $3 }'");
 		break;
 	case 'snmp_interface':
 		$snmp_address = $_POST['snmp_address'];

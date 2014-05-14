@@ -68,7 +68,6 @@ if (empty($data)) {
 	$data = 0;
 }
 
-$graph_title .= ' (' . $refresh/1000 . ' ' . __('Seconds') . ')';
 echo '{
     "label": "' . $graph_title . '",
     "data": [["' . time() . '", ' . $data . ']]

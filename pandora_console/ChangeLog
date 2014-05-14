@@ -1,5 +1,12 @@
 2014-05-14  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/realtime_graphs/ajax.php
+	extensions/realtime_graphs/realtime_graphs.js
+	godmode/agentes/module_manager_editor_network.php: Improvements
+	in realtime graphs and snmp walk modal window
+
+2014-05-14  Sergio Martin <sergio.martin@artica.es>
+
 	* extensions/realtime_graphs/ajax.php: Improve the commands of 
 	realtime graphs
 

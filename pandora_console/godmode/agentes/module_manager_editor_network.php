@@ -335,7 +335,7 @@ function snmpBrowserWindow () {
 			opacity: 0.5,
 			background: "black"
 		},
-		width: 730,
+		width: 780,
 		height: 430
 	});
 }

@@ -1,3 +1,10 @@
+2014-05-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: fixed "resolution" of custom
+	graphs to have the same results of simple graphs when have data
+	of more than one month.
+	For SF bug #2425
+
 2014-05-13  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/servers/manage_recontask_form.php: Fix a field 

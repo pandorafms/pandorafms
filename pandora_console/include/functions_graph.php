@@ -873,6 +873,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	} 
 	else {
 		$time_format = 'M d';
+		$time_format_2 = 'H\h';
 	}
 	
 	// Set variables

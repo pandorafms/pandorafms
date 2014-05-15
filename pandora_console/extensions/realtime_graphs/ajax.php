@@ -25,7 +25,7 @@ switch($graph) {
 		$data = exec("top -bn 2 -d 0.01 | grep '^Cpu' | tail -n 1 | awk '{ print $2+$4+$6 }'");
 		break;
 	case 'pending_packets':
-		$data = exec("ls /var/spool/pandora/data_in/ | wc -l");
+		$data = exec("ls /var/spool/pandora/data_in/*.data | wc -l");
 		break;
 	case 'disk_io_wait':
 		$data = exec("vmstat 1 3 | tail -1 | awk '{ print $16 }'");

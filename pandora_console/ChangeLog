@@ -1,3 +1,11 @@
+2014-05-15  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_ipam.php: Fix bad translations
+	on ipam english help 
+	
+	* extensions/realtime_graphs/ajax.php: Little improvement
+	on pending pandora packages for realtime graphs
+
 2014-05-14  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/realtime_graphs/ajax.php

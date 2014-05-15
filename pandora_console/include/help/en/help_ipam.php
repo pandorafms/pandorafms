@@ -29,22 +29,22 @@ Addresses will be shown as icons, large or small. This icons will render the fol
 <th>Unresponsive host</th>
 </tr>
 <tr>
-<td>No agent assigned<br><br>Events disabled</td>
+<td>No assigned agent<br><br>Disabled events</td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host.png"></td>
 </tr>
 <tr>
-<td>With assigned agent<br><br>Events disabled</td>
+<td>With assigned agent<br><br>Disabled events</td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent.png"></td>
 </tr>
 <tr>
-<td>No agent assigned<br><br>Events activated</td>
+<td>No assigned agent<br><br>Activated events</td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_alert.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_alert.png"></td>
 </tr>
 <tr>
-<td>With assigned agent<br><br>Events activated</td>
+<td>With assigned agent<br><br>Activated events</td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent_alert.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent_alert.png"></td>
 </tr>
@@ -67,7 +67,7 @@ Each IP address have in the bottom right position a link to edit it (with admini
 
 When you click on the main icon, a modal window will be opened showing all the IP information, including associated agent and OS, setup for that IP and other information, like creation date, last user edition or last time it was checked by server. In this view you can also do a manual, realtime check to see if that IP respond to ping. Note that this ping is done by the console, instead the regular check, done by the recon server.
 
-<h3>Vista de edición</h3>
+<h3>Edition view</h3>
 If you have enought permission, you will have access to setup view, where IP address are shown as a list. You can filter to show only the IP's you are interested into, make changes and update all at once.<br><br>
 
 Some fields, are automatically filled by the recon script, like hostname, if it have a Pandora FMS agent and the operating system. You can mark that fields as "manual" and edit them.<br><br>

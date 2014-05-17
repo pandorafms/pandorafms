@@ -1,3 +1,7 @@
+2014-05-17  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_html.php: Fixed the PHP warning.
+
 2014-05-16  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/languages/Makefile: Removed unavailable language files

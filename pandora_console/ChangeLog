@@ -1,3 +1,9 @@
+2014-05-17  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_html.php: Fixed the PHP warning.
+
+	MERGED FROM TRUNK.
+
 2014-05-14  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: fixed "resolution" of custom

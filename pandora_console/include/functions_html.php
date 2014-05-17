@@ -1404,6 +1404,7 @@ function html_print_table (&$table, $return = false) {
 			if (isset ($table->headstyle[$key])) {
 				$headStyle = ' style = "' . $table->headstyle[$key] . '" ';
 			}
+			else $headStyle = '';
 	
 			$output .= '<th class="'.$table->headclass[$key].'" ' . $headColspan . $headStyle . ' scope="col">'. $heading .'</th>';
 		}

@@ -1,5 +1,15 @@
 2014-05-19  Vanessa Gil <vanessa.gil@artica.es>
 
+	* extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql
+	  extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	  extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql
+	  pandoradb_data.sql
+	  pandoradb.data.postgreSQL.sql
+	  pandoradb.data.oracle.sql: Deleted module templates
+	by default.
+
+2014-05-19  Vanessa Gil <vanessa.gil@artica.es>
+
 	* include/languages/ca.mo
 	include/languages/tr.mo
 	include/languages/de.mo

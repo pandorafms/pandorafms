@@ -969,59 +969,18 @@ INSERT INTO "tnetwork_component_group" ("id_sg", "name", "parent") VALUES (48,'M
 SELECT setval('tnetwork_component_group_id_sg_seq', (SELECT (SELECT MAX(id_sg) FROM tnetwork_component_group)));
 
 -- Network profile
-INSERT INTO "tnetwork_profile" ("id_np", "name", "description") VALUES (1,'Basic Network Monitoring','This includes basic SNMP, ICMP, and TCP checks.');
+
 INSERT INTO "tnetwork_profile" ("id_np", "name", "description") VALUES (2,'Basic Monitoring','Only ICMP check');
 INSERT INTO "tnetwork_profile" ("id_np", "name", "description") VALUES (3,'Basic DMZ Server monitoring','This group of network checks, checks for default services located on DMZ servers...');
-INSERT INTO "tnetwork_profile" ("id_np", "name", "description") VALUES (4,'Full SNMP Monitoring','');
-INSERT INTO "tnetwork_profile" ("id_np", "name", "description") VALUES (5,'Linux Server','Full Monitoring of a Linux server services.');
-INSERT INTO "tnetwork_profile" ("id_np", "name", "description") VALUES (6,'Basic WMI monitoring','Basic monitoring of a Windows host.');
+
 SELECT setval('tnetwork_profile_id_np_seq', (SELECT (SELECT MAX(id_np) FROM tnetwork_profile)));
 
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (24,1);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (25,1);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (27,1);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (28,1);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (30,1);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (31,1);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (34,1);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (39,1);
 INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (34,2);
 INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (34,3);
 INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (37,3);
 INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (39,3);
 INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (38,3);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (24,3);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (3,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (24,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (25,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (26,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (27,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (28,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (29,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (30,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (31,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (32,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (45,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (46,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (47,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (48,4);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (3,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (50,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (53,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (24,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (30,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (27,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (34,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (1,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (2,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (49,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (4,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (51,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (52,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (39,5);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (200,6);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (201,6);
-INSERT INTO "tnetwork_profile_component" ("id_nc", "id_np") VALUES (202,6);
+
 
 -- GIS Data
 INSERT INTO "tgis_map" VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,0,1);

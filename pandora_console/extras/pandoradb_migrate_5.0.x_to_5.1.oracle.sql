@@ -155,3 +155,22 @@ INSERT INTO tconfig (token, value) VALUES ('custom_report_front_font', 'FreeSans
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_logo', 'images/pandora_logo_white.jpg');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_header', '');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_footer', '');
+
+/* 2014/05/19 */
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_profile`
+-- ---------------------------------------------------------------------
+DELETE FROM tnetwork_profile WHERE id_np=1;
+DELETE FROM tnetwork_profile WHERE id_np=4;
+DELETE FROM tnetwork_profile WHERE id_np=5;
+DELETE FROM tnetwork_profile WHERE id_np=6;
+
+/* 2014/05/19 */
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_profile_component`
+-- ---------------------------------------------------------------------
+DELETE FROM tnetwork_profile_component WHERE id_np=1;
+DELETE FROM tnetwork_profile_component WHERE id_np=4;
+DELETE FROM tnetwork_profile_component WHERE id_np=5;
+DELETE FROM tnetwork_profile_component WHERE id_np=6;
+DELETE FROM tnetwork_profile_component WHERE id_nc=24 AND id_np=3;

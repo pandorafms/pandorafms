@@ -959,17 +959,13 @@ INSERT INTO `tnetwork_component_group` VALUES (49,'DB2',15);
 
 -- Network profile
 
-INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (1,'Basic Network Monitoring','This includes basic SNMP, ICMP, and TCP checks.');
 INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (2,'Basic Monitoring','Only ICMP check');
 INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (3,'Basic DMZ Server monitoring','This group of network checks, checks for default services located on DMZ servers...');
-INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (4,'Full SNMP Monitoring','');
-INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (5,'Linux Server','Full Monitoring of a Linux server services.');
-INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (6,'Basic WMI monitoring','Basic monitoring of a Windows host.');
 
 INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES
 (7,'Linux&#x20;Server&#x20;with&#x20;SNMP','Group&#x20;of&#x20;&quot;basic&quot;&#x20;modules&#x20;for&#x20;SNMP&#x20;monitoring&#x20;of&#x20;Linux&#x20;remote&#x20;devices.&#x20;This&#x20;includes&#x20;basic&#x20;conectivity&#x20;checks&#x20;and&#x20;a&#x20;full&#x20;range&#x20;of&#x20;System');
 
-INSERT INTO `tnetwork_profile_component` VALUES (24,1),(25,1),(27,1),(28,1),(30,1),(31,1),(34,1),(39,1),(34,2),(34,3),(37,3),(39,3),(38,3),(24,3),(3,4),(24,4),(25,4),(26,4),(27,4),(28,4),(29,4),(30,4),(31,4),(32,4),(45,4),(46,4),(47,4),(48,4),(3,5),(50,5),(53,5),(24,5),(30,5),(27,5),(34,5),(1,5),(2,5),(49,5),(4,5),(51,5),(52,5),(39,5),(200,6),(201,6),(202,6),(540,7),(533,7),(534,7),(537,7),(538,7),(536,7),(535,7),(539,7),(1,7),(4,7),(34,7),(30,7),(27,7),(24,7);
+INSERT INTO `tnetwork_profile_component` VALUES (34,2),(34,3),(37,3),(39,3),(38,3),(540,7),(533,7),(534,7),(537,7),(538,7),(536,7),(535,7),(539,7),(1,7),(4,7),(34,7),(30,7),(27,7),(24,7);
 
 
 

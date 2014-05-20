@@ -261,7 +261,7 @@ switch ($action) {
 		}
 		
 		ui_print_result_message ($mapCreatedOk, __('Map successfully update'),
-			__('Map could not be update'));
+			__('Map could not be updated'));
 		
 		html_print_input_hidden('action', 'update_saved');
 		html_print_input_hidden('map_id', $idMap);

@@ -1,3 +1,8 @@
+2014-05-20  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/gis_maps/configure_gis_map.php: Fixed
+	typographic error.
+
 2014-05-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_api.php: Fixed the function

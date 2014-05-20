@@ -1,3 +1,8 @@
+2014-05-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_api.php: Fixed the function
+	"get_events_with_user". Fixed the json output format.
+
 2014-05-20  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/events/events.build_query.php

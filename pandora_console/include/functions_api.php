@@ -157,6 +157,8 @@ function returnData($returnType, $data, $separator = ';') {
 			}
 			break;
 		case 'json':
+			$data = array_apply_io_safe_output($data);
+			header('Content-type: application/json');
 			echo json_encode ($data);
 			break;
 	}
@@ -5426,10 +5428,10 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	
 	$id_group = (int)$filter['id_group'];
 	
-	$user_groups = users_get_groups ($user_in_db, "IR");
+	$user_groups = users_get_groups ($user_in_db, "ER");
 	$user_id_groups = array();
 	if (!empty($user_groups))
-		$user_id_groups = array_keys ($groups);
+		$user_id_groups = array_keys ($user_groups);
 	
 	$is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $user_in_db);
 	

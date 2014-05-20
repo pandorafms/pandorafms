@@ -1,3 +1,10 @@
+2014-05-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_api.php: Fixed the function
+	"get_events_with_user". Fixed the json output format.
+	
+	MERGED FROM TRUNK.
+
 2014-05-17  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_html.php: Fixed the PHP warning.

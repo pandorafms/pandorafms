@@ -1,3 +1,10 @@
+2014-05-20  Vanessa Gil <vanessa.gil@artica.es>
+
+	* operation/events/events.build_query.php
+	  operation/events/events.php
+	  operation/events/events_list.php: Added filters
+	to event list.
+
 2014-05-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* pandora_console/include/styles/pandora.css: Changed

@@ -205,6 +205,8 @@ $filter_only_alert = (int) get_parameter('filter_only_alert', -1);
 $filter_id = (int) get_parameter('filter_id', 0);
 $id_name = (string) get_parameter('id_name', '');
 $open_filter = (int) get_parameter('open_filter', 0);
+$date_from = (string)get_parameter('date_from', '');
+$date_to = (string)get_parameter('date_to', '');
 
 $text_agent = (string) get_parameter("text_agent", __("All"));
 
@@ -250,6 +252,8 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;history=" . (int)$history .
 	"&amp;section=" . $section .
 	"&amp;open_filter=" . $open_filter .
+	"&amp;date_from=" . $date_from .
+	"&amp;date_to=" . $date_to .
 	"&amp;pure=" . $config["pure"];
 
 if ($meta) {

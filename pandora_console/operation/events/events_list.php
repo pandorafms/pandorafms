@@ -390,6 +390,19 @@ $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
 $data = array();
+$data[0] = __('Date from') . '<br>';
+
+$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+
+$data[0] .= html_print_input_text ('date_from', $date_from, '', 15, 10, true);
+
+$data[1] = __('Date to') . '<br>';
+$data[1] .= html_print_input_text ('date_to', $date_to, '', 15, 10, true);
+
+$table_advanced->data[] = $data;
+$table_advanced->rowclass[] = '';
+
+$data = array();
 $data[0] = __('User ack.') . '<br>';
 
 $user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
@@ -573,6 +586,7 @@ html_print_input_hidden('meta', (int)$meta);
 html_print_input_hidden('history', (int)$history);
 
 ui_require_jquery_file('json');
+echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language(), false, false, false) . '"></script>';
 ?>
 <script language="javascript" type="text/javascript">
 /*<![CDATA[ */
@@ -586,6 +600,9 @@ var val_none = 0;
 var text_none = "<?php echo __('None'); ?>";
 
 $(document).ready( function() {
+	
+	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+	
 	// If the events are not charged, dont show graphs link
 	if ($('#events_graph').val() == undefined) {
 		$('#events_graph_link').hide();

@@ -1241,7 +1241,7 @@ div.title_line {
 	width: 762px;
 }
 
-.transparent {
+.alpha50 {
 	filter:alpha(opacity=50);
 	-moz-opacity: 0.5;
 	opacity: 0.5;

@@ -1,3 +1,12 @@
+2014-05-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* pandora_console/include/styles/pandora.css: Changed
+	the name of the class "transparent" for "alpha50".
+
+	* pandora_console/godmode/agentes/module_manager_editor_common.php:
+	Changed the class "transparent" of the elements for the
+	class "alpha50".
+
 2014-05-20  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Change double

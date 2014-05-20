@@ -569,7 +569,7 @@ $table_relations->head[3] = __('Delete');
 // Create an invisible row to use their html to add new rows
 $table_relations->data[-1][0] = "";
 $table_relations->data[-1][1] = "";
-$table_relations->data[-1][2] = '<a id="disable_updates_button" class="transparent" href="">' . html_print_image('images/lock.png', true) . '</a>';
+$table_relations->data[-1][2] = '<a id="disable_updates_button" class="alpha50" href="">' . html_print_image('images/lock.png', true) . '</a>';
 $table_relations->data[-1][3] = '<a id="delete_relation_button" href="">' . html_print_image('images/cross.png', true) . '</a>';
 
 $module_relations = modules_get_relations(array('id_module' => $id_agent_module));
@@ -600,7 +600,7 @@ foreach ($module_relations as $key => $module_relation) {
 		$disabled_update_class = "";
 	}
 	else {
-		$disabled_update_class = "transparent";
+		$disabled_update_class = "alpha50";
 	}
 	
 	// Agent name
@@ -827,7 +827,7 @@ function add_new_relation () {
 										'<td id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
 										'<td id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
 										'<td id="module_relations-' + relationsCount + '-2" style="width: 10%; text-align: center;">' +
-											'<a id="disable_updates_button" class="transparent" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
+											'<a id="disable_updates_button" class="alpha50" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
 												'<?php echo html_print_image("images/lock.png", true); ?>' +
 											'</a>' +
 										'</td>' +
@@ -857,11 +857,11 @@ function change_lock_relation (num_row, id_relation) {
 	var row = $("#module_relations-" + num_row);
 	var button = row.find("#disable_updates_button");
 	var oldSrc = button.find("img").prop("src");
-	var isEnabled = button.hasClass('transparent');
+	var isEnabled = button.hasClass('alpha50');
 
 	if (row.length > 0 && !button.hasClass('working')) {
 		button.addClass('working');
-		button.removeClass('transparent');
+		button.removeClass('alpha50');
 		button.find("img").prop("src", 'images/spinner.gif');
 
 		$.ajax({
@@ -875,14 +875,14 @@ function change_lock_relation (num_row, id_relation) {
 			},
 			success: function (data) {
 				if (data === false) {
-					button.addClass('transparent');
+					button.addClass('alpha50');
 				}
 				button.removeClass('working');
 				button.find("img").prop("src", oldSrc);
 			},
 			error: function (data) {
 				if (isEnabled) {
-					button.addClass('transparent');
+					button.addClass('alpha50');
 				}
 				button.removeClass('working');
 				button.find("img").prop("src", oldSrc);

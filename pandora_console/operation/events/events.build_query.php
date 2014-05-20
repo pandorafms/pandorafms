@@ -71,7 +71,7 @@ switch ($status) {
 }
 
 if ($search != "") {
-	$sql_post .= " AND evento LIKE '%" . io_safe_input($search) . "%'";
+	$sql_post .= " AND (evento LIKE '%" . io_safe_input($search) . "%' OR id_evento LIKE '%$search%')";
 }
 
 if ($event_type != "") {
@@ -129,9 +129,21 @@ if ($id_user_ack != "0")
 	$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
 
 
-if ($event_view_hr > 0) {
-	$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR);
-	$sql_post .= " AND (utimestamp > " . $unixtime . ")";
+if (($date_from == '') && ($date_to == '')) {
+	if ($event_view_hr > 0) {
+		$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR);
+		$sql_post .= " AND (utimestamp > " . $unixtime . ")";
+	}
+} else {
+	if ($date_from != '') {
+		$udate_from = strtotime($date_from." 00:00:00");
+		$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
+		
+	}
+	if ($date_to != '') {
+		$udate_to = strtotime($date_to." 23:59:59");
+		$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
+	}
 }
 
 //Search by tag

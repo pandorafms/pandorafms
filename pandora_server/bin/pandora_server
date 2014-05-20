@@ -148,6 +148,8 @@ sub pandora_crash () {
 	# worried about that. If perl has a more "clean" way to avoid this messages
 	# will be nice to replace this code, but at this time it's the only way I know
 	
+	callback_stop() if (defined($Config{'__win32_service__'}));
+
 	foreach my $error_line (@_) {
 		# Trap the XML error and exit without nasty messages
 		if ($error_line =~ m/XML\/Parser/) {
@@ -471,7 +473,7 @@ sub parse_options {
 			} elsif ($service_action eq 'uninstall') {
 				win32_uninstall_service();
 			} elsif ($service_action eq 'run') {
-				win32_service_run;
+				$Config{'__win32_service__'} == 1;
 			} else {
 				error("Unknown action: $service_action");
 			}
@@ -622,8 +624,14 @@ sub main() {
 }
 
 # Parse command line options.
-parse_options;
+parse_options();
 
 # Run as a regular process.
-main();
+if (!defined($Config{'__win32_service__'})) {
+	main();
+}
+# Run as a Windows service.
+else {
+	win32_service_run();
+}
 

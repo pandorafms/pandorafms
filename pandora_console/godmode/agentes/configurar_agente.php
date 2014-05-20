@@ -876,6 +876,8 @@ if ($update_module || $create_module) {
 	
 	$snmp_community = (string) get_parameter ('snmp_community');
 	$snmp_oid = (string) get_parameter ('snmp_oid');
+	//Change double quotes by single
+	$snmp_oid = preg_replace('/&quot;/', '&#039;', $snmp_oid);
 	
 	if (empty ($snmp_oid)) {
 		/* The user did not set any OID manually but did a SNMP walk */

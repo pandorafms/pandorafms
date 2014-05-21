@@ -1078,13 +1078,21 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	else {
 		$current_interval = $module->{'module_interval'};
 	}
-	
+
 	#Update module status
+	my $min_ff_event = $module->{'min_ff_event'};
 	my $current_utimestamp = time ();
+
+	if ($module->{'each_ff'}) {
+		$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
+		$min_ff_event = $module->{'min_ff_event_critical'} if ($new_status == 1);
+		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
+	}
+	
 	if ($last_status == $new_status) {
 		
 		# Avoid overflows
-		$status_changes = $module->{'min_ff_event'} if ($status_changes > $module->{'min_ff_event'});
+		$status_changes = $min_ff_event if ($status_changes > $module->{'min_ff_event'});
 		
 		$status_changes++;
 	}
@@ -1093,12 +1101,12 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 	
 	# Active ff interval
-	if ($module->{'module_ff_interval'} != 0 && $status_changes < $module->{'min_ff_event'}) {
+	if ($module->{'module_ff_interval'} != 0 && $status_changes < $min_ff_event) {
 		$current_interval = $module->{'module_ff_interval'};
 	}
 	
 	# Change status
-	if ($status_changes == $module->{'min_ff_event'} && $status != $new_status) {
+	if ($status_changes == $min_ff_event && $status != $new_status) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
 		$status = $new_status;
 

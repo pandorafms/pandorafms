@@ -203,6 +203,10 @@ if ($id_agent_module) {
 	$max_critical = $module['max_critical'];
 	$str_critical = $module['str_critical'];
 	$ff_event = $module['min_ff_event'];
+	$ff_event_normal = $module['min_ff_event_normal'];
+	$ff_event_warning = $module['min_ff_event_warning'];
+	$ff_event_critical = $module['min_ff_event_critical'];
+	$each_ff = $module['each_ff'];
 	// Select tag info.
 	$id_tag = tags_get_module_tags ($id_agent_module);
 	

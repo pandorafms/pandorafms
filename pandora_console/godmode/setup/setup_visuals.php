@@ -302,6 +302,11 @@ $table->data[$row][1] = html_print_select($arraySelectIcon, "gis_default_icon", 
 
 $row++;
 
+// For 5.1 Autohidden menu feature
+
+$table->data['autohidden'][0] = __('Autohidden menu');
+$table->data['autohidden'][1] = html_print_checkbox('autohidden_menu', 1, $config['autohidden_menu'], true);
+
 // Juanma (07/05/2014) New feature: Table for custom front page for reports  
 
 $table->data[$row][0] = __('Custom report front page') . ui_print_help_tip(__('Custom report front page. It will be applied to all reports and templates by default.'), true);
@@ -480,7 +485,6 @@ $(document).ready (function () {
 	
 	// Juanma (06/05/2014) New feature: Custom front page for reports  
 	var custom_report = $('#checkbox-custom_report_front').prop('checked');
-	console.log(custom_report);
 	display_custom_report_front(custom_report);
 
 	$("#checkbox-custom_report_front").click( function()  {

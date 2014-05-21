@@ -424,7 +424,9 @@ function config_update_config () {
 						$error_update[] = __('GIS Labels');
 					if (!config_update_value ('gis_default_icon', get_parameter ('gis_default_icon')))
 						$error_update[] = __('Default icon in GIS');
-					
+					if (!config_update_value ('autohidden_menu', get_parameter('autohidden_menu')))
+						$error_update[] = __('Autohidden menu');
+						
 					$interval_values = get_parameter ('interval_values');
 					
 					// Add new interval value if is provided
@@ -1147,6 +1149,10 @@ function config_process_config () {
 
 	if (!isset($config['custom_report_front_footer'])) {
 		config_update_value ('custom_report_front_footer', '');
+	}
+		
+	if (!isset($config['autohidden_menu'])) {
+		config_update_value ('autohidden_menu', 0);
 	}
 		
 	/* Finally, check if any value was overwritten in a form */

@@ -470,7 +470,7 @@ foreach ($modules as $module) {
 	$data[3] .= ui_print_truncate_text($module["nombre"], 'module_medium');
 	if (!empty($module["extended_info"])) {
 		if ($module["extended_info"] != "") {
-			$data[3] .= ui_print_help_tip ($module["extended_info"], true, '/images/comments.png');
+			$data[3] .= ui_print_help_tip ($module["extended_info"], true, '/images/default_list.png');
 		}
 	}
 	

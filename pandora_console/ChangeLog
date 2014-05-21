@@ -1,3 +1,12 @@
+2014-05-21  Vanessa Gil <vanessa.gil@artica.es>
+
+	* images/dot_blue.png
+	  images/dot_white.png
+	  images/dot_yellow.png
+	  operation/agentes/estado_monitores.php
+	  operation/agentes/status_monitor.php: Changed images.
+
+
 2014-05-21  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/agentes/configurar_agente.php,

@@ -28,8 +28,14 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once($config['homedir'] . "/include/functions_network_profiles.php");
 
+if (check_acl ($config['id_user'], 0, "AW")) {
+	$options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>" . html_print_image ("images/operation.png", true, array ("title" =>__('View'))) . "</a>";
+}
+
 // Headers
-ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true);
+//ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true);
+ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true, $options);
+
 
 // --------------------------------
 // DELETE A RECON TASKs

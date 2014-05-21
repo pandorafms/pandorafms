@@ -1,3 +1,8 @@
+2014-05-22  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/servers/manage_recontask.php
+	  operation/servers/recon_view.php: Added tabs.
+
 2014-05-21  Sergio Martin <sergio.martin@artica.es>
 
 	* general/main_menu.php

@@ -23,7 +23,12 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 require_once ($config["homedir"] . '/include/functions_servers.php');
 require_once ($config['homedir'] . "/include/functions_network_profiles.php");
 
+if (check_acl ($config['id_user'], 0, "AW")) {
+	$options['manage']['text'] = "<a href='index.php?sec=estado&sec2=godmode/servers/manage_recontask'>" . html_print_image("images/setup.png", true, array('title' => __('Manage'))) . "</a>";
+}
+
 $options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>" . html_print_image("images/refresh_mc.png", true, array('title' => __('Refresh'))) . "</a>";
+
 
 ui_print_page_header (__('Recon View'), "images/op_recon.png", false, "", false, $options);
 

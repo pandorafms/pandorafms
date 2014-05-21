@@ -1,3 +1,11 @@
+2014-05-21  Sergio Martin <sergio.martin@artica.es>
+
+	* general/main_menu.php
+	godmode/setup/setup_visuals.php
+	include/styles/pandora.css
+	include/functions_config.php: Added autohidden menu
+	feature
+
 2014-05-21  Vanessa Gil <vanessa.gil@artica.es>
 
 	* images/dot_blue.png

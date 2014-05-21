@@ -265,6 +265,12 @@ div#main_help div.databox p{
 	text-align: justify;
 }
 
+div#menu_container {
+	-moz-border-top-right-radius: 6px;
+	-webkit-border-top-right-radius: 6px;
+	border-top-right-radius: 6px;
+}
+
 div#menu {
 	width: 165px;
 	float: left;
@@ -2095,10 +2101,7 @@ div#main {
 	padding-left: 0px;
 	padding-top: 0px;
 	padding-bottom: 20px;
-	/*CLASSIC STYLE*/
 	margin-left: 182px;
-	/*AUTOHIDDEN MENU*/
-	/*margin-left: 40px;*/
 	margin-right: 20px;
 	background: #ECECEC;
 	min-width: 720px;
@@ -2892,6 +2895,7 @@ td.empty_field {
 	margin: 0px !important;
 	bottom: 0px;
 	left: 0px;
+	z-index: 1000;
 }
 
 #shortcut_bar {

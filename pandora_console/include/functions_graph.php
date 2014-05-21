@@ -237,8 +237,10 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 	global $chart_extra_data;
 	global $series_type;
 	global $max_value;
+	global $min_value;
 	
 	$max_value = 0;
+	$min_value = null;
 	$flash_chart = $config['flash_charts'];
 		
 	// Event iterator
@@ -279,6 +281,10 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		
 		if ($max_value < $interval_max) {
 			$max_value = $interval_max;
+		}
+		
+		if ($min_value > $interval_max || $min_value == null) {
+			$min_value = $interval_max;
 		}
 		
 		// Data in the interval
@@ -473,6 +479,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	global $critical_min;
 	global $graphic_type;
 	global $max_value;
+	global $min_value;
 	
 	
 	$chart = array();
@@ -626,7 +633,16 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
 	
 	// Fix event and alert scale
-	$event_max = 2 + (float)$max_value * 1.05;
+	if ($max_value > 0) {
+		$event_max = 2 + (float)$max_value * 1.05;
+	}
+	else {
+		$event_max = abs(($max_value+$min_value)/2);
+		if ($event_max < 5) {
+			$event_max = 5;
+		}
+	}
+	
 	foreach ($chart as $timestamp => $chart_data) {
 		if ($show_events && $chart_data['event'.$series_suffix] > 0) {
 			$chart[$timestamp]['event'.$series_suffix] = $event_max * 1.2;

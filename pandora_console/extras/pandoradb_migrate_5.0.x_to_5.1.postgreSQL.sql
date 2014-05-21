@@ -39,6 +39,15 @@ INSERT INTO "tconfig_os" VALUES (17, 'Router', 'Generic router', 'so_router.png'
 INSERT INTO "tconfig_os" VALUES (18, 'Switch', 'Generic switch', 'so_switch.png');
 INSERT INTO "tconfig_os" VALUES (19, 'Satellite', 'Satellite agent', 'satellite.png');
 
+-- ---------------------------------------------------------------------
+-- Table `tagente_modulo`
+-- ---------------------------------------------------------------------
+/* 2014/05/21 */
+ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_normal" INTEGER default 0;
+ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_warning" INTEGER default 0;
+ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_critical" INTEGER default 0;
+ALTER TABLE "tagente_modulo" ADD COLUMN "each_ff" SMALLINT default 0;
+
 /* 2014/03/18 */
 -- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`

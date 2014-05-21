@@ -121,7 +121,7 @@ $table_simple->style[0] = 'font-weight: bold; vertical-align: top; width: 26%';
 $table_simple->style[1] = 'width: 40%';
 $table_simple->style[2] = 'font-weight: bold; vertical-align: top';
 
-$table_simple->colspan[4][1] = 3;
+#$table_simple->colspan[4][1] = 3;
 $table_simple->colspan[5][1] = 3;
 $table_simple->colspan[6][1] = 3;
 
@@ -266,16 +266,26 @@ $table_simple->data[2][3] .= html_print_checkbox ("critical_inverse", 1, $critic
 
 /* FF stands for Flip-flop */
 $table_simple->data[3][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
-$table_simple->data[3][1] = html_print_input_text ('ff_event', $ff_event,
-	'', 5, 15, true, $disabledBecauseInPolicy);
-$table_simple->data[3][2] = __('Historical data');
+$table_simple->colspan[3][1] = 3;
+
+$table_simple->data[3][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true) . ' ' . __('All state changing') . ' : ';
+$table_simple->data[3][1] .= html_print_input_text ('ff_event', $ff_event, '', 5
+, 15, true, $disabledBecauseInPolicy) . '<br />';
+$table_simple->data[3][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
+$table_simple->data[3][1] .= __('To normal');
+$table_simple->data[3][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
+$table_simple->data[3][1] .= __('To warning');
+$table_simple->data[3][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
+$table_simple->data[3][1] .= __('To critical');
+$table_simple->data[3][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true, $disabledBecauseInPolicy);
+$table_simple->data[4][0] = __('Historical data');
 if($disabledBecauseInPolicy) {
 	// If is disabled, we send a hidden in his place and print a false checkbox because HTML dont send disabled fields and could be disabled by error
-	$table_simple->data[3][3] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
-	$table_simple->data[3][3] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
+	$table_simple->data[4][1] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[4][1] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
 }
 else {
-	$table_simple->data[3][3] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[4][1] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
 }
 
 /* Advanced form part */

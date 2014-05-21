@@ -915,6 +915,10 @@ if ($update_module || $create_module) {
 	$max_critical = (float) get_parameter ('max_critical');
 	$str_critical = (string) get_parameter ('str_critical');
 	$ff_event = (int) get_parameter ('ff_event');
+	$ff_event_normal = (int) get_parameter ('ff_event_normal');
+	$ff_event_warning = (int) get_parameter ('ff_event_warning');
+	$ff_event_critical = (int) get_parameter ('ff_event_critical');
+	$each_ff = (int) get_parameter ('each_ff');
 	$unit = (string) get_parameter('unit');
 	$id_tag = (array) get_parameter('id_tag_selected');
 	$serialize_ops = (string) get_parameter('serialize_ops');
@@ -1000,6 +1004,10 @@ if ($update_module) {
 		'custom_integer_1' => $custom_integer_1,
 		'custom_integer_2' => $custom_integer_2,
 		'min_ff_event' => $ff_event,
+		'min_ff_event_normal' => $ff_event_normal,
+		'min_ff_event_warning' => $ff_event_warning,
+		'min_ff_event_critical' => $ff_event_critical,
+		'each_ff' => $each_ff,
 		'unit' => $unit,
 		'macros' => $macros,
 		'quiet' => $quiet_module,
@@ -1133,6 +1141,10 @@ if ($create_module) {
 		'custom_integer_1' => $custom_integer_1,
 		'custom_integer_2' => $custom_integer_2,
 		'min_ff_event' => $ff_event,
+		'min_ff_event_normal' => $ff_event_normal,
+		'min_ff_event_warning' => $ff_event_warning,
+		'min_ff_event_critical' => $ff_event_critical,
+		'each_ff' => $each_ff,
 		'unit' => $unit,
 		'macros' => $macros,
 		'quiet' => $quiet_module,

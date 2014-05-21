@@ -49,6 +49,11 @@ INSERT INTO `tconfig_os` (`name`, `description`, `icon_name`) VALUES ('Satellite
 -- Table `tagente_modulo`
 -- ---------------------------------------------------------------------
 ALTER TABLE `pandora`.`tagente_modulo` MODIFY COLUMN `post_process` DOUBLE  DEFAULT NULL;
+/* 2014/05/21 */
+ALTER TABLE `tagente_modulo` ADD COLUMN `min_ff_event_normal` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `min_ff_event_warning` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `min_ff_event_critical` int(4) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `each_ff` tinyint(1) unsigned default '0';
 
 /* 2014/03/18 */
 -- ---------------------------------------------------------------------

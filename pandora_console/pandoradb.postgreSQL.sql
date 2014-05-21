@@ -237,7 +237,11 @@ CREATE TABLE "tagente_modulo" (
 	"warning_inverse" SMALLINT NOT NULL default 0,
 	"id_category" INTEGER NOT NULL default 0,
 	"disabled_types_event" TEXT default '',
-	"module_macros" TEXT default ''
+	"module_macros" TEXT default '',
+	"min_ff_event_normal" INTEGER default 0,
+        "min_ff_event_warning" INTEGER default 0,
+        "min_ff_event_critical" INTEGER default 0,
+        "each_ff" SMALLINT default 0
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");

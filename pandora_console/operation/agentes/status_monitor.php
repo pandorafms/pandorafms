@@ -1049,7 +1049,7 @@ foreach ($result as $row) {
 	
 	$data[3] = ui_print_truncate_text($row["module_name"], 'agent_small', false, true, true);
 	if ($row["extended_info"] != "") {
-		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
+		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/default_list.png');
 	}
 	if ($row["tags"] != "") {
 		$data[3] .= html_print_image('/images/tag_red.png', true,

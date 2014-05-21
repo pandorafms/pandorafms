@@ -6,7 +6,8 @@
 #
 # pandora_df	Retrieve filesystem disk usage. By default information for all
 #		filesystems is returned, but one or more filesystems may be
-#		specified as command line parameters.
+#		specified as command line parameters. If parameter start with
+#		a '-', the filesystem is excluded from results.
 #
 # Sample usage:	./pandora_df tmpfs /dev/sda1
 #
@@ -33,8 +34,19 @@ if ($#ARGV < 0) {
 	
 # Parse command line parameters
 my %filesystems;
+my %excluded_filesystems;
+my $onlyexclude = 1;
 foreach my $fs (@ARGV) {
-	$filesystems{$fs} = '-1%';
+	if (substr($fs,0,1) eq '-') {
+		$excluded_filesystems{substr($fs,1,)} = '-1%';
+	} else {
+		$filesystems{$fs} = '-1%';
+		$onlyexclude = 0;
+	}
+}
+
+if ($onlyexclude) {
+	$all_filesystems = 1;
 }
 
 # Retrieve filesystem information
@@ -51,7 +63,9 @@ if ($#df < 0) {
 foreach my $row (@df) {
 	my @columns = split (' ', $row);
 	exit 1 if ($#columns < 4);
-	$filesystems{$columns[0]} = $columns[4] if (defined ($filesystems{$columns[0]}) || $all_filesystems == 1);
+	if (defined ($filesystems{$columns[0]}) || ($all_filesystems == 1 && !defined ($excluded_filesystems{$columns[0]}))) {
+		$filesystems{$columns[0]} = $columns[4] ;
+	}
 }
 
 while (my ($filesystem, $use) = each (%filesystems)) {

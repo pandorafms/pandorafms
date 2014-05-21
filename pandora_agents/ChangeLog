@@ -1,3 +1,10 @@
+2014-05-21  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pc/plugins/pandora_df
+	  shellscript/linux/plugins/pandora_df
+	  unix/plugins/pandora_df: Applied patch 
+	'pandora_fs.excludefs.patch'.
+
 2014-05-20  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* win32/bin/pandora_agent.conf: Fixed typographic error.

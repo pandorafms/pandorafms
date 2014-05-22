@@ -419,7 +419,11 @@ sub _make_pipe ($) {
     # XXX we probably shouldn't throw stderr away.
     # XXX we probably shouldn't use named filehandles.
     open(SAVESTDERR, ">&STDERR");
-    open(STDERR, ">/dev/null");
+	if ($^O eq 'MSWin32') {
+	    open(STDERR, ">/Nul");
+	} else {
+	    open(STDERR, ">/dev/null");
+	}
 
     my $pipe = new IO::Pipe;
 

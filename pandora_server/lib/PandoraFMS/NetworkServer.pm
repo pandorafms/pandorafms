@@ -296,18 +296,18 @@ sub pandora_snmp_get_command ($$$$$$$$$$$) {
     # the call is the same than in linux
     if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
         if ($snmp_version ne "3"){
-            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c $snmp_community $snmp_target $snmp_oid 2> NUL`;
+            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c $snmp_community $snmp_target $snmp_oid 2>$DEVNULL`;
         } else {
-            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2> NUL`;
+            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2>$DEVNULL`;
         }
     }
 
     # by default LINUX/FreeBSD/Solaris calls
     else {
         if ($snmp_version ne "3"){
-            $output = `$snmpget_cmd -M+"$mib_dir" -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>/dev/null`;
+            $output = `$snmpget_cmd -M+"$mib_dir" -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>$DEVNULL`;
         } else {
-            $output = `$snmpget_cmd -M+"$mib_dir" -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2>/dev/null`;
+            $output = `$snmpget_cmd -M+"$mib_dir" -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2>$DEVNULL`;
         }
     }
 

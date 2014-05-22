@@ -72,6 +72,8 @@ if (is_ajax ()) {
 		// Ids of agents to be include in the SQL clause as id_agent IN ()
 		$filter_agents_json = (string) get_parameter ('filter_agents_json', '');
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
+		// Juanma (22/05/2014) Fix: If setted remove void agents from result (by default and for compatibility show void agents)
+		$show_void_agents = (int)get_parameter('show_void_agents', 1);
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			db_pandora_audit("ACL Violation",
@@ -92,6 +94,15 @@ if (is_ajax ()) {
 		
 		if ($status_agents != AGENT_STATUS_ALL) {
 			$filter['status'] = $status_agents;
+		}
+
+		# Juanma (22/05/2014) Fix: If remove void agents setted
+		$_sql_post = ' 1=1 ';
+		if ($show_void_agents == 0) {
+			
+			$_sql_post .= ' AND id_agente IN (SELECT a.id_agente FROM tagente a, tagente_modulo b WHERE a.id_agente=b.id_agente) AND \'1\'';
+			$filter[$_sql_post] = '1';
+			
 		}
 		
 		$agents = agents_get_group_agents($id_group, $filter, "none",

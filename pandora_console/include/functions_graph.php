@@ -290,6 +290,8 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		// Data in the interval
 		if ($count > 0) {
 			$total /= $count;
+			// If detect data, unknown period finishes
+			$is_unknown = false;
 		}
 		
 		// Read events and alerts that fall in the current interval

@@ -1,3 +1,9 @@
+2014-05-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Fix end of unknown
+	periods in graphs when activate events storm protection
+	or other prevent events triggering
+
 2014-05-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/groups/group_list.php: Dont show void agents

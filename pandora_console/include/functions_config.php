@@ -426,6 +426,8 @@ function config_update_config () {
 						$error_update[] = __('Default icon in GIS');
 					if (!config_update_value ('autohidden_menu', get_parameter('autohidden_menu')))
 						$error_update[] = __('Autohidden menu');
+					if (!config_update_value ('paginate_module', get_parameter('paginate_module')))
+						$error_update[] = __('Paginate module');
 						
 					$interval_values = get_parameter ('interval_values');
 					

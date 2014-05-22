@@ -317,8 +317,11 @@ if ($monitors_change_filter) {
 else {
 	$limit = " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 }
-
-$modules = db_get_all_rows_sql ($sql . $limit);
+if ($config['paginate_module']) {
+	$modules = db_get_all_rows_sql ($sql . $limit);
+} else {
+	$modules = db_get_all_rows_sql ($sql);
+}
 if (empty ($modules)) {
 	$modules = array ();
 }
@@ -680,9 +683,15 @@ else {
 		"status_filter_monitor=" . $status_filter_monitor . "&" .
 		"status_text_monitor=" . $status_text_monitor;
 	
-	ui_pagination ($count_modules, $url);
+	if ($config['paginate_module']) {
+		ui_pagination ($count_modules, $url);
+	}
+	
 	html_print_table ($table);
-	ui_pagination ($count_modules, $url);
+	
+	if ($config['paginate_module']) {
+		ui_pagination ($count_modules, $url);
+	}
 }
 
 unset ($table);

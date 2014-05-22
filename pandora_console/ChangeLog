@@ -1,10 +1,17 @@
+2014-05-22  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/setup/setup_visuals.php
+	  include/functions_config.php
+	  operation/agentes/estado_monitores.php: Added optional
+	module pagination.
+
 2014-05-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Fix unknown graphs in graphs
 	with only negative values. Now the unknown graph is always positive
 	Ticket: #569 
 
-2014-05-22  Vanessa Gil <vanessa.gil@artica.es>
+2014-05-21  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/servers/manage_recontask.php
 	  operation/servers/recon_view.php: Added tabs.

@@ -368,6 +368,11 @@ $table->data[$row][1] = html_print_textarea('custom_report_front_footer', 5, 15,
 
 $row++;
 
+$table->data[$row][0] = __('Paginate module view');
+$table->data[$row][1] = html_print_checkbox('paginate_module', 1, $config['paginate_module'], true);
+
+$row++;
+
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
 html_print_table ($table);

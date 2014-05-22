@@ -1,3 +1,11 @@
+2014-05-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Fix end of unknown
+	periods in graphs when activate events storm protection
+	or other prevent events triggering
+
+	MERGED FROM TRUNK
+
 2014-05-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_api.php: Fixed the function

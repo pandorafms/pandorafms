@@ -39,7 +39,7 @@ if [ "$1" == "nightly" ]; then
 	ln -s $RPMHOME/SOURCES/pandorafms_agent-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_agent-$VERSION.tar.gz || exit 1
 	ln -s $RPMHOME/SOURCES/pandorafms_agent_unix-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz || exit 1
 	ln -s $RPMHOME/SOURCES/pandorafms_console_enterprise-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_console_enterprise-$VERSION.tar.gz || exit 1
-	ln -s $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_server_enterprise-$VERSION.tar.gz || exit 1
+	#ln -s $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_server_enterprise-$VERSION.tar.gz || exit 1
 fi
 
 exit 0

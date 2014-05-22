@@ -41,7 +41,8 @@ require Exporter;
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-our @EXPORT = qw( 	
+our @EXPORT = qw(
+	$DEVNULL
     cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
@@ -74,6 +75,9 @@ our @EXPORT = qw(
 	translate_obj
 	valid_regex
 );
+
+# /dev/null
+our $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
 
 ########################################################################
 ## SUB pandora_trash_ascii 
@@ -250,9 +254,9 @@ sub ascii_to_html($) {
 
 sub pandora_daemonize {
 	my $pa_config = $_[0];
-	open STDIN, '/dev/null'		or die "Can't read /dev/null: $!";
-	open STDOUT, '>>/dev/null'	or die "Can't write to /dev/null: $!";
-	open STDERR, '>>/dev/null'	or die "Can't write to /dev/null: $!";
+	open STDIN, '$DEVNULL'		or die "Can't read $DEVNULL: $!";
+	open STDOUT, '>>$DEVNULL'	or die "Can't write to $DEVNULL: $!";
+	open STDERR, '>>$DEVNULL'	or die "Can't write to $DEVNULL: $!";
 	chdir '/tmp'					or die "Can't chdir to /tmp: $!";
 	defined(my $pid = fork)		or die "Can't fork: $!";
 	exit if $pid;
@@ -438,11 +442,12 @@ sub limpia_cadena {
 }
 
 ########################################################################
-# clean_blank (string) - Purge a string for any blank spaces in it
+# clean_blank (string) - Remove leading and trailing blanks
 ########################################################################
 sub clean_blank {
 	my $input = $_[0];
-	$input =~ s/\s//g;
+	$input =~ s/^\s+//g;
+	$input =~ s/\s+$//g;
 	return $input;
 }
 
@@ -803,7 +808,7 @@ sub pandora_ping ($$$$) {
 		# 'networktimeout' is not used by ping on Solaris.
 		
 		# Ping the host
-		`$ping_command -s -n $host 56 $retries >/dev/null 2>&1`;
+		`$ping_command -s -n $host 56 $retries >$DEVNULL 2>&1`;
 		if ($? == 0) {
 			return 1;
 		}
@@ -821,7 +826,7 @@ sub pandora_ping ($$$$) {
 		# 'networktimeout' is not used by ping6 on FreeBSD.
 		
 		# Ping the host
-		`$ping_command -q -n -c $retries $host >/dev/null 2>&1`;
+		`$ping_command -q -n -c $retries $host >$DEVNULL 2>&1`;
 		if ($? == 0) {
 			return 1;
 		}
@@ -839,7 +844,7 @@ sub pandora_ping ($$$$) {
 		# 'networktimeout' is not used by ping6 on NetBSD.
 
 		# Ping the host
-		`$ping_command -q -n -c $retries $host >/dev/null 2>&1`;
+		`$ping_command -q -n -c $retries $host >$DEVNULL 2>&1`;
 		if ($? == 0) {
 			return 1;
 		}
@@ -856,7 +861,7 @@ sub pandora_ping ($$$$) {
 		}
 		
 		# Ping the host
-		`$ping_command -q -W $timeout -n -c $retries $host >/dev/null 2>&1`;	
+		`$ping_command -q -W $timeout -n -c $retries $host >$DEVNULL 2>&1`;	
 		if ($? == 0) {
 			return 1;
 		}
@@ -902,7 +907,7 @@ sub pandora_ping_latency ($$$$) {
 		my $ms_timeout = $timeout * 1000;
 		$output = `ping -n $retries -w $ms_timeout $host`;
 		
-		if ($output =~ m/\=\s([0-9]*)[a-z][a-z]\r/){
+		if ($output =~ m/\=\s([0-9]+)ms$/){
 			return $1;
 		} else {
 			return undef;
@@ -921,7 +926,7 @@ sub pandora_ping_latency ($$$$) {
 		# 'networktimeout' is not used by ping on Solaris.
 		
 		# Ping the host
-		my @output = `$ping_command -s -n $host 56 $retries 2>/dev/null`;
+		my @output = `$ping_command -s -n $host 56 $retries 2>$DEVNULL`;
 		
 		# Something went wrong
 		return undef if ($? != 0);
@@ -945,7 +950,7 @@ sub pandora_ping_latency ($$$$) {
 		# 'networktimeout' is not used on FreeBSD.
 		
 		# Ping the host
-		my @output = `$ping_command -q -n -c $retries $host 2>/dev/null`;
+		my @output = `$ping_command -q -n -c $retries $host 2>$DEVNULL`;
 		
 		# Something went wrong
 		return undef if ($? != 0);
@@ -969,7 +974,7 @@ sub pandora_ping_latency ($$$$) {
 		# 'networktimeout' is not used on NetBSD.
 
 		# Ping the host
-		my @output = `$ping_command -q -n -c $retries $host >/dev/null 2>&1`;
+		my @output = `$ping_command -q -n -c $retries $host >$DEVNULL 2>&1`;
                
 		# Something went wrong
 		return undef in ($? != 0);
@@ -990,7 +995,7 @@ sub pandora_ping_latency ($$$$) {
 		
 		
 		# Ping the host
-		my @output = `$ping_command -q -W $timeout -n -c $retries $host 2>/dev/null`;
+		my @output = `$ping_command -q -W $timeout -n -c $retries $host 2>$DEVNULL`;
 		
 		# Something went wrong
 		return undef if ($? != 0);
@@ -1050,7 +1055,7 @@ sub translate_obj ($$$) {
 	my $mib_dir = $pa_config->{'attachment_dir'} . '/mibs';
 
 	# Translate!
-	my $oid = `snmptranslate -On -mALL -M+"$mib_dir" $obj 2>/dev/null`;
+	my $oid = `snmptranslate -On -mALL -M+"$mib_dir" $obj 2>$DEVNULL`;
 
 	if ($? != 0) {
 		return undef;

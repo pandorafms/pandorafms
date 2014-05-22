@@ -53,7 +53,7 @@ sub new ($$;$) {
 	return undef unless $config->{'wmiserver'} == 1;
 
 	# Check for a WMI client
-	if (system ($config->{'wmi_client'} . ' > /dev/null 2>&1') >> 8 != 1) {
+	if (system ($config->{'wmi_client'} . " >$DEVNULL 2>&1") >> 8 != 1) {
 		logger ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 1);
 		print_message ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 1);
 		return undef;
@@ -169,7 +169,7 @@ sub data_consumer ($$) {
 	logger ($pa_config, "Executing AM # $module_id WMI command '$wmi_command'", 9);
 
 	# Execute command
-	my $module_data = `$wmi_command 2>/dev/null`;
+	my $module_data = `$wmi_command 2>$DEVNULL`;
 	if ($? ne 0 || ! defined ($module_data)) {
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;

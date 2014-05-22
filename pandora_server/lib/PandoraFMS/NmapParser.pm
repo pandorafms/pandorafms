@@ -31,6 +31,8 @@ use vars qw($VERSION %D);
 
 $VERSION = 1.30;
 
+#/dev/null
+my $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
 
 sub new {
 
@@ -143,16 +145,16 @@ sub parsescan {
 #if output file is defined, point it to a localfile then call parsefile instead.
     if ( defined( $self->{cache_file} ) ) {
         $cmd =
-            "$nmap $args -v -v -v -oX "
+            "\"$nmap\" $args -v -v -v -oX "
           . $self->{cache_file} . " "
           . ( join ' ', @ips );
-        `$cmd 2> /dev/null`;    #remove output from STDOUT
+        `$cmd 2>$DEVNULL`;    #remove output from STDOUT
         $self->parsefile( $self->{cache_file} );
     }
     else {
-        $cmd = "$nmap $args -v -v -v -oX - " . ( join ' ', @ips );
+        $cmd = "\"$nmap\" $args -v -v -v -oX - " . ( join ' ', @ips );
         open $FH,
-          "$cmd 2>/dev/null |" || die "[Nmap-Parser] Could not perform nmap scan - $!";
+          "$cmd 2>$DEVNULL |" || die "[Nmap-Parser] Could not perform nmap scan - $!";
         $self->parse($FH);
         close $FH;
     }

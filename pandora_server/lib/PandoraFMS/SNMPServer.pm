@@ -308,7 +308,7 @@ sub stop () {
 	my $self = shift;
 
 	if ($self->{'snmp_trapd'} ne 'manual') {
-		system ('kill -9 `cat /var/run/pandora_snmptrapd.pid 2> /dev/null`');
+		system ("kill -9 `cat /var/run/pandora_snmptrapd.pid 2>$DEVNULL`");
 		unlink ('/var/run/pandora_snmptrapd.pid');
 	}
 	
@@ -388,7 +388,7 @@ sub start_snmptrapd ($) {
 	$snmptrapd_args .=  ' --format1=SNMPv1[**]%4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]' . $address_format . '[**]%N[**]%w[**]%W[**]%q[**]%v\\\n';
 	$snmptrapd_args .=  ' --format2=SNMPv2[**]%4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%b[**]%v\\\n';
 
-	if (system ($config->{'snmp_trapd'} . $snmptrapd_args . ' >/dev/null 2>&1') != 0) {
+	if (system ($config->{'snmp_trapd'} . $snmptrapd_args . " >$DEVNULL 2>&1") != 0) {
 		logger ($config, " [E] Could not start snmptrapd.", 1);
 		print_message ($config, " [E] Could not start snmptrapd.", 1);
 		return 1;

@@ -408,7 +408,7 @@ sub tcp_scan ($$$) {
 	my ($pa_config, $host, $portlist) = @_;
 	
 	my $nmap = $pa_config->{'nmap'};
-	my $output = `$nmap -p$portlist $host | grep open | wc -l`;
+	my $output = `"$nmap" -p$portlist $host | grep open | wc -l`;
 	return 0 if ($? != 0);
 	return $output;
 }
@@ -422,14 +422,14 @@ sub guess_os {
     # Use xprobe2 if available
 	my $xprobe = $pa_config->{'xprobe2'};
 	if (-e $xprobe){
-			my $output = `$xprobe $host 2> /dev/null | grep 'Running OS' | head -1`;
+			my $output = `$xprobe $host 2>$DEVNULL | grep 'Running OS' | head -1`;
 			return 10 if ($? != 0);
 			return pandora_get_os ($dbh, $output);
 	}
 	
 	# Use nmap by default
 	my $nmap = $pa_config->{'nmap'};
-	my $output = `$nmap -F -O $host 2> /dev/null | grep 'Aggressive OS guesses'`;
+	my $output = `"$nmap" -F -O $host 2>$DEVNULL | grep 'Aggressive OS guesses'`;
 	return 10 if ($? != 0);
 	return pandora_get_os ($dbh, $output);
 }

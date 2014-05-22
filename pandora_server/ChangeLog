@@ -1,3 +1,13 @@
+2014-05-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/NmapParser.pm,
+	  lib/PandoraFMS/ReconServer.pm,
+	  lib/PandoraFMS/SNMPServer.pm,
+	  lib/PandoraFMS/Tools.pm,
+	  lib/PandoraFMS/Traceroute.pm,
+	  lib/PandoraFMS/WMIServer.pm: Fixes for win32.
+
 2014-05-21  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Improved 'FF threshold' to be able to define

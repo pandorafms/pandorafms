@@ -116,18 +116,31 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	// 3.2 Standard deviation for Y: sqrt((Sum(Yi²)/Obs) - (avg Y)²) 
 	// Linear correlation coefficient:
 	
-	$avg_x = $cont/$sum_xi;
+	if ($sum_xi != 0) {
+		$avg_x = $cont/$sum_xi;
+	} else {
+		$avg_x = 0;
+	}
 	if ($sum_yi != 0)
 		$avg_y = $cont/$sum_yi;
 	else
 		$avg_y = 0;
-	$covariance = $sum_xi_yi/$cont;
-	$dev_x = sqrt(($sum_xi2/$cont) - ($avg_x*$avg_x));
-	$dev_y = sqrt(($sum_yi2/$cont) - ($avg_y*$avg_y));
+		
+/*
+	if ($cont != 0) {
+		$covariance = $sum_xi_yi/$cont;
+		$dev_x = sqrt(($sum_xi2/$cont) - ($avg_x*$avg_x));
+		$dev_y = sqrt(($sum_yi2/$cont) - ($avg_y*$avg_y));
+	} else {
+		$covariance = 0;
+		$dev_x = 0;
+		$dev_y = 0;
+	}
 	// Prevents division by zero
 	if ($dev_x != 0 and $dev_y != 0) {
 		$linear_coef = $covariance / ($dev_x * $dev_y);
 	}
+*/
 	// Agent interval could be zero, 300 is the predefined
 	if ($sum_obs == 0) {
 		$agent_interval = SECONDS_5MINUTES;
@@ -159,7 +172,12 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	$b = $b_num / $b_den;
 	
 	$a_num = ($sum_yi) - ($b * $sum_xi);
-	$a = $a_num / $cont;
+	
+	if ($cont != 0) {
+		$a = $a_num / $cont;
+	} else {
+		$a = 0;
+	}
 	
 	// Data inicialization
 	$output_data = array();

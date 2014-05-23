@@ -1,3 +1,10 @@
+2014-05-23  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_forecast.php: Fixed division by zero.
+
+	* operation/visual_console/public_console.php: Fixed link
+	to public visual console.
+
 2014-05-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Fix end of unknown

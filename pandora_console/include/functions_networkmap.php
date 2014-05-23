@@ -1527,6 +1527,40 @@ function networkmap_get_filter_types () {
 	return $networkmap_types;
 }
 
+function networkmap_cidr_match($ip, $cidr_mask) {
+	//copy from open source code
+	// https://gist.github.com/linickx/1309388
+	
+	list ($subnet, $bits) = split('/', $cidr_mask);
+	
+	$ip = ip2long($ip);
+	$subnet = ip2long($subnet);
+	$mask = -1 << (32 - $bits);
+	$subnet &= $mask; # nb: in case the supplied subnet wasn't correctly aligned
+	
+	return ($ip & $mask) == $subnet;
+}
+
+function networkmap_get_new_nodes_from_ip_mask($ip_mask) {
+	$list_ip_masks = explode(",", $ip_mask);
+	
+	$list_address = db_get_all_rows_in_table('taddress');
+	if (empty($address))
+		$address = array();
+	
+	$agents = array();
+	foreach ($list_address as $address) {
+		foreach ($list_ip_masks as $ip_mask) {
+			if (networkmap_cidr_match($address['ip'], $ip_mask)) {
+				$agents[] = db_get_value_filter('id_agent',
+					'taddress_agent', array('id_a' => $address['id_a']));
+			}
+		}
+	}
+	
+	return $agents;
+}
+
 ?>
 <script language="javascript" type="text/javascript">
 	/* <![CDATA[ */

@@ -1,3 +1,9 @@
+2014-05-23  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_modules.php,
+	include/functions_networkmap.php: added the filters for the
+	CIDR network masks.
+
 2014-05-23  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/agentes/module_manager.php: Added optional

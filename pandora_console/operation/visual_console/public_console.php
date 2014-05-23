@@ -134,7 +134,10 @@ $(document).ready (function () {
 				description: '<?php echo __('Until refresh'); ?>',
 				onExpiry: function () {
 						href = "<?php echo ui_get_full_url();?>";
-						href = href + "&refr=<?php echo $refr;?>";
+						$exists_refr = href.indexOf("refr");
+						if ($exists_refr == -1) {
+							href = href + "&refr=<?php echo $refr;?>";
+						}
 						$(document).attr ("location", href);
 					}
 			}

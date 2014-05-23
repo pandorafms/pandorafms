@@ -427,10 +427,18 @@ $where_tags = tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition',
 
 switch ($config["dbtype"]) {
 	case "postgresql":
-		$limit_sql = " LIMIT $limit OFFSET $offset ";
+		if ($config['paginate_module']) {
+			$limit_sql = " LIMIT $limit OFFSET $offset ";
+		} else {
+			$limit_sql = '';
+		}
 	case "mysql":
-		if(!isset($limit_sql)) {
-			$limit_sql = " LIMIT $offset, $limit ";
+		if ($config['paginate_module']) {
+			if(!isset($limit_sql)) {
+				$limit_sql = " LIMIT $offset, $limit ";
+			}
+		} else {
+			$limit_sql = '';
 		}
 		$sql = sprintf("SELECT %s
 			FROM tagente_modulo
@@ -441,8 +449,10 @@ switch ($config["dbtype"]) {
 		break;
 	case "oracle":
 		$set = array();
-		$set['limit'] = $limit;
-		$set['offset'] = $offset;
+		if ($config['paginate_module']) {
+			$set['limit'] = $limit;
+			$set['offset'] = $offset;
+		}
 		$sql = sprintf("SELECT %s
 			FROM tagente_modulo
 			WHERE %s %s %s %s", 
@@ -473,7 +483,10 @@ $url = "?" .
 	"sort_field=" . $sortField ."&" .
 	"&sort=" . $sort . "&" .
 	"search_string=" . urlencode($search_string);
-ui_pagination($total_modules, $url);
+
+if ($config['paginate_module']) {
+	ui_pagination($total_modules, $url);
+}
 
 $table->width = '98%';
 $table->head = array ();

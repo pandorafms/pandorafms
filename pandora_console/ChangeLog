@@ -1,5 +1,10 @@
 2014-05-23  Vanessa Gil <vanessa.gil@artica.es>
 
+	* godmode/agentes/module_manager.php: Added optional
+	module pagination.
+
+2014-05-23  Vanessa Gil <vanessa.gil@artica.es>
+
 	* include/functions_forecast.php: Fixed division by zero.
 
 	* operation/visual_console/public_console.php: Fixed link

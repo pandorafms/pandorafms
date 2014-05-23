@@ -81,7 +81,8 @@ function modules_is_disable_type_event($id_agent_module = false, $type_event = f
 	}
 	
 	$disabled_types_event = json_decode(
-		db_get_value('disabled_types_event', 'tagente_modulo', 'id_agente_modulo', $id_agent_module), true);
+		db_get_value('disabled_types_event', 'tagente_modulo', 'id_agente_modulo', $id_agent_module),
+		true);
 	
 	if (isset($disabled_types_event[$type_event])) {
 		if ($disabled_types_event[$type_event]) {
@@ -978,7 +979,9 @@ function modules_get_interfaces($id_agent, $fields_param = false) {
 		$modules = array();
 	
 	foreach ($modules as $module) {
-		if ($module['id_tipo_modulo'] == 18 || $module['id_tipo_modulo'] == 6) {
+		//18 = remote_snmp_proc
+		//6 = remote_icmp_proc
+		if ($module['id_tipo_modulo'] == 18) {
 			
 			if ($fields_param !== false) {
 				if (is_array($fields_param)) {
@@ -1849,12 +1852,11 @@ function modules_get_module_macros_json ($macro_names, $macro_values) {
  * @return mixed Array with relations between modules. False if there were no data.
  */
 function modules_get_relations ($params = array()) {
-
 	$id_agent = 0;
 	if (isset($params['id_agent'])) {
 		$id_agent = $params['id_agent'];
 	}
-
+	
 	$id_module = 0;
 	if (isset($params['id_module'])) {
 		$id_module = $params['id_module'];
@@ -1867,16 +1869,20 @@ function modules_get_relations ($params = array()) {
 			$disabled_update = 1;
 		}
 	}
-
+	
 	$modules_type = "";
 	if (isset($params['modules_type'])) {
 		$modules_type = $params['modules_type'];
 	}
-
-	$sql = "SELECT DISTINCT tmr.id, tmr.module_a, tmr.module_b, tmr.disable_update
-			FROM tmodule_relationship AS tmr, tagente_modulo AS tam, tagente AS ta, ttipo_modulo AS ttm
+	
+	$sql = "SELECT DISTINCT tmr.id, tmr.module_a, tmr.module_b,
+				tmr.disable_update
+			FROM tmodule_relationship AS tmr,
+				tagente_modulo AS tam,
+				tagente AS ta,
+				ttipo_modulo AS ttm
 			WHERE ";
-
+	
 	$agent_filter = "";
 	if ($id_agent > 0) {
 		$agent_filter = sprintf("AND ta.id_agente = %d", $id_agent);
@@ -1889,13 +1895,15 @@ function modules_get_relations ($params = array()) {
 	}
 	$disabled_update_filter = "";
 	if ($disabled_update >= 0) {
-		$disabled_update_filter = sprintf("AND tmr.disable_update = %d", $disabled_update);
+		$disabled_update_filter = sprintf(
+			"AND tmr.disable_update = %d", $disabled_update);
 	}
 	$modules_type_filter = "";
 	if ($modules_type != "") {
-		$modules_type_filter = sprintf("AND (tam.id_tipo_modulo = ttm.id_tipo AND ttm.nombre = '%s')", $modules_type);
+		$modules_type_filter = sprintf(
+			"AND (tam.id_tipo_modulo = ttm.id_tipo AND ttm.nombre = '%s')", $modules_type);
 	}
-
+	
 	$sql .= "( (tmr.module_a = tam.id_agente_modulo
 					$module_a_filter)
 				OR (tmr.module_b = tam.id_agente_modulo
@@ -1904,7 +1912,7 @@ function modules_get_relations ($params = array()) {
 					$agent_filter
 				$disabled_update_filter
 				$modules_type_filter";
-
+	
 	return db_get_all_rows_sql($sql);
 }
 
@@ -1917,15 +1925,15 @@ function modules_get_relations ($params = array()) {
  * @return bool True if the relation exists, false otherwise.
  */
 function modules_relation_exists ($id_module, $id_module_other = false) {
-
+	
 	if ($id_module_other === false) {
-
+		
 		$sql = sprintf("SELECT id
 						FROM tmodule_relationship
 						WHERE module_a = %d
 							OR module_b = %d",
 						$id_module, $id_module);
-
+	
 	} elseif (is_array($id_module_other)) {
 
 		$ids_other = 0;

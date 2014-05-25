@@ -254,9 +254,9 @@ sub ascii_to_html($) {
 
 sub pandora_daemonize {
 	my $pa_config = $_[0];
-	open STDIN, '$DEVNULL'		or die "Can't read $DEVNULL: $!";
-	open STDOUT, '>>$DEVNULL'	or die "Can't write to $DEVNULL: $!";
-	open STDERR, '>>$DEVNULL'	or die "Can't write to $DEVNULL: $!";
+	open STDIN, "$DEVNULL"		or die "Can't read $DEVNULL: $!";
+	open STDOUT, ">>$DEVNULL"	or die "Can't write to $DEVNULL: $!";
+	open STDERR, ">>$DEVNULL"	or die "Can't write to $DEVNULL: $!";
 	chdir '/tmp'					or die "Can't chdir to /tmp: $!";
 	defined(my $pid = fork)		or die "Can't fork: $!";
 	exit if $pid;

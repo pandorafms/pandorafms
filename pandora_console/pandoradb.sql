@@ -718,6 +718,10 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`tags` text NOT NULL,
 	`disabled_types_event` TEXT NOT NULL,
 	`module_macros` TEXT NOT NULL,
+	`min_ff_event_normal` int(4) unsigned default '0',
+	`min_ff_event_warning` int(4) unsigned default '0',
+	`min_ff_event_critical` int(4) unsigned default '0',
+	`each_ff` tinyint(1) unsigned default '0',
 	PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

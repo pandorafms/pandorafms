@@ -770,6 +770,10 @@ CREATE TABLE tnetwork_component (
 	tags CLOB,
 	disabled_types_event CLOB default '',
 	module_macros CLOB default '',
+	min_ff_event_normal INTEGER default 0,
+        min_ff_event_warning INTEGER default 0,
+        min_ff_event_critical INTEGER default 0,
+        each_ff NUMBER(1, 0) default 0,
 	
 	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );

@@ -183,3 +183,12 @@ DELETE FROM tnetwork_profile_component WHERE id_np=4;
 DELETE FROM tnetwork_profile_component WHERE id_np=5;
 DELETE FROM tnetwork_profile_component WHERE id_np=6;
 DELETE FROM tnetwork_profile_component WHERE id_nc=24 AND id_np=3;
+
+/* 2014/05/25 */
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component`
+-- ---------------------------------------------------------------------
+ALTER TABLE tnetwork_component ADD COLUMN min_ff_event_normal INTEGER default 0;
+ALTER TABLE tnetwork_component ADD COLUMN min_ff_event_warning INTEGER default 0;
+ALTER TABLE tnetwork_component ADD COLUMN min_ff_event_critical INTEGER default 0;
+ALTER TABLE tnetwork_component ADD COLUMN each_ff NUMBER(1, 0) default 0;

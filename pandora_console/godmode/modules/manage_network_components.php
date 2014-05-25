@@ -97,6 +97,10 @@ $warning_inverse = (int) get_parameter('warning_inverse');
 $id_category = (int) get_parameter('id_category');
 $id_tag_selected = (array) get_parameter('id_tag_selected');
 $pure = get_parameter('pure', 0);
+$ff_event_normal = (int) get_parameter ('ff_event_normal');
+$ff_event_warning = (int) get_parameter ('ff_event_warning');
+$ff_event_critical = (int) get_parameter ('ff_event_critical');
+$each_ff = (int) get_parameter ('each_ff');
 
 if (count($id_tag_selected) == 1 && empty($id_tag_selected[0])) {
 	$tags = '';
@@ -214,7 +218,11 @@ if ($create_component) {
 				'warning_inverse' => $warning_inverse,
 				'id_category' => $id_category,
 				'tags' => $tags,
-				'disabled_types_event' => $disabled_types_event));
+				'disabled_types_event' => $disabled_types_event,
+				'min_ff_event_normal' => $ff_event_normal,
+				'min_ff_event_warning' => $ff_event_warning,
+				'min_ff_event_critical' => $ff_event_critical,
+				'each_ff' => $each_ff));
 	}
 	else {
 		$id = '';
@@ -296,7 +304,11 @@ if ($update_component) {
 				'warning_inverse' => $warning_inverse,
 				'id_category' => $id_category,
 				'tags' => $tags,
-				'disabled_types_event' => $disabled_types_event));
+				'disabled_types_event' => $disabled_types_event,
+				'min_ff_event_normal' => $ff_event_normal,
+				'min_ff_event_warning' => $ff_event_warning,
+				'min_ff_event_critical' => $ff_event_critical,
+				'each_ff' => $each_ff));
 	}
 	else {
 		$result = '';
@@ -413,7 +425,11 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'critical_inverse' => false,
 	'warning_inverse' => false,
 	'id_category' => false,
-	'tags' => false));
+	'tags' => false,
+	'ff_event_normal' => false,
+	'ff_event_warning' => false,
+	'ff_event_critical' => false,
+	'each_ff' => false));
 
 
 $search_id_group = (int) get_parameter ('search_id_group');

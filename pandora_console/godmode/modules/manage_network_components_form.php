@@ -70,6 +70,10 @@ if ($create_network_from_module) {
 	$critical_inverse = $data_module["critical_inverse"];
 	$warning_inverse = $data_module["warning_inverse"];
 	$id_category = $data_module["id_category"];
+	$ff_event_normal = $data_module["min_ff_event_normal"];
+	$ff_event_warning = $data_module["min_ff_event_warning"];
+	$ff_event_critical = $data_module["min_ff_event_critical"];
+	$each_ff = $data_module["each_ff"];
 }
 
 $id_component_type = (int) get_parameter ('id_component_type');
@@ -120,6 +124,10 @@ if (isset ($id)) {
 		$warning_inverse = $component["warning_inverse"];
 		$id_category = $component["id_category"];
 		$tags = $component["tags"];
+		$ff_event_normal = $component["min_ff_event_normal"];
+		$ff_event_warning = $component["min_ff_event_warning"];
+		$ff_event_critical = $component["min_ff_event_critical"];
+		$each_ff = $component["each_ff"];
 		
 		if ($type >= 15 && $type <= 18) {
 			// New support for snmp v3
@@ -168,6 +176,10 @@ if (isset ($id)) {
 		$warning_inverse = 0;
 		$id_category = 0;
 		$tags = '';
+		$ff_event_normal = 0;
+		$ff_event_warning = 0;
+		$ff_event_critical = 0;
+		$each_ff = 0;
 		
 		$snmp_version = 1;
 		$snmp3_auth_user = '';

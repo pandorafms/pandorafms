@@ -456,54 +456,61 @@ $table->data['edit6'][3] = html_print_input_text ('unit', '', '', 15, 60, true);
 
 /* FF stands for Flip-flop */
 $table->data['edit7'][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
-$table->data['edit7'][1] = html_print_input_text ('min_ff_event', '', '', 5, 15, true);
-$table->data['edit7'][2] = __('Historical data');
-$table->data['edit7'][3] = html_print_select(array('' => __('No change'), '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
+$table->colspan['edit7'][1] = 3;
+$table->data['edit7'][1] = __('Mode') . ' ' . html_print_select(array('' => __('No change'), '1' => __('Each state changing'), '0' => __('All state changing')),'each_ff','','','', '', true) . '<br />';
+$table->data['edit7'][1] .= __('All state changing') . ' : ' . html_print_input_text ('min_ff_event', '', '', 5, 15, true) . '<br />';
+$table->data['edit7'][1] .= __('Each state changing') . ' : ';
+$table->data['edit7'][1] .= __('To normal') . html_print_input_text ('min_ff_event_normal', '', '', 5, 15, true) . ' ';
+$table->data['edit7'][1] .= __('To warning') . html_print_input_text ('min_ff_event_warning', '', '', 5, 15, true) . ' ';
+$table->data['edit7'][1] .= __('To critical') . html_print_input_text ('min_ff_event_critical', '', '', 5, 15, true) . ' ';
+
+$table->data['edit8'][0] = __('Historical data');
+$table->data['edit8'][1] = html_print_select(array('' => __('No change'), '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
 
 /* Tags avalaible */
 $id_tag = array();
-$table->data['edit8'][0] = __('Tags');
-$table->data['edit8'][1] = html_print_select_from_sql ('SELECT id_tag, name FROM ttag ORDER BY name',
+$table->data['edit9'][0] = __('Tags');
+$table->data['edit9'][1] = html_print_select_from_sql ('SELECT id_tag, name FROM ttag ORDER BY name',
 	'id_tag[]', $id_tag, '',__('None'),'0', true, true, false, false);
-$table->data['edit8'][2] = __('Category');
-$table->data['edit8'][3] = html_print_select (categories_get_all_categories('forselect'), 'id_category', '','', __('No change'), '', true, false, false);
+$table->data['edit9'][2] = __('Category');
+$table->data['edit9'][3] = html_print_select (categories_get_all_categories('forselect'), 'id_category', '','', __('No change'), '', true, false, false);
 
 if (enterprise_installed()) {
-	$table->rowspan['edit8'][0] = $table->rowspan['edit8'][1] = 2;
+	$table->rowspan['edit9'][0] = $table->rowspan['edit9'][1] = 2;
 	
-	$table->data['edit81'][2] = __('Policy linking status') . ui_print_help_tip(__("This field only has sense in modules adopted by a policy."), true);
-	$table->data['edit81'][3] = html_print_select (array(MODULE_PENDING_LINK => __('Linked'), MODULE_PENDING_UNLINK => __('Unlinked')), 'policy_linked', '','', __('No change'), '', true, false, false);
+	$table->data['edit91'][2] = __('Policy linking status') . ui_print_help_tip(__("This field only has sense in modules adopted by a policy."), true);
+	$table->data['edit91'][3] = html_print_select (array(MODULE_PENDING_LINK => __('Linked'), MODULE_PENDING_UNLINK => __('Unlinked')), 'policy_linked', '','', __('No change'), '', true, false, false);
 }
 
-if ($table->rowspan['edit8'][0] == 2) {
-	$table->rowspan['edit8'][0] = $table->rowspan['edit8'][1] = 3;
+if ($table->rowspan['edit9'][0] == 2) {
+	$table->rowspan['edit9'][0] = $table->rowspan['edit9'][1] = 3;
 }
 else {
-	$table->rowspan['edit8'][0] = $table->rowspan['edit8'][1] = 2;
+	$table->rowspan['edit9'][0] = $table->rowspan['edit9'][1] = 2;
 }
-$table->data['edit82'][2] = __('Throw unknown events');
+$table->data['edit92'][2] = __('Throw unknown events');
 
-$table->data['edit82'][3] = html_print_select(
+$table->data['edit92'][3] = html_print_select(
 	array('' => __('No change'),
 		'1' => __('Yes'),
 		'0' => __('No')),
 	'throw_unknown_events','','','', '', true);
 
-$table->data['edit10'][0] = '<b>'.__('Critical instructions'). '</b>'. ui_print_help_tip(__("Instructions when the status is critical"), true);
-$table->data['edit10'][1] = html_print_textarea ('critical_instructions', 2, 50, '', '', true);
-$table->colspan['edit10'][1] = 3;
-
-$table->data['edit11'][0] = '<b>'.__('Warning instructions'). '</b>'. ui_print_help_tip(__("Instructions when the status is warning"), true);
-$table->data['edit11'][1] = html_print_textarea ('warning_instructions', 2, 50, '', '', true);
+$table->data['edit11'][0] = '<b>'.__('Critical instructions'). '</b>'. ui_print_help_tip(__("Instructions when the status is critical"), true);
+$table->data['edit11'][1] = html_print_textarea ('critical_instructions', 2, 50, '', '', true);
 $table->colspan['edit11'][1] = 3;
 
-$table->data['edit12'][0] = '<b>'.__('Unknown instructions').'</b>'. ui_print_help_tip(__("Instructions when the status is unknown"), true);
-$table->data['edit12'][1] = html_print_textarea ('unknown_instructions', 2, 50, '', '', true);
+$table->data['edit12'][0] = '<b>'.__('Warning instructions'). '</b>'. ui_print_help_tip(__("Instructions when the status is warning"), true);
+$table->data['edit12'][1] = html_print_textarea ('warning_instructions', 2, 50, '', '', true);
 $table->colspan['edit12'][1] = 3;
 
-$table->data['edit9'][0] = __('Quiet');
-$table->data['edit9'][0] .= ui_print_help_tip(__('The module still store data but the alerts and events will be stop'), true);
-$table->data['edit9'][1] = html_print_select(array(-1 => __('No change'),
+$table->data['edit13'][0] = '<b>'.__('Unknown instructions').'</b>'. ui_print_help_tip(__("Instructions when the status is unknown"), true);
+$table->data['edit13'][1] = html_print_textarea ('unknown_instructions', 2, 50, '', '', true);
+$table->colspan['edit13'][1] = 3;
+
+$table->data['edit10'][0] = __('Quiet');
+$table->data['edit10'][0] .= ui_print_help_tip(__('The module still store data but the alerts and events will be stop'), true);
+$table->data['edit10'][1] = html_print_select(array(-1 => __('No change'),
 	1 => __('Yes'), 0 => __('No')),
 	"quiet_select", -1, "", '', 0, true);
 
@@ -575,12 +582,13 @@ $(document).ready (function () {
 			"tr#delete_table-edit6, " +
 			"tr#delete_table-edit7, " +
 			"tr#delete_table-edit8, " +
-			"tr#delete_table-edit81, " +
-			"tr#delete_table-edit82, " +
 			"tr#delete_table-edit9, " +
+			"tr#delete_table-edit91, " +
+			"tr#delete_table-edit92, " +
 			"tr#delete_table-edit10, " +
 			"tr#delete_table-edit11, " +
-			"tr#delete_table-edit12").hide ();
+			"tr#delete_table-edit12, " +
+			"tr#delete_table-edit13").hide ();
 		
 		if (this.value == '0') {
 			filter = '';
@@ -627,12 +635,13 @@ $(document).ready (function () {
 			"tr#delete_table-edit6, " +
 			"tr#delete_table-edit7, " +
 			"tr#delete_table-edit8, " +
-			"tr#delete_table-edit81, " +
-			"tr#delete_table-edit82, " +
 			"tr#delete_table-edit9, " +
+			"tr#delete_table-edit91, " +
+			"tr#delete_table-edit92, " +
 			"tr#delete_table-edit10, " +
 			"tr#delete_table-edit11, " +
-			"tr#delete_table-edit12").show ();
+			"tr#delete_table-edit12, " +
+			"tr#delete_table-edit13").show ();
 	}
 	
 	function clean_lists() {
@@ -653,12 +662,13 @@ $(document).ready (function () {
 			"tr#delete_table-edit6, " +
 			"tr#delete_table-edit7, " +
 			"tr#delete_table-edit8, " +
-			"tr#delete_table-edit81, " +
-			"tr#delete_table-edit82, " +
 			"tr#delete_table-edit9, " +
+			"tr#delete_table-edit91, " +
+			"tr#delete_table-edit92, " +
 			"tr#delete_table-edit10, " +
 			"tr#delete_table-edit11, " +
-			"tr#delete_table-edit12").hide ();
+			"tr#delete_table-edit12, " +
+			"tr#delete_table-edit13").hide ();
 		$('input[type=checkbox]').attr('checked', false);
 		$('input[type=checkbox]').attr('disabled', true);
 		
@@ -680,7 +690,8 @@ $(document).ready (function () {
 						"tr#delete_table-edit5, " +
 						"tr#delete_table-edit6, " +
 						"tr#delete_table-edit7, " +
-						"tr#delete_table-edit8").show ();
+						"tr#delete_table-edit8, " +
+						"tr#delete_table-edit9").show ();
 				}
 				else {
 					$(".select_modules_row_2").css('display', '');
@@ -695,12 +706,13 @@ $(document).ready (function () {
 							"tr#delete_table-edit6, " +
 							"tr#delete_table-edit7, " +
 							"tr#delete_table-edit8, " +
-							"tr#delete_table-edit81, " +
-							"tr#delete_table-edit82, " +
 							"tr#delete_table-edit9, " +
+							"tr#delete_table-edit91, " +
+							"tr#delete_table-edit92, " +
 							"tr#delete_table-edit10, " +
 							"tr#delete_table-edit11, " +
-							"tr#delete_table-edit12").hide ();
+							"tr#delete_table-edit12, " +
+							"tr#delete_table-edit13").hide ();
 					}
 				}
 			}
@@ -731,12 +743,13 @@ $(document).ready (function () {
 						"tr#delete_table-edit6, " +
 						"tr#delete_table-edit7, " +
 						"tr#delete_table-edit8, " +
-						"tr#delete_table-edit81, " +
-						"tr#delete_table-edit82, " +
 						"tr#delete_table-edit9, " +
+						"tr#delete_table-edit91, " +
+						"tr#delete_table-edit92, " +
 						"tr#delete_table-edit10, " +
 						"tr#delete_table-edit11, " +
-						"tr#delete_table-edit12").show ();
+						"tr#delete_table-edit12, " +
+						"tr#delete_table-edit13").show ();
 				}
 				else {
 					$(".select_agents_row_2").css('display', '');
@@ -751,12 +764,13 @@ $(document).ready (function () {
 							"tr#delete_table-edit6, " +
 							"tr#delete_table-edit7, " +
 							"tr#delete_table-edit8, " +
-							"tr#delete_table-edit81, " +
-							"tr#delete_table-edit82, " +
 							"tr#delete_table-edit9, " +
+							"tr#delete_table-edit91, " +
+							"tr#delete_table-edit92, " +
 							"tr#delete_table-edit10, " +
 							"tr#delete_table-edit11, " +
-							"tr#delete_table-edit12").hide ();
+							"tr#delete_table-edit12, " +
+							"tr#delete_table-edit13").hide ();
 					}
 				}
 			}
@@ -814,12 +828,13 @@ $(document).ready (function () {
 				"tr#delete_table-edit6, " +
 				"tr#delete_table-edit7, " +
 				"tr#delete_table-edit8, " +
-				"tr#delete_table-edit81, " +
-				"tr#delete_table-edit82, " +
 				"tr#delete_table-edit9, " +
+				"tr#delete_table-edit91, " +
+				"tr#delete_table-edit92, " +
 				"tr#delete_table-edit10, " +
 				"tr#delete_table-edit11, " +
-				"tr#delete_table-edit12").hide ();
+				"tr#delete_table-edit12, " +
+				"tr#delete_table-edit13").hide ();
 			
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
@@ -877,7 +892,9 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'id_export', 'history_data', 'critical_inverse',
 		'warning_inverse', 'critical_instructions',
 		'warning_instructions', 'unknown_instructions', 'policy_linked', 
-		'id_category', 'disabled_types_event', 'ip_target', 'descripcion');
+		'id_category', 'disabled_types_event', 'ip_target', 'descripcion',
+		'min_ff_event_normal', 'min_ff_event_warning', 'min_ff_event_critical',
+		'each_ff');
 	$values = array ();
 	
 	// Specific snmp reused fields

@@ -1,5 +1,17 @@
 2014-05-25  Junichi Satoh  <junichi@rworks.jp>
 
+	* godmode/modules/manage_network_components.php,
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_common.php,
+	pandoradb.sql, pandoradb.oracle.sql, pandoradb.postgreSQL.sql,
+	extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql,
+	extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql,
+	extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql: Improved
+	'FF threshold' to be able to define each state changing for
+	network components.
+
+2014-05-25  Junichi Satoh  <junichi@rworks.jp>
+
 	* godmode/massive/massive_edit_modules.php: Improved to support
 	each state changing of 'FF threshold'.
 

@@ -660,7 +660,11 @@ CREATE TABLE "tnetwork_component" (
 	"id_category" INTEGER NOT NULL default 0,
 	"tags" text NOT NULL,
 	"disabled_types_event" TEXT default '',
-	"module_macros" TEXT default ''
+	"module_macros" TEXT default '',
+	"min_ff_event_normal" INTEGER default 0,
+        "min_ff_event_warning" INTEGER default 0,
+        "min_ff_event_critical" INTEGER default 0,
+        "each_ff" SMALLINT default 0
 );
 
 -- ---------------------------------------------------------------------

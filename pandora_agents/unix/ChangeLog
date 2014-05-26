@@ -1,3 +1,8 @@
+2014-05-26  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent_installer: Fixed installed for Darwin/macOS agent. Tested
+	on 10.9.2.
+
 2014-04-30  Sancho Lerena <slerena@artica.es>
 
 	* DEBIAN/postinst,

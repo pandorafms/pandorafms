@@ -111,6 +111,14 @@ help () {
 
 uninstall () {
 	OS_NAME=`uname -s`
+
+	if [ "$OS_NAME" = "Darwin" ]
+        then
+		launchctl remove com.pandorafms.pandorafms 
+		rm /Library/LaunchDaemons/com.pandorafms.pandorafms.plist 2> /dev/null
+	fi
+
+
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then
 		PANDORA_HOME=/usr/local/share/pandora_agent
@@ -259,7 +267,7 @@ install () {
 			DAEMON_SCRIPT=pandora_agent_daemon
 			DAEMON_TEMP=pandora_agent_daemon_temp
 		fi
-		
+
 		# Backup the daemon script
 		cp -f "$DAEMON_SCRIPT" "$DAEMON_SCRIPT.bak"
 		
@@ -467,6 +475,14 @@ install () {
 	else
 		echo "Linking start-up daemon script 'pandora_agent_daemon' on $OS_NAME";
 	fi
+
+	if [ "$OS_NAME" = "Darwin" ]
+        then
+        	# Specific service install on Darwin/macOSX
+                launchctl load -F Darwin/com.pandorafms.pandorafms.plist
+                echo "Start Pandora FMS service with 'launchctl start com.pandorafms.pandorafms'"
+                echo "This service has been scheduled to launch on each system startup"
+        fi
 
 	if [ "$OS_NAME" = "AIX" ]
 	then

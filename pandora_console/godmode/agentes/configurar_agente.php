@@ -1364,7 +1364,8 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 if ($enable_module) {
 	$result = modules_change_disabled($enable_module, 0);
 	
-	if ($result === NOERR) {
+	if ($result === NOERR) {	
+		enterprise_hook('config_agents_enable_module_conf', array($id_agente, $enable_module));
 		db_pandora_audit("Module management", 'Enable  ' . $enable_module);
 	}
 	else {
@@ -1379,6 +1380,7 @@ if ($disable_module) {
 	$result = modules_change_disabled($disable_module, 1);
 	
 	if ($result === NOERR) {
+		enterprise_hook('config_agents_disable_module_conf', array($id_agente, $disable_module));
 		db_pandora_audit("Module management", 'Disable  ' . $disable_module);
 	}
 	else {

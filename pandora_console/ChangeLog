@@ -1,3 +1,8 @@
+2014-05-26  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_networkmap.php: added the generate networkmap
+	from the ip mask.
+
 2014-05-26  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Comment module

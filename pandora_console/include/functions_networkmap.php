@@ -233,7 +233,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
 	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
-	$relative = false, $text_filter = '', $l2_network = false) {
+	$relative = false, $text_filter = '', $l2_network = false, $ip_mask = null) {
 	
 	global $config;
 	
@@ -268,12 +268,20 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	else if ($group == -666) {
 		$agents = false;
 	}
+	else if (!empty($ip_mask)) {
+		$agents = networkmap_get_new_nodes_from_ip_mask($ip_mask,
+			array ('id_grupo, nombre, id_os, id_parent, id_agente,
+				normal_count, warning_count, critical_count,
+				unknown_count, total_count, notinit_count'));
+	}
 	else {
 		$agents = agents_get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_parent, id_agente, 
 				normal_count, warning_count, critical_count,
 				unknown_count, total_count, notinit_count'));
 	}
+	
+	
 	
 	if ($agents === false)
 		//return false;
@@ -1531,7 +1539,9 @@ function networkmap_cidr_match($ip, $cidr_mask) {
 	//copy from open source code
 	// https://gist.github.com/linickx/1309388
 	
-	list ($subnet, $bits) = split('/', $cidr_mask);
+	$chunks = explode("/", $cidr_mask);
+	$subnet = $chunks[0];
+	$bits = $chunks[1];
 	
 	$ip = ip2long($ip);
 	$subnet = ip2long($subnet);
@@ -1541,7 +1551,7 @@ function networkmap_cidr_match($ip, $cidr_mask) {
 	return ($ip & $mask) == $subnet;
 }
 
-function networkmap_get_new_nodes_from_ip_mask($ip_mask) {
+function networkmap_get_new_nodes_from_ip_mask($ip_mask, $fields = array()) {
 	$list_ip_masks = explode(",", $ip_mask);
 	
 	$list_address = db_get_all_rows_in_table('taddress');
@@ -1552,8 +1562,18 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask) {
 	foreach ($list_address as $address) {
 		foreach ($list_ip_masks as $ip_mask) {
 			if (networkmap_cidr_match($address['ip'], $ip_mask)) {
-				$agents[] = db_get_value_filter('id_agent',
-					'taddress_agent', array('id_a' => $address['id_a']));
+				
+				if (empty($fields)) {
+					$agents[] = db_get_value_filter('id_agent',
+						'taddress_agent', array('id_a' => $address['id_a']));
+				}
+				else {
+					$id_agent = db_get_value_filter('id_agent',
+						'taddress_agent', array('id_a' => $address['id_a']));
+					
+					$agents[] = db_get_row('tagente', 'id_agente',
+						$id_agent, $fields);
+				}
 			}
 		}
 	}

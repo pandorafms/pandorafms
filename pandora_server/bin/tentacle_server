@@ -60,8 +60,14 @@ use strict;
 use warnings;
 use Getopt::Std;
 use IO::Select;
+use threads;
 use Thread::Semaphore;
-use POSIX qw(:sys_wait_h strftime);
+use POSIX ":sys_wait_h";
+use Time::HiRes qw(usleep);
+
+# Constants for Win32 services.
+use constant WIN32_SERVICE_STOPPED => 0x01;
+use constant WIN32_SERVICE_RUNNING => 0x04;
 
 my $t_libwrap_installed = eval { require Authen::Libwrap } ? 1 : 0;
 
@@ -76,6 +82,9 @@ my $SOCKET_MODULE =
 	eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
       : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
       : die $@;
+
+# Service name for Win32.
+my $SERVICE_NAME="Tentacle Server";
 
 # Program version
 our $VERSION = '0.4.0';
@@ -126,7 +135,7 @@ my $t_retries = 3;
 my $t_select;
 
 # Semaphore
-my $t_sem;
+my $t_sem :shared;
 
 # Server socket
 my @t_server_sockets;
@@ -169,10 +178,6 @@ my $t_use_libwrap = 0;
 my $t_program_name = $0;
 $t_program_name =~ s/.*\///g;
 
-# logfile name and it's file handle
-my $t_logfile;
-my $t_logfile_handle;
-
 ################################################################################
 ## SUB print_help
 ## Print help screen.
@@ -192,12 +197,12 @@ sub print_help {
 	print ("\t-h\t\tShow help.\n");
 	print ("\t-i\t\tFilters.\n");
 	print ("\t-k key\t\tOpenSSL private key file.\n");
-	print ("\t-l file\t\tPath to the log file. Only used in daemon mode.\n");
 	print ("\t-m size\t\tMaximum file size in bytes (default ${t_max_size}b).\n");
 	print ("\t-o\t\tEnable file overwrite.\n");
 	print ("\t-p port\t\tPort to listen on (default $t_port).\n");
 	print ("\t-q\t\tQuiet. Do now print error messages.\n");
 	print ("\t-r number\tNumber of retries for network opertions (default $t_retries).\n");
+	print ("\t-S (install|uninstall|run) Manage the win32 service.\n");
 	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
 	print ("\t-v\t\tBe verbose.\n");
 	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
@@ -222,13 +227,9 @@ sub daemonize {
 
 	open (STDIN, '/dev/null') || error ("Cannot read /dev/null: $!.");
 
-	if ($t_logfile) {
-		open_logfile();
-	} else {
-		# Do not be verbose when running as a daemon
-		open (STDOUT, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
-		open (STDERR, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
-	}
+	# Do not be verbose when running as a daemon
+	open (STDOUT, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
+	open (STDERR, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
 
 	# Fork
 	$pid = fork ();
@@ -240,39 +241,10 @@ sub daemonize {
 	if ($pid != 0) {
 		exit;
 	}
-	$SIG{TERM} = \&stop_server;
-	$SIG{HUP} = sub {
-		print_log ("SIGHUP received.");
-		if ($t_logfile_handle) {
-			close($t_logfile_handle);
-			open_logfile();
-		}
-	};
 
 	# Child
 	POSIX::setsid () || error ("Cannot start a new session: $!.");
 }
-
-################################################################################
-## SUB start_win_service
-## Turn the current process into a Windows service.
-################################################################################
-#sub start_win_service {
-#	require Win32::Daemon;
-#
-#	# Tell the OS to start the service
-#	Win32::Daemon::StartService ();
-#
-#	# Wait until the service manager is ready
-#	while (SERVICE_START_PENDING != Win32::Daemon::State()) {
-#		sleep (1);
-#	}
-#
-#	# Tell the service manager we are running
-#	Win32::Daemon::State (SERVICE_RUNNING);
-#
-#	# Call Win32::Daemon::StopService() when done
-#}
 
 ################################################################################
 ## SUB parse_options
@@ -284,7 +256,7 @@ sub parse_options {
 	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:c:de:f:hi:k:l:m:op:qr:s:t:vwx:b:g:T', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:c:de:f:g:hi:k:m:op:qr:s:S:t:Tvwx:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -481,22 +453,32 @@ sub parse_options {
 		}
 	}
 
-	if (defined ($opts{'l'})) {
-		$t_logfile = $opts{'l'};
+	# Win32 service management
+	if (defined ($opts{'S'})) {
+		my $service_action = $opts{'S'};
+		if ($^O ne 'MSWin32') {
+			error ("Windows services are only available on Win32.");
+		} else {
+			eval "use Win32::Daemon";
+			die($@) if ($@);
+
+			if ($service_action eq 'install') {
+				install_service();
+			} elsif ($service_action eq 'uninstall') {
+				uninstall_service();
+			} elsif ($service_action eq 'run') {
+				Win32::Daemon::RegisterCallbacks({
+			        start       =>  \&callback_start,
+			        running     =>  \&callback_running,
+			        stop        =>  \&callback_stop,
+				});
+				Win32::Daemon::StartService();
+				exit 0;
+			} else {
+				error("Unknown action: $service_action");
+			}
+		}
 	}
-}
-
-################################################################################
-## SUB sigchld_handler
-## Handle child process termination.
-################################################################################
-sub sigchld_handler {
-
-	while (waitpid(-1, &WNOHANG) > 0) {
-		$t_sem->up ();
-	}
-
-	$SIG{CHLD} = \&sigchld_handler;
 }
 
 ################################################################################
@@ -527,11 +509,6 @@ sub open_proxy {
 ################################################################################
 sub start_server {
 
-	# Show IPv6 status
-	if ($SOCKET_MODULE eq 'IO::Socket::INET') {
-		print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
-	}
-
 	my $t_server_socket;
 
 	foreach my $t_address (@t_addresses) {
@@ -548,9 +525,8 @@ sub start_server {
 			print_log ("Cannot open socket for address $t_address on port $t_port: $!.");
 			next;
 		}
-		my $msg = "Server listening on $t_address port $t_port";
-		$msg .= " (press <ctr-c> to stop)" unless $t_daemon;
-		print_log ($msg);
+
+		print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
 	
 		# Say message if tentacle proxy is enable
 		if (defined ($t_proxy_ip)) {
@@ -630,18 +606,6 @@ sub close_proxy {
 }
 
 ################################################################################
-## SUB open_logfile
-## open logfile and assign log file handle to STDOUT and STDERR
-################################################################################
-sub open_logfile {
-	if ($t_logfile) {
-		open ($t_logfile_handle, '>>', $t_logfile) || error ("Cannot open log file: $t_logfile: $!.");
-		open (STDOUT, '>&', $t_logfile_handle) || error ("Cannot dup log file handle: $!.");
-		open (STDERR, '>&', $t_logfile_handle) || error ("Cannot dup log file handle: $!.");
-	}
-}
-
-################################################################################
 ## SUB stop_server
 ## Close the server socket.
 ################################################################################
@@ -651,9 +615,6 @@ sub stop_server {
 		$t_server_socket->close ();
 	}
 	print_log ("Server going down");
-	if ($t_logfile_handle) {
-		close($t_logfile_handle);
-	}
 	
 	exit 0;
 }
@@ -698,87 +659,86 @@ sub start_ssl {
 }
 
 ################################################################################
-## SUB accept_connection
-## Accept an incoming connection and fork.
+## SUB accept_connections
+## Manage incoming connections.
 ################################################################################
-sub accept_connection {
+sub accept_connections {
 	my $pid;
 	my $t_server_socket;
 
-	my @ready = $select->can_read;
+	# Start server
+	start_server ();
 
-	foreach $t_server_socket (@ready) {
+	# Initialize semaphore
+	$t_sem = Thread::Semaphore->new ($t_max_conn);
 
-		# Accept connection
-		$t_client_socket = $t_server_socket->accept ();
+	while (1) {
+		my @ready = $select->can_read;
+		foreach $t_server_socket (@ready) {
 
-		if (! defined ($t_client_socket)) {
+			# Accept connection
+			$t_client_socket = $t_server_socket->accept ();
 
-			# EINTR
-			if ($! ne '') {
-				next;
+			if (! defined ($t_client_socket)) {
+				next if ($! ne ''); # EINTR
+				error ("accept: $!.");
 			}
 
-			error ("accept: $!.");
+			print_log ("Client connected from " . $t_client_socket->sockhost ());
+
+			# Create a new thread and serve the client
+			$t_sem->down();
+			my $thr = threads->create(\&serve_client);
+			if (! defined ($thr)) {
+				error ("Error creating thread: $!.");
+			}
+			$thr->detach();
 		}
 
-		print_log ("Client connected from " . $t_client_socket->sockhost ());
+		usleep (1000);
+	}
+}
 
-		# Fork and serve the client
-		$pid = fork ();
-		if (! defined ($pid)) {
-			error ("Cannot fork: $!.");
+################################################################################
+## SUB serve_client
+## Serve a connected client.
+################################################################################
+sub serve_client() {
+
+	if ($t_use_libwrap) {
+		if (! hosts_ctl($t_program_name, $t_client_socket)) {
+			print_log ("Connection from " . $t_client_socket->sockhost() . " is closed by tcpwrappers.");
+			$t_client_socket->close ();
+			$t_sem->up();
+			return;
+		}
+	}
+
+	eval {		
+		# Add client socket to select queue
+		$t_select = IO::Select->new ();
+		$t_select->add ($t_client_socket);
+			
+		# Start SSL
+		if ($t_ssl == 1) {
+			start_ssl ();
 		}
 	
-		# Child
-		if ($pid == 0) {
-		
-			# We do not need the server socket
-			$t_server_socket->close ();
-
-			if ($t_use_libwrap) {
-				if (! hosts_ctl($t_program_name, $t_client_socket)) {
-					print_log ("Connection from " . $t_client_socket->sockhost() . " is closed by tcpwrappers.");
-					$t_client_socket->close ();
-
-					exit;
-				}
-			}
-		
-			# Add client socket to select queue
-			$t_select = IO::Select->new ();
-			$t_select->add ($t_client_socket);
-		
-			# Start SSL
-			if ($t_ssl == 1) {
-				start_ssl ();
-			}
-
-			# Authenticate client
-			if ($t_pwd ne '') {
-				auth_pwd ();
-			}
-
-			# Check if proxy mode is enable
-			if (defined ($t_proxy_ip)) {
-
-				serve_proxy_connection ();	
-			
-			} else {
-			
-				serve_connection ();
-			}
-
-			$t_client_socket->close ();
-
-			# Must exit now
-			exit;
+		# Authenticate client
+		if ($t_pwd ne '') {
+			auth_pwd ();
 		}
+	
+		# Check if proxy mode is enable
+		if (defined ($t_proxy_ip)) {
+			serve_proxy_connection ();	
+		} else {
+			serve_connection ();
+		}
+	};
 
-		# Parent
-		$t_client_socket->close ();
-
-	}
+	$t_client_socket->close ();
+	$t_sem->up();
 }
 
 ################################################################################
@@ -1066,24 +1026,13 @@ sub send_file {
 ################################################################################
 
 ################################################################################
-## SUB format_log
-## format log message
-################################################################################
-sub format_log {
-	return strftime("%Y-%m-%d %H:%M:%S ", localtime())
-		. $t_program_name. ' [' . $$ . ']: ' . $_[0];
-}
-
-################################################################################
 ## SUB print_log
 ## Print log messages.
 ################################################################################
 sub print_log {
 
 	if ($t_log == 1) {
-		my $msg = "[log] $_[0]\n";
-		$msg = format_log($msg) if ($t_logfile_handle);
-		print (STDOUT $msg);
+		print (STDOUT "[log] $_[0]\n");
 	}
 }
 
@@ -1094,12 +1043,8 @@ sub print_log {
 sub error {
 
 	if ($t_quiet == 0) {
-		my $msg = "[err] $_[0]\n";
-		$msg = format_log($msg) if ($t_logfile_handle);
-		print (STDERR $msg);
+		die("[err] $_[0]\n\n");
 	}
-
-	exit 1;
 }
 
 ################################################################################
@@ -1465,6 +1410,91 @@ sub apply_filters ($) {
 }
 
 ################################################################################
+## SUB install_service
+## Install the Windows service.
+################################################################################
+sub install_service() {
+
+	my $service_path = $0;
+	my $service_params = "-s \"$t_directory\" -S run";
+
+	my %service_hash = (
+		machine =>  '',
+		name	=>  'TENTACLESRV',
+		display =>  $SERVICE_NAME,
+		path	=>  $service_path,
+		user	=>  '',
+		pwd	 =>  '',
+		description => 'Tentacle Server http://sourceforge.net/projects/tentacled/',
+		parameters => $service_params
+	);
+	
+	if (Win32::Daemon::CreateService(\%service_hash)) {
+		print "Successfully added.\n";
+		exit 0;
+	} else {
+		print "Failed to add service: " . Win32::FormatMessage(Win32::Daemon::GetLastError()) . "\n";
+		exit 1;
+	}
+}
+
+################################################################################
+## SUB uninstall_service
+## Install the Windows service.
+################################################################################
+sub uninstall_service() {
+	if (Win32::Daemon::DeleteService('', 'TENTACLESRV')) {
+		print "Successfully deleted.\n";
+		exit 0;
+	} else {
+		print "Failed to delete service: " . Win32::FormatMessage(Win32::Daemon::GetLastError()) . "\n";
+		exit 1;
+	}
+}
+
+################################################################################
+## SUB callback_running
+## Windows service callback function for the running event.
+################################################################################
+sub callback_running {
+
+	if (Win32::Daemon::State() == WIN32_SERVICE_RUNNING) {
+	}
+}
+
+################################################################################
+## SUB callback_start
+## Windows service callback function for the start event.
+################################################################################
+sub callback_start {
+
+	# Accept_connections ();
+	my $thr = threads->create(\&accept_connections);
+	if (!defined($thr)) {
+		Win32::Daemon::State(WIN32_SERVICE_STOPPED);
+		Win32::Daemon::StopService();
+		return;
+	}
+	$thr->detach();
+
+	Win32::Daemon::State(WIN32_SERVICE_RUNNING);
+}
+
+################################################################################
+## SUB callback_stop
+## Windows service callback function for the stop event.
+################################################################################
+sub callback_stop {
+
+	foreach my $t_server_socket (@t_server_sockets) {
+		$t_server_socket->close ();
+	}
+
+	Win32::Daemon::State(WIN32_SERVICE_STOPPED);
+	Win32::Daemon::StopService();
+}
+
+################################################################################
 # Main
 ################################################################################
 
@@ -1483,6 +1513,11 @@ if ($#ARGV != -1) {
 	exit 1;
 }
 
+# Show IPv6 status
+if ($SOCKET_MODULE eq 'IO::Socket::INET') {
+	print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
+}
+
 # Run as daemon?
 if ($t_daemon == 1 && $^O ne 'MSWin32') {
 	daemonize ();
@@ -1490,25 +1525,16 @@ if ($t_daemon == 1 && $^O ne 'MSWin32') {
 
 # Handle ctr-c
 if ($^O eq 'MSWin32') {
+	no warnings;
 	$SIG{INT2} = \&stop_server;
+	use warnings;
 }
 else {
 	$SIG{INT} = \&stop_server;
 }
 
-# Handle SIGCHLD
-$SIG{CHLD} = \&sigchld_handler;
-
-start_server ();
-
-# Initialize semaphore
-$t_sem = Thread::Semaphore->new ($t_max_conn);
-
 # Accept connections
-while (1) {
-	$t_sem->down ();
-	accept_connection ();
-}
+accept_connections();
 
 __END__
 
@@ -1539,8 +1565,6 @@ __END__
 =item	I<-i>			B<Filters>.
 
 =item	I<-k key>		B<OpenSSL private key> file.
-
-=item	I<-l file>		Path to the B<log file>. Only used in daemon mode.
 
 =item	I<-m size>		B<Maximum file size> in bytes (default I<2000000b>).
 

@@ -1,3 +1,8 @@
+2014-05-27  Vanessa Gil <vanessa.gil@artica.es>
+
+	* operation/snmpconsole/snmp_view.php: Changed ACLs. All 
+	users can view traps whose source isn't in console.
+
 2014-05-27  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager.php,

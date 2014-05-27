@@ -3268,8 +3268,8 @@ sub get_module_status ($$$) {
 	}
 
 	# Set default critical max/min/str values
-	$critical_str = defined ($critical_str) ? safe_output($critical_str) : '';
-	$warning_str = defined ($warning_str)? safe_output($warning_str) : '';
+	$critical_str = (defined ($critical_str) && valid_regex ($critical_str) == 1) ? safe_output($critical_str) : '';
+	$warning_str = (defined ($warning_str) && valid_regex ($warning_str) == 1) ? safe_output($warning_str) : '';
 	
 	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);

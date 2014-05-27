@@ -73,9 +73,11 @@ function pandoralogs_extension_main () {
 	
 	echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
 	
+	$logs_directory = (!empty($config["server_log_dir"])) ? io_safe_output($config["server_log_dir"]) : "/var/log/pandora";
+
 	view_logfile ($config["homedir"]."/pandora_console.log");
-	view_logfile ("/var/log/pandora/pandora_server.log");
-	view_logfile ("/var/log/pandora/pandora_server.error");
+	view_logfile ($logs_directory."/pandora_server.log");
+	view_logfile ($logs_directory."/pandora_server.error");
 }
 
 extensions_add_godmode_menu_option (__('System logfiles'), 'PM','glog', null, "v1r1");

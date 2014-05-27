@@ -244,6 +244,9 @@ $table->data[31][0] = __('Command Snapshot') .
 $table->data[31][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('command_snapshot', 1, '', $config["command_snapshot"], true).'&nbsp;&nbsp;';
 $table->data[31][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('command_snapshot', 0, '', $config["command_snapshot"], true);
 
+$table->data[32][0] = __('Server logs directory') . ui_print_help_tip (__("Directory where the server logs are stored."), true);
+$table->data[32][1] = html_print_input_text ('server_log_dir', $config["server_log_dir"], '', 50, 255, true);
+
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo "<fieldset>";

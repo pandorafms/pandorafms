@@ -76,6 +76,8 @@ function getPandoraDiagnostic(&$systemInfo) {
 }
 
 function getSystemInfo(&$systemInfo, $script = false) {
+	global $config;
+
 	$systemInfo['system_name'] = php_uname('s');
 	$systemInfo['system_host'] = php_uname('n');
 	$systemInfo['system_release'] = php_uname('r');
@@ -127,8 +129,10 @@ function getSystemInfo(&$systemInfo, $script = false) {
 		} 
 	}
 	$systemInfo['process'] = $process;
+
+	$logs_directory = (!empty($config["server_log_dir"])) ? io_safe_output($config["server_log_dir"]) : "/var/log/pandora";
 	
-	$result = shell_exec('du -h /var/log/pandora | cut -d"/" -f1');
+	$result = shell_exec('du -h ' . $logs_directory . ' | cut -d"/" -f1');
 	$systemInfo['size_var_log_pandora'] = $result;
 	
 	$result = shell_exec('date');
@@ -180,10 +184,12 @@ function logFilesLines($file_name, $numLines) {
 
 function getLastLog($numLines = 2000) {
 	global $config;
+
+	$logs_directory = (!empty($config["server_log_dir"])) ? io_safe_output($config["server_log_dir"]) : "/var/log/pandora";
 	
 	show_logfile($config["homedir"]."/pandora_console.log", $numLines);
-	show_logfile("/var/log/pandora/pandora_server.log", $numLines);
-	show_logfile("/var/log/pandora/pandora_server.error", $numLines);
+	show_logfile($logs_directory."/pandora_server.log", $numLines);
+	show_logfile($logs_directory."/pandora_server.error", $numLines);
 	show_logfile("/etc/mysql/my.cnf", $numLines);
 	show_logfile($config["homedir"]."/include/config.php", $numLines);
 	show_logfile("/etc/pandora/pandora_server.conf", $numLines);
@@ -386,13 +392,15 @@ function mainSystemInfo() {
 				
 				$zip->addFile($tempDir . 'system_info.txt', 'system_info.txt');
 			}
+
+			$server_logs_directory = (!empty($config["server_log_dir"])) ? io_safe_output($config["server_log_dir"]) : "/var/log/pandora";
 			
 			if ($log_info) {
 				file_put_contents($tempDir . 'pandora_console.log.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/pandora_console.log", $log_num_lines));
 				$zip->addFile($tempDir . 'pandora_console.log.lines_' . $log_num_lines, 'pandora_console.log.lines_' . $log_num_lines);
-				file_put_contents($tempDir . 'pandora_server.log.lines_' . $log_num_lines, getLastLinesLog("/var/log/pandora/pandora_server.log", $log_num_lines));
+				file_put_contents($tempDir . 'pandora_server.log.lines_' . $log_num_lines, getLastLinesLog($server_logs_directory."/pandora_server.log", $log_num_lines));
 				$zip->addFile($tempDir . 'pandora_server.log.lines_' . $log_num_lines, 'pandora_server.log.lines_' . $log_num_lines);
-				file_put_contents($tempDir . 'pandora_server.error.lines_' . $log_num_lines, getLastLinesLog("/var/log/pandora/pandora_server.error", $log_num_lines));
+				file_put_contents($tempDir . 'pandora_server.error.lines_' . $log_num_lines, getLastLinesLog($server_logs_directory."/pandora_server.error", $log_num_lines));
 				$zip->addFile($tempDir . 'pandora_server.error.lines_' . $log_num_lines, 'pandora_server.error.lines_' . $log_num_lines);
 				file_put_contents($tempDir . 'my.cnf.lines_' . $log_num_lines, getLastLinesLog("/etc/mysql/my.cnf", $log_num_lines));
 				$zip->addFile($tempDir . 'my.cnf.lines_' . $log_num_lines, 'my.cnf.lines_' . $log_num_lines);
@@ -519,6 +527,8 @@ function consoleMode() {
 		
 		if ($pandoraConfFiles) {
 			$lines = 2000;
+
+			$system_logs_directory = (!empty($config["server_log_dir"])) ? io_safe_output($config["server_log_dir"]) : "/var/log/pandora";
 			
 			$file = fopen($tempDir . 'pandora_console.log' . $lines, 'w');
 			if ($file !== false) {
@@ -532,7 +542,7 @@ function consoleMode() {
 			$file = fopen($tempDir . 'pandora_server.log' . $lines, 'w');
 			if ($file !== false) {
 				ob_start();
-				echo getLastLinesLog("/var/log/pandora/pandora_server.log", $lines);
+				echo getLastLinesLog($system_logs_directory."/pandora_server.log", $lines);
 				$output = ob_get_clean();
 				fwrite($file, $output);
 				fclose($file);
@@ -541,7 +551,7 @@ function consoleMode() {
 			$file = fopen($tempDir . 'pandora_server.error' . $lines, 'w');
 			if ($file !== false) {
 				ob_start();
-				echo getLastLinesLog("/var/log/pandora/pandora_server.error", $lines);
+				echo getLastLinesLog($system_logs_directory."/pandora_server.error", $lines);
 				$output = ob_get_clean();
 				fwrite($file, $output);
 				fclose($file);
@@ -586,7 +596,7 @@ function consoleMode() {
 			$file = fopen($tempDir . 'pandora_server.error' . $lines, 'w');
 			if ($file !== false) {
 				ob_start();
-				echo getLastLinesLog("/var/log/pandora/pandora_server.error", $lines);
+				echo getLastLinesLog($system_logs_directory."/pandora_server.error", $lines);
 				$output = ob_get_clean();
 				fwrite($file, $output);
 				fclose($file);
@@ -595,7 +605,7 @@ function consoleMode() {
 			$file = fopen($tempDir . 'pandora_server.log' . $lines, 'w');
 			if ($file !== false) {
 				ob_start();
-				echo getLastLinesLog("/var/log/pandora/pandora_server.log", $lines);
+				echo getLastLinesLog($system_logs_directory."/pandora_server.log", $lines);
 				$output = ob_get_clean();
 				fwrite($file, $output);
 				fclose($file);

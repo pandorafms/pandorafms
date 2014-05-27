@@ -20,11 +20,6 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_users.php");
 
-define("GRAPH_AREA", 0);
-define("GRAPH_STACKED_AREA", 1);
-define("GRAPH_LINE", 2);
-define("GRAPH_STACKED_LINE", 3);
-
 function get_graph_statistics ($chart_array) {
 	
 	/// IMPORTANT!
@@ -1292,7 +1287,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		'color' => COL_GRAPH13, 'alpha' => 50);
 	
 	switch ($stacked) {
-		case GRAPH_AREA:
+		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png"), "",
@@ -1300,21 +1295,21 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$fixed_font_size, "", $ttl); 
 			break;
 		default:
-		case GRAPH_STACKED_AREA: 
+		case CUSTOM_GRAPH_STACKED_AREA: 
 			return stacked_area_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png"), "",
 				"", $water_mark, $config['fontpath'], $fixed_font_size,
 				"", $ttl, $homeurl);
 			break;
-		case GRAPH_LINE:  
+		case CUSTOM_GRAPH_LINE:  
 			return line_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png"), "",
 				"", $water_mark, $config['fontpath'], $fixed_font_size,
 				"", $ttl, $homeurl); 
 			break;
-		case GRAPH_STACKED_LINE:
+		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png"), "",

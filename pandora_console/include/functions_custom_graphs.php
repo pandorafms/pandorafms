@@ -93,8 +93,14 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
  */
 
 function custom_graphs_print($id_graph, $height, $width, $period,
-	$stacked, $return = false, $date = 0, $only_image = false) {
+	$stacked = null, $return = false, $date = 0, $only_image = false) {
 	global $config;
+	
+	$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
+	
+	if ($stacked === null) {
+		$stacked = $graph_conf['stacked'];
+	}
 	
 	$sources = db_get_all_rows_field_filter('tgraph_source', 'id_graph',
 		$id_graph);

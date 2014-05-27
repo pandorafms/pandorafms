@@ -1,5 +1,10 @@
 2014-05-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Tools.pm: If no logfile is defined print the message to
+	  stdout.
+
+2014-05-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Make sure critical_str and warning_str are valid
 	  regular expressions.
 

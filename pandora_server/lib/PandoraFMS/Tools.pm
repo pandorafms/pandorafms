@@ -413,6 +413,11 @@ sub logger ($$;$) {
 	$level = 1 unless defined ($level);
 	return if ($level > $pa_config->{'verbosity'});
 	
+	if (!defined($pa_config->{'logfile'})) {
+		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";
+		return;
+	}
+
 	my $file = $pa_config->{'logfile'};
 	
 	# Log rotation

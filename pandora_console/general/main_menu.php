@@ -26,6 +26,7 @@ if (isset ($config["autohidden_menu"]) && $config["autohidden_menu"]) {
 	$autohidden_menu = 1;
 }
 
+$menu_container_id = '';
 if ($autohidden_menu) {
 	$menu_container_id = 'menu_container';
 }

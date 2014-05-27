@@ -36,7 +36,7 @@ if (is_ajax ()) {
 		
 		return;
 	}
-
+	
 	$get_relations_tooltip = (bool) get_parameter ('get_relations_tooltip', 0);
 	
 	if ($get_relations_tooltip) {
@@ -53,7 +53,7 @@ if (is_ajax ()) {
 		
 		if (empty($relations))
 			return;
-
+		
 		$table_relations = new stdClass();
 		$table_relations->id = 'module_' . $id_agente_modulo . '_relations';
 		$table_relations->width = '98%';
@@ -65,15 +65,16 @@ if (is_ajax ()) {
 		$table_relations->head[0] = __("Relationship information");
 		$table_relations->head_colspan[0] = 4;
 		$table_relations->data = array();
-
+		
 		foreach ($relations as $relation) {
 			if ($relation['module_a'] == $id_agente_modulo) {
 				$id_module = $relation['module_b'];
-			} else {
+			}
+			else {
 				$id_module = $relation['module_a'];
 			}
 			$id_agent = modules_get_agentmodule_agent($id_module);
-
+			
 			$data = array();
 			$data[0] = __('Agent');
 			$data[1] = ui_print_agent_name ($id_agent, true);
@@ -317,9 +318,14 @@ if ($monitors_change_filter) {
 else {
 	$limit = " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 }
-if ($config['paginate_module']) {
+$paginate_module = false;
+if (isset($config['paginate_module']))
+	$paginate_module = $config['paginate_module'];
+
+if ($paginate_module) {
 	$modules = db_get_all_rows_sql ($sql . $limit);
-} else {
+}
+else {
 	$modules = db_get_all_rows_sql ($sql);
 }
 if (empty ($modules)) {
@@ -683,13 +689,13 @@ else {
 		"status_filter_monitor=" . $status_filter_monitor . "&" .
 		"status_text_monitor=" . $status_text_monitor;
 	
-	if ($config['paginate_module']) {
+	if ($paginate_module) {
 		ui_pagination ($count_modules, $url);
 	}
 	
 	html_print_table ($table);
 	
-	if ($config['paginate_module']) {
+	if ($paginate_module) {
 		ui_pagination ($count_modules, $url);
 	}
 }
@@ -733,9 +739,9 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		var server_name = '';
 		var extra_parameters = '';
 		if (period == -1) {
-
+			
 			period = $('#period').val();
-		
+			
 			var selection_mode = $('input[name=selection_mode]:checked').val();
 			var date_from = $('#text-date_from').val();
 			var time_from = $('#text-time_from').val();
@@ -773,7 +779,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		});
 	}
 	function datetime_picker_callback() {
-
+		
 		$("#text-time_from, #text-time_to").timepicker({
 			showSecond: true,
 			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -793,15 +799,15 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	
 	function refresh_pagination_callback (module_id, id_agent, server_name) {
 		$(".binary_dialog").click( function() {
-
+			
 			var classes = $(this).attr('class');
 			classes = classes.split(' ');
 			var offset_class = classes[2];
 			offset_class = offset_class.split('_');
-			var offset = offset_class[1];			
-
+			var offset = offset_class[1];
+			
 			var period = $('#period').val();
-		
+			
 			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
 			return false;
 		});

@@ -425,19 +425,25 @@ $basic_where = sprintf("(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descrip
 
 $where_tags = tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 
+$paginate_module = false;
+if (isset($config['paginate_module']))
+	$paginate_module = $config['paginate_module'];
+
 switch ($config["dbtype"]) {
 	case "postgresql":
-		if ($config['paginate_module']) {
+		if ($paginate_module) {
 			$limit_sql = " LIMIT $limit OFFSET $offset ";
-		} else {
+		}
+		else {
 			$limit_sql = '';
 		}
 	case "mysql":
-		if ($config['paginate_module']) {
-			if(!isset($limit_sql)) {
+		if ($paginate_module) {
+			if (!isset($limit_sql)) {
 				$limit_sql = " LIMIT $offset, $limit ";
 			}
-		} else {
+		}
+		else {
 			$limit_sql = '';
 		}
 		$sql = sprintf("SELECT %s
@@ -449,7 +455,7 @@ switch ($config["dbtype"]) {
 		break;
 	case "oracle":
 		$set = array();
-		if ($config['paginate_module']) {
+		if ($paginate_module) {
 			$set['limit'] = $limit;
 			$set['offset'] = $offset;
 		}
@@ -484,7 +490,7 @@ $url = "?" .
 	"&sort=" . $sort . "&" .
 	"search_string=" . urlencode($search_string);
 
-if ($config['paginate_module']) {
+if ($paginate_module) {
 	ui_pagination($total_modules, $url);
 }
 

@@ -179,6 +179,8 @@ function config_update_config () {
 						$error_update[] = __('Event storm protection');
 					if (!config_update_value ('command_snapshot', get_parameter('command_snapshot')))
 						$error_update[] = __('Command Snapshot');
+					if (!config_update_value ('server_log_dir', get_parameter('server_log_dir')))
+						$error_update[] = __('Server logs directory');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {

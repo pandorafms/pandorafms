@@ -1,3 +1,22 @@
+2014-05-27  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* extensions/files_repo.php: Fixed a weird error when
+	uploading big files.
+
+	* godmode/setup/setup_general.php,
+	include/functions_config.php: Now is possible to set
+	a custom path to the pandora server logs.
+
+	* extensions/pandora_logs.php,
+	extensions/system_info.php: Now the custom server log path
+	is used if exists.
+
+	* include/functions.php: Now the function "get_file_upload_status"
+	returns -1 when the $_FILES array is empty.
+
+	* include/config_process.php: Fixed an error that could
+	avoid the log in pandora_console.log.
+
 2014-05-27  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/graph_builder.main.php,

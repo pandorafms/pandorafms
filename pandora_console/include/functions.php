@@ -1973,6 +1973,9 @@ function can_user_access_node () {
  *  Get the upload status code
  */
 function get_file_upload_status ($file_input_name) {
+	if (!isset($_FILES[$file_input_name]))
+		return -1;
+
 	return $_FILES[$file_input_name]['error'];
 }
 

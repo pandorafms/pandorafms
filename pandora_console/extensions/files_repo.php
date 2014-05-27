@@ -123,12 +123,18 @@ function pandora_files_repo_godmode () {
 		return;
 	}
 
+	// Check for an anoying error that causes the $_POST and $_FILES arrays
+	// were empty if the file is larger than the post_max_size
+	if (intval($_SERVER['CONTENT_LENGTH']) > 0 && empty($_POST)) {
+		ui_print_error_message(__('The file exceeds the maximum size'));
+	}
+
 	// GET and POST parameters
 	$file_id = (int) get_parameter ("file_id");
 	$add_file = (bool) get_parameter ("add_file");
 	$update_file = (bool) get_parameter ("update_file");
 	$delete_file = (bool) get_parameter ("delete");
-
+	
 	// File add or update
 	if ( $add_file || ($update_file && $file_id > 0) ) {
 		$groups = get_parameter ("groups", array());

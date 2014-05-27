@@ -219,7 +219,7 @@ function visual_map_print_item($layoutData) {
 			if ($layoutData['id_custom_graph'] != 0) {
 				$img = custom_graphs_print(
 					$layoutData['id_custom_graph'], $height, $width,
-					$period, true, true, 0, true);
+					$period, null, true, 0, true);
 			}
 			else {
 				$img = grafico_modulo_sparse($id_module, $period, 0, $width,
@@ -1985,7 +1985,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						$layout_data['id_custom_graph'],
 						$layout_data['height'],
 						$layout_data['width'],
-						$layout_data['period'], true, false, 0, true);
+						$layout_data['period'], null, false, 0, true);
 				}
 				else {
 					

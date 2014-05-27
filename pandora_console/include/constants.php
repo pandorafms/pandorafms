@@ -366,4 +366,10 @@ define("EVENTS_GOING_DOWN_NORMAL", 'going_down_normal');
 define("EVENTS_GOING_DOWN_CRITICAL", 'going_down_critical');
 define("EVENTS_GOING_UP_NORMAL", 'going_up_normal');
 define("EVENTS_CONFIGURATION_CHANGE", 'configuration_change');
+
+/* CUSTOM GRAPHS */
+define("CUSTOM_GRAPH_AREA", 0);
+define("CUSTOM_GRAPH_STACKED_AREA", 1);
+define("CUSTOM_GRAPH_LINE", 2);
+define("CUSTOM_GRAPH_STACKED_LINE", 3);
 ?>

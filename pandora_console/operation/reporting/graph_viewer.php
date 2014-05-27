@@ -151,33 +151,37 @@ if ($view_graph) {
 	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
 	echo "<table class='databox_frame' cellpadding='4' cellspacing='4' style='width: 98%'>";
 	echo "<tr>";
+	
 	echo "<td>";
 	echo "<b>" . __('Date') . "</b>" . " ";
 	echo "</td>";
+	
 	echo "<td>";
 	echo html_print_input_text ('date', $date, '', 12, 10, true). ' ';
 	echo "</td>";
+	
 	echo "<td>";
 	echo html_print_input_text ('time', $time, '', 7, 7, true). ' ';
 	echo "</td>";
+	
 	echo "<td class='datos'>";
 	echo "<b>" . __('Time range') . "</b>";
 	echo "</td>";
+	
 	echo "<td class='datos'>";
-	
 	echo html_print_extended_select_for_time ('period', $period, '', '', '0', 10, true);
-	
 	echo "</td>";
+	
 	echo "<td class='datos'>";
 	$stackeds = array ();
 	$stackeds[0] = __('Graph defined');
-	$stackeds[0] = __('Area');
-	$stackeds[1] = __('Stacked area');
-	$stackeds[2] = __('Line');
-	$stackeds[3] = __('Stacked line');
+	$stackeds[CUSTOM_GRAPH_AREA] = __('Area');
+	$stackeds[CUSTOM_GRAPH_STACKED_AREA] = __('Stacked area');
+	$stackeds[CUSTOM_GRAPH_LINE] = __('Line');
+	$stackeds[CUSTOM_GRAPH_STACKED_LINE] = __('Stacked line');
 	html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
-	
 	echo "</td>";
+	
 	echo "<td class='datos'>";
 	$zooms = array();
 	$zooms[0] = __('Graph defined');
@@ -185,11 +189,12 @@ if ($view_graph) {
 	$zooms[2] = __('Zoom x2');
 	$zooms[3] = __('Zoom x3');
 	html_print_select ($zooms, 'zoom', $zoom , '', '', 0);
+	echo "</td>";
 	
-	echo "</td>";
 	echo "<td class='datos'>";
-	echo "<input type=submit value='" . __('Update') . "' class='sub upd'>";
+	echo "<input type=submit value='" . __('Refresh') . "' class='sub upd'>";
 	echo "</td>";
+	
 	echo "</tr>";
 	echo "</table>";
 	echo "</form>";

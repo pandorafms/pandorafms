@@ -140,10 +140,10 @@ echo "<td class='datos2'>";
 include_once($config["homedir"] . "/include/functions_graph.php");
 
 $stackeds = array(
-	GRAPH_AREA => __('Area'),
-	GRAPH_STACKED_AREA => __('Stacked area'),
-	GRAPH_LINE => __('Line'),
-	GRAPH_STACKED_LINE => __('Stacked line'));
+	CUSTOM_GRAPH_AREA => __('Area'),
+	CUSTOM_GRAPH_STACKED_AREA => __('Stacked area'),
+	CUSTOM_GRAPH_LINE => __('Line'),
+	CUSTOM_GRAPH_STACKED_LINE => __('Stacked line'));
 html_print_select ($stackeds, 'stacked', $stacked);
 echo "</td>";
 

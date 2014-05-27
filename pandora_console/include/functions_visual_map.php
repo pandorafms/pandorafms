@@ -51,6 +51,7 @@ function visual_map_print_item($layoutData) {
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
+	require_once ($config["homedir"] . '/include/functions_custom_graphs.php');
 	
 	$width = $layoutData['width'];
 	$height = $max_percentile = $layoutData['height'];
@@ -215,8 +216,15 @@ function visual_map_print_item($layoutData) {
 				}
 			}
 			
-			$img = grafico_modulo_sparse($id_module, $period, 0, $width,
-				$height, '', null, false, 1, false, 0, '', 0, 0, true, true);
+			if ($layoutData['id_custom_graph'] != 0) {
+				$img = custom_graphs_print(
+					$layoutData['id_custom_graph'], $height, $width,
+					$period, true, true, 0, true);
+			}
+			else {
+				$img = grafico_modulo_sparse($id_module, $period, 0, $width,
+					$height, '', null, false, 1, false, 0, '', 0, 0, true, true);
+			}
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -1028,6 +1036,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	}
 	
 	enterprise_include_once("meta/include/functions_ui_meta.php");
+	
+	require_once ($config["homedir"] . '/include/functions_custom_graphs.php');
 	
 	$layout = db_get_row ('tlayout', 'id', $id_layout);
 	
@@ -1939,8 +1949,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 									$url = ui_meta_get_url_console_child(
 										$layout_data['id_metaconsole'],
 										"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data');
+									echo '<a href="' . $url . '">';
 								}
-								echo '<a href="' . $url . '">';
 							}
 						}
 					}
@@ -1969,10 +1979,20 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
 				// resulting fault image links :(
-				echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
-					false, $layout_data['width'], $layout_data['height'],
-					'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url, 1);
 				
+				if ($layout_data['id_custom_graph'] != 0) {
+					custom_graphs_print(
+						$layout_data['id_custom_graph'],
+						$layout_data['height'],
+						$layout_data['width'],
+						$layout_data['period'], true, false, 0, true);
+				}
+				else {
+					
+					echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
+						false, $layout_data['width'], $layout_data['height'],
+						'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url, 1);
+				}
 				//Restore db connection
 				if ($layout_data['id_metaconsole'] != 0) {
 					metaconsole_restore_db();

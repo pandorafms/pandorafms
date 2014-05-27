@@ -53,8 +53,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'background' => __('Background'),
 				'static_graph' => __('Static Graph'),
 				'percentile_item' => __('Percentile Item'),
-				'module_graph' => __('Module Graph'),
-				'module_graph' => __('Module Graph'),
+				'module_graph' => __('Graph'),
 				'simple_value' => __('Simple value'),
 				'label' => __('Label'),
 				'icon' => __('Icon'));
@@ -65,9 +64,9 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			foreach ($titles as $item => $title) {
 				echo '<span id="title_panel_span_' . $item . '"
-				class="title_panel_span"
-				style="display: none; font-weight: bolder;">' .
-				$title . '</span>';
+					class="title_panel_span"
+					style="display: none; font-weight: bolder;">' .
+					$title . '</span>';
 			}
 			?>
 		</caption>
@@ -86,8 +85,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'datos',
 				'icon',
 				'group_item');
-			$form_items['label_row']['html'] = '<td align="left" valign="top" style="">' . __('Label') .'</td>
-				<td align="left" style="">'. html_print_input_text ('label', '', '', 20, 200, true) .'</td>';
+			$form_items['label_row']['html'] =
+				'<td align="left" valign="top" style="">' . __('Label') . '</td>
+				<td align="left" style="">' .
+				html_print_input_text('label', '', '', 20, 200, true) . '</td>';
 			
 			
 			$form_items['image_row'] = array();
@@ -95,8 +96,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'icon',
 				'datos',
 				'group_item');
-			$form_items['image_row']['html'] = '<td align="left">' . __('Image') . '</td>
-				<td align="left">'. html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '', true) .'</td>';
+			$form_items['image_row']['html'] =
+				'<td align="left">' . __('Image') . '</td>
+				<td align="left">' .
+				html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '', true) .
+				'</td>';
 			
 			
 			$form_items['enable_link_row'] = array();
@@ -109,22 +113,56 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'datos',
 				'icon',
 				'group_item');
-			$form_items['enable_link_row']['html'] = '<td align="left" style="">' . __('Enable link') .'</td>
-				<td align="left" style="">'. html_print_checkbox('enable_link', '', 'enable_link', true) .'</td>';
+			$form_items['enable_link_row']['html'] =
+				'<td align="left" style="">' . __('Enable link') . '</td>
+				<td align="left" style="">' .
+				html_print_checkbox('enable_link', '', 'enable_link', true) . '</td>';
 			
 			
 			$form_items['preview_row'] = array();
 			$form_items['preview_row']['items'] = array('static_graph',
 				'datos icon',
 				'group_item');
-			$form_items['preview_row']['html'] = '<td align="left" colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>';
+			$form_items['preview_row']['html'] =
+				'<td align="left" colspan="2" style="text-align: right;">' .
+				'<div id="preview" style="text-align: right;"></div></td>';
+			
+			
+			$form_items['radio_choice_graph'] = array();
+			$form_items['radio_choice_graph']['items'] = array(
+				'module_graph',
+				'datos');
+			$form_items['radio_choice_graph']['html'] =
+				'<td align="left" style=""></td>
+				<td align="left" style="">' .
+				html_print_radio_button('radio_choice',
+					'module_graph', __('Module graph'), 'module_graph',
+					true) .
+				html_print_radio_button('radio_choice',
+					'custom_graph', __('Custom graph'), 'module_graph',
+					true) .
+				'</td>';
+			
+			
+			$form_items['custom_graph_row'] = array();
+			$form_items['custom_graph_row']['items'] = array(
+				'module_graph',
+				'datos');
+			$form_items['custom_graph_row']['html'] =
+				'<td align="left" style="">' . __('Custom graph') . '</td>
+				<td align="left" style="">' .
+				html_print_select_from_sql(
+					"SELECT id_graph, name FROM tgraph", 'custom_graph',
+					'', '', __('None'), 0, true) .
+				'</td>';
 			
 			
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'datos');
-			$form_items['agent_row']['html'] = '<td align="left">' . __('Agent') . '</td>';
+			$form_items['agent_row']['html'] = '<td align="left">' .
+				__('Agent') . '</td>';
 			$params = array();
 			$params['return'] = true;
 			$params['show_helptip'] = true;
@@ -156,8 +194,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['module_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'datos');
-			$form_items['module_row']['html'] = '<td align="left">' . __('Module') . '</td>
-				<td align="left">' . html_print_select (array(), 'module', '', '', __('Any'), 0, true) . '</td>';
+			$form_items['module_row']['html'] = '<td align="left">' .
+				__('Module') . '</td>
+				<td align="left">' .
+				html_print_select(array(), 'module', '', '', __('Any'), 0, true) .
+				'</td>';
 			
 			$own_info = get_user_info($config['id_user']);
 			if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "PM"))
@@ -178,7 +219,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			$form_items['process_value_row'] = array();
 			$form_items['process_value_row']['items'] = array('simple_value', 'datos');
-			$form_items['process_value_row']['html'] = '<td align="left"><span>' . __('Process') . '</span></td>
+			$form_items['process_value_row']['html'] = '<td align="left"><span>' .
+				__('Process') . '</span></td>
 				<td align="left">'. html_print_select (
 					array (PROCESS_VALUE_MIN => __('Min value'), 
 					PROCESS_VALUE_MAX => __('Max value'),
@@ -188,19 +230,22 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			$form_items['background_row_1'] = array();
 			$form_items['background_row_1']['items'] = array('background', 'datos');
-			$form_items['background_row_1']['html'] = '<td align="left">' . __('Background') . '</td>
+			$form_items['background_row_1']['html'] = '<td align="left">' .
+				__('Background') . '</td>
 				<td align="left">' . html_print_select($backgrounds_list, 'background_image', $background, '', 'None', '', true) . '</td>';
 			
 			
 			$form_items['background_row_2'] = array();
 			$form_items['background_row_2']['items'] = array('background', 'datos');
-			$form_items['background_row_2']['html'] = '<td align="left">' . __('Original Size') . '</td>
+			$form_items['background_row_2']['html'] = '<td align="left">' .
+				__('Original Size') . '</td>
 				<td align="left">' . html_print_button(__('Apply'), 'original_false', false, "setAspectRatioBackground('original')", 'class="sub"', true) . '</td>';
 			
 			
 			$form_items['background_row_3'] = array();
 			$form_items['background_row_3']['items'] = array('background', 'datos');
-			$form_items['background_row_3']['html'] = '<td align="left">' . __('Aspect ratio') . '</td>
+			$form_items['background_row_3']['html'] = '<td align="left">' .
+				__('Aspect ratio') . '</td>
 				<td align="left">' . html_print_button(__('Width proportional'), 'original_false', false, "setAspectRatioBackground('width')", 'class="sub"', true) . '</td>';
 			
 			
@@ -212,19 +257,22 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			$form_items['percentile_bar_row_1'] = array();
 			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos');
-			$form_items['percentile_bar_row_1']['html'] = '<td align="left">' . __('Width') . '</td>
+			$form_items['percentile_bar_row_1']['html'] = '<td align="left">' .
+				__('Width') . '</td>
 				<td align="left">' . html_print_input_text('width_percentile', 0, '', 3, 5, true) . '</td>';
 			
 			
 			$form_items['percentile_bar_row_2'] = array();
 			$form_items['percentile_bar_row_2']['items'] = array('percentile_bar', 'percentile_item', 'datos');
-			$form_items['percentile_bar_row_2']['html'] = '<td align="left">' . __('Max value') . '</td>
+			$form_items['percentile_bar_row_2']['html'] = '<td align="left">' .
+				__('Max value') . '</td>
 				<td align="left">' . html_print_input_text('max_percentile', 0, '', 3, 5, true) . '</td>';
 			
 			
 			$form_items['percentile_item_row_3'] = array();
 			$form_items['percentile_item_row_3']['items'] = array('percentile_bar', 'percentile_item', 'datos');
-			$form_items['percentile_item_row_3']['html'] = '<td align="left">' . __('Type') . '</td>
+			$form_items['percentile_item_row_3']['html'] = '<td align="left">' .
+				__('Type') . '</td>
 				<td align="left">' . 
 				html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', true) . 
 				html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', 'style="float: left;"', true) . 
@@ -417,17 +465,28 @@ function visual_map_editor_print_hack_translate_strings() {
 	echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
 	
 	//Hack to translate messages in javascript
-	echo '<span style="display: none" id="message_alert_no_label_no_image">' . __('No image or name defined.') .'</span>';
-	echo '<span style="display: none" id="message_alert_no_label">' . __('No label defined.') .'</span>';
-	echo '<span style="display: none" id="message_alert_no_image">' . __('No image defined.') .'</span>';
-	echo '<span style="display: none" id="message_alert_no_process">' . __('No process defined.') .'</span>';
-	echo '<span style="display: none" id="message_alert_no_max_percentile">' . __('No Max value defined.') .'</span>';
-	echo '<span style="display: none" id="message_alert_no_width_percentile">' . __('No width defined.') .'</span>';
-	echo '<span style="display: none" id="message_alert_no_period">' . __('No period defined.') .'</span>';
-	echo '<span style="display: none" id="message_alert_no_agent">' . __('No agent defined.') .'</span>';
-	echo '<span style="display: none" id="message_alert_no_module">' . __('No module defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_label_no_image">' .
+		__('No image or name defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_label">' .
+		__('No label defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_image">' .
+		__('No image defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_process">' .
+		__('No process defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_max_percentile">' .
+		__('No Max value defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_width_percentile">' .
+		__('No width defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_period">' .
+		__('No period defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_agent">' .
+		__('No agent defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_module">' .
+		__('No module defined.') .'</span>';
 	
-	echo '<span style="display: none" id="hack_translation_correct_save">' . __('Successfully save the changes.') .'</span>';
-	echo '<span style="display: none" id="hack_translation_incorrect_save">' . __('Could not be save') .'</span>';
+	echo '<span style="display: none" id="hack_translation_correct_save">' .
+		__('Successfully save the changes.') .'</span>';
+	echo '<span style="display: none" id="hack_translation_incorrect_save">' .
+		__('Could not be save') .'</span>';
 }
 ?>

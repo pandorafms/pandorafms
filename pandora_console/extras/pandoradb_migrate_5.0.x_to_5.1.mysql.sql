@@ -97,6 +97,7 @@ ALTER TABLE `tnetwork_map` ADD COLUMN `l2_network` tinyint(1) unsigned NOT NULL 
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tlayout_data` ADD COLUMN `id_group` INTEGER UNSIGNED NOT NULL default 0;
+ALTER TABLE `tlayout_data` ADD COLUMN `id_custom_graph` INTEGER UNSIGNED NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`

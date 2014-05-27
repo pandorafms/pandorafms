@@ -90,6 +90,7 @@ ALTER TABLE tnetwork_map ADD (l2_network NUMBER(1, 0) default 0 NOT NULL);
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tlayout_data` ADD COLUMN id_group NUMBER(10, 0) default 0 NOT NULL;
+ALTER TABLE `tlayout_data` ADD COLUMN id_custom_graph NUMBER(10, 0) default 0 NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`

@@ -33,6 +33,7 @@ $ajax = true;
 require_once('include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_graph.php');
+require_once($config['homedir'] . '/include/functions_custom_graphs.php');
 enterprise_include_once('include/functions_visual_map.php');
 
 $action = get_parameter('action');
@@ -69,6 +70,7 @@ $server_id = (int)get_parameter('server_id', 0);
 $id_agent = get_parameter('id_agent', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
+$id_custom_graph = get_parameter('id_custom_graph', null);
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
@@ -95,9 +97,16 @@ switch ($action) {
 			}
 		}
 		
-		$img = grafico_modulo_sparse($id_agent_module,
-			$period, false, $width, $height, '', null, false, 1, false, 0, '', 0, 0,
-			true, true);
+		if ($id_custom_graph != 0) {
+			$img = custom_graphs_print(
+				$id_custom_graph, $height, $width, $period,
+				true, true, 0, true);
+		}
+		else {
+			$img = grafico_modulo_sparse($id_agent_module,
+				$period, false, $width, $height, '', null, false, 1,
+				false, 0, '', 0, 0, true, true);
+		}
 		
 		//Restore db connection
 		if (!empty($id_metaconsole)) {
@@ -380,6 +389,9 @@ switch ($action) {
 						if ($period !== null) {
 							$values['period'] = $period;
 						}
+						if ($id_custom_graph !== null) {
+							$values['id_custom_graph'] = $id_custom_graph;
+						}
 						break;
 					case 'percentile_item':
 					case 'percentile_bar':
@@ -583,6 +595,8 @@ switch ($action) {
 		$values['parent_item'] = $parent;
 		$values['no_link_color'] = 1;
 		$values['enable_link'] = $enable_link;
+		
+		$values['id_custom_graph'] = $id_custom_graph;
 		
 		switch ($type) {
 			case 'module_graph':

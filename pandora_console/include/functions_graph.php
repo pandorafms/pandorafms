@@ -857,9 +857,12 @@ function graph_get_formatted_date($timestamp, $format1, $format2) {
  * 
  * @return Mixed 
  */
-function graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
-	$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0,
-	$stacked = 0, $date = 0, $only_image = false, $homeurl = '', $ttl = 1, $projection = false, $prediction_period = false) {
+function graphic_combined_module ($module_list, $weight_list, $period,
+	$width, $height, $title, $unit_name, $show_events = 0,
+	$show_alerts = 0, $pure = 0, $stacked = 0, $date = 0,
+	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
+	$prediction_period = false) {
+	
 	global $config;
 	global $graphic_type;
 	
@@ -1204,8 +1207,12 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$last = $graph_stats['last'];
 		$units = modules_get_unit($agent_module_id);
 		
-		if ($projection == false or ($projection != false and $i == 0)){
-			$module_name_list[$i] .= ": ".__('Last').": $last $units; ".__("Max").": $max $units; ".__("Min").": $min $units; ". __("Avg").": $avg";
+		if ($projection == false or ($projection != false and $i == 0)) {
+			$module_name_list[$i] .= ": " .
+				__('Last') . ": $last $units; " .
+				__("Max") . ": $max $units; " .
+				__("Min") . ": $min $units; " .
+				__("Avg") . ": $avg";
 		}
 		
 		if ($weight_list[$i] != 1) {
@@ -1253,21 +1260,36 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	
 	$color = array();
 	
-	$color[0] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
-	$color[1] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
-	$color[2] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
-	$color[3] = array('border' => '#000000', 'color' => $config['graph_color4'], 'alpha' => 50);
-	$color[4] = array('border' => '#000000', 'color' => $config['graph_color5'], 'alpha' => 50);
-	$color[5] = array('border' => '#000000', 'color' => $config['graph_color6'], 'alpha' => 50);
-	$color[6] = array('border' => '#000000', 'color' => $config['graph_color7'], 'alpha' => 50);
-	$color[7] = array('border' => '#000000', 'color' => $config['graph_color8'], 'alpha' => 50);
-	$color[8] = array('border' => '#000000', 'color' => $config['graph_color9'], 'alpha' => 50);
-	$color[9] = array('border' => '#000000', 'color' => $config['graph_color10'], 'alpha' => 50);
-	$color[11] = array('border' => '#000000', 'color' => COL_GRAPH9, 'alpha' => 50);
-	$color[12] = array('border' => '#000000', 'color' => COL_GRAPH10, 'alpha' => 50);
-	$color[13] = array('border' => '#000000', 'color' => COL_GRAPH11, 'alpha' => 50);
-	$color[14] = array('border' => '#000000', 'color' => COL_GRAPH12, 'alpha' => 50);
-	$color[15] = array('border' => '#000000', 'color' => COL_GRAPH13, 'alpha' => 50);
+	$color[0] = array('border' => '#000000',
+		'color' => $config['graph_color1'], 'alpha' => 50);
+	$color[1] = array('border' => '#000000',
+		'color' => $config['graph_color2'], 'alpha' => 50);
+	$color[2] = array('border' => '#000000',
+		'color' => $config['graph_color3'], 'alpha' => 50);
+	$color[3] = array('border' => '#000000',
+		'color' => $config['graph_color4'], 'alpha' => 50);
+	$color[4] = array('border' => '#000000',
+		'color' => $config['graph_color5'], 'alpha' => 50);
+	$color[5] = array('border' => '#000000',
+		'color' => $config['graph_color6'], 'alpha' => 50);
+	$color[6] = array('border' => '#000000',
+		'color' => $config['graph_color7'], 'alpha' => 50);
+	$color[7] = array('border' => '#000000',
+		'color' => $config['graph_color8'], 'alpha' => 50);
+	$color[8] = array('border' => '#000000',
+		'color' => $config['graph_color9'], 'alpha' => 50);
+	$color[9] = array('border' => '#000000',
+		'color' => $config['graph_color10'], 'alpha' => 50);
+	$color[11] = array('border' => '#000000',
+		'color' => COL_GRAPH9, 'alpha' => 50);
+	$color[12] = array('border' => '#000000',
+		'color' => COL_GRAPH10, 'alpha' => 50);
+	$color[13] = array('border' => '#000000',
+		'color' => COL_GRAPH11, 'alpha' => 50);
+	$color[14] = array('border' => '#000000',
+		'color' => COL_GRAPH12, 'alpha' => 50);
+	$color[15] = array('border' => '#000000',
+		'color' => COL_GRAPH13, 'alpha' => 50);
 	
 	switch ($stacked) {
 		case GRAPH_AREA:

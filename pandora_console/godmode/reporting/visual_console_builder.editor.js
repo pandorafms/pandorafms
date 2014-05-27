@@ -53,6 +53,21 @@ function visual_map_main() {
 			draw_lines(lines, 'background', true);
 		}
 	);
+	
+	$("input[name='radio_choice']").on('change', function() {
+		var radio_value = $("input[name='radio_choice']:checked").val();
+		
+		if (radio_value == "module_graph") {
+			$("#custom_graph_row").css('display', 'none');
+			$("#agent_row").css('display', '');
+			$("#module_row").css('display', '');
+		}
+		else {
+			$("#custom_graph_row").css('display', '');
+			$("#agent_row").css('display', 'none');
+			$("#module_row").css('display', 'none');
+		}
+	});
 }
 
 function cancel_button_palette_callback() {
@@ -221,6 +236,8 @@ function readFields() {
 	values['value_show'] = $("input[name=value_show]:checked").val();
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
 	values['id_group'] = $("select[name=group]").val();
+	values['id_custom_graph'] = parseInt(
+		$("#custom_graph option:selected").val());
 	
 	if (metaconsole != 0) {
 		values['metaconsole'] = 1;
@@ -286,17 +303,19 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'module_graph':
-			if ((values['agent'] == '')) {
-				alert($("#message_alert_no_agent").html());
-				validate = false;
-			}
-			if ((values['module'] == 0)) {
-				alert($("#message_alert_no_module").html());
-				validate = false;
-			}
-			if ((values['period'] == 0)) {
-				alert($("#message_alert_no_period").html());
-				validate = false;
+			if (values['id_custom_graph'] == 0) {
+				if ((values['agent'] == '')) {
+					alert($("#message_alert_no_agent").html());
+					validate = false;
+				}
+				if ((values['module'] == 0)) {
+					alert($("#message_alert_no_module").html());
+					validate = false;
+				}
+				if ((values['period'] == 0)) {
+					alert($("#message_alert_no_period").html());
+					validate = false;
+				}
 			}
 			break;
 		case 'simple_value':
@@ -369,6 +388,9 @@ function toggle_item_palette() {
 			enterprise_activeToolboxButton(false);
 		}
 		
+		
+		
+		
 		if (creationItem != null) {
 			//Create a item
 			
@@ -393,6 +415,8 @@ function toggle_item_palette() {
 		}
 		
 		hiddenFields(item);
+		
+		
 		
 		$("#properties_panel").show("fast");
 	}
@@ -422,9 +446,11 @@ function loadFieldsFromDB(item) {
 	}
 	
 	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "page",
+		value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "load"});
-	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
 	parameter.push ({name: "type", value: item});
 	parameter.push ({name: "id_element", value: idItem});
 	
@@ -441,11 +467,13 @@ function loadFieldsFromDB(item) {
 				var moduleId = 0;
 				
 				fill_parent_select(idItem);
-				
+					console.log(data);
 				jQuery.each(data, function(key, val) {
-					if (key == 'background') $("#background_image").val(val);
+					if (key == 'background')
+						$("#background_image").val(val);
 					if (key == 'width') $("input[name=width]").val(val);
-					if (key == 'height') $("input[name=height]").val(val);
+					if (key == 'height')
+						$("input[name=height]").val(val);
 					
 					if (key == 'label') {
 						tinymce.get('text-label')
@@ -548,6 +576,15 @@ function loadFieldsFromDB(item) {
 						$("select[name=group]").val(val);
 					}
 					
+					
+					if (key == 'id_custom_graph') {
+						$("input[name='radio_choice'][value='custom_graph']")
+							.prop('checked', true);
+						$("input[name='radio_choice']").trigger('change');
+						$("#custom_graph option[value=" + val + "]")
+							.prop("selected", true);
+					}
+					
 					if (metaconsole != 0) {
 						if (key == 'id_agent') {
 							$("#hidden-agent").val(val);
@@ -561,6 +598,9 @@ function loadFieldsFromDB(item) {
 				if (typeof(enterprise_loadFieldsFromDB) == 'function') {
 					enterprise_loadFieldsFromDB(data);
 				}
+				
+				
+				
 			}
 		});
 }
@@ -695,6 +735,14 @@ function hiddenFields(item) {
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row."  + item).css('display', '');
 	
+	$("#radio_choice_graph").css('display', 'none');
+	$("#radio_choice_graph."  + item).css('display', '');
+	
+	$("#custom_graph_row").css('display', 'none');
+	$("#custom_graph_row."  + item).css('display', '');
+	
+	$("input[name='radio_choice']").trigger('change');
+	
 	if (typeof(enterprise_hiddenFields) == 'function') {
 		enterprise_hiddenFields(item);
 	}
@@ -731,7 +779,19 @@ function cleanFields(item) {
 	fill_parent_select();
 	
 	var anyText = $("#any_text").html(); //Trick for catch the translate text.
-	$("#module").empty().append($('<option value="0" selected="selected">' + anyText + '</option></select>'));
+	$("#module")
+		.empty()
+		.append($('<option value="0" selected="selected">' + anyText + '</option></select>'));
+	
+	//Code for the graphs
+	$("input[name='radio_choice'][value='module_graph']")
+		.prop('checked', true);
+	$("input[name='radio_choice']").trigger('change');
+	
+	//Select none custom graph
+	$("#custom_graph option[value=0]")
+		.prop('selected', true);
+	
 }
 
 function getModuleGraph(id_data) {
@@ -744,7 +804,8 @@ function getModuleGraph(id_data) {
 	
 	var parameter = Array();
 	
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "page",
+		value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_layout_data"});
 	parameter.push ({name: "id_element", value: id_data});
 	jQuery.ajax({
@@ -756,6 +817,7 @@ function getModuleGraph(id_data) {
 		success: function (data)
 		{
 			id_agente_modulo = data['id_agente_modulo'];
+			id_custom_graph = data['id_custom_graph'];
 			label = data['label'];
 			height = data['height'];
 			width = data['width'];
@@ -769,9 +831,11 @@ function getModuleGraph(id_data) {
 	//Cleaned array
 	parameter = Array();
 	
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "page",
+		value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_image_sparse"});
 	parameter.push ({name: "id_agent_module", value: id_agente_modulo});
+	parameter.push ({name: "id_custom_graph", value: id_custom_graph});
 	if (metaconsole != 0) {
 		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
 	}
@@ -1457,9 +1521,11 @@ function updateDB(type, idElement , values, event) {
 	}
 	
 	parameter = Array();
-	parameter.push({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push({name: "page",
+		value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push({name: "action", value: action});
-	parameter.push({name: "id_visual_console", value: id_visual_console});
+	parameter.push({name: "id_visual_console",
+		value: id_visual_console});
 	parameter.push({name: "type", value: type});
 	parameter.push({name: "id_element", value: idElement});
 	

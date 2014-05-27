@@ -45,9 +45,9 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 	if (!$id_user) {
 		$id_user = $config['id_user'];
 	}
-
+	
 	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
-
+	
 	$all_graphs = db_get_all_rows_in_table ('tgraph', 'name');
 	if ($all_graphs === false)
 		return array ();
@@ -70,11 +70,13 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 		}
 		else {
 			$graphs[$graph['id_graph']] = $graph;
-			$graphsCount = db_get_value_sql("SELECT COUNT(id_gs) FROM tgraph_source WHERE id_graph = " . $graph['id_graph']);
+			$graphsCount = db_get_value_sql("SELECT COUNT(id_gs)
+				FROM tgraph_source
+				WHERE id_graph = " . $graph['id_graph']);
 			$graphs[$graph['id_graph']]['graphs_count'] = $graphsCount;
 		}
 	}
-
+	
 	return $graphs;
 }
 
@@ -90,15 +92,17 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
  * @param $date Date to start printing the graph
  */
 
-function custom_graphs_print ($id_graph, $height, $width, $period, $stacked, $return = false, $date = 0) {
+function custom_graphs_print($id_graph, $height, $width, $period,
+	$stacked, $return = false, $date = 0, $only_image = false) {
 	global $config;
 	
-	$sources = db_get_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
+	$sources = db_get_all_rows_field_filter('tgraph_source', 'id_graph',
+		$id_graph);
 	$modules = array ();
 	$weights = array ();
 	
-	if($sources === false) {
-		echo "<div class='nf'>".__('Empty graph')."</div>";
+	if ($sources === false) {
+		echo "<div class='nf'>" . __('Empty graph') . "</div>";
 		return;
 	}
 	
@@ -107,8 +111,8 @@ function custom_graphs_print ($id_graph, $height, $width, $period, $stacked, $re
 		array_push ($weights, $source['weight']);
 	}
 	
-	$output = graphic_combined_module($modules, $weights, $period, $width, $height,
-		'', '', 0, 0, 0, $stacked, $date);
+	$output = graphic_combined_module($modules, $weights, $period,
+		$width, $height, '', '', 0, 0, 0, $stacked, $date, $only_image);
 	
 	if ($return)
 		return $output;

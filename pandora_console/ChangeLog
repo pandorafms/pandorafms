@@ -1,3 +1,14 @@
+2014-05-27 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_standby_alerts.php: Long agent/module
+	name with multi-byte chars could be shown as 'null' on alert
+	list at the massive alert enable/disable/standby operations
+	screen (because LEFT() in SQL does not consider multi-byte
+	chars, neither SUBSTR() for alternative).
+
+	MERGED FROM TRUNK (r9791).
+
 2014-05-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Fix end of unknown

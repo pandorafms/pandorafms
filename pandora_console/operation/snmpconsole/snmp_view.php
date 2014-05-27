@@ -165,12 +165,12 @@ foreach ($all_traps as $trap) {
 //Make query to extract traps of DB.
 switch ($config["dbtype"]) {
 	case "mysql":
-		$sql = "SELECT *
+	$sql = "SELECT *
 			FROM ttrap
 			WHERE (`source` IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					) OR `source`='') %s
+					) OR `source`='' OR `source` NOT IN (SELECT direccion FROM tagente)) %s
 			ORDER BY timestamp DESC
 			LIMIT %d,%d";
 		break;
@@ -180,7 +180,7 @@ switch ($config["dbtype"]) {
 			WHERE (source IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					) OR source='') %s
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
 		break;
@@ -191,7 +191,7 @@ switch ($config["dbtype"]) {
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
 					)
-			OR source='') %s
+			OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
 		break;

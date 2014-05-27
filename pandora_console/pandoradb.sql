@@ -24,9 +24,9 @@
 -- Priority : 3 - Warning (yellow)
 -- Priority : 4 - Critical (red)
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `taddress`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `taddress` (
 	`id_a` int(10) unsigned NOT NULL auto_increment,
 	`ip` varchar(60) NOT NULL default '',
@@ -35,9 +35,9 @@ CREATE TABLE IF NOT EXISTS `taddress` (
 	KEY `ip` (`ip`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `taddress_agent`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `taddress_agent` (
 	`id_ag` bigint(20) unsigned NOT NULL auto_increment,
 	`id_a` bigint(20) unsigned NOT NULL default '0',
@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS `taddress_agent` (
 	PRIMARY KEY  (`id_ag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente` (
 	`id_agente` int(10) unsigned NOT NULL auto_increment,
 	`nombre` varchar(600) BINARY NOT NULL default '',
@@ -87,9 +87,9 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	KEY `id_grupo` (`id_grupo`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente_datos`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` double(22,2) default NULL,
@@ -98,9 +98,9 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente_datos_inc`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` double(22,2) default NULL,
@@ -108,9 +108,9 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 	KEY `data_inc_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente_datos_string`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` text NOT NULL,
@@ -1185,6 +1185,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`enable_link` tinyint(1) UNSIGNED NOT NULL default 1,
 	`id_metaconsole` int(10) NOT NULL default 0,
 	`id_group` INTEGER UNSIGNED NOT NULL default 0,
+	`id_custom_graph` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

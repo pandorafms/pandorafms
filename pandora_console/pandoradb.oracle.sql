@@ -1244,7 +1244,8 @@ CREATE TABLE tlayout_data (
 	no_link_color NUMBER(5, 0) default 0 NOT NULL,
 	enable_link NUMBER(5, 0) default 1 NOT NULL,
 	id_metaconsole NUMBER(10, 0) default 0 NOT NULL,
-	id_group NUMBER(10, 0) default 0 NOT NULL
+	id_group NUMBER(10, 0) default 0 NOT NULL,
+	id_custom_graph NUMBER(10, 0) default 0 NOT NULL
 );
 CREATE SEQUENCE tlayout_data_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tlayout_data_inc BEFORE INSERT ON tlayout_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_data_s.nextval INTO :NEW.ID FROM dual; END tlayout_data_inc;;

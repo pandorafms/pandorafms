@@ -320,22 +320,22 @@ if ($create_modules) {
 	else {
 	
 		// Common values
-		$values = array();
+		$common_values = array();
 		
 		if ($tcp_port != '') {
-			$values['tcp_port'] = $tcp_port;
+			$common_values['tcp_port'] = $tcp_port;
 		}
-		$values['snmp_community'] = $snmp_community;
-		$values['ip_target'] = $ip_target;
-		$values['tcp_send'] = $snmp_version;
+		$common_values['snmp_community'] = $snmp_community;
+		$common_values['ip_target'] = $ip_target;
+		$common_values['tcp_send'] = $snmp_version;
 		
 		if ($snmp_version == '3') {
-			$values['plugin_user'] = $snmp3_auth_user;
-			$values['plugin_pass'] = $snmp3_auth_pass;
-			$values['plugin_parameter'] = $snmp3_auth_method;
-			$values['custom_string_1'] = $snmp3_privacy_method;
-			$values['custom_string_2'] = $snmp3_privacy_pass;
-			$values['custom_string_3'] = $snmp3_security_level;
+			$common_values['plugin_user'] = $snmp3_auth_user;
+			$common_values['plugin_pass'] = $snmp3_auth_pass;
+			$common_values['plugin_parameter'] = $snmp3_auth_method;
+			$common_values['custom_string_1'] = $snmp3_privacy_method;
+			$common_values['custom_string_2'] = $snmp3_privacy_pass;
+			$common_values['custom_string_3'] = $snmp3_security_level;
 		}
 		
 		
@@ -357,6 +357,8 @@ if ($create_modules) {
 		$results = array();
 		
 		foreach ($devices as $device) {
+			$module_values = $common_values;
+
 			// Split module data to get type, name, etc
 			$device_exploded = explode($separator, $device);
 			$device_name = $device_exploded[0];
@@ -373,19 +375,19 @@ if ($create_modules) {
 			// Rebuild device_name
 			$device_id = implode($separator, $device_exploded);
 			
-			$values['descripcion'] = $devices_prefix_descriptions[$device_type];
+			$module_values['descripcion'] = $devices_prefix_descriptions[$device_type];
 	
 			if (($name == 'Bytes read') || ($name == 'Bytes written')) {
-				$values['id_tipo_modulo'] = modules_get_type_id('remote_snmp_inc');
+				$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp_inc');
 			} else {
-				$values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
+				$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
 			}
 			
-			$values['snmp_oid'] = $devices_prefix_oids[$device_type] . $device_id;
+			$module_values['snmp_oid'] = $devices_prefix_oids[$device_type] . $device_id;
 			
-			$values['id_modulo'] = MODULE_SNMP;
+			$module_values['id_modulo'] = MODULE_SNMP;
 			
-			$result = modules_create_agent_module ($id_agent, io_safe_input($device_name), $values);
+			$result = modules_create_agent_module ($id_agent, io_safe_input($device_name), $module_values);
 			
 			$results[$result][] = $device_name;
 		} 
@@ -395,6 +397,8 @@ if ($create_modules) {
 		$temperatures_description = 'The temperature of this sensor in C';
 		
 		foreach ($temperatures as $temperature) {
+			$module_values = $common_values;
+
 			// Split module data to get type, name, etc
 			$temperature_exploded = explode($separator, $temperature);
 			$temperature_name = $temperature_exploded[0];
@@ -405,20 +409,20 @@ if ($create_modules) {
 			// Rebuild device_name
 			$temperature_id = implode($separator, $temperature_exploded);
 			
-			$values['descripcion'] = $temperatures_description;
+			$module_values['descripcion'] = $temperatures_description;
 			
-			$values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
+			$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
 			
-			$values['snmp_oid'] = $temperatures_prefix_oid . $temperature_id;
+			$module_values['snmp_oid'] = $temperatures_prefix_oid . $temperature_id;
 			
-			$values['id_modulo'] = MODULE_SNMP;
+			$module_values['id_modulo'] = MODULE_SNMP;
 			
 			// Temperature are given in mC. Convert to Celsius
-			$values['post_process'] = 0.001;
+			$module_values['post_process'] = 0.001;
 			
-			$values['unit'] = 'C';
+			$module_values['unit'] = 'C';
 			
-			$result = modules_create_agent_module ($id_agent, io_safe_input($temperature_name), $values);
+			$result = modules_create_agent_module ($id_agent, io_safe_input($temperature_name), $module_values);
 			
 			$results[$result][] = $temperature_name;
 		}
@@ -426,7 +430,7 @@ if ($create_modules) {
 		// SNMP DATA (STATIC MODULES)
 		
 		foreach ($snmpdata as $snmpdata_name) {
-			$module_values = $values;
+			$module_values = $common_values;
 			
 			$module_values['descripcion'] = $static_snmp_descriptions[$snmpdata_name];
 			$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
@@ -484,7 +488,7 @@ if ($create_modules) {
 		
 		// PROCESSES
 		foreach ($processes as $process) {
-			$module_values = $values;
+			$module_values = $common_values;
 			
 			$module_values['descripcion'] = sprintf(__('Check if the process %s is running or not'), $process);
 			$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp_proc');
@@ -524,7 +528,7 @@ if ($create_modules) {
 		
 		// DISKS USE
 		foreach ($disks as $disk) {
-			$module_values = $values;
+			$module_values = $common_values;
 			
 			$module_values['descripcion'] = __('Disk use information');
 			$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');

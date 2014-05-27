@@ -1,3 +1,8 @@
+2014-05-27  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/agent_wizard.snmp_explorer.php: Fix wrong
+	parameters like unit setted in SNMP Wizard for ticket #796
+
 2014-05-27  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql,

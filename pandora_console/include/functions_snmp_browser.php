@@ -495,13 +495,13 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table3->data[2][1] = '<b>'.__('Auth user').'</b>';
 	$table3->data[2][2] = html_print_input_text ('snmp3_browser_auth_user', '', '', 15, 60, true);
 	$table3->data[2][3] = '<b>'.__('Auth password').'</b>';
-	$table3->data[2][4] = html_print_input_text ('snmp3_browser_auth_pass', '', '', 15, 60, true);
+	$table3->data[2][4] = html_print_input_password ('snmp3_browser_auth_pass', '', '', 15, 60, true);
 	$table3->data[2][4] .= html_print_input_hidden('active_snmp_v3', 0, true);
 	
 	$table3->data[5][0] = '<b>'.__('Privacy method').'</b>';
 	$table3->data[5][1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp3_browser_privacy_method', '', '', '', '', true);
-	$table3->data[5][2] = '<b>'.__('privacy pass').'</b>';
-	$table3->data[5][3] = html_print_input_text ('snmp3_browser_privacy_pass', '', '', 15, 60, true);
+	$table3->data[5][2] = '<b>'.__('Privacy pass').'</b>';
+	$table3->data[5][3] = html_print_input_password ('snmp3_browser_privacy_pass', '', '', 15, 60, true);
 	
 	$table3->data[6][0] = '<b>'.__('Auth method').'</b>';
 	$table3->data[6][1] = html_print_select(array('MD5' => __('MD5'), 'SHA' => __('SHA')), 'snmp3_browser_auth_method', '', '', '', '', true);

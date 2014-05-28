@@ -1,3 +1,8 @@
+2014-05-28  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Fixed field that
+	wasn't saved on DB in WMI modules for ticket #794
+
 2014-05-27  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* extensions/files_repo.php: Fixed a weird error when

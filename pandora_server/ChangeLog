@@ -1,3 +1,8 @@
+2014-05-28  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Fixed wrong order in 
+	recon script parameters in the conversion from json format
+
 2014-05-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_server,

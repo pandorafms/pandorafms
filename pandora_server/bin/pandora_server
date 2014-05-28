@@ -19,7 +19,6 @@
 
 use strict;
 use warnings;
-use Getopt::Std;
 use POSIX qw(strftime);
 use threads;
 
@@ -148,7 +147,7 @@ sub pandora_crash () {
 	# worried about that. If perl has a more "clean" way to avoid this messages
 	# will be nice to replace this code, but at this time it's the only way I know
 	
-	callback_stop() if (defined($Config{'__win32_service__'}));
+	callback_stop() if ($^O eq 'MSWin32' && defined($Config{'win32_service'}));
 
 	foreach my $error_line (@_) {
 		# Trap the XML error and exit without nasty messages
@@ -448,36 +447,24 @@ sub win32_service_run() {
 ################################################################################
 ## Parse command line options.
 ################################################################################
-sub parse_options {
-	my %opts;
-	my $tmp;
-	my @t_addresses_tmp;
+sub parse_service_options ($) {
+	my $config = shift;
 
-	# Get options
-	if (getopts('S:', \%opts) == 0 || defined ($opts{'h'})) {
-		print_help ();
-		exit 1;
-	}
+	# Sanity checks.
+	return unless defined($config->{'win32_service'});
+	die ("[ERROR] Windows services are only available on Win32.\n\n") if ($^O ne 'MSWin32');
 
-	# Win32 service management
-	if (defined ($opts{'S'})) {
-		my $service_action = $opts{'S'};
-		if ($^O ne 'MSWin32') {
-			error ("Windows services are only available on Win32.");
-		} else {
-			eval "use Win32::Daemon";
-			die($@) if ($@);
+	# Win32 service management.
+	eval "use Win32::Daemon";
+	die($@) if ($@);
 
-			if ($service_action eq 'install') {
-				win32_install_service();
-			} elsif ($service_action eq 'uninstall') {
-				win32_uninstall_service();
-			} elsif ($service_action eq 'run') {
-				$Config{'__win32_service__'} == 1;
-			} else {
-				error("Unknown action: $service_action");
-			}
-		}
+	if ($config->{'win32_service'} eq 'install') {
+		win32_install_service();
+	} elsif ($config->{'win32_service'} eq 'uninstall') {
+		win32_uninstall_service();
+	} elsif ($config->{'win32_service'} eq 'run') {
+	} else {
+		die("[ERROR] Unknown action: " . $config->{'win32_service'});
 	}
 }
 
@@ -488,19 +475,6 @@ sub parse_options {
 ################################################################
 sub main() {
 
-	$SIG{'TERM'} = 'pandora_shutdown';
-	$SIG{'INT'} = 'pandora_shutdown';
-	
-	# Error handler needs to be reviewed, Enterprise not found errors are too nasty :(
-	$SIG{__DIE__} = 'pandora_crash';
-	
-	# Prevent alarm from bombing the main thread when called within a thread
-	$SIG{'ALRM'} = 'IGNORE';
-	
-	# Initialize
-	pandora_init(\%Config, 'Pandora FMS Server');
-	pandora_load_config (\%Config);
-	
 	# Daemonize and put in background
 	if ($Config{'daemon'} == 1) {
 		print_message (\%Config, " [*] Backgrounding Pandora FMS Server process.\n", 1);
@@ -623,11 +597,24 @@ sub main() {
 	pandora_shutdown();
 }
 
+$SIG{'TERM'} = 'pandora_shutdown';
+$SIG{'INT'} = 'pandora_shutdown';
+	
+# Error handler needs to be reviewed, Enterprise not found errors are too nasty :(
+$SIG{__DIE__} = 'pandora_crash';
+	
+# Prevent alarm from bombing the main thread when called within a thread
+$SIG{'ALRM'} = 'IGNORE';
+	
+# Initialize
+pandora_init(\%Config, 'Pandora FMS Server');
+pandora_load_config (\%Config);
+	
 # Parse command line options.
-parse_options();
+parse_service_options(\%Config);
 
 # Run as a regular process.
-if (!defined($Config{'__win32_service__'})) {
+if (!defined($Config{'win32_service'})) {
 	main();
 }
 # Run as a Windows service.

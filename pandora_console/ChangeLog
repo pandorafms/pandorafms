@@ -1,5 +1,10 @@
 2014-05-28  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
+	* include/functions.php: Improved the Windows
+	compatibility of the function "get_snmpwalk".
+
+2014-05-28  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
 	* include/functions_snmp.php: Improved the security
 	on the function "snmp_generate_trap" by escaping the
 	command arguments.

@@ -162,12 +162,24 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 	else {
 		$snmpwalk_bin = $config['snmpwalk'];
 	}
+
+	switch (PHP_OS) {
+		case "WIN32":
+		case "WINNT":
+		case "Windows":
+			$error_redir_dir = 'NUL';
+			break;
+		default:
+			$error_redir_dir = '/dev/null';
+			break;
+	}
+
 	$oid_tree = array('__LEAVES__' => array());
 	if ($version == "3") {
-		exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2>/dev/null', $output, $rc);
+		exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
 	}
 	else {
-		exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2>/dev/null', $output, $rc);
+		exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redirection, $output, $rc);
 	}
 	//if ($rc != 0) {
 	//	return __('No data');
@@ -264,11 +276,23 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
 	else {
 		$snmpget_bin = $config['snmpget'];
 	}
+
+	switch (PHP_OS) {
+		case "WIN32":
+		case "WINNT":
+		case "Windows":
+			$error_redir_dir = 'NUL';
+			break;
+		default:
+			$error_redir_dir = '/dev/null';
+			break;
+	}
+
 	if ($version == "3") {
-		exec ($snmpget_bin  . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($target_oid) . ' 2>/dev/null', $output, $rc);
+		exec ($snmpget_bin  . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($target_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
 	}
 	else {
-		exec ($snmpget_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -On -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($target_oid) . ' 2>/dev/null', $output, $rc);
+		exec ($snmpget_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -On -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($target_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
 	}
 	
 	if ($rc != 0) {

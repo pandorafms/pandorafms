@@ -25,7 +25,8 @@
  * @param string Snmp especific OID.
  */
 function snmp_generate_trap($snmp_host_address, $snmp_community, $snmp_oid, $snmp_agent, $snmp_data, $snmp_type) {
-	$command = "snmptrap -v 1 -c $snmp_community $snmp_host_address $snmp_oid $snmp_agent $snmp_type $snmp_data 0 2>&1";
+	$command = "snmptrap -v 1 -c " . escapeshellarg($snmp_community) . " " . escapeshellarg($snmp_host_address) . " " . escapeshellarg($snmp_oid) . " "
+			. escapeshellarg($snmp_agent) . " " . escapeshellarg($snmp_type) . " " . escapeshellarg($snmp_data) . " 0 2>&1";
 	
 	$output = null;
 	exec($command, $output, $return);

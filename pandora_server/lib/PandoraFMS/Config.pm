@@ -63,6 +63,7 @@ sub help_screen {
 	print "	-D        :  Daemon mode (runs in background)\n";
 	print "	-P <file> :  Store PID to file.\n";
 	print "	-q        :  Quiet startup \n";
+	print "	-S <install|uninstall|run>:  Manage the win32 service.\n";
 	print "	-h        :  This screen. Shows a little help screen \n";
 	print " \n";
 	exit;
@@ -114,6 +115,9 @@ sub pandora_init {
 		}
 		elsif ($parametro =~ m/-D\z/) {
 			$pa_config->{"daemon"}=1;
+		}
+		elsif ($parametro =~ m/^-S\z/i) {
+			$pa_config->{'win32_service'}= clean_blank($ARGV[$ax+1]);
 		}
 		else {
 			($pa_config->{"pandora_path"} = $parametro);

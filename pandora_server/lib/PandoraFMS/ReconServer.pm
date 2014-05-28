@@ -495,7 +495,16 @@ sub exec_recon_script ($$$) {
 	
 	# Add module macros as parameter
 	if(ref($decoded_macros) eq "HASH") {
+		# Convert the hash to a sorted array
+		my @sorted_macros;
 		while (my ($i, $m) = each (%{$decoded_macros})) {
+			$sorted_macros[$i] = $m;
+		}
+
+		# Remove the 0 position		
+		shift @sorted_macros;
+
+		foreach my $m (@sorted_macros) {
 			$macros_parameters = $macros_parameters . ' "' . $m->{"value"} . '"';
 		}
 	}

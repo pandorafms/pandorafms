@@ -313,6 +313,7 @@ function mainAgentsModules() {
 	echo "
 		<style type='text/css'>
 			.rotate_text_module {
+				-ms-transform: rotate(270deg);
 				-webkit-transform: rotate(270deg);
 				-moz-transform: rotate(270deg);
 				-o-transform: rotate(270deg);

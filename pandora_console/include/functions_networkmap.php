@@ -358,7 +358,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			}
 		}
 	}
-
+	
 	// Drop the modules without a partner if l2_network is true
 	// and the snmp interfaces token is false
 	if ($l2_network) {
@@ -905,7 +905,8 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	$status = agents_get_status_from_counts($agent);
 	
 	if (defined('METACONSOLE')) {
-		$server_data = db_get_row('tmetaconsole_setup', 'id', $agent['id_server']);
+		$server_data = db_get_row('tmetaconsole_setup', 'id',
+			$agent['id_server']);
 	}
 	
 	if (empty($server_data)) {

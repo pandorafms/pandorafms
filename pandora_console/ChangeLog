@@ -1,3 +1,10 @@
+2014-05-29  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_networkmap.php: improved the source code style.
+	
+	* extensions/agents_modules.php: fixed the css for the
+	m$-internet exploter 11. Please Bill Gates travels to Leon.
+
 2014-05-29  Sergio Martin <sergio.martin@artica.es>
 
 	* mobile/index.php: Disable the mobile console when

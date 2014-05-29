@@ -54,7 +54,7 @@ $zoom_default = file($config['homedir'] . '/images/zoom_default.svg');
 
 //html_debug_print($graph);
 echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.v3.js" charset="utf-8"></script>';
-echo '<div id="dinamic_networkmap"></div>';
+echo '<div id="dinamic_networkmap" style="overflow: hidden;"></div>';
 ?>
 <style type="text/css">
 	#tooltip_networkmap {

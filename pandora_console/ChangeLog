@@ -1,3 +1,9 @@
+2014-05-29  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/graphs/pandora.d3.js, include/graphs/functions_d3.php,
+	operation/agentes/networkmap.dinamic.php: fixed the css for the
+	m$-internet exploter 11. Please Bill Gates travels to Leon.
+
 2014-05-29  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_config.php: Fixed the permission

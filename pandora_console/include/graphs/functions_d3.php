@@ -60,7 +60,7 @@ function d3_tree_map_graph ($data, $width = 700, $height = 700, $return = false)
 	if (is_array($data))
 		$data = json_encode($data);
 	
-	$output = "<div id=\"tree_map\"></div>";
+	$output = "<div id=\"tree_map\" style='overflow: hidden;'></div>";
 	$output .= include_javascript_d3(true);
 	$output .= "<style type=\"text/css\">
 					.cell>rect {

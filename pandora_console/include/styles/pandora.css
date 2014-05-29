@@ -66,6 +66,11 @@ input {
 	padding: 2px 3px 4px 3px;
 	vertical-align: middle;
 }
+
+input[type='checkbox'] {
+	display: inline !important;
+}
+
 select {
 	padding: 2px 3px 3px 3px;
 	vertical-align: middle;

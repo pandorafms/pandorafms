@@ -58,6 +58,20 @@ if ($action != "ajax") {
 	}
 }
 
+// Disable mobile console if ALC enterprise is enabled
+if ($system->getConfig('enterprise_installed') == 1 && $system->getConfig('acl_enterprise') == 1) {
+		$ui = Ui::getInstance();
+		$system = System::getInstance();		
+		$ui->createPage();
+		$ui->createHeader(__('Mobile console disabled'));
+		$ui->showFooter(false);
+		$ui->beginContent();
+		$ui->contentAddHtml(ui_print_info_message(array('title' => '', 'message' => __('Mobile console is not available with ACL enterprise enabled. Please contact with the administrator.'), 'no_close' => true, 'force_style' => 'margin: 0 auto;'), '', true));
+		$ui->endContent();
+		$ui->showPage();
+		return;
+}
+
 switch ($action) {
 	case 'ajax':
 		$parameter1 = $system->getRequest('parameter1', false);

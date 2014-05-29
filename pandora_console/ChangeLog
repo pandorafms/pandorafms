@@ -1,3 +1,8 @@
+2014-05-29  Sergio Martin <sergio.martin@artica.es>
+
+	* mobile/index.php: Disable the mobile console when
+	ACL Enterprise is enabled
+
 2014-05-28  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions.php: Improved the Windows

@@ -1,3 +1,9 @@
+2014-05-29  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_config.php: Fixed the permission
+	checks of the remote config directories on the function
+	"config_check".
+
 2014-05-29  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/styles/pandora.css: fixed the css for the

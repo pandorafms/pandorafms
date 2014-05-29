@@ -1198,7 +1198,7 @@ function config_check () {
 	// Get remote file dir.
 	$remote_config = db_get_value_filter('value',
 		'tconfig', array('token' => 'remote_config'));
-	
+	$remote_config = io_safe_output($remote_config);
 	
 	if (enterprise_installed()) {
 		if (!is_readable ($remote_config)) {

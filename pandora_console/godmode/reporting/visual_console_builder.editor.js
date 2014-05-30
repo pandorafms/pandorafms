@@ -57,15 +57,17 @@ function visual_map_main() {
 	$("input[name='radio_choice']").on('change', function() {
 		var radio_value = $("input[name='radio_choice']:checked").val();
 		
-		if (radio_value == "module_graph") {
-			$("#custom_graph_row").css('display', 'none');
-			$("#agent_row").css('display', '');
-			$("#module_row").css('display', '');
-		}
-		else {
-			$("#custom_graph_row").css('display', '');
-			$("#agent_row").css('display', 'none');
-			$("#module_row").css('display', 'none');
+		if ((creationItem == 'module_graph') || (selectedItem == 'module_graph')) {
+			if (radio_value == "module_graph") {
+				$("#custom_graph_row").css('display', 'none');
+				$("#agent_row").css('display', '');
+				$("#module_row").css('display', '');
+			}
+			else {
+				$("#custom_graph_row").css('display', '');
+				$("#agent_row").css('display', 'none');
+				$("#module_row").css('display', 'none');
+			}
 		}
 	});
 }

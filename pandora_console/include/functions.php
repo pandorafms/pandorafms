@@ -2029,4 +2029,70 @@ function translate_file_upload_status ($status_code) {
 	return $message;
 }
 
+/**
+ *  Get the arguments given in a function returning default value if not defined
+ *  @param string name of the argument
+ *  @param mixed array with arguments
+ *  @param string defualt value for this argument
+ * 
+ *  @return string value for the argument
+ */
+function get_argument ($argument, $arguments, $default) {
+	if (isset($arguments[$argument])) {
+		return $arguments[$argument];
+	}
+	else {
+		return $default;
+	}
+}
+
+/**
+ *  Get the arguments given in a function returning default value if not defined
+ *  @param mixed arguments
+ * 			- id_user: user who can see the news
+ *  		- modal: true if want to get modal news. false to return not modal news
+ * 			- limit: number of max news returned
+ *  @return mixed list of news
+ */
+function get_news($arguments) {
+	global $config;
+	
+	$id_user = get_argument ('id_user', $arguments, $config['id_user']);
+	$modal = get_argument ('modal', $arguments, false);
+	$limit = get_argument ('limit', $arguments, 99999999);
+	
+	$id_group = array_keys(users_get_groups($id_user, 'AR', true));
+	$id_group = implode(',',$id_group);
+	$current_datetime = date('Y-m-d H:i:s', time());
+	$modal = (int) $modal;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = sprintf("SELECT subject,timestamp,text,author
+				FROM tnews WHERE id_group IN (%s) AND 
+								modal = %s AND 
+								(expire = 0 OR (expire = 1 AND expire_timestamp > '%s'))
+				ORDER BY timestamp DESC
+				LIMIT %s", $id_group, $modal, $current_datetime, $limit);
+			break;
+		case "oracle":
+			$sql = sprintf("SELECT subject,timestamp,text,author
+				FROM tnews
+				WHERE rownum <= %limit AND id_group IN (%s) AND 
+								modal = %s AND 
+								(expire = 0 OR (expire = 1 AND expire_timestamp > '%s'))
+				ORDER BY timestamp DESC", $limit, $id_group, $modal, $current_datetime);
+			break;
+	}
+	
+	$news = db_get_all_rows_sql ($sql);
+	
+	if (empty($news)) {
+		$news = array();
+	}
+	
+	return $news;
+}
+
 ?>

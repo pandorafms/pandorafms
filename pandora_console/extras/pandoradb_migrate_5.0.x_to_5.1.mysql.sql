@@ -209,3 +209,12 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `min_ff_event_normal` int(4) unsigne
 ALTER TABLE `tnetwork_component` ADD COLUMN `min_ff_event_warning` int(4) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `min_ff_event_critical` int(4) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `each_ff` tinyint(1) unsigned default '0';
+
+/* 2014/05/30 */
+-- ---------------------------------------------------------------------
+-- Table `tnews`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tnews` ADD COLUMN `id_group` int(10) NOT NULL default 0;
+ALTER TABLE `tnews` ADD COLUMN `modal` tinyint(1) DEFAULT 0;
+ALTER TABLE `tnews` ADD COLUMN `expire` tinyint(1) DEFAULT 0;
+ALTER TABLE `tnews` ADD COLUMN `expire_timestamp` DATETIME  NOT NULL DEFAULT 0;

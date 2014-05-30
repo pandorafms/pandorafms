@@ -1053,7 +1053,11 @@ CREATE TABLE tnews (
 	author VARCHAR2(255) DEFAULT '',
 	subject VARCHAR2(255) DEFAULT '',
 	text CLOB NOT NULL,
-	timestamp TIMESTAMP default NULL
+	timestamp TIMESTAMP default NULL,
+	id_group NUMBER(10, 0) default 0 NOT NULL,
+	modal NUMBER(5, 0) default 0 NOT NULL,
+	expire NUMBER(5, 0) default 0 NOT NULL,
+	expire_timestamp TIMESTAMP default NULL
 );
 CREATE SEQUENCE tnews_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnews_inc BEFORE INSERT ON tnews REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnews_s.nextval INTO :NEW.ID_NEWS FROM dual; END tnews_inc;;

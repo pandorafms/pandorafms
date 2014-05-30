@@ -931,7 +931,11 @@ CREATE TABLE "tnews" (
 	"author" varchar(255)  NOT NULL DEFAULT '',
 	"subject" varchar(255)  NOT NULL DEFAULT '',
 	"text" TEXT NOT NULL,
-	"timestamp" TIMESTAMP without time zone default '1970-01-01 00:00:00'
+	"timestamp" TIMESTAMP without time zone default '1970-01-01 00:00:00',
+	"id_group" INTEGER NOT NULL default 0,
+	"modal" SMALLINT DEFAULT 0,
+	"expire" SMALLINT DEFAULT 0,
+	"expire_timestamp"  TIMESTAMP without time zone default '1970-01-01 00:00:00'
 );
 
 -- -----------------------------------------------------

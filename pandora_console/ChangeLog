@@ -1,3 +1,17 @@
+2014-05-30  Sergio Martin <sergio.martin@artica.es>
+
+	* general/logon_ok.php
+	godmode/setup/news.php
+	include/functions.php
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	index.php
+	extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql: Added modal window mode
+	to the pandora news for ticket: #821
+
 2014-05-29  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/graphs/pandora.d3.js, include/graphs/functions_d3.php,

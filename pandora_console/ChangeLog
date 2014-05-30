@@ -1,5 +1,11 @@
 2014-05-30  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/events/sound_events.php: fixed the break image.
+	
+	Incident: #844
+
+2014-05-30  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* extensions/files_repo/files_repo_list.php: fixed PHP warnings.
 	
 	Incident: #847

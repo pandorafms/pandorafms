@@ -343,9 +343,8 @@ else {
 	$rows = db_get_all_rows_in_table('trecon_script');
 	
 	if ($rows !== false) {
-		echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox">';
+		echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox alternate">';
 		echo "<th>" . __('Name') . "</th>";
-		echo "<th>" . __('Command') . "</th>";
 		echo "<th>" . __('Description') . "</th>";
 		echo "<th>" . __('Delete') . "</th>";
 		$color = 0;
@@ -359,14 +358,15 @@ else {
 				$color = 1;
 			}
 			echo "<tr>";
-			echo "<td class='$tdcolor'>";
+			echo "<td class='$tdcolor' style='min-width: 100px;'>";
 			echo "<b><a href='index.php?sec=gservers&sec2=godmode/servers/recon_script&view=".$row["id_recon_script"]."'>";
 			echo $row["name"];
 			echo "</a></b></td>";
 			echo "</td><td class='$tdcolor'>";
-			echo $row["script"];
-			echo "</td><td class='$tdcolor'>";
-			echo $row["description"];
+			$desc = io_safe_output($row["description"]);
+			$desc = str_replace("\n", "<br>", $desc);
+			echo $desc . '<br><br>';
+			echo '<b>' . __('Command') . ': </b><i>' . $row["script"] . '</i>';
 			echo "</td><td align='center' class='$tdcolor'>";
 			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/recon_script&kill_reconscript=".$row["id_recon_script"]."'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
 			echo "</td></tr>";

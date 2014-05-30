@@ -109,6 +109,11 @@ if ($add) {
 }
 
 $groups = users_get_groups ();
+$own_info = get_user_info($config['id_user']);
+if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
+	$return_all_group = false;
+else   
+	$return_all_group = true;
 
 // Avoid php warning
 if (empty($alert_templates)) {
@@ -129,8 +134,8 @@ $table->size[3] = '35%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
-	false, '', '', true);
+$table->data[0][1] = html_print_select_groups(false, "AW", $return_all_group,
+	'id_group', $id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
@@ -197,6 +202,7 @@ $(document).ready (function () {
 	
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
+		privilege: "AW",
 		recursion: function() {return recursion},
 		filter_agents_json: filter_agents_json,
 		callbackPost: function () {

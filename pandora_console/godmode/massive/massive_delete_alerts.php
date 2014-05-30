@@ -181,6 +181,11 @@ if ($delete) {
 }
 
 $groups = users_get_groups ();
+$own_info = get_user_info($config['id_user']);
+if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
+	$return_all_group = false;
+else   
+	$return_all_group = true;
 
 $table->id = 'delete_table';
 $table->width = '98%';
@@ -204,7 +209,7 @@ $table->data[0][2] = '';
 $table->data[0][3] = '';
 
 $table->data[1][0] = __('Group');
-$table->data[1][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
+$table->data[1][1] = html_print_select_groups(false, "AW", $return_all_group, 'id_group', $id_group,
 	'', '', '', true, false, true, '', $id_alert_template == 0);
 $table->data[1][2] = __('Group recursion');
 $table->data[1][3] = html_print_checkbox ("recursion", 1, false, true, false);

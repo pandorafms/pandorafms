@@ -1,3 +1,9 @@
+2014-05-30  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/servers/manage_recontask_form.php: Changed the recon task
+	interval control to be more user friendly improving usability 
+	for manual intervals choices. Ticket #839
+
 2014-05-30 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/javascript/jquery.pandora.controls.js,

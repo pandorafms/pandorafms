@@ -197,8 +197,15 @@ $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true
 
 
 $table->data[4][0] = "<b>".__('Interval');
-$table->data[4][1] = html_print_extended_select_for_time ('interval' , $interval, '', '', '0', false, true, false, false);
+$table->data[4][0] .= ui_print_help_tip (__('Manual interval means that it will be executed only On-demand'), true);
+
+$values = array (0 => __('Defined'), 1 => __('Manual'));
+$table->data[4][1] = html_print_select ($values, "interval_manual_defined", (int)($interval == 0), '','','',true);
+
+$table->data[4][1] .= '<span id="interval_manual_container">';
+$table->data[4][1] .= html_print_extended_select_for_time ('interval' , $interval, '', '', '0', false, true, false, false);
 $table->data[4][1] .= ui_print_help_tip (__('The minimum recomended interval for Recon Task is 5 minutes'), true);
+$table->data[4][1] .= '</span>';
 
 
 // Module template
@@ -343,6 +350,23 @@ $(document).ready (function () {
 		}
 	});
 });
+
+$("#interval_manual_defined").change(function() {
+	if ($("#interval_manual_defined").val() == 1) {
+		$('#interval_manual_container').css('visibility', 'hidden');
+		$('#text-interval_text').val('0');
+		$('#hidden-interval').val('0');
+	}
+	else {
+		$('#interval_manual_container').css('visibility', '');
+		$('#text-interval_text').val('10');
+		$('#hidden-interval').val('600');
+		$('#interval_units').val('60');
+	}
+});
+	
+$("#interval_manual_defined").trigger('change');
+
 
 function get_explanation_recon_script(id) {
 	jQuery.post ("ajax.php",

@@ -28,18 +28,23 @@ $filter['order'] = array('field' => 'id', 'order' => 'DESC');
 $files = files_repo_get_files($filter);
 
 if (!empty($files)) {
-
+	
 	echo "<br>";
-
+	
+	if (!isset($manage)) {
+		$manage = false;
+	}
+	
 	// Pagination
 	if ($manage) {
 		$url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo");
-	} else {
+	}
+	else {
 		$url = ui_get_full_url("index.php?sec=extensions&sec2=extensions/files_repo");
 	}
 	$total_files = files_repo_get_files(false, true);
 	ui_pagination($total_files, $url, $offset);
-
+	
 	$table = new stdClass();
 	$table->width = '98%';
 	$table->style = array();
@@ -54,21 +59,21 @@ if (!empty($files)) {
 	$table->head[3] = __("Last modification");
 	$table->head[4] = "";
 	$table->data = array();
-
+	
 	foreach ($files as $file_id => $file) {
 		$data = array();
-
+		
 		// Prepare the filename for the get_file.php script
 		$relative_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $file['location']);
 		$file_path = base64_encode($relative_path);
 		$hash = md5($relative_path . $config['dbpass']);
 		$url = ui_get_full_url("include/get_file.php?file=$file_path&hash=$hash");
-
+		
 		$data[0] = "<a href=\"$url\" target=\"_blank\">" . $file['name'] . "</a>"; // Name
 		$data[1] = ui_print_truncate_text($file['description'], 'description', true, true); // Description
 		$data[2] = ui_format_filesize($file['size']); // Size
 		$data[3] = date('F j, Y - H:m', $file['mtime']); // Last modification
-
+		
 		// Public URL
 		$data[4] = "";
 		if (!empty($file['hash'])) {
@@ -79,18 +84,18 @@ if (!empty($files)) {
 			$data[4] .= html_print_image('images/world.png', true, array('title' => __('Public link'))); // Public link image
 			$data[4] .= "</a> ";
 		}
-
+		
 		$data[4] .= "<a href=\"$url\" target=\"_blank\">";
 		$data[4] .= html_print_image('images/download.png', true, array('title' => __('Download'))); // Download image
 		$data[4] .= "</a>";
-
+		
 		if ($manage) {
-
+			
 			$config_url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo&file_id=$file_id");
 			$data[4] .= " <a href=\"$config_url\">";
 			$data[4] .= html_print_image('images/config.png', true, array('title' => __('Edit'))); // Edit image
 			$data[4] .= "</a>";
-
+			
 			$delete_url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo&delete=1&file_id=$file_id");
 			$data[4] .= " <a href=\"$delete_url\" onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\">";
 			$data[4] .= html_print_image('images/cross.png', true, array('title' => __('Delete'))); // Delete image
@@ -99,8 +104,9 @@ if (!empty($files)) {
 		$table->data[] = $data;
 	}
 	html_print_table($table);
-
-} else {
+	
+}
+else {
 	ui_print_info_message(__('No items'));
 }
 

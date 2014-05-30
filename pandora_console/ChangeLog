@@ -1,3 +1,9 @@
+2014-05-30  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/files_repo/files_repo_list.php: fixed PHP warnings.
+	
+	Incident: #847
+
 2014-05-30  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/servers/recon_script.php: Improve layout of recon scripts

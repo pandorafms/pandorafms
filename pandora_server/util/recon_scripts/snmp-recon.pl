@@ -877,7 +877,7 @@ update_recon_task($DBH, $TASK_ID, 15);
 
 # Find devices.
 message("[2/6] Searching for switches and end hosts...");
-if ($ROUTER ne '0.0.0.0') {
+if (defined($ROUTER) && $ROUTER ne '') {
 	foreach my $router (keys(%VISITED_ROUTERS)) {
 		arp_cache_discovery($router);
 	}

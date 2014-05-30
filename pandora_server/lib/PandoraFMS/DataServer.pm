@@ -296,13 +296,17 @@ sub process_xml_data ($$$$$) {
 		
 		# Get OS, group and description
 		my $os = pandora_get_os ($dbh, $data->{'os_name'});
-		my $group_id = -1;
-		$group_id = get_group_id ($dbh, $data->{'group'}) if (defined ($data->{'group'}));
-		if ($group_id == -1) {
-			$group_id = $pa_config->{'autocreate_group'};
-			if (! defined (get_group_name ($dbh, $group_id))) {
-				logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token)", 3);
-				return;
+		my $group_id = $pa_config->{'autocreate_group'};
+		if (! defined (get_group_name ($dbh, $group_id))) {
+			if (defined ($data->{'group'}) && $data->{'group'} ne '') {
+				$group_id = get_group_id ($dbh, $data->{'group'});
+				if (! defined (get_group_name ($dbh, $group_id))) {
+					logger($pa_config, "Group " . $data->{'group'} . " does not exist.", 3);
+					return;
+				}
+			} else {
+					logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token).", 3);
+					return;
 			}
 		}
 

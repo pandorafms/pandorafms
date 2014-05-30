@@ -1,6 +1,6 @@
 ' df_all.vbs
 ' Returns free space (%) for all drives
-' Pandora FMS Plugin, (c) 2010 Sancho Lerena
+' Pandora FMS Plugin, (c) 2014 Sancho Lerena
 ' ------------------------------------------
 
 Option Explicit
@@ -35,6 +35,11 @@ For Each objItem in colItems
 				Wscript.StdOut.WriteLine "    <data><![CDATA[" & 0 & "]]></data>"
 				else
 				Wscript.StdOut.WriteLine "    <data><![CDATA[" & Percent & "]]></data>"
+				Wscript.StdOut.WriteLine "<unit>%</unit>"
+				Wscript.StdOut.WriteLine "<min_warning>5</min_warning>"
+				Wscript.StdOut.WriteLine "<max_warning>10</max_warning>"
+				Wscript.StdOut.WriteLine "<min_critical>0</min_critical>"
+				Wscript.StdOut.WriteLine "<max_critical>5</max_critical>"
 				Wscript.StdOut.WriteLine "</module>"
 				Wscript.StdOut.flush
 				End If

@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+# Pandora FMS Plugin to get memory information on Linux
+# (c) 2014 Sancho Lerena <slerena@artica.es
+
+use POSIX;
+
+my $TOTAL=`vmstat -s | grep "total memory" | awk  '{ print $1 } '`;
+my $FREE=`vmstat -s | grep "free memory" | awk  '{ print $1 } '`;
+my $FREEP=($FREE/$TOTAL)*100; 
+my $STOTAL=`vmstat -s | grep "total swap" | awk  '{ print $1 } '`;
+my $SUSED=`vmstat -s | grep "free swap" | awk  '{ print $1 } '`;
+my $SFREE=($SUSED/$STOTAL)*100;
+
+$SFREE = floor($SFREE); 
+$FREEP = floor($FREEP);
+
+print "<module>\n";
+print "<name>FreeMemory</name>\n";
+print "<type>generic_data</type>\n";
+print "<description>Free memory %</description>\n";
+print "<unit>%</unit>\n";
+print "<min_critical>0</min_critical>\n";
+print "<max_critical>5</max_critical>\n";
+print "<data>$FREEP</data>\n";
+print "</module>\n";
+
+print "<module>\n";
+print "<name>FreeSwap</name>\n";
+print "<type>generic_data</type>\n";
+print "<description>Free Swapy %</description>\n";
+print "<unit>%</unit>\n";
+print "<min_critical>0</min_critical>\n";
+print "<max_critical>10</max_critical>\n";
+print "<data>$SFREE</data>\n";
+print "</module>\n";

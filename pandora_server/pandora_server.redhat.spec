@@ -26,7 +26,7 @@ Requires:           coreutils
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-XML-Simple perl-XML-Twig net-snmp-utils
 Requires:           perl-NetAddr-IP net-snmp net-tools
-Requires:           perl-IO-Socket-INET6 perl-Socket6
+Requires:           perl-IO-Socket-INET6 perl-Socket6 perl-Net-Telnet
 Requires:           nmap wmic sudo perl-JSON
 
 %description

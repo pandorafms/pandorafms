@@ -58,7 +58,11 @@ config_check();
 				$table->cellspacing = 0;
 				$table->head = array ();
 				$table->data = array ();
-				$table->style[0] = $table->style[1] = $table->style[3] = $table->style[4] = $table->style[5] = $table->style[6] = $table->style[8] = $table->style[9] = 'width: 22px; text-align:center; height: 22px; padding-right: 9px;';
+				$table->style[0] = $table->style[1] = $table->style[3] =
+					$table->style[4] = $table->style[5] =
+					$table->style[6] = $table->style[8] =
+					$table->style[9] = $table->style['qr'] =
+					'width: 22px; text-align:center; height: 22px; padding-right: 9px;';
 				$table->style[7] = 'width: 20px; padding-right: 9px;';
 				$table->style['searchbar'] = 'width: 180px; min-width: 180px;';
 				$table->style[11] = 'padding-left: 10px; padding-right: 5px;width: 16px;';
@@ -87,6 +91,36 @@ config_check();
 				
 				$servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				$servers_link_close = '</a>';
+				
+				$show_qr_code_header = 'display: none;';
+				if (isset($config['show_qr_code_header']))
+					if ($config['show_qr_code_header'])
+						$show_qr_code_header = '';
+				
+				$table->data[0]['qr'] =
+					'<div style="' . $show_qr_code_header . '" id="qr_code_container" style="">' .
+					'<a href="javascript: show_dialog_qrcode();">' .
+					html_print_image(
+						"images/qrcode_icon.jpg",
+						true,
+						array("alt" => __('QR Code of the page'),
+							'title' => __('QR Code of the page'))) .
+					'</a>' .
+					'</div>';
+				
+				echo "<div style='display: none;' id='qrcode_container' title='" . __('QR code of the page') . "'>";
+				echo "<div id='qrcode_container_image'></div>";
+				echo "</div>";
+				?>
+				<script type='text/javascript'>
+					$(document).ready(function() {
+						$( "#qrcode_container" ).dialog({
+							autoOpen: false,
+							modal: true
+						});
+					});
+				</script>
+				<?php
 				
 				$table->data[0][0] = $servers_link_open . $servers_check_img . $servers_link_close;
 				
@@ -155,6 +189,7 @@ config_check();
 				$table->data[0][1] = $autorefresh_link_open_img . $autorefresh_img . $autorefresh_link_close;
 				$table->data[0][2] = $autorefresh_link_open_txt . $autorefresh_txt . $autorefresh_link_close . $autorefresh_additional;
 				//======================================================
+				
 				
 				
 				

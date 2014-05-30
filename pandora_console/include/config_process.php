@@ -190,7 +190,7 @@ $config['extensions'] = extensions_get_extensions ();
 // NOTICE: This variable (config[enterprise_installed] is used in several
 // sections. Faking or forcing to 1 will make pandora fails.
 
-if (file_exists ($config["homedir"].'/'.ENTERPRISE_DIR.'/index.php')) {
+if (file_exists ($config["homedir"] . '/' . ENTERPRISE_DIR . '/index.php')) {
 	$config['enterprise_installed'] = 1;
 	enterprise_include_once ('include/functions_enterprise.php');
 }
@@ -201,10 +201,10 @@ else {
 // Function include_graphs_dependencies() it's called in the code below
 require_once("include_graph_dependencies.php");
 
-include_graphs_dependencies($config['homedir'].'/');
+include_graphs_dependencies($config['homedir'] . '/');
 
 // Updates autorefresh time
-if (isset($_POST['vc_refr'])){
+if (isset($_POST['vc_refr'])) {
 	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
 }
 

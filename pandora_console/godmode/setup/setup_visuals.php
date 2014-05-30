@@ -373,6 +373,17 @@ $table->data[$row][1] = html_print_checkbox('paginate_module', 1, $config['pagin
 
 $row++;
 
+$table->data[$row][0] = __('Show QR Code icon in the header');
+$table->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('show_qr_code_header', 1, '', $config["show_qr_code_header"], true) .
+	'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('show_qr_code_header', 0, '', $config["show_qr_code_header"], true);
+
+$row++;
+
+
+
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
 html_print_table ($table);

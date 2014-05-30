@@ -803,3 +803,108 @@ function hidded_sidebar(position, menuW, menuH, icon_width, top_dist, autotop, r
 function get_php_value(value) {
 	return $.parseJSON($('#php_to_js_value_' + value).html());
 }
+
+function paint_qrcode(text, where, width, height) {
+	if (typeof(text) == 'undefined') {
+		text = window.location.href;
+	}
+	else {
+		//null value
+		if (isEmptyObject(text)) {
+			text = window.location.href;
+		}
+	}
+	
+	if (typeof(where) == 'undefined') {
+		where = $("#qrcode_container_image").get(0);
+	}
+	else if (typeof(where) == 'string') {
+		where = $(where).get(0);
+	}
+	
+	if (typeof(where) == 'undefined') {
+		where = $("#qrcode_container_image").get(0);
+	}
+	else if (typeof(where) == 'string') {
+		where = $(where).get(0);
+	}
+	
+	if (typeof(width) == 'undefined') {
+		width = 256;
+	}
+	else {
+		if (typeof(width) == 'object')
+			//null value
+			if (isEmptyObject(width)) {
+				width = 256;
+			}
+	}
+	
+	if (typeof(height) == 'undefined') {
+		height = 256;
+	}
+	else {
+		if (typeof(height) == 'object')
+			//null value
+			if (isEmptyObject(height)) {
+				height = 256;
+			}
+	}
+	
+	$(where).empty();
+	
+	var qrcode = new QRCode(where, {
+		text: text,
+		width: width,
+		height: height,
+		colorDark : "#3B6941",
+		colorLight : "#ffffff",
+		correctLevel : QRCode.CorrectLevel.M
+	});
+}
+
+function show_dialog_qrcode(dialog, text, where, width, height) {
+	if (typeof(dialog) == 'undefined') {
+		dialog = "#qrcode_container";
+	}
+	else {
+		if (typeof(dialog) == 'object')
+			//null value
+			if (isEmptyObject(dialog)) {
+				dialog = "#qrcode_container";
+			}
+	}
+	
+	if (typeof(where) == 'undefined') {
+		where = $("#qrcode_container_image").get(0);
+	}
+	else if (typeof(where) == 'string') {
+		where = $(where).get(0);
+	}
+	
+	if (typeof(width) == 'undefined') {
+		width = 256;
+	}
+	else {
+		if (typeof(width) == 'object')
+			//null value
+			if (isEmptyObject(width)) {
+				width = 256;
+			}
+	}
+	
+	if (typeof(height) == 'undefined') {
+		height = 256;
+	}
+	else {
+		if (typeof(height) == 'object')
+			//null value
+			if (isEmptyObject(height)) {
+				height = 256;
+			}
+	}
+	
+	paint_qrcode(text, where, 256, 256)
+	
+	$(dialog).dialog( "open" );
+}

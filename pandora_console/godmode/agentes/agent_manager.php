@@ -30,13 +30,13 @@ if (is_ajax ()) {
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
-				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%' . $string . '%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
 				break;
 			case "oracle":
-				$filter[] = '(upper(nombre) LIKE upper("%'.$string.'%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
+				$filter[] = '(upper(nombre) LIKE upper("%' . $string . '%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
 				break;
 		}
-		$filter[] = 'id_agente != '.$id_agent;
+		$filter[] = 'id_agente != ' . $id_agent;
 		
 		$agents = agents_get_agents ($filter, array ('id_agente', 'nombre', 'direccion'));
 		if ($agents === false)
@@ -147,13 +147,17 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
+$table->align[2] = 'center';
+
 $table->data[0][0] = __('Agent name') .
 	ui_print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
 $table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 50, 100,true);
 
+$table->data[0][2] = __('QR Code Agent view');
+
 if ($id_agente) {
 	
-	$table->data[0][1] .= "&nbsp;<b>".__("ID")."</b>&nbsp; $id_agente &nbsp;";
+	$table->data[0][1] .= "&nbsp;<b>" . __("ID") . "</b>&nbsp; $id_agente &nbsp;";
 	$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
 	$table->data[0][1] .= html_print_image ("images/zoom.png", true, array ("border" => 0, "title" => __('Agent detail')));
 	$table->data[0][1] .= '</a>';
@@ -202,6 +206,18 @@ if ($id_agente) {
 	$table->data[1][1] .= html_print_select ($ip_all, "address_list", $direccion_agente, '', '', 0, true);
 	$table->data[1][1] .= "&nbsp;". html_print_checkbox ("delete_ip", 1, false, true).__('Delete selected');
 }
+
+?>
+<style type="text/css">
+	#qr_code_agent_view img {
+		display: inline !important;
+	}
+</style>
+<?php
+$table->rowspan[1][2] = 7;
+$table->data[1][2] =
+	"<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"" .
+		ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente) . "\" );'></a>";
 
 $groups = users_get_groups ($config["id_user"], "AR",false);
 $agents = agents_get_group_agents (array_keys ($groups));
@@ -445,6 +461,8 @@ function changeIcons() {
 
 $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
+	
+	paint_qrcode("<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente);  ?>", "#qr_code_agent_view", 128, 128);
 });
 /* ]]> */
 </script>

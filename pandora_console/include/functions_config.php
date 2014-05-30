@@ -396,6 +396,8 @@ function config_update_config () {
 						$error_update[] = __('Block size for pagination');
 					if (!config_update_value ('round_corner', (bool) get_parameter ('round_corner')))
 						$error_update[] = __('Use round corners');
+					if (!config_update_value ('show_qr_code_header', (bool) get_parameter ('show_qr_code_header')))
+						$error_update[] = __('Show QR code header');
 					if (!config_update_value ('status_images_set', (string) get_parameter ('status_images_set')))
 						$error_update[] = __('Status icon set');
 					if (!config_update_value ('fontpath', (string) get_parameter ('fontpath')))
@@ -640,6 +642,10 @@ function config_process_config () {
 	
 	if (!isset ($config["round_corner"])) {
 		config_update_value ('round_corner', false);
+	}
+	
+	if (!isset ($config["show_qr_code_header"])) {
+		config_update_value ('show_qr_code_header', false);
 	}
 	
 	if (!isset ($config["agentaccess"])) {
@@ -1198,7 +1204,7 @@ function config_check () {
 	// Get remote file dir.
 	$remote_config = db_get_value_filter('value',
 		'tconfig', array('token' => 'remote_config'));
-	$remote_config = io_safe_output($remote_config);
+	
 	
 	if (enterprise_installed()) {
 		if (!is_readable ($remote_config)) {

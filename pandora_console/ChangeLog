@@ -1,3 +1,16 @@
+2014-05-30  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/agent_manager.php,
+	godmode/setup/setup_visuals.php, include/functions_config.php,
+	include/config_process.php, include/functions_ui.php,
+	include/javascript/qrcode.js, include/javascript/pandora.js,
+	operation/visual_console/public_console.php, images/qrcode_icon.jpg,
+	general/header.php: added the feature to show the QR code of the
+	pages for to make for example sticker for the fisical machines or
+	other things.
+	
+	Incident: #818
+
 2014-05-30  Sergio Martin <sergio.martin@artica.es>
 
 	* general/news_dialog.php: Missed file in last commit

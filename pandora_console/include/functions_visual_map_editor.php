@@ -56,7 +56,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'module_graph' => __('Graph'),
 				'simple_value' => __('Simple value'),
 				'label' => __('Label'),
-				'icon' => __('Icon'));
+				'icon' => __('Icon'),
+				'group_item' => __('Group'));
 			
 			if (enterprise_installed()) {
 				enterprise_visual_map_editor_add_title_palette($titles);
@@ -206,7 +207,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			else
 				$return_all_group = true;
 			$form_items['group_row'] = array();
-			$form_items['group_row']['items'] = array('group_item');
+			$form_items['group_row']['items'] = array('group_item', 'datos');
 			$form_items['group_row']['html'] = '<td align="left">' .
 					__('Group') .
 				'</td>

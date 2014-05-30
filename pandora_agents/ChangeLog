@@ -1,3 +1,17 @@
+2014-05-30  Sancho Lerena <slerena@artica.es>
+
+	* win32/bin/pandora_agent.conf: New default configuration file
+	Simplified modules, use of new plugins and same module names
+	for most monitors as linux agent
+	
+	* win32/bin/util/df_percent.vbs: Modified plugin for return
+	unit and predefined thresholds.
+	
+	* win32/bin/util/nettraffic.vbs,
+	win32/bin/util/software_installed.vbs: New agent plugins for
+	network usage and software installed inventory plugin, to fix
+	embedded agent inventory which doesnt report all packages.
+
 2014-05-21  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pc/plugins/pandora_df

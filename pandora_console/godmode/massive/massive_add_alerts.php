@@ -38,7 +38,8 @@ if (is_ajax ()) {
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		
-		$agents = agents_get_group_agents ($id_group, false, "", false, $recursion);
+		$agents = agents_get_group_agents ( array_keys (users_get_groups ($config["id_user"], "AW", false)),
+			false, "", false, $recursion);
 		
 		// Add keys prefix
 		if ($keys_prefix !== "") {
@@ -113,6 +114,11 @@ if ($add) {
 }
 
 $groups = users_get_groups ();
+$own_info = get_user_info($config['id_user']);
+if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
+	$return_all_group = false;
+else   
+	$return_all_group = true;
 
 $table->id = 'add_table';
 $table->width = '98%';
@@ -129,7 +135,7 @@ $table->size[3] = '40%';
 $table->data = array ();
 	
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', 0,
+$table->data[0][1] = html_print_select_groups(false, "AW", $return_all_group, 'id_group', 0,
 	'', 'Select', -1, true, false, true, '', false, 'width:180px;');
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
@@ -140,6 +146,7 @@ $table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
+
 $agents = agents_get_agents();
 $table->data[1][1] = html_print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', false, 'width:180px;');

@@ -109,6 +109,11 @@ switch ($action) {
 }
 
 $groups = users_get_groups ();
+$own_info = get_user_info($config['id_user']);
+if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
+	$return_all_group = false;
+else   
+	$return_all_group = true;
 
 $table->id = 'delete_table';
 $table->width = '98%';
@@ -128,7 +133,7 @@ $table->data[0][0] = '<form method="post" id="form_alerts" action="index.php?sec
 $table->data[0][0] .= html_print_input_hidden('id_alert_template_enabled', $id_alert_templates, true);
 
 $table->data[0][0] .= __('Group');
-$table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', '', true);
+$table->data[0][1] = html_print_select_groups(false, "AW", $return_all_group, 'id_group', $id_group, '', '', '', true);
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
@@ -136,7 +141,7 @@ $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image("images/spinner.png", true);
 $table->data[1][0] .= '</span>';
-$table->data[1][1] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
+$table->data[1][1] = html_print_select (agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false))),
 	'id_agents[]', 0, false, '', '', true, true);
 
 $table->data[2][0] = __('Alert template');
@@ -191,6 +196,7 @@ $(document).ready (function () {
 	
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
+		privilege: "AW",
 		recursion: function() {return recursion},
 		callbackPost: function () {
 			clear_alert_fields();

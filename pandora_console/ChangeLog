@@ -1,3 +1,16 @@
+2014-05-30 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/javascript/jquery.pandora.controls.js,
+	godmode/groups/group_list.php,
+	godmode/massive/massive_add_alerts.php,
+	godmode/massive/massive_add_action_alerts.php
+	godmode/massive/massive_delete_action_alerts.php,
+	godmode/massive/massive_delete_alerts.php,
+	godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_standby_alerts.php: Fixed bug that all
+	agents would be shown in the target for masssive operations, if
+	the user has an AW privilege for any agent (group).
+
 2014-05-30  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/agent_manager.php,

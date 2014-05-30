@@ -67,6 +67,7 @@ if (is_ajax ()) {
 		$disabled = (int) get_parameter ('disabled', 0);
 		$search = (string) get_parameter ('search', '');
 		$recursion = (int) get_parameter ('recursion', 0);
+		$privilege = (string) get_parameter ('privilege', '');
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		// Ids of agents to be include in the SQL clause as id_agent IN ()
@@ -104,10 +105,18 @@ if (is_ajax ()) {
 			$filter[$_sql_post] = '1';
 			
 		}
-		
-		$agents = agents_get_group_agents($id_group, $filter, "none",
-			false, $recursion);
-		
+
+		if ( $id_group == 0 && $privilege != '') {
+			//  if group ID doesn't matter and $privilege is specified (like 'AW'),
+			//  retruns all agents that current user has $privilege privilege for.
+			$agents = agents_get_group_agents(
+				array_keys (users_get_groups ($config["id_user"], $privilege, false)));
+		}
+		else {
+			$agents = agents_get_group_agents($id_group, $filter, "none",
+				false, $recursion);
+		}
+
 		// Add keys prefix
 		if ($keys_prefix !== "") {
 			foreach($agents as $k => $v) {

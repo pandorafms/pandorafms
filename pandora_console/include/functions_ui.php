@@ -1301,7 +1301,8 @@ function ui_process_page_head ($string, $bitfield) {
 		$config['css'] = array_merge (array (
 			"common" => "include/styles/common.css", 
 			"menu" => "include/styles/menu.css", 
-			$config['style'] => "include/styles/" . $config['style'] . ".css"), $config['css']);
+			$config['style'] => "include/styles/" . $config['style'] . ".css"),
+			$config['css']);
 	}
 	
 	// Add the jquery UI styles CSS
@@ -1347,6 +1348,9 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	//Load webchat javascript library
 	$config['js']['webchat'] = "include/javascript/webchat.js";
+	
+	//Load qrcode library
+	$config['js']['qrcode'] = "include/javascript/qrcode.js";
 	
 	//Load other javascript
 	//We can't load empty

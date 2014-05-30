@@ -90,6 +90,9 @@ $table->data[0][0] = __('Autorefresh time');
 $table->data[0][1] = html_print_select ($values, 'refr', $refr, '', 'N/A', 0, true, false, false);
 $table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
 $table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
+$table->data[0][3] .= '<a href="javascript: show_dialog_qrcode();">' .
+	'<img src="../../images/qrcode_icon.jpg"/>' .
+	'</a>';
 
 echo '<div style="height:30px">&nbsp;</div>';
 
@@ -98,6 +101,10 @@ if ($refr > 0) {
 }
 
 echo '<div style="height:30px">&nbsp;</div>';
+
+echo "<div style='display: none;' id='qrcode_container' title='" . __('QR code of the page') . "'>";
+echo "<div id='qrcode_container_image'></div>";
+echo "</div>";
 
 echo '<form method="post">';
 html_print_input_hidden ('pure', $config["pure"]);
@@ -118,6 +125,13 @@ ui_require_javascript_file ('pandora_visual_console');
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+	$(document).ready(function() {
+		$( "#qrcode_container" ).dialog({
+			autoOpen: false,
+			modal: true
+		});
+	});
+	
 	$("#refr").change(function () {
 		$("#hidden-vc_refr").val($("#refr option:selected").val());
 	});

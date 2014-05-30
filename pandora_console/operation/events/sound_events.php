@@ -44,24 +44,23 @@ if (! check_acl ($config['id_user'], 0, "ER")) {
 echo "<html>";
 echo "<head>";
 echo "<title>" . __("Sound Events") . "</title>";
-echo "<style type='text/css'>";
 ?>
-*
-{
-	margin: 0;
-	padding: 0;
-}
-
-img {
-	border: 0;
-}
+<style type='text/css'>
+	* {
+		margin: 0;
+		padding: 0;
+	}
+	
+	img {
+		border: 0;
+	}
+</style>
 <?php
-echo "</style>";
 echo '<link rel="icon" href="../../images/pandora.ico" type="image/ico" />';
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
 echo "</head>";
 echo "<body>";
-echo html_print_image('images/pandora_header_logo.png', true);
+echo html_print_image('images/pandora_logo_head.png', true);
 echo "<h1 style='background: #66AA44; color: #fff;'>" . __("Sound console"). "</h1>";
 
 $table = null;

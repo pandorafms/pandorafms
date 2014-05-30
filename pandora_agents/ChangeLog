@@ -1,5 +1,13 @@
 2014-05-30  Sancho Lerena <slerena@artica.es>
 
+	* unix/Linux/pandora_agent.conf: New default configuration file.
+	Similar monitor names as in Windows agent.
+
+	* unix/plugins/pandora_df_free,
+	unix/plugins/pandora_mem,
+	unix/plugins/pandora_netusage: New linux plugins for returning
+	disk free space in %, memory in % and netusage in bytes/sec.
+
 	* win32/bin/pandora_agent.conf: New default configuration file
 	Simplified modules, use of new plugins and same module names
 	for most monitors as linux agent

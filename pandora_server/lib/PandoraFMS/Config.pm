@@ -323,6 +323,9 @@ sub pandora_load_config {
 
 	# Event auto-expiry time window
 	$pa_config->{"event_expiry_window"} = 86400; # 5.0
+
+	# Event auto-expiry time window
+	$pa_config->{"claim_back_snmp_modules"} = 1; # 5.1
 	
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
@@ -764,7 +767,10 @@ sub pandora_load_config {
                 		exit 1;
 
 			}
-                }
+		}
+		elsif ($parametro =~ m/^claim_back_snmp_modules\s(.*)/i) {
+			$pa_config->{'claim_back_snmp_modules'}= safe_input($1);
+		}
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

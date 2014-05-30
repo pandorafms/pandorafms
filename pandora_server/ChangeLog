@@ -1,5 +1,12 @@
 2014-05-30  Ramon Novoa  <rnovoa@artica.es>
 
+	* conf/pandora_server.conf.new,
+	  lib/PandoraFMS/Config.pm,
+	  util/pandora_db.pl: Added a new option to move SNMP modules back to the
+	  SNMP Enterprise Server.
+
+2014-05-30  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Config.pm
 	  lib/PandoraFMS/DataServer.pm: Ignore the agent group coming from the XML
 	  if autocreate_group is set.

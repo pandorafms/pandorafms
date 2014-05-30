@@ -865,9 +865,11 @@ sub pandoradb_main ($$$) {
 	}
 
 	# Update tconfig with last time of database maintance time (now)
-
 	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
 	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
+
+	# Move SNMP modules back to the Enterprise server
+	enterprise_hook("claim_back_snmp_modules", [$dbh, $conf]);
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }

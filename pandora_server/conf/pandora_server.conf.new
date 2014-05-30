@@ -434,3 +434,8 @@ event_expiry_time 0
 # be greater than event_expiry_time.
 #event_expiry_window 86400
 
+# If set to 1, SNMP modules run by the Network Server will be claimed back by
+# the SNMP Enterprise Server when pandora_db is run.
+claim_back_snmp_modules 1
+
+

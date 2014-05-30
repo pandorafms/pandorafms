@@ -1,10 +1,13 @@
 var original_command = "";
 
 function parse_alert_command (command, classs) {
-	classs = 'field';
 	if (classs == 'recovery') {
-		classs = 'field_recovery';
+		classs = 'fields_recovery';
 	}
+	else {
+		classs = 'fields';
+	}
+	
 	var nfield = 1;
 	$('.' + classs).each(function() {
 		// Only render values different from ''
@@ -22,6 +25,9 @@ function parse_alert_command (command, classs) {
 
 function render_command_preview (original_command) {
 	$("#textarea_command_preview").text (parse_alert_command (original_command, ''));
+}
+
+function render_command_recovery_preview (original_command) {
 	$("#textarea_command_recovery_preview").text (parse_alert_command (original_command, 'recovery'));
 }
 

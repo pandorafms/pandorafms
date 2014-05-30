@@ -41,23 +41,12 @@ echo '<div style="width:50%; float:left;" id="leftcolumn">';
 	//////////////////NEWS BOARD/////////////////////////////
 	echo '<div id="news_board">';
 	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = "SELECT subject,timestamp,text,author
-				FROM tnews
-				ORDER BY timestamp DESC
-				LIMIT 3";
-			break;
-		case "oracle":
-			$sql = "SELECT subject,timestamp,text,author
-				FROM tnews
-				WHERE rownum <= 3
-				ORDER BY timestamp DESC";
-			break;
-	}
+	$options = array();
+	$options['id_user'] = $config['id_user'];
+	$options['modal'] = false;
+	$options['limit'] = 3;
+	$news = get_news($options);
 	
-	$news = db_get_all_rows_sql ($sql);
 	if ($news !== false) {
 		echo '<table cellpadding="4" cellspacing="4" class="databox">';
 		echo '<tr><th><span>' . __('News board') . '</span></th></tr>';

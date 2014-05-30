@@ -404,15 +404,16 @@ if ($old_global_counter_chat != $now_global_counter_chat) {
 		$_SESSION['new_chat'] = true;
 }
 
-// Display login help info dialog
 if (get_parameter ('login', 0) !== 0) {
+	// Display news dialog
+	include_once("general/news_dialog.php");
 	
+	// Display login help info dialog
 	// If it's configured to not skip this
 	if (!isset($config['skip_login_help_dialog']) ||
 		$config['skip_login_help_dialog'] == 0) {
 		
 		include_once("general/login_help_dialog.php");
-		
 	}
 	
 }

@@ -1006,6 +1006,10 @@ CREATE TABLE IF NOT EXISTS `tnews` (
 	`subject` varchar(255)  NOT NULL DEFAULT '',
 	`text` TEXT NOT NULL,
 	`timestamp` DATETIME  NOT NULL DEFAULT 0,
+	`id_group` int(10) NOT NULL default 0,
+	`modal` tinyint(1) DEFAULT 0,
+	`expire` tinyint(1) DEFAULT 0,
+	`expire_timestamp` DATETIME  NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_news`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

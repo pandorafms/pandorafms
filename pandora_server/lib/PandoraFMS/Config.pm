@@ -275,7 +275,7 @@ sub pandora_load_config {
 	# Snmpget for snmpget system command (optional)
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
 	
-	$pa_config->{'autocreate_group'} = 2;
+	$pa_config->{'autocreate_group'} = -1;
 	$pa_config->{'autocreate'} = 1;
 
 	# max log size (bytes)

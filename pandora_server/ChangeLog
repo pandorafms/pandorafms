@@ -1,3 +1,12 @@
+2014-05-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm
+	  lib/PandoraFMS/DataServer.pm: Ignore the agent group coming from the XML
+	  if autocreate_group is set.
+
+	* util/recon_scripts/snmp-recon.pl: Changed the default value for a
+	  router-less scan.
+
 2014-05-28  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Fixed wrong order in 

@@ -255,12 +255,13 @@ $(document).ready (function () {
 				}
 				
 				render_command_preview(original_command);
-				
+				render_command_recovery_preview(original_command);
+
 				$(".fields").keyup (function() {
 					render_command_preview(original_command);
 				});
 				$(".fields_recovery").keyup (function() {
-					render_command_preview(original_command);
+					render_command_recovery_preview(original_command);
 				});
 			},
 			"json"

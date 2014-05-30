@@ -77,7 +77,7 @@ $table->data[0][2] = html_print_input_text ('name', $name, '', 35, 255, true);
 $table->colspan[1][1] = 3;
 $table->data[1][0] = __('Command');
 $table->data[1][0] .= ui_print_help_icon ('alert_macros', true);
-$table->data[1][1] = html_print_input_text ('command', $command, '', 80, 255, true);
+$table->data[1][1] = html_print_textarea ('command', 8, 30, $command, '', true);
 
 $table->colspan[2][1] = 3;
 $table->data[2][0] = __('Description');

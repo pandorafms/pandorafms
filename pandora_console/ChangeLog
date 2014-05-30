@@ -1,5 +1,16 @@
 2014-05-30  Sergio Martin <sergio.martin@artica.es>
 
+	* general/news_dialog.php: Missed file in last commit
+
+	* godmode/alerts/configure_alert_action.php
+	godmode/alerts/configure_alert_command.php
+	include/javascript/pandora_alerts.js: fixed preview
+	of commands in action configuration and changed the 
+	text input by a textarea in command configuration for
+	ticket: #852
+
+2014-05-30  Sergio Martin <sergio.martin@artica.es>
+
 	* general/logon_ok.php
 	godmode/setup/news.php
 	include/functions.php

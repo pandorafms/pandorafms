@@ -163,7 +163,8 @@ CREATE TABLE tagente_estado (
 	status_changes NUMBER(10, 0) default 0,
 	last_status NUMBER(10, 0) default 0,
 	last_known_status NUMBER(10, 0) default 0,
-	last_error NUMBER(10, 0) default 0
+	last_error NUMBER(10, 0) default 0,
+	ff_start_utimestamp NUMBER(10, 0) default 0
 );
 CREATE INDEX tagente_estado_id_agente_idx ON tagente_estado(id_agente);
 CREATE INDEX tagente_estado_estado_idx ON tagente_estado(estado);
@@ -252,7 +253,8 @@ CREATE TABLE tagente_modulo (
 	min_ff_event_normal INTEGER default 0,
         min_ff_event_warning INTEGER default 0,
         min_ff_event_critical INTEGER default 0,
-        each_ff NUMBER(1, 0) default 0
+        each_ff NUMBER(1, 0) default 0,
+	ff_timeout INTEGER unsigned default 0
 	
 	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );

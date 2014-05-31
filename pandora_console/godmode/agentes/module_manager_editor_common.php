@@ -308,9 +308,9 @@ $table_advanced->colspan[1][1] = 2;
 $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
 	'', 20, 65, true);
 
-$table_advanced->data[1][3] = __('FF interval');
-$table_advanced->data[1][4] = html_print_input_text ('module_ff_interval', $ff_interval,
-	'', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution flip flop time interval (in secs).'), true);
+$table_advanced->data[1][3] = __('Unit');
+$table_advanced->data[1][4] = html_print_input_text ('unit', $unit,
+        '', 20, 65, true);
 
 // In the data modules, the interval is not in seconds. It is a factor 
 // to be multiplied for the agent interval
@@ -388,10 +388,14 @@ $table_advanced->data[4][3] = __('Throw unknown events');
 $table_advanced->data[4][4] = html_print_checkbox('throw_unknown_events',
 	1, $throw_unknown_events_check, true);
 
-$table_advanced->data[5][0] = __('Unit');
-$table_advanced->data[5][1] = html_print_input_text ('unit', $unit,
-	'', 20, 65, true);
-$table_advanced->colspan[5][1] = 4;
+$table_advanced->data[5][0] = __('FF interval');
+$table_advanced->data[5][1] = html_print_input_text ('module_ff_interval', $ff_interval,
+       '', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution flip flop time interval (in secs).'), true);
+$table_advanced->colspan[5][1] = 2;
+
+$table_advanced->data[5][3] = __('FF timeout');
+$table_advanced->data[5][4] = html_print_input_text ('ff_timeout', $ff_timeout,
+       '', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Timeout in secs from start of flip flop counting. If this value is exceeded, FF counter is reset. Set to 0 for no timeout.'), true);
 
 /* Tags */
 // This var comes from module_manager_editor.php or policy_modules.php

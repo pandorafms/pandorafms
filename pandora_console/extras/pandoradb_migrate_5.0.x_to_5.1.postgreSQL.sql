@@ -47,6 +47,8 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_normal" INTEGER default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_warning" INTEGER default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_critical" INTEGER default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "each_ff" SMALLINT default 0;
+/* 2014/05/31 */
+ALTER TABLE "tagente_modulo" ADD COLUMN "ff_timeout" INTEGER unsigned default 0;
 
 /* 2014/03/18 */
 -- ----------------------------------------------------------------------
@@ -176,3 +178,9 @@ ALTER TABLE "tnews" ADD COLUMN "id_group" INTEGER NOT NULL default 0;
 ALTER TABLE "tnews" ADD COLUMN "modal" SMALLINT DEFAULT 0;
 ALTER TABLE "tnews" ADD COLUMN "expire" SMALLINT DEFAULT 0;
 ALTER TABLE "tnews" ADD COLUMN "expire_timestamp" TIMESTAMP without time zone default '1970-01-01 00:00:00';
+
+/* 2014/05/31 */
+-- ---------------------------------------------------------------------
+-- Table `tagente_estado`
+-- ---------------------------------------------------------------------
+ALTER TABLE "tagente_estado" ADD COLUMN "ff_start_utimestamp" BIGINT default 0;

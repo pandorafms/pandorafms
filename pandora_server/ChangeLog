@@ -1,3 +1,8 @@
+2014-05-31  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Improved 'FF threshold' to be able to define
+	timeout.
+
 2014-05-30  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf.new: Review of default configuration file.

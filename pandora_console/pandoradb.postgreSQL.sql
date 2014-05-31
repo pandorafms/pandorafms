@@ -156,7 +156,8 @@ CREATE TABLE "tagente_estado" (
 	"status_changes" INTEGER default 0,
 	"last_status" INTEGER default 0,
 	"last_known_status" INTEGER default 0,
-	"last_error" INTEGER default 0
+	"last_error" INTEGER default 0,
+	"ff_start_utimestamp" BIGINT default 0
 );
 CREATE INDEX "tagente_estado_id_agente_modulo_idx" ON "tagente_estado"("id_agente_modulo");
 CREATE INDEX "tagente_estado_id_agente_idx" ON "tagente_estado"("id_agente");
@@ -241,7 +242,8 @@ CREATE TABLE "tagente_modulo" (
 	"min_ff_event_normal" INTEGER default 0,
         "min_ff_event_warning" INTEGER default 0,
         "min_ff_event_critical" INTEGER default 0,
-        "each_ff" SMALLINT default 0
+        "each_ff" SMALLINT default 0,
+	"ff_timeout" INTEGER unsigned default 0
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");

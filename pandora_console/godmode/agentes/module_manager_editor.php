@@ -207,6 +207,7 @@ if ($id_agent_module) {
 	$ff_event_warning = $module['min_ff_event_warning'];
 	$ff_event_critical = $module['min_ff_event_critical'];
 	$each_ff = $module['each_ff'];
+	$ff_timeout = $module['ff_timeout'];
 	// Select tag info.
 	$id_tag = tags_get_module_tags ($id_agent_module);
 	
@@ -311,6 +312,8 @@ else {
 		$wday = '*';
 		
 		$ff_interval = 0;
+
+		$ff_timeout = 0;
 		
 		$module_macros = array ();
 	}

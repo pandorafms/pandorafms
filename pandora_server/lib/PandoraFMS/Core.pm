@@ -1063,6 +1063,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_data_value = $agent_status->{'datos'};
 	my $last_known_status = $agent_status->{'last_known_status'};
 	my $last_error = defined ($module->{'last_error'}) ? $module->{'last_error'} : $agent_status->{'last_error'};
+	my $ff_start_utimestamp = $agent_status->{'ff_start_utimestamp'};
 	
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
@@ -1082,6 +1083,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	#Update module status
 	my $min_ff_event = $module->{'min_ff_event'};
 	my $current_utimestamp = time ();
+	my $ff_timeout = $module->{'ff_timeout'};
 
 	if ($module->{'each_ff'}) {
 		$min_ff_event = $module->{'min_ff_event_normal'} if ($new_status == 0);
@@ -1095,9 +1097,14 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status_changes = $min_ff_event if ($status_changes > $module->{'min_ff_event'});
 		
 		$status_changes++;
+		if ($min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
+			$status_changes = 0;
+			$ff_start_utimestamp = $utimestamp;
+		}
 	}
 	else {
 		$status_changes = 0;
+		$ff_start_utimestamp = $utimestamp;
 	}
 	
 	# Active ff interval
@@ -1148,10 +1155,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		SET datos = ?, estado = ?, last_status = ?, last_known_status = ?,
 			status_changes = ?, utimestamp = ?, timestamp = ?,
 			id_agente = ?, current_interval = ?, running_by = ?,
-			last_execution_try = ?, last_try = ?, last_error = ?
+			last_execution_try = ?, last_try = ?, last_error = ?,
+			ff_start_utimestamp = ?
 		WHERE id_agente_modulo = ?', $processed_data, $status, $last_status, $last_status, $status_changes,
 		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
-		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $module->{'id_agente_modulo'});
+		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
 	
 	# Save module data. Async and log4x modules are not compressed.
 	if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {

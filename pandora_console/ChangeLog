@@ -1,3 +1,9 @@
+2014-06-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* extensions/update_manager/settings.php
+	  godmode/menu.php: Moved license configuration from update manager settings
+	  to its own screen.
+
 2014-06-02  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/alerts/configure_alert_template.php,

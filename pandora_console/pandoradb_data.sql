@@ -1,9 +1,9 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2013 Artica Soluciones Tecnologicas, http://www.artica.es
+-- Copyright (c) 2014 Artica Soluciones Tecnologicas, http://www.artica.es
 -- Please see http://www.pandorafms.org for full contribution list
 
--- Database Data for Pandora FMS 5.0
+-- Database Data for Pandora FMS 5.1
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
@@ -42,16 +42,16 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('show_lastalerts','1'),
 ('style','pandora'),
 ('remote_config', '/var/spool/pandora/data_in'),
-('graph_color1', '#38B800'),
-('graph_color2', '#FFFF00'),
-('graph_color3', '#FF6600'),
-('graph_color4', '#FF66CC'),
+('graph_color1', '#99dd00'),
+('graph_color2', '#336600'),
+('graph_color3', '#3399cc'),
+('graph_color4', '#ff66cc'),
 ('graph_color5', '#CC0000'),
 ('graph_color6', '#0033FF'),
-('graph_color7', '#99FF99'),
+('graph_color7', '#ff6600'),
 ('graph_color8', '#330066'),
-('graph_color9', '#66FFFF'),
-('graph_color10', '#6666FF'),
+('graph_color9', '#ffff00'),
+('graph_color10', '#99ffff'),
 ('sla_period', '604800'),
 ('trap2agent', '0'),
 ('date_format', 'F j, Y, g:i a'),

@@ -1,3 +1,17 @@
+2014-06-02  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/setup/setup_visuals.php,
+	  include/functions_config.php: Added a new config token
+	to hold a custom path for the graphviz binaries.
+
+	* include/functions_networkmap.php: Minor fixes on the
+	functions "networkmap_create_module_node" and
+	"networkmap_open_graph".
+
+	* operation/agentes/networkmap.groups.php,
+	  operation/agentes/networkmap.topology.php: Modified to
+	support the custom graphviz directory, blanks in paths, etc.
+
 2014-06-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/setup/license.php: Added to repository. License configuration

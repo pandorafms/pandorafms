@@ -49,12 +49,11 @@ if ($graph === false) {
 }
 
 // Generate image and map
-// If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
-$filename_map = safe_url_extraclean($config["attachment_store"]) .
-	"/networkmap_" . $filter;
-$filename_img = "attachment/networkmap_" . $filter . "_" . $font_size;
-$filename_dot = safe_url_extraclean($config["attachment_store"]) .
-	"/networkmap_" . $filter;
+// If image was generated just a few minutes ago, then don't regenerate
+// (it takes long) unless regen checkbox is set
+$filename_map = io_safe_output($config["attachment_store"]) . "/networkmap_" . $filter;
+$filename_img = io_safe_output($config["attachment_store"]) . "/networkmap_" . $filter . "_" . $font_size;
+$filename_dot = io_safe_output($config["attachment_store"]) . "/networkmap_" . $filter;
 if ($simple) {
 	$filename_map .= "_simple";
 	$filename_img .= "_simple";
@@ -71,7 +70,6 @@ $filename_dot .= "_" . $id_networkmap . ".dot";
 
 if ($regen != 1 && file_exists ($filename_img) &&
 	filemtime ($filename_img) > get_system_time () - SECONDS_5MINUTES) {
-	
 	$result = true;
 }
 else {
@@ -81,10 +79,11 @@ else {
 	}
 	else {
 		fwrite ($fh, $graph);
-		$cmd = "$filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img." ".$filename_dot;
+		$graphviz_path = ($config['graphviz_bin_dir']) ? io_safe_output($config['graphviz_bin_dir']."/") : "";
+		$cmd = escapeshellarg($graphviz_path.$filter) . " -Tcmapx " . escapeshellarg("-o$filename_map") . " -Tpng ". escapeshellarg("-o$filename_img") . " " . escapeshellarg($filename_dot);
 		$result = system ($cmd);
 		fclose ($fh);
-		//unlink ($filename_dot);
+		unlink ($filename_dot);
 	}
 }
 
@@ -99,7 +98,8 @@ if ($result !== false) {
 		return;
 	}
 	echo "<div style='text-align:center'>";
-	html_print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
+	$image_url = str_replace(realpath(io_safe_output($config['homedir'])), "", realpath($filename_img));
+	html_print_image ($image_url, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	echo "</div>";
 	require ($filename_map);
 }

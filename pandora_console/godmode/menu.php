@@ -266,6 +266,10 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			
 			$extmenu = $extension['godmode_menu'];
 			
+			if ($extmenu["name"] == 'DB interface' && !check_acl ($config['id_user'], 0, "DM")) { 
+				continue;
+			}
+				
 			//Check the ACL for this user
 			if (! check_acl ($config['id_user'], 0, $extmenu['acl'])) {
 				continue;

@@ -216,6 +216,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	$sub["godmode/setup/news"]["text"] = __('Site news');
 	$sub["godmode/setup/os"]["text"] = __('Edit OS');
+	$sub["godmode/setup/license"]["text"] = __('License');
 	
 	enterprise_hook ('enterprise_acl_submenu');
 	enterprise_hook ('skins_submenu');

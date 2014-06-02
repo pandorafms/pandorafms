@@ -66,32 +66,26 @@ echo '<form method="post">';
 $table->width = '95%';
 $table->data = array ();
 
-$table->data[0][0] = '<strong>'.__('Customer key').'</strong>';
-$table->data[0][1] = html_print_input_text ('keys[customer_key]', $settings->customer_key, '', 40, 255, true);
+$table->data[0][0] = '<strong>'.__('Update server host').'</strong>';
+$table->data[0][1] = html_print_input_text ('keys[update_server_host]', $settings->update_server_host, '', 20, 255, true);
 
-$table->data[0][1] .= '&nbsp;<a id="dialog_license_info" title="'.__("License Info").'" href="#">'.html_print_image('images/lock.png', true, array('class' => 'bot', 'title' => __('License info'))).'</a>';
-$table->data[0][1] .= '<div id="dialog_show_license" style="display:none"></div>';
+$table->data[1][0] = '<strong>'.__('Update server path').'</strong>';
+$table->data[1][1] = html_print_input_text ('keys[update_server_path]', $settings->update_server_path, '', 40, 255, true);
 
-$table->data[1][0] = '<strong>'.__('Update server host').'</strong>';
-$table->data[1][1] = html_print_input_text ('keys[update_server_host]', $settings->update_server_host, '', 20, 255, true);
+$table->data[2][0] = '<strong>'.__('Update server port').'</strong>';
+$table->data[2][1] = html_print_input_text ('keys[update_server_port]', $settings->update_server_port, '', 5, 5, true);
 
-$table->data[2][0] = '<strong>'.__('Update server path').'</strong>';
-$table->data[2][1] = html_print_input_text ('keys[update_server_path]', $settings->update_server_path, '', 40, 255, true);
+$table->data[3][0] = '<strong>'.__('Proxy server').'</strong>';
+$table->data[3][1] = html_print_input_text ('keys[proxy]', $settings->proxy, '', 40, 255, true);
 
-$table->data[3][0] = '<strong>'.__('Update server port').'</strong>';
-$table->data[3][1] = html_print_input_text ('keys[update_server_port]', $settings->update_server_port, '', 5, 5, true);
+$table->data[4][0] = '<strong>'.__('Proxy port').'</strong>';
+$table->data[4][1] = html_print_input_text ('keys[proxy_port]', $settings->proxy_port, '', 40, 255, true);
 
-$table->data[6][0] = '<strong>'.__('Proxy server').'</strong>';
-$table->data[6][1] = html_print_input_text ('keys[proxy]', $settings->proxy, '', 40, 255, true);
+$table->data[5][0] = '<strong>'.__('Proxy user').'</strong>';
+$table->data[5][1] = html_print_input_text ('keys[proxy_user]', $settings->proxy_user, '', 40, 255, true);
 
-$table->data[7][0] = '<strong>'.__('Proxy port').'</strong>';
-$table->data[7][1] = html_print_input_text ('keys[proxy_port]', $settings->proxy_port, '', 40, 255, true);
-
-$table->data[8][0] = '<strong>'.__('Proxy user').'</strong>';
-$table->data[8][1] = html_print_input_text ('keys[proxy_user]', $settings->proxy_user, '', 40, 255, true);
-
-$table->data[9][0] = '<strong>'.__('Proxy password').'</strong>';
-$table->data[9][1] = html_print_input_password ('keys[proxy_pass]', $settings->proxy_pass, '', 40, 255, true);
+$table->data[6][0] = '<strong>'.__('Proxy password').'</strong>';
+$table->data[6][1] = html_print_input_password ('keys[proxy_pass]', $settings->proxy_pass, '', 40, 255, true);
 
 if (!enterprise_installed()) {
 	global $conf_update_pandora;

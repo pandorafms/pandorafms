@@ -34,6 +34,29 @@
 
 2014-06-02  Sergio Martin <sergio.martin@artica.es>
 
+	* include/styles/pandora.css
+	include/styles/dialog.css
+	include/functions_events.php
+	operation/agentes/group_view.php
+	images/data.png
+	images/network.png
+	images/tab_green_bg.png
+	images/database.png
+	images/os_icons/so_other.png
+	images/os_icons/so_mac_small.png
+	images/os_icons/so_mac.png
+	images/os_icons/so_other_small.png
+	images/tab_grey_bg.png
+	images/network.disabled.png
+	images/plugin.png
+	images/chart_curve.png
+	images/header_blackout.png
+	images/eye.png
+	general/logon_ok.php: A bunch of aesthetic changes
+	like table header colors, new icons, etc.
+
+2014-06-02  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css: Change the zindex of autohidden
 	menu and shortcut bar to be shown over the gis map for ticket #855
 

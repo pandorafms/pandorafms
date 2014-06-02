@@ -765,7 +765,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->align = array ();
 		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px; background: #E8E8E8;';
 		if ($agent_id == 0) {
-			$table->style[3] = 'width:120px; word-break: break-all;';
+			$table->style[3] = 'word-break: break-all;';
 		}
 		$table->style[4] = 'width:120px; word-break: break-all;';
 		

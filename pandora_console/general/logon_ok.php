@@ -142,7 +142,7 @@ echo '<div style="width:50%; float:left;" id="leftcolumn">';
 		$data[0] = '<strong>' . $session_id_usuario . '</strong>';
 		$data[1] = ui_print_session_action_icon ($session['accion'], true);
 		$data[2] = $session['accion'];
-		$data[3] =  ui_print_help_tip($session['fecha'], true) . human_time_comparation($session['utimestamp']);
+		$data[3] =  ui_print_help_tip($session['fecha'], true) . human_time_comparation($session['utimestamp'], 'tiny');
 		$data[4] = $session_ip_origen;
 		$data[5] = io_safe_output ($session['descripcion']);
 		

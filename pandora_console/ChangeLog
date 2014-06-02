@@ -1,3 +1,12 @@
+2014-06-02  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.editor.js: fixed the
+	default height for the visualmap editor.
+	
+	Incident: #823
+	
+	* godmode/servers/manage_recontask_form.php: fixed PHP warning.
+
 2014-06-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css: Change the zindex of autohidden

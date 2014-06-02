@@ -214,10 +214,12 @@ $table->data[5][1] = html_print_select_from_sql ('SELECT id_np, name FROM tnetwo
 	"id_network_profile", $id_network_profile, '', __('None'), 0, true);
 
 // Recon script
+$data[1] = '';
 $table->data[6][0] = "<b>".__('Recon script');
 $table->data[6][1] = html_print_select_from_sql ('SELECT id_recon_script, name FROM trecon_script', 
 	"id_recon_script", $id_recon_script, 'get_explanation_recon_script($(\'#id_recon_script\').val())', '', '', true);
-$table->data[6][1] .= $data[1] .= html_print_input_hidden('macros',base64_encode($macros),true);
+$table->data[6][1] .= $data[1] .= html_print_input_hidden('macros',
+	base64_encode($macros),true);
 
 
 // OS

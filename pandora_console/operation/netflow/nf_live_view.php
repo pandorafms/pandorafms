@@ -392,7 +392,7 @@ if ($draw != '') {
 
 enterprise_hook('close_meta_frame');
 
-ui_require_jquery_file ("ui-timepicker-addon");
+ui_include_time_picker();
 ?>
 
 <script type="text/javascript">

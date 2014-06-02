@@ -1,5 +1,19 @@
 2014-06-02  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/alerts/configure_alert_template.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	godmode/agentes/planned_downtime.editor.php, godmode/setup/news.php,
+	include/ajax/module.php, include/functions.php,
+	include/functions_ui.php, extensions/insert_data.php,
+	operation/netflow/nf_live_view.php,
+	operation/reporting/reporting_viewer.php,
+	operation/reporting/graph_viewer.php, operation/tree.php,
+	operation/agentes/datos_agente.php,
+	operation/agentes/estado_monitores.php: fixed the i18n of the
+	timepicker.
+
+2014-06-02  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/visual_console_builder.editor.js: fixed the
 	default height for the visualmap editor.
 	

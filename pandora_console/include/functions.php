@@ -339,15 +339,15 @@ function get_user_language ($id_user = null) {
 		$language = get_parameter('language', 0);
 		
 		if (defined('METACONSOLE')) {
-
+			
 			if ($id_user == null)
 				$id_user = $config['id_user'];
-
+			
 			if ($language !== 0)
 				update_user($id_user, array('language' => $language));	
-
+		
 		}
-	
+		
 		if ($language === 'default') {
 			return $config['language'];
 		}
@@ -363,7 +363,7 @@ function get_user_language ($id_user = null) {
 	
 	if ($id_user !== null) {
 		$userinfo = get_user_info ($id_user);
-		if ($userinfo['language'] != 'default'){
+		if ($userinfo['language'] != 'default') {
 			return $userinfo['language'];
 		}
 	}
@@ -381,7 +381,7 @@ function set_user_language() {
 	$l10n = NULL;
 	$user_language = get_user_language ();
 	
-	if (file_exists ('./include/languages/'.$user_language.'.mo')) {
+	if (file_exists ('./include/languages/' . $user_language . '.mo')) {
 		$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
 		$l10n->load_tables();
 	}

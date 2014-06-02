@@ -63,41 +63,44 @@ ui_require_javascript_file ('encode_decode_base64');
 /* <![CDATA[ */
 
 $(document).ready (function () {
-	var news_raw = Base64.decode($('#news_json').html());
-	var news = JSON.parse(news_raw);
-	var inew = 0;
-
-	function show_new () {		
-		if (news[inew] != undefined) {
-			$('#new_text').html(news[inew].text);
-			$('#new_timestamp').html(news[inew].timestamp);
-			$('#new_author').html(news[inew].author);
-			
-			$("#news_dialog").dialog({
-				resizable: true,
-				draggable: true,
-				modal: true,
-				closeOnEscape: false,
-				height: 450,
-				width: 630,
-				title: news[inew].subject,
-				overlay: {
-						opacity: 0.5,
-						background: "black"
-					}
-			});
+	if (typeof($('#news_json').html()) != "undefined") {
+		
+		var news_raw = Base64.decode($('#news_json').html());
+		var news = JSON.parse(news_raw);
+		var inew = 0;
+		
+		function show_new () {
+			if (news[inew] != undefined) {
+				$('#new_text').html(news[inew].text);
+				$('#new_timestamp').html(news[inew].timestamp);
+				$('#new_author').html(news[inew].author);
 				
-			$('.ui-dialog-titlebar-close').hide();
+				$("#news_dialog").dialog({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					closeOnEscape: false,
+					height: 450,
+					width: 630,
+					title: news[inew].subject,
+					overlay: {
+							opacity: 0.5,
+							background: "black"
+						}
+				});
+					
+				$('.ui-dialog-titlebar-close').hide();
+			}
 		}
-	}
-	
-	$("#submit-hide-login-help").click (function () {
-		$("#news_dialog" ).dialog('close');
-		inew++;
+		
+		$("#submit-hide-login-help").click (function () {
+			$("#news_dialog" ).dialog('close');
+			inew++;
+			show_new ();
+		});
+		
 		show_new ();
-	});
-
-	show_new ();
+	}
 });
 
 /* ]]> */

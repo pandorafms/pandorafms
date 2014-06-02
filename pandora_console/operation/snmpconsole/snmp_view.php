@@ -147,6 +147,11 @@ $table->size = array ();
 $table->size[0] = '120px';
 $table->data = array ();
 
+// All traps 
+$all_traps = db_get_all_rows_sql ("SELECT DISTINCT source FROM ttrap");
+if (empty($all_traps))
+	$all_traps = array();
+
 // Set filters
 $agents = array ();
 $oids = array ();

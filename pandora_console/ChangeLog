@@ -1,9 +1,16 @@
-2014-06-01  Miguel de Dios <miguel.dedios@artica.es>
+2014-06-02  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/snmpconsole/snmp_view.php: restored the lost code from
+	the branch 5.
+	
+	Incident: #845
+
+2014-06-02  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* general/news_dialog.php: fixed the empty list of news in the first
 	login.
 
-2014-06-01  Miguel de Dios <miguel.dedios@artica.es>
+2014-06-02  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* pandoradb_data.sql: fixed the insertion data of tnews, the lost
 	columns.

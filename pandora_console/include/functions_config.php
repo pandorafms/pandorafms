@@ -432,7 +432,9 @@ function config_update_config () {
 						$error_update[] = __('Autohidden menu');
 					if (!config_update_value ('paginate_module', get_parameter('paginate_module')))
 						$error_update[] = __('Paginate module');
-						
+					if (!config_update_value ('graphviz_bin_dir', get_parameter('graphviz_bin_dir')))
+						$error_update[] = __('Custom graphviz directory');
+
 					$interval_values = get_parameter ('interval_values');
 					
 					// Add new interval value if is provided

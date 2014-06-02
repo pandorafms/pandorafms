@@ -1183,7 +1183,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 			'width=0.20, ' .
 			'height=0.20, ' .
 			'label="", ' .
-			'tooltip="' . $url_tooltip .
+			'tooltip="' . $url_tooltip . '"' .
 			'];';
 	}
 	return $node;
@@ -1278,7 +1278,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $fo
 	$size = $size_x . ',' . $size_y;
 	
 	// BEWARE: graphwiz DONT use single ('), you need double (")
-	$head = "graph networkmap { bgcolor=\"transparent\", labeljust=l; margin=0; ";
+	$head = "graph networkmap { bgcolor=\"transparent\"; labeljust=l; margin=0; ";
 	if ($nooverlap != '') {
 		$head .= "overlap=\"$overlap\";";
 		$head .= "ranksep=\"$ranksep\";";

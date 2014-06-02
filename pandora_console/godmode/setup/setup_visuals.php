@@ -382,7 +382,10 @@ $table->data[$row][1] .= __('No') . '&nbsp;' .
 
 $row++;
 
+$table->data[$row][0] = __('Custom graphviz directory') . ui_print_help_tip (__("Custom directory where the graphviz binaries are stored."), true);
+$table->data[$row][1] = html_print_input_text ('graphviz_bin_dir', $config["graphviz_bin_dir"], '', 50, 255, true);
 
+$row++;
 
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);

@@ -274,6 +274,7 @@ div#menu_container {
 	-moz-border-top-right-radius: 6px;
 	-webkit-border-top-right-radius: 6px;
 	border-top-right-radius: 6px;
+	z-index: 1010;
 }
 
 div#menu {
@@ -2900,7 +2901,7 @@ td.empty_field {
 	margin: 0px !important;
 	bottom: 0px;
 	left: 0px;
-	z-index: 1000;
+	z-index: 1020;
 }
 
 #shortcut_bar {

@@ -1,5 +1,10 @@
 2014-06-02  Sergio Martin <sergio.martin@artica.es>
 
+	* include/styles/pandora.css: Change the zindex of autohidden
+	menu and shortcut bar to be shown over the gis map for ticket #855
+
+2014-06-02  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/menu.php: Fixed database interface ACLs for DM flag
 	for ticket #849
 

@@ -260,7 +260,7 @@
 .ui-dialog .ui-button-dialog {
     background: #F6F6F6;
     border: 1px solid #CCCCCC;
-    color: #696969 !important;
+    color: #696969;
     font-weight: bold;
     outline: medium none;
     cursor: pointer;    

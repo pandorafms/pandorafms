@@ -95,15 +95,15 @@ if (count($agents) > 0) {
 	echo "<tr>";
 	echo "<th style='width: 26px;'>" . __("Force") . "</th>";
 	//echo "<th style='width: 26px;'>" . __("Status") . "</th>";
-	echo "<th width='30%'>" . __("Group") . "</th>";
-	echo "<th width='10%'>" . __("Agents") . "</th>";
-	echo "<th width='10%'>" . __("Agent unknown") . "</th>";
-	echo "<th width='10%'>" . __("Unknown") . "</th>";
-	echo "<th width='10%'>" . __("Not Init") . "</th>";
-	echo "<th width='10%'>" . __("Normal") . "</th>";
-	echo "<th width='10%'>" . __("Warning") . "</th>";
-	echo "<th width='10%'>" . __("Critical") . "</th>";
-	echo "<th width='10%'>" . __("Alert fired") . "</th>";
+	echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Agents") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Agent unknown") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Unknown") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Not Init") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Normal") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Warning") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Critical") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Alert fired") . "</th>";
 	
 	$printed_groups = array();
 	

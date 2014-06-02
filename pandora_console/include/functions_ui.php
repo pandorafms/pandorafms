@@ -3444,4 +3444,11 @@ function ui_get_error ($error_code) {
 	return array('title' => $title, 'message' => $message);
 }
 
+function ui_include_time_picker() {
+	ui_require_jquery_file ("ui-timepicker-addon");
+	
+	if (file_exists('include/javascript/i18n/jquery-ui-timepicker-' . substr(get_user_language(), 0, 2) . '.js')) {
+		echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . substr(get_user_language(), 0, 2) . '.js', false, false, false) . '"></script>';
+	}
+}
 ?>

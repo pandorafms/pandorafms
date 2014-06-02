@@ -1087,12 +1087,8 @@ else {
 echo '</div>';
 echo '</form>';
 
-ui_require_jquery_file ("ui-timepicker-addon");
+ui_include_time_picker();
 ui_require_javascript_file('pandora');
-// This script is included manually to be included after jquery and avoid error
-if(file_exists('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language() . '.js')) {
-	echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language() . '.js', false, false, false) . '"></script>';
-}
 
 if ($enterpriseEnable) {
 	reporting_enterprise_text_box();

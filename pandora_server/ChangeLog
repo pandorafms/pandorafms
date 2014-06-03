@@ -1,3 +1,8 @@
+2014-06-03  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Changed to ignore 'FF timeout' except async
+	modules.
+
 2014-05-31  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Improved 'FF threshold' to be able to define

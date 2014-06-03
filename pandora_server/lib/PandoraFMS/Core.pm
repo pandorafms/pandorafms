@@ -1097,14 +1097,14 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status_changes = $min_ff_event if ($status_changes > $module->{'min_ff_event'});
 		
 		$status_changes++;
-		if ($min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
+		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
 			$status_changes = 0;
 			$ff_start_utimestamp = $utimestamp;
 		}
 	}
 	else {
 		$status_changes = 0;
-		$ff_start_utimestamp = $utimestamp;
+		$ff_start_utimestamp = $utimestamp if ($module_type =~ m/async/);
 	}
 	
 	# Active ff interval

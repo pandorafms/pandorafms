@@ -25,6 +25,24 @@
  * @param string Snmp especific OID.
  */
 function snmp_generate_trap($snmp_host_address, $snmp_community, $snmp_oid, $snmp_agent, $snmp_data, $snmp_type) {
+	// Call snmptrap
+	if (empty($config['snmptrap'])) {
+		switch (PHP_OS) {
+			case "FreeBSD":
+				$snmpwalk_bin = '/usr/local/bin/snmptrap';
+				break;
+			case "NetBSD":
+				$snmpwalk_bin = '/usr/pkg/bin/snmptrap';
+				break;
+			default:
+				$snmpwalk_bin = 'snmptrap';
+				break;
+		}
+	}
+	else {
+		$snmpwalk_bin = $config['snmptrap'];
+	}
+
 	$command = "snmptrap -v 1 -c " . escapeshellarg($snmp_community) . " " . escapeshellarg($snmp_host_address) . " " . escapeshellarg($snmp_oid) . " "
 			. escapeshellarg($snmp_agent) . " " . escapeshellarg($snmp_type) . " " . escapeshellarg($snmp_data) . " 0 2>&1";
 	

@@ -1,3 +1,8 @@
+2014-06-03  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/agentes/module_manager_editor_common.php: Changed to disable
+	'FF timeout' except async modules.
+
 2014-06-02  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Nice new default colors, it's spring time ! :)

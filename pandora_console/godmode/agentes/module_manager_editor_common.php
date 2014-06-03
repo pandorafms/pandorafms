@@ -394,8 +394,14 @@ $table_advanced->data[5][1] = html_print_input_text ('module_ff_interval', $ff_i
 $table_advanced->colspan[5][1] = 2;
 
 $table_advanced->data[5][3] = __('FF timeout');
-$table_advanced->data[5][4] = html_print_input_text ('ff_timeout', $ff_timeout,
-       '', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Timeout in secs from start of flip flop counting. If this value is exceeded, FF counter is reset. Set to 0 for no timeout.'), true);
+$module_type_name = modules_get_type_name($id_module_type);
+if (preg_match ('/async/', $module_type_name) || $edit) {
+	$table_advanced->data[5][4] = '<span id="ff_timeout">' . html_print_input_text ('ff_timeout', $ff_timeout,
+		'', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Timeout in secs from start of flip flop counting. If this value is exceeded, FF counter is reset. Set to 0 for no timeout.'), true) . '</span>';
+}
+if (!preg_match ('/async/', $module_type_name) || $edit) {
+	$table_advanced->data[5][4] .= '<span id="ff_timeout_disable">' . __('Disabled') . ui_print_help_tip (__('This value can be set only in the async modules.'), true) . '</span>';
+}
 
 /* Tags */
 // This var comes from module_manager_editor.php or policy_modules.php
@@ -706,6 +712,15 @@ $(document).ready (function () {
 			$('#string_warning').show();
 			$('#minmax_critical').hide();
 			$('#minmax_warning').hide();
+		}
+
+		if(type_name_selected.match(/async/) == null) {
+			$('#ff_timeout').hide();
+			$('#ff_timeout_disable').show();
+		}
+		else {
+			$('#ff_timeout').show();
+			$('#ff_timeout_disable').hide();
 		}
 	});
 	

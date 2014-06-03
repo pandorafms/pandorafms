@@ -50,7 +50,7 @@ echo '<div id="news_dialog" title="" style="display: none;">';
 	
 	echo '<div style="position:absolute; margin: 0 auto; top: 340px; right: 10px; width: 570px">';
 		echo '<div style="float: right; width: 20%;">';
-		html_print_submit_button("Ok", 'hide-login-help', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
+		html_print_submit_button("Ok", 'hide-news-help', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
 	echo '</div>';
 	
@@ -93,7 +93,7 @@ $(document).ready (function () {
 			}
 		}
 		
-		$("#submit-hide-login-help").click (function () {
+		$("#submit-hide-news-help").click (function () {
 			$("#news_dialog" ).dialog('close');
 			inew++;
 			show_new ();

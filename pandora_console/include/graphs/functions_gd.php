@@ -201,7 +201,6 @@ function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_
 				
 				//colors
 				$back = ImageColorAllocate($image,255,255,255);
-				imagecolortransparent ($image, $back);
 				
 				$black = ImageColorAllocate($image,0,0,0);
 				$red = ImageColorAllocate($image,255,60,75);
@@ -298,7 +297,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		
 		//colors
 		$back = ImageColorAllocate($image,255,255,255);
-		imagecolortransparent ($image, $back);
+		
 		$bordercolor = ImageColorAllocate($image,174,174,174);
 		$text = ImageColorAllocate($image,74,74,74);
 		$red = ImageColorAllocate($image,255,60,75);
@@ -316,9 +315,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		$soft_red_border = ImageColorAllocate($image,255, 154, 84);
 		$other_red = ImageColorAllocate($image,239, 141, 122);
 		$other_red_border = ImageColorAllocate($image,255, 112, 86);
-		
-		ImageRectangleWithRoundedCorners($image,0,0,$width-1,$height-1,$radius,$back,false);
-		
+				
 		$x1 = 1;
 		$y1 = 1;
 		$x2 = $ratingbar;
@@ -393,8 +390,9 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		}
 		
 		if ($bordercolor !== false) {
-			$x1-=1;
-			$x2 = $width-2;
+			$x1--;
+			$x2 = $width-1;
+			$y1--;
 			imageline($image, $x1+$radius, $y1, $x2-$radius, $y1, $bordercolor);
 			imageline($image, $x1+$radius, $y2, $x2-$radius, $y2, $bordercolor);
 			imageline($image, $x1, $y1+$radius, $x1, $y2-$radius, $bordercolor);

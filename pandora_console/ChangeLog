@@ -1,3 +1,10 @@
+2014-06-03  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_visual_map.php: Now the linked visual
+	maps are opened as a popup.
+	
+	MERGED FROM TRUNK.
+
 2014-05-27 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* godmode/massive/massive_enable_disable_alerts.php,

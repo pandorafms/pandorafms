@@ -1,3 +1,8 @@
+2014-06-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/recon_scripts/snmp-recon.pl: Create a ping module for agents that do
+	  not respond to SNMP.
+
 2014-06-03  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Changed to ignore 'FF timeout' except async

@@ -687,6 +687,18 @@ sub create_pandora_agent($) {
 		}
 	}
 
+	# Create a ping module.
+	my $module_id = get_agent_module_id($DBH, "ping", $agent_id);
+	if ($module_id <= 0) {
+		my %module = ('id_tipo_modulo' => 6,
+			       'id_modulo' => 2,
+		           'nombre' => "ping",
+		           'descripcion' => '',
+		           'id_agente' => $agent_id,
+		           'ip_target' => $device);
+		pandora_create_module_from_hash (\%CONF, \%module, $DBH);
+	}
+
 	# Add interfaces to the agent if it responds to SNMP.
 	return $agent_id unless defined($COMMUNITIES{$device});
 	my @output = snmp_get_value_array($device, $COMMUNITIES{$device}, $IFINDEX);
@@ -726,18 +738,6 @@ sub create_pandora_agent($) {
 		           'tcp_send' => 1,
 		           'snmp_community' => $COMMUNITIES{$device},
 		           'snmp_oid' => "$IFOPERSTATUS.$if_index");
-		pandora_create_module_from_hash (\%CONF, \%module, $DBH);
-	}
-
-	# Create a ping module.
-	my $module_id = get_agent_module_id($DBH, "ping", $agent_id);
-	if ($module_id <= 0) {
-		my %module = ('id_tipo_modulo' => 6,
-			       'id_modulo' => 2,
-		           'nombre' => "ping",
-		           'descripcion' => '',
-		           'id_agente' => $agent_id,
-		           'ip_target' => $device);
 		pandora_create_module_from_hash (\%CONF, \%module, $DBH);
 	}
 

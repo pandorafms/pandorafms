@@ -1,3 +1,8 @@
+2014-06-03  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* include/functions_groups.php: Fixed problem
+	with ACLs in group  view.
+
 2014-06-03  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_visual_map.php: Now the linked visual

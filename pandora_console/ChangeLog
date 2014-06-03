@@ -1,3 +1,11 @@
+2014-06-03  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_visual_map.php: Now the linked visual
+	maps are opened as a popup.
+
+	* include/functions_snmp.php: Added a best way to call the
+	snmpwalk binary.
+
 2014-06-03  Sergio Martin <sergio.martin@artica.es>
 
 	* general/news_dialog.php: Fix a bug in modal window news that

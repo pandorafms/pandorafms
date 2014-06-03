@@ -66,13 +66,15 @@ echo '<div id="login_inner">';
 
 echo '
 	<div id="login_in">
-		<form method="post" action="' . ui_get_full_url('index.php'.$url) . '">';
+		<form method="post" action="' . ui_get_full_url('index.php'.$url) . '" >';
 
 	//TODO: Put branding in variables (external file) or database
 	/* CUSTOM BRANDING STARTS HERE */
 
 	// Replace the following with your own URL and logo.
 	// A mashup of the Pandora FMS logo and your companies highly preferred
+	echo '<table id="login_layout"><tr><td rowspan=2 style="width: 200px;">';
+	
 	echo '<a href="' . $logo_link . '">';
 	if (defined ('METACONSOLE')) {
 		html_print_image ("enterprise/meta/images/pandora_login_enterprise.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
@@ -89,11 +91,13 @@ echo '
 	// For stable/live function it might be wise to comment it out
 
 	/* CUSTOM BRANDING ENDS HERE */
-
-
-	echo '<div style="text-align: center; height: 5px !important;">&nbsp;</div>'; 
-
-	echo '<br />';
+	echo '</td><td>';
+	echo '<div class="login_links">';
+	echo '<a href="http://wiki.pandorafms.com/" target="_blank">' . __('Help') . '</a>';
+	echo ' | ';
+	echo '<a href="http://forums.pandorafms.com/" target="_blank">' . __('Support') . '</a>';
+	echo '</div>';
+	echo '</td></tr><tr><td>';
 	
 	switch($login_screen) {
 		case 'login':
@@ -102,14 +106,20 @@ echo '
 					html_print_input_hidden ($key, $value);
 				}
 			}
+			echo '<div class="login_nick_text">';
+			echo __('User') . '<br>';
+			echo '</div>';
 			echo '<div class="login_nick">';
 			html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login login_user"');
+			echo '</div>';
+			echo '<div class="login_pass_text">';
+			echo __('Password') . '<br>';
 			echo '</div>';
 			echo '<div class="login_pass">';
 			html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login login_password"', false, true);
 			echo '</div>';
 			echo '<div class="login_button">';
-			html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
+			html_print_submit_button(__("Login") . '&nbsp;&nbsp;>', "login_button", false, 'class="sub next_login"');
 			echo '</div>';
 			break;
 		case 'logout':
@@ -131,14 +141,15 @@ echo '
 			}
 			break;
 	}
-		
-	echo '<div id="ver_num">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
-
+	
+	echo '</td></tr></table>';
 echo '</form>
 	</div>
 </div>
 </div>
 </div>';
+	
+echo '<div id="ver_num">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 
 
 if (isset ($login_failed)) {

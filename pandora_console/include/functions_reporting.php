@@ -2508,6 +2508,8 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	$date = 0, $return = false, $filter_event_validated = false,
 	$filter_event_critical = false, $filter_event_warning = false, $filter_event_no_validated = false) {
 	
+	global $config;
+	
 	$id_agents = (array)safe_int ($id_agents, 1);
 	
 	if (!is_numeric ($date)) {
@@ -2584,7 +2586,7 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 					"height" => 16,
 					"title" => $title_st));
 			
-			$data[] = $event['count_rep'];
+			$data[] = $event['event_rep'];
 			
 			$data[] = ui_print_truncate_text(
 				io_safe_output($event['evento']),
@@ -2593,9 +2595,15 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 			$data[] = events_print_type_img ($event["event_type"], true);
 			
 			$data[] = get_priority_name ($event['criticity']);
-			$data[] = io_safe_output($event['user_name']);
+			if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
+				$data[] = '<i>' . __('System') . '</i>';
+			}
+			else {
+				$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+				$data[] = io_safe_output($user_name);
+			}
 			$data[] = '<font style="font-size: 6pt;">' .
-				$event['time2'] . '</font>';
+				date($config['date_format'], $event['timestamp_rep']) . '</font>';
 			array_push ($table->data, $data);
 		}
 	}

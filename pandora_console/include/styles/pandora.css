@@ -22,7 +22,8 @@ Description: The default Pandora FMS theme layout
 */
 
 * {
-	font-family: verdana, sans-serif;
+	font-family: Nunito, verdana, sans-serif;
+	letter-spacing: 0.03pt;
 	font-size: 8pt;
 	color: #3F3F3F;
 }
@@ -143,7 +144,6 @@ p.center {
 h1#log_title {
 	font-size: 18px;
 	margin-bottom: 0px;
-	color: #CCC;
 }
 div#log_msg {
 	display:none;
@@ -311,6 +311,13 @@ div#foot {
 /* LOGIN STYLES */
 /****************/
 
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(../../fonts/nunito.woff) format('woff');
+}
+
 #login_body {
 	/* Set rules to fill background */
 	min-height: 100%;
@@ -326,8 +333,8 @@ div#foot {
 	left: 0;
 	z-index: -999;
 	
-	background-image: url('../../images/login_background.png');
-	background-color: #3f3f3f;
+	background-color: #DDD;
+	background-image: url(../../images/login_background.png);
 	background-repeat: repeat;
 }
 
@@ -339,7 +346,6 @@ div#foot {
 }
 
 p.log_in {
-	color: #CCC;
 	padding: 0px 10px;
 }
 h1#log_f {
@@ -361,29 +367,53 @@ div#login_in, #login_f {
 
 .databox_login, .databox_logout {
 	border: none !important;
-	background-color: #888888;
-	padding: 8px;
+	padding: 4px;
 	border-radius: 11px;
-	height: 300px;
+	height: 227px;
 }
 
 #login_inner {
-	background: url('../../images/splash_bg.png') #111;
 	width: 100%;
 	height: 100%;
-	border-radius: 11px;
+	border-radius: 4px;
 	overflow: hidden;
+	
+	/* Browser without multibackground support */
+	background: #ffffff !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#E9E9E9)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: -webkit-linear-gradient(top, #ffffff, #E9E9E9) !important;
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #ffffff, #E9E9E9) !important;
+    /* Opera 11.10+ */
+    background: -o-linear-background(top, #ffffff, #E9E9E9) !important;
+    /* IE 10 */
+    background: -ms-linear-background(top, #ffffff, #E9E9E9) !important;
+    /* estÃ¡ndar */
+    background: linear-background(top, #ffffff, #E9E9E9) !important;
 }
 #login_outer {
-	-moz-box-shadow: 0px 0px 18px #ffffff; 
-	-webkit-box-shadow: 0px 0px 18px #ffffff; 
-	box-shadow: 0px 0px 18px #ffffff;
+	-moz-box-shadow: 8px 8px 30px #777;
+	-webkit-box-shadow: 8px 8px 30px #777; 
+	box-shadow: 8px 8px 30px #777;
 	padding: 3px;
 	border-radius: 11px;
-	width: 250px !important;
+	width: 431px !important;
 	margin: 100px auto;
-	background: transparent;
+	background-color: #3f3f3f;
 }
+
+#login_outer * {
+	font-family: Nunito, "Arial Rounded MT", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+}
+
+table#login_layout {
+	width: 100%;
+	height: 213px;
+}
+
 div#error_login {
 	#margin: 0 auto;
 	#margin-top: -10px; 
@@ -413,55 +443,98 @@ div#login_f {
 
 IMG.login_logo {
 	border: 0px;
-	width: 150px;
+	width: 140px;
 	margin-top: 15px;
 	margin-bottom: 15px;
 }
 
-input.login:focus {
-	outline-width: 0;
-	-moz-box-shadow:    0px 0px 3px 2px #7fbe41;
-	-webkit-box-shadow: 0px 0px 3px 2px #7fbe41;
-	box-shadow:         0px 0px 3px 2px #7fbe41;
+a:focus, input:focus {
+	utline-width: 0;
+	outline: 0;
 }
 
-DIV.login_button {
+DIV.login_button, DIV.login_links {
 	text-align:right;
-	width: 144px;
-	margin: 18px auto;
+	width: 191px;
+	margin: 16px 0px 17px 0px;
 }
 
-DIV.login_nick {
-	
+input.next_login {
+	padding-right: 12px !important;
+	padding-left: 12px !important;
+	height: 23px;
+	text-align: center;
+	font-weight: 600 !important;
+	letter-spacing: 0.5pt;
+	font-size: 12px !important;
+	border-radius: 3px !important;
+}
+
+DIV.login_nick, DIV.login_pass {
+	text-align: left;
+}
+
+DIV.login_links a {
+	letter-spacing: 0.8pt;
+}
+
+DIV.login_links a:first-child {
+	margin-right: 5px;
+}
+
+DIV.login_links a:last-child {
+	margin-left: 5px;
+}
+
+DIV.login_nick_text {
+	text-align: left;
+	margin-bottom: 3px;
+	width: 191px;
+	margin: 5px 0px;
+	font-size: 12px;
+	letter-spacing: 0.4pt;
+}
+
+DIV.login_pass_text {
+	text-align: left;
+	width: 191px;
+	margin: 13px 0px 5px 0px;
+	font-size: 12px;
+	letter-spacing: 0.4pt;
 }
 
 DIV.login_pass {
-	margin-top: 21px;
 }
 
 input.login {
 	border: 0px none;
 	background-color: #ebebeb !important;
-	margin: 0px auto;
+	margin: 0px 0px;
 	width: 135px;
 	height: 18px;
-	font-weight: bold;
+	font-weight: 100 !important;
+	
+	letter-spacing: 0.3pt;
 }
 
 input.login_user {
 	/* Browser without multibackground support */
-	background: #efefef url(../../images/input_user.png) no-repeat 7px 1px !important;
-	padding-left: 32px;
-	width: 106px;
+	background-color: #e2e2e2 !important;
+	padding-left: 8px;
+	width: 179px;
 	color: #222;
+	height: 18px;
+	-webkit-box-shadow: 0 0 0px 1000px #e2e2e2 inset;
 }
 
 input.login_password {
 	/* Browser without multibackground support */
-	background: #efefef url(../../images/input_lock.png) no-repeat 7px 1px !important;
-	padding-left: 32px;
-	width: 106px;
+	background-color: #e2e2e2 !important;
+	padding-left: 8px;
+	width: 179px;
 	color: #222;
+	height: 18px;
+	-webkit-box-shadow: 0 0 0px 1000px #e2e2e2 inset;
 }
 .databox_error {
 	width: 657px !important;
@@ -472,12 +545,20 @@ input.login_password {
 }
 
 #ver_num {
-	position: relative; 
-	color: #696969;
+	color: #000;
 	font-size: xx-small;
+	background: white;
 	margin-top: 32px;
+	margin: 0 auto;
+	width: 100px;
+	position: absolute;
+	bottom: 10px;
+	right: 0px;
 }
 
+input:-webkit-autofill {
+    #-webkit-box-shadow: 0 0 0px 1000px #DDD inset;
+}
 /***********************/
 /* END OF LOGIN STYLES */
 /***********************/
@@ -529,7 +610,7 @@ input.sub[disabled] {
 	cursor: default;
 }
 
-input.next, input.next_login, input.upd, input.ok, input.wand, input.delete, input.cog,
+input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
 input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
 input.cancel, input.default, input.filter, input.pdf {
@@ -538,7 +619,7 @@ input.cancel, input.default, input.filter, input.pdf {
 	
 }
 
-input.next, input.next_login {
+input.next {
 	background-image: url(../../images/input_go.png) !important;
 }
 input.upd {

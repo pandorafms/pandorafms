@@ -548,7 +548,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment', $m
 	}
 	
 	// If the event hasn't owner, assign the user as owner
-	events_change_owner ($id_event, $similars);
+	events_change_owner ($id_event);
 	
 	// Get the current event comments
 	$first_event = $id_event;
@@ -1224,19 +1224,10 @@ function events_get_agent ($id_agent, $period, $date = 0,
 		$sql_where .= ' AND estado = 0 ';
 	}
 	
-	$sql = sprintf ('SELECT id_usuario,
-			(SELECT t2.fullname
-				FROM tusuario AS t2
-				WHERE t2.id_user = t3.id_usuario) AS user_name,
-			estado, id_agentmodule, evento, event_type, criticity,
-			count(*) AS count_rep, max(timestamp) AS time2
-		FROM tevento as t3
-		WHERE id_agente = %d AND utimestamp > %d
-			AND utimestamp <= %d ' . $sql_where . '
-		GROUP BY id_agentmodule, evento
-		ORDER BY time2 DESC', $id_agent, $datelimit, $date);
+	$sql_where .= sprintf(' id_agente = %d AND utimestamp > %d
+			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
 	
-	return db_get_all_rows_sql ($sql);
+	return events_get_events_grouped($sql_where);
 }
 
 /**

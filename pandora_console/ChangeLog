@@ -1,3 +1,18 @@
+2014-06-03  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	images/login_background.png
+	general/login_page.php: Change the whole
+	login screen to new style
+
+	* fonts
+	fonts/nunito.woff: Added a web font
+
+	* include/functions_events.php
+	include/functions_reporting.php: Fix a bug in the
+	agent events item on reports to reutilize the 
+	standard code
+
 2014-06-03  Vanessa Gil <vanessa.gil@artica.es>
 	
 	* include/functions_groups.php: Fixed problem

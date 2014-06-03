@@ -247,9 +247,13 @@ function groups_get_childrens($parent, $groups = null) {
 		if ($group['id_grupo'] == 0) {
 			continue;
 		}
-		if ($group['parent'] == $parent) {
-			$return = $return + array($group['id_grupo'] => $group) + groups_get_childrens($group['id_grupo'], $groups);
+		
+		if ($group['propagate']) {
+			if ($group['parent'] == $parent) {
+				$return = $return + array($group['id_grupo'] => $group) + groups_get_childrens($group['id_grupo'], $groups);
+			}
 		}
+		
 	}
 	
 	return $return;

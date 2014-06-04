@@ -1,3 +1,10 @@
+2014-06-04  Sergio Martin <sergio.martin@artica.es>
+
+	* extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql
+	extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql: Added missed 
+	field ff_timeout to tagente_modulo in migration scripts
+
 2014-06-03  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

@@ -210,3 +210,10 @@ ALTER TABLE tnews ADD COLUMN expire_timestamp TIMESTAMP default NULL;
 -- Table `tagente_estado`
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente_estado ADD COLUMN ff_start_utimestamp NUMBER(10, 0) default 0;
+
+/* 2014/06/04 */
+-- ---------------------------------------------------------------------
+-- Table `tagente_modulo`
+-- ---------------------------------------------------------------------
+ALTER TABLE tagente_modulo ADD COLUMN ff_timeout INTEGER default 0;
+

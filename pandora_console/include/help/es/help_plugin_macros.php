@@ -17,13 +17,15 @@ Las siguientes macros están disponibles:
 <li>_modulegroup_ : Nombre del grupo del módulo.</li>
 <li>_moduledescription_: Descripcion del modulo.</li>
 <li>_modulestatus_ : Estado del módulo.</li>
-<li>_moduletags_ : Etiquetas asociadas al módulo.</li>
 <li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de Pandora.</li>
 <li>_policy_: Nombre de la política a la que pertenece el módulo (si aplica).</li>
 <li>_interval_ : Intervalo de la ejecución del módulo. </li>
 <li>_target_ip_ : Dirección IP del objetivo del módulo.</li>
 <li>_target_port_ : Puerto del objetivo del módulo.</li>
 <li>_plugin_parameters_ : Parámetros del Plug-in del módulo.</li>
-<li>_email_tag_ : Emails asociados a los tags de módulos.</li>
+<li>_name_tag_ : Names of the tags associated to the module.</li>
+<li>_email_tag_ : Emails associated to the module tags.</li>
+<li>_phone_tag_ : Phone numbers associated to the module tags.</li>
+<li>_moduletags_ : URLs associated to the module tags.</li>
 
 </ul>

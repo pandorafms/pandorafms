@@ -26,7 +26,6 @@ Besides the defined module macros, the following macros are available:
 <li>_modulegroup_ : Module group name.</li>
 <li>_moduledescription_ : Description of the module who fired the alert.</li>
 <li>_modulestatus_ : Status of the module.</li>
-<li>_moduletags_ : Tags associated to the module.</li>
 <li>_alert_name_ : Alert name.</li>
 <li>_alert_priority_ : Numerical alert priority.</li>
 <li>_alert_text_severity_ : Text alert severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
@@ -41,7 +40,10 @@ Besides the defined module macros, the following macros are available:
 <li>_plugin_parameters_ : Plug-in Parameters of the module.</li>
 <li>_groupcontact_ : Group contact information.	Configured when the group is created.</li>
 <li>_groupother_ : Other information about the group. Configured when the group is created.</li>
+<li>_name_tag_ : Names of the tags associated to the module.</li>
 <li>_email_tag_ : Emails associated to the module tags.</li>
+<li>_phone_tag_ : Phone numbers associated to the module tags.</li>
+<li>_moduletags_ : URLs associated to the module tags.</li>
 
 </ul>
 <p>

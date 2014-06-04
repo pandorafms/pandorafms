@@ -27,7 +27,6 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_modulegroup_ : Nombre del grupo del módulo.</li>
 <li>_moduledescription_: Descripcion del modulo.</li>
 <li>_modulestatus_ : Estado del módulo.</li>
-<li>_moduletags_ : Etiquetas asociadas al módulo.</li>
 <li>_alert_name_: Nombre de la alerta.</li>
 <li>_alert_priority_: Prioridad numérica de la alerta.</li>
 <li>_alert_text_severity_: Prioridad en texto de la alerta. (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
@@ -42,7 +41,10 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_plugin_parameters_ : Parámetros del Plug-in del módulo.</li>
 <li>_groupcontact_ : Información de contacto del grupo.	Se configura al crear el grupo.</li>
 <li>_groupother_ : Otra información sobre el grupo. Se configura al crear el grupo.</li>
+<li>_name_tag_ : Nombre de los tags asociados al módulo.</li>
 <li>_email_tag_ : Emails asociados a los tags de módulos.</li>
+<li>_phone_tag_ : Teléfonos asociados a los tags de módulos.</li>
+<li>_moduletags_ : Teléfonos asociados a los tags de módulos.</li>
 
 </ul>
 <p>

@@ -1,5 +1,13 @@
 2014-06-04  Sergio Martin <sergio.martin@artica.es>
 
+	* include/help/es/help_plugin_macros.php
+	include/help/es/help_alert_macros.php
+	include/help/en/help_plugin_macros.php
+	include/help/en/help_alert_macros.php: Added missed and
+	new macros to help
+
+2014-06-04  Sergio Martin <sergio.martin@artica.es>
+
 	* include/constants.php
 	include/functions_graph.php
 	include/functions_reporting.php

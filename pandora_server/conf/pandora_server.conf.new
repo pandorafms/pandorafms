@@ -61,7 +61,7 @@ dbpass pandora
 
 # dbhost: Database hostname or IP address
 
-dbhost localhost
+dbhost 127.0.0.1
 
 # dbport: Database port number
 # Default value depends on the dbengine (mysql: 3306, postgresql: 5432, oracle: 1521)

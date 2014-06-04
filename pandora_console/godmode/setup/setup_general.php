@@ -161,8 +161,13 @@ if ($config["integria_enabled"]) {
 }
 
 $table->data[19][0] = __('Enable Netflow');
-$table->data[19][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_netflow', 1, '', $config["activate_netflow"], true).'&nbsp;&nbsp;';
-$table->data[19][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_netflow', 0, '', $config["activate_netflow"], true);
+$rbt_disabled = false;
+if (strtoupper(substr(PHP_OS, 0, 3) == 'WIN')) {
+	$rbt_disabled = true;
+	$table->data[19][0] .= ui_print_help_tip (__('Not supported in Windows systems.'), true);
+}
+$table->data[19][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('activate_netflow', 1, '', $config["activate_netflow"], $rbt_disabled, '', '', true).'&nbsp;&nbsp;';
+$table->data[19][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('activate_netflow', 0, '', $config["activate_netflow"], $rbt_disabled, '', '', true);
 
 $zone_name = array('Africa' => __('Africa'), 'America' => __('America'), 'Antarctica' => __('Antarctica'), 'Arctic' => __('Arctic'), 'Asia' => __('Asia'), 'Atlantic' => __('Atlantic'), 'Australia' => __('Australia'), 'Europe' => __('Europe'), 'Indian' => __('Indian'), 'Pacific' => __('Pacific'), 'UTC' => __('UTC'));
 

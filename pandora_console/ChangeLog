@@ -1,3 +1,8 @@
+2014-06-04  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* godmode/agentes/planned_downtime.editor.php: Check
+	creation date in scheduled downtime.
+
 2014-06-04  Sergio Martin <sergio.martin@artica.es>
 
 	* extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql

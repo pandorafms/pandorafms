@@ -4051,4 +4051,35 @@ function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text =
 	
 	return $div;
 }
+
+function get_criticity_pie_colors ($data_graph) {
+	$colors = array();
+	foreach (array_keys($data_graph) as $crit) {
+		switch ($crit) {
+			case __('Maintenance'): 
+				$colors[$crit] = COL_MAINTENANCE;
+				break;
+			case __('Informational'): 
+				$colors[$crit] = COL_INFORMATIONAL;
+				break;
+			case __('Normal'): 
+				$colors[$crit] = COL_NORMAL;
+				break;
+			case __('Warning'): 
+				$colors[$crit] = COL_WARNING;
+				break;
+			case __('Critical'): 
+				$colors[$crit] = COL_CRITICAL;
+				break;
+			case __('Minor'): 
+				$colors[$crit] = COL_MINOR;
+				break;
+			case __('Major'): 
+				$colors[$crit] = COL_MAJOR;
+				break;
+		}
+	}
+	
+	return $colors;
+}
 ?>

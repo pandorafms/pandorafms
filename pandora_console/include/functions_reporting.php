@@ -2555,61 +2555,65 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 		}
 	}
 
-	if ($events)
-	foreach ($events as $eventRow) {
-		foreach ($eventRow as $k => $event) {
-			//First pass along the class of this row
-			$table->cellclass[$k][1] = $table->cellclass[$k][2] = 
-			$table->cellclass[$k][4] = $table->cellclass[$k][5] =
-			$table->cellclass[$k][6] =
-				get_priority_class ($event["criticity"]);
-			
-			$data = array ();
-			// Colored box
-			switch ($event['estado']) {
-				case 0:
-					$img_st = "images/star.png";
-					$title_st = __('New event');
-					break;
-				case 1:
-					$img_st = "images/tick.png";
-					$title_st = __('Event validated');
-					break;
-				case 2:
-					$img_st = "images/hourglass.png";
-					$title_st = __('Event in process');
-					break;
+	if ($events) {
+		$note = '';
+		if (count($events) >= 1000) {
+			$note .= '* ' . __('Maximum of events shown') . ' (1000)<br>';
+		}
+		foreach ($events as $eventRow) {
+			foreach ($eventRow as $k => $event) {
+				//First pass along the class of this row
+				$table->cellclass[$k][1] = $table->cellclass[$k][2] = 
+				$table->cellclass[$k][4] = $table->cellclass[$k][5] =
+				$table->cellclass[$k][6] =
+					get_priority_class ($event["criticity"]);
+				
+				$data = array ();
+				// Colored box
+				switch ($event['estado']) {
+					case 0:
+						$img_st = "images/star.png";
+						$title_st = __('New event');
+						break;
+					case 1:
+						$img_st = "images/tick.png";
+						$title_st = __('Event validated');
+						break;
+					case 2:
+						$img_st = "images/hourglass.png";
+						$title_st = __('Event in process');
+						break;
+				}
+				$data[] = html_print_image ($img_st, true, 
+					array ("class" => "image_status",
+						"width" => 16,
+						"title" => $title_st));
+				
+				$data[] = $event['event_rep'];
+				
+				$data[] = ui_print_truncate_text(
+					io_safe_output($event['evento']),
+					140, false, true);
+				//$data[] = $event['event_type'];
+				$data[] = events_print_type_img ($event["event_type"], true);
+				
+				$data[] = get_priority_name ($event['criticity']);
+				if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
+					$data[] = '<i>' . __('System') . '</i>';
+				}
+				else {
+					$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+					$data[] = io_safe_output($user_name);
+				}
+				$data[] = '<font style="font-size: 6pt;">' .
+					date($config['date_format'], $event['timestamp_rep']) . '</font>';
+				array_push ($table->data, $data);
 			}
-			$data[] = html_print_image ($img_st, true, 
-				array ("class" => "image_status",
-					"width" => 16,
-					"height" => 16,
-					"title" => $title_st));
-			
-			$data[] = $event['event_rep'];
-			
-			$data[] = ui_print_truncate_text(
-				io_safe_output($event['evento']),
-				140, false, true);
-			//$data[] = $event['event_type'];
-			$data[] = events_print_type_img ($event["event_type"], true);
-			
-			$data[] = get_priority_name ($event['criticity']);
-			if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
-				$data[] = '<i>' . __('System') . '</i>';
-			}
-			else {
-				$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-				$data[] = io_safe_output($user_name);
-			}
-			$data[] = '<font style="font-size: 6pt;">' .
-				date($config['date_format'], $event['timestamp_rep']) . '</font>';
-			array_push ($table->data, $data);
 		}
 	}
 	
 	if ($events)
-		return html_print_table ($table, $return);
+		return html_print_table ($table, $return) . $note;
 }
 
 /**
@@ -2627,6 +2631,8 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$date = 0, $return = false, $html = true,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false) {
+		
+	global $config;
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -2661,6 +2667,10 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 		$filter_event_warning, $filter_event_no_validated);
 	
 	if ($events) {
+		$note = '';
+		if (count($events) >= 1000) {
+			$note .= '* ' . __('Maximum of events shown') . ' (1000)<br>';
+		}
 		foreach ($events as $k => $event) {
 			//First pass along the class of this row
 			$table->cellclass[$k][1] = $table->cellclass[$k][3] =
@@ -2688,7 +2698,6 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 			$data[] = html_print_image ($img_st, true, 
 				array ("class" => "image_status",
 					"width" => 16,
-					"height" => 16,
 					"title" => $title_st,
 					"id" => 'status_img_' . $event["id_evento"]));
 			
@@ -2699,20 +2708,26 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 			//$data[1] = $event['event_type'];
 			$data[] = events_print_type_img ($event["event_type"], true);
 			
-			if (!empty($event['agent_name']))
-				$data[] = $event['agent_name'];
+			if (!empty($event['id_agente']))
+				$data[] = agents_get_name($event['id_agente']);
 			else
 				$data[] = __('Pandora System');
 			$data[] = get_priority_name ($event['criticity']);
-			$data[] = io_safe_output($event['user_name']);
+			if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
+				$data[] = '<i>' . __('System') . '</i>';
+			}
+			else {
+				$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+				$data[] = io_safe_output($user_name);
+			}
 			$data[] = '<font style="font-size: 6pt;">' .
-				$event['timestamp'] .
+				date($config['date_format'], $event['timestamp_rep']) .
 				'</font>';
 			array_push ($table->data, $data);
 		}
 		
 		if ($html) {
-			return html_print_table ($table, $return);
+			return html_print_table ($table, $return) . $note;
 		}
 		else {
 			return $table;
@@ -2739,6 +2754,8 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
  * @return mixed A table object (XHTML) or object table is false the html.
  */
 function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 0, $return = false, $html = true) {
+	global $config;
+	
 	$id_modules = (array)safe_int ($id_modules, 1);
 	
 	if (!is_numeric ($date)) {
@@ -2755,11 +2772,14 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 
 	$table->width = '99%';
 	$table->data = array ();
 	$table->head = array ();
-	$table->head[0] = __('Event name');
-	$table->head[1] = __('Event type');
-	$table->head[2] = __('Criticity');
-	$table->head[3] = __('Count');
-	$table->head[4] = __('Timestamp');
+	$table->head[0] = __('Status');
+	$table->head[1] = __('Event name');
+	$table->head[2] = __('Event type');
+	$table->head[3] = __('Criticity');
+	$table->head[4] = __('Count');
+	$table->head[5] = __('Timestamp');
+	$table->style[0] = 'text-align: center;';
+	$table->style[4] = 'text-align: center;';
 	
 	$events = array ();
 	
@@ -2771,20 +2791,51 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 
 	}
 	
 	if ($events) {
+		$note = '';
+		if (count($events) >= 1000) {
+			$note .= '* ' . __('Maximum of events shown') . ' (1000)<br>';
+		}
 		foreach ($events as $eventRow) {
-			foreach ($eventRow as $event) {
+			foreach ($eventRow as $k => $event) {
+				//$k = count($table->data);
+				$table->cellclass[$k][1] = $table->cellclass[$k][2] =
+				$table->cellclass[$k][3] = $table->cellclass[$k][4] =
+				$table->cellclass[$k][5] =  get_priority_class ($event["criticity"]);
+				
 				$data = array ();
-				$data[0] = io_safe_output($event['evento']);
-				$data[1] = $event['event_type'];
-				$data[2] = get_priority_name ($event['criticity']);
-				$data[3] = $event['count_rep'];
-				$data[4] = $event['time2'];
+				
+				// Colored box
+				switch ($event['estado']) {
+					case 0:
+						$img_st = "images/star.png";
+						$title_st = __('New event');
+						break;
+					case 1:
+						$img_st = "images/tick.png";
+						$title_st = __('Event validated');
+						break;
+					case 2:
+						$img_st = "images/hourglass.png";
+						$title_st = __('Event in process');
+						break;
+				}
+				$data[0] = html_print_image ($img_st, true, 
+					array ("class" => "image_status",
+						"width" => 16,
+						"title" => $title_st,
+						"id" => 'status_img_' . $event["id_evento"]));
+						
+				$data[1] = io_safe_output($event['evento']);
+				$data[2] = $event['event_type'];
+				$data[3] = get_priority_name ($event['criticity']);
+				$data[4] = $event['event_rep'];
+				$data[5] = date($config['date_format'], $event['timestamp_rep']);
 				array_push ($table->data, $data);
 			}
 		}
 		
 		if ($html) {
-			return html_print_table ($table, $return);
+			return html_print_table ($table, $return) . $note;
 		}
 		else {
 			return $table;
@@ -3802,6 +3853,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_no_validated);
 				
 				$table_event_graph = null;
+				$table_event_graph->width = '100%';
+				$table_event_graph->style[0] = 'text-align: center;';
 				$table_event_graph->head[0] = __('Events validated by user');
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
@@ -3824,14 +3877,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_critical,
 					$filter_event_warning,
 					$filter_event_no_validated);
+						
+				$colors = get_criticity_pie_colors($data_graph);
 				
 				$table_event_graph = null;
+				$table_event_graph->width = '100%';
+				$table_event_graph->style[0] = 'text-align: center;';
 				$table_event_graph->head[0] = __('Events by criticity');
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
 					$config['homedir'] .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']);
+					$config['fontpath'], $config['font_size'], 1, false, $colors);
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
@@ -3850,6 +3907,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_no_validated);
 				
 				$table_event_graph = null;
+				$table_event_graph->width = '100%';
+				$table_event_graph->style[0] = 'text-align: center;';
 				$table_event_graph->head[0] = __('Amount events validated');
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
@@ -4061,6 +4120,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_no_validated);
 				
 				$table_event_graph = null;
+				$table_event_graph->width = '100%';
+				$table_event_graph->style[0] = 'text-align: center;';
 				$table_event_graph->head[0] = __('Events by agent');
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
@@ -4086,6 +4147,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events validated by user');
+				$table_event_graph->width = '100%';
+				$table_event_graph->style[0] = 'text-align: center;';
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
@@ -4107,14 +4170,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_critical,
 					$filter_event_warning,
 					$filter_event_no_validated);
-				
+								
+				$colors = get_criticity_pie_colors($data_graph);
+
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events by criticity');
+				$table_event_graph->width = '100%';
+				$table_event_graph->style[0] = 'text-align: center;';
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
 					$config['homedir'] .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']);
+					$config['fontpath'], $config['font_size'], 1, false, $colors);
 				
 				$data[0] = html_print_table($table_event_graph, true);
 				
@@ -4134,6 +4201,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Amount events validated');
+				$table_event_graph->width = '100%';
+				$table_event_graph->style[0] = 'text-align: center;';
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",

@@ -1127,6 +1127,45 @@ function get_priority_class($priority) {
 }
 
 /**
+ * Get priority style from priority class (CSS class).
+ *
+ * @param string priority class.
+ *
+ * @return string CSS priority class.
+ */
+function get_priority_style($priority_class) {
+	switch ($priority_class) {
+		case "datos_blue":
+			$style_css_criticity = 'background-color: ' . COL_INFORMATIONAL . '; color: #FFFFFF;';
+			break;
+		case "datos_grey":
+			$style_css_criticity = 'background-color: ' . COL_UNKNOWN . '; color: #FFFFFF;';
+			break;
+		case "datos_green":
+			$style_css_criticity = 'background-color: ' . COL_NORMAL . '; color: #FFFFFF;';
+			break;
+		case "datos_yellow":
+			$style_css_criticity = 'background-color: ' . COL_WARNING . ';';
+			break;
+		case "datos_red":
+			$style_css_criticity = 'background-color: ' . COL_CRITICAL . '; color: #FFFFFF;';
+			break;
+		case "datos_pink":
+			$style_css_criticity = 'background-color: ' . COL_MINOR . ';';
+			break;
+		case "datos_brown":
+			$style_css_criticity = 'background-color: ' . COL_MAJOR . '; color: #FFFFFF;';
+			break;
+		case "datos_grey":
+		default:
+			$style_css_criticity = 'background-color: ' . COL_UNKNOWN . '; color: #FFFFFF;';
+			break;
+	}
+	
+	return $style_css_criticity;
+}
+
+/**
  * Check if the enterprise version is installed.
  * 
  * @return boolean If it is installed return true, otherwise return false.

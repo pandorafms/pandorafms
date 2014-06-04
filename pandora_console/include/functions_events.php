@@ -1102,22 +1102,10 @@ function events_get_group_events ($id_group, $period, $date,
 	if ($filter_event_no_validated) {
 		$sql_where .= ' AND estado = 0 ';
 	}
+	$sql_where .= sprintf(' AND id_grupo IN (%s) AND utimestamp > %d
+			AND utimestamp <= %d ', implode (",", $id_group), $datelimit, $date);
 	
-	
-	$sql = sprintf ('SELECT *,
-		(SELECT t2.nombre
-			FROM tagente AS t2
-			WHERE t2.id_agente = t3.id_agente) AS agent_name,
-		(SELECT t2.fullname
-			FROM tusuario AS t2
-			WHERE t2.id_user = t3.id_usuario) AS user_name
-		FROM tevento AS t3
-		WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo IN (%s) ' . $sql_where . '
-		ORDER BY utimestamp ASC',
-		$datelimit, $date, implode (",", $id_group));
-	
-	return db_get_all_rows_sql ($sql);
+	return events_get_events_grouped($sql_where, 0, 1000);
 }
 
 /**
@@ -1205,7 +1193,8 @@ function events_get_agent ($id_agent, $period, $date = 0,
 	
 	$datelimit = $date - $period;
 	
-	$sql_where = ' AND 1 = 1 ';
+	$sql_where = '';
+	
 	$criticities = array();
 	if ($filter_event_critical) {
 		$criticities[] = 4;
@@ -1224,10 +1213,10 @@ function events_get_agent ($id_agent, $period, $date = 0,
 		$sql_where .= ' AND estado = 0 ';
 	}
 	
-	$sql_where .= sprintf(' id_agente = %d AND utimestamp > %d
+	$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
 			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
 	
-	return events_get_events_grouped($sql_where);
+	return events_get_events_grouped($sql_where, 0, 1000);
 }
 
 /**
@@ -1250,6 +1239,11 @@ function events_get_module ($id_agent_module, $period, $date = 0) {
 	}
 	
 	$datelimit = $date - $period;
+	
+	$sql_where .= sprintf(' AND id_agentmodule = %d AND utimestamp > %d
+			AND utimestamp <= %d ', $id_agent_module, $datelimit, $date);
+	
+	return events_get_events_grouped($sql_where, 0, 1000);
 	
 	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
 		FROM tevento

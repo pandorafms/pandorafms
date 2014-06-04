@@ -1,3 +1,7 @@
+2014-06-03  Koichiro KIKUCHI <koichiro@rworks.jp>
+
+	* pandora_agent: Allow spaces in module group names.
+
 2014-05-26  Sancho Lerena <slerena@artica.es>
 
 	* pandora_agent_installer: Fixed installed for Darwin/macOS agent. Tested

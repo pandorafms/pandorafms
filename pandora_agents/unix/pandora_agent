@@ -530,7 +530,7 @@ sub parse_conf_modules($) {
 		} elsif ($line =~ /^\s*module_unit\s+(.*)\s*$/) {
 			$module->{'unit'} = $1;
 		# Module_group
-		} elsif ($line =~ /^\s*module_group\s+(\S+)\s*$/) {
+		} elsif ($line =~ /^\s*module_group\s+(.*?)\s*$/) {
 			$module->{'module_group'} = $1;
 		# Custom id
 		} elsif ($line =~ /^\s*module_custom_id\s+(.*)\s*$/) {

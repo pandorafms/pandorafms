@@ -184,3 +184,9 @@ ALTER TABLE "tnews" ADD COLUMN "expire_timestamp" TIMESTAMP without time zone de
 -- Table `tagente_estado`
 -- ---------------------------------------------------------------------
 ALTER TABLE "tagente_estado" ADD COLUMN "ff_start_utimestamp" BIGINT default 0;
+
+/* 2014/06/04 */
+-- ---------------------------------------------------------------------
+-- Table `tagente_modulo`
+-- ---------------------------------------------------------------------
+ALTER TABLE "tagente_modulo" ADD COLUMN "ff_timeout" int(4) INTEGER default 0;

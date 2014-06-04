@@ -414,10 +414,9 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	
 	/* Create the pPie object */ 
 	$PieChart = new pPie($myPicture,$MyData);
-	
-	foreach ($data_values as $key => $value) {
-		if (isset($colors[$key])) {
-			$PieChart->setSliceColor($key, hex_2_rgb($colors[$key]));
+	foreach ($legend_values as $key => $value) {
+		if (isset($colors[$value])) {
+			$PieChart->setSliceColor($key, hex_2_rgb($colors[$value]));
 		}
 	}
 	

@@ -1,3 +1,18 @@
+2014-06-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/constants.php
+	include/functions_graph.php
+	include/functions_reporting.php
+	include/graphs/functions_pchart.php
+	include/graphs/functions_flot.php
+	include/functions.php
+	include/functions_events.php: Fix a lot of errors
+	on events items on reports using now the same query 
+	as events view, etc.
+
+	* include/styles/pandora.css: Little aesthetic
+	improvement in focus buttons and unset webfont
+
 2014-06-04  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/mergely/*: added mergely javascript library.

@@ -22,7 +22,7 @@ Description: The default Pandora FMS theme layout
 */
 
 * {
-	font-family: Nunito, verdana, sans-serif;
+	font-family: verdana, sans-serif;
 	letter-spacing: 0.03pt;
 	font-size: 8pt;
 	color: #3F3F3F;
@@ -448,7 +448,7 @@ IMG.login_logo {
 	margin-bottom: 15px;
 }
 
-a:focus, input:focus {
+a:focus, input:focus, button:focus {
 	utline-width: 0;
 	outline: 0;
 }

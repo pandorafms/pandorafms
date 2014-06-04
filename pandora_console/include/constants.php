@@ -126,7 +126,7 @@ define('COL_NORMAL','#6EB432');
 define('COL_NOTINIT','#3BA0FF');
 define('COL_UNKNOWN','#AAAAAA');
 define('COL_ALERTFIRED','#FF8800');
-define('COL_MINOR','#FF92E9');
+define('COL_MINOR','#F099A2');
 define('COL_MAJOR','#C97A4A');
 define('COL_INFORMATIONAL','#E4E4E4');
 define('COL_MAINTENANCE','#3BA0FF');

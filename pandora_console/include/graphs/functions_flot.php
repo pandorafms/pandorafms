@@ -395,7 +395,7 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	}
 	
 	$return .= "<script type='text/javascript'>";
-	
+
 	$return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
 		'$series', '$width', $font_size, $water_mark,
 		'$separator', '$legend_position', '$height', '$colors')";

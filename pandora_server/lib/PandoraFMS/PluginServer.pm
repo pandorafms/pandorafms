@@ -200,14 +200,16 @@ sub data_consumer ($$) {
 				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_modulestatus_ => (defined ($module)) ? get_agentmodule_status($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
-				_moduletags_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_moduletags_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
 				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
-				_email_tag_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_email_tag_ => (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_phone_tag_ => (defined ($module)) ? pandora_get_module_phone_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_name_tag_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 	);
 	$parameters = subst_alert_macros ($parameters, \%macros);
 

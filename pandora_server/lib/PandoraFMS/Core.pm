@@ -162,8 +162,9 @@ our @EXPORT = qw(
 	pandora_generate_alerts
 	pandora_get_config_value
 	pandora_get_module_tags
-	pandora_get_module_phone_tags
 	pandora_get_module_url_tags
+	pandora_get_module_phone_tags
+	pandora_get_module_email_tags
 	pandora_get_os
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
@@ -843,7 +844,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_modulestatus_ => (defined ($module)) ? get_agentmodule_status_str($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
-				_moduletags_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_moduletags_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
@@ -851,8 +852,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
 				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
-				_email_tag_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_email_tag_ => (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				_phone_tag_ => (defined ($module)) ? pandora_get_module_phone_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_name_tag_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -2652,7 +2654,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	}
 	else {
 		if (defined ($id_agentmodule) && $id_agentmodule > 0) {
-			$module_tags = pandora_get_module_tags ($pa_config, $dbh, $id_agentmodule);
+			$module_tags = pandora_get_module_url_tags ($pa_config, $dbh, $id_agentmodule);
 		}
 	}
 	
@@ -4150,7 +4152,7 @@ sub pandora_module_unknown ($$) {
 }
 
 ##########################################################################
-=head2 C<< get_event_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+=head2 C<< get_module_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
 
 Get a list of module tags in the format: |tag|tag| ... |tag|
 
@@ -4160,6 +4162,33 @@ sub pandora_get_module_tags ($$$) {
 	my ($pa_config, $dbh, $id_agentmodule) = @_;
 	
 	#~ my @tags = get_db_rows ($dbh, 'SELECT ' . db_concat('ttag.name', 'ttag.url') . ' name_url FROM ttag, ttag_module
+	my @tags = get_db_rows ($dbh, 'SELECT ttag.name FROM ttag, ttag_module
+	                               WHERE ttag.id_tag = ttag_module.id_tag
+	                               AND ttag_module.id_agente_modulo = ?', $id_agentmodule);
+	
+	# No tags found
+	return '' if ($#tags < 0);
+
+	my $tag_string = '';
+	foreach my $tag (@tags) {
+		$tag_string .=  $tag->{'name'} . ',';
+	}
+	
+	# Remove the trailing ','
+	chop ($tag_string);
+	return $tag_string;
+}
+
+##########################################################################
+=head2 C<< get_module_url_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+
+Get a list of module tags in the format: |url|url| ... |url|
+
+=cut
+##########################################################################
+sub pandora_get_module_url_tags ($$$) {
+	my ($pa_config, $dbh, $id_agentmodule) = @_;
+	
 	my @tags = get_db_rows ($dbh, 'SELECT ttag.name,ttag.url name_url FROM ttag, ttag_module
 	                               WHERE ttag.id_tag = ttag_module.id_tag
 	                               AND ttag_module.id_agente_modulo = ?', $id_agentmodule);
@@ -4178,13 +4207,13 @@ sub pandora_get_module_tags ($$$) {
 }
 
 ##########################################################################
-=head2 C<< get_module_url_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+=head2 C<< get_module_email_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
 
 Get a list of email module tags in the format: email,email,...,email
 
 =cut
 ##########################################################################
-sub pandora_get_module_url_tags ($$$) {
+sub pandora_get_module_email_tags ($$$) {
 	my ($pa_config, $dbh, $id_agentmodule) = @_;
 	
 	my @email_tags = get_db_rows ($dbh, 'SELECT ttag.email FROM ttag, ttag_module
@@ -4207,7 +4236,7 @@ sub pandora_get_module_url_tags ($$$) {
 }
 
 ##########################################################################
-=head2 C<< get_module_url_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+=head2 C<< get_module_phone_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
 
 Get a list of phone module tags in the format: phone,phone,...,phone
 

@@ -1,3 +1,8 @@
+2014-06-05  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/search_agents.php: Change the format of the agent interval
+	from seconds to human format for in global search. Ticket #867
+
 2014-06-05  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* extensions/files_repo/files_repo_get_file.php,

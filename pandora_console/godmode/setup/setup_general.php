@@ -162,7 +162,7 @@ if ($config["integria_enabled"]) {
 
 $table->data[19][0] = __('Enable Netflow');
 $rbt_disabled = false;
-if (strtoupper(substr(PHP_OS, 0, 3) == 'WIN')) {
+if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 	$rbt_disabled = true;
 	$table->data[19][0] .= ui_print_help_tip (__('Not supported in Windows systems.'), true);
 }

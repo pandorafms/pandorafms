@@ -18,7 +18,7 @@
 function files_repo_check_directory ($print_messages = false) {
 	global $config;
 
-	$attachment_path = $config['attachment_store'];
+	$attachment_path = io_safe_output($config['attachment_store']);
 	$files_repo_path = $attachment_path."/files_repo";
 
 	$result = false;
@@ -27,7 +27,7 @@ function files_repo_check_directory ($print_messages = false) {
 	// attachment/ check
 	if (!is_writable($attachment_path)) {
 		$messages .= ui_print_error_message(array('message' => __('Attachment directory is not writable by HTTP Server')
-			.'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),
+			.'</h3>'.'<p>'.sprinf(__('Please check that the web server has write rights on the %s directory'), $attachment_path),
 				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	} else {
 		// attachment/agent_packages/ check
@@ -38,7 +38,7 @@ function files_repo_check_directory ($print_messages = false) {
 			}
 			if (!is_writable($files_repo_path)) {
 				$messages .= ui_print_error_message(array('message' => __('Attachment directory is not writable by HTTP Server')
-					.'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),
+					.'</h3>'.'<p>'.sprinf(__('Please check that the web server has write rights on the %s directory'), $attachment_path),
 						'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 			} else {
 				$result = true;
@@ -127,7 +127,7 @@ function files_repo_get_files ($filter = false, $count = false) {
 	global $config;
 
 	// Don't use the realpath for the download links!
-	$files_repo_path = $config['attachment_store']."/files_repo";
+	$files_repo_path = io_safe_output($config['attachment_store'])."/files_repo";
 
 	$sql = "SELECT * FROM tfiles_repo " . db_format_array_where_clause_sql($filter, "AND", "WHERE");
 	$files = db_get_all_rows_sql($sql);
@@ -169,7 +169,7 @@ function files_repo_get_files ($filter = false, $count = false) {
 function files_repo_add_file ($file_input_name = "upfile", $description = "", $groups = array(), $public = false) {
 	global $config;
 
-	$attachment_path = $config['attachment_store'];
+	$attachment_path = io_safe_output($config['attachment_store']);
 	$files_repo_path = $attachment_path."/"."files_repo";
 
 	$result = array();
@@ -283,7 +283,7 @@ function files_repo_delete_file ($file_id) {
 	$filename = db_get_value("name", "tfiles_repo", "id", $file_id);
 
 	if ($filename) {
-		$attachment_path = $config['attachment_store'];
+		$attachment_path = io_safe_output($config['attachment_store']);
 		$files_repo_path = $attachment_path."/files_repo";
 		$location = $files_repo_path."/".$file_id."_".$filename;
 

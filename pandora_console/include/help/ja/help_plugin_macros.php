@@ -25,6 +25,9 @@
 <li>_target_ip_ : モジュールの対象IPアドレス</li>
 <li>_target_port_ : モジュールの対象ポート</li>
 <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
+<li>_name_tag_ : モジュールに関連付けられたタグの名前</li>
 <li>_email_tag_ : モジュールタグに関連付けられた Email。</li>
+<li>_phone_tag_ : モジュールタグに関連付けられた電話番号。</li>
+<li>_moduletags_ : モジュールタグに関連付けられた URL。</li>
 
 </ul>

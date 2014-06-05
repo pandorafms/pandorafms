@@ -1,5 +1,10 @@
 2014-06-05  Vanessa Gil <vanessa.gil@artica.es>
 	
+	* godmode/agentes/configurar_agentes.php: Changed
+	interval in conf.
+
+2014-06-05  Vanessa Gil <vanessa.gil@artica.es>
+	
 	* godmode/gis_maps/configure_gis_maps.php: Changed
 	button when you update.
 

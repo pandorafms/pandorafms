@@ -1,3 +1,9 @@
+2014-06-05  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/PluginServer.pm
+	lib/PandoraFMS/Core.pm: Add tags name macro to alerts and plugins.
+	Add tags phones to plugins. Ticket #568
+
 2014-06-04  Mario Pulido  <mario.pulido@artica.es>
 
 	* conf/pandora_server.conf.new: Fixed bug

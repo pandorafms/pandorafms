@@ -136,11 +136,11 @@ $table->data[4][1] .= html_print_input_text ('ff_event', $ff_event,
 	'', 5, 15, true) . '<br />';
 $table->data[4][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
 $table->data[4][1] .= __('To normal');
-$table->data[4][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
+$table->data[4][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true) . ' ';
 $table->data[4][1] .= __('To warning');
-$table->data[4][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
+$table->data[4][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true) . ' ';
 $table->data[4][1] .= __('To critical');
-$table->data[4][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true, $disabledBecauseInPolicy);
+$table->data[4][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true);
 
 $table->data[5][0] = __('Historical data');
 $table->data[5][1] = html_print_checkbox ("history_data", 1, $history_data, true);

@@ -1,3 +1,10 @@
+2014-06-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_deb.sh,
+	  build_rpm.sh,
+	  build_src.sh: Build enterprise server packages, since we are having
+	  issues with ActiveState binaries.
+
 2014-03-11  Mario Pulido <mario.pulido@artica.es>
 
 	* aditional_rpmspec/nfdump-1.6.8p1-1.redhat.spec: Add spec to create nfdump rpms.

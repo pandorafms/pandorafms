@@ -30,7 +30,7 @@ cd $CODEHOME/pandora_agents && tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$
 cd $PANDHOME_ENT/pandora_console && tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-$LOCAL_VERSION.tar.gz --exclude \.svn enterprise/* || exit 1
 
 # Enterprise server
-#cd $PANDHOME_ENT/pandora_server/ && tar zcvf $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz --exclude \.svn  PandoraFMS-Enterprise || exit 1
+cd $PANDHOME_ENT/pandora_server/ && tar zcvf $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz --exclude \.svn  PandoraFMS-Enterprise || exit 1
 
 # Create symlinks needed to build RPM packages
 if [ "$1" == "nightly" ]; then
@@ -39,7 +39,7 @@ if [ "$1" == "nightly" ]; then
 	ln -s $RPMHOME/SOURCES/pandorafms_agent-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_agent-$VERSION.tar.gz || exit 1
 	ln -s $RPMHOME/SOURCES/pandorafms_agent_unix-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz || exit 1
 	ln -s $RPMHOME/SOURCES/pandorafms_console_enterprise-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_console_enterprise-$VERSION.tar.gz || exit 1
-	#ln -s $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_server_enterprise-$VERSION.tar.gz || exit 1
+	ln -s $RPMHOME/SOURCES/pandorafms_server_enterprise-$LOCAL_VERSION.tar.gz $RPMHOME/SOURCES/pandorafms_server_enterprise-$VERSION.tar.gz || exit 1
 fi
 
 exit 0

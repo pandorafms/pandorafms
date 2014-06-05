@@ -112,7 +112,7 @@ else {
 		array_push($table->data, array(
 			$cellName,
 			ui_print_os_icon ($agent["id_os"], false, true),
-			$agent['intervalo'],
+			human_time_description_raw($agent['intervalo'], false, 'tiny'),
 			ui_print_group_icon ($agent["id_grupo"], true),
 			$modulesCell,
 			$agent_info["status_img"],

@@ -44,7 +44,7 @@ if (!$check_hash) {
 }
 
 // Get the location
-$files_repo_path = $config['attachment_store']."/files_repo";
+$files_repo_path = io_safe_output($config['attachment_store'])."/files_repo";
 $location = $files_repo_path."/".$file['id']."_".$file['name'];
 if (!file_exists($location) || !is_readable($location) || !is_file($location)) {
 	throw_error(5); // ERROR

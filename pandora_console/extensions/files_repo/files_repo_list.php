@@ -64,15 +64,18 @@ if (!empty($files)) {
 		$data = array();
 		
 		// Prepare the filename for the get_file.php script
-		$relative_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $file['location']);
+		$document_root = str_replace("\\", "/", io_safe_output($_SERVER['DOCUMENT_ROOT']));
+		$file['location'] = str_replace("\\", "/", io_safe_output($file['location']));
+		$relative_path = str_replace($document_root, '', $file['location']);
 		$file_path = base64_encode($relative_path);
 		$hash = md5($relative_path . $config['dbpass']);
 		$url = ui_get_full_url("include/get_file.php?file=$file_path&hash=$hash");
+		$date_format = ($config['date_format']) ? io_safe_output($config['date_format']) : 'F j, Y - H:m';
 		
 		$data[0] = "<a href=\"$url\" target=\"_blank\">" . $file['name'] . "</a>"; // Name
 		$data[1] = ui_print_truncate_text($file['description'], 'description', true, true); // Description
 		$data[2] = ui_format_filesize($file['size']); // Size
-		$data[3] = date('F j, Y - H:m', $file['mtime']); // Last modification
+		$data[3] = date($date_format, $file['mtime']); // Last modification
 		
 		// Public URL
 		$data[4] = "";

@@ -216,4 +216,7 @@ ALTER TABLE tagente_estado ADD COLUMN ff_start_utimestamp NUMBER(10, 0) default 
 -- Table `tagente_modulo`
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente_modulo ADD COLUMN ff_timeout INTEGER default 0;
-
+ALTER TABLE tagente_modulo ADD COLUMN min_ff_event_normal INTEGER default 0;
+ALTER TABLE tagente_modulo ADD COLUMN min_ff_event_warning INTEGER default 0;
+ALTER TABLE tagente_modulo ADD COLUMN min_ff_event_critical INTEGER default 0;
+ALTER TABLE tagente_modulo ADD COLUMN each_ff NUMBER(1, 0) default 0;

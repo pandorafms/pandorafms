@@ -630,6 +630,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$url_description = (string) get_parameter("url_description");
 	$quiet = (int) get_parameter("quiet", 0);
 	
+	$old_interval = db_get_value('intervalo', 'tagente', 'id_agente', $id_agente);
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();
@@ -705,6 +706,11 @@ if ($update_agent) { // if modified some agent paramenter
 				__('There was a problem updating the agent'));
 		}
 		else {
+			
+			if ($old_interval != $intervalo) {
+				enterprise_hook('config_agents_update_config_interval', array($id_agente, $intervalo));
+			}
+			
 			$info = 'Group: ' . $grupo . ' Interval: ' . $intervalo .
 				' Comments: ' . $comentarios . ' Mode: ' . $modo . 
 				' ID OS: ' . $id_os . ' Disabled: ' . $disabled . 

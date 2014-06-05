@@ -1,3 +1,8 @@
+2014-06-05  Vanessa Gil <vanessa.gil@artica.es>
+	
+	* godmode/gis_maps/configure_gis_maps.php: Changed
+	button when you update.
+
 2014-06-05  Sergio Martin <sergio.martin@artica.es>
 
 	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql

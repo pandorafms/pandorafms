@@ -379,12 +379,7 @@ switch ($action) {
 	case 'save_new':
 	case 'edit_map':
 	case 'update_saved':
-		if (!empty($invalidFields)) {
-			html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
-		}
-		else {
-			html_print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
-		}
+		html_print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
 		break;
 	case 'new_map':
 		html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');

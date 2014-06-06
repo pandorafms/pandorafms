@@ -1,5 +1,11 @@
 2014-06-05  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/ver_agente.php: Fix sql error in the layer that 
+	appears when put the mouse over a node in network map related with tags
+	in users without acl profiles assigned (just admin assigned) Ticket #824
+
+2014-06-05  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/search_agents.php: Change the format of the agent interval
 	from seconds to human format for in global search. Ticket #867
 

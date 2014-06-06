@@ -48,12 +48,14 @@ if ($develop_bypass != 1) {
 		exit;
 	}
 	// Check perms for config.php
-	if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
-		(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
-		(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
-		$login_screen = 'error_perms';
-		require('general/error_screen.php');
-		exit;
+	if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
+		if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
+			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
+			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
+			$login_screen = 'error_perms';
+			require('general/error_screen.php');
+			exit;
+		}
 	}
 }
 

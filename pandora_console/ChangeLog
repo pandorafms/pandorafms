@@ -1,3 +1,9 @@
+2014-06-06 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* godmode/massive/massive_add_alerts.php: Fixed bug that all
+	agents the user can view would be target of the operation, if
+	the user has an AW privilege for any agent group.
+
 2014-06-05  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/ver_agente.php: Fix sql error in the layer that 

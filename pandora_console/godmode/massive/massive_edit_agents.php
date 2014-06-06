@@ -197,7 +197,7 @@ $table->size[3] = '35%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, "AR", true,
+$table->data[0][1] = html_print_select_groups(false, "AW", true,
 	'id_group', $id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion,
@@ -219,8 +219,8 @@ $table->data[2][0] = __('Agents');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
-$enabled_agents = agents_get_group_agents ($id_group, array('disabled' => 0), "none");
-$all_agents = agents_get_group_agents ($id_group, array('disabled' => 1), "none") + $enabled_agents;
+$enabled_agents = agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false)), array('disabled' => 0), "none");
+$all_agents = agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false)), array('disabled' => 1), "none") + $enabled_agents;
 
 $table->data[2][1] = html_print_select ($all_agents,
 	'id_agents[]', 0, false, '', '', true, true);
@@ -249,7 +249,7 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
-$groups = users_get_groups ($config["id_user"], "AR",false);
+$groups = users_get_groups ($config["id_user"], "AW",false);
 $agents = agents_get_group_agents (array_keys ($groups));
 
 $table->data[0][0] = __('Parent');
@@ -480,6 +480,7 @@ $(document).ready (function () {
 	
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
+		privilege: "AW",
 		status_agents: function () {
 				return $("#status_agents").val();
 			},

@@ -102,7 +102,7 @@ $table->size[3] = '35%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, "AR", true,
+$table->data[0][1] = html_print_select_groups(false, "AW", true,
 	'id_group', $id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion,
@@ -124,7 +124,7 @@ $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $table->data[2][1] = html_print_select(
-	agents_get_group_agents($id_group, false, "none"),
+	agents_get_group_agents(array_keys (users_get_groups ($config["id_user"], "AW", false)), false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
 
 echo '<form method="post" id="form_agents" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents">';
@@ -157,6 +157,7 @@ ui_require_jquery_file ('pandora.controls');
 				return $("#status_agents").val();
 			},
 			agentSelect: "select#id_agents",
+			privilege: "AW",
 			recursion: function() {
 				return recursion;
 			}

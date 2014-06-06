@@ -473,8 +473,9 @@ if (is_ajax ()) {
 
 				$_tags = implode(',', array_keys($_user_tags));
 
-				$_sql_post .= ' AND tagente_modulo.id_agente_modulo IN (SELECT a.id_agente_modulo FROM tagente_modulo a, ttag_module b WHERE a.id_agente_modulo=b.id_agente_modulo AND b.id_tag IN (' . $_tags . ')) ';
-
+				if (!empty($_tags)) {
+					$_sql_post .= ' AND tagente_modulo.id_agente_modulo IN (SELECT a.id_agente_modulo FROM tagente_modulo a, ttag_module b WHERE a.id_agente_modulo=b.id_agente_modulo AND b.id_tag IN (' . $_tags . ')) ';
+				}
 			}
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion,

@@ -1,3 +1,10 @@
+2014-06-06 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* godmode/massive/massive_copy_modules.php,
+	godmode/massive/massive_delete_modules.php: Fixed bug that all
+	agents the user can view could be targets of the operation, if
+	the user has an AW privilege for any.
+
 2014-06-06  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_snmp_browser.php: Fixed an error.

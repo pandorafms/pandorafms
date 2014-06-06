@@ -67,7 +67,7 @@ $table->style[6] = 'font-weight: bold';
 /* Source selection */
 $table->id = 'source_table';
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, "AR", true, 'source_id_group', $source_id_group,
+$table->data[0][1] = html_print_select_groups(false, "AW", true, 'source_id_group', $source_id_group,
 	false, '', '', true);
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("source_recursion", 1, $source_recursion, true, false);
@@ -85,8 +85,12 @@ $table->data[0][6] = __('Agent');
 $table->data[0][6] .= ' <span id="source_agent_loading" class="invisible">';
 $table->data[0][6] .= html_print_image ("images/spinner.png", true);
 $table->data[0][6] .= '</span>';
-$table->data[0][7] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
-	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
+// $table->data[0][7] = html_print_select (agents_get_group_agents ($source_id_group, false, "none"),
+//	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
+$agents = ( $source_id_group ?
+	agents_get_group_agents ($source_id_group, false, "none") :
+	agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false))) );
+$table->data[0][7] = html_print_select ($agents, 'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
 echo '<form action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=copy_modules" id="manage_config_form" method="post">';
 
@@ -164,7 +168,7 @@ $table->size[1] = '30%';
 $table->size[2] = '20%';
 $table->size[3] = '30%';
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select ($groups, 'destiny_id_group',
+$table->data[0][1] = html_print_select_groups(false, "AW", true, 'destiny_id_group',
 	$destiny_id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("destiny_recursion", 1,
@@ -183,8 +187,10 @@ $table->data[2][0] = __('Agent');
 $table->data[2][0] .= '<span id="destiny_agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image ("images/spinner.png", true);
 $table->data[2][0] .= '</span>';
-$table->data[2][1] = html_print_select (agents_get_group_agents ($destiny_id_group, false, "none"),
-	'destiny_id_agent[]', 0, false, '', '', true, true);
+$agents = ( $destiny_id_group ?
+	agents_get_group_agents ($destiny_id_group, false, "none") :
+	agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false))) );
+$table->data[2][1] = html_print_select ($agents, 'destiny_id_agent[]', 0, false, '', '', true, true);
 
 echo '<fieldset id="fieldset_destiny"' .
 	($source_id_agent ? '' : ' class="invisible"') . '>';
@@ -217,6 +223,7 @@ $(document).ready (function () {
 	
 	$("#source_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#source_id_agent",
+		privilege: "AW",
 		recursion: function() {
 			return source_recursion
 		},
@@ -238,6 +245,7 @@ $(document).ready (function () {
 	
 	$("#destiny_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#destiny_id_agent",
+		privilege: "AW",
 		recursion: function() {return destiny_recursion},
 		status_agents: function () {
 			return $("#status_agents_destiny").val();

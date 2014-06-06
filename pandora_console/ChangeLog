@@ -1,5 +1,12 @@
 2014-06-06 Hirofumi Kosaka <kosaka@rworks.jp>
 
+	* godmode/massive/massive_delete_agents.php,
+	godmode/massive/massive_edit_agents.php: Fixed bug that all
+	agents the user can view could be targets of the operation, if
+	the user has an AW privilege for any agents.
+
+2014-06-06 Hirofumi Kosaka <kosaka@rworks.jp>
+
 	* godmode/massive/massive_add_alerts.php: Fixed bug that all
 	agents the user can view would be target of the operation, if
 	the user has an AW privilege for any agent group.

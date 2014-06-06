@@ -1,3 +1,8 @@
+2014-06-06  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* operation/agentes/estado_generalagente.php: Added the
+	group to the agent info table.
+
 2014-06-06 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* godmode/massive/massive_copy_modules.php,

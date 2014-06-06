@@ -276,7 +276,7 @@ foreach ($names as $name) {
 
 $table->rowclass['form_agents_1'] = 'select_agents_row';
 $table->data['form_agents_1'][0] = __('Agent group');
-$groups = groups_get_all(true);
+$groups = users_get_groups ($config["id_user"], "AW", false);
 $groups[0] = __('All');
 $table->colspan['form_agents_1'][1] = 2;
 $table->data['form_agents_1'][1] = html_print_select ($groups, 'groups_select',

@@ -147,8 +147,8 @@ $table->data[1][0] .= '</span>';
 $agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
 
-$agents = agents_get_agents();
-$table->data[1][1] = html_print_select (index_array ($agents, 'id_agente', 'nombre'),
+$agents = agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false)));
+$table->data[1][1] = html_print_select ($agents,
 	'id_agents[]', '', '', '', '', true, true, true, '', false, 'width:180px;');
 $table->data[1][2] = __('When select agents');
 $table->data[1][2] .= '<br>';

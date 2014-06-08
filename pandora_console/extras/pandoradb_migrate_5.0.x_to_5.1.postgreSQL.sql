@@ -184,13 +184,3 @@ ALTER TABLE "tnews" ADD COLUMN "expire_timestamp" TIMESTAMP without time zone de
 -- Table `tagente_estado`
 -- ---------------------------------------------------------------------
 ALTER TABLE "tagente_estado" ADD COLUMN "ff_start_utimestamp" BIGINT default 0;
-
-/* 2014/06/04 */
--- ---------------------------------------------------------------------
--- Table `tagente_modulo`
--- ---------------------------------------------------------------------
-ALTER TABLE "tagente_modulo" ADD COLUMN "ff_timeout" int(4) INTEGER default 0;
-ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_normal" INTEGER default 0;
-ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_warning" INTEGER default 0;
-ALTER TABLE "tagente_modulo" ADD COLUMN "min_ff_event_critical" INTEGER default 0;
-ALTER TABLE "tagente_modulo" ADD COLUMN "each_ff" SMALLINT default 0;

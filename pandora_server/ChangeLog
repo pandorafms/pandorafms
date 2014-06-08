@@ -1,4 +1,9 @@
-2014-06-05  Sergio Martin <sergio.martin@artica.es>
+2014-06-08  Junichi Satoh <junichi@rworks.jp>
+
+	* FreeBSD/pandora_server.conf, NetBSD/pandora_server.conf: Updated
+	default settings as the same as Linux ones.
+	
+014-06-05  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/PluginServer.pm
 	lib/PandoraFMS/Core.pm: Add tags name macro to alerts and plugins.

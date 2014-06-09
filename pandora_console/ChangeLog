@@ -1,5 +1,13 @@
 2014-06-09  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/update_manager.js,
+	include/functions_update_manager.php,
+	include/ajax/update_manager.ajax.php, include/config_process.php:
+	work in the first version of new update manager.
+
+
+2014-06-09  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_config.php, general/login_page.php: improved
 	the source code style.
 	

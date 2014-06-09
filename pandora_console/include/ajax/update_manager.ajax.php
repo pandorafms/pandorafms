@@ -21,16 +21,16 @@ enterprise_include_once("include/functions_update_manager.php");
 $upload_file = (boolean) get_parameter("upload_file");
 $install_package = (boolean) get_parameter("install_package");
 $check_install_package = (boolean) get_parameter("check_install_package");
-$check_install_enterprise_package = (boolean) get_parameter("check_install_enterprise_package");
 $check_online_packages = (boolean) get_parameter("check_online_packages");
 $check_online_enterprise_packages = (boolean) get_parameter("check_online_enterprise_packages");
 $update_last_package = (boolean) get_parameter("update_last_package");
 $update_last_enterprise_package = (boolean) get_parameter("update_last_enterprise_package");
 $install_package_online = (boolean) get_parameter("install_package_online");
-$install_enterprise_package = (boolean) get_parameter("install_enterprise_package");
 $check_progress_update = (boolean) get_parameter("check_progress_update");
 $check_progress_enterprise_update = (boolean) get_parameter("check_progress_enterprise_update");
 $install_package_step2 = (boolean)get_parameter("install_package_step2");
+$enterprise_install_package = (boolean) get_parameter("enterprise_install_package");
+$enterprise_install_package_step2 = (boolean)get_parameter("enterprise_install_package_step2");
 
 if ($upload_file) {
 	ob_clean();
@@ -213,16 +213,45 @@ if ($install_package) {
 	return;
 }
 
-if ($check_install_enterprise_package) {
-	
-	check_install_enterprise_package();
-	
-	return;
-	
-}
-
 if ($check_install_package) {
+	// 1 second
+	//sleep(1);
+	// Half second
+	usleep(500000);
 	
+	ob_clean();
+	
+	$package = (string) get_parameter("package");
+	// All files extracted
+	$files_total = $package."/files.txt";
+	// Number of files extracted
+	$files_num = $package."/files.info.txt";
+	// Files copied
+	$files_copied = $package."/files.copied.txt";
+	
+	$files = @file($files_copied);
+	if (empty($files))
+		$files = array();
+	$total = (int)@file_get_contents($files_num);
+	
+	$progress = 0;
+	if ((count($files) > 0) && ($total > 0)) {
+		$progress = format_numeric((count($files) / $total) * 100, 2);
+		if ($progress > 100)
+			$progress = 100;
+	}
+	
+	$return = array();
+	$return['info'] = (string) implode("<br />", $files);
+	$return['progress'] = $progress;
+	
+	if ($progress >= 100) {
+		unlink($files_total);
+		unlink($files_num);
+		unlink($files_copied);
+	}
+	
+	echo json_encode($return);
 	return;
 }
 
@@ -252,15 +281,6 @@ if ($update_last_package) {
 	return;
 }
 
-if ($install_enterprise_package) {
-	$package = get_parameter('package', '');
-	
-	update_manager_starting_enterprise_update($package,
-		$config['attachment_store'] . "/downloads/" . $package);
-	
-	return; 
-}
-
 if ($install_package_online) {
 	
 	return;
@@ -279,6 +299,22 @@ if ($check_progress_enterprise_update) {
 }
 
 if ($check_progress_update) {
+	
+	return;
+}
+
+if ($enterprise_install_package) {
+	$package = get_parameter('package', '');
+	
+	
+	update_manager_enterprise_starting_update($package,
+		$config['attachment_store'] . "/downloads/" . $package);
+	
+	return;
+}
+
+if ($enterprise_install_package_step2) {
+	update_manager_install_enterprise_package_step2();
 	
 	return;
 }

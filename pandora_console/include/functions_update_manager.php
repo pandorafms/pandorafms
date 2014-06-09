@@ -20,6 +20,8 @@
  */
 
 function update_manager_get_config_values() {
+	global $config;
+	
 	$license = db_get_value('`value`', 'tupdate_settings', '`key`',
 		'customer_key');
 	$current_update = db_get_value('`value`', 'tupdate_settings', '`key`',
@@ -28,9 +30,14 @@ function update_manager_get_config_values() {
 	global $build_version;
 	global $pandora_version;
 	
+	$current_update = 0;
+	if (isset($config['current_package']))
+		$current_update = $config['current_package'];
+	
 	//TO DO
 	$license = "TESTMIGUEL00B0WAW9BU1QM0RZ2QM0MZ3QN5M41R35S5S1DP";
-	$current_update = 11;
+	//$current_update = 11;
+	
 	
 	return array(
 		'license' => $license,

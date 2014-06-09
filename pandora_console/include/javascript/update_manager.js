@@ -249,7 +249,7 @@ function install_package (package) {
 function check_install_package(package) {
 	var parameters = {};
 	parameters['page'] = 'include/ajax/update_manager.ajax';
-	parameters['check_install_enterprise_package'] = 1;
+	parameters['check_install_package'] = 1;
 	parameters['package'] = package;
 	
 	$.ajax({
@@ -273,7 +273,7 @@ function check_install_package(package) {
 			var isInstalling = $('#form-offline_update ul').find('li').hasClass('loading');
 			if (data.progress < 100 && isInstalling) {
 				// Recursive call to check the update status
-				check_install_enterprise_package(package);
+				check_install_package(package);
 			}
 		}
 	})

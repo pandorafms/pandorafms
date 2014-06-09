@@ -1,3 +1,20 @@
+2014-06-09  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php, general/login_page.php: improved
+	the source code style.
+	
+	* godmode/setup/os.builder.php: fixed the form.
+	
+	* godmode/update_manager_xxx/*, godmode/menu.php,
+	include/functions_update_manager.php,
+	include/ajax/update_manager.ajax.php,
+	include/graphs/functions_gd.php, include/graphs/functions_flot.php,
+	include/config_process.php, include/javascript/update_manager.js,
+	include/javascript/jquery.knob.js,
+	include/javascript/jquery.iframe-transport.js,
+	include/javascript/jquery.fileupload.js, images/check-cross.png:
+	first version of new update manager.
+
 2014-06-09  Sergio Martin <sergio.martin@artica.es>
 
 	* images/login_background.jpg

@@ -14,22 +14,22 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-if(isset($config["homedir"])) {
+if (isset($config["homedir"])) {
 	$homedir = $config["homedir"] . '/';
 }
 else {
 	$homedir = '';
 }
-	
+
 include_once($homedir . 'include/functions_ui.php');
 include_once($homedir . 'include/functions.php');
 include_once($homedir . 'include/functions_html.php');
 
-if(!isset($login_screen)) {
+if (!isset($login_screen)) {
 	$login_screen = 'login';
 }
 
-switch($login_screen) {
+switch ($login_screen) {
 	case 'login':
 		$logo_link = 'http://www.pandorafms.com';
 		$logo_title = __('Go to Pandora FMS Website');
@@ -54,6 +54,7 @@ if (!empty ($page) && !empty ($sec)) {
 		$url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 	}
 }
+$login_body_style = '';
 // Overrides the default background with the defined by the user
 if (!empty($config['login_background'])) {
 	$background_url = ui_get_full_url("images/backgrounds/") . $config['login_background'];
@@ -67,10 +68,10 @@ echo '<div id="login_inner">';
 echo '
 	<div id="login_in">
 		<form method="post" action="' . ui_get_full_url('index.php'.$url) . '" >';
-
+	
 	//TODO: Put branding in variables (external file) or database
 	/* CUSTOM BRANDING STARTS HERE */
-
+	
 	// Replace the following with your own URL and logo.
 	// A mashup of the Pandora FMS logo and your companies highly preferred
 	echo '<table id="login_layout"><tr><td rowspan=2 style="width: 200px;">';
@@ -86,10 +87,10 @@ echo '
 		html_print_image ($config['homeurl'] . "/images/pandora_login.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 	}
 	echo '</a>';
-
+	
 	// This prints the current pandora console version.
 	// For stable/live function it might be wise to comment it out
-
+	
 	/* CUSTOM BRANDING ENDS HERE */
 	echo '</td><td>';
 	echo '<div class="login_links">';
@@ -99,7 +100,7 @@ echo '
 	echo '</div>';
 	echo '</td></tr><tr><td>';
 	
-	switch($login_screen) {
+	switch ($login_screen) {
 		case 'login':
 			if (!empty ($page) && !empty ($sec)) {
 				foreach ($_POST as $key => $value) {
@@ -129,7 +130,7 @@ echo '
 			echo '</p>';
 			break;
 		default:
-			if(isset($error_info)) {
+			if (isset($error_info)) {
 				echo '<h1 id="log_title">' . $error_info['title'] . '</h1>';
 				echo '<div id="error_buttons">';
 				echo '<a href="index.php">' . html_print_image($config['homeurl'] . '/images/refresh.png', true, array('title' => __('Refresh')), false, true) . '</a>';

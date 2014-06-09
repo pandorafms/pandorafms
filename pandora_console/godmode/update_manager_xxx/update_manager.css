@@ -1,0 +1,141 @@
+.fileupload_form {
+    background-color: #373A3D;
+    background-image: -moz-linear-gradient(center top , #373A3D, #313437);
+    border-radius: 3px;
+    font-family: 'PT Sans Narrow',sans-serif;
+    margin: 20px;
+    padding: 30px;
+}
+#drop_file {
+    background-color: #E6E6E6;
+    border: 20px solid rgba(0, 0, 0, 0);
+    border-radius: 3px;
+    color: #707070;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    padding: 40px 50px;
+    text-align: center;
+    text-transform: uppercase;
+}
+#drop_file table {
+    vertical-align: middle;
+}
+#drop_file table td, #drop_file table label {
+    color: #707070;
+    font-family: 'PT Sans Narrow',sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 0;
+    vertical-align: middle;
+}
+#drop_file table select {
+    float: none;
+}
+#drop_file a {
+    background-color: #FF9933;
+    border-radius: 2px;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    line-height: 1;
+    padding: 12px 26px;
+}
+#drop_file a:hover {
+    background-color: #FFB972;
+    text-decoration: none;
+}
+#drop_file input {
+    display: none;
+}
+.fileupload_form ul {
+    border-bottom: 1px solid #3D4043;
+    border-top: 1px solid #2B2E31;
+    list-style: none outside none;
+    margin: 0 -30px;
+    padding: 0;
+}
+.fileupload_form ul li {
+    background-color: #333639;
+    background-image: -moz-linear-gradient(center top , #333639, #303335);
+    border-bottom: 1px solid #2B2E31;
+    border-top: 1px solid #3D4043;
+    padding: 15px;
+    position: relative;
+}
+.fileupload_form ul li #input-progress {
+    left: 68px;
+    position: absolute;
+}
+.fileupload_form ul li p {
+    color: #EEEEEE;
+    font-size: 12px;
+    font-weight: bold;
+    left: 95px;
+    overflow: hidden;
+    position: absolute;
+    top: 12px;
+    white-space: nowrap;
+}
+.fileupload_form ul li i {
+    color: #7F7F7F;
+    display: block;
+    font-style: normal;
+    font-weight: normal;
+}
+.fileupload_form ul li canvas {
+    left: 13px;
+    position: absolute;
+    top: 15px;
+}
+.fileupload_form ul li span {
+    background: url("../../images/check-cross.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    cursor: pointer;
+    height: 12px;
+    position: absolute;
+    right: 13px;
+    top: 34px;
+    width: 15px;
+}
+.fileupload_form ul li div {
+    display: block !important;
+}
+.fileupload_form ul li.working span {
+    background-position: 0 -12px;
+    height: 16px;
+}
+.fileupload_form ul li.loading span {
+    background: url("../../images/spinner.gif") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    height: 16px;
+}
+.fileupload_form ul li.suc span {
+    background: url("../../images/check-cross.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    height: 12px;
+}
+.fileupload_form ul li.suc p {
+    color: #5A8629;
+}
+.fileupload_form ul li.error span {
+    background: url("../../images/check-cross.png") no-repeat scroll 0 -12px rgba(0, 0, 0, 0);
+    height: 16px;
+}
+.fileupload_form ul li.error p {
+    color: #FF3333;
+}
+
+#log_zone {
+    background-color: #E6E6E6;
+    border: 20px solid rgba(0, 0, 0, 0);
+    border-radius: 3px;
+    color: #707070;
+    font-size: 12px;
+    margin-bottom: 30px;
+    padding: 10px;
+    text-align: left;
+}
+
+#box_online {
+    background-color: #E6E6E6;
+    padding: 10px;
+}

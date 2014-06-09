@@ -1,3 +1,19 @@
+2014-06-09  Sergio Martin <sergio.martin@artica.es>
+
+	* images/login_background.jpg
+	images/login_background.png
+	images/backgrounds/mosaico_diagonales_gris.png
+	images/backgrounds/fondo_diente_leon_2000.jpg
+	images/backgrounds/fondo_arena_2000.jpg
+	images/backgrounds/fondo_madera_2000.jpg
+	images/backgrounds/fondo_cielo_2000.jpg
+	images/backgrounds/fondo_luna_2000.jpg
+	images/backgrounds/fondo_paisaje_2000.jpg
+	images/backgrounds/fondo_polen_2000.jpg
+	images/backgrounds/fondo_cubos_2000.png
+	include/styles/pandora.css: Added bunch of new login
+	backgrounds and set another default one
+
 2014-06-08  Junichi Satoh  <junichi@rworks.jp>
 
 	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql

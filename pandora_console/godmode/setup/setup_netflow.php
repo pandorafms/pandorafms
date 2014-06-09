@@ -67,7 +67,7 @@ $table->data[7][1] = html_print_input_text ('netflow_max_lifetime', $config['net
 
 $table->data[8][0] = '<b>' . __('Name resolution for IP address') . '</b>' .
 	ui_print_help_tip (__("Resolve the IP addresses to get their hostnames."), true);
-$onclick = "if (!confirm('".__('Warning').". ".__('IP address resolution can take a lot of time').".')) return false;";
+$onclick = "if (!confirm('".__('Warning').". ".__('IP address resolution can take a lot of time')."')) return false;";
 $table->data[8][1] = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended ('netflow_get_ip_hostname', 1, '', $config["netflow_get_ip_hostname"], false, $onclick, '', true).'&nbsp;&nbsp;&nbsp;';
 $table->data[8][1] .= __('No').'&nbsp;&nbsp;'.html_print_radio_button ('netflow_get_ip_hostname', 0, '', $config["netflow_get_ip_hostname"], true);
 

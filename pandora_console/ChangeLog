@@ -1,3 +1,17 @@
+2014-06-09  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_api.php: Added the parameter
+	"address resolution" to the functions
+	"api_get_netflow_get_data" and "api_get_netflow_get_stats".
+
+	* include/functions_netflow.php: Added the parameter
+	"address resolution" to the functions "netflow_get_data",
+	"netflow_get_stats", "netflow_get_summary",
+	"netflow_get_record" and "netflow_draw_item".
+	
+	* operation/netflow/nf_live_view.php: Added an option to
+	apply IP address resolution to the netflow searches.
+
 2014-06-09  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/update_manager.js,

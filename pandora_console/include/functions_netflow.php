@@ -421,13 +421,13 @@ function netflow_is_net ($address) {
  * @return An array with netflow stats.
  *
  */
-function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit, $connection_name = '') {
+function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit, $connection_name = '', $address_resolution = false) {
 	global $nfdump_date_format;
 	global $config;
 	
 	// Requesting remote data
 	if (defined ('METACONSOLE') && $connection_name != '') {
-		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_data', "$start_date|$end_date|$interval_length|" . base64_encode(json_encode($filter)) . "|$aggregate|$max|$unit");
+		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_data', "$start_date|$end_date|$interval_length|" . base64_encode(json_encode($filter)) . "|$aggregate|$max|$unit" . (int)$address_resolution);
 		return json_decode ($data, true);
 	}
 	
@@ -510,7 +510,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 	
 	// Address resolution start
 	$get_hostnames = false;
-	if ($config['netflow_get_ip_hostname'] && ($aggregate == "srcip" || $aggregate == "dstip")) {
+	if ($address_resolution && ($aggregate == "srcip" || $aggregate == "dstip")) {
 		$get_hostnames = true;
 		global $hostnames;
 
@@ -617,12 +617,12 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
  *
  * @return An array with netflow stats.
  */
-function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit, $connection_name = '') {
+function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit, $connection_name = '', $address_resolution = false) {
 	global $config, $nfdump_date_format;
 
 	// Requesting remote data
 	if (defined ('METACONSOLE') && $connection_name != '') {
-		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_stats', "$start_date|$end_date|" . base64_encode(json_encode($filter)) . "|$aggregate|$max|$unit");
+		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_stats', "$start_date|$end_date|" . base64_encode(json_encode($filter)) . "|$aggregate|$max|$unit|" . (int)$address_resolution);
 		return json_decode ($data, true);
 	}
 
@@ -663,7 +663,7 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 		else {
 
 			// Address resolution start
-			if ($config['netflow_get_ip_hostname'] && ($aggregate == "srcip" || $aggregate == "dstip")) {
+			if ($address_resolution && ($aggregate == "srcip" || $aggregate == "dstip")) {
 				global $hostnames;
 				
 				if (!isset($hostnames[$val[4]])) {
@@ -771,7 +771,7 @@ function netflow_get_summary ($start_date, $end_date, $filter, $connection_name 
  *
  * @return An array with netflow stats.
  */
-function netflow_get_record ($start_date, $end_date, $filter, $max, $unit) {
+function netflow_get_record ($start_date, $end_date, $filter, $max, $unit, $address_resolution = false) {
 	global $nfdump_date_format;
 	global $config;
 
@@ -836,7 +836,7 @@ function netflow_get_record ($start_date, $end_date, $filter, $max, $unit) {
 	}
 	
 	// Address resolution start
-	if ($config['netflow_get_ip_hostname']) {
+	if ($address_resolution) {
 		global $hostnames;
 
 		for ($i = 0; $i < count($values); $i++) {
@@ -1091,7 +1091,7 @@ function netflow_get_valid_subintervals () {
  *
  * @return The netflow report in the appropriate format.
  */
-function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $filter, $max_aggregates, $connection_name = '', $output = 'HTML', $only_image = false) {
+function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $filter, $max_aggregates, $connection_name = '', $output = 'HTML', $address_resolution = false) {
 	$aggregate = $filter['aggregate'];
 	$unit = $filter['output'];
 	$interval = $end_date - $start_date;
@@ -1100,7 +1100,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 	switch ($type) {
 		case '0':
 		case 'netflow_area':
-			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
+			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name, $address_resolution);
 			if (empty ($data)) {
 				break;
 			}
@@ -1158,7 +1158,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			break;
 		case '2':
 		case 'netflow_data':
-			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
+			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name, $address_resolution);
 			
 			if (empty ($data)) {
 				break;
@@ -1187,7 +1187,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case '3':
 		case 'netflow_statistics':
 			$data = netflow_get_stats ($start_date, $end_date, $filter,
-				$aggregate, $max_aggregates, $unit, $connection_name);
+				$aggregate, $max_aggregates, $unit, $connection_name, $address_resolution);
 			if (empty ($data)) {
 				break;
 			}
@@ -1203,7 +1203,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case 'netflow_summary':
 			$data_summary = netflow_get_summary ($start_date, $end_date,
 				$filter, $connection_name);
-			if (empty ($data)) {
+			if (empty ($data_summary)) {
 				break;
 			}
 			if ($output == 'HTML' || $output == 'PDF') {
@@ -1217,7 +1217,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case 'netflow_pie':
 			$data_pie = netflow_get_stats ($start_date, $end_date,
 				$filter, $aggregate, $max_aggregates, $unit,
-				$connection_name);
+				$connection_name, $address_resolution);
 			if (empty ($data_pie)) {
 				break;
 			}
@@ -1249,7 +1249,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			
 			$data_pie = netflow_get_stats ($start_date, $end_date,
 				$filter, $aggregate, $max_aggregates, $unit,
-				$connection_name);
+				$connection_name, $address_resolution);
 			if (empty ($data_pie)) {
 				break;
 			}
@@ -1279,7 +1279,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			}
 			break;
 		case 'netflow_mesh':
-			$netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit);
+			$netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit, $address_resolution);
 
 			switch ($aggregate) {
 				case "srcport":
@@ -1328,7 +1328,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			return $html;
 			break;
 		case 'netflow_host_treemap':
-			$netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit);
+			$netflow_data = netflow_get_record($start_date, $end_date, $filter, $max_aggregates, $unit, $address_resolution);
 
 			switch ($aggregate) {
 				case "srcip":

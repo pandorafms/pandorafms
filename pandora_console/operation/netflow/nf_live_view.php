@@ -79,7 +79,6 @@ $filter['ip_src'] = get_parameter('ip_src','');
 $filter['dst_port'] = get_parameter('dst_port','');
 $filter['src_port'] = get_parameter('src_port','');
 $filter['advanced_filter'] = get_parameter('advanced_filter','');
-$filter['advanced_filter'] = get_parameter('advanced_filter','');
 
 // Read chart configuration
 $chart_type = get_parameter('chart_type', 'netflow_area');
@@ -90,6 +89,7 @@ $date = get_parameter_post ('date', date (DATE_FORMAT, get_system_time ()));
 $time = get_parameter_post ('time', date (TIME_FORMAT, get_system_time ()));
 $connection_name = get_parameter('connection_name', '');
 $interval_length = (int) get_parameter('interval_length', 300);
+$address_resolution = (int) get_parameter('address_resolution', $config['netflow_get_ip_hostname']);
 
 // Read buttons
 $draw = get_parameter('draw_button', '');
@@ -173,6 +173,38 @@ enterprise_hook('open_meta_frame');
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
 	echo "<table class='databox' width='99%'>";
 
+	if (defined ('METACONSOLE')) {
+		$list_servers = array();
+		
+		$servers = db_get_all_rows_sql ("SELECT *
+			FROM tmetaconsole_setup");
+		if ($servers === false)
+			$servers = array();
+		foreach ($servers as $server) {
+			// If connection was good then retrieve all data server
+			if (metaconsole_load_external_db ($server)) {
+				$connection = true;
+			}
+			else {
+				$connection = false;
+			}
+			
+			$row = db_get_row('tconfig', 'token', 'activate_netflow');
+			
+			
+			if ($row['value']) {
+				$list_servers[$server['server_name']] = $server['server_name'];
+			}
+			
+			metaconsole_restore_db();
+		}
+		
+		echo "<tr>";
+		echo "<td>" . '<b>'.__('Connection').'</b>' . "</td>";
+		echo "<td>" . html_print_select($list_servers, 'connection_name', $connection_name, '', '', 0, true, false, false) . "</td>";
+		echo "</tr>";
+	}
+
 	echo "<tr>";
 	
 	echo "<td>" .
@@ -209,37 +241,11 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		'50' => '50');
 	echo "<td>" . html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true) . "</td>";
 	
-	if (defined ('METACONSOLE')) {
-		$list_servers = array();
-		
-		$servers = db_get_all_rows_sql ("SELECT *
-			FROM tmetaconsole_setup");
-		if ($servers === false)
-			$servers = array();
-		foreach ($servers as $server) {
-			// If connection was good then retrieve all data server
-			if (metaconsole_load_external_db ($server)) {
-				$connection = true;
-			}
-			else {
-				$connection = false;
-			}
-			
-			$row = db_get_row('tconfig', 'token', 'activate_netflow');
-			
-			
-			if ($row['value']) {
-				$list_servers[$server['server_name']] = $server['server_name'];
-			}
-			
-			metaconsole_restore_db();
-		}
-		
-		
-		
-		echo "<td>" . '<b>'.__('Connection').'</b>' . "</td>";
-		echo "<td>" . html_print_select($list_servers, 'connection_name', $connection_name, '', '', 0, true, false, false) . "</td>";
-	}
+	$onclick = "if (!confirm('".__('Warning').". ".__('IP address resolution can take a lot of time')."')) return false;";
+	$radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended ('address_resolution', 1, '', $address_resolution, false, $onclick, '', true).'&nbsp;&nbsp;&nbsp;';
+	$radio_buttons .= __('No').'&nbsp;&nbsp;'.html_print_radio_button ('address_resolution', 0, '', $address_resolution, true);
+	echo "<td>" . '<b>'.__('IP address resolution').'</b>' . ui_print_help_tip (__("Resolve the IP addresses to get their hostnames."), true) . "</td>";
+	echo "<td>$radio_buttons</td>";
 	
 	echo "</tr>";
 	
@@ -380,14 +386,11 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 echo'</form>';
 
 if ($draw != '') {
-	// Get the command to call nfdump
-	$command = netflow_get_command ($filter);
-	
 	// Draw
 	echo "<br/>";
 	echo netflow_draw_item ($start_date, $end_date,
 		$interval_length, $chart_type, $filter,
-		$max_aggregates, $connection_name);
+		$max_aggregates, $connection_name, 'HTML', $address_resolution);
 }
 
 enterprise_hook('close_meta_frame');
@@ -399,16 +402,16 @@ ui_include_time_picker();
 	// Hide the normal filter and display the advanced filter
 	function displayAdvancedFilter () {
 		// Erase the normal filter
-		$("#text-ip_dst").value = '';
-		$("#text-ip_src").value = '';
-		$("#text-dst_port").value = '';
-		$("#text-src_port").value = '';
+		$("#text-ip_dst").val('');
+		$("#text-ip_src").val('');
+		$("#text-dst_port").val('');
+		$("#text-src_port").val('');
 		
 		// Hide the normal filter
-		$(".filter_normal").css('display', 'none');
+		$(".filter_normal").hide();
 		
 		// Show the advanced filter
-		$(".filter_advance").css('display',  '');
+		$(".filter_advance").show();
 	};
 	
 	// Hide the advanced filter and display the normal filter
@@ -417,16 +420,16 @@ ui_include_time_picker();
 		$("#textarea_advanced_filter").val('');
 		
 		// Hide the advanced filter
-		$(".filter_advance").css('display', 'none');
+		$(".filter_advance").hide();
 		
 		// Show the normal filter
-		$(".filter_normal").css('display', '');
+		$(".filter_normal").show();
 	};
 	
 	// Ask the user to define a name for the filter in order to save it
 	function defineFilterName () {
 		if ($("#text-name").val() == '') {
-			$(".filter_save").css('display', '');
+			$(".filter_save").show();
 			
 			return false;
 		}
@@ -447,14 +450,11 @@ ui_include_time_picker();
 		var filter_type;
 		
 		// Hide information and name/group row
-		$(".filter_save").css('display', 'none');
-		$(".filter_save").css('display', 'none');
+		$(".filter_save").hide();
 		
 		// Clean fields
 		if ($("#filter_id").val() == 0) {
-			//displayNormalFilter ();
-			$(".filter_normal").css('display', '');
-			$(".filter_advance").css('display', 'none');
+			displayNormalFilter();
 			
 			// Check right filter type
 			$("#radiobtn0001").attr("checked", "checked");
@@ -468,7 +468,7 @@ ui_include_time_picker();
 			$("#output").val('');
 			
 			// Hide update filter button
-			$("#submit-update_button").css("visibility", "hidden");
+			$("#submit-update_button").hide();
 			
 		}
 		else {
@@ -491,23 +491,20 @@ ui_include_time_picker();
 					filter_type = data;
 					// Display the appropriate filter
 					if (filter_type == 0) {
-						$(".filter_normal").css('display', '');
-						$(".filter_advance").css('display', 'none');
+						$(".filter_normal").show();
+						$(".filter_advance").hide();
 						
 						// Check right filter type
 						$("#radiobtn0001").attr("checked", "checked");
 					}
 					else {
-						$(".filter_normal").css('display', 'none');
-						$(".filter_advance").css('display', '');
+						$(".filter_normal").hide();
+						$(".filter_advance").show();
 						
 						// Check right filter type
 						$("#radiobtn0002").attr("checked", "checked");
 					}
 				});
-			
-			// Shows update filter button
-			$("#submit-update_button").css("visibility", "");
 			
 			// Get filter values from DB
 			<?php
@@ -541,6 +538,10 @@ ui_include_time_picker();
 					});
 				},
 				"json");
+
+			// Shows update filter button
+			$("#submit-update_button").show();
+			
 		}
 		
 	});
@@ -548,10 +549,10 @@ ui_include_time_picker();
 	$(document).ready( function() {
 		// Hide update filter button
 		if ($("#filter_id").val() == 0) {
-			$("#submit-update_button").css("visibility", "hidden");
+			$("#submit-update_button").hide();
 		}
 		else {
-			$("#submit-update_button").css("visibility", "");
+			$("#submit-update_button").show();
 		}
 		
 		// Change color of name and group if save button has been pushed

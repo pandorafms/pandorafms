@@ -6445,9 +6445,10 @@ function api_get_netflow_get_data ($discard_1, $discard_2, $params) {
 	$aggregate = $params['data'][4];
 	$max = $params['data'][5];
 	$unit = $params['data'][6];
+	$address_resolution = $params['data'][7];
 	
 	// Get netflow data
-	$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit);
+	$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit, '', $address_resolution);
 	
 	returnData('json', $data);
 	return;
@@ -6463,9 +6464,10 @@ function api_get_netflow_get_stats ($discard_1, $discard_2, $params) {
 	$aggregate = $params['data'][3];
 	$max = $params['data'][4];
 	$unit = $params['data'][5];
+	$address_resolution = $params['data'][6];
 	
 	// Get netflow data
-	$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit);
+	$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit, '', $address_resolution);
 	
 	returnData('json', $data);
 	return;

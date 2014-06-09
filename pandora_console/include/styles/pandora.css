@@ -334,8 +334,9 @@ div#foot {
 	z-index: -999;
 	
 	background-color: #DDD;
-	background-image: url(../../images/login_background.png);
+	background-image: url(../../images/login_background.jpg);
 	background-repeat: repeat;
+	background-position: center;
 }
 
 @media screen and (max-width: 1024px) { /* Specific to this particular image */

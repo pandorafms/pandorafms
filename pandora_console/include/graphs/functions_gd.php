@@ -272,7 +272,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fontsize, $value_text, $color) {
 		global $config;
 		global $REMOTE_ADDR;
-
+		
 		// Round corners defined in global setup
 		if ($config["round_corner"] != 0) {
 			$radius = ($height > 18) ? 8 : 0;
@@ -315,7 +315,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		$soft_red_border = ImageColorAllocate($image,255, 154, 84);
 		$other_red = ImageColorAllocate($image,239, 141, 122);
 		$other_red_border = ImageColorAllocate($image,255, 112, 86);
-				
+		
 		$x1 = 1;
 		$y1 = 1;
 		$x2 = $ratingbar;
@@ -443,7 +443,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 			*/
 			
 			drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6,  $value_text, $color);
-
+			
 			break;
 		case 2:
 			if ($progress > 100 || $progress < 0) {

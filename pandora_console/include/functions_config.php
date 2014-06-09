@@ -45,7 +45,8 @@ function config_update_value ($token, $value) {
 	global $config;
 	
 	if ($token == 'list_ACL_IPs_for_API') {
-		$value = str_replace(array("\r\n", "\r", "\n"), ";", io_safe_output($value));
+		$value = str_replace(array("\r\n", "\r", "\n"), ";",
+			io_safe_output($value));
 	}
 	
 	if (!isset ($config[$token])) {

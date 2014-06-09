@@ -218,6 +218,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/os"]["text"] = __('Edit OS');
 	$sub["godmode/setup/license"]["text"] = __('License');
 	
+	$sub["godmode/update_manager_xxx/update_manager_xxx"]["text"] = __('xxxx');
+	
 	enterprise_hook ('enterprise_acl_submenu');
 	enterprise_hook ('skins_submenu');
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
@@ -270,7 +272,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			if ($extmenu["name"] == 'DB interface' && !check_acl ($config['id_user'], 0, "DM")) { 
 				continue;
 			}
-				
+			
 			//Check the ACL for this user
 			if (! check_acl ($config['id_user'], 0, $extmenu['acl'])) {
 				continue;

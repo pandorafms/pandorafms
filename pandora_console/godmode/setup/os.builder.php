@@ -39,7 +39,7 @@ $table->data[2][0] = __('Icon');
 $table->data[2][1] = html_print_select($icons, 'icon',  $icon, 'show_icon_OS();', __('None'), 0, true);
 $table->data[2][1] .= ' <span id="icon_image">' . ui_print_os_icon($idOS, false, true) . '</span>';
 
-echo '<form action="post">';
+
 html_print_table($table);
 
 html_print_input_hidden('id_os', $idOS);
@@ -86,7 +86,7 @@ function show_icon_OS() {
 		async: false,
 		timeout: 10000,
 		success: function (data) {
-			$("#icon_image").html(data);		
+			$("#icon_image").html(data);
 		}
 	});
 }

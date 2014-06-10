@@ -20,6 +20,13 @@ ui_require_css_file('update_manager', 'godmode/update_manager_xxx/');
 require_once("include/functions_update_manager.php");
 enterprise_include_once("include/functions_update_manager.php");
 
+$current_package = 0;
+if (isset($config['current_package']))
+	$current_package = $config['current_package'];
+
+echo "<p><b>" . sprintf(__("The last version of package installed is: %d"),
+	$current_package) . "</b></p>";
+
 /* Translators: Do not translade Update Manager, it's the name of the program */
 ui_print_info_message(
 	'<p>' .

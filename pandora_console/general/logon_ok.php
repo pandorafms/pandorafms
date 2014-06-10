@@ -30,12 +30,14 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 
 ui_print_page_header (__('Welcome to Pandora FMS Web Console'));
 
-if(tags_has_user_acl_tags()) {
+if (tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
 }
-// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------
 // Site news !
-// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
 echo '<div style="width:50%; float:left;" id="leftcolumn">';
 	//////////////////NEWS BOARD/////////////////////////////

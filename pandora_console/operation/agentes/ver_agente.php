@@ -47,6 +47,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
 		$custom_condition = get_parameter('custom_condition', '');
+		$privilege = (string) get_parameter ('privilege', "AR");
 
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
@@ -60,8 +61,7 @@ if (is_ajax ()) {
 			}
 		}
 		else {
-			$groups_orig = users_get_groups();
-			
+			$groups_orig = users_get_groups(false, $privilege);
 			$groups = array_keys($groups_orig);
 		}
 		

@@ -218,13 +218,11 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/os"]["text"] = __('Edit OS');
 	$sub["godmode/setup/license"]["text"] = __('License');
 	
-	$sub["godmode/update_manager_xxx/update_manager_xxx"]["text"] = __('xxxx');
+	$sub["godmode/update_manager/update_manager"]["text"] = __('Update manager');
 	
 	enterprise_hook ('enterprise_acl_submenu');
 	enterprise_hook ('skins_submenu');
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
-	
-	$sub["extensions/update_manager"]["text"] = __('Update manager');
 	
 	$menu_godmode["gsetup"]["sub"] = $sub;
 }

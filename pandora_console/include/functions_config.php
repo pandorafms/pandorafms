@@ -1309,36 +1309,6 @@ function config_check () {
 		}
 	}
 	
-	if (enterprise_installed()) {
-		if ($config['update_manager_installed'] == 1) {
-			um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
-				$config['dbpass'], $config['dbname'], $config['dbport']);
-			
-			$settings = um_db_load_settings ();
-			
-			$result_check_keygen = check_keygen($settings);
-			
-			if (!empty($result_check_keygen)) {
-				$config["alert_cnt"]++;
-				$_SESSION["alert_msg"] .= $result_check_keygen;
-			}
-		}
-	}
-	else {
-		if (isset($config['update_manager_installed'])) {
-			if ($config['update_manager_installed'] == 1) {
-				require_once("extensions/update_manager/lib/functions.ajax.php");
-				
-				$result_check_keygen = check_keygen_online();
-				
-				if (!empty($result_check_keygen)) {
-					$config["alert_cnt"]++;
-					$_SESSION["alert_msg"] .= $result_check_keygen;
-				}
-			}
-		}
-	}
-	
 	// PHP configuration values
 	$PHPupload_max_filesize = config_return_in_bytes(ini_get('upload_max_filesize'));
 	$PHPmax_input_time = ini_get('max_input_time');

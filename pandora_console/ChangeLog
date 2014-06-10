@@ -1,3 +1,7 @@
+2014-06-10  Mario Pulido <mario.pulido@artica.es>
+
+	* pandoradb_data.sql: Fixed bug in plugin exec #803
+
 2014-06-10 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* operation/agentes/ver_agente.php,

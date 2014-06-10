@@ -36,7 +36,11 @@ function update_manager_get_config_values() {
 	
 	//TO DO
 	$license = "TESTMIGUEL00B0WAW9BU1QM0RZ2QM0MZ3QN5M41R35S5S1DP";
-	//$current_update = 11;
+	//~ $current_update = 9;
+	//~ $limit_count = 2;
+	$build_version = "140514";
+	$pandora_version = "4.1";
+	$license = "INTEGRIA-FREE";
 	
 	
 	return array(
@@ -65,7 +69,7 @@ function rrmdir($dir) {
 
 function update_manager_install_package_step2() {
 	global $config;
-
+	
 	ob_clean();
 	
 	$package = (string) get_parameter("package");
@@ -194,6 +198,185 @@ function update_manager_install_package_step2() {
 }
 
 function update_manager_main() {
+	global $config;
 	
+	?>
+	<script src="include/javascript/update_manager.js"></script>
+	<script type="text/javascript">
+		var version_update = "";
+		var stop_check_progress = 0;
+		
+		$(document).ready(function() {
+			check_online_free_packages();
+		});
+	</script>
+	<?php
+}
+
+
+function update_manager_check_online_free_packages ($is_ajax=true) {
+	global $config;
+	
+	$update_message = '';
+	
+	$um_config_values = update_manager_get_config_values();
+	
+	$params = array('action' => 'newest_package',
+		'license' => $um_config_values['license'],
+		'limit_count' => $um_config_values['limit_count'],
+		'current_package' => $um_config_values['current_update'],
+		'version' => $um_config_values['version'],
+		'build' => $um_config_values['build']);
+	
+	
+	$curlObj = curl_init();
+	curl_setopt($curlObj, CURLOPT_URL, $config['url_update_manager']);
+	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curlObj, CURLOPT_POST, true);
+	curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
+	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+	
+	$result = curl_exec($curlObj);
+	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
+	curl_close($curlObj);
+	
+	
+	
+	
+	if ($http_status >= 400 && $http_status < 500) {
+		if ($is_ajax) {
+			echo __("Server not found.");
+		} else {
+			$update_message = __("Server not found.");
+		}
+	}
+	elseif ($http_status >= 500) {
+		if ($is_ajax) {
+			echo $result;
+		} else {
+			$update_message = $result;
+		}
+	}
+	else {
+		if ($is_ajax) {
+			$result = json_decode($result, true);
+			
+			if (!empty($result)) {
+				echo "<p><b>There is a new version:</b> " . $result[0]['version'] . "</p>";
+				echo "<a href='javascript: update_last_package(\"" . base64_encode($result[0]["file_name"]) .
+					"\", \"" . $result[0]['version'] ."\");'>" .
+					__("Update to the last version") . "</a>";
+			}
+			else {
+				echo __("There is no update available.");
+			}
+			return;
+		} else {
+			if (!empty($result)) {
+				$result = json_decode($result, true);
+				$update_message = "There is a new version: " . $result[0]['version'];
+			}
+			
+			return $update_message;
+		}
+	}
+	
+}
+
+
+/**
+ * The update copy entirire the tgz or fail (leave some parts copies and some part not).
+ * This does make any thing with the BD.
+ */
+function update_manager_starting_update() {
+	global $config;
+	
+	$path_package = $config['attachment_store'] .
+		"/downloads/last_package.tgz";
+	
+	try {
+		$phar = new PharData($path_package);
+		rrmdir($config['attachment_store'] . "/downloads/temp_update/trunk");
+		$phar->extractTo($config['attachment_store'] . "/downloads/temp_update");
+	}
+	catch (Exception $e) {
+		// handle errors
+		
+		db_process_sql_update('tconfig',
+			array('value' => json_encode(
+					array(
+						'status' => 'fail',
+						'message' => __('Failed extracting the package to temp directory.')
+					)
+				)
+			),
+			array('token' => 'progress_update_status'));
+	}
+	
+	db_process_sql_update('tconfig',
+		array('value' => 50),
+		array('token' => 'progress_update'));
+	
+	$full_path = $config['attachment_store'] . "/downloads/temp_update/trunk";
+	
+	$homedir = $config['homedir'];
+	
+	$result = update_manager_recurse_copy($full_path, $homedir,
+		array('install.php'));
+	
+	if (!$result) {
+		db_process_sql_update('tconfig',
+			array('value' => json_encode(
+					array(
+						'status' => 'fail',
+						'message' => __('Failed the copying of the files.')
+					)
+				)
+			),
+			array('token' => 'progress_update_status'));
+	}
+	else {
+		db_process_sql_update('tconfig',
+			array('value' => 100),
+			array('token' => 'progress_update'));
+		db_process_sql_update('tconfig',
+			array('value' => json_encode(
+					array(
+						'status' => 'end',
+						'message' => __('Package extracted successfully.')
+					)
+				)
+			),
+			array('token' => 'progress_update_status'));
+	}
+}
+
+
+function update_manager_recurse_copy($src, $dst, $black_list) { 
+	$dir = opendir($src); 
+	@mkdir($dst);
+	@trigger_error("NONE");
+	
+	//debugPrint("mkdir(" . $dst . ")", true);
+	while (false !== ( $file = readdir($dir)) ) { 
+		if (( $file != '.' ) && ( $file != '..' ) && (!in_array($file, $black_list))) { 
+			if ( is_dir($src . '/' . $file) ) { 
+				if (!update_manager_recurse_copy($src . '/' . $file,$dst . '/' . $file, $black_list)) {
+					return false;
+				}
+			}
+			else { 
+				$result = copy($src . '/' . $file,$dst . '/' . $file);
+				$error = error_get_last();
+				
+				if (strstr($error['message'], "copy(") ) {
+					return false;
+				}
+			} 
+		} 
+	} 
+	closedir($dir);
+	
+	return true;
 }
 ?>

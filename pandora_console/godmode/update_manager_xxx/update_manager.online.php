@@ -17,6 +17,7 @@
 global $config;
 
 ui_require_css_file('update_manager', 'godmode/update_manager_xxx/');
+require_once("include/functions_update_manager.php");
 enterprise_include_once("include/functions_update_manager.php");
 
 /* Translators: Do not translade Update Manager, it's the name of the program */

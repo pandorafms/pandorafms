@@ -31,6 +31,10 @@ $check_progress_enterprise_update = (boolean) get_parameter("check_progress_ente
 $install_package_step2 = (boolean)get_parameter("install_package_step2");
 $enterprise_install_package = (boolean) get_parameter("enterprise_install_package");
 $enterprise_install_package_step2 = (boolean)get_parameter("enterprise_install_package_step2");
+$check_online_free_packages = (bool)get_parameter('check_online_free_packages');
+$update_last_free_package = (bool)get_parameter('update_last_free_package');
+$check_update_free_package = (bool)get_parameter('check_update_free_package');
+$install_free_package = (bool)get_parameter('install_free_package');
 
 if ($upload_file) {
 	ob_clean();
@@ -317,5 +321,158 @@ if ($enterprise_install_package_step2) {
 	update_manager_install_enterprise_package_step2();
 	
 	return;
+}
+
+if ($check_online_free_packages) {
+	
+	update_manager_check_online_free_packages();
+	
+	return;
+}
+
+if ($update_last_free_package) {
+	
+	$package = get_parameter('package', '');
+	$version = get_parameter('version', '');
+	$package_url = base64_decode($package);
+	
+	$params = array('action' => 'get_package',
+		'license' => $license,
+		'limit_count' => $users,
+		'current_package' => $current_package,
+		'package' => $package,
+		'version' => $config['version'],
+		'build' => $config['build']);
+	
+	$curlObj = curl_init();
+	//curl_setopt($curlObj, CURLOPT_URL, $config['url_updatemanager']);
+	curl_setopt($curlObj, CURLOPT_URL, $package_url);
+	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curlObj, CURLOPT_FOLLOWLOCATION, true);
+	//curl_setopt($curlObj, CURLOPT_POST, true);
+	//curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
+	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+	$result = curl_exec($curlObj);
+	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
+	
+	curl_close($curlObj);
+	
+	
+	
+	
+	
+	if (empty($result)) {
+		echo json_encode(array(
+			'in_progress' => false,
+			'message' => __('Fail to update to the last package.')));
+	}
+	else {
+		file_put_contents(
+			$config['attachment_store'] . "/downloads/last_package.tgz" , $result);
+		
+		echo json_encode(array(
+			'in_progress' => true,
+			'message' => __('Starting to update to the last package.')));
+		
+		
+		$progress_update_status = db_get_value(
+			'value', 'tconfig', 'token', 'progress_update_status');
+		
+		
+		
+		if (empty($progress_update_status)) {
+			db_process_sql_insert('tconfig',
+				array(
+					'value' => 0,
+					'token' => 'progress_update')
+			);
+			
+			db_process_sql_insert('tconfig',
+				array(
+					'value' => json_encode(
+						array(
+							'status' => 'in_progress',
+							'message' => ''
+						)),
+					'token' => 'progress_update_status')
+				);
+		}
+		else {
+			db_process_sql_update('tconfig',
+				array('value' => 0),
+				array('token' => 'progress_update'));
+			
+			db_process_sql_update('tconfig',
+				array('value' => json_encode(
+						array(
+							'status' => 'in_progress',
+							'message' => ''
+						)
+					)
+				),
+				array('token' => 'progress_update_status'));
+		}
+	}
+	
+	return;
+}
+
+if ($check_update_free_package) {
+	
+	
+	$progress_update = db_get_value('value', 'tconfig',
+		'token', 'progress_update');
+	
+	$progress_update_status = db_get_value('value', 'tconfig',
+		'token', 'progress_update_status');
+	$progress_update_status = json_decode($progress_update_status, true);
+	
+	switch ($progress_update_status['status']) {
+		case 'in_progress':
+			$correct = true;
+			$end = false;
+			break;
+		case 'fail':
+			$correct = false;
+			$end = false;
+			break;
+		case 'end':
+			$correct = true;
+			$end = true;
+			break;
+	}
+	
+	$progressbar_tag = progressbar($progress_update, 400, 20,
+		__("progress"), $config['fontpath']);
+	preg_match("/src='(.*)'/", $progressbar_tag, $matches);
+	$progressbar = $matches[1];
+	
+	echo json_encode(array(
+		'correct' => $correct,
+		'end' => $end,
+		'message' => $progress_update_status['message'],
+		'progressbar' => $progressbar
+	));
+	
+	return;
+}
+
+if ($install_free_package) {
+	$version = get_parameter('version', '');
+	
+	update_manager_starting_update();
+	
+	
+	db_process_sql_update('tconfig', array('`value`' => $version),
+		array('`token`' => "current_package"));
+	$config['current_package'] = $version;
+	
+	sleep(3);
+	
+	
+	
+	$return["status"] = "success";
+	$return["message"]= __("The package is installed.");
+	echo json_encode($return);
 }
 ?>

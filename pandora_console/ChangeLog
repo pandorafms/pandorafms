@@ -1,3 +1,11 @@
+2014-06-10  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/update_manager_xxx/update_manager.online.php,
+	include/functions_update_manager.php,
+	include/javascript/update_manager.js,
+	include/ajax/update_manager.ajax.php: work in the first version of
+	new update manager.
+
 2014-06-10  Mario Pulido <mario.pulido@artica.es>
 
 	* pandoradb_data.sql: Fixed bug in plugin exec #803

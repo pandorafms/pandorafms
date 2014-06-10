@@ -1,5 +1,16 @@
 2014-06-10  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/update_manager.php, extensions/update_manager/*,
+	include/functions_config.php: remove the old update manager. Bye bye
+	my old friend.
+	
+	* godmode/update_manager_xxx -> godmode/update_manager,
+	godmode/update_manager/* -> godmode/update_manager/*,
+	godmode/menu.php: rename
+	the update manager.
+
+2014-06-10  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_config.php,
 	include/functions_update_manager.php, index.php,
 	general/logon_ok.php, extensions/update_manager.php,

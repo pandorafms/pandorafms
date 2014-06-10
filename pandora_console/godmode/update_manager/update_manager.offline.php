@@ -16,7 +16,7 @@
 
 global $config;
 
-ui_require_css_file('update_manager', 'godmode/update_manager_xxx/');
+ui_require_css_file('update_manager', 'godmode/update_manager/');
 
 ?>
 <script type="text/javascript">

@@ -24,15 +24,15 @@ $tab = get_parameter('tab', 'online');
 $buttons = array(
 	'setup' => array(
 		'active' => ($tab == 'setup') ? true : false,
-		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager_xxx/update_manager_xxx&tab=setup">' . 
+		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager_xxx&tab=setup">' . 
 			html_print_image ("images/gm_setup.png", true, array ("title" => __('Options'))) .'</a>'),
 	'offline' => array(
 		'active' => ($tab == 'offline') ? true : false,
-		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager_xxx/update_manager_xxx&tab=offline">' . 
+		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager_xxx&tab=offline">' . 
 			html_print_image ("images/box.disabled.png", true, array ("title" => __('Offline update manager'))) .'</a>'),
 	'online' => array(
 		'active' => ($tab == 'online') ? true : false,
-		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager_xxx/update_manager_xxx&tab=online">' . 
+		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager_xxx&tab=online">' . 
 			html_print_image("images/op_gis.png", true, array ("title" => __('Online update manager'))) .'</a>')
 	);
 

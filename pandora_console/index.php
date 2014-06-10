@@ -206,7 +206,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		|| $config['enable_pass_policy_admin']))
 		&& (defined('PANDORA_ENTERPRISE'))
 		&& ($config['enable_pass_policy'])) {
-		include_once(ENTERPRISE_DIR."/include/auth/mysql.php");
+		include_once(ENTERPRISE_DIR . "/include/auth/mysql.php");
 		
 		$blocked = login_check_blocked($nick);
 		
@@ -233,7 +233,8 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		//login ok and password has expired
 		
 		require_once ('general/login_page.php');
-		db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
+		db_pandora_audit("Password expired",
+			"Password expired: " . $nick, $nick);
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
@@ -297,10 +298,10 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		//Remove everything that might have to do with people's passwords or logins
 		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
 		
-		$user_language = get_user_language ($config['id_user']);
+		$user_language = get_user_language($config['id_user']);
 		
 		$l10n = NULL;
-		if (file_exists ('./include/languages/'.$user_language.'.mo')) {
+		if (file_exists ('./include/languages/' . $user_language . '.mo')) {
 			$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
 			$l10n->load_tables();
 		}
@@ -359,7 +360,19 @@ if ($process_login) {
 	 /* Call all extensions login function */
 	extensions_call_login_function ();
 	
+	unset($_SESSION['new_update']);
 	
+	require_once("include/functions_update_manager.php");
+	enterprise_include_once("include/functions_update_manager.php");
+	
+	if (enterprise_installed()) {
+		$result = update_manager_check_online_enterprise_packages_available();
+	}
+	else {
+		$result = update_manager_check_online_free_packages_available();
+	}
+	if ($result)
+		$_SESSION['new_update'] = 'new';
 	
 	//Set the initial global counter for chat.
 	users_get_last_global_counter('session');

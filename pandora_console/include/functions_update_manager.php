@@ -40,7 +40,7 @@ function update_manager_get_config_values() {
 	//~ $limit_count = 2;
 	$build_version = "140514";
 	$pandora_version = "4.1";
-	$license = "INTEGRIA-FREE";
+	//$license = "INTEGRIA-FREE";
 	
 	
 	return array(
@@ -213,6 +213,47 @@ function update_manager_main() {
 	<?php
 }
 
+function update_manager_check_online_free_packages_available() {
+	global $config;
+	
+	$update_message = '';
+	
+	$um_config_values = update_manager_get_config_values();
+	
+	$params = array('action' => 'newest_package',
+		'license' => $um_config_values['license'],
+		'limit_count' => $um_config_values['limit_count'],
+		'current_package' => $um_config_values['current_update'],
+		'version' => $um_config_values['version'],
+		'build' => $um_config_values['build']);
+	
+	$curlObj = curl_init();
+	curl_setopt($curlObj, CURLOPT_URL, $config['url_update_manager']);
+	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curlObj, CURLOPT_POST, true);
+	curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
+	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+	
+	$result = curl_exec($curlObj);
+	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
+	curl_close($curlObj);
+	
+	
+	if ($http_status >= 400 && $http_status < 500) {
+		return false;
+	}
+	elseif ($http_status >= 500) {
+		return false;
+	}
+	else {
+		if ($is_ajax) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+}
 
 function update_manager_check_online_free_packages ($is_ajax=true) {
 	global $config;

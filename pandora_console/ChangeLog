@@ -1,5 +1,13 @@
 2014-06-10  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_config.php,
+	include/functions_update_manager.php, index.php,
+	general/logon_ok.php, extensions/update_manager.php,
+	godmode/update_manager_xxx/update_manager.online.php: work in the
+	first version of new update manager.
+
+2014-06-10  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/update_manager_xxx/update_manager.online.php,
 	include/functions_update_manager.php,
 	include/javascript/update_manager.js,

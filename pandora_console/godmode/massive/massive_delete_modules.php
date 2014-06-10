@@ -504,6 +504,7 @@ $(document).ready (function () {
 					"recursion" : $("#checkbox-recursion")
 						.attr("checked") ? 1 : 0,
 					"id_group" : this.value,
+					"privilege" : "AW",
 					status_agents: function () {
 						return $("#status_agents").val();
 					},

@@ -1,3 +1,14 @@
+2014-06-10  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_graph.php: Added the function
+	"graph_snmp_traps_treemap".
+
+	* include/functions_netflow.php: Fixed a little error.
+
+	* operation/snmpconsole/snmp_view.php: Fixed the pagination.
+	Now is possible to see a treemap graph of oid per agent with
+	the snmptraps received.
+
 2014-06-10  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager.php, extensions/update_manager/*,

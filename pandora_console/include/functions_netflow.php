@@ -1362,23 +1362,26 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			$id = -1;
 
 			$data = array();
-			$data['name'] = __("Host detailed traffic") . ": " . $type;
-			$data['children'] = array();
 
-			foreach ($data_aux as $address => $ports) {
-				$children = array();
-				$children['id'] = $id++;
-				$children['name'] = $address;
-				$children['children'] = array();
-				foreach ($ports as $port => $value) {
-					$children_data = array();
-					$children_data['id'] = $id++;
-					$children_data['name'] = $port;
-					$children_data['value'] = $value;
-					$children_data['tooltip_content'] = "$port: <b>" . format_numeric($value) . " " . netflow_format_unit($unit) . "</b>";
-					$children['children'][] = $children_data;
+			if (! empty($netflow_data)) {
+				$data['name'] = __("Host detailed traffic") . ": " . $type;
+				$data['children'] = array();
+
+				foreach ($data_aux as $address => $ports) {
+					$children = array();
+					$children['id'] = $id++;
+					$children['name'] = $address;
+					$children['children'] = array();
+					foreach ($ports as $port => $value) {
+						$children_data = array();
+						$children_data['id'] = $id++;
+						$children_data['name'] = $port;
+						$children_data['value'] = $value;
+						$children_data['tooltip_content'] = "$port: <b>" . format_numeric($value) . " " . netflow_format_unit($unit) . "</b>";
+						$children['children'][] = $children_data;
+					}
+					$data['children'][] = $children;
 				}
-				$data['children'][] = $children;
 			}
 
 			return graph_netflow_host_traffic ($data, netflow_format_unit($unit), 'auto', 400);

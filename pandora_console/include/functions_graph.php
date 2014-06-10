@@ -3246,7 +3246,7 @@ function graph_netflow_circular_mesh ($data, $unit, $radius = 700) {
 }
 
 /**
- * Print a rescangular graph with the traffic of the ports for each IP
+ * Print a rectangular graph with the traffic of the ports for each IP
  */
 function graph_netflow_host_traffic ($data, $unit, $width = 700, $height = 700) {
 	global $config;
@@ -4082,4 +4082,21 @@ function get_criticity_pie_colors ($data_graph) {
 	
 	return $colors;
 }
+
+
+/**
+ * Print a rectangular graph with the snmptraps received
+ */
+function graph_snmp_traps_treemap ($data, $width = 700, $height = 700) {
+	global $config;
+
+	if (empty ($data)) {
+		return fs_error_image ();
+	}
+
+	include_once($config['homedir'] . "/include/graphs/functions_d3.php");
+
+	return d3_tree_map_graph ($data, $width, $height, true);
+}
+
 ?>

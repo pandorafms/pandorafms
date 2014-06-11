@@ -401,7 +401,7 @@ $table->data[0][1] = html_print_input_text_extended ('id_user', $id, '', '', 20,
 
 $table->data[1][0] = __('Full (display) name');
 $table->data[1][1] = html_print_input_text_extended ('fullname', $user_info['fullname'],
-	'', '', 30, 255, $view_mode, '', '', true);
+	'', '', 30, 125, $view_mode, '', '', true);
 
 $table->data[2][0] = __('Language');
 $table->data[2][1] = html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
@@ -410,10 +410,10 @@ $table->data[2][1] = html_print_select_from_sql ('SELECT id_language, name FROM 
 if ($config['user_can_update_password']) {
 	$table->data[4][0] = __('Password');
 	$table->data[4][1] = html_print_input_text_extended ('password_new', '', '', '',
-		15, 255, $view_mode, '', '', true, true);
+		15, 45, $view_mode, '', '', true, true);
 	$table->data[5][0] = __('Password confirmation');
 	$table->data[5][1] = html_print_input_text_extended ('password_confirm', '', '',
-		'', 15, 255, $view_mode, '', '', true, true);
+		'', 15, 45, $view_mode, '', '', true, true);
 }
 
 $own_info = get_user_info ($config['id_user']);

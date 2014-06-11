@@ -513,9 +513,13 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
 	$graph_id2 = uniqid('graph_');
+
+	if ($width != 'auto') {
+		$width = $width . "px";
+	}
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."; height: ".$height."px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	if ($water_mark != '') {

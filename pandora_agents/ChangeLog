@@ -1,3 +1,8 @@
+2014-06-11  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* pc/plugins/inventory: Fixed bug in inventory
+	plugin (Ubuntu 12.04).
+
 2014-05-30  Sancho Lerena <slerena@artica.es>
 
 	* unix/Linux/pandora_agent.conf: New default configuration file.

@@ -1136,7 +1136,7 @@ function get_priority_class($priority) {
 function get_priority_style($priority_class) {
 	switch ($priority_class) {
 		case "datos_blue":
-			$style_css_criticity = 'background-color: ' . COL_INFORMATIONAL . '; color: #FFFFFF;';
+			$style_css_criticity = 'background-color: ' . COL_MAINTENANCE . '; color: #FFFFFF;';
 			break;
 		case "datos_grey":
 			$style_css_criticity = 'background-color: ' . COL_UNKNOWN . '; color: #FFFFFF;';

@@ -1,3 +1,14 @@
+2014-06-11  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/users/configure_user.php: Fixed some input
+	properties.
+
+	* include/graphs/functions_flot.php: Added an option
+	to set the width to auto on the function "flot_vcolumn_chart".
+
+	* include/graphs/flot/pandora.flot.js: Increased the tick size
+	of the vertical labels on the function "pandoraFlotVBars".
+
 2014-06-10  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_graph.php: Added the function

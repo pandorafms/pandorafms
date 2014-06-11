@@ -108,6 +108,7 @@ use Time::Local;
 use POSIX qw(strftime);
 use threads;
 use threads::shared;
+use Thread::Semaphore;
 use JSON qw(decode_json encode_json);
 use MIME::Base64;
 
@@ -223,6 +224,9 @@ our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not exe
 
 # Event storm protection (no alerts or events)
 our $EventStormProtection :shared = 0;
+
+# Semaphore for keep alive modules
+my $KeepAliveSem :shared = Thread::Semaphore->new (1);
 
 ##########################################################################
 # Return the agent given the IP address.
@@ -2220,13 +2224,21 @@ sub pandora_module_keep_alive ($$$$$) {
 	my ($pa_config, $id_agent, $agent_name, $server_id, $dbh) = @_;
 	
 	logger($pa_config, "Updating keep_alive module for agent '" . safe_output($agent_name) . "'.", 10);
+	$KeepAliveSem->down_force();
 	
 	# Update keepalive module 
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND delete_pending = 0 AND id_tipo_modulo = 100', $id_agent);
-	return unless defined ($module);
-	
-	my %data = ('data' => 1);
-	pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time(), $server_id, $dbh);
+	if (defined ($module)) {
+		my %data = ('data' => 1);
+		eval {
+			pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time(), $server_id, $dbh);
+		};
+		if ($@) {
+			$KeepAliveSem->up();
+			die($@);
+		}
+	}
+	$KeepAliveSem->up();
 }
 
 ##########################################################################
@@ -2818,7 +2830,15 @@ sub pandora_module_keep_alive_nd {
 	my %data = ('data' => 0);
 	foreach my $module (@modules) {
 		logger($pa_config, "Updating keep_alive module for module '" . $module->{'nombre'} . "' agent ID " . $module->{'id_agente'} . " (agent without data).", 10);
-		pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time (), 0, $dbh);
+		$KeepAliveSem->down();
+		eval {
+			pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time (), 0, $dbh);
+		};
+		if ($@) {
+			$KeepAliveSem->up();
+			die($@);
+		}
+		$KeepAliveSem->up();
 	}
 }
 

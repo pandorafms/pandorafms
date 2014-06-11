@@ -20,6 +20,8 @@
 
 use strict;
 use constant TSTAMP_FILE => '/tmp/pandora_inventory.tstamp';
+use utf8;
+use Encode;
 
 # Operation mode (LSHW or HWINFO)
 my $Mode;
@@ -39,6 +41,9 @@ sub get_module_data ($$$$) {
 		
 	# Parse module data
 	while (my $line = shift (@{$hwinfo})) {
+		$line = Encode::decode("utf8", $line);
+		$line =~ tr/áéíóúüñçÁÉÍÓÚÜÑÇ/aeiouuncAEIOUUNC/;
+		
 		if ($line =~ /$Separator/) {
 			unshift (@{$hwinfo}, $line);
 			last;
@@ -327,6 +332,26 @@ if ($? != 0) {
 	@hwinfo = `hwinfo --cpu --memory --gfxcard --netcard --cdrom --disk 2>/dev/null`;
 }
 
+my @locale = `locale`;
+my @version = `cat /etc/issue`;
+my $spanish = 0;
+my $change_idiom = 0;
+
+while (my $linea = shift (@locale)) {
+	if ($linea =~ /LANG=/) {
+		my @arr_lang = split('=', $linea);
+		my $lang_system = $arr_lang[1];
+		if ($lang_system =~ /es_ES/) {
+			$change_idiom = 1;
+		}
+	}
+}
+if ($version[0] =~ /Ubuntu 12.04/) {
+	if ($change_idiom == 1) {
+		$spanish = 1;
+	}
+}
+
 # Parse hardware information
 my %modules;
 while (my $line = shift (@hwinfo)) {
@@ -335,7 +360,11 @@ while (my $line = shift (@hwinfo)) {
 	# CPU
 	if (($line =~ /\*\-cpu/ || $line =~ /Hardware Class: cpu/) && ($enable_all == 1 || $enabled{'cpu'} == 1)) {
 		if ($Mode eq 'LSHW') {
-			get_module_data ('CPU', \@hwinfo, ['product', 'vendor', 'capacity'], \%modules);
+			if ($spanish) { # SO Ubuntu 12.04 and idiom spanish
+				get_module_data ('CPU', \@hwinfo, ['producto', 'fabricante', 'capacidades'], \%modules);
+			} else {
+				get_module_data ('CPU', \@hwinfo, ['product', 'vendor', 'capacity'], \%modules);
+			}
 		} else {
 			get_module_data ('CPU', \@hwinfo, ['Model', 'Vendor', 'Clock'], \%modules);
 		}
@@ -344,7 +373,11 @@ while (my $line = shift (@hwinfo)) {
 	# RAM
 	if (($line =~ /\*\-bank/ || $line =~ /Hardware Class: memory/) && ($enable_all == 1 || $enabled{'ram'} == 1)) {
 		if ($Mode eq 'LSHW') {
-			get_module_data ('RAM', \@hwinfo, ['description', 'size'], \%modules);
+			if ($spanish) { # SO Ubuntu 12.04 and idiom spanish
+				get_module_data ('RAM', \@hwinfo, ['descripcion', 'tamano'], \%modules);
+			} else {
+				get_module_data ('RAM', \@hwinfo, ['description', 'size'], \%modules);
+			}
 		} else {
 			get_module_data ('RAM', \@hwinfo, ['Model', 'Memory Size'], \%modules);
 		}
@@ -353,7 +386,11 @@ while (my $line = shift (@hwinfo)) {
 	# VIDEO
 	if (($line =~ /\*\-display/ || $line =~ /Hardware Class: graphics card/) && ($enable_all == 1 || $enabled{'video'} == 1)) {
 		if ($Mode eq 'LSHW') {
-			get_module_data ('VIDEO', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+			if ($spanish) { # SO Ubuntu 12.04 and idiom spanish
+				get_module_data ('VIDEO', \@hwinfo, ['producto', 'descripcion', 'fabricante'], \%modules);
+			} else {
+				get_module_data ('VIDEO', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+			}
 		} else {
 			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
 			get_module_data ('VIDEO', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
@@ -363,7 +400,11 @@ while (my $line = shift (@hwinfo)) {
 	# NIC
 	if (($line =~ /\*\-network/ || $line =~ /Hardware Class: network/) && ($enable_all == 1 || $enabled{'nic'} == 1)) {
 		if ($Mode eq 'LSHW') {
-			get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor', 'serial'], \%modules);
+			if ($spanish) { # SO Ubuntu 12.04 and idiom spanish
+				get_module_data ('NIC', \@hwinfo, ['producto', 'descripcion', 'fabricante', 'serie'], \%modules);
+			} else {
+				get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor', 'serial'], \%modules);
+			}
 		} else {
 			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
 			get_module_data ('NIC', \@hwinfo, ['Model', ' Device', ' Vendor', 'HW Address'], \%modules);
@@ -373,7 +414,11 @@ while (my $line = shift (@hwinfo)) {
 	# CDROM
 	if (($line =~ /\*\-cdrom/ || $line =~ /Hardware Class: cdrom/) && ($enable_all == 1 || $enabled{'cdrom'} == 1)) {
 		if ($Mode eq 'LSHW') {
-			get_module_data ('CDROM', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+			if ($spanish) { # SO Ubuntu 12.04 and idiom spanish
+				get_module_data ('CDROM', \@hwinfo, ['producto', 'descripcion', 'fabricante'], \%modules);
+			} else {
+				get_module_data ('CDROM', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+			}
 		} else {
 			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
 			get_module_data ('CDROM', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
@@ -383,7 +428,11 @@ while (my $line = shift (@hwinfo)) {
 	# HD
 	if (($line =~ /\*\-disk/ || $line =~ /Hardware Class: disk/) && ($enable_all == 1 || $enabled{'hd'} == 1)) {
 		if ($Mode eq 'LSHW') {
-			get_module_data ('HD', \@hwinfo, ['product', 'description', 'size'], \%modules);
+			if ($spanish) { # SO Ubuntu 12.04 and idiom spanish
+				get_module_data ('HD', \@hwinfo, ['producto', 'descripcion', 'tamano'], \%modules);
+			} else {
+				get_module_data ('HD', \@hwinfo, ['product', 'description', 'size'], \%modules);
+			}
 		} else {
 			get_module_data ('HD', \@hwinfo, ['Model', 'Serial ID', 'Size'], \%modules);
 		}

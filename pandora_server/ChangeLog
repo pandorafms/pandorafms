@@ -1,3 +1,8 @@
+2014-06-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Prevent race conditions between keep_alive and
+	  keep_alive_nd.
+
 2014-06-08  Junichi Satoh <junichi@rworks.jp>
 
 	* FreeBSD/pandora_server.conf, NetBSD/pandora_server.conf: Updated

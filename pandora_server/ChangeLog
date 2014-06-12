@@ -1,3 +1,9 @@
+2014-06-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Removed the keepalive semaphore, since down_force
+	  is not supported in earlier versions of Thread::Semaphore. Made keep alive
+	  modules work with an FF threshold.
+
 2014-06-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Prevent race conditions between keep_alive and

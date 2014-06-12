@@ -225,9 +225,6 @@ our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not exe
 # Event storm protection (no alerts or events)
 our $EventStormProtection :shared = 0;
 
-# Semaphore for keep alive modules
-my $KeepAliveSem :shared = Thread::Semaphore->new (1);
-
 ##########################################################################
 # Return the agent given the IP address.
 ##########################################################################
@@ -2224,21 +2221,13 @@ sub pandora_module_keep_alive ($$$$$) {
 	my ($pa_config, $id_agent, $agent_name, $server_id, $dbh) = @_;
 	
 	logger($pa_config, "Updating keep_alive module for agent '" . safe_output($agent_name) . "'.", 10);
-	$KeepAliveSem->down_force();
 	
 	# Update keepalive module 
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND delete_pending = 0 AND id_tipo_modulo = 100', $id_agent);
 	if (defined ($module)) {
 		my %data = ('data' => 1);
-		eval {
-			pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time(), $server_id, $dbh);
-		};
-		if ($@) {
-			$KeepAliveSem->up();
-			die($@);
-		}
+		pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time(), $server_id, $dbh);
 	}
-	$KeepAliveSem->up();
 }
 
 ##########################################################################
@@ -2823,22 +2812,14 @@ sub pandora_module_keep_alive_nd {
 					AND tagente.disabled = 0 
 					AND tagente_modulo.id_tipo_modulo = 100 
 					AND tagente_modulo.disabled = 0 
-					AND (' . db_text ('tagente_estado.datos') . ' = \'1.00\' OR ' . db_text ('tagente_estado.datos') . '= \'\')
+					AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()))
 					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 					AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
 
 	my %data = ('data' => 0);
 	foreach my $module (@modules) {
 		logger($pa_config, "Updating keep_alive module for module '" . $module->{'nombre'} . "' agent ID " . $module->{'id_agente'} . " (agent without data).", 10);
-		$KeepAliveSem->down();
-		eval {
-			pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time (), 0, $dbh);
-		};
-		if ($@) {
-			$KeepAliveSem->up();
-			die($@);
-		}
-		$KeepAliveSem->up();
+		pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time (), 0, $dbh);
 	}
 }
 

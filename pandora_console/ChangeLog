@@ -1,3 +1,9 @@
+2014-06-12  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_copy_modules.php: Delete the 
+	source agent from the target agents lists in massive
+	copy form to avoid errors for ticket: #869
+
 2014-06-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions.php: Change incorrect color assigned to

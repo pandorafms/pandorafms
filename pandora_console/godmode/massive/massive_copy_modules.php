@@ -252,10 +252,9 @@ $(document).ready (function () {
 		},
 		loading: "#destiny_agent_loading",
 		callbackPost: function (id, value, option) {
-			if ($("#source_id_agent").fieldValue ().in_array (id)) {
-				/* Hide source agent */
-				$(option).hide ();
-			}
+			/* Hide source agent */
+			var selected_agent = $("#source_id_agent").val();
+			$("#destiny_id_agent option[value='" + selected_agent + "']").remove();
 		}
 	});
 	
@@ -374,6 +373,8 @@ $(document).ready (function () {
 					},
 					"json"
 				);
+				// Refresh selectable agents to delete the selected one
+				$("#destiny_id_group").trigger("change");
 			},
 			"json"
 		);

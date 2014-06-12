@@ -146,7 +146,11 @@ if ($delete) {
 			$condition = '';
 			if ($module_type != 0)
 				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
-				
+
+			$groups = users_get_groups ($config["id_user"], "AW", false);
+			$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
+			$condition = ' AND t1.id_grupo IN (' . $group_id_list . ') ';
+
 			$agents_ = db_get_all_rows_sql('SELECT DISTINCT(t1.id_agente)
 				FROM tagente t1, tagente_modulo t2
 				WHERE t1.id_agente = t2.id_agente AND t2.delete_pending = 0 ' . $condition);
@@ -164,7 +168,13 @@ if ($delete) {
 			}
 		}
 		else if ($force == 'group') {
-			$agents_ = array_keys (agents_get_group_agents ($group_select, false, "none"));
+			if( $group_select == 0 ) {
+				$agents_ = array_keys (agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false)), false, "none"));
+			}
+			else {
+				$agents_ = array_keys (agents_get_group_agents ($group_select, false, "none"));
+			}
+
 			foreach ($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
 				if ($module_name == false) {
@@ -414,7 +424,8 @@ $(document).ready (function () {
 				"get_agent_modules_json" : 1,
 				"filter" : filter,
 				"fields" : "DISTINCT(nombre)",
-				"indexed" : 0
+				"indexed" : 0,
+				"privilege" : "AW"
 			},
 			function (data, status) {
 				jQuery.each (data, function (id, value) {

@@ -140,9 +140,13 @@ if (is_ajax ()) {
 		$nameModules = get_parameter('module_name');
 		$selection_mode = get_parameter('selection_mode','common');
 		
+		$groups = users_get_groups ($config["id_user"], "AW", false);
+		$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
+
 		$sql = 'SELECT DISTINCT(t1.nombre) as name
 			FROM tagente t1, tagente_modulo t2
 			WHERE t1.id_agente = t2.id_agente
+				AND t1.id_grupo IN (' . $group_id_list .')
 				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')';
 		
 		if ($selection_mode == 'common') {
@@ -152,7 +156,7 @@ if (is_ajax ()) {
 					WHERE t3.id_agente = t4.id_agente AND t1.nombre = t3.nombre
 						AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules);
 		}
-		
+
 		$sql .= ' ORDER BY t1.nombre';
 		
 		$nameAgents = db_get_all_rows_sql($sql);
@@ -473,9 +477,8 @@ if (is_ajax ()) {
 
 				$_tags = implode(',', array_keys($_user_tags));
 
-				if (!empty($_tags)) {
-					$_sql_post .= ' AND tagente_modulo.id_agente_modulo IN (SELECT a.id_agente_modulo FROM tagente_modulo a, ttag_module b WHERE a.id_agente_modulo=b.id_agente_modulo AND b.id_tag IN (' . $_tags . ')) ';
-				}
+				$_sql_post .= ' AND tagente_modulo.id_agente_modulo IN (SELECT a.id_agente_modulo FROM tagente_modulo a, ttag_module b WHERE a.id_agente_modulo=b.id_agente_modulo AND b.id_tag IN (' . $_tags . ')) ';
+
 			}
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion,

@@ -1,3 +1,27 @@
+2014-06-13  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/languages/ca.mo
+	include/languages/tr.mo
+	include/languages/de.mo
+	include/languages/ja.mo
+	include/languages/pt_BR.mo
+	include/languages/ru.mo
+	include/languages/el.mo
+	include/languages/nl.mo
+	include/languages/es.po
+	include/languages/pl.mo
+	include/languages/it.mo
+	include/languages/pt.mo
+	include/languages/index.pot
+	include/languages/zh_CN.mo
+	include/languages/cs.mo
+	include/languages/es.mo
+	include/languages/en_GB.mo
+	include/languages/sk.mo
+	include/languages/en.mo
+	include/languages/ar.mo
+	include/languages/fr.mo: Update languages.
+
 2014-06-12 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* godmode/massive/massive_delete_modules.php,

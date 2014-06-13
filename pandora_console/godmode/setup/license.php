@@ -28,7 +28,8 @@ ui_print_page_header (__('License management'), "images/extensions.png", false, 
 
 if ($update_settings) {
 	foreach ($_POST['keys'] as $key => $value) {
-		um_db_update_setting ($key, $value);
+		db_process_sql_update('tupdate_settings',
+			array('value' => $value), array('key' => $key));
 	}
 	
 	ui_print_success_message(__('License updated'));
@@ -38,8 +39,12 @@ ui_require_javascript_file_enterprise('load_enterprise');
 enterprise_include_once('include/functions_license.php');
 $license = enterprise_hook('license_get_info');
 
-$settings = null;
-$settings = um_db_load_settings ();
+$rows = db_get_all_rows_in_table('tupdate_settings');
+
+$settings = new StdClass;
+foreach ($rows as $row) {
+	$settings->$row['key'] = $row['value'];
+}
 
 echo '<script type="text/javascript">';
 print_js_var_enteprise();

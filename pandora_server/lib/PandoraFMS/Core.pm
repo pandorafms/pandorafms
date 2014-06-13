@@ -108,7 +108,6 @@ use Time::Local;
 use POSIX qw(strftime);
 use threads;
 use threads::shared;
-use Thread::Semaphore;
 use JSON qw(decode_json encode_json);
 use MIME::Base64;
 

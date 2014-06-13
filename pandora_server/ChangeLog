@@ -1,3 +1,7 @@
+2014-06-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Removed an unused pm.
+
 2014-06-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Merged from trunk. Removed the keepalive

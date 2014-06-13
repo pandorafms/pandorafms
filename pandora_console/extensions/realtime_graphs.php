@@ -123,6 +123,9 @@ function pandora_realtime_graphs () {
 	echo '<script type="text/javascript" src="extensions/realtime_graphs/realtime_graphs.js"></script>';
 	echo '<script type="text/javascript" src="include/javascript/pandora_snmp_browser.js"></script>';
 	echo '<link rel="stylesheet" type="text/css" href="extensions/realtime_graphs/realtime_graphs.css"></style>';
+	
+	// Store servers timezone offset to be retrieved from js
+	set_js_value('timezone_offset', date('Z', time()));
 }
 
 extensions_add_operation_menu_option (__('Realtime graphs'), null, null, "v1r1");

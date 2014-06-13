@@ -200,7 +200,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $series_type = array(),
 	$chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key = '', $force_integer = false,
-	$series_suffix_str = '', $menu = true) {
+	$series_suffix_str = '', $menu = true, $backgroundColor = 'white') {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -250,6 +250,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['water_mark'] = $water_mark_file;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
+		$graph['backgroundColor'] = $backgroundColor;
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
@@ -260,7 +261,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 
 function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
-	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
+	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '',
+	$backgroundColor = 'white') {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -286,6 +288,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['water_mark'] = $water_mark_file;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
+		$graph['backgroundColor'] = $backgroundColor;
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
@@ -295,7 +298,8 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 
 function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
-	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
+	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '', 
+	$backgroundColor = 'white') {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -322,7 +326,8 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['water_mark'] = $water_mark_file;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
-		
+		$graph['backgroundColor'] = $backgroundColor;
+
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
@@ -331,7 +336,8 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 
 function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
-	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
+	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '',
+	$backgroundColor = 'white') {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -354,7 +360,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['water_mark'] = $water_mark_file;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
-		
+		$graph['backgroundColor'] = $backgroundColor;
+
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";

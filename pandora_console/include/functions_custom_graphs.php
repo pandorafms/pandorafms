@@ -93,7 +93,8 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
  */
 
 function custom_graphs_print($id_graph, $height, $width, $period,
-	$stacked = null, $return = false, $date = 0, $only_image = false) {
+	$stacked = null, $return = false, $date = 0, $only_image = false,
+	$background_color = 'white') {
 	global $config;
 	
 	$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
@@ -118,7 +119,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	}
 	
 	$output = graphic_combined_module($modules, $weights, $period,
-		$width, $height, '', '', 0, 0, 0, $stacked, $date, $only_image);
+		$width, $height, '', '', 0, 0, 0, $stacked, $date, $only_image,
+		'', 1, false, false, $background_color);
 	
 	if ($return)
 		return $output;

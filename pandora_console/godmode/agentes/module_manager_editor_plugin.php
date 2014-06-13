@@ -99,17 +99,9 @@ if (!empty($macros)) {
 
 ?>
 <script type="text/javascript">
-	var load_module_component = false;
-	
 	function changePluginSelect() {
-		
 		load_plugin_description($("#id_plugin").val());
 		load_plugin_macros_fields('simple-macro');
 		forced_title_callback();
-		
-		//For to avoid the deletion of macros in the code
-		//$("#network_component").change (function () {
-		//In the file pandora_modules.js
-		load_module_component = true;
 	}
 </script>

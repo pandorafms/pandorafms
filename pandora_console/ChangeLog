@@ -1,3 +1,7 @@
+2014-06-13  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/setup/license.php: fixed the erased the update extension.
+
 2014-06-13  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/realtime_graphs.php

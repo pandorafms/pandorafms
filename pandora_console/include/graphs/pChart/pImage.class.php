@@ -62,9 +62,12 @@
    var $DataSet           = NULL;			// Attached dataset
 
    /* Class constructor */
-   function pImage($XSize,$YSize,$DataSet=NULL,$TransparentBackground=FALSE)
+   function pImage($XSize,$YSize,$DataSet=NULL,$TransparentBackground=FALSE, $ColorBackground = 'white', $FontColor = array('R' => 0, 'G' => 0, 'B' => 0))
     {
      $this->TransparentBackground = $TransparentBackground;
+     $this->FontColorR = $FontColor['R'];
+     $this->FontColorG = $FontColor['G'];
+     $this->FontColorB = $FontColor['B'];
 
      if ( $DataSet != NULL ) { $this->DataSet = $DataSet; }
 
@@ -81,8 +84,16 @@
       }
      else
       {
-       $C_White = $this->AllocateColor($this->Picture,255,255,255);
-       imagefilledrectangle($this->Picture,0,0,$XSize,$YSize,$C_White);
+	   switch($ColorBackground) {
+			case 'black':
+				$C = $this->AllocateColor($this->Picture,0,0,0);
+				break;
+			case 'white':
+			default:
+				$C = $this->AllocateColor($this->Picture,255,255,255);
+				break;
+	   }
+       imagefilledrectangle($this->Picture,0,0,$XSize,$YSize,$C);
       }
     }
 

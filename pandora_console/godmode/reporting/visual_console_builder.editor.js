@@ -221,6 +221,7 @@ function readFields() {
 	values['label'] = text;
 	
 	values['image'] = $("select[name=image]").val();
+	values['background_color'] = $("select[name=background_color]").val();
 	values['left'] = $("input[name=left]").val(); 
 	values['top'] = $("input[name=top]").val(); 
 	values['agent'] = $("input[name=agent]").val(); 
@@ -472,7 +473,7 @@ function loadFieldsFromDB(item) {
 				var moduleId = 0;
 				
 				fill_parent_select(idItem);
-					console.log(data);
+				
 				jQuery.each(data, function(key, val) {
 					if (key == 'background')
 						$("#background_image").val(val);
@@ -503,8 +504,10 @@ function loadFieldsFromDB(item) {
 					if (key == 'image') {
 						//Load image preview
 						$("select[name=image]").val(val);
+						$("select[name=background_color]").val(val);
 						showPreview(val);
 					}
+					
 					if (key == 'pos_x') $("input[name=left]").val(val);
 					if (key == 'pos_y') $("input[name=top]").val(val);
 					if (key == 'agent_name') {
@@ -740,6 +743,9 @@ function hiddenFields(item) {
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row."  + item).css('display', '');
 	
+	$("#background_color").css('display', 'none');
+	$("#background_color."  + item).css('display', '');
+	
 	$("#radio_choice_graph").css('display', 'none');
 	$("#radio_choice_graph."  + item).css('display', '');
 	
@@ -827,6 +833,8 @@ function getModuleGraph(id_data) {
 			height = data['height'];
 			width = data['width'];
 			period = data['period'];
+			background_color = data['image'];
+			
 			if (metaconsole != 0) {
 				id_metaconsole = data['id_metaconsole'];
 			}
@@ -847,6 +855,7 @@ function getModuleGraph(id_data) {
 	parameter.push ({name: "height", value: height});
 	parameter.push ({name: "width", value: width});
 	parameter.push ({name: "period", value: period});
+	parameter.push ({name: "background_color", value: background_color});
 	jQuery.ajax({
 		async: false,
 		url: url_ajax,

@@ -1,3 +1,16 @@
+2014-06-13  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js
+	include/graphs/fgraph.php
+	include/graphs/functions_pchart.php
+	include/graphs/pChart/pImage.class.php
+	include/functions_visual_map.php
+	include/ajax/visual_console_builder.ajax.php
+	include/functions_visual_map_editor.php
+	include/functions_custom_graphs.php
+	include/functions_graph.php: Added option to cusomize the
+	background of the graphs in visual consoles for ticket: #886
+
 2014-06-13  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ca.mo

@@ -96,6 +96,11 @@ if (isset($graph['font_size'])) {
 		$font_size = $graph['font_size'];
 	}
 }
+if (isset($graph['backgroundColor'])) {
+	if (!empty($graph['backgroundColor'])) {
+		$backgroundColor = $graph['backgroundColor'];
+	}
+}
 if (isset($graph['antialiasing'])) { 
 	$antialiasing = $graph['antialiasing'];
 }
@@ -302,7 +307,7 @@ switch($graph_type) {
 	case 'line':
 		pch_vertical_graph($graph_type, $data_keys, $data_values, $width,
 			$height, $rgb_color, $xaxisname, $yaxisname, false, $legend,
-			$font, $antialiasing, $water_mark, $font_size);
+			$font, $antialiasing, $water_mark, $font_size, $backgroundColor);
 		break;
 	case 'threshold':
 		pch_threshold_graph($graph_type, $data_keys, $data_values, $width,
@@ -619,7 +624,8 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 
 function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false,
-	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size) {
+	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size, 
+	$backgroundColor = 'white') {
 	
 	/* CAT:Vertical Charts */
 	if (!is_array($legend) || empty($legend)) {
@@ -692,9 +698,24 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$MyData->addPoints($index,"Xaxis");
 	$MyData->setSerieDescription("Xaxis", $xaxisname);
 	$MyData->setAbscissa("Xaxis");
-	
+		
+	switch($backgroundColor) {
+		case 'white':
+			$transparent = false;
+			$fontColor = array('R' => 0, 'G' => 0, 'B' => 0);
+			break;
+		case 'black':
+			$transparent = false;
+			$fontColor = array('R' => 200, 'G' => 200, 'B' => 200);
+			break;
+		case 'transparent':
+			$transparent = true;
+			$fontColor = array('R' => 0, 'G' => 0, 'B' => 0);
+			break;
+		
+	}
 	/* Create the pChart object */
-	$myPicture = new pImage($width,$height,$MyData);
+	$myPicture = new pImage($width,$height,$MyData,$transparent,$backgroundColor,$fontColor);
 	
 	/* Turn of Antialiasing */
 	$myPicture->Antialias = $antialiasing;
@@ -817,6 +838,15 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		"XMargin" => 0, 
 		"MinDivHeight" => 20,
 		"TicksFontSize" => $font_size - 1);
+		
+	if (true) {
+		$scaleSettings['AxisR'] = '200';
+		$scaleSettings['AxisG'] = '200';
+		$scaleSettings['AxisB'] = '200';
+		$scaleSettings['TickR'] = '200';
+		$scaleSettings['TickG'] = '200';
+		$scaleSettings['TickB'] = '200';
+	}
 	$myPicture->drawScale($scaleSettings);
 	
 	/* Turn on shadow computing */ 

@@ -128,7 +128,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'<td align="left" colspan="2" style="text-align: right;">' .
 				'<div id="preview" style="text-align: right;"></div></td>';
 			
-			
+			$form_items['background_color'] = array();
+			$form_items['background_color']['items'] = array(
+				'module_graph',
+				'datos');
+			$form_items['background_color']['html'] = '<td align="left"><span>' .
+				__('Background color') . '</span></td>
+				<td align="left">'. html_print_select (
+					array ('white' => __('White'), 
+					'black' => __('Black'),
+					'transparent' => __('Transparent')),
+					'background_color', '', '', 0, 'white', true, false, false) . '</td>';
+					
 			$form_items['radio_choice_graph'] = array();
 			$form_items['radio_choice_graph']['items'] = array(
 				'module_graph',

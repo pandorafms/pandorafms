@@ -45,6 +45,7 @@ $id_element = get_parameter('id_element', null);
 
 $image = get_parameter('image', null);
 $background = get_parameter('background', null);
+$background_color = get_parameter('background_color', null);
 $label = get_parameter('label', '');
 $left = get_parameter('left', null);
 $top = get_parameter('top', null);
@@ -100,12 +101,13 @@ switch ($action) {
 		if ($id_custom_graph != 0) {
 			$img = custom_graphs_print(
 				$id_custom_graph, $height, $width, $period,
-				true, true, 0, true);
+				true, true, 0, true, $background_color);
 		}
 		else {
 			$img = grafico_modulo_sparse($id_agent_module,
 				$period, false, $width, $height, '', null, false, 1,
-				false, 0, '', 0, 0, true, true);
+				false, 0, '', 0, 0, true, true, '', 1, false, '', 
+				false, false, true, $background_color);
 		}
 		
 		//Restore db connection
@@ -124,7 +126,7 @@ switch ($action) {
 	case 'get_layout_data':
 		$layoutData = db_get_row_filter('tlayout_data',
 			array('id' => $id_element));
-		
+				
 		echo json_encode($layoutData);
 		break;
 	
@@ -304,6 +306,12 @@ switch ($action) {
 	case 'update':
 	case 'move':
 		$values = array();
+		
+		// In Graphs, background color is stored in column image (sorry)
+		if ($type == 'module_graph') {
+			$values['image'] = $background_color;
+		}
+		
 		switch ($type) {
 			case 'background':
 				if ($background !== null)
@@ -438,8 +446,12 @@ switch ($action) {
 				}
 				
 				if ($action == 'move') {
-					//Don't change the label because only change the positions
+					// Don't change the label because only change the positions
 					unset($values['label']);
+					// Don't change background color in graphs when move
+					if ($type == 'module_graph') {
+						unset($values['image']);
+					}
 				}
 				
 				$result = db_process_sql_update('tlayout_data', $values, array('id' => $id_element));

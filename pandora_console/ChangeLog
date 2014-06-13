@@ -1,3 +1,8 @@
+2014-06-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_api.php: Add doc info to pagerduty
+	webhook option
+
 2014-06-13  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* godmode/agentes/module_manager_editor_plugin.php,

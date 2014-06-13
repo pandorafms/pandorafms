@@ -39,7 +39,6 @@ AC_CHECK_LIB([gdi32], [main], , AC_MSG_ERROR([libgdi32 not found.]))
 AC_CHECK_LIB([crypto], [main], , AC_MSG_ERROR([libcrypto not found.]))
 AC_CHECK_LIB([ssl], [main], , AC_MSG_ERROR([libssl not found.]))
 AC_CHECK_LIB([curl], [main], , AC_MSG_ERROR([libcurl not found.]))
-AC_CHECK_LIB([odbc++], [main], , AC_MSG_ERROR([libodbc++ not found.]))
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stddef.h stdlib.h string.h sys/socket.h sys/time.h unistd.h wchar.h])

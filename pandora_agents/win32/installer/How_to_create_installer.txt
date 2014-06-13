@@ -38,7 +38,6 @@ C:\pandora_installer
 |   `-- PUT_SSH_KEYS_HERE
 |-- libcurl.dll
 |-- libeay32.dll
-|-- libodbc++.dll
 |-- pandora_agent.conf
 |-- PandoraAgent.exe
 |-- util

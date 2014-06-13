@@ -6647,6 +6647,19 @@ function api_set_enable_disable_agent ($id, $thrash2, $other, $thrash3) {
 	}
 }
 
+/**
+ * Validate alert from Pager Duty service. This call will be setted in PagerDuty's service as a Webhook to 
+ * validate the alerts of Pandora FMS previously linked to PagertDuty when its were validated from PagerDuty.
+ * 
+ * This call only have a parameter: id=alert
+ * 
+ * Call example:
+ * 	http://127.0.0.1/pandora_console/include/api.php?op=set&op2=pagerduty_webhook&apipass=1234&user=admin&pass=pandora&id=alert
+ * 
+ * TODO: Add support to events.
+ * 
+ */
+ 
 function api_set_pagerduty_webhook($type, $matchup_path, $tresh2, $return_type) {
 	global $config;
 

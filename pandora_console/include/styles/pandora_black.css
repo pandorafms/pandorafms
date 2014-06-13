@@ -25,7 +25,7 @@ Description: A theme with a dark style
 
 body, body.pure {
 	color: #EEE;
-	background-color: #4b4949;
+	background-color: #BCBCBC;
 
 }
 h1, h2, h3, h4 {
@@ -37,7 +37,7 @@ a {
 a:hover {
 	color: #CCC;
 }
-}
+
 h1#log {
 	color: #FFF;	
 }
@@ -49,14 +49,17 @@ div#head {
 
 div#container, div#page, div#main {
 	background-image: none;
-	background-color: #000;
+	background-color: #5B5B5B;
+}
+div#main {
+	background-color: #474747;
 }
 div#page {
-	border-bottom: solid 5px #001E40;
-	border-top: solid 5px #202020;
+	/*background-color: #ACACAC;*/
 }
 div#foot {
-	background-color: #503030;	
+	border-top: solid 2px #000;
+	background-color: #000;	
 }
 
 input:hover {
@@ -88,14 +91,14 @@ tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
 	background-color: #363636; 
 }
 
-td.datos2 {
-	line-height: 20px;
-	background-color: #1B1B1B;
-	}
-
 td.datos {
 	line-height: 20px;
 	background-color: #0E0E0E;
+}
+
+td.datos2 {
+	line-height: 20px;
+	background-color: #1B1B1B;
 }
 	
 td.datos3 {
@@ -144,13 +147,17 @@ div.title_line {
 	background-color: #62606a;
 }
 #menu_tab_left li a, #menu_tab_left li span {
-	background-color: #400027;
+	/*background-color: #400027;*/
 }
 #menu_tab_left li.view a {
 	background-color: #0B315B;
 }
 .databox, .databox_color, .databox_frame {
 	border: none;
+}
+
+#menu_tab_left ul.mn li.nomn {
+	background-color: #082C43;
 }
 
 .databox {
@@ -224,14 +231,14 @@ input.login {
 
 /* Calendar background */
 table.scw {
-        background-color:  #505050;
+	background-color:  #505050;
 }
 
 
-/* Today selector */                                      
+/* Today selector */
 td.scwFoot {
-        background-color: #505050;
-        color: #000;
+	background-color: #505050;
+	color: #000;
 }
 
 
@@ -276,21 +283,24 @@ fieldset legend {
 
 
 #menu_tab_frame_view {
-	background: #333333 !important;
+	display: block !important;
+	background-color: #5B5B5B;
+	border-bottom: 1px solid #6db431;
+	margin-left:-8px;
+	min-height:25px;
+	/*padding-right:28px;*/
+	width:100%;
 }
 
 
 /* Godmode */
 #menu_tab_frame {
-	background: #082C43 !important;
-}
-
-#menu_tab_frame, #menu_tab_frame_view {
 	display: block !important;
+	background-color: #5B5B5B;
 	border-bottom: 1px solid #082C43;
 	margin-left:-8px;
 	min-height:25px;
-	padding-right:28px;
+	/*padding-right:28px;*/
 	width:100%;
 }
 
@@ -299,7 +309,7 @@ fieldset legend {
 }
 
 .is_submenu2 {
-   background-color: #222222 !important;
+	background-color: #222222 !important;
 }
 
 .menu ul {

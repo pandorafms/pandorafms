@@ -328,13 +328,9 @@ function configure_modules_form () {
 					}
 				}
 				
-				if (!load_module_component) {
-					// Delete macro fields
-					$('.macro_field').remove();
-					$('#hidden-macros').val('');
-				}
-				load_module_component = false;
-				
+				// Delete macro fields
+				$('.macro_field').remove();
+				$('#hidden-macros').val('');
 				
 				
 				// If exist macros, load the fields

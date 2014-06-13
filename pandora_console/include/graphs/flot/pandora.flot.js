@@ -319,7 +319,6 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 					} ],
 			yaxes: [ { 
 					tickFormatter: yFormatter,
-					tickSize: 20,
 					color: '#000'
 					},
 					{

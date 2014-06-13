@@ -243,8 +243,6 @@ Pandora_Module::parseModuleKindFromString (string kind) {
 		return MODULE_CPUUSAGE;
 	} else if (kind == module_inventory_str) {
 		return MODULE_INVENTORY;
-	} else if (kind == module_odbc_str) {
-		return MODULE_ODBC;
 	} else if (kind == module_logevent_str) {
 		return MODULE_LOGEVENT;  
 	} else if (kind == module_wmiquery_str) {

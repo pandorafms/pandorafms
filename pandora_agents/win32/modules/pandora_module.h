@@ -82,7 +82,6 @@ namespace Pandora_Modules {
 				   *   freememory in the system        */
 		MODULE_FREEMEMORY_PERCENT, /**< The module checks the amount of 
 				   *   freememory in the system        */
-		MODULE_ODBC,       /**< The module performs a SQL query via ODBC */
 		MODULE_LOGEVENT,       /**< The module checks for log events */	
 		MODULE_WMIQUERY,       /**< The module runs WQL queries */		
 		MODULE_PERFCOUNTER,    /**< The module reads performance counters */
@@ -123,7 +122,6 @@ namespace Pandora_Modules {
 	const string module_freememory_percent_str = "module_freememory_percent";
 	const string module_cpuusage_str   = "module_cpuusage";
 	const string module_inventory_str  = "module_inventory";
-	const string module_odbc_str       = "module_odbc";
 	const string module_logevent_str   = "module_logevent";	
 	const string module_wmiquery_str   = "module_wmiquery";	
 	const string module_perfcounter_str = "module_perfcounter";

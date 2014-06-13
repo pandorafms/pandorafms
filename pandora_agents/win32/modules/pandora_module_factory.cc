@@ -30,7 +30,6 @@
 #include "pandora_module_freememory_percent.h"
 #include "pandora_module_cpuusage.h"
 #include "pandora_module_inventory.h"
-#include "pandora_module_odbc.h"
 #include "pandora_module_logevent.h"
 #include "pandora_module_wmiquery.h"
 #include "pandora_module_perfcounter.h"
@@ -58,7 +57,6 @@ using namespace Pandora_Strutils;
 #define TOKEN_FREEMEMORY_PERCENT    ("module_freepercentmemory")
 #define TOKEN_CPUUSAGE      ("module_cpuusage ")
 #define TOKEN_INVENTORY     ("module_inventory")
-#define TOKEN_ODBC          ("module_odbc ")
 #define TOKEN_MAX           ("module_max ")
 #define TOKEN_MIN           ("module_min ")
 #define TOKEN_POST_PROCESS  ("module_postprocess ")
@@ -69,7 +67,6 @@ using namespace Pandora_Strutils;
 #define TOKEN_DISABLED      ("module_disabled ")
 #define TOKEN_MIN_FF_EVENT  ("module_min_ff_event ")
 #define TOKEN_DESCRIPTION   ("module_description ")
-#define TOKEN_ODBC_QUERY    ("module_odbc_query ")
 #define TOKEN_LOGEVENT      ("module_logevent")
 #define TOKEN_SOURCE        ("module_source ")
 #define TOKEN_EVENTTYPE     ("module_eventtype ")
@@ -153,9 +150,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_name, module_type, module_exec;
 	string                 module_min, module_max, module_description;
 	string                 module_interval, module_proc, module_service;
-	string                 module_freedisk, module_cpuusage, module_inventory, module_odbc;
+	string                 module_freedisk, module_cpuusage, module_inventory;
 	string                 module_freedisk_percent, module_freememory_percent;
-	string                 module_odbc_query, module_dsn, module_freememory;
+	string                 module_dsn, module_freememory;
 	string                 module_logevent, module_source, module_eventtype, module_eventcode;
 	string                 module_pattern, module_application, module_async;
 	string                 module_watchdog, module_start_command;
@@ -193,8 +190,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_exec          = "";
 	module_proc          = "";
 	module_service       = "";
-	module_odbc          = "";
-	module_odbc_query    = "";
 	module_logevent      = "";
 	module_source        = "";
 	module_eventtype     = "";
@@ -308,9 +303,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_inventory == "") {
 			module_inventory = parseLine (line, TOKEN_INVENTORY);
 		}
-		if (module_odbc == "") {
-			module_odbc = parseLine (line, TOKEN_ODBC);
-		}
 		if (module_max == "") {
 			module_max = parseLine (line, TOKEN_MAX);
 		}
@@ -340,9 +332,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_description == "") {
 			module_description = parseLine (line, TOKEN_DESCRIPTION);
-		}
-		if (module_odbc_query == "") {
-			module_odbc_query = parseLine (line, TOKEN_ODBC_QUERY);
 		}
 		if (module_logevent == "") {
 			module_logevent = parseLine (line, TOKEN_LOGEVENT);
@@ -641,13 +630,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 					}
 				}
 
-				if (module_odbc != "") {
-					pos_macro = module_odbc.find(macro_name);
-					if (pos_macro != string::npos){
-						module_odbc.replace(pos_macro, macro_name.size(), macro_value);
-					}
-				}
-
 				if (module_max != "") {
 					pos_macro = module_max.find(macro_name);
 					if (pos_macro != string::npos){
@@ -715,13 +697,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 					pos_macro = module_description.find(macro_name);
 					if (pos_macro != string::npos){
 						module_description.replace(pos_macro, macro_name.size(), macro_value);
-					}
-				}
-
-				if (module_odbc_query != "") {
-					pos_macro = module_odbc_query.find(macro_name);
-					if (pos_macro != string::npos){
-						module_odbc_query.replace(pos_macro, macro_name.size(), macro_value);
 					}
 				}
 
@@ -1150,8 +1125,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 
 	} else if (module_inventory != "") {
 		module = new Pandora_Module_Inventory (module_name, module_inventory);
-	} else if (module_odbc != "") {
-		module = new Pandora_Module_Odbc (module_name, module_odbc, module_odbc_query);
 	} else if (module_logevent != "") {
 		module = new Pandora_Module_Logevent (module_name,
 						      module_source,

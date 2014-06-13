@@ -29,7 +29,6 @@
 #include "pandora_module_freememory_percent.h"
 #include "pandora_module_cpuusage.h"
 #include "pandora_module_inventory.h"
-#include "pandora_module_odbc.h"
 #include "pandora_module_logevent.h"
 #include "pandora_module_wmiquery.h"
 #include "pandora_module_perfcounter.h"
@@ -226,7 +225,6 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 	Pandora_Module_Inventory   *module_inventory;
 	Pandora_Module_Freememory *module_freememory;
 	Pandora_Module_Freememory_Percent *module_freememory_percent;
-	Pandora_Module_Odbc       *module_odbc;
 	Pandora_Module_Logevent   *module_logevent;	
 	Pandora_Module_WMIQuery   *module_wmiquery;	
 	Pandora_Module_Perfcounter *module_perfcounter;	
@@ -285,10 +283,6 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
       	case MODULE_INVENTORY:
 			module_inventory = (Pandora_Module_Inventory *) module;
 			modules->push_back (module_inventory);            			
-			break;
-		case MODULE_ODBC:
-			module_odbc = (Pandora_Module_Odbc *) module;
-			modules->push_back (module_odbc);
 			break;
 		case MODULE_LOGEVENT:
 			module_logevent = (Pandora_Module_Logevent *) module;

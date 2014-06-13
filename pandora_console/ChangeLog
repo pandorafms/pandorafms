@@ -1,5 +1,14 @@
 2014-06-13  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/realtime_graphs.php
+	extensions/realtime_graphs/realtime_graphs.js: Fix timezone
+	differences in realtime graphs when client (browser) and
+	server (console instance host) have different timezone.
+	Now it takes always the server timezone.
+	Ticket: #853
+
+2014-06-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_api.php: Add doc info to pagerduty
 	webhook option
 

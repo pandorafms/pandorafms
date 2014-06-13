@@ -5,6 +5,15 @@ var options = {
 			xaxis: {
 				tickFormatter: function (timestamp, axis) {
 					var date = new Date(timestamp * 1000);
+					
+					var server_timezone_offset = get_php_value('timezone_offset');
+					var local_timezone_offset = date.getTimezoneOffset()*60*-1;
+					
+					if (server_timezone_offset != local_timezone_offset) {
+						// If timezone of server and client is different, adjust the time to the server
+						date = new Date((timestamp + (server_timezone_offset - local_timezone_offset)) * 1000);
+					}
+					
 					var hours = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours());
 					var minutes = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
 					var seconds = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());

@@ -79,6 +79,13 @@ rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 install -m 0644 util/pandora_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
 install -m 0640 conf/pandora_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/pandora/pandora_server.conf.new
 
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d
+chmod 0750 $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d
+cat <<EOF > $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d/pandora
+Defaults:pandora !requiretty
+EOF
+chmod 0440 $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d/pandora
+
 cat <<EOF > $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/pandora_db
 #!/bin/bash
 %__perl %{prefix}/pandora_server/util/pandora_db.pl %{_sysconfdir}/pandora/pandora_server.conf
@@ -144,6 +151,7 @@ exit 0
 %{_sysconfdir}/rc.d/init.d/pandora_server
 %{_sysconfdir}/rc.d/init.d/tentacle_serverd
 %{_sysconfdir}/cron.hourly/pandora_db
+%config(noreplace) %{_sysconfdir}/sudoers.d/pandora
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_server
 
 %defattr(755,pandora,root)

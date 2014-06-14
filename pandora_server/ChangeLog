@@ -1,3 +1,9 @@
+2014-06-14  Akihiro Uchida <auchida@rworks.jp>
+
+	* pandora_server/pandora_server.redhat.spec: allow
+	  tty-less sudo for pandora to fix failure on start
+	  tentacle_serverd service in recent RHEL derivatives.
+
 2014-06-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Removed the keepalive semaphore, since down_force

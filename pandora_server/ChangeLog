@@ -1,5 +1,9 @@
 2014-05-15  Junichi Satoh <junichi@rworks.jp>
 
+	* util/pandora_manage.pl: Fixed typo.
+
+2014-05-15  Junichi Satoh <junichi@rworks.jp>
+
 	* util/pandora_manage.pl: Added support for 'each_ff' and 'ff_timeout' 
 	to module creation and modifying options.
 	Fixed bug that 'enable_unkown_events' cannot be set by module creation

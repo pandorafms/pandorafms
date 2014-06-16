@@ -109,6 +109,16 @@ $modules = array ();
 if ($source_id_agent)
 	$modules = agents_get_modules ($source_id_agent, 'nombre');
 
+$agent_alerts = array ();
+if ($source_id_agent)
+	$agent_alerts = agents_get_alerts_simple ($source_id_agent);
+$alerts = array ();
+foreach ($agent_alerts as $alert) {
+	$name = alerts_get_alert_template_name ($alert['id_alert_template']);
+	$name .= ' (<em>'.$modules[$alert['id_agent_module']].'</em>)';
+	$alerts[$alert['id']] = $name;
+}
+
 $table->data['operations'][0] = __('Operations');
 $table->data['operations'][1] = '<span class="with_modules'.(empty ($modules) ? ' invisible': '').'">';
 $table->data['operations'][1] .= html_print_checkbox ('copy_modules', 1, true, true);
@@ -130,16 +140,6 @@ $table->data[1][1] .= '<em>'.__('No modules for this agent').'</em>';
 $table->data[1][1] .= '</span>';
 
 $table->data[2][0] = __('Alerts');
-
-$agent_alerts = array ();
-if ($source_id_agent)
-	$agent_alerts = agents_get_alerts_simple ($source_id_agent);
-$alerts = array ();
-foreach ($agent_alerts as $alert) {
-	$name = alerts_get_alert_template_name ($alert['id_alert_template']);
-	$name .= ' (<em>'.$modules[$alert['id_agent_module']].'</em>)';
-	$alerts[$alert['id']] = $name;
-}
 $table->data[2][1] = '<span class="with_alerts'.(empty ($alerts) ? ' invisible': '').'">';
 $table->data[2][1] .= html_print_select ($alerts,
 	'target_alerts[]', 0, false, '', '', true, true);
@@ -157,7 +157,6 @@ echo '<fieldset id="fieldset_targets"'.($source_id_agent ? '' : ' class="invisib
 echo '<legend><span>'.__('Targets').'</span></legend>';
 html_print_table ($table);
 echo '</fieldset>';
-
 
 
 /* Destiny selection */
@@ -187,9 +186,15 @@ $table->data[2][0] = __('Agent');
 $table->data[2][0] .= '<span id="destiny_agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image ("images/spinner.png", true);
 $table->data[2][0] .= '</span>';
-$agents = ( $destiny_id_group ?
-	agents_get_group_agents ($destiny_id_group, false, "none") :
-	agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false))) );
+
+$agents = array();
+if ($source_id_agent) {
+	$agents = ( $destiny_id_group ?
+		agents_get_group_agents ($destiny_id_group, false, "none") :
+		agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false))) );
+	unset($agents[$source_id_agent]);
+}
+
 $table->data[2][1] = html_print_select ($agents, 'destiny_id_agent[]', 0, false, '', '', true, true);
 
 echo '<fieldset id="fieldset_destiny"' .

@@ -480,7 +480,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	}
 	
 	if (! $copy_modules && ! $copy_alerts)
-		return;
+		return false;
 	
 	if (empty ($target_modules)) {
 		$target_modules = (array) get_parameter ('target_modules', array ());
@@ -628,6 +628,11 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			db_process_sql ('SET AUTOCOMMIT = 1');
 			break;
 	}
+
+	if ($error)
+		return false;
+	else
+		return true;
 }
 
 function agents_get_next_contact($idAgent, $maxModules = false) {

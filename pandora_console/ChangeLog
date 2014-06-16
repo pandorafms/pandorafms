@@ -1,3 +1,10 @@
+2014-06-16  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/massive/massive_copy_modules.php: Error fixes.
+	
+	* include/functions_agents.php: Fixed some returns on the
+	function "agents_process_manage_config".
+
 2014-06-16  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_networkmap.php: fixed into the function

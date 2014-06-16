@@ -1,5 +1,11 @@
 2014-06-16  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_networkmap.php: fixed into the function
+	networkmap_generate_dot the order of agents, now the agents without
+	parents are the first elements in the array.
+
+2014-06-16  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/update_manager/update_manager.setup.php,
 	godmode/update_manager/update_manager.php,
 	include/functions_update_manager.php, include/config_process.php:

@@ -260,10 +260,15 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	if ($group >= 1) {
 		$filter['id_grupo'] = $group;
 		
+		//Order by id_parent ascendant for to avoid the bugs
+		//because the first agents to process in the next
+		//foreach loop are without parent (id_parent = 0)
+		
 		$agents = agents_get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_parent, id_agente,
 				normal_count, warning_count, critical_count,
-				unknown_count, total_count, notinit_count'));
+				unknown_count, total_count, notinit_count'), 'AR',
+				array('field' => 'id_parent', 'order' => 'ASC'));
 	}
 	else if ($group == -666) {
 		$agents = false;
@@ -275,10 +280,15 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				unknown_count, total_count, notinit_count'));
 	}
 	else {
+		//Order by id_parent ascendant for to avoid the bugs
+		//because the first agents to process in the next
+		//foreach loop are without parent (id_parent = 0)
+		
 		$agents = agents_get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_parent, id_agente, 
 				normal_count, warning_count, critical_count,
-				unknown_count, total_count, notinit_count'));
+				unknown_count, total_count, notinit_count'), 'AR',
+				array('field' => 'id_parent', 'order' => 'ASC'));
 	}
 	
 	
@@ -306,7 +316,9 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$node_ref[$agent['id_agente']] = $node_count;
 		
 		// Save node parent information to define edges later
-		if ($agent['id_parent'] != "0" && array_key_exists($agent['id_parent'], $node_ref)) {
+		if ($agent['id_parent'] != "0" &&
+			array_key_exists($agent['id_parent'], $node_ref)) {
+			
 			$parents[$node_count] = $node_ref[$agent['id_parent']];
 		}
 		else {

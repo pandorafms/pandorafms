@@ -30,7 +30,7 @@ if ($action_update_url_update_manager) {
 		__('Unsuccesful Update the url config vars.'));
 }
 
-echo '<form method="post" action="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager_xxx&tab=setup">';
+echo '<form method="post" action="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">';
 $table = null;
 $table->width = '98%';
 

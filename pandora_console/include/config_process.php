@@ -178,7 +178,7 @@ if (!isset($config['inventory_changes_blacklist'])) {
 //NEW UPDATE MANAGER URL
 if (!isset($config['url_update_manager'])) {
 	config_update_value('url_update_manager',
-		'https://artica.es/integriaupdate4/server.php');
+		'https://artica.es/pandoraupdate51/server.php');
 }
 
 if (defined('METACONSOLE')) {

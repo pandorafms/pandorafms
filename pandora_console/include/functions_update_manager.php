@@ -34,13 +34,6 @@ function update_manager_get_config_values() {
 	if (isset($config['current_package']))
 		$current_update = $config['current_package'];
 	
-	//TO DO
-	$license = "TESTMIGUEL00B0WAW9BU1QM0RZ2QM0MZ3QN5M41R35S5S1DP";
-	//~ $current_update = 9;
-	//~ $limit_count = 2;
-	$build_version = "140514";
-	$pandora_version = "4.1";
-	//$license = "INTEGRIA-FREE";
 	
 	
 	return array(
@@ -238,6 +231,10 @@ function update_manager_check_online_free_packages_available() {
 	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
 	curl_close($curlObj);
 	
+	//~ html_debug_print("----------", true);
+	//~ html_debug_print($params, true);
+	//~ html_debug_print($http_status, true);
+	//~ html_debug_print($result, true);
 	
 	if ($http_status >= 400 && $http_status < 500) {
 		return false;
@@ -281,7 +278,10 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
 	curl_close($curlObj);
 	
-	
+	//~ html_debug_print("=============", true);
+	//~ html_debug_print($params, true);
+	//~ html_debug_print($http_status, true);
+	//~ html_debug_print($result, true);
 	
 	
 	if ($http_status >= 400 && $http_status < 500) {

@@ -738,6 +738,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_agentgroup_ => (defined ($agent)) ? get_group_name ($dbh, $agent->{'id_grupo'}) : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
+				_timezone_ => strftime ("%Z", localtime()),
 				_data_ => $data,
 				_alert_name_ => $alert->{'name'},
 				_alert_description_ => $alert->{'description'},

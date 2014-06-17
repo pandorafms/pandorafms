@@ -1,5 +1,10 @@
 2014-06-17  Sergio Martin <sergio.martin@artica.es>
 
+	* include/styles/pandora.css: Added style to fix policy
+	modules table layout
+
+2014-06-17  Sergio Martin <sergio.martin@artica.es>
+
 	* pandoradb_data.sql: Change Hardcoded IP Address on a default
 	events response to localhost
 

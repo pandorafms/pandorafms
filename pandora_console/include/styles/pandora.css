@@ -2698,3 +2698,9 @@ td.empty_field {
 	font-weight: bold;
 	font-size: 9pt;
 }
+
+/* Policies styles */
+
+table#policy_modules td * {
+	display: inline;
+}

@@ -1,3 +1,8 @@
+2014-06-17  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql: Change Hardcoded IP Address on a default
+	events response to localhost
+
 2014-06-16  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* godmode/massive/massive_copy_modules.php: Error fixes.

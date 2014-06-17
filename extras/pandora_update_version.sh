@@ -99,8 +99,8 @@ sed -e "s/\s*\#\s*\Version.*/\# Version $VERSION/" "$SERVER_CONF_FILE" > "$TEMP_
 
 # Pandora Satellite Server
 echo "Updating Pandora Satellite Server version..."
-sed -e "s/\s*use constant SATELLITE_VERSION.*/use constant SATELLITE_VERSION \=\> \"$VERSION\"/" "$SATELLITE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SATELLITE_FILE"
-sed -e "s/\s*use constant SATELLITE_BUILD.*/use constant SATELLITE_BUILD \=\> \"$BUILD\"/" "$SATELLITE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SATELLITE_FILE"
+sed -e "s/\s*use constant SATELLITE_VERSION.*/use constant SATELLITE_VERSION \=\> \"$VERSION\";/" "$SATELLITE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SATELLITE_FILE"
+sed -e "s/\s*use constant SATELLITE_BUILD.*/use constant SATELLITE_BUILD \=\> \"$BUILD\";/" "$SATELLITE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SATELLITE_FILE"
 
 # Pandora Console
 echo "Updating Pandora Console DB version..."

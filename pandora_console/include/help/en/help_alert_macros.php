@@ -16,6 +16,7 @@ The following macros are available:
 <li>_agentgroup_ : Agent group name </li>
 <li>_address_ : Address of the agent that fired the alert.</li>
 <li>_timestamp_ : Time when the alert was fired (yy-mm-dd hh:mm:ss).</li>
+<li>_timezone_ : Timezone name that _timestamp_ represents in.</li>
 <li>_data_ : Module data that caused the alert to fire.</li>
 <li>_alert_description_ : Alert description.</li>
 <li>_alert_threshold_ : Alert threshold.</li>

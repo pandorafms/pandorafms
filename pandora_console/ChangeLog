@@ -1,3 +1,12 @@
+2014-06-17 Hirofumi Kosaka <kosaka@rworks.jp>
+        
+	* include/help/en/help_alert_macros.php,
+	include/help/es/help_alert_macros.php,
+	include/help/ja/help_alert_macros.php: Added _timezone_
+	alert macro descriptions.
+
+	MERGED FROM THE TRUNK
+
 2014-03-12  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/configurar_agente.php: fixed for opensource

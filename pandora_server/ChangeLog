@@ -1,3 +1,10 @@
+2014-06-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Removed an unused module.
+
+	* util/recon_scripts/snmp-recon.pl: Always perform a brute-force network scan.
+	  Connect hosts via traceroute if no L2 information is available.
+
 2014-06-17  Vanessa Gil <vanessa.gil@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed bug

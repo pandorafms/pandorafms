@@ -387,6 +387,7 @@ sub arp_cache_discovery {
 
 	# Mark the device as visited.
 	$VISITED_DEVICES{$device} = { 'addr' => { $device => '' },
+	                              'connected' => 0,
 	                              'type' => $device_type };
 
 	# Check if the device responds to SNMP.
@@ -780,6 +781,8 @@ sub connect_pandora_agents($$$$) {
 
 	# Mark the two devices as connected.
 	$CONNECTIONS{"${module_id_1}_${module_id_2}"} = 1;
+	$VISITED_DEVICES{$dev_1}->{'connected'} = 1;
+	$VISITED_DEVICES{$dev_2}->{'connected'} = 1;
 
 	# Connect the modules if they are not already connected.
 	my $connection_id = get_db_value($DBH, 'SELECT id FROM tmodule_relationship WHERE (module_a = ? AND module_b = ?) OR (module_b = ? AND module_a = ?)', $module_id_1, $module_id_2, $module_id_1, $module_id_2);
@@ -830,6 +833,56 @@ sub show_help {
 	print " Additional information:\nWhen the script is called from a recon task the task_id, group_id and create_incident";
 	print " parameters are automatically filled by the Pandora FMS Server.";
 	exit;
+}
+
+##########################################################################
+# Connect the given hosts to its parent using traceroute.
+##########################################################################	
+sub traceroute_connectivity($) {
+	my ($host) = @_;
+
+	# Get the agent for the first device.
+	my $agent = get_agent_from_addr($DBH, $host);
+	if (!defined($agent)) {
+		$agent = get_agent_from_name($DBH, $host);
+	}
+	return unless defined($agent);
+
+	# Perform a traceroute.
+	my $np = new PandoraFMS::NmapParser;
+	eval {
+		$np->parsescan($CONF{'nmap'}, '-nsP --traceroute', ($host));
+	};
+	return if ($@);
+	
+	# Get hops to the host.
+	my ($h) = $np->all_hosts ();
+	return unless defined ($h);
+	my @hops = $h->all_trace_hops ();
+
+	# Skip the target host.
+	pop(@hops);
+	
+	# Reverse the host order (closest hosts first).
+	@hops = reverse(@hops);
+	
+	# Look for parents.
+	my $parent_id = 0;
+	foreach my $hop (@hops) {
+		my $host_addr = $hop->ipaddr ();
+		
+		# Check if the parent agent exists.
+		my $agent = get_agent_from_addr ($DBH, $host_addr);
+		if (defined ($agent)) {
+			$parent_id = $agent->{'id_agente'};
+			last;
+		}
+	}
+
+	# Connect the host to its parent.
+	if ($parent_id > 0) {
+		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $parent_id, $agent->{'id_agente'});
+	}
 }
 
 ##########################################################################
@@ -926,6 +979,10 @@ update_recon_task($DBH, $TASK_ID, 75);
 message("[6/6] Finding switch/router to end host connectivity...");
 foreach my $device ((@ROUTERS, @SWITCHES)) {
 	host_connectivity($device);
+}
+foreach my $host (keys(%HOSTS)) {
+	next if ($VISITED_DEVICES{$host}->{'connected'} == 1);
+	traceroute_connectivity($host);
 }
 update_recon_task($DBH, $TASK_ID, -1);
 

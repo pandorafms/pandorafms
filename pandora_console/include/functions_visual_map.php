@@ -326,7 +326,7 @@ function visual_map_print_item($layoutData) {
 		
 		echo '<script type="text/javascript">';
 		echo '$(document).ready (function() {
-			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '"});
+			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '","thickness":"' . (empty($config["vc_line_thickness"]) ? 2 : $config["vc_line_thickness"]) . '"});
 		});';
 		echo '</script>';
 	}
@@ -1146,6 +1146,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			$line['id'] = $layout_data['id'];
 			$line['node_begin'] = 'layout-data-' . $layout_data["parent_item"];
 			$line['node_end'] = 'layout-data-' . $layout_data["id"];
+			$line['thickness'] = empty($config["vc_line_thickness"]) ? 2 : $config["vc_line_thickness"];
 			switch ($status_parent) {
 				default:
 				case VISUAL_MAP_STATUS_UNKNOWN:

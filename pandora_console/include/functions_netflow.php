@@ -577,7 +577,15 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 				// Address resolution start
 				if ($get_hostnames) {
 					if (!isset($hostnames[$line['agg']])) {
-						$hostname = gethostbyaddr($line['agg']);
+						$hostname = false;
+						// Trying to get something like an IP from the description
+						if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $line['agg'], $matches) ||
+							preg_match ("/(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:?)|\2))(?4){5}((?4){2}|(25[0-5]|
+								(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i", $line['agg'], $matches)) {
+							if ($matches[0]) {
+								$hostname = gethostbyaddr($line['agg']);
+							}
+						}
 						if ($hostname !== false) {
 							$hostnames[$line['agg']] = $hostname;
 							$line['agg'] = $hostname;

@@ -3466,10 +3466,10 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	// Fix event and alert scale
 	$event_max = 2 + (float)$max_value * 1.05;
 	foreach ($chart as $timestamp => $chart_data) {
-		if ($chart_data['event'] > 0) {
+		if (!empty($chart_data['event']) && $chart_data['event'] > 0) {
 			$chart[$timestamp]['event'] = $event_max;
 		}
-		if ($chart_data['alert'] > 0) {
+		if (!empty($chart_data['alert']) && $chart_data['alert'] > 0) {
 			$chart[$timestamp]['alert'] = $event_max;
 		}
 	}

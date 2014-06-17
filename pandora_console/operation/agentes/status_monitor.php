@@ -514,9 +514,12 @@ foreach ($custom_fields as $custom_field) {
 	$row = array();
 	$row[0] = $custom_field['name'];
 
-	$custom_field_value = $ag_custom_fields[$custom_field['id_field']];
-	if (empty($custom_field_value)) {
-		$custom_field_value = "";
+	$custom_field_value = "";
+	if (!empty($ag_custom_fields)) {
+		$custom_field_value = $ag_custom_fields[$custom_field['id_field']];
+		if (empty($custom_field_value)) {
+			$custom_field_value = "";
+		}
 	}
 	$row[1] = html_print_input_text ("ag_custom_fields[".$custom_field['id_field']."]", $custom_field_value, '', 100, 300, true);
 

@@ -1,3 +1,22 @@
+2014-06-17  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/agentes/module_manager_editor_common.php,
+	  operation/reporting/reporting_viewer.php,
+	  operation/agentes/status_monitor.php,
+	  include/functions_netflow.php,
+	  include/functions_graph.php: Improvements to avoid
+	php notices and warnings.
+
+	* godmode/setup/setup_visuals.php,
+	  include/functions_config.php: Added a new option
+	to choose a custom line thickness for the line between
+	the items relations of the visual maps.
+
+	* include/functions_visual_map.php,
+	  include/javascript/pandora_visual_console.js: Added
+	support to the custom line thickness and fixed some
+	problems with the line connections.
+
 2014-06-17  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/javascript/pandora_module.js: Fixed bug

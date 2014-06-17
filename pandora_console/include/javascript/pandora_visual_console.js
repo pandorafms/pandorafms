@@ -29,10 +29,14 @@ function draw_line (line, id_div, editor) {
 	if (typeof(resize_map) == 'undefined') {
 		resize_map = 0;
 	}
+
+	var lineThickness = 2;
+	if (line['thickness'])
+		lineThickness = line['thickness'];
 	
 	div = document.getElementById (id_div);
 	brush = new jsGraphics (div);
-	brush.setStroke (1);
+	brush.setStroke (lineThickness);
 	brush.setColor (line['color']);
 	
 	have_node_begin_img = $('#'+line['node_begin'] + " img").length;
@@ -42,12 +46,7 @@ function draw_line (line, id_div, editor) {
 		x1 = line['x'];
 	}
 	else {
-		if (resize_map && have_node_begin_img) {
-			width = parseInt($('#'+line['node_begin'] + " img").css('width'));
-		}
-		else {
-			width = $('#'+line['node_begin']).width();
-		}
+		width = $('#'+line['node_begin']).width();
 		x1 = parseInt($('#'+line['node_begin']).css (selector + 'left')) + (width / 2);
 	}
 	
@@ -55,7 +54,7 @@ function draw_line (line, id_div, editor) {
 		y1 = line['y1'];
 	}
 	else {
-		if (resize_map && have_node_begin_img) {
+		if (have_node_begin_img) {
 			height = parseInt($('#'+line['node_begin'] + " img").css('height'));
 		}
 		else {
@@ -68,12 +67,7 @@ function draw_line (line, id_div, editor) {
 		x2 = line['x2'];
 	}
 	else {
-		if (resize_map && have_node_end_img) {
-			width = parseInt($('#'+line['node_end'] + " img").css('width'));
-		}
-		else {
-			width = $('#'+line['node_end']).width();
-		}
+		width = $('#'+line['node_end']).width();
 		x2 = parseInt($('#'+line['node_end']).css (selector + 'left')) + (width / 2);
 	}
 	
@@ -81,7 +75,7 @@ function draw_line (line, id_div, editor) {
 		y2 = line['y2'];
 	}
 	else {
-		if (resize_map && have_node_end_img) {
+		if (have_node_end_img) {
 			height = parseInt($('#'+line['node_end'] + " img").css('height'));
 		}
 		else {

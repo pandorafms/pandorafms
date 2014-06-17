@@ -1,3 +1,8 @@
+2014-06-17  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/agentes/planned_downtime.editor.php: Changed
+	size of time field.
+
 2014-06-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css: Added style to fix policy

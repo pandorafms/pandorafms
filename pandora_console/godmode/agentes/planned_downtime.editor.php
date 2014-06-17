@@ -342,7 +342,7 @@ $table->data[5][1] = "
 					"</td>
 				<td>".
 				html_print_input_text ('once_date_from', $once_date_from, '', 10, 10, true) .
-				html_print_input_text ('once_time_from', $once_time_from, '', 7, 8, true) . 
+				html_print_input_text ('once_time_from', $once_time_from, '', 9, 9, true) . 
 				"</td>
 			</tr>
 			<tr>
@@ -353,7 +353,7 @@ $table->data[5][1] = "
 					"</td>
 				<td>".
 				html_print_input_text ('once_date_to', $once_date_to, '', 10, 10, true) .
-				html_print_input_text ('once_time_to', $once_time_to, '', 7, 8, true) . 
+				html_print_input_text ('once_time_to', $once_time_to, '', 9, 9, true) . 
 				"</td>
 			</tr>
 		</table>

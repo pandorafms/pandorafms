@@ -241,10 +241,9 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 		$return .= "<a href='javascript:'><img id='menu_overview_$graph_id' src='".$homeurl."images/chart_curve_overview.png' alt='".__('Overview graph')."' title='".__('Overview graph')."'></a>
 			</div>";
 	}
-	$extra_height = $height - 50;
 	$extra_width = (int)($width / 3);
 	
-	$return .= "<div id='extra_$graph_id' style='font-size: ".$font_size."pt; display:none; position:absolute; overflow: auto; height: ".$extra_height."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
+	$return .= "<div id='extra_$graph_id' style='font-size: ".$font_size."pt; display:none; position:absolute; overflow: auto; max-height: ".($height+50)."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
 	
 	// Process extra data
 	$events = array();

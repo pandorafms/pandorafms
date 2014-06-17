@@ -1152,7 +1152,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$agent_status->{'datos'} = "";
 	}
 
-	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
+	my $save = ($module->{'quiet'} == 0 && $module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
 	db_do ($dbh, 'UPDATE tagente_estado
 		SET datos = ?, estado = ?, last_status = ?, last_known_status = ?,

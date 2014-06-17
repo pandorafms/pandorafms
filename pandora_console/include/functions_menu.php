@@ -91,6 +91,9 @@ function menu_print_menu (&$menu) {
 		$submenu_output = '';
 		
 		$count_sub = 0;
+		$count_sub_access = 0;
+		$first_sub_sec2 = '';
+		
 		foreach ($main["sub"] as $subsec2 => $sub) {
 			$count_sub++;
 			
@@ -103,6 +106,13 @@ function menu_print_menu (&$menu) {
 			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2)) == false){
 				continue;
 			}
+			
+			// We store the first subsection to use it if the main section has not access
+			if ($count_sub_access == 0) {
+				$first_sub_sec2 = $subsec2;
+			}
+			
+			$count_sub_access++;
 			
 			$class = '';
 			
@@ -321,7 +331,13 @@ function menu_print_menu (&$menu) {
 		
 		// Choose valid section (sec)
 		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $main["sec2"])) == false){
-			continue;
+			if ($count_sub_access > 0) {
+				// If any susection have access but main section not, we change main link to first subsection found
+				$main["sec2"] = $first_sub_sec2;
+			}
+			else {
+				continue;
+			}
 		} 
 		
 		//Print out the first level

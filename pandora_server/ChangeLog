@@ -1,3 +1,8 @@
+2014-06-17  Vanessa Gil <vanessa.gil@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed bug
+	scheduling downtime.
+
 2014-06-17 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/PluginServer.pm: Fixed to handle plugin's

@@ -1,3 +1,8 @@
+2014-06-17 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/PluginServer.pm: Fixed to handle plugin's
+	output that includes multibyte character string.
+
 2014-05-15  Junichi Satoh <junichi@rworks.jp>
 
 	* util/pandora_manage.pl: Fixed typo.

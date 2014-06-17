@@ -27,7 +27,7 @@ use Thread::Semaphore;
 use POSIX qw(strftime);
 use HTML::Entities;
 use JSON qw(decode_json);
-use Encode qw(encode_utf8);
+use Encode qw(encode_utf8 decode_utf8);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -232,11 +232,9 @@ sub data_consumer ($$) {
 		$module_data = `$command`;
 	};
 
-	# Empty ?
-	if (!defined($module_data)){
-		$module_data = "";
-	}
-	
+	# Empty ? or handle it as 'utf8' string
+	$module_data = ( !defined($module_data) ? "" : decode_utf8($module_data) );
+
 	# Clean blank spaces and carriage return from start and end of the data
 	$module_data =~ s/^[\s|\n|\r]*//;
 	$module_data =~ s/[\s|\n|\r]*$//;

@@ -3,9 +3,10 @@
 # The installer will be placed in ./installer/output/.
 # InstallJammer must be installed and in the PATH.
 
-DIST=`lsb_release -i | awk '{print $3}'`
-HOST="i586-mingw32msvc"
-if [ "$DIST" == "openSUSE" ]; then
+ARCH=`uname -m`
+if [ "$ARCH" == "x86_64" ]; then
+	HOST="x86_64-w64-mingw32"
+else
 	HOST="i686-w64-mingw32"
 fi
 

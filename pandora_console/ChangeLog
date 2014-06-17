@@ -1,3 +1,8 @@
+2014-06-17  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/javascript/pandora_module.js: Fixed bug
+	adding and deleting macros.
+
 2014-06-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_menu.php: Fix ACLs limitations. Now its possible

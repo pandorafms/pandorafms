@@ -400,7 +400,7 @@ if (preg_match ('/async/', $module_type_name) || $edit) {
 		'', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Timeout in secs from start of flip flop counting. If this value is exceeded, FF counter is reset. Set to 0 for no timeout.'), true) . '</span>';
 }
 if (!preg_match ('/async/', $module_type_name) || $edit) {
-	$table_advanced->data[5][4] .= '<span id="ff_timeout_disable">' . __('Disabled') . ui_print_help_tip (__('This value can be set only in the async modules.'), true) . '</span>';
+	$table_advanced->data[5][4] = '<span id="ff_timeout_disable">' . __('Disabled') . ui_print_help_tip (__('This value can be set only in the async modules.'), true) . '</span>';
 }
 
 /* Tags */

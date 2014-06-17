@@ -241,6 +241,12 @@ $table->data[$row][1] = html_print_select ($values, 'vc_refr', $config["vc_refr"
 
 $row++;
 
+if (empty($config["vc_line_thickness"])) $config["vc_line_thickness"] = 2;
+$table->data[$row][0] = __('Default line thickness for the Visual Console') . ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
+$table->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
+
+$row++;
+
 $table->data[$row][0] = __('Agent size text') . ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
 $table->data[$row][1] = __('Small:') . html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
 $table->data[$row][1] .= ' ' . __('Normal:') . html_print_input_text ('agent_size_text_medium', $config["agent_size_text_medium"], '', 3, 3, true);

@@ -413,6 +413,8 @@ function config_update_config () {
 						$error_update[] = __('Login background');
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
+					if (!config_update_value ('vc_line_thickness', get_parameter('vc_line_thickness')))
+						$error_update[] = __('Default line thickness for the Visual Console');
 					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))
 						$error_update[] = __('Agent size text');
 					if (!config_update_value ('agent_size_text_medium', get_parameter('agent_size_text_medium')))

@@ -146,13 +146,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'datos');
 			$form_items['radio_choice_graph']['html'] =
 				'<td align="left" style=""></td>
-				<td align="left" style="">' .
-				html_print_radio_button('radio_choice',
-					'module_graph', __('Module graph'), 'module_graph',
-					true) .
-				html_print_radio_button('radio_choice',
-					'custom_graph', __('Custom graph'), 'module_graph',
-					true) .
+				<td align="left" style="">'
+				. __('Module graph') . "&nbsp;&nbsp;" .
+				html_print_radio_button('radio_choice', 'module_graph', '', 'module_graph', true)
+				. "&nbsp;&nbsp;&nbsp;&nbsp;"
+				. __('Custom graph') . "&nbsp;&nbsp;" .
+				html_print_radio_button('radio_choice', 'custom_graph', '', 'module_graph', true) .
 				'</td>';
 			
 			

@@ -585,14 +585,6 @@ function loadFieldsFromDB(item) {
 					}
 					
 					
-					if (key == 'id_custom_graph') {
-						$("input[name='radio_choice'][value='custom_graph']")
-							.prop('checked', true);
-						$("input[name='radio_choice']").trigger('change');
-						$("#custom_graph option[value=" + val + "]")
-							.prop("selected", true);
-					}
-					
 					if (metaconsole != 0) {
 						if (key == 'id_agent') {
 							$("#hidden-agent").val(val);
@@ -602,13 +594,25 @@ function loadFieldsFromDB(item) {
 						}
 					}
 				});
+
+				if (data.type == 1) {
+					if (data.id_custom_graph > 0) {
+						$("input[name='radio_choice'][value='custom_graph']")
+							.prop('checked', true);
+						$("input[name='radio_choice']").trigger('change');
+						$("#custom_graph option[value=" + data.id_custom_graph + "]")
+							.prop("selected", true);
+					}
+					else {
+						$("input[name='radio_choice'][value='module_graph']")
+							.prop('checked', true);
+						$("input[name='radio_choice']").trigger('change');
+					}
+				}
 				
 				if (typeof(enterprise_loadFieldsFromDB) == 'function') {
 					enterprise_loadFieldsFromDB(data);
 				}
-				
-				
-				
 			}
 		});
 }

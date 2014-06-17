@@ -1,3 +1,8 @@
+2014-06-17  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/functions_flot.php: Fix height of the 
+	div with events info in graphs
+
 2014-06-17  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* godmode/agentes/module_manager_editor_common.php,

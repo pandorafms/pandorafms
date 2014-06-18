@@ -139,12 +139,17 @@ ui_require_javascript_file ('encode_decode_base64');
 		theme_advanced_font_sizes : "8pt=.visual_font_size_8pt, 14pt=.visual_font_size_14pt, 24pt=.visual_font_size_24pt, 36pt=.visual_font_size_36pt, 72pt=.visual_font_size_72pt",
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "left",
-		theme_advanced_buttons1 : "bold,italic, |, image, link, |, forecolor, fontsizeselect",
+		theme_advanced_buttons1 : "bold,italic, |, justifyleft, justifycenter, justifyright, |,undo, redo, |, image, link, |, forecolor, fontsizeselect, |, code",
 		theme_advanced_buttons2 : "",
 		theme_advanced_buttons3 : "",
 		theme_advanced_statusbar_location : "none",
 		width: "400",
 		height: "200",
-		nowrap: true
+		nowrap: true,
+		plugins : "noneditable",
+		inline_styles : true,
+		valid_children : "+body[style]",
+		element_format : "html",
+		editor_deselector : "noselected"
 	});
 </script>

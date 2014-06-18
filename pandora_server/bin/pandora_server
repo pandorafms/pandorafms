@@ -350,7 +350,7 @@ sub win32_install_service() {
 
 	# Configure and install the service.
 	my $service_path = $0;
-	my $service_params = "-S run \"$ARGV[0]\"";
+	my $service_params = "-S run \"" . $Config{'pandora_path'} ."\"";
 	my %service_hash = (
 		machine =>  '',
 		name	=>  'PANDORAFMSSRV',

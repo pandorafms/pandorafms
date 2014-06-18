@@ -1,3 +1,13 @@
+2014-06-18  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/reporting/visual_console_builder.editor.php:
+	Added some buttons, like a control to edit the html code
+	of the tinymce's textarea.
+
+	* godmode/reporting/visual_console_builder.editor.js:
+	Modified the funtion "hiddenFields" to enable the tinymce's
+	code control only if the item is a label.
+
 2014-06-18  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/flot/pandora.flot.js: Fixed position of the

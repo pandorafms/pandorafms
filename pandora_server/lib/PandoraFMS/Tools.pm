@@ -494,8 +494,12 @@ sub enterprise_load ($) {
 	#return 1 if (is_loaded ('PandoraFMS::Enterprise'));
 	
 	# Try to load the module
-	# eval 'local $SIG{__DIE__}; require PandoraFMS::Enterprise;';
-	eval 'require PandoraFMS::Enterprise;';
+	if ($^O eq 'MSWin32') {
+		# If the Windows service dies the service is stopped, even inside an eval ($RUN is set to 0)!
+		eval 'local $SIG{__DIE__}; require PandoraFMS::Enterprise;';
+	} else {
+		eval 'require PandoraFMS::Enterprise;';
+	}
 	
 	# Ops
 	return 0 if ($@);

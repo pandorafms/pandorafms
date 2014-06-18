@@ -870,7 +870,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				left_pos = timenewpos - extrasize - 20;
 			}
 			else {
-				left_pos = timenewpos + 20;
+				left_pos = timenewpos - (extrasize / 2);
 			}
 			
 			var extra_info = '<i>No info to show</i>';

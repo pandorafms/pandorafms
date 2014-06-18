@@ -1,3 +1,9 @@
+2014-06-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/graphs/flot/pandora.flot.js: Fixed position of the
+	event information box in flot modules graphs when click on
+	events "ball" for ticket: #948
+
 2014-06-17  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* godmode/reporting/visual_console_builder.editor.js:

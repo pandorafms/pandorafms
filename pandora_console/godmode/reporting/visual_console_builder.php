@@ -251,7 +251,7 @@ switch ($activeTab) {
 				$message = '';
 				
 				if (($width == 0) && ($height == 0) && ($type == MODULE_GRAPH)) {
-					$width = 300;
+					$width = 400;
 					$height = 180;
 				}
 				

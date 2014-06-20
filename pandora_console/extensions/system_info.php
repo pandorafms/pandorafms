@@ -21,12 +21,13 @@ if (is_ajax()) {
 		$pandora_diag = (bool) get_parameter("pandora_diag");
 		$system_info = (bool) get_parameter("system_info");
 		$log_info = (bool) get_parameter("log_info");
+		$log_num_lines = (int) get_parameter('log_num_lines', 2000);
 
 		$checks = array();
 		$checks['pandora_diagnostic'] = $pandora_diag;
 		$checks['system_info'] = $system_info;
 		$checks['log_info'] = $log_info;
-		$result = generate_info($checks);
+		$result = generate_info($checks, $log_num_lines);
 
 		echo json_encode($result);
 		return;
@@ -261,7 +262,7 @@ function show_array($title, $anchor, $array = array()) {
 	html_print_table($table);
 }
 
-function generate_info($checks) {
+function generate_info($checks, $log_num_lines = 2000) {
 	global $config;
 
 	$pandora_diag = isset($checks['pandora_diagnostic']) ? $checks['pandora_diagnostic'] : false;
@@ -292,6 +293,7 @@ function generate_info($checks) {
 	$zip_openned = $zip->open($zipArchive, ZIPARCHIVE::CREATE) === true;
 	
 	if ($some_check && $zip_openned) {
+
 		if ($pandora_diag) {
 			$systemInfo = array();
 			getPandoraDiagnostic($systemInfo);
@@ -326,10 +328,24 @@ function generate_info($checks) {
 			
 			if ($file !== false) {
 				ob_start();
+				$string = "";
 				foreach ($info as $index => $item) {
 					if (is_array($item)) {
 						foreach ($item as $secondIndex => $secondItem) {
-							echo $index. ";" . $secondIndex . ";" . $secondItem . "\n";
+							if (is_array($secondItem)) {
+								foreach ($secondItem as $thirdIndex => $thirdItem) {
+									if (is_array($thirdItem)) {
+										echo $index. ";" . $secondIndex . ";" . $thirdIndex . "\n";
+									}
+									else {
+										echo $index. ";" . $secondIndex . ";" . $thirdIndex . ";" . $thirdItem . "\n";
+									}
+								}
+							}
+							else {
+								echo $index. ";" . $secondIndex . ";" . $secondItem . "\n";
+							}
+							
 						}
 					}
 					else {
@@ -501,7 +517,7 @@ function mainSystemInfo() {
 		$checks['pandora_diagnostic'] = $pandora_diag;
 		$checks['system_info'] = $system_info;
 		$checks['log_info'] = $log_info;
-		$result = generate_info($checks);
+		$result = generate_info($checks, $log_num_lines);
 
 		if ($result['success']) {
 			echo '<b>' . __('File') . ':</b> ' . $result['url'] . '<br />';
@@ -548,7 +564,8 @@ function mainSystemInfo() {
 				generate_info: 1,
 				pandora_diag: Number($("#checkbox-pandora_diag").prop('checked')),
 				system_info: Number($("#checkbox-system_info").prop('checked')),
-				log_info: Number($("#checkbox-log_info").prop('checked'))
+				log_info: Number($("#checkbox-log_info").prop('checked')),
+				log_num_lines: $("#text-log_num_lines").val()
 			},
 			complete: function() {
 				$("#spinner_img").hide();

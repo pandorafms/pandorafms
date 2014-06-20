@@ -44,7 +44,7 @@ main (int argc, char *argv[]) {
 	Pandora_Windows_Service *service;
 	char                     buffer[PATH_SIZE];
 	string                   aux;
-	unsigned int             pos;
+	int                      pos;
 	bool                     process = false;
 	string 					 home;
 	string                   binary_path;

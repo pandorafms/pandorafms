@@ -46,7 +46,7 @@ string pandora_version = PANDORA_VERSION;
  */
 void
 Key_Value::parseLine (string str) {
-	unsigned int           pos;
+	int           pos;
 	list<string>           tokens;
 	list<string>::iterator iter;
 	string                 trimmedstr;

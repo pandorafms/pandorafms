@@ -145,7 +145,7 @@ int
 Pandora_Windows_Service::count_broker_agents(){
 	string       buffer;
 	string       filename;
-	unsigned int pos;
+	int pos;
 	int 		 num = 0;
 	
 	filename = Pandora::getPandoraInstallDir ();
@@ -173,7 +173,7 @@ Pandora_Windows_Service::count_broker_agents(){
 void
 Pandora_Windows_Service::check_broker_agents(string *all_conf){
 	string       buffer, filename;
-	unsigned int pos;
+	int pos;
 	int pos_file = 0;
 	
 	filename = Pandora::getPandoraInstallDir ();
@@ -374,7 +374,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
-	unsigned int pos;
+	int pos;
 	
 	// Get agent name
 	agent_name = conf->getValue ("agent_name");
@@ -1341,7 +1341,7 @@ string
 Pandora_Windows_Service::checkAgentName(string filename){
 	string name_agent = "";
 	string       buffer;
-	unsigned int pos;
+	int pos;
 	ifstream     file (filename.c_str ());
 
 	while (!file.eof ()) {

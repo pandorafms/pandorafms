@@ -48,7 +48,7 @@ void
 Pandora_Modules::Pandora_Module_List::parseModuleConf (string path_file, list<Pandora_Module *> *modules) {
 	ifstream     file_conf (path_file.c_str ());
 	string       buffer;
-	unsigned int pos;
+	int pos;
 	
 	if (!file_conf.is_open ()) {
 		return;
@@ -104,7 +104,7 @@ Pandora_Modules::Pandora_Module_List::parseModuleConf (string path_file, list<Pa
 Pandora_Modules::Pandora_Module_List::Pandora_Module_List (string filename) {
 	ifstream     file (filename.c_str ());
 	string       buffer;
-	unsigned int pos;
+	int pos;
 
 	this->modules = new list<Pandora_Module *> ();
 	
@@ -123,7 +123,7 @@ Pandora_Modules::Pandora_Module_List::Pandora_Module_List (string filename) {
 				pos = buffer.find("include");
 				if (pos != string::npos){
 					string path_file;
-					unsigned pos_c;
+					int pos_c;
 				
 					path_file = buffer.substr(pos+8);
 

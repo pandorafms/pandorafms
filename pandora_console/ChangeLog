@@ -4,6 +4,10 @@
 
 2014-06-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
+	* extensions/system_info.php: Error fixes.
+
+2014-06-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
 	* extensions/system_info.php: Error fix.
 
 2014-06-20  Alejandro Gallardo <alejandro.gallardo@artica.es>

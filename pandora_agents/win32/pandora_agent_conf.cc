@@ -60,7 +60,7 @@ void
 Pandora::Pandora_Agent_Conf::parseFile(string path_file, Collection *aux){
 	ifstream     file_conf (path_file.c_str ());
 	string buffer;
-	unsigned int pos;
+	int pos;
 
 	if (!file_conf.is_open ()) {
 		return;
@@ -112,7 +112,7 @@ writeBrokerConf(string path_broker, string filename, string name_broker){
 	ofstream     file_broker ((Pandora::getPandoraInstallDir ()+path_broker).c_str ());
 	string       buffer;
 	string		 comp;
-	unsigned int pos;
+	int pos;
 	int i; 
 	int ok;
 	
@@ -153,7 +153,7 @@ writeBrokerConf(string path_broker, string filename, string name_broker){
 void
 Pandora::Pandora_Agent_Conf::setFile (string *all_conf){
 	string       buffer, filename;
-	unsigned int pos;
+	int pos;
 	Collection *aux;
 	
 	filename = Pandora::getPandoraInstallDir ();
@@ -184,7 +184,7 @@ Pandora::Pandora_Agent_Conf::setFile (string *all_conf){
 				pos = buffer.find("include");
 				if (pos != string::npos){
 					string path_file;
-					unsigned pos_c;
+					int pos_c;
 				
 					path_file = buffer.substr(pos+8);
 
@@ -200,7 +200,7 @@ Pandora::Pandora_Agent_Conf::setFile (string *all_conf){
 			pos = buffer.find("broker_agent");
 				if (pos != string::npos){
 					string path_broker, name_broker;
-					unsigned pos_c;
+					int pos_c;
 					int position = 0;
 				
 					name_broker = buffer.substr(pos+13);
@@ -266,7 +266,7 @@ void
 Pandora::Pandora_Agent_Conf::setFile (string filename) {
 	ifstream     file (filename.c_str ());
 	string       buffer;
-	unsigned int pos;
+	int pos;
 	Collection *aux;
 	
 	if (this->key_values)
@@ -292,7 +292,7 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 				pos = buffer.find("include");
 				if (pos != string::npos){
 					string path_file;
-					unsigned pos_c;
+					int pos_c;
 				
 					path_file = buffer.substr(pos+8);
 

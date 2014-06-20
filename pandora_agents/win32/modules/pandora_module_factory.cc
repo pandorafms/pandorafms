@@ -121,7 +121,7 @@ using namespace Pandora_Strutils;
 	
 string
 parseLine (string line, string token) {
-	unsigned int pos;
+	int pos;
 	string retstr = "";
 	
 	pos = line.find (token);
@@ -506,7 +506,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	}
 	
 	/* Subst macros */
-	unsigned int pos, pos_macro;
+	int pos, pos_macro;
 	string macro_name, macro_value;
 	
 	if (macro_list.size () > 0) {

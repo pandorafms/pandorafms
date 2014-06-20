@@ -14,6 +14,27 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+if (is_ajax()) {
+
+	$generate_info = (bool) get_parameter("generate_info");
+	if ($generate_info) {
+		$pandora_diag = (bool) get_parameter("pandora_diag");
+		$system_info = (bool) get_parameter("system_info");
+		$log_info = (bool) get_parameter("log_info");
+
+		$checks = array();
+		$checks['pandora_diagnostic'] = $pandora_diag;
+		$checks['system_info'] = $system_info;
+		$checks['log_info'] = $log_info;
+		$result = generate_info($checks);
+
+		echo json_encode($result);
+		return;
+	}
+
+	return;
+}
+
 function getPandoraDiagnostic(&$systemInfo) {
 	global $config;
 	global $build_version;
@@ -197,13 +218,14 @@ function getLastLog($numLines = 2000) {
 }
 
 function show_array($title, $anchor, $array = array()) {
-	$table = null;
 	
-	$table->width = '100%';
-	$table->titlestyle = 'border: 1px solid black;';
-	$table->class = "databox_color";
+	$table = new StdClass();
+	$table->width = '98%';
+	$table->class = "databox";
+	$table->head = array();
+	$table->head[0] = $title;
 	$table->data = array();
-	
+
 	foreach ($array as $index => $item) {
 		if (!is_array($item)) {
 			$row = array();
@@ -239,6 +261,123 @@ function show_array($title, $anchor, $array = array()) {
 	html_print_table($table);
 }
 
+function generate_info($checks) {
+	global $config;
+
+	$pandora_diag = isset($checks['pandora_diagnostic']) ? $checks['pandora_diagnostic'] : false;
+	$system_info = isset($checks['system_info']) ? $checks['system_info'] : false;
+	$log_info = isset($checks['log_info']) ? $checks['log_info'] : false;
+
+	$tempDirSystem = sys_get_temp_dir();
+	$nameDir = 'dir_' . uniqid();
+	$tempDir = $tempDirSystem . '/' . $nameDir . '/';
+	mkdir($tempDir);
+	
+	$zipArchive = $config['attachment_store'] . '/last_info.zip';
+	@unlink($zipArchive);
+	
+	$url_zip = ui_get_full_url(false);
+	
+	$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('download here') . '</a>';
+	
+	$result = array();
+	$result['success'] = false;
+	$result['url'] = $url;
+	$result['location'] = $zipArchive;
+
+	$some_check = $log_info || $system_info || $pandora_diag;
+
+	$zip = new ZipArchive;
+
+	$zip_openned = $zip->open($zipArchive, ZIPARCHIVE::CREATE) === true;
+	
+	if ($some_check && $zip_openned) {
+		if ($pandora_diag) {
+			$systemInfo = array();
+			getPandoraDiagnostic($systemInfo);
+			
+			$file = fopen($tempDir . 'pandora_diagnostic.txt', 'w');
+			
+			if ($file !== false) {
+				ob_start();
+				foreach ($systemInfo as $index => $item) {
+					if (is_array($item)) {
+						foreach ($item as $secondIndex => $secondItem) {
+							echo $index. ";" . $secondIndex . ";" . $secondItem . "\n";
+						}
+					}
+					else {
+						echo $index . ";" . $item . "\n";
+					}
+				}
+				$output = ob_get_clean();
+				fwrite($file, $output);
+				fclose($file);
+			}
+			
+			$zip->addFile($tempDir . 'pandora_diagnostic.txt', 'pandora_diagnostic.txt');
+		}
+		
+		if ($system_info) {
+			$info = array();
+			getSystemInfo($info);
+			
+			$file = fopen($tempDir . 'system_info.txt', 'w');
+			
+			if ($file !== false) {
+				ob_start();
+				foreach ($info as $index => $item) {
+					if (is_array($item)) {
+						foreach ($item as $secondIndex => $secondItem) {
+							echo $index. ";" . $secondIndex . ";" . $secondItem . "\n";
+						}
+					}
+					else {
+						echo $index . ";" . $item . "\n";
+					}
+				}
+				$output = ob_get_clean();
+				fwrite($file, $output);
+				fclose($file);
+			}
+			
+			$zip->addFile($tempDir . 'system_info.txt', 'system_info.txt');
+		}
+
+		$server_logs_directory = (!empty($config["server_log_dir"])) ? io_safe_output($config["server_log_dir"]) : "/var/log/pandora";
+		
+		if ($log_info) {
+			file_put_contents($tempDir . 'pandora_console.log.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/pandora_console.log", $log_num_lines));
+			$zip->addFile($tempDir . 'pandora_console.log.lines_' . $log_num_lines, 'pandora_console.log.lines_' . $log_num_lines);
+			file_put_contents($tempDir . 'pandora_server.log.lines_' . $log_num_lines, getLastLinesLog($server_logs_directory."/pandora_server.log", $log_num_lines));
+			$zip->addFile($tempDir . 'pandora_server.log.lines_' . $log_num_lines, 'pandora_server.log.lines_' . $log_num_lines);
+			file_put_contents($tempDir . 'pandora_server.error.lines_' . $log_num_lines, getLastLinesLog($server_logs_directory."/pandora_server.error", $log_num_lines));
+			$zip->addFile($tempDir . 'pandora_server.error.lines_' . $log_num_lines, 'pandora_server.error.lines_' . $log_num_lines);
+			file_put_contents($tempDir . 'my.cnf.lines_' . $log_num_lines, getLastLinesLog("/etc/mysql/my.cnf", $log_num_lines));
+			$zip->addFile($tempDir . 'my.cnf.lines_' . $log_num_lines, 'my.cnf.lines_' . $log_num_lines);
+			file_put_contents($tempDir . 'config.php.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/include/config.php", $log_num_lines));
+			$zip->addFile($tempDir . 'config.php.lines_' . $log_num_lines, 'config.php.lines_' . $log_num_lines);
+			file_put_contents($tempDir . 'pandora_server.conf.lines_' . $log_num_lines, getLastLinesLog("/etc/pandora/pandora_server.conf", $log_num_lines));
+			$zip->addFile($tempDir . 'pandora_server.conf.lines_' . $log_num_lines, 'pandora_server.conf.lines_' . $log_num_lines);
+			file_put_contents($tempDir . 'syslog.lines_' . $log_num_lines, getLastLinesLog("/var/log/syslog", $log_num_lines));
+			$zip->addFile($tempDir . 'syslog.lines_' . $log_num_lines, 'syslog.lines_' . $log_num_lines);
+		}
+		
+		$zip->close();
+
+		$result['date'] = ui_print_timestamp(filectime($zipArchive), true);
+		$result['success'] = true;
+	}
+	elseif (!$some_check) {
+		$result['message'] = __('No options selected');
+	}
+	elseif (!$zip_openned) {
+		$result['message'] = __('There was an error with the zip file');
+	}
+
+	return $result;
+}
+
 function mainSystemInfo() {
 	global $config;
 	
@@ -262,11 +401,8 @@ function mainSystemInfo() {
 	echo __("This extension can run as PHP script in a shell for extract more information, but it must be run as root or across sudo. For example: <i>sudo php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>");
 	echo '</div>';
 	
-	echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
-	
-	echo "<form method='post' action='index.php?extension_in_menu=gsetup&sec=gextensions&sec2=extensions/system_info'>";
 	$table = null;
-	$table->width = '98%';
+	$table->width = '99%';
 	$table->align = array();
 	$table->align[1] = 'right';
 	if ($pandora_diag) {
@@ -293,12 +429,55 @@ function mainSystemInfo() {
 	$table->data[2][1] = html_print_checkbox('log_info', 1, $log_info, true);
 	$table->data[3][0] = __('Number lines of log');
 	$table->data[3][1] = html_print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
+	
+
+	$default_location = $config['attachment_store'] . '/last_info.zip';
+	$file_exists = file_exists($default_location) && is_readable($default_location);
+
+	$table_file = new StdClass();
+	$table_file->id = "table_file";
+	$table_file->width = '99%';
+	$table_file->style = array();
+	$table_file->style[0] = "font-weight: bold";
+	$table_file->data = array();
+
+	$display_file_link = $file_exists ? "" : "style=\"display: none;\"";
+	$url = ui_get_full_url(false) . "attachment/last_info.zip";
+	$file_link = "<a href=\"$url\" $display_file_link>";
+	$file_link .= html_print_image('images/file.png', true, array('title' => __('Download'))); // Download image
+	$file_link .= "</a>";
+
+	$data = array();
+	$data[0] = __('File');
+	$data['cell-link'] = $file_link;
+	$table_file->data['row_link'] = $data;
+
+	$data = array();
+	$data[0] = __('Created');
+	$data['cell-date'] = $file_exists ? ui_print_timestamp(filectime($default_location), true) : '';
+	$table_file->data['row_date'] = $data;
+
+	$data = array();
+	$data[0] = __('Location');
+	$data['cell-location'] = $file_exists ? $default_location : '';
+	$table_file->data['row_location'] = $data;
+
+	echo "<form method='post' action='index.php?extension_in_menu=gsetup&sec=gextensions&sec2=extensions/system_info'>";
+	
 	html_print_table($table);
+	
+	$display_table_file = $file_exists ? "" : "style=\"display: none;\"";
+	echo "<div id=\"table_file_container\" $display_table_file>";
+	html_print_table($table_file);
+	echo "</div>";
+
+	echo "<br>";
 	echo "<div style='width: " . $table->width . "; text-align: right;'>";
-		html_print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
+	html_print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
+	html_print_image('images/spinner.gif', false, array('id' => 'spinner_img', 'title' => __('Loading'), 'style' => 'display: none;'));
 	echo "</div>";
 	echo "</form>";
-	
+
 	if ($show) {
 		if ($pandora_diag) {
 			$info = array();
@@ -318,103 +497,79 @@ function mainSystemInfo() {
 		}
 	}
 	elseif ($generate) {
-		$tempDirSystem = sys_get_temp_dir();
-		$nameDir = 'dir_' . uniqid();
-		$tempDir = $tempDirSystem . '/' . $nameDir . '/';
-		mkdir($tempDir);
-		
-		$zipArchive = $config['attachment_store'] . '/last_info.zip';
-		@unlink($zipArchive);
-		
-		$url_zip = ui_get_full_url(false);
-		
-		$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('download here') . '</a>';
-		
-		if ($log_info || $system_info || $pandora_diag) {
-			echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
-			echo '<b>' . __('Location:') . '</b> ' . $zipArchive;
+		$checks = array();
+		$checks['pandora_diagnostic'] = $pandora_diag;
+		$checks['system_info'] = $system_info;
+		$checks['log_info'] = $log_info;
+		$result = generate_info($checks);
+
+		if ($result['success']) {
+			echo '<b>' . __('File') . ':</b> ' . $result['url'] . '<br />';
+			echo '<b>' . __('Location') . ':</b> ' . $result['location'];
+		}
+		elseif (isset($result['message'])) {
+			echo $result['message'];
 		}
 		else {
-			echo __('No selected');
-		}
-		
-		$zip = new ZipArchive;
-		
-		if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {
-			if ($pandora_diag) {
-				$systemInfo = array();
-				getPandoraDiagnostic($systemInfo);
-				
-				$file = fopen($tempDir . 'pandora_diagnostic.txt', 'w');
-				
-				if ($file !== false) {
-					ob_start();
-					foreach ($systemInfo as $index => $item) {
-						if (is_array($item)) {
-							foreach ($item as $secondIndex => $secondItem) {
-								echo $index. ";" . $secondIndex . ";" . $secondItem . "\n";
-							}
-						}
-						else {
-							echo $index . ";" . $item . "\n";
-						}
-					}
-					$output = ob_get_clean();
-					fwrite($file, $output);
-					fclose($file);
-				}
-				
-				$zip->addFile($tempDir . 'pandora_diagnostic.txt', 'pandora_diagnostic.txt');
-			}
-			
-			if ($system_info) {
-				$info = array();
-				getSystemInfo($info);
-				
-				$file = fopen($tempDir . 'system_info.txt', 'w');
-				
-				if ($file !== false) {
-					ob_start();
-					foreach ($info as $index => $item) {
-						if (is_array($item)) {
-							foreach ($item as $secondIndex => $secondItem) {
-								echo $index. ";" . $secondIndex . ";" . $secondItem . "\n";
-							}
-						}
-						else {
-							echo $index . ";" . $item . "\n";
-						}
-					}
-					$output = ob_get_clean();
-					fwrite($file, $output);
-					fclose($file);
-				}
-				
-				$zip->addFile($tempDir . 'system_info.txt', 'system_info.txt');
-			}
-
-			$server_logs_directory = (!empty($config["server_log_dir"])) ? io_safe_output($config["server_log_dir"]) : "/var/log/pandora";
-			
-			if ($log_info) {
-				file_put_contents($tempDir . 'pandora_console.log.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/pandora_console.log", $log_num_lines));
-				$zip->addFile($tempDir . 'pandora_console.log.lines_' . $log_num_lines, 'pandora_console.log.lines_' . $log_num_lines);
-				file_put_contents($tempDir . 'pandora_server.log.lines_' . $log_num_lines, getLastLinesLog($server_logs_directory."/pandora_server.log", $log_num_lines));
-				$zip->addFile($tempDir . 'pandora_server.log.lines_' . $log_num_lines, 'pandora_server.log.lines_' . $log_num_lines);
-				file_put_contents($tempDir . 'pandora_server.error.lines_' . $log_num_lines, getLastLinesLog($server_logs_directory."/pandora_server.error", $log_num_lines));
-				$zip->addFile($tempDir . 'pandora_server.error.lines_' . $log_num_lines, 'pandora_server.error.lines_' . $log_num_lines);
-				file_put_contents($tempDir . 'my.cnf.lines_' . $log_num_lines, getLastLinesLog("/etc/mysql/my.cnf", $log_num_lines));
-				$zip->addFile($tempDir . 'my.cnf.lines_' . $log_num_lines, 'my.cnf.lines_' . $log_num_lines);
-				file_put_contents($tempDir . 'config.php.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/include/config.php", $log_num_lines));
-				$zip->addFile($tempDir . 'config.php.lines_' . $log_num_lines, 'config.php.lines_' . $log_num_lines);
-				file_put_contents($tempDir . 'pandora_server.conf.lines_' . $log_num_lines, getLastLinesLog("/etc/pandora/pandora_server.conf", $log_num_lines));
-				$zip->addFile($tempDir . 'pandora_server.conf.lines_' . $log_num_lines, 'pandora_server.conf.lines_' . $log_num_lines);
-				file_put_contents($tempDir . 'syslog.lines_' . $log_num_lines, getLastLinesLog("/var/log/syslog", $log_num_lines));
-				$zip->addFile($tempDir . 'syslog.lines_' . $log_num_lines, 'syslog.lines_' . $log_num_lines);
-			}
-			
-			$zip->close();
+			echo __('Error');
 		}
 	}
+
+?>
+<script type="text/javascript">
+
+	$("#submit-generate").click(function(e) {
+		e.preventDefault();
+
+		generate_info();
+	});
+
+	function generate_info () {
+		$("#submit-generate").hide();
+		$("#spinner_img").show();
+
+		$.ajax({
+			url: 'ajax.php',
+			type: 'POST',
+			dataType: 'json',
+			data: {
+			page: <?php echo json_encode(EXTENSIONS_DIR) ?> + '/system_info',
+			generate_info: 1,
+			pandora_diag: function() { return $("checkbox-pandora_diag").val(); },
+			system_info: function() { return $("checkbox-system_info").val(); },
+			log_info: function() { return $("checkbox-log_info").val(); }
+			},
+			complete: function() {
+				$("#spinner_img").hide();
+				$("#submit-generate").show();
+			},
+			success: function(data) {
+
+				if (data.success) {
+					$("#table_file-row_link-cell-link").find("a").prop("href", data.url);
+					$("#table_file-row_date-cell-date").html(data.date);
+					$("#table_file-row_location-cell-location").html(data.location);
+					$("#table_file_container").slideDown();
+				}
+				else {
+					$("#table_file-row_link-cell-link").find("a").prop("href", "");
+					$("#table_file-row_date-cell-date").html("");
+					$("#table_file-row_location-cell-location").html("");
+					$("#table_file_container").slideUp();
+					alert(data.message);
+				}
+			},
+			error: function(xhr, textStatus, errorThrown) {
+				$("#table_file-row_link-cell-link").find("a").prop("href", "");
+				$("#table_file-row_date-cell-date").html("");
+				$("#table_file-row_location-cell-location").html("");
+				$("#table_file_container").slideUp();
+				alert('Error');
+			}
+		});
+	}
+</script>
+<?php
 }
 
 function consoleMode() {

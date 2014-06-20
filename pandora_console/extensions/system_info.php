@@ -278,7 +278,7 @@ function generate_info($checks) {
 	
 	$url_zip = ui_get_full_url(false);
 	
-	$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('download here') . '</a>';
+	$url = $url_zip . 'attachment/last_info.zip';
 	
 	$result = array();
 	$result['success'] = false;

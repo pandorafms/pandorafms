@@ -521,23 +521,34 @@ function mainSystemInfo() {
 	$("#submit-generate").click(function(e) {
 		e.preventDefault();
 
-		generate_info();
+		if ($("#checkbox-pandora_diag").prop('checked')
+				|| $("#checkbox-system_info").prop('checked')
+				|| $("#checkbox-log_info").prop('checked')) {
+			generate_info();
+		} else {
+			alert('<?php echo __('At least one option must be selected'); ?>');
+		}
+			
 	});
 
 	function generate_info () {
 		$("#submit-generate").hide();
 		$("#spinner_img").show();
 
+		console.log($("#checkbox-pandora_diag").prop('checked'));
+		console.log($("#checkbox-system_info").prop('checked'));
+		console.log($("#checkbox-log_info").prop('checked'));
+
 		$.ajax({
 			url: 'ajax.php',
 			type: 'POST',
 			dataType: 'json',
 			data: {
-			page: <?php echo json_encode(EXTENSIONS_DIR) ?> + '/system_info',
-			generate_info: 1,
-			pandora_diag: function() { return $("checkbox-pandora_diag").val(); },
-			system_info: function() { return $("checkbox-system_info").val(); },
-			log_info: function() { return $("checkbox-log_info").val(); }
+				page: <?php echo json_encode(EXTENSIONS_DIR) ?> + '/system_info',
+				generate_info: 1,
+				pandora_diag: Number($("#checkbox-pandora_diag").prop('checked')),
+				system_info: Number($("#checkbox-system_info").prop('checked')),
+				log_info: Number($("#checkbox-log_info").prop('checked'))
 			},
 			complete: function() {
 				$("#spinner_img").hide();
@@ -546,7 +557,7 @@ function mainSystemInfo() {
 			success: function(data) {
 
 				if (data.success) {
-					$("#table_file-row_link-cell-link").find("a").prop("href", data.url);
+					$("#table_file-row_link-cell-link").find("a").prop("href", data.url).show();
 					$("#table_file-row_date-cell-date").html(data.date);
 					$("#table_file-row_location-cell-location").html(data.location);
 					$("#table_file_container").slideDown();
@@ -564,7 +575,7 @@ function mainSystemInfo() {
 				$("#table_file-row_date-cell-date").html("");
 				$("#table_file-row_location-cell-location").html("");
 				$("#table_file_container").slideUp();
-				alert('Error');
+				alert('<?php echo __('Error'); ?>');
 			}
 		});
 	}

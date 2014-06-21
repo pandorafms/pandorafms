@@ -1,3 +1,8 @@
+2014-06-21  Junichi Satoh  <junichi@rworks.jp>
+	
+	* include/functions_api.php: Added support for 'each_ff' and
+	'ff_timeout' to module creation and modifying APIs.
+
 2014-06-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* extensions/system_info.php: Error fixes.

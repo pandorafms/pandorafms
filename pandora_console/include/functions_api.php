@@ -1240,7 +1240,8 @@ function api_get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
  * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
- *  <min>;<max>;<custom_id>;<description>;<disabled_types_event>;<module_macros> in this order
+ *  <min>;<max>;<custom_id>;<description>;<disabled_types_event>;<module_macros>;
+ *  <each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical>; in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -1297,7 +1298,11 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 		'descripcion' => $other['data'][21],
 		'id_modulo' => 2,
 		'disabled_types_event' => $disabled_types_event,
-		'module_macros' => $other['data'][23]
+		'module_macros' => $other['data'][23],
+		'each_ff' => $other['data'][24],
+		'min_ff_event_normal' => $other['data'][25],
+		'min_ff_event_warning' => $other['data'][26],
+		'min_ff_event_critical' => $other['data'][27]
 	);
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
@@ -1319,7 +1324,8 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
  * @param array $other it's array, $other as param is <id_agent>;<disabled>
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
- *  <min>;<max>;<custom_id>;<description>;<disabled_types_event>;<module_macros> in this order
+ *  <min>;<max>;<custom_id>;<description>;<disabled_types_event>;<module_macros>;
+ *  <each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critidcal>; in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -1379,7 +1385,11 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3){
 		'custom_id',
 		'descripcion',
 		'disabled_types_event',
-		'module_macros');
+		'module_macros',
+		'each_ff',
+		'min_ff_event_normal',
+		'min_ff_event_warning',
+		'min_ff_event_critical');
 	
 	$values = array();
 	$cont = 0;
@@ -1408,7 +1418,8 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3){
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<tcp_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter>;
- *  <disabled_types_event>;<macros>;<module_macros> in this order
+ *  <disabled_types_event>;<macros>;<module_macros>;<each_ff>;<ff_threshold_normal>;
+ *  <ff_threshold_warning>;<ff_threshold_critical> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -1467,7 +1478,11 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 		'plugin_parameter' => $other['data'][25],
 		'disabled_types_event' => $disabled_types_event,
 		'macros' => base64_decode ($other['data'][27]),
-		'module_macros' => $other['data'][28]
+		'module_macros' => $other['data'][28],
+		'each_ff' => $other['data'][29],
+		'min_ff_event_normal' => $other['data'][30],
+		'min_ff_event_warning' => $other['data'][31],
+		'min_ff_event_critical' => $other['data'][32]
 	);
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
@@ -1489,7 +1504,8 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter>;
- *  <disabled_types_event>;<macros>;<module_macros> in this order
+ *  <disabled_types_event>;<macros>;<module_macros>;<each_ff>;<ff_threshold_normal>;
+ *  <ff_threshold_warning>;<ff_threshold_critical> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -1553,7 +1569,11 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
 		'plugin_parameter',
 		'disabled_types_event',
 		'macros',
-		'module_macros');
+		'module_macros',
+		'each_ff',
+		'min_ff_event_normal',
+		'min_ff_event_warning',
+		'min_ff_event_critical');
 	
 	$values = array();
 	$cont = 0;
@@ -1586,7 +1606,8 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
  * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
  * 	<description>;<id_module_group>;<min_value>;<max_value>;<post_process>;<module_interval>;<min_warning>;
  * 	<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<history_data>;
- * 	<disabled_types_event>;<module_macros> in this order
+ * 	<disabled_types_event>;<module_macros>;<ff_threshold>;<each_ff>;
+ *	<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical>; in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -1634,7 +1655,13 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 		'history_data' => $other['data'][15],
 		'id_modulo' => 1,
 		'disabled_types_event' => $disabled_types_event,
-		'module_macros' => $other['data'][17]
+		'module_macros' => $other['data'][17],
+		'min_ff_event' => $other['data'][18],
+		'each_ff' => $other['data'][19],
+		'min_ff_event_normal' => $other['data'][20],
+		'min_ff_event_warning' => $other['data'][21],
+		'min_ff_event_critical' => $other['data'][22],
+		'ff_timeout' => $other['data'][23]
 	);
 	
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
@@ -1656,7 +1683,9 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
  * @param array $other it's array, $other as param is <id_agent>;<disabled>;<description>;
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
- *  <min>;<max>;<custom_id>;<disabled_types_event>;<module_macros> in this order
+ *  <min>;<max>;<custom_id>;<disabled_types_event>;<module_macros>;<ff_threshold>;
+ *  <each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical>;
+ *  <ff_timeout> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
@@ -1709,7 +1738,13 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3){
 		'str_critical', 
 		'history_data',
 		'disabled_types_event',
-		'module_macros');
+		'module_macros',
+		'min_ff_event',
+		'each_ff',
+		'min_ff_event_normal',
+		'min_ff_event_warning',
+		'min_ff_event_critical',
+		'ff_timeout');
 	
 	$values = array();
 	$cont = 0;
@@ -1739,7 +1774,8 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3){
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<module_port>;<snmp_version>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description>;<snmp3_priv_method>;<snmp3_priv_pass>;<snmp3_sec_level>;<snmp3_auth_method>;
- *  <snmp3_auth_user>;<snmp3_auth_pass> in this order
+ *  <snmp3_auth_user>;<snmp3_auth_pass>;<disabled_types_event>;<each_ff>;<ff_threshold_normal>;
+ *  <ff_threshold_warning>;<ff_threshold_critical> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  * 
@@ -1829,7 +1865,11 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 			'plugin_parameter' => $other['data'][26],
 			'plugin_user' => $other['data'][27],
 			'plugin_pass' => $other['data'][28],
-			'disabled_types_event' => $disabled_types_event
+			'disabled_types_event' => $disabled_types_event,
+			'each_ff' => $other['data'][30],
+			'min_ff_event_normal' => $other['data'][31],
+			'min_ff_event_warning' => $other['data'][32],
+			'min_ff_event_critical' => $other['data'][33]
 		);
 	}
 	else {
@@ -1858,7 +1898,11 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 			'custom_id' => $other['data'][21],
 			'descripcion' => $other['data'][22],
 			'id_modulo' => 2,
-			'disabled_types_event' => $disabled_types_event
+			'disabled_types_event' => $disabled_types_event,
+			'each_ff' => $other['data'][24],
+			'min_ff_event_normal' => $other['data'][25],
+			'min_ff_event_warning' => $other['data'][26],
+			'min_ff_event_critical' => $other['data'][27]
 		);
 	}
 	
@@ -1882,7 +1926,8 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<ip_target>;<module_port>;<snmp_version>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description>;<snmp3_priv_method>;<snmp3_priv_pass>;<snmp3_sec_level>;<snmp3_auth_method>;
- *  <snmp3_auth_user>;<snmp3_auth_pass> in this order
+ *  <snmp3_auth_user>;<snmp3_auth_pass>;<each_ff>;<ff_threshold_normal>;
+ *  <ff_threshold_warning>;<ff_threshold_critical> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  * 
@@ -1966,7 +2011,11 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			'plugin_parameter',
 			'plugin_user',
 			'plugin_pass',
-			'disabled_types_event');
+			'disabled_types_event',
+			'each_ff',
+			'min_ff_event_normal',
+			'min_ff_event_warning',
+			'min_ff_event_critical');
 	}
 	else {
 		$snmp_module_fields = array('id_agente',
@@ -1991,7 +2040,11 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			'max',
 			'custom_id',
 			'descripcion',
-			'disabled_types_event');
+			'disabled_types_event',
+			'each_ff',
+			'min_ff_event_normal',
+			'min_ff_event_warning',
+			'min_ff_event_critical');
 	}
 	
 	$values = array();

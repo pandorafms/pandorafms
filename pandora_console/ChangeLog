@@ -1,3 +1,11 @@
+2014-06-22  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_api.php: Added support for 'each_ff' and
+	'ff_timeout' to 'set new_network_component', 
+	'set new_plugin_component' and 'set new_snmp_component'.
+	Fixed that component id can not be set correctly by
+	'set new_*_component'.
+
 2014-06-21  Junichi Satoh  <junichi@rworks.jp>
 	
 	* include/functions_api.php: Added support for 'each_ff' and

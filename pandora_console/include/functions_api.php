@@ -2073,7 +2073,8 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
  * @param array $other it's array, $other as param is <network_component_type>;<description>;
  *  <module_interval>;<max_value>;<min_value>;<snmp_community>;<id_module_group>;<max_timeout>;
  *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
- *  <ff_threshold>;<post_process>;<network_component_group>;<max_retries>  in this
+ *  <ff_threshold>;<post_process>;<network_component_group>;<enable_unknown_events>;<each_ff>;
+ *  <ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical>  in this
  *  order and separator char (after text ; ) and separator (pass in param
  *  othermode as othermode=url_encode_separator_<separator>)
  *  example:
@@ -2122,8 +2123,12 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
 		'str_critical' => $other['data'][14],
 		'min_ff_event' => $other['data'][15],
 		'post_process' => $other['data'][16],
-		'max_retries' => $other['data'][17],
-		'disabled_types_event' => $disabled_types_event);
+		'id_group' => $other['data'][17],
+		'disabled_types_event' => $disabled_types_event,
+		'each_ff' => $other['data'][19],
+		'min_ff_event_normal' => $other['data'][20],
+		'min_ff_event_warning' => $other['data'][21],
+		'min_ff_event_critical' => $other['data'][22]);
 	
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
 	
@@ -2148,7 +2153,8 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
  * @param array $other it's array, $other as param is <plugin_component_type>;<description>;
  *  <module_interval>;<max_value>;<min_value>;<module_port>;<id_module_group>;<id_plugin>;<max_timeout>;
  *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
- *  <ff_threshold>;<post_process>;<plugin_component_group>;<max_retries>  in this
+ *  <ff_threshold>;<post_process>;<plugin_component_group>;<enable_unknown_events>;
+ *  <each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical> in this
  *  order and separator char (after text ; ) and separator (pass in param
  *  othermode as othermode=url_encode_separator_<separator>)
  *  example:
@@ -2201,8 +2207,12 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
 		'str_critical' => $other['data'][18],
 		'min_ff_event' => $other['data'][19],
 		'post_process' => $other['data'][20],
-		'max_retries' => $other['data'][11],
-		'disabled_types_event' => $disabled_types_event);
+		'id_group' => $other['data'][21],
+		'disabled_types_event' => $disabled_types_event,
+		'each_ff' => $other['data'][23],
+		'min_ff_event_normal' => $other['data'][24],
+		'min_ff_event_warning' => $other['data'][25],
+		'min_ff_event_critical' => $other['data'][26]);
 	
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
 	
@@ -2228,7 +2238,8 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
  *  <module_interval>;<max_value>;<min_value>;<id_module_group>;<max_timeout>;
  *  <history_data>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;
  *  <ff_threshold>;<post_process>;<snmp_version>;<snmp_oid>;<snmp_community>;
- *  <snmp3_auth_user>;<snmp3_auth_pass>;<module_port>;<snmp3_privacy_method>;<snmp3_privacy_pass>;<snmp3_auth_method>;<snmp3_security_level>;<snmp_component_group>;<max_retries> in this
+ *  <snmp3_auth_user>;<snmp3_auth_pass>;<module_port>;<snmp3_privacy_method>;<snmp3_privacy_pass>;<snmp3_auth_method>;<snmp3_security_level>;<snmp_component_group>;<enable_unknown_events>;
+ *  <each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical> in this
  *  order and separator char (after text ; ) and separator (pass in param
  *  othermode as othermode=url_encode_separator_<separator>)
  *  example:
@@ -2304,8 +2315,12 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 			'custom_string_2' => $other['data'][23],	// snmp3_privacy_pass
 			'plugin_parameter' => $other['data'][24],	// snmp3_auth_method
 			'custom_string_3' => $other['data'][25],	// snmp3_security_level
-			'max_retries' => $other['data'][26],
-			'disabled_types_event' => $disabled_types_event
+			'id_group' => $other['data'][26],
+			'disabled_types_event' => $disabled_types_event,
+			'each_ff' => $other['data'][28],
+			'min_ff_event_normal' => $other['data'][29],
+			'min_ff_event_warning' => $other['data'][30],
+			'min_ff_event_critical' => $other['data'][31]
 			);
 	}
 	else {
@@ -2332,8 +2347,12 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 			'plugin_pass' => '',
 			'tcp_port' => $other['data'][21],
 			'id_modulo' => 2,
-			'max_retries' => $other['data'][22],
-			'disabled_types_event' => $disabled_types_event
+			'id_group' => $other['data'][22],
+			'disabled_types_event' => $disabled_types_event,
+			'each_ff' => $other['data'][24],
+			'min_ff_event_normal' => $other['data'][25],
+			'min_ff_event_warning' => $other['data'][26],
+			'min_ff_event_critical' => $other['data'][27]
 			);
 	}
 	

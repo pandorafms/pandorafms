@@ -924,8 +924,13 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	foreach ($fields as $field) {
 		$value = get_parameter ($field, '');
-		
+
 		switch ($field) {
+			case 'module_interval':
+				if ($value != 0) {
+					$values[$field] = $value;
+				}
+				break;
 			default:
 				if ($value != '') {
 					$values[$field] = $value;

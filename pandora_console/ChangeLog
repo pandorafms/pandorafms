@@ -1,3 +1,8 @@
+2014-06-23  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* godmode/gis_maps/configure_gis_map.php: Visual changes
+	on the inputs.
+
 2014-06-23  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

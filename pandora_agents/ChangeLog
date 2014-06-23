@@ -1,3 +1,8 @@
+2014-06-23  Vanessa Gil  <vanessa.gil@artica.es>
+
+	* win32/bin/pandora_agent.conf: Fixed bug creating
+	a module with accents.
+
 2014-06-11  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* pc/plugins/inventory: Fixed bug in inventory

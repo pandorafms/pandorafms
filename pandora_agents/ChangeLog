@@ -1,5 +1,10 @@
 2014-06-23  Vanessa Gil  <vanessa.gil@artica.es>
 
+	* win32/bin/pandora_agent.conf: Fixed encoding
+	bug.
+
+2014-06-23  Vanessa Gil  <vanessa.gil@artica.es>
+
 	* win32/bin/pandora_agent.conf: Fixed bug creating
 	a module with accents.
 

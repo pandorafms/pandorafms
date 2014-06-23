@@ -48,7 +48,7 @@ INSERT INTO `tconfig_os` (`name`, `description`, `icon_name`) VALUES ('Satellite
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
 -- ---------------------------------------------------------------------
-ALTER TABLE `pandora`.`tagente_modulo` MODIFY COLUMN `post_process` DOUBLE  DEFAULT NULL;
+ALTER TABLE `tagente_modulo` MODIFY COLUMN `post_process` DOUBLE  DEFAULT NULL;
 /* 2014/05/21 */
 ALTER TABLE `tagente_modulo` ADD COLUMN `min_ff_event_normal` int(4) unsigned default '0';
 ALTER TABLE `tagente_modulo` ADD COLUMN `min_ff_event_warning` int(4) unsigned default '0';
@@ -67,10 +67,8 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`module_b` int(10) unsigned NOT NULL,
 	`disable_update` tinyint(1) unsigned NOT NULL default '0',
 	PRIMARY KEY (`id`),
-	FOREIGN KEY (`module_a`) REFERENCES tagente_modulo(`id_agente_modulo`)
-		ON DELETE CASCADE,
-	FOREIGN KEY (`module_b`) REFERENCES tagente_modulo(`id_agente_modulo`)
-		ON DELETE CASCADE
+	FOREIGN KEY (`module_a`) REFERENCES tagente_modulo(`id_agente_modulo`) ON DELETE CASCADE,
+	FOREIGN KEY (`module_b`) REFERENCES tagente_modulo(`id_agente_modulo`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------

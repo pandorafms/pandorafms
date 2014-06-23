@@ -357,22 +357,22 @@ $table->data[3][0] = __('Default zoom') . ui_print_help_tip (__('Default zoom le
 $table->data[3][1] = html_print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . html_print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
 
 $table->data[4][0] = __('Center Latitude') . ':';
-$table->data[4][1] = html_print_input_text ('map_initial_latitude', $map_initial_latitude, '', 4, 8, true);
+$table->data[4][1] = html_print_input_text ('map_initial_latitude', $map_initial_latitude, '', 8, 8, true);
 
 $table->data[5][0] = __('Center Longitude') . ':';
-$table->data[5][1] = html_print_input_text ('map_initial_longitude', $map_initial_longitude, '', 4, 8, true);
+$table->data[5][1] = html_print_input_text ('map_initial_longitude', $map_initial_longitude, '', 8, 8, true);
 
 $table->data[6][0] = __('Center Altitude') . ':';
-$table->data[6][1] = html_print_input_text ('map_initial_altitude', $map_initial_altitude, '', 4, 8, true);
+$table->data[6][1] = html_print_input_text ('map_initial_altitude', $map_initial_altitude, '', 8, 8, true);
 
 $table->data[7][0] = __('Default Latitude') . ':';
-$table->data[7][1] = html_print_input_text ('map_default_latitude', $map_default_latitude, '', 4, 8, true);
+$table->data[7][1] = html_print_input_text ('map_default_latitude', $map_default_latitude, '', 8, 8, true);
 
 $table->data[8][0] = __('Default Longitude') . ':';
-$table->data[8][1] = html_print_input_text ('map_default_longitude', $map_default_longitude, '', 4, 8, true);
+$table->data[8][1] = html_print_input_text ('map_default_longitude', $map_default_longitude, '', 8, 8, true);
 
 $table->data[9][0] = __('Default Altitude') . ':';
-$table->data[9][1] = html_print_input_text ('map_default_altitude', $map_default_altitude, '', 4, 8, true);
+$table->data[9][1] = html_print_input_text ('map_default_altitude', $map_default_altitude, '', 8, 8, true);
 
 echo '<div class="action-buttons" style="margin-top: 20px; width: '.$table->width.'">';
 switch ($action) {

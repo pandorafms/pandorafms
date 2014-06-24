@@ -63,7 +63,7 @@ $available_directories[$directory] = $directory;
 
 $real_directory = realpath ($config['homedir'] . '/' . $directory);
 
-ui_print_info_message(__("MIB files will be installed on the system. To customize trap definitions use the SNMP trap editor."));
+ui_print_info_message(__("MIB files will be installed on the system. Please note that a MIB may depend on other MIB. To customize trap definitions use the SNMP trap editor."));
 
 echo '<h4>' . __('Index of %s', $directory) . '</h4>';
 

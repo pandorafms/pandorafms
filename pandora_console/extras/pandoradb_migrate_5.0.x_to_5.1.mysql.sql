@@ -224,3 +224,9 @@ ALTER TABLE `tnews` ADD COLUMN `expire_timestamp` DATETIME  NOT NULL DEFAULT 0;
 -- Table `tagente_estado`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tagente_estado` ADD COLUMN `ff_start_utimestamp` bigint(20) default 0;
+
+/* 2014/06/24 */
+-- ---------------------------------------------------------------------
+-- Table `trecon_script`
+-- ---------------------------------------------------------------------
+DELETE FROM `trecon_script` WHERE id_recon_script=1;

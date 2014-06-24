@@ -1,3 +1,7 @@
+2014-06-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/recon_scripts/snmp-recon.pl: Improved host connection.
+
 2014-06-24  Vanessa Gil <vanessa.gil@artica.es>
 
 	* util/recon_scripts/snmpdevices.pl: Deleted file.

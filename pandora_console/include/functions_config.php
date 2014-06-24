@@ -437,7 +437,9 @@ function config_update_config () {
 						$error_update[] = __('Paginate module');
 					if (!config_update_value ('graphviz_bin_dir', get_parameter('graphviz_bin_dir')))
 						$error_update[] = __('Custom graphviz directory');
-
+					if (!config_update_value ('networkmap_max_width', get_parameter('networkmap_max_width')))
+						$error_update[] = __('Networkmap max width');
+					
 					$interval_values = get_parameter ('interval_values');
 					
 					// Add new interval value if is provided
@@ -473,26 +475,26 @@ function config_update_config () {
 					
 				if (!config_update_value ('interval_values', $interval_values))
 					$error_update[] = __('Delete interval');
-					
+				
 				// Juanma (06/05/2014) New feature: Custom front page for reports  	
 				if (!config_update_value ('custom_report_front', get_parameter('custom_report_front')))
 					$error_update[] = __('Custom report front');
-
+				
 				if (!config_update_value ('custom_report_front_font', get_parameter('custom_report_front_font')))
 					$error_update[] = __('Custom report front') . ' - ' . __('Font family');
-									
+				
 				if (!config_update_value ('custom_report_front_logo', get_parameter('custom_report_front_logo')))
 					$error_update[] = __('Custom report front') . ' - ' . __('Custom logo');
-
+				
 				if (!config_update_value ('custom_report_front_header', get_parameter('custom_report_front_header')))
 					$error_update[] = __('Custom report front') . ' - ' . __('Header');
-
+				
 				if (!config_update_value ('custom_report_front_firstpage', get_parameter('custom_report_front_firstpage')))
 					$error_update[] = __('Custom report front') . ' - ' . __('First page');				
-
+				
 				if (!config_update_value ('custom_report_front_footer', get_parameter('custom_report_front_footer')))
 					$error_update[] = __('Custom report front') . ' - ' . __('Footer');				
-
+				
 				break;
 			case 'net':
 				if (!config_update_value ('netflow_path', get_parameter ('netflow_path')))
@@ -1148,28 +1150,32 @@ function config_process_config () {
 	
 	if (!isset($config['custom_report_front_font'])) {
 		config_update_value ('custom_report_front_font', 'FreeSans.ttf');
-	}	
+	}
 	
 	if (!isset($config['custom_report_front_logo'])) {
 		config_update_value ('custom_report_front_logo', 'images/pandora_logo_white.jpg');
 	}
-
+	
 	if (!isset($config['custom_report_front_header'])) {
 		config_update_value ('custom_report_front_header', '');
 	}
-
+	
 	if (!isset($config['custom_report_front_firstpage'])) {
 		config_update_value ('custom_report_front_firstpage', "&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;img&#x20;src=&quot;" . ui_get_full_url(false, false, false, false) . "/images/pandora_report_logo.png&quot;&#x20;alt=&quot;&quot;&#x20;width=&quot;800&quot;&#x20;/&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;xx-large;&quot;&gt;&#40;_REPORT_NAME_&#41;&lt;/span&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;large;&quot;&gt;&#40;_DATETIME_&#41;&lt;/span&gt;&lt;/p&gt;");
-	}	
-
+	}
+	
 	if (!isset($config['custom_report_front_footer'])) {
 		config_update_value ('custom_report_front_footer', '');
 	}
-		
+	
 	if (!isset($config['autohidden_menu'])) {
 		config_update_value ('autohidden_menu', 0);
 	}
-		
+	
+	if (!isset($config['networkmap_max_width'])) {
+		config_update_value ('networkmap_max_width', 800);
+	}
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }

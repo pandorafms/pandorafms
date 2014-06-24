@@ -2377,9 +2377,11 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
  * @param $id string Name of the local component.
  * @param $thrash1 Don't use.
  * @param array $other it's array, $other as param is <description>;<id_os>;
- *  <local_component_group>;<configuration_data>  in this
- *  order and separator char (after text ; ) and separator (pass in param
- *  othermode as othermode=url_encode_separator_<separator>)
+ *  <local_component_group>;<configuration_data>;<enable_unknown_events>;
+ *  <ff_threshold>;<each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;
+ *  <ff_threshold_critical>;<ff_timeout>  in this order and separator char
+ *  (after text ; ) and separator (pass in param othermode as
+ *  othermode=url_encode_separator_<separator>)
  *  example:
  *  
  *  api.php?op=set&op2=new_local_component&id=example_local_component_name&other=local%20component%20created%20by%20Api~5~12~module_begin%0dmodule_name%20example_local_component_name%0dmodule_type%20generic_data%0dmodule_exec%20ps%20|%20grep%20pid%20|%20wc%20-l%0dmodule_interval%202%0dmodule_end&other_mode=url_encode_separator_~
@@ -2407,8 +2409,14 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
 	
 	$values = array ( 
 		'description' => $other['data'][0],
-		'id_network_component_group' => $other['data'][1],
-		'disabled_types_event' => $disabled_types_event);
+		'id_network_component_group' => $other['data'][2],
+		'disabled_types_event' => $disabled_types_event,
+		'min_ff_event' => $other['data'][5],
+		'each_ff' => $other['data'][6],
+		'min_ff_event_normal' => $other['data'][7],
+		'min_ff_event_warning' => $other['data'][8],
+		'min_ff_event_critical' => $other['data'][9],
+		'ff_timeout' => $other['data'][10]);
 	
 	$name_check = enterprise_hook('local_components_get_local_components',
 		array(array('name' => $id), 'name'));

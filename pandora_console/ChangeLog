@@ -1,5 +1,10 @@
 2014-06-24  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/functions_api.php: Added support for 'each_ff' and
+	'ff_timeout' to 'set add_*_module_policy'.
+
+2014-06-24  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/functions_api.php: Added support for ff_threshold to
 	'set new_local_component'. Fixed that component id can not be set
 	correctly by 'set new_local_component'.

@@ -781,14 +781,26 @@ sub connect_pandora_agents($$$$) {
 
 	# Mark the two devices as connected.
 	$CONNECTIONS{"${module_id_1}_${module_id_2}"} = 1;
-	$VISITED_DEVICES{$dev_1}->{'connected'} = 1;
-	$VISITED_DEVICES{$dev_2}->{'connected'} = 1;
+	if (ref($VISITED_DEVICES{$dev_1}) eq 'HASH') {
+		$VISITED_DEVICES{$dev_1}->{'connected'} = 1;
+	} else {
+		${$VISITED_DEVICES{$dev_1}}->{'connected'} = 1; # An alias.
+	}
+	if (ref($VISITED_DEVICES{$dev_2}) eq 'HASH') {
+		$VISITED_DEVICES{$dev_2}->{'connected'} = 1;
+	} else {
+		${$VISITED_DEVICES{$dev_2}}->{'connected'} = 1; # An alias.
+	}
 
 	# Connect the modules if they are not already connected.
 	my $connection_id = get_db_value($DBH, 'SELECT id FROM tmodule_relationship WHERE (module_a = ? AND module_b = ?) OR (module_b = ? AND module_a = ?)', $module_id_1, $module_id_2, $module_id_1, $module_id_2);
 	if (! defined($connection_id)) {
 		db_do($DBH, 'INSERT INTO tmodule_relationship (`module_a`, `module_b`, `id_rt`) VALUES(?, ?, ?)', $module_id_1, $module_id_2, $TASK_ID);
 	}
+
+	# Unset parents (otherwise the map will look broken).
+	db_do($DBH, 'UPDATE tagente SET id_parent=0 WHERE id_agente=?', $agent_1->{'id_agente'});
+	db_do($DBH, 'UPDATE tagente SET id_parent=0 WHERE id_agente=?', $agent_2->{'id_agente'});
 }
 
 
@@ -873,6 +885,9 @@ sub traceroute_connectivity($) {
 		
 		# Check if the parent agent exists.
 		my $agent = get_agent_from_addr ($DBH, $host_addr);
+		if (!defined($agent)) {
+			$agent = get_agent_from_name($DBH, $host_addr);
+		}
 		if (defined ($agent)) {
 			$parent_id = $agent->{'id_agente'};
 			last;
@@ -981,7 +996,8 @@ foreach my $device ((@ROUTERS, @SWITCHES)) {
 	host_connectivity($device);
 }
 foreach my $host (keys(%HOSTS)) {
-	next if ($VISITED_DEVICES{$host}->{'connected'} == 1);
+	next unless (ref($VISITED_DEVICES{$host}) eq 'HASH'); # Skip aliases.
+	next if ($VISITED_DEVICES{$host}->{'connected'} == 1); # Skip already connected hosts.
 	traceroute_connectivity($host);
 }
 update_recon_task($DBH, $TASK_ID, -1);

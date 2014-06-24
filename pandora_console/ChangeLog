@@ -1,3 +1,8 @@
+2014-06-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/snmpconsole/snmp_mib_uploader.php: Display information about the
+	  MIB uploader.
+
 2014-06-24  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_networkmap.php: Modified the function

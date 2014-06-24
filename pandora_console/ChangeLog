@@ -1,5 +1,9 @@
 2014-06-24  Ramon Novoa  <rnovoa@artica.es>
 
+	* operation/snmpconsole/snmp_mib_uploader.php: Added additional information.
+
+2014-06-24  Ramon Novoa  <rnovoa@artica.es>
+
 	* operation/snmpconsole/snmp_mib_uploader.php: Display information about the
 	  MIB uploader.
 

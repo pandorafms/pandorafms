@@ -388,12 +388,13 @@ $table_advanced->data[4][3] = __('Throw unknown events');
 $table_advanced->data[4][4] = html_print_checkbox('throw_unknown_events',
 	1, $throw_unknown_events_check, true);
 
-$table_advanced->data[5][0] = __('FF interval');
+$table_advanced->data[5][0] = __('FF interval') . ' ' . ui_print_help_icon ('ff_interval', true);
 $table_advanced->data[5][1] = html_print_input_text ('module_ff_interval', $ff_interval,
        '', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution flip flop time interval (in secs).'), true);
 $table_advanced->colspan[5][1] = 2;
 
-$table_advanced->data[5][3] = __('FF timeout');
+$table_advanced->data[5][3] = __('FF timeout') . ' ' . ui_print_help_icon ('ff_timeout', true);
+
 $module_type_name = modules_get_type_name($id_module_type);
 if (preg_match ('/async/', $module_type_name) || $edit) {
 	$table_advanced->data[5][4] = '<span id="ff_timeout">' . html_print_input_text ('ff_timeout', $ff_timeout,

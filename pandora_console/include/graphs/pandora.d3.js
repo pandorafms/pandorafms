@@ -337,149 +337,152 @@ function treeMap(recipient, data, width, height) {
 	var nodes = treemap.nodes(root);
 
 	var children = nodes.filter(function(d) {
-            return !d.children;
-        });
-        var parents = nodes.filter(function(d) {
-            return d.children;
-        });
+		return !d.children;
+	});
+	var parents = nodes.filter(function(d) {
+		return d.children;
+	});
 
-        // create parent cells
-        var parentCells = chart.selectAll("g.cell.parent")
-            .data(parents, function(d) {
-                return "p-" + d.name;
-            });
-        var parentEnterTransition = parentCells.enter()
-            .append("g")
-            .attr("class", "cell parent")
-            .on("click", function(d) {
-                zoom(d);
-            })
-            .append("svg")
-            .attr("class", "clip")
-            .attr("width", function(d) {
-                return Math.max(0.01, d.dx);
-            })
-            .attr("height", headerHeight);
-        parentEnterTransition.append("rect")
-            .attr("width", function(d) {
-                return Math.max(0.01, d.dx);
-            })
-            .attr("height", headerHeight)
-            .style("fill", headerColor);
-        parentEnterTransition.append('text')
-            .attr("class", "label")
-            .attr("fill", "white")
-            .attr("transform", "translate(3, 13)")
-            .attr("width", function(d) {
-                return Math.max(0.01, d.dx);
-            })
-            .attr("height", headerHeight)
-            .text(function(d) {
-                return d.name;
-            });
-        // update transition
-        var parentUpdateTransition = parentCells.transition().duration(transitionDuration);
-        parentUpdateTransition.select(".cell")
-            .attr("transform", function(d) {
-                return "translate(" + d.dx + "," + d.y + ")";
-            });
-        parentUpdateTransition.select("rect")
-            .attr("width", function(d) {
-                return Math.max(0.01, d.dx);
-            })
-            .attr("height", headerHeight)
-            .style("fill", headerColor);
-        parentUpdateTransition.select(".label")
-            .attr("transform", "translate(3, 13)")
-            .attr("width", function(d) {
-                return Math.max(0.01, d.dx);
-            })
-            .attr("height", headerHeight)
-            .text(function(d) {
-                return d.name;
-            });
-        // remove transition
-        parentCells.exit()
-            .remove();
+	// create parent cells
+	var parentCells = chart.selectAll("g.cell.parent")
+		.data(parents, function(d) {
+			return d.id;
+		});
+	var parentEnterTransition = parentCells.enter()
+		.append("g")
+		.attr("class", "cell parent")
+		.on("click", function(d) {
+			zoom(d);
+		})
+		.append("svg")
+		.attr("class", "clip")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", headerHeight);
+	parentEnterTransition.append("rect")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", headerHeight)
+		.style("fill", headerColor);
+	parentEnterTransition.append('text')
+		.attr("class", "label")
+		.attr("fill", "white")
+		.attr("transform", "translate(3, 13)")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", headerHeight)
+		.text(function(d) {
+			return d.name;
+		});
+	// update transition
+	var parentUpdateTransition = parentCells.transition().duration(transitionDuration);
+	parentUpdateTransition.select(".cell")
+		.attr("transform", function(d) {
+			return "translate(" + d.dx + "," + d.y + ")";
+		});
+	parentUpdateTransition.select("rect")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", headerHeight)
+		.style("fill", headerColor);
+	parentUpdateTransition.select(".label")
+		.attr("transform", "translate(3, 13)")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", headerHeight)
+		.text(function(d) {
+			return d.name;
+		});
+	// remove transition
+	parentCells.exit()
+		.remove();
 
-        // create children cells
-        var childrenCells = chart.selectAll("g.cell.child")
-            .data(children, function(d) {
-                return "c-" + d.name;
-            });
-        // enter transition
-        var childEnterTransition = childrenCells.enter()
-            .append("g")
-            .attr("class", "cell child")
-            .on("click", function(d) {
-                zoom(node === d.parent ? root : d.parent);
-            })
-            .on("mouseover", over_user)
-			.on("mouseout", out_user)
-			.on("mousemove", move_tooltip)
-            .append("svg")
-            .attr("class", "clip");
-        childEnterTransition.append("rect")
-            .classed("background", true)
-            .style("fill", function(d) {
-                return color(d.parent.name);
-            });
-        childEnterTransition.append('text')
-            .attr("class", "label")
-            .attr('x', function(d) {
-                return d.dx / 2;
-            })
-            .attr('y', function(d) {
-                return d.dy / 2;
-            })
-            .attr("dy", ".35em")
-            .attr("text-anchor", "middle")
-            .style("display", "none")
-            .text(function(d) {
-                return d.name;
-            });
-        // update transition
-        var childUpdateTransition = childrenCells.transition().duration(transitionDuration);
-        childUpdateTransition.select(".cell")
-            .attr("transform", function(d) {
-                return "translate(" + d.x + "," + d.y + ")";
-            });
-        childUpdateTransition.select("rect")
-            .attr("width", function(d) {
-                return Math.max(0.01, d.dx);
-            })
-            .attr("height", function(d) {
-                return d.dy;
-            })
-            .style("fill", function(d) {
-                return color(d.parent.name);
-            });
-        childUpdateTransition.select(".label")
-            .attr('x', function(d) {
-                return d.dx / 2;
-            })
-            .attr('y', function(d) {
-                return d.dy / 2;
-            })
-            .attr("dy", ".35em")
-            .attr("text-anchor", "middle")
-            .style("display", "none")
-            .text(function(d) {
-                return d.name;
-            });
+	// create children cells
+	var childrenCells = chart.selectAll("g.cell.child")
+		.data(children, function(d) {
+			return d.id;
+		});
 
-        // exit transition
-        childrenCells.exit()
-            .remove();
+	// enter transition
+	var childEnterTransition = childrenCells.enter()
+		.append("g")
+		.attr("class", "cell child")
+		.on("click", function(d) {
+			zoom(node === d.parent ? root : d.parent);
+		})
+		.on("mouseover", over_user)
+		.on("mouseout", out_user)
+		.on("mousemove", move_tooltip)
+		.append("svg")
+		.attr("class", "clip");
 
-        d3.select("select").on("change", function() {
-            console.log("select zoom(node)");
-            treemap.value(this.value == "size" ? size : count)
-                .nodes(root);
-            zoom(node);
-        });
+	childEnterTransition.append("rect")
+		.classed("background", true)
+		.style("fill", function(d) {
+			return color(d.name);
+		});
 
-        zoom(node);
+	childEnterTransition.append('text')
+		.attr("class", "label")
+		.attr('x', function(d) {
+			return d.dx / 2;
+		})
+		.attr('y', function(d) {
+			return d.dy / 2;
+		})
+		.attr("dy", ".35em")
+		.attr("text-anchor", "middle")
+		.style("display", "none")
+		.text(function(d) {
+			return d.name;
+		});
+
+	// update transition
+	var childUpdateTransition = childrenCells.transition().duration(transitionDuration);
+
+	childUpdateTransition.select(".cell")
+		.attr("transform", function(d) {
+			return "translate(" + d.x + "," + d.y + ")";
+		});
+
+	childUpdateTransition.select("rect")
+		.attr("width", function(d) {
+			return Math.max(0.01, d.dx);
+		})
+		.attr("height", function(d) {
+			return d.dy;
+		});
+
+	childUpdateTransition.select(".label")
+		.attr('x', function(d) {
+			return d.dx / 2;
+		})
+		.attr('y', function(d) {
+			return d.dy / 2;
+		})
+		.attr("dy", ".35em")
+		.attr("text-anchor", "middle")
+		.style("display", "none")
+		.text(function(d) {
+			return d.name;
+		});
+
+	// exit transition
+	childrenCells.exit()
+		.remove();
+
+	d3.select("select").on("change", function() {
+		treemap.value(this.value == "size" ? size : count)
+			.nodes(root);
+		zoom(node);
+	});
+
+	zoom(node);
 
 	function size(d) {
 		return d.size;
@@ -513,90 +516,88 @@ function treeMap(recipient, data, width, height) {
 		var bgDelta = (components.R * 0.299) + (components.G * 0.587) + (components.B * 0.114);
 		return ((255 - bgDelta) < nThreshold) ? "#000000" : "#ffffff";
 	}
-function zoom(d) {
-        treemap
-            .padding([headerHeight / (chartHeight / d.dy), 0, 0, 0])
-            .nodes(d);
+	
+	function zoom(d) {
+		treemap
+			.padding([headerHeight / (chartHeight / d.dy), 0, 0, 0])
+			.nodes(d);
 
-        // moving the next two lines above treemap layout messes up padding of zoom result
-        var kx = chartWidth / d.dx;
-        var ky = chartHeight / d.dy;
-        var level = d;
+		// moving the next two lines above treemap layout messes up padding of zoom result
+		var kx = chartWidth / d.dx;
+		var ky = chartHeight / d.dy;
+		var level = d;
 
-        xscale.domain([d.x, d.x + d.dx]);
-        yscale.domain([d.y, d.y + d.dy]);
+		xscale.domain([d.x, d.x + d.dx]);
+		yscale.domain([d.y, d.y + d.dy]);
 
-        if (node != level) {
-            chart.selectAll(".cell.child .label")
-                .style("display", "none");
-        }
+		if (node != level) {
+			chart.selectAll(".cell.child .label")
+				.style("display", "none");
+		}
 
-        var zoomTransition = chart.selectAll("g.cell").transition().duration(transitionDuration)
-            .attr("transform", function(d) {
-                return "translate(" + xscale(d.x) + "," + yscale(d.y) + ")";
-            })
-            .each("start", function() {
-                d3.select(this).select("label")
-                    .style("display", "none");
-            })
-            .each("end", function(d, i) {
-                if (!i && (level !== self.root)) {
-                    chart.selectAll(".cell.child")
-                        .filter(function(d) {
-                            return d.parent === self.node; // only get the children for selected group
-                        })
-                        .select(".label")
-                        .style("display", "")
-                        .style("fill", function(d) {
-                            return idealTextColor(color(d.parent.name));
-                        });
-                }
-            });
+		var zoomTransition = chart.selectAll("g.cell").transition().duration(transitionDuration)
+			.attr("transform", function(d) {
+				return "translate(" + xscale(d.x) + "," + yscale(d.y) + ")";
+			})
+			.each("start", function() {
+				d3.select(this).select("label")
+					.style("display", "none");
+			})
+			.each("end", function(d, i) {
+				if (!i && (level !== self.root)) {
+					chart.selectAll(".cell.child")
+						.filter(function(d) {
+							return d.parent === self.node; // only get the children for selected group
+						})
+						.select(".label")
+						.style("display", "")
+						.style("color", function(d) {
+							return idealTextColor(color(d.parent.name));
+						});
+				}
+			});
 
-        zoomTransition.select(".clip")
-            .attr("width", function(d) {
-                return Math.max(0.01, (kx * d.dx));
-            })
-            .attr("height", function(d) {
-                return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
-            });
+		zoomTransition.select(".clip")
+			.attr("width", function(d) {
+				return Math.max(0.01, (kx * d.dx));
+			})
+			.attr("height", function(d) {
+				return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
+			});
 
-        zoomTransition.select(".label")
-            .attr("width", function(d) {
-                return Math.max(0.01, (kx * d.dx));
-            })
-            .attr("height", function(d) {
-                return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
-            })
-            .text(function(d) {
-                return d.name;
-            });
+		zoomTransition.select(".label")
+			.attr("width", function(d) {
+				return Math.max(0.01, (kx * d.dx));
+			})
+			.attr("height", function(d) {
+				return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
+			})
+			.text(function(d) {
+				return d.name;
+			});
 
-        zoomTransition.select(".child .label")
-            .attr("x", function(d) {
-                return kx * d.dx / 2;
-            })
-            .attr("y", function(d) {
-                return ky * d.dy / 2;
-            });
+		zoomTransition.select(".child .label")
+			.attr("x", function(d) {
+				return kx * d.dx / 2;
+			})
+			.attr("y", function(d) {
+				return ky * d.dy / 2;
+			});
 
-        zoomTransition.select("rect")
-            .attr("width", function(d) {
-                return Math.max(0.01, (kx * d.dx));
-            })
-            .attr("height", function(d) {
-                return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
-            })
-            .style("fill", function(d) {
-                return d.children ? headerColor : color(d.parent.name);
-            });
+		zoomTransition.select("rect")
+			.attr("width", function(d) {
+				return Math.max(0.01, (kx * d.dx));
+			})
+			.attr("height", function(d) {
+				return d.children ? headerHeight : Math.max(0.01, (ky * d.dy));
+			});
 
-        node = d;
+		node = d;
 
-        if (d3.event) {
-            d3.event.stopPropagation();
-        }
-    }
+		if (d3.event) {
+			d3.event.stopPropagation();
+		}
+	}
 
 
 	function position() {

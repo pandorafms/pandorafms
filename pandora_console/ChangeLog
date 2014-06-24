@@ -1,3 +1,8 @@
+2014-06-24  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/graphs/pandora.d3.js: Fixed some errors on
+	the graph created by the function "treeMap".
+
 2014-06-24  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/setup/setup_visuals.php, include/functions_networkmap.php,

@@ -185,21 +185,22 @@ $row++;
 
 $table->data[$row][0] = __('Font size');
 
-$font_size_array = array( 1 => 1,
-			2 => 2,
-			3 => 3,
-			4 => 4,
-			5 => 5,
-			6 => 6,
-			7 => 7,
-			8 => 8,
-			9 => 9,
-			10 => 10,
-			11 => 11,
-			12 => 12,
-			13 => 13,
-			14 => 14,
-			15 => 15);
+$font_size_array = array(
+	1 => 1,
+	2 => 2,
+	3 => 3,
+	4 => 4,
+	5 => 5,
+	6 => 6,
+	7 => 7,
+	8 => 8,
+	9 => 9,
+	10 => 10,
+	11 => 11,
+	12 => 12,
+	13 => 13,
+	14 => 14,
+	15 => 15);
 
 $table->data[$row][1] = html_print_select($font_size_array, 'font_size', $config["font_size"], '', '', 0, true); 
 
@@ -390,6 +391,11 @@ $row++;
 
 $table->data[$row][0] = __('Custom graphviz directory') . ui_print_help_tip (__("Custom directory where the graphviz binaries are stored."), true);
 $table->data[$row][1] = html_print_input_text ('graphviz_bin_dir', $config["graphviz_bin_dir"], '', 50, 255, true);
+
+$row++;
+
+$table->data[$row][0] = __('Networkmap max width');
+$table->data[$row][1] = html_print_input_text ('networkmap_max_width', $config["networkmap_max_width"], '', 10, 20, true);
 
 $row++;
 

@@ -237,6 +237,10 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	
 	global $config;
 	
+	if ($l2_network) {
+		$nooverlap = 1;
+	}
+	
 	$parents = array();
 	$orphans = array();
 	
@@ -1263,10 +1267,19 @@ function networkmap_close_group () {
 
 // Opens a graph definition
 function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size) {
+	global $config;
+	
 	$overlap = 'compress';
-	$size_x = 8;
-	$size_y = 5.4;
-	$size = '';
+	
+	if (isset($config['networkmap_max_width'])) {
+		$size_x = $config['networkmap_max_width'] / 100;
+		$size_y = $size_x * 0.8;
+	}
+	else {
+		$size_x = 8;
+		$size_y = 5.4;
+		$size = '';
+	}
 	
 	
 	if ($layout == 'radial') {

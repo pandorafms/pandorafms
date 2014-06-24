@@ -1,3 +1,10 @@
+2014-06-24  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/setup/setup_visuals.php, include/functions_networkmap.php,
+	include/functions_config.php: added the visual config value for
+	to set the width of networkmap, and fixed the overlap of networkmap
+	L2.
+
 2014-06-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/snmpconsole/snmp_mib_uploader.php: Added additional information.

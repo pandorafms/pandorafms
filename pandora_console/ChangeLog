@@ -1,3 +1,9 @@
+2014-06-24  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* include/functions_networkmap.php: Modified the function
+	"networkmap_generate_dot" to link the orphan nodes with a
+	central node when selecting the L2 network interfaces option.
+
 2014-06-24  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_extensions.php, index.php: force to load the

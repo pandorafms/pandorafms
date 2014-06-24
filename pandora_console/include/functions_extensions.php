@@ -74,8 +74,16 @@ function extensions_call_login_function () {
 function extensions_is_extension ($page) {
 	global $config;
 	
-	$filename = basename ($page);
-	return isset ($config['extensions'][$filename]);
+	$return = false;
+	
+	//Avoid the old update manager
+	if ($page != "godmode/update_manager/update_manager.php") {
+		$filename = basename ($page);
+		
+		$return = isset ($config['extensions'][$filename]);
+	}
+	
+	return $return;
 }
 
 /**

@@ -1,3 +1,9 @@
+2014-06-24  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_extensions.php, index.php: force to load the
+	new integrated update manager and don't load the old update manager
+	extension.
+
 2014-06-24  Vanessa Gil <vanessa.gil@artica.es>
 
 	* pandoradb.data.sql

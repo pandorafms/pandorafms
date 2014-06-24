@@ -468,11 +468,15 @@ else {
 	if ($page != "") {
 		$page .= '.php';
 		// Enterprise ACL check
-		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $sec, $sec2, true)) == false) {
+		if (enterprise_hook ('enterprise_acl',
+			array ($config['id_user'], $sec, $sec2, true)) == false) {
+			
 			require ("general/noaccess.php");
+			
 		}
 		elseif (file_exists ($page)) {
 			if (! extensions_is_extension ($page)) {
+				
 				require_once($page);
 			}
 			else {
@@ -496,7 +500,7 @@ else {
 		}
 		
 		if ($home_page != '') {
-			switch($home_page) {
+			switch ($home_page) {
 				case 'Event list':
 					require ('operation/events/events.php');
 					break;
@@ -525,13 +529,14 @@ else {
 					$id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
 					if (($home_url == '') || ($id_visualc == false)) {
 						$str = 'sec=visualc&sec2=operation/visual_console/index&refr=60';
-					} else 
-					$str = 'sec=visualc&sec2=operation/visual_console/render_view&id='.$id_visualc .'&refr=60';
+					}
+					else 
+						$str = 'sec=visualc&sec2=operation/visual_console/render_view&id='.$id_visualc .'&refr=60';
 					parse_str($str, $res);
 					foreach ($res as $key => $param) {
 						$_GET[$key] = $param;
 					}
-					require($_GET["sec2"].'.php');
+					require($_GET["sec2"] . '.php');
 					break;
 				case 'Other':
 					$home_url = io_safe_output($home_url);
@@ -540,7 +545,7 @@ else {
 						$_GET[$key] = $param;
 					}
 					if (isset($_GET['sec2'])) {
-						$file = $_GET['sec2'].'.php';
+						$file = $_GET['sec2'] . '.php';
 						
 						if (!file_exists ($file)) {
 							unset($_GET['sec2']);

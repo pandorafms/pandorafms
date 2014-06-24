@@ -1,3 +1,13 @@
+2014-06-24  Vanessa Gil <vanessa.gil@artica.es>
+
+	* pandoradb.data.sql
+	  pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+	  extras/pandoradb_migrate_5.0.x_to5.1.mysql.sql
+	  extras/pandoradb_migrate_5.0.x_to5.1.oracle.sql
+	  extras/pandoradb_migrate_5.0.x_to5.1.postgreSQL.sql: Delete
+	custom SNMP task.
+
 2014-06-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php,

@@ -3239,7 +3239,8 @@ function api_set_add_agent_policy($id, $thrash1, $other, $thrash3) {
  * @param array $other it's array, $other as param is <module_name>;<id_module_type>;<description>;
  * <id_module_group>;<min>;<max>;<post_process>;<module_interval>;<min_warning>;<max_warning>;<str_warning>;
  * <min_critical>;<max_critical>;<str_critical>;<history_data>;<configuration_data>;
- * <disabled_types_event>;<module_macros> in this order
+ * <disabled_types_event>;<module_macros>;<ff_threshold>;<each_ff>;<ff_threshold_normal>;
+ * <ff_threshold_warning>;<ff_threshold_critical>;<ff_timeout> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  * 
@@ -3290,6 +3291,12 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
  	$values['configuration_data'] = $other['data'][15];
  	$values['disabled_types_event'] = $disabled_types_event;
 	$values['module_macros'] = $other['data'][17];
+	$values['min_ff_event'] = $other['data'][18];
+	$values['each_ff'] = $other['data'][19];
+	$values['min_ff_event_normal'] = $other['data'][20];
+	$values['min_ff_event_warning'] = $other['data'][21];
+	$values['min_ff_event_critical'] = $other['data'][22];
+	$values['ff_timeout'] = $other['data'][23];
  	
  	if ($name_module_policy !== false) {
 		if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -3383,7 +3390,8 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
  * @param array $other it's array, $other as param is <module_name>;<id_module_type>;<description>;
  * <id_module_group>;<min>;<max>;<post_process>;<module_interval>;<min_warning>;<max_warning>;<str_warning>;
  * <min_critical>;<max_critical>;<str_critical>;<history_data>;<time_threshold>;<disabled>;<module_port>;
- * <snmp_community>;<snmp_oid>;<custom_id>;<disabled_types_event>;<module_macros> in this order
+ * <snmp_community>;<snmp_oid>;<custom_id>;<disabled_types_event>;<module_macros>;
+ * <each_ff>;<ff_threshold_normal>;<ff_threshold_warning>;<ff_threshold_critical> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  * 
@@ -3449,6 +3457,10 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['custom_id'] = $other['data'][20];
 	$values['disabled_types_event'] = $disabled_types_event;
 	$values['module_macros'] = $other['data'][22];
+	$values['each_ff'] = $other['data'][23];
+	$values['min_ff_event_normal'] = $other['data'][24];
+	$values['min_ff_event_warning'] = $other['data'][25];
+	$values['min_ff_event_critical'] = $other['data'][26];
 	
 	if ($name_module_policy !== false) {
 		if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -3545,7 +3557,8 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<module_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description>;<id_plugin>;<plugin_user>;<plugin_pass>;<plugin_parameter>;
- *  <disabled_types_event>;<macros>;<module_macros> in this order
+ *  <disabled_types_event>;<macros>;<module_macros>;<each_ff>;<ff_threshold_normal>;
+ *  <ff_threshold_warning>;<ff_threshold_critical> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  * 
@@ -3609,6 +3622,10 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['disabled_types_event'] = $disabled_types_event;
 	$values['macros'] = base64_decode ($other['data'][26]);
 	$values['module_macros'] = $other['data'][27];
+	$values['each_ff'] = $other['data'][28];
+	$values['min_ff_event_normal'] = $other['data'][29];
+	$values['min_ff_event_warning'] = $other['data'][30];
+	$values['min_ff_event_critical'] = $other['data'][31];
 	
 	if ($name_module_policy !== false) {
 		if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -3843,7 +3860,8 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
  *  <id_module_group>;<min_warning>;<max_warning>;<str_warning>;<min_critical>;<max_critical>;<str_critical>;<ff_threshold>;
  *  <history_data>;<module_port>;<snmp_version>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
  *  <min>;<max>;<custom_id>;<description>;<snmp3_priv_method>;<snmp3_priv_pass>;<snmp3_sec_level>;<snmp3_auth_method>;
- *  <snmp3_auth_user>;<snmp3_auth_pass> in this order
+ *  <snmp3_auth_user>;<snmp3_auth_pass>;<disabled_types_event>;;<each_ff>;<ff_threshold_normal>;
+ *  <ff_threshold_warning>;<ff_threshold_critical> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:  
  * 
@@ -3925,7 +3943,11 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			'plugin_parameter' => $other['data'][25],
 			'plugin_user' => $other['data'][26],
 			'plugin_pass' => $other['data'][27],
-			'disabled_types_event' => $disabled_types_event
+			'disabled_types_event' => $disabled_types_event,
+			'each_ff' => $other['data'][29],
+			'min_ff_event_normal' => $other['data'][30],
+			'min_ff_event_warning' => $other['data'][31],
+			'min_ff_event_critical' => $other['data'][32]
 		);
 	}
 	else {
@@ -3951,7 +3973,11 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			'max' => $other['data'][19],
 			'custom_id' => $other['data'][20],
 			'description' => $other['data'][21],
-			'disabled_types_event' => $disabled_types_event
+			'disabled_types_event' => $disabled_types_event,
+			'each_ff' => $other['data'][23],
+			'min_ff_event_normal' => $other['data'][24],
+			'min_ff_event_warning' => $other['data'][25],
+			'min_ff_event_critical' => $other['data'][26]
 		);
 	}
 	

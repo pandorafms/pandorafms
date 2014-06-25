@@ -84,6 +84,7 @@ else {
 		$result = system ($cmd);
 		fclose ($fh);
 		unlink ($filename_dot);
+		//~ html_debug_print($cmd);
 	}
 }
 

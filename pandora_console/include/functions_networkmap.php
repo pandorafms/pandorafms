@@ -550,15 +550,36 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			}
 		}
 	}
-
-	// Create a central node if orphan nodes exist
-	if (count ($orphans) || empty ($nodes)) {
-		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
-	}
 	
-	// Define edges for orphan nodes
-	foreach (array_keys($orphans) as $node) {
-		$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+	if ($l2_network) {
+		$count = 0;
+		$group_nodes = 10;
+		$graph .= networkmap_create_transparent_node($count);
+		foreach (array_keys($orphans) as $node) {
+			if ($group_nodes == 0) {
+				$count++;
+				$graph .= networkmap_create_transparent_node($count);
+				
+				$group_nodes = 10;
+			}
+			
+			$graph .= networkmap_create_transparent_edge('transp_' . $count,
+				$node);
+			
+			$group_nodes--;
+		}
+	}
+	else {
+		// Create a central node if orphan nodes exist
+		if (count ($orphans) || empty ($nodes)) {
+			$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
+		}
+		
+		// Define edges for orphan nodes
+		foreach (array_keys($orphans) as $node) {
+			$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+		}
+		
 	}
 	
 	// Close graph
@@ -820,6 +841,14 @@ function networkmap_create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom
 	// edgeURL allows node navigation
 	$edge = "\n" . $head . ' -- ' . $tail .
 		'[color="#BDBDBD", headclip=false, tailclip=false, edgeURL=""];' . "\n";
+	
+	return $edge;
+}
+
+function networkmap_create_transparent_edge($head, $tail) {
+	// edgeURL allows node navigation
+	$edge = "\n" . $head . ' -- ' . $tail .
+		'[color="#00000000", headclip=false, tailclip=false, edgeURL=""];' . "\n";
 	
 	return $edge;
 }
@@ -1241,6 +1270,14 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	
 	$node = '0 [ color="' . $color . '", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
 		shape="ellipse", tooltip="' . $url_tooltip . '", URL="' . $url . '" ];';
+	
+	return $node;
+}
+
+function networkmap_create_transparent_node($count = 0) {
+	
+	$node = 'transp_' .$count  . ' [ color="#00000000", style="filled", fixedsize=true, width=0.8, height=0.6, label=<>,
+		shape="ellipse"];';
 	
 	return $node;
 }

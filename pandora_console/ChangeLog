@@ -1,5 +1,10 @@
 2014-06-25  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_config.php: set the default size of networkmap
+	to 900 instead 800.
+
+2014-06-25  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/networkmap.topology.php,
 	include/functions_networkmap.php: fixed the networkmaps of level 2,
 	now the nodes without conections with others are more or less

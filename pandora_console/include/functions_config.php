@@ -1173,7 +1173,7 @@ function config_process_config () {
 	}
 	
 	if (!isset($config['networkmap_max_width'])) {
-		config_update_value ('networkmap_max_width', 800);
+		config_update_value ('networkmap_max_width', 900);
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

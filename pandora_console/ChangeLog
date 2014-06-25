@@ -1,3 +1,8 @@
+2014-06-25  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_ff_interval.php,
+	include/help/ja/help_ff_timeout.php: Translated to Japanese.
+
 2014-06-24  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/graphs/pandora.d3.js: Fixed some errors on

@@ -1,3 +1,10 @@
+2014-06-25  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/networkmap.topology.php,
+	include/functions_networkmap.php: fixed the networkmaps of level 2,
+	now the nodes without conections with others are more or less
+	clean posicioned into the networkmap.
+
 2014-06-25  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_ff_interval.php,

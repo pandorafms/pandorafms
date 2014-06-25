@@ -3,19 +3,19 @@
  * @package Include/help/ja
  */
 ?>
-<h1>Module Flip Flop Interval</h1>
+<h1>連続抑制時の間隔</h1>
 
 <br><br>
 
-If FF threshold is greater than 0, several consecutive values are required to change the status of a module. But if you want subsequent cheks to be performed at a different interval you can specify it with FF interval.
+連続抑制回数が 0 より大きい場合、モジュールの状態変化が発生するには複数回値が変化した状態になる必要があります。このときモジュールの値を通常の間隔と異なる間隔でチェックしたい場合は、連続抑制時の間隔で設定できます。
 
-For example, a ping module with a 5 minute interval, a FF threshold of 1 and a FF interval of 60 seconds would behave in the following way:
+たとえば、5分間隔の ping モジュールにおいて、連続抑制回数が 1 で連続抑制時の間隔が 60秒の場合、次のような動作をします。
 
 <br><br>
 <table>
-<th>Time</th>
-<th>Data</th>
-<th>Status change</th>
+<th>時間</th>
+<th>データ</th>
+<th>状態変化</th>
 <tr>
 	<td>12:00</td>
 	<td>1</td>

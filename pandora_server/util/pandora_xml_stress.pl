@@ -47,7 +47,8 @@ sub load_config ($\%\@) {
 	open (FILE, "<", $conf_file) || die ("[error] Could not open configuration file '$conf_file': $!.\n\n");
 	
 	while (my $line = <FILE>) {
-		
+		$line =~ s/[\r\n]+//g;
+
 		# A module definition
 		if ($line =~ m/module_begin/) {
 			my %module;
@@ -56,6 +57,7 @@ sub load_config ($\%\@) {
 			next if ($line =~ m/^#/);
 			
 			while (my $line = <FILE>) {
+				$line =~ s/[\r\n]+//g;
 				
 				# A comment
 				next if ($line =~ m/^#/);

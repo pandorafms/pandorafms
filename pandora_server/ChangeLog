@@ -1,3 +1,8 @@
+2014-06-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_xml_stress.pl: Remove new line and carriage return
+	  characters when parsing the configuration file.
+
 2014-06-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/recon_scripts/snmp-recon.pl: Improved host connection.

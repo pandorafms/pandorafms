@@ -1,5 +1,9 @@
 2014-06-26  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/setup/license.php: fix the link to new update manager.
+
+2014-06-26  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/update_manager/update_manager.offline.php,
 	godmode/update_manager/update_manager.online.php,
 	include/functions_update_manager.php,

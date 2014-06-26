@@ -117,4 +117,28 @@ function d3_tree_map_graph ($data, $width = 700, $height = 700, $return = false)
 	return $output;
 }
 
+function d3_sunburst_graph ($data, $width = 700, $height = 700, $return = false) {
+	global $config;
+
+	if (is_array($data))
+		$data = json_encode($data);
+	
+	$output = "<div id=\"sunburst\" style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<style type=\"text/css\">
+					path {
+						stroke: #fff;
+						fill-rule: evenodd;
+					}
+				</style>";
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					sunburst('#sunburst', $data, '$width', '$height');
+				</script>";
+
+	if (!$return)
+		echo $output;
+	
+	return $output;
+}
+
 ?>

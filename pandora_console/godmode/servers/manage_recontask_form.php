@@ -143,6 +143,12 @@ elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
 // Headers
 ui_print_page_header (__('Manage recontask'), "", false, "recontask", true);
 
+$is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
+if ($is_windows) {
+	echo '<div class="notify">';
+	echo __('Warning') . ": " . __("By default, in Windows, Pandora FMS only support Standard network sweep, not custom scripts");
+	echo '</div>';
+}
 
 $table->id='table_recon';
 $table->width='98%';
@@ -182,7 +188,8 @@ $table->data[1][1] = html_print_select_from_sql ('SELECT id_server, name
 
 
 $fields['network_sweep'] = __("Network sweep");
-$fields['recon_script'] = __("Custom script");
+if (!$is_windows)
+	$fields['recon_script'] = __("Custom script");
 
 
 $table->data[2][0] = "<b>".__('Mode')."</b>";

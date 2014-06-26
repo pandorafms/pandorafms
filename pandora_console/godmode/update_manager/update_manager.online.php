@@ -20,12 +20,29 @@ ui_require_css_file('update_manager', 'godmode/update_manager/');
 require_once("include/functions_update_manager.php");
 enterprise_include_once("include/functions_update_manager.php");
 
-$current_package = 0;
-if (isset($config['current_package']))
-	$current_package = $config['current_package'];
+if (enterprise_installed()) {
+	$current_package = 0;
+		if (isset($config['current_package_enterprise']))
+			$current_package = $config['current_package_enterprise'];
+}
+else {
+	$current_package = 0;
+	if (isset($config['current_package']))
+		$current_package = $config['current_package'];
+}
 
 echo "<p><b>" . sprintf(__("The last version of package installed is: %d"),
 	$current_package) . "</b></p>";
+
+
+$memory_limit = ini_get("memory_limit");
+$memory_limit = str_replace("M", "", $memory_limit);
+$memory_limit = (int)$memory_limit;
+if ($memory_limit < 512) {
+	ui_print_error_message(
+		sprintf(__('Your PHP has set memory limit in %s. For avoid problems with big updates please set to 512M'), ini_get("memory_limit"))
+	);
+}
 
 /* Translators: Do not translade Update Manager, it's the name of the program */
 ui_print_info_message(

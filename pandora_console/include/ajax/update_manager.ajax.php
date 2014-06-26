@@ -16,6 +16,7 @@
 global $config;
 
 require_once("include/functions_update_manager.php");
+require_once("include/functions_graph.php");
 enterprise_include_once("include/functions_update_manager.php");
 
 $upload_file = (boolean) get_parameter("upload_file");

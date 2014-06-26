@@ -21,18 +21,33 @@
 
 function update_manager_get_config_values() {
 	global $config;
-	
-	$license = db_get_value('`value`', 'tupdate_settings', '`key`',
-		'customer_key');
-	$current_update = db_get_value('`value`', 'tupdate_settings', '`key`',
-		'current_update');
-	$limit_count = db_get_value_sql("SELECT count(*) FROM tagente");
 	global $build_version;
 	global $pandora_version;
 	
-	$current_update = 0;
-	if (isset($config['current_package']))
-		$current_update = $config['current_package'];
+	$license = db_get_value('`value`', 'tupdate_settings', '`key`',
+		'customer_key');
+	
+	if (enterprise_installed()) {
+		$current_update = db_get_value('`value`', 'tupdate_settings', '`key`',
+			'current_package_enterprise');
+		
+		$current_update = 0;
+		if (isset($config['current_package_enterprise']))
+			$current_update = $config['current_package_enterprise'];
+	}
+	else {
+		$current_update = db_get_value('`value`', 'tupdate_settings', '`key`',
+			'current_package');
+		
+		$current_update = 0;
+		if (isset($config['current_package']))
+			$current_update = $config['current_package'];
+	}
+	
+	$limit_count = db_get_value_sql("SELECT count(*) FROM tagente");
+	
+	
+	
 	
 	
 	
@@ -194,6 +209,12 @@ function update_manager_main() {
 	global $config;
 	
 	?>
+	<script type="text/javascript">
+		<?php
+		echo "var unknown_error_update_manager = \"" .
+			__('There is a unknown error.') . "\";";
+		?>
+	</script>
 	<script src="include/javascript/update_manager.js"></script>
 	<script type="text/javascript">
 		var version_update = "";
@@ -267,6 +288,11 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 		'build' => $um_config_values['build']);
 	
 	
+	//For to test in the shell
+	/*
+	wget https://artica.es/pandoraupdate51/server.php -O- --no-check-certificate --post-data "action=newest_package&license=PANDORA_FREE&limit_count=1&current_package=1&version=v5.1RC1&build=PC140625"
+	*/
+	
 	$curlObj = curl_init();
 	curl_setopt($curlObj, CURLOPT_URL, $config['url_update_manager']);
 	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
@@ -337,7 +363,7 @@ function update_manager_starting_update() {
 	
 	try {
 		$phar = new PharData($path_package);
-		rrmdir($config['attachment_store'] . "/downloads/temp_update/trunk");
+		rrmdir($config['attachment_store'] . "/downloads/temp_update/pandora_console");
 		$phar->extractTo($config['attachment_store'] . "/downloads/temp_update");
 	}
 	catch (Exception $e) {
@@ -358,7 +384,7 @@ function update_manager_starting_update() {
 		array('value' => 50),
 		array('token' => 'progress_update'));
 	
-	$full_path = $config['attachment_store'] . "/downloads/temp_update/trunk";
+	$full_path = $config['attachment_store'] . "/downloads/temp_update/pandora_console";
 	
 	$homedir = $config['homedir'];
 	

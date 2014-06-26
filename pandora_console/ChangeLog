@@ -1,3 +1,12 @@
+2014-06-26  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/update_manager/update_manager.offline.php,
+	godmode/update_manager/update_manager.online.php,
+	include/functions_update_manager.php,
+	include/ajax/update_manager.ajax.php,
+	include/javascript/update_manager.js: a lot of fixes into the update
+	manager.
+
 2014-06-26  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/languages/ar.mo

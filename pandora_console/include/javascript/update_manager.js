@@ -1,3 +1,5 @@
+var correct_install_progress = true;
+
 function form_upload () {
 	//Thanks to: http://tutorialzine.com/2013/05/mini-ajax-file-upload-form/
 	var ul = $('#form-offline_update ul');
@@ -365,7 +367,8 @@ function check_progress_update() {
 				}
 			}
 			else {
-				//$("#box_online .content").html(data['message']);
+				correct_install_progress = false;
+				$("#box_online .content").html(data['message']);
 			}
 		},
 		"json"
@@ -379,23 +382,38 @@ function install_free_package(package,version) {
 	parameters['package'] = package;
 	parameters['version'] = version;
 	
-	jQuery.post(
-		"ajax.php",
-		parameters,
-		function (data) {
-			if (data["status"] == "success") {
-				$("#box_online .loading").hide();
-				$("#box_online .progressbar").hide();
-				$("#box_online .content").html(data['message']);
-				stop_check_progress = 1;
+	jQuery.ajax ({
+		data: parameters,
+		type: 'POST',
+		url: "ajax.php",
+		timeout: 600000,
+		dataType: "json",
+		error: function(data) {
+			correct_install_progress = false;
+			stop_check_progress = 1;
+			
+			$("#box_online .loading").hide();
+					$("#box_online .progressbar").hide();
+			$("#box_online .content").html(unknown_error_update_manager);
+		},
+		success: function (data) {
+			if (correct_install_progress) {
+				if (data["status"] == "success") {
+					$("#box_online .loading").hide();
+					$("#box_online .progressbar").hide();
+					$("#box_online .content").html(data['message']);
+					stop_check_progress = 1;
+				}
+				else {
+					$("#box_online .loading").hide();
+					$("#box_online .progressbar").hide();
+					$("#box_online .content").html(data['message']);
+					stop_check_progress = 1;
+				}
 			}
 			else {
-				$("#box_online .loading").hide();
-				$("#box_online .progressbar").hide();
-				$("#box_online .content").html(data['message']);
 				stop_check_progress = 1;
 			}
-		},
-		"json"
-	);
+		}
+	});
 }

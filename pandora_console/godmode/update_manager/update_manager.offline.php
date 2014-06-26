@@ -24,7 +24,7 @@ ui_require_css_file('update_manager', 'godmode/update_manager/');
 	echo "var drop_the_package_here_or ='" . __('Drop the package here or') . "';\n";
 	echo "var browse_it ='" . __('browse it') . "';\n";
 	echo "var the_package_has_been_uploaded_successfully ='" . __('The package has been uploaded successfully.') . "';\n";
-	echo "var remember_that_this_package_will ='" . __('Remember that this package will override the actual Pandora FMS files and it is recommended to do a backup before continue with the update.') . "';\n";
+	echo "var remember_that_this_package_will =\"" . __('Remember that this package will override the actual Pandora FMS files and it is recommended to do a backup before continue with the update.') . "\";\n";
 	echo "var click_on_the_file_below_to_begin ='" . __('Click on the file below to begin.') . "';\n";
 	echo "var updating ='" . __('Updating') . "';\n";
 	echo "var package_updated_successfully ='" . __('Package updated successfully.') . "';\n";

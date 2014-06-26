@@ -164,7 +164,7 @@ $table->data[19][0] = __('Enable Netflow');
 $rbt_disabled = false;
 if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 	$rbt_disabled = true;
-	$table->data[19][0] .= ui_print_help_tip (__('Not supported in Windows systems.'), true);
+	$table->data[19][0] .= ui_print_help_tip (__('Not supported in Windows systems'), true);
 }
 $table->data[19][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('activate_netflow', 1, '', $config["activate_netflow"], $rbt_disabled, '', '', true).'&nbsp;&nbsp;';
 $table->data[19][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('activate_netflow', 0, '', $config["activate_netflow"], $rbt_disabled, '', '', true);

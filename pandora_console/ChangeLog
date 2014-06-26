@@ -1,3 +1,20 @@
+2014-06-26  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* operation/netflow/nf_live_view.php,
+	  godmode/netflow/nf_edit.php,
+	  godmode/servers/manage_recontask_form.php,
+	  godmode/servers/plugin.php,
+	  godmode/setup/setup_general.php: Added messages to
+	warn about incompatibilities for Windows users.
+
+	* include/functions_graph.php: Added the function
+	"graph_monitor_wheel".
+
+	* include/graphs/functions_d3.php: Added the function
+	"d3_sunburst_graph".
+
+	* include/graphs/pandora.d3.js: Added the function "sunburst".
+
 2014-06-25  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php: set the default size of networkmap

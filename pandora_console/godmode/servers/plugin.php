@@ -390,6 +390,13 @@ else {
 	}
 	else {
 		ui_print_page_header (__('Plugins registered in Pandora FMS'), "images/gm_servers.png", false, "", true);
+
+		$is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
+		if ($is_windows) {
+			echo '<div class="notify">';
+			echo __("You need to create your own plugins with Windows compatibility");
+			echo '</div>';
+		}
 	}
 	
 	enterprise_hook('open_meta_frame');

@@ -4103,4 +4103,50 @@ function graph_snmp_traps_treemap ($data, $width = 700, $height = 700) {
 	return d3_tree_map_graph ($data, $width, $height, true);
 }
 
+/**
+ * Print a solarburst graph with a representation of all the groups, agents, module groups and modules grouped
+ */
+function graph_monitor_wheel ($data, $unit, $width = 700, $height = 700) {
+	global $config;
+
+	$data = array();
+
+	include_once ($config['homedir'] . "/include/functions_users.php");
+	//include_once ($config['homedir'] . "/include/functions_groups.php");
+	include_once ($config['homedir'] . "/include/functions_agents.php");
+	//include_once ($config['homedir'] . "/include/functions_modules.php");
+
+	$groups = users_get_groups(false, "AR", false, true);
+
+	if (!empty($groups)) {
+		$filter = array('id_grupo' => array_keys($groups));
+		$fields = array('id_agente', 'id_parent', 'id_grupo', 'nombre');
+		$agents = agents_get_agents($filter, $fields);
+
+		if (!empty($agents)) {
+			$agents_id = array();
+			foreach ($agents as $key => $agent) {
+				$agents_id[] = $agent['id_agente'];
+			}
+			$fields = array('id_agente_modulo', 'id_agente', 'id_module_group', 'nombre');
+
+			$module_groups = modules_get_modulegroups();
+			$modules = agents_get_modules($agents_id, $fields);
+
+			if (!empty($modules)) {
+				
+			}
+		}
+	}
+
+
+	if (empty ($data)) {
+		return fs_error_image ();
+	}
+
+	include_once($config['homedir'] . "/include/graphs/functions_d3.php");
+
+	return d3_tree_map_graph ($data, $width, $height, true);
+}
+
 ?>

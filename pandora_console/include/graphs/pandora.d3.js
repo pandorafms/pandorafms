@@ -18,9 +18,9 @@
 // The matrix must be a 2 dimensional array with a row and a column for each element
 // Ex:
 // elements = ["a", "b", "c"];
-// matrix = [[0, 0, 2],		// a[a => a, a => b, a => c]
-//			 [5, 0, 1],		// b[b => a, b => b, b => c]
-// 			 [2, 3, 0]];	// c[c => a, c => b, c => c]
+// matrix = [[0, 0, 2],     // a[a => a, a => b, a => c]
+//           [5, 0, 1],     // b[b => a, b => b, b => c]
+//           [2, 3, 0]];    // c[c => a, c => b, c => c]
 function chordDiagram (recipient, elements, matrix, unit, width) {
 
 	d3.chart = d3.chart || {};
@@ -266,37 +266,37 @@ function chordDiagram (recipient, elements, matrix, unit, width) {
 // The recipient is the selector of the html element
 // The data must be a bunch of associative arrays like this
 // data = {
-// 	"name": "IP Traffic",
-//	"id": 0,
-// 	"children": [
-// 		{
-// 			"name": "192.168.1.1",
-//			"id": 1,
-// 			"children": [
-// 				{
-// 					"name": "HTTP",
-//					"id": 2,
-// 					"value": 33938
-// 				}
-// 			]
-// 		},
-// 		{
-// 			"name": "192.168.1.2",
-//			"id": 3,
-// 			"children": [
-// 				{
-// 					"name": "HTTP",
-//					"id": 4,
-// 					"value": 3938
-// 				},
-// 				{
-// 					"name": "FTP",
-//					"id": 5,
-// 					"value": 1312
-// 				}
-// 			]
-// 		}
-// 	]
+//  "name": "IP Traffic",
+//  "id": 0,
+//  "children": [
+//      {
+//          "name": "192.168.1.1",
+//          "id": 1,
+//          "children": [
+//              {
+//                  "name": "HTTP",
+//                  "id": 2,
+//                  "value": 33938
+//              }
+//          ]
+//      },
+//      {
+//          "name": "192.168.1.2",
+//          "id": 3,
+//          "children": [
+//              {
+//                  "name": "HTTP",
+//                  "id": 4,
+//                  "value": 3938
+//              },
+//              {
+//                  "name": "FTP",
+//                  "id": 5,
+//                  "value": 1312
+//              }
+//          ]
+//      }
+//  ]
 // };
 function treeMap(recipient, data, width, height) {
 
@@ -667,5 +667,74 @@ function treeMap(recipient, data, width, height) {
 	
 	function hide_tooltip() {
 		$("#tooltip").hide();
+	}
+}
+
+
+// A sunburst is similar to a treemap, except it uses a radial layout.
+// The root node of the tree is at the center, with leaves on the circumference.
+// The area (or angle, depending on implementation) of each arc corresponds to its value.
+// Sunburst design by John Stasko. Data courtesy Jeff Heer.
+// http://bl.ocks.org/mbostock/4348373
+function sunburst (recipient, data, width, height) {
+
+	if (width === 'auto') {
+		width = $(recipient).innerWidth();
+	}
+	if (height === 'auto') {
+		height = width;
+	}
+	// var width = 960,
+	// 	height = 700;
+	var radius = Math.min(width, height) / 2;
+
+	var x = d3.scale.linear()
+		.range([0, 2 * Math.PI]);
+
+	var y = d3.scale.sqrt()
+		.range([0, radius]);
+
+	var color = d3.scale.category20c();
+
+	var svg = d3.select(recipient).append("svg")
+		.attr("width", width)
+		.attr("height", height)
+		.append("g")
+		.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+
+	var partition = d3.layout.partition()
+		.value(function(d) { return d.size; });
+
+	var arc = d3.svg.arc()
+		.startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+		.endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+		.innerRadius(function(d) { return Math.max(0, y(d.y)); })
+		.outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+
+	var path = svg.selectAll("path")
+		.data(partition.nodes(data))
+		.enter().append("path")
+		.attr("d", arc)
+		.style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+		.on("click", click);
+
+	function click(d) {
+		path.transition()
+			.duration(750)
+			.attrTween("d", arcTween(d));
+	}
+
+	d3.select(self.frameElement).style("height", height + "px");
+
+	// Interpolate the scales!
+	function arcTween(d) {
+		var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+			yd = d3.interpolate(y.domain(), [d.y, 1]),
+			yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+		return function(d, i) {
+			return i
+				? function(t) { return arc(d); }
+				: function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+		};
 	}
 }

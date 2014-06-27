@@ -38,9 +38,9 @@ echo "<p><b>" . sprintf(__("The last version of package installed is: %d"),
 $memory_limit = ini_get("memory_limit");
 $memory_limit = str_replace("M", "", $memory_limit);
 $memory_limit = (int)$memory_limit;
-if ($memory_limit < 512) {
+if ($memory_limit < 500) {
 	ui_print_error_message(
-		sprintf(__('Your PHP has set memory limit in %s. For avoid problems with big updates please set to 512M'), ini_get("memory_limit"))
+		sprintf(__('Your PHP has set memory limit in %s. For avoid problems with big updates please set to 500M'), ini_get("memory_limit"))
 	);
 }
 

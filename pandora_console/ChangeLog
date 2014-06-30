@@ -1,5 +1,11 @@
 2014-06-30 Koichiro KIKUCHI <koichiro@rworks.jp>
 
+	* operation/agentes/estado_monitores.php,
+	  operation/agentes/status_monitor.php,
+	  operation/search_modules.php: Fixed snapshot view title.
+
+2014-06-30 Koichiro KIKUCHI <koichiro@rworks.jp>
+
 	* extensions/agents_modules.php,
 	  include/functions_events.php,
 	  operation/agentes/estado_monitores.php,

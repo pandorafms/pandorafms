@@ -1165,7 +1165,7 @@ foreach ($result as $row) {
 			$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
 				"id=" . $row["id_agente_modulo"] .
 				"&refr=" . $row["current_interval"] .
-				"&label=" . $row["nombre"] . "','" . $win_handle . "', 700,480)"; 
+				"&label=" . rawurlencode(urlencode(io_safe_output($row["module_name"]))) . "','" . $win_handle . "', 700,480)"; 
 			
 			$salida = '<a href="javascript:' . $link . '">' .
 				html_print_image("images/default_list.png", true,

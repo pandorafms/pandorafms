@@ -572,7 +572,7 @@ foreach ($modules as $module) {
 				$link ="winopeng_var('operation/agentes/snapshot_view.php?" .
 					"id=" . $module["id_agente_modulo"] .
 					"&refr=" . $module["current_interval"] .
-					"&label=" . rawurlencode($module["nombre"]) . "','".$win_handle."', 700,480)"; 
+					"&label=" . rawurlencode(urlencode(io_safe_output($module["nombre"]))) . "','".$win_handle."', 700,480)"; 
 				
 				$salida = '<a href="javascript:'.$link.'">' .
 					html_print_image("images/default_list.png", true,

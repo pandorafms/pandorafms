@@ -175,7 +175,7 @@ else {
 				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 				$win_handle=dechex(crc32($handle));
 				
-				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".$module["nombre"]."','".$win_handle."', 700,480)"; 
+				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".rawurlencode(urlencode(io_safe_output($module["module_name"])))."','".$win_handle."', 700,480)"; 
 				
 				$dataCell = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
 			}

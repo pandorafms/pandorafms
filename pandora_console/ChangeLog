@@ -1,3 +1,15 @@
+2014-06-30 Koichiro KIKUCHI <koichiro@rworks.jp>
+
+	* extensions/agents_modules.php,
+	  include/functions_events.php,
+	  operation/agentes/estado_monitores.php,
+	  operation/agentes/status_monitor.php,
+	  operation/search_modules.php,
+	  operation/tree.php: Fixed garbled title issue in the module graph.
+
+	MERGED FROM TRUNK.
+
+
 2014-06-24  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/massive/massive_edit_modules.php: Fixed unexpected update

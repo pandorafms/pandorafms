@@ -1,3 +1,12 @@
+2014-06-30 Koichiro KIKUCHI <koichiro@rworks.jp>
+
+	* extensions/agents_modules.php,
+	  include/functions_events.php,
+	  operation/agentes/estado_monitores.php,
+	  operation/agentes/status_monitor.php,
+	  operation/search_modules.php,
+	  operation/tree.php: Fixed the garbled title issue in the module graph.
+
 2014-06-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/update_manager/update_manager.online.php: set to 500mb the

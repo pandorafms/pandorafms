@@ -396,7 +396,7 @@ if (is_ajax ())
 						"type=$graph_type&" .
 						"period=86400&" .
 						"id=" . $row["id_agente_modulo"] . "&" .
-						"label=" . base64_encode($row["nombre"]) . "&" .
+						"label=" . rawurlencode(urlencode(base64_encode($row["nombre"]))) . "&" .
 						"refresh=600");
 				}
 				else {
@@ -405,7 +405,7 @@ if (is_ajax ())
 						"type=$graph_type&" .
 						"period=86400&" .
 						"id=" . $row["id_agente_modulo"] . "&" .
-						"label=" . base64_encode($row["nombre"]) . "&" .
+						"label=" . rawurlencode(urlencode(base64_encode($row["nombre"]))) . "&" .
 						"refresh=600";
 				}
 				$link ="winopeng('" . $url_module_graph . "','day_".$win_handle."')";

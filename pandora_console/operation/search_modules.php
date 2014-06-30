@@ -148,7 +148,7 @@ else {
 			$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
 			$win_handle = dechex(crc32($module["id_agente_modulo"] . $module["module_name"]));
 			
-			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".base64_encode($module["module_name"])."&refresh=600','day_".$win_handle."')";
+			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($module["module_name"])))."&refresh=600','day_".$win_handle."')";
 			
 			$graphCell = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => 0, "alt" => "")) . '</a>';
 			$graphCell .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$module["id_agente"]."&amp;tab=data_view&period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => "0", "alt" => "")) . "</a>";

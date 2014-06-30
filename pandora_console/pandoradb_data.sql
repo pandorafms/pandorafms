@@ -36,7 +36,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('days_compact','0'),
 ('graph_res','5'),
 ('step_compact','1'),
-('db_scheme_version','5.1RC2'),
+('db_scheme_version','5.1'),
 ('db_scheme_build','PD140630'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),

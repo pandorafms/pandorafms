@@ -1920,7 +1920,7 @@ function events_page_details ($event, $server = "") {
 		if (isset($module["module_name"])) {
 			$module_module_name = $module["module_name"];
 		}
-		$link ="winopeng('" . $serverstring . "operation/agentes/stat_win.php?type=" . $graph_type."&period=86400&id=" . $module["id_agente_modulo"] . "&label=" . base64_encode($module_module_name) . $hashstring . "&refresh=600','day_".$win_handle."')";
+		$link ="winopeng('" . $serverstring . "operation/agentes/stat_win.php?type=" . $graph_type."&period=86400&id=" . $module["id_agente_modulo"] . "&label=" . rawurlencode(urlencode(base64_encode($module_module_name))) . $hashstring . "&refresh=600','day_".$win_handle."')";
 		
 		$data[1] = '<a href="javascript:'.$link.'">';
 		$data[1] .= html_print_image('images/chart_curve.png',true);

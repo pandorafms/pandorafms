@@ -1121,9 +1121,9 @@ foreach ($result as $row) {
 		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
 		
 		if (defined('METACONSOLE'))
-			$link ="winopeng('" . $row['server_url'] . "operation/agentes/stat_win.php?type=$graph_type&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . $row["user"] . "&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["module_name"])."&refresh=600','day_".$win_handle."')";
+			$link ="winopeng('" . $row['server_url'] . "operation/agentes/stat_win.php?type=$graph_type&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . $row["user"] . "&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
 		else
-			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["module_name"])."&refresh=600','day_".$win_handle."')";
+			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
 		
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		if (defined('METACONSOLE'))

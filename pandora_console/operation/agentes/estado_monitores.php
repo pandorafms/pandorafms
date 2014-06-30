@@ -572,7 +572,7 @@ foreach ($modules as $module) {
 				$link ="winopeng_var('operation/agentes/snapshot_view.php?" .
 					"id=" . $module["id_agente_modulo"] .
 					"&refr=" . $module["current_interval"] .
-					"&label=" . $module["nombre"] . "','".$win_handle."', 700,480)"; 
+					"&label=" . rawurlencode($module["nombre"]) . "','".$win_handle."', 700,480)"; 
 				
 				$salida = '<a href="javascript:'.$link.'">' .
 					html_print_image("images/default_list.png", true,
@@ -633,7 +633,7 @@ foreach ($modules as $module) {
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 		
-		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".base64_encode($module["nombre"])."&amp;refresh=600','day_".$win_handle."')";
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".rawurlencode(urlencode(base64_encode($module["nombre"])))."&amp;refresh=600','day_".$win_handle."')";
 		
 		$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 		$server_name = '';

@@ -166,6 +166,8 @@ our @EXPORT = qw(
 	pandora_get_module_phone_tags
 	pandora_get_module_email_tags
 	pandora_get_os
+	pandora_mark_agent_for_alert_update
+	pandora_mark_agent_for_module_update
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
 	pandora_module_unknown

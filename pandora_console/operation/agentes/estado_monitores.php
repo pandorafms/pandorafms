@@ -633,7 +633,13 @@ foreach ($modules as $module) {
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 		
-		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".rawurlencode(urlencode(base64_encode($module["nombre"])))."&amp;refresh=600','day_".$win_handle."')";
+		# Show events for boolean modules by default.
+		if ($graph_type == 'boolean') {
+			$draw_events = 1;
+		} else {
+			$draw_events = 0;
+		}
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".rawurlencode(urlencode(base64_encode($module["nombre"])))."&amp;refresh=600&amp;draw_events=$draw_events','day_".$win_handle."')";
 		
 		$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 		$server_name = '';

@@ -245,6 +245,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 	$is_unknown = $start_unknown;
 	
 	// Calculate chart data
+	$last_known = $previous_data;
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 		
@@ -270,6 +271,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$interval_min = $data[$data_i]['datos'];
 			}
 			$total += $data[$data_i]['datos'];
+			$last_known = $data[$data_i]['datos'];
 			$count++;
 			$data_i++;
 		}
@@ -399,7 +401,6 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$chart[$timestamp]['sum'.$series_suffix] = $total;
 				$chart[$timestamp]['min'.$series_suffix] = $interval_min;
 			}
-			$previous_data = $total;
 		// Compressed data
 		}
 		else {
@@ -415,12 +416,12 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			else {
 				if ($avg_only) {
-					$chart[$timestamp]['sum'.$series_suffix] = $previous_data;
+					$chart[$timestamp]['sum'.$series_suffix] = $last_known;
 				}
 				else {
-					$chart[$timestamp]['max'.$series_suffix] = $previous_data;
-					$chart[$timestamp]['sum'.$series_suffix] = $previous_data;
-					$chart[$timestamp]['min'.$series_suffix] = $previous_data;
+					$chart[$timestamp]['max'.$series_suffix] = $last_known;
+					$chart[$timestamp]['sum'.$series_suffix] = $last_known;
+					$chart[$timestamp]['min'.$series_suffix] = $last_known;
 				}
 			}
 		}
@@ -1103,6 +1104,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$countAvg = 0;
 		
 		// Calculate chart data
+		$last_known = $previous_data;
 		for ($l = 0; $l < $resolution; $l++) {
 			$countAvg ++;
 			
@@ -1117,8 +1119,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$count = 0;
 			
 			// Read data that falls in the current interval
-			$interval_min = $previous_data;
-			$interval_max = $previous_data;
+			$interval_min = $last_known;
+			$interval_max = $last_known;
 			while (isset ($data[$j]) && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] < ($timestamp + $interval)) {
 				if ($data[$j]['datos'] > $interval_max) {
 					$interval_max = $data[$j]['datos'];
@@ -1127,6 +1129,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$interval_min = $data[$j]['datos'];
 				}
 				$total += $data[$j]['datos'];
+				$last_known = $data[$j]['datos'];
 				$count++;
 				$j++;
 			}
@@ -1153,18 +1156,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			if ($count > 0) {
 				//$graph_values[$i][$timestamp] = $total * $weight_list[$i];
 				$temp_graph_values[$timestamp_short] = $total * $weight_list[$i];
-				
-				$previous_data = $total;
 			}
 			else {
 				// Compressed data
 				if ($uncompressed_module || ($timestamp > time ())) {
-					//$graph_values[$i][$timestamp] = 0;
 					$temp_graph_values[$timestamp_short] = 0;
 				}
 				else {
-					//$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
-					$temp_graph_values[$timestamp_short] = $previous_data * $weight_list[$i];
+					$temp_graph_values[$timestamp_short] = $last_known * $weight_list[$i];
 				}
 			}
 			
@@ -2670,6 +2669,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	$max_value = 0;
 	
 	// Calculate chart data
+	$last_known = $previous_data;
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 		
@@ -2689,6 +2689,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 				$count++;
 			}
 			
+			$last_known = $data[$j]['datos'];
 			$j++;
 		}
 		
@@ -2796,43 +2797,20 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			//New code set 0 if there is a 0
 			//Please check the incident #665
 			//http://192.168.50.2/integria/index.php?sec=incidents&sec2=operation/incidents/incident_dashboard_detail&id=665
-			
-			
 			$chart[$timestamp]['sum'.$series_suffix] = 0;
-			$previous_data = 0;
-			
-			//Old code that make a AVG
-			
-			//~ if ($avg_only) {
-				//~ $chart[$timestamp]['sum'.$series_suffix] = $total;
-			//~ }
-			//~ else {
-				//~ $chart[$timestamp]['sum'.$series_suffix] = $total;
-				//~ $chart[$timestamp + 1] = array ('sum'.$series_suffix => 0,
-					//~ //'count' => 0,
-					//~ //'timestamp_bottom' => $timestamp,
-					//~ //'timestamp_top' => $timestamp + $interval,
-					//~ 'min'.$series_suffix => 0,
-					//~ 'max'.$series_suffix => 0,
-					//~ 'event'.$series_suffix => $event_value,
-					//~ 'alert'.$series_suffix => $alert_value);
-			//~ }
-			//~ $previous_data = 0;
 		}
 		else if ($zero == 1) { // Just zeros
 			$chart[$timestamp]['sum'.$series_suffix] = 0;
-			$previous_data = 0;
 		}
 		else if ($count > 0) { // No zeros
 			$chart[$timestamp]['sum'.$series_suffix] = $total;
-			$previous_data = $total;
 		}
 		else { // Compressed data
 			if ($uncompressed_module || ($timestamp > time ()) || $is_unknown) {
 				$chart[$timestamp]['sum'.$series_suffix] = 0;
 			}
 			else {
-				$chart[$timestamp]['sum'.$series_suffix] = $previous_data;
+				$chart[$timestamp]['sum'.$series_suffix] = $last_known;
 			}
 		}
 		
@@ -3381,6 +3359,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	}
 	
 	// Calculate chart data
+	$last_known = $previous_data;
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 		
@@ -3388,6 +3367,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$total = 0;	
 		// Read data that falls in the current interval
 		while (isset($data[$j]) && isset ($data[$j]) !== null && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
+			$last_known = $data[$j];
 			$count++;
 			$j++;
 		}
@@ -3449,11 +3429,10 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		
 		if ($count > 0) {
 			$chart[$timestamp]['sum'] = $count;
-			$previous_data = $total;
 		}
 		else {
 			// Compressed data
-			$chart[$timestamp]['sum'] = $previous_data;
+			$chart[$timestamp]['sum'] = $last_known;
 		}
 		
 		if (!$avg_only) {

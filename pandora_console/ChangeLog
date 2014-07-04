@@ -1,3 +1,8 @@
+2014-07-04  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* index.php: Now the shortcut bar isn't loaded while
+	the pandora console is in fullscreen mode.
+
 2014-07-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_graph.php: When drawing charts, propagate the last value

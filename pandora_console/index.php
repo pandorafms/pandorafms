@@ -562,7 +562,9 @@ else {
 			require("general/logon_ok.php");
 		}
 	}
-	require("general/shortcut_bar.php");
+	if ($config["pure"] == 0) {
+		require("general/shortcut_bar.php");
+	}
 }
 
 if ($config["pure"] == 0) {

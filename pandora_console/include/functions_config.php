@@ -1312,7 +1312,7 @@ function config_check () {
 			$config["alert_cnt"]++;
 			$_SESSION["alert_msg"] .= ui_print_info_message(
 				array('title' => __("New update of Pandora Console"),
-				'message' => __('There is a new update please go to menu Administration and into extensions <a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager_xxx/update_manager_xxx&tab=online">go to Update Manager</a> for more details.'),
+				'message' => __('There is a new update please go to menu Administration and into extensions <a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">go to Update Manager</a> for more details.'),
 				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 		}
 	}

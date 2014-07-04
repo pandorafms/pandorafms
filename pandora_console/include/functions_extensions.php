@@ -99,11 +99,11 @@ function extensions_get_extensions ($enterprise = false) {
 		$dir = ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
 
 	if (file_exists ($dir))
-		$handle = @opendir ($dir);	
+		$handle = @opendir ($dir);
 	
 	if (empty ($handle))
 		return;
-		
+	
 	$file = readdir ($handle);
 	$extensions = array ();
 	$ignores = array ('.', '..');
@@ -117,6 +117,10 @@ function extensions_get_extensions ($enterprise = false) {
 			$file = readdir ($handle);
 			continue;
 		}
+		
+		if ($file == "update_manager.php")
+			continue;
+		
 		$extension['file'] = $file;
 		$extension['operation_menu'] = '';
 		$extension['godmode_menu'] = '';

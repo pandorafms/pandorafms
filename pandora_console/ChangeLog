@@ -1,3 +1,9 @@
+2014-07-04  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php, include/functions_extensions.php:
+	fixed the show old update manager and set the correct link in the
+	header warning message to update manager.
+
 2014-06-30 Koichiro KIKUCHI <koichiro@rworks.jp>
 
 	* operation/agentes/estado_monitores.php,

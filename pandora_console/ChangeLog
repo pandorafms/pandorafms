@@ -1,3 +1,11 @@
+2014-07-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_graph.php: When drawing charts, propagate the last value
+	  in the database instead of the value of the last interval (which is the
+	  average value for that interval).
+
+	* operation/agentes/estado_monitores.php: Show events for boolean modules by default.
+
 2014-07-04  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php, include/functions_extensions.php:

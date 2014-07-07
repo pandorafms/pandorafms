@@ -1,5 +1,11 @@
 2014-07-07  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/setup/license.php: fixed the white screen.
+	
+	INCIDENT: #996
+
+2014-07-07  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/alerts_status.php: fixed the pagination with
 	the column sorted.
 	

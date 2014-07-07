@@ -114,9 +114,11 @@ function visual_map_print_item($layoutData) {
 			echo '<div id="' . $id . '" class="item static_graph" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				if (($width != 0) && ($height != 0)) 
-					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
+					echo html_print_image($img, true,
+						array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
 				else
-					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
+					echo html_print_image($img, true,
+						array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
 				echo '<br />';
 			}
 			echo io_safe_output($text);
@@ -1299,7 +1301,27 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				}
 				
 				$img_style = array ();
+				
 				$img_style["title"] = strip_tags($layout_data["label"]);
+				if ($layout_data['type'] == STATIC_GRAPH) {
+					if ($layout_data['id_agente_modulo'] != 0) {
+						$unit_text = trim(io_safe_output(
+							modules_get_unit($layout_data['id_agente_modulo'])));
+						
+						$value = modules_get_last_value($layout_data['id_agente_modulo']);
+						
+						if (!is_string($value)) {
+							$value = format_for_graph($value, 2);
+						}
+						
+						if (!empty($unit_text))
+							$value .= " " . $unit_text;
+						
+						$img_style["title"] .= " <br>" . __("Last value: ") .
+							$value;
+					}
+				}
+				
 				
 				if (!empty ($layout_data["width"])) {
 					$img_style["width"] = $layout_data["width"];

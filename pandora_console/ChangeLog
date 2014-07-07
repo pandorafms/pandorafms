@@ -1,5 +1,12 @@
 2014-07-07  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map.php: show in the tooltip of
+	"static graph" the last value of module.
+	
+	INCIDENT: #1014 
+
+2014-07-07  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/setup/license.php: fixed the white screen.
 	
 	INCIDENT: #996

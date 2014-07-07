@@ -47,7 +47,8 @@ foreach ($rows as $row) {
 }
 
 echo '<script type="text/javascript">';
-print_js_var_enteprise();
+if (enterprise_installed())
+	print_js_var_enteprise();
 echo '</script>';
 
 echo '<form method="post">';
@@ -71,11 +72,13 @@ $table->data[4][0] = '<strong>'.__('License Mode').'</strong>';
 $table->data[4][1] = html_print_input_text('expires', $license['license_mode'], '', 10, 255, true, true);
 
 html_print_table ($table);
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_input_hidden ('update_settings', 1);
-html_print_submit_button (__('Validate'), 'update_button', false, 'class="sub upd"');
-html_print_button(__('Request new license'), '', false, 'generate_request_code()', 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub next"');
-echo '</div>';
+if (enterprise_installed()) {
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	html_print_input_hidden ('update_settings', 1);
+	html_print_submit_button (__('Validate'), 'update_button', false, 'class="sub upd"');
+	html_print_button(__('Request new license'), '', false, 'generate_request_code()', 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub next"');
+	echo '</div>';
+}
 echo '</form>';
 echo '<div id="code_license_dialog" style="display: none; text-align: left;" title="' . __('Request new license') . '">';
 echo '<div id="logo">';

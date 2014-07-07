@@ -258,7 +258,8 @@ else {
 
 
 $alerts = array();
-$options_simple = array('offset' => $offset_simple, 'limit' => $config['block_size'], 'order' => $order);
+$options_simple = array('offset' => $offset_simple,
+	'limit' => $config['block_size'], 'order' => $order);
 
 $filter_alert = array();
 if($filter_standby == 'standby_on') {
@@ -322,11 +323,11 @@ else {
 }
 
 if ($tab != null) {
-	$url = $url.'&tab='.$tab;
+	$url = $url.'&tab=' . $tab;
 }
 
 if ($pure) {
-	$url .= '&pure='.$pure;
+	$url .= '&pure=' . $pure;
 }
 
 // Filter form
@@ -345,13 +346,17 @@ $table->align = array ();
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	if ($print_agent) {
 		if (!defined('METACONSOLE')) {
-			$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+			$table->head[0] = "<span title='" . __('Policy') . "'>" .
+				__('P.') . "</span>";
 		}
 		
-		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
+		$table->head[1] = "<span title='" . __('Standby') . "'>" .
+			__('S.') . "</span>";
 		
 		if (!defined('METACONSOLE')) {
-			$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+			$table->head[2] =
+				"<span title='" . __('Force execution') . "'>" .
+					__('F.') . "</span>";
 		}
 		
 		$table->head[3] = __('Agent');
@@ -481,6 +486,12 @@ else
 	}
 }
 
+
+if ($sortField) {
+	$url .= '&sort_field=' . $sortField;
+	$url .= '&sort=' . $sort;
+}
+
 $table->data = array ();
 
 $rowPair = true;
@@ -496,9 +507,10 @@ foreach ($alerts['alerts_simple'] as $alert) {
 }
 
 if (!empty ($table->data)) {
-	echo '<form method="post" action="'.$url.'">';
+	echo '<form method="post" action="' . $url . '">';
 	
-	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
+	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false,
+		'offset_simple');
 	html_print_table ($table);
 	
 	if (!defined('METACONSOLE')) {

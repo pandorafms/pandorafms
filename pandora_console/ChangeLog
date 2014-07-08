@@ -1,3 +1,8 @@
+2014-07-08  Mario Pulido <mario.pulido@artica.es>
+
+	* include/help/en/help_snmp_alert_field1.php,
+	include/help/es/help_snmp_alert_field1.php: Change macros snmp alert help
+
 2014-07-08 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Fixed that 'set enable_module'

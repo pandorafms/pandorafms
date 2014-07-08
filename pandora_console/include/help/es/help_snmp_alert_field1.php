@@ -14,10 +14,10 @@ Para contruir un mensaje, podríamos usar la siguiente cadena en el "campo1":
 <br><br>
 Puede usar esas macros en los campos FieldX (1-10) de cualquier alerta.
 <br><br>
-<b>_DATA_</b>: Trap entero <br>
-<b>_AGENT_</b>: Nombre del Agente <br>
-<b>_IP_</b>: Dirección IP<br>
-<b>_TIMESTAMP_</b>: Fecha trap<br>
-<b>_SNMP_OID_</b>: OID del trap<br> 
-<b>_SNMP_VALUE_</b>: Valor del OID del trap<br> 
+<b>_data_</b>: Trap entero <br>
+<b>_agent_</b>: Nombre del Agente <br>
+<b>_address_</b>: Dirección IP<br>
+<b>_timestamp_</b>: Fecha trap<br>
+<b>_snmp_oid_</b>: OID del trap<br> 
+<b>_snmp_value_</b>: Valor del OID del trap<br> 
 </p>

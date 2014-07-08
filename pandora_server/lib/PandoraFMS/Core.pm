@@ -2400,7 +2400,18 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'type'};
 	delete $parameters->{'datalist'};
 	delete $parameters->{'status'};
-	
+	if (defined $parameters->{'id_os'}) {
+		delete $parameters->{'id_os'};
+	}
+	if (defined $parameters->{'os_version'}) {
+		delete $parameters->{'os_version'};
+	}
+	if (defined $parameters->{'id_os'}) {
+		delete $parameters->{'id'};
+	}
+	if (defined $parameters->{'id_network_component_group'}) {
+		delete $parameters->{'id_network_component_group'};
+	}
 	my $module_id = db_process_insert($dbh, 'id_agente_modulo',
 		'tagente_modulo', $parameters);
 	

@@ -1,3 +1,10 @@
+2014-07-08 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/functions_api.php: Fixed that 'set enable_module'
+	had not worked.
+
+	MERGED FROM BRANCH 5.0
+
 2014-07-07  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php: show in the tooltip of

@@ -6064,7 +6064,7 @@ function api_set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
 	
-	$result = modules_change_disabled($id_agent_module, 1);
+	$result = modules_change_disabled($id_agent_module, 0);
 	
 	if ($result === NOERR) {
 		returnData('string', array('type' => 'string', 'data' => __('Correct module enable')));

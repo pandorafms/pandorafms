@@ -4044,7 +4044,9 @@ sub cli_create_local_component() {
 	my %parameters;
 	
 	$parameters{'name'} = safe_input($component_name);
-	$parameters{'data'} = safe_input($data);
+	my $data_aux = safe_input($data);
+	$data_aux =~ s/&#92;n/&#x0a;/g;
+	$parameters{'data'} = $data_aux;
 	$parameters{'description'} = safe_input($description) unless !defined ($description);
 	$parameters{'id_os'} = $id_os unless !defined ($id_os);
 	$parameters{'type'} = $type unless !defined ($type);

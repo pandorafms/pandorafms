@@ -14,10 +14,10 @@ To build the message, we would use the following string in Field1.
 <br><br>
 You can use these macros in FieldX (1-10) of any alert
 <br><br>
-<b>_DATA_</b>: Full trap<br>
-<b>_AGENT_</b>: Agent name<br>
-<b>_IP_</b>: IP Address<br>
-<b>_TIMESTAMP_</b>: Trap date<br> 
-<b>_SNMP_OID_</b>: Trap OID<br> 
-<b>_SNMP_VALUE_</b>: Trap OID value<br> 
+<b>_data_</b>: Full trap<br>
+<b>_agent_</b>: Agent name<br>
+<b>_address_</b>: IP Address<br>
+<b>_timestamp_</b>: Trap date<br> 
+<b>_snmp_oid_</b>: Trap OID<br> 
+<b>_snmp_value_</b>: Trap OID value<br> 
 </p>

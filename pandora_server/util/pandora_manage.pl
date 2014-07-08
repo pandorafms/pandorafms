@@ -128,6 +128,8 @@ sub help_screen{
 	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
 	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
 	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
+	help_screen_line('--create_data_module_from_local_component', '<agent_name> <component_name>', "Create a new data \n\t  module from a local component");
+	help_screen_line('--create_local_component', "<component_name> <data> [<description> <id_os> <os_version> \n\t  <id_network_component_group> <type> <min> <max> <module_interval> <id_module_group> <history_data> <min_warning> \n\t <max_warning> <str_warning> <min_critical> <max_critical>\n\t  <str_critical> <min_ff_event> <post_process> <unit>\n\t  <wizard_level> <macros> <critical_instructions>\n\t  <warning_instructions> <unknown_instructions> <critical_inverse>\n\t  <warning_inverse> <id_category> <disabled_types_event>\n\t  <tags> <min_ff_event_normal> <min_ff_event_warning>\n\t  <min_ff_event_critical> <each_ff> <ff_timeout>]", 'Create local component');
 
 	print "\nUSERS:\n\n" unless $param ne '';
     help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
@@ -3885,6 +3887,14 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1);
 			cli_delete_special_day();
 		}
+		elsif ($param eq '--create_data_module_from_local_component') {
+			param_check($ltotal, 2);
+			cli_create_data_module_from_local_component();
+		}
+		elsif ($param eq '--create_local_component') {
+			param_check($ltotal, 35, 33);
+			cli_create_local_component();
+		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -3979,4 +3989,109 @@ sub cli_delete_modules_to_graph () {
 	foreach my $module (@module_array) {
 		pandora_delete_graph_source($id_graph, $dbh, $module);
 	}
+}
+
+##############################################################################
+# Return local component id given the name
+##############################################################################
+
+sub pandora_get_local_component_id($$) {
+	my ($dbh,$name) = @_;
+	
+	my $lc_id = get_db_value($dbh, 'SELECT id FROM tlocal_component WHERE name = ?',safe_input($name));
+	
+	return defined ($lc_id) ? $lc_id : -1;
+}
+
+##############################################################################
+# Create data module from local component.
+# Related option: --create_data_module_from_local_component
+##############################################################################
+
+sub cli_create_data_module_from_local_component() {
+	my ($agent_name, $component_name) = @ARGV[2..3];
+	
+	my $agent_id = get_agent_id($dbh,$agent_name);
+	exist_check($agent_id,'agent',$agent_name);
+		
+	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
+	exist_check($lc_id,'local component',$component_name);
+	
+	my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
+	non_exist_check($module_exists, 'module name', $component_name);
+	
+	# Get local component data
+	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
+	
+	#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
+	enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
+}
+
+##############################################################################
+# Create local component.
+# Related option: --create_local_component
+##############################################################################
+
+sub cli_create_local_component() {
+
+	my ($component_name, $data, $description, $id_os, $os_version, $id_network_component_group, $type,
+		$min,$max,$module_interval, $id_module_group, $history_data, $min_warning, $max_warning, $str_warning,
+		$min_critical, $max_critical, $str_critical, $min_ff_event, $post_process, $unit, $wizard_level,
+	    $critical_instructions, $warning_instructions, $unknown_instructions, $critical_inverse, $warning_inverse,
+	    $id_category, $tags, $disabled_types_event, $min_ff_event_normal, $min_ff_event_warning, $min_ff_event_critical,
+	    $each_ff, $ff_timeout) = @ARGV[2..37];
+	
+	my %parameters;
+	
+	$parameters{'name'} = safe_input($component_name);
+	$parameters{'data'} = safe_input($data);
+	$parameters{'description'} = safe_input($description) unless !defined ($description);
+	$parameters{'id_os'} = $id_os unless !defined ($id_os);
+	$parameters{'type'} = $type unless !defined ($type);
+	if (defined $id_network_component_group) {
+		$parameters{'id_network_component_group'} = $id_network_component_group;
+	} else {
+		$parameters{'id_network_component_group'} = 1;
+	}
+	$parameters{'max'} = $max unless !defined ($max);
+	$parameters{'min'} = $min unless !defined ($min);
+	$parameters{'module_interval'} = $module_interval unless !defined ($module_interval);
+	$parameters{'id_module_group'} = $id_module_group unless !defined ($id_module_group);
+	$parameters{'history_data'} = safe_input($history_data) unless !defined ($history_data);
+	$parameters{'min_warning'} = $min_warning unless !defined ($min_warning);
+	$parameters{'max_warning'} = $max_warning unless !defined ($max_warning);
+	$parameters{'str_warning'} = $str_warning unless !defined ($str_warning);
+	$parameters{'min_critical'} = $min_critical unless !defined ($min_critical);
+	$parameters{'max_critical'} = $max_critical unless !defined ($max_critical);
+	$parameters{'str_critical'} = $str_critical unless !defined ($str_critical);
+	$parameters{'min_ff_event'} = $min_ff_event unless !defined ($min_ff_event);
+	$parameters{'post_process'} = $post_process unless !defined ($post_process);
+	$parameters{'unit'} = $unit  unless !defined ($unit);
+	$parameters{'wizard_level'} = $wizard_level unless !defined ($wizard_level);
+	$parameters{'critical_instructions'} = safe_input($critical_instructions) unless !defined ($critical_instructions);
+	$parameters{'warning_instructions'} = safe_input($warning_instructions) unless !defined ($warning_instructions);
+	$parameters{'unknown_instructions'} = safe_input($unknown_instructions) unless !defined ($unknown_instructions);
+	$parameters{'critical_inverse'} = $critical_inverse unless !defined ($critical_inverse);
+	$parameters{'warning_inverse'} = $warning_inverse unless !defined ($warning_inverse);
+	$parameters{'id_category'} = $id_category unless !defined ($id_category);
+	$parameters{'tags'} = safe_input($tags) unless !defined ($tags);
+
+	my $disabled_types_event_hash = {};
+	if ($disabled_types_event) {
+		$disabled_types_event_hash->{'going_unknown'} = 0;
+	}
+	else {
+		$disabled_types_event_hash->{'going_unknown'} = 1;
+	}
+	my $disabled_types_event_json = encode_json($disabled_types_event_hash);
+	$parameters{'disabled_types_event'} = $disabled_types_event_json unless !defined ($disabled_types_event);
+	
+	$parameters{'min_ff_event_normal'} = $min_ff_event_normal unless !defined ($min_ff_event_normal);
+	$parameters{'min_ff_event_warning'} = $min_ff_event_warning unless !defined ($min_ff_event_warning);
+	$parameters{'min_ff_event_critical'} = $min_ff_event_critical unless !defined ($min_ff_event_critical);
+	$parameters{'each_ff'} = $each_ff unless !defined ($each_ff);
+	$parameters{'ff_timeout'} = $ff_timeout unless !defined ($ff_timeout);
+	
+	my $component_id = enterprise_hook('pandora_create_local_component_from_hash',[$conf, \%parameters, $dbh]);
+
 }

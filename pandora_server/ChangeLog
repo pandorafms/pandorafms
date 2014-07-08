@@ -1,3 +1,9 @@
+2014-07-08 Vanessa Gil <vanessa.gil@artica.es>
+	
+	* util/pandora_manage.pl
+	  lib/PandoraFMS/Core.pm: Added 'create_data_module_from_local_component'
+	and 'create_local_component' functions to CLI.
+
 2014-06-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_xml_stress.pl: Remove new line and carriage return

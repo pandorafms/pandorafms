@@ -582,7 +582,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment', $m
 			
 			$event_comments_array[] = $comment_for_json;
 			
-			$event_comments = json_encode($event_comments_array);
+			$event_comments = io_json_mb_encode($event_comments_array);
 			
 			// Update comment
 			$ret = db_process_sql_update($event_table,  array('user_comment' => $event_comments), array('id_evento' => implode(',', $id_event)));

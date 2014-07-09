@@ -52,7 +52,7 @@ if (is_ajax()) {
 		$event_filter['tag_with'] = base64_encode(io_safe_output($event_filter['tag_with']));
 		$event_filter['tag_without'] = base64_encode(io_safe_output($event_filter['tag_without']));
 		
-		echo json_encode($event_filter);
+		echo io_json_mb_encode($event_filter);
 	}
 	
 	// Saves an event filter
@@ -69,8 +69,8 @@ if (is_ajax()) {
 		$values['event_view_hr'] = get_parameter('event_view_hr');
 		$values['id_user_ack'] = get_parameter('id_user_ack');
 		$values['group_rep'] = get_parameter('group_rep');
-		$values['tag_with'] = get_parameter('tag_with', json_encode(array()));
-		$values['tag_without'] = get_parameter('tag_without', json_encode(array()));
+		$values['tag_with'] = get_parameter('tag_with', io_json_mb_encode(array()));
+		$values['tag_without'] = get_parameter('tag_without', io_json_mb_encode(array()));
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
 		
@@ -97,8 +97,8 @@ if (is_ajax()) {
 		$values['event_view_hr'] = get_parameter('event_view_hr');	
 		$values['id_user_ack'] = get_parameter('id_user_ack');
 		$values['group_rep'] = get_parameter('group_rep');
-		$values['tag_with'] = get_parameter('tag_with', json_encode(array()));
-		$values['tag_without'] = get_parameter('tag_without', json_encode(array()));
+		$values['tag_with'] = get_parameter('tag_with', io_json_mb_encode(array()));
+		$values['tag_without'] = get_parameter('tag_without', io_json_mb_encode(array()));
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
 		
@@ -116,7 +116,7 @@ if (is_ajax()) {
 	if ($get_event_filters) {
 		$event_filter = events_get_event_filter_select();
 		
-		echo json_encode($event_filter);
+		echo io_json_mb_encode($event_filter);
 	}
 	
 	return;

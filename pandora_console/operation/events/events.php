@@ -172,7 +172,7 @@ if (is_ajax ()) {
 			$return = array('fired' => 0);
 		}
 		
-		echo json_encode($return);
+		echo io_json_mb_encode($return);
 	}
 	
 	return;

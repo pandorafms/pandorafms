@@ -1,5 +1,9 @@
 2014-07-09  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/help/ja/help_snmp_alert_field1.php: Updated help.
+
+2014-07-09  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/functions_events.php, operation/events/events.php,
 	operation/events/events_list.php: Replaced json_encode()
 	with io_json_mb_encode() to avoid invalid encoding with multi-byte

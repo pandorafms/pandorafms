@@ -806,7 +806,8 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	$cascadeProtection = $other['data'][4];
 	$intervalSeconds = $other['data'][5];
 	$idOS = $other['data'][6];
-	$idServer = $other['data'][7];
+	//$idServer = $other['data'][7];
+	$nameServer = $other['data'][7];
 	$customId = $other['data'][8];
 	$learningMode = $other['data'][9];
 	$disabled = $other['data'][10];
@@ -815,12 +816,12 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql1 = 'SELECT name
-				FROM tserver WHERE id_server =' . $idServer;
+				FROM tserver WHERE name LIKE "' . $nameServer . '"';
 			break;
 		case "postgresql":
 		case "oracle":
 			$sql1 = 'SELECT name
-				FROM tserver WHERE id_server =' . $idServer;
+				FROM tserver WHERE name LIKE \'' . $nameServer . '\'';
 			break;
 	}
 	

@@ -1,3 +1,7 @@
+2014-07-10  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_snmp_alert_field1.php: Updated help.
+
 2014-07-09  Mario Pulido <mario.pulido@artica.es>
 
         * include/help/ja/help_snmp_alert_field1.php: Added macros snmp alert help

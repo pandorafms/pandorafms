@@ -20,11 +20,4 @@
 <b>_timestamp_</b>: トラップのタイムスタンプ<br>
 <b>_snmp_oid_</b>: トラップの OID<br>
 <b>_snmp_value_</b>: トラップ OID の値<br>
-<br><br>
-<b>_data_</b>: Full trap<br>
-<b>_agent_</b>: Agent name<br>
-<b>_address_</b>: IP Address<br>
-<b>_timestamp_</b>: Trap date<br>
-<b>_snmp_oid_</b>: Trap OID<br>
-<b>_snmp_value_</b>: Trap OID value<br>
 </p>

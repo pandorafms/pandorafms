@@ -1,3 +1,11 @@
+2014-07-10  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the call "set_update_agent"
+	because before the call get the id_server but this data never
+	was translated to name_server. 
+	
+	MERGED FROM THE TRUNK
+
 2014-07-08 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Fixed that 'set enable_module' API

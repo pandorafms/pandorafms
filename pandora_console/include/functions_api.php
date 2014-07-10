@@ -757,7 +757,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	$cascadeProtection = $other['data'][4];
 	$intervalSeconds = $other['data'][5];
 	$idOS = $other['data'][6];
-	$idServer = $other['data'][7];
+	$nameServer = $other['data'][7];
 	$customId = $other['data'][8];
 	$learningMode = $other['data'][9];
 	$disabled = $other['data'][10];

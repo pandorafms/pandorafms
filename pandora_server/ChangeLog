@@ -1,3 +1,8 @@
+2014-07-10 Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* bin/pandora_server: Fixed issue that pandora_server failed to
+	 shut down properly on non-Linux systems.
+
 2014-06-17 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/PluginServer.pm: Fixed to handle plugin's

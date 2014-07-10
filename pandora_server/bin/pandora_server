@@ -41,11 +41,22 @@ use PandoraFMS::PredictionServer;
 my %Config;
 my @Servers;
 my $DBH;
+my $MainThread = threads->self;
 
 ########################################################################################
 # Server shutdown. Handler to do a controlled shutdown.
 ########################################################################################
 sub pandora_shutdown () {
+	my $signal = shift;
+
+	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Caught SIG' . $signal . ' by thread(' . threads->self()->tid() . ')', 10);
+
+	if (!threads->self->equal($MainThread)) {
+		# deliver signal to the main thread since no other threads than main thread
+		# could disconnet $DBH properly
+                $MainThread->kill($signal);
+		return;
+	}
 	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 1);
 	
 	# Stop servers

@@ -757,7 +757,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	$cascadeProtection = $other['data'][4];
 	$intervalSeconds = $other['data'][5];
 	$idOS = $other['data'][6];
-	$idServer = $other['data'][7];
+	$nameServer = $other['data'][7];
 	$customId = $other['data'][8];
 	$learningMode = $other['data'][9];
 	$disabled = $other['data'][10];
@@ -4857,7 +4857,7 @@ function api_set_delete_module($id, $id2, $other, $trash1) {
 		else {
 			$return = true;
 		}
-
+		
 		$data['type'] = 'string';
 		if ($return === false) {
 			$data['data'] = 0;
@@ -4866,7 +4866,7 @@ function api_set_delete_module($id, $id2, $other, $trash1) {
 			$data['data'] = $return;
 		}
 		returnData('string', $data);
-		return;		
+		return;
 	}
 	else {
 		returnError('error_parameter', 'Error in the parameters.');
@@ -4901,20 +4901,20 @@ function api_set_module_data($id, $thrash2, $other, $trash1) {
 						<data><![CDATA[%s]]></data>
 					</module>
 				</agent_data>";
-		
+			
 			$xml = sprintf($xmlTemplate, io_safe_output(get_os_name($agent['id_os'])),
 				io_safe_output($agent['os_version']), $agent['intervalo'],
 				io_safe_output($agent['agent_version']), date('Y/m/d H:i:s', $time),
 				io_safe_output($agent['nombre']), $agent['timezone_offset'],
 				io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
-		
-				
+			
+			
 			if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['nombre']) . '.' . $time . '.data', $xml)) {
 				returnError('error_file', 'Can save agent data xml.');
 			}
 			else {
 				returnData('string', array('type' => 'string', 'data' => $xml));
-				return;		
+				return;
 			}
 		}
 	}
@@ -6666,7 +6666,8 @@ function api_get_pandora_servers($trash1, $trash2, $other, $returnType) {
 			'module_lag' => $server["module_lag"],
 			'threads' => $server["threads"],
 			'queued_modules' => $server["queued_modules"],
-			'keepalive' => $server['keepalive']
+			'keepalive' => $server['keepalive'],
+			'id_server' => $server['id_server']
 		);
 		
 		// servers_get_info() returns "<a http:....>servername</a>" for recon server's name.

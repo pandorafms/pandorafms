@@ -1,5 +1,12 @@
 2014-07-10  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_api.php: fixed the call "set_update_agent"
+	because before the call get the id_server but this data never
+	was translated to name_server. And added id_server into the call
+	"get_pandora_servers" in the last position.
+
+2014-07-10  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_api.php: restored the parameter name server in
 	the api call "set_new_agent", thanks KOSAKA.
 

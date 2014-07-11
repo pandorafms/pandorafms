@@ -1,3 +1,10 @@
+2014-07-11 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/functions_api.php: restored the parameter name server in
+	the api call "set_new_agent".
+
+	MERGED FROM THE TRUNK
+
 2014-07-10  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the call "set_update_agent"

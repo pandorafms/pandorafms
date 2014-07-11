@@ -1,3 +1,8 @@
+2014-07-11 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* util/pandora_manage.pl: To handle multi-byte strings in
+	command line arguments (assumes utf-8).
+
 2014-07-08 Vanessa Gil <vanessa.gil@artica.es>
 	
 	* util/pandora_manage.pl: Fixed problem

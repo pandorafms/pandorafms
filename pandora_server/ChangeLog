@@ -1,3 +1,10 @@
+2014-07-11 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* util/pandora_manage.pl: To handle multi-byte strings in
+	command line arguments (assumes utf-8).
+
+	MERGED FROM THE TRUNK
+
 2014-07-10 Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* bin/pandora_server: Fixed issue that pandora_server failed to

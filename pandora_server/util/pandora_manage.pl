@@ -29,6 +29,10 @@ use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::Config;
 
+# To handle 'UTF-8' encoded string in command like arguments (similar to "-CA" option for perl)
+use Encode::Locale;
+Encode::Locale::decode_argv;
+
 # version: define current version
 my $version = "5.1 PS140630";
 

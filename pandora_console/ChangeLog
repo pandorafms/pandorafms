@@ -1,3 +1,10 @@
+2014-07-14  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/admin_access_log.php
+	  include/functions.php: Added export to csv.
+
+	* godmode/audit_log_csv.php: Added file.
+
 2014-07-10  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the call "set_update_agent"

@@ -1,3 +1,9 @@
+2014-06-17  Vanessa Gil <vanessa.gil@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added macros
+	'_alert_critical_instructions_' and
+	'_alert_warning_instructions_'.
+
 2014-07-11 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* util/pandora_manage.pl: To handle multi-byte strings in

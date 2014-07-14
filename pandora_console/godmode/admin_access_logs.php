@@ -295,6 +295,13 @@ foreach ($result as $row) {
 
 html_print_table ($table);
 
+echo '<div style="width: '.$table->width.'" class="action-buttons">';
+echo '<a href="' .
+			ui_get_full_url(false, false, false, false) . 'godmode/audit_log_csv.php?tipo_log='.$tipo_log.'&user_filter='.$user_filter.'&filter_text='.$filter_text.'&filter_hours_old='.$filter_hours_old.'&filter_ip='.$filter_ip.'"'.
+			'target="_new">' .
+			html_print_button (__('Export to CSV '), 'export_csv', false, '', 'class=sub next', true, false). '</a>';
+echo '</div>';
+
 if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
 	enterprise_hook('enterpriseAuditFooter');
 }

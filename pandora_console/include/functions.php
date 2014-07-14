@@ -2134,4 +2134,29 @@ function get_news($arguments) {
 	return $news;
 }
 
+
+/**
+ * Print audit data in CSV format.
+ *
+ * @param array Audit data.
+ *
+ */
+function print_audit_csv ($data) {
+	global $config;
+	global $graphic_type;
+
+	$config['ignore_callback'] = true;
+	while (@ob_end_clean ());
+	
+	header("Content-type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=audit_log".date("Y-m-d_His").".csv");
+	header("Pragma: no-cache");
+	header("Expires: 0");
+	
+	echo __('User') . ';' . __('Action') . ';' . __('Date') . ';' . __('Source ID') . ';'. __('Comments') ."\n";
+	foreach ($data as $line) {
+		echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
+	}
+}
+
 ?>

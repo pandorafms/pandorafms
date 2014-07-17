@@ -65,8 +65,11 @@ $config["admin_can_disable_user"] = false; //Not implemented
 $config["admin_can_make_admin"] = false;
 
 //Required and optional keys for this function to work
-$req_keys = array ("ldap_server", "ldap_base_dn", "ldap_login_attr", "ldap_admin_group_name", "ldap_admin_group_attr", "ldap_admin_group_type", "ldap_user_filter", "ldap_user_attr");
-$opt_keys = array ("ldap_port", "ldap_start_tls", "ldap_version", "ldap_admin_dn", "ldap_admin_pwd");
+$req_keys = array("ldap_server", "ldap_base_dn", "ldap_login_attr",
+	"ldap_admin_group_name", "ldap_admin_group_attr",
+	"ldap_admin_group_type", "ldap_user_filter", "ldap_user_attr");
+$opt_keys = array("ldap_port", "ldap_start_tls", "ldap_version",
+	"ldap_admin_dn", "ldap_admin_pwd");
 
 global $ldap_cache; //Needs to be globalized because config_process_config () function calls this file first and the variable would be local and subsequently lost
 $ldap_cache = array ();
@@ -76,13 +79,15 @@ $ldap_cache["ds"] = "";
 //Put each required key in a variable.
 foreach ($req_keys as $key) {
 	if (!isset ($config["auth"][$key])) {
-		user_error ("Required key ".$key." not set", E_USER_ERROR);
+		user_error("Required key " . $key . " not set", E_USER_ERROR);
 	}
 }
 
 // Convert group name to lower case to prevent problems
-$config["auth"]["ldap_admin_group_attr"] = strtolower ($config["auth"]["ldap_admin_group_attr"]);
-$config["auth"]["ldap_admin_group_type"] = strtolower ($config["auth"]["ldap_admin_group_type"]);
+$config["auth"]["ldap_admin_group_attr"] =
+	strtolower ($config["auth"]["ldap_admin_group_attr"]);
+$config["auth"]["ldap_admin_group_type"] =
+	strtolower ($config["auth"]["ldap_admin_group_type"]);
 
 foreach ($opt_keys as $key) {
 	if (!isset ($config["auth"][$key])) {
@@ -122,7 +127,7 @@ function process_user_login ($login, $pass) {
 		return false;
 	} 
 	global $config;
-		
+	
 	$profile = db_get_value ("id_usuario", "tusuario_perfil", "id_usuario", $login);
 	
 	if ($profile === false && empty ($config["auth"]["create_user_undefined"])) {
@@ -311,7 +316,8 @@ function ldap_search_user ($login) {
 	
 	$nick = false;
 	if (ldap_connect_bind ()) {
-		$sr = @ldap_search ($ldap_cache["ds"], $config["auth"]["ldap_base_dn"], "(&(".$config["auth"]["ldap_login_attr"]."=".$login.")".$config["auth"]["ldap_user_filter"].")", array_values ($config["auth"]["ldap_user_attr"]));
+		$sr = @ldap_search ($ldap_cache["ds"],
+			io_safe_output($config["auth"]["ldap_base_dn"]), "(&(".io_safe_output($config["auth"]["ldap_login_attr"])."=".$login.")".io_safe_output($config["auth"]["ldap_user_filter"]).")", array_values ($config["auth"]["ldap_user_attr"]));
 		
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server: ' . ldap_error ($ldap_cache["ds"]);
@@ -364,7 +370,7 @@ function ldap_valid_login ($login, $password) {
 			return $ret;
 		}
 		
-		$r = @ldap_bind ($ds, $config["auth"]["ldap_login_attr"]."=".$login.",".$config["auth"]["ldap_base_dn"], $password);
+		$r = @ldap_bind ($ds, io_safe_output($config["auth"]["ldap_login_attr"])."=".$login.",".io_safe_output($config["auth"]["ldap_base_dn"]), $password);
 		if (!$r) {
 			$ldap_cache["error"] .= 'Invalid login';
 		}
@@ -393,7 +399,8 @@ function ldap_load_user ($login) {
 	$time = get_system_time ();
 	if (ldap_connect_bind ()) {
 		
-		$sr = ldap_search ($ldap_cache["ds"], $config["auth"]["ldap_base_dn"], "(&(".$config["auth"]["ldap_login_attr"]."=".$login.")".$config["auth"]["ldap_user_filter"].")", array_values ($config["auth"]["ldap_user_attr"]));
+		$sr = ldap_search ($ldap_cache["ds"],
+			io_safe_output($config["auth"]["ldap_base_dn"]), "(&(".io_safe_output($config["auth"]["ldap_login_attr"])."=".$login.")".io_safe_output($config["auth"]["ldap_user_filter"]).")", array_values ($config["auth"]["ldap_user_attr"]));
 		
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server (load_user): ' . ldap_error( $ldap_cache["ds"] );
@@ -497,7 +504,7 @@ function get_users ($order = false) {
 	$time = get_system_time ();
 	
 	if (ldap_connect_bind ()) {
-		$sr = @ldap_search ($ldap_cache["ds"], $config["auth"]["ldap_base_dn"], $config["auth"]["ldap_user_filter"], array_values ($config["auth"]["ldap_user_attr"]));
+		$sr = @ldap_search ($ldap_cache["ds"], io_safe_output($config["auth"]["ldap_base_dn"]), io_safe_output($config["auth"]["ldap_user_filter"]), array_values ($config["auth"]["ldap_user_attr"]));
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server (get_users): ' . ldap_error( $ldap_cache["ds"] );
 		}

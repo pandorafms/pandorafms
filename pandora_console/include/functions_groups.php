@@ -236,7 +236,7 @@ function groups_check_used($idGroup) {
  * @param integer $parent The id_group parent to search the childrens.
  * @param array $groups The groups, its for optimize the querys to DB.
  */
-function groups_get_childrens($parent, $groups = null) {
+function groups_get_childrens($parent, $groups = null, $onlyPropagate = false) {
 	if (empty($groups)) {
 		$groups = db_get_all_rows_in_table('tgrupo');
 	}
@@ -248,7 +248,7 @@ function groups_get_childrens($parent, $groups = null) {
 			continue;
 		}
 		
-		if ($group['propagate']) {
+		if ($group['propagate'] || $onlyPropagate) {
 			if ($group['parent'] == $parent) {
 				$return = $return + array($group['id_grupo'] => $group) + groups_get_childrens($group['id_grupo'], $groups);
 			}

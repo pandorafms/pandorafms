@@ -230,14 +230,14 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$buttons['addmap'] = array('active' => $activeTab == false,
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 		html_print_image("images/add_mc.png", true, array ("title" => __('Add map'))) .'</a>');
-
+	
 	if (!$nomaps && $id_networkmap != 0) {
 		$buttons['deletemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 			html_print_image("images/delete_mc.png", true, array ("title" => __('Delete map'))) .'</a>');
-	
+		
 		$buttons['savemap'] = array('active' => $activeTab == false,
-		'text' => '<a href="index.php?sec=network&amp;' .
+			'text' => '<a href="index.php?sec=network&amp;' .
 			'sec2=operation/agentes/networkmap&amp;' .
 			'id_networkmap=' . $id_networkmap . '&amp;' .
 			'save_networkmap=1&amp;' .
@@ -320,7 +320,7 @@ $options_form = '<form action="index.php?sec=network&amp;sec2=operation/agentes/
 
 
 unset($table);
-$table->width = '95%';
+$table->width = '98%';
 $table->class = 'databox';
 $table->data = array();
 $table->data[0][] = __('Name:') . '&nbsp;' .
@@ -329,7 +329,9 @@ $table->data[0][] = __('Group:') . '&nbsp;' .
 	html_print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
 if ($activeTab == 'groups' || $activeTab == 'policies') {
 	$table->data[0][] = __('Module group') . '&nbsp;' .
-		html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group', 'module_group', $module_group, '', 'All', 0, true);
+		html_print_select_from_sql ('
+			SELECT id_mg, name
+			FROM tmodule_group', 'module_group', $module_group, '', 'All', 0, true);
 }
 
 if ($activeTab == 'topology') {
@@ -411,7 +413,7 @@ if ($activeTab != 'dinamic') {
 
 $table->data[2][] = __('Free text for search (*):') . '&nbsp;' .
 	html_print_input_text('text_filter', $text_filter, '', 30, 100, true);
-if ($activeTab == 'groups') {
+if (($activeTab == 'groups') || ($activeTab == 'topology')) {
 	$table->data[2][] = __('Don\'t show subgroups:') .
 		ui_print_help_tip(__('Only run with it is filter for any group'), true) .
 		'&nbsp;' .

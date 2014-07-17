@@ -233,7 +233,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
 	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
-	$relative = false, $text_filter = '', $l2_network = false, $ip_mask = null) {
+	$relative = false, $text_filter = '', $l2_network = false, $ip_mask = null,
+	$dont_show_subgroups = false) {
 	
 	global $config;
 	
@@ -262,7 +263,20 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	}
 	
 	if ($group >= 1) {
-		$filter['id_grupo'] = $group;
+		if ($dont_show_subgroups)
+			$filter['id_grupo'] = $group;
+		else {
+			$childrens = groups_get_childrens($group, null, true);
+			if (!empty($childrens)) {
+				$childrens = array_keys($childrens);
+				
+				$filter['id_grupo'] = $childrens;
+				$filter['id_grupo'][] = $group;
+			}
+			else {
+				$filter['id_grupo'] = $group;
+			}
+		}
 		
 		//Order by id_parent ascendant for to avoid the bugs
 		//because the first agents to process in the next
@@ -589,7 +603,13 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 }
 
 // Generate a dot graph definition for graphviz with groups
-function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0, $dont_show_subgroups = 0, $text_filter = '') {
+function networkmap_generate_dot_groups ($pandora_name, $group = 0,
+	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
+	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
+	$modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0,
+	$depth = 'all', $id_networkmap = 0, $dont_show_subgroups = 0,
+	$text_filter = '') {
+	
 	global $config;
 	
 	$parents = array();
@@ -682,7 +702,8 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 		// Get agents data
 		$agents = agents_get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_agente, 
-				normal_count, warning_count, critical_count, unknown_count, total_count, notinit_count'));
+				normal_count, warning_count, critical_count,
+				unknown_count, total_count, notinit_count'));
 		
 		if ($agents === false)
 			$agents = array();

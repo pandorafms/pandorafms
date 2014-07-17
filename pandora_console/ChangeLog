@@ -1,3 +1,15 @@
+2014-07-17  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_groups.php: added parameter to avoid the check
+	the propagation in the function "groups_get_childrens".
+	
+	* include/functions_networkmap.php,
+	operation/agentes/networkmap.php,
+	operation/agentes/networkmap.topology.php: added feature to show the
+	agents in subgroups (or not).
+	
+	INCIDENT: #1018
+
 2014-07-14  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/admin_access_log.php

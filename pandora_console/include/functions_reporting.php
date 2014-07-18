@@ -3123,9 +3123,29 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			else {
 				
-				$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
-					false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-					$report["datetime"], '', 0, 0, true, true, ui_get_full_url(false) . '/');
+				$data[0] = grafico_modulo_sparse(
+					$content['id_agent_module'],
+					$content['period'],
+					false,
+					$sizgraph_w,
+					$sizgraph_h,
+					'',
+					'',
+					false,
+					true,
+					true,
+					$report["datetime"],
+					'',
+					0,
+					0,
+					true,
+					true,
+					ui_get_full_url(false) . '/',
+					1,
+					false,
+					'',
+					false,
+					true);
 			}
 			
 			array_push ($table->data, $data);

@@ -102,13 +102,14 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 	
 	foreach ($chart_array as $item) {
 		if ($series_suffix != '') {
-			$item['sum'] = $item['sum'.$series_suffix];
-			$item['min'] = $item['min'.$series_suffix];
-			$item['max'] = $item['max'.$series_suffix];
+			$item['sum'] = $item['sum' . $series_suffix];
+			$item['min'] = $item['min' . $series_suffix];
+			$item['max'] = $item['max' . $series_suffix];
 		}
 		
 		//Get stats for normal graph
 		if (isset($item['sum']) && $item['sum']) {
+			
 			//Sum all values later divide by the number of elements
 			$stats['sum']['avg'] = $stats['sum']['avg'] + $item['sum'];
 			
@@ -3257,7 +3258,7 @@ function graph_netflow_host_traffic ($data, $unit, $width = 700, $height = 700) 
  * @param integer date date
  */
 function grafico_modulo_string ($agent_module_id, $period, $show_events,
-	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
+	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure = 0,
 	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $ttl = 1, $menu = true) {
 	global $config;
 	global $graphic_type;
@@ -3417,7 +3418,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		//The order in chart array is very important!!!!
 		if ($show_events) {
 			$chart[$timestamp]['event'] = $event_value;
-		}	
+		}
 		
 		if ($show_alerts) {
 			$chart[$timestamp]['alert'] = $alert_value;

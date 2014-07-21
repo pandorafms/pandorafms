@@ -1,3 +1,7 @@
+2014-07-21  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* pandoradb.postgreSQL.sql: fixed the SQL.
+
 2014-07-18  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php, include/functions_reporting.php:

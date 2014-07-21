@@ -26,7 +26,8 @@
 
 --\c "pandora"
 
-CREATE OR REPLACE LANGUAGE plpgsql;
+-- For previous PostgreSQL version 9.0
+CREATE LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION unix_timestamp(TIMESTAMP without time zone = CURRENT_TIMESTAMP) RETURNS double precision AS 'SELECT ceil(date_part(''epoch'', $1)); ' LANGUAGE SQL;
 
@@ -240,10 +241,10 @@ CREATE TABLE "tagente_modulo" (
 	"disabled_types_event" TEXT default '',
 	"module_macros" TEXT default '',
 	"min_ff_event_normal" INTEGER default 0,
-        "min_ff_event_warning" INTEGER default 0,
-        "min_ff_event_critical" INTEGER default 0,
-        "each_ff" SMALLINT default 0,
-	"ff_timeout" INTEGER unsigned default 0
+	"min_ff_event_warning" INTEGER default 0,
+	"min_ff_event_critical" INTEGER default 0,
+	"each_ff" SMALLINT default 0,
+	"ff_timeout" INTEGER default 0
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");
@@ -1595,7 +1596,7 @@ CREATE TABLE "tpassword_history" (
 -- -----------------------------------------------------
 -- Table `tevent_response`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS "tevent_response" (
+CREATE TABLE "tevent_response" (
 	"id"  SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(600) NOT NULL default '',
 	"description" TEXT,
@@ -1611,7 +1612,7 @@ CREATE TABLE IF NOT EXISTS "tevent_response" (
 -- ---------------------------------------------------------------------
 -- Table "tcategory"
 -- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS "tcategory" (
+CREATE TABLE "tcategory" (
 	"id"  SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(600) NOT NULL default ''
 );

@@ -1,3 +1,10 @@
+2014-07-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+        * include/ajax/events.php: Fixed custom fields view in
+        metaconsole event extended view.
+
+        This is my last commit for Pandora guys! Bye ;-)
+
 2014-07-22  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/agent_wizard.snmp_explorer.php,

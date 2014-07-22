@@ -349,7 +349,13 @@ if ($get_extended_event) {
 	}
 	
 	$details = events_page_details($event, $server);
-	
+
+	// Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct node connection was lost
+	if ($meta) {
+		$server = metaconsole_get_connection_by_id ($server_id);
+                metaconsole_connect($server);
+	}
+
 	$custom_fields = events_page_custom_fields($event);
 	
 	$custom_data = events_page_custom_data($event);

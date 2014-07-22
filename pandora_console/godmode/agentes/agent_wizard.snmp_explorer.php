@@ -50,64 +50,73 @@ $create_modules = (int) get_parameter("create_modules", 0);
 // Get the plugin
 $plugin = db_get_row_sql('SELECT * FROM tplugin WHERE execute LIKE "%/snmp_remote.pl"');
 
-if(empty($plugin)) {
+if (empty($plugin)) {
 	ui_print_info_message(array('message' => __('The SNMP remote plugin doesnt seem to be installed') . '. ' . __('It is necessary to use some features') . '.<br><br>' . __('Please, install the SNMP remote plugin (The name of the plugin must be snmp_remote.pl)'), 'no_close' => true));
 }
 
 // Define STATIC SNMP data
 $static_snmp_descriptions = array(
-					'Load-1' => 'Load Average (Last minute)',
-					'Load-5' => 'Load Average (Last 5 minutes)',
-					'Load-15' => 'Load Average (Last 5 minutes)',
-					'memTotalSwap' => 'Total Swap Size configured for the host',
-					'memAvailSwap' => 'Available Swap Space on the host',
-					'memTotalReal' => 'Total Real/Physical Memory Size on the host',
-					'memAvailReal' => 'Available Real/Physical Memory Space on the host',
-					'memTotalFree' => 'Total Available Memory on the host',
-					//'memShared' => 'Total Shared Memory',
-					'memCached' => 'Total Cached Memory',
-					'memBuffer' => 'Total Buffered Memory',
-					'ssSwapIn' => 'Amount of memory swapped in from disk (kB/s)',
-					'ssSwapOut' => 'Amount of memory swapped to disk (kB/s)',
-					'ssIORawSent' => 'Number of blocks sent to a block device',
-					'ssIORawReceived' => 'Number of blocks received from a block device',
-					'ssRawInterrupts' => 'Number of interrupts processed',
-					'ssRawContexts' => 'Number of context switches',
-					'ssCpuRawUser' => 'user CPU time',
-					'ssCpuRawSystem' => 'system CPU time',
-					'ssCpuRawIdle' => 'idle CPU time'
-					);
-					
+	'Load-1' => 'Load Average (Last minute)',
+	'Load-5' => 'Load Average (Last 5 minutes)',
+	'Load-15' => 'Load Average (Last 5 minutes)',
+	'memTotalSwap' => 'Total Swap Size configured for the host',
+	'memAvailSwap' => 'Available Swap Space on the host',
+	'memTotalReal' => 'Total Real/Physical Memory Size on the host',
+	'memAvailReal' => 'Available Real/Physical Memory Space on the host',
+	'memTotalFree' => 'Total Available Memory on the host',
+	//'memShared' => 'Total Shared Memory',
+	'memCached' => 'Total Cached Memory',
+	'memBuffer' => 'Total Buffered Memory',
+	'ssSwapIn' => 'Amount of memory swapped in from disk (kB/s)',
+	'ssSwapOut' => 'Amount of memory swapped to disk (kB/s)',
+	'ssIORawSent' => 'Number of blocks sent to a block device',
+	'ssIORawReceived' => 'Number of blocks received from a block device',
+	'ssRawInterrupts' => 'Number of interrupts processed',
+	'ssRawContexts' => 'Number of context switches',
+	'ssCpuRawUser' => 'user CPU time',
+	'ssCpuRawSystem' => 'system CPU time',
+	'ssCpuRawIdle' => 'idle CPU time'
+	);
+
 $static_snmp_oids = array(
-					'Load-1' => '.1.3.6.1.4.1.2021.10.1.5.1',
-					'Load-5' => '.1.3.6.1.4.1.2021.10.1.5.2',
-					'Load-15' => '.1.3.6.1.4.1.2021.10.1.5.3',
-					'memTotalSwap' => '.1.3.6.1.4.1.2021.4.3.0',
-					'memAvailSwap' => '.1.3.6.1.4.1.2021.4.4.0',
-					'memTotalReal' => '.1.3.6.1.4.1.2021.4.5.0',
-					'memAvailReal' => '.1.3.6.1.4.1.2021.4.6.0',
-					'memTotalFree' => '.1.3.6.1.4.1.2021.4.11.0',
-					//'memShared' => '.1.3.6.1.4.1.2021.4.13',
-					'memCached' => '.1.3.6.1.4.1.2021.4.15.0',
-					'memBuffer' => '.1.3.6.1.4.1.2021.4.14.0',
-					'ssSwapIn' => '.1.3.6.1.4.1.2021.11.3.0',
-					'ssSwapOut' => '.1.3.6.1.4.1.2021.11.4.0',
-					'ssIORawSent' => '.1.3.6.1.4.1.2021.11.57.0',
-					'ssIORawReceived' => '.1.3.6.1.4.1.2021.11.58.0',
-					'ssRawInterrupts' => '.1.3.6.1.4.1.2021.11.59.0',
-					'ssRawContexts' => '.1.3.6.1.4.1.2021.11.60.0',
-					'ssCpuRawUser' => '.1.3.6.1.4.1.2021.11.50.0',
-					'ssCpuRawSystem' => '.1.3.6.1.4.1.2021.11.52.0',
-					'ssCpuRawIdle' => '.1.3.6.1.4.1.2021.11.53.0'
-					);
+	'Load-1' => '.1.3.6.1.4.1.2021.10.1.5.1',
+	'Load-5' => '.1.3.6.1.4.1.2021.10.1.5.2',
+	'Load-15' => '.1.3.6.1.4.1.2021.10.1.5.3',
+	'memTotalSwap' => '.1.3.6.1.4.1.2021.4.3.0',
+	'memAvailSwap' => '.1.3.6.1.4.1.2021.4.4.0',
+	'memTotalReal' => '.1.3.6.1.4.1.2021.4.5.0',
+	'memAvailReal' => '.1.3.6.1.4.1.2021.4.6.0',
+	'memTotalFree' => '.1.3.6.1.4.1.2021.4.11.0',
+	//'memShared' => '.1.3.6.1.4.1.2021.4.13',
+	'memCached' => '.1.3.6.1.4.1.2021.4.15.0',
+	'memBuffer' => '.1.3.6.1.4.1.2021.4.14.0',
+	'ssSwapIn' => '.1.3.6.1.4.1.2021.11.3.0',
+	'ssSwapOut' => '.1.3.6.1.4.1.2021.11.4.0',
+	'ssIORawSent' => '.1.3.6.1.4.1.2021.11.57.0',
+	'ssIORawReceived' => '.1.3.6.1.4.1.2021.11.58.0',
+	'ssRawInterrupts' => '.1.3.6.1.4.1.2021.11.59.0',
+	'ssRawContexts' => '.1.3.6.1.4.1.2021.11.60.0',
+	'ssCpuRawUser' => '.1.3.6.1.4.1.2021.11.50.0',
+	'ssCpuRawSystem' => '.1.3.6.1.4.1.2021.11.52.0',
+	'ssCpuRawIdle' => '.1.3.6.1.4.1.2021.11.53.0'
+	);
 
 // Using plugin
-if(!empty($plugin)) {
+if (!empty($plugin)) {
 	$static_snmp_descriptions['avgCpuLoad'] = 'Average of CPUs Load (%)';
 	$static_snmp_descriptions['memoryUse'] = 'Memory use (%)';
 }
 
 $fail = false;
+
+$devices = array();
+$processes = array();
+$disks = array();
+$temperatures = array();
+
+$arrow = false;
+
+$other_snmp_data = array();
 
 if ($snmpwalk) {
 	// OID Used is for DISKS
@@ -120,7 +129,6 @@ if ($snmpwalk) {
 		$snmpis = array();
 	}
 	else {
-		$disks = array();
 		// We get here only the interface part of the MIB, not full mib
 		foreach($snmpis as $key => $snmp) {
 			
@@ -136,14 +144,14 @@ if ($snmpwalk) {
 			
 			if (array_key_exists(1,$data)) {
 				$disks[$data[1]] = $data[1];
-
+			
 			}
 			else {
 				$disks[$data[0]] = $data[0];
-
-			}	
+				
+			}
 		}
-			
+		
 		// OID Used is for PROCESSES
 		$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 			$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
@@ -152,8 +160,8 @@ if ($snmpwalk) {
 		if ($snmpis === false) {
 			$snmpis = array();
 		}
-
-		$processes = array();
+		
+		
 		// We get here only the interface part of the MIB, not full mib
 		foreach($snmpis as $key => $snmp) {
 			
@@ -168,12 +176,12 @@ if ($snmpwalk) {
 			
 			if (array_key_exists(1,$data)) {
 				$process_name = str_replace  ( "\""  , "" , $data[1]);
-
+				
 			}
 			else {
 				$process_name = str_replace  ( "\""  , "" , $data[0]);
-
-			}	
+				
+			}
 			
 			$processes[$process_name] = $process_name;
 		}
@@ -191,7 +199,7 @@ if ($snmpwalk) {
 			$snmpis = array();
 		}
 		
-		$temperatures = array();
+		
 		// We get here only the interface part of the MIB, not full mib
 		foreach($snmpis as $key => $snmp) {
 			
@@ -208,11 +216,11 @@ if ($snmpwalk) {
 			if ($keydata2[0] == 'lmTempSensorsDevice') {
 				if (array_key_exists(1,$data)) {
 					$temperatures[$keydata2[1]] = $data[1];
-
+					
 				}
 				else {
 					$temperatures[$keydata2[1]] = $data[0];
-
+					
 				}
 			}
 		}
@@ -229,7 +237,7 @@ if ($snmpwalk) {
 			$snmpis = array();
 		}
 		
-		$devices = array();
+		
 		// We get here only the interface part of the MIB, not full mib
 		foreach($snmpis as $key => $snmp) {
 			
@@ -262,8 +270,15 @@ if ($snmpwalk) {
 	
 	// Other SNMP Data
 	$arrow = true;
-	foreach ($static_snmp_oids as $key=>$oid) {
-		$result = snmpget($ip_target, $snmp_community, $oid);
+	
+	foreach ($static_snmp_oids as $key => $oid) {
+		if ($snmp_version == 3) {
+			$result = false; //It is statics oids.
+		}
+		else {
+			$result = snmpget($ip_target, $snmp_community, $oid);
+		}
+		
 		if ($result != false) {
 			$other_snmp_data[$key] = $static_snmp_descriptions[$key];
 		}
@@ -341,33 +356,33 @@ if ($create_modules) {
 		
 		// DEVICES
 		$devices_prefix_oids = array(
-								'diskIONRead' => '.1.3.6.1.4.1.2021.13.15.1.1.3.',
-								'diskIONWritten' => '.1.3.6.1.4.1.2021.13.15.1.1.4.',
-								'diskIONReads' => '.1.3.6.1.4.1.2021.13.15.1.1.5.',
-								'diskIONWrites' => '.1.3.6.1.4.1.2021.13.15.1.1.6.'
-								);
-								
+			'diskIONRead' => '.1.3.6.1.4.1.2021.13.15.1.1.3.',
+			'diskIONWritten' => '.1.3.6.1.4.1.2021.13.15.1.1.4.',
+			'diskIONReads' => '.1.3.6.1.4.1.2021.13.15.1.1.5.',
+			'diskIONWrites' => '.1.3.6.1.4.1.2021.13.15.1.1.6.'
+			);
+		
 		$devices_prefix_descriptions = array(
-								'diskIONRead' => 'The number of bytes read from this device since boot',
-								'diskIONWritten' => 'The number of bytes written to this device since boot',
-								'diskIONReads' => 'The number of read accesses from this device since boot',
-								'diskIONWrites' => 'The number of write accesses from this device since boot'
-								);
-								
+			'diskIONRead' => 'The number of bytes read from this device since boot',
+			'diskIONWritten' => 'The number of bytes written to this device since boot',
+			'diskIONReads' => 'The number of read accesses from this device since boot',
+			'diskIONWrites' => 'The number of write accesses from this device since boot'
+			);
+		
 		$results = array();
 		
 		foreach ($devices as $device) {
 			$module_values = $common_values;
-
+			
 			// Split module data to get type, name, etc
 			$device_exploded = explode($separator, $device);
 			$device_name = $device_exploded[0];
 			
 			$name_exploded = explode('-', $device_name);
 			$name = ltrim(html_entity_decode($name_exploded[1]));
-
+			
 			$device_type = $device_exploded[1];
-		
+			
 			// Delete type from device id
 			unset($device_exploded[0]);
 			unset($device_exploded[1]);
@@ -376,10 +391,11 @@ if ($create_modules) {
 			$device_id = implode($separator, $device_exploded);
 			
 			$module_values['descripcion'] = $devices_prefix_descriptions[$device_type];
-	
+			
 			if (($name == 'Bytes read') || ($name == 'Bytes written')) {
 				$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp_inc');
-			} else {
+			}
+			else {
 				$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
 			}
 			
@@ -398,7 +414,7 @@ if ($create_modules) {
 		
 		foreach ($temperatures as $temperature) {
 			$module_values = $common_values;
-
+			
 			// Split module data to get type, name, etc
 			$temperature_exploded = explode($separator, $temperature);
 			$temperature_name = $temperature_exploded[0];
@@ -434,14 +450,14 @@ if ($create_modules) {
 			
 			$module_values['descripcion'] = $static_snmp_descriptions[$snmpdata_name];
 			$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
-
+			
 			//Average use of CPUs is a plugin module
 			switch ($snmpdata_name) {
 				case 'avgCpuLoad':
 				case 'memoryUse':
 					$module_values['id_modulo'] = MODULE_PLUGIN;
 					$module_values['id_plugin'] = $plugin['id'];
-
+					
 					$macros = json_decode($plugin['macros'], true);
 					
 					foreach($macros as $k => $macro) {
@@ -497,7 +513,7 @@ if ($create_modules) {
 			
 			$macros = json_decode($plugin['macros'], true);
 			
-			foreach($macros as $k => $macro) {
+			foreach ($macros as $k => $macro) {
 				switch($macro['macro']) {
 					case '_field1_':
 						// Field 1 is the IP Address
@@ -519,7 +535,7 @@ if ($create_modules) {
 			unset($module_values['snmp_community']); //snmp_community
 			unset($module_values['ip_target']); //ip_target
 			unset($module_values['tcp_send']); //snmp_version
-
+			
 			$result = modules_create_agent_module ($id_agent, io_safe_input($process), $module_values);
 			
 			$results[$result][] = $process;
@@ -537,7 +553,7 @@ if ($create_modules) {
 			
 			$macros = json_decode($plugin['macros'], true);
 			
-			foreach($macros as $k => $macro) {
+			foreach ($macros as $k => $macro) {
 				switch($macro['macro']) {
 					case '_field1_':
 						// Field 1 is the IP Address
@@ -559,34 +575,41 @@ if ($create_modules) {
 			unset($module_values['snmp_community']); //snmp_community
 			unset($module_values['ip_target']); //ip_target
 			unset($module_values['tcp_send']); //snmp_version
-
+			
 			$result = modules_create_agent_module ($id_agent, io_safe_input($disk), $module_values);
 			
 			$results[$result][] = $disk;
 		}
-				
+		
 		$success_message = '';
 		$error_message = '';
-	
-		if (count($results[NOERR]) > 0) {
-			$success_message .= sprintf(__('%s modules created succesfully'), count($results[NOERR])) . '<br>';
+		
+		if (isset($results[NOERR])) {
+			if (count($results[NOERR]) > 0) {
+				$success_message .= sprintf(__('%s modules created succesfully'), count($results[NOERR])) . '<br>';
+			}
 		}
-		if (count($results[ERR_GENERIC]) > 0) {
-			$error_message .= sprintf(__('Error creating %s modules') . ': <br>&nbsp;&nbsp;* ' . implode('<br>&nbsp;&nbsp;* ', $results[ERR_GENERIC]), count($results[ERR_GENERIC])) . '<br>';
+		if (isset($results[ERR_GENERIC])) {
+			if (count($results[ERR_GENERIC]) > 0) {
+				$error_message .= sprintf(__('Error creating %s modules') . ': <br>&nbsp;&nbsp;* ' . implode('<br>&nbsp;&nbsp;* ', $results[ERR_GENERIC]), count($results[ERR_GENERIC])) . '<br>';
+			}
 		}
-		if (count($results[ERR_EXIST]) > 0) {
-			$error_message .= sprintf(__('%s modules already exist') . ': <br>&nbsp;&nbsp;* ' . implode('<br>&nbsp;&nbsp;* ', $results[ERR_EXIST]), count($results[ERR_EXIST])) . '<br>';
+		if (isset($results[ERR_EXIST])) {
+			if (count($results[ERR_EXIST]) > 0) {
+				$error_message .= sprintf(__('%s modules already exist') . ': <br>&nbsp;&nbsp;* ' . implode('<br>&nbsp;&nbsp;* ', $results[ERR_EXIST]), count($results[ERR_EXIST])) . '<br>';
+			}
 		}
 		 
 		if (!empty($error_message)) {
 			ui_print_error_message($error_message);
-		} else {
+		}
+		else {
 			if (empty($success_message)) {
 				$success_message .= sprintf(__('Modules created succesfully')) . '<br>';
 			}
 			ui_print_success_message($success_message);
 		}
-	}				
+	}
 }
 
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
@@ -697,17 +720,17 @@ if (!$fail) {
 	$table->data[1][0] .= html_print_select ($modes,
 		'snmp_wizard_modes', '', '', '', '', true, false, false);
 	$table->cellstyle[1][0] = 'vertical-align: middle;';
-
+	
 	$table->colspan[1][0] = 2;
 	$table->data[1][2] = '<b>'.__('Modules').'</b>';
 	$table->cellstyle[1][2] = 'vertical-align: middle;';
-
+	
 	// Devices list
-	$table->data[2][0] .= '<div class="wizard_mode_form wizard_mode_devices">';
+	$table->data[2][0] = '<div class="wizard_mode_form wizard_mode_devices">';
 	$table->data[2][0] .= html_print_select ($devices, 'devices', '', '',
 		'', '', true, true, true, '', false, 'width: 300px;');
 	$table->data[2][0] .= '</div>';
-
+	
 	// If SNMP remote plugin is not installed, show an advice
 	if(empty($plugin)) {
 		// Processes list
@@ -747,7 +770,7 @@ if (!$fail) {
 	$table->data[2][0] .= '</div>';
 	
 	$table->cellstyle[2][0] = 'vertical-align: top; text-align: center;';
-
+	
 	// Devices arrow
 	$table->data[2][1] = '<div class="wizard_mode_form wizard_mode_devices wizard_mode_devices_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
 	// Processes arrow
@@ -761,15 +784,15 @@ if (!$fail) {
 		$table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_snmpdata wizard_mode_snmpdata_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
 	}
 	$table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">' . html_print_image('images/cross.png', true, array('title' => __('Remove from modules list'))) . '</div>'; 
-	$table->cellstyle[2][1] .= 'vertical-align: middle; text-align: center;';
-
+	$table->cellstyle[2][1] = 'vertical-align: middle; text-align: center;';
+	
 	$table->data[2][2] = html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:300px; height: 100%;');
 	$table->data[2][2] .= html_print_input_hidden('agent', $id_agent, true);
 	$table->cellstyle[2][2] = 'vertical-align: top; text-align: center;';
-
+	
 	html_print_table($table);
 	
-	echo "<div style='text-align:right; width:".$table->width."'>";
+	echo "<div style='text-align:right; width:" . $table->width . "'>";
 	html_print_submit_button(__('Create modules'), 'create_modules_btn', false, array('class' => 'sub add'));
 	echo "</div>";
 	unset($table);
@@ -778,7 +801,7 @@ if (!$fail) {
 	echo "</form>";
 	echo '</div>';
 }
-	
+
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
 ui_require_jquery_file ('bgiframe');

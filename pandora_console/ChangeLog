@@ -1,5 +1,10 @@
 2014-07-22  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/agent_wizard.snmp_explorer.php,
+	include/functions.php: some fixes for the snmp v3.
+
+2014-07-22  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/agent_manager.php: fixed to show the QR code image
 	in the creation of a new agent.
 

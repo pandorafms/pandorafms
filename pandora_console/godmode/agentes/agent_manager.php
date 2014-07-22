@@ -159,7 +159,8 @@ if ($id_agente) {
 	
 	$table->data[0][1] .= "&nbsp;<b>" . __("ID") . "</b>&nbsp; $id_agente &nbsp;";
 	$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
-	$table->data[0][1] .= html_print_image ("images/zoom.png", true, array ("border" => 0, "title" => __('Agent detail')));
+	$table->data[0][1] .= html_print_image ("images/zoom.png",
+		true, array ("border" => 0, "title" => __('Agent detail')));
 	$table->data[0][1] .= '</a>';
 }
 
@@ -215,9 +216,14 @@ if ($id_agente) {
 </style>
 <?php
 $table->rowspan[1][2] = 7;
-$table->data[1][2] =
-	"<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"" .
-		ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente) . "\" );'></a>";
+if ($id_agente) {
+	$table->data[1][2] =
+		"<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"" .
+			ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente) . "\" );'></a>";
+}
+else {
+	$table->data[1][2] = __("Only it is show when<br />the agent is saved.");
+}
 
 $groups = users_get_groups ($config["id_user"], "AR",false);
 $agents = agents_get_group_agents (array_keys ($groups));

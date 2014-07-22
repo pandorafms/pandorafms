@@ -1,3 +1,8 @@
+2014-07-22  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/agent_manager.php: fixed to show the QR code image
+	in the creation of a new agent.
+
 2014-07-21  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* pandoradb.postgreSQL.sql: fixed the SQL.

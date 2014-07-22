@@ -1430,9 +1430,11 @@ function array_key_to_offset($array, $key) {
  * 
  * @return array SNMP result.
  */
-function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_auth_user = '',
-	$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
-	$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "", $snmp_port = '') {
+function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
+	$snmp3_auth_user = '', $snmp3_security_level = '',
+	$snmp3_auth_method = '', $snmp3_auth_pass = '',
+	$snmp3_privacy_method = '', $snmp3_privacy_pass = '',
+	$quick_print = 0, $base_oid = "", $snmp_port = '') {
 	
 	global $config;
 	
@@ -1464,7 +1466,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 	else {
 		$snmpwalk_bin = $config['snmpwalk'];
 	}
-
+	
 	switch (PHP_OS) {
 		case "WIN32":
 		case "WINNT":
@@ -1480,15 +1482,53 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 	$rc = 0;
 	switch ($snmp_version) {
 		case '3':
-			exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2> ' . $error_redir_dir, $output, $rc);
+			switch ($snmp3_security_level) {
+				case "authNoPriv":
+					$command_str = $snmpwalk_bin .
+						' -m ALL -v 3' .
+						' -u ' . escapeshellarg($snmp3_auth_user) .
+						' -A ' . escapeshellarg($snmp3_auth_pass) .
+						' -l ' . escapeshellarg($snmp3_security_level) .
+						' -a ' . escapeshellarg($snmp3_auth_method) .
+						' ' . escapeshellarg($ip_target)  .
+						' ' . $base_oid .
+						' 2> ' . $error_redir_dir;
+					break;
+				case "noAuthNoPriv":
+					$command_str = $snmpwalk_bin .
+						' -m ALL -v 3' .
+						' -u ' . escapeshellarg($snmp3_auth_user) .
+						' -l ' . escapeshellarg($snmp3_security_level) .
+						' ' . escapeshellarg($ip_target)  .
+						' ' . $base_oid .
+						' 2> ' . $error_redir_dir;
+					break;
+				default:
+					$command_str = $snmpwalk_bin .
+						' -m ALL -v 3' .
+						' -u ' . escapeshellarg($snmp3_auth_user) .
+						' -A ' . escapeshellarg($snmp3_auth_pass) .
+						' -l ' . escapeshellarg($snmp3_security_level) .
+						' -a ' . escapeshellarg($snmp3_auth_method) .
+						' -x ' . escapeshellarg($snmp3_privacy_method) .
+						' -X ' . escapeshellarg($snmp3_privacy_pass) .
+						' ' . escapeshellarg($ip_target)  .
+						' ' . $base_oid .
+						' 2> ' . $error_redir_dir;
+					break;
+			}
 			break;
 		case '2':
 		case '2c':
 		case '1':
 		default:
-			exec ($snmpwalk_bin . ' -m ALL -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2> ' . $error_redir_dir, $output, $rc);	
+			$command_str = $snmpwalk_bin . ' -m ALL -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2> ' . $error_redir_dir;
 			break;
 	}
+	
+	//html_debug_print($command_str);
+	
+	exec($command_str, $output, $rc);
 	
 	// Parse the output of snmpwalk
 	$snmpwalk = array();

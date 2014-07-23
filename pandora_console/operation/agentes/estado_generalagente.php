@@ -477,7 +477,11 @@ $data[0] .= '<fieldset class="databox" style="position: static;">
 			'</fieldset>';
 
 // ACCESS RATE GRAPH
-if ($config["agentaccess"]) {
+$access_agent = db_get_value_sql("SELECT COUNT(id_agent)
+	FROM tagent_access
+	WHERE id_agent = " . $id_agente);
+
+if ($config["agentaccess"] && $access_agent > 0) {
 	$data[0] .= '<fieldset class="databox" style="position: static;">
 					<legend style="text-align:left; color: #666;">' . 
 						__('Agent access rate (24h)') . 

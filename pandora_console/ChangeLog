@@ -1,5 +1,12 @@
 2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/agentes/estado_generalagente.php: fixed the show the
+	agent access box when the agent is new without data.
+	
+	INCIDENT: #1078
+
+2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/agent_wizard.snmp_explorer.php,
 	godmode/agentes/module_manager_editor_plugin.php: some fixes for
 	the snmp version 3.

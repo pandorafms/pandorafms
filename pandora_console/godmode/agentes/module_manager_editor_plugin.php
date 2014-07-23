@@ -84,7 +84,12 @@ if (!empty($macros)) {
 		if (!empty($m['help'])) {
 			$data[0] .= ui_print_help_tip ($m['help'], true);
 		}
-		if($m['hide']) {
+		
+		$m_hide = false;
+		if (isset($m['hide']))
+			$m_hide = $m['hide'];
+		
+		if ($m_hide) {
 			$data[1] = html_print_input_password($m['macro'], $m['value'], '', 100, 255, true);
 		}
 		else {

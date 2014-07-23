@@ -195,6 +195,8 @@ function servers_get_performance () {
 		$interval_avgs_agents = array();
 	}
 	
+	$interval_avgs = array();
+	
 	// Merge with the previous calculated array
 	foreach($interval_avgs_agents as $iaagents) {
 		if(!isset($interval_avgs[$iaagents['id_modulo']]['modules'])) {

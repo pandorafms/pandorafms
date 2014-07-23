@@ -1,5 +1,10 @@
 2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_servers.php, include/functions_reporting.php:
+	tiny fixes for the improve the support of postgreSQL databases.
+
+2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/agentes/estado_generalagente.php: fixed the show the
 	agent access box when the agent is new without data.
 	

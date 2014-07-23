@@ -907,6 +907,8 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 }
 
 function reporting_get_stats_servers($tiny = true) {
+	global $config;
+	
 	$server_performance = servers_get_performance();
 	
 	// Alerts table
@@ -1020,8 +1022,23 @@ function reporting_get_stats_servers($tiny = true) {
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
 		
-		$system_events = db_get_value_sql('SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento');
-
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$system_events = db_get_value_sql(
+					'SELECT SQL_NO_CACHE COUNT(id_evento)
+					FROM tevento');
+				break;
+			case "postgresql":
+			case "oracle":
+				$system_events = db_get_value_sql(
+					'SELECT COUNT(id_evento)
+					FROM tevento');
+				break;
+		}
+		
+		
+		
 		$tdata = array();
 		$tdata[0] = html_print_image('images/lightning_go.png', true, array('title' => __('Total events'), 'width' => '25px'));
 		$tdata[1] = '<span class="big_data">' . format_numeric($system_events) . '</span>';

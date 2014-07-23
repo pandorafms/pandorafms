@@ -255,7 +255,7 @@ if(enterprise_installed()) {
 	else {
 		$data[1] = __('Enabled');
 	}
-
+	
 	$table_data->data[] = $data;
 }
 
@@ -323,7 +323,7 @@ $last_incident = db_get_row_sql("SELECT * FROM tincidencia
 		WHERE estado IN (0,1)
 		AND id_agent=$id_agente
 		ORDER BY actualizacion DESC");
-		
+
 if ($last_incident != false) {
 	
 	$table_incident->id = 'agent_incident_main';
@@ -333,10 +333,10 @@ if ($last_incident != false) {
 	$table_incident->class = 'databox';
 	$table_incident->style[0] = 'width: 30%;';
 	$table_incident->style[1] = 'width: 70%;';
-
+	
 	$table_incident->head[0] = ' <span>' . '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$last_incident["id_incidencia"].'">' .__('Active incident on this agent') .'</a>'. '</span>';
 	$table_incident->head_colspan[0] = 2;
-
+	
 	$data = array();
 	$data[0] = '<b>' . __('Author') . '</b>';
 	$data[1] = $last_incident["id_creator"];
@@ -391,20 +391,20 @@ if (! empty($modules)) {
 	$table_interface->head_colspan = array();
 	$table_interface->head_colspan[0] = 4;
 	$table_interface->data = array();
-
+	
 	foreach ($modules as $key => $module) {
-
+		
 		// Trying to get the interface name from the module name
 		if (preg_match ("/_(.+)$/", (string)$module['nombre'], $matches)) {
 			if ($matches[1]) {
 				$interface_name = $matches[1];
-
+				
 				$module_id = $module['id_agente_modulo'];
 				$db_status = modules_get_agentmodule_status($module_id);
 				$module_value = modules_get_last_value ($module_id);
 				modules_get_status($module_id, $db_status, $module_value, $status, $title);
 				$status = ui_print_status_image($status, $title, true);
-
+				
 				$ip_target = "--";
 				// Trying to get something like an IP from the description
 				if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", (string)$module['descripcion'], $matches) ||
@@ -421,7 +421,7 @@ if (! empty($modules)) {
 						$description = $matches[0];
 					}
 				}
-
+				
 				$data = array();
 				$data[0] = "<strong>" . $interface_name . "</strong>";
 				$data[1] = $status;
@@ -432,7 +432,7 @@ if (! empty($modules)) {
 		}
 	}
 	unset($modules);
-
+	
 	// This javascript piece of code is used to make expandible the body of the table
 	?>
 	<script type="text/javascript">

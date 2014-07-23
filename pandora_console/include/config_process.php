@@ -247,4 +247,24 @@ if (defined('METACONSOLE')) {
 // cases (reverse proxy, others ports...).
 //======================================================================
 $config["homeurl"] = ui_get_full_url(false);
+
+
+//======================================================================
+// Get the version of DB manager
+//======================================================================
+switch ($config["dbtype"]) {
+	case "mysql":
+		break;
+	case "postgresql":
+		if (!isset($config['dbversion'])) {
+			$result = db_get_sql("select version();");
+			$result_chunks = explode(" ", $result);
+			
+			$config['dbversion'] = $result_chunks[1];
+		}
+		break;
+	case "oracle":
+		break;
+}
+//======================================================================
 ?>

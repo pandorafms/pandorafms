@@ -14,8 +14,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-
 // Load global vars
 global $config;
 
@@ -44,6 +42,8 @@ else {
 	
 	ui_meta_print_header(__("Monitor view"));
 }
+
+
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
@@ -101,8 +101,12 @@ $sql_conditions_base = " WHERE tagente.id_agente = tagente_modulo.id_agente
 
 $sql_conditions = " AND tagente_modulo.disabled = 0 AND tagente.disabled = 0";
 
-
-$id_ag_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $ag_group);
+if (is_numeric($ag_group)) {
+	$id_ag_group = 0;
+}
+else {
+	$id_ag_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $ag_group);
+}
 
 // Agent group selector
 if (!defined('METACONSOLE')) {
@@ -123,6 +127,7 @@ else {
 		$sql_conditions_group = " AND tagente.id_grupo IN (".$user_groups.")";
 	}
 }
+
 // Module group
 if (defined('METACONSOLE')) {
 	if ($modulegroup != '-1')
@@ -310,7 +315,9 @@ if ($flag_is_admin)
 if (defined('METACONSOLE')) {
 	
 	// For each server defined and not disabled:
-	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
+	$servers = db_get_all_rows_sql ("SELECT *
+		FROM tmetaconsole_setup
+		WHERE disabled = 0");
 	
 	if ($servers === false)
 		$servers = array();
@@ -727,8 +734,15 @@ switch ($config["dbtype"]) {
 			LIMIT ".$offset.",".$limit_sql;
 		break;
 	case "postgresql":
+		if (strstr($config['dbversion'], "8.4") !== false) {
+			$string_agg = "array_to_string(array_agg(ttag.name), ',')";
+		}
+		else {
+			$string_agg = "STRING_AGG(ttag.name, ',')";
+		}
+		
 		$sql = "SELECT
-			(SELECT  STRING_AGG(ttag.name, ',')
+			(SELECT  " . $string_agg . "
 				FROM ttag
 				WHERE ttag.id_tag IN (
 					SELECT ttag_module.id_tag
@@ -760,7 +774,10 @@ switch ($config["dbtype"]) {
 			tagente_modulo.critical_instructions,
 			tagente_modulo.warning_instructions,
 			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp".$sql_form . $sql_conditions_all." LIMIT " . $limit_sql . " OFFSET " . $offset;
+			tagente_estado.utimestamp AS utimestamp" .
+			$sql_from .
+			$sql_conditions_all .
+			" LIMIT " . $limit_sql . " OFFSET " . $offset;
 		break;
 	case "oracle":
 		$set = array();
@@ -799,7 +816,9 @@ switch ($config["dbtype"]) {
 			tagente_modulo.critical_instructions,
 			tagente_modulo.warning_instructions,
 			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp" . $sql_form . $sql_conditions_all;
+			tagente_estado.utimestamp AS utimestamp" .
+			$sql_from .
+			$sql_conditions_all;
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }

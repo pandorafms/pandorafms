@@ -223,18 +223,31 @@ $selectLastContactUp = '';
 $selectLastContactDown = '';
 $order = null;
 
+
+$order_collation = "";
+switch ($config["dbtype"]) {
+	case "mysql":
+		$order_collation = "COLLATE utf8_general_ci";
+		break;
+	case "postgresql":
+	case "oracle":
+		$order_collation = "";
+		break;
+}
+
+
 switch ($sortField) {
 	case 'name':
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order = array('field' => 'nombre COLLATE utf8_general_ci',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'nombre' . $order_collation,
+					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order = array('field' => 'nombre COLLATE utf8_general_ci',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'nombre' . $order_collation,
+					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -243,12 +256,12 @@ switch ($sortField) {
 			case 'up':
 				$selectOsUp = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectOsDown = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -257,12 +270,12 @@ switch ($sortField) {
 			case 'up':
 				$selectIntervalUp = $selected;
 				$order = array('field' => 'intervalo',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectIntervalDown = $selected;
 				$order = array('field' => 'intervalo',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -271,12 +284,12 @@ switch ($sortField) {
 			case 'up':
 				$selectGroupUp = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectGroupDown = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -285,12 +298,12 @@ switch ($sortField) {
 			case 'up':
 				$selectLastContactUp = $selected;
 				$order = array('field' => 'ultimo_contacto',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
 				break;
 			case 'down':
 				$selectLastContactDown = $selected;
 				$order = array('field' => 'ultimo_contacto',
-					'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
 				break;
 		}
 		break;
@@ -305,15 +318,15 @@ switch ($sortField) {
 		$selectGroupDown = '';
 		$selectLastContactUp = '';
 		$selectLastContactDown = '';
-		$order = array('field' => 'nombre COLLATE utf8_general_ci',
-			'field2' => 'nombre COLLATE utf8_general_ci',
+		$order = array('field' => 'nombre' . $order_collation,
+			'field2' => 'nombre' . $order_collation,
 			'order' => 'ASC');
 		break;
 }
 
 $search_sql = '';
 if ($search != "") {
-	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
+	$search_sql = " AND ( nombre " . $order_collation . " LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
 }
 
 // Show only selected groups
@@ -340,8 +353,9 @@ $total_agents = agents_get_agents(array (
 	array ('COUNT(*) as total'), 'AR', false);
 $total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
 
+
 $agents = agents_get_agents(array (
-	'order' => 'nombre COLLATE utf8_general_ci ASC',
+	'order' => 'nombre ' . $order_collation . ' ASC',
 	'id_grupo' => $groups,
 	'disabled' => 0,
 	'status' => $status,
@@ -354,7 +368,7 @@ $agents = agents_get_agents(array (
 		'id_os',
 		'ultimo_contacto',
 		'intervalo',
-		'comentarios description', 
+		'comentarios description',
 		'quiet',
 		'normal_count',
 		'warning_count',

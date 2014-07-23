@@ -1,5 +1,12 @@
 2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/config_process.php, operation/agentes/status_monitor.php,
+	operation/agentes/estado_generalagente.php,
+	operation/agentes/estado_agente.php: tiny fixes for the improve the
+	support of postgreSQL databases.
+
+2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_servers.php, include/functions_reporting.php:
 	tiny fixes for the improve the support of postgreSQL databases.
 

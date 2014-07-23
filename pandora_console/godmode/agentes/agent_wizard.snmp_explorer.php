@@ -333,7 +333,7 @@ if ($create_modules) {
 		ui_print_error_message (__('No agent selected or the agent does not exist'));
 	}
 	else {
-	
+		
 		// Common values
 		$common_values = array();
 		
@@ -480,6 +480,33 @@ if ($create_modules) {
 										$macros[$k]['value'] = '-m memuse';
 										break;
 								}
+								
+								if ($snmp_version == '3') {
+									$macros[$k]['value'] .= " -v3 ";
+									switch ($snmp3_security_level) {
+										case "authNoPriv":
+											$macros[$k]['value'] .= 
+												' -u ' . $snmp3_auth_user .
+												' -A ' . $snmp3_auth_pass .
+												' -l ' . $snmp3_security_level .
+												' -a ' . $snmp3_auth_method;
+											break;
+										case "noAuthNoPriv":
+											$macros[$k]['value'] .= 
+												' -u ' . $snmp3_auth_user .
+												' -l ' . $snmp3_security_level;
+											break;
+										default:
+											$macros[$k]['value'] .= 
+												' -u ' . $snmp3_auth_user .
+												' -A ' . $snmp3_auth_pass .
+												' -l ' . $snmp3_security_level .
+												' -a ' . $snmp3_auth_method .
+												' -x ' . $snmp3_privacy_method .
+												' -X ' . $snmp3_privacy_pass;
+											break;
+									}
+								}
 								break;
 						}
 					}
@@ -526,6 +553,33 @@ if ($create_modules) {
 					case '_field3_':
 						// Field 3 is the plugin parameters
 						$macros[$k]['value'] = io_safe_input('-m process -p "' . $process . '"');
+						
+						if ($snmp_version == '3') {
+							$macros[$k]['value'] .= " -v3 ";
+							switch ($snmp3_security_level) {
+								case "authNoPriv":
+									$macros[$k]['value'] .= 
+										' -u ' . $snmp3_auth_user .
+										' -A ' . $snmp3_auth_pass .
+										' -l ' . $snmp3_security_level .
+										' -a ' . $snmp3_auth_method;
+									break;
+								case "noAuthNoPriv":
+									$macros[$k]['value'] .= 
+										' -u ' . $snmp3_auth_user .
+										' -l ' . $snmp3_security_level;
+									break;
+								default:
+									$macros[$k]['value'] .= 
+										' -u ' . $snmp3_auth_user .
+										' -A ' . $snmp3_auth_pass .
+										' -l ' . $snmp3_security_level .
+										' -a ' . $snmp3_auth_method .
+										' -x ' . $snmp3_privacy_method .
+										' -X ' . $snmp3_privacy_pass;
+									break;
+							}
+						}
 						break;
 				}
 			}
@@ -566,7 +620,33 @@ if ($create_modules) {
 					case '_field3_':
 						// Field 3 is the plugin parameters
 						$macros[$k]['value'] = io_safe_input('-m diskuse -d "' . io_safe_output($disk) . '"');
-						break;
+						
+						if ($snmp_version == '3') {
+							$macros[$k]['value'] .= " -v3 ";
+							switch ($snmp3_security_level) {
+								case "authNoPriv":
+									$macros[$k]['value'] .= 
+										' -u ' . $snmp3_auth_user .
+										' -A ' . $snmp3_auth_pass .
+										' -l ' . $snmp3_security_level .
+										' -a ' . $snmp3_auth_method;
+									break;
+								case "noAuthNoPriv":
+									$macros[$k]['value'] .= 
+										' -u ' . $snmp3_auth_user .
+										' -l ' . $snmp3_security_level;
+									break;
+								default:
+									$macros[$k]['value'] .= 
+										' -u ' . $snmp3_auth_user .
+										' -A ' . $snmp3_auth_pass .
+										' -l ' . $snmp3_security_level .
+										' -a ' . $snmp3_auth_method .
+										' -x ' . $snmp3_privacy_method .
+										' -X ' . $snmp3_privacy_pass;
+									break;
+							}
+						}
 				}
 			}
 			
@@ -576,7 +656,7 @@ if ($create_modules) {
 			unset($module_values['ip_target']); //ip_target
 			unset($module_values['tcp_send']); //snmp_version
 			
-			$result = modules_create_agent_module ($id_agent, io_safe_input($disk), $module_values);
+			$result = modules_create_agent_module($id_agent, io_safe_input($disk), $module_values);
 			
 			$results[$result][] = $disk;
 		}
@@ -592,6 +672,11 @@ if ($create_modules) {
 		if (isset($results[ERR_GENERIC])) {
 			if (count($results[ERR_GENERIC]) > 0) {
 				$error_message .= sprintf(__('Error creating %s modules') . ': <br>&nbsp;&nbsp;* ' . implode('<br>&nbsp;&nbsp;* ', $results[ERR_GENERIC]), count($results[ERR_GENERIC])) . '<br>';
+			}
+		}
+		if (isset($results[ERR_DB])) {
+			if (count($results[ERR_DB]) > 0) {
+				$error_message .= sprintf(__('Error creating %s modules') . ': <br>&nbsp;&nbsp;* ' . implode('<br>&nbsp;&nbsp;* ', $results[ERR_DB]), count($results[ERR_DB])) . '<br>';
 			}
 		}
 		if (isset($results[ERR_EXIST])) {

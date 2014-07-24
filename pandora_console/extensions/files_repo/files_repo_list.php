@@ -17,15 +17,18 @@
 
 global $config;
 
-$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
-require_once ($full_extensions_dir."files_repo/functions_files_repo.php");
+$full_extensions_dir = $config['homedir'] . "/" . EXTENSIONS_DIR . "/";
+require_once ($full_extensions_dir .
+	"files_repo/functions_files_repo.php");
 
 $offset = (int) get_parameter('offset');
 $filter = array();
 $filter['limit'] = $config['block_size'];
 $filter['offset'] = $offset;
 $filter['order'] = array('field' => 'id', 'order' => 'DESC');
+
 $files = files_repo_get_files($filter);
+
 
 if (!empty($files)) {
 	

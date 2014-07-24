@@ -162,7 +162,16 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 						(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
-					GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra" . $groupby_extra . "
+					GROUP BY estado, evento, id_agentmodule, id_evento,
+						id_agente, id_usuario, id_grupo, estado,
+						timestamp, utimestamp, event_type, id_alert_am,
+						criticity, user_comment, tags, source, id_extra,
+						te.critical_instructions,
+						te.warning_instructions,
+						te.unknown_instructions,
+						te.owner_user,
+						te.ack_utimestamp,
+						te.custom_data " . $groupby_extra . "
 					ORDER BY timestamp_rep DESC LIMIT " . $pagination . " OFFSET " . $offset;
 			}
 			break;

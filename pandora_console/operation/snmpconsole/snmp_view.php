@@ -48,7 +48,8 @@ $i = 0;
 foreach ($user_groups as $id=>$name) {
 	if ($i == 0) {
 		$str_user_groups .= $id;
-	} else {
+	}
+	else {
 		$str_user_groups .= ','.$id;
 	}
 	$i++;
@@ -336,8 +337,11 @@ $trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm s
 $table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
 
 $table->data[3][3] = '<strong>'.__('Group by OID/IP').'</strong>';
-$table->data[3][4] .= __('Yes').'&nbsp;'.html_print_radio_button ('group_by', 1, '', $group_by, true).'&nbsp;&nbsp;';
-$table->data[3][4] .= __('No').'&nbsp;'.html_print_radio_button ('group_by', 0, '', $group_by, true);
+$table->data[3][4] = __('Yes') . '&nbsp;'.
+	html_print_radio_button ('group_by', 1, '', $group_by, true) .
+	'&nbsp;&nbsp;';
+$table->data[3][4] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('group_by', 0, '', $group_by, true);
 
 $filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.((int)get_parameter('refr', 0)).'&pure='.$config["pure"].'&tab='.$tab.'">';
 $filter .= html_print_table($table, true);

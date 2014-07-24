@@ -1,3 +1,20 @@
+2014-07-24  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/snmpconsole/snmp_view.php,
+	operation/events/events_list.php, operation/incidents/incident.php,
+	extensions/files_repo.php,
+	extensions/files_repo/sql/files_repo.postgreSQL.sql,
+	extensions/files_repo/functions_files_repo.php,
+	extensions/files_repo/files_repo_list.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/snmpconsole/snmp_alert.php, godmode/db/db_info.php,
+	include/functions_graph.php, include/functions_db.php,
+	include/db/postgresql.php, include/db/oracle.php,
+	include/db/mysql.php, include/functions_update_manager.php,
+	include/functions_events.php, include/graphs/functions_flot.php,
+	include/graphs/fgraph.php: tiny fixes for the improve the support of
+	postgreSQL databases.
+
 2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/module_groups.php, extensions/agents_alerts.php,

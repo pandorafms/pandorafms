@@ -161,6 +161,17 @@ echo "</form>";
 echo "</div>";
 
 
+$order_collation = "";
+switch ($config["dbtype"]) {
+	case "mysql":
+		$order_collation = "COLLATE utf8_general_ci";
+		break;
+	case "postgresql":
+	case "oracle":
+		$order_collation = "";
+		break;
+}
+
 $selected = 'border: 1px solid black;';
 $selectNameUp = '';
 $selectNameDown = '';
@@ -173,14 +184,14 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order = array('field' => 'nombre COLLATE utf8_general_ci',
-					'field2' => 'nombre COLLATE utf8_general_ci',
+				$order = array('field' => 'nombre ' . $order_collation,
+					'field2' => 'nombre ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order = array('field' => 'nombre COLLATE utf8_general_ci',
-					'field2' => 'nombre COLLATE utf8_general_ci',
+				$order = array('field' => 'nombre ' . $order_collation,
+					'field2' => 'nombre ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -190,13 +201,13 @@ switch ($sortField) {
 			case 'up':
 				$selectOsUp = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre COLLATE utf8_general_ci',
+					'field2' => 'nombre ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectOsDown = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre COLLATE utf8_general_ci',
+					'field2' => 'nombre ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -206,13 +217,13 @@ switch ($sortField) {
 			case 'up':
 				$selectGroupUp = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre COLLATE utf8_general_ci',
+					'field2' => 'nombre ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectGroupDown = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre COLLATE utf8_general_ci',
+					'field2' => 'nombre ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -224,13 +235,16 @@ switch ($sortField) {
 		$selectOsDown = '';
 		$selectGroupUp = '';
 		$selectGroupDown = '';
-		$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+		$order = array('field' => 'nombre ' . $order_collation,
+			'field2' => 'nombre ' . $order_collation,
+			'order' => 'ASC');
 		break;
 }
 
 $search_sql = '';
 if ($search != "") {
-	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%') ";
+	$search_sql = " AND ( nombre " . $order_collation . "
+		LIKE '%$search%' OR direccion LIKE '%$search%') ";
 }
 
 // Show only selected groups

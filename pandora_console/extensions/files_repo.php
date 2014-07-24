@@ -18,12 +18,14 @@
 function pandora_files_repo_install () {
 	global $config;
 	
+	
 	if (isset($config['files_repo_installed'])) {
 		if ($config['files_repo_installed'] == 1) {
 			return;
 		}
 	}
-
+	
+	
 	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
 	$full_sql_dir = $full_extensions_dir."files_repo/sql/";
 	
@@ -39,6 +41,7 @@ function pandora_files_repo_install () {
 			$sentences = file ($full_sql_dir.'files_repo.oracle.sql');
 			break;
 	}
+	
 	
 	foreach ($sentences as $sentence) {
 		if (trim ($sentence) == "")
@@ -61,22 +64,22 @@ function pandora_files_repo_uninstall () {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			db_process_sql ('DROP TABLE `tfiles_repo_group`');
-			db_process_sql ('DROP TABLE `tfiles_repo`');
-			db_process_sql ('DELETE FROM `tconfig`
-							 WHERE `token` LIKE "files_repo_%"');
+			db_process_sql('DROP TABLE `tfiles_repo_group`');
+			db_process_sql('DROP TABLE `tfiles_repo`');
+			db_process_sql('DELETE FROM `tconfig`
+				WHERE `token` LIKE "files_repo_%"');
 			break;
 		case "postgresql":
-			db_process_sql ('DROP TABLE `tfiles_repo_group`');
-			db_process_sql ('DROP TABLE `tfiles_repo`');
-			db_process_sql ('DELETE FROM "tconfig"
-							 WHERE "token" LIKE \'files_repo_%\'');
+			db_process_sql('DROP TABLE "tfiles_repo_group"');
+			db_process_sql('DROP TABLE "tfiles_repo"');
+			db_process_sql('DELETE FROM "tconfig"
+				WHERE "token" LIKE \'files_repo_%\'');
 			break;
 		case "oracle":
-			db_process_sql ('DROP TABLE `tfiles_repo_group`');
-			db_process_sql ('DROP TABLE `tfiles_repo`');
-			db_process_sql ('DELETE FROM tconfig
-							 WHERE token LIKE \'files_repo_%\'');
+			db_process_sql('DROP TABLE "tfiles_repo_group"');
+			db_process_sql('DROP TABLE "tfiles_repo"');
+			db_process_sql('DELETE FROM tconfig
+				WHERE token LIKE \'files_repo_%\'');
 			break;
 	}
 
@@ -86,11 +89,11 @@ function pandora_files_repo_uninstall () {
 
 function pandora_files_repo_godmode () {
 	global $config;
-
+	
 	if (!isset($config['files_repo_installed']) || !$config['files_repo_installed']) {
 		ui_print_error_message(__('Extension not installed'));
 	}
-
+	
 	// ACL Check
 	check_login ();
 	if (! check_acl ($config['id_user'], 0, "PM")) {
@@ -98,37 +101,41 @@ function pandora_files_repo_godmode () {
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	// Header tabs
 	$godmode['text'] = '<a href="index.php?sec=gextensions&sec2=extensions/files_repo">'
 			. html_print_image ("images/setup.png", true, array ("title" => __('Administration view')))
 			. "</a>";
 	$godmode['godmode'] = 1;
 	$godmode['active'] = 1;
-		
+	
 	$operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'
 			. html_print_image ("images/operation.png", true, array ("title" => __('Operation view')))
 			. "</a>";
 	$operation['operation'] = 1;
-			
+	
 	$onheader = array('godmode' => $godmode, 'operation' => $operation);
 	// Header
 	ui_print_page_header (__("Files repository manager"), "images/extensions.png", false, "", true, $onheader);
-
+	
 	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
-	require_once ($full_extensions_dir."files_repo/functions_files_repo.php");
-
+	require_once ($full_extensions_dir . "files_repo/functions_files_repo.php");
+	
 	// Directory files_repo check
 	if (!files_repo_check_directory(true)) {
 		return;
 	}
-
+	
+	$server_content_length = 0;
+	if (isset($_SERVER['CONTENT_LENGTH']))
+		$server_content_length =  $_SERVER['CONTENT_LENGTH'];
+	
 	// Check for an anoying error that causes the $_POST and $_FILES arrays
 	// were empty if the file is larger than the post_max_size
-	if (intval($_SERVER['CONTENT_LENGTH']) > 0 && empty($_POST)) {
+	if (intval($server_content_length) > 0 && empty($_POST)) {
 		ui_print_error_message(__('The file exceeds the maximum size'));
 	}
-
+	
 	// GET and POST parameters
 	$file_id = (int) get_parameter ("file_id");
 	$add_file = (bool) get_parameter ("add_file");
@@ -144,7 +151,7 @@ function pandora_files_repo_godmode () {
 			$description = mb_substr($description, 0, 200, "UTF-8");
 		}
 		$description = io_safe_input($description);
-
+		
 		if ($add_file) {
 			$result = files_repo_add_file("upfile", $description, $groups, $public);
 		} elseif ($update_file) {
@@ -163,7 +170,7 @@ function pandora_files_repo_godmode () {
 		}
 		$file_id = 0;
 	}
-
+	
 	// FORM
 	require ($full_extensions_dir."files_repo/files_repo_form.php");
 	if (!$file_id) {
@@ -175,7 +182,7 @@ function pandora_files_repo_godmode () {
 
 function pandora_files_repo_operation () {
 	global $config;
-
+	
 	// Header tabs
 	$onheader = array();
 	if (check_acl($config['id_user'], 0, "PM")) {
@@ -194,18 +201,19 @@ function pandora_files_repo_operation () {
 	}
 	// Header
 	ui_print_page_header (__("Files repository"), "images/extensions.png", false, "", false, $onheader);
-
+	
 	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
 	require_once ($full_extensions_dir."files_repo/functions_files_repo.php");
-
+	
 	// Directory files_repo check
 	if (!files_repo_check_directory(true)) {
 		return;
 	}
-
+	
 	// LIST
 	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
-	require ($full_extensions_dir."files_repo/files_repo_list.php");
+	
+	require ($full_extensions_dir . "files_repo/files_repo_list.php");
 }
 
 extensions_add_operation_menu_option(__('Files repository'), null, null, "v1r1");

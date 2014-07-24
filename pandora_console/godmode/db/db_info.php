@@ -79,7 +79,7 @@ asort ($count, SORT_NUMERIC);
 
 foreach ($count as $agent_id => $value) {
 	$data = array ();
-
+	
 	//First row is a link to the agent
 	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$agent_id.'">'.$agents[$agent_id].'</a></strong>';
 	//Second row is a number of modules for the agent

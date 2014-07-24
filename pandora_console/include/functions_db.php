@@ -109,6 +109,22 @@ function db_escape_string_sql($string) {
 	}
 }
 
+function db_encapsule_fields_with_same_name_to_instructions($field) {
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_encapsule_fields_with_same_name_to_instructions($field);
+			break;
+		case "postgresql":
+			return postgresql_encapsule_fields_with_same_name_to_instructions($field);
+			break;
+		case "oracle":
+			return oracle_encapsule_fields_with_same_name_to_instructions($field);
+			break;
+	}
+}
+
 /**
  * Adds an audit log entry (new function in 3.0)
  *

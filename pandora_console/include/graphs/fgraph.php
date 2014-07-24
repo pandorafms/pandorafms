@@ -398,11 +398,13 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	if ($flash_chart) {
-		if ($return){
-			return flot_hcolumn_chart ($chart_data, $width, $height, $water_mark_url);
+		if ($return) {
+			return flot_hcolumn_chart(
+				$chart_data, $width, $height, $water_mark_url);
 		}
-		else{
-			echo flot_hcolumn_chart ($chart_data, $width, $height, $water_mark_url);
+		else {
+			echo flot_hcolumn_chart(
+				$chart_data, $width, $height, $water_mark_url);
 		}
 	}
 	else {
@@ -422,7 +424,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='".$homedir."include/graphs/functions_pchart.php?static_graph=1&graph_type=hbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
+		return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=hbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
 	}
 }
 

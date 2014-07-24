@@ -362,6 +362,18 @@ function postgresql_escape_string_sql($string) {
 	return $str;
 }
 
+function postgresql_encapsule_fields_with_same_name_to_instructions($field) {
+	$return = $field;
+	
+	if (is_string($return)) {
+		if ($return[0] !== '"') {
+			$return = '"' . $return . '"';
+		}
+	}
+	
+	return $return;
+}
+
 /**
  * Get the first value of the first row of a table in the database from an
  * array with filter conditions.

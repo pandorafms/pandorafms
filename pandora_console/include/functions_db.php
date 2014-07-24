@@ -65,7 +65,8 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $port 
 	if ($return === false) {
 		if ($critical) {
 			$login_screen = 'error_authconfig';
-			require($config['homeurl'] . '/general/error_screen.php');
+			
+			require($config['homedir'] . '/general/error_screen.php');
 			exit;
 		}
 		else if ($error == 0) {

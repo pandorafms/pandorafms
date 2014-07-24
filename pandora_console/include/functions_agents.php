@@ -360,6 +360,11 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		}
 	}
 	
+	//Fix for postgresql
+	if (empty($filter['id_agente'])) {
+		unset($filter['id_agente']);
+	}
+	
 	$where = db_format_array_where_clause_sql ($filter, 'AND', '');
 	
 	$where_nogroup = db_format_array_where_clause_sql ($filter_nogroup, 'AND', '');
@@ -412,6 +417,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				return $sql;
 			else
 				$agents = db_get_all_rows_sql($sql);
+			
 			break;
 		case "oracle":
 			$set = array();

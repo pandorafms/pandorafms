@@ -40,9 +40,12 @@ $agentName = get_parameter_post ('agent', 0);
 
 switch ($config["dbtype"]) {
 	case "mysql":
-	case "postgresql":
 		$agents = agents_get_agents(
 			array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
+		break;
+	case "postgresql":
+		$agents = agents_get_agents(
+			array('nombre LIKE \'' . $agentName . '\''), array ('id_agente'));
 		break;
 	case "oracle":
 		$agents = agents_get_agents(
@@ -198,7 +201,7 @@ if (empty($export_btn)) {
 	$table->data[0][0] = '<b>'.__('Group').'</b>';
 	
 	$groups = users_get_groups ($config['id_user'], "RR", users_can_manage_group_all());
-
+	
 	$table->data[0][1] = html_print_select_groups($config['id_user'],
 		"RR", users_can_manage_group_all(), "group", $group, '', '', 0, true, false, true,
 		'w130', false);

@@ -174,7 +174,8 @@ function mainAgentsAlerts() {
 	
 	if (!empty($templates)) {
 		$sql = sprintf('SELECT id, name
-			FROM talert_templates WHERE id IN (%s)',implode(',',array_keys($templates)));
+			FROM talert_templates
+			WHERE id IN (%s)',implode(',',array_keys($templates)));
 		
 		$templates_raw = db_get_all_rows_sql($sql);
 	}
@@ -225,7 +226,7 @@ function mainAgentsAlerts() {
 				if($anyfired) {
 					$cellstyle = 'background:'.COL_ALERTFIRED.';';
 				}
-								
+				
 				echo '<td style="text-align:center;'.$cellstyle.'"> ';
 				
 				$uniqid = uniqid();
@@ -266,8 +267,11 @@ function print_alerts_summary_modal_window($id, $alerts) {
 		$data[0] = modules_get_agentmodule_name ($alert['id_agent_module']);
 		
 		$actions = alerts_get_alert_agent_module_actions ($alert['id']);
-				
-		$actionDefault = db_get_value_sql("SELECT id_alert_action FROM talert_templates WHERE id = " . $alert['id_alert_template']);
+		
+		$actionDefault = db_get_value_sql("
+			SELECT id_alert_action
+			FROM talert_templates
+			WHERE id = " . $alert['id_alert_template']);
 		
 		$actionText = '';
 		
@@ -284,10 +288,13 @@ function print_alerts_summary_modal_window($id, $alerts) {
 		}
 		else {
 			if (!empty($actionDefault)) {
-				$actionText = db_get_sql ("SELECT name FROM talert_actions WHERE id = $actionDefault"). " <i>(".__("Default") . ")</i>";
+				$actionText = db_get_sql ("SELECT name
+					FROM talert_actions
+					WHERE id = $actionDefault") .
+					" <i>(" . __("Default") . ")</i>";
 			}
 		}
-	
+		
 		$data[1] = $actionText;
 		$data[2] = ui_print_timestamp ($alert["last_fired"], true);
 		

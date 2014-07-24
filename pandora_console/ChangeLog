@@ -1,5 +1,14 @@
 2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/module_groups.php, extensions/agents_alerts.php,
+	include/functions_agents.php, operation/agentes/exportdata.php: tiny
+	fixes for the improve the support of postgreSQL databases.
+	
+	* include/functions_db.php: fix blank screen when the connection
+	fail, now it shows the error message again.
+
+2014-07-23  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/config_process.php, operation/agentes/status_monitor.php,
 	operation/agentes/estado_generalagente.php,
 	operation/agentes/estado_agente.php: tiny fixes for the improve the

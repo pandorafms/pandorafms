@@ -141,7 +141,8 @@ function mainModuleGroups() {
 				GROUP BY estado";
 			break;
 		case "postgresql":
-			$sql = "SELECT COUNT(id_agente) AS count, case utimestamp when 0 then 5 else estado end as estado
+			$sql = "SELECT COUNT(id_agente) AS count,
+					case utimestamp when 0 then 5 else estado end as estado
 				FROM tagente_estado
 				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled = 0)
@@ -149,7 +150,7 @@ function mainModuleGroups() {
 					(SELECT id_agente_modulo
 						FROM tagente_modulo
 						WHERE id_module_group = %d AND disabled = 0 AND delete_pending = 0)
-				GROUP BY estado";
+				GROUP BY estado, utimestamp";
 			break;
 		case "oracle":
 			$sql = "SELECT COUNT(id_agente) AS count, case when utimestamp = 0 then 5 else estado end estado
@@ -185,7 +186,8 @@ function mainModuleGroups() {
 		//Metaobject use in html_print_table
 		$table = null;
 		$table->align[0] = 'right'; //Align to right the first column.
-		$table->style[0] = 'color: #ffffff; background-color: #778866; font-weight: bolder;';
+		$table->style[0] = 'color: #ffffff; '.
+			'background-color: #778866; font-weight: bolder;';
 		$table->head = $head;
 		$table->width = '98%';
 		
@@ -201,7 +203,7 @@ function mainModuleGroups() {
 			
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
 				$fired = false;
-				$query = sprintf($sql,$idAgentGroup, $idModelGroup);
+				$query = sprintf($sql, $idAgentGroup, $idModelGroup);
 				
 				$rowsDB = db_get_all_rows_sql ($query);
 				

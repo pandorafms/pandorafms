@@ -24,11 +24,17 @@ function update_manager_get_config_values() {
 	global $build_version;
 	global $pandora_version;
 	
-	$license = db_get_value('`value`', 'tupdate_settings', '`key`',
+	$license = db_get_value(
+		db_encapsule_fields_with_same_name_to_instructions('value'),
+		'tupdate_settings',
+		db_encapsule_fields_with_same_name_to_instructions('key'),
 		'customer_key');
 	
 	if (enterprise_installed()) {
-		$current_update = db_get_value('`value`', 'tupdate_settings', '`key`',
+		$current_update = db_get_value(
+			db_encapsule_fields_with_same_name_to_instructions('value'),
+			'tupdate_settings',
+			db_encapsule_fields_with_same_name_to_instructions('key'),
 			'current_package_enterprise');
 		
 		$current_update = 0;
@@ -36,7 +42,10 @@ function update_manager_get_config_values() {
 			$current_update = $config['current_package_enterprise'];
 	}
 	else {
-		$current_update = db_get_value('`value`', 'tupdate_settings', '`key`',
+		$current_update = db_get_value(
+			db_encapsule_fields_with_same_name_to_instructions('value'),
+			'tupdate_settings',
+			db_encapsule_fields_with_same_name_to_instructions('key'),
 			'current_package');
 		
 		$current_update = 0;
@@ -264,11 +273,13 @@ function update_manager_check_online_free_packages_available() {
 		return false;
 	}
 	else {
-		if ($is_ajax) {
-			return true;
+		$result = json_decode($result, true);
+		
+		if (empty($result)) {
+			return false;
 		}
 		else {
-			return false;
+			return true;
 		}
 	}
 }

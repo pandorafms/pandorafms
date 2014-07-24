@@ -195,14 +195,14 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->class = 'databox';
 	$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
 	$table->style[0] = 'width: 50%; width:50%;';
-
+	
 	$data = array();
 	$table->rowid[0] = 'update_save_selector';
 	$data[0] = html_print_radio_button('filter_mode', 'new', '', true, true) . __('New filter') . '<br><br>';
 	$data[1] = html_print_radio_button('filter_mode', 'update', '', false, true) . __('Update filter') . '<br><br>';
 	$table->data[] = $data;
 	$table->rowclass[] = '';
-
+	
 	$data = array();
 	$table->rowid[1] = 'save_filter_row1';
 	$data[0] = __('Filter name') . '<br>';
@@ -212,7 +212,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$data[1] .= html_print_select_groups($config["id_user"], "ER", users_can_manage_group_all(), 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
 	$table->data[] = $data;
 	$table->rowclass[] = '';
-
+	
 	$data = array();
 	$table->rowid[2] = 'save_filter_row2';
 	$data[0] = html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"', true);
@@ -220,18 +220,18 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->cellstyle[2][0] = 'text-align:right;';
 	$table->data[] = $data;
 	$table->rowclass[] = '';
-
+	
 	$data = array();
 	$table->rowid[3] = 'update_filter_row1';
 	$data[0] = __("Overwrite filter") . '<br>';
 	# Fix  : Only admin user can see filters of group ALL for update
 	$_filters_update = events_get_event_filter_select(false);
-
+	
 	$data[0] .= html_print_select ($_filters_update, "overwrite_filter", '', '', '', 0, true);
 	$data[1] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
 	$table->data[] = $data;
 	$table->rowclass[] = '';
-
+	
 	html_print_table($table);
 	unset($table);
 	echo '</div>';
@@ -536,9 +536,15 @@ if ($group_rep == 0) {
 	
 	//Extract the events by filter (or not) from db
 	$result = db_get_all_rows_sql ($sql);
+	
 }
 else {
-	$result = events_get_events_grouped($sql_post, $offset, $pagination, $meta, $history);
+	$result = events_get_events_grouped(
+		$sql_post,
+		$offset,
+		$pagination,
+		$meta,
+		$history);
 }
 
 if (!empty($result)) {

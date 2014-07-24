@@ -1796,6 +1796,7 @@ function graph_db_agentes_modulos($width, $height) {
 	if ($modules === false)
 		$modules = array ();
 	
+	$data = array();
 	foreach ($modules as $module) {
 		$agent_name = agents_get_name ($module['id_agente'], "none");
 		
@@ -1816,7 +1817,8 @@ function graph_db_agentes_modulos($width, $height) {
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 		
-	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
+	return hbar_graph($config['flash_charts'],
+		$data, $width, $height, array(),
 		array(), "", "", true, "",
 		$water_mark,
 		$config['fontpath'], $config['font_size'], false);

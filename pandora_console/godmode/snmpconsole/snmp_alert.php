@@ -476,10 +476,11 @@ if ($multiple_delete) {
 $user_groups = users_get_groups($config['id_user'],"AR", true);
 $str_user_groups = '';
 $i = 0;
-foreach ($user_groups as $id=>$name) {
+foreach ($user_groups as $id => $name) {
 	if ($i == 0) {
 		$str_user_groups .= $id;
-	} else {
+	}
+	else {
 		$str_user_groups .= ','.$id;
 	}
 	$i++;
@@ -895,6 +896,7 @@ else {
 		$where_sql .= ' AND `priority` = ' . $priority_filter;
 	}
 	
+	$where_sql = "";
 	if (!empty($free_search)) {
 		$where_sql .= " AND (`single_value` LIKE '%" . $free_search . "%'
 			OR `_snmp_f10_` LIKE '%" . $free_search . "%'
@@ -914,7 +916,8 @@ else {
 	}
 	
 	$count = db_get_value_sql("SELECT COUNT(*)
-		FROM talert_snmp WHERE id_group IN ($str_user_groups) " . $where_sql);
+		FROM talert_snmp WHERE id_group IN ($str_user_groups) " .
+		$where_sql);
 	
 	$result = array();
 	

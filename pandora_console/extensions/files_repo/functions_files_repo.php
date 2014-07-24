@@ -125,31 +125,33 @@ function files_repo_get_user_groups ($user_id) {
 
 function files_repo_get_files ($filter = false, $count = false) {
 	global $config;
-
+	
 	// Don't use the realpath for the download links!
 	$files_repo_path = io_safe_output($config['attachment_store'])."/files_repo";
-
-	$sql = "SELECT * FROM tfiles_repo " . db_format_array_where_clause_sql($filter, "AND", "WHERE");
+	
+	$sql = "SELECT *
+		FROM tfiles_repo
+		" . db_format_array_where_clause_sql($filter, "AND", "WHERE");
 	$files = db_get_all_rows_sql($sql);
-
+	
 	if ($files === false)
 		$files = array();
-
+	
 	$user_groups = files_repo_get_user_groups($config['id_user']);
-
+	
 	$files_data = array();
 	foreach ($files as $file) {
-
+		
 		$file_groups = files_repo_get_file_groups($file['id']);
 		$permission = files_repo_check_file_acl ($file['id'], $config['id_user'], $file_groups, $user_groups);
 		if (!$permission) {
 			continue;
 		}
-
+		
 		$data = array();
 		$data['name'] = $file['name'];
 		$data['description'] = $file['description'];
-		$data['location'] = $files_repo_path."/".$file['id']."_".$data['name'];
+		$data['location'] = $files_repo_path . "/" . $file['id']."_".$data['name'];
 		// Size in bytes
 		$data['size'] = filesize($data['location']);
 		// Last modification time in unix timestamp
@@ -158,7 +160,7 @@ function files_repo_get_files ($filter = false, $count = false) {
 		$data['hash'] = $file['hash'];
 		$files_data[$file['id']] = $data;
 	}
-
+	
 	if ($count) {
 		$files_data = count($files_data);
 	}

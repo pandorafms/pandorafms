@@ -25,7 +25,8 @@ if (! check_acl ($config['id_user'], 0, "IR")) {
 }
 
 // Header
-ui_print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, "");
+ui_print_page_header (__('Incident management'),
+	"images/book_edit.png", false, "", false, "");
 
 // Take input parameters
 
@@ -197,7 +198,7 @@ switch ($config["dbtype"]) {
 			ORDER BY actualizacion DESC OFFSET ".$offset." LIMIT ".$config["block_size"];
 		$count_sql = "SELECT count(*) FROM tincidencia WHERE
 			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter;
-		breka;
+		break;
 }
 
 $result = db_get_all_rows_sql ($sql);
@@ -250,11 +251,14 @@ if ($agents_incidents === false){
 	$agents_incidents = array();
 }
 
-foreach ($agents_incidents as $agent_incident){
+$result_agent_incidents = array();
+foreach ($agents_incidents as $agent_incident) {
 	$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
 }
 
-html_print_select ($result_agent_incidents, "agent_search", $agent_search, 'javascript:this.form.submit();', __('All agents'), "", false, false, false, "w155");
+html_print_select ($result_agent_incidents, "agent_search",
+	$agent_search, 'javascript:this.form.submit();', __('All agents'),
+	"", false, false, false, "w155");
 
 echo '</td></tr><tr><td colspan=3>';
 	

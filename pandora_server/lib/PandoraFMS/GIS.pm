@@ -146,12 +146,24 @@ B<Returns>: I<undef> if there is not information available or a B<hash> with:
 ##########################################################################
 sub get_reverse_geoip_sql($$$) {
 	my ($pa_config,$ip_addr, $dbh) = @_;
-
-	my $id_range =  get_db_value($dbh, 'SELECT `id_range` FROM tgis_reverse_geoip_ranges WHERE INET_ATON(?) >= `first_IP_decimal` AND INET_ATON(?) <= `last_IP_decimal` LIMIT 1', $ip_addr, $ip_addr);
-    if (defined($id_range)) {
-    	logger($pa_config,"Range id of '$ip_addr' is '$id_range'", 8);
-        my $region_info = get_db_single_row($dbh, 'SELECT * FROM tgis_reverse_geoip_info WHERE `id_range` = ?',$id_range);
-       	logger($pa_config, "region info of id_range '$id_range' is: country:".$region_info->{'country_name'}." region:".$region_info->{'region'}." city:".$region_info->{'city'}." longitude:".$region_info->{'longitude'}." latitude:".$region_info->{'longitude'}, 8);
+	
+	my $id_range =  get_db_value($dbh,
+		'SELECT ' . $RDBMS_QUOTE . 'id_range' . $RDBMS_QUOTE . '
+		FROM tgis_reverse_geoip_ranges
+		WHERE INET_ATON(?) >=  ' . $RDBMS_QUOTE . 'first_IP_decimal' . $RDBMS_QUOTE . '
+			AND INET_ATON(?) <=  ' . $RDBMS_QUOTE . 'last_IP_decimal ' . $RDBMS_QUOTE . '
+			LIMIT 1', $ip_addr, $ip_addr);
+	
+	if (defined($id_range)) {
+		logger($pa_config,"Range id of '$ip_addr' is '$id_range'", 8);
+		my $region_info = get_db_single_row($dbh,
+			'SELECT *
+			FROM tgis_reverse_geoip_info
+			WHERE  ' . $RDBMS_QUOTE . 'id_range ' . $RDBMS_QUOTE . ' = ?',
+			$id_range);
+		
+		logger($pa_config, "region info of id_range '$id_range' is: country:".$region_info->{'country_name'}." region:".$region_info->{'region'}." city:".$region_info->{'city'}." longitude:".$region_info->{'longitude'}." latitude:".$region_info->{'longitude'}, 8);
+		
 		return $region_info;
 	}
 	return undef;

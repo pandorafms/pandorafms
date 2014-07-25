@@ -547,7 +547,9 @@ sub pandora_load_config ($) {
  	foreach my $param ('dbuser', 'dbpass', 'dbname', 'dbhost', 'log_file') {
 		die ("[ERROR] Bad config values. Make sure " . $conf->{'_pandora_path'} . " is a valid config file.\n\n") unless defined ($conf->{$param});
  	}
+	$conf->{'dbengine'} = 'mysql' unless defined ($conf->{'dbengine'});
 	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
+	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
 
 	# Read additional tokens from the DB
 	my $dbh = db_connect ('mysql', $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});

@@ -86,13 +86,17 @@ our @EXPORT = qw(
 		get_agentmodule_data
 		$RDBMS
 		$RDBMS_QUOTE
+		$RDBMS_QUOTE_STRING
 	);
 
 # Relational database management system in use
 our $RDBMS = '';
 
-# Character used to quote reserved words in the current RDBMS
+# For fields, character used to quote reserved words in the current RDBMS
 our $RDBMS_QUOTE = '';
+
+# For strings, Character used to quote in the current RDBMS
+our $RDBMS_QUOTE_STRING = '';
 
 ##########################################################################
 ## Connect to the DB.
@@ -103,7 +107,8 @@ sub db_connect ($$$$$$) {
 	if ($rdbms eq 'mysql') {
 		$RDBMS = 'mysql';
 		$RDBMS_QUOTE = '`';
-	
+		$RDBMS_QUOTE_STRING = '"';
+		
 		# Connect to MySQL
 		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:$db_port", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
@@ -119,15 +124,18 @@ sub db_connect ($$$$$$) {
 	elsif ($rdbms eq 'postgresql') {
 		$RDBMS = 'postgresql';
 		$RDBMS_QUOTE = '"';
+		$RDBMS_QUOTE_STRING = "'";
 		
 		# Connect to PostgreSQL
 		my $dbh = DBI->connect("DBI:Pg:dbname=$db_name;host=$db_host;port=$db_port", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
 		
 		return $dbh;
-	} elsif ($rdbms eq 'oracle') {
+	}
+	elsif ($rdbms eq 'oracle') {
 		$RDBMS = 'oracle';
 		$RDBMS_QUOTE = '"';
+		$RDBMS_QUOTE_STRING = '"';
 		
 		# Connect to Oracle
 		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=$db_port;sid=pandora", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
@@ -641,6 +649,7 @@ sub db_insert ($$$;@) {
 	my ($dbh, $index, $query, @values) = @_;
 	my $insert_id = undef;
 	
+	
 	# MySQL
 	if ($RDBMS eq 'mysql') {
 		$dbh->do($query, undef, @values);
@@ -684,9 +693,9 @@ sub get_alert_template_module_id ($$$) {
 	return defined ($rc) ? $rc : -1;
 }
 
-##########################################################################
+########################################################################
 ## SQL insert. Returns the ID of the inserted row.
-##########################################################################
+########################################################################
 sub db_process_insert($$$$;@) {
 	my ($dbh, $index, $table, $parameters, @values) = @_;
 	
@@ -711,9 +720,13 @@ sub db_process_insert($$$$;@) {
 	}
 	$wildcards = '('.$wildcards.')';
 	
-	my $columns_string = join('`,`',@columns_array);
+	my $columns_string = join($RDBMS_QUOTE . ',' . $RDBMS_QUOTE,
+		@columns_array);
 	
-	my $res = db_insert ($dbh, $index, "INSERT INTO $table (`".$columns_string."`) VALUES ".$wildcards, @values_array);
+	my $res = db_insert ($dbh,
+		$index,
+		"INSERT INTO $table (" . $RDBMS_QUOTE . $columns_string . $RDBMS_QUOTE . ") VALUES " . $wildcards, @values_array);
+	
 	
 	return $res;
 }
@@ -740,7 +753,8 @@ sub db_process_update($$$$$;@) {
 		if ($i > 0 && $i <= $#values_array) {
 			$fields = $fields.',';
 		}
-		$fields = $fields." `$columns_array[$i]` = ?";
+		$fields = $fields .
+			" " . $RDBMS_QUOTE . "$columns_array[$i]" . $RDBMS_QUOTE . " = ?";
 	}
 	
 	push(@values_array, $where_value);
@@ -752,28 +766,30 @@ sub db_process_update($$$$$;@) {
 	return $res;
 }
 
-##########################################################################
+########################################################################
 # Add the given address to taddress.
-##########################################################################
+########################################################################
 sub add_address ($$) {
 	my ($dbh, $ip_address) = @_;
-
+	
 	return db_insert ($dbh, 'id_a', 'INSERT INTO taddress (ip) VALUES (?)', $ip_address);
 }
 
-##########################################################################
+########################################################################
 # Assign the new address to the agent
-##########################################################################
+########################################################################
 sub add_new_address_agent ($$$) {
 	my ($dbh, $addr_id, $agent_id) = @_;
 	
-	db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+	db_do ($dbh, 'INSERT INTO taddress_agent (' .
+		$RDBMS_QUOTE . 'id_a' . $RDBMS_QUOTE . ', ' .
+		$RDBMS_QUOTE. 'id_agent' . $RDBMS_QUOTE. ')
 		VALUES (?, ?)', $addr_id, $agent_id);
 }
 
-##########################################################################
+########################################################################
 # Return the ID of the given address, -1 if it does not exist.
-##########################################################################
+########################################################################
 sub get_addr_id ($$) {
 	my ($dbh, $addr) = @_;
 	
@@ -825,9 +841,9 @@ sub is_agent_address ($$$) {
 	return (defined ($id_ag)) ? $id_ag : 0;
 }
 
-##########################################################################
+########################################################################
 ## Quote the given string. 
-##########################################################################
+########################################################################
 sub db_string ($) {
 	my $string = shift;
 	
@@ -856,7 +872,10 @@ sub db_text ($) {
 sub get_alert_template_name ($$) {
 	my ($dbh, $alert_id) = @_;
 	
-	return get_db_value ($dbh, "SELECT name FROM talert_templates, talert_template_modules WHERE talert_templates.id = talert_template_modules.id_alert_template AND talert_template_modules.id = ?", $alert_id);
+	return get_db_value ($dbh, "SELECT name
+		FROM talert_templates, talert_template_modules
+		WHERE talert_templates.id = talert_template_modules.id_alert_template
+			AND talert_template_modules.id = ?", $alert_id);
 }
 
 ########################################################################
@@ -906,18 +925,18 @@ sub get_priority_name ($) {
 ########################################################################
 sub db_update_get_values ($) {
 	my ($set_ref) = @_;
-
+	
 	my $set = '';
 	my @values;
 	while (my ($key, $value) = each (%{$set_ref})) {
-
-			# Not value for the given column
-			next if (! defined ($value));
-
-			$set .= "$key = ?,";
-			push (@values, $value);
+		
+		# Not value for the given column
+		next if (! defined ($value));
+		
+		$set .= "$key = ?,";
+		push (@values, $value);
 	}
-
+	
 	# Remove the last ,
 	chop ($set);
 	
@@ -929,34 +948,34 @@ sub db_update_get_values ($) {
 ########################################################################
 sub db_insert_get_values ($) {
 	my ($insert_ref) = @_;
-
+	
 	my $columns = '(';
 	my @values;
 	while (my ($key, $value) = each (%{$insert_ref})) {
-
-			# Not value for the given column
-			next if (! defined ($value));
-
-			$columns .= $PandoraFMS::DB::RDBMS_QUOTE . "$key" . $PandoraFMS::DB::RDBMS_QUOTE . ",";
-			push (@values, $value);
+		
+		# Not value for the given column
+		next if (! defined ($value));
+		
+		$columns .= $PandoraFMS::DB::RDBMS_QUOTE . "$key" . $PandoraFMS::DB::RDBMS_QUOTE . ",";
+		push (@values, $value);
 	}
-
+	
 	# Remove the last , and close the parentheses
 	chop ($columns);
 	$columns .= ')';
 	
-	# No columns		
+	# No columns
 	if ($columns eq '()') {
 		return;
 	}
-
+	
 	# Add placeholders for the values
 	$columns .= ' VALUES (' . ("?," x ($#values + 1));
-
+	
 	# Remove the last , and close the parentheses
 	chop ($columns);
 	$columns .= ')';
-		
+	
 	return ($columns, \@values);
 }
 
@@ -973,7 +992,7 @@ sub db_get_lock($$;$) {
 	my $sth = $dbh->prepare('SELECT GET_LOCK(?, ?)');
 	$sth->execute($lock_name, $lock_timeout);
 	my ($lock) = $sth->fetchrow;
-
+	
 	# Something went wrong
 	return 0 if (! defined ($lock));
 	

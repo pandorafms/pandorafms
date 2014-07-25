@@ -262,7 +262,7 @@ sub data_consumer ($$) {
 			}
 		}
 		# End of GIS code -----------------------------      
-		else {	
+		else {
 			# Create a new agent
 			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
 					                                  $host_name, $addr, $task->{'id_group'},
@@ -274,7 +274,7 @@ sub data_consumer ($$) {
 			logger($pa_config, "Error creating agent '$host_name'.", 3);
 			next;
 		}
-
+		
 		# Add the new address if it does not exist
 		my $addr_id = get_addr_id ($dbh, $addr);
 		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
@@ -282,14 +282,15 @@ sub data_consumer ($$) {
 			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
 			next;
 		}
-
+		
 		# Assign the new address to the agent
 		my $agent_addr_id = get_agent_addr_id ($dbh, $addr_id, $agent_id);
 		if ($agent_addr_id <= 0) {
-			db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-		                  VALUES (?, ?)', $addr_id, $agent_id);
+			db_do ($dbh, 'INSERT INTO taddress_agent (' . $RDBMS_QUOTE . 'id_a' . $RDBMS_QUOTE . ', ' .
+				$RDBMS_QUOTE . 'id_agent' . $RDBMS_QUOTE . ')
+				VALUES (?, ?)', $addr_id, $agent_id);
 		}
-
+		
 		# Create network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
 		
@@ -309,9 +310,9 @@ sub data_consumer ($$) {
 		$text .= "\n\nThis is the list of IP addresses found: \n\n$added_hosts";
 		pandora_create_incident ($pa_config, $dbh, "[RECON] New hosts detected", $text, 0, 0, 'Pandora FMS Recon Server', $task->{'id_group'});
 	}
-
+	
 	logger($pa_config, "Finished recon task for net " . $task->{'subnet'} . ".", 10);
-
+	
 	# Mark recon task as done
 	update_recon_task ($dbh, $task_id, -1);
 }
@@ -388,12 +389,13 @@ sub get_host_parent {
 		if ($os_detect == 1) {
 			$id_os = guess_os ($pa_config, $dbh, $host_addr);
 		}
-	
+		
 		# Create the host
 		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $host_name, $host_addr, $group, $parent_id, $id_os, '', 300, $dbh);
 		$agent_id = 0 unless defined ($parent_id);
-		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-			          VALUES (?, ?)', $addr_id, $agent_id);
+		db_do ($dbh, 'INSERT INTO taddress_agent (' . $RDBMS_QUOTE . 'id_a' . $RDBMS_QUOTE . ',' .
+			$RDBMS_QUOTE . 'id_agent' . $RDBMS_QUOTE . ')
+			VALUES (?, ?)', $addr_id, $agent_id);
 		
 		# Move to the next host
 		$parent_id = $agent_id;
@@ -417,9 +419,9 @@ sub tcp_scan ($$$) {
 # Guess OS using xprobe2.
 ##########################################################################
 sub guess_os {
-    my ($pa_config, $dbh, $host) = @_;
-    
-    # Use xprobe2 if available
+	my ($pa_config, $dbh, $host) = @_;
+	
+	# Use xprobe2 if available
 	my $xprobe = $pa_config->{'xprobe2'};
 	if (-e $xprobe){
 			my $output = `$xprobe $host 2>$DEVNULL | grep 'Running OS' | head -1`;

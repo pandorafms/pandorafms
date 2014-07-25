@@ -1201,8 +1201,10 @@ sub pandora_planned_downtime_disabled_once_stop($$) {
 	# Stop executed downtimes (enable agents and disable_agents_alerts)
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime != "quiet" AND type_execution="once"
-			AND executed = 1 AND date_to <= ?', $utimestamp);
+		WHERE type_downtime != ' . $RDBMS_QUOTE_STRING. 'quiet' . $RDBMS_QUOTE_STRING. '
+			AND type_execution = ' . $RDBMS_QUOTE_STRING. 'once' . $RDBMS_QUOTE_STRING. '
+			AND executed = 1
+			AND date_to <= ?', $utimestamp);
 	
 	foreach my $downtime (@downtimes) {
 		
@@ -1234,7 +1236,8 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 	# Start pending downtimes (disable agents and disable_agents_alerts)
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime != "quiet" AND type_execution="once"
+		WHERE type_downtime != ' . $RDBMS_QUOTE_STRING . 'quiet' . $RDBMS_QUOTE_STRING . '
+			AND type_execution = ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
 			AND executed = 0 AND date_from <= ?
 			AND date_to >= ?', $utimestamp, $utimestamp);
 	
@@ -1431,7 +1434,8 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 	# Stop pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime = "quiet" AND type_execution="once"
+		WHERE type_downtime = ' . $RDBMS_QUOTE_STRING . 'quiet' . $RDBMS_QUOTE_STRING . '
+			AND type_execution = ' . $RDBMS_QUOTE_STRING. 'once' . $RDBMS_QUOTE_STRING . '
 			AND executed = 1 AND date_to <= ?', $utimestamp);
 	
 	foreach my $downtime (@downtimes) {
@@ -1471,7 +1475,8 @@ sub pandora_planned_downtime_quiet_once_start($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime = "quiet" AND type_execution="once"
+		WHERE type_downtime = ' . $RDBMS_QUOTE_STRING . 'quiet' . $RDBMS_QUOTE_STRING . '
+			AND type_execution = ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
 			AND executed = 0 AND date_from <= ?
 			AND date_to >= ?', $utimestamp, $utimestamp);
 	
@@ -1525,7 +1530,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity="monthly"
+		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'monthly' . $RDBMS_QUOTE_STRING . '
 			AND executed = 0
 			AND periodically_day_from <= ?
 			AND periodically_day_to >= ?', 
@@ -1627,9 +1632,9 @@ sub pandora_planned_downtime_monthly_stop($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity = "monthly"
+		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'monthly' . $RDBMS_QUOTE_STRING . '
 			AND executed = 1
-			AND type_execution <> "once"');
+			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING);
 	
 	foreach my $downtime (@downtimes) {
 		#Convert to identical type.
@@ -1703,18 +1708,18 @@ sub pandora_planned_downtime_weekly_start($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity="weekly"
+		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'weekly' . $RDBMS_QUOTE_STRING . '
 			AND executed = 0');
 	
 	foreach my $downtime (@downtimes) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0 ;
 		$found = 0;
-
+		
 		if ($across_date && ($time lt $downtime->{'periodically_time_to'})) {
-                        $number_day_week--;
-                        $number_day_week = 6 if ($number_day_week == -1);
-                }
-
+			$number_day_week--;
+			$number_day_week = 6 if ($number_day_week == -1);
+		}
+		
 		if (($number_day_week == 1) &&
 			($downtime->{'monday'})) {
 				$found = 1;
@@ -1825,8 +1830,8 @@ sub pandora_planned_downtime_weekly_stop($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity = "weekly"
-			AND type_execution <> "once"
+		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'weekly' . $RDBMS_QUOTE_STRING . '
+			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
 			AND executed = 1');
 	
 	foreach my $downtime (@downtimes) {
@@ -2145,7 +2150,7 @@ sub pandora_update_gis_data ($$$$$$$$$) {
 Create a template module.
 
 =cut
-##########################################################################
+########################################################################
 sub pandora_create_template_module ($$$$;$$$) {
 	my ($pa_config, $dbh, $id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby) = @_;
 	
@@ -2154,16 +2159,27 @@ sub pandora_create_template_module ($$$$;$$$) {
 	$standby = 0 unless defined $standby;
 	
 	my $module_name = get_module_name($dbh, $id_agent_module);
-	return db_insert ($dbh, 'id', "INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`, `id_policy_alerts`, `disabled`, `standby`, `last_reference`) VALUES (?, ?, ?, ?, ?, ?)", $id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby, time);
+	
+	return db_insert ($dbh,
+		'id',
+		"INSERT INTO talert_template_modules(
+			" . $RDBMS_QUOTE . "id_agent_module" . $RDBMS_QUOTE . ",
+			" . $RDBMS_QUOTE . "id_alert_template" . $RDBMS_QUOTE . ",
+			" . $RDBMS_QUOTE . "id_policy_alerts" . $RDBMS_QUOTE . ",
+			" . $RDBMS_QUOTE . "disabled" . $RDBMS_QUOTE . ",
+			" . $RDBMS_QUOTE . "standby" . $RDBMS_QUOTE . ",
+			" . $RDBMS_QUOTE . "last_reference" . $RDBMS_QUOTE . ")
+		VALUES (?, ?, ?, ?, ?, ?)",
+		$id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby, time);
 }
 
-##########################################################################
+########################################################################
 =head2 C<< pandora_update_template_module(I<$pa_config>, I<$dbh>, I<$id_alert>, I<$id_policy_alerts>, I<$disabled>, I<$standby>) >>
 
 Update a template module.
 
 =cut
-##########################################################################
+########################################################################
 
 sub pandora_update_template_module ($$$;$$$) {
 	my ($pa_config, $dbh, $id_alert, $id_policy_alerts, $disabled, $standby) = @_;
@@ -2172,16 +2188,22 @@ sub pandora_update_template_module ($$$;$$$) {
 	$disabled = 0 unless defined $disabled;
 	$standby = 0 unless defined $standby;
 	
-	db_do ($dbh, "UPDATE talert_template_modules SET `id_policy_alerts` = ?, `disabled` =  ?, `standby` = ? WHERE id = ?", $id_policy_alerts, $disabled, $standby, $id_alert);
+	db_do ($dbh,
+		"UPDATE talert_template_modules
+		SET " . $RDBMS_QUOTE . "id_policy_alerts" . $RDBMS_QUOTE . " = ?,
+			" . $RDBMS_QUOTE . "disabled" . $RDBMS_QUOTE . " =  ?,
+			" . $RDBMS_QUOTE . "standby" . $RDBMS_QUOTE . " = ?
+		WHERE id = ?",
+		$id_policy_alerts, $disabled, $standby, $id_alert);
 }
 
-##########################################################################
+########################################################################
 =head2 C<< pandora_create_template_module_action(I<$pa_config>, I<$parameters>, I<$dbh>) >>
 
 Create a template action.
 
 =cut
-##########################################################################
+########################################################################
 sub pandora_create_template_module_action ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
 	
@@ -2192,26 +2214,26 @@ sub pandora_create_template_module_action ($$$) {
 	return $action_id;
 }
 
-##########################################################################
+########################################################################
 =head2 C<< pandora_delete_all_template_module_actions(I<$dbh>, I<$template_module_id>) >>
 
 Delete all actions of policy template module.
 
 =cut
-##########################################################################
+########################################################################
 sub pandora_delete_all_template_module_actions ($$) {
 	my ($dbh, $template_module_id) = @_;
 	
 	return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ?', $template_module_id);
 }
 
-##########################################################################
+########################################################################
 =head2 C<< pandora_update_agent_address(I<$pa_config>, I<$agent_id>, I<$address>, I<$dbh>) >>
 
 Update the address of an agent.
 
 =cut
-##########################################################################
+########################################################################
 sub pandora_update_agent_address ($$$$$) {
 	my ($pa_config, $agent_id, $agent_name, $address, $dbh) = @_;
 	
@@ -2306,9 +2328,13 @@ sub pandora_create_module ($$$$$$$$$$) {
 		$status = 0;
 	}
 	
-	my $module_id = db_insert($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
-	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $agent_id, $status, $status, $status);
+	my $module_id = db_insert($dbh, 'id_agente_modulo',
+		'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)',
+		$agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try)
+		VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')',
+		$module_id, $agent_id, $status, $status, $status);
 	
 	# Update the module status count. When the module is created disabled dont do it
 	pandora_mark_agent_for_module_update ($dbh, $agent_id);
@@ -2514,8 +2540,16 @@ sub pandora_create_module_tags ($$$$) {
 	}
 	
 	foreach my $tag_name (split (',', $serialized_tags)) {
-		my $tag_id = get_db_value ($dbh, "SELECT id_tag FROM ttag WHERE name = ?", $tag_name);
-		db_insert ($dbh, 'id_tag', "INSERT INTO ttag_module (`id_tag`, `id_agente_modulo`) VALUES (?, ?)", $tag_id, $id_agent_module);
+		my $tag_id = get_db_value ($dbh,
+			"SELECT id_tag FROM ttag WHERE name = ?", $tag_name);
+		
+		db_insert ($dbh,
+			'id_tag',
+			"INSERT INTO ttag_module(
+				" . $RDBMS_QUOTE . "id_tag" . $RDBMS_QUOTE . ",
+				" . $RDBMS_QUOTE . "id_agente_modulo" . $RDBMS_QUOTE . ")
+			VALUES (?, ?)",
+			$tag_id, $id_agent_module);
 	}
 }
 
@@ -3987,33 +4021,46 @@ sub pandora_self_monitoring ($$) {
 		                                       AND estado = 3");
 		$agents_unknown = 0 if (!defined($agents_unknown));
 	}
-
+	
 	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
-
-	if (!defined($queued_modules)){
+	
+	if (!defined($queued_modules)) {
 		$queued_modules = 0;
 	}
-
-	my $dbmaintance = get_db_value ($dbh, "SELECT COUNT(*) FROM tconfig WHERE token = 'db_maintance' AND value > UNIX_TIMESTAMP() - 86400");
-
+	
+	my $dbmaintance;
+	if ($RDBMS eq 'postgresql') {
+		$dbmaintance = get_db_value ($dbh,
+			"SELECT COUNT(*)
+			FROM tconfig
+			WHERE token = 'db_maintance'
+				AND NULLIF(value, '')::int > UNIX_TIMESTAMP() - 86400");
+	}
+	else {
+		$dbmaintance = get_db_value ($dbh,
+			"SELECT COUNT(*)
+			FROM tconfig
+			WHERE token = 'db_maintance' AND value > UNIX_TIMESTAMP() - 86400");
+	}
+	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
 	$xml_output .=" <type>generic_proc</type>";
 	$xml_output .=" <data>$dbmaintance</data>";
 	$xml_output .=" </module>";
-
+	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Queued_Modules</name>";
 	$xml_output .=" <type>generic_data</type>";
 	$xml_output .=" <data>$queued_modules</data>";
 	$xml_output .=" </module>";
-
+	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Agents_Unknown</name>";
 	$xml_output .=" <type>generic_data</type>";
 	$xml_output .=" <data>$agents_unknown</data>";
 	$xml_output .=" </module>";
-
+	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>System_Load_AVG</name>";
 	$xml_output .=" <type>generic_data</type>";

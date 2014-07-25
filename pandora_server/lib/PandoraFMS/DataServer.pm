@@ -528,7 +528,7 @@ sub process_module_data ($$$$$$$$$) {
 	            'str_warning' => '', 'str_critical' => '', 'critical_instructions' => '', 'warning_instructions' => '',
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
 	            'module_ff_interval' => 0};
-
+	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
 	
@@ -539,8 +539,8 @@ sub process_module_data ($$$$$$$$$) {
 		} else {
 			$module_conf->{'extended_info'} .= "$tag: " . get_tag_value ($data, $tag, '') . '<br/>';
 		}
-	}	
-		
+	}
+	
 	# Description XML tag and column name don't match
 	$module_conf->{'descripcion'} = $module_conf->{'description'};
 	$module_conf->{'descripcion'} = '' unless defined ($module_conf->{'descripcion'});
@@ -549,14 +549,14 @@ sub process_module_data ($$$$$$$$$) {
 	# Name XML tag and column name don't match
 	$module_conf->{'nombre'} = safe_input($module_name);
 	delete $module_conf->{'name'};
-
+	
 	# Calculate the module interval in seconds
 	$module_conf->{'module_interval'} = 1 unless defined ($module_conf->{'module_interval'});
 	$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
-
+	
 	# Allow , as a decimal separator
 	$module_conf->{'post_process'} =~ s/,/./ if (defined ($module_conf->{'post_process'}));
-
+	
 	# Get module data or create it if it does not exist
 	$ModuleSem->down ();
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text ('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
@@ -568,14 +568,14 @@ sub process_module_data ($$$$$$$$$) {
 			$ModuleSem->up ();
 			return;
 		}
-
+		
 		# Is the agent learning?
 		if ($agent->{'modo'} ne '1') {
 			logger($pa_config, "Learning mode disabled. Skipping module '$module_name' agent '$agent_name'.", 10);
 			$ModuleSem->up ();
 			return;
 		}
-
+		
 		# Get the module type
 		$module_conf->{'id_tipo_modulo'} = get_module_id ($dbh, $module_type);
 		if ($module_conf->{'id_tipo_modulo'} <= 0) {
@@ -583,16 +583,16 @@ sub process_module_data ($$$$$$$$$) {
 			$ModuleSem->up ();
 			return;
 		}
-	
+		
 		# The group name has to be translated to a group ID
 		if (defined $module_conf->{'module_group'}) {
 			$module_conf->{'id_module_group'} = get_module_group_id ($dbh, $module_conf->{'module_group'});
 			delete $module_conf->{'module_group'};
 		}
-
+		
 		$module_conf->{'id_modulo'} = 1;
 		$module_conf->{'id_agente'} = $agent->{'id_agente'};
-
+		
 		my $module_tags = undef;
 		if(defined ($module_conf->{'tags'})) {
 			$module_tags = $module_conf->{'tags'};
@@ -601,7 +601,7 @@ sub process_module_data ($$$$$$$$$) {
 		
 		# Create the module
 		my $module_id = pandora_create_module_from_hash ($pa_config, $module_conf, $dbh);
-
+		
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
@@ -626,7 +626,8 @@ sub process_module_data ($$$$$$$$$) {
 			}
 		}
 		
-	} else {
+	}
+	else {
 		# Control NULL columns
 		$module->{'descripcion'} = '' unless defined ($module->{'descripcion'});
 		$module->{'extended_info'} = '' unless defined ($module->{'extended_info'});
@@ -649,15 +650,15 @@ sub process_module_data ($$$$$$$$$) {
 	if ($agent->{'modo'} eq '1' && $policy_linked == 0) {
 		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
 	}
-
+	
 	$ModuleSem->up ();
-
+	
 	# Module disabled!
 	if ($module->{'disabled'} eq '1') {
 		logger($pa_config, "Skipping disabled module '$module_name' agent '$agent_name'.", 10);
 		return;
 	}
-
+	
 	# Parse the timestamp and process the module
 	if ($timestamp !~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/ &&
 		$timestamp !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {

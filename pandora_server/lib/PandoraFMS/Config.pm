@@ -248,6 +248,9 @@ sub pandora_load_config {
 	$pa_config->{"snmp_pdu_address"} = 0; # 5.0
 	$pa_config->{"snmp_storm_protection"} = 0; # 5.0
 	$pa_config->{"snmp_storm_timeout"} = 600; # 5.0
+	$pa_config->{"snmpconsole_threads"} = 1; # 5.1
+	$pa_config->{"translate_variable_bindings"} = 0; # 5.1
+	$pa_config->{"translate_enterprise_strings"} = 1; # 5.1
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
@@ -464,6 +467,15 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmp_storm_timeout\s+(\d+)/i) { 
 			$pa_config->{'snmp_storm_timeout'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmpconsole_threads\s+(\d+)/i) { 
+			$pa_config->{'snmpconsole_threads'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^translate_variable_bindings\s+([0-1])/i) { 
+			$pa_config->{'translate_variable_bindings'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^translate_enterprise_strings\s+([0-1])/i) { 
+			$pa_config->{'translate_enterprise_strings'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^dbengine\s(.*)/i) { 
 			$pa_config->{'dbengine'}= clean_blank($1); 

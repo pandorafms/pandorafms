@@ -1,3 +1,7 @@
+2014-07-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/agentes/estado_agente.php: Fixed sql error.
+
 2014-07-24  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/snmpconsole/snmp_view.php,

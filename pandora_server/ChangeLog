@@ -1,3 +1,13 @@
+2014-07-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf.new,
+	  lib/PandoraFMS/Config.pm: Added configuration tokens to disable the
+	  translation of enterprise strings and variable bindings (SNMP console).
+
+	* lib/PandoraFMS/SNMPServer.pm: Added thread support to the SNMP console.
+
+	* lib/PandoraFMS/DB.pm: Fixed a warning.
+
 2014-07-25  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/GIS.pm, lib/PandoraFMS/DB.pm,

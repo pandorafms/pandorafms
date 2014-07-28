@@ -884,9 +884,8 @@ sub get_alert_template_name ($$) {
 sub db_concat ($$) {
 	my ($element1, $element2) = @_;
 	
-	return " concat(" . $element1 . ", ' '," . $element2 . ") " if ($RDBMS eq 'mysql');
-	
 	return " " . $element1 . " || ' ' || " . $element2 . " " if ($RDBMS eq 'oracle' or $RDBMS eq 'postgresql');
+	return " concat(" . $element1 . ", ' '," . $element2 . ") ";
 }
 
 ########################################################################

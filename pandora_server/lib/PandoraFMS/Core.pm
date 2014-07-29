@@ -1070,12 +1070,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		# Update module status count
 		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
 	}
-	# Set not-init modules to normal even if min_ff_event is not matched the first time they receive data
-	elsif ($status == 4) {
-		$new_status = 0;
-		
-		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
-		$status = $new_status;
+	# Set not-init or unknown modules to normal even if min_ff_event is not matched the first time they receive data
+	elsif ($status == 3 || $status == 4) {
+		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $last_known_status, $dbh);
+		$status = 0;
 
 		# Update module status count
 		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
@@ -4013,7 +4011,8 @@ Get a list of module tags in the format: |tag|tag| ... |tag|
 sub pandora_get_module_tags ($$$) {
 	my ($pa_config, $dbh, $id_agentmodule) = @_;
 	
-	my @tags = get_db_rows ($dbh, 'SELECT ' . db_concat('ttag.name', 'ttag.url') . ' name_url FROM ttag, ttag_module
+	print 'SELECT ' . db_concat('ttag.name', 'ttag.url') . ' AS name_url FROM ttag, ttag_module' . "\n";
+	my @tags = get_db_rows ($dbh, 'SELECT ' . db_concat('ttag.name', 'ttag.url') . ' AS name_url FROM ttag, ttag_module
 	                               WHERE ttag.id_tag = ttag_module.id_tag
 	                               AND ttag_module.id_agente_modulo = ?', $id_agentmodule);
 	

@@ -1,3 +1,8 @@
+2014-07-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Merged from trunk. Set unknown modules to normal
+	  if new data arrives but ff_threshold is greater than 0.
+
 2014-07-11 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* util/pandora_manage.pl: To handle multi-byte strings in

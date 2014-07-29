@@ -1459,16 +1459,19 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 		$filter['id_agente'] = $id_agent; 
 	}
 	
-	$fields = array('SUM(critical_count) Critical', 
-		'SUM(warning_count) Warning', 
-		'SUM(normal_count) Normal', 
-		'SUM(unknown_count) Unknown');
+	$fields = array('SUM(critical_count) AS Critical', 
+		'SUM(warning_count) AS Warning', 
+		'SUM(normal_count) AS Normal', 
+		'SUM(unknown_count) AS Unknown');
 	
 	if ($show_not_init) {
 		$fields[] = 'SUM(notinit_count) "Not init"';
 	}
 	
 	$data = db_get_row_filter('tagente', $filter, $fields);
+	if (empty($data)) {
+		$data = array();
+	}
 	
 	array_walk($data, 'truncate_negatives');
 	

@@ -1,3 +1,8 @@
+2014-07-29  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_events.php: Fixed a bug that event's comment
+	is not shown when it includes newline.
+
 2014-07-28  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/agentes/estado_agente.php: Fixed sql error.

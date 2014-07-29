@@ -1,5 +1,10 @@
 2014-07-30  Ramon Novoa  <rnovoa@artica.es>
 
+	* util/trap_rate.sh: Added to repository. Script to calculate the rate of
+	  SNMP traps received by snmptrapd.
+
+2014-07-30  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Set unknown modules to normal if new data
 	  arrives but ff_threshold is greater than 0.
 

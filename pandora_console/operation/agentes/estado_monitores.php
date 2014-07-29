@@ -232,7 +232,6 @@ if (!empty($status_text_monitor)) {
 //Count monitors/modules
 switch ($config["dbtype"]) {
 	case "mysql":
-	case "postgresql":
 		$sql = sprintf("
 			SELECT COUNT(*)
 			FROM tagente_estado,
@@ -246,7 +245,28 @@ switch ($config["dbtype"]) {
 				AND %s %s 
 				AND tagente_estado.estado != %d  
 			ORDER BY tagente_modulo.id_module_group , %s  %s",
-			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);	
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
+		break;
+	case "postgresql":
+		$sql = sprintf("
+			SELECT COUNT(DISTINCT tagente_modulo.id_module_group)
+			FROM tagente_estado,
+				(SELECT *
+				FROM tagente_modulo
+				WHERE id_agente = %d AND nombre LIKE '%s'
+					AND delete_pending = 0
+					AND disabled = 0) tagente_modulo 
+			LEFT JOIN tmodule_group
+				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+				AND %s %s 
+				AND tagente_estado.estado != %d
+			GROUP BY tagente_modulo.id_module_group,
+				tagente_modulo.nombre
+			ORDER BY tagente_modulo.id_module_group , %s  %s",
+			$id_agente, $status_text_monitor_sql, $status_filter_sql,
+			$tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'],
+			$order['order']);
 		break;
 	case "oracle":
 		$sql = sprintf ("
@@ -265,15 +285,18 @@ switch ($config["dbtype"]) {
 			", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
 		break;
 }
-$count_modules = db_get_all_rows_sql ($sql);
-$count_modules = reset($count_modules[0]);
+
+$count_modules = db_get_all_rows_sql($sql);
+if (isset($count_modules[0]))
+	$count_modules = reset($count_modules[0]);
+else
+	$count_modules = 0;
 
 
 //Get monitors/modules
 // Get all module from agent
 switch ($config["dbtype"]) {
 	case "mysql":
-	case "postgresql":
 		$sql = sprintf("
 			SELECT *
 			FROM tagente_estado,
@@ -287,7 +310,23 @@ switch ($config["dbtype"]) {
 				AND %s %s 
 				AND tagente_estado.estado != %d  
 			ORDER BY tagente_modulo.id_module_group , %s  %s",
-			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);	
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
+		break;
+	case "postgresql":
+		$sql = sprintf("
+			SELECT *
+			FROM tagente_estado,
+				(SELECT *
+				FROM tagente_modulo
+				WHERE id_agente = %d AND nombre LIKE '%s' AND delete_pending = 0
+					AND disabled = 0) tagente_modulo 
+			LEFT JOIN tmodule_group
+				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+				AND %s %s 
+				AND tagente_estado.estado != %d  
+			ORDER BY tagente_modulo.id_module_group , %s  %s",
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
 		break;
 	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 	case "oracle":

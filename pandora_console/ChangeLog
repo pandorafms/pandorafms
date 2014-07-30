@@ -1,3 +1,13 @@
+2014-07-30  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/servers/manage_recontask.php,
+	godmode/servers/manage_recontask_form.php,
+	include/functions_treeview.php, include/ajax/module.php,
+	include/functions_reporting.php, include/db/postgresql.php,
+	include/functions_servers.php, operation/agentes/estado_agente.php,
+	operation/tree.php: tiny fixes for the improve
+	the support of postgreSQL databases.
+
 2014-07-29  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php, include/functions_reporting.php,

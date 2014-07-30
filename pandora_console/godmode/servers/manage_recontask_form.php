@@ -54,7 +54,7 @@ if (is_ajax ()) {
 		echo io_json_mb_encode($macros);
 		return;
 	}
-
+	
 	return;
 }
 
@@ -261,7 +261,7 @@ $table->data[11][1] =  html_print_input_text ('snmp_community', $snmp_community,
 
 
 $explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id_recon_script);
-		
+
 $table->data[12][0] = "<b>" . __('Explanation') . "</b>";
 $table->data[12][1] = "<span id='spinner_layour' style='display: none;'>" . html_print_image ("images/spinner.gif", true) .
 "</span>" . html_print_textarea('explanation', 4, 60, $explanation, 'style="width: 388px;"', true);

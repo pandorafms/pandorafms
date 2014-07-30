@@ -23,6 +23,14 @@ include_once($config['homedir'] . "/include/functions_ui.php");
 enterprise_include_once ('include/functions_metaconsole.php');
 
 $get_plugin_macros = get_parameter('get_plugin_macros');
+$search_modules = get_parameter('search_modules');
+$get_module_detail = get_parameter ('get_module_detail', 0);
+$get_module_autocomplete_input = (bool) get_parameter('get_module_autocomplete_input');
+$add_module_relation = (bool) get_parameter('add_module_relation');
+$remove_module_relation = (bool) get_parameter('remove_module_relation');
+$change_module_relation_updates = (bool) get_parameter('change_module_relation_updates');
+$get_id_tag = (bool) get_parameter('get_id_tag', 0);
+
 if ($get_plugin_macros) {
 	$id_plugin = get_parameter('id_plugin', 0);
 	
@@ -37,7 +45,7 @@ if ($get_plugin_macros) {
 	return;
 }
 
-$search_modules = get_parameter('search_modules');
+
 if ($search_modules) {
 	$id_agents = json_decode(io_safe_output(get_parameter('id_agents')));
 	$filter = get_parameter('q', '') . '%';
@@ -56,10 +64,9 @@ if ($search_modules) {
 	return;
 }
 
-$get_module_detail = get_parameter ('get_module_detail', 0);
 
 if ($get_module_detail) {
-
+	
 	ui_include_time_picker();
 	
 	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
@@ -131,15 +138,16 @@ if ($get_module_detail) {
 	
 	html_print_table($formtable);
 	
-	$moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($module_id));
+	$moduletype_name = modules_get_moduletype_name(
+		modules_get_agentmodule_type($module_id));
 	
 	$offset = (int) get_parameter("offset");
 	$block_size = (int) $config["block_size"];
 	
 	$columns = array ();
 	
-	$datetime_from = strtotime ($date_from.' '.$time_from);
-	$datetime_to = strtotime ($date_to.' '.$time_to);
+	$datetime_from = strtotime ($date_from . ' ' . $time_from);
+	$datetime_to = strtotime ($date_to . ' ' . $time_to);
 	
 	if ($moduletype_name == "log4x") {
 		$table->width = "100%";
@@ -337,10 +345,10 @@ if ($get_module_detail) {
 	return;
 }
 
-$get_module_autocomplete_input = (bool) get_parameter('get_module_autocomplete_input');
+
 if ($get_module_autocomplete_input) {
 	$id_agent = (int) get_parameter("id_agent");
-
+	
 	ob_clean();
 	if ($id_agent > 0) {
 		html_print_autocomplete_modules(
@@ -350,7 +358,7 @@ if ($get_module_autocomplete_input) {
 	return;
 }
 
-$add_module_relation = (bool) get_parameter('add_module_relation');
+
 if ($add_module_relation) {
 	$result = false;
 	$id_module_a = (int) get_parameter("id_module_a");
@@ -384,7 +392,7 @@ if ($add_module_relation) {
 	return;
 }
 
-$remove_module_relation = (bool) get_parameter('remove_module_relation');
+
 if ($remove_module_relation) {
 	$id_relation = (int) get_parameter("id_relation");
 	if ($id_relation > 0) {
@@ -395,23 +403,25 @@ if ($remove_module_relation) {
 	return;
 }
 
-$change_module_relation_updates = (bool) get_parameter('change_module_relation_updates');
+
 if ($change_module_relation_updates) {
 	$id_relation = (int) get_parameter("id_relation");
 	if ($id_relation > 0) {
 		$result = (bool) modules_change_relation_lock($id_relation);
 	}
+	
 	echo json_encode($result);
 	return;
 }
 
-$get_id_tag = (bool) get_parameter('get_id_tag', 0);
+
 if ($get_id_tag) {
 	$tag_name = get_parameter('tag_name');
-
+	
 	if ($tag_name) {
 		$tag_id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
-	} else {
+	}
+	else {
 		$tag_id = 0;
 	}
 	

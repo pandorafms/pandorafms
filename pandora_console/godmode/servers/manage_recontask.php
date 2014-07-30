@@ -204,6 +204,7 @@ if (isset($_GET["create"])) {
 		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		{
 			$result = db_process_sql_insert('trecon_task', $values);
+			
 			$reason = __("Network provided is not correct");
 		}
 		elseif ($id_recon_script != 'NULL') {
@@ -215,9 +216,10 @@ if (isset($_GET["create"])) {
 			$result = false;
 		}
 	}
-	else
+	else {
 		$result = false;
-		
+	}
+	
 	if ($result !== false) {
 		ui_print_success_message(__('Successfully created recon task'));
 	}

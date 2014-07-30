@@ -1,16 +1,7 @@
-2014-07-30  Alejandro Gallardo <alejandro.gallardo@artica.es>
+2014-07-30  Miguel de Dios <miguel.dedios@artica.es>
 	
-	* include/functions_graph.php: Finished the function
-	"graph_monitor_wheel". This function returns a sunburst
-	graph representing all the group>agent>module group>module
-	hierarchy.
-	
-	* include/functions_groups.php: Added the function
-	"groups_get_tree". This function returns an array representing
-	the group hierarchy of the passed groups array.
-
-	* include/graphs/pandora.d3.js: Improved the function
-	"sunburst". Now this graph can show tooltips.
+	* include/ajax/module.php: tiny fixes for the improve the support of
+	postgreSQL databases.
 
 2014-07-30  Miguel de Dios <miguel.dedios@artica.es>
 	

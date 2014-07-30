@@ -332,6 +332,9 @@ function postgresql_db_process_sql_insert($table, $values) {
 		else if (is_float ($value) || is_double ($value)) {
 			$values_str .= sprintf("%f", $value);
 		}
+		elseif (is_string($value) && (strtoupper($value) === 'NULL')) {
+			$values_str .= "NULL";
+		}
 		else {
 			$values_str .= sprintf("'%s'", $value);
 		}
@@ -345,6 +348,7 @@ function postgresql_db_process_sql_insert($table, $values) {
 	$query .= '(' . implode(', ', $fields) . ')';
 	
 	$query .= ' VALUES (' . $values_str . ')';
+	
 	
 	return db_process_sql($query, 'insert_id');
 }

@@ -468,11 +468,19 @@ function treeview_printTree($type) {
 	echo '<table class="databox" style="width:98%">';
 	echo '<tr><td style="width:50%" valign="top">';
 	
+	
+	
 	if (! defined ('METACONSOLE')) {
+		
 		$list = treeview_getData ($type);
+		
 	}
 	else {
-		$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
+		$servers = db_get_all_rows_sql ("
+			SELECT *
+			FROM tmetaconsole_setup
+			WHERE disabled = 0");
+		
 		if ($servers === false) {
 			$servers = array();
 		}
@@ -501,6 +509,8 @@ function treeview_printTree($type) {
 		
 		metaconsole_restore_db();
 	}
+	
+	
 	
 	if ($list === false) {
 		ui_print_error_message(__('There aren\'t agents in this agrupation'));
@@ -543,18 +553,24 @@ function treeview_printTree($type) {
 			else {
 				$id = $item['_id_'];
 			}
-
+			
 			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\", \"\")'>";
 			
 			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' (';
 			
-			$counts_info = array('total_count' => $item['_num_ok_'] + $item['_num_critical_'] + $item['_num_warning_'] + $item['_num_unknown_'],
-					'normal_count' => $item['_num_ok_'],
-					'critical_count' => $item['_num_critical_'],
-					'warning_count' => $item['_num_warning_'],
-					'unknown_count' => $item['_num_unknown_']);
-
+			$counts_info = array(
+				'total_count' => $item['_num_ok_'] +
+					$item['_num_critical_'] +
+					$item['_num_warning_'] +
+					$item['_num_unknown_'],
+				'normal_count' => $item['_num_ok_'],
+				'critical_count' => $item['_num_critical_'],
+				'warning_count' => $item['_num_warning_'],
+				'unknown_count' => $item['_num_unknown_']);
+			
+			
 			reporting_tiny_stats($counts_info, false, $type);
+			
 			
 			echo ') '. "</a>";
 			
@@ -581,7 +597,11 @@ function treeview_getData ($type) {
 	$avariableGroups = users_get_groups ();
 	
 	//Get all groups with agents
-	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente WHERE total_count > 0");
+	$full_groups = db_get_all_rows_sql("
+		SELECT DISTINCT id_grupo
+		FROM tagente
+		WHERE total_count > 0");
+	
 	if ($full_groups === false) {
 		return array ();
 	}
@@ -607,9 +627,12 @@ function treeview_getData ($type) {
 		switch ($select_status) {
 			case NORMAL:
 				foreach ($avariableGroups as $group_name) {
-					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+					$id_group = db_get_value_sql('
+						SELECT id_grupo
+						FROM tgrupo
+						WHERE nombre ="' . $group_name . '"');
 					
-					$num_ok = groups_agent_ok($id_group);	
+					$num_ok = groups_agent_ok($id_group);
 					
 					if ($num_ok <= 0)
 						unset($avariableGroups[$id_group]);
@@ -619,7 +642,10 @@ function treeview_getData ($type) {
 				break;
 			case WARNING:
 				foreach ($avariableGroups as $group_name) {
-					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+					$id_group = db_get_value_sql('
+						SELECT id_grupo
+						FROM tgrupo
+						WHERE nombre ="' . $group_name . '"');
 					
 					$num_warning = groups_agent_warning($id_group);
 					
@@ -629,7 +655,10 @@ function treeview_getData ($type) {
 				break;
 			case CRITICAL:
 				foreach ($avariableGroups as $group_name) {
-					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+					$id_group = db_get_value_sql('
+						SELECT id_grupo
+						FROM tgrupo
+						WHERE nombre ="' . $group_name . '"');
 					
 					$num_critical = groups_agent_critical($id_group);
 					
@@ -639,7 +668,10 @@ function treeview_getData ($type) {
 				break;
 			case UNKNOWN:
 				foreach ($avariableGroups as $group_name) {
-					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+					$id_group = db_get_value_sql('
+						SELECT id_grupo
+						FROM tgrupo
+						WHERE nombre ="' . $group_name . '"');
 					
 					$num_unknown = groups_agent_unknown($id_group);
 					
@@ -656,17 +688,42 @@ function treeview_getData ($type) {
 	}
 	
 	if ($search_free != '') {
-		$sql_search = " AND id_grupo IN (SELECT id_grupo FROM tagente
-			WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+		switch ($config['dbtype']) {
+			case "mysql":
+				$sql_search = " AND id_grupo IN (
+					SELECT id_grupo
+					FROM tagente
+					WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+				break;
+			case "postgresql":
+				$sql_search = " AND id_grupo IN (
+					SELECT id_grupo
+					FROM tagente
+					WHERE tagente.nombre LIKE '%$search_free%')";
+				break;
+			case "oracle":
+				$sql_search = " AND id_grupo IN (
+					SELECT id_grupo
+					FROM tagente
+					WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+				break;
+		}
 	}
 	else {
 		$sql_search ='';
 	}
 	
+	$order_collate = "";
+	switch ($config['dbtype']) {
+		case "mysql":
+			$order_collate = "COLLATE utf8_general_ci";
+			break;
+	}
+	
 	switch ($type) {
-		case 'os':		
+		case 'os':
 			$sql = agents_get_agents(array (
-				'order' => 'nombre COLLATE utf8_general_ci ASC',
+				'order' => 'nombre ' . $order_collate . ' ASC',
 				'disabled' => 0,
 				'status' => $select_status,
 				'search' => $sql_search),
@@ -676,7 +733,9 @@ function treeview_getData ($type) {
 				false,
 				true);
 			
-			$sql_os = sprintf("SELECT * FROM tconfig_os WHERE id_os IN (%s)", $sql);
+			$sql_os = sprintf("SELECT *
+				FROM tconfig_os
+				WHERE id_os IN (%s)", $sql);
 			
 			$list = db_get_all_rows_sql($sql_os);
 			
@@ -692,17 +751,31 @@ function treeview_getData ($type) {
 			
 			switch ($config["dbtype"]) {
 				case "mysql":
+					$list = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE nombre IN (" . $stringAvariableGroups . ") $sql_search
+						ORDER BY nombre COLLATE utf8_general_ci ASC");
+					break;
 				case "postgresql":
-					$list = db_get_all_rows_sql("SELECT * FROM tgrupo WHERE nombre IN (" . $stringAvariableGroups . ") $sql_search ORDER BY nombre COLLATE utf8_general_ci ASC");
+					$list = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE nombre IN (" . $stringAvariableGroups . ") $sql_search
+						ORDER BY nombre ASC");
 					break;
 				case "oracle":
-					$list = db_get_all_rows_sql("SELECT * FROM tgrupo WHERE dbms_lob.substr(nombre,4000,1) IN (" . $stringAvariableGroups . ") ORDER BY nombre COLLATE utf8_general_ci ASC");
+					$list = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE dbms_lob.substr(nombre,4000,1) IN (" . $stringAvariableGroups . ")
+						ORDER BY nombre COLLATE utf8_general_ci ASC");
 					break;
 			}
 			break;
 		case 'module_group':
 			$sql = agents_get_agents(array (
-				'order' => 'nombre COLLATE utf8_general_ci ASC',
+				'order' => 'nombre ' . $order_collate . ' ASC',
 				'disabled' => 0,
 				'status' => $select_status,
 				'search' => $sql_search),
@@ -714,8 +787,13 @@ function treeview_getData ($type) {
 			// Skip agents without modules
 			$sql .= ' AND tagente.total_count>0';
 			
-			$sql_module_groups = sprintf("SELECT * FROM tmodule_group
-				WHERE id_mg IN (SELECT id_module_group FROM tagente_modulo WHERE id_agente IN (%s))", $sql);			
+			$sql_module_groups = sprintf("
+				SELECT *
+				FROM tmodule_group
+				WHERE id_mg IN (
+					SELECT id_module_group
+					FROM tagente_modulo
+					WHERE id_agente IN (%s))", $sql);
 			
 			
 			$list = db_get_all_rows_sql($sql_module_groups);
@@ -734,7 +812,8 @@ function treeview_getData ($type) {
 			$groups = implode(',',$groups_id);
 			
 			if ($search_free != '') {
-				$sql = "SELECT DISTINCT tpolicies.id, tpolicies.name
+				$sql = "
+					SELECT DISTINCT tpolicies.id, tpolicies.name
 					FROM tpolicies, tpolicy_modules,
 						tagente_estado, tagente, tagente_modulo
 					WHERE 
@@ -749,7 +828,7 @@ function treeview_getData ($type) {
 						tagente.nombre LIKE '%$search_free%' AND
 						tagente.disabled = 0 AND
 						tagente_modulo.disabled = 0
-						ORDER BY tpolicies.name COLLATE utf8_general_ci ASC";
+					ORDER BY tpolicies.name COLLATE utf8_general_ci ASC";
 				
 				$list = db_get_all_rows_sql($sql);
 				
@@ -825,7 +904,7 @@ function treeview_getData ($type) {
 						tagente.id_grupo IN ($groups) AND
 						tagente.disabled = 0 AND
 						tagente_modulo.disabled = 0
-						ORDER BY tpolicies.name COLLATE utf8_general_ci ASC");
+						ORDER BY tpolicies.name ' . $order_collate . ' ASC");
 				
 				$element = 0;
 				switch ($select_status) {
@@ -889,8 +968,28 @@ function treeview_getData ($type) {
 			}
 			
 			if ($search_free != '') {
-				$sql_search = " AND t1.id_agente IN (SELECT id_agente FROM tagente
-					WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+				switch ($config['dbtype']) {
+					case "mysql":
+						$sql_search = " AND t1.id_agente IN (
+							SELECT id_agente
+							FROM tagente
+							WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+						break;
+					case "postgresql":
+						$sql_search = " AND t1.id_agente IN (
+							SELECT id_agente
+							FROM tagente
+							WHERE nombre LIKE '%$search_free%')";
+						break;
+					case "oracle":
+						$sql_search = " AND t1.id_agente IN (
+							SELECT id_agente
+							FROM tagente
+							WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+						break;
+				}
+				
+				
 			}
 			else {
 				$sql_search = '';
@@ -899,7 +998,8 @@ function treeview_getData ($type) {
 			if ($select_status != -1)
 				$sql_search .= " AND estado = " . $select_status . " ";
 			
-			$sql_search .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
+			$sql_search .= tags_get_acl_tags(
+				$config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
 			
 			switch ($config["dbtype"]) {
 				case "mysql":
@@ -915,7 +1015,7 @@ function treeview_getData ($type) {
 							$sql_search.'
 						GROUP BY t1.nombre ORDER BY t1.nombre');
 					break;
-				case "oracle":	
+				case "oracle":
 					$list = db_get_all_rows_sql('
 						SELECT dbms_lob.substr(t1.nombre,4000,1) as nombre
 						FROM tagente_modulo t1, tagente t2,
@@ -950,15 +1050,16 @@ function treeview_getData ($type) {
 					$search_sql = sprintf(" AND tagente.nombre COLLATE utf8_general_ci LIKE '%%%s%%'", $search_free);
 				}
 				
-				$sql = "SELECT DISTINCT ttag.name 
-						FROM ttag, ttag_module, tagente, tagente_modulo 
-						WHERE ttag.id_tag = ttag_module.id_tag
+				$sql = "
+					SELECT DISTINCT ttag.name 
+					FROM ttag, ttag_module, tagente, tagente_modulo 
+					WHERE ttag.id_tag = ttag_module.id_tag
 						AND tagente.id_agente = tagente_modulo.id_agente
 						AND tagente.disabled = 0
 						AND ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo" .
 						$search_sql . 
-						$user_tags_sql . 
-						" ORDER BY ttag.name COLLATE utf8_general_ci ASC";
+						$user_tags_sql . "
+					ORDER BY ttag.name ' . $order_collate . ' ASC";
 				
 				$list = db_get_all_rows_sql($sql);
 			break;
@@ -1054,6 +1155,13 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 		return false;
 	}
 	
+	$order_collate = "";
+	switch ($config['dbtype']) {
+		case "mysql":
+			$order_collate = "COLLATE utf8_general_ci";
+			break;
+	}
+	
 	//TODO CHANGE POLICY ACL FOR TAG ACL
 	$extra_sql = '';
 	if ($extra_sql != '') {
@@ -1062,7 +1170,18 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 	$groups_sql = implode(', ', $avariableGroupsIds);
 	
 	if ($search_free != '') {
-		$search_sql = " AND tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
+		switch ($config['dbtype']) {
+			case "mysql":
+				$search_sql = " AND tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
+				break;
+			case "postgresql":
+				$search_sql = " AND tagente.nombre LIKE '%$search_free%'";
+				break;
+			case "oracle":
+				$search_sql = " AND tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
+				break;
+		}
+		
 	}
 	else {
 		$search_sql = '';
@@ -1078,14 +1197,14 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				}
 			}
 			
-			$sql = agents_get_agents(array (	
+			$sql = agents_get_agents(array (
 				'id_grupo' => $id,
 				'disabled' => 0,
 				'status' => $statusSel,
 				'search' => $search_sql),
 				array ('*'),
 				'AR',
-				array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
+				array('field' => 'nombre ' . $order_collate, 'order' => ' ASC'),
 				true);
 			break;
 		case 'os':
@@ -1097,7 +1216,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				'search' => $search_sql),
 				array ('*'),
 				'AR',
-				array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
+				array('field' => 'nombre ' . $order_collate, 'order' => ' ASC'),
 				true);
 			break;
 		case 'module_group':
@@ -1117,7 +1236,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				FROM tagente_modulo 
 				WHERE id_module_group = ' . $id . ')';
 			
-			$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
+			$sql .= 'ORDER BY nombre ' . $order_collate . ' ASC';
 			
 			break;
 		case 'policies':
@@ -1144,7 +1263,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 					AND tagente_estado.utimestamp != 0
 					AND tagente_modulo.id_policy_module != 0
 					AND tpolicy_modules.id_policy = ' . $id . '
-					group by tagente.id_agente
+					GROUP BY tagente.id_agente
 					having COUNT(*) > 0)';
 			}
 			else if ($statusSel == 0) {
@@ -1152,11 +1271,12 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				// If status filter is NORMAL add void agents
 				$sql .= " UNION SELECT * FROM tagente 
 					WHERE tagente.disabled = 0
-					AND tagente.id_agente NOT IN (SELECT tagente_estado.id_agente 
+					AND tagente.id_agente NOT IN (
+						SELECT tagente_estado.id_agente 
 						FROM tagente_estado)";
 			}
 			
-			$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
+			$sql .= 'ORDER BY nombre ' . $order_collate . ' ASC';
 			
 			break;
 		case 'module':
@@ -1188,7 +1308,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				)
 				', $name);
 			
-			$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
+			$sql .= 'ORDER BY nombre ' . $order_collate . ' ASC';
 			
 			break;
 		case 'tag':
@@ -1219,7 +1339,8 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 			
 			$sql .= ' AND tagente.disabled = 0'. $search_sql;
 			
-			$sql .= ' GROUP BY tagente.id_agente ORDER BY tagente.nombre COLLATE utf8_general_ci ASC';
+			$sql .= ' GROUP BY tagente.id_agente
+				ORDER BY tagente.nombre ' . $order_collate . ' ASC';
 			
 			break;
 	}
@@ -1234,25 +1355,36 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 // Get SQL for the second tree branch
 function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 	global $config;
+	
+	$order_collate = "";
+	switch ($config['dbtype']) {
+		case "mysql":
+			$order_collate = "COLLATE utf8_general_ci";
+			break;
+	}
+	
 	switch ($fatherType) {
 		case 'group':
 			$sql = 'SELECT * 
 				FROM tagente_modulo AS t1 
-				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+				INNER JOIN tagente_estado AS t2
+					ON t1.id_agente_modulo = t2.id_agente_modulo
 				WHERE t1.id_agente = ' . $id;
 			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
 			break;
 		case 'os':
 			$sql = 'SELECT * 
 				FROM tagente_modulo AS t1 
-				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+				INNER JOIN tagente_estado AS t2
+					ON t1.id_agente_modulo = t2.id_agente_modulo
 				WHERE t1.id_agente = ' . $id;
 			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
 			break;
 		case 'module_group':
 			$sql = 'SELECT * 
 				FROM tagente_modulo AS t1 
-				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+				INNER JOIN tagente_estado AS t2
+					ON t1.id_agente_modulo = t2.id_agente_modulo
 				WHERE t1.id_agente = ' . $id . ' AND id_module_group = ' . $id_father;
 			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
 			break;
@@ -1275,8 +1407,10 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 			$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
 			$name = $id_father;
 			for ($i = 0; $i < strlen($symbols); $i++) {
-				$name = str_replace('_articapandora_'.ord(substr($symbols, $i, 1)).'_pandoraartica_', substr($symbols, $i, 1), $name);
-			}	
+				$name = str_replace('_articapandora_' .
+					ord(substr($symbols, $i, 1)) .'_pandoraartica_',
+					substr($symbols, $i, 1), $name);
+			}
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$sql = 'SELECT * 
@@ -1315,8 +1449,9 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 			break;
 		}
 	
-	// This line checks for initializated modules or (non-initialized) asyncronous modules	
-	$sql .= ' AND disabled = 0 AND (utimestamp > 0 OR id_tipo_modulo IN (21,22,23)) ORDER BY nombre COLLATE utf8_general_ci ASC';
+	// This line checks for initializated modules or (non-initialized) asyncronous modules
+	$sql .= ' AND disabled = 0 AND (utimestamp > 0 OR id_tipo_modulo IN (21,22,23))
+		ORDER BY nombre ' . $order_collate . ' ASC';
 	return $sql;
 }
 ?>

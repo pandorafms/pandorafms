@@ -79,6 +79,8 @@ function servers_get_performance () {
 	$data["avg_interval_remote_modules"] = array();
 	$data["avg_interval_local_modules"] = 0;
 	$data["local_modules_rate"] = 0;
+	$data["network_modules_rate"] = 0;
+	
 	
 	if ($config["realtimestats"] == 1) {
 		$counts = db_get_all_rows_sql ("SELECT tagente_modulo.id_modulo, COUNT(tagente_modulo.id_agente_modulo) modules

@@ -72,7 +72,7 @@ if (is_ajax ())
 	}
 	if ($printAlertsTable) {
 		$id_module = get_parameter('id_module');
-				
+		
 		if (defined ('METACONSOLE')) {
 			$server = metaconsole_get_connection ($server_name);
 			metaconsole_connect($server);
@@ -86,7 +86,7 @@ if (is_ajax ())
 	}
 	if ($printModuleTable) {
 		$id_module = get_parameter('id_module');
-				
+		
 		if (defined ('METACONSOLE')) {
 			$server = metaconsole_get_connection ($server_name);
 			metaconsole_connect($server);
@@ -139,7 +139,8 @@ if (is_ajax ())
 					}
 					$avariableGroups = users_get_groups();
 					$avariableGroupsIds = array_keys($avariableGroups);
-					$sql = treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel, $search_free);
+					$sql = treeview_getFirstBranchSQL ($type, $id,
+						$avariableGroupsIds, $statusSel, $search_free);
 					if ($sql === false) {
 						$server_rows = array ();
 					}
@@ -437,7 +438,7 @@ if (is_ajax ())
 						"id=" . $row["id_agente_modulo"];
 				}
 				echo "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agente'].", \"" . $server_name . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
-
+				
 				echo " ";
 				
 				$nmodule_alerts = db_get_value_sql(sprintf("SELECT count(*) FROM talert_template_modules WHERE id_agent_module = %s", $row["id_agente_modulo"]));
@@ -525,35 +526,44 @@ else {
 }
 
 $module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by=module'>"
-	. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
+	. html_print_image("images/brick.png",
+		true,
+		array("title" => __('Modules'))) . "</a>",
+		'active' => $activeTab == "module");
 
 $tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&sort_by=tag&pure=$pure'>"
-	. html_print_image ("images/tag.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
-	
+	. html_print_image("images/tag.png",
+		true,
+		array("title" => __('Tags'))) . "</a>",
+		'active' => $activeTab == "tag");
+
 switch ($activeTab) {
 	case 'group':
-		$order =  __('groups');
+		$order = __('groups');
 		break;
 	case 'module_group':
-		$order =  __('module groups');
+		$order = __('module groups');
 		break;
 	case 'policies':
-		$order =  __('policies');
+		$order = __('policies');
 		break;
 	case 'module':
-		$order =  __('modules');
+		$order = __('modules');
 		break;
 	case 'os':
-		$order =  __('OS');
+		$order = __('OS');
 		break;
 	case 'tag':
-		$order =  __('tags');
+		$order = __('tags');
 		break;
 }
 
 if (! defined ('METACONSOLE')) {
 	$onheader = array('tag' => $tags_tab, 'os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
-	ui_print_page_header (__('Tree view')." - ".__('Sort the agents by ') .$order, "images/extensions.png", false, "", false, $onheader);
+	ui_print_page_header(
+		__('Tree view') . " - " . __('Sort the agents by ') . $order,
+		"images/extensions.png",
+		false, "", false, $onheader);
 }
 else {
 	
@@ -569,7 +579,7 @@ else {
 	if ($config['enable_tags_tree']) {
 		$allowed_tabs[] = 'tag';
 	}
-
+	
 	if (!in_array($activeTab, $allowed_tabs)) {
 		db_pandora_audit("HACK Attempt",
 		"Trying to access to not allowed tab on tree view");
@@ -577,17 +587,19 @@ else {
 		exit;
 	}
 	// End of tab check
-
+	
 	$group_tab = array('text' => "<a href='index.php?sec=monitoring&sec2=operation/tree&refr=0&tab=group&pure=$pure'>"
 		. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>",
 		'active' => $activeTab == "group");
 	
 	$subsections['group'] = $group_tab; 
-
-	if($config['enable_tags_tree']) {
-		$tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag&pure=$pure'>"
-					. html_print_image ("images/tag.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
 	
+	if ($config['enable_tags_tree']) {
+		$tags_tab = array(
+			'text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag&pure=$pure'>" .
+				html_print_image ("images/tag.png", true, array ("title" => __('Tags'))) . "</a>",
+			'active' => $activeTab == "tag");
+		
 		$subsections['tag'] = $tags_tab;
 	}
 	
@@ -649,6 +661,7 @@ ui_require_javascript_file('pandora_modules');
 
 treeview_printTree($activeTab);
 
+
 enterprise_hook('close_meta_frame');
 
 ui_include_time_picker();
@@ -672,9 +685,13 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	 * id_father int use in js and ajax php, its useful when you have a two subtrees with same agent for diferent each one
 	 */
 	function loadSubTree(type, div_id, less_branchs, id_father, server_name) {
-		hiddenDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv');
-		loadDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv');
-		pos = parseInt($('#tree_image'+id_father+'_'+type+'_'+div_id).attr('pos_tree'));
+		hiddenDiv = $('#tree_div' + id_father + '_' + type + '_' + div_id)
+			.attr('hiddenDiv');
+		loadDiv = $('#tree_div' + id_father + '_' + type + '_' + div_id)
+			.attr('loadDiv');
+		
+		pos = parseInt($('#tree_image' + id_father + '_' + type + '_' + div_id)
+			.attr('pos_tree'));
 		
 		//If has yet ajax request running
 		if (loadDiv == 2)
@@ -683,8 +700,10 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		if (loadDiv == 0) {
 			
 			//Put an spinner to simulate loading process
-			$('#tree_div'+id_father+'_'+type+'_'+div_id).html("<img style='padding-top:10px;padding-bottom:10px;padding-left:20px;' src=images/spinner.gif>");
-			$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
+			$('#tree_div' + id_father + '_' + type + '_' + div_id)
+				.html("<img style='padding-top:10px;padding-bottom:10px;padding-left:20px;' src=images/spinner.gif>");
+			$('#tree_div' + id_father + '_' + type + '_' + div_id)
+				.show('normal');
 			
 			$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 2);
 			$.ajax({

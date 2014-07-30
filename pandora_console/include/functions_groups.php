@@ -1531,4 +1531,42 @@ function groups_print_group_sons($group, $sons, &$branch_classes, $groups_count,
 		}
 	}
 }
+
+/**
+ * Return an array with the groups hierarchy (Recursive)
+ *
+ * @param array Groups array passed by reference
+ * @param mixed The id of the parent to search or false to begin the search from the first hierarchy level
+ * 
+ * @return array The groups reordered by its hierarchy
+ */
+function groups_get_tree(&$groups, $parent = false) {
+	$return = array();
+	
+	foreach ($groups as $id => $group) {
+		if ($parent === false && (!isset($group['parent']) || $group['parent'] == 0)) {
+			$return[$id] = $group;
+			unset($groups[$id]);
+			$children = groups_get_tree($groups, $id);
+
+			if (!empty($children)) {
+				$return[$id]['children'] = $children;
+			}
+		}
+		else if ($parent && isset($group['parent']) && $group['parent'] == $parent) {
+			$return[$id] = $group;
+			unset($groups[$id]);
+			$children = groups_get_tree($groups, $id);
+
+			if (!empty($children)) {
+				$return[$id]['children'] = $children;
+			}
+		}
+		else {
+			continue;
+		}
+	}
+	
+	return $return;
+}
 ?>

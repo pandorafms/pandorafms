@@ -4091,47 +4091,157 @@ function graph_snmp_traps_treemap ($data, $width = 700, $height = 700) {
 /**
  * Print a solarburst graph with a representation of all the groups, agents, module groups and modules grouped
  */
-function graph_monitor_wheel ($data, $unit, $width = 700, $height = 700) {
+function graph_monitor_wheel ($width = 500, $height = 600) {
 	global $config;
 
-	$data = array();
-
 	include_once ($config['homedir'] . "/include/functions_users.php");
-	//include_once ($config['homedir'] . "/include/functions_groups.php");
+	include_once ($config['homedir'] . "/include/functions_groups.php");
 	include_once ($config['homedir'] . "/include/functions_agents.php");
-	//include_once ($config['homedir'] . "/include/functions_modules.php");
+
+	$graph_data = array();
 
 	$groups = users_get_groups(false, "AR", false, true);
 
+	$data_groups = array();
 	if (!empty($groups)) {
+		$groups_aux = $groups;
+		$data_groups = groups_get_tree($groups_aux);
+		$groups_aux = $groups = null;
+	}
+
+	if (!empty($data_groups)) {
 		$filter = array('id_grupo' => array_keys($groups));
 		$fields = array('id_agente', 'id_parent', 'id_grupo', 'nombre');
 		$agents = agents_get_agents($filter, $fields);
 
 		if (!empty($agents)) {
 			$agents_id = array();
+			$agents_aux = array();
 			foreach ($agents as $key => $agent) {
-				$agents_id[] = $agent['id_agente'];
+				$agents_aux[$agent['id_agente']] = $agent;
 			}
+			$agents = $agents_aux;
+			$agents_aux = null;
 			$fields = array('id_agente_modulo', 'id_agente', 'id_module_group', 'nombre');
 
 			$module_groups = modules_get_modulegroups();
-			$modules = agents_get_modules($agents_id, $fields);
+			$module_groups[0] = __('Not assigned');
+			$modules = agents_get_modules(array_keys($agents), $fields);
 
+			$data_agents = array();
 			if (!empty($modules)) {
-				
+				foreach ($modules as $key => $module) {
+					$module_id = $module['id_agente_modulo'];
+					$agent_id = $module['id_agente'];
+					$module_group_id = $module['id_module_group'];
+					$module_name = $module['nombre'];
+
+					if (!isset($data_agents[$agent_id])) {
+						$data_agents[$agent_id] = array();
+						$data_agents[$agent_id]['id'] = $agent_id;
+						$data_agents[$agent_id]['name'] = $agents[$agent_id]['nombre'];
+						$data_agents[$agent_id]['group'] = $agents[$agent_id]['id_grupo'];
+						$data_agents[$agent_id]['type'] = 'agent';
+						$data_agents[$agent_id]['size'] = 30;
+						$data_agents[$agent_id]['children'] = array();
+
+						$tooltip_content = __('Agent') . ": <b>" . $data_agents[$agent_id]['name'] . "</b>";
+						$data_agents[$agent_id]['tooltip_content'] = $tooltip_content;
+
+						unset($agents[$agent_id]);
+					}
+					if (!isset($data_agents[$agent_id]['children'][$module_group_id])) {
+						$data_agents[$agent_id]['children'][$module_group_id] = array();
+						$data_agents[$agent_id]['children'][$module_group_id]['id'] = $module_group_id;
+						$data_agents[$agent_id]['children'][$module_group_id]['name'] = $module_groups[$module_group_id];
+						$data_agents[$agent_id]['children'][$module_group_id]['type'] = 'module_group';
+						$data_agents[$agent_id]['children'][$module_group_id]['size'] = 10;
+						$data_agents[$agent_id]['children'][$module_group_id]['children'] = array();
+
+						$tooltip_content = __('Module group') . ": <b>" . $module_groups[$module_group_id] . "</b>";
+						$data_agents[$agent_id]['children'][$module_group_id]['tooltip_content'] = $tooltip_content;
+					}
+					
+					$data_module = array();
+					$data_module['id'] = $module_id;
+					$data_module['name'] = $module_name;
+					$data_module['type'] = 'module';
+					$data_module['size'] = 10;
+
+					$tooltip_content = __('Module') . ": <b>" . $module_name . "</b>";
+					$data_module['tooltip_content'] = $tooltip_content;
+
+					$data_agents[$agent_id]['children'][$module_group_id]['children'][] = $data_module;
+
+					unset($modules[$module_id]);
+				}
 			}
+			foreach ($agents as $id => $agent) {
+				if (!isset($data_agents[$id])) {
+					$data_agents[$id] = array();
+					$data_agents[$id]['id'] = $id;
+					$data_agents[$id]['name'] = $agent['name'];
+					$data_agents[$id]['type'] = 'agent';
+				}
+			}
+			$agents = null;
 		}
 	}
 
+	function iterate_group_array ($groups, &$data_agents) {
+		
+		$data = array();
 
-	if (empty ($data)) {
-		return fs_error_image ();
+		foreach ($groups as $id => $group) {
+
+			$group_aux = array();
+			$group_aux['id'] = $id;
+			$group_aux['name'] = $group['nombre'];
+			$group_aux['parent'] = $group['parent'];
+			$group_aux['type'] = 'group';
+			$group_aux['size'] = 100;
+
+			$tooltip_content = __('Group') . ": <b>" . $group_aux['name'] . "</b>";
+			$group_aux['tooltip_content'] = $tooltip_content;
+
+			if (!isset($group['children']))
+				$group_aux['children'] = array();
+			if (!empty($group['children']))
+				$group_aux['children'] = iterate_group_array($group['children']);
+
+			$agents = extract_agents_with_group_id($data_agents, $id);
+
+			if (!empty($agents))
+				$group_aux['children'] = array_merge($group_aux['children'], $agents);
+			
+			$data[] = $group_aux;
+		}
+
+		return $data;
 	}
+
+	function extract_agents_with_group_id (&$agents, $group_id) {
+		$valid_agents = array();
+		foreach ($agents as $id => $agent) {
+			if (isset($agent['group']) && $agent['group'] == $group_id) {
+				$valid_agents[$id] = $agent;
+				unset($agents[$id]);
+			}
+		}
+		if (!empty($valid_agents))
+			return $valid_agents;
+		else
+			return false;
+	}
+
+	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents));
+
+	if (empty($graph_data['children']))
+		return fs_error_image();
 
 	include_once($config['homedir'] . "/include/graphs/functions_d3.php");
 
-	return d3_tree_map_graph ($data, $width, $height, true);
+	return d3_sunburst_graph ($graph_data, $width, $height, true);
 }
 
 ?>

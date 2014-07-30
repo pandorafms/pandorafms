@@ -89,6 +89,9 @@ if ($get_module_detail) {
 		$conexion = mysql_connect ($server['dbhost'], $server['dbuser'], $server['dbpass']);
 		$select_db = mysql_select_db ($server['dbname'], $conexion);
 	}
+	else {
+		$conexion = false;
+	}
 	
 	$selection_mode = get_parameter('selection_mode', 'fromnow');
 	$date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
@@ -230,13 +233,29 @@ if ($get_module_detail) {
 		);
 	}
 	
+	
 	$sql_body = io_safe_output($sql_body);
 	// Clean all codification characters
 	
 	$sql = "SELECT * " . $sql_body;
-	$sql_count = "SELECT count(*) " . $sql_body;
+	
+	switch ($config['dbtype']) {
+		case "mysql":
+			$sql_count = "SELECT count(*) " . $sql_body;
+			break;
+		case "postgresql":
+			$sql_body = str_replace("ORDER BY utimestamp DESC",
+				"GROUP BY utimestamp ORDER BY utimestamp DESC",
+				$sql_body);
+			$sql_count = "SELECT count(DISTINCT utimestamp) " . $sql_body;
+			break;
+		case "oracle":
+			$sql_count = "SELECT count(*) " . $sql_body;
+			break;
+	}
 	
 	$count = db_get_value_sql ($sql_count, $conexion);
+	
 	
 	switch ($config["dbtype"]) {
 		case "mysql":

@@ -1448,7 +1448,9 @@ function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'rad
 	$values['show_groups'] = $show_groups;
 	$values['show_modules'] = $show_modules;
 	
-	return @db_process_sql_insert ('tnetwork_map', $values);
+	$values['server_name'] = "";
+	
+	return @db_process_sql_insert('tnetwork_map', $values);
 }
 
 /**

@@ -340,7 +340,7 @@ $events_filter .= html_print_input_hidden('id_name', $id_name, true);
 if ($open_filter) {
 	$events_filter .= html_print_input_hidden('open_filter', 'true', true);
 } 
-else{
+else {
 	$events_filter .= html_print_input_hidden('open_filter', 'false', true);
 }
 
@@ -414,8 +414,18 @@ $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
 $data = array();
-$data[0] = '<fieldset class="databox" style="width: 310px;"><legend>' . __('Events with following tags') . '</legend>' . html_print_table($tabletags_with, true) . '</fieldset>';
-$data[1] = '<fieldset class="databox" style="width: 310px;"><legend>' . __('Events without following tags') . '</legend>' . html_print_table($tabletags_without, true) . '</fieldset>';
+$data[0] = '<fieldset class="databox" style="width: 310px;">' .
+		'<legend>' .
+			__('Events with following tags') .
+		'</legend>' .
+		html_print_table($tabletags_with, true) .
+	'</fieldset>';
+$data[1] = '<fieldset class="databox" style="width: 310px;">' .
+		'<legend>' .
+			__('Events without following tags') .
+		'</legend>' .
+		html_print_table($tabletags_without, true) .
+	'</fieldset>';
 $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 

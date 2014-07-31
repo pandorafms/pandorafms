@@ -172,6 +172,7 @@ function mainAgentsAlerts() {
 		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_alerts&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."'>".html_print_image("images/darrowleft.png",true, array('title' => __('Previous templates')))."</a> </th>";
 	}
 	
+	$templates_raw = array();
 	if (!empty($templates)) {
 		$sql = sprintf('SELECT id, name
 			FROM talert_templates
@@ -179,6 +180,9 @@ function mainAgentsAlerts() {
 		
 		$templates_raw = db_get_all_rows_sql($sql);
 	}
+	
+	if (empty($templates_raw))
+		$templates_raw = array();
 	
 	$alerts = array();
 	$ntemplates = 0;

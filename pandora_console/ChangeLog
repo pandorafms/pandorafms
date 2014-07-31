@@ -1,3 +1,21 @@
+2014-07-31  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_networkmap.php, include/functions_graph.php,
+	include/db/postgresql.php, include/db/oracle.php,
+	include/functions_api.php, extensions/agents_alerts.php,
+	operation/search_main.php, operation/search_agents.getdata.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/networkmap.topology.php,
+	operation/agentes/ver_agente.php,
+	operation/search_modules.getdata.php, operation/search_results.php,
+	operation/events/events_list.php,
+	godmode/alerts/alert_list.builder.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/modules/manage_network_components_form.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/reporting/map_builder.php: tiny fixes for the improve the
+	support of postgreSQL databases.
+
 2014-07-30  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/ajax/module.php: tiny fixes for the improve the support of

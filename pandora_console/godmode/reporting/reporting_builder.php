@@ -66,12 +66,12 @@ if ($schedule_report != '') {
 		'args' => serialize ($parameters),
 		'scheduled' => $scheduled,
 		'flag_delete' => 1);
-
+	
 	$result = db_process_sql_insert('tuser_task_scheduled', $values);
 	
 	ui_print_result_message ($result,
-				__('Your report has been planned, and the system will email you a PDF with the report as soon as its finished'),
-				__('An error has ocurred'));
+		__('Your report has been planned, and the system will email you a PDF with the report as soon as its finished'),
+		__('An error has ocurred'));
 	echo '<br>';
 }
 
@@ -451,9 +451,12 @@ switch ($action) {
 					$data[2] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure.'">' .
 						html_print_image("images/html.png", true, array('title' => __('HTML view'))) . '</a>';
 					$data[3] = '<a href="'. ui_get_full_url(false, false, false, false) . 'ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/xml.png", true, array('title' => __('Export to XML'))) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
-				} else {
-					$data[2] =  html_print_image("images/html_disabled.png", true);
-					$data[3] =  html_print_image("images/xml_disabled.png", true);
+				}
+				else {
+					$data[2] = html_print_image(
+						"images/html_disabled.png", true);
+					$data[3] = html_print_image(
+						"images/xml_disabled.png", true);
 				}
 				
 				
@@ -475,7 +478,8 @@ switch ($action) {
 					$next++;
 					
 					
-					$data[$next] = ui_print_group_icon($report['id_group'], true, "groups_small", '', !defined('METACONSOLE')); 
+					$data[$next] = ui_print_group_icon(
+						$report['id_group'], true, "groups_small", '', !defined('METACONSOLE')); 
 					$next++;
 				}
 				
@@ -801,7 +805,7 @@ switch ($action) {
 						else
 							$values['id_agent_module'] = get_parameter('id_agent_module');
 						
-						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
+						$values['only_display_wrong'] = (int)get_parameter('checkbox_only_display_wrong', 0);
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
 						$values['wednesday'] = get_parameter('wednesday', 0);
@@ -814,7 +818,7 @@ switch ($action) {
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent');
 						$values['show_resume'] = get_parameter ('checkbox_show_resume');
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown');
-						$values['exception_condition'] = get_parameter('exception_condition');
+						$values['exception_condition'] = (int)get_parameter('exception_condition', 0);
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
 						$values['show_graph'] = get_parameter('combo_graph_options');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
@@ -916,7 +920,7 @@ switch ($action) {
 						if ($good_format) {
 							$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
 						}
-						else{
+						else {
 							$resultOperationDB = false;
 						}
 						break;
@@ -926,6 +930,7 @@ switch ($action) {
 						$values['type'] = get_parameter('type', null);
 						$values['name'] = (string) get_parameter('name');
 						$values['description'] = get_parameter('description');
+						
 						// Support for projection graph, prediction date and SLA reports
 						// 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report
 						switch ($values['type']) {
@@ -1007,15 +1012,15 @@ switch ($action) {
 						switch ($config['dbtype']) {
 							case "mysql":
 							case "postgresql":
-								$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
+								$values['only_display_wrong'] = (int)get_parameter('checkbox_only_display_wrong', 0);
 								break;
 							case "oracle":
 								$only_display_wrong_tmp = get_parameter('checkbox_only_display_wrong');
 								if (empty($only_display_wrong_tmp)) {
 									$values['only_display_wrong'] = 0;
 								}
-								else{
-									$values['only_display_wrong'] = $only_display_wrong_tmp;					
+								else {
+									$values['only_display_wrong'] = $only_display_wrong_tmp;
 								}
 								break;
 						}
@@ -1040,7 +1045,7 @@ switch ($action) {
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent',0);
 						$values['show_resume'] = get_parameter ('checkbox_show_resume',0);
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown',0);
-						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
+						$values['exception_condition'] = (int)get_parameter('radiobutton_exception_condition', 0);
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
 						$values['show_graph'] = get_parameter('combo_graph_options');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
@@ -1391,11 +1396,17 @@ switch ($action) {
 			default:
 				switch ($config["dbtype"]) {
 					case "mysql":
-						$oldOrder = db_get_value_sql('SELECT `order` FROM treport_content WHERE id_rc = ' . $idItem);
+						$oldOrder = db_get_value_sql('
+							SELECT `order`
+							FROM treport_content
+							WHERE id_rc = ' . $idItem);
 						break;
 					case "postgresql":
 					case "oracle":
-						$oldOrder = db_get_value_sql('SELECT "order" FROM treport_content WHERE id_rc = ' . $idItem);
+						$oldOrder = db_get_value_sql('
+							SELECT "order"
+							FROM treport_content
+							WHERE id_rc = ' . $idItem);
 						break;
 				}
 				//db_get_value_filter('order', 'treport_content', array('id_rc' => $idItem));
@@ -1413,17 +1424,20 @@ switch ($action) {
 					case "mysql":
 						$resultOperationDB = db_process_sql_update('treport_content',
 							array('`order`' => $oldOrder),
-							array('`order`' => $newOrder, 'id_report' => $idReport));
+							array('`order`' => $newOrder,
+								'id_report' => $idReport));
 						break;
 					case "postgresql":
 						$resultOperationDB = db_process_sql_update('treport_content',
 							array('"order"' => $oldOrder),
-							array('"order"' => $newOrder, 'id_report' => $idReport));
+							array('"order"' => $newOrder,
+								'id_report' => $idReport));
 						break;
 					case "oracle":
 						$resultOperationDB = db_process_sql_update('treport_content',
 							array('"order"' => $oldOrder),
-							array('"order"' => $newOrder, 'id_report' => $idReport),
+							array('"order"' => $newOrder,
+								'id_report' => $idReport),
 							'AND', false);
 						break;
 				}
@@ -1505,7 +1519,7 @@ if ($enterpriseEnable) {
 		$resultOperationDB = $result;
 	}
 }
-			
+
 $buttons = array(
 	'list_reports' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
@@ -1545,15 +1559,21 @@ else {
 // Page header for metaconsole
 if ($enterpriseEnable and defined('METACONSOLE')) {
 	// Bread crumbs
-	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure, 'text' => __('Reporting')));
+	ui_meta_add_breadcrumb(
+		array('link' =>
+			'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure=' . $pure,
+		'text' => __('Reporting')));
 	
 	ui_meta_print_page_header($nav_bar);
 	
 	// Print header
 	ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);
 }
-else
-	ui_print_page_header(__('Reporting') . $textReportName, "images/op_reporting.png", false, "reporting_" . $activeTab . "_tab", false, $buttons);
+else {
+	ui_print_page_header(__('Reporting') . $textReportName,
+		"images/op_reporting.png", false,
+		"reporting_" . $activeTab . "_tab", false, $buttons);
+}
 
 enterprise_hook('open_meta_frame');
 
@@ -1563,13 +1583,16 @@ if ($resultOperationDB !== null) {
 
 switch ($activeTab) {
 	case 'main':
-		require_once($config['homedir'] . '/godmode/reporting/reporting_builder.main.php');
+		require_once($config['homedir'] .
+			'/godmode/reporting/reporting_builder.main.php');
 		break;
 	case 'list_items':
-		require_once($config['homedir'] . '/godmode/reporting/reporting_builder.list_items.php');
+		require_once($config['homedir'] .
+			'/godmode/reporting/reporting_builder.list_items.php');
 		break;
 	case 'item_editor':
-		require_once($config['homedir'] . '/godmode/reporting/reporting_builder.item_editor.php');
+		require_once($config['homedir'] .
+			'/godmode/reporting/reporting_builder.item_editor.php');
 		break;
 	default:
 		reporting_enterprise_select_tab($activeTab);

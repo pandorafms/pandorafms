@@ -203,7 +203,7 @@ if ($tag_filter !== 0) {
 				WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
 			)";
 	}
-	else{
+	else {
 		$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
 				FROM ttag_module

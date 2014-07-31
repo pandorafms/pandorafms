@@ -254,7 +254,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 			else if ($type[0] == '/INSERT'){
 				$query = oci_parse($config['dbconnection'], substr($sql,1));			
 			}
-			else{
+			else {
 				$query = oci_parse($config['dbconnection'], $sql);
 			}
 		}
@@ -661,7 +661,7 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 			else if ($value[0] == '%') {
 				$query .= sprintf ("%s LIKE '%s'", $field, $value);
 			}
-			else{ 
+			else { 
 				$query .= sprintf ("%s = '%s'", $field, $value);
 			}
 		}
@@ -1009,16 +1009,16 @@ function oracle_db_get_num_rows ($sql) {
 	global $config;
 	
 	$type = explode(' ',strtoupper(trim($sql)));
-	if ($type[0] == 'SELECT'){
+	if ($type[0] == 'SELECT') {
 		$sql = "SELECT count(*) as NUM FROM (" . $sql . ")";
 	}
 	$query = oci_parse($config['dbconnection'], $sql);
 	oci_execute($query);
-	if ($type[0] == 'SELECT'){
+	if ($type[0] == 'SELECT') {
 		$row = oci_fetch_assoc($query);
 		$rows = $row['NUM'];
 	}
-	else{
+	else {
 		$rows = oci_num_rows($query);
 	}
 	
@@ -1039,13 +1039,19 @@ function oracle_db_get_num_rows ($sql) {
  */
 function oracle_db_get_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
 	if (is_int ($condition) || is_bool ($condition)) {
-		$sql = sprintf ("SELECT * FROM %s WHERE %s = %d", $table, $field, $condition);
+		$sql = sprintf ("SELECT *
+			FROM %s
+			WHERE %s = %d", $table, $field, $condition);
 	}
 	else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT * FROM %s WHERE %s = %f", $table, $field, $condition);
+		$sql = sprintf ("SELECT *
+			FROM %s
+			WHERE %s = %f", $table, $field, $condition);
 	}
 	else {
-		$sql = sprintf ("SELECT * FROM %s WHERE %s = '%s'", $table, $field, $condition);
+		$sql = sprintf ("SELECT *
+			FROM %s
+			WHERE %s = '%s'", $table, $field, $condition);
 	}
 	
 	if ($order_field != "")

@@ -125,7 +125,7 @@ if ($copy_layout) {
 				ui_print_error_message(__('Not copied. Error copying data'));
 			}
 		}
-		else{
+		else {
 			// If the array is empty the copy is completed
 			ui_print_success_message(__('Successfully copied'));
 			db_clean_cache();

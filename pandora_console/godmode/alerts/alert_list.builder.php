@@ -80,7 +80,7 @@ $table->data[1][0] = __('Template');
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$templates = alerts_get_alert_templates (false, array ('id', 'name'));
-else{
+else {
 	$usr_groups = users_get_groups($config['id_user'], 'LW', true);
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($usr_groups));
@@ -107,13 +107,17 @@ if (!empty($groups_user)) {
 	$actions = db_get_all_rows_sql($sql);
 }
 $table->data[2][1] = '<div class="actions_container">';
-$table->data[2][1] .= html_print_select(index_array ($actions, 'id', 'name'),'action_select','','',__('Default action'),'0',true, '', true, '', false, 'width: 250px;');
+$table->data[2][1] .= html_print_select(
+	index_array($actions, 'id', 'name'), 'action_select', '', '',
+	__('Default action'), '0', true, '', true, '', false,
+	'width: 250px;');
 $table->data[2][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
 $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
-$table->data[2][1] .= ' '.__('to').' ';
+$table->data[2][1] .= ' ' . __('to') . ' ';
 $table->data[2][1] .= html_print_input_text ('fires_max', '', '', 4, 10, true);
-$table->data[2][1] .= ui_print_help_icon ("alert-matches", true, ui_get_full_url(false, false, false, false));
+$table->data[2][1] .= ui_print_help_icon ("alert-matches", true,
+	ui_get_full_url(false, false, false, false));
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
 if (check_acl ($config['id_user'], 0, "LM")) {

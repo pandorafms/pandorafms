@@ -394,11 +394,15 @@ if ($create_template) {
 	}
 	if ($result) {
 		//db_pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
-		db_pandora_audit("Template alert management", "Create alert template #" . $result, false, false, json_encode($values));
+		db_pandora_audit("Template alert management",
+			"Create alert template #" . $result, false, false,
+			json_encode($values));
 	}
 	else {
 		//db_pandora_audit("Command management", "Fail try to create alert command", false, false, json_encode($values));
-		db_pandora_audit("Template alert management", "Fail try to create alert template", false, false, json_encode($values));
+		db_pandora_audit("Template alert management",
+			"Fail try to create alert template", false, false,
+			json_encode($values));
 	}
 	
 	ui_print_result_message ($result,
@@ -455,7 +459,7 @@ if ($id && ! $create_template) {
 	for ($i = 1; $i <= 10; $i++) {
 		$fields_recovery[$i] = $template['field'.$i.'_recovery'];
 	}
-
+	
 	$default_action = $template['id_alert_action'];
 	$priority = $template['priority'];
 	$id_group = $template['id_group'];
@@ -474,6 +478,10 @@ $table->size[0] = '20%';
 $table->size[2] = '20%';
 
 if ($step == 2) {
+	
+	if (!isset($show_matches))
+		$show_matches = false;
+	
 	/* Firing conditions and events */
 	$table->colspan = array ();
 	$table->colspan[4][1] = 3;
@@ -493,7 +501,7 @@ if ($step == 2) {
 	$table->data[0][1] .= html_print_checkbox ('saturday', 1, $saturday, true);
 	$table->data[0][1] .= __('Sun');
 	$table->data[0][1] .= html_print_checkbox ('sunday', 1, $sunday, true);
-
+	
 	$table->data[0][2] = __('Use special days list');
 	$table->data[0][3] = html_print_checkbox ('special_day', 1, $special_day, true);
 	
@@ -512,11 +520,11 @@ if ($step == 2) {
 	'', false, true);
 	
 	$table->data[3][0] = __('Min. number of alerts');
-	$table->data[3][1] = html_print_input_text ('min_alerts', $min_alerts, '',
-		5, 7, true);
+	$table->data[3][1] = html_print_input_text ('min_alerts',
+		$min_alerts, '', 5, 7, true);
 	$table->data[3][2] = __('Max. number of alerts');
-	$table->data[3][3] = html_print_input_text ('max_alerts', $max_alerts, '',
-		5, 7, true);
+	$table->data[3][3] = html_print_input_text ('max_alerts',
+		$max_alerts, '', 5, 7, true);
 	
 	$table->data[4][0] = __('Default action');
 	$usr_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM', true)));
@@ -529,7 +537,8 @@ if ($step == 2) {
 				ORDER BY name', $usr_groups);
 			break;
 		case "oracle":
-			$sql_query = sprintf('SELECT id, dbms_lob.substr(name,4000,1) as nombre
+			$sql_query = sprintf('SELECT id,
+					dbms_lob.substr(name,4000,1) AS nombre
 				FROM talert_actions
 				WHERE id_group IN (%s)
 				ORDER BY dbms_lob.substr(name,4000,1)', $usr_groups);
@@ -543,13 +552,15 @@ if ($step == 2) {
 	$table->data[5][0] = __('Condition type');
 	$table->data[5][1] = html_print_select (alerts_get_alert_templates_types (), 'type',
 		$type, '', __('Select'), 0, true, false, false);
-	$table->data[5][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
+	$table->data[5][1] .= '<span id="matches_value" ' .
+		($show_matches ? '' : 'style="display: none"').'>';
 	$table->data[5][1] .= '&nbsp;'.html_print_checkbox ('matches_value', 1, $matches, true);
-	$table->data[5][1] .= html_print_label (__('Trigger when matches the value'),
+	$table->data[5][1] .= html_print_label(
+		__('Trigger when matches the value'),
 		'checkbox-matches_value', true);
 	$table->data[5][1] .= '</span>';
 	$table->colspan[5][1] = 3;
-
+	
 	$table->data['value'][0] = __('Value');
 	$table->data['value'][1] = html_print_input_text ('value', $value, '',
 		35, 255, true);
@@ -566,17 +577,20 @@ if ($step == 2) {
 			'width' => '20px'));
 	$table->data['value'][1] .= '</span>';
 	$table->colspan['value'][1] = 3;
-
+	
 	//Min first, then max, that's more logical
 	$table->data['min'][0] = __('Min.');
-	$table->data['min'][1] = html_print_input_text ('min', $min, '', 5, 255, true);
+	$table->data['min'][1] = html_print_input_text ('min', $min, '', 5,
+		255, true);
 	$table->colspan['min'][1] = 3;
-
+	
 	$table->data['max'][0] = __('Max.');
-	$table->data['max'][1] = html_print_input_text ('max', $max, '', 5, 255, true);
+	$table->data['max'][1] = html_print_input_text ('max', $max, '', 5,
+		255, true);
 	$table->colspan['max'][1] = 3;
-
-	$table->data['example'][1] = ui_print_alert_template_example ($id, true, false);
+	
+	$table->data['example'][1] = ui_print_alert_template_example($id,
+		true, false);
 	$table->colspan['example'][1] = 4;
 }
 else if ($step == 3) {
@@ -585,7 +599,7 @@ else if ($step == 3) {
 	$table->style[2] = 'font-weight: bold; vertical-align: top';
 	$table->size = array ();
 	$table->size[0] = '20%';
-
+	
 	/* Alert recover */
 	if (! $recovery_notify) {
 		$table->cellstyle['label_fields'][2] = 'display:none;';
@@ -610,7 +624,7 @@ else if ($step == 3) {
 	$table->data['label_fields'][0] = '';
 	$table->data['label_fields'][1] = __('Firing fields');
 	$table->data['label_fields'][2] = __('Recovery fields');
-		
+	
 	for ($i = 1; $i <= 10; $i++) {
 		if (isset($template[$name])) {
 			$value = $template[$name];
@@ -621,8 +635,9 @@ else if ($step == 3) {
 		
 		//$table->rowclass['field'.$i] = 'row_field';
 		
-		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true);
-		$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
+		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) .
+			ui_print_help_icon ('alert_macros', true);
+		$table->data['field'.$i][1] = html_print_textarea('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
 		// Recovery
 		$table->data['field'.$i][2] = html_print_textarea ('field'.$i.'_recovery', 1, 1, isset($fields_recovery[$i]) ? $fields_recovery[$i] : '', 'style="min-height:40px" class="fields"', true);
 	}

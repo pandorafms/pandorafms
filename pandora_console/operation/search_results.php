@@ -58,7 +58,9 @@ $selected = 'border: 1px solid black;';
 
 if ($searchMain) {
 	$main_tab = array('text' => "<a href='index.php?search_category=main&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/zoom_mc.png", true, array ("title" => __('Global search'))) . "</a>", 'active' => $searchTab == "main");
+		. html_print_image ("images/zoom_mc.png", true,
+			array ("title" => __('Global search'))) . "</a>",
+				'active' => $searchTab == "main");
 }
 else {
 	$main_tab = '';
@@ -66,7 +68,9 @@ else {
 
 if ($searchAgents) {
 	$agents_tab = array('text' => "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/op_monitoring.png", true, array ("title" => __('Agents'))) . "</a>", 'active' => $searchTab == "agents");
+		. html_print_image ("images/op_monitoring.png", true,
+			array ("title" => __('Agents'))) . "</a>",
+				'active' => $searchTab == "agents");
 }
 else {
 	$agents_tab = '';
@@ -74,7 +78,9 @@ else {
 
 if ($searchUsers) {
 	$users_tab = array('text' => "<a href='index.php?search_category=users&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/op_workspace.png", true, array ("title" => __('Users'))) . "</a>", 'active' => $searchTab == "users");
+		. html_print_image ("images/op_workspace.png", true,
+			array ("title" => __('Users'))) . "</a>",
+				'active' => $searchTab == "users");
 }
 else {
 	$users_tab = '';
@@ -82,7 +88,9 @@ else {
 
 if ($searchAlerts) {
 	$alerts_tab = array('text' => "<a href='index.php?search_category=alerts&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/op_alerts.png", true, array ("title" => __('Alerts'))) . "</a>", 'active' => $searchTab == "alerts");
+		. html_print_image ("images/op_alerts.png", true,
+			array ("title" => __('Alerts'))) . "</a>",
+				'active' => $searchTab == "alerts");
 }
 else {
 	$alerts_tab = '';
@@ -90,7 +98,9 @@ else {
 
 if ($searchGraphs) {
 	$graphs_tab = array('text' => "<a href='index.php?search_category=graphs&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/chart.png", true, array ("title" => __('Graphs'))) . "</a>", 'active' => $searchTab == "graphs");
+		. html_print_image ("images/chart.png", true,
+			array ("title" => __('Graphs'))) . "</a>",
+				'active' => $searchTab == "graphs");
 }
 else {
 	$graphs_tab = '';
@@ -98,7 +108,9 @@ else {
 
 if ($searchReports) {
 	$reports_tab = array('text' => "<a href='index.php?search_category=reports&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/op_reporting.png", true, array ("title" => __('Reports'))) . "</a>", 'active' => $searchTab == "reports");
+		. html_print_image ("images/op_reporting.png", true,
+			array ("title" => __('Reports'))) . "</a>",
+				'active' => $searchTab == "reports");
 }
 else {
 	$reports_tab = '';
@@ -106,7 +118,9 @@ else {
 
 if ($searchMaps) {
 	$maps_tab = array('text' => "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/visual_console.png", true, array ("title" => __('Maps'))) . "</a>", 'active' => $searchTab == "maps");
+		. html_print_image ("images/visual_console.png", true,
+			array ("title" => __('Maps'))) . "</a>",
+				'active' => $searchTab == "maps");
 }
 else {
 	$maps_tab = '';
@@ -114,7 +128,9 @@ else {
 
 if ($searchModules) {
 	$modules_tab = array('text' => "<a href='index.php?search_category=modules&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-		. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $searchTab == "modules");
+		. html_print_image ("images/brick.png", true,
+			array ("title" => __('Modules'))) . "</a>",
+				'active' => $searchTab == "modules");
 }
 else {
 	$modules_tab = '';
@@ -135,6 +151,7 @@ $only_count = false;
 switch ($searchTab) {
 	case 'main':
 		$only_count = true;
+		
 		require_once('search_agents.getdata.php');
 		require_once('search_agents.php');
 		require_once('search_users.getdata.php');

@@ -44,6 +44,7 @@ $table->style[8] = 'font-weight: bold; text-align: center;';
 $table->style[9] = 'font-weight: bold; text-align: center;';
 $table->style[10] = 'font-weight: bold; text-align: center;';
 $table->style[11] = 'font-weight: bold; text-align: center;';
+$table->style[13] = 'font-weight: bold; text-align: center;';
 
 $table->data[0][0] = html_print_image ("images/agent.png", true, array ("title" => __('Agents found')));
 $table->data[0][1] = "<a href='index.php?search_category=agents&keywords=".$keyword."&head_search_keywords=Search'>" .

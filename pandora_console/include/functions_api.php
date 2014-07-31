@@ -2477,7 +2477,7 @@ function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
 	if (!$module_values) {
 		returnError('error_get_module_value_all_agents', 'Error getting module values from all agents.');
 	}
-	else{
+	else {
 		$data = array('type' => 'array', 'data' => $module_values);
 		
 		returnData('csv', $data, ';');

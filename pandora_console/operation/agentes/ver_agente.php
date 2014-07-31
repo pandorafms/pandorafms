@@ -624,7 +624,7 @@ if (is_ajax ()) {
 		if ($modulegroup === false) {
 			echo __('None').'<br />';
 		}
-		else{
+		else {
 			echo $modulegroup.'<br />';
 		}
 		echo '<strong>'.__('Agent').':</strong> ';

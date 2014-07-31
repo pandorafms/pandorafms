@@ -173,7 +173,7 @@ if ($searchAgents) {
 					AND (
 						t1.nombre LIKE '%%" . $stringSearchSQL . "%%' OR
 						t2.nombre LIKE '%%" . $stringSearchSQL . "%%' OR
-						t1.direction LIKE '%%" . $stringSearchSQL . "%%'
+						t1.direccion LIKE '%%" . $stringSearchSQL . "%%'
 					)
 			";
 			break;

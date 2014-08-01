@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -18,12 +17,14 @@ global $config;
 
 check_login();
 
+
 if (! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
 	return;
 }
+
 
 require_once ('include/functions_users.php');
 
@@ -36,10 +37,7 @@ ui_print_page_header(
 	true,
 	"");
 
-// Load global vars
-global $config;
 
-check_login();
 
 //Initialize data
 $id_agent = get_parameter ("id_agent");

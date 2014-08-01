@@ -1,3 +1,9 @@
+2014-08-01  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/planned_downtime.editor.php: fixed the acl.
+	
+	MERGED FROM THE BRANCH 5.0
+
 2014-07-31  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_networkmap.php, include/functions_graph.php,

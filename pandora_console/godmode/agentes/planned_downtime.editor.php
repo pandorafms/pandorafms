@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -18,12 +17,14 @@ global $config;
 
 check_login();
 
+
 if (! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
 	return;
 }
+
 
 require_once ('include/functions_users.php');
 
@@ -36,10 +37,7 @@ ui_print_page_header(
 	true,
 	"");
 
-// Load global vars
-global $config;
 
-check_login();
 
 //Initialize data
 $id_agent = get_parameter ("id_agent");
@@ -153,7 +151,7 @@ if ($create_downtime || $update_downtime) {
 	$datetime_from = strtotime ($once_date_from . ' ' . $once_time_from);
 	$datetime_to = strtotime ($once_date_to . ' ' . $once_time_to);
 	$now = strtotime(date(DATE_FORMAT). ' ' . date(TIME_FORMAT));
-
+	
 	if ($datetime_from < $now) {
 		ui_print_error_message(__('Not created. Error inserting data. Start time must be higher than the current time' ));
 	}

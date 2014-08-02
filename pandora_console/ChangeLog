@@ -1,3 +1,7 @@
+2014-08-02  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/agentes/estado_agente.php: Fixed sql error.
+
 2014-08-01  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/planned_downtime.editor.php: fixed the acl.

@@ -781,7 +781,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		
 		var server_name = '';
 		var extra_parameters = '';
-		if (period == -1) {
+		if ($('input[name=selection_mode]:checked').val()) {
 			
 			period = $('#period').val();
 			

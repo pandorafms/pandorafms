@@ -1576,9 +1576,9 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	
 	// Show GOTO FIRST button
 	if ($other_class == '') {
-		$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.html_print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
+		$output .= '<a class="pagination offset_0" href="'.$url.'&amp;' .$offset_name.'=0">'.html_print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
 	} else {
-		$output .= "<a class='pagination $other_class go_first' href='$url.&amp;$offset_name=0'>".html_print_image ("images/go_first.png", true, array ("class" => "bot"))."</a>&nbsp;";
+		$output .= "<a class='pagination $other_class offset_0' href='$url.&amp;$offset_name=0'>".html_print_image ("images/go_first.png", true, array ("class" => "bot"))."</a>&nbsp;";
 	}
 
 	// Show PREVIOUS button
@@ -1588,9 +1588,9 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 			$index_page_prev = 0;
 			
 		if ($other_class == '') {
-				$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.html_print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
+			$output .= '<a class="pagination offset_' . $index_page_prev . '" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.html_print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
 		} else {
-			$output .= "<a class='pagination $other_class go_rewind' href='$url &amp;$offset_name = $index_page_prev'>".html_print_image ("images/go_previous.png", true, array ("class" => "bot"))."</a>";
+			$output .= "<a class='pagination $other_class offset_$index_page_prev' href='$url &amp;$offset_name = $index_page_prev'>".html_print_image ("images/go_previous.png", true, array ("class" => "bot"))."</a>";
 		}
 	}
 	
@@ -1629,13 +1629,12 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 	// Index_counter stores max of blocks
 	if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
 		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
-		if ($prox_bloque > $count)
-			$prox_bloque = ($count -1) - $pagination;
-			
+		if ($prox_bloque >= $count)
+			$prox_bloque = (int) (($count - 1) / $pagination) * $pagination;
 		if ($other_class == '') {
-				$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.html_print_image ("images/go_next.png", true, array ("class" => "bot")).'</a>';
+			$output .= '<a class="pagination offset_' . $prox_bloque . '" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.html_print_image ("images/go_next.png", true, array ("class" => "bot")).'</a>';
 		} else {
-			$output .= "<a class='pagination $other_class go_fastforward' href='$url&amp;$offset_name=$prox_bloque'>".html_print_image ("images/go_next.png", true, array ("class" => "bot"))."</a>";
+			$output .= "<a class='pagination $other_class offset_$prox_bloque' href='$url&amp;$offset_name=$prox_bloque'>".html_print_image ("images/go_next.png", true, array ("class" => "bot"))."</a>";
 		}
 		$i = $index_counter;
 	}
@@ -1647,9 +1646,9 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$myoffset = floor (($count - 1) / $pagination) * $pagination;
 		
 		if ($other_class == '') {
-			$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.html_print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
+			$output .= '<a class="pagination offset_' . $myoffset . '" href="'.$url. '&amp;'.$offset_name.'='.$myoffset.'">'.html_print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
 		} else {
-			$output .= "<a class='pagination $other_class go_last' href='$url&amp;$offset_name=$myoffset'>".html_print_image ("images/go_last.png", true, array ("class" => "bot"))."</a>";
+			$output .= "<a class='pagination $other_class offset_$myoffset' href='$url&amp;$offset_name=$myoffset'>".html_print_image ("images/go_last.png", true, array ("class" => "bot"))."</a>";
 		}
 	}
 	

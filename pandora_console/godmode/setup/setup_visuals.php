@@ -399,6 +399,16 @@ $table->data[$row][1] = html_print_input_text ('networkmap_max_width', $config["
 
 $row++;
 
+$table->data[$row][0] = __('Fixed header');
+$table->data[$row][1] = html_print_checkbox('fixed_header', 1, $config['fixed_header'], true);
+
+$row++;
+
+$table->data[$row][0] = __('Fixed menu');
+$table->data[$row][1] = html_print_checkbox('fixed_menu', 1, $config['fixed_menu'], true);
+
+$row++;
+
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
 html_print_table ($table);

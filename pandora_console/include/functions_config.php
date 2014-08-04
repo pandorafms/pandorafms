@@ -433,6 +433,10 @@ function config_update_config () {
 						$error_update[] = __('Default icon in GIS');
 					if (!config_update_value ('autohidden_menu', get_parameter('autohidden_menu')))
 						$error_update[] = __('Autohidden menu');
+					if (!config_update_value ('fixed_header', get_parameter('fixed_header')))
+						$error_update[] = __('Fixed header');
+					if (!config_update_value ('fixed_menu', get_parameter('fixed_menu')))
+						$error_update[] = __('Fixed menu');
 					if (!config_update_value ('paginate_module', get_parameter('paginate_module')))
 						$error_update[] = __('Paginate module');
 					if (!config_update_value ('graphviz_bin_dir', get_parameter('graphviz_bin_dir')))

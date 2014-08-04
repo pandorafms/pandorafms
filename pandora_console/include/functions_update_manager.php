@@ -73,10 +73,12 @@ function update_manager_get_config_values() {
 function rrmdir($dir) {
 	if (is_dir($dir)) {
 		$objects = scandir($dir);
+		
 		foreach ($objects as $object) {
 			if ($object != "." && $object != "..") {
-				if (filetype($dir."/".$object) == "dir")
-					rrmdir($dir."/".$object); else unlink($dir."/".$object);
+				if (filetype($dir . "/" . $object) == "dir")
+					rrmdir($dir . "/" . $object);
+				else unlink($dir . "/" . $object);
 			}
 		}
 		reset($objects);
@@ -373,8 +375,10 @@ function update_manager_starting_update() {
 		"/downloads/last_package.tgz";
 	
 	try {
+		rrmdir($config['attachment_store'] .
+			"/downloads/temp_update/pandora_console");
+		
 		$phar = new PharData($path_package);
-		rrmdir($config['attachment_store'] . "/downloads/temp_update/pandora_console");
 		$phar->extractTo($config['attachment_store'] . "/downloads/temp_update");
 	}
 	catch (Exception $e) {
@@ -395,7 +399,14 @@ function update_manager_starting_update() {
 		array('value' => 50),
 		array('token' => 'progress_update'));
 	
-	$full_path = $config['attachment_store'] . "/downloads/temp_update/pandora_console";
+	$path_array = array('downloads', 'temp_update', 'pandora_console');
+	$full_path = $config['attachment_store'];
+	foreach ($path_array as $directory) {
+		$full_path = $full_path . '/' . $directory;
+		if (!is_dir($full_path)) {
+			mkdir($full_path);
+		}
+	}
 	
 	$homedir = $config['homedir'];
 	

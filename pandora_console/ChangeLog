@@ -1,3 +1,8 @@
+2014-08-04  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* general/main_menu.php: Now the submenus opened by the
+	user remain opened when navigating through Pandora FMS.
+
 2014-08-04  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/config_process.php: added global config var for the

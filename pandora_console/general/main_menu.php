@@ -63,11 +63,39 @@ ui_require_jquery_file ('cookie');
 
 var autohidden_menu = <?php echo $autohidden_menu; ?>;
 
+var menuState = $.cookie(btoa('pandora_menu_state'));
+if (!menuState) {
+	menuState = {};
+}
+else {
+	menuState = JSON.parse(menuState);
+	$.each(menuState, function (index, value) {
+		if (value)
+			$('div.menu>ul>li#' + index + '>ul').show();
+	});
+}
+
 $(document).ready( function() {
-	$("img.toggle").click (function () {
-		$(this).siblings ("ul").toggle ();
+	$("img.toggle").click (function (e) {
 		//In case the links gets activated, we don't want to follow link
-		return false;
+		e.preventDefault();
+		
+		var menuItem = $(this).parent();
+		var submenu = menuItem.children("ul");
+
+		if (submenu.is(":visible")) {
+			submenu.slideUp();
+			
+			if (typeof menuState[menuItem.attr('id')] != 'undefined')
+				delete menuState[menuItem.attr('id')];
+		}
+		else {
+			submenu.slideDown();
+
+			menuState[menuItem.attr('id')] = 1;
+		}
+		
+		$.cookie(btoa('pandora_menu_state'), JSON.stringify(menuState), {expires: 7});
 	});
 	
 	$('#menu_container').hover (handlerIn, handlerOut);
@@ -107,7 +135,7 @@ $(document).ready( function() {
 	
 	function show_menu_pretty() {
 		$('div.menu ul li').css('background-position', '');
-		$('ul.submenu li a, li.menu_icon a, li.links a').css('visibility', '');
+		$('ul.submenu li a, li.menu_icon a, li.links a, div.menu>ul>li>img.toggle').show();
 		$('.titop').css('color', 'white');
 		$('.bg3').css('color', 'white');
 		$('.bg4').css('color', 'white');
@@ -120,7 +148,7 @@ $(document).ready( function() {
 	
 	function hide_menu_pretty() {
 		$('div.menu li').css('background-position', '140px 3px');
-		$('ul.submenu li a, li.menu_icon a, li.links a').css('visibility', 'hidden');
+		$('ul.submenu li a, li.menu_icon a, li.links a, div.menu>ul>li>img.toggle').hide();
 		$('.titop').css('color', $('.titop').css('background-color'));
 		$('.bg3').css('color', $('.bg3').css('background-color'));
 		$('.bg4').css('color', $('.bg4').css('background-color'));

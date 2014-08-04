@@ -254,6 +254,9 @@ $config["homeurl"] = ui_get_full_url(false);
 //======================================================================
 switch ($config["dbtype"]) {
 	case "mysql":
+		if (!isset($config['quote_string'])) {
+			$config['db_quote_string'] = "\"";
+		}
 		break;
 	case "postgresql":
 		if (!isset($config['dbversion'])) {
@@ -261,6 +264,9 @@ switch ($config["dbtype"]) {
 			$result_chunks = explode(" ", $result);
 			
 			$config['dbversion'] = $result_chunks[1];
+		}
+		if (!isset($config['quote_string'])) {
+			$config['db_quote_string'] = "'";
 		}
 		break;
 	case "oracle":

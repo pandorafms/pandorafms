@@ -1,3 +1,8 @@
+2014-08-04  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/config_process.php: added global config var for the
+	quote strings (for example, PostgreSQL).
+
 2014-08-03  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/functions_ui.php: Fixed that the fast forward and the going

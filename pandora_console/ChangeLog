@@ -1,3 +1,19 @@
+2014-08-04  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* general/header.php: Now the header can be configured
+	to be fixed at the top.
+
+	* general/main_menu.php: Now the menu can be configured
+	to be fixed at the left.
+
+	* godmode/setup/setup_visuals.php,
+	  include/functions_config.php: Added new options to
+	enable the fixed header and menu.
+
+	* include/styles/menu.css,
+	  include/styles/pandora.css: Changes on the menu styles.
+
+
 2014-08-04  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php,

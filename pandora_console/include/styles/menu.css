@@ -81,7 +81,6 @@
 .submenu {
 	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
 	margin: 0px 10px 0px 0;
-	width: 173px;
 }
 .submenu li a {
 	background-color: #222;
@@ -143,10 +142,6 @@
 	background-position: 4px 8px;
 }
 
-.menu {
-	width: 173px;
-
-}
 /* Icons specified here */
 #icon_oper-networkconsole {
  	background-image: url(../../images/op_network.png);
@@ -234,7 +229,6 @@
 #menu_container {
 	z-index: 3;
 	position: absolute;
-	left: -140px;
+	left: -80px;
 	background-color: #AAA;
-	height: 100%;
 }

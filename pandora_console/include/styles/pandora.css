@@ -278,7 +278,7 @@ div#menu_container {
 }
 
 div#menu {
-	width: 165px;
+	width: 175px;
 	float: left;
 }
 
@@ -291,6 +291,14 @@ div#head {
 	background-color: #274C00;
 }
 
+.fixed_header {
+	z-index: 9999;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+}
+
 div#foot {
 	font-size: 6pt !important;
 	border-top: solid 2px #222;
@@ -298,7 +306,6 @@ div#foot {
 	padding-bottom: 5px;
 	text-align: center;
 	background: #333333;
-	width: 960px;
 	height: 38px;
 	clear: both;
 	width: auto;
@@ -901,17 +908,10 @@ tr.disabled_row_user * {
 	padding: 6px 0px;
 	height: 14px;
 }
-.titop {
-	-moz-border-top-right-radius: 6px;
-	-webkit-border-top-right-radius: 6px;
-	border-top-right-radius: 6px;
-	heigth: 100px;
-}
 .tit, .titb {
 	font-weight: bold;
 	color: #fff;
 	text-align: center;
-	width: 173px;
 }
 
 .suc * {
@@ -1863,12 +1863,10 @@ div#page {
 div#main {
 	width: auto;
 	float: none;
-	padding-right: 0px;
-	padding-left: 0px;
-	padding-top: 0px;
-	padding-bottom: 20px;
-	margin-left: 182px;
-	margin-right: 20px;
+	margin-top: 10px;
+	margin-left: 185px;
+	margin-right: 10px;
+	padding-bottom: 10px;
 	background: #ECECEC;
 	min-width: 720px;
 }

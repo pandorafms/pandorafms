@@ -1,3 +1,9 @@
+2014-08-04  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php,
+	include/functions_update_manager.php: some fixes into the update
+	manager.
+
 2014-08-04  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* general/main_menu.php: Now the submenus opened by the

@@ -781,17 +781,31 @@ function config_process_config () {
 	// 	config_update_value ('autoupdate', true);
 	// }
 	
-	require_once ($config["homedir"]."/include/auth/mysql.php");
+	require_once ($config["homedir"] . "/include/auth/mysql.php");
 	
-	// Next is the directory where "/attachment" directory is placed, to upload files stores. 
-	// This MUST be writtable by http server user, and should be in pandora root. 
-	// By default, Pandora adds /attachment to this, so by default is the pandora console home dir
+	
+	// Next is the directory where "/attachment" directory is placed,
+	// to upload files stores. This MUST be writtable by http server
+	// user, and should be in pandora root. By default, Pandora adds
+	// /attachment to this, so by default is the pandora console home
+	// dir.
 	if (!isset ($config['attachment_store'])) {
-		config_update_value ( 'attachment_store', $config['homedir'].'/attachment');
+		config_update_value('attachment_store',
+			$config['homedir'] . '/attachment');
+	}
+	else {
+		//Fixed when the user moves the pandora console to another dir
+		//after the first uses.
+		if (!is_dir($config['attachment_store'])) {
+			config_update_value('attachment_store',
+				$config['homedir'] . '/attachment');
+		}
 	}
 	
+	
 	if (!isset ($config['fontpath'])) {
-		config_update_value ( 'fontpath', $config['homedir'].'/include/fonts/smallfont.ttf');
+		config_update_value('fontpath',
+			$config['homedir'] . '/include/fonts/smallfont.ttf');
 	}
 	
 	if (!isset ($config['style'])) {
@@ -919,7 +933,8 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['ldap_base_dn'])) {
-		config_update_value ( 'ldap_base_dn', 'ou=People,dc=edu,dc=example,dc=org');
+		config_update_value('ldap_base_dn',
+			'ou=People,dc=edu,dc=example,dc=org');
 	}
 	
 	if (!isset ($config['ldap_login_attr'])) {
@@ -1030,11 +1045,11 @@ function config_process_config () {
 		config_update_value( 'api_password', '');
 	}
 	
-	if(defined('METACONSOLE')) {
+	if (defined('METACONSOLE')) {
 		// Customizable sections (Metaconsole)
 		enterprise_include_once ('include/functions_enterprise.php');
 		$customizable_sections = enterprise_hook('enterprise_get_customizable_sections');
-
+		
 		if($customizable_sections != ENTERPRISE_NOT_HOOK) {
 			foreach($customizable_sections as $k => $v) {
 				if (!isset ($config[$k])) {
@@ -1050,7 +1065,7 @@ function config_process_config () {
 	
 	if (!isset ($config['relative_path']) && (isset ($_POST['nick'])
 		|| isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
-
+		
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			
@@ -1153,7 +1168,8 @@ function config_process_config () {
 	}
 	
 	if (!isset($config['custom_report_front_logo'])) {
-		config_update_value ('custom_report_front_logo', 'images/pandora_logo_white.jpg');
+		config_update_value ('custom_report_front_logo',
+			'images/pandora_logo_white.jpg');
 	}
 	
 	if (!isset($config['custom_report_front_header'])) {
@@ -1161,7 +1177,8 @@ function config_process_config () {
 	}
 	
 	if (!isset($config['custom_report_front_firstpage'])) {
-		config_update_value ('custom_report_front_firstpage', "&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;img&#x20;src=&quot;" . ui_get_full_url(false, false, false, false) . "/images/pandora_report_logo.png&quot;&#x20;alt=&quot;&quot;&#x20;width=&quot;800&quot;&#x20;/&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;xx-large;&quot;&gt;&#40;_REPORT_NAME_&#41;&lt;/span&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;large;&quot;&gt;&#40;_DATETIME_&#41;&lt;/span&gt;&lt;/p&gt;");
+		config_update_value ('custom_report_front_firstpage',
+			"&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;img&#x20;src=&quot;" . ui_get_full_url(false, false, false, false) . "/images/pandora_report_logo.png&quot;&#x20;alt=&quot;&quot;&#x20;width=&quot;800&quot;&#x20;/&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;xx-large;&quot;&gt;&#40;_REPORT_NAME_&#41;&lt;/span&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;large;&quot;&gt;&#40;_DATETIME_&#41;&lt;/span&gt;&lt;/p&gt;");
 	}
 	
 	if (!isset($config['custom_report_front_footer'])) {

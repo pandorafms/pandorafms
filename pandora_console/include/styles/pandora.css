@@ -2667,7 +2667,7 @@ td.empty_field {
 	margin: 0px !important;
 	bottom: 0px;
 	left: 0px;
-	z-index: 1020;
+	z-index: 9001;
 }
 
 #shortcut_bar {

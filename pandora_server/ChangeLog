@@ -1,5 +1,11 @@
 2014-08-05 Hirofumi Kosaka <kosaka@rworks.jp>
 
+	* lib/PandoraFMS/Core.pm: Suppress "going to normal (warning,
+	critical)" events from "unknown" status, if you disable "Throw
+	unknown events" at the Console.
+
+2014-08-05 Hirofumi Kosaka <kosaka@rworks.jp>
+
 	* lib/PandoraFMS/Core.pm: Fixed that unknown modules would be
 	set to normal if its status is not normal, when new data
 	arrives but ff_threshold is greater than 0.

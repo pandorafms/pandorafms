@@ -3436,6 +3436,19 @@ sub generate_status_event ($$$$$$$$) {
 		return;
 	}
 
+	# disable event just recovering from 'Unknown' without status change
+	if($last_status == 3 && $status == $last_known_status && $module->{'disabled_types_event'} ) {
+		my $disabled_types_event;
+		eval {
+			local $SIG{__DIE__};
+			$disabled_types_event = decode_json($module->{'disabled_types_event'});
+		};
+		
+		if ($disabled_types_event->{'going_unknown'}) {
+			return;
+		}
+	}
+
 	# Mark as "validated" any previous event for this module
 	pandora_validate_event ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 	

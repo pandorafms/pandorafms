@@ -1,5 +1,10 @@
 2014-08-05  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
+	* general/main_menu.php: Improved the submenus state
+	persistence functionality.
+
+2014-08-05  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
 	* general/main_menu.php: Fixed the menu position when
 	it's fixed and the header's not.
 

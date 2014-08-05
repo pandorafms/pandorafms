@@ -64,8 +64,11 @@ ui_require_jquery_file ('cookie');
 var autohidden_menu = <?php echo $autohidden_menu; ?>;
 var fixed_menu = <?php echo json_encode((bool)$config['fixed_menu']); ?>;
 var fixed_header = <?php echo json_encode((bool)$config['fixed_header']); ?>;
+var id_user = "<?php echo $config['id_user']; ?>";
+var cookie_name = id_user + '-pandora_menu_state';
+var cookie_name_encoded = btoa(cookie_name);
 
-var menuState = $.cookie(btoa('pandora_menu_state'));
+var menuState = $.cookie(cookie_name_encoded);
 if (!menuState) {
 	menuState = {};
 }
@@ -112,7 +115,7 @@ $(document).ready( function() {
 			menuState[menuItem.attr('id')] = 1;
 		}
 		
-		$.cookie(btoa('pandora_menu_state'), JSON.stringify(menuState), {expires: 7});
+		$.cookie(cookie_name_encoded, JSON.stringify(menuState), {expires: 7});
 	});
 	
 	if (fixed_menu) {

@@ -715,7 +715,7 @@ function sunburst (recipient, data, width, height) {
 		.data(partition.nodes(data))
 		.enter().append("path")
 		.attr("d", arc)
-		.style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+		.style("fill", function(d) { return d.color ? d3.rgb(d.color) : color((d.children ? d : d.parent).name); })
 		.on("click", click)
 		.on("mouseover", over_user)
 		.on("mouseout", out_user)

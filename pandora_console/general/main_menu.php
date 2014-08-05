@@ -63,6 +63,7 @@ ui_require_jquery_file ('cookie');
 
 var autohidden_menu = <?php echo $autohidden_menu; ?>;
 var fixed_menu = <?php echo json_encode((bool)$config['fixed_menu']); ?>;
+var fixed_header = <?php echo json_encode((bool)$config['fixed_header']); ?>;
 
 var menuState = $.cookie(btoa('pandora_menu_state'));
 if (!menuState) {
@@ -133,6 +134,16 @@ $(document).ready( function() {
 			})
 			.children('div')
 				.css('margin-bottom', $('div#head').innerHeight() + 'px');
+
+		if (!fixed_header) {
+			$(window).scroll(function () {
+				if ($(this).scrollTop() <= $('div#head').innerHeight()) {
+					$('div#menu').css('top', $('div#head').innerHeight() - $(this).scrollTop() + 'px' );
+				} else {
+					$('div#menu').css('top', '0');
+				}
+			});
+		}
 	}
 
 	if (autohidden_menu) {

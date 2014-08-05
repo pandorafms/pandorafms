@@ -4097,6 +4097,7 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 	include_once ($config['homedir'] . "/include/functions_users.php");
 	include_once ($config['homedir'] . "/include/functions_groups.php");
 	include_once ($config['homedir'] . "/include/functions_agents.php");
+	include_once ($config['homedir'] . "/include/functions_modules.php");
 
 	$graph_data = array();
 
@@ -4126,27 +4127,37 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 
 			$module_groups = modules_get_modulegroups();
 			$module_groups[0] = __('Not assigned');
-			$modules = agents_get_modules(array_keys($agents), $fields);
+			$modules = agents_get_modules(array_keys($agents), '*');
 
 			$data_agents = array();
 			if (!empty($modules)) {
 				foreach ($modules as $key => $module) {
-					$module_id = $module['id_agente_modulo'];
-					$agent_id = $module['id_agente'];
-					$module_group_id = $module['id_module_group'];
+					$module_id = (int) $module['id_agente_modulo'];
+					$agent_id = (int) $module['id_agente'];
+					$module_group_id = (int) $module['id_module_group'];
 					$module_name = $module['nombre'];
+					$module_status = modules_get_agentmodule_status($module_id);
 
 					if (!isset($data_agents[$agent_id])) {
 						$data_agents[$agent_id] = array();
 						$data_agents[$agent_id]['id'] = $agent_id;
 						$data_agents[$agent_id]['name'] = $agents[$agent_id]['nombre'];
-						$data_agents[$agent_id]['group'] = $agents[$agent_id]['id_grupo'];
+						$data_agents[$agent_id]['group'] = (int) $agents[$agent_id]['id_grupo'];
 						$data_agents[$agent_id]['type'] = 'agent';
 						$data_agents[$agent_id]['size'] = 30;
 						$data_agents[$agent_id]['children'] = array();
 
 						$tooltip_content = __('Agent') . ": <b>" . $data_agents[$agent_id]['name'] . "</b>";
 						$data_agents[$agent_id]['tooltip_content'] = $tooltip_content;
+
+						$data_agents[$agent_id]['modules_critical'] = 0;
+						$data_agents[$agent_id]['modules_warning'] = 0;
+						$data_agents[$agent_id]['modules_normal'] = 0;
+						$data_agents[$agent_id]['modules_not_init'] = 0;
+						$data_agents[$agent_id]['modules_not_normal'] = 0;
+						$data_agents[$agent_id]['modules_unknown'] = 0;
+
+						$data_agents[$agent_id]['color'] = COL_UNKNOWN;
 
 						unset($agents[$agent_id]);
 					}
@@ -4160,6 +4171,89 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 
 						$tooltip_content = __('Module group') . ": <b>" . $module_groups[$module_group_id] . "</b>";
 						$data_agents[$agent_id]['children'][$module_group_id]['tooltip_content'] = $tooltip_content;
+
+						$data_agents[$agent_id]['children'][$module_group_id]['modules_critical'] = 0;
+						$data_agents[$agent_id]['children'][$module_group_id]['modules_warning'] = 0;
+						$data_agents[$agent_id]['children'][$module_group_id]['modules_normal'] = 0;
+						$data_agents[$agent_id]['children'][$module_group_id]['modules_not_init'] = 0;
+						$data_agents[$agent_id]['children'][$module_group_id]['modules_not_normal'] = 0;
+						$data_agents[$agent_id]['children'][$module_group_id]['modules_unknown'] = 0;
+
+						$data_agents[$agent_id]['children'][$module_group_id]['color'] = COL_UNKNOWN;
+					}
+					
+					switch ($module_status) {
+						case AGENT_MODULE_STATUS_CRITICAL_BAD:
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+							$data_agents[$agent_id]['modules_critical']++;
+							$data_agents[$agent_id]['children'][$module_group_id]['modules_critical']++;
+							break;
+						
+						case AGENT_MODULE_STATUS_WARNING:
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
+							$data_agents[$agent_id]['modules_warning']++;
+							$data_agents[$agent_id]['children'][$module_group_id]['modules_warning']++;
+							break;
+
+						case AGENT_MODULE_STATUS_NORMAL:
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
+							$data_agents[$agent_id]['modules_normal']++;
+							$data_agents[$agent_id]['children'][$module_group_id]['modules_normal']++;
+							break;
+
+						case AGENT_MODULE_STATUS_NOT_INIT:
+							$data_agents[$agent_id]['modules_not_init']++;
+							$data_agents[$agent_id]['children'][$module_group_id]['modules_not_init']++;
+							break;
+
+						case AGENT_MODULE_STATUS_NOT_NORMAL:
+							$data_agents[$agent_id]['modules_not_normal']++;
+							$data_agents[$agent_id]['children'][$module_group_id]['modules_not_normal']++;
+							break;
+
+						case AGENT_MODULE_STATUS_NO_DATA:
+						case AGENT_MODULE_STATUS_UNKNOWN:
+							$data_agents[$agent_id]['modules_unknown']++;
+							$data_agents[$agent_id]['children'][$module_group_id]['modules_unknown']++;
+							break;
+					}
+
+					if ($data_agents[$agent_id]['modules_critical'] > 0) {
+						$data_agents[$agent_id]['color'] = COL_CRITICAL;
+					}
+					else if ($data_agents[$agent_id]['modules_warning'] > 0) {
+						$data_agents[$agent_id]['color'] = COL_WARNING;
+					}
+					else if ($data_agents[$agent_id]['modules_not_normal'] > 0) {
+						$data_agents[$agent_id]['color'] = COL_WARNING;
+					}
+					else if ($data_agents[$agent_id]['modules_unknown'] > 0) {
+						$data_agents[$agent_id]['color'] = COL_UNKNOWN;
+					}
+					else if ($data_agents[$agent_id]['modules_normal'] > 0) {
+						$data_agents[$agent_id]['color'] = COL_NORMAL;
+					}
+					else {
+						$data_agents[$agent_id]['color'] = COL_NOTINIT;
+					}
+
+					if ($data_agents[$agent_id]['children'][$module_group_id]['modules_critical'] > 0) {
+						$data_agents[$agent_id]['children'][$module_group_id]['color'] = COL_CRITICAL;
+					}
+					else if ($data_agents[$agent_id]['children'][$module_group_id]['modules_warning'] > 0) {
+						$data_agents[$agent_id]['children'][$module_group_id]['color'] = COL_WARNING;
+					}
+					else if ($data_agents[$agent_id]['children'][$module_group_id]['modules_not_normal'] > 0) {
+						$data_agents[$agent_id]['children'][$module_group_id]['color'] = COL_WARNING;
+					}
+					else if ($data_agents[$agent_id]['children'][$module_group_id]['modules_unknown'] > 0) {
+						$data_agents[$agent_id]['children'][$module_group_id]['color'] = COL_UNKNOWN;
+					}
+					else if ($data_agents[$agent_id]['children'][$module_group_id]['modules_normal'] > 0) {
+						$data_agents[$agent_id]['children'][$module_group_id]['color'] = COL_NORMAL;
+					}
+					else {
+						$data_agents[$agent_id]['children'][$module_group_id]['color'] = COL_NOTINIT;
 					}
 					
 					$data_module = array();
@@ -4171,6 +4265,37 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 					$tooltip_content = __('Module') . ": <b>" . $module_name . "</b>";
 					$data_module['tooltip_content'] = $tooltip_content;
 
+					switch ($module_status) {
+						case AGENT_MODULE_STATUS_CRITICAL_BAD:
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+							$data_module['color'] = COL_CRITICAL;
+							break;
+						
+						case AGENT_MODULE_STATUS_WARNING:
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
+							$data_module['color'] = COL_WARNING;
+							break;
+
+						case AGENT_MODULE_STATUS_NORMAL:
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
+							$data_module['color'] = COL_NORMAL;
+							break;
+
+						case AGENT_MODULE_STATUS_NOT_INIT:
+							$data_module['color'] = COL_NOTINIT;
+							break;
+
+						case AGENT_MODULE_STATUS_NOT_NORMAL:
+							$data_module['color'] = COL_WARNING;
+							break;
+
+						case AGENT_MODULE_STATUS_NO_DATA:
+						case AGENT_MODULE_STATUS_UNKNOWN:
+						default:
+							$data_module['color'] = COL_UNKNOWN;
+							break;
+					}
+
 					$data_agents[$agent_id]['children'][$module_group_id]['children'][] = $data_module;
 
 					unset($modules[$module_id]);
@@ -4179,9 +4304,10 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 			foreach ($agents as $id => $agent) {
 				if (!isset($data_agents[$id])) {
 					$data_agents[$id] = array();
-					$data_agents[$id]['id'] = $id;
-					$data_agents[$id]['name'] = $agent['name'];
+					$data_agents[$id]['id'] = (int) $id;
+					$data_agents[$id]['name'] = $agent['nombre'];
 					$data_agents[$id]['type'] = 'agent';
+					$data_agents[$id]['color'] = COL_NOTINIT;
 				}
 			}
 			$agents = null;
@@ -4195,13 +4321,34 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 		foreach ($groups as $id => $group) {
 
 			$group_aux = array();
-			$group_aux['id'] = $id;
+			$group_aux['id'] = (int) $id;
 			$group_aux['name'] = $group['nombre'];
-			$group_aux['parent'] = $group['parent'];
+			$group_aux['parent'] = (int) $group['parent'];
 			$group_aux['type'] = 'group';
 			$group_aux['size'] = 100;
+			$group_aux['status'] = groups_get_status($id);
 
-			$tooltip_content = __('Group') . ": <b>" . $group_aux['name'] . "</b>";
+			switch ($group_aux['status']) {
+				case AGENT_STATUS_CRITICAL:
+					$group_aux['color'] = COL_CRITICAL;
+					break;
+				
+				case AGENT_STATUS_WARNING:
+				case AGENT_STATUS_ALERT_FIRED:
+					$group_aux['color'] = COL_WARNING;
+					break;
+
+				case AGENT_STATUS_NORMAL:
+					$group_aux['color'] = COL_NORMAL;
+					break;
+
+				case AGENT_STATUS_UNKNOWN:
+				default:
+					$group_aux['color'] = COL_UNKNOWN;
+					break;
+			}
+
+			$tooltip_content = html_print_image("images/groups_small/" . $group['icon'] . ".png", true) . "&nbsp;" . __('Group') . ": <b>" . $group_aux['name'] . "</b>";
 			$group_aux['tooltip_content'] = $tooltip_content;
 
 			if (!isset($group['children']))
@@ -4209,7 +4356,7 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 			if (!empty($group['children']))
 				$group_aux['children'] = iterate_group_array($group['children']);
 
-			$agents = extract_agents_with_group_id($data_agents, $id);
+			$agents = extract_agents_with_group_id($data_agents, (int) $id);
 
 			if (!empty($agents))
 				$group_aux['children'] = array_merge($group_aux['children'], $agents);
@@ -4235,7 +4382,7 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 	}
 
 	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents));
-
+	
 	if (empty($graph_data['children']))
 		return fs_error_image();
 

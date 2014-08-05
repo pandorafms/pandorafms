@@ -1,3 +1,16 @@
+2014-08-05  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* general/main_menu.php: Fixed the menu position when
+	it's fixed and the header's not.
+
+	* include/functions_graph.php,
+	  include/graphs/pandora.d3.js: Added colors to the elements
+	depending on their status on the functions 'sunburst' and
+	'graph_monitor_wheel'.
+
+	* include/styles/pandora.css: Fixed the z-index of the
+	shortcut bar.
+
 2014-08-04  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* general/header.php: Now the header can be configured

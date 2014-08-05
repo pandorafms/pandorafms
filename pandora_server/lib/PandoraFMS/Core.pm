@@ -1132,10 +1132,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		# Update module status count
 		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
 	}
-	# Set not-init or unknown modules to normal even if min_ff_event is not matched the first time they receive data
+	# Set not-init or unknown modules to its current status even if min_ff_event is not matched the first time they receive data
 	elsif ($status == 3 || $status == 4) {
-		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $last_known_status, $dbh);
-		$status = 0;
+		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
+		$status = $new_status;
 
 		# Update module status count
 		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});

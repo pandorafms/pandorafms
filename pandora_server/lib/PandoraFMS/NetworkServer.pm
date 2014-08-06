@@ -356,7 +356,7 @@ sub pandora_query_snmp ($$$) {
 
 	return (undef, 0) unless ($snmp_oid ne '');
 	if ($snmp_oid =~ m/[a-zA-Z]/) {
-		$snmp_oid = translate_obj ($pa_config, $dbh, $snmp_oid, );
+		$snmp_oid = translate_obj ($pa_config, $dbh, $snmp_oid);
 		
 		# Could not translate OID, disable the module
 		if (! defined ($snmp_oid) || $snmp_oid eq '') {

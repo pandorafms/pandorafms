@@ -25,6 +25,7 @@ use threads::shared;
 use Thread::Semaphore;
 
 use IO::Socket::INET6;
+use IO::Select;
 use HTML::Entities;
 use POSIX qw(strftime);
 
@@ -170,100 +171,103 @@ sub pandora_query_tcp ($$$$$$$$$$) {
 		$retries = $pa_config->{'tcp_checks'};
 	}
 	
-    $tcp_send = decode_entities($tcp_send);
-    $tcp_rcv = decode_entities($tcp_rcv);
+	$tcp_send = decode_entities($tcp_send);
+	$tcp_rcv = decode_entities($tcp_rcv);
 
-        my $counter; 
-        for ($counter =0; $counter < $retries; $counter++){
-	        my $temp; my $temp2;
-	        my $tam;
-	        my $handle=IO::Socket::INET6->new(
-		        Proto=>"tcp",
-		        PeerAddr=>$ip_target,
-		        Timeout=>$timeout,
-		        PeerPort=>$tcp_port,
+	my $counter; 
+	for ($counter =0; $counter < $retries; $counter++){
+		my $temp; my $temp2;
+		my $tam;
+		my $handle=IO::Socket::INET6->new(
+			Proto=>"tcp",
+			PeerAddr=>$ip_target,
+			Timeout=>$timeout,
+			PeerPort=>$tcp_port,
 			Multihomed=>1,
-		        Blocking=>0 ); # Non blocking !!, very important !
-		        
-	        if (defined ($handle)){
+			Blocking=>0 ); # Non blocking !!, very important !
+			
+		if (defined ($handle)){
 			# Multi request patch, submitted by Glen Eustace (new zealand)
 			my @tcp_send = split( /\|/, $tcp_send );
 			my @tcp_rcv  = split( /\|/, $tcp_rcv );
+
+			# Add server socket to select queue
+			my $select = IO::Select->new ();
+			$select->add ($handle);
 
 next_pair:
 			$tcp_send = shift( @tcp_send );
 			$tcp_rcv  = shift( @tcp_rcv );
 
-		        if  ((defined ($tcp_send)) && ($tcp_send ne "")){ # its Expected to sending data ?
-			        # Send data
-			        $handle->autoflush(1);
-			        $tcp_send =~ s/\^M/\r\n/g;
-			        # Replace Carriage rerturn and line feed
-			        $handle->send($tcp_send);
-		        }
-		        # we expect to receive data ? (non proc types)
-		        if ((defined ($tcp_rcv) && $tcp_rcv ne "") || (($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11))) {
-			        # Receive data, non-blocking !!!! (VERY IMPORTANT!)
-			        $temp2 = "";
-			        for ($tam=0; $tam<$timeout; $tam++){
-				        $handle->recv($temp,16000,0x40);
-				        $temp2 = $temp2.$temp;
-				        if ($temp ne ""){
-					        $tam++; # If doesnt receive data, increase counter
-				        }
-				        sleep(1);
-			        }
-			        if ($id_tipo_modulo == 9){ # only for TCP Proc
-				        if ($temp2 =~ /$tcp_rcv/i){ # String match !
+			if  ((defined ($tcp_send)) && ($tcp_send ne "")){ # its Expected to sending data ?
+				# Send data
+				$handle->autoflush(1);
+				$tcp_send =~ s/\^M/\r\n/g;
+				# Replace Carriage rerturn and line feed
+				$handle->send($tcp_send);
+			}
+			# we expect to receive data ? (non proc types)
+			if ((defined ($tcp_rcv) && $tcp_rcv ne "") || (($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11))) {
+				# Receive data, non-blocking !!!! (VERY IMPORTANT!)
+				$temp2 = "";
+				for ($tam = 0; $tam < $timeout; $tam ++) {
+					if ($select->can_read (1)) {
+						my $read = sysread ($handle, $temp, 16000);
+						last if (! defined ($read) || $read == 0); # No more data or something went wrong
+						$temp2 = $temp2.$temp;
+					}
+				}
+				if ($id_tipo_modulo == 9){ # only for TCP Proc
+					if ($temp2 =~ /$tcp_rcv/i){ # String match !
 						if ( @tcp_send ) { # still more pairs
 							goto next_pair;
 						}
- 					        $$module_data = 1;
-					        $$module_result = 0;
-					        $counter = $retries;
-				        } else {
-					        $$module_data = 0;
-					        $$module_result = 0;
-					        $counter = $retries;
-				        }
-			        } elsif ($id_tipo_modulo == 10 ){ # TCP String (no int conversion)!
-				        $$module_data = $temp2;
-				        $$module_result =0;
-			        } else { # TCP Data numeric (inc or data)
-				        if ($temp2 ne ""){
-					        if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
-						        $$module_result = 1;
-						        $$module_data = 0; # invalid data
-						        $counter = $retries;
-					        } else {
-						        $$module_data = int($temp2);
-						        $$module_result = 0; # Successful
-						        $counter = $retries;
-					        }
-				        } else {
-						        $$module_result = 1; 
-						        $$module_data = 0; # invalid data
-						        $counter = $retries;
-					        }
-			        }
-		        } else { # No expected data to receive, if connected and tcp_proc type successful
-			        if ($id_tipo_modulo == 9){ # TCP Proc
-				        $$module_result = 0;
-				        $$module_data = 1;
-				        $counter = $retries;
-			        }
-		        }
-		        $handle->close();
-		        undef ($handle);
-	        } else { # Cannot connect (open sock failed)
-		        $$module_result = 1; # Fail
-		        if ($id_tipo_modulo == 9){ # TCP Proc
-			        $$module_result = 0;
-			        $$module_data = 0; # Failed, but data exists
-			        $counter = $retries;
-		        }
-	        }
-        }
+						$$module_data = 1;
+						$$module_result = 0;
+						$counter = $retries;
+					} else {
+						$$module_data = 0;
+						$$module_result = 0;
+						$counter = $retries;
+					}
+				} elsif ($id_tipo_modulo == 10 ){ # TCP String (no int conversion)!
+					$$module_data = $temp2;
+					$$module_result =0;
+				} else { # TCP Data numeric (inc or data)
+					if ($temp2 ne ""){
+						if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
+							$$module_result = 1;
+							$$module_data = 0; # invalid data
+							$counter = $retries;
+						} else {
+							$$module_data = int($temp2);
+							$$module_result = 0; # Successful
+							$counter = $retries;
+						}
+					} else {
+						$$module_result = 1; 
+						$$module_data = 0; # invalid data
+						$counter = $retries;
+					}
+				}
+			} else { # No expected data to receive, if connected and tcp_proc type successful
+				if ($id_tipo_modulo == 9){ # TCP Proc
+					$$module_result = 0;
+					$$module_data = 1;
+					$counter = $retries;
+				}
+			}
+			$handle->close();
+			undef ($handle);
+		} else { # Cannot connect (open sock failed)
+			$$module_result = 1; # Fail
+			if ($id_tipo_modulo == 9){ # TCP Proc
+				$$module_result = 0;
+				$$module_data = 0; # Failed, but data exists
+				$counter = $retries;
+			}
+		}
+	}
 }
 
 ###############################################################################

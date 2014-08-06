@@ -1,3 +1,8 @@
+2014-08-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Rewrote TCP module socket code for
+	  sending data (tcp_send). Fixes ticket #1096.
+
 2014-08-05 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Suppress "going to normal (warning,

@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`plugin_pass` text,
 	`plugin_parameter` text,
 	`id_plugin` int(10) default '0',
-	`post_process` double default NULL,
+	`post_process` double(18,5) default 0,
 	`prediction_module` bigint(14) default '0',
 	`max_timeout` int(4) unsigned default '0',
 	`max_retries` int(4) unsigned default '0',

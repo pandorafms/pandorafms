@@ -1,3 +1,13 @@
+2014-08-06  Sancho Lerena <slerena@artica.es>
+
+	* extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql,
+	pandoradb.sql: Fixed bug introduced in commit 9604
+	altering tagente_modulo.post_process double precission
+	making conversion from bytes to megabytes impossible
+	(0,00000095367432). Pending to fix also the interface for
+	module creation/edition which also fails. This is critical 
+	for SP1 release :(
+
 2014-08-05  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* general/main_menu.php: Improved the submenus state

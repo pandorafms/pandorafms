@@ -153,9 +153,10 @@ server_threshold 5
 network_threads 4
 
 # icmp_checks x : defines number of pings for each icmp_proc module type. at least one of 
-# that ping should be 1 to report 1
+# that ping should be 1 to report 1. Setting this to 1 will make all icmp montioring faster but
+# with more probability of failure. 
 
-icmp_checks 1
+icmp_checks 3
 
 # tcp specific options :
 # tcp_checks: number of tcp retries if first attempt fails.

@@ -1,3 +1,10 @@
+2014-08-06  Sancho Lerena <slerena@artica.es>
+
+	* NetBSD/pandora_server.conf,
+	conf/pandora_server.conf.new,
+	conf/pandora_server.conf.windows: New default value for icmp_retries
+	to have default setup more realiable but a bit slower. 
+
 2014-08-06  Alejandro Gallardo <alejandro.gallardo@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Little syntax fix.

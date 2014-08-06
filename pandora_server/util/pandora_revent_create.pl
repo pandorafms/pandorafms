@@ -232,9 +232,9 @@ sub tool_api_main () {
 			$i++;
 		}
 
-		$data_event = $event_name.",".$id_group.",".$id_agent.",".$status.",".$id_user.",".$event_type.",".$criticity.",".$id_agent_module.",".$id_alert_am.",".$critical_instructions.",".$warning_instructions.",".$unknown_instructions.",".$user_comment.",".$owner_user.",".$source.",".$tags;
+		$data_event = $event_name."|".$id_group."|".$id_agent."|".$status."|".$id_user."|".$event_type."|".$criticity."|".$id_agent_module."|".$id_alert_am."|".$critical_instructions."|".$warning_instructions."|".$unknown_instructions."|".$user_comment."|".$owner_user."|".$source."|".$tags;
 
-		$call_api = $api_path.'?op=set&op2=create_event&id='.$event_name.'&other='.$data_event.'&other_mode=url_encode_separator_,&apipass='.$api_pass.'&user='.$db_user.'&pass='.$db_pass;
+		$call_api = $api_path.'?op=set&op2=create_event&id='.$event_name.'&other='.$data_event.'&other_mode=url_encode_separator_|&apipass='.$api_pass.'&user='.$db_user.'&pass='.$db_pass;
 
 		#DEBUG TRACE#
 

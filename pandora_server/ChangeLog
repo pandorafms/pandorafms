@@ -1,3 +1,10 @@
+2014-08-06  Alejandro Gallardo <alejandro.gallardo@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Little syntax fix.
+
+	* util/pandora_revent_create.pl: Changed the url encode
+	separator of the api call from "," to "|".
+
 2014-08-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Rewrote TCP module socket code for

@@ -37,6 +37,7 @@ if ($OSNAME eq "freebsd") {
 		'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
 		'networktimeout' => 2,
+		'nmap_timing_template' => 2,
 		'PID' => '',
 		'quiet' => 1,
 	);
@@ -46,6 +47,7 @@ if ($OSNAME eq "freebsd") {
 		'pandora_path' => '/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
 		'networktimeout' => 2,
+		'nmap_timing_template' => 2,
 		'PID' => '',
 		'quiet' => 1,
 	);

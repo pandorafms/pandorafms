@@ -34,7 +34,7 @@ pidof_pandora () {
 	OS_NAME=`uname -s`
 	if [ $OS_NAME = "HP-UX" ]
 	then
-		PANDORA_PID=`ps -ex | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $1 }'`
+		PANDORA_PID=`ps -ef | grep "/usr/bin/perl /opt/PandoraFMS/usr/bin/pandora_agent" | grep -v grep | awk '{print $2}'`
 	else
 		if [ "$OS_NAME" = "SunOS" ]
 		then

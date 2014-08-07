@@ -190,3 +190,9 @@ ALTER TABLE "tagente_estado" ADD COLUMN "ff_start_utimestamp" BIGINT default 0;
 -- Table trecon_script
 -- ---------------------------------------------------------------------
 DELETE FROM "trecon_script" WHERE "id_recon_script"=1;
+
+/* 2014/08/07 */
+-- ---------------------------------------------------------------------
+-- Table `tagente_modulo`
+-- ---------------------------------------------------------------------
+ALTER TABLE "tagente_modulo" MODIFY COLUMN "post_process" NUMERIC(18,15) default 0;

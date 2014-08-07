@@ -1,3 +1,7 @@
+2014-08-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_daemon: Fixes the ps call on HP-UX.
+
 2014-06-04  Koichiro KIKUCHI <koichiro@rworks.jp>
 
 	* pandora_agent: Allow spaces in module group names.

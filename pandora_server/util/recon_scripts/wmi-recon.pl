@@ -27,8 +27,8 @@ if ($OSNAME eq "freebsd") {
 			'daemon' => 0,
 			'PID' => '',
 			'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
-			'ping_timeout' => 2,
-			'ping_retries' => 1,
+			'networktimeout' => 2,
+			'icmp_checks' => 1,
 			'wmi_client' => '/usr/local/bin/wmic');
 } else {
 	%CONF = ('quiet' => 0,
@@ -36,8 +36,8 @@ if ($OSNAME eq "freebsd") {
 			'daemon' => 0,
 			'PID' => '',
 			'pandora_path' => '/etc/pandora/pandora_server.conf',
-			'ping_timeout' => 2,
-			'ping_retries' => 1,
+			'networktimeout' => 2,
+			'icmp_checks' => 1,
 			'wmi_client' => '/usr/bin/wmic');
 }
 
@@ -106,10 +106,10 @@ sub recon_scan($$) {
 	my ($task, $function) = @_;
 
 	# Timeout in ms.
-	my $timeout = $CONF{'ping_timeout'} * 1000;
+	my $timeout = $CONF{'networktimeout'} * 1000;
 
 	# Added -PE to make nmap behave like ping and avoid confusion if ICMP traffic is blocked.
-	my $nmap_args = '-nsP -PE --max-retries ' . $CONF{'ping_retries'} . ' --host-timeout ' . $timeout;
+	my $nmap_args = '-nsP -PE --max-retries ' . $CONF{'icmp_checks'} . ' --host-timeout '.$timeout.' -T'.$CONF{'nmap_timing_template'};
 
 	# Scan the network.
 	my $np = new PandoraFMS::NmapParser;

@@ -141,9 +141,11 @@ sub data_consumer ($$) {
 	}
 
 	# Call nmap
+	my $timeout = $pa_config->{'networktimeout'}*1000;
+	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$pa_config->{'nmap_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
-		$np->parsescan($pa_config->{'nmap'},'-nsP', ($task->{'subnet'}));
+		$np->parsescan($pa_config->{'nmap'}, $nmap_args, ($task->{'subnet'}));
 	};
 	if ($@) {
 		update_recon_task ($dbh, $task_id, -1);
@@ -325,9 +327,11 @@ sub get_host_parent {
 	my ($pa_config, $host, $dbh, $group, $max_depth, $resolve, $os_detect) = @_;
 	
 	# Call nmap
+	my $timeout = $pa_config->{'networktimeout'}*1000;
+	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$pa_config->{'nmap_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
-		$np->parsescan($pa_config->{'nmap'},'-nsP --traceroute', ($host));
+		$np->parsescan($pa_config->{'nmap'}, $nmap_args, ($host));
 	};
 	if ($@) {
 		return 0;

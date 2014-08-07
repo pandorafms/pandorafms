@@ -35,8 +35,8 @@ if ($OSNAME eq "freebsd") {
 	%CONF = (
 		'nmap' => '/usr/local/bin/nmap',
 		'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
-		'ping_retries' => 1,
-		'ping_timeout' => 2,
+		'icmp_checks' => 1,
+		'networktimeout' => 2,
 		'PID' => '',
 		'quiet' => 1,
 	);
@@ -44,8 +44,8 @@ if ($OSNAME eq "freebsd") {
 	%CONF = (
 		'nmap' => '/usr/bin/nmap',
 		'pandora_path' => '/etc/pandora/pandora_server.conf',
-		'ping_retries' => 1,
-		'ping_timeout' => 2,
+		'icmp_checks' => 1,
+		'networktimeout' => 2,
 		'PID' => '',
 		'quiet' => 1,
 	);
@@ -861,9 +861,11 @@ sub traceroute_connectivity($) {
 	return unless defined($agent);
 
 	# Perform a traceroute.
+	my $timeout = $CONF{'networktimeout'}*1000;
+	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$CONF{'nmap_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
-		$np->parsescan($CONF{'nmap'}, '-nsP --traceroute', ($host));
+		$np->parsescan($CONF{'nmap'}, $nmap_args, ($host));
 	};
 	return if ($@);
 	
@@ -930,10 +932,11 @@ update_recon_task($DBH, $TASK_ID, 1);
 
 # Populate ARP caches.
 message("Populating ARP caches...");
-my $timeout = $CONF{'ping_timeout'} * 1000; # Convert the timeout from s to ms.
+my $timeout = $CONF{'networktimeout'} * 1000; # Convert the timeout from s to ms.
+my $nmap_args  = '-nsP --send-ip --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$CONF{'nmap_timing_template'};
 my $np = new PandoraFMS::NmapParser;
 if ($#SUBNETS >= 0) {
-	$np->parsescan($CONF{'nmap'}, '-nsP --send-ip --max-retries ' . $CONF{'ping_retries'} . ' --host-timeout ' . $timeout, @SUBNETS);
+	$np->parsescan($CONF{'nmap'}, $nmap_args, @SUBNETS);
 }
 
 # Find routers.

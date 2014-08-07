@@ -1,3 +1,12 @@
+2014-08-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf.new,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/ReconServer.pm,
+	  util/recon_scripts/snmp-recon.pl,
+	  util/recon_scripts/wmi-recon.pl: Added a new parameter to control how
+	  aggressive nmap should be.
+
 2014-08-06  Sancho Lerena <slerena@artica.es>
 
 	* NetBSD/pandora_server.conf,

@@ -29,6 +29,7 @@ if ($OSNAME eq "freebsd") {
 			'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
 			'networktimeout' => 2,
 			'icmp_checks' => 1,
+			'nmap_timing_template' => 2,
 			'wmi_client' => '/usr/local/bin/wmic');
 } else {
 	%CONF = ('quiet' => 0,
@@ -38,6 +39,7 @@ if ($OSNAME eq "freebsd") {
 			'pandora_path' => '/etc/pandora/pandora_server.conf',
 			'networktimeout' => 2,
 			'icmp_checks' => 1,
+			'nmap_timing_template' => 2,
 			'wmi_client' => '/usr/bin/wmic');
 }
 

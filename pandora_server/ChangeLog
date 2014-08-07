@@ -1,5 +1,11 @@
 2014-08-07  Ramon Novoa  <rnovoa@artica.es>
 
+	* util/recon_scripts/snmp-recon.pl,
+	  util/recon_scripts/wmi-recon.pl: Set a default value
+	  for nmap_timing_template.
+
+2014-08-07  Ramon Novoa  <rnovoa@artica.es>
+
 	* conf/pandora_server.conf.new,
 	  lib/PandoraFMS/Config.pm,
 	  lib/PandoraFMS/ReconServer.pm,

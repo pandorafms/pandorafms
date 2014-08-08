@@ -1,3 +1,18 @@
+2014-08-08  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions.php,
+	include/help/clippy/godmode_agentes_modificar_agente.php,
+	include/help/clippy/homepage.php,
+	include/help/clippy/godmode_agentes_configurar_agente.php,
+	include/javascript/intro.js,
+	include/javascript/introjs.css,
+	include/javascript/clippy.js,
+	include/functions_ui.php,
+	include/functions_clippy.php,
+	index.php,
+	general/header.php: first version of the new feature a annoying
+	clippy such as the lovely micro$oft mascot.
+
 2014-08-07  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* pandoradb.sql,

@@ -1245,7 +1245,13 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	$output .= "\n\t";
 	
+	
+	
+	
+	
+	////////////////////////////////////////////////////////////////////
 	//Load CSS
+	////////////////////////////////////////////////////////////////////
 	if (empty ($config['css'])) {
 		$config['css'] = array ();
 	}
@@ -1270,13 +1276,15 @@ function ui_process_page_head ($string, $bitfield) {
 		}
 	}
 	
-	//First, if user has assigned a skin then try to use css files of skin subdirectory
+	//First, if user has assigned a skin then try to use css files of
+	//skin subdirectory
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	if (!$login_ok) {
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			enterprise_hook('skins_cleanup');
 		}
 	}
+	
 	
 	$exists_css = false;
 	if ($login_ok and $isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
@@ -1305,11 +1313,16 @@ function ui_process_page_head ($string, $bitfield) {
 			$config['css']);
 	}
 	
+	
+	
 	// Add the jquery UI styles CSS
 	$config['css']['jquery-UI'] = "include/styles/jquery-ui-1.10.0.custom.css";
-	
 	// Add the dialog styles CSS
 	$config['css']['dialog'] = "include/styles/dialog.css";
+	// Add the dialog styles CSS
+	$config['css']['dialog'] = "include/javascript/introjs.css";
+	
+	
 	
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');
@@ -1333,24 +1346,33 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= '<link rel="stylesheet" href="' . $url_css . '" type="text/css" />'."\n\t";
 		}
 	}
+	////////////////////////////////////////////////////////////////////
 	//End load CSS
+	////////////////////////////////////////////////////////////////////
 	
+	
+	
+	
+	////////////////////////////////////////////////////////////////////
 	//Load JS
+	////////////////////////////////////////////////////////////////////
 	if (empty ($config['js'])) {
 		$config['js'] = array (); //If it's empty, false or not init set array to empty just in case
 	}
 	
+	
 	//Pandora specific JavaScript should go first
 	$config['js'] = array_merge (array ("pandora" => "include/javascript/pandora.js"), $config['js']);
-	
 	//Load base64 javascript library
 	$config['js']['base64'] = "include/javascript/encode_decode_base64.js";
-	
 	//Load webchat javascript library
 	$config['js']['webchat'] = "include/javascript/webchat.js";
-	
 	//Load qrcode library
 	$config['js']['qrcode'] = "include/javascript/qrcode.js";
+	//Load intro.js library (for bubbles and clippy)
+	$config['js']['intro'] = "include/javascript/intro.js";
+	$config['js']['clippy'] = "include/javascript/clippy.js";
+	
 	
 	//Load other javascript
 	//We can't load empty
@@ -1370,9 +1392,15 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 		}
 	}
+	////////////////////////////////////////////////////////////////////
 	//End load JS
+	////////////////////////////////////////////////////////////////////
 	
+	
+	
+	////////////////////////////////////////////////////////////////////
 	//Load jQuery
+	////////////////////////////////////////////////////////////////////
 	if (empty ($config['jquery'])) {
 		$config['jquery'] = array (); //If it's empty, false or not init set array to empty just in case
 	}
@@ -1422,6 +1450,11 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 		}
 	}
+	////////////////////////////////////////////////////////////////////
+	//End load JQuery
+	////////////////////////////////////////////////////////////////////
+	
+	
 	
 	
 	if ($config['flash_charts']) {

@@ -355,6 +355,7 @@ if (isset ($_GET["bye"])) {
  * Load here, because if not, some extensions not load well, I don't why.
  */
 
+$config['logged'] = false;
 extensions_load_extensions ($config['extensions']);
 if ($process_login) {
 	 /* Call all extensions login function */
@@ -376,6 +377,8 @@ if ($process_login) {
 	
 	//Set the initial global counter for chat.
 	users_get_last_global_counter('session');
+	
+	$config['logged'] = true;
 }
 
 //Get old parameters before navigation.
@@ -585,6 +588,11 @@ if ($config["pure"] == 0) {
 	require ("general/footer.php");
 	echo '</div>';
 }
+
+/// Clippy function
+require ('include/functions_clippy.php');
+clippy_start($sec2);
+
 while (@ob_end_flush ());
 
 db_print_database_debug ();

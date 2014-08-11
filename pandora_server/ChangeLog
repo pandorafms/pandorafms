@@ -1,3 +1,11 @@
+2014-08-11 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Fixed modules would have ignored
+	ff_threshold when the module shifted from normal to critical
+	while its status remained unknown.
+
+	MERGED FROM THE TRUNK
+
 2014-08-05 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Suppress "going to normal (warning,

@@ -1046,6 +1046,12 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	
 	#Update module status
 	my $current_utimestamp = time ();
+
+	# replace $new_status with $last_known_status when recovering from 'unknown'
+	if ($status == 3) {
+		$new_status = $last_known_status;
+	}
+
 	if ($last_status == $new_status) {
 		
 		# Avoid overflows
@@ -1070,8 +1076,17 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		# Update module status count
 		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
 	}
-	# Set not-init or unknown modules to its current status even if min_ff_event is not matched the first time they receive data
-	elsif ($status == 3 || $status == 4) {
+	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
+	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
+	elsif ($status == 4) {
+		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $last_known_status, $dbh);
+		$status = 0;
+
+		# Update module status count
+		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
+	}
+	# If unknown modules receive data, restore status even if min_ff_event is not matched.
+	elsif ($status == 3) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
 		$status = $new_status;
 

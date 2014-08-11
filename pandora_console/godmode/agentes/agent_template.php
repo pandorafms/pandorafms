@@ -96,7 +96,12 @@ if (isset ($_POST["template_id"])) {
 				'warning_instructions' => $row2['warning_instructions'],
 				'unknown_instructions' => $row2['unknown_instructions'],
 				'id_category' => $row2['id_category'],
-				'module_macros' => $row2['module_macros']
+				'module_macros' => $row2['module_macros'],
+				'each_ff' => $row2['each_ff'],
+				'min_ff_event' => $row2['min_ff_event'],
+				'min_ff_event_normal' => $row2['min_ff_event_normal'],
+				'min_ff_event_warning' => $row2['min_ff_event_warning'],
+				'min_ff_event_critical' => $row2['min_ff_event_critical']
 				);
 			
 			$name = $row2["name"];

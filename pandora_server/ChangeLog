@@ -1,3 +1,9 @@
+2014-08-11 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Fixed modules would have ignored
+	ff_threshold when the module shifted from normal to critical
+	while its status remained unknown.
+
 2014-08-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/recon_scripts/snmp-recon.pl,

@@ -20,81 +20,52 @@
  */
 
 function clippy_start_page() {
-	global $config;
 	
-	$clippy = get_cookie('clippy', false);
-	set_cookie('clippy', null);
+	$helps = array();
 	
-	switch ($clippy) {
-		case 'monitoring_server':
-			$steps = array();
-			$steps[] = array(
-				'element'=> '#clippy',
-				'intro' => __('I show how to monitoring a server.')
-				);
-			$steps[] = array(
-				'element'=> 'input[name="search"]',
-				'intro' => __('Please type a agent to save the modules for monitoring a server.')
-				);
-			$steps[] = array(
-				'element'=> 'input[name="srcbutton"]',
-				'intro' => __('Maybe if you typped correctly the name, you can see the agent.')
-				);
-			break;
-		case 'choose_agent':
-			$steps = array();
-			$steps[] = array(
-				'element'=> '#clippy',
-				'intro' => __('Please choose the agent that you have searched.')
-				);
-			$steps[] = array(
-				'element'=> '#agent_list',
-				'intro' => __('Choose the agent, please click in the name.')
-				);
-			break;
-	}
+	//==================================================================
+	//Help tour about the monitoring with a ping (step 1)
+	//------------------------------------------------------------------
+	$helps['monitoring_server_step_1'] = array();
+	$helps['monitoring_server_step_1']['steps'] = array();
+	$helps['monitoring_server_step_1']['steps'][] = array(
+		'element'=> '#clippy',
+		'intro' => __('I show how to monitoring a server.')
+		);
+	$helps['monitoring_server_step_1']['steps'][] = array(
+		'element'=> 'input[name="search"]',
+		'intro' => __('Please type a agent to save the modules for monitoring a server.')
+		);
+	$helps['monitoring_server_step_1']['steps'][] = array(
+		'element'=> 'input[name="srcbutton"]',
+		'intro' => __('Maybe if you typped correctly the name, you can see the agent.')
+		);
+	$helps['monitoring_server_step_1']['conf'] = array();
+	$helps['monitoring_server_step_1']['conf']['showBullets'] = 0;
+	$helps['monitoring_server_step_1']['conf']['showStepNumbers'] = 1;
+	$helps['monitoring_server_step_1']['conf']['next_help'] = 'monitoring_server_step_2';
+	//==================================================================
 	
 	
+	//==================================================================
+	//Help tour about the monitoring with a ping (step 2)
+	//------------------------------------------------------------------
+	$helps['monitoring_server_step_2'] = array();
+	$helps['monitoring_server_step_2']['steps'] = array();
+	$helps['monitoring_server_step_2']['steps'][] = array(
+		'element'=> '#clippy',
+		'intro' => __('Please choose the agent that you have searched.')
+		);
+	$helps['monitoring_server_step_2']['steps'][] = array(
+		'element'=> '#agent_list',
+		'intro' => __('Choose the agent, please click in the name.')
+		);
+	$helps['monitoring_server_step_2']['conf'] = array();
+	$helps['monitoring_server_step_2']['conf']['showBullets'] = 0;
+	$helps['monitoring_server_step_2']['conf']['showStepNumbers'] = 0;
+	$helps['monitoring_server_step_2']['conf']['next_help'] = 'monitoring_server_step_3';
+	//==================================================================
 	
-	?>
-	<script type="text/javascript">
-		var steps = <?php echo json_encode($steps); ?>;
-		var intro = null;
-		
-		$(document).ready(function() {
-			intro = introJs();
-			
-			
-			<?php
-			switch ($clippy) {
-				case 'monitoring_server':
-					?>
-					intro.setOptions({
-						steps: steps,
-						showBullets: false,
-						showStepNumbers: true
-					});
-					
-					clippy_set_help('choose_agent');
-					intro.start();
-					<?php
-					break;
-				case 'choose_agent':
-					?>
-					intro.setOptions({
-						steps: steps,
-						showBullets: false,
-						showStepNumbers: false
-					});
-					
-					clippy_set_help('choose_tabs_modules');
-					intro.start();
-					<?php
-					break;
-			}
-			?>
-		});
-	</script>
-	<?php
+	clippy_write_javascript_helps_steps($helps);
 }
 ?>

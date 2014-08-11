@@ -1,5 +1,10 @@
 2014-08-11  Vanessa Gil <vanessa.gil@artica.es>
 
+	* godmode/agentes/agent_template.php: Fixed bug in FF
+	threshold to apply a template module. Ticket #871.
+
+2014-08-11  Vanessa Gil <vanessa.gil@artica.es>
+
 	* godmode/agentes/agent_conf_gis.php: Altitude coordinate by
 	default. Fixed bug #766.
 

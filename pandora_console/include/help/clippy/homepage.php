@@ -19,20 +19,28 @@
  * @subpackage Clippy
  */
 
-function clippy_start_page() {
+function clippy_start_page_homepage() {
 	global $config;
 	
-	$steps = array();
-	$steps[] = array(
+	clippy_clean_help();
+	
+	$helps = array();
+	
+	//==================================================================
+	//Help tour with the some task for to help the user.
+	//------------------------------------------------------------------
+	$helps['homepage'] = array();
+	$helps['homepage']['steps'] = array();
+	$helps['homepage']['steps'][] = array(
 		'element'=> '#clippy',
 		'intro' => __('Could you help you?<br/><br/>I am Pandorin, the annoying clippy for Pandora. You could follow my advices for to make common and basic tasks in Pandora.')
 		);
-	$steps[] = array(
+	$helps['homepage']['steps'][] = array(
 		'element'=> '#clippy',
 		'intro' => __('What task do you want to do?') . '<br/><br/>' .
 			'<ul style="text-align: left; margin-left: 3px; list-style-type: disc;">' .
 				'<li>' .
-					"<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server\");'>" . 
+					"<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>" . 
 					//'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&clippy=monitoring_server">' . 
 						__('Monitoring a server Linux/Windows with a pandora agent') .
 					'</a>' .
@@ -41,29 +49,23 @@ function clippy_start_page() {
 				'<li>' . __('Monitoring a Windows server with remote WMI ') . '</li>' .
 			'</ul>'
 		);
+	$helps['homepage']['conf'] = array();
+	$helps['homepage']['conf']['showBullets'] = 0;
+	$helps['homepage']['conf']['showStepNumbers'] = 0;
+	$helps['homepage']['conf']['name_obj_tour'] = 'intro_homepage';
+	$helps['homepage']['conf']['other_js'] = "
+		function show_clippy() {
+			intro_homepage.start();
+		}
+		";
+	if ($config['logged']) {
+		$helps['homepage']['conf']['autostart'] = true;
+	}
+	else {
+		$helps['homepage']['conf']['autostart'] = false;
+	}
+	//==================================================================
 	
-	?>
-	<script type="text/javascript">
-		var steps = <?php echo json_encode($steps); ?>;
-		var intro = null;
-		
-		$(document).ready(function() {
-			intro = introJs();
-			
-			intro.setOptions({
-				steps: steps,
-				showBullets: false,
-				showStepNumbers: false
-			});
-			<?php
-			if ($config['logged']) {
-			?>
-			intro.start();
-			<?php
-			}
-			?>
-		});
-	</script>
-	<?php
+	clippy_write_javascript_helps_steps($helps);
 }
 ?>

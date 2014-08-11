@@ -28,12 +28,96 @@ function clippy_start($sec2) {
 	
 	$sec2 = str_replace('/', '_', $sec2);
 	
-	//~ html_debug_print($sec2, true);
-	
-	if (is_file("include/help/clippy/" . $sec2 . ".php")) {
-		require("include/help/clippy/" . $sec2 . ".php");
+	if ($sec2 != 'homepage') {
+		if (is_file("include/help/clippy/" . $sec2 . ".php")) {
+			require("include/help/clippy/" . $sec2 . ".php");
+			
+			clippy_start_page();
+		}
 		
-		clippy_start_page();
+		//Add homepage for all pages for to show the "task sugestions"
+		require("include/help/clippy/homepage.php");
+		clippy_start_page_homepage();
 	}
+	else {
+		require("include/help/clippy/homepage.php");
+		clippy_start_page_homepage();
+	}
+}
+
+function clippy_clean_help() {
+	set_cookie('clippy', null);
+}
+
+function clippy_write_javascript_helps_steps($helps) {
+	global $config;
+	
+	$clippy = get_cookie('clippy', false);
+	set_cookie('clippy', null);
+	
+	
+	//Get the help steps from a task
+	$steps = $helps[$clippy]['steps'];
+	if (empty($steps)) {
+		//Get the first by default
+		$temp = reset($helps);
+		$steps = $temp['steps'];
+	}
+	
+	$conf = $helps[$clippy]['conf'];
+	if (empty($conf)) {
+		//Get the first by default
+		$temp = reset($helps);
+		$conf = $temp['conf'];
+	}
+	
+	$name_obj_tour = 'intro';
+	if (!empty($conf['name_obj_tour'])) {
+		$name_obj_tour = $conf['name_obj_tour'];
+	}
+	
+	$autostart = true;
+	if (!is_null($conf['autostart'])) {
+		$autostart = $conf['autostart'];
+	}
+	
+	$other_js = '';
+	if (!empty($conf['other_js'])) {
+		$other_js = $conf['other_js'];
+	}
+	
+	?>
+	<script type="text/javascript">
+		var <?php echo $name_obj_tour; ?> = null;
+		
+		$(document).ready(function() {
+			<?php echo $name_obj_tour; ?> = introJs();
+			
+			<?php echo $name_obj_tour; ?>.setOptions({
+				steps: <?php echo json_encode($steps); ?>,
+				showBullets: <?php echo json_encode($conf['showBullets']); ?>,
+				showStepNumbers: <?php echo json_encode($conf['showStepNumbers']); ?>,
+			});
+			
+			<?php
+			if (!empty($conf['next_help'])) {
+			?>
+				clippy_set_help('<?php echo $conf['next_help']; ?>');
+			<?php
+			}
+			?>
+			
+			<?php
+			if ($autostart) {
+			?>
+				<?php echo $name_obj_tour; ?>.start();
+			<?php
+			}
+			?>
+		});
+		
+		<?php echo $other_js; ?>
+	</script>
+	<?php
 }
 ?>

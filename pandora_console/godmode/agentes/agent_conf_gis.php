@@ -118,9 +118,7 @@ function validateFormFields() {
 	//Validate altitude
 	if ((jQuery.trim(altitude).length == 0) ||
 		isNaN(parseFloat(altitude))) {
-		$('input[name=altitude]').css('background', '#cc0000');
-		
-		valid = false;
+			$('input[name=altitude]').val(1);
 	}
 	
 	if (valid) return true;

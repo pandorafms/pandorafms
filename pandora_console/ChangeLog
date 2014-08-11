@@ -1,3 +1,8 @@
+2014-08-11  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/agentes/agent_conf_gis.php: Altitude coordinate by
+	default. Fixed bug #766.
+
 2014-08-08  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions.php,

@@ -1,5 +1,13 @@
 2014-08-12  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_clippy.php: changed to modal version.
+	
+	* include/javascript/intro.js: added feature to avoid the exit, and
+	the pull request to original repository is solicited too
+	(https://github.com/usablica/intro.js/pull/311).
+
+2014-08-12  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* general/header.php, godmode/setup/setup_general.php,
 	include/functions_clippy.php, include/functions_config.php,
 	include/help/clippy/homepage.php: wip in the clippy.

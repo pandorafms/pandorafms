@@ -1729,12 +1729,7 @@ sub write_module_xml ($@) {
 		
 	# Data list
 	if ($#data > 0) {
-		$Xml .= "	<datalist>\n";
-		foreach my $data_item (@data) {
-			chomp ($data_item);
-			$Xml .= "	<data><value><![CDATA[$data_item]]></value></data>\n";
-		}
-		$Xml .= "	</datalist>\n";
+		$Xml .= "	<data><![CDATA[" . join('', @data) . "]]></data>\n";
 	# Single data
 	} else {
 		chomp ($data[0]);

@@ -1,3 +1,9 @@
+2014-08-12  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: No more "welcome to Pandora FMS 5.0" 
+	removed version code to allow the same text for next releases
+	:-)
+
 2014-08-11  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/help/clippy/godmode_agentes_modificar_agente.php,

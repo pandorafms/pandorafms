@@ -1,3 +1,8 @@
+2014-08-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Trim leading and trailing whitespaces from module names
+	  (like policies and windows agents do).
+
 2014-08-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent_daemon: Fixes the ps call on HP-UX.

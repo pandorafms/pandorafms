@@ -343,6 +343,8 @@ sub parse_conf_modules($) {
 			init_module ($module);
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
 			$module->{'name'} = $1;
+			$module->{'name'} =~ s/\s+$//g;
+			$module->{'name'} =~ s/^\s+//g;
 		} elsif ($line =~ /^\s*module_description\s+(.+)$/) {
 			$module->{'description'} = $1;
 		} elsif ($line =~ /^\s*module_type\s+(\S+)\s*$/) {

@@ -102,6 +102,7 @@ if (!isset ($id_agente)) {
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_tags.php");
+include_once($config['homedir'] . "/include/functions_clippy.php");
 
 $id_agent = get_parameter('id_agente');
 $url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $id_agent;
@@ -413,6 +414,8 @@ $rowIndex = 0;
 $id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
 	'nombre', 'web_content_string');
 
+$show_context_help_first_time = false;
+
 foreach ($modules as $module) {
 	//The code add the row of 1 cell with title of group for to be more organice the list.
 	
@@ -548,7 +551,15 @@ foreach ($modules as $module) {
 	modules_get_status($module['id_agente_modulo'], $module['estado'],
 		$module_value, $status, $title);
 	
+	
 	$data[5] = ui_print_status_image($status, $title, true);
+	if (!$show_context_help_first_time) {
+		$show_context_help_first_time = true;
+		
+		if ($module['estado'] == AGENT_MODULE_STATUS_UNKNOWN) {
+			$data[5] .= clippy_context_help("module_unknow");
+		}
+	}
 	
 	
 	if ($module["id_tipo_modulo"] == 24) {

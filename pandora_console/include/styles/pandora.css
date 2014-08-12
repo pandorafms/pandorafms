@@ -2702,3 +2702,12 @@ td.empty_field {
 table#policy_modules td * {
 	display: inline;
 }
+
+
+.context_help_title {
+	font-weight: bolder;
+	text-align: left;
+}
+.context_help_body {
+	text-align: left;
+}

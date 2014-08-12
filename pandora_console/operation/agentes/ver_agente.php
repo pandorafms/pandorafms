@@ -48,7 +48,7 @@ if (is_ajax ()) {
 		$recursion = (int) get_parameter ('recursion', 0);
 		$custom_condition = get_parameter('custom_condition', '');
 		$privilege = (string) get_parameter ('privilege', "AR");
-
+		
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
@@ -142,7 +142,7 @@ if (is_ajax ()) {
 		
 		$groups = users_get_groups ($config["id_user"], "AW", false);
 		$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
-
+		
 		$sql = 'SELECT DISTINCT(t1.nombre) as name
 			FROM tagente t1, tagente_modulo t2
 			WHERE t1.id_agente = t2.id_agente
@@ -156,7 +156,7 @@ if (is_ajax ()) {
 					WHERE t3.id_agente = t4.id_agente AND t1.nombre = t3.nombre
 						AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules);
 		}
-
+		
 		$sql .= ' ORDER BY t1.nombre';
 		
 		$nameAgents = db_get_all_rows_sql($sql);
@@ -468,17 +468,17 @@ if (is_ajax ()) {
 		
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
-	
+			
 			# Fix : Only show agents with module with tags of user profile
 			$_user_tags = tags_get_user_tags($config['id_user'], 'RR');
-
+			
 			$_sql_post = '';
 			if ($_user_tags !== false) {
-
+				
 				$_tags = implode(',', array_keys($_user_tags));
-
+				
 				$_sql_post .= ' AND tagente_modulo.id_agente_modulo IN (SELECT a.id_agente_modulo FROM tagente_modulo a, ttag_module b WHERE a.id_agente_modulo=b.id_agente_modulo AND b.id_tag IN (' . $_tags . ')) ';
-
+				
 			}
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion,
@@ -488,9 +488,9 @@ if (is_ajax ()) {
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.disabled = 0 
 				AND tagente_estado.estado = 1', $id_agent);
-
+		
 		$sql .= $_sql_post;
-
+		
 		if ($metaconsole) {
 			if (metaconsole_connect($server) != NOERR) {
 				return;

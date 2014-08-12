@@ -324,12 +324,12 @@ config_check();
 
 <script type="text/javascript">
 	/* <![CDATA[ */
-
+	
 	var fixed_header = <?php echo json_encode((bool)$config['fixed_header']); ?>;
-
+	
 	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
 	$(document).ready (function () {
-
+		
 		if (fixed_header) {
 			$('div#head').addClass('fixed_header');
 			$('div#page')

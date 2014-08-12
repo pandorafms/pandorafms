@@ -1663,15 +1663,15 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 		$status = STATUS_AGENT_DOWN;
 		$last_status =  modules_get_agentmodule_last_status($id_agent_module);
 		switch($last_status) {
-			case 0:
+			case AGENT_STATUS_NORMAL:
 				$title = __('UNKNOWN') . " - " . __('Last status') .
 					" " . __('NORMAL');
 				break;
-			case 1:
+			case AGENT_STATUS_CRITICAL:
 				$title = __('UNKNOWN') . " - " . __('Last status') .
 					" " . __('CRITICAL');
 				break;
-			case 2:
+			case AGENT_STATUS_WARNING:
 				$title = __('UNKNOWN') . " - " . __('Last status') .
 					" " . __('WARNING');
 				break;

@@ -1,5 +1,9 @@
 2014-08-12  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Fixed to make the 'Command Snapshot' feature work.
+
+2014-08-12  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent: Trim leading and trailing whitespaces from module names
 	  (like policies and windows agents do).
 

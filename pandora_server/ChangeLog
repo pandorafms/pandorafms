@@ -1,5 +1,12 @@
 2014-08-12  Koichiro Kikuchi <koichiro@rworks.jp>
 
+	* bin/pandora_server: Fixed issue that pandora_server failed to
+	 shut down properly on non-Linux systems.
+
+	Merged r10335 from branch 5.0.
+
+2014-08-12  Koichiro Kikuchi <koichiro@rworks.jp>
+
 	* pandora_server_installer: Refactord implementation, added
 	"fakeroot" installation support, small bug fixes and improvements:
 	fixed processing arguments, replace "test -e" with "test -f" for portability

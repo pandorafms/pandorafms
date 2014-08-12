@@ -2300,7 +2300,8 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer .= '<span style="display: inline-block; vertical-align: top; margin-top: 2px;">' . 
 		ui_print_truncate_text($title, 38);
 	if ($help != "")
-		$buffer .= "<div class='head_help' style='float: right; margin-top: -3px !important; margin-left: 2px !important;'>" . ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
+		$buffer .= "<div class='head_help' style='float: right; margin-top: -3px !important; margin-left: 2px !important;'>" .
+			ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
 	$buffer .= '</span></li></ul></div>';
 	
 	if (is_array($options)) {

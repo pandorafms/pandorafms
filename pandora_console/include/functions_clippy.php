@@ -138,4 +138,39 @@ function clippy_write_javascript_helps_steps($helps,
 		<?php
 	}
 }
+
+function clippy_context_help($help = null) {
+	$id = uniqid("id_");
+	
+	$return = '';
+	
+	require_once("include/help/clippy/" . $help . ".php");
+	
+	ob_start();
+	$function = "clippy_" . $help;
+	$function();
+	$code = ob_get_clean();
+	
+	$code = str_replace('{clippy}', '#' . $id, $code); html_debug_print($code, true);
+	$code = str_replace('{clippy_obj}', 'intro_' . $id, $code); html_debug_print($code, true);
+	
+	$return = $code . 
+		'<div id="' . $id . '" style="display: inline;">' .
+		'<a onclick="intro_' .  $id . '.start();" href="javascript: return false;" >' .
+			html_print_image(
+				"images/clippy_icon.png",
+				true) .
+		'</a>' .
+		'</div>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			$("#' . $id . ' img").pulsate ();
+		});
+		</script>
+		';
+	
+	
+	
+	return $return;
+}
 ?>

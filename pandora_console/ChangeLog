@@ -1,5 +1,15 @@
 2014-08-12  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* index.php, operation/agentes/ver_agente.php,
+	operation/agentes/estado_monitores.php, general/header.php,
+	include/functions_clippy.php, include/functions_ui.php,
+	include/help/en/help_context_module_unknow.php,
+	include/help/clippy/module_unknow.php, include/styles/pandora.css,
+	include/javascript/intro.js: added first version of context help
+	interactive.
+
+2014-08-12  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_modules.php: killed some unicorns and magic
 	numbers into the function "modules_get_status".
 

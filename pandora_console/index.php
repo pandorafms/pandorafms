@@ -590,7 +590,7 @@ if ($config["pure"] == 0) {
 }
 
 /// Clippy function
-require ('include/functions_clippy.php');
+require_once('include/functions_clippy.php');
 clippy_start($sec2);
 
 while (@ob_end_flush ());

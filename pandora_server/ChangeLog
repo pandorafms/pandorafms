@@ -1,3 +1,25 @@
+2014-08-12  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_server_installer: Refactord implementation, added
+	"fakeroot" installation support, small bug fixes and improvements:
+	fixed processing arguments, replace "test -e" with "test -f" for portability
+	(solaris' /bin/sh doesn't support "test -e").
+
+	* Makefile.PL: Install bin/tentacle_server if WITHOUT_TENTACLE=0 so that
+	MakeMaker can fix perl path in the shebang line.
+
+	* pandora_server.redhat.spec: Added missing dependency.
+
+	* FreeBSD/pandora_server.conf -> FreeBSD/pandora_server.conf.new: Renamed
+	* NetBSD/pandora_server.conf  -> NetBSD/pandora_server.conf.new: Rename
+
+	* FreeBSD/tentacle_server: Small bug fix and improvements. Fixed
+	"tentacle_server_flags" and modified code to use proper variables and
+	to get pid more strictly.
+
+	* FreeBSD/pandora_server: Added support to start multiple pandora_server
+	instances.
+
 2014-08-12  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/DataServer.pm: Fixed sql

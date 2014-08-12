@@ -49,7 +49,9 @@ function clippy_clean_help() {
 	set_cookie('clippy', null);
 }
 
-function clippy_write_javascript_helps_steps($helps) {
+function clippy_write_javascript_helps_steps($helps,
+	$force_first_step_by_default = true) {
+	
 	global $config;
 	
 	$clippy = get_cookie('clippy', false);
@@ -58,76 +60,82 @@ function clippy_write_javascript_helps_steps($helps) {
 	
 	//Get the help steps from a task
 	$steps = $helps[$clippy]['steps'];
-	if (empty($steps)) {
-		//Get the first by default
-		$temp = reset($helps);
-		$steps = $temp['steps'];
+	if ($force_first_step_by_default) {
+		if (empty($steps)) {
+			//Get the first by default
+			$temp = reset($helps);
+			$steps = $temp['steps'];
+		}
 	}
 	
 	$conf = $helps[$clippy]['conf'];
-	if (empty($conf)) {
-		//Get the first by default
-		$temp = reset($helps);
-		$conf = $temp['conf'];
+	if ($force_first_step_by_default) {
+		if (empty($conf)) {
+			//Get the first by default
+			$temp = reset($helps);
+			$conf = $temp['conf'];
+		}
 	}
 	
-	$name_obj_tour = 'intro';
-	if (!empty($conf['name_obj_tour'])) {
-		$name_obj_tour = $conf['name_obj_tour'];
-	}
-	
-	$autostart = true;
-	if (!is_null($conf['autostart'])) {
-		$autostart = $conf['autostart'];
-	}
-	
-	$other_js = '';
-	if (!empty($conf['other_js'])) {
-		$other_js = $conf['other_js'];
-	}
-	
-	?>
-	<script type="text/javascript">
-		var <?php echo $name_obj_tour; ?> = null;
+	if (!empty($steps)) {
+		$name_obj_tour = 'intro';
+		if (!empty($conf['name_obj_tour'])) {
+			$name_obj_tour = $conf['name_obj_tour'];
+		}
 		
-		$(document).ready(function() {
-			<?php echo $name_obj_tour; ?> = introJs();
-			
-			<?php echo $name_obj_tour; ?>.setOptions({
-				steps: <?php echo json_encode($steps); ?>,
-				showBullets: <?php echo json_encode($conf['showBullets']); ?>,
-				showStepNumbers: <?php echo json_encode($conf['showStepNumbers']); ?>,
-				nextLabel: "<?php echo __('Next &rarr;'); ?>",
-				prevLabel: "<?php echo __('&larr; Back'); ?>",
-				skipLabel: "<?php echo __('Skip'); ?>",
-				doneLabel: "<?php echo __('Done'); ?>",
-				exitOnOverlayClick: false,
-				exitOnEsc: true, //false,
-			})
-			.onexit(function(value) {
-					exit = confirm("<?php echo __("Do you want to exit the help tour?"); ?>");
-					return exit;
-				});
-			
-			<?php
-			if (!empty($conf['next_help'])) {
-			?>
-				clippy_set_help('<?php echo $conf['next_help']; ?>');
-			<?php
-			}
-			?>
-			
-			<?php
-			if ($autostart) {
-			?>
-				<?php echo $name_obj_tour; ?>.start();
-			<?php
-			}
-			?>
-		});
+		$autostart = true;
+		if (!is_null($conf['autostart'])) {
+			$autostart = $conf['autostart'];
+		}
 		
-		<?php echo $other_js; ?>
-	</script>
-	<?php
+		$other_js = '';
+		if (!empty($conf['other_js'])) {
+			$other_js = $conf['other_js'];
+		}
+		
+		?>
+		<script type="text/javascript">
+			var <?php echo $name_obj_tour; ?> = null;
+			
+			$(document).ready(function() {
+				<?php echo $name_obj_tour; ?> = introJs();
+				
+				<?php echo $name_obj_tour; ?>.setOptions({
+					steps: <?php echo json_encode($steps); ?>,
+					showBullets: <?php echo json_encode($conf['showBullets']); ?>,
+					showStepNumbers: <?php echo json_encode($conf['showStepNumbers']); ?>,
+					nextLabel: "<?php echo __('Next &rarr;'); ?>",
+					prevLabel: "<?php echo __('&larr; Back'); ?>",
+					skipLabel: "<?php echo __('Skip'); ?>",
+					doneLabel: "<?php echo __('Done'); ?>",
+					exitOnOverlayClick: false,
+					exitOnEsc: true, //false,
+				})
+				.onexit(function(value) {
+						exit = confirm("<?php echo __("Do you want to exit the help tour?"); ?>");
+						return exit;
+					});
+				
+				<?php
+				if (!empty($conf['next_help'])) {
+				?>
+					clippy_set_help('<?php echo $conf['next_help']; ?>');
+				<?php
+				}
+				?>
+				
+				<?php
+				if ($autostart) {
+				?>
+					<?php echo $name_obj_tour; ?>.start();
+				<?php
+				}
+				?>
+			});
+			
+			<?php echo $other_js; ?>
+		</script>
+		<?php
+	}
 }
 ?>

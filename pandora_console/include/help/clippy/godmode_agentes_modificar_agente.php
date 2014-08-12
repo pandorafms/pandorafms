@@ -66,6 +66,6 @@ function clippy_start_page() {
 	$helps['monitoring_server_step_2']['conf']['next_help'] = 'monitoring_server_step_3';
 	//==================================================================
 	
-	clippy_write_javascript_helps_steps($helps);
+	clippy_write_javascript_helps_steps($helps, false);
 }
 ?>

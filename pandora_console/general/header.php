@@ -58,10 +58,16 @@ config_check();
 				$table->cellspacing = 0;
 				$table->head = array ();
 				$table->data = array ();
-				$table->style[0] = $table->style[1] = $table->style[3] =
-					$table->style[4] = $table->style[5] =
-					$table->style[6] = $table->style[8] =
-					$table->style[9] = $table->style['qr'] =
+				$table->style[0] =
+					$table->style['clippy'] =
+					$table->style[1] =
+					$table->style[3] =
+					$table->style[4] =
+					$table->style[5] =
+					$table->style[6] =
+					$table->style[8] =
+					$table->style[9] =
+					$table->style['qr'] =
 					'width: 22px; text-align:center; height: 22px; padding-right: 9px;';
 				$table->style[7] = 'width: 20px; padding-right: 9px;';
 				$table->style['searchbar'] = 'width: 180px; min-width: 180px;';
@@ -126,7 +132,7 @@ config_check();
 					$table->data[0]['clippy'] = 
 						'<a href="javascript: show_clippy();">' .
 							html_print_image(
-								"images/heart_col.png",
+								"images/clippy_icon.png",
 								true,
 								array("id" => 'clippy',
 									"class" => 'clippy',

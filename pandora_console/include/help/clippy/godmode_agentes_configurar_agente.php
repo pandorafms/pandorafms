@@ -121,6 +121,6 @@ function clippy_start_page() {
 	//==================================================================
 	
 	
-	clippy_write_javascript_helps_steps($helps);
+	clippy_write_javascript_helps_steps($helps, false);
 }
 ?>

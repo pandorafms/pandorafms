@@ -3,6 +3,7 @@
 # **********************************************************************
 # Pandora FMS Server Daemon launcher for FreeBSD
 # (c) 2010 Junichi Satoh <junichi@rworks.jp>
+# (c) 2014 Koichiro Kikuchi <koichiro@rworks.jp>
 #
 # **********************************************************************
 
@@ -10,27 +11,66 @@
 # REQUIRE: LOGIN mysql
 # KEYWORD: shutdown
 
-# Add the following line to /etc/rc.conf to enable `pandora_server':
-#
-# pandora_server_enable="YES"
+# Add the following lines to /etc/rc.conf to enable pandora_server:
+# pandora_server_enable (bool):  Set to "YES" to enable pandora_server (default: NO)
+# pandora_server_profiles (str): Define your profiles here (default: "")
 #
 
 . "/etc/rc.subr"
 
-name="pandora_server"
-rcvar=`set_rcvar`
-
-# read configuration and set defaults
-pandora_server_enable=${pandora_server_enable:-"NO"}
-load_rc_config $name
-
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 
-pidfile=/var/run/$name.pid
-command=/usr/local/bin/${name}
-command_args="-D -P ${pidfile} /usr/local/etc/pandora/pandora_server.conf"
-required_files="/usr/local/etc/pandora/pandora_server.conf"
+name="pandora_server"
+rcvar=pandora_server_enable
 
-procname="/usr/local/bin/perl"
+: ${pandora_server_enable:=NO}
+: ${pandora_server_configfile:=/usr/local/etc/pandora/pandora_server.conf}
+
+command=/usr/local/bin/${name}
+command_args="-D"
+command_interpreter=/usr/local/bin/perl
+_pidprefix=/var/run/$name
+pidfile=${_pidprefix}.pid
+required_files="$pandora_server_configfile"
+
+load_rc_config $name
+
+if [ "$2" ]; then
+	profile="$2"
+	if [ "$pandora_server_profiles" ]; then
+		pidfile="${_pidprefix}.${profile}.pid"
+		eval pandora_server_configfile="\${pandora_server_${profile}_configfile:-}"
+		if [ -z "$pandora_server_configfile" ]; then
+			echo "You must define a configuration file (pandora_server_${profile}_configfile)"
+			exit 1
+		fi
+		required_files="$pandora_server_configfile"
+		eval pandora_server_enable="\${pandora_server_${profile}_enable:-$pandora_server_enable}"
+		eval pandora_server_flags="\${pandora_server_${profile}_flags:-$pandora_server_flags}"
+		eval pidfile="\${pandora_server_${profile}_pidfile:-$pidfile}"
+		pandora_server_flags="$pandora_server_flags -P $pidfile $pandora_server_configfile"
+	else
+		echo "$0: extra argument ignored"
+	fi
+else
+	if [ "${pandora_server_profiles}" ] && [ "$1" ]; then
+		for profile in ${pandora_server_profiles}; do
+			eval _enable="\${pandora_server_${profile}_enable}"
+			case "${_enable:-${pandora_server_enable}}" in
+			[Yy][Ee][Ss]);;
+			*) continue;;
+			esac
+			echo "===> pandora_server profile: ${profile}"
+			/usr/local/etc/rc.d/pandora_server $1 ${profile}
+			retcode="$?"
+			if [ "0${retcode}" -ne 0 ]; then
+				failed="${profile} (${retcode}) ${failed:-}"
+			else
+				success="${profile} ${success:-}"
+			fi
+		done
+		exit 0
+	fi
+fi
 
 run_rc_command "$1"

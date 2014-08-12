@@ -1,6 +1,12 @@
 use 5.000;
 use ExtUtils::MakeMaker;
 
+my %ARGV = map { my @r = split /=/,$_; defined $r[1] or $r[1]=1; @r } @ARGV;
+
+my @exe_files = qw(bin/pandora_server bin/pandora_exec);
+
+$ARGV{WITHOUT_TENTACLE} or push @exe_files, 'bin/tentacle_server';
+
 WriteMakefile(
 	INSTALLSITELIB  => '/usr/lib/perl5',
 	(($^O eq 'freebsd')
@@ -27,10 +33,9 @@ WriteMakefile(
 		HTML::Entities => 0,
 		IO::Socket::INET6 => 0,
 		JSON => 0,
-    },
-    EXE_FILES 		=> [ 'bin/pandora_server', 'bin/pandora_exec'],
-    PMLIBDIRS  		=> [ 'lib' ],
-    'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX'
-=> '.gz', 'COMPRESS' => 'gzip'}
+	},
+	EXE_FILES 		=> [ @exe_files ],
+	PMLIBDIRS  		=> [ 'lib' ],
+	'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX' => '.gz', 'COMPRESS' => 'gzip'}
 );
 

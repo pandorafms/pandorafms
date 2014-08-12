@@ -10,97 +10,177 @@
 
 
 MODE=$1
-SECOPT=$2
+shift
+
+# Defaults
+PREFIX=/usr
 PANDORA_SPOOL=/var/spool/pandora
-PANDORA_HOME=/usr/share/pandora_server
+PANDORA_HOME=$PREFIX/share/pandora_server
 PANDORA_CFG_DIR=/etc/pandora
 PANDORA_LOG=/var/log/pandora
 PANDORA_SERVER=/etc/init.d/pandora_server
 TENTACLE_SERVER=/etc/init.d/tentacle_serverd
-PANDORA_CFG_FILE=/etc/pandora/pandora_server.conf
+PANDORA_CFG_FILE=$PANDORA_CFG_DIR/pandora_server.conf
+PANDORA_CFG_FILE_DIST=conf/pandora_server.conf.new
+PANDORA_INIT_SCRIPT=util/pandora_server
+TENTACLE_INIT_SCRIPT=util/tentacle_serverd
+PERL=perl
+MANDIR=$PREFIX/share/man/man1
+INITDIR=/etc/init.d
+WITHOUT_TENTACLE=0
 
+#
+# set_global_vars
+#	Check platform and set DISTRO, OS_VERSION and LINUX.
+#	Also, define some platform sepcific variables (e.g. PANDORA_RC_VAR for (Free|Net)BSD) 
+#	and override some of defaults defined above if needed.
+#
+set_global_vars () {
+	# Default
+	LINUX=NO
+	OS_VERSION=`uname -r`
+	DISTRO=`uname -s`
 
-get_distro () {
-	# Get Linux Distro type and version
-	# We assume we are on Linux unless told otherwise
-	LINUX=YES
-	if [ -f "/etc/SuSE-release" ]
-	then
-		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
-		LINUX_DISTRO=SUSE
-	elif [ -f "/etc/lsb-release" ] && [ ! -f "/etc/redhat-release" ]
-	then
-		OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
-		LINUX_DISTRO=UBUNTU
-		OS_VERSION="UBUNTU $OS_VERSION"
-	elif [ -f "/etc/debian_version" ]
-	then
-		OS_VERSION=`cat /etc/debian_version`
-		OS_VERSION="DEBIAN $OS_VERSION"
-		LINUX_DISTRO=DEBIAN
-	elif [ -f "/etc/fedora-release" ]
-	then
-		OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
-		OS_VERSION="FEDORA $OS_VERSION"
-		LINUX_DISTRO=FEDORA
-	elif [ `uname -s` = "Darwin" ]
-	then
-		# For future reference, Darwin doesn't have /etc/init.d but uses LaunchDaemons
-		LINUX_DISTRO="Darwin"
-		OS_VERSION=`uname -r`
-		LINUX=NO
-	elif [ `uname -s` = "AIX" ]
-	then
-		# For future reference, AIX doesn't have /etc/init.d
-		LINUX_DISTRO="AIX"
-		OS_VERSION=`uname -r`
-		LINUX=NO
-	elif [ `uname -s` = "SunOS" ]
-	then
+	# set corret value for LINUX_DISTRO
+	case $DISTRO in
+	Linux)
+		# Default for Linux
+		LINUX=YES
+		DISTRO="GENERIC"
+		# Get Linux Distro type and version
+		# We assume we are on Linux unless told otherwise
+		if [ -f "/etc/SuSE-release" ]
+		then
+			OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+			DISTRO=SUSE
+		elif [ -f "/etc/lsb-release" ] && [ ! -f "/etc/redhat-release" ]
+		then
+			OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+			DISTRO=UBUNTU
+			OS_VERSION="UBUNTU $OS_VERSION"
+		elif [ -f "/etc/debian_version" ]
+		then
+			OS_VERSION=`cat /etc/debian_version`
+			OS_VERSION="DEBIAN $OS_VERSION"
+			DISTRO=DEBIAN
+		elif [ -f "/etc/fedora-release" ]
+		then
+			OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+			OS_VERSION="FEDORA $OS_VERSION"
+			DISTRO=FEDORA
+		fi
+		;;
+	Darwin|AIX)
+		# For future reference, Darwin doesn't have /etc/init.d but uses LaunchDaemons.
+		# AIX doesn't have /etc/init.d
+		;;
+	SunOS)
 		# Some Solaris and other Unices don't have /etc/init.d, some have /usr/spool instead of /var/spool
-		LINUX_DISTRO="Solaris"
-		OS_VERSION=`uname -r`
-		LINUX=NO
-	elif [ `uname -s` = "Linux" ]
-	then
-		# Test for Linux to make sure we're on Linux
-		LINUX_DISTRO="GENERIC"
-		OS_VERSION=`uname -r`
-	elif [ `uname -s` = "FreeBSD" ]
-	then
-		LINUX_DISTRO="FreeBSD"
-		OS_VERSION=`uname -r`
-		LINUX=NO
-	elif [ `uname -s` = "NetBSD" ]
-	then
-		LINUX_DISTRO="NetBSD"
-		OS_VERSION=`uname -r`
-		LINUX=NO
-	else
-		# Default to Linux is false, test for real Linux above - that way we don't assume we can just plunk down files everywhere
-		LINUX_DISTRO=`uname -s`
-		OS_VERSION=`uname -r`
-		LINUX=NO
-	fi
-	echo "$LINUX_DISTRO:$OS_VERSION:$LINUX"
+		DISTRO="Solaris"
+		;;
+	FreeBSD)
+		PREFIX=/usr/local
+		PANDORA_HOME=$PREFIX/share/pandora_server
+		PANDORA_CFG_DIR=$PREFIX/etc/pandora
+		PANDORA_SERVER=$PREFIX/etc/rc.d/pandora_server
+		TENTACLE_SERVER=$PREFIX/etc/rc.d/tentacle_server
+		PANDORA_CFG_FILE=$PANDORA_CFG_DIR/pandora_server.conf
+		PANDORA_CFG_FILE_DIST=$DISTRO/pandora_server.conf.new
+		PANDORA_INIT_SCRIPT=$DISTRO/pandora_server
+		TENTACLE_INIT_SCRIPT=$DISTRO/tentacle_server
+		MANDIR=$PREFIX/man/man1
+		INITDIR=$PREFIX/etc/rc.d
+		PERL=/usr/local/bin/perl
+		PANDORA_RC_VAR="pandora_server_enable"
+		TENTACLE_RC_VAR="tentacle_server_enable"
+		;;
+	NetBSD)
+		PREFIX=/usr/local
+		PANDORA_HOME=$PREFIX/share/pandora_server
+		PANDORA_CFG_DIR=$PREFIX/etc/pandora
+		PANDORA_SERVER=/etc/rc.d/pandora_server
+		TENTACLE_SERVER=/etc/rc.d/tentacle_server
+		PANDORA_CFG_FILE=$PANDORA_CFG_DIR/pandora_server.conf
+		PANDORA_CFG_FILE_DIST=$DISTRO/pandora_server.conf.new
+		PANDORA_INIT_SCRIPT=$DISTRO/pandora_server
+		TENTACLE_INIT_SCRIPT=$DISTRO/tentacle_server
+		PERL=/usr/pkg/bin/perl
+		INITDIR=/etc/rc.d
+		PANDORA_RC_VAR="pandora_server"
+		TENTACLE_RC_VAR="tentacle_server"
+		;;
+	esac
 }
 
+#
+# install_startup_script [options...] SRC
+#	copy SRC into the $INITDIR and do additional required operation according to $DISTRO
+#	if $INITDIR is not set or empty, do nothing.
+#	If $DESTDIR is set, skip enabling service
+#	OPTIONS:
+#		-s SPRIO  specify startup priority for service
+#
+install_startup_script () {
+	[ "$INITDIR" ] || return 1
+	if [ "$1" = "-s" ]
+	then
+		SPRIO=$2
+		shift;shift
+	fi
+	SRC=$1
+	SCRIPT_NAME=`basename $SRC`
+
+	echo "Copying the daemon script into $INITDIR"
+	cp $SRC $DESTDIR$INITDIR
+
+	[ "$DESTDIR" ] && return
+
+	case $DISTRO in
+	UBUNTU|DEBIAN)
+		echo "Linking startup script to /etc/rc2.d"
+		update-rc.d $SCRIPT_NAME defaults
+		;;
+	SUSE)
+		echo "Creating startup daemons"
+		insserv $SCRIPT_NAME
+		;;
+	FeeBSD|NetBSD)
+		chmod 555 $SRC
+		;;
+	*)
+		if [ "$LINUX" = YES ]
+		then
+			# Pandora FMS Server install (Other Distros)
+			INITLV=`grep '[0-9]:initdefault' /etc/inittab | cut -f 2 -d ':'`
+			: ${INITLV:=2}
+			echo "Linking startup script to /etc/rc.d/rc$INITLV.d/S$SPRIO$SCRIPT_NAME"
+			ln -s $INITDIR/$SCRIPT_NAME /etc/rc.d/rc$INITLV.d/S$SPRIO$SCRIPT_NAME
+		fi
+		;;
+	esac
+}
 
 install () {
-
-	perl Makefile.PL > output 2>&1 #&& sleep 2 && cat output | grep "found" | wc -l 
-	DEPENDENCIAS=`cat output | grep "found" | wc -l`
+	set_global_vars
 
 	FORCE=0
 
-	if [ ! -z "$SECOPT" ]
-	then
-		if [ "$SECOPT" = "--force" ]
-		then
-			FORCE=1
-		fi
-	fi
-			
+	# parse options
+	while :
+	do
+		case $1 in
+		--force) FORCE=1;;
+		--no-tentacle) WITHOUT_TENTALCE=1;;
+		--destdir) DESTDIR=$2;shift;;
+		*) break;;
+		esac
+		shift
+	done
+
+	$PERL Makefile.PL INSTALLMAN1DIR=none WITHOUT_TENTACLE=$WITHOUT_TENTACLE > output 2>&1
+	#&& sleep 2 && cat output | grep "found" | wc -l 
+	DEPENDENCIAS=`cat output | grep "found" | wc -l`
+
 	if [ $DEPENDENCIAS -gt 0 ] && [ $FORCE -eq 0 ]
 	then
 		echo "You are missing the following dependencies"
@@ -142,448 +222,251 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 		echo "	$ cpan Time::Local DBI Socket6 XML::Simple XML::Twig IO::Socket Time::HiRes NetAddr::IP HTML::Entities IO::Socket::INET6 JSON"
 		echo " "
 		rm output
-	else
+		exit 1
+	fi
+	rm output
 
-		# This returns a multiple value string, separated with ":" -> $LINUX_DISTRO:$OS_VERSION:$LINUX	
-		GET_DISTRO="`get_distro`"
-		DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
-		OS_VERSION=`echo $GET_DISTRO | cut -f 2 -d ":"`
-		LINUX=`echo $GET_DISTRO | cut -f 3 -d ":"`	
-	
-		if [ "$DISTRO" = "UBUNTU" ]
-		then
-			echo "UBUNTU distribution detected"
-		elif [ "$DISTRO" = "SUSE" ]
-		then
-			echo "SUSE distribution detected"
-		elif [ "$DISTRO" = "FreeBSD" ]
-                then
-			echo "FreeBSD detected"
-			PANDORA_SPOOL=/var/spool/pandora
-			PANDORA_HOME=/usr/local/share/pandora_server
-			PANDORA_CFG_DIR=/usr/local/etc/pandora
-			PANDORA_LOG=/var/log/pandora
-			PANDORA_SERVER=/usr/local/etc/rc.d/pandora_server
-			TENTACLE_SERVER=/usr/local/etc/rc.d/tentacle_server
-			PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
-		elif [ "$DISTRO" = "NetBSD" ]
-		then
-			echo "NetBSD detected"
-			PANDORA_SPOOL=/var/spool/pandora
-			PANDORA_HOME=/usr/local/share/pandora_server
-			PANDORA_CFG_DIR=/usr/local/etc/pandora
-			PANDORA_LOG=/var/log/pandora
-			PANDORA_SERVER=/etc/rc.d/pandora_server
-			TENTACLE_SERVER=/etc/rc.d/tentacle_server
-			PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
-                
-			sed s:/usr/bin/perl:/usr/pkg/bin/perl: bin/pandora_server > bin/tmp
-			mv bin/tmp bin/pandora_server
-			sed s:/usr/bin/perl:/usr/pkg/bin/perl: bin/pandora_exec > bin/tmp
-			mv bin/tmp bin/pandora_exec
-			sed s:/usr/bin/perl:/usr/pkg/bin/perl: bin/tentacle_server > bin/tmp
-			mv bin/tmp bin/tentacle_server
-
-		fi
+	if [ "$LINUX" = YES ]
+	then
+		echo "$DISTRO distribution detected"
+	else 
+		echo "$DISTRO detected"
+	fi
 		
-		echo "Installing binaries and libraries"
-		make
-		make install
+	echo "Installing binaries and libraries"
+	make
+	make DESTDIR=$DESTDIR install
 		
-	    echo "Checking binaries at /usr/local/bin -> /usr/bin"
-		if [ ! -e "/usr/bin/pandora_server" ]
+	echo "Checking binaries at /usr/local/bin -> /usr/bin"
+	if [ ! -f "$DESTDIR/usr/bin/pandora_server" ] 
+	then
+		if [ ! -f "$DESTDIR/usr/local/bin/pandora_server" ]
 		then
-			if [ ! -e "/usr/local/bin/pandora_server" ]
-			then
-				echo "ERROR compiling Pandora FMS Server from sources. Aborting"
-				exit 1
-			fi
-			if [ "$DISTRO" != "FreeBSD" -a "$DISTRO" != "NetBSD" ]
-			then
-				ln -s /usr/local/bin/pandora_server /usr/bin
-				ln -s /usr/local/bin/pandora_exec /usr/bin		
-			fi
+			echo "ERROR compiling Pandora FMS Server from sources. Aborting"
+			exit 1
 		fi
-
-		echo "Creating common Pandora FMS directories"
-		id pandora 2> /dev/null
-		if [ $? -eq 0 ]; then
-			echo " "
-			echo "User pandora does exist, make sure the SSH directories are correct"
-		else
-			echo "Are you sure we can create a standard 'pandora' user locally? [y/N]"
-			read AREYOUSURE
-			if [ "$AREYOUSURE" = "y" ]; then
-				if [ "$DISTRO" = "FreeBSD" ]
-				then
-					echo "pandora:41121:::::Pandora FMS:/home/pandora:/usr/sbin/nologin:" | adduser -f - -w no 2> /dev/null
-				else
-					useradd pandora 
-					mkdir /home/pandora 2> /dev/null
-					mkdir /home/pandora/.ssh 2> /dev/null
-					chown -R pandora /home/pandora 
-				fi
-			else
-				echo "Please create the 'pandora' user manually according to your authentication scheme, then start again the installation"
-				echo "Aborting..."
-				exit 1
-			fi
-		fi
-
-		mkdir $PANDORA_SPOOL 2> /dev/null
-		mkdir $PANDORA_SPOOL/data_in 2> /dev/null
-		chmod 770 $PANDORA_SPOOL/data_in
-		mkdir $PANDORA_SPOOL/data_in/conf 2> /dev/null
-		chmod 770 $PANDORA_SPOOL/data_in/conf
-		mkdir $PANDORA_SPOOL/data_in/md5 2> /dev/null
-		chmod 770 $PANDORA_SPOOL/data_in/md5
-		mkdir $PANDORA_SPOOL/data_in/collections 2> /dev/null
-		chmod 770 $PANDORA_SPOOL/data_in/collections
-		mkdir $PANDORA_SPOOL/data_in/netflow 2> /dev/null
-		chmod 770 $PANDORA_SPOOL/data_in/netflow
-		mkdir $PANDORA_LOG 2> /dev/null	
-
-		echo "Giving proper permission to /var/spool/pandora"
-		IDGROUP=`id -g www-data 2> /dev/null`
-		if [ $? -eq 0 ]
+		if [ "$DISTRO" != "FreeBSD" ] && [ "$DISTRO" != "NetBSD" ]
 		then
-			GROUPNAME=`cat /etc/group | grep ":$IDGROUP:" | awk -F":" '{print $1}'`
-			chown -R pandora:$GROUPNAME $PANDORA_SPOOL
-		else
-			IDGROUP=`id -g wwwrun 2> /dev/null`
-			if [ $? -eq 0 ]
-			then
-				GROUPNAME=`cat /etc/group | grep ":$IDGROUP:" | awk -F":" '{print $1}'`
-				chown -R pandora:$GROUPNAME $PANDORA_SPOOL
-			else
-				IDGROUP=`id -g www 2> /dev/null`
-				if [ $? -eq 0 ]
-				then
-					GROUPNAME=`cat /etc/group | grep ":$IDGROUP:" | awk -F":" '{print $1}'`
-					chown -R pandora:$GROUPNAME $PANDORA_SPOOL
-				else
-					IDGROUP=`id -g apache 2> /dev/null`
-					if [ $? -eq 0 ]
-					then
-						GROUPNAME=`cat /etc/group | grep ":$IDGROUP:" | awk -F":" '{print $1}'`
-						chown -R pandora:$GROUPNAME $PANDORA_SPOOL
-					else
-						echo "No web server user found, some functionality might not perform correctly"
-						chown -R pandora:root $PANDORA_SPOOL
-					fi
-				fi
-			fi
+			ln -s /usr/local/bin/pandora_server $DESTDIR$PREFIX
+			ln -s /usr/local/bin/pandora_exec $DESTDIR$PREFIX
 		fi
-		
-		
-		echo "Creating setup directory in $PANDORA_CFG_DIR"
-		mkdir $PANDORA_CFG_DIR 2> /dev/null
-		if [ "$DISTRO" = "FreeBSD" ]
-		then
-			if [ -e $PANDORA_CFG_FILE ]
-			then
-				OLDFILENAMETMP=`date +"%Y-%m-%d"`
-				echo "Old installation detected, backing up pandora_server.conf.$ODFILENAMETMP"
-				mv $PANDORA_CFG_FILE $PANDORA_CFG_FILE.$OLDFILENAMETMP
-			fi
-			echo cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
-                	cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
-		elif [ "$DISTRO" = "NetBSD" ]
-		then
-			if [ ! -d $PANDORA_CFG_DIR ]
-			then
-				mkdir -p $PANDORA_CFG_DIR
-			fi
-			if [ -e $PANDORA_CFG_FILE ]
-			then
-				OLDFILENAMETMP=`date +"%Y-%m-%d"`
-				echo "Old installation detected, backing up pandora_server.conf.$ODFILENAMETMP"
-				mv $PANDORA_CFG_FILE $PANDORA_CFG_FILE.$OLDFILENAMETMP
-			fi
-			echo cp NetBSD/pandora_server.conf $PANDORA_CFG_DIR
-			cp NetBSD/pandora_server.conf $PANDORA_CFG_DIR     
-		else
-			if [ -f "$PANDORA_CFG_FILE" ]
-			then
-				echo cp conf/pandora_server.conf.new $PANDORA_CFG_DIR
-				cp conf/pandora_server.conf.new $PANDORA_CFG_DIR
-			else
-			echo cp conf/pandora_server.conf.new $PANDORA_CFG_FILE
-				cp conf/pandora_server.conf.new $PANDORA_CFG_FILE
-			fi
-		fi
-		chmod 770 $PANDORA_CFG_FILE
-
-		echo "Installing Pandora Server manual"
-		if [ "$DISTRO" = "FreeBSD" ]
-		then
-			cp man/man1/pandora_server.1.gz /usr/local/man/man1
-		else
-			cp man/man1/pandora_server.1.gz /usr/share/man/man1
-		fi
-		
-		if [ "$LINUX" = "YES" ]
-		then
-			echo "Copying the daemon script into /etc/init.d/pandora_server"
-			cp util/pandora_server /etc/init.d/		
-			
-			if [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
-			then
-			
-				echo "Linking startup script to /etc/rc2.d"
-				update-rc.d pandora_server defaults
-			else
-				if [ "$DISTRO" = "SUSE" ]
-				then
-					echo "Creating startup daemons"
-					insserv pandora_server
-				else
-					# Pandora FMS Server install (Other Distros)
-					INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
-					if [ -z "$INITLV" ]
-					then
-						INITLV=2
-					fi
-					echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
-					ln -s $PANDORA_SERVER /etc/rc.d/rc$INITLV.d/S90pandora_server
-				fi
-			fi
-		else
-			if [ "$DISTRO" = "FreeBSD" ]
-			then
-				echo "Copying the daemon script into $PANDORA_SERVER"
-				cp FreeBSD/pandora_server $PANDORA_SERVER 
-				chmod 555 $PANDORA_SERVER
-                        fi
-			if [ "$DISTRO" = "NetBSD" ]
-			then
-				echo "Copying the daemon script into $PANDORA_SERVER"
-				cp NetBSD/pandora_server $PANDORA_SERVER 
-				chmod 555 $PANDORA_SERVER
-			fi
-		fi
-
-		if [ -d /etc/logrotate.d ]; then
-			echo "Creating logrotate.d entry for Pandora FMS log management"
-			cp util/pandora_logrotate /etc/logrotate.d/pandora
-		else
-			echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
-		fi
-	
-		if [ "$LINUX" = "YES" ]
-		then
-			if [ "$SECOPT" != "--no-tentacle" ]
-			then
-				if [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
-				then
-					# Tentacle server install (Ubuntu)
-					echo "Installing tentacle server"
-					cp bin/tentacle_server /usr/bin
-					chown pandora /usr/bin/tentacle_server
-					cp util/tentacle_serverd $TENTACLE_SERVER
-   					update-rc.d tentacle_serverd defaults
-				else
-					if [ "$DISTRO" = "SUSE" ]
-					then
-						echo "Creating Tentacle startup daemon"
-						cp bin/tentacle_server /usr/bin
-						chown pandora /usr/bin/tentacle_server
-						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-						insserv tentacle_serverd
-					else
-						# Tentacle server install (Other Distros)
-						echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
-						cp bin/tentacle_server /usr/bin
-						chown pandora /usr/bin/tentacle_server
-						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-						ln -s $TENTACLE_SERVER /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
-					fi
-				fi
-
-				echo "Installing Tentacle Server manual"
-				cp man/man1/tentacle_server.1.gz /usr/share/man/man1
-			fi
-		else
-			if [ "$SECOPT" != "--no-tentacle" ]
-			then
-				if [ "$DISTRO" = "FreeBSD" ]
-				then
-					echo "Installing tentacle server"
-					cp bin/tentacle_server /usr/local/bin
-					chown pandora /usr/local/bin/tentacle_server
-					chmod 555 /usr/local/bin/tentacle_server
-					cp FreeBSD/tentacle_server $TENTACLE_SERVER
-					chmod 555 $TENTACLE_SERVER
-					echo "Installing Tentacle Server manual"
-					cp man/man1/tentacle_server.1.gz /usr/local/man/man1
-				fi
-				if [ "$DISTRO" = "NetBSD" ]
-				then
-					echo "Installing tentacle server"
-					cp bin/tentacle_server /usr/local/bin
-					chown pandora /usr/local/bin/tentacle_server
-					chmod 555 /usr/local/bin/tentacle_server
-					cp NetBSD/tentacle_server $TENTACLE_SERVER
-					chmod 555 $TENTACLE_SERVER
-					echo "Installing Tentacle Server manual"
-					cp man/man1/tentacle_server.1.gz /usr/share/man/man1
-				fi
-			fi
-		fi
-
-		echo "Creating Pandora FMS distribution directory in $PANDORA_HOME"
-		mkdir $PANDORA_HOME 2> /dev/null
-		if [ ! -d $PANDORA_HOME ]
-		then
-			mkdir -p $PANDORA_HOME
-		fi
-		cp -R util $PANDORA_HOME
-		
-		if [ -d /etc/cron.hourly ]
-		then
-			echo "Creating the Cron script to run Pandora DB tool each hour"
-			echo "#!/bin/bash" > /etc/cron.hourly/pandora_db	
-			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.hourly/pandora_db	
-			chmod +x /etc/cron.hourly/pandora_db
-		else
-			if [ "$DISTRO" = "FreeBSD" -o "$DISTRO" = "NetBSD" ]
-			then
-				grep pandora_db.pl /etc/crontab > /dev/null 2>&1
-				if [ $? -ne 0 ]
-				then
-					echo "# Pandora FMS" >> /etc/crontab
-					echo "2	*	*	*	*	root	perl /usr/local/share/pandora_server/util/pandora_db.pl /usr/local/etc/pandora/pandora_server.conf" >> /etc/crontab
-				else
-					echo "The crontab for pandora_db.pl is already configured."
-				fi
-			else
-				echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (hourly) on your master server:"
-				echo "	perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
-			fi
-		fi
-		echo
-		echo "Now you have to edit your $PANDORA_CFG_FILE file to change the database password (default is pandora) with the one set in include/config.php of your Pandora FMS Console."
-		echo "After setting password you can start your Pandora FMS Server!!"
-		rm output
-
-		if [ -d "/etc/logrotate.d" ]
-		then
-			echo "Managing Pandora FMS logs with logrotate (Distro independent)"
-			cp -aRf util/pandora_logrotate /etc/logrotate.d/pandora
-		fi
-
-		if [ "$DISTRO" = "FreeBSD" ]
-		then
-			echo " "
-			echo "Define 'pandora_server_enable=\"YES\"' in /etc/rc.conf to enable pandora server daemon."
-			echo "Define 'tentacle_server_enable=\"YES\"' in /etc/rc.conf to enable tentacle server daemon."
-		fi
-
-		if [ "$DISTRO" = "NetBSD" ]
-		then
-			echo " "
-			echo "Define 'pandora_server=\"YES\"' in /etc/rc.conf to enable pandora server daemon."
-			echo "Define 'tentacle_server=\"YES\"' in /etc/rc.conf to enable tentacle server daemon."
-                fi
-
 	fi
 
-}
-
-uninstall_bsd () {
-	if [ "$DISTRO" = "FreeBSD" ]
+	echo "Creating common Pandora FMS directories"
+	id pandora 2> /dev/null
+	if [ $? -eq 0 ]; then
+		echo " "
+		echo "User pandora does exist, make sure the SSH directories are correct"
+	elif [ "$DESTDIR" ]
 	then
-		PANDORA_SPOOL=/var/spool/pandora
-		PANDORA_HOME=/usr/local/share/pandora_server
-		PANDORA_CFG_DIR=/usr/local/etc/pandora
-		PANDORA_LOG=/var/log/pandora
-		PANDORA_SERVER=/usr/local/etc/rc.d/pandora_server
-		TENTACLE_SERVER=/usr/local/etc/rc.d/tentacle_server
-		PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
-		TMP_CRONTAB=/tmp/crontab.tmp
+		# chown can fail with fakeroot installation
+		echo "User 'pandora' does not exist. All chown operations may fail."
+		echo "You should manualy set proper ownership to $DESTDIR$PANDORA_SPOOL if needed."
+		echo
 	else
-		PANDORA_SPOOL=/var/spool/pandora
-		PANDORA_HOME=/usr/local/share/pandora_server
-		PANDORA_CFG_DIR=/usr/local/etc/pandora
-		PANDORA_LOG=/var/log/pandora
-		PANDORA_SERVER=/etc/rc.d/pandora_server
-		TENTACLE_SERVER=/etc/rc.d/tentacle_server
-		PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
-		TMP_CRONTAB=/tmp/crontab.tmp
-        fi
+		echo "Are you sure we can create a standard 'pandora' user locally? [y/N]"
+		read AREYOUSURE
+		if [ "$AREYOUSURE" = "y" ]; then
+			if [ "$DISTRO" = "FreeBSD" ]
+			then
+				echo "pandora:41121:::::Pandora FMS:/home/pandora:/usr/sbin/nologin:" | adduser -f - -w no 2> /dev/null
+			else
+				useradd pandora 
+				mkdir /home/pandora 2> /dev/null
+				mkdir /home/pandora/.ssh 2> /dev/null
+				chown -R pandora /home/pandora 
+			fi
+		else
+			echo "Please create the 'pandora' user manually according to your authentication scheme, then start again the installation"
+			echo "Aborting..."
+			exit 1
+		fi
+	fi
 
-	echo "Removing PERL libs"
-	rm -rf /usr/lib/perl5/PandoraFMS/
+	mkdir -p $DESTDIR$PANDORA_SPOOL/data_in 2> /dev/null
+	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/conf 2> /dev/null
+	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/conf
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/md5 2> /dev/null
+	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/md5
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/collections 2> /dev/null
+	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/collections
+	mkdir $DESTDIR$PANDORA_SPOOL/data_in/netflow 2> /dev/null
+	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
+	mkdir -p $DESTDIR$PANDORA_LOG 2> /dev/null	
 
-	echo "Removing Pandora Servers"
-	rm -Rf $PANDORA_SPOOL/data_in/
+	echo "Giving proper permission to /var/spool/pandora"
+	for group in "www-data" wwwrun www apache
+	do
+		IDGROUP=`id -g "$group" 2> /dev/null`
+		if [ $? -eq 0 ]
+		then
+			GROUPNAME=`grep ":$IDGROUP:" /etc/group | awk -F":" '{print $1}'`
+			break
+		fi
+	done
+	if [ -z "$GROUPNAME" ]
+	then
+		echo "No web server user found, some functionality might not perform correctly"
+		GROUPNAME=0
+	fi
+	# when fakeroot installation, this can fail
+	chown -R pandora:$GROUPNAME $DESTDIR$PANDORA_SPOOL 2>/dev/null
+		
+	echo "Creating setup directory in $PANDORA_CFG_DIR"
+	mkdir -p $DESTDIR$PANDORA_CFG_DIR 2> /dev/null
+	if [ -f "$DESTDIR$PANDORA_CFG_FILE" ]
+	then
+		echo cp $PANDORA_CFG_FILE_DIST $DESTDIR$PANDORA_CFG_DIR
+		cp $PANDORA_CFG_FILE_DIST $DESTDIR$PANDORA_CFG_DIR
+	else
+		echo cp $PANDORA_CFG_FILE_DIST $DESTDIR$PANDORA_CFG_FILE
+		cp $PANDORA_CFG_FILE_DIST $DESTDIR$PANDORA_CFG_FILE
+		chmod 770 $DESTDIR$PANDORA_CFG_FILE
+	fi
 
-	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
-	echo "  rmuser pandora"
+	echo "Installing Pandora Server manual"
+	cp man/man1/pandora_server.1.gz $DESTDIR$MANDIR
 
-	rm -Rf $PANDORA_LOG 2> /dev/null
-	rm -Rf $PANDORA_CFG_FILE 2> /dev/null
-	rm -Rf $PANDORA_SERVER 2> /dev/null
-	rm -Rf $PANDORA_HOME
-	rm -Rf $PANDORA_SERVER
-	rm -Rf $TENTACLE_SERVER
+	install_startup_script -s 90 $PANDORA_INIT_SCRIPT
 
-	cat /etc/crontab | grep -v "Pandora FMS" | grep -v "pandora_db.pl" > $TMP_CRONTAB
-	cp $TMP_CRONTAB /etc/crontab
-	rm $TMP_CRONTAB
+	if [ -d /etc/logrotate.d ]
+	then
+		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
+		echo "Creating logrotate.d entry for Pandora FMS log management"
+		cp util/pandora_logrotate $DESTDIR/etc/logrotate.d/pandora
+	else
+		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
+	fi
+	
+	if [ $WITHOUT_TENTACLE -eq 0 ]
+	then
+		# tentacle_server is already installed by "make install"
+		install_startup_script -s 80 $TENTACLE_INIT_SCRIPT
+		
+		echo "Installing Tentacle Server manual"
+		cp man/man1/tentacle_server.1.gz $DESTDIR$MANDIR
+	fi
 
-	echo "Done"
-	exit
+	echo "Creating Pandora FMS distribution directory in $PANDORA_HOME"
+	mkdir -p $DESTDIR$PANDORA_HOME 2> /dev/null
+	cp -R util $DESTDIR$PANDORA_HOME
+	find $DESTDIR$PANDORA_HOME -type l -delete
+
+	# install cron job
+	if [ -d /etc/cron.hourly ]
+	then
+		[ ! -d $DESTDIR/etc/cron.hourly ] && mkdir -p $DESTDIR/etc/cron.hourly
+		echo "Creating the Cron script to run Pandora DB tool each hour"
+		echo "#!/bin/bash" > $DESTDIR/etc/cron.hourly/pandora_db	
+		echo "perl $PANDORA_HOME/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.hourly/pandora_db	
+		chmod +x /etc/cron.hourly/pandora_db
+	elif [ "$DISTRO" = "FreeBSD" ] || [ "$DISTRO" = "NetBSD" ]
+	then
+		if [ "$DESTDIR" ]
+		then
+			echo "Skip adding cron entry for pandora_db.pl when performing fakeroot installation."
+		else
+			grep pandora_db.pl /etc/crontab > /dev/null 2>&1
+			if [ $? -ne 0 ]
+			then
+				echo "# Pandora FMS" >> /etc/crontab
+				echo "2	*	*	*	*	root	perl $PANDORA_HOME/util/pandora_db.pl $PANDORA_CFG_FILE" >> /etc/crontab
+			else
+				echo "The crontab for pandora_db.pl is already configured."
+			fi
+		fi
+	else
+		echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (hourly) on your master server:"
+		echo "	perl $PANDORA_HOME/util/pandora_db.pl $PANDORA_CFG_FILE"
+	fi
+	echo
+	echo "Now you have to edit your $PANDORA_CFG_FILE file to change the database password (default is pandora) with the one set in include/config.php of your Pandora FMS Console."
+	echo "After setting password you can start your Pandora FMS Server!!"
+
+	if [ "$DISTRO" = "FreeBSD" ] || [ "$DISTRO" = "NetBSD" ]
+	then
+		echo " "
+		echo "Define '$PANDORA_RC_VAR=\"YES\"' in /etc/rc.conf to enable pandora server daemon."
+		[ "$WITHOUT_TENTACLE" = 0 ] && \
+			echo "Define '$TENTACLE_RC_VAR=\"YES\"' in /etc/rc.conf to enable tentacle server daemon."
+    fi
 }
 
 uninstall () {
-	GET_DISTRO="`get_distro`"
-	DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
-	if [ "`uname -s`" != "Linux" ]; then
-		if [ "$DISTRO" = "FreeBSD" -o "$DISTRO" = "NetBSD" ]
-		then
-			uninstall_bsd
-		else
-			echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
-		fi
+	set_global_vars
+
+	if [ "$LINUX" != NO ] || [ "$DISTRO" != "FreeBSD" ] || [ "$DISTRO" != "NetBSD" ]
+	then
+		echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
+		exit 1
 	fi
 
-	echo "Removing PERL libs"
-	rm -rf /usr/lib/perl5/PandoraFMS/
+	echo "Removing PERL libs and man files"
+	
+	PERL_SITELIB=/usr/lib/perl5
+	if [ "$DISTRO" != "FreeBSD" ] || [ "$DISTRO" != "NetBSD" ]
+	then
+		PERL_SITELIB=$(eval $($PERL -V:sitelib);echo $sitelib);
+	fi
+	PERL_SITEMAN3DIR=`eval \`$PERL -V:siteman3dir\`;echo $siteman3dir`;
+
+	[ -d $DESTDIR/$PERL_SITELIB/PandoraFMS ] && rm -rf $DESTDIR/$PERL_SITELIB/PandoraFMS
+	rm -f $DESTDIR/$PERL_SITEMAN3DIR/PandoraFMS::* 2>/dev/null
+
 
 	echo "Removing Pandora Servers"
-	if [ -d $PANDORA_SPOOL/data_out ]; then
-		rm -Rf $PANDORA_SPOOL/data_in
+	if [ -d $DESTDIR$PANDORA_SPOOL/data_out ]; then
+		rm -Rf $DESTDIR$PANDORA_SPOOL/data_in
 	else
-		rm -Rf $PANDORA_SPOOL
+		rm -Rf $DESTDIR$PANDORA_SPOOL
 	fi
 
 	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
-	echo "	userdel pandora"
-	echo "	rm -Rf /home/pandora/"
+	if [ "$DISTRO" != "FreeBSD" ] || [ "$DISTRO" != "NetBSD" ]
+	then
+		echo "  rmuser pandora"
+	else
+		echo "	userdel pandora"
+		echo "	rm -Rf /home/pandora/"
+	fi
 
 	## Just to clarify here. Some people (like me) are using the pandora user 
 	## for other purposes and/or using an LDAP-based user management
 	## I would hate to have a script clear out this users' information without any notification
 
-	rm -Rf $PANDORA_LOG 2> /dev/null 
-	rm -Rf $PANDORA_CFG_FILE 2> /dev/null
-	rm -Rf "$PANDORA_CFG_FILE.new" 2> /dev/null
-	rm -Rf $PANDORA_SERVER 2> /dev/null 
-	rm -Rf /usr/bin/pandora_server 2> /dev/null
-	rm -Rf /usr/bin/pandora_exec 2> /dev/null
-	rm -Rf $PANDORA_HOME
-	rm -Rf /etc/cron.hourly/pandora_db
-	rm -Rf /etc/logrotate.d/pandora
-	if [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
+
+	rm -Rf $DESTDIR$PANDORA_LOG 2> /dev/null 
+	rm -f  $DESTDIR$PANDORA_CFG_FILE 2> /dev/null
+	rm -f  "$DESTDIR$PANDORA_CFG_FILE.new" 2> /dev/null
+	rm -f  $DESTDIR$PANDORA_SERVER 2> /dev/null 
+	rm -f  $DESTDIR$PREFIX/bin/pandora_server 2> /dev/null
+	rm -f  $DESTDIR$PREFIX/bin/pandora_exec 2> /dev/null
+	rm -f  $DESTDIR$PREFIX/bin/tentacle_server 2> /dev/null
+	rm -Rf $DESTDIR$PANDORA_HOME
+	rm -f  $DESTDIR/etc/cron.hourly/pandora_db
+	rm -f  $DESTDIR/etc/logrotate.d/pandora
+	if [ "$DESTDIR" ]
+	then
+		# do nothing with "fakeroot" uninstallation
+		:
+	elif [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
 	then
 		update-rc.d -f pandora_server remove
 		update-rc.d -f tentacle_serverd remove
+	elif  [ "$DISTRO" != "FreeBSD" ] || [ "$DISTRO" != "NetBSD" ]
+	then
+		TMP_CRONTAB=/tmp/crontab.tmp
+		egrep -v "Pandora FMS|pandora_db.pl" /etc/crontab > $TMP_CRONTAB
+		cp $TMP_CRONTAB /etc/crontab
+		rm $TMP_CRONTAB
 	fi
-	rm -Rf /etc/rc2.d/S90pandora_server 2> /dev/null 
-	rm -Rf /etc/rc.d/rc3.d/S90pandora_server 2> /dev/null 
-	rm -Rf /usr/share/man/man1/pandora_server.1.gz 2>/dev/null
-	rm -Rf /usr/share/man/man1/tentacle_server.1.gz 2>/dev/null
+	rm -f $DESTDIR/etc/rc2.d/S90pandora_server 2> /dev/null 
+	rm -f $DESTDIR/etc/rc.d/rc3.d/S90pandora_server 2> /dev/null 
+	rm -f $DESTDIR/etc/rc2.d/S80tentacle_serverd 2> /dev/null 
+	rm -f $DESTDIR/etc/rc.d/rc3.d/S80tentacle_serverd 2> /dev/null 
+	rm -f $DESTDIR$MANDIR/pandora_server.1.gz 2>/dev/null
+	rm -f $DESTDIR$MANDIR/tentacle_server.1.gz 2>/dev/null
 	echo "Done"
 }
 
@@ -595,24 +478,25 @@ help () {
 	echo " "
 	echo "  --force         Ignore dependency problems and do the install"
 	echo "	--no-tentacle	Skip tentacle server installation (by default tentacle server installed)"
+	echo "	--destdir DIR	Specify root directory for \"fakeroot\" installation"
 	echo " "
 }
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 5.0 Server Installer (c) 2008-2013 Artica ST"
+echo "Pandora FMS 5.1 Server Installer (c) 2008-2014 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
 
 case "$MODE" in
 
 '--install')
-	install
+	install "$@"
 	exit
 	;;
 
 '--uninstall')
-	uninstall
+	uninstall "$@"
 	exit
 	;;
 

@@ -22,24 +22,23 @@ rcvar=`set_rcvar`
 
 # read configuration and set defaults
 tentacle_server_enable=${tentacle_server_enable:-"NO"}
-tentacle_server_flags=${tentacle_server_flags:-"-a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -i.*\.conf:conf\;.*\.md5:md5\;.*\.zip:collections -d"}
+tentacle_server_flags=${tentacle_server_flags:-'-a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -i.*\.conf:conf\;.*\.md5:md5\;.*\.zip:collections -d'}
 tentacle_server_user=${tentacle_server_user:-"pandora"}
 load_rc_config $name
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 
 command=/usr/local/bin/${name}
-
+command_interpreter=/usr/local/bin/perl
+procname=$command
 pidfile=/var/run/$name.pid
+
 start_postcmd=start_postcmd
 stop_postcmd=stop_postcmd
 
-procname="/usr/bin/perl"
-
 start_postcmd()
 {
-	TENTACLE_PID=`pgrep -f -j none "$procname $command"`
-	echo $TENTACLE_PID > $pidfile
+	pgrep -f -j none "^$command_interpreter $command" > $pidfile
 }
 
 stop_postcmd()

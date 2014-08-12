@@ -556,6 +556,13 @@ sub process_module_data ($$$$$$$$$) {
 	
 	# Allow , as a decimal separator
 	$module_conf->{'post_process'} =~ s/,/./ if (defined ($module_conf->{'post_process'}));
+
+	# avoid NULL columns
+	$module_conf->{'critical_instructions'} = '' unless defined ($module_conf->{'critical_instructions'});
+	$module_conf->{'warning_instructions'} = '' unless defined ($module_conf->{'warning_instructions'});
+	$module_conf->{'unknown_instructions'} = '' unless defined ($module_conf->{'unknown_instructions'});
+	$module_conf->{'disabled_types_event'} = '' unless defined ($module_conf->{'disabled_types_event'});
+	$module_conf->{'module_macros'} = '' unless defined ($module_conf->{'module_macros'});
 	
 	# Get module data or create it if it does not exist
 	$ModuleSem->down ();

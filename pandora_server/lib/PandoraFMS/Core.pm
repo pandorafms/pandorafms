@@ -2341,11 +2341,11 @@ sub pandora_create_module ($$$$$$$$$$) {
 	}
 	
 	my $module_id = db_insert($dbh, 'id_agente_modulo',
-		'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)',
+		'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo, critical_instructions, warning_instructions, unknown_instructions, disabled_types_event, module_macros)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, \'\', \'\', \'\', \'\', \'\')',
 		$agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
-	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try)
-		VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')',
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try, datos)
+		VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')',
 		$module_id, $agent_id, $status, $status, $status);
 	
 	# Update the module status count. When the module is created disabled dont do it
@@ -2466,7 +2466,7 @@ sub pandora_create_module_from_hash ($$$) {
 		$status = 0;
 	}
 	
-	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'}, $status, $status, $status);
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try, datos) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $module_id, $parameters->{'id_agente'}, $status, $status, $status);
 	
 	# Update the module status count. When the module is created disabled dont do it
 	pandora_mark_agent_for_module_update ($dbh, $parameters->{'id_agente'});

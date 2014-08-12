@@ -252,6 +252,17 @@ $table->data[31][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('c
 $table->data[32][0] = __('Server logs directory') . ui_print_help_tip (__("Directory where the server logs are stored."), true);
 $table->data[32][1] = html_print_input_text ('server_log_dir', $config["server_log_dir"], '', 50, 255, true);
 
+$modes_tutorial = array(
+	'full' => __('Full mode'),
+	'on_demand' => __('On demand'),
+	'expert' => __('Expert')
+	);
+$table->data['tutorial_mode'][0] = __('Tutorial mode') .
+	ui_print_help_tip (__("Configuration of our clippy, 'full mode' show the icon in the header and the contextual helps and it is noise, 'on demand' it is equal to full but it is not noise and 'expert' the icons in the header and the context is not."), true);
+$table->data['tutorial_mode'][1] = 
+	html_print_select($modes_tutorial, 'tutorial_mode',
+		$config["tutorial_mode"], '', '', 0, true);
+
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo "<fieldset>";

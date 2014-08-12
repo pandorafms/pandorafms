@@ -182,6 +182,8 @@ function config_update_config () {
 						$error_update[] = __('Command Snapshot');
 					if (!config_update_value ('server_log_dir', get_parameter('server_log_dir')))
 						$error_update[] = __('Server logs directory');
+					if (!config_update_value ('tutorial_mode', get_parameter('tutorial_mode')))
+						$error_update[] = __('Tutorial mode');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
@@ -887,7 +889,7 @@ function config_process_config () {
 	if (!isset ($config['netflow_nfexpire'])) {
 		config_update_value ( 'netflow_nfexpire', '/usr/bin/nfexpire');
 	}
-		
+	
 	if (!isset ($config['netflow_max_resolution'])) {
 		config_update_value ( 'netflow_max_resolution', '50');
 	}
@@ -895,7 +897,7 @@ function config_process_config () {
 	if (!isset ($config['netflow_disable_custom_lvfilters'])) {
 		config_update_value ( 'netflow_disable_custom_lvfilters', 0);
 	}
-
+	
 	if (!isset ($config['netflow_max_lifetime'])) {
 		config_update_value ( 'netflow_max_lifetime', '5');
 	}
@@ -944,7 +946,7 @@ function config_process_config () {
 	if (!isset ($config['ldap_login_attr'])) {
 		config_update_value ( 'ldap_login_attr', 'uid');
 	}
-
+	
 	if (!isset ($config['fallback_local_auth'])) {
 		config_update_value ( 'fallback_local_auth', '0');
 	}
@@ -1195,6 +1197,10 @@ function config_process_config () {
 	
 	if (!isset($config['networkmap_max_width'])) {
 		config_update_value ('networkmap_max_width', 900);
+	}
+	
+	if (!isset($config['tutorial_mode'])) {
+		config_update_value ('tutorial_mode', 'full');
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

@@ -22,6 +22,8 @@
 function clippy_start_page_homepage() {
 	global $config;
 	
+	$clippy_is_annoying = (int)get_cookie('clippy_is_annoying', 0);
+	
 	clippy_clean_help();
 	
 	$helps = array();
@@ -33,7 +35,7 @@ function clippy_start_page_homepage() {
 	$helps['homepage']['steps'] = array();
 	$helps['homepage']['steps'][] = array(
 		'element'=> '#clippy',
-		'intro' => __('Could you help you?<br/><br/>I am Pandorin, the annoying clippy for Pandora. You could follow my advices for to make common and basic tasks in Pandora.')
+		'intro' => __('Could I help you?<br/><br/>I am Pandorin, the annoying clippy for Pandora. You could follow my advices for to make common and basic tasks in Pandora.')
 		);
 	$helps['homepage']['steps'][] = array(
 		'element'=> '#clippy',
@@ -47,7 +49,13 @@ function clippy_start_page_homepage() {
 				'</li>' .
 				'<li>' . __('Monitoring a switch with remote SNMP') . '</li>' .
 				'<li>' . __('Monitoring a Windows server with remote WMI ') . '</li>' .
-			'</ul>'
+			'</ul>' .
+			'<div style="text-align: left;">'.
+			html_print_checkbox_extended
+				('clippy_is_annoying', 1, $clippy_is_annoying, false,
+				'set_clippy_annoying()', '', true) .
+				__('Please the clippy is annoying, I don\'t want see.') .
+			'</div>'
 		);
 	$helps['homepage']['conf'] = array();
 	$helps['homepage']['conf']['showBullets'] = 0;
@@ -57,6 +65,18 @@ function clippy_start_page_homepage() {
 		function show_clippy() {
 			intro_homepage.start();
 		}
+		
+		function set_clippy_annoying() {
+			checked = $('input[name=\'clippy_is_annoying\']').is(':checked');
+			intro_homepage.exit();
+			
+			if (checked) {
+				document.cookie = 'clippy_is_annoying=1';
+			}
+			else {
+				document.cookie = 'clippy_is_annoying=0';
+			}
+		}
 		";
 	if ($config['logged']) {
 		$helps['homepage']['conf']['autostart'] = true;
@@ -64,6 +84,15 @@ function clippy_start_page_homepage() {
 	else {
 		$helps['homepage']['conf']['autostart'] = false;
 	}
+	
+	if ($config["tutorial_mode"] == 'on_demand') {
+		$helps['homepage']['conf']['autostart'] = false;
+	}
+	
+	if ($clippy_is_annoying === 1) {
+		$helps['homepage']['conf']['autostart'] = false;
+	}
+	
 	//==================================================================
 	
 	clippy_write_javascript_helps_steps($helps);

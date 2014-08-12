@@ -97,7 +97,21 @@ function clippy_write_javascript_helps_steps($helps) {
 				steps: <?php echo json_encode($steps); ?>,
 				showBullets: <?php echo json_encode($conf['showBullets']); ?>,
 				showStepNumbers: <?php echo json_encode($conf['showStepNumbers']); ?>,
-			});
+				nextLabel: "<?php echo __('Next &rarr;'); ?>",
+				prevLabel: "<?php echo __('&larr; Back'); ?>",
+				skipLabel: "<?php echo __('Skip'); ?>",
+				doneLabel: "<?php echo __('Done'); ?>",
+				exitOnOverlayClick: false,
+				exitOnEsc: true, //false,
+			})
+			.onexit(function(value) {
+					console.log("onexit");
+					return false;
+				})
+			.oncomplete(function(value) {
+					console.log("oncomplete");
+					
+				});
 			
 			<?php
 			if (!empty($conf['next_help'])) {

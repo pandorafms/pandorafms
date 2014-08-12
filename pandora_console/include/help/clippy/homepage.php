@@ -35,7 +35,12 @@ function clippy_start_page_homepage() {
 	$helps['homepage']['steps'] = array();
 	$helps['homepage']['steps'][] = array(
 		'element'=> '#clippy',
-		'intro' => __('Could I help you?<br/><br/>I am Pandorin, the annoying clippy for Pandora. You could follow my advices for to make common and basic tasks in Pandora.')
+		'intro' => __('Could I help you?<br/><br/>I am Pandorin, the annoying clippy for Pandora. You could follow my advices for to make common and basic tasks in Pandora.') .
+			'<div style="position:relative;">
+			<div id="pandorin" style="display: block; position: absolute; left: -100px; top: 20px;">' .
+				html_print_image('images/pandorin.png', true) .
+			'</div>
+			</div>'
 		);
 	$helps['homepage']['steps'][] = array(
 		'element'=> '#clippy',

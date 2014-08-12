@@ -1,5 +1,13 @@
 2014-08-12  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_clippy.php,
+	include/help/clippy/godmode_agentes_modificar_agente.php,
+	include/help/clippy/godmode_agentes_configurar_agente.php: fixed the
+	execution of help tour when never it started. Sorry the clippy is
+	less annoying.
+
+2014-08-12  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_clippy.php: changed to modal version.
 	
 	* include/javascript/intro.js: added feature to avoid the exit, and

@@ -105,12 +105,8 @@ function clippy_write_javascript_helps_steps($helps) {
 				exitOnEsc: true, //false,
 			})
 			.onexit(function(value) {
-					console.log("onexit");
-					return false;
-				})
-			.oncomplete(function(value) {
-					console.log("oncomplete");
-					
+					exit = confirm("<?php echo __("Do you want to exit the help tour?"); ?>");
+					return exit;
 				});
 			
 			<?php

@@ -122,16 +122,20 @@ config_check();
 				</script>
 				<?php
 				
-				$table->data[0]['clippy'] = 
-					'<a href="javascript: show_clippy();">' .
-						html_print_image(
-							"images/heart_col.png",
-							true,
-							array("id" => 'clippy',
-								"class" => 'clippy',
-								"alt" => __('Clippy'),
-								'title' => __('Clippy'))) .
-					'</a>';
+				if ($config['tutorial_mode'] !== 'expert') {
+					$table->data[0]['clippy'] = 
+						'<a href="javascript: show_clippy();">' .
+							html_print_image(
+								"images/heart_col.png",
+								true,
+								array("id" => 'clippy',
+									"class" => 'clippy',
+									"alt" => __('Clippy'),
+									'title' => __('Clippy'))) .
+						'</a>';
+				}
+				
+				
 				$table->data[0][0] = $servers_link_open .
 					$servers_check_img . $servers_link_close;
 				

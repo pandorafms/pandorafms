@@ -1,5 +1,10 @@
 2014-08-13  Junichi Satoh  <junichi@rworks.jp>
 
+	* pandoradb.sql: Fixed sql error with MySQL 5.6 when NO_ZERO_DATE
+	SQL mode is enabled.
+
+2014-08-13  Junichi Satoh  <junichi@rworks.jp>
+
 	* mobile/operation/events.php: Improved to show event comment.
 
 2014-08-12  Miguel de Dios <miguel.dedios@artica.es>

@@ -261,6 +261,25 @@ class Events {
 						if (empty($event["tags"])) {
 							$event["tags"] = '<i>'.__('N/A').'</i>';
 						}
+
+						$event_comments = db_get_value('user_comment', 'tevento', 'id_evento', $id_event);
+						$event_comments_array = array();
+						$event_comments_array = json_decode($event_comments, true);
+						// Support for new format only.
+						if (empty($event_comments_array)) {
+							$comment = '<i>'.__('N/A').'</i>';
+						} else {
+							$comment = '';
+							$event_comments_array = array_reverse($event_comments_array);
+							foreach($event_comments_array as $c) {
+								$comment .=  date ($system->getConfig("date_format"), $c['utimestamp']) . ' (' . $c['id_user'] . ')';
+								$c['comment'] = io_safe_output($c['comment']);
+								$c['comment'] = str_replace("\n", "<br>", $c['comment']);
+								$comment .= '<br>' . $c['comment'] . '<br>';
+							}
+						}
+
+						$event["comments"] = $comment;
 						
 						echo json_encode(array('correct' => 1, 'event' => $event));
 					}
@@ -485,6 +504,10 @@ class Events {
 				<tr class="event_tags">
 					<th><?php echo __('Tags');?></th>
 					<td class="cell_event_tags"></td>
+				</tr>
+				<tr class="event_comments">
+					<th><?php echo __('Comments');?></th>
+					<td class="cell_event_comments"></td>
 				</tr>
 			</tbody>
 		</table>
@@ -828,6 +851,9 @@ class Events {
 										.html(event[\"group\"]);
 									$(\"#detail_event_dialog .cell_event_tags\")
 										.html(event[\"tags\"]);
+									$(\"#detail_event_dialog .cell_event_comments\")
+
+.html(event[\"comments\"]);
 									$(\"#detail_event_dialog .cell_agent\")
 										.html(event[\"agent\"]);
 									

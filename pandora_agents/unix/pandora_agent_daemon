@@ -34,38 +34,39 @@ pidof_pandora () {
 	OS_NAME=`uname -s`
 	if [ $OS_NAME = "HP-UX" ]
 	then
-		PANDORA_PID=`ps -ef | grep "/usr/bin/perl /opt/PandoraFMS/usr/bin/pandora_agent" | grep -v grep | awk '{print $2}'`
-	else
-		if [ "$OS_NAME" = "SunOS" ]
+		PANDORA_PID=`ps -ef | grep "/usr/bin/perl $DAEMON" | grep -v grep | awk '{print $2}'`
+	elif [ "$OS_NAME" = "SunOS" ]
+	then
+		ZONENAME_CMD="/bin/zonename"
+		TRUNCATED_DAEMON=`echo "$DAEMON $PANDORA_PATH" | cut -c1-20`
+		if [ -x $ZONENAME_CMD ]
 		then
-			ZONENAME_CMD="/bin/zonename"
-			TRUNCATED_DAEMON=`echo "$DAEMON $PANDORA_PATH" | cut -c1-20`
-			if [ -x $ZONENAME_CMD ]
-			then
-				ZONE=`$ZONENAME_CMD`
-			else
-				ZONE=
-			fi
-			if [ "$ZONE" = "global" ]
-			then
-				PANDORA_PID=`ps -f -z global | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
-			else
-				PANDORA_PID=`ps -Af | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
-			fi
-		elif [ "$OS_NAME" = "Linux" -a -x /usr/sbin/vzpid ]
-		then
-			for _pid in `ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
-			do
-				_ctid=`/usr/sbin/vzpid $_pid | awk '$1 == '$_pid' { print $2 }'`
-				if [ "X$_ctid" = "X0" ]
-				then
-					PANDORA_PID=$_pid
-					break
-				fi
-			done
+			ZONE=`$ZONENAME_CMD`
 		else
-			PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+			ZONE=
 		fi
+		if [ "$ZONE" = "global" ]
+		then
+			PANDORA_PID=`ps -f -z global | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
+		else
+			PANDORA_PID=`ps -Af | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
+		fi
+	elif [ "$OS_NAME" = "Linux" ] && [ -x /usr/sbin/vzpid ]
+	then
+		# Virtuozzo/OpenVZ
+		local _pid _ctid _pids
+		_pids=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
+		[ "$_pids" ] && for _pid in $_pids
+		do
+			_ctid=`/usr/sbin/vzpid $_pid | awk '$1 == '$_pid' { print $2 }'`
+			if [ "X$_ctid" = "X0" ]
+			then
+				PANDORA_PID=$_pid
+				break
+			fi
+		done
+	else
+		PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
 	fi
 	
 	echo $PANDORA_PID

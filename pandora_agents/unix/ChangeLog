@@ -1,3 +1,16 @@
+2014-08-13  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* FreeBSD/pandora_agent: Small fixes: use proper rc variables,
+	 remove obsolete function "set_rcvar" call and use "daemon" command
+	 to start pandora_agent.
+
+	* pandora_agent_installer: Refactored implementation and added
+	 "fakeroot" installation support.
+
+	* plugins/who.sh: Converted to bourne shell script.
+
+	* pandora_agent_daemon: Small bug fixes and refactorings.
+
 2014-08-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Fixed to make the 'Command Snapshot' feature work.

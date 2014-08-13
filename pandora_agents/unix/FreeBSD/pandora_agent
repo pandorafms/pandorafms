@@ -3,6 +3,7 @@
 # **********************************************************************
 # Pandora FMS Agent Daemon launcher for FreeBSD
 # (c) 2010 Junichi Satoh <junichi@rworks.jp>
+# (c) 2014 Koichiro Kikuchi <koichiro@rworks.jp>
 #
 # **********************************************************************
 
@@ -18,7 +19,7 @@
 . "/etc/rc.subr"
 
 name="pandora_agent"
-rcvar=`set_rcvar`
+rcvar=pandora_agent_enable
 
 # read configuration and set defaults
 pandora_agent_enable=${pandora_agent_enable:-"NO"}
@@ -26,22 +27,15 @@ load_rc_config "$name"
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 
-command=/usr/local/bin/pandora_agent
-command_args="/usr/local/etc/pandora &"
-
 pidfile=/var/run/$name.pid
 required_files="/usr/local/etc/pandora/pandora_agent.conf"
-start_postcmd=start_postcmd
 stop_postcmd=stop_postcmd
 
-procname="/usr/bin/perl"
+command=/usr/bin/daemon
+command_interpreter=/usr/local/bin/perl
+procname=/usr/local/bin/pandora_agent
 
-start_postcmd()
-{
-	sleep 1
-	PANDORA_PID=`pgrep -f -j none $name`
-	echo $PANDORA_PID > $pidfile
-}
+command_args="-cfp $pidfile $procname /usr/local/etc/pandora"
 
 stop_postcmd()
 {

@@ -142,7 +142,7 @@ sub data_consumer ($$) {
 
 	# Call nmap
 	my $timeout = $pa_config->{'networktimeout'}*1000;
-	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$pa_config->{'nmap_timing_template'};
+	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$pa_config->{'recon_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
 		$np->parsescan($pa_config->{'nmap'}, $nmap_args, ($task->{'subnet'}));

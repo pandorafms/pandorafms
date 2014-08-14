@@ -38,12 +38,13 @@ function clippy_start_page_homepage() {
 	$return_tours['tours']['homepage']['steps'] = array();
 	$return_tours['tours']['homepage']['steps'][] = array(
 		'element'=> '#clippy',
-		'intro' => __('Could I help you?<br/><br/>I am Pandorin, the annoying clippy for Pandora. You could follow my advices for to make common and basic tasks in Pandora.') .
+		'intro' => __('Hi, can I help you?') . '<br/><br/>' .
+			__('Let me introduce my self: I am Pandorin, the annoying clippy of Pandora FMS. You can follow my steps to do basic tasks in Pandora FMS or you can close me and never see me again.') .
 			'<div style="text-align: left;">'.
 			html_print_checkbox_extended
 				('clippy_is_annoying', 1, $clippy_is_annoying, false,
 				'set_clippy_annoying()', '', true) .
-				__('Please the clippy is annoying, I don\'t want see.') .
+				__('Close this annoying clippy right now.') .
 			'</div>' .
 			'<div style="position:relative;">
 			<div id="pandorin" style="display: block; position: absolute; left: -100px; top: 20px;">' .
@@ -53,16 +54,16 @@ function clippy_start_page_homepage() {
 		);
 	$return_tours['tours']['homepage']['steps'][] = array(
 		'element'=> '#clippy',
-		'intro' => __('What task do you want to do?') . '<br/><br/>' .
+		'intro' => __('Which task would you like to do first?') . '<br/><br/>' .
 			'<ul style="text-align: left; margin-left: 3px; list-style-type: disc;">' .
 				'<li>' .
 					"<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>" . 
 					//'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&clippy=monitoring_server">' . 
-						__('Ping to a server Linux/Windows with a pandora agent') .
+						__('Ping to a Linux or Windows server with a Pandora FMS agent') .
 					'</a>' .
 				'</li>' .
-				'<li>' . __('Monitoring a switch with remote SNMP') . '</li>' .
-				'<li>' . __('Monitoring a Windows server with remote WMI') . '</li>' .
+				'<li>' . __('Monitor a switch with remote SNMP') . '</li>' .
+				'<li>' . __('Monitor a Windows server with remote WMI') . '</li>' .
 			'</ul>'
 		);
 	$return_tours['tours']['homepage']['conf'] = array();

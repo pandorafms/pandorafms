@@ -375,15 +375,15 @@ install () {
 	done
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/plugins
 
-	DESTDIR=""
-	[ "$PANDORA_BASE" ] && [ $FAKEROOT -eq 1 ] && DESTDIR=$PANDORA_BASE
+	PANDORA_BASE_REAL="$PANDORA_BASE"
+	[ $FAKEROOT -eq 1 ] && PANDORA_BASE_REAL=""
 
-	ln -s $DESTDIR$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
+	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
 
 	echo "Copying Pandora FMS Agent collections to $PANDORA_BASE$PANDORA_HOME/collections..."
 	cp -r collections $PANDORA_BASE$PANDORA_HOME
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/collections
-	ln -s $DESTDIR$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
+	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
 	
 	if [ $WITHOUT_TENTACLE_SERVER -eq 0 ]
 	then
@@ -428,6 +428,9 @@ install () {
 		echo "Start Pandora FMS service with 'launchctl start com.pandorafms.pandorafms'"
 		echo "This service has been scheduled to launch on each system startup"
 	else
+		DESTDIR=""
+		[ "$PANDORA_BASE" ] && [ $FAKEROOT -eq 1 ] && DESTDIR=$PANDORA_BASE
+
 		cp $DAEMON_SCRIPT $DESTDIR$PANDORA_STARTUP
 		chmod 755 $DESTDIR$PANDORA_STARTUP
 		chown root:0 $DESTDIR$PANDORA_STARTUP 2>/dev/null
@@ -473,7 +476,7 @@ install () {
 	echo " ($HOME/.ssh/id_dsa) under /home/pandora/.ssh/authorized_keys "
 	echo "on your Pandora FMS Server host"
 	echo " "
-	echo "You also need to setup your $DESTDIR$PANDORA_CFG/pandora_agent.conf config file"
+	echo "You also need to setup your $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf config file"
 	echo " "
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then

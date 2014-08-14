@@ -1,3 +1,7 @@
+2014-08-14  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent_installer: Fixed symlink source path.
+
 2014-08-13  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* FreeBSD/pandora_agent: Small fixes: use proper rc variables,

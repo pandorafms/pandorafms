@@ -197,6 +197,12 @@ function clippy_write_javascript_helps_steps($tours) {
 }
 
 function clippy_context_help($help = null) {
+	global $config;
+	
+	if ($config['tutorial_mode'] == 'expert') {
+		return;
+	}
+	
 	$id = uniqid("id_");
 	
 	$return = '';

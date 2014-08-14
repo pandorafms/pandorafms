@@ -722,8 +722,15 @@ foreach ($modules as $module) {
 </script>
 <?php
 
-echo "<h4 style='padding-top:0px !important;'>" .
-	__('Full list of monitors') . "</h4>";
+echo "<h4 style='padding-top:0px !important;'>";
+echo __('Full list of monitors');
+$modules_not_init = agents_monitor_notinit($id_agente);
+if (!empty($modules_not_init)) {
+	echo clippy_context_help("modules_not_init");
+}
+echo "</h4>";
+
+
 
 print_form_filter_monitors($id_agente, $status_filter_monitor, $status_text_monitor);
 if (empty ($table->data)) {

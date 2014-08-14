@@ -247,6 +247,9 @@ nmap /usr/bin/nmap
 # A value that specifies how aggressive nmap should be from 1 to 5. 1 means slower but more reliable, 5 means faster but less reliable. 2 by default.
 nmap_timing_template 2
 
+# Like nmap_timing_template, but applies to Satellite Server and Recon Server network scans. 3 by default.
+recon_timing_template 3
+
 # snmpget: Needed to do SNMP checks. By default is on /usr/bin/snmpget
 
 snmpget /usr/bin/snmpget

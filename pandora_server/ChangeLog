@@ -1,5 +1,10 @@
 2014-08-14  Ramon Novoa  <rnovoa@artica.es>
 
+	* conf/pandora_server.conf.new: Added recon_timing_template to the
+	  configuration file.
+
+2014-08-14  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Config.pm,
 	  lib/PandoraFMS/ReconServer.pm: Added a separate timing template for
 	  network scans, since they can be very slow.

@@ -1,3 +1,7 @@
+2014-08-14  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_server_installer: Fixed wrong chmod target.
+
 2014-08-14 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/PluginServer.pm: Added new alert macros

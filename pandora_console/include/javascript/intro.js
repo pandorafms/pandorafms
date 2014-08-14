@@ -57,7 +57,9 @@
       /* Scroll to highlighted element? */
       scrollToElement: true,
       /* Set the overlay opacity */
-      overlayOpacity: 0.8
+      overlayOpacity: 0.8,
+      /* Set the flag of status of intro js*/
+      flag_started: false,
     };
   }
 
@@ -372,7 +374,9 @@
     } else if (document.detachEvent) { //IE
       document.detachEvent('onkeydown', this._onKeyDown);
     }
-
+    
+    this._options['flag_started'] = false;
+    
     //set the step to zero
     this._currentStep = undefined;
   }
@@ -980,6 +984,11 @@
       return this;
     },
     start: function () {
+      this._options['flag_started'] = true;
+      
+      if (this._introStartCallback != undefined)
+        this._introStartCallback.call(this);
+      
       _introForElement.call(this, this._targetElement);
       return this;
     },
@@ -1034,6 +1043,14 @@
       }
       return this;
     },
+    onstart: function(providedCallback) {
+      if (typeof (providedCallback) === 'function') {
+        this._introStartCallback = providedCallback;
+      } else {
+        throw new Error('Provided callback for onstart was not a function.');
+      }
+      return this;
+    },
     onexit: function(providedCallback) {
       if (typeof (providedCallback) === 'function') {
         this._introExitCallback = providedCallback;
@@ -1041,6 +1058,9 @@
         throw new Error('Provided callback for onexit was not a function.');
       }
       return this;
+    },
+    started: function() {
+      return this._options['flag_started'];
     }
   };
 

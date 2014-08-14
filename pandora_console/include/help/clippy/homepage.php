@@ -26,49 +26,62 @@ function clippy_start_page_homepage() {
 	
 	clippy_clean_help();
 	
-	$helps = array();
+	$return_tours = array();
+	$return_tours['first_step_by_default'] = true;
+	$return_tours['tours'] = array();
+	
 	
 	//==================================================================
 	//Help tour with the some task for to help the user.
 	//------------------------------------------------------------------
-	$helps['homepage'] = array();
-	$helps['homepage']['steps'] = array();
-	$helps['homepage']['steps'][] = array(
+	$return_tours['tours']['homepage'] = array();
+	$return_tours['tours']['homepage']['steps'] = array();
+	$return_tours['tours']['homepage']['steps'][] = array(
 		'element'=> '#clippy',
 		'intro' => __('Could I help you?<br/><br/>I am Pandorin, the annoying clippy for Pandora. You could follow my advices for to make common and basic tasks in Pandora.') .
+			'<div style="text-align: left;">'.
+			html_print_checkbox_extended
+				('clippy_is_annoying', 1, $clippy_is_annoying, false,
+				'set_clippy_annoying()', '', true) .
+				__('Please the clippy is annoying, I don\'t want see.') .
+			'</div>' .
 			'<div style="position:relative;">
 			<div id="pandorin" style="display: block; position: absolute; left: -100px; top: 20px;">' .
 				html_print_image('images/pandorin.png', true) .
 			'</div>
 			</div>'
 		);
-	$helps['homepage']['steps'][] = array(
+	$return_tours['tours']['homepage']['steps'][] = array(
 		'element'=> '#clippy',
 		'intro' => __('What task do you want to do?') . '<br/><br/>' .
 			'<ul style="text-align: left; margin-left: 3px; list-style-type: disc;">' .
 				'<li>' .
 					"<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>" . 
 					//'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&clippy=monitoring_server">' . 
-						__('Monitoring a server Linux/Windows with a pandora agent') .
+						__('Ping to a server Linux/Windows with a pandora agent') .
 					'</a>' .
 				'</li>' .
 				'<li>' . __('Monitoring a switch with remote SNMP') . '</li>' .
-				'<li>' . __('Monitoring a Windows server with remote WMI ') . '</li>' .
-			'</ul>' .
-			'<div style="text-align: left;">'.
-			html_print_checkbox_extended
-				('clippy_is_annoying', 1, $clippy_is_annoying, false,
-				'set_clippy_annoying()', '', true) .
-				__('Please the clippy is annoying, I don\'t want see.') .
-			'</div>'
+				'<li>' . __('Monitoring a Windows server with remote WMI') . '</li>' .
+			'</ul>'
 		);
-	$helps['homepage']['conf'] = array();
-	$helps['homepage']['conf']['showBullets'] = 0;
-	$helps['homepage']['conf']['showStepNumbers'] = 0;
-	$helps['homepage']['conf']['name_obj_tour'] = 'intro_homepage';
-	$helps['homepage']['conf']['other_js'] = "
+	$return_tours['tours']['homepage']['conf'] = array();
+	$return_tours['tours']['homepage']['conf']['show_bullets'] = 0;
+	$return_tours['tours']['homepage']['conf']['show_step_numbers'] = 0;
+	$return_tours['tours']['homepage']['conf']['name_obj_js_tour'] = 'intro_homepage';
+	$return_tours['tours']['homepage']['conf']['other_js'] = "
+		var started = 0;
+		
 		function show_clippy() {
-			intro_homepage.start();
+			if (intro_homepage.started()) {
+				started = 1;
+			}
+			else {
+				started = 0;
+			}
+			
+			if (started == 0)
+				intro_homepage.start();
 		}
 		
 		function set_clippy_annoying() {
@@ -84,22 +97,22 @@ function clippy_start_page_homepage() {
 		}
 		";
 	if ($config['logged']) {
-		$helps['homepage']['conf']['autostart'] = true;
+		$return_tours['tours']['homepage']['conf']['autostart'] = true;
 	}
 	else {
-		$helps['homepage']['conf']['autostart'] = false;
+		$return_tours['tours']['homepage']['conf']['autostart'] = false;
 	}
 	
 	if ($config["tutorial_mode"] == 'on_demand') {
-		$helps['homepage']['conf']['autostart'] = false;
+		$return_tours['tours']['homepage']['conf']['autostart'] = false;
 	}
 	
 	if ($clippy_is_annoying === 1) {
-		$helps['homepage']['conf']['autostart'] = false;
+		$return_tours['tours']['homepage']['conf']['autostart'] = false;
 	}
 	
 	//==================================================================
 	
-	clippy_write_javascript_helps_steps($helps);
+	return $return_tours;
 }
 ?>

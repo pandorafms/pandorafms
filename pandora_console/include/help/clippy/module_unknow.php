@@ -20,15 +20,19 @@
  */
 
 function clippy_module_unknow() {
-	$helps = array();
+	
+	$return_tours = array();
+	$return_tours['first_step_by_default'] = true;
+	$return_tours['help_context'] = true;
+	$return_tours['tours'] = array();
 	
 	//==================================================================
 	//Help tour about the monitoring with a ping (step 3)
 	//------------------------------------------------------------------
-	$helps['module_unknow'] = array();
-	$helps['module_unknow']['steps'] = array();
-	$helps['module_unknow']['steps'][] = array(
-		'element'=> '{clippy}', //The template to replace with the autogenerate id
+	$return_tours['tours']['module_unknow'] = array();
+	$return_tours['tours']['module_unknow']['steps'] = array();
+	$return_tours['tours']['module_unknow']['steps'][] = array(
+		'init_step_context' => true,
 		'intro' => '<table>' .
 			'<tr>' .
 			'<td class="context_help_title">' .
@@ -43,13 +47,12 @@ function clippy_module_unknow() {
 			'</tr>' .
 			'</table>'
 		);
-	$helps['module_unknow']['conf'] = array();
-	$helps['module_unknow']['conf']['autostart'] = false;
-	$helps['module_unknow']['conf']['showBullets'] = 0;
-	$helps['module_unknow']['conf']['showStepNumbers'] = 0;
-	$helps['module_unknow']['conf']['name_obj_tour'] = '{clippy_obj}';
+	$return_tours['tours']['module_unknow']['conf'] = array();
+	$return_tours['tours']['module_unknow']['conf']['autostart'] = false;
+	$return_tours['tours']['module_unknow']['conf']['show_bullets'] = 0;
+	$return_tours['tours']['module_unknow']['conf']['show_step_numbers'] = 0;
 	//==================================================================
 	
-	clippy_write_javascript_helps_steps($helps, true);
+	return $return_tours;
 }
 ?>

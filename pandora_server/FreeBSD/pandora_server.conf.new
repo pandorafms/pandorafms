@@ -253,7 +253,7 @@ braa_retries 3
 
 # Default group id for new agents created with Pandora FMS Data Server
 
-autocreate_group 2
+#autocreate_group 2
 
 # Set to 1 if want to autocreate agents with Pandora FMS Data Server, 
 # set to 0 to disable (for security purposes, for example).

@@ -1,3 +1,10 @@
+2014-08-14  Sancho Lerena <slerena@artica.es>
+
+	* FreeBSD/pandora_server.conf.new,
+	conf/pandora_server.conf.new,
+	conf/pandora_server.conf.windows: Modified default configuration
+	to avoid put all agents in the group id #2. 
+
 2014-08-14  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_server_installer: Fixed wrong chmod target.

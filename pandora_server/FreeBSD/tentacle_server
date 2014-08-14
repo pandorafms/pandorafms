@@ -18,7 +18,7 @@
 . "/etc/rc.subr"
 
 name="tentacle_server"
-rcvar=`set_rcvar`
+rcvar=tentacle_server_enable
 
 # read configuration and set defaults
 tentacle_server_enable=${tentacle_server_enable:-"NO"}

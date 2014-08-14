@@ -1,3 +1,8 @@
+2014-08-14  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_console_install: Refactored code and added "fakeroot"
+	 installation support.
+
 2014-08-13  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandoradb.sql: Fixed sql error with MySQL 5.6 when NO_ZERO_DATE

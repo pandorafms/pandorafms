@@ -1,3 +1,9 @@
+2014-08-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* plugins/grep_log,
+	  plugins/grep_log_module: Detect log rotation by inode number AND file
+	  size.
+
 2014-08-14  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* FreeBSD/pandora_agent: Fixed path of the daemon command.

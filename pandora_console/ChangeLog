@@ -1,5 +1,13 @@
 2014-08-14  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/update_manager/update_manager.online.php,
+	include/functions_update_manager.php,
+	include/ajax/update_manager.ajax.php: fixed the update manager when
+	some tar formats, and fixed the versions copy&paste error in the
+	code.
+
+2014-08-14  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/help/clippy/agent_out_of_limits.php,
 	include/help/clippy/modules_not_init.php,
 	include/functions_clippy.php,

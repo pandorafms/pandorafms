@@ -30,29 +30,6 @@ function update_manager_get_config_values() {
 		db_encapsule_fields_with_same_name_to_instructions('key'),
 		'customer_key');
 	
-	if (enterprise_installed()) {
-		$current_update = db_get_value(
-			db_encapsule_fields_with_same_name_to_instructions('value'),
-			'tupdate_settings',
-			db_encapsule_fields_with_same_name_to_instructions('key'),
-			'current_package_enterprise');
-		
-		$current_update = 0;
-		if (isset($config['current_package_enterprise']))
-			$current_update = $config['current_package_enterprise'];
-	}
-	else {
-		$current_update = db_get_value(
-			db_encapsule_fields_with_same_name_to_instructions('value'),
-			'tupdate_settings',
-			db_encapsule_fields_with_same_name_to_instructions('key'),
-			'current_package');
-		
-		$current_update = 0;
-		if (isset($config['current_package']))
-			$current_update = $config['current_package'];
-	}
-	
 	$limit_count = db_get_value_sql("SELECT count(*) FROM tagente");
 	
 	
@@ -62,7 +39,7 @@ function update_manager_get_config_values() {
 	
 	return array(
 		'license' => $license,
-		'current_update' => $current_update,
+		'current_update' => update_manager_get_current_package(),
 		'limit_count' => $limit_count,
 		'build' => $build_version,
 		'version' => $pandora_version,
@@ -374,16 +351,16 @@ function update_manager_starting_update() {
 	$path_package = $config['attachment_store'] .
 		"/downloads/last_package.tgz";
 	
-	try {
-		rrmdir($config['attachment_store'] .
-			"/downloads/temp_update/pandora_console");
-		
-		$phar = new PharData($path_package);
-		$phar->extractTo($config['attachment_store'] . "/downloads/temp_update");
-	}
-	catch (Exception $e) {
-		// handle errors
-		
+	$full_path = $config['attachment_store'] . "/downloads/pandora_console";
+	rrmdir($full_path);
+	
+	
+	ob_start();
+	$result = system("tar xvzf " . $path_package .
+		" -C " . $config['attachment_store'] . "/downloads/", $none);
+	ob_end_clean();
+	
+	if ($result != 0) {
 		db_process_sql_update('tconfig',
 			array('value' => json_encode(
 					array(
@@ -393,24 +370,21 @@ function update_manager_starting_update() {
 				)
 			),
 			array('token' => 'progress_update_status'));
+		
+		return false;
 	}
 	
 	db_process_sql_update('tconfig',
 		array('value' => 50),
 		array('token' => 'progress_update'));
 	
-	$path_array = array('downloads', 'temp_update', 'pandora_console');
-	$full_path = $config['attachment_store'];
-	foreach ($path_array as $directory) {
-		$full_path = $full_path . '/' . $directory;
-		if (!is_dir($full_path)) {
-			mkdir($full_path);
-		}
-	}
+	
 	
 	$homedir = $config['homedir'];
 	
-	$result = update_manager_recurse_copy($full_path, $homedir,
+	$result = update_manager_recurse_copy(
+		$full_path,
+		$homedir,
 		array('install.php'));
 	
 	if (!$result) {
@@ -423,6 +397,8 @@ function update_manager_starting_update() {
 				)
 			),
 			array('token' => 'progress_update_status'));
+		
+		return false;
 	}
 	else {
 		db_process_sql_update('tconfig',
@@ -437,6 +413,8 @@ function update_manager_starting_update() {
 				)
 			),
 			array('token' => 'progress_update_status'));
+		
+		return true;
 	}
 }
 
@@ -467,5 +445,53 @@ function update_manager_recurse_copy($src, $dst, $black_list) {
 	closedir($dir);
 	
 	return true;
+}
+
+function update_manager_set_current_package($current_package) {
+	if (enterprise_installed()) {
+		$token = 'current_package_enterprise';
+	}
+	else {
+		$token = 'current_package';
+	}
+	
+	$value = db_get_value('`value`',
+		'tupdate_settings', '`key`', $token);
+	
+	if ($value === false) {
+		db_process_sql_insert('tupdate_settings',
+			array('`value`' => $current_package,
+				'`key`' => $token));
+	}
+	else {
+		db_process_sql_update('tupdate_settings',
+			array('`value`' => $current_package),
+			array('`key`' => $token));
+	}
+}
+
+function update_manager_get_current_package() {
+	global $config;
+	
+	if (enterprise_installed()) {
+		$token = 'current_package_enterprise';
+	}
+	else {
+		$token = 'current_package';
+	}
+	
+	$current_update = db_get_value(
+		db_encapsule_fields_with_same_name_to_instructions('value'),
+		'tupdate_settings',
+		db_encapsule_fields_with_same_name_to_instructions('key'),
+		$token);
+	
+	if ($current_update === false) {
+		$current_update = 0;
+		if (isset($config[$token]))
+			$current_update = $config[$token];
+	}
+	
+	return $current_update;
 }
 ?>

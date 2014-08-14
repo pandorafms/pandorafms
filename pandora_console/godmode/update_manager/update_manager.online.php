@@ -20,16 +20,7 @@ ui_require_css_file('update_manager', 'godmode/update_manager/');
 require_once("include/functions_update_manager.php");
 enterprise_include_once("include/functions_update_manager.php");
 
-if (enterprise_installed()) {
-	$current_package = 0;
-		if (isset($config['current_package_enterprise']))
-			$current_package = $config['current_package_enterprise'];
-}
-else {
-	$current_package = 0;
-	if (isset($config['current_package']))
-		$current_package = $config['current_package'];
-}
+$current_package = update_manager_get_current_package();
 
 echo "<p><b>" . sprintf(__("The last version of package installed is: %d"),
 	$current_package) . "</b></p>";

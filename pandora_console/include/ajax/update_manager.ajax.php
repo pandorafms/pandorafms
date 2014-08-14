@@ -463,10 +463,11 @@ if ($install_free_package) {
 	
 	update_manager_starting_update();
 	
+	$result = update_manager_starting_update();
 	
-	db_process_sql_update('tconfig', array('`value`' => $version),
-		array('`token`' => "current_package"));
-	$config['current_package'] = $version;
+	if ($result)
+		update_manager_set_current_package($version);
+	
 	
 	sleep(3);
 	

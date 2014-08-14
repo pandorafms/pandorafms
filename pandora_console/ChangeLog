@@ -1,5 +1,12 @@
 2014-08-14  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/help/clippy/godmode_agentes_modificar_agente.php,
+	include/help/clippy/homepage.php,
+	include/help/clippy/godmode_agentes_configurar_agente.php: updated
+	the text from the works of Carla. Thanks Carla.
+
+2014-08-14  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_clippy.php,
 	include/help/clippy/godmode_agentes_modificar_agente.php,
 	include/help/clippy/homepage.php,

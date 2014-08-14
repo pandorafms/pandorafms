@@ -11,91 +11,102 @@
 
 PI_VERSION=4.0
 FORCE=0
+DESTDIR=""
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 MODE=$1
 
+#
+# set_global_vars
+#	Check platform and set DISTRO, OS_VERSION, WWWUSER, WWWGROUP, WWWROOT,
+#	PANDORA_HOME and PANDORA_HOME_GROUP.
+#
+set_global_vars () {
+	DISTRO="GENERIC"
 
-get_distro () {
-
-	OS_NAME=`uname -s`
-
-	# Get Linux Distro type and version
-	if [ -f "/etc/SuSE-release" ]
-	then
-		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
-		LINUX_DISTRO=SUSE
-	else
-		if [ -f "/etc/lsb-release" ] && [ ! -f "/etc/redhat-release" ]
+	case `uname -s` in
+	Linux)
+		# Get Linux Distro type and version
+		if [ -f "/etc/SuSE-release" ]
+		then
+			OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+			DISTRO=SUSE
+		elif [ -f "/etc/lsb-release" ] && [ ! -f "/etc/redhat-release" ]
 		then
 			OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
-			LINUX_DISTRO=UBUNTU
+			DISTRO=UBUNTU
 			OS_VERSION="UBUNTU $OS_VERSION"
-		else
-			if [ -f "/etc/debian_version" ]
-			then
-				OS_VERSION=`cat /etc/debian_version`
-				OS_VERSION="DEBIAN $OS_VERSION"
-				LINUX_DISTRO=DEBIAN
-			else
-				if [ -f "/etc/fedora-release" ]
-				then
-					OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
-					OS_VERSION="FEDORA $OS_VERSION"
-					LINUX_DISTRO=FEDORA
-				else
-					if [ -f "/etc/redhat-release" ]
-					then
-						LINUX_DISTRO=RHEL_CENTOS
-					else
-						if [ "$OS_NAME" = "FreeBSD" ]
-						then
-							LINUX_DISTRO=FreeBSD
-						else
-							if [ "$OS_NAME" = "NetBSD" ]
-							then
-								LINUX_DISTRO=NetBSD
-							else
-								LINUX_DISTRO=GENERIC
-							fi
-						fi
-						OS_VERSION=`uname -r`
-					fi
-				fi
-			fi
+		elif [ -f "/etc/debian_version" ]
+		then
+			OS_VERSION=`cat /etc/debian_version`
+			OS_VERSION="DEBIAN $OS_VERSION"
+			DISTRO=DEBIAN
+		elif [ -f "/etc/fedora-release" ]
+		then
+			OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+			OS_VERSION="FEDORA $OS_VERSION"
+			DISTRO=FEDORA
+		elif [ -f "/etc/redhat-release" ]
+		then
+			DISTRO=RHEL_CENTOS
 		fi
+		case $DISTRO in
+		SUSE)
+			WWWUSER=wwwrun
+			WWWGROUP=www
+			PANDORA_HOME_GROUP=root
+			WWWROOT=/srv/www/htdocs
+			;;
+		UBUNTU|DEBIAN)
+			WWWUSER=www-data
+			WWWGROUP=www-data
+			WWWROOT=/var/www
+			;;
+		FEDORA|RHEL_CENTOS)
+			WWWUSER=apache
+			WWWGROUP=apache
+			WWWROOT=/var/www/html
+			;;
+		esac
+		;;
+	FreeBSD)
+		DISTRO=FreeBSD
+		WWWUSER=www
+		WWWGROUP=www
+		WWWROOT=/usr/local/www
+
+		local apache
+		for apache in apache24 apache22
+		do
+			[ ! -d $WWWROOT/$apache ] && continue
+			WWWROOT=$WWWROOT/$apache/data
+			break
+		done
+		;;
+	NetBSD)
+		DISTRO=NetBSD
+		WWWUSER=www
+		WWWGROUP=www
+		WWWROOT=/usr/pkg/share/httpd/htdocs
+		;;
+	esac
+
+	# backward compatible defaults (Assuming SUSE)
+	if [ "$DISTRO" = GENERIC ]
+	then
+		WWWUSER=wwwrun
+		WWWGROUP=www
+		WWWROOT=/srv/www/htdocs
+		PANDORA_HOME_GROUP=root
 	fi
-	echo $LINUX_DISTRO
+	# Use WWWGROUP as default for PANDORA_HOME_GROUP
+	: ${PANDORA_HOME_GROUP:=$WWWGROUP}
+
+	OS_VERSION=`uname -r`
+	PANDORA_HOME="$WWWROOT/pandora_console"
 }
 
 uninstall () {
-	DISTRO=`get_distro`
-
-	if [ "$DISTRO" = "UBUNTU" ]
-	then
-		PANDORA_HOME=/var/www/pandora_console
-	else
-		if [ "$DISTRO" = "RHEL_CENTOS" ]
-		then
-			PANDORA_HOME=/var/www/html/pandora_console
-		else
-			if [ "$DISTRO" = "FEDORA" ]
-			then
-				PANDORA_HOME=/var/www/html/pandora_console
-			else
-				if [ "$DISTRO" = "FreeBSD" ]
-				then
-					PANDORA_HOME="/usr/local/www/data/pandora_console /usr/local/www/apache24/data/pandora_console /usr/local/www/apache22/data/pandora_console"
-				else
-					if [ "$DISTRO" = "NetBSD" ]
-					then
-						PANDORA_HOME="/usr/pkg/share/httpd/htdocs/pandora_console"
-					else
-						PANDORA_HOME=/srv/www/htdocs/pandora_console
-					fi
-				fi
-			fi
-		fi
-	fi
+	set_global_vars
 
 	echo "Removing Pandora FMS Console"
 	rm -Rf $PANDORA_HOME
@@ -104,81 +115,43 @@ uninstall () {
 }
 
 install () {
+	set_global_vars
 
-	DISTRO=`get_distro`
 	OLDFILENAMETMP=`date +"%Y-%m-%d"`
-	
-	if [ "$DISTRO" = "UBUNTU" ]
-	then
-		PANDORA_HOME=/var/www/pandora_console
-		PANDORA_CONF=$PANDORA_HOME/include/config.php
-	else
-		if [ "$DISTRO" = "RHEL_CENTOS" ]
-		then
-			PANDORA_HOME=/var/www/html/pandora_console
-			PANDORA_CONF=$PANDORA_HOME/include/config.php
-		else
-			if [ "$DISTRO" = "FEDORA" ]
-			then
-				PANDORA_HOME=/var/www/html/pandora_console
-				PANDORA_CONF=$PANDORA_HOME/include/config.php
-			else
-				if [ "$DISTRO" = "FreeBSD" ]
-				then
-					if [ -d /usr/local/www/apache24 ]
-					then
-						PANDORA_HOME=/usr/local/www/apache24/data/pandora_console
-					else
-						if [ -d /usr/local/www/apache22 ]
-						then
-							PANDORA_HOME=/usr/local/www/apache22/data/pandora_console
-						else
-							PANDORA_HOME=/usr/local/www/data/pandora_console
-						fi
-					fi
-					PANDORA_CONF=$PANDORA_HOME/include/config.php
-				else
-					if [ "$DISTRO" = "NetBSD" ]
-					then
-						PANDORA_HOME=/usr/pkg/share/httpd/htdocs/pandora_console
-						PANDORA_CONF=$PANDORA_HOME/include/config.php
-					else
-						PANDORA_HOME=/srv/www/htdocs/pandora_console
-						PANDORA_CONF=$PANDORA_HOME/include/config.php
-					fi
-				fi
-			fi
-		fi
-	fi
+	PANDORA_CONF=$PANDORA_HOME/include/config.php
 
 	echo "Detecting operating system: $DISTRO"
 	
-	if [ -f $PANDORA_HOME ] && [ "$FORCE" = "0" ]
+	if [ -f $DESTDIR$PANDORA_HOME ] && [ "$FORCE" = "0" ]
 	then
 		echo "Seems that default dir already exists. Please use --force to"
-		echo "force installer to install on $PANDORA_HOME"
+		echo "force installer to install on $DESTDIR$PANDORA_HOME"
 		exit
 	else
-		echo "Checking default dir $PANDORA_HOME..."
+		echo "Checking default dir $DESTDIR$PANDORA_HOME..."
 	fi
 
-	# Create directories
-	echo "Creating Pandora FMS Console home directory at $PANDORA_HOME ..."
-	mkdir -p $PANDORA_HOME 2> /dev/null
-
-	# Copying Pandora FMS console
-	echo "Copying Pandora FMS Console to $PANDORA_HOME.."
-	cp -R * $PANDORA_HOME
-	chmod -R u+rwX,g+rX,g-w,o-rwx $PANDORA_HOME
-
-
-	# Creating 'pandora' user
+	# Check and create 'pandora' user if needed
 	id pandora 2> /dev/null
 	if [ $? -eq 0 ]; then
 		echo " "
 		echo "User pandora does exist, skipping this step"
+	elif [ "$DESTDIR" ]
+	then
+		# don't create user with "fakeroot" installation
+		echo "User 'pandora' does not exist. All chown operations may fail."
+		echo "You should manualy set proper ownership to $DESTDIR$PANDORA_HOME and $DESTDIR$PANDORA_SPOOL if it's required."
+		echo
 	else
-		echo "Creating 'pandora' user"
+		echo "Are you sure we can create a standard 'pandora' user locally? [y/N]"
+		read AREYOUSURE
+		if [ "$AREYOUSURE" != "y" ]
+		then
+			echo "Please create the 'pandora' user manually according to your authentication scheme, then start again the installation"
+			echo "Aborting..."
+			exit 1
+		fi
+		# creating user
 		if [ "$DISTRO" = "FreeBSD" ]
 		then
 			echo "pandora:41121:::::Pandora FMS:/home/pandora:/usr/sbin/nologin:" | adduser -f - -w no 2> /dev/null
@@ -190,46 +163,31 @@ install () {
 		fi
 	fi
 
-	if [ ! -d /var/spool/pandora ]
-	then
-		mkdir -p /var/spool/pandora
-	fi
+	# Create directories
+	echo "Creating Pandora FMS Console home directory at $DESTDIR$PANDORA_HOME ..."
+	mkdir -p $DESTDIR$PANDORA_HOME 2> /dev/null
+
+	# Copying Pandora FMS console
+	echo "Copying Pandora FMS Console to $DESTDIR$PANDORA_HOME.."
+	cp -R * $DESTDIR$PANDORA_HOME
+	chmod -R u+rwX,g+rX,g-w,o-rwx $DESTDIR$PANDORA_HOME
+
+	# prepare /var/spool/pandora/data_in and sub directories
+	for subdir in collections conf md5 netflow
+	do
+		[ ! -d $DESTDIR/var/spool/pandora/data_in/$subdir ] && mkdir -p $DESTDIR/var/spool/pandora/data_in/$subdir
+	done
 
 	#Ownership
-	if [ "$DISTRO" = "UBUNTU" ]
-	then
-		chown -R www-data:root $PANDORA_HOME
-		chown -R pandora:www-data /var/spool/pandora/
-	else 
-		if [ "$DISTRO" = "RHEL_CENTOS" ]
-		then
-			chown -R apache:apache $PANDORA_HOME
-			chown -R pandora:apache /var/spool/pandora/	
-		else 
-			if [ "$DISTRO" = "FEDORA" ]
-			then
-				chown -R apache:apache $PANDORA_HOME
-				chown -R pandora:apache /var/spool/pandora/	
-			else
-				if [ "$DISTRO" = "FreeBSD" -o "$DISTRO" = "NetBSD" ]
-				then
-					chown -R www:www $PANDORA_HOME
-					chown -R pandora:www /var/spool/pandora/
-				else
-					# Assuming SUSE
-					chown -R wwwrun:root $PANDORA_HOME
-					chown -R pandora:www /var/spool/pandora/
-				fi
-			fi
-		fi
-	fi
+	chown -R $WWWUSER:$PANDORA_HOME_GROUP $DESTDIR$PANDORA_HOME 2> /dev/null
+	chown -R pandora:$WWWGROUP $DESTDIR/var/spool/pandora/	2> /dev/null
 
 	echo "Setting secure permissions for Pandora FMS spool dir..."
-	chmod -R u+rwX,g+rwX,o-rwx /var/spool/pandora/
+	chmod -R u+rwX,g+rwX,o-rwx $DESTDIR/var/spool/pandora/
 
 	echo "Done."
 	echo " "
-	echo "You have your Pandora FMS console installed on $PANDORA_HOME."
+	echo "You have your Pandora FMS console installed on $DESTDIR$PANDORA_HOME."
 	echo " "
 	echo "Now you can setup your Pandora FMS console and install"
 	echo "database using a browser and point to: "
@@ -240,16 +198,39 @@ install () {
 }
 
 help () {
+	echo "Syntax":
+	echo
+	echo "    ./pandora_console_install < --mode > [ --option ]"
+	echo " "
+	echo "Modes:"
+	echo
 	echo "    --force-install     To force installation if already installed on this system"
 	echo "    --install           To install Pandora FMS Console on this system"
-	echo " "
+	echo "    --uninstall         To uninstall/remove Pandora FMS Console on this System"
+	echo
+	echo "Option:"
+	echo
+	echo "	  --destdir DIR	      Specify root directory for \"fakeroot\" installation"
+	echo
 }
 
 # Script banner at start
 echo " "
-echo "Pandora FMS Console Installer $PI_VERSION (c) 2008-2011 ArticaST"
+echo "Pandora FMS Console Installer $PI_VERSION (c) 2008-2014 ArticaST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
+
+# parse option
+if [ "$2" = "--destdir" ]
+then
+	if [ -z "$3" ]
+	then
+		echo '"--datadir" option requires an argument'
+		help
+		exit 1
+	fi
+	DESTDIR="$3"
+fi
 
 case "$MODE" in
 

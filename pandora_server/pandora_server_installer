@@ -145,7 +145,7 @@ install_startup_script () {
 		insserv $SCRIPT_NAME
 		;;
 	FeeBSD|NetBSD)
-		chmod 555 $SRC
+		chmod 555 $DESTDIR$INITDIR/$SCRIPT_NAME
 		;;
 	*)
 		if [ "$LINUX" = YES ]

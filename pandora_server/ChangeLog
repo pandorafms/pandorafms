@@ -1,3 +1,10 @@
+2014-08-14 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/PluginServer.pm: Added new alert macros
+	_plugin_param1_ (,_plugin_param2_ and so on) to access to
+	each of plugin parameters. Also added _plugin_param1_desc_
+	to access to each description of plugin parameters.
+
 2014-08-14  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* FreeBSD/tentacle_server: Set rcvar statically.

@@ -169,6 +169,7 @@ sub data_consumer ($$) {
 	}
 		
 	my $parameters = $plugin->{'parameters'};
+	my %plugin_macros_for_alert_processing;
 	
 	if (!defined($module->{'macros'})){
 		$module->{'macros'} = "";
@@ -183,9 +184,22 @@ sub data_consumer ($$) {
 			if(ref($macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))
 				{
+					my $macro_field = safe_output($macros{$macro_id}{'macro'});
+					my $macro_desc  = safe_output($macros{$macro_id}{'desc'});
 					my $macro_value = safe_output($macros{$macro_id}{'value'});
 					
+					# build parameters to invoke plugin
 					$parameters =~ s/$macros{$macro_id}{'macro'}/$macro_value/g;
+
+					# build 'plugin module' dependent alert macros
+					my $field_number = $macro_field;
+					$field_number = s/.*([0-9]+).*/$1/;
+
+					my $name_for_desc  = "_plugin_param${field_number}_desc_";
+					my $name_for_value = "_plugin_param${field_number}_";
+
+					$plugin_macros_for_alert_processing{$name_for_desc} = $macro_desc;
+					$plugin_macros_for_alert_processing{$name_for_value} = $macro_value;
 				}
 			}
 		}
@@ -281,8 +295,7 @@ sub data_consumer ($$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
 	my %data = ("data" => $module_data);
-	pandora_process_module ($pa_config, \%data, '', $module, '', $timestamp, $utimestamp, $self->getServerID (), $dbh);
-
+	pandora_process_module ($pa_config, \%data, '', $module, '', $timestamp, $utimestamp, $self->getServerID (), $dbh, \%plugin_macros_for_alert_processing);
 	my $agent_os_version = get_db_value ($dbh, 'SELECT os_version FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
 	
 	if ($agent_os_version eq ''){

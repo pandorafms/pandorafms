@@ -265,6 +265,7 @@ sub pandora_load_config {
 	# nmap for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"nmap"} = "/usr/bin/nmap";
 	$pa_config->{"nmap_timing_template"} = 2; # > 5.1
+	$pa_config->{"recon_timing_template"} = 3; # > 5.1
 
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
@@ -610,6 +611,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^nmap_timing_template\s([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^recon_timing_template\s([0-9]*)/i) {
+			$pa_config->{'recon_timing_template'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^braa\s(.*)/i) {
 			$pa_config->{'braa'}= clean_blank($1); 

@@ -1,3 +1,9 @@
+2014-08-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/ReconServer.pm: Added a separate timing template for
+	  network scans, since they can be very slow.
+
 2014-08-14  Sancho Lerena <slerena@artica.es>
 
 	* FreeBSD/pandora_server.conf.new,

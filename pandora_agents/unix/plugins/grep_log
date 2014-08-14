@@ -47,6 +47,9 @@ my $Idx_pos = 0;
 # Log file inode number
 my $Idx_ino = '';
 
+# Log file size
+my $Idx_size = 0;
+
 # Regular expression to be matched
 my $Reg_exp = '';
 
@@ -91,6 +94,7 @@ sub log_msg ($) {
 sub load_idx () {
 	my $line;
 	my $current_ino;
+	my $current_size;
 
 	log_msg("Loading index file $Idx_file");
 
@@ -99,18 +103,20 @@ sub load_idx () {
 
 	# Read position and date
 	$line = <IDXFILE>;
-	($Idx_pos, $Idx_ino) = split(' ', $line);
+	($Idx_pos, $Idx_ino, $Idx_size) = split(' ', $line);
 
 	close(IDXFILE);
 
 	# Reset the file index if the file has changed
 	$current_ino = (stat($Log_file))[1];
-	if ($current_ino != $Idx_ino) {
+	$current_size = -s "$Log_file";
+	if ($current_ino != $Idx_ino || $current_size < $Idx_size) {
 		log_msg("File changed, resetting index");
 
 		$Idx_pos = 0;
 		$Idx_ino = $current_ino;
 	}
+	$Idx_size = $current_size;
 
 	return;
 }
@@ -125,7 +131,7 @@ sub save_idx () {
 
 	open(IDXFILE, "> $Idx_file") || error_msg("Error opening file $Idx_file: "
 	                                          . $!);
-	print (IDXFILE $Idx_pos . " " . $Idx_ino);
+	print (IDXFILE $Idx_pos . " " . $Idx_ino . " " . $Idx_size);
 	close(IDXFILE);
 
 	return;

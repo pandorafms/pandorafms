@@ -31,7 +31,7 @@ pidfile=/var/run/$name.pid
 required_files="/usr/local/etc/pandora/pandora_agent.conf"
 stop_postcmd=stop_postcmd
 
-command=/usr/bin/daemon
+command=/usr/sbin/daemon
 command_interpreter=/usr/local/bin/perl
 procname=/usr/local/bin/pandora_agent
 

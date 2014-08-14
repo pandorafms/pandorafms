@@ -1,5 +1,14 @@
 2014-08-14  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/help/clippy/agent_out_of_limits.php,
+	include/help/clippy/modules_not_init.php,
+	include/functions_clippy.php,
+	operation/agentes/estado_monitores.php,
+	operation/agentes/estado_generalagente.php: wip in the clippy
+	project.
+
+2014-08-14  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/help/clippy/godmode_agentes_modificar_agente.php,
 	include/help/clippy/homepage.php,
 	include/help/clippy/godmode_agentes_configurar_agente.php: updated

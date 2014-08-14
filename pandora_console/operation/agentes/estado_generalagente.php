@@ -25,6 +25,8 @@ include_graphs_dependencies();
 require_once ($config['homedir'] . '/include/functions_groups.php');
 require_once ($config['homedir'] .'/include/functions_incidents.php');
 
+include_once($config['homedir'] . "/include/functions_clippy.php");
+
 check_login ();
 
 
@@ -204,6 +206,11 @@ $table_contact->data[] = $data;
 $data[0] = '<b>' . __('Next contact') . '</b>';
 $progress = agents_get_next_contact($id_agente);
 $data[1] = progress_bar($progress, 200, 20);
+
+if ($progress > 100) {
+	$data[1] .= clippy_context_help("agent_out_of_limits");
+}
+
 $table_contact->data[] = $data;
 
 // END: TABLE CONTACT BUILD

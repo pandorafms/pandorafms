@@ -51,23 +51,23 @@ else {
 		'list' => array(
 			'active' => false,
 			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
-				html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
+				html_print_image ("images/list.png", true, array ("title" => __('Incidents'))) .'</a>'),
 		'incident' => array(
 			'active' => false,
 			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$id_incident.'">' . 
-				html_print_image ("images/eye.png", true, array ("title" => __('Incident details'))) .'</a>'),
+				html_print_image ("images/zoom_mc.png", true, array ("title" => __('Incident details'))) .'</a>'),
 		'workunits' => array(
 			'active' => false,
 			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=workunits&id_incident='.$id_incident.'">' . 
-				html_print_image ("images/computer.png", true, array ("title" => __('Workunits'))) .'</a>'),
+				html_print_image ("images/star_white.png", true, array ("title" => __('Workunits'))) .'</a>'),
 		'files' => array(
 			'active' => false,
 			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident='.$id_incident.'"">' . 
-				html_print_image ("images/file.png", true, array ("title" => __('Files'))) .'</a>'),
+				html_print_image ("images/save_mc.png", true, array ("title" => __('Files'))) .'</a>'),
 		'tracking' => array(
 			'active' => false,
 			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=tracking&id_incident='.$id_incident.'"">' . 
-				html_print_image ("images/comments.png", true, array ("title" => __('Tracking'))) .'</a>'));
+				html_print_image ("images/gm_log.png", true, array ("title" => __('Tracking'))) .'</a>'));
 }
 
 $buttons[$tab]['active'] = true;
@@ -81,10 +81,9 @@ if ($update_incident == 1) {
 	$values[3] = urlencode(io_safe_output(get_parameter('epilog')));
 	$values[4] = get_parameter('group');
 	$values[5] = get_parameter('priority');
-	$values[6] = get_parameter('source');
-	$values[7] = get_parameter('resolution');
-	$values[8] = get_parameter('status');
-	$values[9] = get_parameter('id_user_assigned');
+	$values[6] = get_parameter('resolution');
+	$values[7] = get_parameter('status');
+	$values[8] = get_parameter('id_user_assigned');
 	
 	$params = implode($token, $values);
 	
@@ -275,7 +274,6 @@ switch ($tab) {
 		}
 		$url_resolutions =  $integria_api."&op=get_incidents_resolutions";
 		$url_status =  $integria_api."&op=get_incidents_status";
-		$url_sources =  $integria_api."&op=get_incidents_sources";
 		$url_groups =  $integria_api."&op=get_groups&params=0";
 		$url_users =  $integria_api."&op=get_users";
 		break;
@@ -322,7 +320,6 @@ if (xml_parse(xml_parser_create(), $xml)) {
 		case 'incident':
 			$result_resolutions = incidents_xml_to_array(incidents_call_api($url_resolutions));
 			$result_status = incidents_xml_to_array(incidents_call_api($url_status));
-			$result_sources = incidents_xml_to_array(incidents_call_api($url_sources));
 			$result_groups = incidents_xml_to_array(incidents_call_api($url_groups));
 			$result_users = incidents_xml_to_array(incidents_call_api($url_users));
 			require_once('incident.incident.php');

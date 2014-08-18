@@ -291,9 +291,11 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$temp_sec2 = $sec2; 
 	if($config['integria_enabled']) {
 		$sec2 = "operation/integria_incidents/incident";
+		$sec2sub = "operation/integria_incidents/incident_statistics";
 	}
 	else {
 		$sec2 = "operation/incidents/incident";
+		$sec2sub = "operation/incidents/incident_statistics";
 	}
 	
 	$sub[$sec2]["text"] = __('Incidents');
@@ -301,9 +303,9 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$sub[$sec2]["subsecs"] = array(
 		"operation/incidents/incident_detail",
 		"operation/integria_incidents");
-	
+
 	$sub2 = array ();
-	$sub2["operation/incidents/incident_statistics"]["text"] = __('Statistics');
+	$sub2[$sec2sub]["text"] = __('Statistics');
 	
 	$sub[$sec2]["sub2"] = $sub2;
 	$sec2 = $temp_sec2;

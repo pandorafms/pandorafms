@@ -284,7 +284,7 @@ div#menu {
 
 div#head {
 	font-size: 8pt;
-	width: 960px;
+	width: 100%;
 	height: 62px; 
 	padding-top: 0px;
 	margin-bottom: 8px;
@@ -1871,11 +1871,10 @@ div#main {
 	min-width: 720px;
 }
 div#head {
-	width: auto;
-	height: auto;
-	background-color: #333;
+	width: 100%;
 	height: 47px;
 	min-width: 882px;
+	background-color: #333;
 	color: white;
 }
 

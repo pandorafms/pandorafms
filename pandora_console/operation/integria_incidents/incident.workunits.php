@@ -23,7 +23,7 @@ $table->data = array();
 $table->colspan[1][0] = 3;
 
 $profiles = array();
-$default_time = "0.25";
+$default_time = "0";
 $table->data[0][0] = "<b>".__('Time used')."</b><br/>".html_print_input_text ('time_used', $default_time, '', 10, 255, true);
 $table->data[0][1] = "<b>".__('Have cost')."</b><br/>".html_print_checkbox ('have_cost', '', false, true);
 $table->data[0][2] = "<b>".__('Public')."</b><br/>".html_print_checkbox ('public', '', true, true);

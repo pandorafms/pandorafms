@@ -1,3 +1,14 @@
+2014-08-18  Alejandro Gallardo <alejandro.gallardo@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added an internal action to
+	create a Integria IMS incident on the function
+	"pandora_execute_action". Added the function
+	"pandora_create_integria_ticket".
+
+	* util/pandora_manage.pl: Added an option to recreate
+	a collection with the function "cli_recreate_collection".
+	Added a call to get the Pandora FMS shared config.
+
 2014-08-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf.new: Added recon_timing_template to the

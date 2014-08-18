@@ -1766,12 +1766,39 @@ sub udp_server ($$) {
 		my($port, $ipaddr) = sockaddr_in($sock->peername);
 		$hishost = gethostbyaddr($ipaddr, AF_INET);
 
-		log_message ('udp server', 'Received signal from '.$hishost);
-
 		if (($udp_auth_address eq "0.0.0.0") || ($hishost eq $udp_auth_address)){
 			if ($newmsg =~ /REFRESH AGENT/){
 				# Send signal to restart agent
+				log_message ('udp server', 'Received signal from '.$hishost);
 				kill 'SIGINT' , $parent_pid;
+			}
+			elsif ($newmsg =~ /PROCESS START (.*)/){
+				my $process_name = $1;
+				$process_name =~ s/^\s*//g;
+				$process_name =~ s/\s*$//g;
+				if (defined($Conf{"process_${process_name}_start"})) {
+					log_message ('udp server', "Process $process_name started from $hishost");
+					if (fork() == 0) {  
+						`$Conf{"process_${process_name}_start"} 2>$DevNull`;
+						exit 0;
+					}
+				} else {
+					log_message ('udp server', "Attempt to start unknown process $process_name from $hishost");
+				}
+			}
+			elsif ($newmsg =~ /PROCESS STOP (.*)/){
+				my $process_name = $1;
+				$process_name =~ s/^\s*//g;
+				$process_name =~ s/\s*$//g;
+				if (defined($Conf{"process_${process_name}_stop"})) {
+					log_message ('udp server', "Process $process_name stopped from $hishost");
+					if (fork() == 0) {  
+						`$Conf{"process_${process_name}_stop"} 2>$DevNull`;
+						exit 0;
+					}
+				} else {
+					log_message ('udp server', "Attempt to stop unknown process $process_name from $hishost");
+				}
 			}
 		}
 	}

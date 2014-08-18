@@ -1,3 +1,9 @@
+2014-08-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf,
+	  pandora_agent: Added support to start and stop processes via the UDP
+	  server.
+
 2014-08-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* plugins/grep_log,

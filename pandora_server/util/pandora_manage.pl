@@ -69,6 +69,9 @@ my $dbh = db_connect ('mysql', $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}
 my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $conf{'_history_db_name'},
 		$conf{'_history_db_host'}, '3306', $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
 
+# Read shared config file
+pandora_get_sharedconfig (\%conf, $dbh);
+
 my $conf = \%conf;
 
 # Main
@@ -166,6 +169,7 @@ sub help_screen{
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
 	help_screen_line('--get_policies', '[<agent_name>]', "Get all the policies (without parameters) or \n\tthe policies of a given agent (agent name as parameter)");
+	help_screen_line('--recreate_collection', '<collection_id>', 'Recreate the files of a collection');
   
 	print "\nNETFLOW:\n\n" unless $param ne '';
 	help_screen_line('--create_netflow_filter', "<filter_name> <group_name> <filter> \n\t  <aggregate_by dstip|dstport|none|proto|srcip|srcport> <output_format kilobytes|kilobytespersecond|\n\t  megabytes|megabytespersecond>", "Create a new netflow filter");
@@ -2814,6 +2818,24 @@ sub cli_apply_all_policies() {
 }
 
 ##############################################################################
+# Recreate the files of a collection.
+# Related option: --recreate_collection
+##############################################################################
+
+sub cli_recreate_collection () {
+	my $collection_id = @ARGV[2];
+
+	my $result = enterprise_hook('pandora_recreate_collection', [$conf, $collection_id, $dbh]);
+	
+	if ($result == 1) {
+		print_log "[INFO] Collection recreated successfully.\n";
+	}
+	elsif ($result == 0) {
+		print_log "[ERROR] Collection not recreated.\n";
+	}
+}
+
+##############################################################################
 # Validate all the alerts
 # Related option: --validate_all_alerts
 ##############################################################################
@@ -3898,6 +3920,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_local_component') {
 			param_check($ltotal, 35, 33);
 			cli_create_local_component();
+		}
+		elsif ($param eq '--recreate_collection') {
+			param_check($ltotal, 1);
+			cli_recreate_collection();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

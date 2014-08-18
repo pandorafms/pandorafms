@@ -982,6 +982,46 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			}
 		}
 	
+	# Integria IMS Ticket
+	} elsif ($clean_name eq "Integria IMS Ticket") {
+		$field1 = subst_alert_macros ($field1, \%macros);
+		$field3 = subst_alert_macros ($field3, \%macros);
+		$field4 = subst_alert_macros ($field4, \%macros);
+		$field6 = subst_alert_macros ($field6, \%macros);
+		$field7 = subst_alert_macros ($field7, \%macros);
+
+		# Field 1 (Integria IMS API path)
+		my $api_path = $field1;
+		
+		# Field 2 (Integria IMS API pass)
+		my $api_pass = $field2;
+		
+		# Field 3 (Integria IMS user)
+		my $integria_user = $field3;
+		
+		# Field 4 (Ticket name)
+		my $ticket_name = $field4;
+		if ($ticket_name eq "") {
+			$ticket_name = "Pandora FMS alert action created by API";
+		}
+		
+		# Field 5 (Ticket group ID)
+		my $ticket_group_id = $field5;
+		if ($ticket_group_id eq '') {
+			$ticket_group_id = 0;
+		}
+		
+		# Field 6 (Ticket priority);
+		my $ticket_priority = $field6;
+		if ($ticket_priority eq '') {
+			$ticket_priority = 0;
+		}
+		
+		# Field 7 (Ticket description);
+		my $ticket_description = $field7;
+
+		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_description);
+
 	# Unknown
 	} else {
 		logger($pa_config, "Unknown action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 3);
@@ -4626,6 +4666,50 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 		WHERE id_graph = ?',$name, $user, $description,$period, $width, $height, $idGroup, $events, $stacked, $id_graph);
 		
 	return $res;
+}
+
+sub pandora_create_integria_ticket ($$$$$$$$) {
+	my ($pa_config,$api_path,$api_pass,$integria_user,$ticket_name,$group_id,$ticket_priority,$ticket_description) = @_;
+	
+	my $data_ticket;
+	my $call_api;
+
+	if ($api_path eq "") {
+		return 0;
+	}
+	if ($integria_user eq "") {
+		$integria_user = "admin";
+	}
+	if ($ticket_name eq "") {
+		$ticket_name = "Ticket created by Pandora FMS";
+	}
+	if ($group_id eq "") {
+		$group_id = 0;
+	}
+	if ($ticket_priority eq "") {
+		$ticket_priority = 1;
+	}
+	
+	$data_ticket = $ticket_name .
+		"|;|" . $group_id .
+		"|;|" . $ticket_priority .
+		"|;|" . $ticket_description;
+
+	$call_api = $api_path . '?' .
+		'user=' . $integria_user . '&' .
+		'pass=' . $api_pass . '&' .
+		'op=create_incident&' .
+		'params=' . $data_ticket .'&' .
+		'token=|;|';
+	logger($pa_config, "Integria ticket call:" . $call_api . "", 3);
+	my $content = get($call_api);
+	logger($pa_config, "Integria ticket res:" . $content . "", 3);
+	if (is_numeric($content) && $content ne "-1") {
+		return $content;
+	}
+	else {
+		return 0;
+	}
 }
 
 # End of function declaration

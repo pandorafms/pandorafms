@@ -1,3 +1,13 @@
+2014-08-18  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_ui.php, operation/search_helps.php,
+	operation/search_results.php, operation/search_helps.getdata.php,
+	general/pandora_help.php: added feature to search into the help
+	files, it is in the search bar header.
+	
+	* operation/search_main.php: fixed the search any term of several
+	words separated with whitespaces.
+
 2014-08-18  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* pandoradb.sql,

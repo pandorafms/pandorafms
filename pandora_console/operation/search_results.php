@@ -24,6 +24,7 @@ $searchAgents = $searchAlerts = $searchModules = check_acl($config['id_user'], 0
 $searchUsers = check_acl($config['id_user'], 0, "UM");
 $searchMaps = $searchReports = $searchGraphs = check_acl($config["id_user"], 0, "IR");
 $searchMain = true;
+$searchHelps = true;
 
 $arrayKeywords = explode('&#x20;', $config['search_keywords']);
 
@@ -32,7 +33,7 @@ foreach ($arrayKeywords as $keyword) {
 	// Remember, $keyword is already pass a safeinput filter.
 	array_push($temp, "%" . $keyword . "%");
 }
-$stringSearchSQL = implode("&#x20;",$temp);
+$stringSearchSQL = implode("&#x20;", $temp);
 
 if ($config['search_category'] == "all") 
 	$searchTab = "main";
@@ -136,6 +137,16 @@ else {
 	$modules_tab = '';
 }
 
+if ($searchHelps) {
+	$helps_tab = array('text' => "<a href='index.php?search_category=helps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
+		. html_print_image ("images/help_w.png", true,
+			array ("title" => __('Helps'))) . "</a>",
+				'active' => $searchTab == "helps");
+}
+else {
+	$helps_tab = '';
+}
+
 $onheader = array('main' => $main_tab,
 	'agents' => $agents_tab, 
 	'modules' => $modules_tab, 
@@ -143,9 +154,12 @@ $onheader = array('main' => $main_tab,
 	'users' => $users_tab, 
 	'graphs' => $graphs_tab,
 	'reports' => $reports_tab, 
-	'maps' => $maps_tab);
+	'maps' => $maps_tab,
+	'helps' => $helps_tab);
 
-ui_print_page_header (__("Search").": \"".$config['search_keywords']."\"", "images/zoom_mc.png", false, "", false, $onheader);
+ui_print_page_header (__("Search") .
+	": \"" . $config['search_keywords'] . "\"",
+	"images/zoom_mc.png", false, "", false, $onheader);
 
 $only_count = false;
 switch ($searchTab) {
@@ -160,6 +174,7 @@ switch ($searchTab) {
 		require_once('search_reports.getdata.php');
 		require_once('search_maps.getdata.php');
 		require_once('search_modules.getdata.php');
+		require_once('search_helps.getdata.php');
 		
 		require_once('search_main.php');
 		break;
@@ -190,6 +205,10 @@ switch ($searchTab) {
 	case 'modules':
 		require_once('search_modules.getdata.php');
 		require_once('search_modules.php');
+		break;
+	case 'helps':
+		require_once('search_helps.getdata.php');
+		require_once('search_helps.php');
 		break;
 }
 ?>

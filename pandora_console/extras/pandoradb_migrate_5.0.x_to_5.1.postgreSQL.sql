@@ -196,3 +196,14 @@ DELETE FROM "trecon_script" WHERE "id_recon_script"=1;
 -- Table `tagente_modulo`
 -- ---------------------------------------------------------------------
 ALTER TABLE "tagente_modulo" MODIFY COLUMN "post_process" NUMERIC(18,15) default 0;
+
+/* 2014/08/18 */
+-- ---------------------------------------------------------------------
+-- Table `talert_commands`
+-- ---------------------------------------------------------------------
+INSERT INTO "talert_commands" ("name", "command", "description", "internal", "fields_descriptions", "fields_values") VALUES ('Integria&#x20;IMS&#x20;Ticket','Internal&#x20;type','This&#x20;alert&#x20;create&#x20;a&#x20;ticket&#x20;into&#x20;your&#x20;Integria&#x20;IMS.',1,'[\"Integria&#x20;IMS&#x20;API&#x20;path\",\"Integria&#x20;IMS&#x20;API&#x20;pass\",\"Integria&#x20;IMS&#x20;user\",\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Ticket&#x20;description\"]','[\"\",\"\",\"\",\"\",\"\",\"10,Maintenance;0,Informative;1,Low;2,Medium;3,Serious;4,Very&#x20;Serious\",\"\"]');
+
+-- ---------------------------------------------------------------------
+-- Table `talert_actions`
+-- ---------------------------------------------------------------------
+INSERT INTO "talert_actions" ("name", "id_alert_command", "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "id_group", "action_threshold") VALUES ('Create&#x20;a&#x20;ticket&#x20;in&#x20;Integria&#x20;IMS',13,'http://localhost/integria/include/api.php','1234','admin','_agent_:&#x20;_alert_name_','1','3','_alert_description_','','','',0,0);

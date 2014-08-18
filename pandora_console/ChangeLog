@@ -1,3 +1,34 @@
+2014-08-18  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* pandoradb.sql,
+	  pandoradb.data.postgreSQL.sql,
+	  pandoradb.data.oracle.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.mysql.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.oracle.sql,
+	  extras/pandoradb_migrate_5.0.x_to_5.1.postgreSQL.sql:
+	Added some inserts with the new action and command to create
+	a ticket in Integria IMS.
+
+	* include/styles/pandora.css: Fixed the header style.
+
+	* operation/menu.php: Now the incidents statistics menu option
+	takes the user to the correct place if the "Integria incidents"
+	option is selected.
+
+	* operation/integria_incidents/incident.incident.php: Fixed the
+	incident edition.
+
+	* operation/integria_incidents/incident.php: Improved the tab
+	images.
+
+	* operation/integria_incidents/incident.workunits.php: Now the
+	default time of the incident workunits is 0.
+
+	* operation/integria_incidents/incident_detail.php: File removed.
+
+	* operation/integria_incidents/incident_statistics.php: Now this
+	section show the real statistics of the Integria IMS incidents.
+
 2014-08-14  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/update_manager/update_manager.online.php,

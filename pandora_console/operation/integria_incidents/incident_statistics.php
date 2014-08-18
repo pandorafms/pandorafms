@@ -28,21 +28,35 @@ if (! check_acl ($config['id_user'], 0, "IR") == 1) {
 }
 ui_print_page_header (__('Statistics'), "images/book_edit.png", false, "", false, "");
 
+$integria_api = $config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password'];
+$op = 'get_stats';
+$url = "$integria_api&op=$op";
+
+$curlObj = curl_init();
+curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($curlObj, CURLOPT_URL, $url . "&params=opened");
+$opened_tickets = curl_exec($curlObj);
+curl_setopt($curlObj, CURLOPT_URL, $url . "&params=closed");
+$closed_tickets = curl_exec($curlObj);
+curl_close($curlObj);
+
+$opened_tickets = trim($opened_tickets);
+$closed_tickets = trim($closed_tickets);
+
+if (!is_numeric($opened_tickets))
+	$opened_tickets = 0;
+if (!is_numeric($closed_tickets))
+	$closed_tickets = 0;
+
+$data = array();
+$data[__('Opened tickets')] = $opened_tickets;
+$data[__('Closed tickets')] = $closed_tickets;
+
 echo '<table width="90%">
 	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>';
-echo graph_incidents_status ();
-
-echo '<td valign="top"><h3>'.__('Incidents by priority').'</h3>';
-echo grafico_incidente_prioridad ();
-
-echo '<tr><td><h3>'.__('Incidents by group').'</h3>';
-echo graphic_incident_group();
-
-echo '<td><h3>'.__('Incidents by user').'</h3>';
-echo graphic_incident_user();
-
-echo '<tr><td><h3>'.__('Incidents by source').'</h3>';
-echo graphic_incident_source();
+echo pie3d_graph($config['flash_charts'], $data, 370, 180,
+	__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+	$config['fontpath'], $config['font_size']);
 
 echo '</table>';
 ?>

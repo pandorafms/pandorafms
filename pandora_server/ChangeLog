@@ -1,3 +1,7 @@
+2014-08-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Copy tag names to events, not the URL.
+
 2014-08-18  Alejandro Gallardo <alejandro.gallardo@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added an internal action to

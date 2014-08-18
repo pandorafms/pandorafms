@@ -2761,7 +2761,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	}
 	else {
 		if (defined ($id_agentmodule) && $id_agentmodule > 0) {
-			$module_tags = pandora_get_module_url_tags ($pa_config, $dbh, $id_agentmodule);
+			$module_tags = pandora_get_module_tags ($pa_config, $dbh, $id_agentmodule);
 		}
 	}
 	

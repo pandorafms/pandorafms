@@ -4297,9 +4297,13 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 					}
 
 					$data_agents[$agent_id]['children'][$module_group_id]['children'][] = $data_module;
-
 					unset($modules[$module_id]);
 				}
+				function order_module_group_keys ($value, $key) {
+					$value['children'] = array_merge($value['children']);
+					return $value;
+				}
+				$data_agents = array_map('order_module_group_keys', $data_agents);
 			}
 			foreach ($agents as $id => $agent) {
 				if (!isset($data_agents[$id])) {

@@ -1,5 +1,10 @@
 2014-08-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
+	* include/functions_graph.php: Modified the color of
+	the main node on the function "graph_monitor_wheel".
+
+2014-08-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
 	* include/functions_graph.php: Fixed the function
 	"graph_monitor_wheel".
 

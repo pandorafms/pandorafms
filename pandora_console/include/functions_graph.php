@@ -4385,7 +4385,7 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 			return false;
 	}
 
-	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents));
+	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents), 'color' => '#3F3F3F');
 	
 	if (empty($graph_data['children']))
 		return fs_error_image();

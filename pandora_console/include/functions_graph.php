@@ -4135,20 +4135,21 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 					$module_id = (int) $module['id_agente_modulo'];
 					$agent_id = (int) $module['id_agente'];
 					$module_group_id = (int) $module['id_module_group'];
-					$module_name = $module['nombre'];
+					$module_name = io_safe_output($module['nombre']);
 					$module_status = modules_get_agentmodule_status($module_id);
+					$module_value = modules_get_last_value($module_id);
 
 					if (!isset($data_agents[$agent_id])) {
 						$data_agents[$agent_id] = array();
 						$data_agents[$agent_id]['id'] = $agent_id;
-						$data_agents[$agent_id]['name'] = $agents[$agent_id]['nombre'];
+						$data_agents[$agent_id]['name'] = io_safe_output($agents[$agent_id]['nombre']);
 						$data_agents[$agent_id]['group'] = (int) $agents[$agent_id]['id_grupo'];
 						$data_agents[$agent_id]['type'] = 'agent';
 						$data_agents[$agent_id]['size'] = 30;
 						$data_agents[$agent_id]['children'] = array();
 
 						$tooltip_content = __('Agent') . ": <b>" . $data_agents[$agent_id]['name'] . "</b>";
-						$data_agents[$agent_id]['tooltip_content'] = $tooltip_content;
+						$data_agents[$agent_id]['tooltip_content'] = io_safe_output($tooltip_content);
 
 						$data_agents[$agent_id]['modules_critical'] = 0;
 						$data_agents[$agent_id]['modules_warning'] = 0;
@@ -4164,12 +4165,12 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 					if (!isset($data_agents[$agent_id]['children'][$module_group_id])) {
 						$data_agents[$agent_id]['children'][$module_group_id] = array();
 						$data_agents[$agent_id]['children'][$module_group_id]['id'] = $module_group_id;
-						$data_agents[$agent_id]['children'][$module_group_id]['name'] = $module_groups[$module_group_id];
+						$data_agents[$agent_id]['children'][$module_group_id]['name'] = io_safe_output($module_groups[$module_group_id]);
 						$data_agents[$agent_id]['children'][$module_group_id]['type'] = 'module_group';
 						$data_agents[$agent_id]['children'][$module_group_id]['size'] = 10;
 						$data_agents[$agent_id]['children'][$module_group_id]['children'] = array();
 
-						$tooltip_content = __('Module group') . ": <b>" . $module_groups[$module_group_id] . "</b>";
+						$tooltip_content = __('Module group') . ": <b>" . $data_agents[$agent_id]['children'][$module_group_id]['name'] . "</b>";
 						$data_agents[$agent_id]['children'][$module_group_id]['tooltip_content'] = $tooltip_content;
 
 						$data_agents[$agent_id]['children'][$module_group_id]['modules_critical'] = 0;
@@ -4261,8 +4262,13 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 					$data_module['name'] = $module_name;
 					$data_module['type'] = 'module';
 					$data_module['size'] = 10;
+					$data_module['link'] = ui_get_full_url("index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$agent_id");
 
 					$tooltip_content = __('Module') . ": <b>" . $module_name . "</b>";
+					if (isset($module_value) && $module_value !== false) {
+						$tooltip_content .= "<br>";
+						$tooltip_content .= __('Value') . ": <b>" . io_safe_output($module_value) . "</b>";
+					}
 					$data_module['tooltip_content'] = $tooltip_content;
 
 					switch ($module_status) {
@@ -4309,7 +4315,7 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 				if (!isset($data_agents[$id])) {
 					$data_agents[$id] = array();
 					$data_agents[$id]['id'] = (int) $id;
-					$data_agents[$id]['name'] = $agent['nombre'];
+					$data_agents[$id]['name'] = io_safe_output($agent['nombre']);
 					$data_agents[$id]['type'] = 'agent';
 					$data_agents[$id]['color'] = COL_NOTINIT;
 				}
@@ -4326,7 +4332,8 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 
 			$group_aux = array();
 			$group_aux['id'] = (int) $id;
-			$group_aux['name'] = $group['nombre'];
+			$group_aux['name'] = io_safe_output($group['nombre']);
+			$group_aux['show_name'] = true;
 			$group_aux['parent'] = (int) $group['parent'];
 			$group_aux['type'] = 'group';
 			$group_aux['size'] = 100;

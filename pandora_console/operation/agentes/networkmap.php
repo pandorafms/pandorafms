@@ -213,11 +213,11 @@ $buttons['topology'] = array('active' => $activeTab == 'topology',
 
 $buttons['dinamic'] = array('active' => $activeTab == 'dinamic',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=dinamic&amp;pure='.$pure.'">' . 
-		html_print_image("images/dynamic_network_icon.png", true, array ("title" => __('Dinamic view'))) .'</a>');
+		html_print_image("images/dynamic_network_icon.png", true, array ("title" => __('Dynamic view'))) .'</a>');
 
-$buttons['radial_dinamic'] = array('active' => $activeTab == 'radial_dinamic',
-	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=radial_dinamic&amp;pure='.$pure.'">' . 
-		html_print_image("images/radial_dynamic_network_icon.png", true, array ("title" => __('Radial dinamic view'))) .'</a>');
+$buttons['radial_dinamic'] = array('active' => $activeTab == 'radial_dynamic',
+	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=radial_dynamic&amp;pure='.$pure.'">' . 
+		html_print_image("images/radial_dynamic_network_icon.png", true, array ("title" => __('Radial dynamic view'))) .'</a>');
 
 $combolist = '<form name="query_sel" method="post" action="index.php?sec=network&sec2=operation/agentes/networkmap">';
 
@@ -281,10 +281,10 @@ switch ($activeTab) {
 		$title = __('Policies view');
 		break;
 	case 'dinamic':
-		$title = __('Dinamic view');
+		$title = __('Dynamic view');
 		break;
 	case 'radial_dinamic':
-		$title = __('Radial dinamic view');
+		$title = __('Radial dynamic view');
 		break;
 }
 
@@ -333,7 +333,7 @@ $table->data[0][] = __('Name:') . '&nbsp;' .
 	html_print_input_text ('name', $name, '', 25, 50, true);
 $table->data[0][] = __('Group:') . '&nbsp;' .
 	html_print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
-if ($activeTab == 'groups' || $activeTab == 'policies' || $activeTab == 'radial_dinamic') {
+if ($activeTab == 'groups' || $activeTab == 'policies' || $activeTab == 'radial_dynamic') {
 	$table->data[0][] = __('Module group') . '&nbsp;' .
 		html_print_select_from_sql ('
 			SELECT id_mg, name
@@ -345,7 +345,7 @@ if ($activeTab == 'topology') {
 		html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dinamic') {
+if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
 	$table->data[0][] = __('Layout') . '&nbsp;' .
 		html_print_select ($layout_array, 'layout', $layout, '', '', '', true);
 }
@@ -368,7 +368,7 @@ if ($activeTab == 'policies') {
 		html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dinamic') {
+if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
 	$table->data[1][] = __('No Overlap') . '&nbsp;' .
 		html_print_checkbox ('nooverlap', '1', $nooverlap, true);
 }
@@ -386,12 +386,12 @@ if (($activeTab == 'groups' || $activeTab == 'policies') &&
 	}
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dinamic') {
+if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
 	$table->data[1][] = __('Simple') . '&nbsp;' .
 		html_print_checkbox ('simple', '1', $simple, true);
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dinamic') {
+if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
 	$table->data[1][] = __('Regenerate') . '&nbsp;' .
 		html_print_checkbox ('regen', '1', $regen, true);
 }
@@ -412,12 +412,12 @@ if ($pure == "1") {
 	
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dinamic') {
+if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
 	$table->data[1][] = __('Font') . '&nbsp;' .
 		html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
 }
 
-if ($activeTab != 'radial_dinamic') {
+if ($activeTab != 'radial_dynamic') {
 	$table->data[2][] = __('Free text for search (*):') . '&nbsp;' .
 		html_print_input_text('text_filter', $text_filter, '', 30, 100, true);
 }
@@ -460,7 +460,7 @@ if ($id_networkmap != 0) {
 		case 'dinamic':
 			require_once('operation/agentes/networkmap.dinamic.php');
 			break;
-		case 'radial_dinamic':
+		case 'radial_dynamic':
 			require_once('operation/agentes/networkmap.dinamic.php');
 			break;
 		default:

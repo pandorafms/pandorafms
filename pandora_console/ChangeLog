@@ -1,5 +1,12 @@
 2014-08-21  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
+	* include/functions_networkmap.php,
+	  operation/agentes/networkmap.dinamic.php,
+	  operation/agentes/networkmap.php: Renamed some text
+	from 'dinamic' to 'dynamic'.
+
+2014-08-21  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
 	* images/radial_dynamic_network_icon.png: Added file.
 	
 	* operation/agentes/networkmap.php: Changed the icon

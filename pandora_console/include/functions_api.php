@@ -6513,6 +6513,38 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 	}
 }
 
+/**
+ * Add event commet.
+ *
+ * @param $id event id.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, but only <csv_separator> is available.
+ * @param $thrash3 Don't use.
+ *
+ * example:
+ *   http://127.0.0.1/pandora_console/include/api.php?op=set&op2=add_event_comment&id=event_id&other=string|&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_add_event_comment($id, $thrash2, $other, $thrash3) {
+
+        if ($other['type'] == 'string') {
+                returnError('error_parameter', 'Error in the parameters.');
+                return;
+        }
+        else if ($other['type'] == 'array') {
+		$comment = $other['data'][0];
+		$meta = $other['data'][1];
+		$history = $other['data'][2];
+
+		$status = events_comment ($id, $comment, 'Added comment', $meta, $history);
+		if (is_error($status)) {
+			returnError('error_add_event_comment', __('Error adding event comment.'));
+			return;
+		}
+	}
+	returnData('string', array('type' => 'string', 'data' => $status));
+	return;
+}
+
 // http://localhost/pandora_console/include/api.php?op=get&op2=tactical_view&apipass=1234&user=admin&pass=pandora
 function api_get_tactical_view($trash1, $trash2, $trash3, $returnType) {
 	$tactical_info = reporting_get_group_stats();

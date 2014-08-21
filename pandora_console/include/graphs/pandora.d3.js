@@ -698,9 +698,7 @@ function sunburst (recipient, data, width, height) {
 
 	var svg = d3.select(recipient).append("svg")
 		.attr("width", width)
-		.attr("height", height)
-		.append("g")
-		.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+		.attr("height", height);
 
 	var partition = d3.layout.partition()
 		.value(function(d) { return d.size; });
@@ -711,20 +709,72 @@ function sunburst (recipient, data, width, height) {
 		.innerRadius(function(d) { return Math.max(0, y(d.y)); })
 		.outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-	var path = svg.selectAll("path")
+	var g = svg.selectAll("g")
 		.data(partition.nodes(data))
-		.enter().append("path")
+		.enter().append("g")
+		.attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+
+	var path = g.append("path")
 		.attr("d", arc)
 		.style("fill", function(d) { return d.color ? d3.rgb(d.color) : color((d.children ? d : d.parent).name); })
+		.style("cursor", "pointer")
 		.on("click", click)
 		.on("mouseover", over_user)
 		.on("mouseout", out_user)
 		.on("mousemove", move_tooltip);
 
+	function computeTextRotation(d) {
+		var angle = x(d.x + d.dx / 2) - Math.PI / 2;
+		return angle / Math.PI * 180;
+	}
+
+	var text = g.append("text")
+		.attr("x", function(d) { return y(d.y); })
+		.attr("dx", "6") // margin
+		.attr("dy", ".35em") // vertical-align
+		.attr("opacity", function(d) {
+			if (typeof d.show_name != "undefined" && d.show_name)
+				return 1;
+			else
+				return 0;
+		})
+		.text(function(d) {
+			return d.name;
+		})
+		.attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
+		.style("font-size", "10px")
+		 // Makes svg elements invisible to events
+		.style("pointer-events", "none");
+
 	function click(d) {
-		path.transition()
-			.duration(750)
-			.attrTween("d", arcTween(d));
+		if (typeof d.link != "undefined") {
+			window.location.href = d.link;
+		}
+		else {
+			// fade out all text elements
+			text.transition().attr("opacity", 0);
+
+			path.transition()
+				.duration(750)
+				.attrTween("d", arcTween(d))
+				.each("end", function(e, i) {
+					// check if the animated element's data e lies within the visible angle span given in d
+					if ((typeof e.type != 'undefined'
+							&& (e.type == "group"
+								|| ( e.type == "agent" && (d.type == "group" || d.type == "agent" || d.type == "module_group" || d.type == "module") )
+								|| ( (e.type == "module_group" || e.type == "module") && (d.type == "agent" || d.type == "module_group") ) ))
+							&& e.x >= d.x && e.x < (d.x + d.dx)) {
+						// get a selection of the associated text element
+						var arcText = d3.select(this.parentNode).select("text");
+						// fade in the text element and recalculate positions
+						arcText
+							.attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
+							.attr("x", function(d) { return y(d.y); })
+							.transition().duration(250)
+								.attr("opacity", 1);
+		 			}
+				});
+		}
 	}
 
 	d3.select(self.frameElement).style("height", height + "px");

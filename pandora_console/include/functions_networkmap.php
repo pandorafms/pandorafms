@@ -1583,8 +1583,8 @@ function networkmap_get_types () {
 	
 	$networkmap_types['topology'] = __('Create a new topology map');
 	$networkmap_types['groups'] = __('Create a new group map');
-	$networkmap_types['dinamic'] = __('Create a new dinamic map');
-	$networkmap_types['radial_dinamic'] = __('Create a new radial dinamic map');
+	$networkmap_types['dinamic'] = __('Create a new dynamic map');
+	$networkmap_types['radial_dynamic'] = __('Create a new radial dynamic map');
 	
 	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_types');
@@ -1607,8 +1607,8 @@ function networkmap_get_filter_types () {
 	
 	$networkmap_types['topology'] = __('Topology');
 	$networkmap_types['groups'] = __('Group');
-	$networkmap_types['dinamic'] = __('Dinamic');
-	$networkmap_types['radial_dinamic'] = __('Radial dinamic');
+	$networkmap_types['dinamic'] = __('Dynamic');
+	$networkmap_types['radial_dynamic'] = __('Radial dynamic');
 	
 	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_filter_types');

@@ -28,7 +28,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 
 require_once ('include/functions_networkmap.php');
 
-if ($activeTab == "radial_dinamic") {
+if ($activeTab == "radial_dynamic") {
 	include_once("include/functions_graph.php");
 
 	echo "<div style='width: auto; text-align: center;'>";
@@ -38,7 +38,7 @@ if ($activeTab == "radial_dinamic") {
 		$filter['group'] = $group;
 	if (!empty($module_group))
 		$filter['module_group'] = $module_group;
-	
+
 	echo graph_monitor_wheel(600, 650, $filter);
 
 	echo "</div>";

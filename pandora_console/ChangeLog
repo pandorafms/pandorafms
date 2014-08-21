@@ -1,5 +1,15 @@
 2014-08-21  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
+	* include/functions_graph.php: Added filters to the
+	function "graph_monitor_wheel".
+	
+	* operation/agentes/networkmap.dinamic.php,
+	  operation/agentes/networkmap.php,
+	  include/functions_networkmap.php: Added the 'radial
+	dinamic' type.
+
+2014-08-21  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
 	* include/functions_graph.php: Improved the function
 	"graph_monitor_wheel" to remove the html encoding.
 	

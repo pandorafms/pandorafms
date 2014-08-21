@@ -217,7 +217,7 @@ $buttons['dinamic'] = array('active' => $activeTab == 'dinamic',
 
 $buttons['radial_dinamic'] = array('active' => $activeTab == 'radial_dinamic',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=radial_dinamic&amp;pure='.$pure.'">' . 
-		html_print_image("images/dynamic_network_icon.png", true, array ("title" => __('Radial dinamic view'))) .'</a>');
+		html_print_image("images/radial_dynamic_network_icon.png", true, array ("title" => __('Radial dinamic view'))) .'</a>');
 
 $combolist = '<form name="query_sel" method="post" action="index.php?sec=network&sec2=operation/agentes/networkmap">';
 

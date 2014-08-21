@@ -1,5 +1,12 @@
 2014-08-21  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
+	* images/radial_dynamic_network_icon.png: Added file.
+	
+	* operation/agentes/networkmap.php: Changed the icon
+	of the 'radial dinamic' tab.
+
+2014-08-21  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
 	* include/functions_graph.php: Added filters to the
 	function "graph_monitor_wheel".
 	

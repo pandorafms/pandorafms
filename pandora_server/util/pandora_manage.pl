@@ -17,9 +17,9 @@ use POSIX qw(strftime);
 use POSIX;
 use HTML::Entities;		# Encode or decode strings with HTML entities
 use File::Basename;
-use JSON qw(encode_json);
+use JSON qw(decode_json encode_json);
 use MIME::Base64;
-use Encode qw(decode);
+use Encode qw(decode encode_utf8);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -154,6 +154,7 @@ sub help_screen{
     help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events'); 
     help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id'); 
     help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id'); 
+    help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
 	print "\nINCIDENTS:\n\n" unless $param ne '';
     help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
@@ -2707,6 +2708,46 @@ sub cli_get_event_info () {
 	
     exit;
 }
+
+###############################################################################
+# Add event comment
+# Related option: --add_event_comment
+###############################################################################
+sub cli_add_event_comment() {
+	my ($id_event, $user_name, $comment) = @ARGV[2..4];
+
+	my $id_user;
+	if (!defined($user_name) || $user_name eq '') {
+		$id_user = 'admin';
+	}
+	else {
+		$id_user = pandora_get_user_id($dbh,$user_name);
+		exist_check($id_user,'user',$user_name);
+	}
+
+	my $event_name = pandora_get_event_name($dbh, $id_event);
+	exist_check($event_name,'event',$id_event);
+
+	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
+	my $utimestamp = time ();
+	my @additional_comment = ({ comment => $comment, action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
+
+	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
+
+	my $decoded_comment;
+	my $update;
+	if ($current_comment eq '') {
+		$update->{'user_comment'} = encode_json \@additional_comment;
+	}
+	else {
+		$decoded_comment = decode_json($current_comment);
+		push $decoded_comment, @additional_comment;	
+		$update->{'user_comment'} = encode_json $decoded_comment;
+	}
+
+	pandora_update_event_from_hash ($update, 'id_evento', $id_event, $dbh);
+}
+
 ##############################################################################
 # Create incident.
 # Related option: --create_incident
@@ -3459,6 +3500,28 @@ sub pandora_get_event_name($$) {
 	return defined ($event_name) ? $event_name : -1;
 }
 
+##########################################################################
+## Update event from hash
+##########################################################################
+sub pandora_update_event_from_hash ($$$$) {
+	my ($parameters, $where_column, $where_value, $dbh) = @_;
+
+	my $event_id = db_process_update($dbh, 'tevento', $parameters, $where_column, $where_value);
+	return $event_id;
+}
+
+##############################################################################
+# Return event comment given a event id
+##############################################################################
+
+sub pandora_get_event_comment($$) {
+	my ($dbh,$id_event) = @_;
+
+	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM tevento WHERE id_evento = ?',$id_event);
+
+	return defined ($event_name) ? $event_name : -1;
+}
+
 ##############################################################################
 # Return user id given a user name
 ##############################################################################
@@ -3730,6 +3793,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_event_info') {
 			param_check($ltotal, 2,1);
 			cli_get_event_info();
+		}
+		elsif ($param eq '--add_event_comment') {
+			param_check($ltotal, 3);
+			cli_add_event_comment();
 		}
 		elsif ($param eq '--create_incident') {
 			param_check($ltotal, 7, 1);

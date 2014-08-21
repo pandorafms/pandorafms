@@ -4091,7 +4091,7 @@ function graph_snmp_traps_treemap ($data, $width = 700, $height = 700) {
 /**
  * Print a solarburst graph with a representation of all the groups, agents, module groups and modules grouped
  */
-function graph_monitor_wheel ($width = 500, $height = 600) {
+function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	global $config;
 
 	include_once ($config['homedir'] . "/include/functions_users.php");
@@ -4101,7 +4101,9 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 
 	$graph_data = array();
 
-	$groups = users_get_groups(false, "AR", false, true);
+	$filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
+
+	$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
 
 	$data_groups = array();
 	if (!empty($groups)) {
@@ -4138,6 +4140,9 @@ function graph_monitor_wheel ($width = 500, $height = 600) {
 					$module_name = io_safe_output($module['nombre']);
 					$module_status = modules_get_agentmodule_status($module_id);
 					$module_value = modules_get_last_value($module_id);
+					
+					if ($filter_module_group && $filter_module_group != $module_group_id)
+						continue;
 
 					if (!isset($data_agents[$agent_id])) {
 						$data_agents[$agent_id] = array();

@@ -1,3 +1,7 @@
+2014-08-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_api.php: Added a function to add an event comment.
+
 2014-08-20  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* include/functions_graph.php: Modified the color of

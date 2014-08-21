@@ -1,3 +1,12 @@
+2014-08-21  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Prevent some warnings would be
+	written at pandora_server.error ("Use of uninitialized value
+	in subroutine entry at ..." and "Use of uninitialized value in
+	string ne at ..").
+
+	MERGED FROM BRANCH 5.0 (rev10441).
+
 2014-08-21  Junichi Satoh <junichi@rworks.jp>
 
 	* util/pandora_manage.pl: Added an option to add an event comment.

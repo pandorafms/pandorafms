@@ -1,3 +1,10 @@
+2014-08-21 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Prevent some warnings would be
+	written at pandora_server.error ("Use of uninitialized value
+	in subroutine entry at ..." and "Use of uninitialized value in
+	string ne at ...").
+
 2014-08-14 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/PluginServer.pm: Added new alert macros

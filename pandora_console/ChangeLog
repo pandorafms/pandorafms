@@ -1,3 +1,10 @@
+2014-08-22  Junichi Satoh  <junichi@rworks.jp>
+
+	* mobile/operation/events.php: Fixed present event filter loading
+	failure.
+
+	MERGED FROM THE TRUNK
+
 2014-08-01  Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/planned_downtime.editor.php,

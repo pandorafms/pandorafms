@@ -1,3 +1,10 @@
+2014-08-22  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* pandoradb.sql,
+	  pandoradb.data.postgreSQL.sql,
+	  pandoradb.data.oracle.sql: Fixed the id column in an
+	alert command insertion.
+
 2014-08-22  Junichi Satoh  <junichi@rworks.jp>
 
 	* mobile/operation/events.php: Fixed present event filter loading

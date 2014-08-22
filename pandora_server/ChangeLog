@@ -1,3 +1,8 @@
+2014-08-22  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* FreeBSD/pandora_server: Fixed bug fail to start pandora_server with
+	 no profile.
+
 2014-08-21  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Prevent some warnings would be

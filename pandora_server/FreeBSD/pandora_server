@@ -48,29 +48,28 @@ if [ "$2" ]; then
 		eval pandora_server_enable="\${pandora_server_${profile}_enable:-$pandora_server_enable}"
 		eval pandora_server_flags="\${pandora_server_${profile}_flags:-$pandora_server_flags}"
 		eval pidfile="\${pandora_server_${profile}_pidfile:-$pidfile}"
-		pandora_server_flags="$pandora_server_flags -P $pidfile $pandora_server_configfile"
 	else
 		echo "$0: extra argument ignored"
 	fi
-else
-	if [ "${pandora_server_profiles}" ] && [ "$1" ]; then
-		for profile in ${pandora_server_profiles}; do
-			eval _enable="\${pandora_server_${profile}_enable}"
-			case "${_enable:-${pandora_server_enable}}" in
-			[Yy][Ee][Ss]);;
-			*) continue;;
-			esac
-			echo "===> pandora_server profile: ${profile}"
-			/usr/local/etc/rc.d/pandora_server $1 ${profile}
-			retcode="$?"
-			if [ "0${retcode}" -ne 0 ]; then
-				failed="${profile} (${retcode}) ${failed:-}"
-			else
-				success="${profile} ${success:-}"
-			fi
-		done
-		exit 0
-	fi
+elif [ "${pandora_server_profiles}" ] && [ "$1" ]; then
+	for profile in ${pandora_server_profiles}; do
+		eval _enable="\${pandora_server_${profile}_enable}"
+		case "${_enable:-${pandora_server_enable}}" in
+		[Yy][Ee][Ss]);;
+		*) continue;;
+		esac
+		echo "===> pandora_server profile: ${profile}"
+		/usr/local/etc/rc.d/pandora_server $1 ${profile}
+		retcode="$?"
+		if [ "0${retcode}" -ne 0 ]; then
+			failed="${profile} (${retcode}) ${failed:-}"
+		else
+			success="${profile} ${success:-}"
+		fi
+	done
+	exit 0
 fi
+
+pandora_server_flags="$pandora_server_flags -P $pidfile $pandora_server_configfile"
 
 run_rc_command "$1"

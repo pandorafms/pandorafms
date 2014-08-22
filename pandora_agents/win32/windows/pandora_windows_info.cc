@@ -282,12 +282,6 @@ Pandora_Windows_Info::getSoftware (list<string> &rows, string separator) {
             continue;
         }
      
-        /* Skip system components */
-        system = getRegistryValue (HKEY_LOCAL_MACHINE, reg_path, "SystemComponent");
-        if (system != "") {
-           continue;
-        }
-        
         /* Get application version */
         version = getRegistryValue (HKEY_LOCAL_MACHINE, reg_path, "DisplayVersion");
         if (version != "") {

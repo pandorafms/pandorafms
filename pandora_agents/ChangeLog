@@ -1,3 +1,8 @@
+2014-08-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/windows/pandora_windows_info.cc: Show system components when
+	  retrieving the list of installed software.
+
 2014-06-23  Vanessa Gil  <vanessa.gil@artica.es>
 
 	* win32/bin/pandora_agent.conf: Fixed encoding

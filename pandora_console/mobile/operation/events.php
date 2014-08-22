@@ -406,7 +406,7 @@ class Events {
 		$this->free_search = $filter['search'];
 		$this->hours_old = $filter['event_view_hr'];
 		$this->status = $filter['status'];
-		$this->type = $filter['type'];
+		$this->type = $filter['event_type'];
 		$this->severity = $filter['severity'];
 	}
 	

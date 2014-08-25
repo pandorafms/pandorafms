@@ -1,5 +1,10 @@
 2014-08-25  Vanessa Gil <vanessa.gil@artica.es>
 
+	* godmode/groups/group_list.php: Fixed bug listing
+	group hierarchy.
+
+2014-08-25  Vanessa Gil <vanessa.gil@artica.es>
+
 	* godmode/groups/configure_group.php
 	  include/functions_tags.php
 	  operation/events/events.build_query.php

@@ -291,36 +291,26 @@ $groups = users_get_groups_tree ($config['id_user'], "AR", true);
 
 $table->width = '98%';
 
+$all_parents = array();
 $groups_count = 0;
 $sons = array();
+$groups_aux = array();
 foreach ($groups as $k => $g) {
-	if ($g['parent'] == 0) {
-		$groups_count++;
+	if ($g['parent'] != 0) {
+		$all_parents[$g['parent']] = $g['parent'];
 	}
-	else if ($g['parent'] != 0) {
-		
-		//Check the group has the parent in the list
-		//else the group chage to hook in the all group
-		$found = false;
-		foreach ($groups as $check_g) {
-			if ($check_g['id_grupo'] == $g['parent']) {
-				$found = true;
-				break;
-			}
-		}
-		
-		
-		if ($found) {
+}
+krsort($all_parents);
+foreach ($all_parents as $parent) {
+	foreach ($groups as $k => $g) {
+		if ($g['parent'] == $parent) {
 			$sons[$g['parent']][] = $g;
 			unset($groups[$k]);
-		}
-		else {
-			$groups_count++;
 		}
 	}
 }
 
-
+$groups_count = count($groups_aux);
 
 if (check_acl($config['id_user'], 0, "PM")) {
 	echo '<br />';

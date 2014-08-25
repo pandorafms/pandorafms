@@ -188,7 +188,9 @@ else {
 $tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
 	'event_condition', 'AND');
 
-$sql_post .= $tags_acls_condition;
+if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != ERR_ACL)&& ($tags_acls_condition != -110000)) {
+	$sql_post .= $tags_acls_condition;
+}
 
 // Metaconsole fitlers
 if ($meta) {

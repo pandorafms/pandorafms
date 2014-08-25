@@ -667,6 +667,20 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 	elseif (!is_array($id_group)) {
 		$id_group = (array) $id_group;
 	}
+
+	$id_group_aux = array();
+	foreach ($id_group as $key=>$id) {
+		array_push($id_group_aux, $id);
+		$parent = db_get_value('parent','tgrupo','id_grupo',$id);
+
+		if ($parent !== 0) {
+			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
+			if ($propagate == 1) {
+				array_push($id_group_aux,$parent);
+			}
+		}
+	}
+	$id_group = $id_group_aux;
 	
 	$acl_column = get_acl_column($access);
 	
@@ -868,11 +882,14 @@ function tags_get_acl_tags_event_condition($acltags) {
 		$condition .= "($group_condition AND \n($tags_condition))\n";
 	}
 	
+	//Commented because ACLs propagation don't work
+/*
 	if (!empty($condition)) {
 		// Juanma (08/05/2014) Fix : Also add events of other groups (taking care of propagate ACLs func!)
 		if (!empty($_groups_not_in))
 			$condition = sprintf("\n((%s) OR id_grupo NOT IN (%s))", $condition, rtrim($_groups_not_in, ','));
 	}
+*/
 	
 	return $condition;
 }
@@ -1017,33 +1034,30 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 	if (is_array($id_group)) {
 
 		foreach ($id_group  as $group) {
-
 			if($group > 0) {
-                        	if(isset($acls[$group])) {
-                                	foreach($tags as $tag) {
-                                        	$tag = tags_get_id($tag);
+				if(isset($acls[$group])) {
+					foreach($tags as $tag) {
+						$tag = tags_get_id($tag);
 
-                                        	if(in_array($tag, $acls[$group])) {
-                                                	return true;
-                                        	}
-                                	}
-                        	}
-                        	else {
-                                	return false;
-                        	}
+						if(in_array($tag, $acls[$group])) {
+							return true;
+						}
+					}
+				}
+				else {
+					return false;
+				}
 			} else {
-                        	foreach($acls as $acl_tags) {
-                                	foreach($tags as $tag) {
-                                        	$tag = tags_get_id($tag);
-                                        	if(in_array($tag, $acl_tags)) {
-                                                	return true;
-                                        	}
-                                	}
-                        	}
-               		}
-
-                }
-
+				foreach($acls as $acl_tags) {
+					foreach($tags as $tag) {
+							$tag = tags_get_id($tag);
+							if(in_array($tag, $acl_tags)) {
+								return true;
+							}
+					}
+				}
+			}
+		}
 	} else {
 		if($id_group > 0) {
 			if(isset($acls[$id_group])) {
@@ -1072,5 +1086,97 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 	}	
 
 	return false;
+}
+
+function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p = false) {
+	global $config;
+
+	if($id_user === false) {
+		$id_user = $config['id_user'];
+	}
+	
+	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
+
+	// If there are wrong parameters or fail ACL check, return false
+	if($acls === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
+		return false;
+	}
+
+	// If there are not tags restrictions or tags passed, return true
+	if(empty($acls) || empty($tags)) {
+		return true;
+	}
+
+	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
+	if (is_array($id_group)) {
+
+		foreach ($id_group  as $group) {
+			if($group > 0) {
+				if(isset($acls[$group])) {
+					foreach($tags as $tag) {
+						$tag = tags_get_id($tag);
+						if(in_array($tag, $acls[$group])) {
+							return true;
+						}
+					}
+				}
+				else {
+					//return false;
+					$return = false;
+                }
+			} else {
+				foreach($acls as $acl_tags) {
+						foreach($tags as $tag) {
+								$tag = tags_get_id($tag);
+								if(in_array($tag, $acl_tags)) {
+										return true;
+								}
+						}
+				}
+			}
+
+		}
+
+	} else {
+		if($id_group > 0) {
+			if(isset($acls[$id_group])) {
+				foreach($tags as $tag) {
+					$tag = tags_get_id($tag);
+					
+					if(in_array($tag, $acls[$id_group])) {
+						return true;
+					}
+				}
+			}
+			else {
+				//return false;
+				$return = false;
+			}
+		}
+		else {
+			foreach($acls as $acl_tags) {
+				foreach($tags as $tag) {
+					$tag = tags_get_id($tag);
+					if(in_array($tag, $acl_tags)) {
+						return true;
+					}
+				}
+			}
+		}
+	}	
+	//return false;
+	$return = false;
+	
+	if ($return == false) {
+		$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
+
+		if ($parent !== 0) {
+			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
+			if ($propagate == 1) {
+				$acl_parent = tags_check_acl_event($id_user, $parent, $access, $tags,$p);
+				return $acl_parent;
+			}
+		}
+	}
 }
 ?>

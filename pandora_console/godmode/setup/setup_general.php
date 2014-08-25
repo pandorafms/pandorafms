@@ -318,9 +318,9 @@ function show_timezone () {
 }
 
 $(document).ready (function () {
-	
-	$("#zone").attr("disabled", true);
-	$("#timezone").attr("disabled", true);
+
+	$("#zone").attr("hidden", true);
+	$("#timezone").attr("hidden", true);
 	
 	$("input[name='acl_enterprise']").click(function() {
 		flag = $(this).is(':checked');
@@ -333,8 +333,8 @@ $(document).ready (function () {
 	
 	
 	$("#change_timezone").click(function () {
-		$("#zone").attr("disabled", false);
-		$("#timezone").attr("disabled", false);
+		$("#zone").attr("hidden", false);
+		$("#timezone").attr("hidden", false);
 	});
 });
 </script>

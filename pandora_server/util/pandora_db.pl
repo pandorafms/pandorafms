@@ -179,6 +179,7 @@ sub pandora_purgedb ($$) {
 			my @events = get_db_rows ($dbh, 'SELECT * FROM tmetaconsole_event WHERE estado = 0 AND utimestamp < ?', $event_limit);
 			foreach my $event (@events) {
 				db_process_insert($dbh, 'id_evento', 'tmetaconsole_event_history', $event);
+				db_do($dbh, "DELETE FROM tmetaconsole_event WHERE id_evento =".$event->{'id_evento'});
 			}
 		}
 		

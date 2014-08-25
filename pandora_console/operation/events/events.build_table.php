@@ -503,7 +503,7 @@ foreach ($result as $event) {
 		
 		if(!$readonly) {
 			// Validate event
-			if (($event["estado"] != 1) && (tags_check_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1)) {
+			if (($event["estado"] != 1) && (tags_check_acl_event ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'], true) == 1)) {
 				$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
 				$data[$i] .= html_print_image ("images/ok.png", true,
 					array ("title" => __('Validate event')));
@@ -536,12 +536,12 @@ foreach ($result as $event) {
 		$i++;
 		
 		if(!$readonly) {
-			if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
+			if (tags_check_acl_event ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
 				//Checkbox
 				// Class 'candeleted' must be the fist class to be parsed from javascript. Dont change
 				$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="candeleted chk_val"', true);
 			}
-			else if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1) {
+			else if (tags_check_acl_event ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1) {
 				//Checkbox
 				$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="chk_val"', true);
 			}

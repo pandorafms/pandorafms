@@ -149,7 +149,7 @@ $table->data[3][0] = __('Alerts');
 $table->data[3][1] = html_print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
 
 $table->data[4][0] = __('Propagate ACL') . ui_print_help_tip (__("Propagate the same ACL security into the child subgroups."), true);
-$table->data[4][1] = html_print_checkbox('propagate', 1, $propagate, true);
+$table->data[4][1] = html_print_checkbox('propagate', 1, $propagate, true).ui_print_help_icon ("propagate_acl", true);
 
 $table->data[5][0] = __('Custom ID');
 $table->data[5][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);

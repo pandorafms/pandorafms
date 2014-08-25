@@ -1,5 +1,10 @@
 2014-08-25  Vanessa Gil <vanessa.gil@artica.es>
 
+	* include/help/en/help_propagate_acl.php
+	  include/help/es/help_propagate_acl.php: Added help.
+
+2014-08-25  Vanessa Gil <vanessa.gil@artica.es>
+
 	* godmode/groups/group_list.php: Fixed bug listing
 	group hierarchy.
 

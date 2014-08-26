@@ -136,16 +136,35 @@ $table->data[5][2] = html_print_textarea ('command_recovery_preview', 5, 30, '',
 
 $row = 6;
 for ($i = 1; $i <= 10; $i++) {
-	$table->data['field'.$i][0] = html_print_image('images/spinner.gif',true);
-	$table->data['field'.$i][1] = html_print_image('images/spinner.gif',true);
-	$table->data['field'.$i][2] = html_print_image('images/spinner.gif',true);
+	$table->data['field' . $i][0] = html_print_image('images/spinner.gif', true);
+	$table->data['field' . $i][1] = html_print_image('images/spinner.gif', true);
+	$table->data['field' . $i][2] = html_print_image('images/spinner.gif', true);
 	// Store the value in a hidden to keep it on first execution
-	$table->data['field'.$i][1] .= html_print_input_hidden('field'.$i.'_value', !empty($action['field'.$i]) ? $action['field'.$i] : '', true);
-	$table->data['field'.$i][2] .= html_print_input_hidden('field'.$i.'_recovery_value', !empty($action['field'.$i.'_recovery']) ? $action['field'.$i.'_recovery'] : '', true);
+	$table->data['field' . $i][1] .= html_print_input_hidden('field' . $i . '_value',
+		!empty($action['field' . $i]) ?
+			$action['field' . $i] : '', true);
+	$table->data['field' . $i][2] .= html_print_input_hidden('field' . $i . '_recovery_value',
+		!empty($action['field' . $i . '_recovery']) ?
+			$action['field' . $i . '_recovery'] : '', true);
 }
 
 echo '<form method="post" action="index.php?sec=' . $sec . '&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
-html_print_table ($table);
+$table_html = html_print_table ($table, true);
+
+////////////////////////////////////////////////////////////////////////
+//Hack to hook the bubble dialog of clippy in any place, the intro.js
+//fails with new elements in the dom from javascript code
+//----------------------------------------------------------------------
+$table_html = str_replace(
+	'<tr id="table_macros-field1" style="" class="datos2">',
+	"</tbody>
+	<tbody id=\"clippy_fields\">
+	<tr id=\"table_macros-field1\" class=\"datos\">",
+	$table_html);
+
+////////////////////////////////////////////////////////////////////////
+
+echo $table_html;
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
@@ -158,9 +177,9 @@ if ($id) {
 		}
 	} 
 	else {
-	
-			html_print_input_hidden ('update_action', 1);
-			html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
+		
+		html_print_input_hidden ('update_action', 1);
+		html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
 	}
 }
 else {
@@ -256,7 +275,7 @@ $(document).ready (function () {
 				
 				render_command_preview(original_command);
 				render_command_recovery_preview(original_command);
-
+				
 				$(".fields").keyup (function() {
 					render_command_preview(original_command);
 				});

@@ -28,6 +28,12 @@ function clippy_start($sec2) {
 	
 	$sec2 = str_replace('/', '_', $sec2);
 	
+	//Avoid some case the other parameters in the url
+	if (strstr($sec2, "&") !== false) {
+		$chunks = explode("&", $sec2);
+		$sec2 = $chunks[0];
+	}
+	
 	if ($sec2 != 'homepage') {
 		if (is_file("include/help/clippy/" . $sec2 . ".php")) {
 			require("include/help/clippy/" . $sec2 . ".php");
@@ -76,7 +82,6 @@ function clippy_write_javascript_helps_steps($tours) {
 	
 	$clippy = get_cookie('clippy', false);
 	set_cookie('clippy', null);
-	
 	
 	//Get the help steps from a task
 	$steps = $tours['tours'][$clippy]['steps'];

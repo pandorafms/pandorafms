@@ -520,7 +520,7 @@ if ($custom_fields === false) $custom_fields = array();
 foreach ($custom_fields as $custom_field) {
 	$row = array();
 	$row[0] = $custom_field['name'];
-
+	
 	$custom_field_value = "";
 	if (!empty($ag_custom_fields)) {
 		$custom_field_value = $ag_custom_fields[$custom_field['id_field']];
@@ -529,7 +529,7 @@ foreach ($custom_fields as $custom_field) {
 		}
 	}
 	$row[1] = html_print_input_text ("ag_custom_fields[".$custom_field['id_field']."]", $custom_field_value, '', 100, 300, true);
-
+	
 	$table_custom_fields->data[] = $row;
 }
 
@@ -1067,7 +1067,19 @@ foreach ($result as $row) {
 		$data[1] .= '</a></strong>';
 	}
 	
-	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true); 
+	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true);
+	if (check_acl ($config['id_user'], $row['id_group'], "AW")) 
+		$data[2] .= '<a href="' .
+			'index.php?' .
+				'sec=gagente&amp;' .
+				'sec2=godmode/agentes/configurar_agente&amp;' .
+				'id_agente=' . $row['id_agent'] . '&amp;' .
+				'tab=module&amp;' .
+				'id_agent_module=' . $row["id_agente_modulo"] . '&amp;' .
+				'edit_module=1">' .
+				html_print_image("images/config.png", true,
+					array("alt" => '0', "border" => "", "title" => __('Edit'))) .
+			'</a>';
 	
 	$data[3] = ui_print_truncate_text($row["module_name"], 'agent_small', false, true, true);
 	if ($row["extended_info"] != "") {
@@ -1079,10 +1091,6 @@ foreach ($result as $row) {
 				'title' => $row["tags"],
 				'style' => 'width: 20px; margin-left: 3px;'));
 	}
-	
-/*
-	$data[4] = ui_print_truncate_text($row['tags'], 'agent_small', false, true, true, '[&hellip;]', 'font-size:7pt;');
-*/
 	
 	$data[5] = ($row['module_interval'] == 0) ?
 		human_time_description_raw($row['agent_interval'])

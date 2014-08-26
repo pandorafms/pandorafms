@@ -89,11 +89,11 @@ input[type=submit], input[type=button] {
 }
 
 select {
-	border:1px solid #ddd;
+	border: 1px solid #ddd;
 }
 checkbox {
 	padding: 4px;
-	border:1px solid #eee;
+	border: 1px solid #eee;
 }
 h1, h2, h3, h4 {
 	font-weight: bold;
@@ -146,7 +146,7 @@ h1#log_title {
 	margin-bottom: 0px;
 }
 div#log_msg {
-	display:none;
+	display: none;
 }
 div#error_buttons {
 	margin-top: 20px;
@@ -593,8 +593,8 @@ input.datos_readonly {
 }
 
 input.sub {
-	font-weight: bold;
-
+	font-weight: normal;
+	
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
@@ -604,9 +604,9 @@ input.sub {
 	background-color: #333 !important;
 	background-repeat: no-repeat !important;
 	background-position: 92% 5px !important;
-
+	
 	color: white !important;
-	padding: 3px 3px 3px 9px;
+	padding: 3px 3px 5px 12px;
 	
 	border-color: #333;
 }
@@ -804,7 +804,8 @@ th {
 	color: #fff;
 	background-color: #666;
 	text-align:center;
-	font-size: 7pt;
+	font-size: 7.5pt;
+	letter-spacing: 0.3pt;
 }
 tr.datos, tr.datost, tr.datosb , tr.datos_id, 
 tr.datosf9 { 
@@ -871,7 +872,7 @@ tr.disabled_row_user * {
 }
 
 .bg { /* op menu */
-	background: #6db431;
+	background: #82b92e;
 }
 
 .bg2 { /* main page */
@@ -1022,20 +1023,20 @@ div.title_line {
 }
 
 #menu_tab_frame {
-	background:#FAFAFA;
+	background: #FAFAFA;
 }
 #menu_tab_frame_view {
-	background:#FAFAFA;
+	background: #FAFAFA;
 }
 
 #menu_tab_frame, #menu_tab_frame_view {
 	display: block !important;
-	border-bottom:1px solid #666;
+	border-bottom: 1px solid #b3b3b3;
 /*	float:left; */
-	margin-left:-8px;
-	min-height:25px;
-	padding-right:28px;
-	width:100%;
+	margin-left: -8px;
+	min-height: 25px;
+	padding-right: 28px;
+	width: 100%;
 }
 
 #menu_tab {
@@ -1061,7 +1062,7 @@ div.title_line {
 	
 	-moz-border-top-right-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
-	border-top-right-radius: 5px;	
+	border-top-right-radius: 5px;
 	
 	-moz-border-top-left-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
@@ -1091,7 +1092,7 @@ div.title_line {
 
 
 #menu_tab li.tab_operation a, #menu_tab a.tab_operation {
-	background: #6ba532;
+	background: #82b92e;
 	padding-left: 3px;
 	padding-right: 3px;
 	min-height: 23px;
@@ -1112,7 +1113,7 @@ div.title_line {
 }
 
 #menu_tab li.nomn_high a {
-	/*background: #6db431;*/
+	/*background: #82b92e;*/
 	color: #fff;
 }
 #menu_tab .mn li a {
@@ -1120,7 +1121,7 @@ div.title_line {
 	text-decoration: none;
 }
 #menu_tab li.nomn:hover a, #menu_tab li:hover ul a:hover {
-	/*background: #6db431;*/
+	/*background: #82b92e;*/
 	color: #fff;
 }
 #menu_tab li:hover a {
@@ -1175,7 +1176,7 @@ div.title_line {
 }
 
 #menu_tab_left ul.mn li.view {
-	background: #6db431;
+	background: #82b92e;
 	max-width: 450px;
 	min-width: 300px;
 	padding: 2px 5px 0px;
@@ -2709,4 +2710,19 @@ table#policy_modules td * {
 }
 .context_help_body {
 	text-align: left;
+}
+
+#left_column_logon_ok {
+	width: 750px;
+	float:left;
+}
+
+#news_board {
+	width: 750px;
+}
+
+#right_column_logon_ok {
+	width: 350px;
+	float: right;
+	margin-right: 20px;
 }

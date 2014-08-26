@@ -1,5 +1,15 @@
 2014-08-26  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/introjs.css, include/styles/pandora_black.css,
+	include/styles/pandora.css, general/logon_ok.php,
+	mobile/include/style/main.css: some aesthetic changes suggested by
+	Carla.
+	
+	* include/help/clippy/godmode_agentes_modificar_agente.php: fixed
+	the position of dialog.
+
+2014-08-26  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/alerts/configure_alert_action.php,
 	include/help/clippy/godmode_agentes_modificar_agente.php,
 	include/help/clippy/homepage.php,

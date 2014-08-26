@@ -39,7 +39,8 @@ function clippy_start_page() {
 		'intro' => __('Please, type an agent to save the modules for monitoring a server.')
 		);
 	$return_tours['tours']['monitoring_server_step_1']['steps'][] = array(
-		'element'=> 'input[name="srcbutton"]',
+		'element' => 'input[name="srcbutton"]',
+		'position' => 'left',
 		'intro' => __('If you have typed the name correctly you will see the agent.')
 		);
 	$return_tours['tours']['monitoring_server_step_1']['conf'] = array();
@@ -60,6 +61,7 @@ function clippy_start_page() {
 		);
 	$return_tours['tours']['monitoring_server_step_2']['steps'][] = array(
 		'element'=> '#agent_list',
+		'position' => 'top',
 		'intro' => __('Choose the agent and click on the name.')
 		);
 	$return_tours['tours']['monitoring_server_step_2']['conf'] = array();

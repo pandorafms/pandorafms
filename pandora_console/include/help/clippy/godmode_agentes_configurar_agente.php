@@ -31,11 +31,12 @@ function clippy_start_page() {
 	$return_tours['tours']['monitoring_server_step_3'] = array();
 	$return_tours['tours']['monitoring_server_step_3']['steps'] = array();
 	$return_tours['tours']['monitoring_server_step_3']['steps'][] = array(
-		'element'=> '#clippy',
+		'element' => '#clippy',
 		'intro' => __('Now you must go to Modules. Don\'t worry I\'ll lead you.')
 		);
 	$return_tours['tours']['monitoring_server_step_3']['steps'][] = array(
-		'element'=> "img[alt='Modules']",
+		'element' => "img[alt='Modules']",
+		'position' => 'left',
 		'intro' => __('Click in this tab..')
 		);
 	$return_tours['tours']['monitoring_server_step_3']['conf'] = array();
@@ -121,6 +122,66 @@ function clippy_start_page() {
 	$return_tours['tours']['monitoring_server_step_6']['conf'] = array();
 	$return_tours['tours']['monitoring_server_step_6']['conf']['show_bullets'] = 0;
 	$return_tours['tours']['monitoring_server_step_6']['conf']['show_step_numbers'] = 0;
+	//==================================================================
+	
+	//==================================================================
+	//Help tour about the email alert module (step 7)
+	//------------------------------------------------------------------
+	$return_tours['tours']['email_alert_module_step_7'] = array();
+	$return_tours['tours']['email_alert_module_step_7']['steps'] = array();
+	$return_tours['tours']['email_alert_module_step_7']['steps'][] = array(
+		'element' => "img[alt='Alerts']",
+		'position' => 'left',
+		'intro' => __('Click on alerts tab and then fill the form to add an alert.')
+		);
+	$return_tours['tours']['email_alert_module_step_7']['conf'] = array();
+	$return_tours['tours']['email_alert_module_step_7']['conf']['show_bullets'] = 0;
+	$return_tours['tours']['email_alert_module_step_7']['conf']['show_step_numbers'] = 0;
+	$return_tours['tours']['email_alert_module_step_7']['conf']['next_help'] = 'email_alert_module_step_8';
+	//==================================================================
+	
+	//==================================================================
+	//Help tour about the email alert module (step 8)
+	//------------------------------------------------------------------
+	$return_tours['tours']['email_alert_module_step_8'] = array();
+	$return_tours['tours']['email_alert_module_step_8']['steps'] = array();
+	$return_tours['tours']['email_alert_module_step_8']['steps'][] = array(
+		'element' => "select[name='id_agent_module']",
+		'intro' => __('Select the critical module.')
+		);
+	$return_tours['tours']['email_alert_module_step_8']['steps'][] = array(
+		'element' => "select[name='template']",
+		'intro' => __('In template select "Critical Condition".')
+		);
+	$return_tours['tours']['email_alert_module_step_8']['steps'][] = array(
+		'element' => "select[name='action_select']",
+		'intro' => __('Now, select the action created before.')
+		);
+	$return_tours['tours']['email_alert_module_step_8']['steps'][] = array(
+		'element' => "input[name='add']",
+		'position' => 'left',
+		'intro' => __('Click on Add Alert button to create the alert.')
+		);
+	$return_tours['tours']['email_alert_module_step_8']['conf'] = array();
+	$return_tours['tours']['email_alert_module_step_8']['conf']['show_bullets'] = 0;
+	$return_tours['tours']['email_alert_module_step_8']['conf']['show_step_numbers'] = 0;
+	$return_tours['tours']['email_alert_module_step_8']['conf']['next_help'] = 'email_alert_module_step_9';
+	//==================================================================
+	
+	//==================================================================
+	//Help tour about the email alert module (step 9)
+	//------------------------------------------------------------------
+	$return_tours['tours']['email_alert_module_step_9'] = array();
+	$return_tours['tours']['email_alert_module_step_9']['steps'] = array();
+	$return_tours['tours']['email_alert_module_step_9']['steps'][] = array(
+		'element' => "img[alt='View']",
+		'position' => 'left',
+		'intro' => __('To test the alert you\'ve just created go to the main view by clicking on the eye tab.')
+		);
+	$return_tours['tours']['email_alert_module_step_9']['conf'] = array();
+	$return_tours['tours']['email_alert_module_step_9']['conf']['show_bullets'] = 0;
+	$return_tours['tours']['email_alert_module_step_9']['conf']['show_step_numbers'] = 0;
+	$return_tours['tours']['email_alert_module_step_9']['conf']['next_help'] = 'email_alert_module_step_10';
 	//==================================================================
 	
 	return $return_tours;

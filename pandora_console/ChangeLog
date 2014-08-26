@@ -1,3 +1,19 @@
+2014-08-26  Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/alerts/configure_alert_action.php,
+	include/help/clippy/godmode_agentes_modificar_agente.php,
+	include/help/clippy/homepage.php,
+	include/help/clippy/module_unknow.php,
+	include/help/clippy/godmode_agentes_configurar_agente.php,
+	include/help/clippy/godmode_alerts_alert_actions.php,
+	include/help/clippy/operation_agentes_ver_agente.php,
+	include/help/clippy/godmode_alerts_configure_alert_action.php,
+	include/help/clippy/operation_agentes_status_monitor.php,
+	include/help/en/help_context_pandora_server_email.php,
+	include/functions_clippy.php, operation/menu.php,
+	operation/agentes/status_monitor.php: some changes suggested by
+	Carla.
+
 2014-08-25  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/setup/setup_general.php: Improved timezone

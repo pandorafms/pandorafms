@@ -44,7 +44,7 @@ function clippy_start_page() {
 		);
 	$return_tours['tours']['monitoring_server_step_1']['conf'] = array();
 	$return_tours['tours']['monitoring_server_step_1']['conf']['show_bullets'] = 0;
-	$return_tours['tours']['monitoring_server_step_1']['conf']['show_step_numbers'] = 1;
+	$return_tours['tours']['monitoring_server_step_1']['conf']['show_step_numbers'] = 0;
 	$return_tours['tours']['monitoring_server_step_1']['conf']['next_help'] = 'monitoring_server_step_2';
 	//==================================================================
 	

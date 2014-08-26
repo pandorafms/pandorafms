@@ -55,15 +55,19 @@ function clippy_start_page_homepage() {
 	$return_tours['tours']['homepage']['steps'][] = array(
 		'element'=> '#clippy',
 		'intro' => __('Which task would you like to do first?') . '<br/><br/>' .
-			'<ul style="text-align: left; margin-left: 3px; list-style-type: disc;">' .
+			'<ul style="text-align: left; margin-left: 10px; list-style-type: disc;">' .
 				'<li>' .
 					"<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>" . 
-					//'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&clippy=monitoring_server">' . 
 						__('Ping to a Linux or Windows server with a Pandora FMS agent') .
 					'</a>' .
 				'</li>' .
-				'<li>' . __('Monitor a switch with remote SNMP') . '</li>' .
-				'<li>' . __('Monitor a Windows server with remote WMI') . '</li>' .
+				'<li>' .
+					"<a href='javascript: clippy_go_link_show_help(\"index.php\", \"email_alert_module_step_1\");'>" . 
+						__('Create a alert by email in a critical module.') .
+					'</a>' .
+				'</li>' .
+				//'<li>' . __('Monitor a switch with remote SNMP') . '</li>' .
+				//'<li>' . __('Monitor a Windows server with remote WMI') . '</li>' .
 			'</ul>'
 		);
 	$return_tours['tours']['homepage']['conf'] = array();
@@ -113,6 +117,39 @@ function clippy_start_page_homepage() {
 	}
 	
 	//==================================================================
+	
+	
+	//==================================================================
+	//Help tour about the email alert module (step 1)
+	//------------------------------------------------------------------
+	$return_tours['tours']['email_alert_module_step_1'] = array();
+	$return_tours['tours']['email_alert_module_step_1']['steps'] = array();
+	$return_tours['tours']['email_alert_module_step_1']['steps'][] = array(
+		'element'=> '#clippy',
+		'intro' => __('The first thing you have to do  is to setup the config email in the Pandora FMS Server.') .
+			'<br />' .
+			ui_print_help_icon ('context_pandora_server_email', true, '', 'images/help.png') .
+			'<br />' .
+			__('If you have it already configured you can go to the next step.')
+		);
+	$return_tours['tours']['email_alert_module_step_1']['steps'][] = array(
+		'element'=> '#icon_god-alerts',
+		'position' => 'top',
+		'intro' => __('Now, pull down the Manage alerts menu and click on Actions. ')
+		);
+	$return_tours['tours']['email_alert_module_step_1']['conf'] = array();
+	$return_tours['tours']['email_alert_module_step_1']['conf']['show_bullets'] = 0;
+	$return_tours['tours']['email_alert_module_step_1']['conf']['show_step_numbers'] = 0;
+	
+	$return_tours['tours']['email_alert_module_step_1']['conf']['complete_js'] = "
+		;
+		";
+	$return_tours['tours']['email_alert_module_step_1']['conf']['exit_js'] = "
+		location.reload();
+		";
+	$return_tours['tours']['email_alert_module_step_1']['conf']['next_help'] = 'email_alert_module_step_2';
+	//==================================================================
+	
 	
 	return $return_tours;
 }

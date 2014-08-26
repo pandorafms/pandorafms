@@ -303,7 +303,7 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$sub[$sec2]["subsecs"] = array(
 		"operation/incidents/incident_detail",
 		"operation/integria_incidents");
-
+	
 	$sub2 = array ();
 	$sub2[$sec2sub]["text"] = __('Statistics');
 	

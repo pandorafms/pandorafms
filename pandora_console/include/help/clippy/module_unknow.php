@@ -42,7 +42,7 @@ function clippy_module_unknow() {
 			'<tr>' .
 			'<td class="context_help_body">' .
 			__('Unknown modules are modules which receive data normally at least in one occassion, but at this time are not receving data. Please check our troubleshoot help page to help you determine why you have unknown modules.') .
-			ui_print_help_icon ('context_module_unknow', true, '', 'images/help_w.png') .
+			ui_print_help_icon ('context_module_unknow', true, '', 'images/help.png') .
 			'</td>' .
 			'</tr>' .
 			'</table>'

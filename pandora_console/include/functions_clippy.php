@@ -117,6 +117,12 @@ function clippy_write_javascript_helps_steps($tours) {
 	}
 	
 	if (!empty($steps)) {
+		foreach ($steps as $iterator => $element) {
+			$steps[$iterator]['intro'] = 
+				"<div id='clippy_head_title'>"  . __("Pandora FMS assistant") . "</div>" .
+				$steps[$iterator]['intro'];
+		}
+		
 		if (!empty($conf['name_obj_js_tour'])) {
 			$name_obj_js_tour = $conf['name_obj_js_tour'];
 		}

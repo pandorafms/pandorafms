@@ -2726,3 +2726,16 @@ table#policy_modules td * {
 	float: right;
 	margin-right: 20px;
 }
+
+#clippy_head_title {
+	font-weight: bold;
+	background: #82b92e;
+	color: #ffffff;
+	margin-top: -15px;
+	margin-left: -15px;
+	margin-right: -15px;
+	padding: 5px;
+	margin-bottom: 10px;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+}

@@ -1,5 +1,10 @@
 2014-08-26  Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_clippy.php, include/styles/pandora.css: some
+	aesthetic changes suggested by Carla.
+
+2014-08-26  Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/introjs.css, include/styles/pandora_black.css,
 	include/styles/pandora.css, general/logon_ok.php,
 	mobile/include/style/main.css: some aesthetic changes suggested by

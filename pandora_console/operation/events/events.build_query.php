@@ -123,6 +123,11 @@ else {
 			$sql_post .= " AND id_agente = " . $id_agent;
 			break;
 	}
+
+}
+
+if ($id_agent_module) {
+	$sql_post .= " AND id_agentmodule = " . $id_agent_module;
 }
 
 if ($id_user_ack != "0")

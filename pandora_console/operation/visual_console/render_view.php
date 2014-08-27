@@ -96,6 +96,12 @@ if (check_acl ($config["id_user"], $id_group, "RW")) {
 		html_print_image ("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
 	$options['list_elements']['text'] = '<a href="' . $url_base . $action . '&tab=list_elements&id_visual_console=' . $id_layout . '">' .
 		html_print_image ("images/list.png", true, array ("title" => __('List elements'))) .'</a>';
+
+	if (enterprise_installed()) {
+		$options['wizard_services']['text'] = '<a href="' . $url_base . $action . '&tab=wizard_services&id_visual_console=' . $id_layout . '">' .
+				html_print_image ("images/wand_services.png", true, array ("title" => __('Services wizard'))) .'</a>';
+	}
+
 	$options['wizard']['text'] = '<a href="' . $url_base . $action . '&tab=wizard&id_visual_console=' . $id_layout . '">' .
 		html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>';
 	$options['editor']['text'] = '<a href="' . $url_base . $action . '&tab=editor&id_visual_console=' . $id_layout . '">' .

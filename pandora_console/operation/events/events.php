@@ -193,6 +193,7 @@ $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 3); // -1 all, 0 only new, 1 only validated, 2 only in process, 3 only not validated,
 $id_agent = (int) get_parameter ("id_agent", 0);
+$id_agent_module = (int) get_parameter ("id_agent_module", 0);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $event_view_hr = (int) get_parameter ("event_view_hr", $history ? 0 : $config["event_view_hr"]);
 $id_user_ack = get_parameter ("id_user_ack", 0);

@@ -47,7 +47,7 @@ else {
 	$action = get_parameterBetweenListValues('action2', array('new', 'save', 'edit', 'update', 'delete'), 'new');
 }
 
-$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor'), 'data');
+$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'wizard_services', 'editor'), 'data');
 
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
 
@@ -397,6 +397,25 @@ switch ($activeTab) {
 				break;
 		}
 		break;
+	case 'wizard_services':
+		$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
+		$visualConsoleName = $visualConsole['name'];
+		switch ($action) {
+			case 'update':
+				enterprise_include_once("/include/functions_visual_map.php");
+				
+				$icon = (string) get_parameter('icon');
+				$id_services = (array) get_parameter('services_selected');
+				
+				$result = enterprise_hook('enterprise_visual_map_process_services_wizard_add', array($id_services, $idVisualConsole, $icon));
+				if ($result != ENTERPRISE_NOT_HOOK) {
+					$statusProcessInDB = array('flag' => $result['status'], 'message' => $result['message']);
+				}
+				
+				$action = 'edit';
+				break;
+		}
+		break;
 	case 'editor':
 		switch ($action) {
 			case 'new':
@@ -429,28 +448,36 @@ else {
 // Hash for auto-auth in public link
 $hash = md5($config["dbpass"] . $id_layout . $config["id_user"]);
 
-$buttons = array(
-	'consoles_list' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
-			html_print_image ("images/visual_console.png", true, array ("title" => __('Visual consoles list'))) .'</a>'),
-	'public_link' => array('active' => false,
-		'text' => '<a href="' . ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]) . '">'.
-			html_print_image ("images/camera_mc.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>'),
-	'data' => array('active' => false,
-		'text' => '<a href="' . $url_base . $action . '&tab=data&id_visual_console=' . $idVisualConsole . '">' . 
-			html_print_image ("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>'),
-	'list_elements' => array('active' => false,
-		'text' => '<a href="' . $url_base . $action . '&tab=list_elements&id_visual_console=' . $idVisualConsole . '">' .
-			html_print_image ("images/list.png", true, array ("title" => __('List elements'))) .'</a>'),
-	'wizard' => array('active' => false,
-		'text' => '<a href="' . $url_base . $action . '&tab=wizard&id_visual_console=' . $idVisualConsole . '">' .
-			html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>'),
-	'editor' => array('active' => false,
-		'text' => '<a href="' . $url_base . $action . '&tab=editor&id_visual_console=' . $idVisualConsole . '">' .
-			html_print_image ("images/builder.png", true, array ("title" => __('Builder'))) .'</a>'),
-	'view' => array('active' => false,
-		'text' => '<a href="' . $url_view . '">' .
-			html_print_image ("images/operation.png", true, array ("title" => __('View'))) .'</a>'));
+$buttons = array();
+
+$buttons['consoles_list'] = array('active' => false,
+	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
+		html_print_image ("images/visual_console.png", true, array ("title" => __('Visual consoles list'))) .'</a>');
+$buttons['public_link'] = array('active' => false,
+	'text' => '<a href="' . ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]) . '">'.
+		html_print_image ("images/camera_mc.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>');
+$buttons['data'] = array('active' => false,
+	'text' => '<a href="' . $url_base . $action . '&tab=data&id_visual_console=' . $idVisualConsole . '">' . 
+		html_print_image ("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>');
+$buttons['list_elements'] = array('active' => false,
+	'text' => '<a href="' . $url_base . $action . '&tab=list_elements&id_visual_console=' . $idVisualConsole . '">' .
+		html_print_image ("images/list.png", true, array ("title" => __('List elements'))) .'</a>');
+
+if (enterprise_installed()) {
+	$buttons['wizard_services'] = array('active' => false,
+		'text' => '<a href="' . $url_base . $action . '&tab=wizard_services&id_visual_console=' . $idVisualConsole . '">' .
+			html_print_image ("images/wand_services.png", true, array ("title" => __('Services wizard'))) .'</a>');
+}
+
+$buttons['wizard'] = array('active' => false,
+	'text' => '<a href="' . $url_base . $action . '&tab=wizard&id_visual_console=' . $idVisualConsole . '">' .
+		html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>');
+$buttons['editor'] = array('active' => false,
+	'text' => '<a href="' . $url_base . $action . '&tab=editor&id_visual_console=' . $idVisualConsole . '">' .
+		html_print_image ("images/builder.png", true, array ("title" => __('Builder'))) .'</a>');
+$buttons['view'] = array('active' => false,
+	'text' => '<a href="' . $url_view . '">' .
+		html_print_image ("images/operation.png", true, array ("title" => __('View'))) .'</a>');
 
 if ($action == 'new' || $idVisualConsole === false) {
 	$buttons = array('data' => $buttons['data']); //Show only the data tab
@@ -473,6 +500,11 @@ if ($statusProcessInDB !== null) {
 switch ($activeTab) {
 	case 'wizard':
 		require_once($config['homedir'] . '/godmode/reporting/visual_console_builder.wizard.php');
+		break;
+	case 'wizard_services':
+		if (enterprise_installed()) {
+			enterprise_include('/godmode/reporting/visual_console_builder.wizard_services.php');
+		}
 		break;
 	case 'data':
 		require_once($config['homedir'] . '/godmode/reporting/visual_console_builder.data.php');

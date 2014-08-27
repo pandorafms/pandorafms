@@ -1,5 +1,10 @@
 2014-08-27  Vanessa Gil <vanessa.gil@artica.es>
 
+	* godmode/reporting/reporting_builder.php: Owner of a report can be delete it.
+	Ticket #1199.
+
+2014-08-27  Vanessa Gil <vanessa.gil@artica.es>
+
 	* godmode/groups/group_list.php: Fixed problem displaying empty 
 	agents.
 

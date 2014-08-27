@@ -494,10 +494,14 @@ switch ($action) {
 							&&
 							users_can_manage_group_all($report["id_group"], "RW");
 						
-						$delete = check_acl($config['id_user'],
-							$report['id_group'], "RM")
-							&&
-							users_can_manage_group_all($report["id_group"], "RM");
+							if ($config['id_user'] == $report['id_user']) {
+								$delete = true; //owner can delete
+							} else {
+								$delete = check_acl($config['id_user'],
+									$report['id_group'], "RM")
+									&&
+									users_can_manage_group_all($report["id_group"], "RM");
+							}
 						break;
 					case 'group_edit':
 						$edit = check_acl($config['id_user'],

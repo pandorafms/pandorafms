@@ -1,3 +1,9 @@
+2014-08-27 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/PluginServer.pm: Fixed that _plugin_param2_
+	and _plugin_param2_desc_ (and so on) were not replaced with
+	the corresponding values.
+
 2014-08-25 Vanessa Gil <vanessa.gil@artica.es>
 	
 	* util/pandora_db.pl: Fixed problem

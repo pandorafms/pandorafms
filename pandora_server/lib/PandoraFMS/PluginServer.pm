@@ -193,7 +193,7 @@ sub data_consumer ($$) {
 
 					# build 'plugin module' dependent alert macros
 					my $field_number = $macro_field;
-					$field_number = s/.*([0-9]+).*/$1/;
+					$field_number =~ s/.*([0-9]+).*/$1/;
 
 					my $name_for_desc  = "_plugin_param${field_number}_desc_";
 					my $name_for_value = "_plugin_param${field_number}_";

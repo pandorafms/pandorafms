@@ -677,7 +677,7 @@ function install_step3() {
 				
 				<tr><td valign=top>
 				Drop Database if exists<br>
-				<input class='login' type='checkbox' name='drop' value=1 disabled>				
+				<input class='login' type='checkbox' name='drop' value=1>				
 				
 				
 				<td>Full path to HTTP publication directory<br>

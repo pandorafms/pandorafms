@@ -1,3 +1,14 @@
+2014-08-29  Miguel de Dios <miguel.dedios@artica.es>
+	* pandora_console/images/clippy/clippy.png,
+	pandora_console/images/clippy/easter_egg_00.png,
+	pandora_console/images/clippy/easter_egg_01.png,
+	pandora_console/images/clippy/easter_egg_02.png,
+	pandora_console/images/clippy/easter_egg_03.png,
+	pandora_console/images/clippy/easter_egg_04.png,
+	pandora_console/images/pandorin.png,
+	pandora_console/include/help/clippy/homepage.php: added the
+	easter egg for clippy.
+
 2014-08-29  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* install.php: Removed the disabled option of the "drop database

@@ -1,3 +1,8 @@
+2014-08-29  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
+	* install.php: Removed the disabled option of the "drop database
+	if exists" checkbox on the step 3.
+
 2014-08-27  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Owner of a report can be delete it.

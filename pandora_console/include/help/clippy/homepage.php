@@ -23,6 +23,22 @@ function clippy_start_page_homepage() {
 	global $config;
 	
 	$clippy_is_annoying = (int)get_cookie('clippy_is_annoying', 0);
+	$nagios = (int)get_cookie('nagios', -1);
+	
+	$easter_egg_toy = $nagios % 6;
+	if (($easter_egg_toy == 5) ||
+		($easter_egg_toy == -1)) {
+		$image = 'images/clippy/clippy.png';
+	}
+	else {
+		$image = 'images/clippy/easter_egg_0' . $easter_egg_toy . '.png';
+	}
+	if ($image != 'easter_egg_04.png') {
+		$style = 'display: block; position: absolute; left: -112px; top: -80px;';
+	}
+	else {
+		$style = 'display: block; position: absolute; left: -200px; top: -80px;';
+	}
 	
 	clippy_clean_help();
 	
@@ -38,17 +54,23 @@ function clippy_start_page_homepage() {
 	$return_tours['tours']['homepage']['steps'] = array();
 	$return_tours['tours']['homepage']['steps'][] = array(
 		'element'=> '#clippy',
-		'intro' => __('Hi, can I help you?') . '<br/><br/>' .
+		'intro' => 
+			'<div style="text-align: left; padding-left: 20px; padding-right: 20px;">'.
+			__('Hi, can I help you?') . '<br/><br/>' .
 			__('Let me introduce my self: I am Pandorin, the annoying clippy of Pandora FMS. You can follow my steps to do basic tasks in Pandora FMS or you can close me and never see me again.') .
-			'<div style="text-align: left;">'.
+			'<br /> ' .
+			'<br /> ' .
 			html_print_checkbox_extended
 				('clippy_is_annoying', 1, $clippy_is_annoying, false,
 				'set_clippy_annoying()', '', true) .
 				__('Close this annoying clippy right now.') .
 			'</div>' .
 			'<div style="position:relative;">
-			<div id="pandorin" style="display: block; position: absolute; left: -100px; top: 20px;">' .
-				html_print_image('images/pandorin.png', true) .
+			<div id="pandorin" style="' . $style . '">' .
+				html_print_image(
+					$image,
+					true,
+					array('id'=> 'clippy_toy', 'onclick' => 'easter_egg_clippy(1);')) .
 			'</div>
 			</div>'
 		);
@@ -89,9 +111,41 @@ function clippy_start_page_homepage() {
 				intro_homepage.start();
 		}
 		
+		var nagios = -1;
+		function easter_egg_clippy(click) {
+			if (readCookie('nagios')) {
+				nagios = readCookie('nagios');
+			}
+			
+			if (click)
+				nagios++;
+			
+			if (nagios > 5) {
+				easter_egg_toy = nagios % 6;
+				
+				if ((easter_egg_toy == 5) ||
+					(easter_egg_toy == -1)) {
+					image = 'images/clippy/clippy.png';
+				}
+				else {
+					image = 'images/clippy/easter_egg_0' + easter_egg_toy + '.png';
+				}
+				
+				$('#clippy_toy').attr('src', image);
+				if (easter_egg_toy == 4) {
+					$('#pandorin').css('left', '-200px');
+				}
+				else {
+					$('#pandorin').css('left', '-112px');
+				}
+				
+				document.cookie = 'nagios=' + nagios;
+			}
+		}
+		
 		function set_clippy_annoying() {
 			checked = $('input[name=\'clippy_is_annoying\']').is(':checked');
-			intro_homepage.exit();
+			//intro_homepage.exit();
 			
 			if (checked) {
 				document.cookie = 'clippy_is_annoying=1';
@@ -100,6 +154,22 @@ function clippy_start_page_homepage() {
 				document.cookie = 'clippy_is_annoying=0';
 			}
 		}
+		
+		function readCookie(name) {
+			var nameEQ = name + '=';
+			var ca = document.cookie.split(';');
+			
+			for(var i=0;i < ca.length;i++) {
+				var c = ca[i];
+				
+				while (c.charAt(0)==' ')
+					c = c.substring(1,c.length);
+				if (c.indexOf(nameEQ) == 0)
+					return c.substring(nameEQ.length,c.length);
+			}
+			return null;
+		}
+		
 		";
 	if ($config['logged']) {
 		$return_tours['tours']['homepage']['conf']['autostart'] = true;

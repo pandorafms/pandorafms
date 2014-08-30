@@ -1,3 +1,8 @@
+2014-08-30  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_context_pandora_server_email.php,
+	include/help/ja/help_propagate_acl.php: Added new help files.
+
 2014-08-27  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Owner of a report can be delete it.

@@ -1,3 +1,13 @@
+2014-09-01  Miguel de Dios <miguel.dedios@artica.es>
+
+	* pandora_console/include/functions_graph.php,
+	pandora_console/operation/events/events.build_query.php,
+	pandora_console/operation/events/events.php,
+	pandora_console/operation/events/events_list.php: added feature to
+	filter by module in events.
+	
+	TICKETS #385
+
 2014-08-30  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_context_pandora_server_email.php,

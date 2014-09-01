@@ -193,7 +193,6 @@ $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 3); // -1 all, 0 only new, 1 only validated, 2 only in process, 3 only not validated,
 $id_agent = (int) get_parameter ("id_agent", 0);
-$id_agent_module = (int) get_parameter ("id_agent_module", 0);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $event_view_hr = (int) get_parameter ("event_view_hr", $history ? 0 : $config["event_view_hr"]);
 $id_user_ack = get_parameter ("id_user_ack", 0);
@@ -202,6 +201,7 @@ $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate", 0);
 $section = (string) get_parameter ("section", "list");
 $text_agent = (string) get_parameter('text_agent', __("All"));
+$text_module = (string) get_parameter('module_search', '');
 $filter_only_alert = (int) get_parameter('filter_only_alert', -1);
 $filter_id = (int) get_parameter('filter_id', 0);
 $id_name = (string) get_parameter('id_name', '');
@@ -328,7 +328,7 @@ if ($config["pure"] == 0 || $meta) {
 			'rss' => $rss,
 			'marquee' => $marquee,
 			'csv' => $csv,
-			'sound_event' => $sound_event) ;
+			'sound_event' => $sound_event);
 	}
 	
 	// If the history event is not ebabled, dont show the history tab

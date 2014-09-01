@@ -2110,9 +2110,26 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	$loop = 0;
 	define ('NUM_PIECES_PIE', 6);
 	
-	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ", "EXEC");
+	
+	//Hotfix for the id_agente_modulo
+	$url = str_replace(
+		'SELECT id_agente_modulo', 'SELECT_id_agente_modulo', $url);
+	
+	
+	$badstrings = array (";",
+		"SELECT ",
+		"DELETE ",
+		"UPDATE ",
+		"INSERT ",
+		"EXEC");
 	//remove bad strings from the query so queries like ; DELETE FROM  don't pass
 	$url = str_ireplace ($badstrings, "", $url);
+	
+	
+	//Hotfix for the id_agente_modulo
+	$url = str_replace(
+		'SELECT_id_agente_modulo', 'SELECT id_agente_modulo', $url);
+	
 	
 	// Choose the table where search if metaconsole or not
 	if ($meta) {
@@ -2144,7 +2161,8 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 				FROM '.$event_table.'
 				WHERE 1=1 %s %s
 				GROUP BY id_agente'.$groupby_extra.'
-				ORDER BY count DESC LIMIT 8', $url, $tags_condition); 
+				ORDER BY count DESC LIMIT 8', $url, $tags_condition);
+			
 			break;
 		case "postgresql":
 		case "oracle":

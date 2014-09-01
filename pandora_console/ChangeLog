@@ -1,3 +1,8 @@
+2014-08-30  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_context_pandora_server_email.php,
+	include/help/ja/help_propagate_acl.php: Added new help files.
+
 2014-08-29  Miguel de Dios <miguel.dedios@artica.es>
 	* pandora_console/images/clippy/clippy.png,
 	pandora_console/images/clippy/easter_egg_00.png,

@@ -93,8 +93,9 @@ if ($event_type != "") {
 if ($severity != -1) {
 	switch ($severity) {
 		case EVENT_CRIT_WARNING_OR_CRITICAL:
-			$sql_post .= " AND (criticity = " . EVENT_CRIT_WARNING . " OR 
-								criticity = " . EVENT_CRIT_CRITICAL . ")";
+			$sql_post .= "
+				AND (criticity = " . EVENT_CRIT_WARNING . " OR 
+					criticity = " . EVENT_CRIT_CRITICAL . ")";
 			break;
 		case EVENT_CRIT_NOT_NORMAL:
 			$sql_post .= " AND criticity != " . EVENT_CRIT_NORMAL;
@@ -123,11 +124,19 @@ else {
 			$sql_post .= " AND id_agente = " . $id_agent;
 			break;
 	}
-
 }
 
-if ($id_agent_module) {
-	$sql_post .= " AND id_agentmodule = " . $id_agent_module;
+if ($meta) {
+	//There is another filter.
+}
+else {
+	if (!empty($text_module)) {
+		$sql_post .= ' AND id_agentmodule IN (
+				SELECT id_agente_modulo
+				FROM tagente_modulo
+				WHERE nombre = "' . $text_module . '"
+			)';
+	}
 }
 
 if ($id_user_ack != "0")
@@ -199,7 +208,10 @@ if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != E
 
 // Metaconsole fitlers
 if ($meta) {
-	$enabled_nodes = db_get_all_rows_sql('SELECT id FROM tmetaconsole_setup WHERE disabled = 0');
+	$enabled_nodes = db_get_all_rows_sql('
+		SELECT id
+		FROM tmetaconsole_setup
+		WHERE disabled = 0');
 	
 	if (empty($enabled_nodes)) {
 		$sql_post .= ' AND 1 = 0';
@@ -209,7 +221,8 @@ if ($meta) {
 		foreach ($enabled_nodes as $en) {
 			$enabled_nodes_id[] = $en['id'];
 		}
-		$sql_post .= ' AND server_id IN ('.implode(',',$enabled_nodes_id).')';
+		$sql_post .= ' AND server_id IN (' .
+			implode(',',$enabled_nodes_id) . ')';
 	}
 }
 

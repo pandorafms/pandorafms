@@ -1,3 +1,8 @@
+2014-09-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/build_vars.sh: Updated the build scripts to work with the new git
+	  repo. Merged from 5.0 branch.
+
 2014-02-24  Sancho Lerena <slerena@artica.es>
 
 	* pandorafms-agent.spec: Lots of changes to adapt spec to fedora standards.

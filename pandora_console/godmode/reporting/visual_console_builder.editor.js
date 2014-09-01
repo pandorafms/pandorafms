@@ -434,6 +434,9 @@ function fill_parent_select(id_item) {
 		.filter(function() { if ($(this).attr('value') != 0) return true; })
 		.remove();
 	jQuery.each(parents, function(key, value) {
+		if (value == undefined) {
+			return;
+		}
 		if (id_item == key) {
 			return; //continue
 		}

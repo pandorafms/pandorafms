@@ -33,11 +33,13 @@ function clippy_start_page() {
 	$return_tours['tours']['email_alert_module_step_10']['steps'][] = array(
 		'element'=> '#table8',
 		'position' => 'top',
-		'intro' => __('The last step is to check the alert created. Click on the round icon to force the action execution and after a few minutes you will receive the alert in your email.')
+		'intro' => __('The last step is to check the alert created. Click on the round icon to force the action execution and after a few minutes you will receive the alert in your email.') . '<br />' .
+			__('And restart your pandora server to read again general configuration tokens.')
 		);
 	$return_tours['tours']['email_alert_module_step_10']['conf'] = array();
 	$return_tours['tours']['email_alert_module_step_10']['conf']['show_bullets'] = 0;
 	$return_tours['tours']['email_alert_module_step_10']['conf']['show_step_numbers'] = 0;
+	$return_tours['tours']['email_alert_module_step_10']['conf']['done_label'] = __('Done');
 	//==================================================================
 	
 	return $return_tours;

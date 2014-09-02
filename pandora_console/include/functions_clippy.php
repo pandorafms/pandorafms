@@ -154,6 +154,16 @@ function clippy_write_javascript_helps_steps($tours) {
 			$show_step_numbers = (int)$conf['show_step_numbers'];
 		}
 		
+		$doneLabel = __('End wizard');
+		if (!empty($conf['done_label'])) {
+			$doneLabel = $conf['done_label'];
+		}
+		
+		$skipLabel = __('End wizard');
+		if (!empty($conf['skip_label'])) {
+			$skipLabel = $conf['skip_label'];
+		}
+		
 		$help_context = false;
 		
 		?>
@@ -169,20 +179,20 @@ function clippy_write_javascript_helps_steps($tours) {
 					showStepNumbers: <?php echo $show_step_numbers; ?>,
 					nextLabel: "<?php echo __('Next &rarr;'); ?>",
 					prevLabel: "<?php echo __('&larr; Back'); ?>",
-					skipLabel: "<?php echo __('Skip'); ?>",
-					doneLabel: "<?php echo __('Done'); ?>",
+					skipLabel: "<?php echo $skipLabel; ?>",
+					doneLabel: "<?php echo $doneLabel; ?>",
 					exitOnOverlayClick: false,
 					exitOnEsc: true, //false,
 				})
 				.oncomplete(function(value) {
-						<?php echo $complete_js; ?>;
-					})
+					<?php echo $complete_js; ?>;
+				})
 				.onexit(function(value) {
-						<?php echo $exit_js; ?>;
-						
-						exit = confirm("<?php echo __("Do you want to exit the help tour?"); ?>");
-						return exit;
-					});
+					<?php echo $exit_js; ?>;
+					
+					exit = confirm("<?php echo __("Do you want to exit the help tour?"); ?>");
+					return exit;
+				});
 				
 				<?php
 				if (!empty($conf['next_help'])) {

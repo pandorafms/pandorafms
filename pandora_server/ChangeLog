@@ -1,5 +1,10 @@
 2014-09-02  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Added support for loading complex macros on
+	  demand.
+
+2014-09-02  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Added the macros _agentcustomid_ and
 	  _modulecustomid_.
 

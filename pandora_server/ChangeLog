@@ -1,3 +1,8 @@
+2014-09-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added the macros _agentcustomid_ and
+	  _modulecustomid_.
+
 2014-08-27 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/PluginServer.pm: Fixed that _plugin_param2_

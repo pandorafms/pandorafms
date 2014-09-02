@@ -836,7 +836,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_agentcustomid_ => (defined ($agent)) ? $agent->{'custom_id'} : '',
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
-				_agentstatus_ => (defined ($agent)) ? get_agent_status ($pa_config, $dbh, $agent->{'id_agente'}) : '',
+				_agentstatus_ => undef,
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				_timezone_ => strftime ("%Z", localtime()),
@@ -853,20 +853,20 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_groupother_ => (defined ($group)) ? $group->{'other'} : '',
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				_modulecustomid_ => (defined ($module)) ? $module->{'custom_id'} : '',
-				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
+				_modulegroup_ => undef,
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
-				_modulestatus_ => (defined ($module)) ? get_agentmodule_status_str($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
-				_moduletags_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_modulestatus_ => undef,
+				_moduletags_ => undef,
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
-				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
+				_policy_ => undef,
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
-				_email_tag_ => (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
-				_phone_tag_ => (defined ($module)) ? pandora_get_module_phone_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
-				_name_tag_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_email_tag_ => undef,
+				_phone_tag_ => undef,
+				_name_tag_ => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -881,18 +881,18 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# User defined alerts
 	if ($action->{'internal'} == 0) {
-		$macros{_field1_} = subst_alert_macros ($field1, \%macros);
-		$macros{_field2_} = subst_alert_macros ($field2, \%macros);
-		$macros{_field3_} = subst_alert_macros ($field3, \%macros);
-		$macros{_field4_} = subst_alert_macros ($field4, \%macros);
-		$macros{_field5_} = subst_alert_macros ($field5, \%macros);
-		$macros{_field6_} = subst_alert_macros ($field6, \%macros);
-		$macros{_field7_} = subst_alert_macros ($field7, \%macros);
-		$macros{_field8_} = subst_alert_macros ($field8, \%macros);
-		$macros{_field9_} = subst_alert_macros ($field9, \%macros);
-		$macros{_field10_} = subst_alert_macros ($field10, \%macros);
+		$macros{_field1_} = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field2_} = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field3_} = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field4_} = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field5_} = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field6_} = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field7_} = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field8_} = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field9_} = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field10_} = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module);
 		
-		my $command = subst_alert_macros (decode_entities ($action->{'command'}), \%macros);
+		my $command = subst_alert_macros (decode_entities ($action->{'command'}), \%macros, $pa_config, $dbh, $agent, $module);
 		logger($pa_config, "Executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 8);
 		
 		eval {
@@ -906,14 +906,14 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Internal Audit
 	} elsif ($clean_name eq "Internal Audit") {
-		$field1 = subst_alert_macros ($field1, \%macros);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
 		pandora_audit ($pa_config, $field1, defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A', 'Alert (' . safe_output($alert->{'description'}) . ')', $dbh);
 	
 	# Email
 	} elsif ($clean_name eq "eMail") {
-		$field1 = subst_alert_macros ($field1, \%macros);
-		$field2 = subst_alert_macros ($field2, \%macros);
-		$field3 = subst_alert_macros ($field3, \%macros);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
+		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
 		if ($pa_config->{"mail_in_separate"} != 0){
 			foreach my $address (split (',', $field1)) {
 				# Remove blanks
@@ -927,12 +927,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Pandora FMS Event
 	} elsif ($clean_name eq "Pandora FMS Event") {
-		$field1 = subst_alert_macros ($field1, \%macros);
-		$field3 = subst_alert_macros ($field3, \%macros);
-		$field4 = subst_alert_macros ($field4, \%macros);
-		$field6 = subst_alert_macros ($field6, \%macros);
-		$field7 = subst_alert_macros ($field7, \%macros);
-		$field8 = subst_alert_macros ($field8, \%macros);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
+		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
+		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
+		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
 		
 		# Field 1 (event text)
 		my $event_text = $field1;
@@ -951,7 +951,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		if($agent_name eq "") {
 			$agent_name = "_agent_";
 		}
-		$agent_name = subst_alert_macros ($agent_name, \%macros);
+		$agent_name = subst_alert_macros ($agent_name, \%macros, $pa_config, $dbh, $agent, $module);
 		my $fullagent = get_agent_from_name ($dbh, $agent_name);
 		
 		# Field 5 (priority)
@@ -986,11 +986,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Integria IMS Ticket
 	} elsif ($clean_name eq "Integria IMS Ticket") {
-		$field1 = subst_alert_macros ($field1, \%macros);
-		$field3 = subst_alert_macros ($field3, \%macros);
-		$field4 = subst_alert_macros ($field4, \%macros);
-		$field6 = subst_alert_macros ($field6, \%macros);
-		$field7 = subst_alert_macros ($field7, \%macros);
+		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
+		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
+		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
 
 		# Field 1 (Integria IMS API path)
 		my $api_path = $field1;
@@ -3238,19 +3238,49 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 ##########################################################################
 # Search string for macros and substitutes them with their values.
 ##########################################################################
-sub subst_alert_macros ($$) {
-	my ($string, $macros) = @_;
+sub subst_alert_macros ($$;$$$$) {
+	my ($string, $macros, $pa_config, $dbh, $agent, $module) = @_;
 
-	my $macro_regexp = join('|', grep { defined $macros->{$_} } keys %{$macros});
+	my $macro_regexp = join('|', keys %{$macros});
 
 	# Macro data may contain HTML entities
 	eval {
 		no warnings;
 		local $SIG{__DIE__};
-		$string =~ s/($macro_regexp)/decode_entities($macros->{$1})/ige;
+		$string =~ s/($macro_regexp)/decode_entities(on_demand_macro($pa_config, $dbh, $1, $macros, $agent, $module))/ige;
 	};
 
 	return $string;
+}
+
+##########################################################################
+# Load macros that access the database on demand.
+##########################################################################
+sub on_demand_macro($$$$$$) {
+	my ($pa_config, $dbh, $macro, $macros, $agent, $module) = @_;
+
+	# Static macro.
+	return $macros->{$macro} if (defined($macros->{$macro}));
+
+	# Load on-demand macros.
+	return '' unless defined($pa_config) and defined($dbh);
+	if ($macro eq '_agentstatus_') {
+		return (defined ($agent)) ? get_agent_status ($pa_config, $dbh, $agent->{'id_agente'}) : '';
+	} elsif ($macro eq '_modulegroup_') {
+		return (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '';
+	} elsif ($macro eq '_modulestatus_') {
+		return (defined ($module)) ? get_agentmodule_status_str($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+	} elsif ($macro eq '_moduletags_') {
+		return (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+	} elsif ($macro eq '_policy_') {
+		return (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '';
+	} elsif ($macro eq '_email_tag_') {
+		return (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+	} elsif ($macro eq '_phone_tag_') {
+		return (defined ($module)) ? pandora_get_module_phone_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+	} elsif ($macro eq '_name_tag_') {
+		return (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+	}
 }
 
 ##########################################################################
@@ -4219,7 +4249,7 @@ sub pandora_module_unknown ($$) {
 				_data_ => 'N/A',
 			);
 		        load_module_macros ($module->{'module_macros'}, \%macros);
-			$description = subst_alert_macros ($description, \%macros);
+			$description = subst_alert_macros ($description, \%macros, $pa_config, $dbh, $agent, $module);
 
 			pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
 				$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
@@ -4277,7 +4307,7 @@ sub pandora_module_unknown ($$) {
 		                _module_ => safe_output($module->{'nombre'}),
 		        );
 		        load_module_macros ($module->{'module_macros'}, \%macros);
-		        $description = subst_alert_macros ($description, \%macros);
+		        $description = subst_alert_macros ($description, \%macros, $pa_config, $dbh, $agent, $module);
 		        
 				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
 					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});

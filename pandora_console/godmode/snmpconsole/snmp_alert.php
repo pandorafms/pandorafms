@@ -997,7 +997,7 @@ else {
 			foreach ($other_actions as $action) {
 				$data[1] .= '<tr>';
 				$data[1] .= '<td>'. alerts_get_alert_action_name ($action["alert_type"]).'</td>';
-				$data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'"> '  .
+				$data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'  .
 					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a> </td>';
 				$data[1] .= '</tr>';
 			}
@@ -1026,7 +1026,7 @@ else {
 			'<a href="javascript:show_add_action_snmp(\'' . $row['id_as'] . '\');">' .
 			html_print_image('images/add.png', true, array('title' => __("Add action"))) .
 			'</a>' .
-			'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
+			'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'  .
 			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
 
 			
@@ -1233,6 +1233,13 @@ $(document).ready (function () {
 	
 	// Charge the fields of the action 
 	$("#alert_type").trigger('change');
+	
+	$("#submit-delete_button").click (function () {
+		confirmation = confirm("<?php echo __('Are you sure?'); ?>");
+		if (!confirmation) {
+			return;
+		}
+	});
 
 });
 

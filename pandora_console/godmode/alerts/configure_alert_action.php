@@ -155,13 +155,20 @@ $table_html = html_print_table ($table, true);
 //Hack to hook the bubble dialog of clippy in any place, the intro.js
 //fails with new elements in the dom from javascript code
 //----------------------------------------------------------------------
+/*
+$table_html = str_replace(
+	"</table>", 
+	"</div>",
+	$table_html);
 $table_html = str_replace(
 	'<tr id="table_macros-field1" style="" class="datos2">',
-	"</tbody>
-	<tbody id=\"clippy_fields\">
+	"</tbody></table>
+	<div id=\"clippy_fields\">
+	<table>
+	<tbody>
 	<tr id=\"table_macros-field1\" class=\"datos\">",
 	$table_html);
-
+*/
 ////////////////////////////////////////////////////////////////////////
 
 echo $table_html;

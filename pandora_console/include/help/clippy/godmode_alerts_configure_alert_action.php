@@ -48,18 +48,18 @@ function clippy_start_page() {
 			ui_print_help_icon ('action_threshold', true, '', 'images/help.png')
 		);
 	$return_tours['tours']['email_alert_module_step_3']['steps'][] = array(
-		'element'=> '#clippy_fields',
-		'position' => 'top',
+		'element'=> '#table_macros',
+		'position' => 'bottom',
 		'intro' => __('In the first field enter the email address/addresses where you want to receive the email alerts separated with comas ( , ) or white spaces.')
 		);
 	$return_tours['tours']['email_alert_module_step_3']['steps'][] = array(
-		'element'=> '#clippy_fields',
-		'position' => 'top',
+		'element'=> '#table_macros',
+		'position' => 'bottom',
 		'intro' => __('In the "Subject"  field  you can use the macros _agent_ or _module_ for each name.')
 		);
 	$return_tours['tours']['email_alert_module_step_3']['steps'][] = array(
-		'element'=> '#clippy_fields',
-		'position' => 'top',
+		'element'=> '#table_macros',
+		'position' => 'bottom',
 		'intro' => __('In the text field, you can also use macros. Get more information about the macros by clicking on the help icon.') . '<br />' .
 			ui_print_help_icon ('alert_config', true, '', 'images/help.png')
 		);

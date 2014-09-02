@@ -57,13 +57,15 @@ function clippy_start_page_homepage() {
 		'intro' => 
 			'<div style="text-align: left; padding-left: 20px; padding-right: 20px;">'.
 			__('Hi, can I help you?') . '<br/><br/>' .
-			__('Let me introduce my self: I am Pandorin, the annoying clippy of Pandora FMS. You can follow my steps to do basic tasks in Pandora FMS or you can close me and never see me again.') .
+			__('Let me introduce my self: I am Pandorin, the annoying assistant of Pandora FMS. You can follow my steps to do basic tasks in Pandora FMS or you can close me and never see me again.') .
 			'<br /> ' .
 			'<br /> ' .
-			html_print_checkbox_extended
-				('clippy_is_annoying', 1, $clippy_is_annoying, false,
-				'set_clippy_annoying()', '', true) .
-				__('Close this annoying clippy right now.') .
+			'<div style="font-size: 7pt;">' .
+				html_print_checkbox_extended
+					('clippy_is_annoying', 1, $clippy_is_annoying, false,
+					'set_clippy_annoying()', '', true) .
+					__('Close this wizard and don\'t open it again.') .
+				'</div>' .
 			'</div>' .
 			'<div style="position:relative;">
 			<div id="pandorin" style="' . $style . '">' .

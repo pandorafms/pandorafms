@@ -101,7 +101,8 @@ function clippy_start_page() {
 		);
 	$return_tours['tours']['monitoring_server_step_5']['steps'][] = array(
 		'element'=> "input[name='crtbutton']",
-		'intro' => __('And only to finish it is clicking this button.')
+		'intro' => __('And only to finish it is clicking this button.'),
+		'position' => 'left'
 		);
 	$return_tours['tours']['monitoring_server_step_5']['conf'] = array();
 	$return_tours['tours']['monitoring_server_step_5']['conf']['show_bullets'] = 0;
@@ -122,6 +123,7 @@ function clippy_start_page() {
 	$return_tours['tours']['monitoring_server_step_6']['conf'] = array();
 	$return_tours['tours']['monitoring_server_step_6']['conf']['show_bullets'] = 0;
 	$return_tours['tours']['monitoring_server_step_6']['conf']['show_step_numbers'] = 0;
+	$return_tours['tours']['monitoring_server_step_6']['conf']['done_label'] = __('Done');
 	//==================================================================
 	
 	//==================================================================

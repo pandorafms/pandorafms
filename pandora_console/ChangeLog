@@ -1,3 +1,13 @@
+2014-09-02  Miguel de Dios <miguel.dedios@artica.es>
+
+	* pandora_console/godmode/alerts/configure_alert_action.php,
+	pandora_console/include/functions_clippy.php,
+	pandora_console/include/help/clippy/godmode_agentes_configurar_agente.php,
+	pandora_console/include/help/clippy/godmode_alerts_configure_alert_action.php,
+	pandora_console/include/help/clippy/homepage.php,
+	pandora_console/include/help/clippy/operation_agentes_ver_agente.php:
+	some changes in the clippy.
+
 2014-09-01  Miguel de Dios <miguel.dedios@artica.es>
 
 	* pandora_console/include/functions_graph.php,

@@ -120,6 +120,7 @@ switch ($action) {
 		$type = get_parameter('type', 'SLA');
 		switch ($type) {
 			case 'SLA_monthly':
+			case 'SLA_services':
 			case 'SLA':
 			case 'top_n':
 			case 'exception':
@@ -221,6 +222,23 @@ switch ($action) {
 					break;
 				case 'SLA_monthly':
 					$description = $item['description'];
+					$only_display_wrong = $item['only_display_wrong'];
+					$monday = $item['monday'];
+					$tuesday = $item['tuesday'];
+					$wednesday = $item['wednesday'];
+					$thursday = $item['thursday'];
+					$friday = $item['friday'];
+					$saturday = $item['saturday'];
+					$sunday = $item['sunday'];
+					$time_from = $item['time_from'];
+					$time_to = $item['time_to'];
+					$show_graph = $item['show_graph'];
+					// 'top_n' filed will be reused for SLA sort option
+					$sla_sorted_by = $item['top_n'];
+					break;
+				case 'SLA_services':
+					$description = $item['description'];
+					$period = $item['period'];
 					$only_display_wrong = $item['only_display_wrong'];
 					$monday = $item['monday'];
 					$tuesday = $item['tuesday'];
@@ -1884,6 +1902,13 @@ function chooseType() {
 			$("#sla_list").show();
 			$("#row_working_time").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_sort").show();
+			break;
+		case 'SLA_services':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_only_display_wrong").show();
+			$("#row_working_time").show();
 			$("#row_sort").show();
 			break;
 		case 'monitor_report':

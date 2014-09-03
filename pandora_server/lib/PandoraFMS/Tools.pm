@@ -25,6 +25,7 @@ use PandoraFMS::Sendmail;
 use HTML::Entities;
 use Encode;
 use Socket qw(inet_ntoa inet_aton);
+use Sys::Syslog;
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -418,16 +419,31 @@ sub logger ($$;$) {
 		return;
 	}
 
+	# Get the log file (can be a regular file or 'syslog')
 	my $file = $pa_config->{'logfile'};
+
+	# Syslog
+	if ($file eq 'syslog') {
+		
+		# Set the security level
+		my $security_level = 'info';
+		if ($level < 2) {
+			$security = 'crit';
+		} elsif ($level < 5) {
+			$security = 'warn';
+		}
+
+		openlog('pandora_server', 'ndelay', 'daemon');
+		syslog($security_level, $message);
+		closelog();
+	} else {
+		# Log rotation
+		rename ($file, $file.'.old') if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'});
 	
-	# Log rotation
-	if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
-		rename ($file, $file.'.old');
+		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
+		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
+		close (FILE);
 	}
-	
-	open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
-	print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
-	close (FILE);
 }
 
 ########################################################################

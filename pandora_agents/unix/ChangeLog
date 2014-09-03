@@ -1,5 +1,9 @@
 2014-09-03  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Added basic support to log to syslog.
+
+2014-09-03  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent: Added support for global macros.
 
 2014-08-18  Ramon Novoa  <rnovoa@artica.es>

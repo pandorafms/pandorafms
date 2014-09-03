@@ -752,6 +752,7 @@ switch ($action) {
 								$values['text'] = $intervals;
 								break;
 							case 'SLA_monthly':
+							case 'SLA_services':
 							case 'SLA':
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('combo_sla_sort_options',0);

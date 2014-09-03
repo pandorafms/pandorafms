@@ -1,5 +1,13 @@
 2014-09-03  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
+	* godmode/reporting/reporting_builder.item_editor.php,
+	  godmode/reporting/reporting_builder.php,
+	  include/functions_reporting.php,
+	  include/functions_reports.php: Added hooks to the
+	enterprise services SLA wizard.
+
+2014-09-03  Alejandro Gallardo <alejandro.gallardo@artica.es>
+	
 	* general/pandora_help.php: Error fixes on the help file
 	search.
 

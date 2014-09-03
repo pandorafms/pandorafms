@@ -797,7 +797,8 @@ if ($update_module || $create_module) {
 	// 1.23E-10 is 0.000000000123
 	
 	$post_process = (string) get_parameter ('post_process', 0.0);
-	$prediction_module = 0;
+	//$prediction_module = 0;
+
 	$max_timeout = (int) get_parameter ('max_timeout');
 	$max_retries = (int) get_parameter ('max_retries');
 	$min = (int) get_parameter_post ("min");
@@ -1099,9 +1100,12 @@ if ($create_module) {
 	}
 	
 	$id_module = (int) get_parameter ('id_module');
+	//Commented because can't create prediction modules
+/*
 	if ($id_module == 5) {
 		$prediction_module = 1;
 	}
+*/
 	
 	switch ($config["dbtype"]) {
 		case "oracle":

@@ -13,6 +13,8 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_field2_: Campo 2 definido por el usuario.</li>
 <li>_field3_: Campo 3 definido por el usuario.</li>
 <li>_agent_: Nombre del agente que disparó la alerta.</li>
+<li>_agentcustomfield_<i>n</i>_: Campo personalizado número <i>n</i> del agente (eg. _agentcustomfield_9_). </li>
+<li>_agentcustomid_ : ID personalizado del agente. </li>
 <li>_agentdescription_ : Descripción del agente que disparó la alerta.</li>
 <li>_agentgroup_ : Nombre del grupo del agente.</li>
 <li>_agentstatus_ : Estado actual del agente.</li>
@@ -24,6 +26,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_alert_threshold_: Umbral de la alerta.</li>
 <li>_alert_times_fired_: Número de veces que se ha disparado la alerta.</li>
 <li>_module_: Nombre del módulo</li>
+<li>_modulecustomid_: ID personalizado del módulo. </li>
 <li>_modulegroup_ : Nombre del grupo del módulo.</li>
 <li>_moduledescription_: Descripcion del modulo.</li>
 <li>_modulestatus_ : Estado del módulo.</li>

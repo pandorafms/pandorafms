@@ -12,6 +12,8 @@ Besides the defined module macros, the following macros are available:
 <li>_field2_ : User defined field 2.</li>
 <li>_field3_ : User defined field 3.</li>
 <li>_agent_ : Name of the agent that fired the alert.</li>
+<li>_agentcustomfield_<i>n</i>_: Agent custom field number <i>n</i> (eg. _agentcustomfield_9_). </li>
+<li>_agentcustomid_: Agent custom ID. </li>
 <li>_agentdescription_ : Description of the agent who fired alert.</li>
 <li>_agentgroup_ : Agent group name.</li>
 <li>_agentstatus_ : Current status of the agent.</li>
@@ -23,6 +25,7 @@ Besides the defined module macros, the following macros are available:
 <li>_alert_threshold_ : Alert threshold.</li>
 <li>_alert_times_fired_ : Number of times the alert has been fired.</li>
 <li>_module_ : Module name.</li>
+<li>_modulecustomid_: Module custom ID. </li>
 <li>_modulegroup_ : Module group name.</li>
 <li>_moduledescription_ : Description of the module who fired the alert.</li>
 <li>_modulestatus_ : Status of the module.</li>

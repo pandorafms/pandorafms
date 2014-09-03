@@ -13,6 +13,8 @@
 <li>_field2_ : ユーザ定義フィールド2</li>
 <li>_field3_ : ユーザ定義フィールド3</li>
 <li>_agent_ : アラートが発生したエージェント</li>
+<li>_agentcustomfield_<i>n</i>_ : Agent custom field number <i>n</i> (eg. _agentcustomfield_9_). </li>
+<li>_agentcustomid_: Agent custom ID. </li>
 <li>_agentdescription_ : 発生したアラートの説明</li>
 <li>_agentgroup_ : エージェントグループ名</li>
 <li>_agentstatus : エージェントの現在の状態</li>
@@ -24,6 +26,7 @@
 <li>_alert_threshold_ : アラートのしきい値</li>
 <li>_alert_times_fired_ : アラートが発生した回数</li>
 <li>_module_ : モジュール名</li>
+<li>_modulecustomid_: Module custom ID. </li>
 <li>_modulegroup_ : モジュールグループ名</li>
 <li>_moduledescription_ : アラートが発生したモジュールの説明</li>
 <li>_modulestatus_ : モジュールの状態</li>

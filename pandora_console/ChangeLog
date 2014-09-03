@@ -1,3 +1,9 @@
+2014-09-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/en/help_alert_macros.php,
+	  include/help/es/help_alert_macros.php,
+	  include/help/ja/help_alert_macros.php: Added new macros.
+
 2014-09-03  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Fixed bug creating

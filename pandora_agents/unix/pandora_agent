@@ -29,7 +29,7 @@ use Sys::Hostname;
 use File::Basename;
 use File::Copy;
 use IO::Socket;
-
+use Sys::Syslog;
 
 # Agent XML data
 my $Xml;
@@ -286,13 +286,15 @@ sub start_log (;$) {
 	my $quiet = shift;
 
 	# Get the logfile
-	my $log_file_name = read_config ('logfile');
-	$log_file_name = '/var/log/pandora/pandora_agent.log' unless defined ($log_file_name);
+	$Conf{'logfile'} = read_config ('logfile');
+	$Conf{'logfile'} = '/var/log/pandora/pandora_agent.log' unless defined ($Conf{'logfile'});
 
 	# Open it
-	open ($LogFileFH, "> $log_file_name") or error ("Could not open log file '$log_file_name' for writing: $!.");
-	if (! defined ($quiet)) {
-		print "Logging to $log_file_name\n";
+	if ($Conf{'logfile'} eq 'syslog') {
+		openlog('pandora_agent', 'nowait', 'daemon');
+	} else {
+		open ($LogFileFH, "> $Conf{'logfile'}") or error ("Could not open log file $Conf{'logfile'} for writing: $!.");
+		print "Logging to $Conf{'logfile'}\n" if (!defined ($quiet));
 	}
 }
 
@@ -300,7 +302,11 @@ sub start_log (;$) {
 # Close the agent logfile and stop logging.
 ################################################################################
 sub stop_log () {
-	close ($LogFileFH);
+	if ($Conf{'logfile'} eq 'syslog') {
+		closelog();
+	} else {
+		close ($LogFileFH);
+	}
 }
 
 ################################################################################
@@ -311,6 +317,8 @@ sub log_message ($$;$) {
 	
 	if (defined ($dest)) {
 		print $dest strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
+	} elsif ($Conf{'logfile'} eq 'syslog') {
+		syslog('info', $msg);
 	} else {
 		#Trying to write into log file to test its writable
 		syswrite ($LogFileFH, "");

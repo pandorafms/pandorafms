@@ -199,6 +199,9 @@ my $DevNull = '/dev/null';
 # Shell command separator
 my $CmdSep = ';';
 
+# Global macros
+my %Macros;
+
 # PID of tentacle proxy, used in proxy mode
 my $tentacle_pid = undef;
 
@@ -634,6 +637,12 @@ sub read_config (;$) {
 			$Customfields{$1} = $2;
 			next;
 		}
+
+		# Save global macros
+		if ($line =~ m/^macro(\S+)\s+(.*)/) {
+			$Macros{$1} = $2;
+			next;
+		}
 		
 		# Token search
 		if (defined ($token)) {
@@ -898,7 +907,8 @@ sub check_remote_config () {
 	# Save the new configuration
 	move ("$Conf{'temporal'}/$RemoteConfFile", "$ConfDir/$ConfFile");
 
-	# Empty modules, plugins and collections
+	# Empty macros, modules, plugins and collections
+	%Macros = ();
 	@Modules = ();
 	%Collections = ();
 	%Conf = %DefaultConf;
@@ -1878,7 +1888,14 @@ sub replace_macros ($) {
 				
 		# Simple configuration token
 		if(ref($module->{$token}) eq ''){
+			# Module macros
 			while (my ($macro, $subst) = each (%{$module->{'macros'}})) {
+				eval {
+					$module->{$token} =~ s/$macro/$subst/g;
+				};
+			}
+			# Global macros
+			while (my ($macro, $subst) = each (%Macros)) {
 				eval {
 					$module->{$token} =~ s/$macro/$subst/g;
 				};
@@ -1891,8 +1908,15 @@ sub replace_macros ($) {
 				# Array of configuration tokens
 				foreach my $key (keys (%{$module->{$token}->[$i]})) {
 					
-					# Each configuration token is a hash
+					# Module macros (each configuration token is a hash)
 					while (my ($macro, $subst) = each (%{$module->{'macros'}})) {
+						eval {
+							$module->{$token}->[$i]->{$key} =~ s/$macro/$subst/g;
+						}
+					}
+
+					# Global macros (each configuration token is a hash)
+					while (my ($macro, $subst) = each (%Macros)) {
 						eval {
 							$module->{$token}->[$i]->{$key} =~ s/$macro/$subst/g;
 						}
@@ -2099,6 +2123,7 @@ while (1) {
 			start_log ('quiet');
 				
 			# Read configuration file
+			%Macros = ();
 			@Modules = ();
 			%Collections = ();
 			%Conf = %DefaultConf;

@@ -834,6 +834,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field10_ => $field10,
 				_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentcustomid_ => (defined ($agent)) ? $agent->{'custom_id'} : '',
+				'_agentcustomfield_\d+_'  => undef,
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
 				_agentstatus_ => undef,
@@ -3280,6 +3281,12 @@ sub on_demand_macro($$$$$$) {
 		return (defined ($module)) ? pandora_get_module_phone_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
 	} elsif ($macro eq '_name_tag_') {
 		return (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '';
+	} elsif ($macro =~ /_agentcustomfield_(\d+)_/) {
+		return '' unless defined ($agent);
+		my $field_number = $1;
+		my $field_value = get_db_value($dbh, 'SELECT description FROM tagent_custom_data WHERE id_field=? AND id_agent=?', $field_number, $agent->{'id_agente'});
+		return (defined($field_value)) ? $field_value : '';
+		
 	}
 }
 

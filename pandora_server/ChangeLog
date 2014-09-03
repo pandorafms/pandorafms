@@ -1,5 +1,9 @@
 2014-09-03  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Tools.pm: Added basic support to log to syslog.
+
+2014-09-03  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Added dynamic macros for agent custom fields.
 
 2014-09-02  Ramon Novoa  <rnovoa@artica.es>

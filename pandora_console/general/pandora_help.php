@@ -49,8 +49,8 @@ $safe_language = safe_url_extraclean ($user_language, "en");
 
 $safe_id = safe_url_extraclean ($id, "");
 $files = array ($config["homedir"]."/include/help/".$safe_language."/help_".$safe_id.".php",
-	$config["homedir"].ENTERPRISE_DIR."/include/help/".$safe_language."/help_".$safe_id.".php",
-	$config["homedir"].ENTERPRISE_DIR."/include/help/en/help_".$safe_id.".php",
+	$config["homedir"]."/".ENTERPRISE_DIR."/include/help/".$safe_language."/help_".$safe_id.".php",
+	$config["homedir"]."/".ENTERPRISE_DIR."/include/help/en/help_".$safe_id.".php",
 	$config["homedir"]."/include/help/en/help_".$safe_id.".php");
 $help_file = '';
 foreach ($files as $file) {

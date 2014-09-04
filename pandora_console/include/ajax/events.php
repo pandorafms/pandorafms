@@ -290,7 +290,7 @@ if ($get_extended_event) {
 	}
 	
 	// Tabs
-	$tabs = "<ul style='background:#eeeeee;border:0px'>";
+	$tabs = "<ul style='background:#ffffff !important; border-top: 0px; border-left: 0px; border-right: 0px; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; border-color: #D3D3D3;'>";
 	$tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true).__('General')."</a></li>";
 	$tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
 	$tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png',true).__('Agent fields')."</a></li>";
@@ -349,13 +349,13 @@ if ($get_extended_event) {
 	}
 	
 	$details = events_page_details($event, $server);
-
+	
 	// Juanma (09/05/2014) Fix: Needs to reconnect to node, in previous funct node connection was lost
 	if ($meta) {
 		$server = metaconsole_get_connection_by_id ($server_id);
-                metaconsole_connect($server);
+			metaconsole_connect($server);
 	}
-
+	
 	$custom_fields = events_page_custom_fields($event);
 	
 	$custom_data = events_page_custom_data($event);
@@ -434,8 +434,8 @@ if ($get_events_details) {
 	
 	$out = '<table class="eventtable" style="width:100%;height:100%;padding:0px 0px 0px 0px; border-spacing: 0px; margin: 0px 0px 0px 0px;">';
 	$out .= '<tr style="font-size:0px; heigth: 0px; background: #ccc;"><td></td><td></td></tr>';
-	foreach($events as $event) {
-		switch($event["estado"]) {
+	foreach ($events as $event) {
+		switch ($event["estado"]) {
 			case 0:
 				$img = ui_get_full_url("images/star.png", false, false, false);
 				$title = __('New event');

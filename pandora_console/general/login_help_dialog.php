@@ -38,53 +38,49 @@ if (is_ajax()) {
 echo '<div id="login_help_dialog" title="' .
 	__('Welcome to Pandora FMS') . '" style="">';
 	
-	echo '<div style="position:absolute; top:30px; left: 10px; text-align: left; right:0%; height:70px; width:560px; margin: 0 auto; border: 1px solid #FFF; line-height: 19px;">';
-		echo '<span style="font-size: 15px;">' .
-			__('If this is your first time with Pandora FMS, we propose you a few links to learn more about Pandora FMS. Monitoring could be overwhelm, but take your time to learn how to use the power of Pandora!') . '</span>';
+	echo '<div style="font-size: 10pt; margin: 20px;">';
+	echo __('If this is your first time with Pandora FMS, we propose you a few links to learn more about Pandora FMS. Monitoring could be overwhelm, but take your time to learn how to use the power of Pandora FMS!');
 	echo '</div>';
 	
-	echo '<div style="position:absolute; top:110px; text-align: center; left:0%; right:0%; height:210px; width:580px; margin: 0 auto; border: 1px solid #FFF">';
+	echo '<div style="">';
 		echo '<table cellspacing=0 cellpadding=0 style="border:1px solid #FFF; width:100%; height: 100%">';
 		echo '<tr>';
-			echo '<td style="border:1px solid #FFF; width:50%; height: 50%;">';
-				echo '<div style="position: relative; float: left; width:40%;">';
-				echo '<a href="' . ui_get_full_url(false) . 'general/pandora_help.php?id=main_help" target="_blank" style="text-decoration:none;">' . html_print_image('images/online_help.png', true, array("alt" => __('Online help'), "border" => 0)) . '</a>';
-				echo '</div>';
-				echo '<div style="position:relative; margin: 0 auto; float: right; width:60%; height: 60px; top: 20px; text-align: left;">';
-				echo  '<a href="' . ui_get_full_url(false) . 'general/pandora_help.php?id=main_help" target="_blank" style="text-decoration:none; text-shadow: 0 2px 2px #9D9999;" onmouseover="this.style.textDecoration=\'underline\';" onmouseout="this.style.textDecoration=\'none\';"><span style="font-size: 14px;">' . __('Online help') . '</span></a>';
-				echo '</div>';
+			echo '<td style="border:1px solid #FFF;">';
+				echo '<a href="' . ui_get_full_url(false) . 'general/pandora_help.php?id=main_help" target="_blank" style="text-decoration:none;">' .
+					html_print_image('images/online_help.png', true,
+						array("alt" => __('Online help'), "border" => 0)) . '</a>';
+				echo '<br style="margin-bottom: 40px;" />';
+				echo '<a style="font-size: 9pt;" href="' . ui_get_full_url(false) . 'general/pandora_help.php?id=main_help" target="_blank">' . __('Online help') . '</a>';
 			echo '</td>';
+			
+			echo '<td style="border:1px solid #FFF;">';
+				echo '<a href="http://pandorafms.com/" target="_blank" style="text-decoration:none;">' .
+					html_print_image('images/enterprise_version.png', true,
+						array("alt" => __('Enterprise version'), "border" => 0)) . '</a>';
+				echo '<br style="margin-bottom: 40px;" />';
+				echo '<a style="font-size: 9pt;" href="http://pandorafms.com/" target="_blank">' . __('Enterprise version') . '</a>';
+			echo '</td>';
+			
 			echo '<td style="border:1px solid #FFF">';
-				echo '<div style="position: relative; float: left; width:40%;">';
-				echo '<a href="http://openideas.info/smf/" target="_blank" style="text-decoration:none;">' . html_print_image('images/support.png', true, array("alt" => __('Support'), "border" => 0)) . '</a>';
-				echo '</div>';
-				echo '<div style="position:relative; margin: 0 auto; float: right; width:60%; height: 60px; top: 20px; text-align: left;">';
-				echo '<a href="http://openideas.info/smf/" target="_blank" style="text-decoration:none; text-shadow: 0 2px 2px #9D9999;" onmouseover="this.style.textDecoration=\'underline\';" onmouseout="this.style.textDecoration=\'none\';"><span style="font-size: 14px;">' . __('Support') . ' / ' . __('Forums') . '</span></a>';
-				echo '</div>';
+				echo '<a href="http://openideas.info/smf/" target="_blank" style="text-decoration:none;">' .
+					html_print_image('images/support.png', true,
+						array("alt" => __('Support'), "border" => 0)) . '</a>';
+				echo '<br style="margin-bottom: 40px;" />';
+				echo '<a style="font-size: 9pt;" href="http://openideas.info/smf/" target="_blank">' . __('Support') . ' / ' . __('Forums') . '</a>';
 			echo '</td>';
-			echo '</tr>';
-			echo '<tr>';
-			echo '<td style="border:1px solid #FFF; width:50%; height: 50%">';
-				echo '<div style="position: relative; float: left; width:40%;">';
-				echo '<a href="http://pandorafms.com/" target="_blank" style="text-decoration:none;">' . html_print_image('images/enterprise_version.png', true, array("alt" => __('Enterprise version'), "border" => 0)) . '</a>';
-				echo '</div>';
-				echo '<div style="position:relative; margin: 0 auto; float: right; width:60%; height: 60px; top: 20px; text-align: left;">';
-				echo '<a href="http://pandorafms.com/" target="_blank" style="text-decoration:none; text-shadow: 0 2px 2px #9D9999;" onmouseover="this.style.textDecoration=\'underline\';" onmouseout="this.style.textDecoration=\'none\';"><span style="font-size: 14px;">' . __('Enterprise version') . '</span></a>';
-				echo '</div>';
-			echo '</td>';
+			
 			echo '<td style="border:1px solid #FFF">';
-				echo '<div style="position: relative; float: left; width:40%;">';
-				echo '<a href="http://pandorafms.com/pandora/doc/en" target="_blank" style="text-decoration:none;">' . html_print_image('images/documentation.png', true, array("alt" => __('Documentation'), "border" => 0)) . '</a>';
-				echo '</div>';
-				echo '<div style="position:relative; margin: 0 auto; float: right; width:60%; height: 60px; top: 20px; text-align: left;">';
-				echo '<a href="http://pandorafms.com/pandora/doc/en" target="_blank" style="text-decoration:none; text-shadow: 0 2px 2px #9D9999;" onmouseover="this.style.textDecoration=\'underline\';" onmouseout="this.style.textDecoration=\'none\';"><span style="font-size: 14px;">' . __('Documentation') . '</span></a>';
-				echo '</div>';
+				echo '<a href="http://pandorafms.com/pandora/doc/en" target="_blank" style="text-decoration:none;">' .
+					html_print_image('images/documentation.png', true,
+						array("alt" => __('Documentation'), "border" => 0)) . '</a>';
+				echo '<br style="margin-bottom: 40px;" />';
+				echo '<a style="font-size: 9pt;" href="http://pandorafms.com/pandora/doc/en" target="_blank">' . __('Documentation') . '</span></a>';
 			echo '</td>';
 		echo '</tr>';
 		echo '</table>';
 	echo '</div>';
 	
-	echo '<div style="position:absolute; margin: 0 auto; top: 340px; right: 10px; border: 1px solid #FFF; width: 570px">';
+	echo '<div style="position:absolute; margin: 0 auto; top: 240px; right: 10px; border: 1px solid #FFF; width: 570px">';
 		echo '<div style="float: left; margin-top: 3px; margin-left: 0px; width: 80%; text-align: left;">';
 			html_print_checkbox('skip_login_help', 1, false, false, false, 'cursor: \'pointer\'');
 			echo '&nbsp;<span style="font-size: 12px;">' .__("Click here to don't show again this message") . '</span>';
@@ -106,7 +102,7 @@ $(document).ready (function () {
 		resizable: true,
 		draggable: true,
 		modal: true,
-		height: 450,
+		height: 350,
 		width: 630,
 		overlay: {
 				opacity: 0.5,

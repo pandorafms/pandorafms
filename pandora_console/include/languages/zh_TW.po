@@ -1,22 +1,22 @@
-# translation of pandora-el.po to Greek
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Traditional Chinese translation for pandora-fms
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the pandora-fms package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
 #
-# Jorge Gonzalez <jorgegonz@artica.es>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: pandora-el\n"
+"Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 12:34+0200\n"
-"PO-Revision-Date: 2012-03-15 17:08+0000\n"
-"Last-Translator: Minas Salapatas <msalap@gmail.com>\n"
-"Language-Team: Greek <el@li.org>\n"
+"PO-Revision-Date: 2012-03-28 12:31+0000\n"
+"Last-Translator: KW Lee <higogg@gmail.com>\n"
+"Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 15:12+0000\n"
+"X-Launchpad-Export-Date: 2014-09-04 15:10+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
-"Language: el\n"
+"Language: \n"
 
 #: ../../godmode/menu.php:28
 msgid "Manage monitoring"
@@ -148,7 +148,7 @@ msgstr ""
 #: ../../include/functions_treeview.php:220
 #: ../../include/functions_filemanager.php:534
 msgid "Actions"
-msgstr "Ενέργειες"
+msgstr ""
 
 #: ../../godmode/menu.php:120
 #: ../../enterprise/meta/include/functions_alerts_meta.php:114
@@ -236,11 +236,11 @@ msgstr ""
 
 #: ../../godmode/menu.php:216 ../../general/links_menu.php:20
 msgid "Links"
-msgstr "Σύνδεσμοι"
+msgstr "鏈結"
 
 #: ../../godmode/menu.php:217
 msgid "Site news"
-msgstr "Νέα του ιστότοπου"
+msgstr ""
 
 #: ../../godmode/menu.php:218 ../../godmode/setup/os.php:139
 msgid "Edit OS"
@@ -296,7 +296,7 @@ msgstr ""
 #: ../../godmode/menu.php:257 ../../godmode/extensions.php:27
 #: ../../operation/menu.php:357 ../../operation/extensions.php:27
 msgid "Extensions"
-msgstr "Επεκτάσεις"
+msgstr ""
 
 #: ../../godmode/servers/recon_script.php:73
 msgid "Recon script creation"
@@ -418,7 +418,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:6393
 #: ../../include/functions_filemanager.php:531
 msgid "Name"
-msgstr "Όνομα"
+msgstr "名稱"
 
 #: ../../godmode/servers/recon_script.php:100
 msgid "Script fullpath"
@@ -576,7 +576,7 @@ msgstr ""
 #: ../../include/functions_treeview.php:343
 #: ../../include/functions_snmp_browser.php:405
 msgid "Description"
-msgstr "Περιγραφή"
+msgstr ""
 
 #: ../../godmode/servers/recon_script.php:160
 #: ../../godmode/servers/plugin.php:312
@@ -599,7 +599,7 @@ msgstr ""
 #: ../../enterprise/godmode/modules/configure_local_component.php:420
 #: ../../general/login_page.php:97 ../../include/functions_ui.php:1015
 msgid "Help"
-msgstr "Βοήθεια"
+msgstr ""
 
 #: ../../godmode/servers/recon_script.php:198
 #: ../../godmode/servers/plugin.php:350
@@ -697,7 +697,7 @@ msgstr ""
 #: ../../include/functions_filemanager.php:862
 #: ../../include/functions_visual_map_editor.php:336
 msgid "Create"
-msgstr "Δημιουργία"
+msgstr "建立"
 
 #: ../../godmode/servers/recon_script.php:222
 #: ../../godmode/servers/plugin.php:378
@@ -816,7 +816,7 @@ msgstr "Δημιουργία"
 #: ../../include/functions_events.php:1596
 #: ../../include/functions_visual_map_editor.php:328
 msgid "Update"
-msgstr "Ενημέρωση"
+msgstr "更新"
 
 #: ../../godmode/servers/recon_script.php:227
 msgid "Recon scripts registered in Pandora FMS"
@@ -969,7 +969,7 @@ msgstr ""
 #: ../../extensions/files_repo/files_repo_list.php:107
 #: ../../include/functions_groups.php:1489
 msgid "Delete"
-msgstr "Διαγραφή"
+msgstr "删除"
 
 #: ../../godmode/servers/recon_script.php:369
 #: ../../godmode/servers/plugin.php:259 ../../godmode/servers/plugin.php:542
@@ -979,7 +979,7 @@ msgstr "Διαγραφή"
 #: ../../godmode/alerts/configure_alert_action.php:106
 #: ../../godmode/alerts/configure_alert_command.php:78
 msgid "Command"
-msgstr "Εντολή"
+msgstr ""
 
 #: ../../godmode/servers/recon_script.php:378
 msgid "There are no recon scripts in the system"
@@ -1041,7 +1041,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.workunits.php:35
 #: ../../extensions/files_repo/files_repo_form.php:93
 msgid "Add"
-msgstr "Προσθήκη"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:113
 #: ../../godmode/setup/file_manager.php:63
@@ -1069,7 +1069,7 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:188 ../../godmode/servers/plugin.php:565
 msgid "Nagios"
-msgstr "Nagios"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:193
 msgid "Max. timeout"
@@ -1220,7 +1220,7 @@ msgstr ""
 #: ../../include/functions_snmp_browser.php:400
 #: ../../include/functions_visual_map_editor.php:286
 msgid "Type"
-msgstr "Τύπος"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:544
 #: ../../godmode/servers/servers.build_table.php:66
@@ -1396,7 +1396,7 @@ msgstr ""
 #: ../../include/functions_filemanager.php:659
 #: ../../include/functions_groups.php:1489
 msgid "Are you sure?"
-msgstr "Είστε σίγουρος;"
+msgstr ""
 
 #: ../../godmode/servers/plugin.php:576
 msgid "There are no plugins in the system"
@@ -1421,7 +1421,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:464
 #: ../../operation/visual_console/render_view.php:111
 msgid "View"
-msgstr "Προβολή"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:49
 msgid "Successfully deleted recon task"
@@ -1467,7 +1467,7 @@ msgstr ""
 #: ../../enterprise/extensions/ipam/ipam_list.php:35
 #: ../../operation/servers/recon_view.php:95
 msgid "Network"
-msgstr "Δίκτυο"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:250
 #: ../../godmode/servers/manage_recontask_form.php:195
@@ -1644,7 +1644,7 @@ msgstr ""
 #: ../../include/functions_groups.php:706
 #: ../../include/functions_graph.php:4385
 msgid "Group"
-msgstr "Ομάδα"
+msgstr "群組"
 
 #: ../../godmode/servers/manage_recontask.php:250
 #: ../../godmode/servers/manage_recontask_form.php:250
@@ -1677,7 +1677,7 @@ msgstr ""
 #: ../../operation/search_agents.php:53
 #: ../../include/functions_events.php:1857
 msgid "OS"
-msgstr "ΛΣ"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:250
 #: ../../godmode/servers/manage_recontask_form.php:206
@@ -1723,7 +1723,7 @@ msgstr "ΛΣ"
 #: ../../include/functions_treeview.php:72
 #: ../../include/functions_treeview.php:339
 msgid "Interval"
-msgstr "Διάστημα ανανέωσης"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:250
 #: ../../godmode/servers/manage_recontask_form.php:238
@@ -1788,7 +1788,7 @@ msgstr ""
 #: ../../extensions/agents_alerts.php:266 ../../include/functions.php:2213
 #: ../../include/functions_ui_renders.php:97
 msgid "Action"
-msgstr "Ενέργεια"
+msgstr "動作"
 
 #: ../../godmode/servers/manage_recontask.php:267
 #: ../../godmode/alerts/alert_view.php:106
@@ -1840,7 +1840,7 @@ msgstr "Ενέργεια"
 #: ../../include/functions.php:932 ../../include/functions.php:938
 #: ../../include/functions.php:941 ../../include/functions_db.php:151
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:272
 #: ../../operation/servers/recon_view.php:145
@@ -1914,7 +1914,7 @@ msgstr ""
 #: ../../operation/users/user_edit.php:254
 #: ../../operation/snmpconsole/snmp_view.php:340
 msgid "Yes"
-msgstr "Ναι"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:291
 #: ../../godmode/servers/manage_recontask_form.php:249
@@ -1987,7 +1987,7 @@ msgstr "Ναι"
 #: ../../include/functions_events.php:2147
 #: ../../include/functions_events.php:2154
 msgid "No"
-msgstr "Όχι"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:295
 #: ../../godmode/servers/manage_recontask_form.php:235
@@ -2010,7 +2010,7 @@ msgstr "Όχι"
 #: ../../include/functions_html.php:723 ../../include/functions_html.php:724
 #: ../../include/functions_html.php:725
 msgid "Any"
-msgstr "Οποιοδήποτε"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:302
 #: ../../godmode/servers/manage_recontask_form.php:209
@@ -2079,7 +2079,7 @@ msgstr ""
 #: ../../include/functions.php:1056 ../../include/functions.php:1059
 #: ../../include/functions.php:1093
 msgid "Warning"
-msgstr "Προειδοποίηση"
+msgstr "警告"
 
 #: ../../godmode/servers/manage_recontask_form.php:149
 msgid ""
@@ -2348,7 +2348,7 @@ msgstr ""
 #: ../../include/ajax/planned_downtime.ajax.php:58
 #: ../../include/functions_html.php:300 ../../include/functions_html.php:459
 msgid "None"
-msgstr "Κανένα"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:225
 msgid "Recon script"
@@ -2383,7 +2383,7 @@ msgstr ""
 #: ../../operation/users/user_edit.php:341 ../../include/functions.php:2213
 #: ../../include/ajax/events.php:297
 msgid "Comments"
-msgstr "Σχόλια"
+msgstr "註解"
 
 #: ../../godmode/servers/manage_recontask_form.php:306
 msgid "OS detection"
@@ -2521,11 +2521,11 @@ msgstr ""
 #: ../../include/functions_reporting.php:6401
 #: ../../include/functions_snmp_browser.php:425
 msgid "Status"
-msgstr "Κατάσταση"
+msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:57
 msgid "Load"
-msgstr "Φόρτος"
+msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:57
 msgid "Modules running on this server / Total modules of this type"
@@ -2586,11 +2586,11 @@ msgstr ""
 #: ../../include/functions_reporting.php:5989
 #: ../../include/ajax/networkmap.ajax.php:104
 msgid "Modules"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:59
 msgid "Lag"
-msgstr "Lag"
+msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:59
 msgid "Max. Delay(sec)/Modules delayed"
@@ -2610,7 +2610,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:316
 #: ../../operation/integria_incidents/incident.list.php:98
 msgid "Updated"
-msgstr "Ενημερώθηκε"
+msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:87
 msgid "This is a master server"
@@ -2619,7 +2619,7 @@ msgstr ""
 #: ../../godmode/servers/servers.build_table.php:98
 #: ../../godmode/servers/servers.build_table.php:103
 msgid "of"
-msgstr "από"
+msgstr ""
 
 #: ../../godmode/servers/servers.build_table.php:118
 msgid "Reset module status and fired alert counts"
@@ -2651,7 +2651,7 @@ msgstr ""
 #: ../../include/functions_events.php:1852
 #: ../../include/functions_treeview.php:318
 msgid "IP Address"
-msgstr "Διεύθυνση IP"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:58
 msgid "Pandora servers"
@@ -2715,7 +2715,7 @@ msgstr ""
 #: ../../operation/netflow/nf_live_view.php:130
 #: ../../operation/agentes/ver_agente.php:771
 msgid "Main"
-msgstr "Κύριο"
+msgstr ""
 
 #: ../../godmode/netflow/nf_item_list.php:58
 msgid "Netflow reports"
@@ -2778,7 +2778,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:106
 #: ../../extensions/files_repo.php:169
 msgid "Successfully deleted"
-msgstr "Διεγράφη επιτυχώς"
+msgstr ""
 
 #: ../../godmode/netflow/nf_item_list.php:106
 #: ../../godmode/netflow/nf_item_list.php:127
@@ -2808,7 +2808,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1319
 #: ../../enterprise/dashboard/widgets/top_n.php:72
 msgid "Order"
-msgstr "Σειρά"
+msgstr ""
 
 #: ../../godmode/netflow/nf_item_list.php:148
 #: ../../godmode/admin_access_logs.php:45
@@ -2840,7 +2840,7 @@ msgstr "Σειρά"
 #: ../../operation/agentes/networkmap_list.php:77
 #: ../../operation/incidents/incident.php:215
 msgid "Filter"
-msgstr "Φίλτρο"
+msgstr ""
 
 #: ../../godmode/netflow/nf_item_list.php:150
 #: ../../godmode/reporting/reporting_builder.item_editor.php:982
@@ -2922,7 +2922,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:105
 #: ../../operation/snmpconsole/snmp_view.php:125
 msgid "Successfully updated"
-msgstr "Επιτυχής αναβάθμιση"
+msgstr ""
 
 #: ../../godmode/netflow/nf_edit_form.php:130
 #: ../../godmode/events/event_edit_filter.php:135
@@ -2966,7 +2966,7 @@ msgstr ""
 #: ../../include/functions_graph.php:4072 ../../include/functions.php:859
 #: ../../include/functions.php:1054 ../../include/functions.php:1090
 msgid "Normal"
-msgstr "Κανονικό"
+msgstr "正常"
 
 #: ../../godmode/netflow/nf_edit_form.php:197
 #: ../../godmode/alerts/configure_alert_template.php:706
@@ -3249,7 +3249,7 @@ msgstr ""
 #: ../../include/functions_graph.php:1973 ../../include/functions.php:892
 #: ../../include/functions.php:1105
 msgid "All"
-msgstr "Όλα"
+msgstr ""
 
 #: ../../godmode/admin_access_logs.php:63
 #: ../../godmode/admin_access_logs.php:187
@@ -3277,7 +3277,7 @@ msgstr "Όλα"
 #: ../../include/functions_config.php:309
 #: ../../include/functions_config.php:319
 msgid "User"
-msgstr "Χρήστης"
+msgstr "用戶"
 
 #: ../../godmode/admin_access_logs.php:65
 #: ../../godmode/admin_access_logs.php:66
@@ -3315,7 +3315,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:6342
 #: ../../include/functions_visual_map_editor.php:476
 msgid "IP"
-msgstr "Διεύθυνση IP"
+msgstr ""
 
 #: ../../godmode/admin_access_logs.php:189
 #: ../../godmode/reporting/reporting_builder.item_editor.php:835
@@ -3337,12 +3337,12 @@ msgstr "Διεύθυνση IP"
 #: ../../extensions/insert_data.php:165
 #: ../../include/functions_reporting.php:4410 ../../include/functions.php:2213
 msgid "Date"
-msgstr "Ημερομηνία"
+msgstr "日期"
 
 #: ../../godmode/admin_access_logs.php:190
 #: ../../mobile/operation/tactical.php:260 ../../general/logon_ok.php:98
 msgid "Source IP"
-msgstr "Πηγή διεύθυνσης IP"
+msgstr "來源IP"
 
 #: ../../godmode/admin_access_logs.php:302
 msgid "Export to CSV "
@@ -3391,7 +3391,7 @@ msgstr ""
 #: ../../enterprise/extensions/ipam/ipam_action.php:90
 #: ../../enterprise/extensions/ipam/ipam_action.php:98
 msgid "Could not be created"
-msgstr "Δεν μπόρεσε να δημιουργηθεί"
+msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:280
 #: ../../godmode/agentes/modificar_agente.php:486
@@ -3537,7 +3537,7 @@ msgstr ""
 #: ../../include/functions_events.php:42
 #: ../../include/functions_events.php:874
 msgid "Alert"
-msgstr "Alert"
+msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:489
 #: ../../operation/agentes/ver_agente.php:963
@@ -3599,7 +3599,7 @@ msgstr ""
 #: ../../enterprise/extensions/cron/main.php:130
 #: ../../enterprise/extensions/ipam/ipam_action.php:94
 msgid "Successfully created"
-msgstr "Επιτυχής δημιουργία"
+msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:585
 msgid "No data to normalize"
@@ -3777,7 +3777,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.list.php:93
 #: ../../extensions/api_checker.php:128
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #: ../../godmode/agentes/agent_incidents.php:79
 #: ../../godmode/alerts/alert_templates.php:50
@@ -3800,7 +3800,7 @@ msgstr "ID"
 #: ../../include/functions_events.php:1974
 #: ../../include/functions_reporting.php:1740
 msgid "Priority"
-msgstr "Προτεραιότητα"
+msgstr ""
 
 #: ../../godmode/agentes/agent_incidents.php:82
 #: ../../godmode/events/custom_events.php:104
@@ -3822,7 +3822,7 @@ msgstr "Προτεραιότητα"
 #: ../../include/functions_events.php:1947
 #: ../../include/functions_events.php:2037
 msgid "Source"
-msgstr "Πηγή"
+msgstr ""
 
 #: ../../godmode/agentes/agent_incidents.php:83
 #: ../../godmode/events/custom_events.php:110
@@ -3836,7 +3836,7 @@ msgstr "Πηγή"
 #: ../../include/functions_events.php:48
 #: ../../include/functions_events.php:2125
 msgid "Owner"
-msgstr "Ιδιοκτήτης"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_data.php:17
 msgid "Data server module"
@@ -3904,7 +3904,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.list.php:76
 #: ../../include/functions_snmp_browser.php:543
 msgid "Search"
-msgstr "Αναζήτηση"
+msgstr "搜尋"
 
 #: ../../godmode/agentes/modificar_agente.php:159
 #: ../../godmode/agentes/modificar_agente.php:564
@@ -3941,7 +3941,7 @@ msgstr ""
 #: ../../godmode/agentes/modificar_agente.php:407
 #: ../../operation/agentes/estado_agente.php:421
 msgid "R"
-msgstr "R"
+msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:452
 #: ../../godmode/agentes/planned_downtime.editor.php:320
@@ -3994,7 +3994,7 @@ msgstr ""
 #: ../../include/functions_treeview.php:312
 #: ../../include/functions_groups.php:1474
 msgid "Disabled"
-msgstr "Ανενεργό"
+msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:505
 #: ../../operation/agentes/estado_agente.php:516
@@ -4125,7 +4125,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:106
 #: ../../operation/snmpconsole/snmp_view.php:126
 msgid "Could not be updated"
-msgstr "Δεν μπόρεσε να αναβαθμιστεί"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:317
 msgid "Quiet: Disable modules that we indicate below."
@@ -4211,7 +4211,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_prediction.php:157
 #: ../../enterprise/extensions/cron/functions.php:156
 msgid "Weekly"
-msgstr "Εβδομαδιαία"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:366
 #: ../../godmode/agentes/module_manager_editor_prediction.php:158
@@ -4226,7 +4226,7 @@ msgstr ""
 #: ../../enterprise/godmode/alerts/alert_events.php:403
 #: ../../include/functions.php:899
 msgid "Mon"
-msgstr "Δευτ."
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:378
 #: ../../godmode/agentes/planned_downtime.list.php:259
@@ -4235,7 +4235,7 @@ msgstr "Δευτ."
 #: ../../enterprise/godmode/alerts/alert_events.php:405
 #: ../../include/functions.php:901
 msgid "Tue"
-msgstr "Τρι"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:381
 #: ../../godmode/agentes/planned_downtime.list.php:263
@@ -4244,7 +4244,7 @@ msgstr "Τρι"
 #: ../../enterprise/godmode/alerts/alert_events.php:407
 #: ../../include/functions.php:903
 msgid "Wed"
-msgstr "Τετ"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:384
 #: ../../godmode/agentes/planned_downtime.list.php:267
@@ -4280,7 +4280,7 @@ msgstr ""
 #: ../../enterprise/godmode/alerts/alert_events.php:415
 #: ../../include/functions.php:911
 msgid "Sun"
-msgstr "Sun"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:400
 msgid "From day:"
@@ -4453,7 +4453,7 @@ msgstr ""
 #: ../../include/functions_visual_map_editor.php:209
 #: ../../include/functions_graph.php:4290
 msgid "Module"
-msgstr "Άρθρωμα"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:640
 msgid "Add Module:"
@@ -4499,7 +4499,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:228
 #: ../../operation/tree.php:909 ../../extensions/insert_data.php:194
 msgid "Time"
-msgstr "Χρόνος"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.editor.php:945
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1375
@@ -4519,7 +4519,7 @@ msgstr "Χρόνος"
 #: ../../operation/tree.php:910 ../../extensions/insert_data.php:195
 #: ../../include/functions_html.php:715
 msgid "Hour"
-msgstr "Ώρα"
+msgstr "小時"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:946
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1376
@@ -4729,7 +4729,7 @@ msgstr ""
 #: ../../include/functions_visual_map_editor.php:176
 #: ../../include/functions_graph.php:4174
 msgid "Agent"
-msgstr "Ατζέντης"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:124
 #: ../../godmode/agentes/module_manager_editor_prediction.php:149
@@ -4770,12 +4770,12 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_csv.php:1205
 #: ../../include/functions_visual_map_editor.php:304
 msgid "Period"
-msgstr "Περίοδος"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:159
 #: ../../enterprise/extensions/cron/functions.php:155
 msgid "Daily"
-msgstr "Καθημερινά"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_network.php:27
 #: ../../include/functions_snmp_browser.php:590
@@ -4810,7 +4810,7 @@ msgstr ""
 #: ../../enterprise/godmode/setup/setup_history.php:49
 #: ../../include/functions_config.php:537
 msgid "Port"
-msgstr "Θύρα"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_network.php:82
 #: ../../godmode/agentes/agent_wizard.snmp_interfaces_explorer.php:287
@@ -4830,7 +4830,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_network.php:108
 #: ../../godmode/modules/manage_network_components_form_network.php:47
 msgid "SNMP OID"
-msgstr "SNMP OID"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_network.php:116
 #: ../../extensions/realtime_graphs.php:103
@@ -5000,7 +5000,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:146
 #: ../../operation/events/events.build_table.php:595
 msgid "Delete selected"
-msgstr "Διαγραφή επιλεγμένου"
+msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:225
 msgid "Only it is show when<br />the agent is saved."
@@ -5016,7 +5016,7 @@ msgstr ""
 #: ../../operation/agentes/ver_agente.php:666
 #: ../../include/functions_visual_map_editor.php:389
 msgid "Parent"
-msgstr "Γονέας"
+msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:239
 #: ../../godmode/massive/massive_edit_agents.php:263
@@ -5039,7 +5039,7 @@ msgstr ""
 #: ../../enterprise/extensions/csv_import/main.php:72
 #: ../../operation/events/events.build_table.php:42
 msgid "Server"
-msgstr "Εξυπηρετητής"
+msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:284
 #: ../../godmode/agentes/module_manager_editor_common.php:306
@@ -5066,13 +5066,13 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:299
 #: ../../godmode/massive/massive_edit_agents.php:325
 msgid "Active"
-msgstr "Ενεργό"
+msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:306
 #: ../../godmode/agentes/agent_manager.php:328
 #: ../../godmode/massive/massive_edit_agents.php:335
 msgid "Not available"
-msgstr "Μη διαθέσιμο"
+msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:319
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:201
@@ -5177,7 +5177,7 @@ msgstr ""
 #: ../../godmode/agentes/planned_downtime.list.php:199
 #: ../../enterprise/extensions/backup/main.php:92
 msgid "Running"
-msgstr "Εκτελείται"
+msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.list.php:200
 #: ../../godmode/agentes/planned_downtime.list.php:326
@@ -5330,7 +5330,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_wmi.php:44
 #: ../../godmode/modules/manage_network_components_form_wmi.php:42
 msgid "Namespace"
-msgstr "Namespace"
+msgstr ""
 
 #: ../../godmode/agentes/agent_wizard.wmi_explorer.php:262
 #: ../../godmode/agentes/module_manager_editor_wmi.php:51
@@ -5339,7 +5339,7 @@ msgstr "Namespace"
 #: ../../enterprise/godmode/agentes/inventory_manager.php:184
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:201
 msgid "Username"
-msgstr "Όνομα χρήστη"
+msgstr ""
 
 #: ../../godmode/agentes/agent_wizard.wmi_explorer.php:265
 #: ../../godmode/agentes/module_manager_editor_wmi.php:53
@@ -5361,7 +5361,7 @@ msgstr "Όνομα χρήστη"
 #: ../../include/functions_config.php:311
 #: ../../include/functions_config.php:321
 msgid "Password"
-msgstr "Κωδικός πρόσβασης"
+msgstr "密碼"
 
 #: ../../godmode/agentes/agent_wizard.wmi_explorer.php:275
 msgid "WMI Explore"
@@ -5840,7 +5840,7 @@ msgstr ""
 #: ../../include/functions_treeview.php:94
 #: ../../include/functions_graph.php:4196
 msgid "Module group"
-msgstr "Ομάδα Ενότητας"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_common.php:223
 #: ../../godmode/massive/massive_edit_modules.php:436
@@ -6053,7 +6053,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:316
 #: ../../extensions/agents_alerts.php:298 ../../include/functions_ui.php:843
 msgid "Default"
-msgstr "Προεπιλογή"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_common.php:351
 #: ../../godmode/massive/massive_edit_modules.php:406
@@ -6075,7 +6075,7 @@ msgstr ""
 #: ../../include/functions_graph.php:660
 #: ../../include/functions_graph.php:2906
 msgid "Min. Value"
-msgstr "Κατ. Τιμή"
+msgstr "最小值"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:358
 msgid "Any value below this number is discarted."
@@ -6092,7 +6092,7 @@ msgstr ""
 #: ../../include/functions_graph.php:660
 #: ../../include/functions_graph.php:2905
 msgid "Max. Value"
-msgstr "Ανωτ. Τιμή"
+msgstr "最大值"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:360
 msgid "Any value over this number is discarted."
@@ -6283,7 +6283,7 @@ msgstr ""
 #: ../../include/functions_snmp_browser.php:396
 #: ../../include/functions_graph.php:4293
 msgid "Value"
-msgstr "Τιμή"
+msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_common.php:537
 msgid "Add module macro"
@@ -6497,7 +6497,7 @@ msgstr ""
 #: ../../include/functions_visual_map_editor.php:59
 #: ../../include/functions_visual_map_editor.php:444
 msgid "Icon"
-msgstr "Εικονίδιο"
+msgstr ""
 
 #: ../../godmode/groups/configure_group.php:129
 msgid "You have not access to the parent."
@@ -6542,7 +6542,7 @@ msgstr ""
 #: ../../include/functions_graph.php:2358
 #: ../../include/functions_graph.php:3235
 msgid "Other"
-msgstr "Άλλο"
+msgstr ""
 
 #: ../../godmode/groups/configure_group.php:163
 msgid "Information accessible through the _group_other_ macro"
@@ -6588,7 +6588,7 @@ msgstr ""
 #: ../../include/functions_events.php:1309 ../../include/functions_ui.php:216
 #: ../../include/functions.php:1028
 msgid "Error"
-msgstr "Σφάλμα"
+msgstr ""
 
 #: ../../godmode/db/db_refine.php:42
 msgid "Maximum is equal to minimum"
@@ -6628,11 +6628,11 @@ msgstr ""
 
 #: ../../godmode/db/db_refine.php:94 ../../godmode/db/db_refine.php:96
 msgid "Minimum"
-msgstr "Ελάχιστο"
+msgstr ""
 
 #: ../../godmode/db/db_refine.php:99 ../../godmode/db/db_refine.php:101
 msgid "Maximum"
-msgstr "Μέγιστο"
+msgstr ""
 
 #: ../../godmode/db/db_audit.php:19
 msgid "Database audit purge"
@@ -6655,7 +6655,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:4614
 #: ../../include/functions_reporting.php:4629
 msgid "Total"
-msgstr "Σύνολο"
+msgstr ""
 
 #: ../../godmode/db/db_audit.php:81 ../../godmode/db/db_event.php:55
 msgid "Records"
@@ -6667,7 +6667,7 @@ msgstr ""
 
 #: ../../godmode/db/db_audit.php:88
 msgid "Latest date"
-msgstr "Τελευταία ημερομηνία"
+msgstr ""
 
 #: ../../godmode/db/db_audit.php:92 ../../godmode/db/db_event.php:66
 #: ../../godmode/db/db_purge.php:335
@@ -6767,7 +6767,7 @@ msgstr ""
 #: ../../include/functions.php:409 ../../include/functions.php:553
 #: ../../include/functions_html.php:609
 msgid "days"
-msgstr "ημέρες"
+msgstr "天"
 
 #: ../../godmode/db/db_main.php:86
 msgid "Max. time before purge"
@@ -6782,7 +6782,7 @@ msgstr ""
 #: ../../mobile/operation/groups.php:95
 #: ../../include/functions_reporting.php:1300
 msgid "Total agents"
-msgstr "Συνολικοί πράκτορες"
+msgstr "代理程式總數"
 
 #: ../../godmode/db/db_main.php:105 ../../include/functions_reporting.php:1045
 msgid "Total events"
@@ -6830,7 +6830,7 @@ msgstr ""
 #: ../../operation/gis_maps/ajax.php:271
 #: ../../include/functions_treeview.php:355 ../../include/functions_ui.php:414
 msgid "Never"
-msgstr "Ποτέ"
+msgstr ""
 
 #: ../../godmode/db/db_main.php:200
 msgid ""
@@ -7065,7 +7065,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:112
 #: ../../operation/reporting/reporting_viewer.php:115
 msgid "Reporting"
-msgstr "Αναφέρωντας"
+msgstr ""
 
 #: ../../godmode/reporting/graphs.php:71 ../../operation/menu.php:164
 #: ../../operation/reporting/graph_viewer.php:142
@@ -7158,7 +7158,7 @@ msgstr ""
 #: ../../include/functions_visual_map_editor.php:53
 #: ../../include/functions_visual_map_editor.php:245
 msgid "Background"
-msgstr "Παρασκήνιο"
+msgstr "背景"
 
 #: ../../godmode/reporting/visual_console_builder.data.php:94
 #: ../../godmode/reporting/reporting_builder.main.php:32
@@ -7282,7 +7282,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting.php:3223
 #: ../../operation/visual_console/render_view.php:106
 msgid "Wizard"
-msgstr "Αυτόματος εγκαταστάτης"
+msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.php:477
 #: ../../enterprise/meta/screens/screens.visualmap.php:146
@@ -7329,7 +7329,7 @@ msgstr ""
 #: ../../enterprise/dashboard/widgets/custom_graph.php:35
 #: ../../include/functions_visual_map_editor.php:272
 msgid "Width"
-msgstr "Πλάτος"
+msgstr "寬度"
 
 #: ../../godmode/reporting/graph_builder.main.php:127
 #: ../../godmode/reporting/visual_console_builder.wizard.php:109
@@ -7338,7 +7338,7 @@ msgstr "Πλάτος"
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:176
 #: ../../enterprise/dashboard/widgets/custom_graph.php:37
 msgid "Height"
-msgstr "Ύψος"
+msgstr "高度"
 
 #: ../../godmode/reporting/graph_builder.main.php:137
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:202
@@ -7350,7 +7350,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:208
 #: ../../operation/reporting/graph_viewer.php:178
 msgid "Area"
-msgstr "Περιοχή"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.main.php:144
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:209
@@ -7362,7 +7362,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:210
 #: ../../operation/reporting/graph_viewer.php:180
 msgid "Line"
-msgstr "Γραμμή"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.main.php:146
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:211
@@ -7450,7 +7450,7 @@ msgstr ""
 #: ../../include/ajax/networkmap.ajax.php:156
 #: ../../include/ajax/networkmap.ajax.php:161
 msgid "Agents"
-msgstr "Πράκτορες"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:243
 #: ../../godmode/reporting/visual_console_builder.elements.php:61
@@ -7485,7 +7485,7 @@ msgstr ""
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:233
 #: ../../extensions/net_tools.php:282
 msgid "Options"
-msgstr "Επιλογές"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:265
 #: ../../godmode/reporting/reporting_builder.list_items.php:429
@@ -7708,7 +7708,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting.php:1056
 #: ../../include/functions_html.php:709
 msgid "Monday"
-msgstr "Δευτέρα"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:636
 #: ../../godmode/alerts/alert_templates.php:64
@@ -7719,7 +7719,7 @@ msgstr "Δευτέρα"
 #: ../../enterprise/include/functions_reporting.php:1057
 #: ../../include/functions_html.php:709
 msgid "Tuesday"
-msgstr "Τρίτη"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:642
 #: ../../godmode/alerts/alert_templates.php:65
@@ -7730,7 +7730,7 @@ msgstr "Τρίτη"
 #: ../../enterprise/include/functions_reporting.php:1058
 #: ../../include/functions_html.php:709
 msgid "Wednesday"
-msgstr "Τετάρτη"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:648
 #: ../../godmode/alerts/alert_templates.php:66
@@ -7741,7 +7741,7 @@ msgstr "Τετάρτη"
 #: ../../enterprise/include/functions_reporting.php:1059
 #: ../../include/functions_html.php:709
 msgid "Thursday"
-msgstr "Πέμπτη"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:654
 #: ../../godmode/alerts/alert_templates.php:67
@@ -7752,7 +7752,7 @@ msgstr "Πέμπτη"
 #: ../../enterprise/include/functions_reporting.php:1060
 #: ../../include/functions_html.php:709
 msgid "Friday"
-msgstr "Παρασκευή"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:660
 #: ../../godmode/alerts/alert_templates.php:68
@@ -7763,7 +7763,7 @@ msgstr "Παρασκευή"
 #: ../../enterprise/include/functions_reporting.php:1061
 #: ../../include/functions_html.php:709
 msgid "Saturday"
-msgstr "Σάββατο"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:666
 #: ../../godmode/alerts/alert_templates.php:69
@@ -7774,7 +7774,7 @@ msgstr "Σάββατο"
 #: ../../enterprise/include/functions_reporting.php:1062
 #: ../../include/functions_html.php:709
 msgid "Sunday"
-msgstr "Κυριακή"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:674
 #: ../../godmode/alerts/configure_alert_template.php:508
@@ -7845,7 +7845,7 @@ msgstr ""
 #: ../../include/functions_reports.php:581
 #: ../../include/functions_reporting.php:3975
 msgid "Text"
-msgstr "Κείμενο"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:915
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1206
@@ -8001,7 +8001,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:3698
 #: ../../include/functions_db.php:1091
 msgid "OK"
-msgstr "Εντάξει"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1014
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:224
@@ -8110,7 +8110,7 @@ msgstr ""
 #: ../../include/functions.php:1058 ../../include/functions.php:1059
 #: ../../include/functions.php:1096
 msgid "Critical"
-msgstr "Κρίσιμο"
+msgstr "重大更新"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1056
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1299
@@ -8222,7 +8222,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:5617
 #: ../../include/functions_menu.php:499
 msgid "Operation"
-msgstr "Λειτουργία"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1261
 msgid ""
@@ -8242,14 +8242,14 @@ msgstr ""
 #: ../../include/functions_visual_map_editor.php:90
 #: ../../include/functions_visual_map_editor.php:443
 msgid "Label"
-msgstr "Ετικέτα"
+msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:59
 #: ../../godmode/reporting/visual_console_builder.wizard.php:91
 #: ../../include/functions_filemanager.php:617
 #: ../../include/functions_visual_map_editor.php:101
 msgid "Image"
-msgstr "Εικόνα"
+msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:60
 msgid "Width x Height<br>Max value"
@@ -8525,7 +8525,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:107
 #: ../../extensions/files_repo.php:169
 msgid "Could not be deleted"
-msgstr "Δεν μπόρεσε να διαγραφεί"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:326
 msgid "Free text for search: "
@@ -8543,18 +8543,18 @@ msgstr ""
 #: ../../operation/reporting/custom_reporting.php:40
 #: ../../operation/search_reports.php:40
 msgid "HTML"
-msgstr "HTML"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:401
 #: ../../operation/reporting/custom_reporting.php:41
 #: ../../operation/search_reports.php:41
 msgid "XML"
-msgstr "XML"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:412
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:246
 msgid "Private"
-msgstr "Ιδιωτικό"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:452
 msgid "HTML view"
@@ -8606,7 +8606,7 @@ msgstr ""
 #: ../../include/functions_events.php:40
 #: ../../include/functions_reporting.php:2801
 msgid "Event type"
-msgstr "Τύπος συμβάντος"
+msgstr ""
 
 #: ../../godmode/events/event_filter.php:92
 #: ../../godmode/events/event_edit_filter.php:187
@@ -8629,7 +8629,7 @@ msgstr ""
 #: ../../include/functions_events.php:784
 #: ../../include/functions_events.php:2159
 msgid "Severity"
-msgstr "Αυστηρότητα"
+msgstr ""
 
 #: ../../godmode/events/event_responses.php:52
 msgid "Response added succesfully"
@@ -8697,7 +8697,7 @@ msgstr ""
 #: ../../operation/events/events_list.php:464
 #: ../../include/functions_events.php:1315 ../../include/functions.php:1060
 msgid "Not normal"
-msgstr "οχι κανονικό"
+msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:190
 #: ../../godmode/snmpconsole/snmp_alert.php:844
@@ -8768,7 +8768,7 @@ msgstr ""
 #: ../../operation/events/events_list.php:301
 #: ../../operation/events/events_list.php:322
 msgid "Remove"
-msgstr "Αφαίρεση"
+msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:288
 #: ../../operation/events/events_list.php:433
@@ -8837,7 +8837,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:2804
 #: ../../include/functions_netflow.php:287 ../../include/ajax/events.php:460
 msgid "Timestamp"
-msgstr "Χρονόσημο"
+msgstr ""
 
 #: ../../godmode/events/custom_events.php:89
 #: ../../godmode/events/custom_events.php:155
@@ -9002,13 +9002,13 @@ msgstr ""
 #: ../../include/functions_visual_map_editor.php:310
 #: ../../include/functions_visual_map_editor.php:373
 msgid "Size"
-msgstr "Μέγεθος"
+msgstr ""
 
 #: ../../godmode/events/event_responses.editor.php:103
 #: ../../enterprise/extensions/cron/main.php:291
 #: ../../include/functions_events.php:1664
 msgid "Parameters"
-msgstr "Παράμετροι"
+msgstr ""
 
 #: ../../godmode/gis_maps/index.php:133
 msgid "Caution: Do you want delete the map?"
@@ -9182,7 +9182,7 @@ msgstr ""
 #: ../../enterprise/meta/general/main_header.php:235
 #: ../../general/header.php:185 ../../extensions/insert_data.php:162
 msgid "Select"
-msgstr "Επιλέξτε"
+msgstr "選取"
 
 #: ../../godmode/gis_maps/configure_gis_map.php:670
 #: ../../godmode/gis_maps/configure_gis_map.php:726
@@ -9241,7 +9241,7 @@ msgstr ""
 #: ../../enterprise/extensions/cron/main.php:214
 #: ../../operation/search_users.php:44
 msgid "Email"
-msgstr "Ηλεκτρονικό ταχυδρομείο"
+msgstr ""
 
 #: ../../godmode/tag/edit_tag.php:181
 msgid "Associated Email direction to use later in alerts associated to Tags."
@@ -9250,7 +9250,7 @@ msgstr ""
 #: ../../godmode/tag/edit_tag.php:189 ../../godmode/tag/tag.php:164
 #: ../../godmode/users/user_list.php:317
 msgid "Phone"
-msgstr "Τηλέφωνο"
+msgstr ""
 
 #: ../../godmode/tag/edit_tag.php:190
 msgid "Associated phone number to use later in alerts associated to Tags."
@@ -9403,7 +9403,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:2040
 #: ../../include/functions_treeview.php:219
 msgid "Template"
-msgstr "Πρότυπο"
+msgstr ""
 
 #: ../../godmode/alerts/alert_list.builder.php:97
 msgid "Create Template"
@@ -9441,7 +9441,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:6242
 #: ../../include/functions_reporting.php:6396
 msgid "Threshold"
-msgstr "Κατώφλι"
+msgstr ""
 
 #: ../../godmode/alerts/alert_list.builder.php:138
 msgid "Add alert"
@@ -9563,7 +9563,7 @@ msgstr ""
 #: ../../include/graphs/functions_flot.php:308
 #: ../../include/functions.php:1015
 msgid "Unknown"
-msgstr "Άγνωστο"
+msgstr ""
 
 #: ../../godmode/alerts/alert_list.builder.php:206
 #: ../../godmode/alerts/configure_alert_template.php:817
@@ -9590,12 +9590,12 @@ msgstr ""
 #: ../../enterprise/extensions/ipam/ipam_editor.php:67
 #: ../../include/functions_config.php:545
 msgid "Days"
-msgstr "Ημέρες"
+msgstr ""
 
 #: ../../godmode/alerts/alert_templates.php:71
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:128
 msgid "Every"
-msgstr "Κάθε"
+msgstr ""
 
 #: ../../godmode/alerts/alert_templates.php:81
 #: ../../enterprise/dashboard/widgets/tactical.php:33
@@ -9624,7 +9624,7 @@ msgstr ""
 #: ../../operation/agentes/gis_view.php:163
 #: ../../operation/reporting/reporting_viewer.php:166
 msgid "From"
-msgstr "Από"
+msgstr ""
 
 #: ../../godmode/alerts/alert_templates.php:130
 #: ../../godmode/alerts/alert_templates.php:174
@@ -9686,7 +9686,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:1178 ../../include/functions.php:408
 #: ../../include/functions.php:552 ../../include/functions_html.php:606
 msgid "seconds"
-msgstr "δευτερόλεπτα"
+msgstr "秒"
 
 #: ../../godmode/alerts/configure_alert_action.php:126
 #: ../../godmode/alerts/alert_view.php:409
@@ -9845,7 +9845,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:6359
 #: ../../include/functions_groups.php:1474
 msgid "Enabled"
-msgstr "Ενεργοποιημένο"
+msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:625
 #: ../../godmode/alerts/alert_view.php:427
@@ -10092,7 +10092,7 @@ msgstr ""
 #: ../../include/functions_ui.php:856 ../../include/functions_agents.php:1980
 #: ../../include/functions.php:1022
 msgid "Alert fired"
-msgstr "Ειδοποίηση φωτιά"
+msgstr ""
 
 #: ../../godmode/alerts/alert_list.list.php:590
 #: ../../godmode/alerts/alert_view.php:78
@@ -10103,7 +10103,7 @@ msgstr "Ειδοποίηση φωτιά"
 #: ../../mobile/operation/alerts.php:249
 #: ../../extensions/agents_alerts.php:309 ../../include/functions_ui.php:856
 msgid "times"
-msgstr "φορές"
+msgstr ""
 
 #: ../../godmode/alerts/alert_list.list.php:594
 #: ../../godmode/alerts/alert_view.php:82
@@ -10405,7 +10405,7 @@ msgstr ""
 #: ../../godmode/users/profile_list.php:202
 #: ../../enterprise/meta/advanced/synchronizing.user.php:553
 msgid "Profiles"
-msgstr "Προφίλ"
+msgstr ""
 
 #: ../../godmode/users/profile_list.php:204
 msgid "System incidents reading"
@@ -10527,18 +10527,18 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:422
 #: ../../include/functions_reporting.php:1683
 msgid "User ID"
-msgstr "Ταυτότητα (ID) χρήστη"
+msgstr ""
 
 #: ../../godmode/users/user_list.php:231 ../../godmode/users/user_list.php:324
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:250
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:263
 #: ../../operation/search_users.php:63
 msgid "Admin"
-msgstr "Διαχειριστής"
+msgstr ""
 
 #: ../../godmode/users/user_list.php:232 ../../operation/search_users.php:50
 msgid "Profile"
-msgstr "Προφίλ"
+msgstr ""
 
 #: ../../godmode/users/user_list.php:318
 #: ../../godmode/users/configure_user.php:434
@@ -10550,7 +10550,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:425
 #: ../../operation/search_users.php:64
 msgid "Administrator"
-msgstr "Διαχειριστής"
+msgstr ""
 
 #: ../../godmode/users/user_list.php:353 ../../operation/search_users.php:82
 msgid "The user doesn't have any assigned profile/group"
@@ -10599,7 +10599,7 @@ msgstr ""
 #: ../../enterprise/godmode/setup/setup_acl.php:136
 #: ../../operation/users/user_edit.php:380
 msgid "Profile name"
-msgstr "Όνομα προφίλ"
+msgstr ""
 
 #: ../../godmode/users/configure_profile.php:150
 msgid "View incidents"
@@ -10711,7 +10711,7 @@ msgstr ""
 #: ../../enterprise/extensions/translate_string.php:254
 #: ../../operation/users/user_edit.php:260
 msgid "Language"
-msgstr "Γλώσσα"
+msgstr ""
 
 #: ../../godmode/users/configure_user.php:414
 #: ../../operation/users/user_edit.php:226
@@ -10743,7 +10743,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:438
 #: ../../operation/users/user_edit.php:215
 msgid "Phone number"
-msgstr "Αριθμός τηλεφώνου"
+msgstr ""
 
 #: ../../godmode/users/configure_user.php:472
 #: ../../godmode/setup/setup_visuals.php:209
@@ -10822,7 +10822,7 @@ msgstr ""
 #: ../../operation/extensions.php:48 ../../extensions/realtime_graphs.php:106
 #: ../../include/functions_snmp_browser.php:501
 msgid "Version"
-msgstr "Έκδοση"
+msgstr ""
 
 #: ../../godmode/extensions.php:145
 #: ../../enterprise/include/functions_setup.php:27
@@ -10905,7 +10905,7 @@ msgstr ""
 #: ../../include/functions_visual_map.php:441
 #: ../../include/functions_visual_map.php:663
 msgid "No agents selected"
-msgstr "Δεν επιλέχθηκαν πράκτορες"
+msgstr ""
 
 #: ../../godmode/massive/massive_delete_agents.php:57
 #, php-format
@@ -10973,7 +10973,7 @@ msgstr ""
 #: ../../operation/search_results.php:83
 #: ../../include/functions_reporting.php:1267
 msgid "Users"
-msgstr "Χρήστες"
+msgstr ""
 
 #: ../../godmode/massive/massive_delete_action_alerts.php:56
 msgid "Could not be deleted. No agents selected"
@@ -11170,12 +11170,12 @@ msgstr ""
 #: ../../enterprise/operation/services/services.list.php:128
 #: ../../operation/gis_maps/render_view.php:139
 msgid "Ok"
-msgstr "ΟΚ"
+msgstr ""
 
 #: ../../godmode/massive/massive_edit_agents.php:366
 #: ../../enterprise/dashboard/widgets/maps_status.php:75
 msgid "Bad"
-msgstr "Κακό"
+msgstr ""
 
 #: ../../godmode/massive/massive_add_profiles.php:72
 msgid "Profiles added successfully"
@@ -11209,7 +11209,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:187
 #: ../../extensions/system_info.php:493
 msgid "Loading"
-msgstr "Φόρτωση"
+msgstr "載入中"
 
 #: ../../godmode/massive/massive_copy_modules.php:157
 #: ../../enterprise/meta/advanced/synchronizing.component.php:304
@@ -11436,7 +11436,7 @@ msgstr ""
 #: ../../extensions/realtime_graphs.php:102
 #: ../../include/functions_snmp_browser.php:391
 msgid "OID"
-msgstr "OID"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:74
 #: ../../godmode/snmpconsole/snmp_alert.php:532
@@ -11582,7 +11582,7 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:782
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:269
 msgid "Other value"
-msgstr "Άλλη τιμή"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:795
 #: ../../godmode/snmpconsole/snmp_alert.php:951
@@ -11845,12 +11845,12 @@ msgstr ""
 #: ../../include/functions_graph.php:2343
 #: ../../include/functions_graph.php:2346 ../../include/functions.php:1027
 msgid "System"
-msgstr "Σύστημα"
+msgstr "系統"
 
 #: ../../godmode/setup/setup_general.php:63
 #: ../../enterprise/meta/advanced/metasetup.setup.php:87
 msgid "Database"
-msgstr "Βάση δεδομένων"
+msgstr ""
 
 #: ../../godmode/setup/setup_general.php:66
 #: ../../include/functions_config.php:130
@@ -12154,7 +12154,7 @@ msgstr ""
 #: ../../godmode/setup/setup_visuals.php:53
 #: ../../enterprise/meta/advanced/metasetup.visual.php:74
 msgid "Example"
-msgstr "Παράδειγμα"
+msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:67
 #: ../../enterprise/meta/advanced/metasetup.visual.php:87
@@ -12245,21 +12245,21 @@ msgstr ""
 #: ../../include/functions.php:412 ../../include/functions.php:556
 #: ../../include/functions_html.php:607
 msgid "minutes"
-msgstr "λεπτά"
+msgstr "分鐘"
 
 #: ../../godmode/setup/setup_visuals.php:135
 #: ../../enterprise/meta/advanced/metasetup.visual.php:136
 #: ../../include/functions.php:413 ../../include/functions.php:557
 #: ../../include/functions_html.php:608
 msgid "hours"
-msgstr "ώρες"
+msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:137
 #: ../../enterprise/meta/advanced/metasetup.visual.php:138
 #: ../../include/functions.php:410 ../../include/functions.php:554
 #: ../../include/functions_html.php:611
 msgid "months"
-msgstr "μήνες"
+msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:138
 #: ../../enterprise/meta/advanced/metasetup.visual.php:139
@@ -12299,7 +12299,7 @@ msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:173
 msgid "Colors"
-msgstr "Χρώματα"
+msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:174
 msgid "Faces"
@@ -12733,7 +12733,7 @@ msgstr ""
 
 #: ../../godmode/setup/links.php:86 ../../godmode/setup/news.php:130
 msgid "Name error"
-msgstr "Λάθος ονόματος"
+msgstr ""
 
 #: ../../godmode/setup/links.php:106 ../../godmode/setup/links.php:136
 msgid "Link name"
@@ -12742,7 +12742,7 @@ msgstr ""
 #: ../../godmode/setup/links.php:109
 #: ../../enterprise/godmode/policies/policy_linking.php:134
 msgid "Link"
-msgstr "Σύνδεσμος"
+msgstr ""
 
 #: ../../godmode/setup/links.php:132
 msgid "There isn't links"
@@ -12765,7 +12765,7 @@ msgstr ""
 #: ../../operation/messages/message_edit.php:203
 #: ../../operation/messages/message_list.php:121
 msgid "Subject"
-msgstr "Θέμα"
+msgstr ""
 
 #: ../../godmode/setup/news.php:167
 msgid "Modal screen"
@@ -12787,7 +12787,7 @@ msgstr ""
 #: ../../operation/agentes/estado_generalagente.php:348
 #: ../../operation/incidents/incident_detail.php:417
 msgid "Author"
-msgstr "Δημιουργός"
+msgstr ""
 
 #: ../../godmode/setup/news.php:242
 msgid "Modal"
@@ -12878,7 +12878,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:1077 ../../include/functions.php:1937
 #: ../../include/ajax/module.php:109
 msgid "1 hour"
-msgstr "1 ώρα"
+msgstr ""
 
 #: ../../godmode/setup/performance.php:82
 #: ../../enterprise/godmode/agentes/inventory_manager.php:175
@@ -12889,7 +12889,7 @@ msgstr "1 ώρα"
 #: ../../include/functions_netflow.php:1047
 #: ../../include/functions_netflow.php:1080 ../../include/ajax/module.php:111
 msgid "12 hours"
-msgstr "12 ώρες"
+msgstr "12 小時"
 
 #: ../../godmode/setup/performance.php:83
 msgid "Last day"
@@ -12902,7 +12902,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:1049
 #: ../../include/functions_netflow.php:1082
 msgid "2 days"
-msgstr "2 ημέρες"
+msgstr ""
 
 #: ../../godmode/setup/performance.php:85
 msgid "10 days"
@@ -12912,7 +12912,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:189
 #: ../../include/functions_netflow.php:1052
 msgid "Last week"
-msgstr "Τελευταία εβδομάδα"
+msgstr ""
 
 #: ../../godmode/setup/performance.php:87
 msgid "2 weeks"
@@ -12922,7 +12922,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:191
 #: ../../include/functions_netflow.php:1053
 msgid "Last month"
-msgstr "Τελευταίος μήνας"
+msgstr ""
 
 #: ../../godmode/setup/performance.php:90
 #: ../../include/functions_config.php:349
@@ -13406,7 +13406,7 @@ msgstr ""
 #: ../../index.php:493 ../../enterprise/meta/index.php:397
 #: ../../enterprise/meta/index.php:409
 msgid "Sorry! I can't find the page!"
-msgstr "Συγνώμη! Δε μπορώ να βρώ την σελίδα!"
+msgstr ""
 
 #: ../../enterprise/godmode/menu.php:17
 #: ../../enterprise/godmode/massive/massive_operations.php:67
@@ -13522,7 +13522,7 @@ msgstr ""
 #: ../../enterprise/extensions/ipam/ipam_network.php:462
 #: ../../operation/agentes/ver_agente.php:634
 msgid "Address"
-msgstr "Διεύθυνση"
+msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export.php:130
 #: ../../enterprise/godmode/servers/manage_export_form.php:86
@@ -13623,7 +13623,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:421
 #: ../../operation/agentes/networkmap.php:390
 msgid "Simple"
-msgstr "Απλό"
+msgstr ""
 
 #: ../../enterprise/godmode/services/services.service.php:211
 #: ../../enterprise/godmode/services/services.elements.php:53
@@ -13681,7 +13681,7 @@ msgstr ""
 #: ../../enterprise/godmode/services/services.elements.php:102
 #: ../../operation/search_maps.php:33
 msgid "Elements"
-msgstr "Στοιχεία"
+msgstr ""
 
 #: ../../enterprise/godmode/services/services.elements.php:104
 #: ../../enterprise/include/functions_services.php:1225
@@ -13983,14 +13983,14 @@ msgstr ""
 #: ../../include/functions_netflow.php:1045
 #: ../../include/functions_netflow.php:1078
 msgid "2 hours"
-msgstr "2 ώρες"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:174
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:184
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:192
 #: ../../include/ajax/module.php:110
 msgid "6 hours"
-msgstr "6 ώρες"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:176
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:186
@@ -14001,7 +14001,7 @@ msgstr "6 ώρες"
 #: ../../include/functions_netflow.php:1081 ../../include/functions.php:1940
 #: ../../include/ajax/module.php:112
 msgid "1 day"
-msgstr "1 ημέρα"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:178
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:196
@@ -14015,14 +14015,14 @@ msgstr ""
 #: ../../include/functions_netflow.php:1084 ../../include/functions.php:1942
 #: ../../include/ajax/module.php:114
 msgid "15 days"
-msgstr "15 ημέρες"
+msgstr "15 天"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:180
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:198
 #: ../../include/functions_netflow.php:1086 ../../include/functions.php:1943
 #: ../../include/ajax/module.php:115
 msgid "1 month"
-msgstr "1 μήνας"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:191
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:207
@@ -14040,7 +14040,7 @@ msgstr ""
 #: ../../include/functions_ui.php:770 ../../include/functions_groups.php:732
 #: ../../include/functions_groups.php:909
 msgid "Force"
-msgstr "Εξαναγκασμός"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.data.php:43
 #: ../../enterprise/godmode/agentes/collections.data.php:111
@@ -14085,7 +14085,7 @@ msgstr ""
 #: ../../include/functions_graph.php:2412
 #: ../../include/functions_netflow.php:310
 msgid "Data"
-msgstr "Δεδομένα"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.data.php:87
 #: ../../enterprise/godmode/agentes/collections.data.php:182
@@ -14913,17 +14913,17 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:192
 #: ../../include/functions_netflow.php:1054
 msgid "2 months"
-msgstr "2 μήνες"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:193
 #: ../../include/functions_netflow.php:1056 ../../include/ajax/module.php:117
 msgid "6 months"
-msgstr "6 μήνες"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:194
 #: ../../include/functions.php:1946 ../../include/ajax/module.php:118
 msgid "1 year"
-msgstr "1 χρόνο"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policies.php:149
 msgid "Policies Management"
@@ -15370,7 +15370,7 @@ msgstr ""
 #: ../../extensions/agents_alerts.php:78
 #: ../../extensions/agents_modules.php:86
 msgid "Refresh"
-msgstr "Ανανέωση"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:291
 msgid "This operation could take a long time"
@@ -15411,7 +15411,7 @@ msgstr ""
 #: ../../operation/servers/recon_view.php:104
 #: ../../operation/servers/recon_view.php:158
 msgid "Progress"
-msgstr "Πρόοδος"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:401
 #: ../../enterprise/godmode/massive/massive_edit_modules_satellite.php:351
@@ -15833,7 +15833,7 @@ msgstr ""
 #: ../../enterprise/extensions/cron/functions.php:188
 #: ../../include/functions_html.php:642
 msgid "Custom"
-msgstr "Προσαρμοσμένο"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_acl.php:71
 #: ../../enterprise/godmode/setup/setup_acl.php:94
@@ -16091,7 +16091,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/setup/setup.php:58
 msgid "Seconds"
-msgstr "Δευτερόλεπτα"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup.php:61
 #: ../../include/functions_config.php:204
@@ -16518,7 +16518,7 @@ msgstr ""
 #: ../../enterprise/dashboard/widgets/tactical.php:33
 #: ../../include/functions_reporting.php:1304
 msgid "Monitor checks"
-msgstr "Παρακολούθηση ελέγχων"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/tactical.php:39
 #: ../../include/functions_reporting.php:1055
@@ -16532,7 +16532,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:5527
 #: ../../include/functions_reporting.php:5901
 msgid "Summary"
-msgstr "Περίληψη"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/tactical.php:60
 #: ../../enterprise/dashboard/widgets/tactical.php:68
@@ -16559,7 +16559,7 @@ msgstr ""
 #: ../../include/functions_graph.php:2910
 #: ../../include/functions_graph.php:3516
 msgid "Events"
-msgstr "Γεγονότα"
+msgstr "事件"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:28
 msgid "Latest events list"
@@ -16597,7 +16597,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:372
 #: ../../operation/agentes/networkmap.php:349
 msgid "Layout"
-msgstr "Διάταξη"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/alerts_fired.php:24
 msgid "Alerts Fired"
@@ -16615,7 +16615,7 @@ msgstr ""
 #: ../../enterprise/extensions/cron/main.php:244
 #: ../../extensions/resource_exportation.php:357
 msgid "Report"
-msgstr "Αναφορά"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/reports.php:29
 msgid "Show a report made by user"
@@ -16634,7 +16634,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:1046
 #: ../../include/functions_netflow.php:1079
 msgid "5 hours"
-msgstr "5 ώρες"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/top_n.php:31
 msgid "Top N"
@@ -16724,7 +16724,7 @@ msgstr ""
 #: ../../operation/messages/message_edit.php:90
 #: ../../operation/messages/message_edit.php:206
 msgid "Message"
-msgstr "Μήνυμα"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:26
 msgid "Welcome"
@@ -16816,7 +16816,7 @@ msgstr ""
 #: ../../enterprise/dashboard/widgets/maps_status.php:28
 #: ../../operation/search_results.php:123
 msgid "Maps"
-msgstr "Χάρτες"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/post.php:23
 msgid "Panel with a message"
@@ -16838,7 +16838,7 @@ msgstr ""
 #: ../../include/functions_events.php:1918
 #: ../../include/functions_visual_map_editor.php:56
 msgid "Graph"
-msgstr "Γράφημα"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:53
 msgid "You don't have access"
@@ -16894,7 +16894,7 @@ msgstr ""
 #: ../../operation/agentes/status_monitor.php:502 ../../operation/tree.php:652
 #: ../../operation/incidents/incident.php:222
 msgid "Show"
-msgstr "Εμφάνιση"
+msgstr ""
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:136
 msgid "Destination user's group"
@@ -17169,7 +17169,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:2246
 #: ../../include/functions_reporting.php:2386
 msgid "Monitor"
-msgstr "Οθόνη"
+msgstr ""
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:142
 msgid "Web check"
@@ -17210,7 +17210,7 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:120
 #: ../../operation/integria_incidents/incident.php:141
 msgid "No description available"
-msgstr "Δεν υπάρχει διαθέσιμη περιγραφή"
+msgstr ""
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:97
 #: ../../include/functions_events.php:1571 ../../include/functions_xml.php:125
@@ -17627,7 +17627,7 @@ msgstr ""
 #: ../../operation/agentes/networkmap.php:366 ../../operation/tree.php:522
 #: ../../include/ajax/networkmap.ajax.php:50
 msgid "Policies"
-msgstr "Πολιτικές"
+msgstr ""
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:123
 #, php-format
@@ -17842,12 +17842,12 @@ msgstr ""
 #: ../../mobile/operation/modules.php:172 ../../mobile/operation/agent.php:57
 #: ../../general/noaccess.php:18 ../../general/noaccess.php:21
 msgid "You don't have access to this page"
-msgstr "Δεν έχετε πρόσβαση σε αυτή την σελίδα"
+msgstr "你沒有瀏覽這個頁面的權限"
 
 #: ../../enterprise/meta/general/metaconsole_no_activated.php:21
 #: ../../enterprise/meta/general/noaccess.php:29 ../../general/noaccess.php:29
 msgid "No access"
-msgstr "Καμία Πρόσβαση"
+msgstr ""
 
 #: ../../enterprise/meta/general/metaconsole_no_activated.php:25
 msgid ""
@@ -17867,12 +17867,12 @@ msgstr ""
 #: ../../enterprise/meta/general/login_page.php:82
 #: ../../general/login_page.php:153
 msgid "Build"
-msgstr "Χτίσιμο"
+msgstr ""
 
 #: ../../enterprise/meta/general/login_page.php:95
 #: ../../general/login_page.php:166
 msgid "Login failed"
-msgstr "Σύνδεση απέτυχε"
+msgstr "登入失敗。"
 
 #: ../../enterprise/meta/general/login_page.php:117
 msgid ""
@@ -17970,7 +17970,7 @@ msgstr ""
 #: ../../mobile/include/functions_web.php:33
 #: ../../mobile/include/ui.class.php:175 ../../general/header.php:241
 msgid "Logout"
-msgstr "Αποσύνδεση"
+msgstr "登出"
 
 #: ../../enterprise/meta/general/main_header.php:219
 #: ../../general/header.php:165
@@ -18055,11 +18055,7 @@ msgid ""
 "attempts to access this page are recorded in security logs of Pandora System "
 "Database"
 msgstr ""
-"Η πρόσβαση στη σελίδα περιορίζεται σε εξουσιοδοτημένους χρήστες, παρακαλώ "
-"επικοινωνήστε με το διαχειριστή του συστήματος αν χρειάζεστε "
-"βοήθεια.<br><br> Παρακαλώ ενημερωθείτε πως όλες οι προσπάθειες πρόσβασης στη "
-"σελίδα καταγράφονται στα ημερολόγια ασφαλείας της βάσης δεδομένων του "
-"συστήματος Πανδώρας."
+"這個頁面只有認可的使用者能瀏覽，如果你需要協助請聯絡系統管理員。請注意!!!任何存取這個頁面的行為都將記錄在Pandora的系統資料庫中。"
 
 #: ../../enterprise/meta/include/functions_agents_meta.php:969
 #: ../../enterprise/meta/include/functions_agents_meta.php:980
@@ -18111,7 +18107,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:375
 #: ../../operation/agentes/networkmap.php:416
 msgid "Font"
-msgstr "Γραμματοσειρά"
+msgstr ""
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:382
 msgid "Show modules"
@@ -18165,7 +18161,7 @@ msgstr ""
 #: ../../operation/agentes/networkmap.dinamic.php:56
 #: ../../operation/agentes/networkmap.topology.php:39
 msgid "Pandora FMS"
-msgstr "Pandora FMS"
+msgstr ""
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:499
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:557
@@ -18190,7 +18186,7 @@ msgstr ""
 #: ../../operation/agentes/networkmap.groups.php:43
 #: ../../operation/agentes/networkmap.topology.php:46
 msgid "No agents found"
-msgstr "Δεμ Βρέθηκαν Παράγοντες"
+msgstr ""
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:679
 #, php-format
@@ -18427,7 +18423,7 @@ msgstr ""
 #: ../../operation/gis_maps/ajax.php:276
 #: ../../include/functions_treeview.php:348
 msgid "Remote"
-msgstr "Απομακρυσμένο"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1154
 #: ../../operation/agentes/estado_generalagente.php:303
@@ -18481,7 +18477,7 @@ msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1260
 msgid "Group name"
-msgstr "Όνομα ομάδας"
+msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1337
 #: ../../include/functions_treeview.php:47
@@ -18664,7 +18660,7 @@ msgstr ""
 #: ../../include/functions_modules.php:1652
 #: ../../include/functions_modules.php:1672
 msgid "CRITICAL"
-msgstr "ικανοποιητική"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:563
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:586
@@ -18683,7 +18679,7 @@ msgstr "ικανοποιητική"
 #: ../../include/functions_modules.php:1656
 #: ../../include/functions_modules.php:1676
 msgid "WARNING"
-msgstr "ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:567
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:576
@@ -18702,7 +18698,7 @@ msgstr "ΠΡΟΕΙΔΟΠΟΙΗΣΗ"
 #: ../../include/functions_modules.php:1660
 #: ../../include/functions_modules.php:1668
 msgid "NORMAL"
-msgstr "κανονική"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:575
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:580
@@ -18730,7 +18726,7 @@ msgstr "κανονική"
 #: ../../include/functions_modules.php:1671
 #: ../../include/functions_modules.php:1675
 msgid "UNKNOWN"
-msgstr "ΆΓΝΩΣΤΟ"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:575
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:580
@@ -18754,7 +18750,7 @@ msgstr "ΆΓΝΩΣΤΟ"
 #: ../../include/functions_modules.php:1671
 #: ../../include/functions_modules.php:1675
 msgid "Last status"
-msgstr "Τελευταία κατάσταση"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:600
 msgid "Status: "
@@ -18860,7 +18856,7 @@ msgstr ""
 #: ../../include/functions_groups.php:814
 #: ../../include/functions_groups.php:815
 msgid "Alerts fired"
-msgstr "Ξεκίνησαν ειδοποιήσεις"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:237
 msgid "Source data"
@@ -19027,7 +19023,7 @@ msgstr ""
 #: ../../operation/agentes/exportdata.php:293
 #: ../../extensions/insert_data.php:168
 msgid "CSV"
-msgstr "CSV"
+msgstr ""
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:21
 msgid "Scheduled/Email"
@@ -19353,7 +19349,7 @@ msgstr ""
 #: ../../extensions/resource_exportation.php:359
 #: ../../extensions/resource_exportation.php:362
 msgid "Export"
-msgstr "Εξαγωγή"
+msgstr ""
 
 #: ../../enterprise/extensions/translate_string.php:168
 #: ../../enterprise/extensions/translate_string.php:329
@@ -19586,7 +19582,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:78
 #: ../../operation/integria_incidents/incident_statistics.php:29
 msgid "Statistics"
-msgstr "Στατιστικά"
+msgstr ""
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:186
 msgid "Total IPs"
@@ -19834,7 +19830,7 @@ msgstr ""
 #: ../../include/graphs/functions_gd.php:165
 #: ../../include/graphs/functions_gd.php:256
 msgid "Out of limits"
-msgstr "Εκτός ορίων"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting.php:1035
 msgid "Day"
@@ -20731,11 +20727,11 @@ msgstr ""
 #: ../../include/functions_graph.php:660
 #: ../../include/functions_graph.php:2905
 msgid "Avg. Value"
-msgstr "Συνηθ. Τιμή"
+msgstr "平均值"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2943
 msgid "Info"
-msgstr "Πληροφορίες"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3134
 msgid "Agent:"
@@ -20773,7 +20769,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:3606
 #: ../../operation/agentes/gis_view.php:164
 msgid "To"
-msgstr "Προς"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:3609
 #: ../../operation/reporting/reporting_viewer.php:169
@@ -21548,7 +21544,7 @@ msgstr ""
 #: ../../operation/agentes/graphs.php:77
 #: ../../operation/agentes/stat_win.php:260
 msgid "Begin date"
-msgstr "Ημερομηνία έναρξης"
+msgstr "起始時間"
 
 #: ../../mobile/operation/module_graph.php:457
 msgid "Update graph"
@@ -21644,9 +21640,7 @@ msgstr ""
 msgid ""
 "Your session is over. Please close your browser window to close this Pandora "
 "session."
-msgstr ""
-"Ο χρόνος σας έληξε. Παρακαλώ κλείστε το παράθυρο του προγράμματος περιήγησης "
-"σας για να κλείσετε τη σύνδεση με την Πανδώρα."
+msgstr "操作時限己過. 請關閉瀏覽器以結束是次 Pandora 操作."
 
 #: ../../mobile/include/user.class.php:168
 msgid "user"
@@ -21658,13 +21652,13 @@ msgstr ""
 
 #: ../../mobile/include/user.class.php:180 ../../general/login_page.php:123
 msgid "Login"
-msgstr "Σύνδεση"
+msgstr "登入"
 
 #: ../../mobile/include/functions_web.php:81
 #: ../../mobile/include/ui.class.php:257 ../../general/footer.php:30
 #, php-format
 msgid "Pandora FMS %s - Build %s"
-msgstr "Pandora FMS %s - ανάκτηση %s"
+msgstr ""
 
 #: ../../mobile/include/ui.class.php:87 ../../mobile/include/ui.class.php:168
 msgid "Pandora FMS mobile"
@@ -21743,7 +21737,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:31
 msgid "Welcome to Pandora FMS Web Console"
-msgstr "Καλώς ήρθατε στην δικτυακή κονσόλα Pandora FMS"
+msgstr "歡迎使用Pandora FMS管理系統"
 
 #: ../../general/logon_ok.php:54
 msgid "News board"
@@ -21751,28 +21745,27 @@ msgstr ""
 
 #: ../../general/logon_ok.php:59
 msgid "ago"
-msgstr "πριν"
+msgstr "前"
 
 #: ../../general/logon_ok.php:66
 msgid "by"
-msgstr "από"
+msgstr "由"
 
 #: ../../general/logon_ok.php:74
 msgid "No news articles at this moment"
-msgstr "Δεν υπάρχουν νέα άρθρα για την ώρα"
+msgstr "目前未有新聞項目"
 
 #: ../../general/logon_ok.php:100
 msgid "This is your last activity in Pandora FMS console"
 msgstr ""
-"Αυτή είναι η τελευταία δραστηριότητα σας στην κονσόλα του Pandora FMS"
 
 #: ../../general/logon_ok.php:181
 msgid "Pandora FMS Overview"
-msgstr "Πανόραμσ της Pandora FMS"
+msgstr "Pandora FMS 概覽"
 
 #: ../../general/logon_failed.php:21
 msgid "Authentication error"
-msgstr "Σφάλμα πιστοποίησης"
+msgstr ""
 
 #: ../../general/logon_failed.php:33
 msgid ""
@@ -21782,16 +21775,10 @@ msgid ""
 "these can be reviewed by each user, please report to admin any incident or "
 "malfunction."
 msgstr ""
-"Είτε ο κωδικός σας, είτε το όνομα χρήστη είναι λανθασμένα. Παρακαλώ ελέγξτε "
-"το πλήκτρο ΚΕΦΑΛΑΙΑ ΓΡΑΜΜΑΤΑ, στο όνομα χρήστη και τον κωδικό γίνεται "
-"διάκριση μεταξύ πεζών-κεφαλαίων <br><br> Όλες οι δραστηριότητες, "
-"συμπεριλαμβανομένου των αποτυχημένων προσπαθειών σύνδεσης καταγράφονται στο "
-"ημερολόγιο του συστήματος Πανδώρα FMS και είναι εμφανή σε κάθε χρήστη, "
-"παρακαλώ αναφέρατε στον διαχειριστή οποιοδήποτε συμβάν ή δυσλειτουργία."
 
 #: ../../general/main_menu.php:50 ../../include/functions_menu.php:496
 msgid "Administration"
-msgstr "Διαχείριση συστήματος"
+msgstr ""
 
 #: ../../general/login_page.php:35
 msgid "Go to Pandora FMS Website"
@@ -21803,7 +21790,7 @@ msgstr ""
 
 #: ../../general/login_page.php:127
 msgid "Logged out"
-msgstr "Αποσυνδέθηκε"
+msgstr "已登出"
 
 #: ../../general/login_page.php:137
 msgid "View details"
@@ -21838,19 +21825,19 @@ msgstr ""
 
 #: ../../general/header.php:86 ../../general/header.php:94
 msgid "All systems"
-msgstr "Όλα τα συστήματα"
+msgstr "全部系統"
 
 #: ../../general/header.php:86
 msgid "Down"
-msgstr "Κάτω"
+msgstr ""
 
 #: ../../general/header.php:90
 msgid "servers down"
-msgstr "Οι διακομιστές έχουν πρόβλημα"
+msgstr ""
 
 #: ../../general/header.php:94
 msgid "Ready"
-msgstr "Έτοιμο"
+msgstr "就緒"
 
 #: ../../general/header.php:112 ../../general/header.php:113
 msgid "QR Code of the page"
@@ -21867,14 +21854,12 @@ msgstr ""
 
 #: ../../general/header.php:222
 msgid "System alerts detected - Please fix as soon as possible"
-msgstr ""
-"Εντοπίστηκαν Ειδοποιήσεις του συστήματος  - Να διορθώθούν το συντομότερο "
-"δυνατόν"
+msgstr "發現系統警示 - 請盡快修正"
 
 #: ../../general/header.php:228
 #, php-format
 msgid "You have %d warning(s)"
-msgstr "Εχετε %d Ειδοποιήσεις"
+msgstr "你有 %d 個警告"
 
 #: ../../general/header.php:231
 msgid "There are not warnings"
@@ -21886,16 +21871,16 @@ msgstr ""
 
 #: ../../general/header.php:266
 msgid "Message overview"
-msgstr "Μύνημα Επισκόπησης"
+msgstr "訊息概覽"
 
 #: ../../general/header.php:267
 #, php-format
 msgid "You have %d unread message(s)"
-msgstr "Έχετε %d αδιάβαστα μηνύματα"
+msgstr "你有 %d 則未讀訊息"
 
 #: ../../general/header.php:287 ../../general/header.php:289
 msgid "Enter keywords to search"
-msgstr "Εισάγετε λέξεις κλειδιά για την αναζήτηση"
+msgstr ""
 
 #: ../../general/header.php:304
 msgid "Blank characters are used as AND conditions"
@@ -21919,24 +21904,22 @@ msgstr ""
 
 #: ../../general/footer.php:32
 msgid "Page generated at"
-msgstr "Η σελίδα ξεκινάει από"
+msgstr "頁面產生位置："
 
 #: ../../general/pandora_help.php:24 ../../general/pandora_help.php:68
 #: ../../general/pandora_help.php:95
 msgid "Pandora FMS help system"
-msgstr "Το σύστημα βοήθειας της Πανδώρας FMS"
+msgstr ""
 
 #: ../../general/pandora_help.php:73
 msgid "Help system error"
-msgstr "Λάθος στο σύστημα Βοήθειας"
+msgstr ""
 
 #: ../../general/pandora_help.php:78
 msgid ""
 "Pandora FMS help system has been called with a help reference that currently "
 "don't exist. There is no help content to show."
 msgstr ""
-"Το σύστημα βοήθειας της Πανδώρας FMS κλήθηκε για ένα θέμα βοήθειας που επί "
-"του παρόντος δεν υπάρχει. Δεν υπάρχει σχετική βοήθεια για εμφάνιση."
 
 #: ../../operation/menu.php:51 ../../operation/agentes/alerts_status.php:117
 #: ../../operation/users/user_edit.php:290
@@ -21970,15 +21953,15 @@ msgstr ""
 
 #: ../../operation/menu.php:239
 msgid "RSS"
-msgstr "RSS:"
+msgstr ""
 
 #: ../../operation/menu.php:243
 msgid "CSV File"
-msgstr "Αρχείο CSV"
+msgstr ""
 
 #: ../../operation/menu.php:247
 msgid "Marquee"
-msgstr "Marquee"
+msgstr ""
 
 #: ../../operation/menu.php:254 ../../operation/events/sound_events.php:46
 msgid "Sound Events"
@@ -21999,7 +21982,7 @@ msgstr ""
 #: ../../operation/menu.php:316 ../../operation/messages/message_edit.php:46
 #: ../../operation/messages/message_list.php:43
 msgid "Messages"
-msgstr "Μηνύματα"
+msgstr ""
 
 #: ../../operation/menu.php:320
 msgid "New message"
@@ -22011,7 +21994,7 @@ msgstr ""
 
 #: ../../operation/menu.php:340 ../../operation/events/events_rss.php:152
 msgid "SNMP"
-msgstr "SNMP"
+msgstr ""
 
 #: ../../operation/menu.php:346
 msgid "SNMP console"
@@ -22057,11 +22040,11 @@ msgstr ""
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:126
 #: ../../include/help/clippy/operation_agentes_ver_agente.php:42
 msgid "Done"
-msgstr "Έγινε"
+msgstr ""
 
 #: ../../operation/servers/recon_view.php:140
 msgid "Pending"
-msgstr "Σε αναμονή"
+msgstr ""
 
 #: ../../operation/servers/recon_view.php:174
 msgid "This server has no recon tasks assigned"
@@ -22174,7 +22157,7 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:294
 msgid "MS Excel"
-msgstr "MS Excel"
+msgstr ""
 
 #: ../../operation/agentes/exportdata.php:295
 msgid "Average per hour/day"
@@ -22222,18 +22205,18 @@ msgstr ""
 #: ../../operation/agentes/graphs.php:81
 #: ../../operation/agentes/stat_win.php:267
 msgid "Zoom factor"
-msgstr "Βαθμός μεγέθυνσης"
+msgstr "顯示比例"
 
 #: ../../operation/agentes/graphs.php:90
 #: ../../operation/agentes/stat_win.php:279
 #: ../../operation/reporting/graph_viewer.php:168
 msgid "Time range"
-msgstr "Χρονικό διάστημα"
+msgstr "時間範圍"
 
 #: ../../operation/agentes/graphs.php:94
 #: ../../operation/agentes/stat_win.php:285
 msgid "Show events"
-msgstr "Δείξε γεγονότα"
+msgstr "顯示事件"
 
 #: ../../operation/agentes/graphs.php:96
 #: ../../operation/agentes/stat_win.php:302
@@ -22297,7 +22280,7 @@ msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:409
 msgid "Monitor status"
-msgstr "Κατάσταση Παρακολούθησης"
+msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:469
 msgid "Only it is show tags in use."
@@ -22500,7 +22483,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:410
 msgid "Zoom"
-msgstr "Μεγέθυνση"
+msgstr ""
 
 #: ../../operation/agentes/networkmap.php:427
 msgid "Only run with it is filter for any group"
@@ -22512,7 +22495,7 @@ msgstr ""
 
 #: ../../operation/agentes/stat_win.php:104
 msgid "There was a problem locating the source of the graph"
-msgstr "Υπήρξε ένα πρόβλημα στον εντοπισμό της πηγής του γραφήματος"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:210
 msgid "Pandora FMS Graph configuration menu"
@@ -22524,11 +22507,11 @@ msgstr ""
 
 #: ../../operation/agentes/stat_win.php:245
 msgid "Refresh time"
-msgstr "Ανανέωση χρόνου"
+msgstr "更新時間"
 
 #: ../../operation/agentes/stat_win.php:252
 msgid "Avg. Only"
-msgstr "Σύνηθ. Μόνο"
+msgstr ""
 
 #: ../../operation/agentes/stat_win.php:296
 msgid ""
@@ -22666,11 +22649,11 @@ msgstr ""
 #: ../../operation/messages/message_edit.php:156
 #: ../../operation/messages/message_list.php:120
 msgid "Sender"
-msgstr "Αποστολέας"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:78
 msgid "at"
-msgstr "στο"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:80
 #: ../../operation/messages/message_edit.php:165
@@ -22684,7 +22667,7 @@ msgstr ""
 
 #: ../../operation/messages/message_edit.php:117
 msgid "Reply"
-msgstr "Απάντηση"
+msgstr ""
 
 #: ../../operation/messages/message_edit.php:134
 #, php-format
@@ -22720,7 +22703,7 @@ msgstr ""
 #: ../../operation/messages/message_edit.php:213
 #: ../../operation/users/webchat.php:87
 msgid "Send message"
-msgstr "Αποστολή μηνύματος"
+msgstr ""
 
 #: ../../operation/messages/message_list.php:74
 msgid "Not deleted. Error deleting messages"
@@ -22758,7 +22741,7 @@ msgstr ""
 
 #: ../../operation/messages/message_list.php:175
 msgid "No Subject"
-msgstr "Κανένα Θέμα"
+msgstr ""
 
 #: ../../operation/reporting/custom_reporting.php:32
 #: ../../operation/reporting/graph_viewer.php:270
@@ -23107,7 +23090,7 @@ msgstr ""
 
 #: ../../operation/users/user_edit.php:224
 msgid "New Password"
-msgstr "Νέος Κωδικός"
+msgstr ""
 
 #: ../../operation/users/user_edit.php:234
 msgid ""
@@ -23257,7 +23240,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.incident.php:84
 #: ../../operation/integria_incidents/incident.list.php:100
 msgid "Creator"
-msgstr "Δημιουργός"
+msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:376
 msgid "Update incident"
@@ -23280,7 +23263,7 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:503
 #: ../../operation/integria_incidents/incident.files.php:42
 msgid "Filename"
-msgstr "Όνομα αρχείου"
+msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:479
 msgid "Attached files"
@@ -23502,12 +23485,12 @@ msgstr ""
 
 #: ../../operation/integria_incidents/incident.list.php:98
 msgid "Started"
-msgstr "Ξεκίνησε"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.list.php:132
 #: ../../operation/integria_incidents/incident.workunits.php:61
 msgid "Hours"
-msgstr "Ώρες"
+msgstr "小時"
 
 #: ../../operation/integria_incidents/incident.list.php:135
 msgid "Delete incident"
@@ -23528,7 +23511,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.workunits.php:29
 #: ../../operation/integria_incidents/incident.workunits.php:61
 msgid "Public"
-msgstr "Δημόσιο"
+msgstr ""
 
 #: ../../operation/integria_incidents/incident.workunits.php:42
 msgid "Add workunit"
@@ -24487,7 +24470,7 @@ msgstr ""
 #: ../../include/functions_incidents.php:69 ../../include/functions.php:853
 #: ../../include/functions.php:1052 ../../include/functions.php:1084
 msgid "Maintenance"
-msgstr "Συντήρηση"
+msgstr "維護"
 
 #: ../../include/functions_events.php:1349
 #: ../../include/functions_graph.php:2271
@@ -24495,7 +24478,7 @@ msgstr "Συντήρηση"
 #: ../../include/functions_graph.php:4069 ../../include/functions.php:856
 #: ../../include/functions.php:1053 ../../include/functions.php:1087
 msgid "Informational"
-msgstr "Πληροφοριακό"
+msgstr "資訊"
 
 #: ../../include/functions_events.php:1382
 #: ../../include/functions_events.php:1403
@@ -24668,7 +24651,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:1360
 #: ../../include/functions_reporting.php:1382
 msgid "Alert level"
-msgstr "Επίπεδο προειδοποίησης"
+msgstr "警示等級"
 
 #: ../../include/functions_reporting.php:1234
 msgid "Defined and fired alerts"
@@ -24695,7 +24678,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:1344
 #: ../../include/functions_reporting.php:1376
 msgid "Monitor health"
-msgstr "Κατάσταση εποπτείας"
+msgstr "監察健康狀況"
 
 #: ../../include/functions_reporting.php:1344
 #, php-format
@@ -24705,12 +24688,12 @@ msgstr ""
 #: ../../include/functions_reporting.php:1346
 #: ../../include/functions_reporting.php:1377
 msgid "of monitors up"
-msgstr "των οθονών επάνω"
+msgstr "在錢的監察器中"
 
 #: ../../include/functions_reporting.php:1352
 #: ../../include/functions_reporting.php:1379
 msgid "Module sanity"
-msgstr "Ενότητα λογικότητας"
+msgstr "模組合理性"
 
 #: ../../include/functions_reporting.php:1352
 #, php-format
@@ -24720,7 +24703,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:1354
 #: ../../include/functions_reporting.php:1380
 msgid "of total modules inited"
-msgstr "του συνόλου των μονάδων inited"
+msgstr "已啓用的模組中"
 
 #: ../../include/functions_reporting.php:1360
 #: ../../include/functions_reporting.php:7143
@@ -24732,11 +24715,11 @@ msgstr ""
 #: ../../include/functions_reporting.php:1362
 #: ../../include/functions_reporting.php:1383
 msgid "of defined alerts not fired"
-msgstr "καθορισμένων ειδοποιήσεων χωρις σήμα"
+msgstr "没有被觸發的已定義警示中"
 
 #: ../../include/functions_reporting.php:2146
 msgid "Alerts not fired"
-msgstr "Δεν ξεκίνησαν ειδοποιήσεις"
+msgstr ""
 
 #: ../../include/functions_reporting.php:2153
 msgid "Total alerts monitored"
@@ -24752,11 +24735,11 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:2221
 msgid "Monitors OK"
-msgstr ""
+msgstr "狀態正常"
 
 #: ../../include/functions_reporting.php:2222
 msgid "Monitors BAD"
-msgstr ""
+msgstr "狀態異常"
 
 #: ../../include/functions_reporting.php:2294
 #, php-format
@@ -26006,7 +25989,7 @@ msgstr ""
 
 #: ../../include/functions_visual_map.php:493
 msgid "Agent successfully added to layout"
-msgstr "Οι πράκτορες προστέθηκαν επιτυχώς στην διάταξη"
+msgstr ""
 
 #: ../../include/functions_visual_map.php:637
 msgid "Modules successfully added to layout"
@@ -26422,7 +26405,7 @@ msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:412
 msgid "Label color"
-msgstr "Χρώμα ετικέτας"
+msgstr ""
 
 #: ../../include/functions_visual_map_editor.php:449
 msgid "Auto Save"
@@ -26656,21 +26639,21 @@ msgstr ""
 #: ../../include/functions_graph.php:1714
 #: ../../include/functions_graph.php:1722
 msgid "Today"
-msgstr "Σήμερα"
+msgstr ""
 
 #: ../../include/functions_graph.php:1703
 #: ../../include/functions_graph.php:1709
 #: ../../include/functions_graph.php:1715
 #: ../../include/functions_graph.php:1722
 msgid "Week"
-msgstr "Εβδομάδα"
+msgstr ""
 
 #: ../../include/functions_graph.php:1704
 #: ../../include/functions_graph.php:1710
 #: ../../include/functions_graph.php:1716
 #: ../../include/functions_graph.php:1723 ../../include/functions_html.php:718
 msgid "Month"
-msgstr "Μήνας"
+msgstr ""
 
 #: ../../include/functions_graph.php:1705
 #: ../../include/functions_graph.php:1711
@@ -26678,7 +26661,7 @@ msgstr "Μήνας"
 #: ../../include/functions_graph.php:1720
 #: ../../include/functions_graph.php:1723
 msgid "Months"
-msgstr "Μήνες"
+msgstr ""
 
 #: ../../include/functions_graph.php:1706
 #: ../../include/functions_graph.php:1712
@@ -26686,37 +26669,37 @@ msgstr "Μήνες"
 #: ../../include/functions_graph.php:1720
 #: ../../include/functions_graph.php:1723
 msgid "Older"
-msgstr "Παλαιότερο"
+msgstr ""
 
 #: ../../include/functions_graph.php:1896
 #: ../../include/functions_incidents.php:29
 #: ../../include/functions_incidents.php:54
 msgid "Informative"
-msgstr "Πληροφοριακό"
+msgstr ""
 
 #: ../../include/functions_graph.php:1897
 #: ../../include/functions_incidents.php:30
 #: ../../include/functions_incidents.php:57
 msgid "Low"
-msgstr "Χαμηλή"
+msgstr "低"
 
 #: ../../include/functions_graph.php:1898
 #: ../../include/functions_incidents.php:31
 #: ../../include/functions_incidents.php:60
 msgid "Medium"
-msgstr "Μεσαίο"
+msgstr "中"
 
 #: ../../include/functions_graph.php:1899
 #: ../../include/functions_incidents.php:32
 #: ../../include/functions_incidents.php:63
 msgid "Serious"
-msgstr "Σοβαρές"
+msgstr "嚴重的"
 
 #: ../../include/functions_graph.php:1900
 #: ../../include/functions_incidents.php:33
 #: ../../include/functions_incidents.php:66
 msgid "Very serious"
-msgstr "Πολύ σοβαρό"
+msgstr "非常嚴重的"
 
 #: ../../include/functions_graph.php:1917
 #: ../../include/functions_graph.php:1929
@@ -26858,11 +26841,11 @@ msgstr ""
 #: ../../include/functions_netflow.php:1050
 #: ../../include/functions_netflow.php:1083
 msgid "5 days"
-msgstr "5 ημέρες"
+msgstr ""
 
 #: ../../include/functions_netflow.php:1055 ../../include/ajax/module.php:116
 msgid "3 months"
-msgstr "3 μήνες"
+msgstr ""
 
 #: ../../include/functions_netflow.php:1057
 msgid "Last year"
@@ -26887,7 +26870,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:1085 ../../include/functions.php:1941
 #: ../../include/ajax/module.php:113
 msgid "1 week"
-msgstr "1 εβδομάδα"
+msgstr ""
 
 #: ../../include/functions_netflow.php:1118
 #: ../../include/functions_netflow.php:1127
@@ -27029,11 +27012,11 @@ msgstr ""
 
 #: ../../include/functions.php:215
 msgid "."
-msgstr "."
+msgstr ""
 
 #: ../../include/functions.php:217
 msgid ","
-msgstr ","
+msgstr ""
 
 #: ../../include/functions.php:417 ../../include/functions.php:561
 msgid "s"
@@ -27342,7 +27325,7 @@ msgstr ""
 
 #: ../../include/functions_html.php:610
 msgid "weeks"
-msgstr "εβδομάδες"
+msgstr ""
 
 #: ../../include/functions_html.php:717
 msgid "Month day"
@@ -27398,149 +27381,29 @@ msgstr ""
 msgid "Time (ms)"
 msgstr ""
 
-#~ msgid "Id"
-#~ msgstr "Ταυτότητα (ID)"
+#~ msgid "Logged Out"
+#~ msgstr "登出"
 
-#~ msgid "Settings"
-#~ msgstr "Ρυθμίσεις"
+#~ msgid "General information"
+#~ msgstr "一般資訊"
 
-#~ msgid "Development"
-#~ msgstr "Ανάπτυξη εφαρμογών"
+#~ msgid "Authentication Error"
+#~ msgstr "認證錯誤"
 
 #~ msgid "preview"
-#~ msgstr "Προεπισκόπηση"
-
-#~ msgid "Factor"
-#~ msgstr "Συντελεστής"
-
-#~ msgid "Up"
-#~ msgstr "Επάνω"
-
-#~ msgid "Master"
-#~ msgstr "Πρωτεύων"
+#~ msgstr "預覽"
 
 #~ msgid "hour"
-#~ msgstr "ώρα"
-
-#~ msgid "day"
-#~ msgstr "ημέρα"
-
-#~ msgid "week"
-#~ msgstr "εβδομάδα"
-
-#~ msgid "month"
-#~ msgstr "μήνας"
-
-#~ msgid "Del"
-#~ msgstr "Del"
-
-#~ msgid "Oper"
-#~ msgstr "Oper"
-
-#~ msgid "S"
-#~ msgstr "Σ"
-
-#~ msgid "SNMP server"
-#~ msgstr "Εξυπηρετητής SNMP"
-
-#~ msgid "from"
-#~ msgstr "από"
-
-#~ msgid " to "
-#~ msgstr " με "
+#~ msgstr "小時"
 
 #~ msgid "minute"
-#~ msgstr "λεπτό"
-
-#~ msgid "Last name"
-#~ msgstr "Επώνυμο:"
-
-#~ msgid "First name"
-#~ msgstr "Όνομα:"
-
-#, php-format
-#~ msgid "%d hour"
-#~ msgstr "%d ώρα"
-
-#, php-format
-#~ msgid "%d weeks"
-#~ msgstr "%d εβδομάδες"
-
-#, php-format
-#~ msgid "%d week"
-#~ msgstr "%d εβδομάδα"
-
-#, php-format
-#~ msgid "%d day"
-#~ msgstr "%d ημέρα"
+#~ msgstr "分鐘"
 
 #~ msgid "Autorefresh"
-#~ msgstr "Αυτόματη ανανέωση"
-
-#~ msgid "Your IP"
-#~ msgstr "Η διευθυνση IP σας"
-
-#~ msgid "Users defined"
-#~ msgstr "Καθορίστηκαν χρήστες"
-
-#~ msgid "Visual map wizard"
-#~ msgstr "Βοηθός οπτικού χάρτη"
-
-#~ msgid "Image size (px)"
-#~ msgstr "Μέγεθος εικόνας"
-
-#~ msgid "Image range (px)"
-#~ msgstr "Εύρος εικόνας"
-
-#~ msgid "There was a problem creating reporting"
-#~ msgstr "Υπήρξε πρόβλημα στην δημιουργία της αναφοράς"
-
-#~ msgid "Reporting successfully created"
-#~ msgstr "Η αναφορά δημιουργήθηκε επιτυχώς"
-
-#~ msgid ""
-#~ "This is the Web Management System for Pandora FMS. From here you can manage "
-#~ "its agents, alerts and incidents. Session is open while activity exists."
-#~ msgstr ""
-#~ "Αυτο είναι το Σύστημα ηλεκτρονικής διαχείρησης για την Pandora FMS. Από εδώ "
-#~ "μπορείτε να διαχειριστείτε τους πράκτορες, τις προειδοποιησεις και τα "
-#~ "συμβάντα. Η συνεδρία είναι ενεργή όσο υπάρχει δραστηριότητα."
+#~ msgstr "自動刷新"
 
 #~ msgid "Alerts defined"
-#~ msgstr "Ορίστηκαν οι προειδοποιήσεις"
+#~ msgstr "已定義警示"
 
-#~ msgid "Map builder"
-#~ msgstr "Σχεδιαστής χάρτη"
-
-#~ msgid "No layout with this id found"
-#~ msgstr "Δε βρέθηκε διάταξη με αυτή την ταυτότητα"
-
-#~ msgid "There was a problem creating SLA"
-#~ msgstr "Παρουσιάστηκε πρόβλημα στη δημιουργία του SLA"
-
-#~ msgid "SLA was successfully created"
-#~ msgstr "το SLA δημιουργήθηκε επιτυχώς"
-
-#~ msgid "SLA was successfully delete"
-#~ msgstr "To SLA διαγράφθηκε επιτυχώς"
-
-#~ msgid "SLAs defined"
-#~ msgstr "Τα SLAs δημιοργήθηκαν"
-
-#~ msgid "There was a problem deleting SLA"
-#~ msgstr "Παρουσιάστηκε πρόβλημα κατά τη διαγραφή του SLA"
-
-#~ msgid "You are"
-#~ msgstr "Είστε"
-
-#~ msgid "Monitors critical"
-#~ msgstr "Κρίσιμες Παρακολουθήσεις"
-
-#~ msgid "Monitors normal"
-#~ msgstr "κανονικές Οθόνες"
-
-#~ msgid "Monitors warning"
-#~ msgstr "Οθόνες προειδοποίησης"
-
-#~ msgid "Monitors unknown"
-#~ msgstr "Αγνωστες οθόνες"
+#~ msgid "Your IP"
+#~ msgstr "你的 IP"

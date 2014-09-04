@@ -1,3 +1,23 @@
+2014-09-04  Miguel de Dios <miguel.dedios@artica.es>
+
+	* pandora_console/extensions/module_groups.php,
+	pandora_console/general/login_help_dialog.php,
+	pandora_console/images/close_button_dialog.png,
+	pandora_console/images/documentation.png,
+	pandora_console/images/enterprise_version.png,
+	pandora_console/images/error_login.png,
+	pandora_console/images/online_help.png,
+	pandora_console/images/support.png,
+	pandora_console/include/ajax/events.php,
+	pandora_console/include/constants.php,
+	pandora_console/include/functions_events.php,
+	pandora_console/include/javascript/pandora_events.js,
+	pandora_console/include/styles/jquery-ui-1.10.0.custom.css,
+	pandora_console/include/styles/pandora.css,
+	pandora_console/mobile/include/style/main.css,
+	pandora_console/operation/events/events_list.php: changes some
+	bad colors and others aesthetic changes. Thanks Carla.
+
 2014-09-03  Alejandro Gallardo <alejandro.gallardo@artica.es>
 	
 	* godmode/reporting/reporting_builder.item_editor.php,

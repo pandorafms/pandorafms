@@ -47,7 +47,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 						background: "black"
 					},
 					width: 725,
-					height: 510
+					height: 530
 				})
 				.show ();
 				
@@ -71,7 +71,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					$('#notification_owner_error').show();
 					break;
 			}
-
+			
 			forced_title_callback();
 		},
 		"html"

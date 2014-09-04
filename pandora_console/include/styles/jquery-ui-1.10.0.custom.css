@@ -406,6 +406,9 @@ button.ui-button::-moz-focus-inner {
 }
 .ui-dialog .ui-dialog-titlebar {
 	padding: .4em 1em;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin: 3px;
 	position: relative;
 }
 .ui-dialog .ui-dialog-title {
@@ -1194,7 +1197,7 @@ body .ui-tooltip {
 }
 
 .ui-dialog .ui-widget-header {
-	background-color: transparent !important;
+	background-color: #82b92e !important;
 }
 
 .ui_tpicker_hour,
@@ -1220,4 +1223,40 @@ body .ui-tooltip {
 }
 
 .ui-icon {
+}
+
+/*
+ * Pandora Styles
+ */
+
+.ui-dialog .ui-widget-content {
+	border: 0px;
+}
+
+.ui-dialog {
+	border: 0px;
+}
+
+.ui-dialog-titlebar {
+	border: 0px;
+}
+
+.ui-dialog-titlebar .ui-icon-closethick,
+.ui-dialog-titlebar .ui-state-default,
+.ui-dialog-titlebar .ui-state-hover,
+.ui-dialog-titlebar button {
+	background: transparent;
+	border: 0px;
+}
+
+.ui-dialog-titlebar .ui-icon-closethick {
+	background-image: url("../../images/close_button_dialog.png");
+	width: 14px;
+	height: 13px;
+	margin-top: -5px;
+}
+
+.ui-dialog-title {
+	color: #ffffff;
+	font-size: 9pt;
 }

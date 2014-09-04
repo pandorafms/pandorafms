@@ -96,7 +96,7 @@ tr.group_view_crit, .group_view_crit {
 	color: #000000 !important;
 }
 .ui-btn-up-group_view_crit, .ui-btn-hover-group_view_crit {
-	background-color: #FF4040;
+	background-color: #f85858;
 	color: #fff;
 	border: 1px solid #111111;
 	font-weight: bold;
@@ -146,7 +146,7 @@ a.group_view_warn {
 	color: #000000 !important;
 }
 .ui-btn-up-group_view_warn, .ui-btn-hover-group_view_warn  {
-	background-color: #F2D400;
+	background-color: #ffea59;
 	color: #111;
 	border: 1px solid #111111;
 	font-weight: bold;
@@ -483,7 +483,7 @@ table.event_details td.cell_event_name {
 
 /*INIT-----------Agents styles----------------------------------------*/
 .red, .redb, .redi, .error {
-	background: #FF4040 !important;
+	background: #f85858 !important;
 }
 
 .green {
@@ -495,7 +495,7 @@ table.event_details td.cell_event_name {
 }
 
 .yellow {
-	background: #F2D400 !important;
+	background: #ffea59 !important;
 }
 
 .grey {

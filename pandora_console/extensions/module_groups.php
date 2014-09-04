@@ -167,7 +167,9 @@ function mainModuleGroups() {
 	
 	ui_print_page_header (__("Combined table of agent group and module group"), "images/module_group.png", false, "", false, '');
 	
-	echo "<p>" . __("This table shows in columns the modules group and in rows agents group. The cell shows all modules") . "</p>";
+	echo "<p>" .
+		__("This table shows in columns the modules group and in rows agents group. The cell shows all modules") .
+		"</p>";
 	
 	
 	$agentGroups = users_get_groups ($config['id_user'], "AR", false);
@@ -187,7 +189,7 @@ function mainModuleGroups() {
 		$table = null;
 		$table->align[0] = 'right'; //Align to right the first column.
 		$table->style[0] = 'color: #ffffff; '.
-			'background-color: #778866; font-weight: bolder;';
+			'background-color: #373737; font-weight: bolder; padding-right: 10px;';
 		$table->head = $head;
 		$table->width = '98%';
 		

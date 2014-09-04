@@ -924,7 +924,7 @@ tr.disabled_row_user * {
 }
 
 .error *{
-	color: #FF4040;
+	color: #f85858;
 }
 
 .help {
@@ -2005,14 +2005,14 @@ div.cellNormal {
 div.cellCritical {
 	width: 100%; 
 	height: 100%;
-	background: #FF4040;
+	background: #f85858;
 	color: #fff;
 }
 
 div.cellWarning {
 	width: 100%;
 	height: 100%;
-	background: #F2D400;
+	background: #ffea59;
 	color: #111;
 }
 
@@ -2085,7 +2085,7 @@ tr.group_view_data, .group_view_data {
 }
 
 tr.group_view_crit, .group_view_crit {
-	background-color:  #FF4040;
+	background-color:  #f85858;
 	color: #fff;
 }
 
@@ -2098,7 +2098,7 @@ tr.group_view_ok, .group_view_ok {
 }
 
 tr.group_view_warn, .group_view_warn, tr.group_view_warn.a, a.group_view_warn, tr.a.group_view_warn {
-	background-color: #F2D400;
+	background-color: #ffea59;
 	color: #3F3F3F !important;
 }
 
@@ -2122,12 +2122,12 @@ tr.group_view_unk, .group_view_unk {
 	color: #fff;
 }
 .datos_red, .datos_redf9, .datos_red a, .datos_redf9 a, .datos_red *{
-	background-color: #FF4040;
+	background-color: #f85858;
 	color: #fff !important;
 }
 
 .datos_yellow, .datos_yellowf9, .datos_yellow *  {
-	background-color: #F2D400;
+	background-color: #ffea59;
 	color: #111;
 }
 
@@ -2142,7 +2142,7 @@ a.datos_blue, .datos_bluef9, .datos_blue, .datos_blue * {
 }
 
 .datos_pink, .datos_pinkf9, .datos_pink * {
-	background-color: #F099A2;
+	background-color: #fdc4ca;
 	color: #111;
 }
 

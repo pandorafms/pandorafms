@@ -1521,12 +1521,14 @@ function events_page_responses ($event) {
 	// Responses
 	/////////
 	
+	$table_responses->cellspacing = 2;
+	$table_responses->cellpadding = 2;
 	$table_responses->id = 'responses_table';
 	$table_responses->width = '100%';
 	$table_responses->data = array ();
 	$table_responses->head = array ();
-	$table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left;';
-	$table_responses->style[1] = 'text-align: left;';
+	$table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
+	$table_responses->style[1] = 'text-align: left; height: 23px; text-align: right;';
 	$table_responses->class = "alternate rounded_cells";
 	
 	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
@@ -1541,7 +1543,7 @@ function events_page_responses ($event) {
 		// Juanma (05/05/2014) Fix : Propagate ACL hell!
 		$_user_groups = array_keys(users_get_groups($config['id_user'], 'ER', users_can_manage_group_all()));
 		$users = groups_get_users($_user_groups, array('id_perfil' => $profiles_view_events), true, true);
-
+		
 		foreach($users as $u) {
 			$owners[$u['id_user']] = $u['fullname'];
 		}
@@ -1586,9 +1588,9 @@ function events_page_responses ($event) {
 				$status = array(1 => __('Validated'));
 				break;
 		}
-
+		
 	}
-
+	
 	// The change status option will be enabled only when is possible change the status
 	$data[1] = html_print_select($status, 'estado', $event['estado'], '', '', 0, true, false, false, '', $status_blocked);
 	
@@ -1621,22 +1623,24 @@ function events_page_responses ($event) {
 	// Custom responses
 	$data = array();
 	$data[0] = __('Custom responses');
-
+	
 	$id_groups = array_keys(users_get_groups(false, "EW"));
 	$event_responses = db_get_all_rows_filter('tevent_response',
 		array('id_group' => $id_groups));
-			
-	if(empty($event_responses)) {
+	
+	if (empty($event_responses)) {
 		$data[1] = '<i>'.__('N/A').'</i>';
 	}
 	else {
 		$responses = array();
-		foreach($event_responses as $v) {
+		foreach ($event_responses as $v) {
 			$responses[$v['id']] = $v['name'];
 		}
-		$data[1] = html_print_select($responses,'select_custom_response','','','','',true, false, false);
+		$data[1] = html_print_select(
+			$responses,
+			'select_custom_response','','','','',true, false, false);
 		
-		if(isset($event['server_id'])) {
+		if (isset($event['server_id'])) {
 			$server_id = $event['server_id'];
 		}
 		else {
@@ -1648,6 +1652,7 @@ function events_page_responses ($event) {
 	
 	$table_responses->data[] = $data;
 	
+	
 	$responses_js = "<script>
 			$('#select_custom_response').change(function() {
 				var id_response = $('#select_custom_response').val();
@@ -1655,22 +1660,27 @@ function events_page_responses ($event) {
 				var description = get_response_description(id_response);
 				$('.params_rows').remove();
 				
-				$('#responses_table').append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px;\">".__('Description')."</td><td style=\"text-align:left;\">'+description+'</td></tr>');
+				$('#responses_table')
+					.append('<tr class=\"params_rows\"><td style=\"text-align:left; font-weight: bolder;\">".__('Description')."</td><td style=\"text-align:left;\">'+description+'</td></tr>');
 				
-				if(params.length == 1 && params[0] == '') {
+				if (params.length == 1 && params[0] == '') {
 					return;
 				}
 				
-				$('#responses_table').append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px;\" colspan=\"2\">".__('Parameters')."</td></tr>');
+				$('#responses_table')
+					.append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px;\" colspan=\"2\">".__('Parameters')."</td></tr>');
 				
-				for(i=0;i<params.length;i++) {
+				for (i = 0; i < params.length; i++) {
 					add_row_param('responses_table',params[i]);
 				}
 			});
 			$('#select_custom_response').trigger('change');
 			</script>";
 	
-	$responses = '<div id="extended_event_responses_page" class="extended_event_pages">'.html_print_table($table_responses, true).$responses_js.'</div>';
+	$responses = '<div id="extended_event_responses_page" class="extended_event_pages">' .
+		html_print_table($table_responses, true) .
+		$responses_js .
+		'</div>';
 	
 	return $responses;
 }
@@ -1733,11 +1743,13 @@ function events_page_custom_fields ($event) {
 	// Custom fields
 	////////////////////////////////////////////////////////////////////
 	
+	$table->cellspacing = 2;
+	$table->cellpadding = 2;
 	$table->width = '100%';
 	$table->data = array ();
 	$table->head = array ();
-	$table->style[0] = 'width:35%; font-weight: bold; text-align: left;';
-	$table->style[1] = 'text-align: left;';
+	$table->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
+	$table->style[1] = 'text-align: left; height: 23px;';
 	$table->class = "alternate rounded_cells";
 	
 	$all_customs_fields = (bool)check_acl($config["id_user"],
@@ -1804,8 +1816,10 @@ function events_page_details ($event, $server = "") {
 	$table_details->width = '100%';
 	$table_details->data = array ();
 	$table_details->head = array ();
-	$table_details->style[0] = 'width:35%; font-weight: bold; text-align: left;';
-	$table_details->style[1] = 'text-align: left;';
+	$table_details->cellspacing = 2;
+	$table_details->cellpadding = 2;
+	$table_details->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
+	$table_details->style[1] = 'text-align: left; height: 23px;';
 	$table_details->class = "alternate rounded_cells";
 	
 	switch ($event['event_type']) {
@@ -2093,12 +2107,13 @@ function events_page_general ($event) {
 	////////////////////////////////////////////////////////////////////
 	// General
 	////////////////////////////////////////////////////////////////////
-	
+	$table_general->cellspacing = 2;
+	$table_general->cellpadding = 2;
 	$table_general->width = '100%';
 	$table_general->data = array ();
 	$table_general->head = array ();
-	$table_general->style[0] = 'width:35%; font-weight: bold; text-align: left;';
-	$table_general->style[1] = 'text-align: left;';
+	$table_general->style[0] = 'width:35%; font-weight: bold; text-align: left; height: 23px;';
+	$table_general->style[1] = 'text-align: left; height: 23px;';
 	$table_general->class = "alternate rounded_cells";
 	
 	$data = array();
@@ -2234,7 +2249,9 @@ function events_page_general ($event) {
 	}
 	$table_general->data[] = $data;
 
-	$general = '<div id="extended_event_general_page" class="extended_event_pages">'.html_print_table($table_general,true).'</div>';
+	$general = '<div id="extended_event_general_page" class="extended_event_pages">' .
+		html_print_table($table_general,true) .
+		'</div>';
 	
 	return $general;
 }

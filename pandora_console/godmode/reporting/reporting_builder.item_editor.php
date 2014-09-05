@@ -1120,16 +1120,18 @@ function print_SLA_list($width, $action, $idItem = null) {
 	global $config;
 	global $meta;
 	
+	$report_item_type = db_get_value ('type', 'treport_content', 'id_rc', $idItem);
 	?>
 	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
 			<tr>
-				<th class="header" scope="col"><?php echo __('Agent');?></th>
-				<th class="header" scope="col"><?php echo __('Module');?></th>
-				<th class="header" scope="col"><?php echo __('SLA Min. (value)');?></th>
-				<th class="header" scope="col"><?php echo __('SLA Max. (value)');?></th>
-				<th class="header" scope="col"><?php echo __('SLA Limit (%)');?></th>
-				<th class="header" scope="col"><?php echo __('Action');?></th>
+				<th class="header sla_list_agent_col" scope="col"><?php echo __('Agent');?></th>
+				<th class="header sla_list_module_col" scope="col"><?php echo __('Module');?></th>
+				<th class="header sla_list_service_col" scope="col"><?php echo __('Service');?></th>
+				<th class="header sla_list_sla_min_col" scope="col"><?php echo __('SLA Min. (value)');?></th>
+				<th class="header sla_list_sla_max_col" scope="col"><?php echo __('SLA Max. (value)');?></th>
+				<th class="header sla_list_sla_limit_col" scope="col"><?php echo __('SLA Limit (%)');?></th>
+				<th class="header sla_list_action_col" scope="col"><?php echo __('Action');?></th>
 			</tr>
 		</thead>
 			<?php
@@ -1170,17 +1172,24 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$server_name_element = '';
 						if ($meta && $server_name != '') 
 							$server_name_element .= ' (' . $server_name . ')';
-						
-						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">
-								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
-								<td>' . printSmallFont($nameModule) . '</td>
-								<td>' . $item['sla_min'] . '</td>
-								<td>' . $item['sla_max'] . '</td>
-								<td>' . $item['sla_limit'] . '</td>
-								<td style="text-align: center;">
+
+						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">';
+						echo 	'<td class="sla_list_agent_col">' . printSmallFont($nameAgent) . $server_name_element .  '</td>';
+						echo 	'<td class="sla_list_module_col">' . printSmallFont($nameModule) . '</td>';
+
+						if (enterprise_installed() && $report_item_type == 'SLA_services') {
+							enterprise_include_once("include/functions_services.php");
+							$nameService = enterprise_hook('services_get_name', array($item['id_agent_module']));
+							echo '<td class="sla_list_service_col">' . printSmallFont($nameService) . '</th>';
+						}
+
+						echo 	'<td class="sla_list_sla_min_col">' . $item['sla_min'] . '</td>';
+						echo 	'<td class="sla_list_sla_max_col">' . $item['sla_max'] . '</td>';
+						echo 	'<td class="sla_list_sla_limit_col">' . $item['sla_limit'] . '</td>';
+						echo 	'<td class="sla_list_action_col" style="text-align: center;">
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
-								</td>
-							</tr>';
+								</td>';
+						echo '</tr>';
 						if ($meta) {
 							//Restore db connection
 							metaconsole_restore_db();
@@ -1190,17 +1199,24 @@ function print_SLA_list($width, $action, $idItem = null) {
 					?>
 					<tbody id="sla_template">
 						<tr id="row" style="display: none;" class="datos">
-							<td class="agent_name"></td>
-							<td class="module_name"></td>
-							<td class="sla_min"></td>
-							<td class="sla_max"></td>
-							<td class="sla_limit"></td>
-							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteSLARow(0);"><?php html_print_image("images/cross.png", false); ?></a></td>
+							<td class="sla_list_agent_col agent_name"></td>
+							<td class="sla_list_module_col module_name"></td>
+							<?php
+							if (enterprise_installed() && $report_item_type == 'SLA_services') {
+								echo "<td class=\"sla_list_service_col service_name\"></td>";
+							}
+							?>
+							<td class="sla_list_sla_min_col sla_min"></td>
+							<td class="sla_list_sla_max_col sla_max"></td>
+							<td class="sla_list_sla_limit_col sla_limit"></td>
+							<td class="sla_list_action_col" style="text-align: center;">
+								<a class="delete_button" href="javascript: deleteSLARow(0);"><?php html_print_image("images/cross.png", false); ?></a>
+							</td>
 						</tr>
 					</tbody>
 					<tbody>
 						<tr id="sla_form" style="" class="datos">
-							<td>
+							<td class="sla_list_agent_col">
 								<input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
 								<input id="hidden-server_name" name="server_name" value="" type="hidden">
 								<?php
@@ -1220,11 +1236,29 @@ function print_SLA_list($width, $action, $idItem = null) {
 								}
 								ui_print_agent_autocomplete_input($params);
 								?>
-							<td><select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
-							<td><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
-							<td><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>
-							<td><input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text"></td>
-							<td style="text-align: center;"><a href="javascript: addSLARow();"><?php html_print_image("images/disk.png", false); ?></a></td>
+							<td class="sla_list_module_col"><select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
+							<?php
+							if (enterprise_installed() && $report_item_type == 'SLA_services') {
+								enterprise_include_once("include/functions_services.php");
+								// Services list
+								$services = array();
+								$services_tmp = enterprise_hook('services_get_services', array(false, array('id', 'name', 'sla_id_module', 'sla_value_id_module')));
+								if (!empty($services_tmp) && $services_tmp != ENTERPRISE_NOT_HOOK) {
+									foreach ($services_tmp as $service) {
+										$check_module_sla = modules_check_agentmodule_exists($service['sla_id_module']);
+										$check_module_sla_value = modules_check_agentmodule_exists($service['sla_value_id_module']);
+										if ($check_module_sla && $check_module_sla_value) {
+											$services[$service['id']] = $service['name'];
+										}
+									}
+								}
+								echo "<td class=\"sla_list_service_col\">".html_print_select($services, 'id_service', false, '', '', '', true, false, false)."</td>";
+							}
+							?>
+							<td class="sla_list_sla_min_col"><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
+							<td class="sla_list_sla_max_col"><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>
+							<td class="sla_list_sla_limit_col"><input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text"></td>
+							<td class="sla_list_action_col" style="text-align: center;"><a href="javascript: addSLARow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
 					<?php
@@ -1611,39 +1645,46 @@ function addSLARow() {
 	var slaMin = $("input[name=sla_min]").val();
 	var slaMax = $("input[name=sla_max]").val();
 	var slaLimit = $("input[name=sla_limit]").val();
+
+	var serviceId = $("select#id_service>option:selected").val();
+	var serviceName = $("select#id_service>option:selected").text();
 	
-	if ((idAgent != '') && (slaMin != '') && (slaMax != '')
-		&& (slaLimit != '')) {
-			//Truncate nameAgent
-			var params = [];
-			params.push("truncate_text=1");
-			params.push("text=" + nameAgent);
-			params.push("page=include/ajax/reporting.ajax");
-			jQuery.ajax ({
-				data: params.join ("&"),
-				type: 'POST',
-				url: action= <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?> + "/ajax.php",
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					nameAgent = data;
-				}
-			});
-			//Truncate nameModule
-			var params = [];
-			params.push("truncate_text=1");
-			params.push("text=" + nameModule);
-			params.push("page=include/ajax/reporting.ajax");
-			jQuery.ajax ({
-				data: params.join ("&"),
-				type: 'POST',
-				url: action= <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?> + "/ajax.php",
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					nameModule = data;
-				}
-			});
+	if (((idAgent != '') && (slaMin != '') && (slaMax != '')
+		&& (slaLimit != '')) || serviceId != '') {
+
+			if (nameAgent != '') {
+				//Truncate nameAgent
+				var params = [];
+				params.push("truncate_text=1");
+				params.push("text=" + nameAgent);
+				params.push("page=include/ajax/reporting.ajax");
+				jQuery.ajax ({
+					data: params.join ("&"),
+					type: 'POST',
+					url: action= <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?> + "/ajax.php",
+					async: false,
+					timeout: 10000,
+					success: function (data) {
+						nameAgent = data;
+					}
+				});
+
+				//Truncate nameModule
+				var params = [];
+				params.push("truncate_text=1");
+				params.push("text=" + nameModule);
+				params.push("page=include/ajax/reporting.ajax");
+				jQuery.ajax ({
+					data: params.join ("&"),
+					type: 'POST',
+					url: action= <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?> + "/ajax.php",
+					async: false,
+					timeout: 10000,
+					success: function (data) {
+						nameModule = data;
+					}
+				});
+			}
 			
 			var params = [];
 			params.push("add_sla=1");
@@ -1653,6 +1694,10 @@ function addSLARow() {
 			params.push("sla_max=" + slaMax);
 			params.push("sla_limit=" + slaLimit);
 			params.push("server_id=" + serverId);
+
+			if (serviceId != '') {
+				params.push("id_service=" + serviceId);
+			}
 			
 			params.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
@@ -1669,6 +1714,7 @@ function addSLARow() {
 						$("#row", row).attr('id', 'sla_' + data['id']);
 						$(".agent_name", row).html(nameAgent);
 						$(".module_name", row).html(nameModule);
+						$(".service_name", row).html(serviceName);
 						$(".sla_min", row).html(slaMin);
 						$(".sla_max", row).html(slaMax);
 						$(".sla_limit", row).html(slaLimit);
@@ -1809,7 +1855,6 @@ function chooseType() {
 	$("#row_url").hide();
 	$("#row_field_separator").hide();
 	$("#row_line_separator").hide();
-	$("#sla_list").hide();
 	$("#row_custom_example").hide();
 	$("#row_group").hide();
 	$("#row_working_time").hide();
@@ -1839,6 +1884,16 @@ function chooseType() {
 	$("#row_netflow_filter").hide();
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
+
+	// SLA list default state
+	$("#sla_list").hide();
+	$(".sla_list_agent_col").show();
+	$(".sla_list_module_col").show();
+	$(".sla_list_service_col").hide();
+	$(".sla_list_sla_min_col").show();
+	$(".sla_list_sla_max_col").show();
+	$(".sla_list_sla_limit_col").show();
+	$(".sla_list_action_col").show();
 	
 	//$('#agent_autocomplete').show();
 	$('#agent_autocomplete_events').show();
@@ -1910,6 +1965,14 @@ function chooseType() {
 			$("#row_only_display_wrong").show();
 			$("#row_working_time").show();
 			$("#row_sort").show();
+
+			$(".sla_list_agent_col").hide();
+			$(".sla_list_module_col").hide();
+			$(".sla_list_service_col").show();
+			$(".sla_list_sla_min_col").hide();
+			$(".sla_list_sla_max_col").hide();
+			$(".sla_list_sla_limit_col").hide();
+			$("#sla_list").show();
 			break;
 		case 'monitor_report':
 			$("#row_description").show();

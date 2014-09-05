@@ -66,6 +66,11 @@ if ($add_sla) {
 	$sla_max = get_parameter('sla_max', 0);
 	$sla_min = get_parameter('sla_min', 0);
 	$server_id = (int)get_parameter('server_id', 0);
+
+	$id_service = (int) get_parameter("id_service");
+	if (empty($id_module) && !empty($id_service)) {
+		$id_module = $id_service;
+	}
 	
 	$include_enterprise = enterprise_include("include/functions_metaconsole.php");
 	

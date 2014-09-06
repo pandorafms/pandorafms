@@ -4223,7 +4223,7 @@ sub pandora_module_unknown ($$) {
 			
 			# Set the module state to normal
 			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to NORMAL", 10);
-			db_do ($dbh, 'UPDATE tagente_estado SET last_known_status = estado, last_status = 0, estado = 0 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+			db_do ($dbh, 'UPDATE tagente_estado SET last_status = 0, estado = 0 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
 			
 			# Get agent information
 			my $agent = get_db_single_row ($dbh, 'SELECT *
@@ -4265,7 +4265,7 @@ sub pandora_module_unknown ($$) {
 		else {
 			# Set the module state to unknown
 			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
-			db_do ($dbh, 'UPDATE tagente_estado SET last_known_status = estado, last_status = 3, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+			db_do ($dbh, 'UPDATE tagente_estado SET last_status = 3, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
 			
 			# Get agent information
 			my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});

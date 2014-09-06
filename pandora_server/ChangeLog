@@ -1,3 +1,9 @@
+2014-09-06 Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Fixed that unknown modules are never
+	recovered when module data is received correctly in/after the
+	race condition (module execution time exceeds its interval).
+
 2014-09-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Added basic support to log to syslog.

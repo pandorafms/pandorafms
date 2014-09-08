@@ -111,6 +111,15 @@ if (!function_exists ('mime_content_type')) {
 	}
 }
 
+global $config;
+
+if (isset($config['homedir_filemanager'])) {
+	$homedir_filemanager = $config['homedir_filemanager'];
+}
+else {
+	$homedir_filemanager = $config['homedir'];
+}
+
 $upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
 
 if ($upload_file_or_zip) {
@@ -157,7 +166,8 @@ if ($upload_file) {
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
 		if ($hash != $testHash) {
-			$config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
+			$config['filemanager']['message'] =
+				ui_print_error_message(__('Security error'), '', true);
 		}
 		else {
 			// Copy file to directory and change name
@@ -165,7 +175,7 @@ if ($upload_file) {
 				$nombre_archivo = $real_directory .'/'. $filename;
 			}
 			else {
-				$nombre_archivo = $config['homedir'] . '/' .
+				$nombre_archivo = $homedir_filemanager . '/' .
 					$directory . '/' . $filename;
 			}
 			
@@ -234,7 +244,7 @@ if ($create_text_file) {
 				$nombre_archivo = $real_directory . '/' . $filename;
 			}
 			else {
-				$nombre_archivo = $config['homedir'] . '/' .
+				$nombre_archivo = $homedir_filemanager . '/' .
 					$directory . '/' . $filename;
 			}
 			
@@ -293,8 +303,9 @@ if ($upload_zip) {
 				$nombre_archivo = $real_directory .'/'. $filename;
 			}
 			else {
-				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
+				$nombre_archivo = $homedir_filemanager . '/'.$directory.'/'.$filename;
 			}
+			
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
 				$config['filemanager']['message'] = ui_print_error_message(__('Attach error'), '', true);
 			}
@@ -304,7 +315,7 @@ if ($upload_zip) {
 				
 				//Extract the zip file
 				$zip = new ZipArchive;
-				$pathname = $config['homedir'].'/'.$directory.'/';
+				$pathname = $homedir_filemanager . '/'.$directory.'/';
 				
 				if ($zip->open($nombre_archivo) === true) {
 					$zip->extractTo($pathname);
@@ -339,7 +350,7 @@ if ($create_dir) {
 		$dirname = io_safe_output($dirname);
 		
 		if ($dirname != '') {
-			@mkdir ($config['homedir'] . '/' .
+			@mkdir ($homedir_filemanager . '/' .
 				$directory . '/' . $dirname);
 			$config['filemanager']['message'] = ui_print_success_message(__('Directory created'), '', true);
 			
@@ -456,13 +467,31 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
  * @param boolean $download_button The flag to show download button, by default false.
  * @param string $umask The umask as hex values to set the new files or updload.
  */
-function filemanager_file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false, $url_file = '', $download_button = false, $umask = '') {
+function filemanager_file_explorer($real_directory, $relative_directory,
+	$url, $father = '', $editor = false, $readOnly = false,
+	$url_file = '', $download_button = false, $umask = '',
+	$homedir_filemanager = false) {
+	
 	global $config;
-
+	
+	
 	// Windows compatibility
 	$real_directory = str_replace("\\", "/", $real_directory);
 	$relative_directory = str_replace("\\", "/", $relative_directory);
 	$father = str_replace("\\", "/", $father);
+	
+	if ($homedir_filemanager === false) {
+		$homedir_filemanager = $config['homedir'];
+		unset($config['homedir_filemanager']);
+		config_update_value('homedir_filemanager',
+			$homedir_filemanager);
+	}
+	else {
+		$config['homedir_filemanager'] = $homedir_filemanager;
+		
+	}
+	
+	
 	
 	$hack_metaconsole = '';
 	if (defined('METACONSOLE'))
@@ -557,7 +586,8 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] = '';
 		
 		$table->data[1][1] .= '<div id="create_folder" style="display: none;">';
-		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
+		$table->data[1][1] .= html_print_button(__('Close'), 'close',
+			false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '">';
 		$table->data[1][1] .= html_print_input_text ('dirname', '', '', 15, 255, true);
 		$table->data[1][1] .= html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"', true);
@@ -603,7 +633,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	}
 	
 	foreach ($files as $fileinfo) {
-
+		
 		$fileinfo['realpath'] = str_replace("\\", "/", $fileinfo['realpath']);
 		$relative_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $fileinfo['realpath']);
 		
@@ -621,6 +651,14 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 				break;
 			case MIME_TEXT:
 				$data[0] = html_print_image ('images/mimetypes/text.png', true, array('title' => __('Text file')));
+				break;
+			case MIME_UNKNOWN:
+				if ($fileinfo['size'] == 0) {
+					if (strstr($fileinfo['name'], '.txt') !== false) {
+						$fileinfo['mime'] = MIME_TEXT;
+						$data[0] = html_print_image ('images/mimetypes/text.png', true, array('title' => __('Text file')));
+					}
+				}
 				break;
 			default:
 				$data[0] = html_print_image ('images/mimetypes/unknown.png', true, array('title' => __('Unknown')));
@@ -646,7 +684,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$data[3] = '';
 		}
 		else {
-			$data[3] = ui_format_filesize ($fileinfo['size']);
+			$data[3] = ui_format_filesize($fileinfo['size']);
 		}
 		
 		//Actions buttons
@@ -661,7 +699,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'] . $config['dbpass']), true);
 			$data[4] .= html_print_input_hidden ('delete_file', 1, true);
 			
-			$relative_dir = str_replace($config['homedir'], '', str_replace("\\", "/", dirname($fileinfo['realpath'])));
+			$relative_dir = str_replace($homedir_filemanager, '', str_replace("\\", "/", dirname($fileinfo['realpath'])));
 			if ($relative_dir[0] == '/') {
 				$relative_dir = substr($relative_dir, 1);
 			}
@@ -690,16 +728,25 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	
 	if (!$readOnly) {
 		if (is_writable ($real_directory)) {
+			//The buttons to make actions
+			
 			echo "<div style='text-align: right; width: " . $table->width . ";'>";
-			echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
-			echo html_print_image('images/create_directory.png', true, array("title" => __('Create directory'))); 
+			
+			echo "<a href='javascript: show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
+			echo html_print_image('images/create_directory.png', true,
+				array("title" => __('Create directory'))); 
 			echo "</a>";
+			
 			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px; margin-bottom: 5px;'>";
-			echo html_print_image('images/create_file.png', true, array("title" => __('Create text')));
+			echo html_print_image('images/create_file.png', true,
+				array("title" => __('Create text')));
 			echo "</a>";
+			
 			echo "<a href='javascript: show_upload_file();'>";
-			echo html_print_image('images/upload_file.png', true, array("title" => __('Upload file/s'))); 
+			echo html_print_image('images/upload_file.png', true,
+				array("title" => __('Upload file/s'))); 
 			echo "</a>";
+			
 			echo "</div>";
 		}
 		else {
@@ -709,236 +756,6 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		}
 	}
 	html_print_table ($table);
-}
-
-/**
- * 
- * @param string $real_directory The string of dir as realpath.
- * @param string $relative_directory The string of dir as relative path.
- * @param string $url The url to set in the forms and some links in the explorer.
- */
-function filemanager_box_upload_file_complex($real_directory, $relative_directory, $url = '') {
-	global $config;
-
-	// Windows compatibility
-	$real_directory = str_replace("\\", "/", $real_directory);
-	$relative_directory = str_replace("\\", "/", $relative_directory);
-	
-	$table->width = '100%';
-	
-	$table->data = array ();
-	
-	if (! filemanager_is_writable_dir ($real_directory)) {
-		ui_print_error_message(__('Current directory is not writable by HTTP Server'));
-		echo '<p>';
-		echo __('Please check that current directory has write rights for HTTP server');
-		echo '</p>';
-	}
-	else {
-		$table->data[1][0] = __('Upload') . ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
-		$table->data[1][1] = html_print_input_file ('file', true, false);
-		$table->data[1][2] = html_print_radio_button('zip_or_file', 'zip', __('Multiple files zipped'), false, true);
-		$table->data[1][3] = html_print_radio_button('zip_or_file', 'file', __('One'), true, true);
-		$table->data[1][4] = html_print_submit_button (__('Go'), 'go', false,
-			'class="sub next"', true);
-		$table->data[1][4] .= html_print_input_hidden ('real_directory', $real_directory, true);
-		$table->data[1][4] .= html_print_input_hidden ('directory', $relative_directory, true);
-		$table->data[1][4] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
-		$table->data[1][4] .= html_print_input_hidden ('upload_file_or_zip', 1, true);
-	}
-	
-	echo '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
-	html_print_table ($table);
-	echo '</form>';
-}
-
-/**
- * Print the box of fields for upload file.
- * 
- * @param string $real_directory The string of dir as realpath.
- * @param string $relative_directory The string of dir as relative path.
- * @param string $url The url to set in the forms and some links in the explorer.
- */
-function filemanager_box_upload_file_explorer($real_directory, $relative_directory, $url = '') {
-	global $config;
-
-	// Windows compatibility
-	$real_directory = str_replace("\\", "/", $real_directory);
-	$relative_directory = str_replace("\\", "/", $relative_directory);
-	
-	$table->width = '50%';
-	
-	$table->data = array ();
-	
-	if (! filemanager_is_writable_dir ($real_directory)) {
-		ui_print_error_message(__('Current directory is not writable by HTTP Server'));
-		echo '<p>';
-		echo __('Please check that current directory has write rights for HTTP server');
-		echo '</p>';
-	}
-	else {
-		$table->data[1][0] = __('Upload file');
-		$table->data[1][1] = html_print_input_file ('file', true, false);
-		$table->data[1][2] = html_print_submit_button (__('Go'), 'go', false,
-			'class="sub next"', true);
-		$table->data[1][2] .= html_print_input_hidden ('real_directory', $real_directory, true);
-		$table->data[1][2] .= html_print_input_hidden ('directory', $relative_directory, true);
-		$table->data[1][2] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
-		$table->data[1][2] .= html_print_input_hidden ('upload_file', 1, true);
-	}
-	
-	echo '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
-	html_print_table ($table);
-	echo '</form>';
-}
-
-/**
- * Print the box of fields for upload file zip.
- * 
- * @param unknown_type $real_directory
- * @param unknown_type $relative_directory
- * @param string $url The url to set in the forms and some links in the explorer.
- */
-function filemanager_box_upload_zip_explorer($real_directory, $relative_directory, $url = '') {
-	global $config;
-
-	// Windows compatibility
-	$real_directory = str_replace("\\", "/", $real_directory);
-	$relative_directory = str_replace("\\", "/", $relative_directory);
-	
-	$table->width = '60%';
-	
-	$table->data = array ();
-	
-	if (! filemanager_is_writable_dir ($real_directory)) {
-		ui_print_error_message(__('Current directory is not writable by HTTP Server'));
-		echo '<p>';
-		echo __('Please check that current directory has write rights for HTTP server');
-		echo '</p>';
-	}
-	else {
-		$table->data[1][0] = __('Upload zip file: ') . ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
-		$table->data[1][1] = html_print_input_file ('file', true, false);
-		$table->data[1][2] = html_print_submit_button (__('Go'), 'go', false,
-			'class="sub next"', true);
-		$table->data[1][2] .= html_print_input_hidden ('real_directory', $real_directory, true);
-		$table->data[1][2] .= html_print_input_hidden ('directory', $relative_directory, true);
-		$table->data[1][2] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
-		$table->data[1][2] .= html_print_input_hidden ('upload_zip', 1, true);
-	}
-	
-	echo '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
-	html_print_table ($table);
-	echo '</form>';
-}
-
-/**
- * Print the box of fields for create the text file.
- * 
- * @param unknown_type $real_directory
- * @param unknown_type $relative_directory
- * @param string $url The url to set in the forms and some links in the explorer.
- */
-function filemanager_box_create_text_explorer($real_directory, $relative_directory, $url = '') {
-	global $config;
-
-	// Windows compatibility
-	$real_directory = str_replace("\\", "/", $real_directory);
-	$relative_directory = str_replace("\\", "/", $relative_directory);
-	
-	$table->width = '60%';
-	
-	$table->data = array ();
-	
-	if (! filemanager_is_writable_dir ($real_directory)) {
-		ui_print_error_message(__('Current directory is not writable by HTTP Server'));
-		echo '<p>';
-		echo __('Please check that current directory has write rights for HTTP server');
-		echo '</p>';
-	}
-	else {
-		$table->data[1][0] = __('Create text file: ');
-		$table->data[1][1] = html_print_input_text('name_file', '', '', 30, 50, true);
-		$table->data[1][2] = html_print_submit_button (__('Create'), 'create', false,
-			'class="sub"', true);
-		$table->data[1][2] .= html_print_input_hidden ('real_directory', $real_directory, true);
-		$table->data[1][2] .= html_print_input_hidden ('directory', $relative_directory, true);
-		$table->data[1][2] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
-		$table->data[1][2] .= html_print_input_hidden ('create_text_file', 1, true);
-	}
-	
-	echo '<form method="post" action="' . $url . '">';
-	html_print_table ($table);
-	echo '</form>';
-}
-
-/**
- * Get the available directories of the file manager.
- *
- * @return array An array with all the directories where the file manager can
- * operate.
- */
-function filemanager_get_available_directories () {
-	global $config;
-	
-	$dirs = array ();
-	$dirs['images'] = "images";
-	$dirs['attachment'] = "attachment";
-	$dirs['languages'] = "include/languages";
-	
-	foreach ($dirs as $dirname) {
-		$dirpath = realpath ($config['homedir'].'/'.$dirname);
-		$dir = opendir ($dirpath);
-		while ($file = @readdir ($dir)) {
-			/* Ignore hidden files */
-			if ($file[0] == '.')
-				continue;
-			$filepath = $dirpath.'/'.$file;
-			if (is_dir ($filepath)) {
-				$dirs[$dirname.'/'.$file] = $dirname.'/'.$file;
-			}
-		}
-	}
-	
-	return $dirs;
-}
-
-/**
- * Check if a dirname is available for the file manager.
- *
- * @param string Dirname to check.
- * 
- * @return array An array with all the directories where the file manager can
- * operate.
- */
-function filemanager_is_available_directory ($dirname) {
-
-	$dirname = str_replace("\\", "/", $dirname); // Windows compatibility
-	$dirs = filemanager_get_available_directories ();
-	
-	return isset ($dirs[$dirname]);
-}
-
-/**
- * Check if a directory is writable.
- *
- * @param string Directory path to check.
- * @param bool If set, it will try to make the directory writeable if it's not.
- *
- * @param bool Wheter the directory is writeable or not.
- */
-function filemanager_is_writable_dir ($dirpath, $force = false) {
-
-	$dirname = str_replace("\\", "/", $dirname); // Windows compatibility
-
-	if (filemanager_is_available_directory (basename ($dirpath)))
-		return is_writable ($dirpath);
-	if (filemanager_is_writable_dir (realpath ($dirpath.'/..')))
-		return true;
-	else if (! $force)
-		return is_writable ($dirpath);
-	
-	return (is_writable ($dirpath) || @chmod ($dirpath, 0755));
 }
 
 /**

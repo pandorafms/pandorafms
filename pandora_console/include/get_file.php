@@ -45,7 +45,9 @@ if ($hash != $testHash) {
 		"</h3>";
 }
 else if (!empty($file) && !empty($hash)) {
-	$file = $_SERVER['DOCUMENT_ROOT'] . $file;
+	//echo $file;
+	if (!file_exists($file))
+		$file = $_SERVER['DOCUMENT_ROOT'] . $file;
 	
 	if (!file_exists($file)) {
 		echo "<h3 style='" . $styleError . "'>" .

@@ -157,7 +157,8 @@ if ($upload_file) {
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
 		if ($hash != $testHash) {
-			$config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
+			$config['filemanager']['message'] =
+				ui_print_error_message(__('Security error'), '', true);
 		}
 		else {
 			// Copy file to directory and change name
@@ -295,6 +296,7 @@ if ($upload_zip) {
 			else {
 				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
 			}
+			
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
 				$config['filemanager']['message'] = ui_print_error_message(__('Attach error'), '', true);
 			}
@@ -456,7 +458,10 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
  * @param boolean $download_button The flag to show download button, by default false.
  * @param string $umask The umask as hex values to set the new files or updload.
  */
-function filemanager_file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false, $url_file = '', $download_button = false, $umask = '') {
+function filemanager_file_explorer($real_directory, $relative_directory,
+	$url, $father = '', $editor = false, $readOnly = false,
+	$url_file = '', $download_button = false, $umask = '') {
+	
 	global $config;
 
 	// Windows compatibility
@@ -557,7 +562,8 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] = '';
 		
 		$table->data[1][1] .= '<div id="create_folder" style="display: none;">';
-		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
+		$table->data[1][1] .= html_print_button(__('Close'), 'close',
+			false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '">';
 		$table->data[1][1] .= html_print_input_text ('dirname', '', '', 15, 255, true);
 		$table->data[1][1] .= html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"', true);
@@ -603,7 +609,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	}
 	
 	foreach ($files as $fileinfo) {
-
+		
 		$fileinfo['realpath'] = str_replace("\\", "/", $fileinfo['realpath']);
 		$relative_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $fileinfo['realpath']);
 		
@@ -621,6 +627,14 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 				break;
 			case MIME_TEXT:
 				$data[0] = html_print_image ('images/mimetypes/text.png', true, array('title' => __('Text file')));
+				break;
+			case MIME_UNKNOWN:
+				if ($fileinfo['size'] == 0) {
+					if (strstr($fileinfo['name'], '.txt') !== false) {
+						$fileinfo['mime'] = MIME_TEXT;
+						$data[0] = html_print_image ('images/mimetypes/text.png', true, array('title' => __('Text file')));
+					}
+				}
 				break;
 			default:
 				$data[0] = html_print_image ('images/mimetypes/unknown.png', true, array('title' => __('Unknown')));
@@ -646,7 +660,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$data[3] = '';
 		}
 		else {
-			$data[3] = ui_format_filesize ($fileinfo['size']);
+			$data[3] = ui_format_filesize($fileinfo['size']);
 		}
 		
 		//Actions buttons
@@ -690,16 +704,25 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	
 	if (!$readOnly) {
 		if (is_writable ($real_directory)) {
+			//The buttons to make actions
+			
 			echo "<div style='text-align: right; width: " . $table->width . ";'>";
-			echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
-			echo html_print_image('images/create_directory.png', true, array("title" => __('Create directory'))); 
+			
+			echo "<a href='javascript: show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
+			echo html_print_image('images/create_directory.png', true,
+				array("title" => __('Create directory'))); 
 			echo "</a>";
+			
 			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px; margin-bottom: 5px;'>";
-			echo html_print_image('images/create_file.png', true, array("title" => __('Create text')));
+			echo html_print_image('images/create_file.png', true,
+				array("title" => __('Create text')));
 			echo "</a>";
+			
 			echo "<a href='javascript: show_upload_file();'>";
-			echo html_print_image('images/upload_file.png', true, array("title" => __('Upload file/s'))); 
+			echo html_print_image('images/upload_file.png', true,
+				array("title" => __('Upload file/s'))); 
 			echo "</a>";
+			
 			echo "</div>";
 		}
 		else {

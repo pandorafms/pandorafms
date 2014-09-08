@@ -247,8 +247,9 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 		fi
 		if [ "$DISTRO" != "FreeBSD" ] && [ "$DISTRO" != "NetBSD" ]
 		then
-			ln -s /usr/local/bin/pandora_server $DESTDIR$PREFIX
-			ln -s /usr/local/bin/pandora_exec $DESTDIR$PREFIX
+			ln -s /usr/local/bin/pandora_server $DESTDIR$PREFIX/bin
+			ln -s /usr/local/bin/pandora_exec $DESTDIR$PREFIX/bin
+			ln -s /usr/local/bin/tentacle_server $DESTDIR$PREFIX/bin
 		fi
 	fi
 

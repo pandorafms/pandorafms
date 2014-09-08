@@ -1,3 +1,8 @@
+2014-09-08  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_server_installer: Fixed problems on linux due
+	bad link paths from /usr/local/bin -> /usr/bin
+
 2014-09-06 Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Fixed that unknown modules are never

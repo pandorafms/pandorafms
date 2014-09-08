@@ -262,17 +262,18 @@ html_print_input_hidden("shortcut_id_user", $config['id_user']);
 
 <script type='text/javascript'>
 	$(function() {
-
+		
 		if (<?php echo json_encode((int) $shortcut_state); ?> < 2) {
 			$('#shortcut_bar').hide();
-
+			
 			$('#shortcut_button>img')
 				.css('transform', 'rotate(-90deg)')
 				.css('-o-transform', 'rotate(-90deg)')
 				.css('-ms-transform', 'rotate(-90deg)')
 				.css('-moz-transform', 'rotate(-90deg)')
 				.css('-webkit-transform', 'rotate(-90deg)');
-		} else {
+		}
+		else {
 			$('#shortcut_button>img')
 				.css('transform', 'rotate(90deg)')
 				.css('-o-transform', 'rotate(90deg)')
@@ -280,8 +281,8 @@ html_print_input_hidden("shortcut_id_user", $config['id_user']);
 				.css('-moz-transform', 'rotate(90deg)')
 				.css('-webkit-transform', 'rotate(90deg)');
 		}
-			
-
+		
+		
 		$('#shortcut_button').click (function () {
 			if ($('#shortcut_bar').is(":visible")) {
 				$('#shortcut_bar').slideUp();

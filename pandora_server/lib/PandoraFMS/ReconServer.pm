@@ -141,8 +141,7 @@ sub data_consumer ($$) {
 	}
 
 	# Call nmap
-	my $timeout = $pa_config->{'networktimeout'}*1000;
-	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$pa_config->{'recon_timing_template'};
+	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$pa_config->{'networktimeout'}.'s -T'.$pa_config->{'recon_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
 		$np->parsescan($pa_config->{'nmap'}, $nmap_args, ($task->{'subnet'}));
@@ -327,8 +326,7 @@ sub get_host_parent {
 	my ($pa_config, $host, $dbh, $group, $max_depth, $resolve, $os_detect) = @_;
 	
 	# Call nmap
-	my $timeout = $pa_config->{'networktimeout'}*1000;
-	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$pa_config->{'nmap_timing_template'};
+	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$pa_config->{'networktimeout'}.'s -T'.$pa_config->{'nmap_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
 		$np->parsescan($pa_config->{'nmap'}, $nmap_args, ($host));

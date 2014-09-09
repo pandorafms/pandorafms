@@ -47,7 +47,8 @@ Besides the defined module macros, the following macros are available:
 <li>_email_tag_ : Emails associated to the module tags.</li>
 <li>_phone_tag_ : Phone numbers associated to the module tags.</li>
 <li>_moduletags_ : URLs associated to the module tags.</li>
-
+<li>_alert_critical_instructions_: Instructions for CRITICAL status, as contained in module.</li>
+<li>_alert_warning_instructions_: Instrucciones for WARNING status, as contained in module.</li>
 </ul>
 <p>
 </p>

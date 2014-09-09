@@ -208,24 +208,24 @@ sub data_consumer ($$) {
 	# Agent and module macros
 	my %macros = (_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
-				_agentstatus_ => (defined ($agent)) ? get_agent_status ($pa_config, $dbh, $agent->{'id_agente'}) : '',
+				_agentstatus_ => undef,
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
-				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
+				_modulegroup_ => undef,
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
-				_modulestatus_ => (defined ($module)) ? get_agentmodule_status($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
-				_moduletags_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_modulestatus_ => undef,
+				_moduletags_ => undef,
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
-				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
+				_policy_ => undef,
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
-				_email_tag_ => (defined ($module)) ? pandora_get_module_email_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
-				_phone_tag_ => (defined ($module)) ? pandora_get_module_phone_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
-				_name_tag_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_email_tag_ => undef,
+				_phone_tag_ => undef,
+				_name_tag_ => undef,
 	);
-	$parameters = subst_alert_macros ($parameters, \%macros);
+	$parameters = subst_alert_macros ($parameters, \%macros, $pa_config, $dbh, $agent, $module);
 
 	# If something went wrong with macros, we log it
 	if ($@) {

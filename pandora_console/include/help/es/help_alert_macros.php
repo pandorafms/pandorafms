@@ -41,15 +41,18 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_interval_ : Intervalo de la ejecución del módulo. </li>
 <li>_target_ip_ : Dirección IP del objetivo del módulo.</li>
 <li>_target_port_ : Puerto del objetivo del módulo.</li>
-<li>_plugin_parameters_ : Parámetros del Plug-in del módulo.</li>
 <li>_groupcontact_ : Información de contacto del grupo.	Se configura al crear el grupo.</li>
 <li>_groupother_ : Otra información sobre el grupo. Se configura al crear el grupo.</li>
 <li>_name_tag_ : Nombre de los tags asociados al módulo.</li>
 <li>_email_tag_ : Emails asociados a los tags de módulos.</li>
 <li>_phone_tag_ : Teléfonos asociados a los tags de módulos.</li>
 <li>_moduletags_ : Teléfonos asociados a los tags de módulos.</li>
-
+<li>_plugin_param1_ - _plugin_param10_ (podria ser mas): El valor de campo de los parametros de plug-in correspondiente.</li>
+<li>i_plugin_param1_desc_ - _plugin_param10_desc_ (podria ser mas): La descripcion del campo de los parametros de plug-in correspondiente.</li>
+<li>_alert_critical_instructions_: Instrucciones contenidas en el módulo para un estado CRITICAL.</li>
+<li>_alert_warning_instructions_: Instrucciones contenidas en el módulo para un estado WARNING.</li>
 </ul>
+
 <p>
 Ejemplo: Error en el agente _agent_: _alert_description_ 
 </p>

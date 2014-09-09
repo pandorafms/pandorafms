@@ -1081,4 +1081,10 @@ function mysql_db_get_table_count($sql, $search_history_db = false) {
 	
 	return $count;
 }
+
+function mysql_get_fields($table) {
+	global $config;
+	
+	return db_get_all_rows_sql("SHOW COLUMNS FROM " . $table);
+}
 ?>

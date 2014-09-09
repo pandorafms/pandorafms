@@ -1171,4 +1171,20 @@ function db_get_table_count($table, $search_history_db = false) {
 			break;
 	}
 }
+
+function db_get_fields($table) {
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_fields($table);
+			break;
+		case "postgresql":
+			//return postgresql_get_fields($table);
+			break;
+		case "oracle":
+			//return oracle_get_fields($table);
+			break;
+	}
+}
 ?>

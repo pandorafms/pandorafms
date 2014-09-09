@@ -1634,7 +1634,9 @@ function html_print_checkbox ($name, $value, $checked = false, $return = false, 
  * 
  * @return string HTML code if return parameter is true.
  */
-function html_print_image ($src, $return = false, $options = false, $return_src = false, $relative = false) {
+function html_print_image ($src, $return = false, $options = false,
+	$return_src = false, $relative = false) {
+	
 	global $config;
 	
 	// If metaconsole is in use then don't use skins

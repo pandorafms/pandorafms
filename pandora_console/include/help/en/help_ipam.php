@@ -54,12 +54,18 @@ Addresses will be shown as icons, large or small. This icons will render the fol
 <tr>
 <th>Setup</th>
 <th>Alive host</th>
-<th>Unresponsive host<</th>
+<th>Unresponsive host</th>
 </tr>
 <tr>
 <td style="width: 100px;">If an IP address is not managed, you can only view if is responding or not.</td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_dotted.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/not_host.png"></td>
+</tr>
+<tr>
+<th colspan=3>Not assigned</th>
+</tr>
+<tr>
+<td colspan=3>The icon have a soft blue color when is unassigned.</td>
 </tr>
 </table>
 <br><br>

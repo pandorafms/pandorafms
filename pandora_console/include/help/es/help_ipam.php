@@ -62,6 +62,12 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_dotted.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/not_host.png"></td>
 </tr>
+<tr>
+<th colspan=3>No asignado</th>
+</tr>
+<tr>
+<td colspan=3>El icono tiene de color de fondo un azul claro cuando no esta asignado.</td>
+</tr>
 </table>
 <br><br>
 Cada dirección tendrá en la parte inferior derecha un enlace para editarla, si disponemos de privilegios suficientes. Así mismo, en la parte inferior izquierda, tendrá un pequeño icono indicando el sistema operativo asociado. 

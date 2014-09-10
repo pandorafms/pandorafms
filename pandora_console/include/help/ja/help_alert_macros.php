@@ -49,6 +49,8 @@
 <li>_email_tag_ : モジュールタグに関連付けられた Email。</li>
 <li>_phone_tag_ : モジュールタグに関連付けられた電話番号。</li>
 <li>_moduletags_ : モジュールタグに関連付けられた URL。</li>
+<li>_alert_critical_instructions_: モジュールの障害状態時手順。</li>
+<li>_alert_warning_instructions_: モジュールの警告状態時手順。</li>
 
 </ul>
 <p>

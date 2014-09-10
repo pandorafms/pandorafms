@@ -136,11 +136,6 @@ sub data_producer ($) {
 
 	my @tasks;
 	
-	# Slave server
-	if ($pa_config->{'pandora_master'} == 0 && get_db_value ($dbh, 'SELECT name FROM tserver WHERE name = ANY(SELECT name FROM tserver WHERE status = 0)') == undef) {
-		return @tasks;
-	}
-
 	# Reset storm protection counters
 	my $curr_time = time ();
 	if ($pa_config->{"__storm_ref__"} + $pa_config->{"snmp_storm_timeout"} < $curr_time) {

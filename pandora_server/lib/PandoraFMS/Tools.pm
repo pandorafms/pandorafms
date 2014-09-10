@@ -43,6 +43,19 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
+	DATASERVER
+	NETWORKSERVER
+	SNMPCONSOLE
+	RECONSERVER
+	PLUGINSERVER
+	PREDICTIONSERVER
+	WMISERVER
+	EXPORTSERVER
+	INVENTORYSERVER
+	WEBSERVER
+	EVENTSERVER
+	ICMPSERVER
+	SNMPSERVER
 	$DEVNULL
     cron_get_closest_in_range
 	cron_next_execution
@@ -76,6 +89,21 @@ our @EXPORT = qw(
 	translate_obj
 	valid_regex
 );
+
+# ID of the different servers
+use constant DATASERVER => 0;
+use constant NETWORKSERVER => 1;
+use constant SNMPCONSOLE => 2;
+use constant RECONSERVER => 3;
+use constant PLUGINSERVER => 4;
+use constant PREDICTIONSERVER => 5;
+use constant WMISERVER => 6;
+use constant EXPORTSERVER => 7;
+use constant INVENTORYSERVER => 8;
+use constant WEBSERVER => 9;
+use constant EVENTSERVER => 10;
+use constant ICMPSERVER => 11;
+use constant SNMPSERVER => 12;
 
 # /dev/null
 our $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';

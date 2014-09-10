@@ -99,7 +99,7 @@ sub new ($$$) {
 	$TaskSem = Thread::Semaphore->new (0);
 
 	# Call the constructor of the parent class
-	my $self = $class->SUPER::new($config, 2, \&PandoraFMS::SNMPServer::data_producer, \&PandoraFMS::SNMPServer::data_consumer, $dbh);
+	my $self = $class->SUPER::new($config, SNMPCONSOLE, \&PandoraFMS::SNMPServer::data_producer, \&PandoraFMS::SNMPServer::data_consumer, $dbh);
 
 	# Save the path of snmptrapd
 	$self->{'snmp_trapd'} = $config->{'snmp_trapd'};

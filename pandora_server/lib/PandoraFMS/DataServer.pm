@@ -69,7 +69,7 @@ sub new ($$;$) {
 	$ModuleSem = Thread::Semaphore->new (1);
 	
 	# Call the constructor of the parent class
-	my $self = $class->SUPER::new($config, 0, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
+	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
 
 	bless $self, $class;
 	return $self;

@@ -3789,7 +3789,7 @@ sub pandora_server_statistics ($$) {
 	foreach my $server (@servers) {
 
 		# Inventory server
-		if ($server->{"server_type"} == 8) {
+		if ($server->{"server_type"} == INVENTORYSERVER) {
 			# Get modules exported by this server
 			$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente AND tagente.server_name = ?", $server->{"name"});
 
@@ -3809,7 +3809,7 @@ sub pandora_server_statistics ($$) {
 			$server->{"lag"} = $lag_row->{"lag"};
 		}
 		# Export server
-		elsif ($server->{"server_type"} == 7) {
+		elsif ($server->{"server_type"} == EXPORTSERVER) {
 	
 			# Get modules exported by this server
 			$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tserver_export WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export = tserver_export.id AND tserver_export.id_export_server = ?", $server->{"id_server"});
@@ -3820,7 +3820,7 @@ sub pandora_server_statistics ($$) {
 			$server->{"lag"} = 0;
 			$server->{"module_lag"} = 0;
 		# Recon server
-		} elsif ($server->{"server_type"} == 3) {
+		} elsif ($server->{"server_type"} == RECONSERVER) {
 
 				# Total jobs running on this recon server
 				$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ?", $server->{"id_server"});
@@ -3842,10 +3842,9 @@ sub pandora_server_statistics ($$) {
 
 			$server->{"modules_total"} = get_db_value ($dbh,"SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = ?", $server->{"server_type"});
 
-			# Dataserver
-			if ($server->{"server_type"} != 0){
+			# Non-dataserver LAG calculation:
+			if ($server->{"server_type"} != DATASERVER){
 				
-				# Local/Dataserver server LAG calculation:
 				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
 					FROM tagente_estado, tagente_modulo
 					WHERE utimestamp > 0
@@ -3856,7 +3855,9 @@ sub pandora_server_statistics ($$) {
 					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
 					AND running_by = ?
 					AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)", $server->{"id_server"});
-			} else {
+			}
+			# Dataserver LAG calculation:
+			else {
 				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
 					FROM tagente_estado, tagente_modulo
 					WHERE utimestamp > 0
@@ -4111,7 +4112,7 @@ sub pandora_self_monitoring ($$) {
 	$free_mem = '' unless defined ($free_mem);
 	my $free_disk_spool = disk_free ($pa_config->{"incomingdir"});
 	$free_disk_spool = '' unless defined ($free_disk_spool);
-	my $my_data_server = get_db_value ($dbh, "SELECT id_server FROM tserver WHERE server_type = 0 AND name = '".$pa_config->{"servername"}."'");
+	my $my_data_server = get_db_value ($dbh, "SELECT id_server FROM tserver WHERE server_type = ? AND name = '".$pa_config->{"servername"}."'", DATASERVER);
 
 	# Number of unknown agents
 	my $agents_unknown = 0;

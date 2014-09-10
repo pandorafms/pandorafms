@@ -68,7 +68,7 @@ sub new ($$;$) {
 	$TaskSem = Thread::Semaphore->new (0);
 			
 	# Call the constructor of the parent class
-	my $self = $class->SUPER::new($config, 4, \&PandoraFMS::PluginServer::data_producer, \&PandoraFMS::PluginServer::data_consumer, $dbh);
+	my $self = $class->SUPER::new($config, PLUGINSERVER, \&PandoraFMS::PluginServer::data_producer, \&PandoraFMS::PluginServer::data_consumer, $dbh);
 
     bless $self, $class;
     return $self;

@@ -152,10 +152,10 @@ if ($create_downtime || $update_downtime) {
 	$datetime_to = strtotime ($once_date_to . ' ' . $once_time_to);
 	$now = strtotime(date(DATE_FORMAT). ' ' . date(TIME_FORMAT));
 	
-	if ($datetime_from < $now) {
+	if ($type_execution == 'once' && $datetime_from < $now) {
 		ui_print_error_message(__('Not created. Error inserting data. Start time must be higher than the current time' ));
 	}
-	else if ($datetime_from >= $datetime_to) {
+	else if ($type_execution == 'once' && $datetime_from >= $datetime_to) {
 		ui_print_error_message(__('Not created. Error inserting data' ).
 			': START &gt;= END');
 	}

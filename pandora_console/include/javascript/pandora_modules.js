@@ -360,6 +360,10 @@ function configure_modules_form () {
 					}
 				}
 				
+				if (data["id_modulo"] == 4) {
+					changePluginSelect();
+				}
+				
 				if (data["throw_unknown_events"])
 					$("input[name='throw_unknown_events']").check();
 				else

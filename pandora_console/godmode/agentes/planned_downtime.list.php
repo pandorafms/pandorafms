@@ -180,9 +180,95 @@ if ($delete_downtime) {
 	}
 }
 
-$groups = users_get_groups ();
+// Filter parameters
+$offset = (int) get_parameter('offset');
+$search_text = (string) get_parameter('search_text');
+$date_from = (string) get_parameter('date_from');
+$date_to = (string) get_parameter('date_to');
+$execution_type = (string) get_parameter('execution_type');
+$show_archived = (bool) get_parameter('archived');
+$agent_id = (int) get_parameter('agent_id');
+$agent_name = !empty($agent_id) ? (string) get_parameter('agent_name') : "";
+$module_id = (int) get_parameter('module_name_hidden');
+$module_name = !empty($module_id) ? (string) get_parameter('module_name') : "";
+
+$filter_params = array();
+$filter_params['search_text'] = $search_text;
+$filter_params['date_from'] = $date_from;
+$filter_params['date_to'] = $date_to;
+$filter_params['execution_type'] = $execution_type;
+$filter_params['archived'] = $show_archived;
+$filter_params['agent_id'] = $agent_id;
+$filter_params['agent_name'] = $agent_name;
+$filter_params['module_id'] = $module_id;
+$filter_params['module_name'] = $module_name;
+
+$filter_params_aux = array();
+foreach ($filter_params as $name => $value) {
+	$filter_params_aux[] = is_bool($value) ? $name."=".(int)$value : "$name=$value";
+}
+$filter_params_str = !empty($filter_params_aux) ? implode("&", $filter_params_aux) : "";
+
+// Table filter
+$table = new StdClass();
+$table->class = 'databox';
+$table->width = '99%';
+$table->rowstyle = array();
+$table->rowstyle[0] = "background-color: #f9faf9;";
+$table->rowstyle[1] = "background-color: #f9faf9;";
+$table->rowstyle[2] = "background-color: #f9faf9;";
+$table->data = array();
+
+$row = array();
+
+// Search text
+$row[] = __('Search') . '&nbsp;' . html_print_input_text("search_text", $search_text, '', 50, 250, true);
+// Dates
+$date_inputs = __('From') . '&nbsp;' . html_print_input_text('date_from', $date_from, '', 10, 10, true);
+$date_inputs .= "&nbsp;&nbsp;";
+$date_inputs .= __('To') . '&nbsp;' . html_print_input_text('date_to', $date_to, '', 10, 10, true);
+$row[] = $date_inputs;
+
+$table->data[] = $row;
+
+$row = array();
+
+// Execution type
+$execution_type_fields = array('once' => __('Once'), 'periodically' => __('Periodically'));
+$row[] = __('Execution type') . '&nbsp;' . html_print_select($execution_type_fields, 'execution_type', $execution_type, '', __('Any'), '', true, false, false);
+// Show past downtimes
+$row[] = __('Show past downtimes') . '&nbsp;' . html_print_checkbox ("archived", 1, $show_archived, true);
+
+$table->data[] = $row;
+
+$row = array();
+
+// Agent
+$params = array();
+$params['show_helptip'] = true;
+$params['input_name'] = 'agent_name';
+$params['value'] = $agent_name;
+$params['return'] = true;
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_name'] = 'agent_id';
+$params['hidden_input_idagent_value'] = $agent_id;
+$agent_input = __('Agent') . '&nbsp;' . ui_print_agent_autocomplete_input($params);
+$row[] = $agent_input;
+
+// Module
+$module_input = __('Module') . '&nbsp;' . html_print_autocomplete_modules('module_name', $module_name, false, true, '', array(), true);
+$row[] = $module_input;
+
+$row[] = html_print_submit_button('Search', 'search', false, 'class="sub search"', true);
+
+$table->data[] = $row;
+
+echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
+html_print_table($table);
+echo "</form>";
 
 // View available downtimes present in database (if any of them)
+$table = new StdClass();
 $table->class = 'databox';
 //Start Overview of existing planned downtime
 $table->width = '98%';
@@ -194,10 +280,10 @@ $table->head[2] = __('Group');
 $table->head[3] = __('Type');
 $table->head[4] = __('Execution');
 $table->head[5] = __('Configuration');
-$table->head[6] = __('Delete');
-$table->head[7] = __('Update');
-$table->head[8] = __('Running');
-$table->head[9] = __('Stop downtime');
+$table->head[6] = __('Running');
+$table->head[7] = __('Stop downtime');
+$table->head[8] = __('Edit');
+$table->head[9] = __('Delete');
 $table->align[2] = "center";
 //$table->align[5] = "center";
 $table->align[6] = "center";
@@ -205,11 +291,82 @@ $table->align[7] = "center";
 $table->align[8] = "center";
 $table->align[9] = "center";
 
+$groups = users_get_groups ();
 if(!empty($groups)) {
+	$where_values = "1=1";
+
+	$groups_string = implode (",", array_keys ($groups));
+	$where_values .= " AND id_group IN ($groups_string)";
+
+	if (!empty($search_text)) {
+		$where_values .= " AND (name LIKE '%$search_text%' OR description LIKE '%$search_text%')";
+	}
+
+	if (!empty($execution_type)) {
+		$where_values .= " AND type_execution = '$execution_type'";
+	}
+
+	if (!empty($date_from)) {
+		$where_values .= " AND (type_execution = 'periodically' OR (type_execution = 'once' AND date_from >= '".strtotime("$date_from 00:00:00")."'))";
+	}
+
+	if (!empty($date_to)) {
+		$periodically_monthly_w = "type_periodicity = 'monthly' AND (periodically_day_from <= '".date('d', strtotime($date_from))."' AND periodically_time_to >= '".date('d', strtotime($date_to))."')";
+		
+		$periodically_weekly_days = array();
+		$date_from_aux = strtotime($date_from);
+		$date_end = strtotime($date_to);
+		$days_number = 0;
+
+		while ($date_from_aux <= $date_end && $days_number < 7) {
+			$weekday_actual = strtolower(date('l', $date_from_aux));
+			
+			$periodically_weekly_days[] = "$weekday_actual = 1";
+
+			$date_from_aux = $date_from_aux + SECONDS_1DAY;
+			$days_number++;
+		}
+
+		$periodically_weekly_w = "type_periodicity = 'weekly' AND (".implode(" OR ", $periodically_weekly_days).")";
+		
+		$periodically_w = "type_execution = 'periodically' AND (($periodically_monthly_w) OR ($periodically_weekly_w))";
+		
+		$once_w = "type_execution = 'once' AND date_to <= '".strtotime("$date_to 23:59:59")."'";
+		
+		$where_values .= " AND (($periodically_w) OR ($once_w))";
+	}
+
+	if (!$show_archived) {
+		$where_values .= " AND (type_execution = 'periodically' OR (type_execution = 'once' AND date_to >= '".time()."'))";
+	}
+
+	if (!empty($agent_id)) {
+		$where_values .= " AND id IN (SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent = $agent_id)";
+	}
+
+	if (!empty($module_id)) {
+		$where_values .= " AND (id IN (SELECT id_downtime
+									   FROM tplanned_downtime_modules
+									   WHERE id_agent_module = $module_id)
+							OR id IN (SELECT id_downtime
+									  FROM tplanned_downtime_agents tpda, tagente_modulo tam
+									  WHERE tpda.id_agent = tam.id_agente
+									  	AND tam.id_agente_modulo = $module_id
+									  	AND tpda.all_modules = 1))";
+	}
+
 	$sql = "SELECT *
-		FROM tplanned_downtime
-		WHERE id_group IN (" . implode (",", array_keys ($groups)) . ")";
+			FROM tplanned_downtime
+			WHERE $where_values
+			ORDER BY type_execution DESC, date_from DESC
+			LIMIT ".$config["block_size"]."
+			OFFSET $offset";
+	$sql_count = "SELECT COUNT(id) AS num
+				  FROM tplanned_downtime
+				  WHERE $where_values";
 	$downtimes = db_get_all_rows_sql ($sql);
+	$downtimes_number_res = db_get_all_rows_sql($sql_count);
+	$downtimes_number = $downtimes_number_res != false ? $downtimes_number_res[0]['num'] : 0;
 }
 else {
 	$downtimes = array();
@@ -219,6 +376,8 @@ if (!$downtimes) {
 	echo '<div class="nf">'.__('No planned downtime').'</div>';
 }
 else {
+	ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset);
+
 	foreach ($downtimes as $downtime) {
 		$data = array();
 		$total  = db_get_sql ("SELECT COUNT(id_agent)
@@ -295,44 +454,71 @@ else {
 		}
 		
 		if ($downtime["executed"] == 0) {
-			$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;'.
-				'delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
-			$data[7] = '<a
-				href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
-		}
-		else {
-			$data[6]= "N/A";
-			$data[7]= "N/A";
-		
-		}
-		if ($downtime["executed"] == 0) {
-			$data[8] = html_print_image ("images/pixel_red.png", true,
+			$data[6] = html_print_image ("images/pixel_red.png", true,
 				array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
 		}
 		else {
-			$data[8] = html_print_image ("images/pixel_green.png", true,
+			$data[6] = html_print_image ("images/pixel_green.png", true,
 				array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 		}
 		
-		
-		if (($downtime['type_execution'] == 'once')
-			&& ($downtime["executed"] == 1)) {
+		if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
 			
-			$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;' .
+			$data[7] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;' .
 				'stop_downtime=1&amp;' .
 				'id_downtime=' . $downtime['id'] . '">' .
 			html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
 		}
+		else {
+			$data[7] = "";
+		}
 		
+		if ($downtime["executed"] == 0) {
+			$data[8] = '<a
+				href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
+			$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;'.
+				'delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+		}
+		else {
+			$data[8]= "N/A";
+			$data[9]= "N/A";
+		
+		}
 		array_push ($table->data, $data);
 	}
 	html_print_table ($table);
 }
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
-echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor">';
+echo '<br>';
+echo '<div style="display: inline;">';
+html_print_button(__('Export to CSV'), 'csv_export', false, "location.href='godmode/agentes/planned_downtime.export_csv.php?$filter_params_str'", 'class="sub next"');
+echo '</div>';
+echo '&nbsp;';
+echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
 html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 echo '</form>';
 echo '</div>';
+
+
+ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
+
+?>
+<script language="javascript" type="text/javascript">
+
+$("input[name=module_name_hidden]").val(<?php echo (int)$module_id; ?>);
+
+$(document).ready (function () {
+	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+
+	$("a#delete_downtime").click(function (e) {
+		if (!confirm("<?php echo __('WARNING: If you delete this planned downtime, it will not be taken into account in future SLA reports'); ?>")) {
+			e.preventDefault();
+		}
+	});
+});
+
+</script>

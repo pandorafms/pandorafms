@@ -42,11 +42,16 @@ then
 	. /etc/rc.status
 	rc_reset
 else
-	# Define rc functions for non-suse systems, "void" functions.
-	function rc_status () { VOID=1; }
-	function rc_exit () { exit; }
-	function rc_failed () { VOID=1; }
-
+	# Define part of rc functions for non-suse systems
+	function rc_status () {
+		RETVAL=$?
+		case $1 in
+			-v) RETVAL=0;;
+		esac
+	}
+	function rc_exit () { exit $RETVAL; }
+	function rc_failed () { RETVAL=${1:-1}; }
+	RETVAL=0
 fi
 	
 # This function replace pidof, not working in the same way in different linux distros

@@ -745,7 +745,16 @@ if (!$disabled) {
 	}
 	else {
 		html_print_input_hidden ('step', $step + 1);
-		html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
+		if ($step == 2) {
+			//Javascript onsubmit to avoid min = 0 and max = 0
+			
+			html_print_submit_button(__('Next'), 'next', false,
+				'class="sub next" onclick="return check_fields_step2();"');
+		}
+		else {
+			html_print_submit_button(__('Next'), 'next', false,
+				'class="sub next"');
+		}
 	}
 }
 
@@ -774,6 +783,24 @@ var critical = <?php echo "'" . __("The alert would fire when the module is in c
 var onchange_msg = <?php echo "'" . __("The alert would fire when the module value changes") . "'";?>;
 var onchange_not = <?php echo "'" . __("The alert would fire when the module value does not change") . "'";?>;
 var unknown = <?php echo "'" . __("The alert would fire when the module is in unknown status") . "'";?>;
+var error_message_min_max_zero = <?php echo "'" . __("The alert template has not a min an max condition equal 0.") . "'";?>;
+
+function check_fields_step2() {
+	var correct = true;
+	
+	type = $("select[name='type']").val();
+	min_v = $("input[name='min']").val();
+	max_v = $("input[name='max']").val();
+	
+	if (type == 'max_min') {
+		if ((min_v == 0) && (max_v == 0)) {
+			alert(error_message_min_max_zero);
+			correct = false;
+		}
+	}
+	
+	return correct;
+}
 
 function check_regex () {
 	if ($("#type").val() != 'regex') {

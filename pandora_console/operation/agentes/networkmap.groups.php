@@ -75,7 +75,12 @@ else {
 	}
 	else {
 		fwrite ($fh, $graph);
-		$graphviz_path = ($config['graphviz_bin_dir']) ? io_safe_output($config['graphviz_bin_dir']."/") : "";
+		
+		$graphviz_path = (!empty($config['graphviz_bin_dir'])) ?
+			io_safe_output($config['graphviz_bin_dir'] . "/")
+			:
+			"";
+		
 		$cmd = escapeshellarg($graphviz_path.$filter) . " -Tcmapx " . escapeshellarg("-o$filename_map") . " -Tpng ". escapeshellarg("-o$filename_img") . " " . escapeshellarg($filename_dot);
 		$result = system ($cmd);
 		fclose ($fh);

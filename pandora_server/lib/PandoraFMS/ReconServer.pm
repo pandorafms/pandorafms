@@ -71,7 +71,7 @@ sub new ($$$$$$) {
 	$TaskSem = Thread::Semaphore->new (0);
 	
 	# Call the constructor of the parent class
-	my $self = $class->SUPER::new($config, 3, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);
+	my $self = $class->SUPER::new($config, RECONSERVER, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);
 	
 	bless $self, $class;
 	return $self;

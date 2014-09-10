@@ -20,8 +20,6 @@ require_once ("../../include/functions.php");
 require_once ("../../include/functions_db.php");
 require_once ("../../include/functions_users.php");
 require_once ("../../include/functions_groups.php");
-// require_once ("../../include/functions_modules.php");
-// require_once ("../../include/functions_agents.php");
 
 $config["id_user"] = $_SESSION["id_usuario"];
 if (! check_acl ($config['id_user'], 0, "AW")) {
@@ -43,6 +41,7 @@ $module_id = (int) get_parameter('module_name_hidden');
 $module_name = !empty($module_id) ? (string) get_parameter('module_name') : "";
 
 $separator = (string) get_parameter("separator", ";");
+$items_separator = (string) get_parameter("items_separator", ",");
 
 // SQL QUERY CREATION
 $where_values = "1=1";
@@ -129,6 +128,7 @@ if (!empty($downtimes)) {
 	$titles[] = "type";
 	$titles[] = "execution_type";
 	$titles[] = "execution_date";
+	$titles[] = "affected_items";
 
 	echo implode($separator, $titles);
 	echo chr(13);
@@ -196,6 +196,39 @@ if (!empty($downtimes)) {
 		}
 		$execution_date = io_safe_output($execution_date);
 
+		$affected_items = array();
+
+		$sql_agents = "SELECT tpda.id_agent AS agent_id, tpda.all_modules AS all_modules, ta.nombre AS agent_name
+				 		FROM tplanned_downtime_agents tpda, tagente ta
+				 		WHERE tpda.id_downtime = $id
+				 			AND tpda.id_agent = ta.id_agente";
+		$downtime_agents = @db_get_all_rows_sql($sql_agents);
+
+		if (!empty($downtime_agents)) {
+			foreach ($downtime_agents as $downtime_agent) {
+				$downtime_items = array();
+				$downtime_items[] = $downtime_agent['agent_name'];
+
+				if (!$downtime_agent['all_modules']) {
+					$agent_id = $downtime_agent['agent_id'];
+					$sql_modules = "SELECT tpdm.id_agent_module AS module_id, tam.nombre AS module_name
+				 					FROM tplanned_downtime_modules tpdm, tagente_modulo tam
+				 					WHERE tpdm.id_downtime = $id
+				 						AND tpdm.id_agent = $agent_id
+				 						AND tpdm.id_agent_module = tam.id_agente_modulo";
+					$downtime_modules = @db_get_all_rows_sql($sql_modules);
+
+					if (!empty($downtime_modules)) {
+						foreach ($downtime_modules as $downtime_module) {
+							$downtime_items[] = $downtime_module['module_name'];
+						}
+					}
+				}
+				$affected_items[] = "[".implode("|", $downtime_items)."]";
+			}
+		}
+		$affected_items = implode(",", $affected_items);
+
 		$values = array();
 		$values[] = $id;
 		$values[] = $name;
@@ -204,6 +237,7 @@ if (!empty($downtimes)) {
 		$values[] = $type;
 		$values[] = $execution_type;
 		$values[] = $execution_date;
+		$values[] = $affected_items;
 
 		echo implode($separator, $values);
 		echo chr(13);

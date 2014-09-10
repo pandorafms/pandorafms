@@ -77,7 +77,7 @@ esac
 
 if [ ! -f "${TENTACLE_PATH}$TENTACLE_DAEMON" ]; then
 	echo "Tentacle Server not found in ${TENTACLE_PATH}$TENTACLE_DAEMON"
-	rc_failed 1
+	rc_failed 5 # program is not installed
 	rc_exit
 fi
 
@@ -86,8 +86,7 @@ case "$1" in
 		TENTACLE_PID=`get_pid`
 		if [ ! -z "$TENTACLE_PID" ]; then
 			echo "Tentacle Server is already running with PID $TENTACLE_PID"
-			rc_failed 2
-			rc_exit	
+			rc_exit	# running start on a service already running
 		fi
 	
 		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS
@@ -100,7 +99,7 @@ case "$1" in
 		else
 			echo "Tentacle Server could not be started."
 			echo "Verify that port $TENTACLE_PORT is not used."
-			rc_status -v
+			rc_failed 7 # program not running
 		fi
 
 	;;
@@ -109,7 +108,7 @@ case "$1" in
 		TENTACLE_PID=`get_pid`
 		if [ -z "$TENTACLE_PID" ]; then
 			echo "Tentacle Server does not seem to be running"
-			rc_failed 2
+			rc_exit # running stop on a service already stopped or not running
 		else
 			kill $TENTACLE_PID
 			sleep 1
@@ -117,7 +116,7 @@ case "$1" in
 
 			if [ "$_PID" = "$TENTACLE_PID" ]; then
 				echo "Tentacle Server could not be stopped"
-				rc_status -s
+				rc_failed
 			fi
 
 			echo "Stopping Tentacle Server"
@@ -137,7 +136,7 @@ case "$1" in
 		TENTACLE_PID=`get_pid`
 		if [ -z "$TENTACLE_PID" ]; then
 			echo "Tentacle Server is not running."
-			rc_status 
+			rc_failed 7 # program is not running
 		else
 			echo "Tentacle Server is running with PID $TENTACLE_PID."
 			rc_status 

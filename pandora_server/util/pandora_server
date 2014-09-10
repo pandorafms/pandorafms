@@ -65,7 +65,7 @@ function pidof_pandora () {
 if [ ! -f $PANDORA_DAEMON ]
 then
 	echo "Pandora FMS Server not found, please check setup and read manual"
-	rc_status -s
+	rc_failed 5 # program is not installed
 	rc_exit
 fi
 
@@ -74,9 +74,8 @@ case "$1" in
 		PANDORA_PID=`pidof_pandora`
 		if [ ! -z "$PANDORA_PID" ]
 		then
-			echo "Pandora FMS Server is currently running on this machine with PID ($PANDORA_PID). Aborting now..."
-			rc_failed 1
-			rc_exit 
+			echo "Pandora FMS Server is currently running on this machine with PID ($PANDORA_PID)."
+			rc_exit # running start on a service already running
 		fi
 	
 		$PANDORA_DAEMON $PANDORA_HOME -D
@@ -91,7 +90,7 @@ case "$1" in
 		else
 			echo "Cannot start Pandora FMS Server. Aborted."
 			echo "Check Pandora FMS log files at '/var/log/pandora/pandora_server.error & pandora_server.log'"
-			rc_status -s
+			rc_failed 7 # program is not running
 		fi
 	;;
 		
@@ -100,7 +99,7 @@ case "$1" in
 		if [ -z "$PANDORA_PID" ]
 		then
 			echo "Pandora FMS Server is not running, cannot stop it."
-			rc_failed 
+			rc_exit # running stop on a service already stopped or not running
 		else
 			echo "Stopping Pandora FMS Server"
 			kill $PANDORA_PID > /dev/null 2>&1
@@ -131,7 +130,7 @@ case "$1" in
 		if [ -z "$PANDORA_PID" ]
 		then
 			echo "Pandora FMS Server is not running."
-			rc_status 
+			rc_failed 7 # program is not running
 		else
 			echo "Pandora FMS Server is running with PID $PANDORA_PID."
 			rc_status

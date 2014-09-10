@@ -302,6 +302,11 @@ else {
 		$critical_inverse = '';
 		$warning_inverse = '';
 		
+		$each_ff = 0;
+		$ff_event_normal = '';
+		$ff_event_warning = '';
+		$ff_event_critical = '';
+		
 		$id_category = 0;
 		
 		$cron_interval = '* * * * *';

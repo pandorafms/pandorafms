@@ -114,7 +114,7 @@ sub data_producer ($) {
 			WHERE ((server_name = ?)
 				OR (server_name = ANY(SELECT name
 					FROM tserver
-					WHERE status = 0)))
+					WHERE status = 0 AND server_type = ?)))
 				AND tagente_modulo.id_agente = tagente.id_agente
 				AND tagente.disabled = 0
 				AND tagente_modulo.disabled = 0
@@ -123,7 +123,7 @@ sub data_producer ($) {
 				AND tagente_modulo.id_modulo = 5
 				AND (tagente_modulo.flag = 1
 				OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
-			ORDER BY last_execution_try ASC', $pa_config->{'servername'});
+			ORDER BY last_execution_try ASC', $pa_config->{'servername'}, PREDICTIONSERVER);
 	}
 	
 	foreach my $row (@rows) {

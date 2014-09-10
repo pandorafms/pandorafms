@@ -83,8 +83,12 @@ function clippy_write_javascript_helps_steps($tours) {
 	$clippy = get_cookie('clippy', false);
 	set_cookie('clippy', null);
 	
+	
 	//Get the help steps from a task
-	$steps = $tours['tours'][$clippy]['steps'];
+	$steps = null;
+	if (isset($tours['tours'][$clippy])) {
+		$steps = $tours['tours'][$clippy]['steps'];
+	}
 	if ($first_step_by_default) {
 		if (empty($steps)) {
 			//Get the first by default
@@ -106,8 +110,10 @@ function clippy_write_javascript_helps_steps($tours) {
 			}
 		}
 	}
-	
-	$conf = $tours['tours'][$clippy]['conf'];
+	$conf = null;
+	if (isset($tours['tours'][$clippy])) {
+		$conf = $tours['tours'][$clippy]['conf'];
+	}
 	if ($first_step_by_default) {
 		if (empty($conf)) {
 			//Get the first by default

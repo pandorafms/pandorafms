@@ -57,6 +57,7 @@ if (isset ($_POST["template_id"])) {
 	
 	foreach ($npc as $row) {
 		$nc = db_get_all_rows_field_filter ("tnetwork_component", "id_nc", $row["id_nc"]);
+
 		if ($nc === false) {
 			$nc = array ();
 		}
@@ -96,7 +97,7 @@ if (isset ($_POST["template_id"])) {
 				'warning_instructions' => $row2['warning_instructions'],
 				'unknown_instructions' => $row2['unknown_instructions'],
 				'id_category' => $row2['id_category'],
-				'module_macros' => $row2['module_macros'],
+				'macros' => $row2['macros'],
 				'each_ff' => $row2['each_ff'],
 				'min_ff_event' => $row2['min_ff_event'],
 				'min_ff_event_normal' => $row2['min_ff_event_normal'],

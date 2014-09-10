@@ -30,17 +30,17 @@ require_once ('include/functions_networkmap.php');
 
 if ($activeTab == "radial_dynamic") {
 	include_once("include/functions_graph.php");
-
+	
 	echo "<div style='width: auto; text-align: center;'>";
-
+	
 	$filter = array();
 	if (!empty($group))
 		$filter['group'] = $group;
 	if (!empty($module_group))
 		$filter['module_group'] = $module_group;
-
+	
 	echo graph_monitor_wheel(600, 650, $filter);
-
+	
 	echo "</div>";
 	return;
 }
@@ -115,8 +115,18 @@ echo '<div id="dinamic_networkmap" style="overflow: hidden;"></div>';
 
 </style>
 <script>
-var width = $("#dinamic_networkmap").width(),
-    height = $("#main").height();
+var width = $("#dinamic_networkmap").width();
+if ($("#main").height()) {
+	var height = $("#main").height();
+}
+else {
+	//Set the height in the pure view (fullscreen).
+	
+	var height = $(window).height() -
+		$("#menu_tab_frame_view").height() -
+		80; // 80 of margin
+}
+
 
 var color = d3.scale.category20();
 

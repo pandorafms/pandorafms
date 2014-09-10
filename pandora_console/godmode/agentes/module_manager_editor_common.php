@@ -310,7 +310,12 @@ $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
 
 $table_advanced->data[1][3] = __('Unit');
 $table_advanced->data[1][4] = html_print_input_text ('unit', $unit,
-        '', 20, 65, true);
+	'', 20, 65, true);
+
+$module_id_policy_module = 0;
+if (isset($module['id_policy_module'])) {
+	$module_id_policy_module = $module['id_policy_module'];
+}
 
 // In the data modules, the interval is not in seconds. It is a factor 
 // to be multiplied for the agent interval
@@ -326,14 +331,14 @@ if ($moduletype == MODULE_DATA) {
 	else {
 		$table_advanced->data[2][1] = sprintf(__('Agent interval x %s'), $interval_factor) . ui_print_help_icon ('module_interval_factor', true);
 	}
-       
-    if ($__code_from == 'policies') {
+	
+	if ($__code_from == 'policies') {
 		// If is the policy form, module_interval will store the factor (not the seconds). 
 		// So server will transform it to interval in seconds
 		$table_advanced->data[2][1] = sprintf(__('Default') . ': 1' , $interval_factor) . ui_print_help_icon ('module_interval_factor', true);
 		$table_advanced->data[2][1] .= html_print_input_hidden('module_interval', $interval_factor, true);
 	}
-	else if ($module['id_policy_module'] != 0) {
+	else if ($module_id_policy_module != 0) {
 		$table_advanced->data[2][1] .= ui_print_help_tip(__('The policy modules of data type will only update their intervals when policy is applied.'), true);
 	}
 	

@@ -62,6 +62,12 @@ IP 管理は、Pandora FMS エージェントで設定している監視と並�
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_dotted.png"></td>
 <td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/not_host.png"></td>
 </tr>
+<tr>
+<th colspan=3>未割当</th>
+</tr>
+<tr>
+<td colspan=3>未割当のときはアイコンは青になります。</td>
+</tr>
 </table>
 <br><br>
 それぞれの IP アドレスは、右下にそれを編集する(管理者権限)リンクがあります。左下には、検出した OS を表示する小さいアイコンがあります。無効化アドレスでは OS の代わりに、次のようなアイコンが表示されます。<br><br><img src="../images/delete.png" style="width:18px;"><br><br>

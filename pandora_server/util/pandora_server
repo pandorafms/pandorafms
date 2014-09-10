@@ -51,14 +51,14 @@ fi
 	
 # This function replace pidof, not working in the same way in different linux distros
 
-function pidof_pandora () (
+function pidof_pandora () {
 	# This sets COLUMNS to XXX chars, because if command is run 
 	# in a "strech" term, ps aux don't report more than COLUMNS
 	# characters and this will not work. 
 	COLUMNS=300
 	PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON $PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
-)
+}
 
 # Main script
 
@@ -106,7 +106,7 @@ case "$1" in
 			kill $PANDORA_PID > /dev/null 2>&1
 			COUNTER=0
 
-		while [ $COUNTER -lt $MAXWAIT ]
+			while [ $COUNTER -lt $MAXWAIT ]
 	 		do
  				_PID=`pidof_pandora`
 				if [ "$_PID" != "$PANDORA_PID" ]

@@ -2425,10 +2425,10 @@ DIV.forced_title_layer {
 	border: 1px solid #708090;
 	background-color: #666;
 	color: #FFF;
-	padding: 6px 10px;
+	padding: 4px 5px;
 	font-weight: bold;
 	font-size: small;
-	font-size: 10px;
+	font-size: 11px;
 	
 	/* IE 8 */
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=9)";

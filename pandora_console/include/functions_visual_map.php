@@ -1292,7 +1292,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						else {
 							$url_vc = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=1&id_visualmap=" . $layout_data["id_layout_linked"] . "&refr=0";
 						}
-						echo "<a href=\"javascript:open('$url_vc', 'visual_console_" . $layout_data["id_layout_linked"] . "', 'status=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes')\">";
+						echo "<a href=\"$url_vc\">";
 					}
 					else {
 						// A void object

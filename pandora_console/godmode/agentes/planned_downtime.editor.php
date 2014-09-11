@@ -25,6 +25,7 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 	return;
 }
 
+$config["past_planned_downtimes"] = isset($config["past_planned_downtimes"]) ? $config["past_planned_downtimes"] : 1;
 
 require_once ('include/functions_users.php');
 
@@ -152,7 +153,7 @@ if ($create_downtime || $update_downtime) {
 	$datetime_to = strtotime ($once_date_to . ' ' . $once_time_to);
 	$now = strtotime(date(DATE_FORMAT). ' ' . date(TIME_FORMAT));
 	
-	if ($type_execution == 'once' && $datetime_from < $now) {
+	if (!$config["past_planned_downtimes"] && $type_execution == 'once' && $datetime_from < $now) {
 		ui_print_error_message(__('Not created. Error inserting data. Start time must be higher than the current time' ));
 	}
 	else if ($type_execution == 'once' && $datetime_from >= $datetime_to) {

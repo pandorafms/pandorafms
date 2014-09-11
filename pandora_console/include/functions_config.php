@@ -184,6 +184,8 @@ function config_update_config () {
 						$error_update[] = __('Server logs directory');
 					if (!config_update_value ('tutorial_mode', get_parameter('tutorial_mode')))
 						$error_update[] = __('Tutorial mode');
+					if (!config_update_value ('past_planned_downtimes', get_parameter('past_planned_downtimes')))
+						$error_update[] = __('Allow create planned downtimes in the past');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {

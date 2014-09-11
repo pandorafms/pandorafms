@@ -2251,6 +2251,12 @@ span#plugin_description {
 #tinymce {
 	text-align: left;
 }
+.visual_font_size_4pt, .visual_font_size_4pt > em, .visual_font_size_4pt > strong {
+	font-size: 4pt;
+}
+.visual_font_size_6pt, .visual_font_size_6pt > em, .visual_font_size_6pt > strong {
+	font-size: 6pt;
+}
 .visual_font_size_8pt, .visual_font_size_8pt > em, .visual_font_size_8pt > strong {
 	font-size: 8pt;
 }
@@ -2286,7 +2292,7 @@ span#plugin_description {
 .menu_sidebar {
 	color:#111;
 	background: #3f3f3f;
-
+	
 	margin-left: 10px;
 	padding-left: 0px;
 	padding-right: 0px;

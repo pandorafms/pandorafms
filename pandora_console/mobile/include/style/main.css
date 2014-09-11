@@ -682,6 +682,12 @@ table.event_details td.cell_event_name {
 /* For mobiles */
 @media screen and (max-width: 750px)
 {
+	.resize_visual_font_size_4pt * {
+		font-size: 2pt !important;
+	}
+	.resize_visual_font_size_6pt * {
+		font-size: 3pt !important;
+	}
 	.resize_visual_font_size_8pt * {
 		font-size: 4pt !important;
 	}
@@ -701,6 +707,12 @@ table.event_details td.cell_event_name {
 /* For tablets */
 @media screen and (min-width: 750px)
 {
+	.resize_visual_font_size_4pt * {
+		font-size: 2pt !important;
+	}
+	.resize_visual_font_size_6pt * {
+		font-size: 3pt !important;
+	}
 	.resize_visual_font_size_8pt * {
 		font-size: 4pt !important;
 	}

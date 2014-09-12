@@ -512,7 +512,7 @@ if ($id_downtime > 0) {
 	echo html_print_select (array(), "module[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
 	echo "</div>";
 	echo "<br /><br /><br />";
-	html_print_submit_button (__('Add'), '', $disabled_add_button, 'class="sub next"',false);
+	html_print_submit_button (__('Add'), 'add_item', $disabled_add_button, 'class="sub next"',false);
 	echo "</form>";
 	echo "</table>";
 	
@@ -970,5 +970,18 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		$("#id_agent").blur (function () {
 			$(this).css ("width", "180px");
 		});
+
+		// Warning message about the problems caused updating a past planned downtime
+		var type_execution = "<?php echo $type_execution; ?>";
+		var datetime_from = <?php echo json_encode(strtotime($once_date_from . ' ' . $once_time_from)); ?>;
+		var datetime_now = <?php echo json_encode(strtotime(date(DATE_FORMAT). ' ' . date(TIME_FORMAT))); ?>;
+		var create = <?php echo json_encode($create); ?>;
+		if (!create && (type_execution == 'periodically' || (type_execution == 'once' && datetime_from < datetime_now))) {
+			$("input#submit-updbutton, input#submit-add_item, table#list a").click(function (e) {
+				if (!confirm("<?php echo __('WARNING: If you edit this planned downtime, the data of future SLA reports may be altered'); ?>")) {
+					e.preventDefault();
+				}
+			});
+		}
 	});
 </script>

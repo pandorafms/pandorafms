@@ -941,7 +941,10 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true, $noACLs = false) {
+function agents_get_modules ($id_agent = null, $details = false,
+	$filter = false, $indexed = true, $get_not_init_modules = true,
+	$noACLs = false) {
+	
 	global $config;
 	
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
@@ -1014,8 +1017,38 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	if (! empty ($filter)) {
 		$where .= ' AND ';
 		if (is_array ($filter)) {
-			$fields = array (); 
-			foreach ($filter as $field => $value) { 
+			$fields = array ();
+			
+			
+			//----------------------------------------------------------
+			// Code for filters as array of arrays
+			//  for example:
+			//    $filter =  array(
+			//      'id_modulo' => 2, // networkmap type
+			//      'id_tipo_modulo' => array(
+			//        '<>2', // != generic_proc
+			//        '<>6', // != remote_icmp_proc
+			//        '<>9'));
+			//----------------------------------------------------------
+			$list_filter = array();
+			foreach ($filter as $field => $value) {
+				if (is_array($value)) {
+					foreach ($value as $v) {
+						$list_filter[] = array('field' => $field,
+							'value' => $v);
+					}
+				}
+				else {
+					$list_filter[] = array('field' => $field,
+						'value' => $value);
+				}
+			}
+			//----------------------------------------------------------
+			
+			foreach ($list_filter as $item) {
+				$field = $item['field'];
+				$value = $item['value'];
+				
 				//Check <> operator
 				$operatorDistin = false;
 				if (strlen($value) > 2) {
@@ -1028,10 +1061,12 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 					switch ($config['dbtype']) {
 						case "mysql":
 						case "postgresql":
-							array_push ($fields, $field.' LIKE "'.$value.'"');
+							array_push ($fields,
+								$field . ' LIKE "' . $value . '"');
 							break;
 						case "oracle":
-							array_push ($fields, $field.' LIKE \''.$value.'\'');
+							array_push ($fields,
+								$field . ' LIKE \'' . $value . '\'');
 							break;
 					}
 				}
@@ -1141,6 +1176,8 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 				$where);
 			break;
 	}
+	
+	//html_debug_print($sql);
 	
 	$result = db_get_all_rows_sql ($sql);
 	

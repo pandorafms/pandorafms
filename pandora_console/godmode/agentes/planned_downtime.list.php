@@ -311,7 +311,10 @@ if(!empty($groups)) {
 	}
 
 	if (!empty($date_to)) {
-		$periodically_monthly_w = "type_periodicity = 'monthly' AND (periodically_day_from <= '".date('d', strtotime($date_from))."' AND periodically_time_to >= '".date('d', strtotime($date_to))."')";
+		$periodically_monthly_w = "type_periodicity = 'monthly'
+			AND ((periodically_day_from <= '".date('d', strtotime($date_from))."' AND periodically_day_to >= '".date('d', strtotime($date_to))."')
+				OR (periodically_day_from > periodically_day_to
+					AND (periodically_day_from <= '".date('d', strtotime($date_from))."' OR periodically_day_to >= '".date('d', strtotime($date_to))."')))";
 		
 		$periodically_weekly_days = array();
 		$date_from_aux = strtotime($date_from);

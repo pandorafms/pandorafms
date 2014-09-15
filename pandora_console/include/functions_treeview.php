@@ -1059,8 +1059,8 @@ function treeview_getData ($type) {
 						AND ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo" .
 						$search_sql . 
 						$user_tags_sql . "
-					ORDER BY ttag.name ' . $order_collate . ' ASC";
-				
+					ORDER BY ttag.name $order_collate ASC";
+			
 				$list = db_get_all_rows_sql($sql);
 			break;
 	}

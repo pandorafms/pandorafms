@@ -112,7 +112,7 @@ if ($update) {
 					$module_name = array();
 				}
 				foreach($module_name as $mod_name) {
-					$result = process_manage_edit ($mod_name['nombre'], $id_agent);
+					$result = process_manage_edit($mod_name['nombre'], $id_agent);
 					$count ++;
 					$success += (int)$result;
 				}
@@ -518,6 +518,11 @@ $table->data['edit11'][0] .= ui_print_help_tip(__('The module still store data b
 $table->data['edit11'][1] = html_print_select(array(-1 => __('No change'),
 	1 => __('Yes'), 0 => __('No')),
 	"quiet_select", -1, "", '', 0, true);
+$table->data['edit11'][2] = __('Timeout');
+$table->data['edit11'][3] = html_print_input_text(
+		'max_timeout', '', '', 5, 10, true) .  ' ' .
+	ui_print_help_tip (
+		__('Seconds that agent will wait for the execution of the module.'), true);
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
 html_print_table ($table);
@@ -907,7 +912,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'warning_instructions', 'unknown_instructions', 'policy_linked', 
 		'id_category', 'disabled_types_event', 'ip_target', 'descripcion',
 		'min_ff_event_normal', 'min_ff_event_warning', 'min_ff_event_critical',
-		'each_ff', 'module_ff_interval', 'ff_timeout');
+		'each_ff', 'module_ff_interval', 'ff_timeout', 'max_timeout');
 	$values = array ();
 	
 	// Specific snmp reused fields
@@ -924,7 +929,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	foreach ($fields as $field) {
 		$value = get_parameter ($field, '');
-
+		
 		switch ($field) {
 			case 'module_interval':
 				if ($value != 0) {

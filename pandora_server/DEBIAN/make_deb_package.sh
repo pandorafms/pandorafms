@@ -89,7 +89,7 @@ then
 	cp -aRf conf/* temp_package/usr/share/pandora_server/conf/
 	cp -aRf util temp_package/usr/share/pandora_server/
 	cp -aRf lib/* temp_package/usr/lib/perl5/
-	cp -aRf AUTHORS COPYING ChangeLog README temp_package/usr/share/pandora_server/
+	cp -aRf AUTHORS COPYING README temp_package/usr/share/pandora_server/
 	
 	cp -aRf util/pandora_server temp_package/etc/init.d/
 	cp -aRf util/tentacle_serverd temp_package/etc/init.d/

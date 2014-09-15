@@ -148,7 +148,7 @@ exit 0
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS COPYING ChangeLog README
+%doc AUTHORS COPYING README
 %{_sysconfdir}/rc.d/init.d/pandora_server
 %{_sysconfdir}/rc.d/init.d/tentacle_serverd
 %{_sysconfdir}/cron.hourly/pandora_db

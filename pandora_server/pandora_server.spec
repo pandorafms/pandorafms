@@ -73,7 +73,7 @@ cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf conf/pandora_server.conf.new $RPM_BUILD_ROOT/etc/pandora/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
 cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/
-cp -aRf AUTHORS COPYING ChangeLog README $RPM_BUILD_ROOT%{prefix}/pandora_server/
+cp -aRf AUTHORS COPYING README $RPM_BUILD_ROOT%{prefix}/pandora_server/
 
 cp -aRf util/pandora_server $RPM_BUILD_ROOT/etc/init.d/
 cp -aRf util/tentacle_serverd $RPM_BUILD_ROOT/etc/init.d/

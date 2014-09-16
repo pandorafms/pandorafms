@@ -479,173 +479,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	}
 	
 	// Calculate planned downtime dates
-	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
-					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
-					WHERE (tpd.id = tpda.id_downtime
-							AND tpda.all_modules = 1
-							AND tpda.id_agent = tam.id_agente
-							AND tam.id_agente_modulo = $id_agent_module)
-						OR (tpd.id = tpdm.id_downtime
-							AND tpdm.id_agent_module = $id_agent_module)";
-	$downtimes = db_get_all_rows_sql($sql_downtime);
-	if ($downtimes == false) {
-		$downtimes = array();
-	}
-	$downtime_dates = array();
-	foreach ($downtimes as $downtime) {
-		$downtime_id = $downtime['id'];
-		$downtime_type = $downtime['type_execution'];
-		$downtime_periodicity = $downtime['type_periodicity'];
-		
-		if ($downtime_type == 'once') {
-			$dates = array();
-			$dates['date_from'] = $downtime['date_from'];
-			$dates['date_to'] = $downtime['date_to'];
-			$downtime_dates[] = $dates;
-		}
-		else if ($downtime_type == 'periodically') {
-			$downtime_time_from = $downtime['periodically_time_from'];
-			$downtime_time_to = $downtime['periodically_time_to'];
-
-			$downtime_hour_from = date("H", strtotime($downtime_time_from));
-			$downtime_minute_from = date("i", strtotime($downtime_time_from));
-			$downtime_second_from = date("s", strtotime($downtime_time_from));
-			$downtime_hour_to = date("H", strtotime($downtime_time_to));
-			$downtime_minute_to = date("i", strtotime($downtime_time_to));
-			$downtime_second_to = date("s", strtotime($downtime_time_to));
-
-			if ($downtime_periodicity == "monthly") {
-				$downtime_day_from = $downtime['periodically_day_from'];
-				$downtime_day_to = $downtime['periodically_day_to'];
-
-				$date_aux = strtotime(date("Y-m-01", $datelimit));
-				$year_aux = date("Y", $date_aux);
-				$month_aux = date("m", $date_aux);
-
-				$end_year = date("Y", $date);
-				$end_month = date("m", $date);
-
-				while ($year_aux < $end_year || ($year_aux == $end_year && $month_aux <= $end_month)) {
-					
-					if ($downtime_day_from > $downtime_day_to) {
-						$dates = array();
-						$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-						$dates['date_to'] = strtotime(date("Y-m-t H:i:s", strtotime("$year_aux-$month_aux-28 23:59:59")));
-						$downtime_dates[] = $dates;
-
-						$dates = array();
-						if ($month_aux + 1 <= 12) {
-							$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
-							$dates['date_to'] = strtotime("$year_aux-".($month_aux + 1)."-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-						}
-						else {
-							$dates['date_from'] = strtotime(($year_aux + 1)."-01-01 00:00:00");
-							$dates['date_to'] = strtotime(($year_aux + 1)."-01-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-						}
-						$downtime_dates[] = $dates;
-					}
-					else {
-						if ($downtime_day_from == $downtime_day_to && strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
-							$date_aux_from = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$max_day_num = date('t', $date_aux);
-
-							$dates = array();
-							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_from 23:59:59");
-							$downtime_dates[] = $dates;
-
-							if ($downtime_day_to + 1 > $max_day_num) {
-
-								$dates = array();
-								if ($month_aux + 1 <= 12) {
-									$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
-									$dates['date_to'] = strtotime("$year_aux-".($month_aux + 1)."-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								}
-								else {
-									$dates['date_from'] = strtotime(($year_aux + 1)."-01-01 00:00:00");
-									$dates['date_to'] = strtotime(($year_aux + 1)."-01-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								}
-								$downtime_dates[] = $dates;
-							}
-							else {
-								$dates = array();
-								$dates['date_from'] = strtotime("$year_aux-$month_aux-".($downtime_day_to + 1)." 00:00:00");
-								$dates['date_to'] = strtotime("$year_aux-$month_aux-".($downtime_day_to + 1)." $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								$downtime_dates[] = $dates;
-							}
-						}
-						else {
-							$dates = array();
-							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-							$downtime_dates[] = $dates;
-						}
-					}
-
-					$month_aux++;
-					if ($month_aux > 12) {
-						$month_aux = 1;
-						$year_aux++;
-					}
-				}
-			}
-			else if ($downtime_periodicity == "weekly") {
-				$date_aux = $datelimit;
-				$active_days = array();
-				$active_days[0] = ($downtime['sunday'] == 1) ? true : false;
-				$active_days[1] = ($downtime['monday'] == 1) ? true : false;
-				$active_days[2] = ($downtime['tuesday'] == 1) ? true : false;
-				$active_days[3] = ($downtime['wednesday'] == 1) ? true : false;
-				$active_days[4] = ($downtime['thursday'] == 1) ? true : false;
-				$active_days[5] = ($downtime['friday'] == 1) ? true : false;
-				$active_days[6] = ($downtime['saturday'] == 1) ? true : false;
-
-				while ($date_aux <= $date) {
-					$weekday_num = date('w', $date_aux);
-					
-					if ($active_days[$weekday_num]) {
-						$day_num = date('d', $date_aux);
-						$month_num = date('m', $date_aux);
-						$year_num = date('Y', $date_aux);
-
-						$max_day_num = date('t', $date_aux);
-
-						if (strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
-							$dates = array();
-							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num 23:59:59");
-							$downtime_dates[] = $dates;
-
-							$dates = array();
-							if ($day_num + 1 > $max_day_num) {
-								if ($month_num + 1 > 12) {
-									$dates['date_from'] = strtotime(($year_num + 1)."-01-01 00:00:00");
-									$dates['date_to'] = strtotime(($year_num + 1)."-01-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								}
-								else {
-									$dates['date_from'] = strtotime("$year_num-".($month_num + 1)."-01 00:00:00");
-									$dates['date_to'] = strtotime("$year_num-".($month_num + 1)."-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								}
-							}
-							else {
-								$dates['date_from'] = strtotime("$year_num-$month_num-".($day_num + 1)." 00:00:00");
-								$dates['date_to'] = strtotime("$year_num-$month_num-".($day_num + 1)." $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-							}
-							$downtime_dates[] = $dates;
-						}
-						else {
-							$dates = array();
-							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-							$downtime_dates[] = $dates;
-						}
-					}
-
-					$date_aux += SECONDS_1DAY;
-				}
-			}
-		}
-	}
+	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date, true);
 	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
@@ -919,173 +753,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	//------------------------------------------------------------------
 	
 	//--------Calculate planned downtime dates--------------------------
-	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
-					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
-					WHERE (tpd.id = tpda.id_downtime
-							AND tpda.all_modules = 1
-							AND tpda.id_agent = tam.id_agente
-							AND tam.id_agente_modulo = $id_agent_module)
-						OR (tpd.id = tpdm.id_downtime
-							AND tpdm.id_agent_module = $id_agent_module)";
-	$downtimes = db_get_all_rows_sql($sql_downtime);
-	if ($downtimes == false) {
-		$downtimes = array();
-	}
-	$downtime_dates = array();
-	foreach ($downtimes as $downtime) {
-		$downtime_id = $downtime['id'];
-		$downtime_type = $downtime['type_execution'];
-		$downtime_periodicity = $downtime['type_periodicity'];
-		
-		if ($downtime_type == 'once') {
-			$dates = array();
-			$dates['date_from'] = $downtime['date_from'];
-			$dates['date_to'] = $downtime['date_to'];
-			$downtime_dates[] = $dates;
-		}
-		else if ($downtime_type == 'periodically') {
-			$downtime_time_from = $downtime['periodically_time_from'];
-			$downtime_time_to = $downtime['periodically_time_to'];
-
-			$downtime_hour_from = date("H", strtotime($downtime_time_from));
-			$downtime_minute_from = date("i", strtotime($downtime_time_from));
-			$downtime_second_from = date("s", strtotime($downtime_time_from));
-			$downtime_hour_to = date("H", strtotime($downtime_time_to));
-			$downtime_minute_to = date("i", strtotime($downtime_time_to));
-			$downtime_second_to = date("s", strtotime($downtime_time_to));
-
-			if ($downtime_periodicity == "monthly") {
-				$downtime_day_from = $downtime['periodically_day_from'];
-				$downtime_day_to = $downtime['periodically_day_to'];
-
-				$date_aux = strtotime(date("Y-m-01", $datelimit));
-				$year_aux = date("Y", $date_aux);
-				$month_aux = date("m", $date_aux);
-
-				$end_year = date("Y", $date);
-				$end_month = date("m", $date);
-
-				while ($year_aux < $end_year || ($year_aux == $end_year && $month_aux <= $end_month)) {
-					
-					if ($downtime_day_from > $downtime_day_to) {
-						$dates = array();
-						$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-						$dates['date_to'] = strtotime(date("Y-m-t H:i:s", strtotime("$year_aux-$month_aux-28 23:59:59")));
-						$downtime_dates[] = $dates;
-
-						$dates = array();
-						if ($month_aux + 1 <= 12) {
-							$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
-							$dates['date_to'] = strtotime("$year_aux-".($month_aux + 1)."-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-						}
-						else {
-							$dates['date_from'] = strtotime(($year_aux + 1)."-01-01 00:00:00");
-							$dates['date_to'] = strtotime(($year_aux + 1)."-01-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-						}
-						$downtime_dates[] = $dates;
-					}
-					else {
-						if ($downtime_day_from == $downtime_day_to && strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
-							$date_aux_from = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$max_day_num = date('t', $date_aux);
-
-							$dates = array();
-							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_from 23:59:59");
-							$downtime_dates[] = $dates;
-
-							if ($downtime_day_to + 1 > $max_day_num) {
-
-								$dates = array();
-								if ($month_aux + 1 <= 12) {
-									$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
-									$dates['date_to'] = strtotime("$year_aux-".($month_aux + 1)."-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								}
-								else {
-									$dates['date_from'] = strtotime(($year_aux + 1)."-01-01 00:00:00");
-									$dates['date_to'] = strtotime(($year_aux + 1)."-01-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								}
-								$downtime_dates[] = $dates;
-							}
-							else {
-								$dates = array();
-								$dates['date_from'] = strtotime("$year_aux-$month_aux-".($downtime_day_to + 1)." 00:00:00");
-								$dates['date_to'] = strtotime("$year_aux-$month_aux-".($downtime_day_to + 1)." $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								$downtime_dates[] = $dates;
-							}
-						}
-						else {
-							$dates = array();
-							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-							$downtime_dates[] = $dates;
-						}
-					}
-
-					$month_aux++;
-					if ($month_aux > 12) {
-						$month_aux = 1;
-						$year_aux++;
-					}
-				}
-			}
-			else if ($downtime_periodicity == "weekly") {
-				$date_aux = $datelimit;
-				$active_days = array();
-				$active_days[0] = ($downtime['sunday'] == 1) ? true : false;
-				$active_days[1] = ($downtime['monday'] == 1) ? true : false;
-				$active_days[2] = ($downtime['tuesday'] == 1) ? true : false;
-				$active_days[3] = ($downtime['wednesday'] == 1) ? true : false;
-				$active_days[4] = ($downtime['thursday'] == 1) ? true : false;
-				$active_days[5] = ($downtime['friday'] == 1) ? true : false;
-				$active_days[6] = ($downtime['saturday'] == 1) ? true : false;
-
-				while ($date_aux <= $date) {
-					$weekday_num = date('w', $date_aux);
-					
-					if ($active_days[$weekday_num]) {
-						$day_num = date('d', $date_aux);
-						$month_num = date('m', $date_aux);
-						$year_num = date('Y', $date_aux);
-
-						$max_day_num = date('t', $date_aux);
-
-						if (strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
-							$dates = array();
-							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num 23:59:59");
-							$downtime_dates[] = $dates;
-
-							$dates = array();
-							if ($day_num + 1 > $max_day_num) {
-								if ($month_num + 1 > 12) {
-									$dates['date_from'] = strtotime(($year_num + 1)."-01-01 00:00:00");
-									$dates['date_to'] = strtotime(($year_num + 1)."-01-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								}
-								else {
-									$dates['date_from'] = strtotime("$year_num-".($month_num + 1)."-01 00:00:00");
-									$dates['date_to'] = strtotime("$year_num-".($month_num + 1)."-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-								}
-							}
-							else {
-								$dates['date_from'] = strtotime("$year_num-$month_num-".($day_num + 1)." 00:00:00");
-								$dates['date_to'] = strtotime("$year_num-$month_num-".($day_num + 1)." $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-							}
-							$downtime_dates[] = $dates;
-						}
-						else {
-							$dates = array();
-							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
-							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
-							$downtime_dates[] = $dates;
-						}
-					}
-
-					$date_aux += SECONDS_1DAY;
-				}
-			}
-		}
-	}
+	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date, true);
 
 	foreach ($downtime_dates as $downtime_date) {
 		// Delete data of the planned downtime and put the last data on the upper limit
@@ -1201,6 +869,195 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	
 	return $data_colors;
+}
+
+/** 
+ * Get the time intervals where an agentmodule is affected by the planned downtimes.
+ * 
+ * @param int Agent module to calculate planned downtimes intervals.
+ * @param int Start date in utimestamp.
+ * @param int End date in utimestamp.
+ * @param bool Whether ot not to get the planned downtimes that affect the service associated with the agentmodule.
+ * 
+ * @return Array with time intervals.
+ */
+function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_date, $end_date, $check_services = false) {
+	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
+					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
+					WHERE (tpd.id = tpda.id_downtime
+							AND tpda.all_modules = 1
+							AND tpda.id_agent = tam.id_agente
+							AND tam.id_agente_modulo = $id_agent_module)
+						OR (tpd.id = tpdm.id_downtime
+							AND tpdm.id_agent_module = $id_agent_module)";
+	$downtimes = db_get_all_rows_sql($sql_downtime);
+	if ($downtimes == false) {
+		$downtimes = array();
+	}
+	$downtime_dates = array();
+	foreach ($downtimes as $downtime) {
+		$downtime_id = $downtime['id'];
+		$downtime_type = $downtime['type_execution'];
+		$downtime_periodicity = $downtime['type_periodicity'];
+		
+		if ($downtime_type == 'once') {
+			$dates = array();
+			$dates['date_from'] = $downtime['date_from'];
+			$dates['date_to'] = $downtime['date_to'];
+			$downtime_dates[] = $dates;
+		}
+		else if ($downtime_type == 'periodically') {
+			$downtime_time_from = $downtime['periodically_time_from'];
+			$downtime_time_to = $downtime['periodically_time_to'];
+
+			$downtime_hour_from = date("H", strtotime($downtime_time_from));
+			$downtime_minute_from = date("i", strtotime($downtime_time_from));
+			$downtime_second_from = date("s", strtotime($downtime_time_from));
+			$downtime_hour_to = date("H", strtotime($downtime_time_to));
+			$downtime_minute_to = date("i", strtotime($downtime_time_to));
+			$downtime_second_to = date("s", strtotime($downtime_time_to));
+
+			if ($downtime_periodicity == "monthly") {
+				$downtime_day_from = $downtime['periodically_day_from'];
+				$downtime_day_to = $downtime['periodically_day_to'];
+
+				$date_aux = strtotime(date("Y-m-01", $start_date));
+				$year_aux = date("Y", $date_aux);
+				$month_aux = date("m", $date_aux);
+
+				$end_year = date("Y", $end_date);
+				$end_month = date("m", $end_date);
+
+				while ($year_aux < $end_year || ($year_aux == $end_year && $month_aux <= $end_month)) {
+					
+					if ($downtime_day_from > $downtime_day_to) {
+						$dates = array();
+						$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+						$dates['date_to'] = strtotime(date("Y-m-t H:i:s", strtotime("$year_aux-$month_aux-28 23:59:59")));
+						$downtime_dates[] = $dates;
+
+						$dates = array();
+						if ($month_aux + 1 <= 12) {
+							$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
+							$dates['date_to'] = strtotime("$year_aux-".($month_aux + 1)."-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+						}
+						else {
+							$dates['date_from'] = strtotime(($year_aux + 1)."-01-01 00:00:00");
+							$dates['date_to'] = strtotime(($year_aux + 1)."-01-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+						}
+						$downtime_dates[] = $dates;
+					}
+					else {
+						if ($downtime_day_from == $downtime_day_to && strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
+							$date_aux_from = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$max_day_num = date('t', $date_aux);
+
+							$dates = array();
+							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_from 23:59:59");
+							$downtime_dates[] = $dates;
+
+							if ($downtime_day_to + 1 > $max_day_num) {
+
+								$dates = array();
+								if ($month_aux + 1 <= 12) {
+									$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
+									$dates['date_to'] = strtotime("$year_aux-".($month_aux + 1)."-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								}
+								else {
+									$dates['date_from'] = strtotime(($year_aux + 1)."-01-01 00:00:00");
+									$dates['date_to'] = strtotime(($year_aux + 1)."-01-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								}
+								$downtime_dates[] = $dates;
+							}
+							else {
+								$dates = array();
+								$dates['date_from'] = strtotime("$year_aux-$month_aux-".($downtime_day_to + 1)." 00:00:00");
+								$dates['date_to'] = strtotime("$year_aux-$month_aux-".($downtime_day_to + 1)." $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								$downtime_dates[] = $dates;
+							}
+						}
+						else {
+							$dates = array();
+							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+							$downtime_dates[] = $dates;
+						}
+					}
+
+					$month_aux++;
+					if ($month_aux > 12) {
+						$month_aux = 1;
+						$year_aux++;
+					}
+				}
+			}
+			else if ($downtime_periodicity == "weekly") {
+				$date_aux = $start_date;
+				$active_days = array();
+				$active_days[0] = ($downtime['sunday'] == 1) ? true : false;
+				$active_days[1] = ($downtime['monday'] == 1) ? true : false;
+				$active_days[2] = ($downtime['tuesday'] == 1) ? true : false;
+				$active_days[3] = ($downtime['wednesday'] == 1) ? true : false;
+				$active_days[4] = ($downtime['thursday'] == 1) ? true : false;
+				$active_days[5] = ($downtime['friday'] == 1) ? true : false;
+				$active_days[6] = ($downtime['saturday'] == 1) ? true : false;
+
+				while ($date_aux <= $end_date) {
+					$weekday_num = date('w', $date_aux);
+					
+					if ($active_days[$weekday_num]) {
+						$day_num = date('d', $date_aux);
+						$month_num = date('m', $date_aux);
+						$year_num = date('Y', $date_aux);
+
+						$max_day_num = date('t', $date_aux);
+
+						if (strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
+							$dates = array();
+							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num 23:59:59");
+							$downtime_dates[] = $dates;
+
+							$dates = array();
+							if ($day_num + 1 > $max_day_num) {
+								if ($month_num + 1 > 12) {
+									$dates['date_from'] = strtotime(($year_num + 1)."-01-01 00:00:00");
+									$dates['date_to'] = strtotime(($year_num + 1)."-01-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								}
+								else {
+									$dates['date_from'] = strtotime("$year_num-".($month_num + 1)."-01 00:00:00");
+									$dates['date_to'] = strtotime("$year_num-".($month_num + 1)."-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								}
+							}
+							else {
+								$dates['date_from'] = strtotime("$year_num-$month_num-".($day_num + 1)." 00:00:00");
+								$dates['date_to'] = strtotime("$year_num-$month_num-".($day_num + 1)." $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+							}
+							$downtime_dates[] = $dates;
+						}
+						else {
+							$dates = array();
+							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+							$downtime_dates[] = $dates;
+						}
+					}
+
+					$date_aux += SECONDS_1DAY;
+				}
+			}
+		}
+	}
+
+	if ($check_services) {
+		enterprise_include_once("include/functions_services.php");
+		if (function_exists("services_get_planned_downtimes_intervals")) {
+			services_get_planned_downtimes_intervals($downtime_dates, $start_date, $end_date, false, $id_agent_module);
+		}
+	}
+
+	return $downtime_dates;
 }
 
 function reporting_get_stats_servers($tiny = true) {

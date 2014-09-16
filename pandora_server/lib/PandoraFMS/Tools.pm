@@ -413,7 +413,10 @@ sub logger ($$;$) {
 	
 	# Log rotation
 	if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
-		rename ($file, $file.'.old');
+		foreach my $i (reverse 1..$pa_config->{'max_log_generation'}) {
+			rename ($file . "." . ($i - 1), $file . "." . $i);
+		}
+		rename ($file, "$file.0");
 	}
 	
 	open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";

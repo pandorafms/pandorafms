@@ -1,3 +1,10 @@
+2014-09-17 Akihiro Uchida <auchida@rworks.jp>
+
+	* lib/PandoraFMS/Tools.pm: Added max_log_generation config 
+	  parameter to manage log generation.
+
+	MERGED FROM THE DEVELOP
+
 2014-09-10 Akihiro Uchida <auchida@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Fixed that unknown modules are never

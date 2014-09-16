@@ -57,13 +57,22 @@ require ("links_menu.php");
 echo '</div>'; //menu_container
 
 ui_require_jquery_file ('cookie');
+
+$config_fixed_menu = false;
+if (isset($config['fixed_menu'])) {
+	$config_fixed_menu = $config['fixed_menu'];
+}
+$config_fixed_header = false;
+if (isset($config['fixed_header'])) {
+	$config_fixed_header = $config['fixed_header'];
+}
 ?>
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
 
 var autohidden_menu = <?php echo $autohidden_menu; ?>;
-var fixed_menu = <?php echo json_encode((bool)$config['fixed_menu']); ?>;
-var fixed_header = <?php echo json_encode((bool)$config['fixed_header']); ?>;
+var fixed_menu = <?php echo json_encode((bool)$config_fixed_menu); ?>;
+var fixed_header = <?php echo json_encode((bool)$config_fixed_header); ?>;
 var id_user = "<?php echo $config['id_user']; ?>";
 var cookie_name = id_user + '-pandora_menu_state';
 var cookie_name_encoded = btoa(cookie_name);

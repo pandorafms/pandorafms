@@ -286,6 +286,9 @@ sub pandora_load_config {
 	# max log size (bytes)
 	$pa_config->{'max_log_size'} = 1048576;
 
+	# max log generation
+	$pa_config->{'max_log_generation'} = 1;
+
 	# Ignore the timestamp in the XML and use the file timestamp instead
 	$pa_config->{'use_xml_timestamp'} = 0; 
 
@@ -638,6 +641,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^max_log_size\s([0-9]*)/i) {
 			$pa_config->{'max_log_size'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^max_log_generation\s([1-9])/i) {
+			$pa_config->{'max_log_generation'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^wmi_threads\s([0-9]*)/i) {
 			$pa_config->{'wmi_threads'}= clean_blank($1); 

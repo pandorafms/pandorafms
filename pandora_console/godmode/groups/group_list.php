@@ -105,7 +105,7 @@ if (is_ajax ()) {
 			$filter[$_sql_post] = '1';
 			
 		}
-
+		
 		if ( $id_group == 0 && $privilege != '') {
 			//  if group ID doesn't matter and $privilege is specified (like 'AW'),
 			//  retruns all agents that current user has $privilege privilege for.
@@ -116,7 +116,7 @@ if (is_ajax ()) {
 			$agents = agents_get_group_agents($id_group, $filter, "none",
 				false, $recursion);
 		}
-
+		
 		// Add keys prefix
 		if ($keys_prefix !== "") {
 			foreach($agents as $k => $v) {
@@ -294,7 +294,9 @@ $table->width = '98%';
 $all_parents = array();
 $groups_count = 0;
 $sons = array();
-$groups_aux = array();
+
+
+
 foreach ($groups as $k => $g) {
 	if ($g['parent'] != 0) {
 		$all_parents[$g['parent']] = $g['parent'];
@@ -310,7 +312,8 @@ foreach ($all_parents as $parent) {
 	}
 }
 
-$groups_count = count($groups_aux);
+
+$groups_count = count($groups);
 
 if (check_acl($config['id_user'], 0, "PM")) {
 	echo '<br />';

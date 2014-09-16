@@ -818,17 +818,28 @@ function users_can_manage_group_all($id_group = 0, $access = "PM") {
  * 
  * @return mixed Array with id_user as index and value
  */
-function users_get_user_users($id_user = false, $privilege = "AR", $returnAllGroup = true) {
+function users_get_user_users($id_user = false, $privilege = "AR",
+	$returnAllGroup = true, $fields = null) {
+	
 	global $config;
 	
 	$user_groups = users_get_groups($id_user, $privilege, $returnAllGroup);
-
+	
 	$user_users = array();
-	foreach($user_groups as $id_user_group => $name_user_group) {
+	foreach ($user_groups as $id_user_group => $name_user_group) {
 		$group_users = groups_get_users($id_user_group, false, $returnAllGroup);
 		
-		foreach($group_users as $gu) {
-			$user_users[$gu['id_user']] = $gu['id_user'];
+		
+		foreach ($group_users as $gu) {
+			if (empty($fields)) {
+				$user_users[$gu['id_user']] = $gu['id_user'];
+			}
+			else {
+				$fields = (array)$fields;
+				foreach ($fields as $field) {
+					$user_users[$gu['id_user']][$field] = $gu[$field];
+				}
+			}
 		}
 	}
 	

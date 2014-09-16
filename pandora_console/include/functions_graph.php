@@ -745,7 +745,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$projection, $adapt_key, $compare,
 			$series_suffix, $series_suffix_str, $show_unknown);
 		
-		switch($compare) {
+		switch ($compare) {
 			case 'separated':
 				// Store the chart calculated
 				$chart_prev = $chart;

@@ -66,9 +66,9 @@ dbhost 192.168.55.1
 
 # verbosity: level of detail on errors/messages (0 default, 1 verbose, 2 debug.... 10 noisy)
 # -v in command line (verbose) or -d (debug). Set this to 10 when try to locate problems and
-# set to 0 or 1 on production enviroments.
+# set to 1 or 3 on production enviroments.
 
-verbosity 5
+verbosity 3
 
 # Master Server, 1 if master server (normal mode), 0 for slave mode (slave in multi-server setup)
 

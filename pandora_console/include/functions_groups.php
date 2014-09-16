@@ -519,7 +519,7 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
 	}
 	
 	$return = groups_flatten_tree_groups($tree, 0);
-
+	
 	return $return;
 }
 
@@ -749,7 +749,7 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 	$row[__('Agents')] = "<a class='link_count' href='" . $row['links'][__('Agents')] . "'>";
 	$row[__('Agents')] .= $row['counts'][__('Agents')];
 	$row[__('Agents')] .= "</a>";
-
+	
 	
 	// Agents unknown
 	$row['links'][__('Agents unknown')] = "index.php?" .
@@ -1105,7 +1105,7 @@ function groups_create_group($group_name, $rest_values){
 // Get agents NOT INIT
 
 function groups_agent_not_init ($group_array) {
-
+	
 	// If there are not groups to query, we jump to nextone
 	
 	if (empty ($group_array)) {
@@ -1160,7 +1160,7 @@ function groups_agent_ok ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo IN $group_clause");
-
+	
 	return $count > 0 ? $count : 0;
 }
 
@@ -1278,7 +1278,7 @@ function groups_monitor_critical ($group_array) {
 // Get monitor WARNING, except disabled and non-init
 
 function groups_monitor_warning ($group_array) {
-
+	
 	// If there are not groups to query, we jump to nextone
 	
 	if (empty ($group_array)) {
@@ -1488,6 +1488,11 @@ function groups_get_group_to_list($group, $groups_count, &$symbolBranchs) {
 					'id_group=' . $group['id_grupo'] . '&' .
 					'delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 		}
+		else {
+			$data[5] .= '&nbsp;&nbsp;' .
+				ui_print_help_tip(
+					__('You can not delete the last group in Pandora. A common installation must has almost one group.'), true);
+		}
 	}
 	
 	return $data;
@@ -1509,7 +1514,7 @@ function groups_print_group_sons($group, $sons, &$branch_classes, $groups_count,
 	if (isset($sons[$group['id_grupo']])) {
 		foreach($sons[$group['id_grupo']] as $key => $g) {
 			$symbolBranchs .= ' symbol_branch_' . $g['parent'];
-
+			
 			$data = groups_get_group_to_list($g, $groups_count, $symbolBranchs);
 			array_push ($table->data, $data);
 			
@@ -1524,7 +1529,7 @@ function groups_print_group_sons($group, $sons, &$branch_classes, $groups_count,
 					$table->rowstyle[$iterator] = 'display: none;';
 				}
 			}
-	
+			
 			$iterator++;
 			
 			groups_print_group_sons($g, $sons, $branch_classes, $groups_count, $table, $iterator, $symbolBranchs);
@@ -1548,7 +1553,7 @@ function groups_get_tree(&$groups, $parent = false) {
 			$return[$id] = $group;
 			unset($groups[$id]);
 			$children = groups_get_tree($groups, $id);
-
+			
 			if (!empty($children)) {
 				$return[$id]['children'] = $children;
 			}
@@ -1557,7 +1562,7 @@ function groups_get_tree(&$groups, $parent = false) {
 			$return[$id] = $group;
 			unset($groups[$id]);
 			$children = groups_get_tree($groups, $id);
-
+			
 			if (!empty($children)) {
 				$return[$id]['children'] = $children;
 			}

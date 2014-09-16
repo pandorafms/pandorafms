@@ -284,7 +284,7 @@ sub pandora_load_config {
 	$pa_config->{'autocreate'} = 1;
 
 	# max log size (bytes)
-	$pa_config->{'max_log_size'} = 32000;
+	$pa_config->{'max_log_size'} = 1048576;
 
 	# Ignore the timestamp in the XML and use the file timestamp instead
 	$pa_config->{'use_xml_timestamp'} = 0; 

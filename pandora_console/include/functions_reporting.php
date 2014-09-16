@@ -962,7 +962,7 @@ function reporting_get_stats_servers($tiny = true) {
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' .
-				format_numeric($server_performance ["network_modules_rate"], 2) .
+				format_numeric($server_performance["network_modules_rate"], 2) .
 				'</span>';
 			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 			
@@ -1009,9 +1009,13 @@ function reporting_get_stats_servers($tiny = true) {
 		if (isset($server_performance ["total_web_modules"])) {
 			$tdata = array();
 			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '25px'));
-			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_web_modules"]) . '</span>';
+			$tdata[1] = '<span class="big_data">' .
+				format_numeric($server_performance ["total_web_modules"]) .
+				'</span>';
 			
-			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["web_modules_rate"], 2) . '</span>';
+			$tdata[2] = '<span class="med_data">' .
+				format_numeric($server_performance ["web_modules_rate"], 2) .
+				'</span>';
 			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 			
 			$table_srv->rowclass[] = '';
@@ -1042,8 +1046,10 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		
 		$tdata = array();
-		$tdata[0] = html_print_image('images/lightning_go.png', true, array('title' => __('Total events'), 'width' => '25px'));
-		$tdata[1] = '<span class="big_data">' . format_numeric($system_events) . '</span>';
+		$tdata[0] = html_print_image('images/lightning_go.png', true,
+			array('title' => __('Total events'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' .
+			format_numeric($system_events) . '</span>';
 		
 		$table_srv->colspan[count($table_srv->data)][1] = 3;
 		$table_srv->rowclass[] = '';

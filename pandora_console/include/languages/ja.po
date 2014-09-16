@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 12:34+0200\n"
-"PO-Revision-Date: 2014-06-30 03:31+0000\n"
+"PO-Revision-Date: 2014-09-08 06:11+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-09-04 15:12+0000\n"
+"X-Launchpad-Export-Date: 2014-09-16 10:17+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../../godmode/menu.php:28
@@ -3354,7 +3354,7 @@ msgstr "ソースIP"
 
 #: ../../godmode/admin_access_logs.php:302
 msgid "Export to CSV "
-msgstr ""
+msgstr "CSV へエクスポート "
 
 #: ../../godmode/agentes/configurar_agente.php:181
 #: ../../godmode/agentes/configurar_agente.php:663
@@ -5012,7 +5012,7 @@ msgstr "選択範囲を削除します"
 
 #: ../../godmode/agentes/agent_manager.php:225
 msgid "Only it is show when<br />the agent is saved."
-msgstr ""
+msgstr "エージェントが保存されたときのみ<br />表示されます。"
 
 #: ../../godmode/agentes/agent_manager.php:231
 #: ../../godmode/groups/configure_group.php:119
@@ -7287,7 +7287,7 @@ msgstr "エレメント一覧"
 #: ../../godmode/reporting/visual_console_builder.php:469
 #: ../../operation/visual_console/render_view.php:102
 msgid "Services wizard"
-msgstr ""
+msgstr "サービスウィザード"
 
 #: ../../godmode/reporting/visual_console_builder.php:474
 #: ../../enterprise/godmode/setup/setup_acl.php:93
@@ -12113,20 +12113,20 @@ msgstr "サーバのログを保存するディレクトリ。"
 
 #: ../../godmode/setup/setup_general.php:256
 msgid "Full mode"
-msgstr ""
+msgstr "フルモード"
 
 #: ../../godmode/setup/setup_general.php:257
 msgid "On demand"
-msgstr ""
+msgstr "オンデマンド"
 
 #: ../../godmode/setup/setup_general.php:258
 msgid "Expert"
-msgstr ""
+msgstr "上級者"
 
 #: ../../godmode/setup/setup_general.php:260
 #: ../../include/functions_config.php:186
 msgid "Tutorial mode"
-msgstr ""
+msgstr "チュートリアルモード"
 
 #: ../../godmode/setup/setup_general.php:261
 msgid ""
@@ -12134,6 +12134,8 @@ msgid ""
 "contextual helps and it is noise, 'on demand' it is equal to full but it is "
 "not noise and 'expert' the icons in the header and the context is not."
 msgstr ""
+"アシスタントの設定です。'フルモード' はヘッダーにアイコンとヘルプが表示されうるさい感じになます。'オンデマンド' "
+"はフルモードと同じですがうるさくはありません。'上級者' はヘッダーにアイコンとヘルプが表示されません。"
 
 #: ../../godmode/setup/setup_general.php:269
 msgid "General options"
@@ -12586,12 +12588,12 @@ msgstr "ネットワークマップ最大幅"
 #: ../../godmode/setup/setup_visuals.php:402
 #: ../../include/functions_config.php:439
 msgid "Fixed header"
-msgstr ""
+msgstr "ヘッダーの固定"
 
 #: ../../godmode/setup/setup_visuals.php:407
 #: ../../include/functions_config.php:441
 msgid "Fixed menu"
-msgstr ""
+msgstr "メニューの固定"
 
 #: ../../godmode/setup/setup_netflow.php:41
 #: ../../include/functions_config.php:507
@@ -13085,6 +13087,10 @@ msgid ""
 "href=\"http://artica.es/pandoraupdate51/index.php?section=generate_key_client"
 "\">http://artica.es/pandoraupdate51/index.php?section=generate_key_client</a>"
 msgstr ""
+"<a target=\"_blank\" "
+"href=\"http://artica.es/pandoraupdate51/index.php?section=generate_key_client"
+"\">http://artica.es/pandoraupdate51/index.php?section=generate_key_client</a>"
+" へアクセス"
 
 #: ../../godmode/setup/license.php:93 ../../enterprise/load_enterprise.php:374
 #: ../../enterprise/load_enterprise.php:583
@@ -13175,7 +13181,7 @@ msgstr "インストール済の最新パッケージ: %d"
 msgid ""
 "Your PHP has set memory limit in %s. For avoid problems with big updates "
 "please set to 500M"
-msgstr ""
+msgstr "PHP のメモリ制限が %s に設定されています。大きな更新における問題を避けるためには、500M に設定してください。"
 
 #: ../../godmode/update_manager/update_manager.online.php:41
 msgid ""
@@ -13713,6 +13719,8 @@ msgid ""
 "\t\tYou can modify the default behaviour editing alerts in the agent who "
 "stores data and alert definitions about the service and the SLA status."
 msgstr ""
+"アラートテンプレートの説明です。デフォルトのアクションで利用されます。\n"
+"\t\tデータが存在しサービスとSLAの状態に関するアラートの定義があるエージェントでアラートを編集することによりデフォルトの動作を変更できます。"
 
 #: ../../enterprise/godmode/services/services.service.php:262
 msgid "Warning Service alert"
@@ -14805,27 +14813,27 @@ msgstr "SQL"
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:114
 msgid "Available"
-msgstr ""
+msgstr "利用可能"
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:116
 msgid "Selected"
-msgstr ""
+msgstr "選択済"
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:123
 msgid "Push the selected services into the list"
-msgstr ""
+msgstr "選択したサービスを一覧に入れる"
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:128
 msgid "Remove the services from the list"
-msgstr ""
+msgstr "一覧からサービスを削除"
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:182
 msgid "Icon preview"
-msgstr ""
+msgstr "アイコンプレビュー"
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:258
 msgid "The services list is empty"
-msgstr ""
+msgstr "サービス一覧が空です"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:185
 msgid "Sucessfully applied"
@@ -14855,7 +14863,7 @@ msgstr "デフォルトの名前「テンプレート名 - エージェント (�
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:243
 msgid "Report group"
-msgstr ""
+msgstr "レポートグループ"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1139
 msgid ""
@@ -15855,6 +15863,7 @@ msgid ""
 "not be installed on the system! You can use the MIB uploader for that "
 "purpose."
 msgstr ""
+"MIBファイルがロードされ SNMP トラップ定義で検索されます。システムにはインストールされません。MIB アップローダはこの目的の範囲で利用できます。"
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:212
 msgid "Load MIB"
@@ -18887,7 +18896,7 @@ msgstr "ノード"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:212
 msgid "Pending to generate"
-msgstr ""
+msgstr "生成の保留"
 
 #: ../../enterprise/operation/agentes/agent_inventory.diff_view.php:40
 msgid "Unsucessful get module inventory data."
@@ -20217,12 +20226,12 @@ msgstr "値:"
 
 #: ../../enterprise/include/functions_visual_map.php:510
 msgid "None of the services was added"
-msgstr ""
+msgstr "サービスが追加されませんでした"
 
 #: ../../enterprise/include/functions_visual_map.php:513
 #, php-format
 msgid "%d services couldn't be added"
-msgstr ""
+msgstr "%d サービスを追加できませんでした"
 
 #: ../../enterprise/include/functions_visual_map.php:517
 #: ../../include/functions_ui.php:219
@@ -20231,11 +20240,11 @@ msgstr "成功"
 
 #: ../../enterprise/include/functions_visual_map.php:521
 msgid "There was an error retrieving the visual map information"
-msgstr ""
+msgstr "ビジュアルマップ情報の取得エラー"
 
 #: ../../enterprise/include/functions_visual_map.php:525
 msgid "No services selected"
-msgstr ""
+msgstr "サービスが選択されていません"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:594
 #, php-format
@@ -20262,7 +20271,7 @@ msgstr "親を設定"
 #: ../../enterprise/include/functions_networkmap_enterprise.php:600
 #: ../../enterprise/include/functions_networkmap_enterprise.php:606
 msgid "Abort the action of set relationship"
-msgstr ""
+msgstr "関係設定動作の中止"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:602
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1630
@@ -20998,7 +21007,7 @@ msgstr "サーバが見つかりません。"
 #: ../../enterprise/include/functions_update_manager.php:211
 #, php-format
 msgid "There is a error: %s"
-msgstr ""
+msgstr "エラーがあります: %s"
 
 #: ../../enterprise/include/functions_update_manager.php:137
 #, php-format
@@ -21926,7 +21935,7 @@ msgstr "ページの QR コード"
 
 #: ../../general/header.php:139 ../../general/header.php:140
 msgid "Clippy"
-msgstr ""
+msgstr "アシスタント"
 
 #: ../../general/header.php:222
 msgid "System alerts detected - Please fix as soon as possible"
@@ -22517,12 +22526,12 @@ msgstr "トポロジービュー"
 #: ../../operation/agentes/networkmap.php:216
 #: ../../operation/agentes/networkmap.php:284
 msgid "Dynamic view"
-msgstr ""
+msgstr "動的表示"
 
 #: ../../operation/agentes/networkmap.php:220
 #: ../../operation/agentes/networkmap.php:287
 msgid "Radial dynamic view"
-msgstr ""
+msgstr "放射状の動的表示"
 
 #: ../../operation/agentes/networkmap.php:224
 msgid "No selected"
@@ -22694,7 +22703,7 @@ msgstr "マップが見つかりました"
 
 #: ../../operation/search_main.php:72
 msgid "Helps found"
-msgstr ""
+msgstr "ヘルプがあります"
 
 #: ../../operation/search_main.php:82
 #, php-format
@@ -22905,7 +22914,7 @@ msgstr "フィルタの上書き"
 
 #: ../../operation/events/events_list.php:387
 msgid "Module search"
-msgstr ""
+msgstr "モジュール検索"
 
 #: ../../operation/events/events_list.php:412
 msgid "Date from"
@@ -23218,7 +23227,7 @@ msgstr "実行"
 
 #: ../../operation/search_results.php:143
 msgid "Helps"
-msgstr ""
+msgstr "ヘルプ"
 
 #: ../../operation/incidents/incident.php:28
 #: ../../operation/integria_incidents/incident.php:75
@@ -23362,7 +23371,7 @@ msgstr "アップロード"
 
 #: ../../operation/search_helps.php:22
 msgid "Zero results found."
-msgstr ""
+msgstr "見つかりませんでした。"
 
 #: ../../operation/search_helps.php:23
 #, php-format
@@ -23370,10 +23379,12 @@ msgid ""
 "You can find more help in the <a style=\"text-decoration: underline;\" "
 "href=\"%s\">Pandora's wiki</a>"
 msgstr ""
+"より詳細は、<a style=\"text-decoration: underline;\" href=\"%s\">Pandora の "
+"wiki</a>を参照してください"
 
 #: ../../operation/search_helps.php:37
 msgid "Matches"
-msgstr ""
+msgstr "一致"
 
 #: ../../operation/snmpconsole/snmp_browser.php:90
 msgid "SNMP Browser"
@@ -23541,11 +23552,11 @@ msgstr "Integria からのメッセージにエラーがあるか、接続でき
 
 #: ../../operation/integria_incidents/incident_statistics.php:52
 msgid "Opened tickets"
-msgstr ""
+msgstr "オープンしているチケット"
 
 #: ../../operation/integria_incidents/incident_statistics.php:53
 msgid "Closed tickets"
-msgstr ""
+msgstr "クローズしたチケット"
 
 #: ../../operation/integria_incidents/incident.incident.php:93
 msgid "Assigned user"
@@ -24420,7 +24431,7 @@ msgstr "ITIL"
 
 #: ../../include/functions_reports.php:535
 msgid "Services S.L.A."
-msgstr ""
+msgstr "サービス SLA"
 
 #: ../../include/functions_reports.php:539
 #: ../../include/functions_reports.php:541
@@ -24986,7 +24997,7 @@ msgstr "不明エージェント数 %d"
 msgid ""
 "Now, you have to go to the monitors list and look for a \"critical\" module "
 "to apply the alert."
-msgstr ""
+msgstr "ここでアラートを適用するには、監視一覧へ行き \"障害\" 状態のモジュールを探します。"
 
 #: ../../include/help/clippy/operation_agentes_status_monitor.php:39
 msgid ""
@@ -24994,39 +25005,41 @@ msgid ""
 "status, type it in this field to make the module list shorter. You can write "
 "the entire name or just a part of it."
 msgstr ""
+"障害状態のエージェント名またはモジュール名がわかっている場合は、モジュール一覧を短くするためにこのフィールドにそれを入力します。名前全体もしくは一部分の入"
+"力ができます。"
 
 #: ../../include/help/clippy/operation_agentes_status_monitor.php:44
 msgid "Click on Show button to get the modules list filtered."
-msgstr ""
+msgstr "フィルタしたモジュール一覧は、表示ボタンをクリックします。"
 
 #: ../../include/help/clippy/operation_agentes_status_monitor.php:60
 msgid ""
 "Now, to edit the module, click on the wrench that appears in the type column."
-msgstr ""
+msgstr "ここでモジュールを編集するには、タイプカラムにあるスパナアイコンをクリックします。"
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:35
 msgid "I'm going to show you how to monitor a server."
-msgstr ""
+msgstr "サーバの監視の仕方をお見せします。"
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:39
 msgid "Please, type an agent to save the modules for monitoring a server."
-msgstr ""
+msgstr "サーバ監視のモジュールを保存するためにエージェントを入力してください。"
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:44
 msgid "If you have typed the name correctly you will see the agent."
-msgstr ""
+msgstr "正しく名前を入力したら、エージェントが表示されます。"
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:60
 msgid "Now, please choose the agent you searched."
-msgstr ""
+msgstr "検索したエージェントを選択してください。"
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:65
 msgid "Choose the agent and click on the name."
-msgstr ""
+msgstr "エージェントを選択し名前をクリックします。"
 
 #: ../../include/help/clippy/modules_not_init.php:39
 msgid "You have non initialized modules"
-msgstr ""
+msgstr "未初期化モジュールがあります。"
 
 #: ../../include/help/clippy/modules_not_init.php:44
 msgid ""
@@ -25038,54 +25051,57 @@ msgid ""
 "viewâ, you can see/edit them in the module administration section, in the "
 "agent administrator."
 msgstr ""
+"モジュール作成後、最初の実行がされていない場合にこれが発生します。通常は数秒で初期化されメイン画面で参照できるようになります。24時間以上(実行や設定に問"
+"題がある等で)未初期化モジュールが放置された場合は、システムにより自動的に削除されます。未初期化モジュールは、メインがメインに表示されません。エージェント"
+"管理のモジュール管理画面でのみ参照や編集ができます。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:35
 msgid "Now you must go to Modules. Don't worry I'll lead you."
-msgstr ""
+msgstr "ここでモジュールへ行きます。誘導しますので心配はいりません。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:40
 msgid "Click in this tab.."
-msgstr ""
+msgstr "このタブをクリックします。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:56
 msgid "Now you must create the module. Don't worry, i'll teach you."
-msgstr ""
+msgstr "ここでモジュールを作成する必要があります。心配する必要はありません。お教えします。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:60
 msgid "Choose the network server module."
-msgstr ""
+msgstr "ネットワークサーバモジュールを選択します。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:64
 msgid "And click the button."
-msgstr ""
+msgstr "そしてボタンをクリックします。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:80
 msgid "Now you must create the module. Don't worry, i'll teach you ."
-msgstr ""
+msgstr "ここでモジュールを作成する必要があります。心配はいりません。お教えします。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:84
 msgid "Now we are going to fill the form."
-msgstr ""
+msgstr "ここでフォームに入力します。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:88
 msgid "Please choose Network Management."
-msgstr ""
+msgstr "ネットワーク管理を選択してください。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:92
 msgid "Choose the component named \"Host alive\"."
-msgstr ""
+msgstr "コンポーネント名 \"Host alive\" を選択してください。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:96
 msgid "You can change the name if you want."
-msgstr ""
+msgstr "必要であれば名前を変更できます。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:100
 msgid "Check if the IP showed is the IP of your machine."
-msgstr ""
+msgstr "表示された IP があなたのマシンの IP かどうか確認します。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:104
 msgid "And only to finish it is clicking this button."
-msgstr ""
+msgstr "そしてこのボタンをクリックするだけで終了です。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:121
 msgid ""
@@ -25094,36 +25110,39 @@ msgid ""
 "the first time. In the next seconds, if there is no problem, the status "
 "color will turn into <b>red</b> or <b>green</b>."
 msgstr ""
+"おめでとうございます! モジュールが作成されました。<br />そして、状態の色は <b>青</b>です。<br /> "
+"この色は、モジュールの初回実行が完了していないことを意味しています。問題がなければ数秒のうちに状態の色が<b>赤</b>または<b>緑</b>に変わります"
+"。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:137
 msgid "Click on alerts tab and then fill the form to add an alert."
-msgstr ""
+msgstr "アラートを追加するために、アラートタブをクリックしフォームに入力します。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:152
 msgid "Select the critical module."
-msgstr ""
+msgstr "障害モジュールを選択します。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:156
 msgid "In template select \"Critical Condition\"."
-msgstr ""
+msgstr "テンプレートで \"Critical Condition\" を選択します。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:160
 msgid "Now, select the action created before."
-msgstr ""
+msgstr "ここで事前に作成したアクションを選択します。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:165
 msgid "Click on Add Alert button to create the alert."
-msgstr ""
+msgstr "アラートを作成するために、アラートの追加ボタンをクリックします。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:181
 msgid ""
 "To test the alert you've just created go to the main view by clicking on the "
 "eye tab."
-msgstr ""
+msgstr "作成したアラートのテストをするには、メイン画面へ行き目のタブをクリックします。"
 
 #: ../../include/help/clippy/homepage.php:59
 msgid "Hi, can I help you?"
-msgstr ""
+msgstr "こんにちは、お手伝いしましょうか?"
 
 #: ../../include/help/clippy/homepage.php:60
 msgid ""
@@ -25131,36 +25150,38 @@ msgid ""
 "FMS. You can follow my steps to do basic tasks in Pandora FMS or you can "
 "close me and never see me again."
 msgstr ""
+"自己紹介をさせてください。私は Pandora FMS のおせっかいなアシスタント Pandorin です。Pandora FMS "
+"の基本的な操作をお教えします。私を閉じて再表示しないようにもできます。"
 
 #: ../../include/help/clippy/homepage.php:67
 msgid "Close this wizard and don't open it again."
-msgstr ""
+msgstr "このウィザードを閉じて、再度開かないでください。"
 
 #: ../../include/help/clippy/homepage.php:81
 msgid "Which task would you like to do first?"
-msgstr ""
+msgstr "どのタスクを最初に実行したいですか。"
 
 #: ../../include/help/clippy/homepage.php:85
 msgid "Ping to a Linux or Windows server with a Pandora FMS agent"
-msgstr ""
+msgstr "Pandora FMS エージェントで Linux または Windows サーバに ping を実行します"
 
 #: ../../include/help/clippy/homepage.php:90
 msgid "Create a alert by email in a critical module."
-msgstr ""
+msgstr "障害モジュールで email によるアラートを作成します。"
 
 #: ../../include/help/clippy/homepage.php:201
 msgid ""
 "The first thing you have to do  is to setup the config email in the Pandora "
 "FMS Server."
-msgstr ""
+msgstr "最初にやるべきことは、Pandora FMS サーバでの email の設定です。"
 
 #: ../../include/help/clippy/homepage.php:205
 msgid "If you have it already configured you can go to the next step."
-msgstr ""
+msgstr "すでに設定済であれば、次のステップへ行きます。"
 
 #: ../../include/help/clippy/homepage.php:210
 msgid "Now, pull down the Manage alerts menu and click on Actions. "
-msgstr ""
+msgstr "ここで、アラート管理メニューからアクションをクリックします。 "
 
 #: ../../include/help/clippy/operation_agentes_ver_agente.php:36
 msgid ""
@@ -25168,15 +25189,16 @@ msgid ""
 "force the action execution and after a few minutes you will receive the "
 "alert in your email."
 msgstr ""
+"最後のステップは、作成したアラートの確認です。アクションの強制実行には丸いアイコンをクリックします。数分のうちにアラートをメールで受信するでしょう。"
 
 #: ../../include/help/clippy/operation_agentes_ver_agente.php:37
 msgid ""
 "And restart your pandora server to read again general configuration tokens."
-msgstr ""
+msgstr "そして、設定ファイルを再読み込みするために pandora サーバを再起動します。"
 
 #: ../../include/help/clippy/module_unknow.php:39
 msgid "You have unknown modules in this agent."
-msgstr ""
+msgstr "このエージェントには不明モジュールがあります。"
 
 #: ../../include/help/clippy/module_unknow.php:44
 msgid ""
@@ -25184,28 +25206,30 @@ msgid ""
 "occassion, but at this time are not receving data. Please check our "
 "troubleshoot help page to help you determine why you have unknown modules."
 msgstr ""
+"不明モジュールとは、少なくとも一回は正常にデータを受信していたが現時点ではデータを受信していないモジュールです。なぜ不明モジュールがあるのか原因を特定する"
+"には、トラブルシュートのためのヘルプページを確認してください。"
 
 #: ../../include/help/clippy/godmode_alerts_alert_actions.php:36
 msgid ""
 "Let me show you how to create an email action: Click on Create button and "
 "fill the form showed in the following screen."
-msgstr ""
+msgstr "email アクションの作成方法をお見せします。作成ボタンをクリックし次の画面に表示されるフォームに入力します。"
 
 #: ../../include/help/clippy/godmode_alerts_alert_actions.php:51
 msgid ""
 "Now, you have to go to the monitors list and look for a critical module to "
 "apply the alert."
-msgstr ""
+msgstr "ここで、監視一覧へ行き、アラートを適用する障害モジュールを探します。"
 
 #: ../../include/help/clippy/godmode_alerts_alert_actions.php:56
 msgid ""
 "Click on the arrow to drop down the Monitoring submenu and select Monitor "
 "Detail."
-msgstr ""
+msgstr "モニタリングサブメニューをドロップダウンするために矢印をクリックしてモニタ詳細を選択します。"
 
 #: ../../include/help/clippy/agent_out_of_limits.php:39
 msgid "Agent contact date passed it's ETA!."
-msgstr ""
+msgstr "エージェント接続日時が予想時間を過ぎました。"
 
 #: ../../include/help/clippy/agent_out_of_limits.php:44
 msgid ""
@@ -25213,48 +25237,52 @@ msgid ""
 "(too load or just down). Check also connectivity between the agent and the "
 "server."
 msgstr ""
+"エージェントからの通信が止まったりサーバで何らかの問題が発生(高負荷やダウン)しているときにこれが起こります。エージェントとサーバの間の通信も確認してくだ"
+"さい。"
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:35
 msgid "Fill the name of your action."
-msgstr ""
+msgstr "アクション名を入力します。"
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:39
 msgid ""
 "Select the group in the drop-down list and filter for ACL (the user in this "
 "group can use your action to create an alert)."
 msgstr ""
+"ドロップダウンリストのグループとACLフィルタ(アラート作成のためにこのグループのユーザがあなたのアクションを利用できます)を選択してください。"
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:43
 msgid "In the command field select \"email\"."
-msgstr ""
+msgstr "コマンドフィールドで \"email\" を選択します。"
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:47
 msgid ""
 "In the threshold field enter the seconds. The help icon show more "
 "information."
-msgstr ""
+msgstr "閾値フィールドで秒を入力します。ヘルプアイコンをクリックするとより詳細を表示します。"
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:53
 msgid ""
 "In the first field enter the email address/addresses where you want to "
 "receive the email alerts separated with comas ( , ) or white spaces."
 msgstr ""
+"最初のフィールドにメールでアラートを受け取りたい email アドレスを入力してください。カンマ(,)またはスペース区切りで複数指定できます。"
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:58
 msgid ""
 "In the \"Subject\"  field  you can use the macros _agent_ or _module_ for "
 "each name."
-msgstr ""
+msgstr "\"Subject\" フィールドでは、それぞれの名前を表す _agent_ または _module_ マクロが利用できます。"
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:63
 msgid ""
 "In the text field, you can also use macros. Get more information about the "
 "macros by clicking on the help icon."
-msgstr ""
+msgstr "テキストフィールドではマクロも利用できます。マクロに関するより詳細はヘルプアイコンをクリックしてください。"
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:69
 msgid "Click on Create button to create the action."
-msgstr ""
+msgstr "アクションを作成するには、作成ボタンをクリックします。"
 
 #: ../../include/functions_gis.php:27 ../../include/functions_gis.php:31
 #: ../../include/functions_gis.php:36
@@ -26009,7 +26037,7 @@ msgstr "モジュール有効化エラー"
 
 #: ../../include/functions_api.php:6540
 msgid "Error adding event comment."
-msgstr ""
+msgstr "イベントコメント追加エラー"
 
 #: ../../include/functions_api.php:6778
 msgid "Error in agent enabling/disabling."
@@ -26109,7 +26137,7 @@ msgstr "ビジュアルマップを読み込めません"
 
 #: ../../include/functions_visual_map.php:1320
 msgid "Last value: "
-msgstr ""
+msgstr "最新の値: "
 
 #: ../../include/functions_visual_map.php:2201
 msgid "Percentile bar"
@@ -26129,19 +26157,19 @@ msgstr "グループマップの新規作成"
 
 #: ../../include/functions_networkmap.php:1586
 msgid "Create a new dynamic map"
-msgstr ""
+msgstr "新たな動的マップの作成"
 
 #: ../../include/functions_networkmap.php:1587
 msgid "Create a new radial dynamic map"
-msgstr ""
+msgstr "放射状の動的マップを新規作成"
 
 #: ../../include/functions_networkmap.php:1610
 msgid "Dynamic"
-msgstr ""
+msgstr "動的"
 
 #: ../../include/functions_networkmap.php:1611
 msgid "Radial dynamic"
-msgstr ""
+msgstr "放射状で動的"
 
 #: ../../include/auth/mysql.php:489
 msgid "Your installation of PHP does not support LDAP"
@@ -26866,7 +26894,7 @@ msgstr "表示するデータがありません"
 
 #: ../../include/functions_graph.php:4418
 msgid "Main node"
-msgstr ""
+msgstr "メインノード"
 
 #: ../../include/functions_alerts.php:549
 msgid "Max and min"
@@ -26890,7 +26918,7 @@ msgstr "変化発生"
 
 #: ../../include/functions_update_manager.php:203
 msgid "There is a unknown error."
-msgstr ""
+msgstr "不明なエラーがあります。"
 
 #: ../../include/functions_update_manager.php:368
 msgid "Failed extracting the package to temp directory."
@@ -27230,7 +27258,7 @@ msgstr "不明なアップロードエラー"
 
 #: ../../include/functions.php:2213
 msgid "Source ID"
-msgstr ""
+msgstr "ソース ID"
 
 #: ../../include/functions_tags.php:607
 msgid "Click here to open a popup window with URL tag"
@@ -27398,6 +27426,9 @@ msgid ""
 "href=\"index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=on"
 "line\">go to Update Manager</a> for more details."
 msgstr ""
+"新たな更新があります。詳細については、管理メニューの拡張へ行き<a style=\"font-weight:bold;\" "
+"href=\"index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=on"
+"line\">アップデートマネージャ</a>を確認してください。"
 
 #: ../../include/functions_config.php:1357
 msgid "PHP safe mode is enabled. Some features may not properly work."
@@ -27475,24 +27506,24 @@ msgstr "モジュールを検索するには、少なくとも二文字入力し
 
 #: ../../include/functions_clippy.php:122
 msgid "Pandora FMS assistant"
-msgstr ""
+msgstr "Pandora FMS アシスタント"
 
 #: ../../include/functions_clippy.php:157
 #: ../../include/functions_clippy.php:162
 msgid "End wizard"
-msgstr ""
+msgstr "ウィザードの終了"
 
 #: ../../include/functions_clippy.php:180
 msgid "Next &rarr;"
-msgstr ""
+msgstr "次へ &rarr;"
 
 #: ../../include/functions_clippy.php:181
 msgid "&larr; Back"
-msgstr ""
+msgstr "&larr; 戻る"
 
 #: ../../include/functions_clippy.php:193
 msgid "Do you want to exit the help tour?"
-msgstr ""
+msgstr "ヘルプツアーを終了しますか。"
 
 #: ../../include/functions_db.php:75
 #, php-format
@@ -28384,31 +28415,3 @@ msgstr "時間 (ミリ秒)"
 
 #~ msgid "Search text"
 #~ msgstr "検索文字列"
-
-#~ msgid "Dinamic"
-#~ msgstr "動的"
-
-#~ msgid "Create a new dinamic map"
-#~ msgstr "新規の動的マップ作成"
-
-#~ msgid "Dinamic view"
-#~ msgstr "動的表示"
-
-#~ msgid "Auto calculate"
-#~ msgstr "自動計算"
-
-#~ msgid "Draw chart"
-#~ msgstr "グラフ描画"
-
-#~ msgid "Abort relationship"
-#~ msgstr "関連付の中止"
-
-#~ msgid ""
-#~ "There is a new update please go to menu Administration and into extensions "
-#~ "<a style=\"font-weight:bold;\" "
-#~ "href=\"index.php?sec=gsetup&sec2=godmode/update_manager_xxx/update_manager_xx"
-#~ "x&tab=online\">go to Update Manager</a> for more details."
-#~ msgstr ""
-#~ "新たな更新があります。詳細は、システム管理メニューの拡張にある <a style=\"font-weight:bold;\" "
-#~ "href=\"index.php?sec=gsetup&sec2=godmode/update_manager_xxx/update_manager_xx"
-#~ "x&tab=online\">アップデートマネージャ</a> を確認してください。"

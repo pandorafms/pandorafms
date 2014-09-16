@@ -3364,11 +3364,12 @@ sub process_inc_data ($$$$$) {
 
 	# Negative increment, reset inc data
 	if ($data < $data_inc->{'datos'}) {
-		db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});		
-		db_do ($dbh, 'INSERT INTO tagente_datos_inc
-				(id_agente_modulo, datos, utimestamp)
-				VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
+		db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
 		logger($pa_config, "Discarding data and resetting counter for incremental module " . $module->{'nombre'} . "(module id " . $module->{'id_agente_modulo'} . ").", 10);
+
+		# Prevent the module from becoming unknown!
+		db_do ($dbh, 'UPDATE tagente_estado SET utimestamp = ? WHERE id_agente_modulo = ?', time(), $module->{'id_agente_modulo'});
+
 		return undef;
 	}
 

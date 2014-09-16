@@ -28,6 +28,64 @@ global $config;
 require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_users.php');
 
+function custom_graphs_create($id_modules = array(), $name = "",
+	$description = "", $stacked = CUSTOM_GRAPH_AREA, $width = 0,
+	$height = 0, $events = 0 , $period = 0, $private = 0, $id_group = 0,
+	$user = false) {
+	
+	global $config;
+	
+	if ($user === false) {
+		$user = $config['id_user'];
+	}
+	
+	$id_graph = db_process_sql_insert('tgraph',
+		array(
+			'id_user' => $user,
+			'name' => $name,
+			'description' => $description,
+			'period' => $period,
+			'width' => $width,
+			'height' => $height,
+			'private' => $private,
+			'events' => $events,
+			'stacked' => $stacked,
+			'id_group' => $id_group,
+			'id_graph_template' => 0
+			));
+	
+	if (empty($id_graph)) {
+		return false;
+	}
+	else {
+		$result = true;
+		foreach ($id_modules as $id_module) {
+			$result = db_process_sql_insert('tgraph_source',
+				array(
+					'id_graph' => $id_graph,
+					'id_agent_module' => $id_module,
+					'weight' => 1
+					));
+			
+			if (empty($result))
+				break;
+		}
+		
+		if (empty($result)) {
+			//Not it is a complete insert the modules. Delete all
+			db_process_sql_delete('tgraph_source',
+				array('id_graph' => $id_graph));
+			
+			db_process_sql_delete('tgraph',
+				array('id_graph' => $id_graph));
+			
+			return false;
+		}
+		
+		return $id_graph;
+	}
+}
+
 /**
  * Get all the custom graphs a user can see.
  *
@@ -94,33 +152,69 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 
 function custom_graphs_print($id_graph, $height, $width, $period,
 	$stacked = null, $return = false, $date = 0, $only_image = false,
-	$background_color = 'white') {
+	$background_color = 'white', $modules_param = array()) {
+	
 	global $config;
 	
-	$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
+	if ($id_graph == 0) {
+		$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
+	}
+	else {
+		$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
+	}
 	
 	if ($stacked === null) {
 		$stacked = $graph_conf['stacked'];
 	}
 	
-	$sources = db_get_all_rows_field_filter('tgraph_source', 'id_graph',
-		$id_graph);
-	$modules = array ();
-	$weights = array ();
+	$sources = false;
+	if ($id_graph == 0) {
+		$modules = $modules_param;
+		$count_modules = count($modules);
+		$weights = array_fill(0, $count_modules, 1);
+		
+		if ($count_modules > 0)
+			$sources = true;
+	}
+	else {
+		$sources = db_get_all_rows_field_filter('tgraph_source', 'id_graph',
+			$id_graph);
+		
+		$modules = array ();
+		$weights = array ();
+		foreach ($sources as $source) {
+			array_push ($modules, $source['id_agent_module']);
+			array_push ($weights, $source['weight']);
+		}
+	}
+	
+	
 	
 	if ($sources === false) {
 		echo "<div class='nf'>" . __('Empty graph') . "</div>";
 		return;
 	}
 	
-	foreach ($sources as $source) {
-		array_push ($modules, $source['id_agent_module']);
-		array_push ($weights, $source['weight']);
-	}
 	
-	$output = graphic_combined_module($modules, $weights, $period,
-		$width, $height, '', '', 0, 0, 0, $stacked, $date, $only_image,
-		'', 1, false, false, $background_color);
+	
+	$output = graphic_combined_module($modules,
+		$weights,
+		$period,
+		$width,
+		$height,
+		'',
+		'',
+		0,
+		0,
+		0,
+		$stacked,
+		$date,
+		$only_image,
+		'',
+		1,
+		false,
+		false,
+		$background_color);
 	
 	if ($return)
 		return $output;

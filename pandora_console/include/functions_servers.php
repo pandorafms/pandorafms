@@ -81,13 +81,21 @@ function servers_get_performance () {
 	$data["local_modules_rate"] = 0;
 	$data["network_modules_rate"] = 0;
 	
-	
 	if ($config["realtimestats"] == 1) {
-		$counts = db_get_all_rows_sql ("SELECT tagente_modulo.id_modulo, COUNT(tagente_modulo.id_agente_modulo) modules
+		
+		$counts = db_get_all_rows_sql ("
+			SELECT tagente_modulo.id_modulo,
+				COUNT(tagente_modulo.id_agente_modulo) modules
 			FROM tagente_modulo, tagente_estado, tagente
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND tagente_modulo.disabled = 0 AND delete_pending = 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
-				AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
+				AND tagente.id_agente = tagente_estado.id_agente
+				
+				AND tagente_modulo.disabled = 0
+				AND delete_pending = 0
+				AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
+				AND tagente.disabled = 0
+				
+			GROUP BY tagente_modulo.id_modulo");
 		
 		if (empty($counts)) {
 			$counts = array();
@@ -123,13 +131,16 @@ function servers_get_performance () {
 		}
 	}
 	else {
-		$counts = db_get_all_rows_sql ("SELECT server_type, my_modules modules FROM tserver GROUP BY server_type");
+		$counts = db_get_all_rows_sql ("
+			SELECT server_type, my_modules modules
+			FROM tserver
+			GROUP BY server_type");
 		
 		if (empty($counts)) {
 			$counts = array();
 		}
 		
-		foreach($counts as $c) {
+		foreach ($counts as $c) {
 			switch ($c['server_type']) {
 				case SERVER_TYPE_DATA:
 					$data["total_local_modules"] = $c['modules'];
@@ -159,7 +170,7 @@ function servers_get_performance () {
 					break;
 			}
 			
-			if($c['server_type'] != SERVER_TYPE_DATA) {
+			if ($c['server_type'] != SERVER_TYPE_DATA) {
 				$data["total_remote_modules"] += $c['modules'];
 			}
 			
@@ -167,13 +178,22 @@ function servers_get_performance () {
 		}
 	}
 	
+	$interval_avgs = array();
+	
 	// Avg of modules interval when modules have module_interval > 0
-	$interval_avgs_modules = db_get_all_rows_sql ("SELECT count(tagente_modulo.id_modulo) modules , tagente_modulo.id_modulo, AVG(tagente_modulo.module_interval) avg_interval
-					FROM tagente_modulo, tagente_estado, tagente
-				WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND module_interval > 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
-					AND delete_pending = 0
-					AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
+	$interval_avgs_modules = db_get_all_rows_sql ("
+		SELECT count(tagente_modulo.id_modulo) modules ,
+			tagente_modulo.id_modulo,
+			AVG(tagente_modulo.module_interval) avg_interval
+		FROM tagente_modulo, tagente_estado, tagente
+		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			AND tagente_modulo.disabled = 0
+			AND module_interval > 0
+			AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
+			AND delete_pending = 0
+			AND tagente.disabled = 0
+			AND tagente.id_agente = tagente_estado.id_agente
+		GROUP BY tagente_modulo.id_modulo");
 	
 	if (empty($interval_avgs_modules)) {
 		$interval_avgs_modules = array();
@@ -186,22 +206,26 @@ function servers_get_performance () {
 	}
 	
 	// Avg of agents interval when modules have module_interval == 0
-	$interval_avgs_agents = db_get_all_rows_sql ("SELECT count(tagente_modulo.id_modulo) modules , tagente_modulo.id_modulo, AVG(tagente.intervalo) avg_interval
-					FROM tagente_modulo, tagente_estado, tagente
-				WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND module_interval = 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo >= 21 AND id_tipo_modulo <= 23)))
-					AND delete_pending = 0
-					AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
+	$interval_avgs_agents = db_get_all_rows_sql ("
+		SELECT count(tagente_modulo.id_modulo) modules ,
+			tagente_modulo.id_modulo, AVG(tagente.intervalo) avg_interval
+		FROM tagente_modulo, tagente_estado, tagente
+		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			AND tagente_modulo.disabled = 0
+			AND module_interval = 0
+			AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo >= 21 AND id_tipo_modulo <= 23)))
+			AND delete_pending = 0
+			AND tagente.disabled = 0
+			AND tagente.id_agente = tagente_estado.id_agente
+		GROUP BY tagente_modulo.id_modulo");
 	
 	if (empty($interval_avgs_agents)) {
 		$interval_avgs_agents = array();
 	}
 	
-	$interval_avgs = array();
-	
 	// Merge with the previous calculated array
-	foreach($interval_avgs_agents as $iaagents) {
-		if(!isset($interval_avgs[$iaagents['id_modulo']]['modules'])) {
+	foreach ($interval_avgs_agents as $iaagents) {
+		if (!isset($interval_avgs[$iaagents['id_modulo']]['modules'])) {
 			$interval_avgs[$iaagents['id_modulo']]['avg_interval'] = $iaagents['avg_interval'];		
 			$interval_avgs[$iaagents['id_modulo']]['modules'] = $iaagents['modules'];
 		}
@@ -215,11 +239,14 @@ function servers_get_performance () {
 		switch($id_modulo) {
 			case MODULE_DATA:
 				$data["avg_interval_local_modules"] = $ia['avg_interval'];
-				$data["local_modules_rate"] = servers_get_rate($data["avg_interval_local_modules"], $data["total_local_modules"]);
+				$data["local_modules_rate"] =
+					servers_get_rate($data["avg_interval_local_modules"], $data["total_local_modules"]);
 				break;
 			case MODULE_NETWORK:
 				$data["avg_interval_network_modules"] = $ia['avg_interval'];
-				$data["network_modules_rate"] = servers_get_rate($data["avg_interval_network_modules"], $data["total_network_modules"]);
+				$data["network_modules_rate"] =
+					servers_get_rate($data["avg_interval_network_modules"],
+						$data["total_network_modules"]);
 				break;
 			case MODULE_PLUGIN:
 				$data["avg_interval_plugin_modules"] = $ia['avg_interval'];
@@ -262,7 +289,7 @@ function servers_get_performance () {
 	
 	$data["remote_modules_rate"] = servers_get_rate($data["avg_interval_remote_modules"], $data["total_remote_modules"]);
 	$data["total_modules_rate"] = servers_get_rate($data["avg_interval_total_modules"], $data["total_modules"]);
-
+	
 	return ($data);
 }
 
@@ -292,7 +319,10 @@ function servers_get_avg_interval($modules_avg_interval1, $modules_avg_interval2
  * @return float number of modules processed by second
  */
 function servers_get_rate($avg_interval, $num_modules) {
-	return $avg_interval > 0 ? ($num_modules / $avg_interval) : 0;
+	
+	return $avg_interval > 0 ?
+		($num_modules / $avg_interval) :
+		0;
 }
 
 /**
@@ -315,7 +345,10 @@ function servers_get_info ($id_server = -1) {
 		$select_id = "";
 	}
 	
-	$sql = "SELECT * FROM tserver".$select_id . " ORDER BY server_type";
+	$sql = "
+		SELECT *
+		FROM tserver " . $select_id . "
+		ORDER BY server_type";
 	$result = db_get_all_rows_sql ($sql);
 	$time = get_system_time ();
 	

@@ -325,7 +325,14 @@ config_check();
 <script type="text/javascript">
 	/* <![CDATA[ */
 	
-	var fixed_header = <?php echo json_encode((bool)$config['fixed_header']); ?>;
+	<?php
+	$config_fixed_header = false;
+	if (isset($config['fixed_header'])) {
+		$config_fixed_header = $config['fixed_header']; 
+	}
+	?>
+	
+	var fixed_header = <?php echo json_encode((bool)$config_fixed_header); ?>;
 	
 	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
 	$(document).ready (function () {

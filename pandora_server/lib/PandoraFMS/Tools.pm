@@ -466,7 +466,12 @@ sub logger ($$;$) {
 		closelog();
 	} else {
 		# Log rotation
-		rename ($file, $file.'.old') if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'});
+		if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
+			foreach my $i (reverse 1..$pa_config->{'max_log_generation'}) {
+				rename ($file . "." . ($i - 1), $file . "." . $i);
+			}
+			rename ($file, "$file.0");
+		}
 	
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";

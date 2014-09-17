@@ -107,6 +107,10 @@ $table_other->data[7][1] .= __('No').'&nbsp;'.html_print_radio_button ('agentacc
 $table_other->data[8][0] = __('Max. recommended number of files in attachment directory') . ui_print_help_tip(__('This number is the maximum number of files in attachment directory. If this number is reached then a warning message will appear in the header notification space.'), true);
 $table_other->data[8][1] = html_print_input_text ('num_files_attachment', $config["num_files_attachment"], '', 5, 5, true);
 
+$table_other->data[9][0] = __('Delete not init modules');
+$table_other->data[9][1] = __('Yes').'&nbsp;'.html_print_radio_button ('delete_notinit', 1, '', $config["delete_notinit"], true).'&nbsp;&nbsp;';
+$table_other->data[9][1] .= __('No').'&nbsp;'.html_print_radio_button ('delete_notinit', 0, '', $config["delete_notinit"], true);
+
 echo '<form id="form_setup" method="post">';
 echo "<fieldset>";
 echo "<legend>" . __('Database maintenance options') . "</legend>";

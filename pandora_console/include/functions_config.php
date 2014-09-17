@@ -359,6 +359,8 @@ function config_update_config () {
 						$error_update[] = 'Deprecated compact_header';
 					if (!config_update_value ('num_files_attachment', (int) get_parameter ('num_files_attachment')))
 						$error_update[] = __('Max. recommended number of files in attachment directory');
+					if (!config_update_value ('delete_notinit', get_parameter ('delete_notinit')))
+						$error_update[] = __('Delete not init modules');
 					/////////////
 					break;
 					
@@ -675,6 +677,10 @@ function config_process_config () {
 	
 	if (!isset ($config["realtimestats"])) {
 		config_update_value ('realtimestats', 1);
+	}
+
+	if (!isset ($config["delete_notinit"])) {
+		config_update_value ('delete_notinit', 0);
 	}
 	
 	if (!isset ($config["event_purge"])) {

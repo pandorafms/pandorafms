@@ -121,6 +121,7 @@ ALTER TABLE "tplanned_downtime" ADD COLUMN "type_downtime" VARCHAR( 100 ) NOT NU
 ALTER TABLE "tplanned_downtime" ADD COLUMN "type_execution" VARCHAR( 100 ) NOT NULL default 'once';
 ALTER TABLE "tplanned_downtime" ADD COLUMN "type_periodicity" VARCHAR( 100 ) NOT NULL default 'weekly';
 ALTER TABLE "tplanned_downtime" ADD COLUMN "id_user" varchar(100) NOT NULL default '0';
+UPDATE "tplanned_downtime" SET "type_downtime"='disable_agents' WHERE "only_alerts"=0;
 
 -- -----------------------------------------------------
 -- Table "tplanned_downtime_agents"

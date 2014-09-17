@@ -46,12 +46,11 @@ include_once($config['homedir'] . "/include/functions_netflow.php");
  * 
  * @return float The average module value in the interval.
  */
-function reporting_get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $date = 0) {
 	global $config;
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
@@ -150,12 +149,11 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
  * 
  * @return float The maximum module value in the interval.
  */
-function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_data_max ($id_agent_module, $period=0, $date = 0) {
 	global $config;
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
@@ -230,12 +228,11 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
  * 
  * @return float The minimum module value of the module
  */
-function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_data_min ($id_agent_module, $period=0, $date = 0) {
 	global $config;
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;	
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
@@ -305,12 +302,10 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
  * 
  * @return float The sumatory of the module values in the interval.
  */
-function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_data_sum ($id_agent_module, $period=0, $date = 0) {
 	global $config;
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0))
-		$period = $config["sla_period"];
 	$datelimit = $date - $period;
 	
 	$id_module_type = db_get_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
@@ -413,9 +408,6 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	// Initialize variables
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if ((empty ($period)) OR ($period == 0)) {
-		$period = $config["sla_period"];
 	}
 	if ($daysWeek === null) {
 		$daysWeek = array();
@@ -599,9 +591,6 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	// Initialize variables
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if ((empty ($period)) OR ($period == 0)) {
-		$period = $config["sla_period"];
 	}
 	if ($daysWeek === null) {
 		$daysWeek = array();
@@ -1783,12 +1772,7 @@ function reporting_alert_reporting_agent ($id_agent, $period = 0, $date = 0, $re
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
-	}
-	
+	}	
 	$table->width = '99%';
 	$table->data = array ();
 	$table->head = array ();
@@ -1892,10 +1876,6 @@ function reporting_alert_reporting_group ($id_group, $period = 0, $date = 0, $re
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
 	}
 	
 	$table->width = '99%';
@@ -2034,10 +2014,6 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
 	}
 	
 	$table->width = '99%';
@@ -2548,10 +2524,6 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
-	}
 	
 	$table->width = '99%';
 	
@@ -2669,10 +2641,6 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
 	}
 	
 	$table->width = '99%';
@@ -2793,10 +2761,6 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
 	}
 	
 	$table->width = '99%';
@@ -6531,11 +6495,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
  * 
  * @return float The MTBF value in the interval.
  */
-function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 0) {
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	
 	// Read module configuration
 	$datelimit = $date - $period;	
@@ -6642,11 +6605,10 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
  * 
  * @return float The MTTR value in the interval.
  */
-function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 0) {
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	
 	// Read module configuration
 	$datelimit = $date - $period;	
@@ -6752,11 +6714,10 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
  * 
  * @return float The TTO value in the interval.
  */
-function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_tto ($id_agent_module, $period = 0, $date = 0) {
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	
 	// Read module configuration
 	$datelimit = $date - $period;	
@@ -6853,11 +6814,10 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
  * 
  * @return float The TTR value in the interval.
  */
-function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_ttr ($id_agent_module, $period = 0, $date = 0) {
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	
 	// Read module configuration
 	$datelimit = $date - $period;	
@@ -7017,11 +6977,6 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	if (empty ($period)) {
-		global $config;
-		
-		$period = $config["sla_period"];
-	}
 	
 	return events_get_count_events_by_agent($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
@@ -7049,11 +7004,6 @@ function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		
-		$period = $config["sla_period"];
 	}
 	
 	return events_get_count_events_validated_by_user($filter, $period, $date,
@@ -7083,11 +7033,6 @@ function reporting_get_count_events_by_criticity ($filter, $period = 0,
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	if (empty ($period)) {
-		global $config;
-		
-		$period = $config["sla_period"];
-	}
 	
 	return events_get_count_events_by_criticity($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
@@ -7115,11 +7060,6 @@ function reporting_get_count_events_validated ($filter, $period = 0,
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		
-		$period = $config["sla_period"];
 	}
 	
 	return events_get_count_events_validated($filter, $period, $date,

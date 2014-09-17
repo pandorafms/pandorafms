@@ -70,7 +70,6 @@ INSERT INTO tconfig (token, value) VALUES ('graph_color7', '#99FF99');
 INSERT INTO tconfig (token, value) VALUES ('graph_color8', '#330066');
 INSERT INTO tconfig (token, value) VALUES ('graph_color9', '#66FFFF');
 INSERT INTO tconfig (token, value) VALUES ('graph_color10', '#6666FF');
-INSERT INTO tconfig (token, value) VALUES ('sla_period', '604800');
 INSERT INTO tconfig (token, value) VALUES ('trap2agent', '0');
 INSERT INTO tconfig (token, value) VALUES ('date_format', 'F j, Y, g:i a');
 INSERT INTO tconfig (token, value) VALUES ('event_view_hr', 8);

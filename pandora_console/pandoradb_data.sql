@@ -53,7 +53,6 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('graph_color8', '#330066'),
 ('graph_color9', '#ffff00'),
 ('graph_color10', '#99ffff'),
-('sla_period', '604800'),
 ('trap2agent', '0'),
 ('date_format', 'F j, Y, g:i a'),
 ('event_view_hr', 8),

@@ -1,4 +1,10 @@
 -- ---------------------------------------------------------------------
+-- Update db_scheme_version, db_scheme_build
+-- ---------------------------------------------------------------------
+UPDATE tconfig SET value = '5.0SP4' WHERE token = 'db_scheme_version';
+UPDATE tconfig SET value = 'PD140917' WHERE token = 'db_scheme_build';
+
+-- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetflow_filter` (

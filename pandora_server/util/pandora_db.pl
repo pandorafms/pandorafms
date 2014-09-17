@@ -583,6 +583,7 @@ sub pandora_load_config ($) {
    	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
    	$conf->{'_log_dir'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_dir'");
    	$conf->{'_log_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_max_lifetime'");
+	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
    	
 	db_disconnect ($dbh);
 
@@ -632,61 +633,64 @@ sub pandora_checkdb_integrity {
 # Check database consistency.
 ###############################################################################
 sub pandora_checkdb_consistency {
-	my $dbh = shift;
+	my ($conf, $dbh) = @_;
 	
 	#-------------------------------------------------------------------
 	# 1. Check for modules that do not have tagente_estado but have
 	#    tagente_module
 	#-------------------------------------------------------------------
-	
-	log_message ('CHECKDB', "Deleting non-init data.");
-	my @modules = get_db_rows ($dbh,
-		'SELECT id_agente_modulo, id_agente
-		FROM tagente_estado
-		WHERE estado = 4');
-	
-	foreach my $module (@modules) {
-		my $id_agente_modulo = $module->{'id_agente_modulo'};
-		my $id_agente = $module->{'id_agente'};
+	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} == 1) {
+		log_message ('CHECKDB', "Deleting not-init data.");
+		my @modules = get_db_rows ($dbh,
+			'SELECT id_agente_modulo, id_agente
+			FROM tagente_estado
+			WHERE estado = 4');
 		
-		# Skip policy modules
-		my $is_policy_module = enterprise_hook('is_policy_module',
-			[$dbh, $id_agente_modulo]);
-		next if (defined($is_policy_module) && $is_policy_module);
-		
-		# Skip if agent is disabled
-		my $is_agent_disabled = get_db_value ($dbh,
-			'SELECT disabled
-			FROM tagente
-			WHERE id_agente = ?', $module->{'id_agente'});
-		next if (defined($is_agent_disabled) && $is_agent_disabled);
-		
-		# Skip if module is disabled
-		my $is_module_disabled = get_db_value ($dbh,
-			'SELECT disabled
-			FROM tagente_modulo
-			WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
-		next if (defined($is_module_disabled) && $is_module_disabled);
-		
-		
-		#---------------------------------------------------------------
-		# Delete the module
-		#---------------------------------------------------------------
-		db_do ($dbh, 'UPDATE tagente
-			SET notinit_count = notinit_count - 1
-			WHERE id_agente = ?', $id_agente);
-		
-		db_do ($dbh,
-			'DELETE FROM tagente_modulo
-			WHERE id_agente_modulo = ?', $id_agente_modulo);
-		
-		# Do a nanosleep here for 0,001 sec
-		usleep (100000);
-		
-		# Delete any alerts associated to the module
-		db_do ($dbh,
-			'DELETE FROM talert_template_modules
-			WHERE id_agent_module = ?', $id_agente_modulo);
+		foreach my $module (@modules) {
+			my $id_agente_modulo = $module->{'id_agente_modulo'};
+			my $id_agente = $module->{'id_agente'};
+			
+			# Skip policy modules
+			my $is_policy_module = enterprise_hook('is_policy_module',
+				[$dbh, $id_agente_modulo]);
+			next if (defined($is_policy_module) && $is_policy_module);
+			
+			# Skip if agent is disabled
+			my $is_agent_disabled = get_db_value ($dbh,
+				'SELECT disabled
+				FROM tagente
+				WHERE id_agente = ?', $module->{'id_agente'});
+			next if (defined($is_agent_disabled) && $is_agent_disabled);
+			
+			# Skip if module is disabled
+			my $is_module_disabled = get_db_value ($dbh,
+				'SELECT disabled
+				FROM tagente_modulo
+				WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+			next if (defined($is_module_disabled) && $is_module_disabled);
+			
+			
+			#---------------------------------------------------------------
+			# Delete the module
+			#---------------------------------------------------------------
+			db_do ($dbh, 'UPDATE tagente
+				SET notinit_count = notinit_count - 1
+				WHERE id_agente = ?', $id_agente);
+			
+			db_do ($dbh,
+				'DELETE FROM tagente_modulo
+				WHERE id_agente_modulo = ?', $id_agente_modulo);
+			
+			# Do a nanosleep here for 0,001 sec
+			usleep (100000);
+			
+			# Delete any alerts associated to the module
+			db_do ($dbh,
+				'DELETE FROM talert_template_modules
+				WHERE id_agent_module = ?', $id_agente_modulo);
+		}
+	} else {
+		log_message ('CHECKDB', "Ignoring not-init data.");
 	}
 	
 	log_message ('CHECKDB',
@@ -730,7 +734,7 @@ sub pandora_checkdb_consistency {
 	log_message ('CHECKDB',
 		"Checking database consistency (Missing status).");
 	
-	@modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo');
+	my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
 		my $id_agente = $module->{'id_agente'};
@@ -852,7 +856,7 @@ sub pandoradb_main ($$$) {
 	pandora_purgedb ($conf, $dbh);
 
 	# Consistency check
-	pandora_checkdb_consistency ($dbh);
+	pandora_checkdb_consistency ($conf, $dbh);
 
 	# Maintain Referential integrity and other stuff
 	pandora_checkdb_integrity ($dbh);

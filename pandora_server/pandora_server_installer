@@ -399,7 +399,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 uninstall () {
 	set_global_vars
 
-	if [ "$LINUX" != NO ] || [ "$DISTRO" != "FreeBSD" ] || [ "$DISTRO" != "NetBSD" ]
+	if [ "$LINUX" != "YES" ] && [ "$DISTRO" != "FreeBSD" ] && [ "$DISTRO" != "NetBSD" ]
 	then
 		echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
 		exit 1

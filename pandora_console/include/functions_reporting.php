@@ -1060,6 +1060,148 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 	return $downtime_dates;
 }
 
+/** 
+ * Get the planned downtimes that affect the passed modules on an specific datetime range.
+ * 
+ * @param int Start date in utimestamp.
+ * @param int End date in utimestamp.
+ * @param array The agent modules ids.
+ * 
+ * @return Array with the planned downtimes that are executed in any moment of the range selected and affect the
+ * agent modules selected.
+ */
+function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modules = false) {
+	$start_time = date("H:i:s", $start_date);
+	$end_time = date("H:i:s", $end_date);
+
+	$start_day = date("d", $start_date);
+	$end_day = date("d", $end_date);
+
+	$start_month = date("m", $start_date);
+	$end_month = date("m", $end_date);
+
+	if ($start_date > $end_date) {
+		return false;
+	}
+
+	if ($end_date - $start_date >= SECONDS_1MONTH) {
+		// If the date range is larger than 1 month, every monthly planned downtime will be inside
+		$periodically_monthly_w = "type_periodicity = 'monthly'";
+	}
+	else {
+		// Check if the range is larger than the planned downtime execution, or if its start or end
+		// is inside the planned downtime execution.
+		// The start and end time is very important.
+		$periodically_monthly_w = "type_periodicity = 'monthly'
+									AND (((periodically_day_from > '$start_day'
+												OR (periodically_day_from = '$start_day'
+													AND periodically_time_from > '$start_time'))
+											AND (periodically_day_to < '$end_day'
+												OR (periodically_day_to = '$end_day'
+													AND periodically_time_to < '$end_time')))
+										OR (periodically_day_from < '$start_day' 
+												OR (periodically_day_from = '$start_day'
+													AND periodically_time_from < '$start_time')
+											AND (periodically_day_to > '$start_day'
+												OR (periodically_day_to = '$start_day'
+													AND periodically_time_to > '$start_time')))
+										OR (periodically_day_from < '$end_day' 
+												OR (periodically_day_from = '$end_day'
+													AND periodically_time_from < '$end_time')
+											AND (periodically_day_to > '$end_day'
+												OR (periodically_day_to = '$end_day'
+													AND periodically_time_to > '$end_time'))))";
+	}
+
+	$periodically_weekly_days = array();
+	$date_aux = $start_date;
+	$i = 0;
+
+	if (($end_date - $start_date) >= SECONDS_1WEEK) {
+		// If the date range is larger than 7 days, every weekly planned downtime will be inside.
+		for ($i = 0; $i < 7; $i++) {
+			$weekday_actual = strtolower(date('l', $date_aux));
+			$periodically_weekly_days[] = "($weekday_actual = 1)";
+			$date_aux += SECONDS_1DAY;
+		}
+	}
+	else if (($end_date - $start_date) <= SECONDS_1DAY && $start_day == $end_day) {
+		// If the date range is smaller than 1 day, the start and end days can be equal or consecutive.
+		// If they are equal, the execution times have to be contained in the date range times or contain
+		// the start or end time of the date range.
+		$weekday_actual = strtolower(date('l', $start_date));
+		$periodically_weekly_days[] = "($weekday_actual = 1
+			AND ((periodically_time_from > '$start_time' AND periodically_time_to < '$end_time')
+				OR (periodically_time_from = '$start_time'
+					OR (periodically_time_from < '$start_time'
+						AND periodically_time_to >= '$start_time'))
+				OR (periodically_time_from = '$end_time'
+					OR (periodically_time_from < '$end_time'
+						AND periodically_time_to >= '$end_time'))))";
+	}
+	else {
+		while ($date_aux <= $end_date && $i < 7) {
+
+			$weekday_actual = strtolower(date('l', $date_aux));
+			$day_num_actual = date('d', $date_aux);
+
+			if ($date_aux == $start_date) {
+				$periodically_weekly_days[] = "($weekday_actual = 1 AND periodically_time_to >= '$start_time')";
+			}
+			else if ($day_num_actual == $end_day) {
+				$periodically_weekly_days[] = "($weekday_actual = 1 AND periodically_time_from <= '$end_time')";
+			}
+			else {
+				$periodically_weekly_days[] = "($weekday_actual = 1)";
+			}
+			
+			$date_aux += SECONDS_1DAY;
+			$i++;
+		}
+	}
+
+	if (!empty($periodically_weekly_days)) {
+		$periodically_weekly_w = "type_periodicity = 'weekly' AND (".implode(" OR ", $periodically_weekly_days).")";
+		$periodically_condition = "(($periodically_monthly_w) OR ($periodically_weekly_w))";
+	}
+	else {
+		$periodically_condition = "($periodically_monthly_w)";
+	}
+
+	if (!empty($id_agent_modules)) {
+		$id_agent_modules_str = implode(",", $id_agent_modules);
+		$agent_modules_condition_tpda = "AND tam.id_agente_modulo IN ($id_agent_modules_str)";
+		$agent_modules_condition_tpdm = "AND tpdm.id_agent_module IN ($id_agent_modules_str)";
+	}
+	else {
+		$agent_modules_condition_tpda = "";
+		$agent_modules_condition_tpdm = "";
+	}
+	
+	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
+					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
+					WHERE ((tpd.id = tpda.id_downtime
+								AND tpda.all_modules = 1
+								AND tpda.id_agent = tam.id_agente
+								$agent_modules_condition_tpda)
+							OR (tpd.id = tpdm.id_downtime
+								$agent_modules_condition_tpdm)
+						AND ((type_execution = 'periodically'
+								AND $periodically_condition)
+							OR (type_execution = 'once'
+								AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+									OR (date_from <= '$start_date' AND date_to >= '$end_date')
+									OR (date_from <= '$start_date' AND date_to >= '$start_date')
+									OR (date_from <= '$end_date' AND date_to >= '$end_date'))))";
+
+	$downtimes = db_get_all_rows_sql($sql_downtime);
+	if ($downtimes == false) {
+		$downtimes = array();
+	}
+
+	return $downtimes;
+}
+
 function reporting_get_stats_servers($tiny = true) {
 	global $config;
 	
@@ -3521,10 +3663,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			break;
 		case 'SLA_monthly':
-			reporting_enterprise_sla_monthly($mini, $content, $report, $table, $item_title);
+			if (function_exists("reporting_enterprise_sla_monthly"))
+				reporting_enterprise_sla_monthly($mini, $content, $report, $table, $item_title);
 			break;
 		case 'SLA_services':
-			reporting_enterprise_sla_services($mini, $content, $report, $table, $item_title);
+			if (function_exists("reporting_enterprise_sla_services"))
+				reporting_enterprise_sla_services($mini, $content, $report, $table, $item_title);
 			break;
 		case 3:
 		case 'SLA':

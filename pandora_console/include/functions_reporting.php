@@ -1449,11 +1449,11 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 				ORDER BY nombre");
 			
 			$data["monitor_checks"] += $group_stat[0]["modules"];
-			$data["monitor_not_init"] += $group_stat[0]["non-init"];
-			$data["monitor_unknown"] += $group_stat[0]["unknown"];
-			$data["monitor_ok"] += $group_stat[0]["normal"];
-			$data["monitor_warning"] += $group_stat[0]["warning"];
-			$data["monitor_critical"] += $group_stat[0]["critical"];
+			$data["agent_not_init"] += $group_stat[0]["non-init"];
+			$data["agent_unknown"] += $group_stat[0]["unknown"];
+			$data["agent_ok"] += $group_stat[0]["normal"];
+			$data["agent_warning"] += $group_stat[0]["warning"];
+			$data["agent_critical"] += $group_stat[0]["critical"];
 			$data["monitor_alerts"] += $group_stat[0]["alerts"];
 			$data["monitor_alerts_fired"] += $group_stat[0]["alerts_fired"];
 			$data["monitor_alerts_fire_count"] += $group_stat[0]["alerts_fired"];
@@ -1464,17 +1464,11 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			$data["utimestamp"] = $group_stat[0]["utimestamp"];
 			
 			// This fields are not in database
-			// Get Agents OK
-			$data["agent_ok"] += groups_agent_ok($group);
-			// Get Agents Warning 
-			$data["agent_warning"] += groups_agent_warning($group);
-			// Get Agents Critical
-			$data["agent_critical"] += groups_agent_critical($group);
-			// Get Agents Unknown
-			$data["agent_unknown"] += groups_agent_unknown($group);
-			// Get Agents Not init
-			$data["agent_not_init"] += groups_agent_not_init($group);
-			
+			$data["monitor_ok"] += groups_monitor_ok($group);
+			$data["monitor_warning"] += groups_monitor_warning($group);
+			$data["monitor_critical"] += groups_monitor_critical($group);
+			$data["monitor_unknown"] += groups_monitor_unknown($group);
+			$data["monitor_not_init"] += groups_monitor_not_init($group);
 		}
 		
 	// -------------------------------------------------------------------

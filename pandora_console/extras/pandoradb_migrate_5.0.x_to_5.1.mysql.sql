@@ -250,3 +250,10 @@ INSERT INTO `talert_actions` (`name`, `id_alert_command`, `field1`, `field2`, `f
 -- Table `tconfig`
 -- ---------------------------------------------------------------------
 DELETE FROM `tconfig` WHERE `token`='sla_period';
+
+-- ---------------------------------------------------------------------
+-- Table `network_component`
+-- ---------------------------------------------------------------------
+UPDATE FROM `network_component` SET `module_inteval`= 3600 WHERE `id_nc`=53;
+UPDATE FROM `network_component` SET `post_process`= 0.000000115740741 WHERE `id_nc`=53;
+UPDATE FROM `network_component` SET `unit`= 'day' WHERE `id_nc`=53;

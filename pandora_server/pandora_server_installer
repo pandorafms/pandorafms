@@ -10,7 +10,9 @@
 
 
 MODE=$1
-shift
+if [ $# -gt 1 ]; then
+	shift
+fi
 
 # Defaults
 PREFIX=/usr

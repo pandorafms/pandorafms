@@ -1921,9 +1921,15 @@ function html_print_autocomplete_modules($name = 'module',
 			$groups = users_get_groups($config['id_user'], "AW", false);
 			$groups = array_keys($groups);
 			
+			if (empty($groups)) {
+				$id_groups = 0;
+			} else {
+				$id_groups = implode(',', $groups);
+			}		
+
 			$agents = db_get_all_rows_sql('SELECT id_agente
 				FROM tagente
-				WHERE id_grupo IN (' . implode(',', $groups) . ')');
+				WHERE id_grupo IN (' . $id_groups . ')');
 		}
 		else {
 			$agents = db_get_all_rows_sql('SELECT id_agente

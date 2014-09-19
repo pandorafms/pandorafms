@@ -37,7 +37,7 @@ if ($OSNAME eq "freebsd") {
 		'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
 		'networktimeout' => 2,
-		'nmap_timing_template' => 2,
+		'recon_timing_template' => 3,
 		'PID' => '',
 		'quiet' => 1,
 	);
@@ -47,7 +47,7 @@ if ($OSNAME eq "freebsd") {
 		'pandora_path' => '/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
 		'networktimeout' => 2,
-		'nmap_timing_template' => 2,
+		'recon_timing_template' => 3,
 		'PID' => '',
 		'quiet' => 1,
 	);
@@ -101,7 +101,9 @@ my $DOT1DTPFDBADDRESS = ".1.3.6.1.2.1.17.4.3.1.1";
 my $DOT1DTPFDBPORT = ".1.3.6.1.2.1.17.4.3.1.2";
 my $IFDESC = ".1.3.6.1.2.1.2.2.1.2";
 my $IFINDEX = ".1.3.6.1.2.1.2.2.1.1";
+my $IFINOCTECTS = ".1.3.6.1.2.1.2.2.1.10";
 my $IFOPERSTATUS = ".1.3.6.1.2.1.2.2.1.8";
+my $IFOUTOCTECTS = ".1.3.6.1.2.1.2.2.1.16";
 my $IPENTADDR = ".1.3.6.1.2.1.4.20.1.1";
 my $IFNAME = ".1.3.6.1.2.1.31.1.1.1.1";
 my $IPNETTOMEDIAPHYSADDRESS = ".1.3.6.1.2.1.4.22.1.2";
@@ -731,7 +733,7 @@ sub create_pandora_agent($) {
 		$if_name = safe_input($if_name);
 		$if_desc = safe_input($if_desc);
 
-		# Create the module.
+		# Interface status module.
 		my %module = ('id_tipo_modulo' => 18,
 		           'id_modulo' => 2,
 		           'nombre' => "if_${if_name}",
@@ -741,6 +743,30 @@ sub create_pandora_agent($) {
 		           'tcp_send' => 1,
 		           'snmp_community' => $COMMUNITIES{$device},
 		           'snmp_oid' => "$IFOPERSTATUS.$if_index");
+		pandora_create_module_from_hash (\%CONF, \%module, $DBH);
+
+		# Incoming traffic module.
+		%module = ('id_tipo_modulo' => 16,
+		           'id_modulo' => 2,
+		           'nombre' => "if_${if_name}_in",
+		           'descripcion' => 'The total number of octets received on the interface, including framing characters.',
+		           'id_agente' => $agent_id,
+		           'ip_target' => $device,
+		           'tcp_send' => 1,
+		           'snmp_community' => $COMMUNITIES{$device},
+		           'snmp_oid' => "$IFINOCTECTS.$if_index");
+		pandora_create_module_from_hash (\%CONF, \%module, $DBH);
+
+		# Outgoing traffic module.
+		%module = ('id_tipo_modulo' => 16,
+		           'id_modulo' => 2,
+		           'nombre' => "if_${if_name}_out",
+		           'descripcion' => 'The total number of octets received on the interface, including framing characters.',
+		           'id_agente' => $agent_id,
+		           'ip_target' => $device,
+		           'tcp_send' => 1,
+		           'snmp_community' => $COMMUNITIES{$device},
+		           'snmp_oid' => "$IFOUTOCTECTS.$if_index");
 		pandora_create_module_from_hash (\%CONF, \%module, $DBH);
 	}
 
@@ -864,7 +890,7 @@ sub traceroute_connectivity($) {
 
 	# Perform a traceroute.
 	my $timeout = $CONF{'networktimeout'}*1000;
-	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$CONF{'nmap_timing_template'};
+	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$CONF{'recon_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
 		$np->parsescan($CONF{'nmap'}, $nmap_args, ($host));
@@ -935,7 +961,7 @@ update_recon_task($DBH, $TASK_ID, 1);
 # Populate ARP caches.
 message("Populating ARP caches...");
 my $timeout = $CONF{'networktimeout'} * 1000; # Convert the timeout from s to ms.
-my $nmap_args  = '-nsP --send-ip --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$CONF{'nmap_timing_template'};
+my $nmap_args  = '-nsP --send-ip --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$CONF{'recon_timing_template'};
 my $np = new PandoraFMS::NmapParser;
 if ($#SUBNETS >= 0) {
 	$np->parsescan($CONF{'nmap'}, $nmap_args, @SUBNETS);

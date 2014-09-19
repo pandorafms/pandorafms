@@ -736,7 +736,7 @@ sub create_pandora_agent($) {
 		# Interface status module.
 		my %module = ('id_tipo_modulo' => 18,
 		           'id_modulo' => 2,
-		           'nombre' => "if_${if_name}",
+		           'nombre' => "ifOperStatus_${if_name}",
 		           'descripcion' => $if_desc,
 		           'id_agente' => $agent_id,
 		           'ip_target' => $device,
@@ -748,7 +748,7 @@ sub create_pandora_agent($) {
 		# Incoming traffic module.
 		%module = ('id_tipo_modulo' => 16,
 		           'id_modulo' => 2,
-		           'nombre' => "if_${if_name}_in",
+		           'nombre' => "ifInOctets_${if_name}",
 		           'descripcion' => 'The total number of octets received on the interface, including framing characters.',
 		           'id_agente' => $agent_id,
 		           'ip_target' => $device,
@@ -760,7 +760,7 @@ sub create_pandora_agent($) {
 		# Outgoing traffic module.
 		%module = ('id_tipo_modulo' => 16,
 		           'id_modulo' => 2,
-		           'nombre' => "if_${if_name}_out",
+		           'nombre' => "ifOutOctets_${if_name}",
 		           'descripcion' => 'The total number of octets received on the interface, including framing characters.',
 		           'id_agente' => $agent_id,
 		           'ip_target' => $device,

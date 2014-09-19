@@ -307,8 +307,8 @@ install () {
 			mv  $DAEMON_TEMP $DAEMON_SCRIPT
 		fi
 
-		sed -e "s|^temporal[ 	]*|temporal $PANDORA_BASE|" \
-			-e "s|^logfile[ 	]*|logfile $PANDORA_BASE|" \
+		sed -e "s|^temporal[ \t][ \t]*|temporal $PANDORA_BASE|" \
+			-e "s|^logfile[ \t][ \t]*|logfile $PANDORA_BASE|" \
 			$AGENT_CFG > $AGENT_CFG_TEMP
 		mv $AGENT_CFG_TEMP $AGENT_CFG
 	fi

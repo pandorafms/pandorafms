@@ -1095,22 +1095,22 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
 		$periodically_monthly_w = "type_periodicity = 'monthly'
 									AND (((periodically_day_from > '$start_day'
 												OR (periodically_day_from = '$start_day'
-													AND periodically_time_from > '$start_time'))
+													AND periodically_time_from >= '$start_time'))
 											AND (periodically_day_to < '$end_day'
 												OR (periodically_day_to = '$end_day'
-													AND periodically_time_to < '$end_time')))
+													AND periodically_time_to <= '$end_time')))
 										OR ((periodically_day_from < '$start_day' 
 												OR (periodically_day_from = '$start_day'
-													AND periodically_time_from < '$start_time'))
+													AND periodically_time_from <= '$start_time'))
 											AND (periodically_day_to > '$start_day'
 												OR (periodically_day_to = '$start_day'
-													AND periodically_time_to > '$start_time')))
+													AND periodically_time_to >= '$start_time')))
 										OR ((periodically_day_from < '$end_day' 
 												OR (periodically_day_from = '$end_day'
-													AND periodically_time_from < '$end_time'))
+													AND periodically_time_from <= '$end_time'))
 											AND (periodically_day_to > '$end_day'
 												OR (periodically_day_to = '$end_day'
-													AND periodically_time_to > '$end_time'))))";
+													AND periodically_time_to >= '$end_time'))))";
 	}
 
 	$periodically_weekly_days = array();

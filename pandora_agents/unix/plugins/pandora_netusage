@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 OUT=`netstat -as | grep "OutOctets" | awk '{ print $2 }'`
 IN=`netstat -as | grep "InOctets" | awk '{ print $2 }'`

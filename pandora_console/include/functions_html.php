@@ -2015,6 +2015,12 @@ function html_print_autocomplete_modules($name = 'module',
 									}
 								});
 						},
+					change: function( event, ui ) {
+							if (!ui.item)
+								$("input[name='<?php echo $name; ?>_hidden']")
+									.val(0);
+							return false;
+						},
 					select: function( event, ui ) {
 							$("input[name='<?php echo $name; ?>_hidden']")
 								.val(ui.item.value);

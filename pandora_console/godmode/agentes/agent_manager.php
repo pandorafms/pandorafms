@@ -94,6 +94,7 @@ if (is_ajax ()) {
 // Load global vars
 enterprise_include ('godmode/agentes/agent_manager.php');
 
+require_once ('include/functions_clippy.php');
 require_once ('include/functions_servers.php');
 require_once ('include/functions_gis.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
@@ -288,9 +289,11 @@ $table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255
 $table->data[1][0] = __('Module definition') .
 	ui_print_help_icon("module_definition", true);
 $table->data[1][1] = __('Learning mode') . ' ' .
-	html_print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+	html_print_radio_button_extended ("modo", 1, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
+		'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Normal mode') . ' ' .
-	html_print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+	html_print_radio_button_extended ("modo", 0, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
+		'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
@@ -414,7 +417,22 @@ if (!empty($fields)) {
 }
 
 echo '<div class="action-buttons" style="width: ' . $table->width . '">';
+
+
+//The context help about the learning mode
+if ($modo == 0) {
+	echo "<span id='modules_not_learning_mode_context_help' style=''>";
+}
+else {
+	echo "<span id='modules_not_learning_mode_context_help' style='display: none;'>";
+}
+echo clippy_context_help("modules_not_learning_mode");
+echo "</span>";
+
+
+
 if ($id_agente) {
+	
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 	html_print_input_hidden ('update_agent', 1);
 	html_print_input_hidden ('id_agente', $id_agente);
@@ -463,6 +481,15 @@ function changeIcons() {
 	}
 	
 	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
+}
+
+function show_modules_not_learning_mode_context_help() {
+	if ($("input[name='modo'][value=1]").is(':checked')) {
+		$("#modules_not_learning_mode_context_help").hide();
+	}
+	else {
+		$("#modules_not_learning_mode_context_help").show();
+	}
 }
 
 $(document).ready (function () {

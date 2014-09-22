@@ -259,6 +259,11 @@ UPDATE FROM `network_component` SET `post_process`= 0.000000115740741 WHERE `id_
 UPDATE FROM `network_component` SET `unit`= 'day' WHERE `id_nc`=53;
 
 -- ---------------------------------------------------------------------
--- Table `network_component`
+-- Table `tnetwork_component`
 -- ---------------------------------------------------------------------
-ALTER TABLE `tnetwork_component` MODIFY COLUMN `post_process` DOUBLE(18,15)  DEFAULT 0;
+ALTER TABLE `tnetwork_component` MODIFY COLUMN `post_process` DOUBLE(24,15)  DEFAULT 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tagente_modulo`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tagente_modulo` MODIFY COLUMN `post_process` DOUBLE(24,15)  DEFAULT 0;

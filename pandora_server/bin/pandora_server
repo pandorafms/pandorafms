@@ -516,7 +516,7 @@ sub main() {
 	pandora_startup ();
 	
 	# Start thread to execute server tasks on the master server
-	threads->create('pandora_server_tasks', (\%Config))->detach() if ($Config{"master"} == 1);
+	threads->create('pandora_server_tasks', (\%Config))->detach() if ($Config{"pandora_master"} == 1);
 	
 	# Generate 'going up' events
 	foreach my $server (@Servers) {

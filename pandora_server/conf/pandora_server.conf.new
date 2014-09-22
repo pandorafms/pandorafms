@@ -274,9 +274,12 @@ braa_retries 3
 autocreate 1
 
 # max_log_size: Specify max size of Pandora FMS server log file (1MB by default). If
-# log file grows above this limit, is renamed to "pandora_server.log.old".
+# log file grows above this limit, is renamed to "pandora_server.log.0".
 
 max_log_size 1048576
+
+# max_log_generation: Specify max generation count (between 1 and 9) of Pandora FMS server log files.
+max_log_generation 1
 
 # max_queue_files (500 by default)
 # When server have more than max_queue_files in incoming directory, skips the read   

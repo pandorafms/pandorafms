@@ -46,12 +46,11 @@ include_once($config['homedir'] . "/include/functions_netflow.php");
  * 
  * @return float The average module value in the interval.
  */
-function reporting_get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $date = 0) {
 	global $config;
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
@@ -150,12 +149,11 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
  * 
  * @return float The maximum module value in the interval.
  */
-function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_data_max ($id_agent_module, $period=0, $date = 0) {
 	global $config;
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
@@ -230,12 +228,11 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
  * 
  * @return float The minimum module value of the module
  */
-function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_data_min ($id_agent_module, $period=0, $date = 0) {
 	global $config;
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;	
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
@@ -305,12 +302,10 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
  * 
  * @return float The sumatory of the module values in the interval.
  */
-function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_data_sum ($id_agent_module, $period=0, $date = 0) {
 	global $config;
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0))
-		$period = $config["sla_period"];
 	$datelimit = $date - $period;
 	
 	$id_module_type = db_get_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
@@ -414,9 +409,6 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	if ((empty ($period)) OR ($period == 0)) {
-		$period = $config["sla_period"];
-	}
 	if ($daysWeek === null) {
 		$daysWeek = array();
 	}
@@ -478,27 +470,8 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		$interval_data = array ();
 	}
 	
-	//calculate planned downtime dates
-	$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
-	$sql_downtime = "SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent=$id_agent";
-	$downtimes = db_get_all_rows_sql($sql_downtime); 
-	if ($downtimes == false) {
-		$downtimes = array();
-	}
-	$i = 0;
-	$downtime_dates = array();
-	foreach ($downtimes as $downtime) {
-		$id_downtime = $downtime['id_downtime'];
-		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
-		$date_downtime = db_get_row_sql($sql_date);
-		
-		if ($date_downtime != false) {
-			$downtime_dates[$i]['date_from'] = $date_downtime['date_from'];
-			$downtime_dates[$i]['date_to'] = $date_downtime['date_to'];
-			$i++;
-		}
-	}
-	/////
+	// Calculate planned downtime dates
+	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date, true);
 	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
@@ -599,9 +572,6 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	// Initialize variables
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if ((empty ($period)) OR ($period == 0)) {
-		$period = $config["sla_period"];
 	}
 	if ($daysWeek === null) {
 		$daysWeek = array();
@@ -772,43 +742,27 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	//------------------------------------------------------------------
 	
 	//--------Calculate planned downtime dates--------------------------
-	$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
-	$sql_downtime = "SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent=$id_agent";
-	$downtimes = db_get_all_rows_sql($sql_downtime); 
-	if ($downtimes == false) {
-		$downtimes = array();
-	}
-	$i = 0;
-	$downtime_dates = array();
-	
-	foreach ($downtimes as $downtime) {
-		$id_downtime = $downtime['id_downtime'];
-		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
-		$date_downtime = db_get_row_sql($sql_date);
+	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date, true);
+
+	foreach ($downtime_dates as $downtime_date) {
+		// Delete data of the planned downtime and put the last data on the upper limit
+		$interval_data_indexed[$downtime_date['date_from']]['data'] = 0;
+		$interval_data_indexed[$downtime_date['date_from']]['status'] = 5;
+		$interval_data_indexed[$downtime_date['date_to']]['data'] = 0;
+		$interval_data_indexed[$downtime_date['date_to']]['status'] = 4;
 		
-		if ($date_downtime != false) {
-			// Delete data of the planned downtime and put the last data on the upper limit
-			$interval_data_indexed[$date_downtime['date_from']]['data'] = 0;
-			$interval_data_indexed[$date_downtime['date_from']]['status'] = 5;
-			
-			$last_downtime_data = false;
-			foreach ($interval_data_indexed as $idi_timestamp => $idi) {
-				if ($idi_timestamp != $date_downtime['date_from'] && $idi_timestamp !=  $date_downtime['date_to'] && 
-						$idi_timestamp >= $date_downtime['date_from'] && $idi_timestamp <= $date_downtime['date_to']) {
-					$last_downtime_data = $idi['data'];
-					unset($interval_data_indexed[$idi_timestamp]);
-				} 
+		$last_downtime_data = false;
+		foreach ($interval_data_indexed as $idi_timestamp => $idi) {
+			if ($idi_timestamp != $downtime_date['date_from'] && $idi_timestamp != $downtime_date['date_to'] && 
+					$idi_timestamp >= $downtime_date['date_from'] && $idi_timestamp <= $downtime_date['date_to']) {
+				$last_downtime_data = $idi['data'];
+				unset($interval_data_indexed[$idi_timestamp]);
 			}
-			
-			// Set the last data of the interval as limit
-			if ($last_downtime_data !== false) {
-				$interval_data_indexed[$date_downtime['date_to']]['data'] = $last_downtime_data;
-			}// If there arent data into the downtime, set unknown
-			else {
-				$interval_data_indexed[$date_downtime['date_to']]['data'] = 0;
-				$interval_data_indexed[$date_downtime['date_to']]['status'] = 4;				
-			}
-			$i++;
+		}
+		
+		// Set the last data of the interval as limit
+		if ($last_downtime_data !== false) {
+			$interval_data_indexed[$downtime_date['date_to']]['data'] = $last_downtime_data;
 		}
 	}
 	//------------------------------------------------------------------
@@ -904,6 +858,337 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	
 	return $data_colors;
+}
+
+/** 
+ * Get the time intervals where an agentmodule is affected by the planned downtimes.
+ * 
+ * @param int Agent module to calculate planned downtimes intervals.
+ * @param int Start date in utimestamp.
+ * @param int End date in utimestamp.
+ * @param bool Whether ot not to get the planned downtimes that affect the service associated with the agentmodule.
+ * 
+ * @return Array with time intervals.
+ */
+function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_date, $end_date, $check_services = false) {
+	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
+					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
+					WHERE (tpd.id = tpda.id_downtime
+							AND tpda.all_modules = 1
+							AND tpda.id_agent = tam.id_agente
+							AND tam.id_agente_modulo = $id_agent_module)
+						OR (tpd.id = tpdm.id_downtime
+							AND tpdm.id_agent_module = $id_agent_module)";
+	$downtimes = db_get_all_rows_sql($sql_downtime);
+	if ($downtimes == false) {
+		$downtimes = array();
+	}
+	$downtime_dates = array();
+	foreach ($downtimes as $downtime) {
+		$downtime_id = $downtime['id'];
+		$downtime_type = $downtime['type_execution'];
+		$downtime_periodicity = $downtime['type_periodicity'];
+		
+		if ($downtime_type == 'once') {
+			$dates = array();
+			$dates['date_from'] = $downtime['date_from'];
+			$dates['date_to'] = $downtime['date_to'];
+			$downtime_dates[] = $dates;
+		}
+		else if ($downtime_type == 'periodically') {
+			$downtime_time_from = $downtime['periodically_time_from'];
+			$downtime_time_to = $downtime['periodically_time_to'];
+
+			$downtime_hour_from = date("H", strtotime($downtime_time_from));
+			$downtime_minute_from = date("i", strtotime($downtime_time_from));
+			$downtime_second_from = date("s", strtotime($downtime_time_from));
+			$downtime_hour_to = date("H", strtotime($downtime_time_to));
+			$downtime_minute_to = date("i", strtotime($downtime_time_to));
+			$downtime_second_to = date("s", strtotime($downtime_time_to));
+
+			if ($downtime_periodicity == "monthly") {
+				$downtime_day_from = $downtime['periodically_day_from'];
+				$downtime_day_to = $downtime['periodically_day_to'];
+
+				$date_aux = strtotime(date("Y-m-01", $start_date));
+				$year_aux = date("Y", $date_aux);
+				$month_aux = date("m", $date_aux);
+
+				$end_year = date("Y", $end_date);
+				$end_month = date("m", $end_date);
+
+				while ($year_aux < $end_year || ($year_aux == $end_year && $month_aux <= $end_month)) {
+					
+					if ($downtime_day_from > $downtime_day_to) {
+						$dates = array();
+						$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+						$dates['date_to'] = strtotime(date("Y-m-t H:i:s", strtotime("$year_aux-$month_aux-28 23:59:59")));
+						$downtime_dates[] = $dates;
+
+						$dates = array();
+						if ($month_aux + 1 <= 12) {
+							$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
+							$dates['date_to'] = strtotime("$year_aux-".($month_aux + 1)."-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+						}
+						else {
+							$dates['date_from'] = strtotime(($year_aux + 1)."-01-01 00:00:00");
+							$dates['date_to'] = strtotime(($year_aux + 1)."-01-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+						}
+						$downtime_dates[] = $dates;
+					}
+					else {
+						if ($downtime_day_from == $downtime_day_to && strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
+							$date_aux_from = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$max_day_num = date('t', $date_aux);
+
+							$dates = array();
+							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_from 23:59:59");
+							$downtime_dates[] = $dates;
+
+							if ($downtime_day_to + 1 > $max_day_num) {
+
+								$dates = array();
+								if ($month_aux + 1 <= 12) {
+									$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
+									$dates['date_to'] = strtotime("$year_aux-".($month_aux + 1)."-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								}
+								else {
+									$dates['date_from'] = strtotime(($year_aux + 1)."-01-01 00:00:00");
+									$dates['date_to'] = strtotime(($year_aux + 1)."-01-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								}
+								$downtime_dates[] = $dates;
+							}
+							else {
+								$dates = array();
+								$dates['date_from'] = strtotime("$year_aux-$month_aux-".($downtime_day_to + 1)." 00:00:00");
+								$dates['date_to'] = strtotime("$year_aux-$month_aux-".($downtime_day_to + 1)." $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								$downtime_dates[] = $dates;
+							}
+						}
+						else {
+							$dates = array();
+							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_to $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+							$downtime_dates[] = $dates;
+						}
+					}
+
+					$month_aux++;
+					if ($month_aux > 12) {
+						$month_aux = 1;
+						$year_aux++;
+					}
+				}
+			}
+			else if ($downtime_periodicity == "weekly") {
+				$date_aux = $start_date;
+				$active_days = array();
+				$active_days[0] = ($downtime['sunday'] == 1) ? true : false;
+				$active_days[1] = ($downtime['monday'] == 1) ? true : false;
+				$active_days[2] = ($downtime['tuesday'] == 1) ? true : false;
+				$active_days[3] = ($downtime['wednesday'] == 1) ? true : false;
+				$active_days[4] = ($downtime['thursday'] == 1) ? true : false;
+				$active_days[5] = ($downtime['friday'] == 1) ? true : false;
+				$active_days[6] = ($downtime['saturday'] == 1) ? true : false;
+
+				while ($date_aux <= $end_date) {
+					$weekday_num = date('w', $date_aux);
+					
+					if ($active_days[$weekday_num]) {
+						$day_num = date('d', $date_aux);
+						$month_num = date('m', $date_aux);
+						$year_num = date('Y', $date_aux);
+
+						$max_day_num = date('t', $date_aux);
+
+						if (strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
+							$dates = array();
+							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num 23:59:59");
+							$downtime_dates[] = $dates;
+
+							$dates = array();
+							if ($day_num + 1 > $max_day_num) {
+								if ($month_num + 1 > 12) {
+									$dates['date_from'] = strtotime(($year_num + 1)."-01-01 00:00:00");
+									$dates['date_to'] = strtotime(($year_num + 1)."-01-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								}
+								else {
+									$dates['date_from'] = strtotime("$year_num-".($month_num + 1)."-01 00:00:00");
+									$dates['date_to'] = strtotime("$year_num-".($month_num + 1)."-01 $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+								}
+							}
+							else {
+								$dates['date_from'] = strtotime("$year_num-$month_num-".($day_num + 1)." 00:00:00");
+								$dates['date_to'] = strtotime("$year_num-$month_num-".($day_num + 1)." $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+							}
+							$downtime_dates[] = $dates;
+						}
+						else {
+							$dates = array();
+							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
+							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_to:$downtime_minute_to:$downtime_second_to");
+							$downtime_dates[] = $dates;
+						}
+					}
+
+					$date_aux += SECONDS_1DAY;
+				}
+			}
+		}
+	}
+
+	if ($check_services) {
+		enterprise_include_once("include/functions_services.php");
+		if (function_exists("services_get_planned_downtimes_intervals")) {
+			services_get_planned_downtimes_intervals($downtime_dates, $start_date, $end_date, false, $id_agent_module);
+		}
+	}
+
+	return $downtime_dates;
+}
+
+/** 
+ * Get the planned downtimes that affect the passed modules on an specific datetime range.
+ * 
+ * @param int Start date in utimestamp.
+ * @param int End date in utimestamp.
+ * @param array The agent modules ids.
+ * 
+ * @return Array with the planned downtimes that are executed in any moment of the range selected and affect the
+ * agent modules selected.
+ */
+function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modules = false) {
+	$start_time = date("H:i:s", $start_date);
+	$end_time = date("H:i:s", $end_date);
+
+	$start_day = date("d", $start_date);
+	$end_day = date("d", $end_date);
+
+	$start_month = date("m", $start_date);
+	$end_month = date("m", $end_date);
+
+	if ($start_date > $end_date) {
+		return false;
+	}
+
+	if ($end_date - $start_date >= SECONDS_1MONTH) {
+		// If the date range is larger than 1 month, every monthly planned downtime will be inside
+		$periodically_monthly_w = "type_periodicity = 'monthly'";
+	}
+	else {
+		// Check if the range is larger than the planned downtime execution, or if its start or end
+		// is inside the planned downtime execution.
+		// The start and end time is very important.
+		$periodically_monthly_w = "type_periodicity = 'monthly'
+									AND (((periodically_day_from > '$start_day'
+												OR (periodically_day_from = '$start_day'
+													AND periodically_time_from >= '$start_time'))
+											AND (periodically_day_to < '$end_day'
+												OR (periodically_day_to = '$end_day'
+													AND periodically_time_to <= '$end_time')))
+										OR ((periodically_day_from < '$start_day' 
+												OR (periodically_day_from = '$start_day'
+													AND periodically_time_from <= '$start_time'))
+											AND (periodically_day_to > '$start_day'
+												OR (periodically_day_to = '$start_day'
+													AND periodically_time_to >= '$start_time')))
+										OR ((periodically_day_from < '$end_day' 
+												OR (periodically_day_from = '$end_day'
+													AND periodically_time_from <= '$end_time'))
+											AND (periodically_day_to > '$end_day'
+												OR (periodically_day_to = '$end_day'
+													AND periodically_time_to >= '$end_time'))))";
+	}
+
+	$periodically_weekly_days = array();
+	$date_aux = $start_date;
+	$i = 0;
+
+	if (($end_date - $start_date) >= SECONDS_1WEEK) {
+		// If the date range is larger than 7 days, every weekly planned downtime will be inside.
+		for ($i = 0; $i < 7; $i++) {
+			$weekday_actual = strtolower(date('l', $date_aux));
+			$periodically_weekly_days[] = "($weekday_actual = 1)";
+			$date_aux += SECONDS_1DAY;
+		}
+	}
+	else if (($end_date - $start_date) <= SECONDS_1DAY && $start_day == $end_day) {
+		// If the date range is smaller than 1 day, the start and end days can be equal or consecutive.
+		// If they are equal, the execution times have to be contained in the date range times or contain
+		// the start or end time of the date range.
+		$weekday_actual = strtolower(date('l', $start_date));
+		$periodically_weekly_days[] = "($weekday_actual = 1
+			AND ((periodically_time_from > '$start_time' AND periodically_time_to < '$end_time')
+				OR (periodically_time_from = '$start_time'
+					OR (periodically_time_from < '$start_time'
+						AND periodically_time_to >= '$start_time'))
+				OR (periodically_time_from = '$end_time'
+					OR (periodically_time_from < '$end_time'
+						AND periodically_time_to >= '$end_time'))))";
+	}
+	else {
+		while ($date_aux <= $end_date && $i < 7) {
+
+			$weekday_actual = strtolower(date('l', $date_aux));
+			$day_num_actual = date('d', $date_aux);
+
+			if ($date_aux == $start_date) {
+				$periodically_weekly_days[] = "($weekday_actual = 1 AND periodically_time_to >= '$start_time')";
+			}
+			else if ($day_num_actual == $end_day) {
+				$periodically_weekly_days[] = "($weekday_actual = 1 AND periodically_time_from <= '$end_time')";
+			}
+			else {
+				$periodically_weekly_days[] = "($weekday_actual = 1)";
+			}
+			
+			$date_aux += SECONDS_1DAY;
+			$i++;
+		}
+	}
+
+	if (!empty($periodically_weekly_days)) {
+		$periodically_weekly_w = "type_periodicity = 'weekly' AND (".implode(" OR ", $periodically_weekly_days).")";
+		$periodically_condition = "(($periodically_monthly_w) OR ($periodically_weekly_w))";
+	}
+	else {
+		$periodically_condition = "($periodically_monthly_w)";
+	}
+
+	if (!empty($id_agent_modules)) {
+		$id_agent_modules_str = implode(",", $id_agent_modules);
+		$agent_modules_condition_tpda = "AND tam.id_agente_modulo IN ($id_agent_modules_str)";
+		$agent_modules_condition_tpdm = "AND tpdm.id_agent_module IN ($id_agent_modules_str)";
+	}
+	else {
+		$agent_modules_condition_tpda = "";
+		$agent_modules_condition_tpdm = "";
+	}
+	
+	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
+					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
+					WHERE ((tpd.id = tpda.id_downtime
+								AND tpda.all_modules = 1
+								AND tpda.id_agent = tam.id_agente
+								$agent_modules_condition_tpda)
+							OR (tpd.id = tpdm.id_downtime
+								$agent_modules_condition_tpdm))
+						AND ((type_execution = 'periodically'
+								AND $periodically_condition)
+							OR (type_execution = 'once'
+								AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+									OR (date_from <= '$start_date' AND date_to >= '$end_date')
+									OR (date_from <= '$start_date' AND date_to >= '$start_date')
+									OR (date_from <= '$end_date' AND date_to >= '$end_date'))))";
+	
+	$downtimes = db_get_all_rows_sql($sql_downtime);
+	if ($downtimes == false) {
+		$downtimes = array();
+	}
+
+	return $downtimes;
 }
 
 function reporting_get_stats_servers($tiny = true) {
@@ -1460,11 +1745,11 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 				ORDER BY nombre");
 			
 			$data["monitor_checks"] += $group_stat[0]["modules"];
-			$data["monitor_not_init"] += $group_stat[0]["non-init"];
-			$data["monitor_unknown"] += $group_stat[0]["unknown"];
-			$data["monitor_ok"] += $group_stat[0]["normal"];
-			$data["monitor_warning"] += $group_stat[0]["warning"];
-			$data["monitor_critical"] += $group_stat[0]["critical"];
+			$data["agent_not_init"] += $group_stat[0]["non-init"];
+			$data["agent_unknown"] += $group_stat[0]["unknown"];
+			$data["agent_ok"] += $group_stat[0]["normal"];
+			$data["agent_warning"] += $group_stat[0]["warning"];
+			$data["agent_critical"] += $group_stat[0]["critical"];
 			$data["monitor_alerts"] += $group_stat[0]["alerts"];
 			$data["monitor_alerts_fired"] += $group_stat[0]["alerts_fired"];
 			$data["monitor_alerts_fire_count"] += $group_stat[0]["alerts_fired"];
@@ -1475,17 +1760,11 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			$data["utimestamp"] = $group_stat[0]["utimestamp"];
 			
 			// This fields are not in database
-			// Get Agents OK
-			$data["agent_ok"] += groups_agent_ok($group);
-			// Get Agents Warning 
-			$data["agent_warning"] += groups_agent_warning($group);
-			// Get Agents Critical
-			$data["agent_critical"] += groups_agent_critical($group);
-			// Get Agents Unknown
-			$data["agent_unknown"] += groups_agent_unknown($group);
-			// Get Agents Not init
-			$data["agent_not_init"] += groups_agent_not_init($group);
-			
+			$data["monitor_ok"] += groups_monitor_ok($group);
+			$data["monitor_warning"] += groups_monitor_warning($group);
+			$data["monitor_critical"] += groups_monitor_critical($group);
+			$data["monitor_unknown"] += groups_monitor_unknown($group);
+			$data["monitor_not_init"] += groups_monitor_not_init($group);
 		}
 		
 	// -------------------------------------------------------------------
@@ -1783,12 +2062,7 @@ function reporting_alert_reporting_agent ($id_agent, $period = 0, $date = 0, $re
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
-	}
-	
+	}	
 	$table->width = '99%';
 	$table->data = array ();
 	$table->head = array ();
@@ -1892,10 +2166,6 @@ function reporting_alert_reporting_group ($id_group, $period = 0, $date = 0, $re
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
 	}
 	
 	$table->width = '99%';
@@ -2034,10 +2304,6 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
 	}
 	
 	$table->width = '99%';
@@ -2548,10 +2814,6 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
-	}
 	
 	$table->width = '99%';
 	
@@ -2669,10 +2931,6 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
 	}
 	
 	$table->width = '99%';
@@ -2793,10 +3051,6 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		$period = $config["sla_period"];
 	}
 	
 	$table->width = '99%';
@@ -3373,10 +3627,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			break;
 		case 'SLA_monthly':
-			reporting_enterprise_sla_monthly($mini, $content, $report, $table, $item_title);
+			if (function_exists("reporting_enterprise_sla_monthly"))
+				reporting_enterprise_sla_monthly($mini, $content, $report, $table, $item_title);
 			break;
 		case 'SLA_services':
-			reporting_enterprise_sla_services($mini, $content, $report, $table, $item_title);
+			if (function_exists("reporting_enterprise_sla_services"))
+				reporting_enterprise_sla_services($mini, $content, $report, $table, $item_title);
 			break;
 		case 3:
 		case 'SLA':
@@ -3664,8 +3920,113 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 				
 				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				$data = array();
 				$data[0] = html_print_table($tableslice, true);
+				array_push ($table->data, $data);
+			}
+
+			// Table Planned Downtimes
+			$id_agent_modules = array();
+			foreach ($slas as $sla) {
+				if (!empty($sla['id_agent_module']))
+					$id_agent_modules[] = $sla['id_agent_module'];
+			}
+			$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
+
+			if (!empty($planned_downtimes)) {
+
+				$table_planned_downtimes = new StdClass();
+				$table_planned_downtimes->width = '100%';
+				$table_planned_downtimes->title = __('This SLA has been affected by the following planned downtimes');
+				$table_planned_downtimes->head = array();
+				$table_planned_downtimes->head[0] = __('Name');
+				$table_planned_downtimes->head[1] = __('Description');
+				$table_planned_downtimes->head[2] = __('Execution');
+				$table_planned_downtimes->head[3] = __('Dates');
+				$table_planned_downtimes->headstyle = array();
+				$table_planned_downtimes->style = array();
+				$table_planned_downtimes->data = array();
+
+				if ($for_pdf) {
+					$table_planned_downtimes->titlestyle = 'background: #373737; color: #FFF; display: table-cell; font-size: 12px; border: 1px solid grey';
+					$table_planned_downtimes->class = 'table_sla table_beauty';
+
+					for ($i = 0; $i < count($table_planned_downtimes->head); $i++) {
+						$table_planned_downtimes->headstyle[$i] = 'background: #666; color: #FFF; display: table-cell; font-size: 11px; border: 1px solid grey';
+					}
+					for ($i = 0; $i < count($table_planned_downtimes->head); $i++) {
+						$table_planned_downtimes->style[$i] = 'display: table-cell; font-size: 10px;';
+					}
+				}
+
+				foreach ($planned_downtimes as $planned_downtime) {
+					$data = array();
+					$data[0] = $planned_downtime['name'];
+					$data[1] = $planned_downtime['description'];
+					$data[2] = ucfirst($planned_downtime['type_execution']);
+
+					switch ($planned_downtime['type_execution']) {
+						case 'once':
+							$data[3] = date ("Y-m-d H:i", $planned_downtime['date_from']) .
+								"&nbsp;" . __('to') . "&nbsp;".
+								date ("Y-m-d H:i", $planned_downtime['date_to']);
+							break;
+						case 'periodically':
+							switch ($planned_downtime['type_periodicity']) {
+								case 'weekly':
+									$data[3] = __('Weekly:');
+									$data[3] .= "&nbsp;";
+									if ($planned_downtime['monday']) {
+										$data[3] .= __('Mon');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['tuesday']) {
+										$data[3] .= __('Tue');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['wednesday']) {
+										$data[3] .= __('Wed');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['thursday']) {
+										$data[3] .= __('Thu');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['friday']) {
+										$data[3] .= __('Fri');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['saturday']) {
+										$data[3] .= __('Sat');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['sunday']) {
+										$data[3] .= __('Sun');
+										$data[3] .= "&nbsp;";
+									}
+									$data[3] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
+									$data[3] .= "-" . $planned_downtime['periodically_time_to'] . ")";
+									break;
+								case 'monthly':
+									$data[3] = __('Monthly:') . "&nbsp;";
+									$data[3] .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
+									$data[3] .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
+									$data[3] .= $planned_downtime['periodically_day_to'];
+									$data[3] .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
+									$data[3] .= "-" . $planned_downtime['periodically_time_to'] . ")";
+									break;
+							}
+							break;
+					}
+
+					$table_planned_downtimes->data[] = $data;
+				}
+
+				$data = array();
+				$data[0] = html_print_table($table_planned_downtimes, true);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				array_push ($table->data, $data);
 			}
 			break;
@@ -6531,11 +6892,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
  * 
  * @return float The MTBF value in the interval.
  */
-function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 0) {
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	
 	// Read module configuration
 	$datelimit = $date - $period;	
@@ -6642,11 +7002,10 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
  * 
  * @return float The MTTR value in the interval.
  */
-function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 0) {
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	
 	// Read module configuration
 	$datelimit = $date - $period;	
@@ -6752,11 +7111,10 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
  * 
  * @return float The TTO value in the interval.
  */
-function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_tto ($id_agent_module, $period = 0, $date = 0) {
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	
 	// Read module configuration
 	$datelimit = $date - $period;	
@@ -6853,11 +7211,10 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
  * 
  * @return float The TTR value in the interval.
  */
-function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
+function reporting_get_agentmodule_ttr ($id_agent_module, $period = 0, $date = 0) {
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	
 	// Read module configuration
 	$datelimit = $date - $period;	
@@ -7017,11 +7374,6 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	if (empty ($period)) {
-		global $config;
-		
-		$period = $config["sla_period"];
-	}
 	
 	return events_get_count_events_by_agent($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
@@ -7049,11 +7401,6 @@ function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		
-		$period = $config["sla_period"];
 	}
 	
 	return events_get_count_events_validated_by_user($filter, $period, $date,
@@ -7083,11 +7430,6 @@ function reporting_get_count_events_by_criticity ($filter, $period = 0,
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-	if (empty ($period)) {
-		global $config;
-		
-		$period = $config["sla_period"];
-	}
 	
 	return events_get_count_events_by_criticity($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
@@ -7115,11 +7457,6 @@ function reporting_get_count_events_validated ($filter, $period = 0,
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	}
-	if (empty ($period)) {
-		global $config;
-		
-		$period = $config["sla_period"];
 	}
 	
 	return events_get_count_events_validated($filter, $period, $date,

@@ -48,7 +48,7 @@ if ($get_plugin_macros) {
 
 if ($search_modules) {
 	$id_agents = json_decode(io_safe_output(get_parameter('id_agents')));
-	$filter = get_parameter('q', '') . '%';
+	$filter =  '%' . get_parameter('q', '') . '%';
 	$other_filter = json_decode(io_safe_output(get_parameter('other_filter')), true);
 	
 	$modules = agents_get_modules($id_agents, false,

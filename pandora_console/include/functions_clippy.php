@@ -171,7 +171,6 @@ function clippy_write_javascript_helps_steps($tours) {
 		}
 		
 		$help_context = false;
-		
 		?>
 		<script type="text/javascript">
 			var <?php echo $name_obj_js_tour; ?> = null;
@@ -181,8 +180,18 @@ function clippy_write_javascript_helps_steps($tours) {
 				
 				<?php echo $name_obj_js_tour; ?>.setOptions({
 					steps: <?php echo json_encode($steps); ?>,
-					showBullets: <?php echo $show_bullets; ?>,
-					showStepNumbers: <?php echo $show_step_numbers; ?>,
+					showBullets: <?php
+						if ($show_bullets)
+							echo "true";
+						else
+							echo "false";
+					?>,
+					showStepNumbers: <?php
+						if ($show_step_numbers)
+							echo "true";
+						else
+							echo "false";
+					?>,
 					nextLabel: "<?php echo __('Next &rarr;'); ?>",
 					prevLabel: "<?php echo __('&larr; Back'); ?>",
 					skipLabel: "<?php echo $skipLabel; ?>",

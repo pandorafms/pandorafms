@@ -263,6 +263,12 @@ $table->data['tutorial_mode'][1] =
 	html_print_select($modes_tutorial, 'tutorial_mode',
 		$config["tutorial_mode"], '', '', 0, true);
 
+$config["past_planned_downtimes"] = isset($config["past_planned_downtimes"]) ? $config["past_planned_downtimes"] : 1;
+$table->data[33][0] = __('Allow create planned downtimes in the past') .
+	ui_print_help_tip(__('The planned downtimes created in the past will affect the SLA reports'), true);
+$table->data[33][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 1, '', $config["past_planned_downtimes"], true).'&nbsp;&nbsp;';
+$table->data[33][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 0, '', $config["past_planned_downtimes"], true);
+
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo "<fieldset>";

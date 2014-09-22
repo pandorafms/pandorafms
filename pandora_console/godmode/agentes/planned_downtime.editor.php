@@ -25,6 +25,7 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 	return;
 }
 
+$config["past_planned_downtimes"] = isset($config["past_planned_downtimes"]) ? $config["past_planned_downtimes"] : 1;
 
 require_once ('include/functions_users.php');
 
@@ -51,7 +52,7 @@ $once_time_to = (string) get_parameter ('once_time_to', date(TIME_FORMAT));
 $periodically_day_from = (int) get_parameter ('periodically_day_from', 1);
 $periodically_day_to = (int) get_parameter ('periodically_day_to', 31);
 $periodically_time_from = (string) get_parameter ('periodically_time_from', date(TIME_FORMAT));
-$periodically_time_to = (string) get_parameter ('periodically_time_to', date(TIME_FORMAT));
+$periodically_time_to = (string) get_parameter ('periodically_time_to', date(TIME_FORMAT, time() + SECONDS_1HOUR));
 
 $first_create = (int) get_parameter ('first_create', 0);
 
@@ -152,12 +153,19 @@ if ($create_downtime || $update_downtime) {
 	$datetime_to = strtotime ($once_date_to . ' ' . $once_time_to);
 	$now = strtotime(date(DATE_FORMAT). ' ' . date(TIME_FORMAT));
 	
-	if ($datetime_from < $now) {
+	if ($type_execution == 'once' && !$config["past_planned_downtimes"] && $datetime_from < $now) {
 		ui_print_error_message(__('Not created. Error inserting data. Start time must be higher than the current time' ));
 	}
-	else if ($datetime_from >= $datetime_to) {
-		ui_print_error_message(__('Not created. Error inserting data' ).
-			': START &gt;= END');
+	else if ($type_execution == 'once' && $datetime_from >= $datetime_to) {
+		ui_print_error_message(__('Not created. Error inserting data') . ". " .__('The end date must be higher than the start date'));
+	}
+	else if ($type_execution == 'periodically'
+			&& (($type_periodicity == 'weekly' && $periodically_time_from >= $periodically_time_to)
+				|| ($type_periodicity == 'monthly' && $periodically_day_from == $periodically_day_to && $periodically_time_from >= $periodically_time_to))) {
+		ui_print_error_message(__('Not created. Error inserting data') . ". " .__('The end time must be higher than the start time'));
+	}
+	else if ($type_execution == 'periodically' && $type_periodicity == 'monthly' && $periodically_day_from >= $periodically_day_to) {
+		ui_print_error_message(__('Not created. Error inserting data') . ". " .__('The end day must be higher than the start day'));
 	}
 	else {
 		$sql = '';
@@ -323,35 +331,35 @@ $table->data[3][1] = html_print_select(array('quiet' => __('Quiet'),
 	'type_downtime', $type_downtime, 'change_type_downtime()', '', 0, true, false, true,
 	'');
 $table->data[4][0] = __('Execution');
-$table->data[4][1] = html_print_select(array('once' => __('once'),
+$table->data[4][1] = html_print_select(array('once' => __('Once'),
 	'periodically' => __('Periodically')),
 	'type_execution', $type_execution, 'change_type_execution();', '', 0, true);
 
 $days = array_combine(range(1, 31), range(1, 31));
-$table->data[5][0] = __('Configure the time');
+$table->data[5][0] = __('Configure the time') . "&nbsp;" . ui_print_help_icon ('planned_downtime_time', true);;
 $table->data[5][1] = "
 	<div id='once_time' style='display: none;'>
 		<table>
 			<tr>
 				<td>" .
 					__('From:') .
-					ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
-					ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
 					"</td>
 				<td>".
 				html_print_input_text ('once_date_from', $once_date_from, '', 10, 10, true) .
-				html_print_input_text ('once_time_from', $once_time_from, '', 9, 9, true) . 
+				ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
+				html_print_input_text ('once_time_from', $once_time_from, '', 9, 9, true) .
+				ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
 				"</td>
 			</tr>
 			<tr>
 				<td>" .
 					__('To:') .
-					ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
-					ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
 					"</td>
 				<td>".
 				html_print_input_text ('once_date_to', $once_date_to, '', 10, 10, true) .
-				html_print_input_text ('once_time_to', $once_time_to, '', 9, 9, true) . 
+				ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
+				html_print_input_text ('once_time_to', $once_time_to, '', 9, 9, true) .
+				ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
 				"</td>
 			</tr>
 		</table>
@@ -359,8 +367,7 @@ $table->data[5][1] = "
 	<div id='periodically_time' style='display: none;'>
 		<table>
 			<tr>
-				<td>" . __('Type Periodicity:') . "</td>
-				<td>".
+				<td>" . __('Type Periodicity:') . "&nbsp;".
 					html_print_select(array(
 							'weekly' => __('Weekly'),
 							'monthly' => __('Monthly')),
@@ -407,6 +414,7 @@ $table->data[5][1] = "
 								html_print_select($days,
 									'periodically_day_to', $periodically_day_to, '', '', 0, true) .
 							"</td>
+							<td>" . ui_print_help_tip(__('The end day must be higher than the start day'), true) . "</td>
 						</tr>
 					</table>
 					<table>
@@ -416,12 +424,16 @@ $table->data[5][1] = "
 							html_print_input_text (
 								'periodically_time_from',
 								$periodically_time_from, '', 7, 7, true) . 
+							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds').
+								".<br>".__('The end time must be higher than the start time'), true) .
 							"</td>
 							<td>" . __('To hour:') . "</td>
 							<td>".
 							html_print_input_text (
 								'periodically_time_to',
-								$periodically_time_to, '', 7, 7, true) . 
+								$periodically_time_to, '', 7, 7, true) .
+							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds').
+								".<br>".__('The end time must be higher than the start time'), true) .
 							"</td>
 						</tr>
 					</table>
@@ -511,7 +523,7 @@ if ($id_downtime > 0) {
 	echo html_print_select (array(), "module[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
 	echo "</div>";
 	echo "<br /><br /><br />";
-	html_print_submit_button (__('Add'), '', $disabled_add_button, 'class="sub next"',false);
+	html_print_submit_button (__('Add'), 'add_item', $disabled_add_button, 'class="sub next"',false);
 	echo "</form>";
 	echo "</table>";
 	
@@ -969,5 +981,18 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		$("#id_agent").blur (function () {
 			$(this).css ("width", "180px");
 		});
+
+		// Warning message about the problems caused updating a past planned downtime
+		var type_execution = "<?php echo $type_execution; ?>";
+		var datetime_from = <?php echo json_encode(strtotime($once_date_from . ' ' . $once_time_from)); ?>;
+		var datetime_now = <?php echo json_encode(strtotime(date(DATE_FORMAT). ' ' . date(TIME_FORMAT))); ?>;
+		var create = <?php echo json_encode($create); ?>;
+		if (!create && (type_execution == 'periodically' || (type_execution == 'once' && datetime_from < datetime_now))) {
+			$("input#submit-updbutton, input#submit-add_item, table#list a").click(function (e) {
+				if (!confirm("<?php echo __('WARNING: If you edit this planned downtime, the data of future SLA reports may be altered'); ?>")) {
+					e.preventDefault();
+				}
+			});
+		}
 	});
 </script>

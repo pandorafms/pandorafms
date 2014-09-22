@@ -136,8 +136,8 @@ config_check();
 								true,
 								array("id" => 'clippy',
 									"class" => 'clippy',
-									"alt" => __('Clippy'),
-									'title' => __('Clippy'))) .
+									"alt" => __('Pandora FMS assistant'),
+									'title' => __('Pandora FMS assistant'))) .
 						'</a>';
 				}
 				

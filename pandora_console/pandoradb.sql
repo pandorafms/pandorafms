@@ -707,7 +707,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`custom_string_3` text,
 	`custom_integer_1` int(10) default 0,
 	`custom_integer_2` int(10) default 0,
-	`post_process` double(18,5) default 0,
+	`post_process` double(18,15) default 0,
 	`unit` text,
 	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
 	`macros` text,

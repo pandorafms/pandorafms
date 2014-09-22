@@ -245,3 +245,20 @@ INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`, `fi
 -- Table `talert_actions`
 -- ---------------------------------------------------------------------
 INSERT INTO `talert_actions` (`name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`) VALUES ('Create&#x20;a&#x20;ticket&#x20;in&#x20;Integria&#x20;IMS',13,'http://localhost/integria/include/api.php','1234','admin','_agent_:&#x20;_alert_name_','1','3','_alert_description_','','','',0,0);
+
+-- ---------------------------------------------------------------------
+-- Table `tconfig`
+-- ---------------------------------------------------------------------
+DELETE FROM `tconfig` WHERE `token`='sla_period';
+
+-- ---------------------------------------------------------------------
+-- Table `network_component`
+-- ---------------------------------------------------------------------
+UPDATE FROM `network_component` SET `module_inteval`= 3600 WHERE `id_nc`=53;
+UPDATE FROM `network_component` SET `post_process`= 0.000000115740741 WHERE `id_nc`=53;
+UPDATE FROM `network_component` SET `unit`= 'day' WHERE `id_nc`=53;
+
+-- ---------------------------------------------------------------------
+-- Table `network_component`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tnetwork_component` MODIFY COLUMN `post_process` DOUBLE(18,15)  DEFAULT 0;

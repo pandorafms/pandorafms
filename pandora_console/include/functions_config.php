@@ -184,6 +184,8 @@ function config_update_config () {
 						$error_update[] = __('Server logs directory');
 					if (!config_update_value ('tutorial_mode', get_parameter('tutorial_mode')))
 						$error_update[] = __('Tutorial mode');
+					if (!config_update_value ('past_planned_downtimes', get_parameter('past_planned_downtimes')))
+						$error_update[] = __('Allow create planned downtimes in the past');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
@@ -345,8 +347,6 @@ function config_update_config () {
 						$error_update[] = __('Max. days before compact data');
 					if (!config_update_value ('step_compact', (int) get_parameter ('step_compact')))
 						$error_update[] = __('Compact interpolation in hours (1 Fine-20 bad)');
-					if (!config_update_value ('sla_period', (int) get_parameter ('sla_period')))
-						$error_update[] = __('SLA period (seconds)');
 					if (!config_update_value ('event_view_hr', (int) get_parameter ('event_view_hr')))
 						$error_update[] = __('Default hours for event view');
 					if (!config_update_value ('realtimestats', get_parameter ('realtimestats')))
@@ -359,6 +359,8 @@ function config_update_config () {
 						$error_update[] = 'Deprecated compact_header';
 					if (!config_update_value ('num_files_attachment', (int) get_parameter ('num_files_attachment')))
 						$error_update[] = __('Max. recommended number of files in attachment directory');
+					if (!config_update_value ('delete_notinit', get_parameter ('delete_notinit')))
+						$error_update[] = __('Delete not init modules');
 					/////////////
 					break;
 					
@@ -616,10 +618,6 @@ function config_process_config () {
 		config_update_value ('trap2agent', 0);
 	}
 	
-	if (!isset ($config["sla_period"]) || empty ($config["sla_period"])) {
-		config_update_value ('sla_period', SECONDS_1WEEK);
-	}
-	
 	if (!isset ($config["prominent_time"])) {
 		// Prominent time tells us what to show prominently when a timestamp is
 		// displayed. The comparation (... days ago) or the timestamp (full date)
@@ -675,6 +673,10 @@ function config_process_config () {
 	
 	if (!isset ($config["realtimestats"])) {
 		config_update_value ('realtimestats', 1);
+	}
+
+	if (!isset ($config["delete_notinit"])) {
+		config_update_value ('delete_notinit', 0);
 	}
 	
 	if (!isset ($config["event_purge"])) {

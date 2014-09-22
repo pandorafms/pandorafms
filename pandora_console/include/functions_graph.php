@@ -854,6 +854,11 @@ function graph_get_formatted_date($timestamp, $format1, $format2) {
  * @param int Date to start of getting info.
  * @param mixed If is a projection graph this parameter will be module data with prediction data (the projection) 
  * or false in other case.
+ * @param array List of names for the items. Should have the same size as the module list.
+ * @param bool Show the last value of the item on the list.
+ * @param bool Show the max value of the item on the list.
+ * @param bool Show the min value of the item on the list.
+ * @param bool Show the average value of the item on the list.
  * 
  * @return Mixed 
  */
@@ -861,7 +866,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$width, $height, $title, $unit_name, $show_events = 0,
 	$show_alerts = 0, $pure = 0, $stacked = 0, $date = 0,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
-	$prediction_period = false, $background_color = 'white') {
+	$prediction_period = false, $background_color = 'white',
+	$name_list = array(), $show_last = true, $show_max = true,
+	$show_min = true, $show_avg = true) {
 	
 	global $config;
 	global $graphic_type;
@@ -971,23 +978,28 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		if ($projection != false && $i != 0) {
 			$agent_module_id = $module_list[0];
 			
-			//Get and process agent name
-			$agent_name = io_safe_output(
-				modules_get_agentmodule_agent_name ($agent_module_id));
-			$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
+			if (!empty($name_list) && isset($name_list[$i])) {
+				$module_name_list[$i] = $name_list[$i];
+			}
+			else {
+				//Get and process agent name
+				$agent_name = io_safe_output(
+					modules_get_agentmodule_agent_name ($agent_module_id));
+				$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
+				
+				
+				$agent_id = agents_get_agent_id ($agent_name);
+				
+				
+				//Get and process module name
+				$module_name = io_safe_output(
+					modules_get_agentmodule_name ($agent_module_id));
+				$module_name = sprintf(__("projection for %s"), $module_name);
+				$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
+
+				$module_name_list[$i] = $agent_name ." / ". $module_name;
+			}
 			
-			
-			$agent_id = agents_get_agent_id ($agent_name);
-			
-			
-			//Get and process module name
-			$module_name = io_safe_output(
-				modules_get_agentmodule_name ($agent_module_id));
-			$module_name = sprintf(__("projection for %s"), $module_name);
-			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
-			
-			
-			$module_name_list[$i] = $agent_name ." / ". $module_name;
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
 			$uncompressed_module = is_module_uncompressed ($module_type);
@@ -995,20 +1007,26 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		else {
 			$agent_module_id = $module_list[$i];
 			
-			//Get and process agent name
-			$agent_name = io_safe_output(
-				modules_get_agentmodule_agent_name ($agent_module_id));
-			$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
-			
-			
-			$agent_id = agents_get_agent_id ($agent_name);
-			
-			//Get and process module name
-			$module_name = io_safe_output(
-				modules_get_agentmodule_name ($agent_module_id));
-			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
-			
-			$module_name_list[$i] = $agent_name . " / " . $module_name;
+			if (!empty($name_list) && isset($name_list[$i])) {
+				$module_name_list[$i] = $name_list[$i];
+			}
+			else {
+				//Get and process agent name
+				$agent_name = io_safe_output(
+					modules_get_agentmodule_agent_name ($agent_module_id));
+				$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
+				
+				
+				$agent_id = agents_get_agent_id ($agent_name);
+				
+				//Get and process module name
+				$module_name = io_safe_output(
+					modules_get_agentmodule_name ($agent_module_id));
+				$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
+
+				$module_name_list[$i] = $agent_name . " / " . $module_name;
+			}
+
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
 			$uncompressed_module = is_module_uncompressed ($module_type);
@@ -1199,18 +1217,22 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		
 		$graph_stats = get_graph_statistics($graph_values[$i]);
 		
-		$min = $graph_stats['min'];
-		$max = $graph_stats['max'];
-		$avg = $graph_stats['avg'];
-		$last = $graph_stats['last'];
+		$min = number_format($graph_stats['min'], 2);
+		$max = number_format($graph_stats['max'], 2);
+		$avg = number_format($graph_stats['avg'], 2);
+		$last = number_format($graph_stats['last'], 2);
 		$units = modules_get_unit($agent_module_id);
 		
 		if ($projection == false or ($projection != false and $i == 0)) {
-			$module_name_list[$i] .= ": " .
-				__('Last') . ": $last $units; " .
-				__("Max") . ": $max $units; " .
-				__("Min") . ": $min $units; " .
-				__("Avg") . ": $avg";
+			$module_name_list[$i] .= ": ";
+			if ($show_last)
+				$module_name_list[$i] .= __('Last') . ": $last $units; ";
+			if ($show_max)
+				$module_name_list[$i] .= __("Max") . ": $max $units; ";
+			if ($show_min)
+				$module_name_list[$i] .= __("Min") . ": $min $units; ";
+			if ($show_avg)
+				$module_name_list[$i] .= __("Avg") . ": $avg $units";
 		}
 		
 		if ($weight_list[$i] != 1) {

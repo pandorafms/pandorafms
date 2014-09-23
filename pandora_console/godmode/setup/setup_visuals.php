@@ -400,12 +400,33 @@ $table->data[$row][1] = html_print_input_text ('networkmap_max_width', $config["
 $row++;
 
 $table->data[$row][0] = __('Fixed header');
-$table->data[$row][1] = html_print_checkbox('fixed_header', 1, $config['fixed_header'], true);
+$table->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('fixed_header', 1, '', $config["fixed_header"], true) .
+	'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('fixed_header', 0, '', $config["fixed_header"], true);
 
 $row++;
 
 $table->data[$row][0] = __('Fixed menu');
-$table->data[$row][1] = html_print_checkbox('fixed_menu', 1, $config['fixed_menu'], true);
+$table->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('fixed_menu', 1, '', $config["fixed_menu"], true) .
+	'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('fixed_menu', 0, '', $config["fixed_menu"], true);
+
+$row++;
+
+if (!isset($config["short_module_graph_data"]))
+	$config["short_module_graph_data"] = true;
+
+$table->data[$row][0] = __('Shortened module graph data');
+$table->data[$row][0] .= ui_print_help_tip(__('The data number of the module graphs will be rounded and shortened'), true);
+$table->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('short_module_graph_data', 1, '', $config["short_module_graph_data"], true) .
+	'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('short_module_graph_data', 0, '', $config["short_module_graph_data"], true);
 
 $row++;
 

@@ -162,8 +162,8 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 function custom_graphs_print($id_graph, $height, $width, $period,
 	$stacked = null, $return = false, $date = 0, $only_image = false,
 	$background_color = 'white', $modules_param = array(), $homeurl = '',
-	$name_list = array(), $show_last = true, $show_max = true,
-	$show_min = true, $show_avg = true) {
+	$name_list = array(), $unit_list = array(), $show_last = true,
+	$show_max = true, $show_min = true, $show_avg = true) {
 	
 	global $config;
 	
@@ -227,6 +227,7 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		false,
 		$background_color,
 		$name_list,
+		$unit_list,
 		$show_last,
 		$show_max,
 		$show_min,

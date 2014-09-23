@@ -855,6 +855,7 @@ function graph_get_formatted_date($timestamp, $format1, $format2) {
  * @param mixed If is a projection graph this parameter will be module data with prediction data (the projection) 
  * or false in other case.
  * @param array List of names for the items. Should have the same size as the module list.
+ * @param array List of units for the items. Should have the same size as the module list.
  * @param bool Show the last value of the item on the list.
  * @param bool Show the max value of the item on the list.
  * @param bool Show the min value of the item on the list.
@@ -867,7 +868,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$show_alerts = 0, $pure = 0, $stacked = 0, $date = 0,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$prediction_period = false, $background_color = 'white',
-	$name_list = array(), $show_last = true, $show_max = true,
+	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true) {
 	
 	global $config;
@@ -935,6 +936,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	else {
 		$module_number = count ($module_list);
 	}
+
+	$names_number = count($name_list);
+	$units_number = count($unit_list);
 	
 	// interval - This is the number of "rows" we are divided the time to fill data.
 	//    more interval, more resolution, and slower.
@@ -978,7 +982,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		if ($projection != false && $i != 0) {
 			$agent_module_id = $module_list[0];
 			
-			if (!empty($name_list) && isset($name_list[$i])) {
+			if (!empty($name_list) && $names_number == $module_number && isset($name_list[$i])) {
 				$module_name_list[$i] = $name_list[$i];
 			}
 			else {
@@ -1007,7 +1011,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		else {
 			$agent_module_id = $module_list[$i];
 			
-			if (!empty($name_list) && isset($name_list[$i])) {
+			if (!empty($name_list) && $names_number == $module_number && isset($name_list[$i])) {
 				$module_name_list[$i] = $name_list[$i];
 			}
 			else {
@@ -1216,23 +1220,61 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$avg = round($avg / $countAvg, 1);
 		
 		$graph_stats = get_graph_statistics($graph_values[$i]);
+
+		if (!isset($config["short_module_graph_data"]))
+			$config["short_module_graph_data"] = true;
 		
-		$min = number_format($graph_stats['min'], 2);
-		$max = number_format($graph_stats['max'], 2);
-		$avg = number_format($graph_stats['avg'], 2);
-		$last = number_format($graph_stats['last'], 2);
-		$units = modules_get_unit($agent_module_id);
+		if ($config["short_module_graph_data"]) {
+			$min = $graph_stats['min'];
+			$max = $graph_stats['max'];
+			$avg = $graph_stats['avg'];
+			$last = $graph_stats['last'];
+			
+			if ($min > 1000000)
+				$min = sprintf("%sM", number_format($min / 1000000, 2));
+			else if ($min > 1000)
+				$min = sprintf("%sK", number_format($min / 1000, 2));
+
+			if ($max > 1000000)
+				$max = sprintf("%sM", number_format($max / 1000000, 2));
+			else if ($max > 1000)
+				$max = sprintf("%sK", number_format($max / 1000, 2));
+
+			if ($avg > 1000000)
+				$avg = sprintf("%sM", number_format($avg / 1000000, 2));
+			else if ($avg > 1000)
+				$avg = sprintf("%sK", number_format($avg / 1000, 2));
+
+			if ($last > 1000000)
+				$last = sprintf("%sM", number_format($last / 1000000, 2));
+			else if ($last > 1000)
+				$last = sprintf("%sK", number_format($last / 1000, 2));
+		}
+		else {
+			$min = number_format($graph_stats['min'], 2);
+			$max = number_format($graph_stats['max'], 2);
+			$avg = number_format($graph_stats['avg'], 2);
+			$last = number_format($graph_stats['last'], 2);
+		}
+		
+
+		if (!empty($unit_list) && $units_number == $module_number && isset($unit_list[$i])) {
+			$unit = $unit_list[$i];
+		}
+		else {
+			$unit = modules_get_unit($agent_module_id);
+		}
 		
 		if ($projection == false or ($projection != false and $i == 0)) {
 			$module_name_list[$i] .= ": ";
 			if ($show_last)
-				$module_name_list[$i] .= __('Last') . ": $last $units; ";
+				$module_name_list[$i] .= __('Last') . ": $last $unit; ";
 			if ($show_max)
-				$module_name_list[$i] .= __("Max") . ": $max $units; ";
+				$module_name_list[$i] .= __("Max") . ": $max $unit; ";
 			if ($show_min)
-				$module_name_list[$i] .= __("Min") . ": $min $units; ";
+				$module_name_list[$i] .= __("Min") . ": $min $unit; ";
 			if ($show_avg)
-				$module_name_list[$i] .= __("Avg") . ": $avg $units";
+				$module_name_list[$i] .= __("Avg") . ": $avg $unit";
 		}
 		
 		if ($weight_list[$i] != 1) {

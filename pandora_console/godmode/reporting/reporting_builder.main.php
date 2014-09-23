@@ -92,9 +92,20 @@ if ($report_id_user == $config['id_user'] ||
 }
 
 if ($enterpriseEnable) {
+	$non_interactive_check = false;
+	if (isset($non_interactive)) {
+		$non_interactive_check = $non_interactive;
+	}
+	
 	$table->data['interactive_report'][0] = __('Non interactive report');
-	$table->data['interactive_report'][1] =__('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('non_interactive', 1, '', $non_interactive, true) .'&nbsp;&nbsp;';
-	$table->data['interactive_report'][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('non_interactive', 0, '', $non_interactive, true);
+	$table->data['interactive_report'][1] =__('Yes') .
+		'&nbsp;&nbsp;&nbsp;' .
+		html_print_radio_button('non_interactive', 1, '',
+			$non_interactive_check, true) .'&nbsp;&nbsp;';
+	$table->data['interactive_report'][1] .= __('No') .
+		'&nbsp;&nbsp;&nbsp;' .
+		html_print_radio_button('non_interactive', 0, '',
+			$non_interactive_check, true);
 }
 
 $table->data['description'][0] = __('Description');

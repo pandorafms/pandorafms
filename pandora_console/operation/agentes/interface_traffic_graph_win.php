@@ -60,8 +60,8 @@ $params = json_decode($params_json, true);
 $interface_name = (string) $params['interface_name'];
 $agent_id = (int) $params['agent_id'];
 $interface_traffic_modules = array(
-		'in' => (int) $params['traffic_module_in'],
-		'out' => (int) $params['traffic_module_out']
+		__('In') => (int) $params['traffic_module_in'],
+		__('Out') => (int) $params['traffic_module_out']
 	);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -69,7 +69,7 @@ $interface_traffic_modules = array(
 	<head>
 <?php
 		// Parsing the refresh before sending any header
-		$refresh = (int) get_parameter('refresh', SECONDS_10MINUTES);
+		$refresh = (int) get_parameter('refresh', SECONDS_5MINUTES);
 		if ($refresh > 0) {
 			$query = ui_get_url_refresh(false);
 			
@@ -135,8 +135,20 @@ $interface_traffic_modules = array(
 		else
 			echo '<div style="margin-left: 50px; padding-top: 10px;">';
 		
-		$modules = array($interface_traffic_modules['in'], $interface_traffic_modules['out']);
-		custom_graphs_print(0, $height, $width, $period, null, false, $date, false, 'white', $modules, $config['homeurl']);
+		custom_graphs_print(0,
+			$height,
+			$width,
+			$period,
+			null,
+			false,
+			$date,
+			false,
+			'white',
+			array_values($interface_traffic_modules),
+			$config['homeurl'],
+			array_keys($interface_traffic_modules),
+			array_fill(0, count($interface_traffic_modules),"bytes/s"),
+			false);
 		
 		echo '</div>';
 		

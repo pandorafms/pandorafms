@@ -496,7 +496,11 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	}
 }
 
-function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, type, serie_types, water_mark, width, max_x, homeurl, unit, font_size, menu, events, event_ids, legend_events, alerts, alert_ids, legend_alerts, yellow_threshold, red_threshold, force_integer, separator, separator2, series_suffix_str) {
+function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
+	colors, type, serie_types, water_mark, width, max_x, homeurl, unit,
+	font_size, menu, events, event_ids, legend_events, alerts,
+	alert_ids, legend_alerts, yellow_threshold, red_threshold,
+	force_integer, separator, separator2, series_suffix_str) {
 	
 	var threshold = true;
 	var thresholded = false;

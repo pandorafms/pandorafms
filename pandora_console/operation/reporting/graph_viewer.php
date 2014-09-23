@@ -98,12 +98,17 @@ if ($view_graph) {
 	
 	$name = $graph["name"];
 	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)) {
-		db_pandora_audit("ACL Violation","Trying to access to a custom graph not allowed");
+		db_pandora_audit("ACL Violation",
+			"Trying to access to a custom graph not allowed");
 		include ("general/noaccess.php");
 		exit;
 	}
 	
-	$url = "index.php?sec=reporting&sec2=operation/reporting/graph_viewer&id=$id_graph&view_graph=1";
+	$url = "index.php?" .
+		"sec=reporting&" .
+		"sec2=operation/reporting/graph_viewer&" .
+		"id=$id_graph&" .
+		"view_graph=1";
 	
 	$options = array();
 	
@@ -132,7 +137,7 @@ if ($view_graph) {
 		$options['screen']['text'] = "<a href='$url&pure=0'>"
 			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
-			
+		
 		// In full screen, the manage options are not available
 		$options = array('view' => $options['view'], 'screen' => $options['screen']);
 	}

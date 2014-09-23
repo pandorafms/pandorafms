@@ -735,6 +735,19 @@ function users_get_last_type_message() {
 	return $return;
 }
 
+function users_is_admin($id_user = false) {
+	global $config;
+	
+	if ($id_user === false) {
+		$id_user = $config['id_user'];
+	}
+	
+	$is_admin = (bool)db_get_value('is_admin',
+		'tusuario', 'id_user', $id_user);
+	
+	return $is_admin;
+}
+
 function users_is_last_system_message() {
 	$type = users_get_last_type_message();
 	

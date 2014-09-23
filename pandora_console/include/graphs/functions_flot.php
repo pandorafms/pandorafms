@@ -89,31 +89,76 @@ function include_javascript_dependencies_flot_graph($return = false) {
 ///////////////////////////////
 ////////// AREA GRAPHS ////////
 ///////////////////////////////
-function flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false, $series_suffix_str = '', $menu = true) {
+function flot_area_stacked_graph($chart_data, $width, $height, $color,
+	$legend, $long_index, $homeurl = '', $unit = '', $water_mark = '',
+	$serie_types = array(), $chart_extra_data = array(),
+	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
+	$force_integer = false, $series_suffix_str = '', $menu = true,
+	$background_color = 'white') {
+	
 	global $config;
 	
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str, $menu);
+	return flot_area_graph($chart_data, $width, $height, $color,
+		$legend, $long_index, $homeurl, $unit, 'area_stacked',
+		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
+		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
+		$menu, $background_color);
 }
 
-function flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false, $series_suffix_str = '', $menu = true) {
+function flot_area_simple_graph($chart_data, $width, $height, $color,
+	$legend, $long_index, $homeurl = '', $unit = '', $water_mark = '',
+	$serie_types = array(), $chart_extra_data = array(),
+	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
+	$force_integer = false, $series_suffix_str = '', $menu = true,
+	$background_color = 'white') {
+	
 	global $config;
 	
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str, $menu);
+	return flot_area_graph($chart_data, $width, $height, $color,
+		$legend, $long_index, $homeurl, $unit, 'area_simple',
+		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
+		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
+		$menu, $background_color);
 }
 
-function flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false, $series_suffix_str = '', $menu = true) {
+function flot_line_stacked_graph($chart_data, $width, $height, $color,
+	$legend, $long_index, $homeurl = '', $unit = '', $water_mark = '',
+	$serie_types = array(), $chart_extra_data = array(),
+	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
+	$force_integer = false, $series_suffix_str = '', $menu = true,
+	$background_color = 'white') {
+	
 	global $config;
 	
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str, $menu);
+	return flot_area_graph($chart_data, $width, $height, $color,
+		$legend, $long_index, $homeurl, $unit, 'line_stacked',
+		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
+		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
+		$menu, $background_color);
 }
 
-function flot_line_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false, $series_suffix_str = '', $menu = true) {
+function flot_line_simple_graph($chart_data, $width, $height, $color,
+	$legend, $long_index, $homeurl = '', $unit = '', $water_mark = '',
+	$serie_types = array(), $chart_extra_data = array(),
+	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
+	$force_integer = false, $series_suffix_str = '', $menu = true,
+	$background_color = 'white') {
+	
 	global $config;
 	
-	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str, $menu);
+	return flot_area_graph($chart_data, $width, $height, $color,
+		$legend, $long_index, $homeurl, $unit, 'line_simple',
+		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
+		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
+		$menu, $background_color);
 }
 
-function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $type, $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str = '', $menu = true) {
+function flot_area_graph($chart_data, $width, $height, $color, $legend,
+	$long_index, $homeurl, $unit, $type, $water_mark, $serie_types,
+	$chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key,
+	$force_integer, $series_suffix_str = '', $menu = true,
+	$background_color = 'white') {
+	
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -121,12 +166,26 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$font_size = '7';
 	
 	$menu = (int)$menu;
-
+	
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
 	
+	$background_style = '';
+	switch ($background_color) {
+		default:
+		case 'white':
+			$background_style = ' background: #fff; ';
+			break;
+		case 'black':
+			$background_style = ' background: #000; ';
+			break;
+		case 'transparent':
+			$background_style = '';
+			break;
+	}
+	
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . $width . "px;'>";
+	$return = "<div class='parent_graph' style='width: " . $width . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
 	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
@@ -613,7 +672,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 
 function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '') {
 	global $config;
-
+	
 	include_javascript_dependencies_flot_graph();
 	
 	$height+= 20;

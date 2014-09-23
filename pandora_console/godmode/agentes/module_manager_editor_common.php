@@ -739,6 +739,14 @@ $(document).ready (function () {
 			event.preventDefault();
 		}
 	});
+	
+	//validate post_process. Change ',' by '.'
+	$("#submit-updbutton").click (function () {
+		validate_post_process();
+	});
+	$("#submit-crtbutton").click (function () {
+		validate_post_process();
+	});
 
 });
 
@@ -959,6 +967,12 @@ function delete_relation (num_row, id_relation) {
 			}
 		});
 	}
+}
+
+function validate_post_process() {
+	var post_process = $("#text-post_process").val();
+	var new_post_process = post_process.replace(',','.');
+	$("#text-post_process").val(new_post_process);
 }
 
 /* End of relationship javascript */

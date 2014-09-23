@@ -22,9 +22,9 @@ function snmpBrowse () {
 	var snmp3_auth_user = $('#text-snmp3_browser_auth_user').val();
 	var snmp3_security_level = $('#snmp3_browser_security_level').val();
 	var snmp3_auth_method = $('#snmp3_browser_auth_method').val();
-	var snmp3_auth_pass = $('#text-snmp3_browser_auth_pass').val();
+	var snmp3_auth_pass = $('#password-snmp3_browser_auth_pass').val();
 	var snmp3_privacy_method = $('#snmp3_browser_privacy_method').val();
-	var snmp3_privacy_pass = $('#text-snmp3_browser_privacy_pass').val();
+	var snmp3_privacy_pass = $('#password-snmp3_browser_privacy_pass').val();
 	var ajax_url = $('#hidden-ajax_url').val();
 	
 	// Prepare the AJAX call

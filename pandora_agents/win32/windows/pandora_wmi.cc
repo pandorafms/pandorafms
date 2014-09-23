@@ -372,8 +372,16 @@ Pandora_Wmi::getOSName () {
 			dhGetValue (L"%s", &name, quickfix,
 				    L".Caption");
 			
-			ret = name;
-			dhFreeString (name);
+			if (name != NULL) {
+				// Remove the (R) character.
+				for (int i = 0; i < strlen(name); i++) {
+					if ((unsigned char)name[i] == 0xAE) {
+						name[i] = ' ';
+					}
+				}
+				ret = name;
+				dhFreeString (name);
+			}
 		
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
@@ -406,6 +414,12 @@ Pandora_Wmi::getOSVersion () {
 				    L".CSDVersion");
 		
 			if (version != NULL) {
+				// Remove the (R) character.
+				for (int i = 0; i < strlen(version); i++) {
+					if ((unsigned char)version[i] == 0xAE) {
+						version[i] = ' ';
+					}
+				}
 				ret = version;
 				dhFreeString (version);
 			}

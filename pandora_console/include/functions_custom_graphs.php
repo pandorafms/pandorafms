@@ -152,7 +152,7 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 
 function custom_graphs_print($id_graph, $height, $width, $period,
 	$stacked = null, $return = false, $date = 0, $only_image = false,
-	$background_color = 'white', $modules_param = array()) {
+	$background_color = 'white', $modules_param = array(), $homeurl = '') {
 	
 	global $config;
 	
@@ -210,7 +210,7 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$stacked,
 		$date,
 		$only_image,
-		'',
+		$homeurl,
 		1,
 		false,
 		false,

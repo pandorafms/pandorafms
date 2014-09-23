@@ -100,3 +100,19 @@ $table->colspan['tcp_receive'][1] = 3;
 push_table_row ($data, 'tcp_receive');
 ?>
 
+<script type="text/javascript">
+	$(document).ready (function () {
+		$("#submit-upd").click (function () {
+			validate_post_process();
+		});
+		$("#submit-crt").click (function () {
+			validate_post_process();
+		});
+	});
+	
+	function validate_post_process() {
+		var post_process = $("#text-post_process").val();
+		var new_post_process = post_process.replace(',','.');
+		$("#text-post_process").val(new_post_process);
+	}
+</script>

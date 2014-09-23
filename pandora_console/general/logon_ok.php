@@ -39,7 +39,8 @@ if (tags_has_user_acl_tags()) {
 // Site news !
 // ---------------------------------------------------------------------
 
-echo '<div id="left_column_logon_ok" id="leftcolumn">';
+//echo '<div id="left_column_logon_ok" id="leftcolumn">';
+echo '<div style="width:50%; float:left;" id="leftcolumn">';
 	//////////////////NEWS BOARD/////////////////////////////
 	echo '<div id="news_board">';
 	
@@ -164,7 +165,8 @@ echo '</div>';
 // ---------------------------------------------------------------------------
 // Site stats (global!)
 // ---------------------------------------------------------------------------
-echo '<div id="right_column_logon_ok" id="rightcolumn">';
+//echo '<div id="right_column_logon_ok" id="rightcolumn">';
+echo '<div style="width:30%; float:left;" id="rightcolumn">';
 $data = reporting_get_group_stats ();
 
 ///////////////

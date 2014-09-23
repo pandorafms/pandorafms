@@ -85,7 +85,13 @@ $max_critical = (float) get_parameter ('max_critical');
 $str_critical = (string) get_parameter ('str_critical');
 $ff_event = (int) get_parameter ('ff_event');
 $history_data = (bool) get_parameter ('history_data');
-$post_process = (float) get_parameter('post_process');
+
+// Don't read as (float) because it lost it's decimals when put into MySQL
+// where are very big and PHP uses scientific notation, p.e:
+// 1.23E-10 is 0.000000000123
+	
+$post_process = (string) get_parameter ('post_process', 0.0);
+
 $unit = (string) get_parameter('unit');
 $id = (int) get_parameter ('id');
 $wizard_level = get_parameter ('wizard_level', 'nowizard');

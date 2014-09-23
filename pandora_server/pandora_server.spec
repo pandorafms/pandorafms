@@ -26,6 +26,7 @@ Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-NetAddr-IP net-snmp net-tools perl-XML-Twig
 Requires:           nmap wmic sudo perl-HTML-Tree perl-XML-Simple perl-Net-Telnet
 Requires:           perl-IO-Socket-INET6 perl-Socket6 snmp-mibs perl-JSON
+Requires:			perl-Encode-Locale
 
 %description
 

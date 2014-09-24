@@ -145,14 +145,25 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
  * @param $height Height of the returning image.
  * @param $width Width of the returning image.
  * @param $period Period of time to get data in seconds.
- * @param $stacked Wheter the graph is stacked or not.
+ * @param $stacked Whether the graph is stacked or not.
  * @param $return Whether to return an output string or echo now (optional, echo by default).
  * @param $date Date to start printing the graph
+ * @param bool Wether to show an image instead a interactive chart or not
+ * @param string Background color
+ * @param array List of names for the items. Should have the same size as the module list.
+ * @param bool Show the last value of the item on the list.
+ * @param bool Show the max value of the item on the list.
+ * @param bool Show the min value of the item on the list.
+ * @param bool Show the average value of the item on the list.
+ *
+ * @return Mixed 
  */
 
 function custom_graphs_print($id_graph, $height, $width, $period,
 	$stacked = null, $return = false, $date = 0, $only_image = false,
-	$background_color = 'white', $modules_param = array(), $homeurl = '') {
+	$background_color = 'white', $modules_param = array(), $homeurl = '',
+	$name_list = array(), $unit_list = array(), $show_last = true,
+	$show_max = true, $show_min = true, $show_avg = true) {
 	
 	global $config;
 	
@@ -214,7 +225,13 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		1,
 		false,
 		false,
-		$background_color);
+		$background_color,
+		$name_list,
+		$unit_list,
+		$show_last,
+		$show_max,
+		$show_min,
+		$show_avg);
 	
 	if ($return)
 		return $output;

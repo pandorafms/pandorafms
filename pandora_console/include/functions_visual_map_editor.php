@@ -84,7 +84,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'module_graph',
 				'simple_value',
 				'datos',
-				'icon',
 				'group_item');
 			$form_items['label_row']['html'] =
 				'<td align="left" valign="top" style="">' . __('Label') . '</td>
@@ -122,7 +121,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			$form_items['preview_row'] = array();
 			$form_items['preview_row']['items'] = array('static_graph',
-				'datos icon',
+				'datos',
+				'icon',
 				'group_item');
 			$form_items['preview_row']['html'] =
 				'<td align="left" colspan="2" style="text-align: right;">' .

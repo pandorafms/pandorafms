@@ -250,7 +250,7 @@ function groups_get_childrens($parent, $groups = null, $onlyPropagate = false) {
 		
 		if ($group['propagate'] || $onlyPropagate) {
 			if ($group['parent'] == $parent) {
-				$return = $return + array($group['id_grupo'] => $group) + groups_get_childrens($group['id_grupo'], $groups);
+				$return = $return + array($group['id_grupo'] => $group) + groups_get_childrens($group['id_grupo'], $groups, $onlyPropagate);
 			}
 		}
 		
@@ -869,8 +869,19 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	// Get stats for this group
 	$data = reporting_get_group_stats($id_group);
 	
-	if ($data["total_agents"] == 0)
-		return; // Skip empty groups
+	if ($data["total_agents"] == 0) {
+		if (!empty($group['childs'])) {
+			$group_childrens = groups_get_childrens($id_group, null, true);
+			$group_childrens_agents = groups_total_agents(array_keys($group_childrens));
+
+			if (empty($group_childrens_agents)) {
+				return; // Skip empty groups
+			}
+		}
+		else {
+			return; // Skip empty groups
+		}
+	}
 	
 	// Calculate entire row color
 	if ($data["monitor_alerts_fired"] > 0) {

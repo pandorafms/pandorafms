@@ -26,14 +26,15 @@ require_once ($config['homedir'] . '/include/functions_treeview.php');
 
 if (defined ('METACONSOLE')) {
 	// For each server defined:
-	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
+	$servers = db_get_all_rows_sql ("SELECT *
+		FROM tmetaconsole_setup
+		WHERE disabled = 0");
 	if ($servers === false) {
 		$servers = array();
 	}
 }
 
-if (is_ajax ())
-{
+if (is_ajax ()) {
 	require_once ($config['homedir'] . '/include/functions_reporting.php');
 	require_once ($config['homedir'] . '/include/functions_users.php');
 	require_once ($config['homedir'] . '/include/functions_servers.php');
@@ -453,7 +454,7 @@ if (is_ajax ())
 					echo " ";
 				}
 				
-				echo "<a style='vertical-align: middle;' onfocus='JavaScript: this.blur()' href='javascript: loadModuleTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\"". "," . $id.")'>";				
+				echo "<a style='vertical-align: middle;' onfocus='JavaScript: this.blur()' href='javascript: loadModuleTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\"". "," . $id.")'>";
 				echo ui_print_truncate_text(io_safe_output($row['nombre']), 40, true);
 				echo "</a>";
 				if ($row['quiet']) {

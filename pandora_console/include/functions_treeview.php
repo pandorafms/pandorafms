@@ -889,7 +889,7 @@ function treeview_getData ($type) {
 				array_push($list, array('id' => 0, 'name' => 'No policy'));
 			}
 			else {
-				$list = db_get_all_rows_sql("SELECT DISTINCT tpolicies.id,
+				$sql = "SELECT DISTINCT tpolicies.id,
 						tpolicies.name
 					FROM tpolicies, tpolicy_modules, tagente_estado,
 						tagente, tagente_modulo
@@ -904,7 +904,12 @@ function treeview_getData ($type) {
 						tagente.id_grupo IN ($groups) AND
 						tagente.disabled = 0 AND
 						tagente_modulo.disabled = 0
-						ORDER BY tpolicies.name ' . $order_collate . ' ASC");
+						ORDER BY tpolicies.name " . $order_collate . " ASC";
+				
+				$list = db_get_all_rows_sql($sql);
+				if ($list === false)
+					$list = array();
+				
 				
 				$element = 0;
 				switch ($select_status) {

@@ -86,12 +86,14 @@ if (is_ajax ())
 	}
 	if ($printModuleTable) {
 		$id_module = get_parameter('id_module');
+		$id_agent = get_parameter('id_agent');
 		
 		if (defined ('METACONSOLE')) {
 			$server = metaconsole_get_connection ($server_name);
 			metaconsole_connect($server);
 		}
 		
+		treeview_printTable($id_agent, $server);
 		treeview_printModuleTable($id_module, $server);
 		
 		
@@ -451,7 +453,7 @@ if (is_ajax ())
 					echo " ";
 				}
 				
-				echo "<a style='vertical-align: middle;' onfocus='JavaScript: this.blur()' href='javascript: loadModuleTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\")'>";
+				echo "<a style='vertical-align: middle;' onfocus='JavaScript: this.blur()' href='javascript: loadModuleTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\"". "," . $id.")'>";				
 				echo ui_print_truncate_text(io_safe_output($row['nombre']), 40, true);
 				echo "</a>";
 				if ($row['quiet']) {
@@ -847,11 +849,11 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		});
 	}
 	
-	function loadModuleTable(id_module, server_name) {
+	function loadModuleTable(id_module, server_name, id_agent) {
 		$.ajax({
 			type: "POST",
 			url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
-			data: "page=<?php echo $_GET['sec2']; ?>&printModuleTable=1&id_module=" + id_module + "&server_name=" + server_name,
+			data: "page=<?php echo $_GET['sec2']; ?>&printModuleTable=1&id_module=" + id_module + "&server_name=" + server_name +"&id_agent="+id_agent,
 			success: function(data) {
 				$('#cont').html(data);
 				forced_title_callback();

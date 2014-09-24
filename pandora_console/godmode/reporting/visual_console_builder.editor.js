@@ -72,7 +72,14 @@ function visual_map_main() {
 	});
 	
 	//Resize the view to adapt the screen size.
-	$("#frame_view").height($("#main").height() - 75);
+	if ($("#main").length) {
+		//Console
+		$("#frame_view").height($("#main").height() - 75);
+	}
+	else {
+		//Metaconsole
+		$("#frame_view").height($("#page").height() - 75);
+	}
 }
 
 function cancel_button_palette_callback() {

@@ -489,7 +489,10 @@ if ($action == 'new' || $idVisualConsole === false) {
 $buttons[$activeTab]['active'] = true;
  
 if (!defined('METACONSOLE')) {
-	ui_print_page_header($visualConsoleName, "images/visual_console.png", false, "visual_console_editor_" . $activeTab . "_tab", false, $buttons);
+	ui_print_page_header($visualConsoleName,
+		"images/visual_console.png", false,
+		"visual_console_editor_" . $activeTab . "_tab", false,
+		$buttons);
 }
 
 //The source code for PAINT THE PAGE

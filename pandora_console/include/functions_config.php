@@ -447,6 +447,8 @@ function config_update_config () {
 						$error_update[] = __('Custom graphviz directory');
 					if (!config_update_value ('networkmap_max_width', get_parameter('networkmap_max_width')))
 						$error_update[] = __('Networkmap max width');
+					if (!config_update_value ('short_module_graph_data', get_parameter('short_module_graph_data')))
+						$error_update[] = __('Shortened module graph data');
 					
 					$interval_values = get_parameter ('interval_values');
 					

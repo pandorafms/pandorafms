@@ -219,7 +219,7 @@ sub pandora_snmptrapd {
 
 		if (!defined($oid)) {
 			logger($pa_config, "[W] snmpTrapOID not found (Illegal SNMPv2 trap?)", 1);
-			next;
+			return;
 		}
 		$oid =~ s/.* = OID: //;
 		$data = join("\t", @data);

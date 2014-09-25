@@ -51,7 +51,7 @@ $layout = db_get_row ('tlayout', 'id', $id_layout);
 
 if (! $layout) {
 	db_pandora_audit("ACL Violation","Trying to access visual console without id layout");
-	include ("../../general/noaccess.php");
+	include ($config['homedir'] . "/general/noaccess.php");
 	exit;
 }
 

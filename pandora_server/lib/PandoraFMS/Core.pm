@@ -1146,15 +1146,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
 	}
 	
-	# replace $new_status with $last_known_status when recovering from 'unknown'
-	if ($status == 3) {
-		$new_status = $last_known_status;
-	}
-
 	if ($last_status == $new_status) {
 		
 		# Avoid overflows
-		$status_changes = $min_ff_event if ($status_changes > $module->{'min_ff_event'});
+		$status_changes = $min_ff_event if ($status_changes > $min_ff_event);
 		
 		$status_changes++;
 		if ($module_type =~ m/async/ && $min_ff_event != 0 && $ff_timeout != 0 && ($utimestamp - $ff_start_utimestamp) > $ff_timeout) {
@@ -1173,9 +1168,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 	
 	# Change status
-	if ($status_changes == $min_ff_event && $status != $new_status) {
+	if ($status_changes >= $min_ff_event && $status != $new_status) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
 		$status = $new_status;
+		$last_status = $new_status;
 
 		# Update module status count
 		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
@@ -1185,20 +1181,23 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	elsif ($status == 4) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $last_known_status, $dbh);
 		$status = 0;
+		$last_status = $new_status;
 
 		# Update module status count
 		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
 	}
 	# If unknown modules receive data, restore status even if min_ff_event is not matched.
 	elsif ($status == 3) {
+		$last_status = $new_status; # Set last_status before forcing the module's new status to its last known status.
+		$new_status = $last_known_status; # Set the module to its last known status.
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
 		$status = $new_status;
 
 		# Update module status count
 		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
+	} else {
+		$last_status = $new_status;
 	}
-
-	$last_status = $new_status;
 		
 	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
 	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
@@ -3563,18 +3562,15 @@ sub generate_status_event ($$$$$$$$) {
 	# Warning
 	} elsif ($status == 2) {
 		
-		# From normal
-		if ($last_known_status == 0 || $last_known_status == 4) {
-			($event_type, $severity) = ('going_up_warning', 3);
-			$description = $pa_config->{"text_going_up_warning"};
-			
 		# From critical
-		} elsif ($last_known_status == 1) {
+		if ($last_known_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
 			$description = $pa_config->{"text_going_down_warning"};
-		} else {
-			# Unknown last_status
-			return;
+		}
+		# From normal or warning (after becoming unknown)
+		else {
+			($event_type, $severity) = ('going_up_warning', 3);
+			$description = $pa_config->{"text_going_up_warning"};
 		}
 	} else {
 		# Unknown status

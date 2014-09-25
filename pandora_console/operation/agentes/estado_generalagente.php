@@ -439,7 +439,8 @@ if (! empty($modules)) {
 				if (!empty($interface_traffic_modules) && count($interface_traffic_modules) >= 2) {
 					$interface_traffic_modules_aux = array('in' => '', 'out' => '');
 					foreach ($interface_traffic_modules as $interface_traffic_module) {
-						if (preg_match ("/if(.+)Octets_$interface_name$/i", (string)$interface_traffic_module['nombre'], $matches)) {
+						$interface_name_escaped = str_replace("/", "\/", $interface_name);
+						if (preg_match ("/if(.+)Octets_$interface_name_escaped$/i", $interface_traffic_module['nombre'], $matches)) {
 							if (strtolower($matches[1]) == 'in') {
 								$interface_traffic_modules_aux['in'] = $interface_traffic_module['id_agente_modulo'];
 							}

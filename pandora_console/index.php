@@ -365,15 +365,18 @@ if ($process_login) {
 	
 	require_once("include/functions_update_manager.php");
 	enterprise_include_once("include/functions_update_manager.php");
-	
-	if (enterprise_installed()) {
-		$result = update_manager_check_online_enterprise_packages_available();
+
+	if ($config["autoupdate"] == 1) {	
+		if (enterprise_installed()) {
+			$result = update_manager_check_online_enterprise_packages_available();
+		}
+		else {
+			$result = update_manager_check_online_free_packages_available();
+		}
+		if ($result)
+			$_SESSION['new_update'] = 'new';
+		
 	}
-	else {
-		$result = update_manager_check_online_free_packages_available();
-	}
-	if ($result)
-		$_SESSION['new_update'] = 'new';
 	
 	//Set the initial global counter for chat.
 	users_get_last_global_counter('session');

@@ -15,7 +15,6 @@
 // GNU General Public License for more details.
 
 require_once ($config['homedir'].'/include/functions_users.php');
-require_once ($config['homedir'].'/include/functions_reporting.php');
 
 /**
  * Check if the group is in use in the Pandora DB. 
@@ -532,6 +531,10 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
  * @return int Status of the agents.
  */
 function groups_get_status ($id_group = 0) {
+	global $config;
+	
+	require_once ($config['homedir'].'/include/functions_reporting.php');
+	
 	$data = reporting_get_group_stats($id_group);
 	
 	if ($data['monitor_alerts_fired'] > 0) {

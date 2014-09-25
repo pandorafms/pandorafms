@@ -844,7 +844,7 @@ else {
 	
 	$result = array();
 	$count_modules = 0;
-	foreach($servers as $server) {
+	foreach ($servers as $server) {
 		// If connection was good then retrieve all data server
 		if (metaconsole_connect($server) == NOERR) {
 			$connection = true;
@@ -1068,18 +1068,39 @@ foreach ($result as $row) {
 	}
 	
 	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true);
-	if (check_acl ($config['id_user'], $row['id_group'], "AW")) 
-		$data[2] .= '<a href="' .
-			'index.php?' .
+	if (check_acl ($config['id_user'], $row['id_group'], "AW")) {
+		$show_edit_icon = true;
+		if (defined('METACONSOLE')) {
+			if (!can_user_access_node ()) {
+				$show_edit_icon = false;
+			}
+			
+			$url_edit_module = $row["server_url"] . 'index.php?' .
 				'sec=gagente&amp;' .
 				'sec2=godmode/agentes/configurar_agente&amp;' .
 				'id_agente=' . $row['id_agent'] . '&amp;' .
 				'tab=module&amp;' .
 				'id_agent_module=' . $row["id_agente_modulo"] . '&amp;' .
-				'edit_module=1">' .
+				'edit_module=1' .
+				'&amp;loginhash=auto&amp;loginhash_data=' . $row["hashdata"] . '&amp;loginhash_user=' . $row["user"];
+		}
+		else {
+			$url_edit_module = 'index.php?' .
+				'sec=gagente&amp;' .
+				'sec2=godmode/agentes/configurar_agente&amp;' .
+				'id_agente=' . $row['id_agent'] . '&amp;' .
+				'tab=module&amp;' .
+				'id_agent_module=' . $row["id_agente_modulo"] . '&amp;' .
+				'edit_module=1';
+		}
+		
+		if ($show_edit_icon) {
+			$data[2] .= '<a href="' . $url_edit_module . '">' .
 				html_print_image("images/config.png", true,
 					array("alt" => '0', "border" => "", "title" => __('Edit'))) .
-			'</a>';
+				'</a>';
+		}
+	}
 	
 	$data[3] = ui_print_truncate_text($row["module_name"], 'agent_small', false, true, true);
 	if ($row["extended_info"] != "") {
@@ -1322,14 +1343,14 @@ ui_require_javascript_file('pandora_modules');
 	}
 	
 	function refresh_pagination_callback (module_id, id_agent, server_name) {
-
+		
 		$(".binary_dialog").click( function() {
 			var classes = $(this).attr('class');
 			classes = classes.split(' ');
 			var offset_class = classes[2];
 			offset_class = offset_class.split('_');
 			var offset = offset_class[1];
-		
+			
 			var period = $('#period').val();
 			
 			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);

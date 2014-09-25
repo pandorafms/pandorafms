@@ -70,7 +70,7 @@ function visual_map_print_item($layoutData) {
 	
 	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
 	
-	$status = visual_map_get_status_element($layoutData);
+	$status = $layoutData['status_calculated'];
 	
 	switch ($status) {
 		case VISUAL_MAP_STATUS_CRITICAL_BAD:
@@ -100,7 +100,8 @@ function visual_map_print_item($layoutData) {
 	switch ($type) {
 		case STATIC_GRAPH:
 			if ($layoutData['image'] != null) {
-				$img = visual_map_get_image_status_element($layoutData);
+				$img = visual_map_get_image_status_element($layoutData,
+					$layoutData['status_calculated']);
 				if (substr($img,0,1) == '4') {
 					$borderStyle ='border: 2px solid ' . COL_ALERTFIRED . ';';
 					$img = substr_replace($img, '', 0,1);
@@ -127,7 +128,8 @@ function visual_map_print_item($layoutData) {
 		
 		case GROUP_ITEM:
 			if ($layoutData['image'] != null) {
-				$img = visual_map_get_image_status_element($layoutData);
+				$img = visual_map_get_image_status_element($layoutData,
+					$layoutData['status_calculated']);
 				if (substr($img,0,1) == '4') {
 					$borderStyle ='border: 2px solid ' . COL_ALERTFIRED . ';';
 					$img = substr_replace($img, '', 0,1);
@@ -294,7 +296,8 @@ function visual_map_print_item($layoutData) {
 			break;
 		case ICON:
 			if ($layoutData['image'] != null) {
-				$img = visual_map_get_image_status_element($layoutData);
+				$img = visual_map_get_image_status_element($layoutData,
+					$layoutData['status_calculated']);
 			}
 			
 			if (($width != 0) && ($height != 0)) {
@@ -869,7 +872,7 @@ function visual_map_get_color_line_status($layoutData) {
  * 
  * @return string The image with the relative path to pandora console directory.
  */
-function visual_map_get_image_status_element($layoutData) {
+function visual_map_get_image_status_element($layoutData, $status = false) {
 	$img = "images/console/icons/" . $layoutData["image"];
 	
 	if ($layoutData['type'] == 5) {
@@ -877,7 +880,11 @@ function visual_map_get_image_status_element($layoutData) {
 		$img .= ".png";
 	}
 	else {
-		switch (visual_map_get_status_element($layoutData)) {
+		if ($status === false) {
+			$status = visual_map_get_status_element($layoutData);
+		}
+		
+		switch ($status) {
 			case 1:
 				//Critical (BAD)
 				$img .= "_bad.png";

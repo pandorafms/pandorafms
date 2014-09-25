@@ -15,6 +15,7 @@
 // GNU General Public License for more details.
 
 require_once ($config['homedir'].'/include/functions_users.php');
+require_once ($config['homedir'].'/include/functions_reporting.php');
 
 /**
  * Check if the group is in use in the Pandora DB. 
@@ -531,30 +532,18 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
  * @return int Status of the agents.
  */
 function groups_get_status ($id_group = 0) {
-	$agents = agents_get_group_agents($id_group);
+	$data = reporting_get_group_stats($id_group);
 	
-	$agents_status = array();
-	foreach ($agents as $key => $agent) {
-		$agents_status[] = agents_get_status($key);
-	}
-	
-	$childrens = groups_get_childrens($id_group);
-	
-	foreach ($childrens as $key => $child) {
-		$agents_status[] = groups_get_status($key);
-	}
-	
-	// Status is 0 for normal, 1 for critical, 2 for warning and 3/-1 for unknown. 4 for fired alerts
-	if (is_int(array_search(AGENT_STATUS_ALERT_FIRED, $agents_status))) {
+	if ($data['monitor_alerts_fired'] > 0) {
 		return AGENT_STATUS_ALERT_FIRED;
 	}
-	elseif (is_int(array_search(AGENT_STATUS_CRITICAL, $agents_status))) {
+	elseif ($data['agent_critical'] > 0) {
 		return AGENT_STATUS_CRITICAL;
 	}
-	elseif (is_int(array_search(AGENT_STATUS_WARNING, $agents_status))) {
+	elseif ($data['agent_warning'] > 0) {
 		return AGENT_STATUS_WARNING;
 	}
-	elseif (is_int(array_search(AGENT_STATUS_UNKNOWN, $agents_status))) {
+	elseif ($data['agent_unknown'] > 0) {
 		return AGENT_STATUS_UNKNOWN;
 	}
 	else {
@@ -869,11 +858,12 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	// Get stats for this group
 	$data = reporting_get_group_stats($id_group);
 	
+	
 	if ($data["total_agents"] == 0) {
 		if (!empty($group['childs'])) {
 			$group_childrens = groups_get_childrens($id_group, null, true);
 			$group_childrens_agents = groups_total_agents(array_keys($group_childrens));
-
+			
 			if (empty($group_childrens_agents)) {
 				return; // Skip empty groups
 			}

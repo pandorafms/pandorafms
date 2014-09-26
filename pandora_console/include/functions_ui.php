@@ -2256,6 +2256,12 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 		}
 	}
 	
+	if (substr($fullurl, -1, 1) === substr($url, 0, 1)) {
+		if (substr($fullurl, -1, 1) === '/') {
+			$url = substr($url, 1);
+		}
+	}
+	
 	return $fullurl . $url;
 }
 

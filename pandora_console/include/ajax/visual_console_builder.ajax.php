@@ -320,12 +320,14 @@ switch ($action) {
 					$values['width'] = $width;
 				if ($height !== null)
 					$values['height'] = $height;
-				$result = db_process_sql_update('tlayout', $values, array('id' => $id_visual_console));
+				$result = db_process_sql_update('tlayout',
+					$values, array('id' => $id_visual_console));
 				echo (int)$result;
 				break;
 			case 'simple_value':
 				if ($action == 'update') {
-					$values['type'] = visual_map_get_simple_value_type($process_simple_value);
+					$values['type'] = visual_map_get_simple_value_type(
+						$process_simple_value);
 					$values['period'] = $period;
 				}
 			case 'percentile_bar':
@@ -454,7 +456,8 @@ switch ($action) {
 					}
 				}
 				
-				$result = db_process_sql_update('tlayout_data', $values, array('id' => $id_element));
+				$result = db_process_sql_update('tlayout_data', $values,
+					array('id' => $id_element));
 				echo (int)$result;
 				break;
 		}

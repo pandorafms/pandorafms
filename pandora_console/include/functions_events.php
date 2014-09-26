@@ -742,13 +742,13 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 				$sql = sprintf ("SELECT *
 					FROM tevento
 					WHERE %s %s
-					ORDER BY timestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
+					ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
 			break;
 		case "oracle":
 				$sql = sprintf ("SELECT *
 					FROM tevento
 					WHERE %s %s AND rownum <= %d
-					ORDER BY timestamp DESC", $agent_condition, $filter, $limit);
+					ORDER BY utimestamp DESC", $agent_condition, $filter, $limit);
 			break;
 	}
 	

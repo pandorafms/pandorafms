@@ -592,10 +592,17 @@ function treeview_getData ($type) {
 	
 	$search_free = get_parameter('search_free', '');
 	$select_status = get_parameter('status', -1);
+	$search_group = get_parameter('search_group', 0);
+
+	if ($search_group) {
+		$avariableGroups[$search_group] = groups_get_name($search_group);
+	} else {
+		$avariableGroups = users_get_groups ();
+	}
 	
 	//Get all groups
-	$avariableGroups = users_get_groups ();
-	
+	//$avariableGroups = users_get_groups ();
+		
 	//Get all groups with agents
 	$full_groups = db_get_all_rows_sql("
 		SELECT DISTINCT id_grupo

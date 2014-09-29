@@ -4778,19 +4778,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$datelimit = $report["datetime"] - $content['period'];
 			
+			// This query gets information from the default and the historic database
 			$result = db_get_all_rows_sql('SELECT *
 				FROM tagente_datos
 				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
 					AND utimestamp > ' . $datelimit . '
-					AND utimestamp <= ' . $report["datetime"]);
+					AND utimestamp <= ' . $report["datetime"], true);
 			
 			// Adds string data if there is no numeric data	
-			if ((count($result) < 0) or (!$result)){ 
+			if ((count($result) < 0) or (!$result)) {
+				// This query gets information from the default and the historic database
 				$result = db_get_all_rows_sql('SELECT *
 					FROM tagente_datos_string
 					WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
 						AND utimestamp > ' . $datelimit . '
-						AND utimestamp <= ' . $report["datetime"]);
+						AND utimestamp <= ' . $report["datetime"], true);
 			} 
 			if ($result === false) {
 				$result = array();

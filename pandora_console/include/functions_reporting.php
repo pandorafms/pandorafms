@@ -1350,7 +1350,7 @@ function reporting_get_stats_servers($tiny = true) {
 	return $output;
 }
 
-function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_height = 150, $links = false) {
+function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_height = 150, $links = false, $data_agents=false) {
 	global $config;
 	
 	// Link URLS
@@ -1414,14 +1414,14 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	$tdata[2] = $tdata[3] = '';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
-	
+
 	if ($data["monitor_checks"] > 0) {
 		$tdata = array();
 		$table_mbs->colspan[count($table_mbs->data)][0] = 4;
 		$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
 		$tdata[0] = '<div id="outter_status_pie" style="height: ' . $graph_height . 'px">' .
 			'<div id="status_pie" style="margin: auto; width: ' . $graph_width . 'px;">' .
-				graph_agent_status(false, $graph_width, $graph_height, true, true) .
+				graph_agent_status(false, $graph_width, $graph_height, true, true, $data_agents) .
 			'</div></div>';
 		$table_mbs->rowclass[] = '';
 		$table_mbs->data[] = $tdata;

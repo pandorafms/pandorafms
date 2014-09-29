@@ -47,6 +47,7 @@ our @EXPORT = qw(
 	cron_next_execution_date
 	pandora_daemonize
 	logger
+	pandora_rotate_logfile
 	limpia_cadena
 	md5check
 	float_equal
@@ -408,7 +409,23 @@ sub logger ($$;$) {
 
 	$level = 1 unless defined ($level);
 	return if ($level > $pa_config->{'verbosity'});
-	
+
+	my $file = $pa_config->{'logfile'};
+
+	open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
+	# Get an exclusive lock on the file (LOCK_EX)
+	flock (FILE, 2);
+	print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
+	close (FILE);
+}
+
+########################################################################
+# SUB pandora_rotate_log (pa_config)
+# Log to file
+########################################################################
+sub pandora_rotate_logfile ($) {
+	my ($pa_config) = @_;
+
 	my $file = $pa_config->{'logfile'};
 	
 	# Log rotation
@@ -418,10 +435,6 @@ sub logger ($$;$) {
 		}
 		rename ($file, "$file.0");
 	}
-	
-	open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
-	print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
-	close (FILE);
 }
 
 ########################################################################

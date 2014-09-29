@@ -3452,9 +3452,9 @@ sub get_module_status ($$$) {
 				return 1 if ($data >= $critical_min && $data < $critical_max);
 				return 1 if ($data >= $critical_min && $critical_max < $critical_min);
 			}
-			# (-inf, critical_min), (critical_max, +inf)
+			# (-inf, critical_min), [critical_max, +inf)
 			else {
-				return 1 if ($data < $critical_min || $data > $critical_max);
+				return 1 if ($data < $critical_min || $data >= $critical_max);
 				return 1 if ($data <= $critical_max && $critical_max < $critical_min);
 			}
 		}
@@ -3466,9 +3466,9 @@ sub get_module_status ($$$) {
 				return 2 if ($data >= $warning_min && $data < $warning_max);
 				return 2 if ($data >= $warning_min && $warning_max < $warning_min);
 			}
-			# (-inf, warning_min), (warning_max, +inf)
+			# (-inf, warning_min), [warning_max, +inf)
 			else {
-				return 2 if ($data < $warning_min || $data > $warning_max);
+				return 2 if ($data < $warning_min || $data >= $warning_max);
 				return 2 if ($data <= $warning_max && $warning_max < $warning_min);
 			}
 		}

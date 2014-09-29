@@ -62,6 +62,7 @@ our @EXPORT = qw(
 	cron_next_execution_date
 	pandora_daemonize
 	logger
+	pandora_rotate_logfile
 	limpia_cadena
 	md5check
 	float_equal
@@ -441,7 +442,7 @@ sub logger ($$;$) {
 
 	$level = 1 unless defined ($level);
 	return if ($level > $pa_config->{'verbosity'});
-	
+
 	if (!defined($pa_config->{'logfile'})) {
 		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";
 		return;
@@ -465,17 +466,30 @@ sub logger ($$;$) {
 		syslog($security_level, $message);
 		closelog();
 	} else {
-		# Log rotation
-		if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
-			foreach my $i (reverse 1..$pa_config->{'max_log_generation'}) {
-				rename ($file . "." . ($i - 1), $file . "." . $i);
-			}
-			rename ($file, "$file.0");
-		}
-	
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
+		# Get an exclusive lock on the file (LOCK_EX)
+		flock (FILE, 2);
 		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
 		close (FILE);
+	}
+}
+
+########################################################################
+# SUB pandora_rotate_log (pa_config)
+# Log to file
+########################################################################
+sub pandora_rotate_logfile ($) {
+	my ($pa_config) = @_;
+
+	my $file = $pa_config->{'logfile'};
+
+	# Log File Rotation
+	if ($file ne 'syslog' && -e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
+		foreach my $i (reverse 1..$pa_config->{'max_log_generation'}) {
+			rename ($file . "." . ($i - 1), $file . "." . $i);
+		}
+		rename ($file, "$file.0");
+	
 	}
 }
 

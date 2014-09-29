@@ -270,6 +270,9 @@ sub pandora_server_tasks ($) {
 							
 				# Update forced alerts
 				pandora_exec_forced_alerts ($pa_config, $dbh);
+
+				# Rotate Log File
+				pandora_rotate_logfile($pa_config);
 			}
 			
 			# TASKS EXECUTED EVERY 30 SECONDS (Mid latency tasks)

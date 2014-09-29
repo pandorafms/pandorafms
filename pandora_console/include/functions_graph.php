@@ -1512,7 +1512,7 @@ function truncate_negatives(&$element) {
  * @param bool return or echo flag
  * @param bool show_not_init flag
  */
-function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $return = false, $show_not_init = false) {
+function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $return = false, $show_not_init = false, $data_agents=false) {
 	global $config;
 	
 	
@@ -1531,8 +1531,13 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	if ($show_not_init) {
 		$fields[] = 'SUM(notinit_count) "Not init"';
 	}
+
+	if ($data_agents == false) {
+		$data = db_get_row_filter('tagente', $filter, $fields);
+	} else {
+		$data = $data_agents;
+	}
 	
-	$data = db_get_row_filter('tagente', $filter, $fields);
 	if (empty($data)) {
 		$data = array();
 	}

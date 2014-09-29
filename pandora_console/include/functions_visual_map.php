@@ -312,9 +312,14 @@ function visual_map_print_item($layoutData) {
 				}
 				
 				if (($width != 0) && ($height != 0)) 
-					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height"));
+					echo html_print_image($img, true,
+						array("class" => "image",
+							"id" => "image_" . $id,
+							"width" => "$width",
+							"height" => "$height"));
 				else
-					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id));
+					echo html_print_image($img, true,
+						array("class" => "image", "id" => "image_" . $id));
 				echo '<br />';
 			}
 			echo "</div>";
@@ -2035,7 +2040,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				break;
 			default:
 				enterprise_hook("enterprise_visual_map_print_item",
-					array($layout_data, $status, $colorStatus, 'operation'));
+					array($layout_data, $status, $colorStatus,
+						'operation', $resizedMap, $proportion));
 				break;
 		}
 	}

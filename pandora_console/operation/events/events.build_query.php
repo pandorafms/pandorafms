@@ -48,9 +48,29 @@ else {
 		$sql_post = "";
 	}
 	else {
-		//Otherwise select all groups the user has rights to.
-		$sql_post = " AND id_grupo IN (" .
-			implode (",", array_keys ($groups)) . ")";
+		if ($meta) {
+			// In metaconsole the group search is performed by name
+	
+			$sql_post = " AND group_name IN ( ";
+			$i = 0;
+			foreach ($groups as $group_id=>$group_name) {
+				if ($group_id == 0) {
+					continue;
+				}
+				if ($i==0) {
+					$sql_post .= "'$group_name'";
+				} else {
+					$sql_post .= ",'$group_name'";
+				}
+				$i++;
+			}
+			$sql_post.= ")";
+
+		} else {
+			//Otherwise select all groups the user has rights to.
+			$sql_post = " AND id_grupo IN (" .
+				implode (",", array_keys ($groups)) . ")";
+		}
 	}
 }
 

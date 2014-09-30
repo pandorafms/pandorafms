@@ -212,17 +212,6 @@ $table->data[26][1] = html_print_select($sounds, 'sound_warning', $config['sound
 $table->data[26][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . html_print_image("images/control_play_col.png", true, array("id" => "button_sound_warning", "style" => "vertical-align: middle;", "width" => "16", "title" => __('Play sound'))) . '</a>';
 $table->data[26][1] .= '<div id="layer_sound_warning"></div>';
 
-/*
-$table->data[27][0] = __('License information');
-$license_info = db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key');
-if ($license_info === false)
-	$license_info = '';
-
-$table->data[27][1] = html_print_input_text ('license_info_key', $license_info, '', 40, 255, true);
-$table->data[27][1] .= '&nbsp;<a id="dialog_license_info" title="'.__("License Info").'" href="#">'.html_print_image('images/lock.png', true, array('class' => 'bot', 'title' => __('License info'))).'</a>';
-$table->data[27][1] .= '<div id="dialog_show_license" style="display:none"></div>';
-*/
-
 $table->data[28][0] = __('Public URL');
 $table->data[28][0] .= ui_print_help_tip(__('Set this value when your PandoraFMS across inverse proxy or for example with mod_proxy of Apache.'), true);
 $table->data[28][1] = html_print_input_text ('public_url', $config['public_url'], '', 40, 255, true);

@@ -123,50 +123,18 @@ $(document).ready (function () {
 	}
 	
 	
-	$("a#dialog_license_info").click (function () {
-		var ajax_doc = "ajax.php";
-		if($('#hidden-metaconsole_activated').val() == 1) {
-			ajax_doc = "../../" + ajax_doc;
-		}
+	if ($('#msg_change_password').length) {
 		
-		jQuery.get (ajax_doc,
-			{"page": "extensions/update_manager",
-			 "get_license_info": "1"},
-			function (data, status) {
-				$("#dialog_show_license").hide ()
-					.empty ()
-					.append (data)
-					.dialog ({
-						title: $("a#dialog_license_info").attr ("title"),
-						resizable: false,
-						draggable: true,
-						modal: true,
-						overlay: {
-							opacity: 0.5,
-							background: "black"
-						},
-						width: 500,
-						height: 250
-					})
-					.show ();
-			},
-			"html"
-		);	
-		return false;
-	});
-	
-	if ($('#msg_change_password').length) {	
-	
 		$( "#msg_change_password" ).dialog({
-					resizable: true,
-					draggable: true,
-					modal: true,
-					height: 260,
-					width: 590,
-					overlay: {
-								opacity: 0.5,
-								background: "black"
-							}
+			resizable: true,
+			draggable: true,
+			modal: true,
+			height: 260,
+			width: 590,
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			}
 		});
 	
 	}

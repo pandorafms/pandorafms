@@ -7632,7 +7632,7 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 			$table_agent->width = '100%';
 			$table_agent->data = array();
 			$table_agent->head = array();
-			$table_agent->head[0] = $agent['name'];
+			$table_agent->head[0] = sprintf(__("Agent '%s'"), $agent['name']);
 			$table_agent->headstyle = array();
 			$table_agent->headstyle[0] = 'font-size: 16px;';
 			$table_agent->style[0] = 'text-align: center';
@@ -7651,7 +7651,7 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 				$table_interface->rowstyle = array();
 				$table_interface->head = array();
 				$table_interface->cellstyle = array();
-				$table_interface->title = $interface_name;
+				$table_interface->title = sprintf(__("Interface '%s' throughput graph"), $interface_name);
 				$table_interface->head['ip'] = __('IP');
 				$table_interface->head['mac'] = __('Mac');
 				$table_interface->head['status'] = __('Actual status');

@@ -1183,9 +1183,6 @@ INSERT INTO tevent_response VALUES (1,'Ping&#x20;to&#x20;host','Ping&#x20;to&#x2
 
 INSERT INTO tupdate_settings VALUES ('current_update', '412');
 INSERT INTO tupdate_settings VALUES ('customer_key', 'PANDORA-FREE');
-INSERT INTO tupdate_settings VALUES ('update_server_host', 'www.artica.es');
-INSERT INTO tupdate_settings VALUES ('update_server_port', '80');
-INSERT INTO tupdate_settings VALUES ('update_server_path', '/pandoraupdate5/server.php');
 INSERT INTO tupdate_settings VALUES ('updating_binary_path', 'Path where the updated binary files will be stored');
 INSERT INTO tupdate_settings VALUES ('updating_code_path', 'Path where the updated code is stored');
 INSERT INTO tupdate_settings VALUES ('dbname', '');

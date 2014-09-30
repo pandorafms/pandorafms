@@ -112,13 +112,19 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 		$tags = array();
 	}
 	
+	$user_tags = tags_get_user_tags($config["id_user"]);
+	
 	foreach ($tags as $k => $v) {
-		$tag_name = tags_get_name($v);
-		if (empty($tag_name)) {
+		if (!array_key_exists($v, $user_tags)) { //only show user's tags.
 			unset($tags[$k]);
-		}
-		else {
-			$tags[$k] = $tag_name;
+		} else {
+			$tag_name = tags_get_name($v);
+			if (empty($tag_name)) {
+				unset($tags[$k]);
+			}
+			else {
+				$tags[$k] = $tag_name;
+			}
 		}
 	}
 	

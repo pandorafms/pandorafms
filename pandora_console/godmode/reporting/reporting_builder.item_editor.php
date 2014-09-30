@@ -125,6 +125,7 @@ switch ($action) {
 			case 'top_n':
 			case 'exception':
 			case 'general':
+			case 'network_interfaces_report':
 				$get_data_editor = true;
 				break;
 			default:
@@ -419,6 +420,11 @@ switch ($action) {
 				case 'group_report':
 					$description = $item['description'];
 					$group = $item['id_group'];
+					break;
+				case 'network_interfaces_report':
+					$description = $item['description'];
+					$group = $item['id_group'];
+					$period = $item['period'];
 					break;
 				case 'top_n':
 					$description = $item['description'];
@@ -2146,6 +2152,11 @@ function chooseType() {
 			$("#row_group").show();
 			$("#row_servers").show();
 			$("#row_description").show();
+			break;
+		case 'network_interfaces_report':
+			$("#row_group").show();
+			$("#row_description").show();
+			$("#row_period").show();
 			break;
 		case 'top_n':
 			$("#row_description").show();

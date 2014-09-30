@@ -4755,7 +4755,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 			$filter['tag'] = $other['data'][14];
 		}
 		else {
-			$filterString .= " AND tags LIKE '%" . $other['data'][14]."%'";
+			$filterString .= " AND tags LIKE '" . $other['data'][14]."'";
 		}
 	}
 	
@@ -5667,7 +5667,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	
 	//Search by tag
 	if ($tag != "") {
-		$sql_post .= " AND tags LIKE '%" . io_safe_input($tag) . "%'";
+		$sql_post .= " AND tags LIKE '" . io_safe_input($tag) . "'";
 	}
 	
 	//Inject the raw sql

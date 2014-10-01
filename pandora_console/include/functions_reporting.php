@@ -7587,13 +7587,15 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 
 	$ttl = $is_pdf ? 2 : 1;
 
-	$graph_width = 600;
-	$graph_height = 200;
+	$graph_width = 900;
+	$graph_height = 300;
 
 	$datetime = $report['datetime'];
 	$period = $content['period'];
 
 	if ($is_pdf) {
+		$graph_width = 800;
+		$graph_height = 200;
 		pdf_header_content($pdf, $content, $report, $item_title, false, $content["description"]);
 	}
 	else if ($is_html) {
@@ -7614,7 +7616,11 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 		}
 	}
 
-	$network_interfaces_by_agents = agents_get_network_interfaces(false, array('id_grupo' => $content['id_group']));
+	$filter = array(
+			'id_grupo' => $content['id_group'],
+			'disabled' => 0
+		);
+	$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
 
 	if (empty($network_interfaces_by_agents)) {
 		$data = array();
@@ -7681,7 +7687,7 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 				if (!empty($interface['traffic'])) {
 
 					$only_image = !(bool)$config['flash_charts'] || $is_pdf ? true : false;
-
+					
 					$graph = custom_graphs_print(0,
 						$graph_height,
 						$graph_width,

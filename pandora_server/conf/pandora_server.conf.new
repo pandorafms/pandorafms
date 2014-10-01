@@ -462,4 +462,7 @@ event_expiry_time 0
 # the SNMP Enterprise Server when pandora_db is run.
 claim_back_snmp_modules 1
 
+# If set to 1 asynchronous modules that do not receive data for twice their
+# interval will become normal. Set to 0 to disable.
+async_recovery 1
 

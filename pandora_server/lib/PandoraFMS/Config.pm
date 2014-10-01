@@ -335,6 +335,9 @@ sub pandora_load_config {
 	# Event auto-expiry time window
 	$pa_config->{"claim_back_snmp_modules"} = 1; # 5.1
 	
+	# Auto-recovery of asynchronous modules.
+	$pa_config->{"async_recovery"} = 1; # 5.1SP1
+
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -796,6 +799,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^claim_back_snmp_modules\s(.*)/i) {
 			$pa_config->{'claim_back_snmp_modules'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^async_recovery\s+([0-1])/i) {
+			$pa_config->{'async_recovery'}= safe_input($1);
 		}
 	} # end of loop for parameter #
 

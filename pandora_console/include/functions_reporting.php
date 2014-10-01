@@ -3321,15 +3321,17 @@ function reporting_header_content($mini, $content, $report, &$table, $title = fa
 function reporting_render_report_html_item ($content, $table, $report, $mini = false) {
 	global $config;
 	global $graphic_type;
+
+	$only_image = (bool)$config['flash_charts'] ? false : true;
 	
 	if ($mini) {
 		$sizem = '1.5';
-		$sizgraph_w = '350';
+		$sizgraph_w = '450';
 		$sizgraph_h = '100';
 	}
 	else {
 		$sizem = '3';
-		$sizgraph_w = '750';
+		$sizgraph_w = '900';
 		$sizgraph_h = '230';
 	}
 	
@@ -3402,7 +3404,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
 					false, $sizgraph_w, $sizgraph_h, '', '', false, 1, false,
-					$report["datetime"], true, $urlImage);
+					$report["datetime"], $only_image, $urlImage);
 				
 			}
 			else {
@@ -3423,7 +3425,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					0,
 					0,
 					true,
-					true,
+					$only_image,
 					ui_get_full_url(false) . '/',
 					1,
 					false,
@@ -3550,7 +3552,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', true, 0, true, true, ui_get_full_url(false) . '/');
+				$report["datetime"], '', true, 0, true, $only_image, ui_get_full_url(false) . '/');
 			
 			/*$data[0] = 	graphic_combined_module(
 				$modules,
@@ -3608,8 +3610,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[1][0] = 3;
 			$data = array();
 
-			$only_image = (bool)$config['flash_charts'] ? false : true;
-			
 			require_once ($config["homedir"] . '/include/functions_graph.php');
 			$data[0] = 	graphic_combined_module(
 				$modules,

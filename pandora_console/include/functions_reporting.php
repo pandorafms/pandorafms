@@ -5052,6 +5052,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				</table>";
 			
 			break;
+		case 'network_interfaces_report':
+			reporting_network_interfaces_table($content, $report, $mini, $item_title, $table);
+			break;
 		case 'general':
 			if (empty($item_title)) {
 				$item_title = __('General');
@@ -7565,6 +7568,157 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 	}
 	else {
 		echo $out;
+	}
+}
+
+
+function reporting_network_interfaces_table ($content, $report, $mini, $item_title = "", &$table = null, &$pdf = null) {
+	global $config;
+
+	include_once($config['homedir'] . "/include/functions_custom_graphs.php");
+
+	if (empty($item_title)) {
+		$group_name = groups_get_name($content['id_group']);
+		$item_title = __('Network interfaces') . " - " . sprintf(__('Group "%s"'), $group_name);
+	}
+
+	$is_html = $table !== null;
+	$is_pdf = $pdf !== null;
+
+	$ttl = $is_pdf ? 2 : 1;
+
+	$graph_width = 600;
+	$graph_height = 200;
+
+	$datetime = $report['datetime'];
+	$period = $content['period'];
+
+	if ($is_pdf) {
+		pdf_header_content($pdf, $content, $report, $item_title, false, $content["description"]);
+	}
+	else if ($is_html) {
+		reporting_header_content($mini, $content, $report, $table, $item_title);
+
+		//RUNNING
+		$table->style[1] = 'text-align: right';
+		
+		// Put description at the end of the module (if exists)
+		$table->colspan[0][1] = 2;
+		$next_row = 1;
+		if ($content["description"] != "") {
+			$table->colspan[$next_row][0] = 3;
+			$next_row++;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+	}
+
+	$network_interfaces_by_agents = agents_get_network_interfaces(false, array('id_grupo' => $content['id_group']));
+
+	if (empty($network_interfaces_by_agents)) {
+		$data = array();
+		$table->colspan[$next_row][0] = 3;
+		$next_row++;
+		$data[0] = __('The group has no agents or none of the agents has any network interface');
+		array_push ($table->data, $data);
+		$slas = array();
+		return;
+	}
+	else {
+		foreach ($network_interfaces_by_agents as $agent_id => $agent) {
+
+			$table_agent = new StdCLass();
+			$table_agent->width = '100%';
+			$table_agent->data = array();
+			$table_agent->head = array();
+			$table_agent->head[0] = sprintf(__("Agent '%s'"), $agent['name']);
+			$table_agent->headstyle = array();
+			$table_agent->headstyle[0] = 'font-size: 16px;';
+			$table_agent->style[0] = 'text-align: center';
+
+			if ($is_pdf) {
+				$table_agent->class = 'table_sla table_beauty';
+				$table_agent->headstyle[0] = 'background: #373737; color: #FFF; display: table-cell; font-size: 16px; border: 1px solid grey';
+			}
+
+			$table_agent->data['interfaces'] = "";
+
+			foreach ($agent['interfaces'] as $interface_name => $interface) {
+				$table_interface = new StdClass();
+				$table_interface->width = '100%';
+				$table_interface->data = array();
+				$table_interface->rowstyle = array();
+				$table_interface->head = array();
+				$table_interface->cellstyle = array();
+				$table_interface->title = sprintf(__("Interface '%s' throughput graph"), $interface_name);
+				$table_interface->head['ip'] = __('IP');
+				$table_interface->head['mac'] = __('Mac');
+				$table_interface->head['status'] = __('Actual status');
+				$table_interface->style['ip'] = 'text-align: left';
+				$table_interface->style['mac'] = 'text-align: left';
+				$table_interface->style['status'] = 'width: 150px; text-align: center';
+
+				if ($is_pdf) {
+					$table_interface->class = 'table_sla table_beauty';
+					$table_interface->titlestyle = 'background: #373737; color: #FFF; display: table-cell; font-size: 12px; border: 1px solid grey';
+
+					$table_interface->headstyle['ip'] = 'text-align: left; background: #666; color: #FFF; display: table-cell; font-size: 11px; border: 1px solid grey';
+					$table_interface->headstyle['mac'] = 'text-align: left; background: #666; color: #FFF; display: table-cell; font-size: 11px; border: 1px solid grey';
+					$table_interface->headstyle['status'] = 'background: #666; color: #FFF; display: table-cell; font-size: 11px; border: 1px solid grey';
+
+					$table_interface->style['ip'] = 'text-align: left; display: table-cell; font-size: 10px;';
+					$table_interface->style['mac'] = 'text-align: left; display: table-cell; font-size: 10px;';
+					$table_interface->style['status'] = 'text-align: center; display: table-cell; font-size: 10px;';
+				}
+
+				$data = array();
+				$data['ip'] = !empty($interface['ip']) ? $interface['ip'] : "--";
+				$data['mac'] = !empty($interface['mac']) ? $interface['mac'] : "--";
+				$data['status'] = $interface['status_image'];
+				$table_interface->data['data'] = $data;
+
+				if (!empty($interface['traffic'])) {
+
+					$only_image = !(bool)$config['flash_charts'] || $is_pdf ? true : false;
+
+					$graph = custom_graphs_print(0,
+						$graph_height,
+						$graph_width,
+						$period,
+						null,
+						true,
+						$date,
+						$only_image,
+						'white',
+						array_values($interface['traffic']),
+						$config['homeurl'],
+						array_keys($interface['traffic']),
+						array_fill(0, count($interface['traffic']),"bytes/s"),
+						false,
+						true,
+						true,
+						true,
+						$ttl);
+					
+					$table_interface->data['graph'] = $graph;
+					$table_interface->colspan['graph'][0] = count($table_interface->head);
+					$table_interface->cellstyle['graph'][0] = 'text-align: center;';
+				}
+
+				$table_agent->data['interfaces'] .= html_print_table($table_interface, true);
+				$table_agent->colspan[$interface_name][0] = 3;
+			}
+
+			if ($is_html) {
+				$table->data[$agent_id] = html_print_table($table_agent, true);
+				$table->colspan[$agent_id][0] = 3;
+			}
+			else if ($is_pdf) {
+				$html = html_print_table($table_agent, true);
+				$pdf->addHTML($html);
+			}
+		}
 	}
 }
 ?>

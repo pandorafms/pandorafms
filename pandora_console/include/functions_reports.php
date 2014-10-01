@@ -574,6 +574,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 	}
 	$types['top_n'] = array('optgroup' => __('Grouped'),
 		'name' => __('Top n'));
+	$types['network_interfaces_report'] = array('optgroup' => __('Grouped'),
+		'name' => __('Network interfaces'));
 	
 	
 	

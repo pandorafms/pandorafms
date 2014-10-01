@@ -30,6 +30,7 @@ include_once($config['homedir'] . "/include/functions_network_components.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 enterprise_include_once ('include/functions_local_components.php');
+enterprise_include_once ('include/functions_events.php');
 
 /**
  * Parse the "other" parameter.
@@ -204,6 +205,16 @@ function api_get_test() {
 	global $pandora_version;
 	global $build_version;
 	echo "OK,$pandora_version,$build_version";
+}
+
+// Returs the string OK if a connection to the event replication DB can be established.
+function api_get_test_event_replication_db() {
+	$status = enterprise_hook('events_test_replication_db', array());
+	if ($status === ENTERPRISE_NOT_HOOK) {
+		echo 'ERR';
+		return;
+	}
+	echo $status;
 }
 
 //-------------------------DEFINED OPERATIONS FUNCTIONS-----------------
@@ -4755,7 +4766,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 			$filter['tag'] = $other['data'][14];
 		}
 		else {
-			$filterString .= " AND tags LIKE '%" . $other['data'][14]."%'";
+			$filterString .= " AND tags LIKE '" . $other['data'][14]."'";
 		}
 	}
 	
@@ -5667,7 +5678,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	
 	//Search by tag
 	if ($tag != "") {
-		$sql_post .= " AND tags LIKE '%" . io_safe_input($tag) . "%'";
+		$sql_post .= " AND tags LIKE '" . io_safe_input($tag) . "'";
 	}
 	
 	//Inject the raw sql

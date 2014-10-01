@@ -764,6 +764,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	
 	var legends = $('#legend_' + graph_id + ' .legendLabel');
 	
+	
 	var updateLegendTimeout = null;
 	var latestPosition = null;
 	var currentPlot = null;
@@ -839,11 +840,17 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			
 			// The graphs of points type and unknown graphs will dont be updated
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
-				legends.eq(i).text(label_aux.replace(/=.*/, '= ' + parseFloat(y).toFixed(2) +' '+unit));
+				
+				$('#legend_' + graph_id + ' .legendLabel')
+					.eq(i).text(label_aux.replace(/=.*/,
+					'= ' + parseFloat(y).toFixed(2) + ' ' + unit));
 			}
 			
-			legends.eq(i).css('font-size',font_size+'pt');
-			legends.eq(i).css('color','#000');
+			$('#legend_' + graph_id + ' .legendLabel')
+				.eq(i).css('font-size',font_size+'pt');
+			
+			$('#legend_' + graph_id + ' .legendLabel')
+				.eq(i).css('color','#000');
 			
 			i++;
 		}
@@ -936,7 +943,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
-			legends.eq(i).text(legends.eq(i).text().replace(/=.*/, ''));
+			$('#legend_' + graph_id + ' .legendLabel')
+				.eq(i).text(legends.eq(i).text().replace(/=.*/, ''));
 		}
 		plot.clearCrosshair();
 		overview.clearCrosshair();
@@ -972,14 +980,14 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	
 	if (menu) {
 		var parent_height;
-		$('#menu_overview_'+graph_id).click(function() {
-			if ( $('#overview_'+graph_id).css('visibility') == 'hidden' )
-				$('#overview_'+graph_id).css('visibility','visible');
+		$('#menu_overview_' + graph_id).click(function() {
+			if ( $('#overview_' + graph_id).css('visibility') == 'hidden' )
+				$('#overview_' + graph_id).css('visibility','visible');
 			else
-				$('#overview_'+graph_id).css('visibility','hidden');
+				$('#overview_' + graph_id).css('visibility','hidden');
 		});
 		
-		$('#menu_threshold_'+graph_id).click(function() {
+		$('#menu_threshold_' + graph_id).click(function() {
 			datas = new Array();
 			
 			if (thresholded) {
@@ -999,12 +1007,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				//}
 			});
 			
-			plot = $.plot($('#'+graph_id), datas, options);
+			plot = $.plot($('#' + graph_id), datas, options);
 			
 			plot.setSelection(currentRanges);
 		});
 		
-		$('#menu_cancelzoom_'+graph_id).click(function() {
+		$('#menu_cancelzoom_' + graph_id).click(function() {
 			// cancel the zooming
 			plot = $.plot($('#'+graph_id), data_base,
 				$.extend(true, {}, options, {
@@ -1012,7 +1020,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					legend: { show: false }
 				}));
 			
-			$('#menu_cancelzoom_'+graph_id).attr('src',homeurl+'/images/zoom_cross.disabled.png');
+			$('#menu_cancelzoom_' + graph_id)
+				.attr('src', homeurl + '/images/zoom_cross.disabled.png');
 			overview.clearSelection();
 			currentRanges = null;
 		});

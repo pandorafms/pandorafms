@@ -708,10 +708,10 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$width, $height , $title = '', $unit_name = null,
-	$show_alerts = false, $avg_only = 0, $pure = false,
-	$date = 0, $unit = '', $baseline = 0, $return_data = 0,
-	$show_title = true, $only_image = false, $homeurl = '', $ttl = 1,
-	$projection = false, $adapt_key = '', $compare = false, $show_unknown = false, 
+	$show_alerts = false, $avg_only = 0, $pure = false, $date = 0,
+	$unit = '', $baseline = 0, $return_data = 0, $show_title = true,
+	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
+	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white') {
 	
 	global $config;
@@ -735,7 +735,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$series_suffix_str = '';
 	if ($compare !== false) {
 		$series_suffix = '2';
-		$series_suffix_str = ' ('.__('Previous').')';
+		$series_suffix_str = ' (' . __('Previous') . ')';
 		// Build the data of the previous period
 		
 		grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
@@ -761,7 +761,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$series_type_prev = $series_type;
 				$color_prev = $color;
 				foreach($color_prev as $k => $col) {
-					$color_prev[$k]['color'] = '#'.get_complementary_rgb($color_prev[$k]['color']);
+					$color_prev[$k]['color'] = '#' .
+						get_complementary_rgb($color_prev[$k]['color']);
 				}
 				break;
 		}

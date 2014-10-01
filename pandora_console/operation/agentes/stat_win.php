@@ -33,7 +33,9 @@ if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
 	$loginhash_data = get_parameter("loginhash_data", "");
 	$loginhash_user = get_parameter("loginhash_user", "");
 	
-	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
+	if ($config["loginhash_pwd"] != ""
+		&& $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
+		
 		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
@@ -101,7 +103,8 @@ $label = base64_decode(get_parameter('label', ''));
 		// Get input parameters
 		$label = get_parameter ("label","");
 		if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
-			ui_print_error_message(__('There was a problem locating the source of the graph'));
+			ui_print_error_message(
+				__('There was a problem locating the source of the graph'));
 			exit;
 		}
 		
@@ -202,9 +205,9 @@ $label = base64_decode(get_parameter('label', ''));
 		}
 		echo '</div>';
 		
-		///////////////////////////
+		////////////////////////////////////////////////////////////////
 		// SIDE MENU
-		///////////////////////////
+		////////////////////////////////////////////////////////////////
 		$params = array();
 		// TOP TEXT
 		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/config_mc.png', true, array('width' => '16px')) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
@@ -240,17 +243,19 @@ $label = base64_decode(get_parameter('label', ''));
 		//$table->size[0] = '50%';
 		$table->styleTable = 'border-spacing: 4px;';
 		$table->class = 'alternate';
-
+		
 		$data = array();
 		$data[0] = __('Refresh time');
-		$data[1] = html_print_extended_select_for_time("refresh", $refresh, '', '', 0, 7, true);
+		$data[1] = html_print_extended_select_for_time("refresh",
+			$refresh, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
 		if ($graph_type != "boolean" && $graph_type != "string") {
 			$data = array();
 			$data[0] = __('Avg. Only');
-			$data[1] = html_print_checkbox ("avg_only", 1, (bool) $avg_only, true, false, 'show_others()');
+			$data[1] = html_print_checkbox ("avg_only", 1,
+				(bool)$avg_only, true, false, 'show_others()');
 			$data[1] .= html_print_input_hidden('show_other', 0, true);
 			$table->data[] = $data;
 			$table->rowclass[] = '';
@@ -258,15 +263,19 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		$data = array();
 		$data[0] = __('Begin date');
-		$data[1] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 15, 255, true);
-		$data[1] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);", "style" => 'vertical-align: bottom;'));
+		$data[1] = html_print_input_text ("start_date",
+			substr($start_date, 0, 10),'', 15, 255, true);
+		$data[1] .= html_print_image ("images/calendar_view_day.png",
+			true, array(
+				"onclick" => "scwShow(scwID('text-start_date'),this);",
+				"style" => 'vertical-align: bottom;'));
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
 		$data = array();
 		$data[0] = __('Zoom factor');
 		$options = array ();
-		$options[$zoom] = 'x'.$zoom;
+		$options[$zoom] = 'x' . $zoom;
 		$options[1] = 'x1';
 		$options[2] = 'x2';
 		$options[3] = 'x3';
@@ -277,7 +286,8 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		$data = array();
 		$data[0] = __('Time range');
-		$data[1] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
+		$data[1] = html_print_extended_select_for_time('period',
+			$period, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
@@ -345,12 +355,16 @@ $label = base64_decode(get_parameter('label', ''));
 		$table->class = 'databox';
 		
 		$data = array();
-		$data[0] = html_print_div(array('content' => $form_table, 'style' => 'overflow: auto; height: 220px'), true);
+		$data[0] = html_print_div(array('content' => $form_table,
+			'style' => 'overflow: auto; height: 220px'), true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
 		$data = array();
-		$data[0] = '<div style="width:100%; text-align:right;">' . html_print_submit_button (__('Reload'), "submit", false, 'class="sub upd"', true) . "</div>";
+		$data[0] = '<div style="width:100%; text-align:right;">' .
+			html_print_submit_button(__('Reload'), "submit", false,
+				'class="sub upd"', true) .
+			"</div>";
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
@@ -371,7 +385,8 @@ $label = base64_decode(get_parameter('label', ''));
 		html_print_side_layer($params);
 		
 		// Hidden div to forced title
-		html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true));
+		html_print_div(array('id' => 'forced_title_layer',
+			'class' => 'forced_title_layer', 'hidden' => true));
 		?>
 		
 	</body>

@@ -3606,7 +3606,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$sizgraph_h += count($modules) * 15;
 			
 			$table->colspan[1][0] = 3;
-			$data = array ();
+			$data = array();
+
+			$only_image = (bool)$config['flash_charts'] ? false : true;
 			
 			require_once ($config["homedir"] . '/include/functions_graph.php');
 			$data[0] = 	graphic_combined_module(
@@ -3621,7 +3623,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$graph["stacked"],
 				$report["datetime"],
-				true,
+				$only_image,
 				ui_get_full_url(false) . '/');
 			array_push ($table->data, $data);
 			
@@ -7588,7 +7590,7 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 	$ttl = $is_pdf ? 2 : 1;
 
 	$graph_width = 900;
-	$graph_height = 300;
+	$graph_height = 200;
 
 	$datetime = $report['datetime'];
 	$period = $content['period'];

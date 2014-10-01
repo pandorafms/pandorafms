@@ -4218,6 +4218,8 @@ sub pandora_module_unknown ($$) {
 		if ($module->{'id_tipo_modulo'} == 21 ||
 			$module->{'id_tipo_modulo'} == 22 ||
 			$module->{'id_tipo_modulo'} == 23) {
+
+			next if ($pa_config->{"async_recovery"} == 0);
 			
 			# Set the module state to normal
 			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to NORMAL", 10);

@@ -277,3 +277,8 @@ restart_delay 60
 
 # Update parent from the agent xml
 #update_parent 1
+
+# If set to 1 asynchronous modules that do not receive data for twice their
+# interval will become normal. Set to 0 to disable.
+async_recovery 1
+

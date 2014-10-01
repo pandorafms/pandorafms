@@ -7625,12 +7625,15 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 	$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
 
 	if (empty($network_interfaces_by_agents)) {
-		$data = array();
-		$table->colspan[$next_row][0] = 3;
-		$next_row++;
-		$data[0] = __('The group has no agents or none of the agents has any network interface');
-		array_push ($table->data, $data);
-		$slas = array();
+		if ($is_pdf) {
+			$pdf->addHTML(__('The group has no agents or none of the agents has any network interface'));
+		}
+		else if ($is_html) {
+			$data = array();
+			$data[0] = __('The group has no agents or none of the agents has any network interface');
+			$table->colspan[$next_row][0] = 3;
+			array_push ($table->data, $data);
+		}
 		return;
 	}
 	else {

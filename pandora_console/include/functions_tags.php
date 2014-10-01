@@ -867,7 +867,7 @@ function tags_get_acl_tags_event_condition($acltags) {
 			//~ $tags_condition .= sprintf(' OR tags LIKE "%s %%"',io_safe_input($all_tags[$tag]));
 			//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s %%"',io_safe_input($all_tags[$tag]));
 			
-			$tags_condition .= sprintf('tags LIKE "%%%s%%"',io_safe_input($all_tags[$tag]));
+			$tags_condition .= sprintf('tags LIKE "%s"',io_safe_input($all_tags[$tag]));
 		}
 		
 		// If there is not tag condition ignore

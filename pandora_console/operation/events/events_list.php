@@ -567,7 +567,7 @@ else {
 
 if (!empty($result)) {
 	$graph = '<div style="width: 350px; margin: 0 auto;">' .
-		grafico_eventos_grupo(400, 250,
+		grafico_eventos_grupo(350, 185,
 			rawurlencode ($sql_post), $meta, $history) .
 		'</div>';
 	html_print_div(array('id' => 'events_graph',

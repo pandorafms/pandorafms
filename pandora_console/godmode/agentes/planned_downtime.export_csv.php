@@ -112,8 +112,7 @@ $sql = "SELECT *
 		WHERE $where_values
 		ORDER BY type_execution DESC, date_from DESC";
 $downtimes = @db_get_all_rows_sql($sql);
-html_debug_print($sql);
-html_debug_print($downtimes);
+
 if (!empty($downtimes)) {
 	ob_clean();
 	// Show contentype header

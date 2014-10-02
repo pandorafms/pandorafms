@@ -797,8 +797,8 @@ sub connect_pandora_agents($$$$) {
 	return unless defined($agent_2);
 
 	# Check wether the modules exists.
-	my $module_name_1 = safe_input($if_1 eq '' ? 'ping' : "if_$if_1");
-	my $module_name_2 = safe_input($if_2 eq '' ? 'ping' : "if_$if_2");
+	my $module_name_1 = safe_input($if_1 eq '' ? 'ping' : "ifOperStatus_$if_1");
+	my $module_name_2 = safe_input($if_2 eq '' ? 'ping' : "ifOperStatus_$if_2");
 	my $module_id_1 = get_agent_module_id($DBH, $module_name_1, $agent_1->{'id_agente'});
 	if ($module_id_1 <= 0) {
 		message("ERROR: Module " . safe_output($module_name_1) . " does not exist for agent $dev_1.");

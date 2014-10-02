@@ -93,11 +93,23 @@ if ($idReport != 0) {
 				$edit = true;
 			break;
 	}
+
 	if (! $edit) {
-		db_pandora_audit("ACL Violation",
-			"Trying to access report builder");
-		require ("general/noaccess.php");
-		exit;
+		// The user that created the report should can delete it. Despite its permissions.
+		$delete_report_bypass = false;
+
+		if ($action == 'delete_report') {
+			if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
+				$delete_report_bypass = true;
+			}
+		}
+		
+		if (!$delete_report_bypass) {
+			db_pandora_audit("ACL Violation",
+				"Trying to access report builder");
+			require ("general/noaccess.php");
+			exit;
+		}
 	}
 }
 
@@ -298,6 +310,43 @@ switch ($action) {
 		enterprise_hook('open_meta_frame');
 		
 		if ($action == 'delete_report') {
+			$delete = false;
+			switch ($type_access_selected) {
+				case 'group_view':
+					if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
+						$delete = true; //owner can delete
+					} else {
+						$delete = check_acl($config['id_user'],
+							$report['id_group'], "RM")
+							&&
+							users_can_manage_group_all($report["id_group"], "RM");
+					}
+					break;
+				case 'group_edit':
+					if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
+						$delete = true; //owner can delete
+					} else {
+						$delete = check_acl($config['id_user'],
+							$report['id_group'], "RM")
+							&&
+							users_can_manage_group_all($report["id_group"], "RM");
+					}
+					break;
+				case 'user_edit':
+					if ($config['id_user'] == $report['id_user'] ||
+						is_user_admin ($config["id_user"])) {
+						$delete = true;
+					}
+					break;
+			}
+
+			if (! $delete) {
+				db_pandora_audit("ACL Violation",
+					"Trying to access report builder deletion");
+				require ("general/noaccess.php");
+				exit;
+			}
+
 			$result = reports_delete_report ($idReport);
 			if ($result !== false)
 				db_pandora_audit("Report management", "Delete report #$idReport");
@@ -494,14 +543,14 @@ switch ($action) {
 							&&
 							users_can_manage_group_all($report["id_group"], "RW");
 						
-							if ($config['id_user'] == $report['id_user']) {
-								$delete = true; //owner can delete
-							} else {
-								$delete = check_acl($config['id_user'],
-									$report['id_group'], "RM")
-									&&
-									users_can_manage_group_all($report["id_group"], "RM");
-							}
+						if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
+							$delete = true; //owner can delete
+						} else {
+							$delete = check_acl($config['id_user'],
+								$report['id_group'], "RM")
+								&&
+								users_can_manage_group_all($report["id_group"], "RM");
+						}
 						break;
 					case 'group_edit':
 						$edit = check_acl($config['id_user'],
@@ -509,10 +558,14 @@ switch ($action) {
 							&&
 							users_can_manage_group_all($report["id_group_edit"], "RW");
 						
-						$delete = check_acl($config['id_user'],
-							$report['id_group_edit'], "RM")
-							&&
-							users_can_manage_group_all($report["id_group_edit"], "RM");
+						if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
+							$delete = true; //owner can delete
+						} else {
+							$delete = check_acl($config['id_user'],
+								$report['id_group'], "RM")
+								&&
+								users_can_manage_group_all($report["id_group"], "RM");
+						}
 						break;
 					case 'user_edit':
 						if ($config['id_user'] == $report['id_user'] ||

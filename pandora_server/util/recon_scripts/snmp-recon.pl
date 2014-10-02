@@ -37,6 +37,7 @@ if ($OSNAME eq "freebsd") {
 		'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
 		'networktimeout' => 2,
+		'snmp_checks' => 2,
 		'snmp_timeout' => 2,
 		'recon_timing_template' => 3,
 		'PID' => '',
@@ -183,7 +184,7 @@ sub responds_to_snmp($) {
 	my ($target) = @_;
 
 	foreach my $community (@SNMP_COMMUNITIES) {
-		`snmpwalk -M/dev/null -r2 -t$CONF{'snmp_timeout'} -v1 -On -Oe -c $community $target .0 2>/dev/null`;
+		`snmpwalk -M/dev/null -r$CONF{'snmp_checks'} -t$CONF{'snmp_timeout'} -v1 -On -Oe -c $community $target .0 2>/dev/null`;
 		if ($? == 0) {
 			$COMMUNITIES{$target} = $community;
 			return $community;
@@ -200,7 +201,7 @@ sub snmp_get($$$) {
 	my ($target, $community, $oid) = @_;
 	my @output;
 
-	@output = `snmpwalk -M/dev/null -r2 -t$CONF{'snmp_timeout'}  -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
+	@output = `snmpwalk -M/dev/null -r$CONF{'snmp_checks'} -t$CONF{'snmp_timeout'}  -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
 	return @output;
 }
 
@@ -891,8 +892,7 @@ sub traceroute_connectivity($) {
 	return unless defined($agent);
 
 	# Perform a traceroute.
-	my $timeout = $CONF{'networktimeout'}*1000;
-	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$CONF{'recon_timing_template'};
+	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$CONF{'networktimeout'}.'s -T'.$CONF{'recon_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
 		$np->parsescan($CONF{'nmap'}, $nmap_args, ($host));
@@ -962,8 +962,7 @@ update_recon_task($DBH, $TASK_ID, 1);
 
 # Populate ARP caches.
 message("Populating ARP caches...");
-my $timeout = $CONF{'networktimeout'} * 1000; # Convert the timeout from s to ms.
-my $nmap_args  = '-nsP --send-ip --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$timeout.' -T'.$CONF{'recon_timing_template'};
+my $nmap_args  = '-nsP --send-ip --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$CONF{'networktimeout'}.'s -T'.$CONF{'recon_timing_template'};
 my $np = new PandoraFMS::NmapParser;
 if ($#SUBNETS >= 0) {
 	$np->parsescan($CONF{'nmap'}, $nmap_args, @SUBNETS);

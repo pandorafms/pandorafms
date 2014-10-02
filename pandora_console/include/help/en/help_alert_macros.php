@@ -42,6 +42,7 @@ Besides the defined module macros, the following macros are available:
 <li>_target_port_ : Port number of the target of the module.</li>
 <li>_plugin_parameters_ : Plug-in Parameters of the module.</li>
 <li>_groupcontact_ : Group contact information.	Configured when the group is created.</li>
+<li>_groupcustomid_: Group custom ID. </li>
 <li>_groupother_ : Other information about the group. Configured when the group is created.</li>
 <li>_name_tag_ : Names of the tags associated to the module.</li>
 <li>_email_tag_ : Emails associated to the module tags.</li>

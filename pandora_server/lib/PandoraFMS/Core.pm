@@ -851,6 +851,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_critical_instructions_ => $alert->{'critical_instructions'},
 				_alert_warning_instructions_ => $alert->{'warning_instructions'},
 				_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
+				_groupcustomid_ => (defined ($group)) ? $group->{'custom_id'} : '',
 				_groupother_ => (defined ($group)) ? $group->{'other'} : '',
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				_modulecustomid_ => (defined ($module)) ? $module->{'custom_id'} : '',
@@ -4218,6 +4219,8 @@ sub pandora_module_unknown ($$) {
 		if ($module->{'id_tipo_modulo'} == 21 ||
 			$module->{'id_tipo_modulo'} == 22 ||
 			$module->{'id_tipo_modulo'} == 23) {
+
+			next if ($pa_config->{"async_recovery"} == 0);
 			
 			# Set the module state to normal
 			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to NORMAL", 10);

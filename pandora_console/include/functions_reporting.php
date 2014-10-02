@@ -3321,15 +3321,17 @@ function reporting_header_content($mini, $content, $report, &$table, $title = fa
 function reporting_render_report_html_item ($content, $table, $report, $mini = false) {
 	global $config;
 	global $graphic_type;
+
+	$only_image = (bool)$config['flash_charts'] ? false : true;
 	
 	if ($mini) {
 		$sizem = '1.5';
-		$sizgraph_w = '350';
+		$sizgraph_w = '450';
 		$sizgraph_h = '100';
 	}
 	else {
 		$sizem = '3';
-		$sizgraph_w = '750';
+		$sizgraph_w = '900';
 		$sizgraph_h = '230';
 	}
 	
@@ -3402,7 +3404,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
 					false, $sizgraph_w, $sizgraph_h, '', '', false, 1, false,
-					$report["datetime"], true, $urlImage);
+					$report["datetime"], $only_image, $urlImage);
 				
 			}
 			else {
@@ -3423,7 +3425,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					0,
 					0,
 					true,
-					true,
+					$only_image,
 					ui_get_full_url(false) . '/',
 					1,
 					false,
@@ -3550,7 +3552,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', true, 0, true, true, ui_get_full_url(false) . '/');
+				$report["datetime"], '', true, 0, true, $only_image, ui_get_full_url(false) . '/');
 			
 			/*$data[0] = 	graphic_combined_module(
 				$modules,
@@ -3606,8 +3608,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$sizgraph_h += count($modules) * 15;
 			
 			$table->colspan[1][0] = 3;
-			$data = array ();
-			
+			$data = array();
+
 			require_once ($config["homedir"] . '/include/functions_graph.php');
 			$data[0] = 	graphic_combined_module(
 				$modules,
@@ -3621,7 +3623,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$graph["stacked"],
 				$report["datetime"],
-				true,
+				$only_image,
 				ui_get_full_url(false) . '/');
 			array_push ($table->data, $data);
 			
@@ -7587,13 +7589,15 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 
 	$ttl = $is_pdf ? 2 : 1;
 
-	$graph_width = 600;
+	$graph_width = 900;
 	$graph_height = 200;
 
 	$datetime = $report['datetime'];
 	$period = $content['period'];
 
 	if ($is_pdf) {
+		$graph_width = 800;
+		$graph_height = 200;
 		pdf_header_content($pdf, $content, $report, $item_title, false, $content["description"]);
 	}
 	else if ($is_html) {
@@ -7614,15 +7618,22 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 		}
 	}
 
-	$network_interfaces_by_agents = agents_get_network_interfaces(false, array('id_grupo' => $content['id_group']));
+	$filter = array(
+			'id_grupo' => $content['id_group'],
+			'disabled' => 0
+		);
+	$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
 
 	if (empty($network_interfaces_by_agents)) {
-		$data = array();
-		$table->colspan[$next_row][0] = 3;
-		$next_row++;
-		$data[0] = __('The group has no agents or none of the agents has any network interface');
-		array_push ($table->data, $data);
-		$slas = array();
+		if ($is_pdf) {
+			$pdf->addHTML(__('The group has no agents or none of the agents has any network interface'));
+		}
+		else if ($is_html) {
+			$data = array();
+			$data[0] = __('The group has no agents or none of the agents has any network interface');
+			$table->colspan[$next_row][0] = 3;
+			array_push ($table->data, $data);
+		}
 		return;
 	}
 	else {
@@ -7681,7 +7692,7 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 				if (!empty($interface['traffic'])) {
 
 					$only_image = !(bool)$config['flash_charts'] || $is_pdf ? true : false;
-
+					
 					$graph = custom_graphs_print(0,
 						$graph_height,
 						$graph_width,

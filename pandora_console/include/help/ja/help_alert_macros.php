@@ -44,6 +44,7 @@
 <li>_target_port_ : モジュールの対象ポート</li>
 <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
 <li>_groupcontact_ : グループコンタクト情報。グループの作成時に設定されます。</li>
+<li>_groupcustomid_: グループカスタムID</li>
 <li>_groupother_ : グループに関するその他情報。グループの作成時に設定されます。</li>
 <li>_name_tag_ : モジュールに関連付けられたタグの名前。</li>
 <li>_email_tag_ : モジュールタグに関連付けられた Email。</li>

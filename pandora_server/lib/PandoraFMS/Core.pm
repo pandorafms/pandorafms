@@ -804,6 +804,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_priority_ => $alert->{'priority'},
 				_alert_text_severity_ => get_priority_name($alert->{'priority'}),
 				_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
+				_groupcustomid_ => (defined ($group)) ? $group->{'custom_id'} : '',
 				_groupother_ => (defined ($group)) ? $group->{'other'} : '',
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				_modulecustomid_ => (defined ($module)) ? $module->{'custom_id'} : '',

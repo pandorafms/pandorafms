@@ -436,8 +436,11 @@ foreach ($result as $event) {
 	
 	if (in_array('user_comment',$show_fields)) {
 		$safe_event_user_comment = strip_tags(io_safe_output($event["user_comment"]));
+		$line_breaks = array("\r\n", "\n", "\r");
+		$safe_event_user_comment = str_replace($line_breaks, '<br>', $safe_event_user_comment);
 		$event_user_comments = json_decode($safe_event_user_comment, true);
 		$event_user_comment_str = "";
+		
 		if (!empty($event_user_comments)) {
 			$last_key = key(array_slice($event_user_comments, -1, 1, true));
 			$date_format = $config['date_format'];

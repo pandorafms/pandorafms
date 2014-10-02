@@ -37,6 +37,7 @@ if ($OSNAME eq "freebsd") {
 		'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
 		'networktimeout' => 2,
+		'snmp_timeout' => 2,
 		'recon_timing_template' => 3,
 		'PID' => '',
 		'quiet' => 1,
@@ -47,6 +48,7 @@ if ($OSNAME eq "freebsd") {
 		'pandora_path' => '/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
 		'networktimeout' => 2,
+		'snmp_timeout' => 2,
 		'recon_timing_template' => 3,
 		'PID' => '',
 		'quiet' => 1,
@@ -181,7 +183,7 @@ sub responds_to_snmp($) {
 	my ($target) = @_;
 
 	foreach my $community (@SNMP_COMMUNITIES) {
-		`snmpwalk -M/dev/null -r2 -t0.1 -v1 -On -Oe -c $community $target .0 2>/dev/null`;
+		`snmpwalk -M/dev/null -r2 -t$CONF{'snmp_timeout'} -v1 -On -Oe -c $community $target .0 2>/dev/null`;
 		if ($? == 0) {
 			$COMMUNITIES{$target} = $community;
 			return $community;
@@ -198,7 +200,7 @@ sub snmp_get($$$) {
 	my ($target, $community, $oid) = @_;
 	my @output;
 
-	@output = `snmpwalk -M/dev/null -r2 -t0.1 -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
+	@output = `snmpwalk -M/dev/null -r2 -t$CONF{'snmp_timeout'}  -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
 	return @output;
 }
 

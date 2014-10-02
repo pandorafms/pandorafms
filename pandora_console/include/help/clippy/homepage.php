@@ -146,14 +146,22 @@ function clippy_start_page_homepage() {
 		}
 		
 		function set_clippy_annoying() {
-			checked = $('input[name=\'clippy_is_annoying\']').is(':checked');
+			var now = new Date();
+			var time = now.getTime();
+			var expireTime = time + 3600000 * 24 * 360 * 20;
+			now.setTime(expireTime);
+			
+			checked = $('input[name=\'clippy_is_annoying\']')
+				.is(':checked');
 			//intro_homepage.exit();
 			
 			if (checked) {
-				document.cookie = 'clippy_is_annoying=1';
+				document.cookie = 'clippy_is_annoying=1;expires=' +
+					now.toGMTString() + ';';
 			}
 			else {
-				document.cookie = 'clippy_is_annoying=0';
+				document.cookie = 'clippy_is_annoying=0;expires=' +
+					now.toGMTString() + ';';
 			}
 		}
 		

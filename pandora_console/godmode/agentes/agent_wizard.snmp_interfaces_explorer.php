@@ -153,6 +153,9 @@ if ($create_modules) {
 		else if (isset($interfaces[$id]['ifDescr']) && $interfaces[$id]['ifDescr']['value'] != "") {
 			$ifname = $interfaces[$id]['ifDescr']['value'];
 		}
+		if (isset($interfaces[$id]['ifPhysAddress']) && $interfaces[$id]['ifPhysAddress']['value'] != "") {
+			$ifPhysAddress = $interfaces[$id]['ifPhysAddress']['value'];
+		}
 		foreach ($modules as $module) {
 			$oid_array = explode('.',$module);
 			$oid_array[count($oid_array)-1] = $id;
@@ -200,7 +203,11 @@ if ($create_modules) {
 				$module_type = 15;
 			
 			$values['id_tipo_modulo'] = $module_type;
-			$values['descripcion'] = io_safe_input("(" . $ip_target." - ".$name . ") " . $interfaces[$id]['ifDescr']['value']);
+
+			if (!empty($ifPhysAddress))
+				$values['descripcion'] = io_safe_input("(".$ip_target." - ".$ifPhysAddress." - ".$name.") " . $interfaces[$id]['ifDescr']['value']);
+			else
+				$values['descripcion'] = io_safe_input("(".$ip_target." - ".$name.") " . $interfaces[$id]['ifDescr']['value']);
 			
 			$values['snmp_oid'] = $oid;
 			$values['id_modulo'] = 2;

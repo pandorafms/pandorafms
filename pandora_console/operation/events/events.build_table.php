@@ -435,7 +435,30 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('user_comment',$show_fields)) {
-		$data[$i] = '<span id="comment_header_' . $event['id_evento'] . '">' .ui_print_truncate_text(strip_tags($event["user_comment"])) . '</span>';
+		$safe_event_user_comment = strip_tags(io_safe_output($event["user_comment"]));
+		$event_user_comments = json_decode($safe_event_user_comment, true);
+		$event_user_comment_str = "";
+		if (!empty($event_user_comments)) {
+			$last_key = key(array_slice($event_user_comments, -1, 1, true));
+			$date_format = $config['date_format'];
+
+			foreach ($event_user_comments as $key => $event_user_comment) {
+				$event_user_comment_str .= sprintf('%s: %s<br>%s: %s<br>%s: %s<br>',
+					__('Date'), date($date_format, $event_user_comment['utimestamp']),
+					__('User'), $event_user_comment['id_user'],
+					__('Comment'), $event_user_comment['comment']);
+				if ($key != $last_key) {
+					$event_user_comment_str .= '<br>';
+				}
+			}
+		}
+		$comments_help_tip = "";
+		if (!empty($event_user_comment_str)) {
+			$comments_help_tip = ui_print_help_tip($event_user_comment_str, true);
+		}
+
+		html_debug_print(json_decode($safe_event_user_comment, true));
+		$data[$i] = '<span id="comment_header_' . $event['id_evento'] . '">' . $comments_help_tip . '</span>';
 		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}

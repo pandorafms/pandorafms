@@ -1010,24 +1010,33 @@ function is_module_uncompressed ($module_type) {
 function get_event_types ($id_type = false) {
 	global $config;
 	
-	$types = array ();
-	
-	$types['unknown'] = __('Unknown');
+	$types = array();
 	
 	$types['critical'] = __('Monitor Critical');
 	$types['warning'] = __('Monitor Warning');
 	$types['normal'] = __('Monitor Normal');
+	$types['unknown'] = __('Unknown');
 	$types['going_unknown'] = __('Monitor Unknown');
-	
+
 	$types['alert_fired'] = __('Alert fired');
 	$types['alert_recovered'] = __('Alert recovered');
 	$types['alert_ceased'] = __('Alert ceased');
 	$types['alert_manual_validation'] = __('Alert manual validation');
+	
+	$types['new_agent'] = __('Agent created');
 	$types['recon_host_detected'] = __('Recon host detected');
 	$types['system'] = __('System');
 	$types['error'] = __('Error');
-	$types['configuration_change'] = __('Configuration change ');
-	
+	$types['configuration_change'] = __('Configuration change');
+
+	// This types are impersonated by the monitor 'x' types
+	// $types['going_up_normal'] = __('Going Normal');
+	// $types['going_up_warning'] = __('Going Warning');
+	// $types['going_up_critical'] = __('Going Critical');
+	// $types['going_down_warning'] = __('Going down Warning');
+	// $types['going_down_normal'] = __('Going down Normal');
+	// $types['going_down_critical'] = __('Going down Critical');
+
 	foreach ($types as $key => $type) {
 		$types[$key] = ui_print_truncate_text($type, GENERIC_SIZE_TEXT, false, true, false);
 	}

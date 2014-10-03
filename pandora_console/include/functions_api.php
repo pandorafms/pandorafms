@@ -4296,6 +4296,50 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Update a group.
+ *
+ * @param integer $id Group ID
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <group_name>;<icon_name>;<parent_group_id>;<propagete>;<disabled>;<custom_id>;<id_skin>;<description>;<contact>;<other> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *
+ * 	api.php?op=set&op2=update_group&id=example_group_id&other=New%20Name|application|2|1|0|custom%20id|0|new%20description||&other_mode=url_encode_separator_|
+ *
+ * @param $thrash3 Don't use
+ */
+function api_set_update_group($id_group, $thrash2, $other, $thrash3) {
+	global $config;
+		//html_debug_print($other);
+	$name = $other['data'][0];
+	$icon = $other['data'][1];
+	$parent = $other['data'][2];
+	$propagate = $other['data'][3];
+	$disabled = $other['data'][4];
+	$custom_id = $other['data'][5];
+	$id_skin = $other['data'][6];
+	$description = $other['data'][7];
+	$contact = $other['data'][8];
+	$other = $other['data'][9];
+
+	$return = db_process_sql_update('tgrupo',
+		array('nombre' => $name,
+			'icon' => $icon,
+			'parent' => $parent,
+			'propagate' => $propagate,
+			'disabled' => $disabled,
+			'custom_id' => $custom_id,
+			'id_skin' => $id_skin,
+			'description' => $description,
+			'contact' => $contact,
+			'other' => $other),
+		array('id_grupo' => $id_group));
+
+	returnData('string',
+		array('type' => 'string', 'data' => (int)((bool)$return)));
+}
+
+/**
  * Create a new netflow filter. And return the id_group of the new group. 
  * 
  * @param $thrash1 Don't use.

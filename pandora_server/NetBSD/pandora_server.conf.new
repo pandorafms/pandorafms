@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 5.1BETA1
+# Version 5.1SP1
 # Licensed under GPL license v2,
 # (c) 2003-2014 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -74,9 +74,9 @@ dbhost 127.0.0.1
 
 # verbosity: level of detail on errors/messages (0 default, 1 verbose, 2 debug.... 10 noisy)
 # -v in command line (verbose) or -d (debug). Set this to 10 when try to locate problems and
-# set to 0 or 1 on production enviroments.
+# set to 1 or 3 on production enviroments.
 
-verbosity 1
+verbosity 3
 
 # Master Server, 1 if master server (normal mode), 0 for slave mode (slave in multi-server setup)
 
@@ -85,6 +85,18 @@ master 1
 # Activate Pandora SNMP console (depending on snmptrapd)
 
 snmpconsole 0
+
+# snmpconsole_threads: number of SNMP console threads for processing SNMP traps.
+
+snmpconsole_threads 1
+
+# Attempt to translate variable bindings when processing SNMP traps. 1 enabled, 0 disabled. 0 by default. (ENTERPRISE ONLY).
+
+translate_variable_bindings 0
+
+# Attempt to translate enterprise strings when processing SNMP traps. 1 enabled, 0 disabled. 1 by default. (ENTERPRISE ONLY).
+
+translate_enterprise_strings 0
 
 # snmptrapd will ignore authenticationFailure traps if set to 1.
 
@@ -144,9 +156,9 @@ server_threshold 5
 
 network_threads 4
 
-# icmp_checks x : defines number of pings for each icmp_proc module type. at least one of 
-# that ping should be 1 to report 1. Values of 1 have more performance, but are more feasible
-# to produce false positives. 
+# icmp_checks x : defines number of pings for each icmp_proc module type. at least one of
+# that ping should be 1 to report 1. Setting this to 1 will make all icmp montioring faster but
+# with more probability of failure.
 
 icmp_checks 3
 
@@ -236,6 +248,12 @@ xprobe2 /usr/local/bin/xprobe2
 
 nmap /usr/pkg/bin/nmap
 
+# A value that specifies how aggressive nmap should be from 1 to 5. 1 means slower but more reliable, 5 means faster but less reliable. 2 by default.
+nmap_timing_template 2
+
+# Like nmap_timing_template, but applies to Satellite Server and Recon Server network scans. 3 by default.
+recon_timing_template 3
+
 # snmpget: Needed to do SNMP checks. By default is on /usr/local/bin/snmpget
 
 snmpget /usr/pkg/bin/snmpget
@@ -253,8 +271,9 @@ braa /usr/local/bin/braa
 braa_retries 3
 
 # Default group id for new agents created with Pandora FMS Data Server
+# If this token is enabled and Agent is setup with a fixed group, server settings will override agent settings
 
-# autocreate_group 2
+#autocreate_group 2
 
 # Set to 1 if want to autocreate agents with Pandora FMS Data Server, 
 # set to 0 to disable (for security purposes, for example).
@@ -262,9 +281,12 @@ braa_retries 3
 autocreate 1
 
 # max_log_size: Specify max size of Pandora FMS server log file (1MB by default). If
-# log file grows above this limit, is renamed to "pandora_server.log.old".
+# log file grows above this limit, is renamed to "pandora_server.log.0".
 
-max_log_size 65536
+max_log_size 1048576
+
+# max_log_generation: Specify max generation count (between 1 and 9) of Pandora FMS server log files.
+max_log_generation 1
 
 # max_queue_files (500 by default)
 # When server have more than max_queue_files in incoming directory, skips the read   
@@ -345,6 +367,9 @@ webserver 1
 # Number of threads for the Web Server (PANDORA FMS ENTERPRISE ONLY).
 
 web_threads 1
+
+# Uncomment to perform web checks with CURL instead of LWP.
+#web_engine curl
 
 # Enable (1) or disable (0) Pandora FMS Inventory Server (PANDORA FMS ENTERPRISE ONLY).
 
@@ -441,3 +466,11 @@ event_expiry_time 0
 # Only events more recent than the specified time window (in seconds) will be auto-validated. This value must
 # be greater than event_expiry_time.
 #event_expiry_window 86400
+
+# If set to 1, SNMP modules run by the Network Server will be claimed back by
+# the SNMP Enterprise Server when pandora_db is run.
+claim_back_snmp_modules 1
+
+# If set to 1 asynchronous modules that do not receive data for twice their
+# interval will become normal. Set to 0 to disable.
+async_recovery 1

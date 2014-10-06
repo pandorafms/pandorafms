@@ -508,8 +508,12 @@ switch ($action) {
 				}
 				
 				//Make the html of select box of modules about id_agent.
-				if ($elementFields['id_agent'] != 0) {
-					$modules = agents_get_modules($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
+				if (($elementFields['id_agent'] != 0)
+					&&($elementFields['id_layout_linked'] == 0)) {
+					$modules = agents_get_modules(
+						$elementFields['id_agent'], false,
+						array('disabled' => 0,
+							'id_agente' => $elementFields['id_agent']));
 					
 					$elementFields['modules_html'] = '<option value="0">--</option>';
 					foreach ($modules as $id => $name) {

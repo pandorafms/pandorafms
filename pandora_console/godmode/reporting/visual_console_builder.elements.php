@@ -90,11 +90,14 @@ $table->data[0][2] = html_print_input_text('width', $visualConsole['width'], '',
 $table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 
 $i = 1;
-$layoutDatas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
+$layoutDatas = db_get_all_rows_field_filter ('tlayout_data',
+	'id_layout', $idVisualConsole);
 if ($layoutDatas === false)
 	$layoutDatas = array();
 
 $alternativeStyle = true;
+
+
 foreach ($layoutDatas as $layoutData) {
 	$idLayoutData = $layoutData['id'];
 	
@@ -104,44 +107,57 @@ foreach ($layoutDatas as $layoutData) {
 	
 	switch ($layoutData['type']) {
 		case STATIC_GRAPH:
-			$table->data[$i + 1]['icon'] = html_print_image('images/camera.png', true, array('title' => __('Static Graph')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/camera.png', true, array('title' => __('Static Graph')));
 			break;
 		case PERCENTILE_BAR:
-			$table->data[$i + 1]['icon'] = html_print_image('images/chart_bar.png', true, array('title' => __('Percentile Bar')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/chart_bar.png', true, array('title' => __('Percentile Bar')));
 			break;
 		case PERCENTILE_BUBBLE:
-			$table->data[$i + 1]['icon'] = html_print_image('images/dot_red.png', true, array('title' => __('Percentile Bubble')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/dot_red.png', true, array('title' => __('Percentile Bubble')));
 			break;
 		case MODULE_GRAPH:
-			$table->data[$i + 1]['icon'] = html_print_image('images/chart_curve.png', true, array('title' => __('Module Graph')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/chart_curve.png', true, array('title' => __('Module Graph')));
 			break;
 		case SIMPLE_VALUE:
-			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/binary.png', true, array('title' => __('Simple Value')));
 			break;
 		case SIMPLE_VALUE_MAX:
-			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Max)')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Max)')));
 			break;
 		case SIMPLE_VALUE_MIN:
-			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Min)')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Min)')));
 			break;
 		case SIMPLE_VALUE_AVG:
-			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Avg)')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Avg)')));
 			break;
 		case LABEL:
-			$table->data[$i + 1]['icon'] = html_print_image('images/tag_red.png', true, array('title' => __('Label')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/tag_red.png', true, array('title' => __('Label')));
 			break;
 		case ICON:
-			$table->data[$i + 1]['icon'] = html_print_image('images/photo.png', true, array('title' => __('Icon')));
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/photo.png', true, array('title' => __('Icon')));
 			break;
 		default:
 			if (enterprise_installed()) {
-				$table->data[$i + 1]['icon'] = enterprise_visual_map_print_list_element('icon', $layoutData);
+				$table->data[$i + 1]['icon'] =
+					enterprise_visual_map_print_list_element('icon', $layoutData);
 			}
 			else {
 				$table->data[$i + 1]['icon'] = '';
 			}
 			break;
 	}
+	
+	
 	
 	//First row
 	
@@ -158,6 +174,8 @@ foreach ($layoutDatas as $layoutData) {
 		$table->data[$i + 1][0] = '';
 	}
 	
+	
+	
 	//Image
 	if (($layoutData['type'] == STATIC_GRAPH) || ($layoutData['type'] == ICON)) {
 		$table->data[$i + 1][1] = html_print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true,  false, true, '', false, "width: 120px");
@@ -165,6 +183,8 @@ foreach ($layoutDatas as $layoutData) {
 	else {
 		$table->data[$i + 1][1] = '';
 	}
+	
+	
 	
 	//Width and height
 	$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
@@ -246,6 +266,7 @@ foreach ($layoutDatas as $layoutData) {
 			break;
 	}
 	
+	
 	//Module
 	switch ($layoutData['type']) {
 		case ICON:
@@ -253,9 +274,15 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 2][1] = '';
 			break;
 		default:
+			if ($layoutData['id_layout_linked'] != 0) {
+				//It is a item that links with other visualmap
+				break;
+			}
+			
 			$cell_content_enterprise = false;
 			if (enterprise_installed()) {
-				$cell_content_enterprise = enterprise_visual_map_print_list_element('module', $layoutData);
+				$cell_content_enterprise =
+					enterprise_visual_map_print_list_element('module', $layoutData);
 			}
 			if ($cell_content_enterprise === false) {
 				if (!defined('METACONSOLE')) {
@@ -263,7 +290,8 @@ foreach ($layoutDatas as $layoutData) {
 				}
 				else {
 					if ($layoutData['id_agent'] != 0) {
-						$modules = agents_meta_get_modules($layoutData['id_metaconsole'],
+						$modules = agents_meta_get_modules(
+							$layoutData['id_metaconsole'],
 							$layoutData['id_agent']);
 					}
 				}
@@ -271,13 +299,17 @@ foreach ($layoutDatas as $layoutData) {
 				$modules = io_safe_output($modules);
 				
 				$table->data[$i + 2][1] = html_print_select($modules,
-					'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true,  false, true, '', false, "width: 120px");
+					'module_' . $idLayoutData,
+					$layoutData['id_agente_modulo'], '', '---', 0, true,
+					false, true, '', false, "width: 120px");
 			}
 			else {
 				$table->data[$i + 2][1] = $cell_content_enterprise;
 			}
 			break;
 	}
+	
+	
 	
 	//Empty
 	$table->data[$i + 2][2] = '';
@@ -288,7 +320,10 @@ foreach ($layoutDatas as $layoutData) {
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
-			$table->data[$i + 2][3] = html_print_extended_select_for_time ('period_' . $idLayoutData, $layoutData['period'], '', '--', '0', 10, true);
+			$table->data[$i + 2][3] =
+				html_print_extended_select_for_time(
+					'period_' . $idLayoutData,
+					$layoutData['period'], '', '--', '0', 10, true);
 			break;
 		default:
 			$table->data[$i + 2][3] = '';
@@ -296,7 +331,8 @@ foreach ($layoutDatas as $layoutData) {
 	}
 	
 	//Map linked
-	$table->data[$i + 2][4] = html_print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
+	$table->data[$i + 2][4] = html_print_select_from_sql(
+		'SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
 		'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true,  false, true, '', false, "width: 120px");
 	$table->data[$i + 2][5] = '';
 	
@@ -321,7 +357,7 @@ if (!defined('METACONSOLE')) {
 else {
 	echo "<form method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=" . $idVisualConsole . "'>";
 }
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 if (!defined('METACONSOLE')) {
 	html_print_input_hidden ('action', 'update');
 }
@@ -333,7 +369,7 @@ html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
 echo '</div>';
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';

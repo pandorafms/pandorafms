@@ -106,7 +106,6 @@ if (!empty($macros)) {
 <script type="text/javascript">
 	function changePluginSelect() {
 		load_plugin_description($("#id_plugin").val());
-		load_plugin_macros_fields('simple-macro');
 		forced_title_callback();
 	}
 </script>

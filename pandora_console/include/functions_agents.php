@@ -1769,6 +1769,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		// db_process_delete_temp ("tagent_access", "id_agent", $id_agent);
 		
 		// Delete agent policies
+		enterprise_include_once('include/functions_policies.php');
 		enterprise_hook('policies_delete_agent', array($id_agent));
 		
 		// Delete agent in networkmap enterprise

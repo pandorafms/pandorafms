@@ -2270,7 +2270,7 @@ function events_page_comments ($event) {
 	$table_comments->class = "alternate rounded_cells";
 	
 	$event_comments = io_safe_output($event["user_comment"]);
-	$event_comments = str_replace("\n", "<br>", $event_comments);
+	$event_comments = str_replace( array("\n", '&#x0a;'), "<br>", $event_comments);
 	
 	// If comments are not stored in json, the format is old
 	$event_comments_array = json_decode($event_comments, true);

@@ -349,8 +349,25 @@ function modules_delete_agent_module ($id_agent_module) {
  * @return True if the module was updated. False if not.
  */
 function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false, $tags = false) {
+	
+	$update_tags = false;
+	$return_tag = true;
+	if ($tags !== false) {
+		$update_tags = true;
+		$return_tag = tags_update_module_tag ($id, $tags);
+	}
+	
+	if ($return_tag === false) {
+		return ERR_DB;
+	}
+	
 	if (!is_array ($values) || empty ($values)) {
-		return ERR_GENERIC;
+		if ($update_tags) {
+			return true;
+		}
+		else {
+			return ERR_GENERIC;
+		}
 	}
 	
 	if (isset ($values['nombre'])) {
@@ -368,14 +385,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 		}
 	}
 	
-	$return_tag = true;
-	if ($tags !== false) {
-		$return_tag = tags_update_module_tag ($id, $tags);
-	}
 	
-	if ($return_tag === false) {
-		return ERR_DB;
-	}
 	
 	$where = array();
 	$where['id_agente_modulo'] = $id;

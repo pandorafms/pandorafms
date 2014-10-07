@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "5.1SP1 PS141006";
+my $version = "5.1SP1 PS141007";
 
 # Pandora server configuration
 my %conf;
@@ -82,6 +82,9 @@ sub pandora_purgedb ($$) {
 	
 	# Delete old numeric data
 	pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
+
+	# Delete old export data
+	pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
 	
 	# Delete extended session data
 	if (enterprise_load (\%conf) != 0) {
@@ -437,6 +440,7 @@ sub pandora_compactdb ($$) {
 				my $id_module = $data->{'id_agente_modulo'};
 				if (! defined($module_proc_hash{$id_module})) {
 					my $module_type = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
+					next unless defined ($module_type);
 
 					# Mark proc modules.
 					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31) {
@@ -842,6 +846,18 @@ sub pandora_delete_old_module_data {
 	} else {
 		log_message ('PURGE', "No data in $table.");
 	}
+}
+
+##############################################################################
+# Delete old export data.
+##############################################################################
+sub pandora_delete_old_export_data {
+	my ($dbh, $ulimit_timestamp) = @_;
+
+	log_message ('PURGE', "Deleting old export data from tserver_export_data\n");
+	while(db_do ($dbh, "DELETE FROM tserver_export_data WHERE UNIX_TIMESTAMP(timestamp) < ? LIMIT $SMALL_OPERATION_STEP", $ulimit_timestamp) ne '0E0') {
+		usleep (10000);
+	};
 }
 
 ###############################################################################

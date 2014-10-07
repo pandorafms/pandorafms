@@ -756,7 +756,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 			break;
 		case 'event_condition':
 			// Return the condition of the tags for tevento table
-			$condition = tags_get_acl_tags_event_condition($acltags);
+			$condition = "(".tags_get_acl_tags_event_condition($acltags).")";
 			
 			if(!empty($condition)) {
 				return " $query_prefix ".$condition;

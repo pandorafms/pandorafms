@@ -82,6 +82,9 @@ sub pandora_purgedb ($$) {
 	
 	# Delete old numeric data
 	pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
+
+	# Delete old export data
+	pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
 	
 	# Delete extended session data
 	if (enterprise_load (\%conf) != 0) {
@@ -843,6 +846,18 @@ sub pandora_delete_old_module_data {
 	} else {
 		log_message ('PURGE', "No data in $table.");
 	}
+}
+
+##############################################################################
+# Delete old export data.
+##############################################################################
+sub pandora_delete_old_export_data {
+	my ($dbh, $ulimit_timestamp) = @_;
+
+	log_message ('PURGE', "Deleting old export data from tserver_export_data\n");
+	while(db_do ($dbh, "DELETE FROM tserver_export_data WHERE UNIX_TIMESTAMP(timestamp) < ? LIMIT $SMALL_OPERATION_STEP", $ulimit_timestamp) ne '0E0') {
+		usleep (10000);
+	};
 }
 
 ###############################################################################

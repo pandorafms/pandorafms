@@ -200,8 +200,6 @@ $group_rep = (int) get_parameter ("group_rep", 1);
 $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate", 0);
 $section = (string) get_parameter ("section", "list");
-$text_agent = (string) get_parameter('text_agent', __("All"));
-$text_module = (string) get_parameter('module_search', '');
 $filter_only_alert = (int) get_parameter('filter_only_alert', -1);
 $filter_id = (int) get_parameter('filter_id', 0);
 $id_name = (string) get_parameter('id_name', '');
@@ -210,6 +208,24 @@ $date_from = (string)get_parameter('date_from', '');
 $date_to = (string)get_parameter('date_to', '');
 
 $text_agent = (string) get_parameter("text_agent", __("All"));
+$id_agent = get_parameter('id_agent', 0);
+if ($id_agent != 0) {
+	$text_agent = db_get_value('nombre', 'tagente', 'id_agente', $id_agent);
+	if ($text_agent == false) {
+		$text_agent = '';
+	}
+}
+
+
+$text_module = (string) get_parameter('module_search', '');
+$id_agent_module = get_parameter('id_agent_module', 0);
+if ($id_agent_module != 0) {
+	$text_module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	if ($text_module == false) {
+		$text_module = '';
+	}
+}
+
 
 $tag_with_json = base64_decode(get_parameter("tag_with", '')) ;
 $tag_with_json_clean = io_safe_output($tag_with_json);

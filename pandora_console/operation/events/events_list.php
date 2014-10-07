@@ -386,7 +386,7 @@ $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 if (!$meta) {
 	$data[1] = __('Module search') . '<br>';
 	$data[1] .= html_print_autocomplete_modules('module_search',
-		'', false, true, '', array(), true);
+		$text_module, false, true, '', array(), true);
 }
 else {
 	$data[1] .= '';

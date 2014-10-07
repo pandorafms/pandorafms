@@ -442,7 +442,7 @@ $table->data[5][1] = "
 		</table>
 	</div>";
 
-echo '<form method="POST" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor">';
+echo '<form method="POST" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor">';
 
 if ($id_downtime > 0) {
 	echo "<table width=100% border=0 cellpadding=4 >";
@@ -502,7 +502,7 @@ if ($id_downtime > 0) {
 		$disabled_add_button = true;
 	}
 	
-	echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
+	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
 	
 	html_print_select_groups(false, "AW", true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');
 	
@@ -510,7 +510,7 @@ if ($id_downtime > 0) {
 	html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 	echo "</form>";
 	
-	echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
+	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
 	echo html_print_select ($data, "id_agents[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
 	echo '<h4>' . __('Available modules:') . 
@@ -593,7 +593,7 @@ if ($id_downtime > 0) {
 					html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Delete'))) . "</a>";
 				
 			}
-			$data[5] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor'.
+			$data[5] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor'.
 				'&amp;id_agent=' . $downtime["id_agente"] . 
 				'&amp;delete_downtime_agent=1' .
 				'&amp;id_downtime_agent=' . $downtime["id"] .

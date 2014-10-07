@@ -478,7 +478,7 @@ else {
 		
 		if ($downtime["executed"] == 0) {
 			$data[8] = '<a
-				href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+				href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
 			$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;'.
 				'delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
@@ -500,7 +500,7 @@ echo '<div style="display: inline;">';
 html_print_button(__('Export to CSV'), 'csv_export', false, "location.href='godmode/agentes/planned_downtime.export_csv.php?$filter_params_str'", 'class="sub next"');
 echo '</div>';
 echo '&nbsp;';
-echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
 html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 echo '</form>';
 echo '</div>';

@@ -6584,7 +6584,7 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3) {
                 return;
         }
         else if ($other['type'] == 'array') {
-		$comment = $other['data'][0];
+		$comment = io_safe_input($other['data'][0]);
 		$meta = $other['data'][1];
 		$history = $other['data'][2];
 

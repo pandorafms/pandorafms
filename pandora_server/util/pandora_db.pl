@@ -437,6 +437,7 @@ sub pandora_compactdb ($$) {
 				my $id_module = $data->{'id_agente_modulo'};
 				if (! defined($module_proc_hash{$id_module})) {
 					my $module_type = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
+					next unless defined ($module_type);
 
 					# Mark proc modules.
 					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31) {

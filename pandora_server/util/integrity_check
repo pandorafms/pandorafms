@@ -156,7 +156,7 @@ then
 	cat /dev/null > $OUTPUT
 	echo "#Pandora FMS Integrity Check generated at $HUMANDATE at `hostname` by $USER" >> $OUTPUT
 	echo "Creating integrity check of Pandora FMS Console files"
-	for ax in `find /var/www/pandora_console/ -name "*.php" -o -name "*.js" -o -name "*.css" -o -name "*.sql"`
+	for ax in `find $CONSOLE_PATH -name "*.php" -o -name "*.js" -o -name "*.css" -o -name "*.sql"`
 	do
 		bx=`md5sum $ax`
 		echo $bx >>$OUTPUT

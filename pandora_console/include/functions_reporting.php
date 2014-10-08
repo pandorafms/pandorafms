@@ -3717,6 +3717,122 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table1->style[5] = 'text-align: right';
 				$table1->style[6] = 'text-align: center';
 			}
+
+			// Table Planned Downtimes
+			$id_agent_modules = array();
+			foreach ($slas as $sla) {
+				if (!empty($sla['id_agent_module']))
+					$id_agent_modules[] = $sla['id_agent_module'];
+			}
+			$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
+
+			if (!empty($planned_downtimes)) {
+				require_once ('include/functions_planned_downtimes.php');
+				$downtime_malformed = false;
+				$malformed_planned_downtimes = planned_downtimes_get_malformed();
+
+				$table_planned_downtimes = new StdClass();
+				$table_planned_downtimes->width = '100%';
+				$table_planned_downtimes->title = __('This SLA has been affected by the following planned downtimes');
+				$table_planned_downtimes->head = array();
+				$table_planned_downtimes->head[0] = __('Name');
+				$table_planned_downtimes->head[1] = __('Description');
+				$table_planned_downtimes->head[2] = __('Execution');
+				$table_planned_downtimes->head[3] = __('Dates');
+				$table_planned_downtimes->headstyle = array();
+				$table_planned_downtimes->style = array();
+				$table_planned_downtimes->cellstyle = array();
+				$table_planned_downtimes->data = array();
+
+				foreach ($planned_downtimes as $planned_downtime) {
+
+					$data = array();
+					$data[0] = $planned_downtime['name'];
+					$data[1] = $planned_downtime['description'];
+					$data[2] = ucfirst($planned_downtime['type_execution']);
+					$data[3] = "";
+					switch ($planned_downtime['type_execution']) {
+						case 'once':
+							$data[3] = date ("Y-m-d H:i", $planned_downtime['date_from']) .
+								"&nbsp;" . __('to') . "&nbsp;".
+								date ("Y-m-d H:i", $planned_downtime['date_to']);
+							break;
+						case 'periodically':
+							switch ($planned_downtime['type_periodicity']) {
+								case 'weekly':
+									$data[3] = __('Weekly:');
+									$data[3] .= "&nbsp;";
+									if ($planned_downtime['monday']) {
+										$data[3] .= __('Mon');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['tuesday']) {
+										$data[3] .= __('Tue');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['wednesday']) {
+										$data[3] .= __('Wed');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['thursday']) {
+										$data[3] .= __('Thu');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['friday']) {
+										$data[3] .= __('Fri');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['saturday']) {
+										$data[3] .= __('Sat');
+										$data[3] .= "&nbsp;";
+									}
+									if ($planned_downtime['sunday']) {
+										$data[3] .= __('Sun');
+										$data[3] .= "&nbsp;";
+									}
+									$data[3] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
+									$data[3] .= "-" . $planned_downtime['periodically_time_to'] . ")";
+									break;
+								case 'monthly':
+									$data[3] = __('Monthly:') . "&nbsp;";
+									$data[3] .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
+									$data[3] .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
+									$data[3] .= $planned_downtime['periodically_day_to'];
+									$data[3] .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
+									$data[3] .= "-" . $planned_downtime['periodically_time_to'] . ")";
+									break;
+							}
+							break;
+					}
+
+					if (!empty($malformed_planned_downtimes) && isset($malformed_planned_downtimes[$planned_downtime['id']])) {
+						$next_row_num = count($table_planned_downtimes->data);
+						$table_planned_downtimes->cellstyle[$next_row_num][0] = 'color: red';
+						$table_planned_downtimes->cellstyle[$next_row_num][1] = 'color: red';
+						$table_planned_downtimes->cellstyle[$next_row_num][2] = 'color: red';
+						$table_planned_downtimes->cellstyle[$next_row_num][3] = 'color: red';
+
+						if (!$downtime_malformed)
+							$downtime_malformed = true;
+					}
+					
+
+					$table_planned_downtimes->data[] = $data;
+				}
+
+				if ($downtime_malformed) {
+					$info_malformed = ui_print_error_message(__('This item is affected by a malformed planned downtime') . ". " .
+						__('Go to the planned downtimes section to solve this') . ".", '', true);
+					
+					$data = array();
+					$data[0] = $info_malformed;
+					$data[0] .= html_print_table($table_planned_downtimes, true);
+					$table->colspan[$next_row][0] = 3;
+					$next_row++;
+					array_push ($table->data, $data);
+					break;
+				}
+			}
 			
 			$data_graph = array ();
 			$data_horin_graph = array();
@@ -3950,103 +4066,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 			}
 
-			// Table Planned Downtimes
-			$id_agent_modules = array();
-			foreach ($slas as $sla) {
-				if (!empty($sla['id_agent_module']))
-					$id_agent_modules[] = $sla['id_agent_module'];
-			}
-			$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
-
-			if (!empty($planned_downtimes)) {
-
-				$table_planned_downtimes = new StdClass();
-				$table_planned_downtimes->width = '100%';
-				$table_planned_downtimes->title = __('This SLA has been affected by the following planned downtimes');
-				$table_planned_downtimes->head = array();
-				$table_planned_downtimes->head[0] = __('Name');
-				$table_planned_downtimes->head[1] = __('Description');
-				$table_planned_downtimes->head[2] = __('Execution');
-				$table_planned_downtimes->head[3] = __('Dates');
-				$table_planned_downtimes->headstyle = array();
-				$table_planned_downtimes->style = array();
-				$table_planned_downtimes->data = array();
-
-				if ($for_pdf) {
-					$table_planned_downtimes->titlestyle = 'background: #373737; color: #FFF; display: table-cell; font-size: 12px; border: 1px solid grey';
-					$table_planned_downtimes->class = 'table_sla table_beauty';
-
-					for ($i = 0; $i < count($table_planned_downtimes->head); $i++) {
-						$table_planned_downtimes->headstyle[$i] = 'background: #666; color: #FFF; display: table-cell; font-size: 11px; border: 1px solid grey';
-					}
-					for ($i = 0; $i < count($table_planned_downtimes->head); $i++) {
-						$table_planned_downtimes->style[$i] = 'display: table-cell; font-size: 10px;';
-					}
-				}
-
-				foreach ($planned_downtimes as $planned_downtime) {
-					$data = array();
-					$data[0] = $planned_downtime['name'];
-					$data[1] = $planned_downtime['description'];
-					$data[2] = ucfirst($planned_downtime['type_execution']);
-
-					switch ($planned_downtime['type_execution']) {
-						case 'once':
-							$data[3] = date ("Y-m-d H:i", $planned_downtime['date_from']) .
-								"&nbsp;" . __('to') . "&nbsp;".
-								date ("Y-m-d H:i", $planned_downtime['date_to']);
-							break;
-						case 'periodically':
-							switch ($planned_downtime['type_periodicity']) {
-								case 'weekly':
-									$data[3] = __('Weekly:');
-									$data[3] .= "&nbsp;";
-									if ($planned_downtime['monday']) {
-										$data[3] .= __('Mon');
-										$data[3] .= "&nbsp;";
-									}
-									if ($planned_downtime['tuesday']) {
-										$data[3] .= __('Tue');
-										$data[3] .= "&nbsp;";
-									}
-									if ($planned_downtime['wednesday']) {
-										$data[3] .= __('Wed');
-										$data[3] .= "&nbsp;";
-									}
-									if ($planned_downtime['thursday']) {
-										$data[3] .= __('Thu');
-										$data[3] .= "&nbsp;";
-									}
-									if ($planned_downtime['friday']) {
-										$data[3] .= __('Fri');
-										$data[3] .= "&nbsp;";
-									}
-									if ($planned_downtime['saturday']) {
-										$data[3] .= __('Sat');
-										$data[3] .= "&nbsp;";
-									}
-									if ($planned_downtime['sunday']) {
-										$data[3] .= __('Sun');
-										$data[3] .= "&nbsp;";
-									}
-									$data[3] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
-									$data[3] .= "-" . $planned_downtime['periodically_time_to'] . ")";
-									break;
-								case 'monthly':
-									$data[3] = __('Monthly:') . "&nbsp;";
-									$data[3] .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
-									$data[3] .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
-									$data[3] .= $planned_downtime['periodically_day_to'];
-									$data[3] .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
-									$data[3] .= "-" . $planned_downtime['periodically_time_to'] . ")";
-									break;
-							}
-							break;
-					}
-
-					$table_planned_downtimes->data[] = $data;
-				}
-
+			if (!empty($table_planned_downtimes)) {
 				$data = array();
 				$data[0] = html_print_table($table_planned_downtimes, true);
 				$table->colspan[$next_row][0] = 3;

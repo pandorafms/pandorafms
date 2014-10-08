@@ -871,6 +871,12 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
  * @return Array with time intervals.
  */
 function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_date, $end_date, $check_services = false) {
+	global $config;
+
+	require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
+
+	$malformed_planned_downtimes = planned_downtimes_get_malformed();
+
 	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
 					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
 					WHERE (tpd.id = tpda.id_downtime
@@ -896,6 +902,20 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 			$downtime_dates[] = $dates;
 		}
 		else if ($downtime_type == 'periodically') {
+
+			// If a planned downtime have malformed dates, its intervals aren't taken account
+			$downtime_malformed = false;
+			foreach ($malformed_planned_downtimes as $malformed_planned_downtime) {
+				if ($downtime_id == $malformed_planned_downtime['id']) {
+					$downtime_malformed = true;
+					break;
+				}
+			}
+			if ($downtime_malformed == true) {
+				continue;
+			}
+			// If a planned downtime have malformed dates, its intervals aren't taken account
+
 			$downtime_time_from = $downtime['periodically_time_from'];
 			$downtime_time_to = $downtime['periodically_time_to'];
 

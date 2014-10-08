@@ -248,6 +248,16 @@ function planned_downtimes_get_malformed () {
 						AND periodically_time_from >= periodically_time_to))";
 	$malformed_downtimes = db_get_all_rows_sql($sql);
 
+	if ($malformed_downtimes === false) {
+		return false;
+	}
+
+	$malformed_downtimes_aux = array();
+	foreach ($malformed_downtimes as $malformed_downtime) {
+		$malformed_downtimes_aux[$malformed_downtime['id']] = $malformed_downtime;
+	}
+	$malformed_downtimes = $malformed_downtimes_aux;
+
 	return $malformed_downtimes;
 }
 

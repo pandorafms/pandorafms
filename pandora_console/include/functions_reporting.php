@@ -876,6 +876,8 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 	require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
 
 	$malformed_planned_downtimes = planned_downtimes_get_malformed();
+	if (empty($malformed_planned_downtimes))
+		$malformed_planned_downtimes = array();
 
 	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
 					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam

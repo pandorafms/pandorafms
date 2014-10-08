@@ -27,6 +27,27 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ('include/functions_users.php');
 require_once ('include/functions_events.php');
+require_once ('include/functions_planned_downtimes.php');
+
+$malformed_downtimes_exist = false;
+$migrate_malformed = (bool) get_parameter("migrate_malformed");
+
+if ($migrate_malformed) {
+	$migration_result = planned_downtimes_migrate_malformed_downtimes();
+
+	if ($migration_result['status'] == false) {
+		ui_print_error_message(__('An error occurred while migrating the malformed planned downtimes') . ". "
+			. __('Please run the migration again or contact with the administrator'));
+		echo "<br>";
+	}
+}
+else {
+	$malformed_downtimes = planned_downtimes_get_malformed();
+
+	if (!empty($malformed_downtimes)) {
+		$malformed_downtimes_exist = true;
+	}
+}
 
 // Header
 ui_print_page_header(
@@ -522,6 +543,12 @@ $(document).ready (function () {
 			e.preventDefault();
 		}
 	});
+
+	if (<?php echo json_encode($malformed_downtimes_exist) ?>) {
+		if (confirm("<?php echo __('WARNING: There are malformed planned downtimes') . '.\n' . __('Do you want to migrate automatically the malformed items?'); ?>")) {
+			window.location.href = "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&migrate_malformed=1";
+		}
+	}
 });
 
 </script>

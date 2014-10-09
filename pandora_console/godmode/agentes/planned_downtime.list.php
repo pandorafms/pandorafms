@@ -29,9 +29,10 @@ require_once ('include/functions_users.php');
 require_once ('include/functions_events.php');
 require_once ('include/functions_planned_downtimes.php');
 
-$malformed_downtimes_exist = false;
-$migrate_malformed = (bool) get_parameter("migrate_malformed");
+$malformed_downtimes = planned_downtimes_get_malformed();
+$malformed_downtimes_exist = !empty($malformed_downtimes) ? true : false;
 
+$migrate_malformed = (bool) get_parameter("migrate_malformed");
 if ($migrate_malformed) {
 	$migration_result = planned_downtimes_migrate_malformed_downtimes();
 
@@ -39,13 +40,6 @@ if ($migrate_malformed) {
 		ui_print_error_message(__('An error occurred while migrating the malformed planned downtimes') . ". "
 			. __('Please run the migration again or contact with the administrator'));
 		echo "<br>";
-	}
-}
-else {
-	$malformed_downtimes = planned_downtimes_get_malformed();
-
-	if (!empty($malformed_downtimes)) {
-		$malformed_downtimes_exist = true;
 	}
 }
 
@@ -293,8 +287,9 @@ $table = new StdClass();
 $table->class = 'databox';
 //Start Overview of existing planned downtime
 $table->width = '98%';
-$table->data = array ();
-$table->head = array ();
+$table->cellstyle = array();
+$table->data = array();
+$table->head = array();
 $table->head[0] = __('Name #Ag.');
 $table->head[1] = __('Description');
 $table->head[2] = __('Group');
@@ -306,7 +301,6 @@ $table->head[7] = __('Stop downtime');
 $table->head[8] = __('Edit');
 $table->head[9] = __('Delete');
 $table->align[2] = "center";
-//$table->align[5] = "center";
 $table->align[6] = "center";
 $table->align[7] = "center";
 $table->align[8] = "center";
@@ -510,6 +504,16 @@ else {
 			$data[9]= "N/A";
 		
 		}
+
+		if (!empty($malformed_downtimes_exist) && isset($malformed_downtimes[$downtime['id']])) {
+			$next_row_num = count($table->data);
+			$table->cellstyle[$next_row_num][0] = 'color: red';
+			$table->cellstyle[$next_row_num][1] = 'color: red';
+			$table->cellstyle[$next_row_num][3] = 'color: red';
+			$table->cellstyle[$next_row_num][4] = 'color: red';
+			$table->cellstyle[$next_row_num][5] = 'color: red';
+		}
+
 		array_push ($table->data, $data);
 	}
 	html_print_table ($table);
@@ -544,7 +548,7 @@ $(document).ready (function () {
 		}
 	});
 
-	if (<?php echo json_encode($malformed_downtimes_exist) ?>) {
+	if (<?php echo json_encode($malformed_downtimes_exist) ?> && <?php echo json_encode($migrate_malformed == false) ?>) {
 		if (confirm("<?php echo __('WARNING: There are malformed planned downtimes') . '.\n' . __('Do you want to migrate automatically the malformed items?'); ?>")) {
 			window.location.href = "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&migrate_malformed=1";
 		}

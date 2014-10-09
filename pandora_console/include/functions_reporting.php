@@ -3727,7 +3727,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
 
 			if (!empty($planned_downtimes)) {
-				require_once ('include/functions_planned_downtimes.php');
+				require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
 				$downtime_malformed = false;
 				$malformed_planned_downtimes = planned_downtimes_get_malformed();
 
@@ -3816,7 +3816,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$downtime_malformed = true;
 					}
 					
-
 					$table_planned_downtimes->data[] = $data;
 				}
 

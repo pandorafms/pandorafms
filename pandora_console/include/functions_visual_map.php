@@ -1039,7 +1039,9 @@ function visual_map_get_status_element($layoutData) {
  * @param bool $show_links
  * @param bool $draw_lines
  */
-function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null, $home_url = '') {
+function visual_map_print_visual_map ($id_layout, $show_links = true,
+	$draw_lines = true, $width = null, $height = null, $home_url = '') {
+	
 	enterprise_include_once('include/functions_visual_map.php');
 	
 	//TODO: USE THE SAME CODE THAT THE VISUAL MAP EDITOR
@@ -1299,11 +1301,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
 						if (empty($layout_data['id_metaconsole'])) {
-							$url_vc = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=1&amp;id=" . $layout_data["id_layout_linked"];
+							$url_vc = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layout_data["id_layout_linked"];
 						}
 						else {
 							$url_vc = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=1&id_visualmap=" . $layout_data["id_layout_linked"] . "&refr=0";
 						}
+						
 						echo "<a href=\"$url_vc\">";
 					}
 					else {
@@ -1419,7 +1422,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($show_links) {
 					if ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
-						echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						echo '<a style="' .
+							(
+								$layout_data['label_color'][0] == '#' ?
+									'color: '.$layout_data['label_color'].';'
+								:
+								''
+							) . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						$endTagA = true;
 					}
 				}

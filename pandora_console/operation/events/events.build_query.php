@@ -162,20 +162,27 @@ else {
 if ($id_user_ack != "0")
 	$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
 
+if (!isset($date_from)) {
+	$date_from = "";
+}
+if (!isset($date_to)) {
+	$date_to = "";
+}
 
 if (($date_from == '') && ($date_to == '')) {
 	if ($event_view_hr > 0) {
 		$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR);
 		$sql_post .= " AND (utimestamp > " . $unixtime . ")";
 	}
-} else {
+}
+else {
 	if ($date_from != '') {
-		$udate_from = strtotime($date_from." 00:00:00");
+		$udate_from = strtotime($date_from . " 00:00:00");
 		$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
 		
 	}
 	if ($date_to != '') {
-		$udate_to = strtotime($date_to." 23:59:59");
+		$udate_to = strtotime($date_to . " 23:59:59");
 		$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
 	}
 }

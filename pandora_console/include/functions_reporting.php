@@ -880,13 +880,13 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 		$malformed_planned_downtimes = array();
 
 	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
-					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
+					FROM tplanned_downtime_agents tpda, tagente_modulo tam, tplanned_downtime tpd
+					LEFT OUTER JOIN tplanned_downtime_modules tpdm ON tpd.id = tpdm.id_downtime
 					WHERE (tpd.id = tpda.id_downtime
 							AND tpda.all_modules = 1
 							AND tpda.id_agent = tam.id_agente
 							AND tam.id_agente_modulo = $id_agent_module)
-						OR (tpd.id = tpdm.id_downtime
-							AND tpdm.id_agent_module = $id_agent_module)";
+						OR (tpdm.id_agent_module = $id_agent_module)";
 	$downtimes = db_get_all_rows_sql($sql_downtime);
 	if ($downtimes == false) {
 		$downtimes = array();
@@ -1182,21 +1182,21 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
 	if (!empty($id_agent_modules)) {
 		$id_agent_modules_str = implode(",", $id_agent_modules);
 		$agent_modules_condition_tpda = "AND tam.id_agente_modulo IN ($id_agent_modules_str)";
-		$agent_modules_condition_tpdm = "AND tpdm.id_agent_module IN ($id_agent_modules_str)";
+		$agent_modules_condition_tpdm = "tpdm.id_agent_module IN ($id_agent_modules_str)";
 	}
 	else {
 		$agent_modules_condition_tpda = "";
-		$agent_modules_condition_tpdm = "";
+		$agent_modules_condition_tpdm = "1=1";
 	}
 	
 	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
-					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tplanned_downtime_modules tpdm, tagente_modulo tam
+					FROM tplanned_downtime_agents tpda, tagente_modulo tam, tplanned_downtime tpd
+					LEFT OUTER JOIN tplanned_downtime_modules tpdm ON tpd.id = tpdm.id_downtime
 					WHERE ((tpd.id = tpda.id_downtime
 								AND tpda.all_modules = 1
 								AND tpda.id_agent = tam.id_agente
 								$agent_modules_condition_tpda)
-							OR (tpd.id = tpdm.id_downtime
-								$agent_modules_condition_tpdm))
+							OR ($agent_modules_condition_tpdm))
 						AND ((type_execution = 'periodically'
 								AND $periodically_condition)
 							OR (type_execution = 'once'

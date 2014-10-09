@@ -3719,17 +3719,55 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 
 			// Table Planned Downtimes
-			$id_agent_modules = array();
-			foreach ($slas as $sla) {
-				if (!empty($sla['id_agent_module']))
-					$id_agent_modules[] = $sla['id_agent_module'];
+			require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
+			$downtime_malformed = false;
+
+			if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+				$id_agent_modules_by_servers = array();
+
+				foreach ($slas as $sla) {
+					$server_name = $sla['server_name'];
+					if (empty($server_name))
+						continue;
+
+					if (!isset($id_agent_modules_by_servers[$server_name]))
+						$id_agent_modules_by_servers[$server_name] = array();
+					
+					$id_agent_modules_by_servers[$server_name][] = $sla['id_agent_module'];
+				}
+
+				$planned_downtimes = array();
+				$malformed_planned_downtimes = array();
+				foreach ($id_agent_modules_by_servers as $server => $id_agent_modules) {
+					//Metaconsole connection
+					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+						$connection = metaconsole_get_connection($server_name);
+						if (!metaconsole_load_external_db($connection)) {
+							continue;
+						}
+						$planned_downtimes_aux = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
+						if (!empty($planned_downtimes_aux))
+							$planned_downtimes += $planned_downtimes_aux;
+
+
+						$malformed_planned_downtimes_aux = planned_downtimes_get_malformed();
+						if (!empty($malformed_planned_downtimes_aux))
+							$malformed_planned_downtimes += $malformed_planned_downtimes_aux;
+					}
+				}
 			}
-			$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
+			else {
+				$id_agent_modules = array();
+				foreach ($slas as $sla) {
+					if (!empty($sla['id_agent_module']))
+						$id_agent_modules[] = $sla['id_agent_module'];
+				}
+				$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
+
+				$malformed_planned_downtimes = planned_downtimes_get_malformed();
+			}
 
 			if (!empty($planned_downtimes)) {
-				require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
-				$downtime_malformed = false;
-				$malformed_planned_downtimes = planned_downtimes_get_malformed();
 
 				$table_planned_downtimes = new StdClass();
 				$table_planned_downtimes->width = '100%';

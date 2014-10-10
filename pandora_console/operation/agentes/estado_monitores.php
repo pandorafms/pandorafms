@@ -723,6 +723,7 @@ foreach ($modules as $module) {
 <?php
 
 echo "<h4 style='padding-top:0px !important;'>";
+ui_print_help_tip(__('For to view the list modules paginated, set in setup visuals.'));
 echo __('Full list of monitors');
 $modules_not_init = agents_monitor_notinit($id_agente);
 if (!empty($modules_not_init)) {

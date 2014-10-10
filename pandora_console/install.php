@@ -557,12 +557,19 @@ function install_step2() {
 			check_extension("mysql", "PHP MySQL extension");
 			check_extension("pgsql", "PHP PostgreSQL extension");
 			check_extension("oci8", "PHP Oracle extension");
-			echo "</table>";		
+			echo "</table>";
+			
 			if ($res > 0) {
 				echo "
 				<div class='err'>You have some incomplete 
 				dependencies. Please correct them or this installer 
 				will not be able to finish your installation.
+				</div>
+				<div class='err'>
+					Remember, if you install any PHP module to comply
+					with these dependences, you <b>need to restart</b>
+					your HTTP/Apache server after it to use the new
+					modules.
 				</div>
 				<div style='text-align: right;'>
 				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'>Force install Step #3</a>
@@ -572,9 +579,8 @@ function install_step2() {
 			else {
 				echo "</div>";
 				echo "<a id='step3' href='install.php?step=3'><br>
-				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>		<div style='clear: both;'><!-- --></div>
-";
-				
+				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>
+				<div style='clear: both;'><!-- --></div>";
 			}
 			echo "
 		</div>

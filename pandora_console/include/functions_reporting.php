@@ -3744,7 +3744,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$malformed_planned_downtimes_by_server = array();
 				foreach ($id_agent_modules_by_server as $server => $id_agent_modules) {
 					//Metaconsole connection
-					if ($metaconsole_on && !empty($server)) {
+					if (!empty($server)) {
 						$connection = metaconsole_get_connection($server);
 						if (!metaconsole_load_external_db($connection)) {
 							continue;
@@ -3757,6 +3757,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$planned_downtimes_empty = false;
 						if (!empty($malformed_planned_downtimes_by_server[$server]))
 							$malformed_planned_downtimes_empty = false;
+						
+						//Restore db connection
+						metaconsole_restore_db();
 					}
 				}
 

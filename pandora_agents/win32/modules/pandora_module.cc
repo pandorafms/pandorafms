@@ -1464,6 +1464,7 @@ Pandora_Module::evaluateConditions () {
 				}
 				WaitForSingleObject(pi.hProcess, this->module_timeout);
 				CloseHandle (pi.hProcess);
+				CloseHandle (pi.hThread);
 			}
 		}
 	}

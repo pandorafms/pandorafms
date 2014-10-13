@@ -194,7 +194,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		$height = 100;
 	}
 	else {
-		$height = 0;
+		$height = 1;
 	}
 	$return .= "<div id='overview_$graph_id' class='overview_graph' style='visibility: hidden; margin-left:0px; margin-top:20px; width: ".$width."px; height: ".$height ."px;'></div>";
 	

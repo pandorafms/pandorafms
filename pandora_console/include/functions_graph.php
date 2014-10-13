@@ -102,9 +102,12 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 	
 	foreach ($chart_array as $item) {
 		if ($series_suffix != '') {
-			$item['sum'] = $item['sum' . $series_suffix];
-			$item['min'] = $item['min' . $series_suffix];
-			$item['max'] = $item['max' . $series_suffix];
+			if (isset($item['sum' . $series_suffix]))
+				$item['sum'] = $item['sum' . $series_suffix];
+			if (isset($item['min' . $series_suffix]))
+				$item['min'] = $item['min' . $series_suffix];
+			if (isset($item['max' . $series_suffix]))
+				$item['max'] = $item['max' . $series_suffix];
 		}
 		
 		//Get stats for normal graph
@@ -3726,8 +3729,8 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 		}
 		else {
 			$data[$cont]['data'] = 1;
-			$current_timestamp = $bottom;
 		}
+		$current_timestamp = $bottom;
 		
 		$legend[] = date($time_format, $current_timestamp);	
 		$cont++;

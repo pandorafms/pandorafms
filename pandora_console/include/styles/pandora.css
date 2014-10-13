@@ -2451,12 +2451,12 @@ DIV.forced_title_layer {
 
 /* Graphs styles */
 
-DIV.legend>DIV {
-	width: 100% !important;
+div.legend>div {
+	pointer-events: none; /* Allow to click the graphs below */
 	opacity: 0.65 !important;
 }
 
-DIV.nodata_text {
+div.nodata_text {
 	padding: 5px 12px 0px 68px; 
 	font-weight: bold; 
 	color: #C1C1C1; 
@@ -2466,7 +2466,7 @@ DIV.nodata_text {
 	text-align: left;
 }
 
-DIV.nodata_container {
+div.nodata_container {
 	width:150px; 
 	height:100px; 
 	background-repeat:no-repeat; 

@@ -3841,8 +3841,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							}
 
 							if (!$malformed_planned_downtimes_empty
-									&& isset($malformed_planned_downtimes[$server])
-									&& isset($malformed_planned_downtimes[$server][$planned_downtime['id']])) {
+									&& isset($malformed_planned_downtimes_by_server[$server])
+									&& isset($malformed_planned_downtimes_by_server[$server][$planned_downtime['id']])) {
 								$next_row_num = count($table_planned_downtimes->data);
 								$table_planned_downtimes->cellstyle[$next_row_num][0] = 'color: red';
 								$table_planned_downtimes->cellstyle[$next_row_num][1] = 'color: red';

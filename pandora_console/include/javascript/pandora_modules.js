@@ -225,6 +225,7 @@ function configure_modules_form () {
 	
 	network_component_group_change_event();
 	
+	flag_load_plugin_component = false;
 	$("#network_component").change (function () {
 		if (this.value == 0)
 			return;
@@ -237,6 +238,8 @@ function configure_modules_form () {
 				"id_module_component" : this.value
 			},
 			function (data, status) {
+				flag_load_plugin_component = true;
+				
 				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
 				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
 				$("#id_module_type").val(data["type"]);
@@ -358,10 +361,6 @@ function configure_modules_form () {
 						$("#simple-field_snmpv3_row3").attr("style", "");
 						$("input[name=active_snmp_v3]").val(1);
 					}
-				}
-				
-				if (data["id_modulo"] == 4) {
-					changePluginSelect();
 				}
 				
 				if (data["throw_unknown_events"])

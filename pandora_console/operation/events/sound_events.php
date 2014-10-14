@@ -77,8 +77,12 @@ $table->data[1][1] = html_print_checkbox('alert_fired', 'alert_fired', true, tru
 	html_print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .
 	html_print_checkbox('warning', 'warning', true, true, false, 'changeType();') . __('Monitor warning') . '<br />' .
 $table->data[2][0] = '';
-$table->data[2][1] = '<a href="javascript: toggleButton();">' . html_print_image("images/play.button.png", true, array("id" => "button")) . '</a>';
-$table->data[2][1] .= '<a href="javascript: ok();">' . html_print_image("images/ok.button.png", true, array("style" => "margin-left: 10px;")) . '</a>';
+$table->data[2][1] = '<a href="javascript: toggleButton();">' .
+	html_print_image("images/play.button.png", true, array("id" => "button")) .
+	'</a>';
+$table->data[2][1] .= '<a href="javascript: ok();">' .
+	html_print_image("images/ok.button.png", true,
+		array("style" => "margin-left: 10px;")) . '</a>';
 
 html_print_table($table);
 ?>
@@ -96,6 +100,8 @@ var id_row = 0;
 
 var redBackground = false;
 
+var button_play_status = "play";
+
 function changeGroup() {
 	group = $("#group").val();
 }
@@ -107,14 +113,22 @@ function changeType() {
 }
 
 function toggleButton() {
-	if ($("#button").attr('src') == '../../images/pause.button.png') {
+	
+	if (button_play_status == 'pause') {
+	//~ if ($("#button").attr('src') == '../../images/pause.button.png') {
+		
 		$("#button").attr('src', '../../images/play.button.png');
 		stopSound();
+		
+		button_play_status = 'play';
 	}
 	else {
+		
 		$("#button").attr('src', '../../images/pause.button.png');
 		forgetPreviousEvents();
 		startSound();
+		
+		button_play_status = 'pause';
 	}
 }
 
@@ -135,7 +149,6 @@ function stopSound() {
 }
 
 function startSound() {
-	$('embed').remove();
 	//running = true;
 }
 
@@ -177,7 +190,6 @@ function check_event() {
 					if (firedId != 0) {
 						id_row = firedId;
 						fired = true;
-						$('embed').remove();
 						$('body').append("<audio src='../../" + data['sound'] + "' autoplay='true' hidden='true' loop='true'>");
 					}
 				},
@@ -193,12 +205,12 @@ function animation() {
 		if (redBackground) {
 			redBackground = false;
 			$('body').css('background', 'white');
-			window.moveBy(5, 0);
+			//~ window.moveBy(5, 0);
 		}
 		else {
 			redBackground = true;
 			$('body').css('background-color', 'red');
-			window.moveBy(-5, 0);
+			//~ window.moveBy(-5, 0);
 		}
 	}
 }

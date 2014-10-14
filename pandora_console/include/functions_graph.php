@@ -102,9 +102,12 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 	
 	foreach ($chart_array as $item) {
 		if ($series_suffix != '') {
-			$item['sum'] = $item['sum' . $series_suffix];
-			$item['min'] = $item['min' . $series_suffix];
-			$item['max'] = $item['max' . $series_suffix];
+			if (isset($item['sum' . $series_suffix]))
+				$item['sum'] = $item['sum' . $series_suffix];
+			if (isset($item['min' . $series_suffix]))
+				$item['min'] = $item['min' . $series_suffix];
+			if (isset($item['max' . $series_suffix]))
+				$item['max'] = $item['max' . $series_suffix];
 		}
 		
 		//Get stats for normal graph
@@ -1746,60 +1749,205 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	
 	
 	if ($id_agent < 1) {
-		$id_agent = -1;
 		$query = "";
 	}
 	else {
-		$modules = agents_get_modules ($id_agent);
-		$query = sprintf (" AND id_agente_modulo IN (%s)", implode (",", array_keys ($modules)));
+		$modules = agents_get_modules($id_agent);
+		$module_ids = array_keys($modules);
+
+		if (!empty($module_ids)) {
+			$module_ids_str = implode(",", $module_ids);
+			
+			if (empty($module_ids_str))
+				$module_ids_str = "0";
+		}
+		else {
+			$module_ids_str = "0";
+		}
+
+		$query = sprintf (" AND id_agente_modulo IN (%s)", $module_ids_str);
 	}
 	
 	// All data (now)
-	$time["all"] = get_system_time ();
+	$time_now = time();
 	
 	// 1 day ago
-	$time["1day"] = $time["all"] - SECONDS_1DAY;
+	$time_1day = $time_now - SECONDS_1DAY;
 	
 	// 1 week ago
-	$time["1week"] = $time["all"] - SECONDS_1WEEK;
+	$time_1week = $time_now - SECONDS_1WEEK;
 	
 	// 1 month ago
-	$time["1month"] = $time["all"] - SECONDS_1MONTH;
+	$time_1month = $time_now - SECONDS_1MONTH;
 	
 	// Three months ago
-	$time["3month"] = $time["all"] - SECONDS_3MONTHS;
+	$time_3months = $time_now - SECONDS_3MONTHS;
 	
-	$data[__("Today")]        = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
-	$data["1 ".__("Week")]    = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
-	$data["1 ".__("Month")]   = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
-	$data["3 ".__("Months")]  = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
-	$data[__("Older")]        = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
-	
-	$data[__("Today")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
-	$data["1 ".__("Week")]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
-	$data["1 ".__("Month")]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
-	$data["3 ".__("Months")] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
-	$data[__("Older")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query), 0, true);
-	
-	$data[__("Today")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
-	$data["1 ".__("Week")]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
-	$data["1 ".__("Month")]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
-	$data["3 ".__("Months")] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
-	$data[__("Older")]       += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE 1=1 %s", $query), 0, true);
-	
-	$data[__("Older")] = $data[__("Older")] - $data["3 ".__("Months")];
-	
-	if ($data[__("Today")] == 0 && $data["1 ".__("Week")] == 0 && 
-		$data["1 ".__("Month")] == 0 && $data["3 ".__("Months")] == 0 && $data[__("Older")] == 0) {
+	$query_error = false;
+
+	// Data from 1 day ago
+	$sql_1day = sprintf("SELECT COUNT(*)
+								+ (SELECT COUNT(*)
+									FROM tagente_datos_string
+									WHERE utimestamp >= %d %s)
+								+ (SELECT COUNT(*)
+									FROM tagente_datos_log4x
+									WHERE utimestamp >= %d %s)
+						FROM tagente_datos
+						WHERE utimestamp > %d %s",
+						$time_1day, $query,
+						$time_1day, $query,
+						$time_1day, $query);
+	$num_1day = db_get_sql($sql_1day);
+
+	if ($num_1day !== false) {
+		// Data from 1 week ago
+		$sql_1week = sprintf("SELECT COUNT(*)
+									+ (SELECT COUNT(*)
+										FROM tagente_datos_string
+										WHERE utimestamp >= %d %s)
+									+ (SELECT COUNT(*)
+										FROM tagente_datos_log4x
+										WHERE utimestamp >= %d %s)
+							FROM tagente_datos
+							WHERE utimestamp >= %d %s",
+							$time_1week, $query,
+							$time_1week, $query,
+							$time_1week, $query);
+		$num_1week = db_get_sql($sql_1week);
+
+		if ($num_1week !== false) {
+			// Data from 1 month ago
+			$sql_1month = sprintf("SELECT COUNT(*)
+										+ (SELECT COUNT(*)
+											FROM tagente_datos_string
+											WHERE utimestamp >= %d %s)
+										+ (SELECT COUNT(*)
+											FROM tagente_datos_log4x
+											WHERE utimestamp >= %d %s)
+								FROM tagente_datos
+								WHERE utimestamp >= %d %s",
+								$time_1month, $query,
+								$time_1month, $query,
+								$time_1month, $query);
+			$num_1month = db_get_sql($sql_1month);
+
+			if ($num_1month !== false) {
+				// Data from 3 months ago
+				$sql_3months = sprintf("SELECT COUNT(*)
+												+ (SELECT COUNT(*)
+													FROM tagente_datos_string
+													WHERE utimestamp >= %d %s)
+												+ (SELECT COUNT(*)
+													FROM tagente_datos_log4x
+													WHERE utimestamp >= %d %s)
+										FROM tagente_datos
+										WHERE utimestamp >= %d %s",
+										$time_3months, $query,
+										$time_3months, $query,
+										$time_3months, $query);
+				$num_3months = db_get_sql($sql_3months);
+
+				if ($num_3months !== false) {
+					// All data
+					$sql_all = sprintf("SELECT COUNT(*)
+												+ (SELECT COUNT(*)
+													FROM tagente_datos_string
+													WHERE 1=1 %s)
+												+ (SELECT COUNT(*)
+													FROM tagente_datos_log4x
+													WHERE 1=1 %s)
+										FROM tagente_datos
+										WHERE 1=1 %s",
+										$query, $query, $query);
+					$num_all = db_get_sql($sql_all);
+
+					if ($num_all !== false) {
+						$num_older = $num_all - $num_3months;
+
+						if ($config['history_db_enabled'] == 1) {
+							// All data in common and history database
+							$sql_all_w_history = sprintf("SELECT COUNT(*)
+																+ (SELECT COUNT(*)
+																	FROM tagente_datos_string
+																	WHERE 1=1 %s)
+																+ (SELECT COUNT(*)
+																	FROM tagente_datos_log4x
+																	WHERE 1=1 %s)
+														FROM tagente_datos
+														WHERE 1=1 %s",
+														$query, $query, $query);
+							$num_all_w_history = db_get_sql($sql_all_w_history, 0, true);
+
+							if ($num_all_w_history !== false) {
+								$num_history = $num_all_w_history - $num_all;
+							} else {
+								$query_error = true;
+							}
+						}
+					} else {
+						$query_error = true;
+					}
+				} else {
+					$query_error = true;
+				}
+			} else {
+				$query_error = true;
+			}
+		} else {
+			$query_error = true;
+		}
+	} else {
+		$query_error = true;
+	}
+
+	// Error
+	if ($query_error || $num_older < 0 || ($config['history_db_enabled'] == 1 && $num_history < 0)
+			|| (empty($num_1day) && empty($num_1week) && empty($num_1month)
+				&& empty($num_3months) && empty($num_all) 
+				&& ($config['history_db_enabled'] == 1 && empty($num_all_w_history)))) {
 		return html_print_image('images/image_problem.png', true);
 	}
+
+	// Data indexes
+	$str_1day = __("Today");
+	$str_1week = "1 ".__("Week");
+	$str_1month = "1 ".__("Month");
+	$str_3months = "3 ".__("Months");
+	$str_older = "> 3 ".__("Months");
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png", 
-		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
+	// Filling the data array
+	$data = array();
+	if (!empty($num_1day))
+		$data[$str_1day] = $num_1day;
+	if (!empty($num_1week))
+		$data[$str_1week] = $num_1week;
+	if (!empty($num_1month))
+		$data[$str_1month] = $num_1month;
+	if (!empty($num_3months))
+		$data[$str_3months] = $num_3months;
+	if (!empty($num_older))
+		$data[$str_older] = $num_older;
+
+	if ($config['history_db_enabled'] == 1 && !empty($num_history)) {
+		// In this pie chart only 5 elements are shown, so we need to remove
+		// an element. With a history db enabled the >3 months element are dispensable
+		if (count($data) >= 5 && isset($data[$str_3months]))
+			unset($data[$str_3months]);
+
+		$time_historic_db = time() - ((int)$config['history_db_days'] * SECONDS_1DAY);
+		$date_human = human_time_comparation($time_historic_db);
+		$str_history = "> $date_human (".__("History db").")";
+		$data[$str_history] = $num_history;
+	}
+
+	$water_mark = array(
+			'file' => $config['homedir'] . "/images/logo_vertical_water.png", 
+			'url' => ui_get_full_url("/images/logo_vertical_water.png")
+		);
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size']);
+		__('Other'), '', $water_mark, $config['fontpath'], $config['font_size']);
 }
 
 /**
@@ -3726,8 +3874,8 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 		}
 		else {
 			$data[$cont]['data'] = 1;
-			$current_timestamp = $bottom;
 		}
+		$current_timestamp = $bottom;
 		
 		$legend[] = date($time_format, $current_timestamp);	
 		$cont++;

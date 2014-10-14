@@ -70,7 +70,8 @@ class Visualmap {
 				case 'render_map':
 					$map_id = $system->getRequest('map_id', '0');
 					$width = $system->getRequest('width', '400');
-					visual_map_print_visual_map($map_id, false, true, $width);
+					$height = $system->getRequest('height', '400');
+					visual_map_print_visual_map($map_id, false, true, $width, $height);
 					exit;
 			}
 		}
@@ -123,6 +124,7 @@ class Visualmap {
 					postvars[\"parameter2\"] = \"render_map\";
 					postvars[\"map_id\"] = \"" . $this->id . "\";
 					postvars[\"width\"] = map_width;
+					postvars[\"height\"] = map_height;
 					
 					$.post(\"index.php\",
 						postvars,

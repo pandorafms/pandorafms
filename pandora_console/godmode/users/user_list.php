@@ -209,6 +209,37 @@ elseif ($disable_user !== false) { //disable_user
 	}
 }
 
+$filter_group = (int)get_parameter('filter_group', 0);
+$filter_search = get_parameter('filter_search', '');
+$search = (bool)get_parameter('search', false);
+
+if (($filter_group == 0) && ($filter_search == '')) {
+	$search = false;
+}
+
+$table = null;
+$table->width = '99%';
+$table->class = "databox";
+$table->rowclass[0] = '';
+$table->data[0][0] = '<b>' . __('Group') . '</b>';
+$table->data[0][1] = html_print_select_groups(false, "AR", true,
+	'filter_group', $filter_group, '', '', 0, true);
+$table->data[0][2] = '<b>' . __('Search') . '</b>' .
+	ui_print_help_tip(__('Search by username, fullname or email'), true);
+$table->data[0][3] = html_print_input_text('filter_search',
+	$filter_search, __('Search by username, fullname or email'), 30, 90, true);
+$table->data[0][4] = html_print_submit_button(__('Search'), 'search',
+	false, array('class' => 'sub search'), true);
+
+
+
+$form_filter = "<form method='post'>";
+$form_filter .= html_print_table($table, true);
+$form_filter .= "</form>";
+
+ui_toggle($form_filter, __('Users control filter'), __('Toggle filter(s)'), !$search);
+
+$table = null;
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->width = '99%';
@@ -252,9 +283,52 @@ $table->valign[4] = 'top';
 $table->valign[5] = 'top';
 $table->valign[6] = 'top';
 
+
+
 $info1 = array ();
 
 $info1 = get_users ($order);
+
+//Filter the users
+if ($search) {
+	foreach ($info1 as $iterator => $user_info) {
+		$found = false;
+		
+		if (!empty($filter_search)) {
+			if (preg_match("/.*" . $filter_search . ".*/", $user_info['fullname']) != 0) {
+				$found = true;
+			}
+			
+			if (preg_match("/.*" . $filter_search . ".*/", $user_info['id_user']) != 0) {
+				$found = true;
+			}
+			
+			if (preg_match("/.*" . $filter_search . ".*/", $user_info['email']) != 0) {
+				$found = true;
+			}
+		}
+		
+		if ($filter_group != 0) {
+			$groups = users_get_groups($user_info['id_user'], 'AR',
+				$user_info['is_admin']);
+			
+			$id_groups = array_keys($groups);
+			
+			if (array_search($filter_group, $id_groups) !== false) {
+				$found = true;
+			}
+		}
+		
+		if (!$found) {
+			unset($info1[$iterator]);
+		}
+	}
+}
+
+//~ 
+//~ $filter_group
+//~ $filter_search
+//~ 
 
 $info = array();
 $own_info = get_user_info ($config['id_user']);

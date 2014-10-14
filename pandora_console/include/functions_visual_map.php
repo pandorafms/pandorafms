@@ -973,7 +973,13 @@ function visual_map_get_status_element($layoutData) {
 				//Status for a whole agent, if agente_modulo was == 0
 				}
 				else if ($layoutData['id_agent'] != 0) {
-					$status = agents_get_status ($layoutData["id_agent"]);
+					
+					//--------------------------------------------------
+					// ADDED NO CHECK ACL FOR AVOID CHECK TAGS THAT
+					// MAKE VERY SLOW THE VISUALMAPS WITH ACL TAGS
+					//--------------------------------------------------
+					$status = agents_get_status ($layoutData["id_agent"], true);
+					
 					if ($status == -1) // agents_get_status return -1 for unknown!
 						$status = VISUAL_MAP_STATUS_UNKNOWN;
 				}
@@ -1039,7 +1045,9 @@ function visual_map_get_status_element($layoutData) {
  * @param bool $show_links
  * @param bool $draw_lines
  */
-function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null, $home_url = '') {
+function visual_map_print_visual_map ($id_layout, $show_links = true,
+	$draw_lines = true, $width = null, $height = null, $home_url = '') {
+	
 	enterprise_include_once('include/functions_visual_map.php');
 	
 	//TODO: USE THE SAME CODE THAT THE VISUAL MAP EDITOR
@@ -1299,11 +1307,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
 						if (empty($layout_data['id_metaconsole'])) {
-							$url_vc = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=1&amp;id=" . $layout_data["id_layout_linked"];
+							$url_vc = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layout_data["id_layout_linked"];
 						}
 						else {
 							$url_vc = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=1&id_visualmap=" . $layout_data["id_layout_linked"] . "&refr=0";
 						}
+						
 						echo "<a href=\"$url_vc\">";
 					}
 					else {
@@ -1419,7 +1428,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($show_links) {
 					if ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
-						echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						echo '<a style="' .
+							(
+								$layout_data['label_color'][0] == '#' ?
+									'color: '.$layout_data['label_color'].';'
+								:
+								''
+							) . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						$endTagA = true;
 					}
 				}
@@ -2174,7 +2189,12 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 		}
 		// Agent
 		else {
-			$status = agents_get_status ($data["id_agent"]);
+			//--------------------------------------------------
+			// ADDED NO CHECK ACL FOR AVOID CHECK TAGS THAT
+			// MAKE VERY SLOW THE VISUALMAPS WITH ACL TAGS
+			//--------------------------------------------------
+			
+			$status = agents_get_status ($data["id_agent"], true);
 		}
 		if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD)
 			return VISUAL_MAP_STATUS_CRITICAL_BAD;

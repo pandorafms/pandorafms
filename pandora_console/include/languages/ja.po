@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-02 13:15+0200\n"
-"PO-Revision-Date: 2014-10-02 09:00+0000\n"
+"PO-Revision-Date: 2014-10-08 10:58+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-02 11:35+0000\n"
+"X-Launchpad-Export-Date: 2014-10-08 11:45+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: ../../godmode/menu.php:28
@@ -4287,7 +4287,7 @@ msgstr "実行"
 #: ../../godmode/agentes/planned_downtime.editor.php:334
 #: ../../godmode/agentes/planned_downtime.list.php:237
 msgid "Once"
-msgstr ""
+msgstr "一回のみ"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:335
 #: ../../godmode/agentes/planned_downtime.list.php:237
@@ -12914,11 +12914,11 @@ msgstr "メニューの固定"
 #: ../../godmode/setup/setup_visuals.php:423
 #: ../../include/functions_config.php:451
 msgid "Shortened module graph data"
-msgstr ""
+msgstr "短縮モジュールグラフデータ"
 
 #: ../../godmode/setup/setup_visuals.php:424
 msgid "The data number of the module graphs will be rounded and shortened"
-msgstr ""
+msgstr "モジュールグラフのデータ数が四捨五入して短くなります"
 
 #: ../../godmode/setup/setup_netflow.php:41
 #: ../../include/functions_config.php:511
@@ -13989,6 +13989,8 @@ msgid ""
 "\t\tIn simple mode only the elements configured as \"critical element\" are "
 "used to calculate the service status."
 msgstr ""
+"マニュアルモードではウエイトを手動で設定する必要があります。自動モードではウエイトはデフォルトの値があります。\n"
+"\t\tシンプルモードでは、\"障害要素\"として設定したもののみがサービスの状態計算に利用されます。"
 
 #: ../../enterprise/godmode/services/services.service.php:206
 #: ../../include/ajax/events.php:475
@@ -18209,6 +18211,8 @@ msgid ""
 "any group with that name, will be created if check box is selected. "
 "Destination group filter is just used to check agents in that group"
 msgstr ""
+"移行先のグループは移行元サーバと同じになります。同じ名前のグループが無い場合、チェックボックスがチェックされていると作成されます。移行先のグループフィルタ"
+"は、エージェントがグループにあるかどうかのみのチェックに利用されます。"
 
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:151
 msgid "Create group if doesnât exist in destination"
@@ -18216,7 +18220,7 @@ msgstr "移行先にグループが無い場合に作成する"
 
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:151
 msgid "Based on name"
-msgstr ""
+msgstr "名前ベース"
 
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:160
 msgid "Add agents to destination server"
@@ -19557,7 +19561,7 @@ msgstr "PDF にエクスポート"
 #: ../../enterprise/operation/reporting/custom_reporting.php:46
 #: ../../enterprise/operation/reporting/custom_reporting.php:69
 msgid "Send by email"
-msgstr ""
+msgstr "Eメールで送信"
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:54
 msgid "ID Report"
@@ -19565,7 +19569,7 @@ msgstr "レポートID"
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:88
 msgid "Send by email "
-msgstr ""
+msgstr "Eメールで送信 "
 
 #: ../../enterprise/extensions/backup.php:57
 msgid "Backup"
@@ -20074,7 +20078,7 @@ msgstr "0 を設定すると手動スキャンです"
 
 #: ../../enterprise/extensions/ipam/ipam_editor.php:85
 msgid "Operator users"
-msgstr ""
+msgstr "オペレータユーザ"
 
 #: ../../enterprise/extensions/ipam/ipam_editor.php:85
 msgid ""
@@ -20173,7 +20177,7 @@ msgstr "管理対象外"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:224
 msgid "Not Reserved"
-msgstr ""
+msgstr "未予約"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:257
 msgid "DESC"
@@ -20234,7 +20238,7 @@ msgstr "予約済アドレス"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:292
 msgid "Unreserved"
-msgstr ""
+msgstr "未予約"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:317
 msgid "Filter options"
@@ -22305,6 +22309,8 @@ msgid ""
 "learn more about Pandora FMS. Monitoring could be overwhelm, but take your "
 "time to learn how to use the power of Pandora FMS!"
 msgstr ""
+"初めての Pandora FMS の利用であれば、Pandora FMS "
+"に関して学べるいくつかのリンクを紹介します。強力な監視ができますが、Pandora FMS の能力を使いこなすには時間が必要です。"
 
 #: ../../general/login_help_dialog.php:51
 #: ../../general/login_help_dialog.php:53
@@ -22816,7 +22822,7 @@ msgstr "他のモジュール"
 
 #: ../../operation/agentes/graphs.php:92
 msgid "Modules network no proc"
-msgstr ""
+msgstr "proc以外のネットワークモジュール"
 
 #: ../../operation/agentes/graphs.php:132
 #: ../../operation/agentes/stat_win.php:276
@@ -22843,19 +22849,19 @@ msgstr "アラート表示"
 
 #: ../../operation/agentes/graphs.php:148
 msgid "the combined graph does not show the alerts into this graph"
-msgstr ""
+msgstr "組み合わせグラフは、グラフ内にアラートを表示しません"
 
 #: ../../operation/agentes/graphs.php:150
 msgid "Show as one combined graph"
-msgstr ""
+msgstr "一つの組み合わせグラフとして表示"
 
 #: ../../operation/agentes/graphs.php:152
 msgid "one combined graph"
-msgstr ""
+msgstr "一つの組み合わせグラフ"
 
 #: ../../operation/agentes/graphs.php:155
 msgid "several graphs for each module"
-msgstr ""
+msgstr "モジュールごとの複数のグラフ"
 
 #: ../../operation/agentes/graphs.php:166
 msgid "Filter graphs"
@@ -22863,7 +22869,7 @@ msgstr "グラフフィルタ"
 
 #: ../../operation/agentes/graphs.php:177
 msgid "Combined graph"
-msgstr ""
+msgstr "組み合わせグラフ"
 
 #: ../../operation/agentes/graphs.php:191
 msgid "Save as custom graph"
@@ -22872,7 +22878,7 @@ msgstr "カスタムグラフとして保存"
 #: ../../operation/agentes/graphs.php:225
 #: ../../operation/agentes/graphs.php:228
 msgid "Name custom graph"
-msgstr ""
+msgstr "カスタムグラフ名"
 
 #: ../../operation/agentes/graphs.php:250
 msgid "Save custom graph"
@@ -22880,7 +22886,7 @@ msgstr "カスタムグラフの保存"
 
 #: ../../operation/agentes/graphs.php:271
 msgid "Custom graph create from the tab graphs in the agent."
-msgstr ""
+msgstr "エージェントのグラフタブからカスタムグラフを作成"
 
 #: ../../operation/agentes/datos_agente.php:167
 msgid "Received data from"
@@ -23981,7 +23987,7 @@ msgstr "トップ %d"
 #: ../../operation/snmpconsole/snmp_statistics.php:121
 #: ../../operation/snmpconsole/snmp_statistics.php:179
 msgid "Number"
-msgstr ""
+msgstr "数"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:136
 #: ../../operation/snmpconsole/snmp_view.php:465
@@ -25039,7 +25045,7 @@ msgstr "グループ化"
 #: ../../include/functions_reports.php:578
 #: ../../include/functions_reporting.php:7584
 msgid "Network interfaces"
-msgstr ""
+msgstr "ネットワークインタフェース"
 
 #: ../../include/functions_reports.php:582
 #: ../../include/functions_reports.php:584
@@ -25590,31 +25596,31 @@ msgstr "不明エージェント数 %d"
 #: ../../include/functions_reporting.php:7584
 #, php-format
 msgid "Group \"%s\""
-msgstr ""
+msgstr "グループ \"%s\""
 
 #: ../../include/functions_reporting.php:7629
 #: ../../include/functions_reporting.php:7633
 msgid ""
 "The group has no agents or none of the agents has any network interface"
-msgstr ""
+msgstr "グループにエージェントが無いか、ネットワークインタフェースのあるエージェントがありません"
 
 #: ../../include/functions_reporting.php:7646
 #, php-format
 msgid "Agent '%s'"
-msgstr ""
+msgstr "エージェント '%s'"
 
 #: ../../include/functions_reporting.php:7665
 #, php-format
 msgid "Interface '%s' throughput graph"
-msgstr ""
+msgstr "インタフェース '%s' スループットグラフ"
 
 #: ../../include/functions_reporting.php:7667
 msgid "Mac"
-msgstr ""
+msgstr "Mac"
 
 #: ../../include/functions_reporting.php:7668
 msgid "Actual status"
-msgstr ""
+msgstr "現在の状態"
 
 #: ../../include/help/clippy/operation_agentes_status_monitor.php:35
 msgid ""
@@ -25642,11 +25648,11 @@ msgstr "ここでモジュールを編集するには、タイプカラムにあ
 
 #: ../../include/help/clippy/extension_cron_send_email.php:39
 msgid "The configuration of email for the task email is in the file:"
-msgstr ""
+msgstr "メール送信タスクのメール設定はこのファイルにあります:"
 
 #: ../../include/help/clippy/extension_cron_send_email.php:41
 msgid "Please check if the email configuration is correct."
-msgstr ""
+msgstr "メール設定が正しいか確認してください。"
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:35
 msgid "I'm going to show you how to monitor a server."
@@ -25690,7 +25696,7 @@ msgstr ""
 msgid ""
 "Please note that you have your agent setup to do not add new modules coming "
 "from the data XML."
-msgstr ""
+msgstr "エージェント設定で、XML で送られてくる新たなモジュールが追加されないようになっていることに注意してください。"
 
 #: ../../include/help/clippy/modules_not_learning_mode.php:41
 msgid ""
@@ -25699,12 +25705,14 @@ msgid ""
 "manually in the interface (with the exact name and type as coming in the XML "
 "file)."
 msgstr ""
+"ローカルプラグインがあるかまたは、手動で新たなモジュールを設定ファイルに追加した場合は、インタフェースで手動作成するまでエージェントに反映されないというこ"
+"とを意味します(正しい名前とタイプは XML で送られます)。"
 
 #: ../../include/help/clippy/modules_not_learning_mode.php:42
 msgid ""
 "You should use the \"normal\" mode (non learn) only when you don't intend to "
 "add more modules to the agent."
-msgstr ""
+msgstr "エージェントにモジュールを追加したくない時のみ、\"通常\"モード(学習しない)を使います。"
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:35
 msgid "Now you must go to Modules. Don't worry I'll lead you."
@@ -27277,7 +27285,7 @@ msgstr "子の表示"
 msgid ""
 "You can not delete the last group in Pandora. A common installation must has "
 "almost one group."
-msgstr ""
+msgstr "最後のグループは削除できません。通常、1つはグループが設定されていなければなりません。"
 
 #: ../../include/functions_menu.php:400
 msgid "Configure user"
@@ -29046,24 +29054,3 @@ msgstr "時間 (ミリ秒)"
 
 #~ msgid "Search text"
 #~ msgstr "検索文字列"
-
-#, php-format
-#~ msgid "%s - agents (%s) - %s"
-#~ msgstr "%s - エージェント (%s) - %s"
-
-#, php-format
-#~ msgid "%s - %s"
-#~ msgstr "%s - %s"
-
-#~ msgid "Schedule report"
-#~ msgstr "スケジュールレポート"
-
-#~ msgid "Schedule report "
-#~ msgstr "スケジュールレポート "
-
-#~ msgid "Scheduled/Email"
-#~ msgstr "スケジュール/メール"
-
-#, php-format
-#~ msgid "%s - agents (%s)"
-#~ msgstr "%s - エージェント (%s)"

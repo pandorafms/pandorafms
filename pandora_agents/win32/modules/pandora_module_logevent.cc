@@ -640,6 +640,7 @@ Pandora_Module_Logevent::getEventDescriptionXPATH (PEVENTLOGRECORD pevlr) {
 	description = strUnicodeToAnsi (pwsMessage);
 	
 	// Cleanup
+	free(pwsMessage);
 	free(pRenderedValues);
 	EvtCloseF(hProviderMetadata);
 	EvtCloseF(hContext);

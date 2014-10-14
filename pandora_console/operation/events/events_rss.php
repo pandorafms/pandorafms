@@ -28,6 +28,9 @@ $ipOrigin = $_SERVER['REMOTE_ADDR'];
 
 // Uncoment this to activate ACL on RSS Events
 if (!isInACL($ipOrigin)) {
+	rss_error_handler(null, null, null, null,
+		__("Your IP is not into the IP list with API access."));
+	
 	exit;
 }
 
@@ -39,25 +42,52 @@ $pss = get_user_info($user);
 $hashup2 = md5($user.$pss['password']);
 
 if ($hashup != $hashup2) {
+	rss_error_handler(null, null, null, null,
+		__("The URL of your feed has bad hash."));
+	
 	exit;
 }
 
 header("Content-Type: application/xml; charset=UTF-8"); //Send header before starting to output
 
-function rss_error_handler ($errno, $errstr, $errfile, $errline) {
+function rss_error_handler ($errno, $errstr, $errfile, $errline, $error_human_description = null) {
 	$url = ui_get_full_url(false);
 	$selfurl = ui_get_full_url('?' . $_SERVER['QUERY_STRING'], false, true);
 	
 	$rss_feed = '<?xml version="1.0" encoding="utf-8" ?>'; //' Fixes certain highlighters freaking out on the PHP closing tag
+	$rss_feed .= "\n";
 	$rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'; 
-	$rss_feed .= '<channel><title>Pandora RSS Feed</title><description>Latest events on Pandora</description>';
+	$rss_feed .= "\n";
+	$rss_feed .= '<channel>';
+	$rss_feed .= "\n";
+	$rss_feed .= '<title>Pandora RSS Feed</title>';
+	$rss_feed .= "\n";
+	$rss_feed .= '<description>Latest events on Pandora</description>';
+	$rss_feed .= "\n";
 	$rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, 0).'</lastBuildDate>';
-	$rss_feed .= '<link>'.$url.'</link>'; //Link back to the main Pandora page
-	$rss_feed .= '<atom:link href="'.io_safe_input ($selfurl).'" rel="self" type="application/rss+xml" />'; //Alternative for Atom feeds. It's the same.
-	
-	$rss_feed .= '<item><guid>'.$url.'/index.php?sec=eventos&sec2=operation/events/events</guid><title>Error creating feed</title>';
-	$rss_feed .= '<description>There was an error creating the feed: '.$errno.' - '.$errstr.' in '.$errfile.' on line '.$errline.'</description>';
-	$rss_feed .= '<link>'.$url.'/index.php?sec=eventos&sec2=operation/events/events</link></item>';
+	$rss_feed .= "\n";
+	$rss_feed .= '<link>' . $url . '</link>'; //Link back to the main Pandora page
+	$rss_feed .= "\n";
+	$rss_feed .= '<atom:link href="' . xml_entities(io_safe_input ($selfurl)) . '" rel="self" type="application/rss+xml" />'; //Alternative for Atom feeds. It's the same.
+	$rss_feed .= "\n";
+	$rss_feed .= '<item>';
+	$rss_feed .= "\n";
+	$rss_feed .= '<guid>'.$url.'/index.php?sec=eventos&amp;sec2=operation/events/events</guid>';
+	$rss_feed .= "\n";
+	$rss_feed .= '<title>Error creating feed</title>';
+	$rss_feed .= "\n";
+	if (empty($error_human_description)) {
+		$rss_feed .= '<description>There was an error creating the feed: '.$errno.' - '.$errstr.' in '.$errfile.' on line '.$errline.'</description>';
+	}
+	else {
+		$rss_feed .= '<description>' . xml_entities(io_safe_input($error_human_description)) .'</description>';
+	}
+	$rss_feed .= "\n";
+	$rss_feed .= '<link>'.$url.'/index.php?sec=eventos&amp;sec2=operation/events/events</link>';
+	$rss_feed .= "\n";
+	$rss_feed .= '</item>';
+	$rss_feed .= "\n";
+	$rss_feed .= '</rss>';
 	
 	exit ($rss_feed); //Exit by displaying the feed
 }
@@ -128,13 +158,13 @@ $rss_feed .= '<title>Pandora RSS Feed</title>'. "\n";
 $rss_feed .= '<description>Latest events on Pandora</description>' . "\n";
 $rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, $lastbuild).'</lastBuildDate>'. "\n"; //Last build date is the last event - that way readers won't mark it as having new posts
 $rss_feed .= '<link>'.$url.'</link>'. "\n"; //Link back to the main Pandora page
-$rss_feed .= '<atom:link href="'.io_safe_input ($selfurl).'" rel="self" type="application/rss+xml" />'. "\n";; //Alternative for Atom feeds. It's the same.
+$rss_feed .= '<atom:link href="' . xml_entities(io_safe_input ($selfurl)) . '" rel="self" type="application/rss+xml" />'. "\n";; //Alternative for Atom feeds. It's the same.
 
 if (empty ($result)) {
 	$result = array();
-	$rss_feed .= '<item><guid>'.io_safe_input ($url.'/index.php?sec=eventos&sec2=operation/events/events').'</guid><title>No results</title>';
+	$rss_feed .= '<item><guid>' . xml_entities(io_safe_input ($url.'/index.php?sec=eventos&sec2=operation/events/events')) . '</guid><title>No results</title>';
 	$rss_feed .= '<description>There are no results. Click on the link to see all Pending events</description>';
-	$rss_feed .= '<link>'.io_safe_input ($url.'/index.php?sec=eventos&sec2=operation/events/events').'</link></item>'. "\n";
+	$rss_feed .= '<link>' . xml_entities(io_safe_input ($url.'/index.php?sec=eventos&sec2=operation/events/events')) . '</link></item>'. "\n";
 }
 
 foreach ($result as $row) {
@@ -152,18 +182,18 @@ foreach ($result as $row) {
 		$agent_name = __('Alert').__('SNMP');
 	}
 	
-//This is mandatory
+	//This is mandatory
 	$rss_feed .= '<item><guid>';
-	$rss_feed .= io_safe_input($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row['id_evento']);
+	$rss_feed .= xml_entities(io_safe_input($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row['id_evento']));
 	$rss_feed .= '</guid><title>';
-	$rss_feed .= $agent_name;
+	$rss_feed .= xml_entities($agent_name);
 	$rss_feed .= '</title><description>';
-	$rss_feed .= $row['evento'];
-	if($row['estado'] == 1) {
-		$rss_feed .= io_safe_input('<br /><br />'.'Validated by ' . $row['id_usuario']);
+	$rss_feed .= xml_entities($row['evento']);
+	if ($row['estado'] == 1) {
+		$rss_feed .= xml_entities(io_safe_input('<br /><br />'.'Validated by ' . $row['id_usuario']));
 	}
 	$rss_feed .= '</description><link>';
-	$rss_feed .= io_safe_input($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row["id_evento"]);
+	$rss_feed .= xml_entities(io_safe_input($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row["id_evento"]));
 	$rss_feed .= '</link>';
 
 //The rest is optional
@@ -176,4 +206,35 @@ foreach ($result as $row) {
 $rss_feed .= "</channel>\n</rss>\n";
 
 echo $rss_feed;
+
+
+function xml_entities($str) {
+	
+	if (!is_string($str)) {
+		return "";
+	}
+	
+	if (preg_match_all('/(&[^;]+;)/', $str, $matches) != 0) {
+		
+		$matches = $matches[0];
+		
+		foreach ($matches as $entity) {
+			$char = html_entity_decode($entity,  ENT_COMPAT | ENT_HTML401, 'UTF-8');
+			
+			$html_entity_numeric = "&#" . uniord($char) . ";";
+			
+			$str = str_replace($entity, $html_entity_numeric, $str);
+		}
+	}
+	
+	return $str;
+}
+
+function uniord($u) { 
+	$k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8'); 
+	$k1 = ord(substr($k, 0, 1));
+	$k2 = ord(substr($k, 1, 1));
+	
+	return $k2 * 256 + $k1; 
+}
 ?>

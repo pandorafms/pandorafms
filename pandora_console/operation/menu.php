@@ -57,10 +57,14 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	enterprise_hook ('services_menu');
 	
 	enterprise_hook ('inventory_menu');
-	
+}
+
+if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["operation/servers/recon_view"]["text"] = __('Recon view');
 	$sub["operation/servers/recon_view"]["refr"] = 0;
-	
+}
+
+if (check_acl ($config['id_user'], 0, "AR")) {
 	if ($config['log_collector'] == 1) {
 		enterprise_hook ('log_collector_menu');
 	}

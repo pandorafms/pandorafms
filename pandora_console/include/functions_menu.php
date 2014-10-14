@@ -521,7 +521,7 @@ function menu_get_sec($with_categories = false) {
  * 
  * @return array Sections list
  */
-function menu_get_sec_pages($sec,$menu_hash = false) {
+function menu_get_sec_pages($sec, $menu_hash = false) {
 	if ($menu_hash === false) {
 		$menu = menu_get_full_sec();
 	}
@@ -529,21 +529,30 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
 		$menu = json_decode(base64_decode($menu_hash),true);
 	}
 	
-	// Get the sec2 of the main section
-	$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
+	$sec2_array = array();
 	
-	// Get the sec2 of the subsections
-	foreach ($menu[$sec]['sub'] as $k => $v) {
-		// Avoid special cases of standalone windows
-		if (preg_match('/^javascript:/',$k) || preg_match('/\.php/',$k)) {
-			continue;
+	if (isset($sec)) {
+		
+		// Get the sec2 of the main section
+		$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
+		
+		
+		// Get the sec2 of the subsections
+		foreach ($menu[$sec]['sub'] as $k => $v) {
+			// Avoid special cases of standalone windows
+			if (preg_match('/^javascript:/', $k) || preg_match('/\.php/', $k)) {
+				continue;
+			}
+			
+			
+			// If this value has various parameters, we only get the first
+			$k = explode('&',$k);
+			$k = $k[0];
+			
+			
+			$sec2_array[$k] = $v['text'];
 		}
 		
-		// If this value has various parameters, we only get the first
-		$k = explode('&',$k);
-		$k = $k[0];
-		
-		$sec2_array[$k] = $v['text'];
 	}
 	
 	return $sec2_array;

@@ -271,7 +271,7 @@ sub get_if_from_ip($$$) {
 }
 
 ########################################################################################
-# Get the MAC address for the interface with the given IP address.
+# Get an interface name from a MAC address.
 ########################################################################################
 sub get_if_from_mac($$$) {
 	my ($device, $community, $mac) = @_;
@@ -639,13 +639,17 @@ sub host_connectivity($) {
 		my $host = $ARP_CACHE{$mac};
 		next unless defined ($HOSTS{$host});
 		my $device_if_name = get_if_from_aft($device, $COMMUNITIES{$device}, $mac);
+		my $host_if_name = defined($COMMUNITIES{$host}) ? get_if_from_mac($host, $COMMUNITIES{$host}, $mac) : '';
 		if ($VISITED_DEVICES{$device}->{'type'} eq 'router') {
-			message("Host $host is connected to router $device (if $device_if_name).");
+			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to router $device (if $device_if_name).");
+		}
+		elsif ($VISITED_DEVICES{$device}->{'type'} eq 'switch') {
+			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to switch $device (if $device_if_name).");
 		}
 		else {
-			message("Host $host is connected to switch $device (if $device_if_name).");
+			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to host $device (if $device_if_name).");
 		}
-		connect_pandora_agents($device, $device_if_name, $host, '');
+		connect_pandora_agents($device, $device_if_name, $host, $host_if_name);
 	}
 }
 

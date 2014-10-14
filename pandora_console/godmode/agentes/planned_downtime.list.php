@@ -27,6 +27,21 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ('include/functions_users.php');
 require_once ('include/functions_events.php');
+require_once ('include/functions_planned_downtimes.php');
+
+$malformed_downtimes = planned_downtimes_get_malformed();
+$malformed_downtimes_exist = !empty($malformed_downtimes) ? true : false;
+
+$migrate_malformed = (bool) get_parameter("migrate_malformed");
+if ($migrate_malformed) {
+	$migration_result = planned_downtimes_migrate_malformed_downtimes();
+
+	if ($migration_result['status'] == false) {
+		ui_print_error_message(__('An error occurred while migrating the malformed planned downtimes') . ". "
+			. __('Please run the migration again or contact with the administrator'));
+		echo "<br>";
+	}
+}
 
 // Header
 ui_print_page_header(
@@ -272,8 +287,9 @@ $table = new StdClass();
 $table->class = 'databox';
 //Start Overview of existing planned downtime
 $table->width = '98%';
-$table->data = array ();
-$table->head = array ();
+$table->cellstyle = array();
+$table->data = array();
+$table->head = array();
 $table->head[0] = __('Name #Ag.');
 $table->head[1] = __('Description');
 $table->head[2] = __('Group');
@@ -285,7 +301,6 @@ $table->head[7] = __('Stop downtime');
 $table->head[8] = __('Edit');
 $table->head[9] = __('Delete');
 $table->align[2] = "center";
-//$table->align[5] = "center";
 $table->align[6] = "center";
 $table->align[7] = "center";
 $table->align[8] = "center";
@@ -478,7 +493,7 @@ else {
 		
 		if ($downtime["executed"] == 0) {
 			$data[8] = '<a
-				href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+				href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
 			$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;'.
 				'delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
@@ -489,6 +504,16 @@ else {
 			$data[9]= "N/A";
 		
 		}
+
+		if (!empty($malformed_downtimes_exist) && isset($malformed_downtimes[$downtime['id']])) {
+			$next_row_num = count($table->data);
+			$table->cellstyle[$next_row_num][0] = 'color: red';
+			$table->cellstyle[$next_row_num][1] = 'color: red';
+			$table->cellstyle[$next_row_num][3] = 'color: red';
+			$table->cellstyle[$next_row_num][4] = 'color: red';
+			$table->cellstyle[$next_row_num][5] = 'color: red';
+		}
+
 		array_push ($table->data, $data);
 	}
 	html_print_table ($table);
@@ -500,7 +525,7 @@ echo '<div style="display: inline;">';
 html_print_button(__('Export to CSV'), 'csv_export', false, "location.href='godmode/agentes/planned_downtime.export_csv.php?$filter_params_str'", 'class="sub next"');
 echo '</div>';
 echo '&nbsp;';
-echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
 html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 echo '</form>';
 echo '</div>';
@@ -522,6 +547,12 @@ $(document).ready (function () {
 			e.preventDefault();
 		}
 	});
+
+	if (<?php echo json_encode($malformed_downtimes_exist) ?> && <?php echo json_encode($migrate_malformed == false) ?>) {
+		if (confirm("<?php echo __('WARNING: There are malformed planned downtimes') . '.\n' . __('Do you want to migrate automatically the malformed items?'); ?>")) {
+			window.location.href = "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&migrate_malformed=1";
+		}
+	}
 });
 
 </script>

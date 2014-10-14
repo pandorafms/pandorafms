@@ -247,7 +247,6 @@ if (check_acl ($config['id_user'], 0, "DM")) {
 	$sub["godmode/db/db_refine"]["text"] = __('Database debug');
 	$sub["godmode/db/db_audit"]["text"] = __('Database audit');
 	$sub["godmode/db/db_event"]["text"] = __('Database event');
-	$sub["godmode/db/db_sanity"]["text"] = __('Database sanity');
 	
 	$menu_godmode["gdbman"]["sub"] = $sub;
 }

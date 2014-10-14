@@ -1527,7 +1527,10 @@ function ui_process_page_body ($string, $bitfield) {
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
-function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false, $offset_name = 'offset', $print_total_items = true, $other_class = '') {
+function ui_pagination ($count, $url = false, $offset = 0,
+	$pagination = 0, $return = false, $offset_name = 'offset',
+	$print_total_items = true, $other_class = '') {
+	
 	global $config;
 	
 	if (empty ($pagination)) {
@@ -1547,13 +1550,14 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$url = ui_get_url_refresh (array ($offset_name => false));
 	}
 	
-	/* 	URL passed render links with some parameter
+	/*
+	 URL passed render links with some parameter
 	 &offset - Offset records passed to next page
 	 &counter - Number of items to be blocked 
 	 Pagination needs $url to build the base URL to render links, its a base url, like 
 	 " http://pandora/index.php?sec=godmode&sec2=godmode/admin_access_logs "
 	 */
-	$block_limit = 15; // Visualize only $block_limit blocks
+	$block_limit = PAGINATION_BLOCKS_LIMIT; // Visualize only $block_limit blocks
 	if ($count <= $pagination) {
 		
 		if ($print_total_items) {
@@ -1572,32 +1576,22 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		return false;
 	}
 	
-	// If exists more registers than I can put in a page, calculate index markers
-	$index_counter = ceil ($count /$pagination); // Number of blocks of block_size with data
-	$index_page = ceil ($offset / $pagination) - (ceil ($block_limit / 2)); // block to begin to show data;
-	if ($index_page < 0)
-		$index_page = 0;
+	$number_of_pages = ceil($count / $pagination);
+	//~ html_debug_print('number_of_pages');
+	//~ html_debug_print($number_of_pages);
+	$actual_page = floor($offset / $pagination);
+	//~ html_debug_print('actual_page');
+	//~ html_debug_print($actual_page);
+	$ini_page = floor($actual_page / $block_limit) * $block_limit;
+	//~ html_debug_print('ini_page');
+	//~ html_debug_print($ini_page);
+	$end_page = $ini_page + $block_limit - 1;
+	if ($end_page > $number_of_pages) {
+		$end_page = $number_of_pages - 1;
+	}
+	//~ html_debug_print('end_page');
+	//~ html_debug_print($end_page);
 	
-	// This calculate index_limit, block limit for this search.
-	if (($index_page + $block_limit) > $index_counter)
-		$index_limit = $index_counter;
-	else
-		$index_limit = $index_page + $block_limit;
-	
-	// This calculate if there are more blocks than visible (more than $block_limit blocks)
-	if ($index_counter > $block_limit )
-		$paginacion_maxima = 1; // If maximum blocks ($block_limit), show only 10 and "...."
-	else
-		$paginacion_maxima = 0;
-	
-	// This setup first block of query
-	if ( $paginacion_maxima == 1)
-		if ($index_page == 0)
-			$inicio_pag = 0;
-		else
-			$inicio_pag = $index_page;
-	else
-		$inicio_pag = 0;
 	
 	$output = "<div class='pagination $other_class'>";
 	
@@ -1607,82 +1601,70 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$output .= '<br>';
 	}
 	
-	// Show GOTO FIRST button
-	if ($other_class == '') {
-		$output .= '<a class="pagination offset_0" href="'.$url.'&amp;' .$offset_name.'=0">'.html_print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
-	} else {
-		$output .= "<a class='pagination $other_class offset_0' href='$url.&amp;$offset_name=0'>".html_print_image ("images/go_first.png", true, array ("class" => "bot"))."</a>&nbsp;";
-	}
-
-	// Show PREVIOUS button
-	if ($index_page > 0) {
-		$index_page_prev = ($index_page - (floor ($block_limit / 2))) * $pagination;
-		if ($index_page_prev < 0)
-			$index_page_prev = 0;
-			
-		if ($other_class == '') {
-			$output .= '<a class="pagination offset_' . $index_page_prev . '" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.html_print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
-		} else {
-			$output .= "<a class='pagination $other_class offset_$index_page_prev' href='$url &amp;$offset_name = $index_page_prev'>".html_print_image ("images/go_previous.png", true, array ("class" => "bot"))."</a>";
-		}
+	// Show GOTO FIRST PAGE button
+	if ($number_of_pages > $block_limit) {
+		$output .= "<a class='pagination $other_class offset_0' href='$url&amp;$offset_name=0'>" .
+			html_print_image ("images/go_first.png", true, array ("class" => "bot")) .
+			"</a>&nbsp;";
 	}
 	
-	// Draw blocks markers
-	// $i stores number of page
-	for ($i = $inicio_pag; $i < $index_limit; $i++) {
-		$inicio_bloque = ($i * $pagination);
-		$final_bloque = $inicio_bloque + $pagination;
-		if ($final_bloque > $count){ // if upper limit is beyond max, this shouldnt be possible !
-			$final_bloque = ($i-1) * $pagination + $count-(($i-1) * $pagination);
-		}
+	// Show PREVIOUS PAGE GROUP OF PAGES
+	// For example
+	// You are in the 12 page with a block of 5 pages
+	// << < 10 - 11 - [12] - 13 - 14 > >>
+	// Click in <
+	// Result << < 5 - 6 - 7 - 8 - [9] > >>
+	if ($ini_page >= $block_limit) {
+		$offset_previous_page = ($ini_page - 1) * $pagination;
+		$output .= "<a class='pagination $other_class offset_$offset_previous_page' href='$url&amp;$offset_name=$offset_previous_page'>" .
+				html_print_image ("images/go_previous.png", true, array ("class" => "bot")) .
+				"</a>";
+	}
+	
+	
+	// Show pages
+	for ($iterator = $ini_page; $iterator <= $end_page;  $iterator++) {
 		
-		if ($inicio_bloque == $offset) {
+		$actual_page = (int)($offset / $pagination);
+		
+		if ($iterator == $actual_page) {
 			$output .= "<span style='font-weight: bold;'>";
 		}
 		else {
 			$output .= "<span>";
 		}
 		
-		$inicio_bloque_fake = $inicio_bloque + 1;
-		// To Calculate last block (doesnt end with round data,
-		// it must be shown if not round to block limit)
-		$link_offset = $config['block_size'] * $i;
+		$offset_page = $iterator * $pagination;
 		
-		if ($other_class == '') {	
-				$output .= '<a class="pagination offset_' . $link_offset . '" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
-		} else {
-			$output .= "<a class='pagination $other_class offset_$link_offset' href='$url &amp;$offset_name=$inicio_bloque'>";
-		}
-		$output .= "[ $i ]";
+		$output .= "<a class='pagination $other_class offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
+		
+		$output .= "[ $iterator ]";
 		
 		$output .= '</a></span>';
-	}
-	$output .= "&nbsp;";
-	// Show NEXT PAGE (fast forward)
-	// Index_counter stores max of blocks
-	if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
-		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
-		if ($prox_bloque >= $count)
-			$prox_bloque = (int) (($count - 1) / $pagination) * $pagination;
-		if ($other_class == '') {
-			$output .= '<a class="pagination offset_' . $prox_bloque . '" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.html_print_image ("images/go_next.png", true, array ("class" => "bot")).'</a>';
-		} else {
-			$output .= "<a class='pagination $other_class offset_$prox_bloque' href='$url&amp;$offset_name=$prox_bloque'>".html_print_image ("images/go_next.png", true, array ("class" => "bot"))."</a>";
-		}
-		$i = $index_counter;
-	}
-	// if exists more registers than i can put in a page (defined by $block_size config parameter)
-	// get offset for index calculation
-	// Draw "last" block link, ajust for last block will be the same
-	// as painted in last block (last integer block).	
-	if (($count - $pagination) > 0) {
-		$myoffset = floor (($count - 1) / $pagination) * $pagination;
 		
-		if ($other_class == '') {
-			$output .= '<a class="pagination offset_' . $myoffset . '" href="'.$url. '&amp;'.$offset_name.'='.$myoffset.'">'.html_print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
-		} else {
-			$output .= "<a class='pagination $other_class offset_$myoffset' href='$url&amp;$offset_name=$myoffset'>".html_print_image ("images/go_last.png", true, array ("class" => "bot"))."</a>";
-		}
+	}
+	
+	
+	// Show NEXT PAGE GROUP OF PAGES
+	// For example
+	// You are in the 12 page with a block of 5 pages
+	// << < 10 - 11 - [12] - 13 - 14 > >>
+	// Click in >
+	// Result << < [15] - 16 - 17 - 18 - 19 > >>
+	if ($number_of_pages - $ini_page > $block_limit) {
+		$offset_next_page = ($end_page + 1) * $pagination;
+		$output .= "<a class='pagination $other_class offset_$offset_next_page' href='$url&amp;$offset_name=$offset_next_page'>" .
+				html_print_image ("images/go_next.png", true, array ("class" => "bot")) .
+				"</a>";
+	}
+	
+	//Show GOTO LAST PAGE button
+	if ($number_of_pages > $block_limit) {
+		$offset_lastpage = ($number_of_pages - 1) * $pagination;
+		
+		$output .= "<a class='pagination $other_class offset_$offset_lastpage' href='$url&amp;$offset_name=$offset_lastpage'>" .
+			html_print_image ("images/go_last.png", true, array ("class" => "bot")) .
+			"</a>";
 	}
 	
 	// End div and layout

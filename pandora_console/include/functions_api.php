@@ -378,6 +378,9 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 		'group_parent',
 		'disabled',
 		'custom_id',
+		'group_description',
+		'group_contact',
+		'group_other',
 		
 		'agent_id',
 		'agent_name',
@@ -677,7 +680,10 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 	
 	$returnVar = array();
 	
-	$groups = db_get_all_rows_sql('SELECT id_grupo as group_id, nombre as group_name, parent as group_parent, disabled, custom_id FROM tgrupo');
+	$groups = db_get_all_rows_sql('SELECT id_grupo as group_id, ' .
+			'nombre as group_name, parent as group_parent, disabled, custom_id, ' .
+			'description as group_description, contact as group_contact, ' .
+			'other as group_other FROM tgrupo');
 	if ($groups === false) $groups = array();
 	$groups = str_replace('\n', $returnReplace, $groups);
 	

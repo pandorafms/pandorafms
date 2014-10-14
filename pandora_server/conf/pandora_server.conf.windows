@@ -214,7 +214,11 @@ dataserver_threads 2
 #snmpget c:\pandora_server\bin\snmpget.exe
 
 # Default group id for new agents created with Pandora FMS Data Server
-#autocreate_group 2
+# If this token is enabled and Agent is setup with a fixed group, server settings will override agent settings
+# If this token is disabled and group is not provided in the agent, or provided group doesn't exist, agent data
+# will be dropped. We use the Group ID #10 (Unknown) for a "valid" default value, please change as your own decision.
+
+autocreate_group 10
 
 # Set to 1 if want to autocreate agents with Pandora FMS Data Server, 
 # set to 0 to disable

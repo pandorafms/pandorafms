@@ -338,6 +338,9 @@ restart_delay 60
 
 self_monitoring 1
 
+# Self monitoring interval (in seconds).
+self_monitoring_interval 300
+
 # Update parent from the agent xml
 
 #update_parent 1

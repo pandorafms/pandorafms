@@ -18,7 +18,29 @@ if ($get_sec_pages) {
 	$sec = get_parameter('sec');
 	$menu_hash = get_parameter('menu_hash');
 	
-	$pages = menu_get_sec_pages($sec,$menu_hash);
+	// WARNING: 'mobile' is a very special section
+	if ($sec === 'mobile') {
+		global $config;
+		require_once($config['homedir']."/mobile/operation/home.php");
+
+		$home = new Home();
+		$pagesItems = $home->getPagesItems();
+
+		if (empty($pagesItems)) {
+			$pagesItems = array();
+		}
+		else {
+			ksort($pagesItems);
+		}
+
+		$pages = array();
+		foreach ($pagesItems as $page => $data) {
+			$pages[$page] = $data['name'];
+		}
+	}
+	else {
+		$pages = menu_get_sec_pages($sec,$menu_hash);
+	}
 
 	echo json_encode($pages);
 	return;

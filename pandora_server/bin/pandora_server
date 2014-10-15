@@ -333,11 +333,10 @@ sub pandora_server_tasks ($) {
 			}
 
 			# Pandora self monitoring
-			if (($counter % 180) == 0) {
-				if (defined($pa_config->{"self_monitoring"}) 
-				&& $pa_config->{"self_monitoring"} == 1){
-					pandora_self_monitoring ($pa_config, $dbh);
-				}
+			if (defined($pa_config->{"self_monitoring"}) 
+				&& $pa_config->{"self_monitoring"} == 1
+				&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
+				pandora_self_monitoring ($pa_config, $dbh);
 			}
 	
 		

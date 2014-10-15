@@ -879,15 +879,24 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 	if (empty($malformed_planned_downtimes))
 		$malformed_planned_downtimes = array();
 
-	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
-					FROM tplanned_downtime_agents tpda, tagente_modulo tam, tplanned_downtime tpd
-					LEFT OUTER JOIN tplanned_downtime_modules tpdm ON tpd.id = tpdm.id_downtime
-					WHERE (tpd.id = tpda.id_downtime
-							AND tpda.all_modules = 1
-							AND tpda.id_agent = tam.id_agente
-							AND tam.id_agente_modulo = $id_agent_module)
-						OR (tpdm.id_agent_module = $id_agent_module)";
+	$sql_downtime = "SELECT DISTINCT(tpdr.id), tpdr.*
+					FROM (
+							SELECT tpd.*
+							FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
+							WHERE tpd.id = tpda.id_downtime
+								AND tpda.all_modules = 1
+								AND tpda.id_agent = tam.id_agente
+								AND tam.id_agente_modulo = $id_agent_module
+						UNION
+							SELECT tpd.*
+							FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
+							WHERE tpd.id = tpdm.id_downtime
+								AND tpdm.id_agent_module = $id_agent_module
+					) tpdr
+					ORDER BY tpdr.id";
+
 	$downtimes = db_get_all_rows_sql($sql_downtime);
+
 	if ($downtimes == false) {
 		$downtimes = array();
 	}
@@ -1179,32 +1188,54 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
 		$periodically_condition = "($periodically_monthly_w)";
 	}
 
-	if (!empty($id_agent_modules)) {
+	if ($id_agent_modules !== false) {
+		if (empty($id_agent_modules))
+			return array();
+
 		$id_agent_modules_str = implode(",", $id_agent_modules);
-		$agent_modules_condition_tpda = "AND tam.id_agente_modulo IN ($id_agent_modules_str)";
-		$agent_modules_condition_tpdm = "tpdm.id_agent_module IN ($id_agent_modules_str)";
+
+		$sql_downtime = "SELECT DISTINCT(tpdr.id), tpdr.*
+						FROM (
+								SELECT tpd.*
+								FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
+								WHERE (tpd.id = tpda.id_downtime
+										AND tpda.all_modules = 1
+										AND tpda.id_agent = tam.id_agente
+										AND tam.id_agente_modulo IN ($id_agent_modules_str))
+									AND ((type_execution = 'periodically'
+											AND $periodically_condition)
+										OR (type_execution = 'once'
+											AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+												OR (date_from <= '$start_date' AND date_to >= '$end_date')
+												OR (date_from <= '$start_date' AND date_to >= '$start_date')
+												OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
+							UNION
+								SELECT tpd.*
+								FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
+								WHERE (tpd.id = tpdm.id_downtime
+										AND tpdm.id_agent_module IN ($id_agent_modules_str))
+									AND ((type_execution = 'periodically'
+											AND $periodically_condition)
+										OR (type_execution = 'once'
+											AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+												OR (date_from <= '$start_date' AND date_to >= '$end_date')
+												OR (date_from <= '$start_date' AND date_to >= '$start_date')
+												OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
+						) tpdr
+						ORDER BY tpdr.id";
 	}
 	else {
-		$agent_modules_condition_tpda = "";
-		$agent_modules_condition_tpdm = "1=1";
+		$sql_downtime = "SELECT *
+						FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
+						WHERE (type_execution = 'periodically'
+									AND $periodically_condition)
+								OR (type_execution = 'once'
+									AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+										OR (date_from <= '$start_date' AND date_to >= '$end_date')
+										OR (date_from <= '$start_date' AND date_to >= '$start_date')
+										OR (date_from <= '$end_date' AND date_to >= '$end_date')))";
 	}
-	
-	$sql_downtime = "SELECT DISTINCT(tpd.id), tpd.*
-					FROM tplanned_downtime_agents tpda, tagente_modulo tam, tplanned_downtime tpd
-					LEFT OUTER JOIN tplanned_downtime_modules tpdm ON tpd.id = tpdm.id_downtime
-					WHERE ((tpd.id = tpda.id_downtime
-								AND tpda.all_modules = 1
-								AND tpda.id_agent = tam.id_agente
-								$agent_modules_condition_tpda)
-							OR ($agent_modules_condition_tpdm))
-						AND ((type_execution = 'periodically'
-								AND $periodically_condition)
-							OR (type_execution = 'once'
-								AND ((date_from >= '$start_date' AND date_to <= '$end_date')
-									OR (date_from <= '$start_date' AND date_to >= '$end_date')
-									OR (date_from <= '$start_date' AND date_to >= '$start_date')
-									OR (date_from <= '$end_date' AND date_to >= '$end_date'))))";
-	
+
 	$downtimes = db_get_all_rows_sql($sql_downtime);
 	if ($downtimes == false) {
 		$downtimes = array();

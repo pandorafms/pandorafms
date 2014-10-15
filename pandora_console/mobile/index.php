@@ -39,12 +39,14 @@ require_once('operation/networkmap.php');
 require_once('operation/visualmaps.php');
 require_once('operation/visualmap.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
+$enterpriseHook = enterprise_include('mobile/operation/home.php');
 
 $system = System::getInstance();
 
 $user = User::getInstance();
 $user->hackInjectConfig();
 
+$page = $system->getRequest('page', 'home');
 $action = $system->getRequest('action');
 if (!$user->isLogged()) {
 	$action = 'login';
@@ -58,24 +60,20 @@ if ($action != "ajax") {
 	}
 }
 
-// Disable mobile console if ALC enterprise is enabled
-if ($system->getConfig('enterprise_installed') == 1 && $system->getConfig('acl_enterprise') == 1) {
-		$ui = Ui::getInstance();
-		$system = System::getInstance();		
-		$ui->createPage();
-		$ui->createHeader(__('Mobile console disabled'));
-		$ui->showFooter(false);
-		$ui->beginContent();
-		$ui->contentAddHtml(ui_print_info_message(array('title' => '', 'message' => __('Mobile console is not available with ACL enterprise enabled. Please contact with the administrator.'), 'no_close' => true, 'force_style' => 'margin: 0 auto;'), '', true));
-		$ui->endContent();
-		$ui->showPage();
-		return;
-}
-
 switch ($action) {
 	case 'ajax':
 		$parameter1 = $system->getRequest('parameter1', false);
 		$parameter2 = $system->getRequest('parameter2', false);
+
+		if (class_exists("Enterprise")) {
+			$enterprise = Enterprise::getInstance();
+
+			$permission = $enterprise->checkEnterpriseACL($parameter1);
+
+			if (!$permission) {
+				return false;
+			}
+		}
 		
 		switch ($parameter1) {
 			case 'events':
@@ -119,7 +117,10 @@ switch ($action) {
 					$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
 					$l10n->load_tables();
 				}
-				$home = new Home();
+				if (class_exists("HomeEnterprise"))
+					$home = new HomeEnterprise();
+				else
+					$home = new Home();
 				$home->show();
 			}
 			else {
@@ -132,11 +133,34 @@ switch ($action) {
 		$user->showLogin();
 		break;
 	default:
-		$page = $system->getRequest('page', 'home');
+		if (class_exists("Enterprise")) {
+			$enterprise = Enterprise::getInstance();
+
+			if ($page != "home") {
+				$permission = $enterprise->checkEnterpriseACL($page);
+
+				if (!$permission) {
+					$error['type'] = 'onStart';
+					$error['title_text'] = __('You don\'t have access to this page');
+					$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+					if (class_exists("HomeEnterprise"))
+						$home = new HomeEnterprise();
+					else
+						$home = new Home();
+					$home->show($error);
+
+					return;
+				}
+			}
+		}
+
 		switch ($page) {
 			case 'home':
 			default:
-				$home = new Home();
+				if (class_exists("HomeEnterprise"))
+					$home = new HomeEnterprise();
+				else
+					$home = new Home();
 				$home->show();
 				break;
 			case 'tactical':

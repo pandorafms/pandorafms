@@ -2715,7 +2715,7 @@ sub cli_get_event_info () {
 ###############################################################################
 sub cli_add_event_comment() {
 	my ($id_event, $user_name, $comment) = @ARGV[2..4];
-
+	
 	my $id_user;
 	if (!defined($user_name) || $user_name eq '') {
 		$id_user = 'admin';
@@ -2724,16 +2724,16 @@ sub cli_add_event_comment() {
 		$id_user = pandora_get_user_id($dbh,$user_name);
 		exist_check($id_user,'user',$user_name);
 	}
-
+	
 	my $event_name = pandora_get_event_name($dbh, $id_event);
 	exist_check($event_name,'event',$id_event);
-
+	
 	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
 	my $utimestamp = time ();
 	my @additional_comment = ({ comment => $comment, action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
-
+	
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
-
+	
 	my $decoded_comment;
 	my $update;
 	if ($current_comment eq '') {
@@ -2741,10 +2741,12 @@ sub cli_add_event_comment() {
 	}
 	else {
 		$decoded_comment = decode_json($current_comment);
-		push $decoded_comment, @additional_comment;	
-		$update->{'user_comment'} = encode_json $decoded_comment;
+		
+		push(@{$decoded_comment}, @additional_comment);
+		
+		$update->{'user_comment'} = encode_json($decoded_comment);
 	}
-
+	
 	pandora_update_event_from_hash ($update, 'id_evento', $id_event, $dbh);
 }
 
@@ -2758,7 +2760,7 @@ sub cli_create_incident() {
 	
 	my $id_group = get_group_id($dbh,$group_name);
 	exist_check($id_group,'group',$group_name);
-				
+	
 	pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
 	print_log "[INFO] Creating incident '$title'\n\n";
 }
@@ -3505,7 +3507,7 @@ sub pandora_get_event_name($$) {
 ##########################################################################
 sub pandora_update_event_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
-
+	
 	my $event_id = db_process_update($dbh, 'tevento', $parameters, $where_column, $where_value);
 	return $event_id;
 }

@@ -13,20 +13,127 @@
 // GNU General Public License for more details.
 
 class Home {
-	private $global_search = '';
+	protected $global_search = '';
+
+	protected $pagesItems = array();
 	
 	function __construct() {
 		$this->global_search = '';
 	}
+
+	public function getPagesItems () {
+		if (empty($this->pagesItems))
+			$this->loadPagesItems();
+
+		return $this->pagesItems;
+	}
+
+	protected function loadPagesItems () {
+		$items = array();
+
+		// In home
+		$items['tactical'] = array(
+				'name' => __('Tactical view'),
+				'filename' => 'tactical.php',
+				'menu_item' => true,
+				'icon' => 'tactical_view'
+			);
+		$items['events'] = array(
+				'name' => __('Events'),
+				'filename' => 'events.php',
+				'menu_item' => true,
+				'icon' => 'events'
+			);
+		$items['groups'] = array(
+				'name' => __('Groups'),
+				'filename' => 'groups.php',
+				'menu_item' => true,
+				'icon' => 'groups'
+			);
+		$items['alerts'] = array(
+				'name' => __('Alerts'),
+				'filename' => 'alerts.php',
+				'menu_item' => true,
+				'icon' => 'alerts'
+			);
+		$items['agents'] = array(
+				'name' => __('Agents'),
+				'filename' => 'agents.php',
+				'menu_item' => true,
+				'icon' => 'agents'
+			);
+		$items['modules'] = array(
+				'name' => __('Modules'),
+				'filename' => 'modules.php',
+				'menu_item' => true,
+				'icon' => 'modules'
+			);
+		$items['networkmaps'] = array(
+				'name' => __('Networkmaps'),
+				'filename' => 'networkmaps.php',
+				'menu_item' => true,
+				'icon' => 'network_maps'
+			);
+		$items['visualmaps'] = array(
+				'name' => __('Visual consoles'),
+				'filename' => 'visualmaps.php',
+				'menu_item' => true,
+				'icon' => 'visual_console'
+			);
+
+		// Not in home
+		$items['agent'] = array(
+				'name' => __('Agent'),
+				'filename' => 'agent.php',
+				'menu_item' => false,
+				'icon' => ''
+			);
+		$items['module_graph'] = array(
+				'name' => __('Module graph'),
+				'filename' => 'module_graph.php',
+				'menu_item' => false,
+				'icon' => ''
+			);
+		$items['networkmap'] = array(
+				'name' => __('Networkmap'),
+				'filename' => 'networkmap.php',
+				'menu_item' => false,
+				'icon' => ''
+			);
+		$items['visualmap'] = array(
+				'name' => __('Visualmap'),
+				'filename' => 'visualmap.php',
+				'menu_item' => false,
+				'icon' => ''
+			);
+
+
+		$this->pagesItems = $items;
+	}
+
+	protected function loadButtons ($ui) {
+		if (empty($this->pagesItems) && $this->pagesItems !== false)
+			$this->loadPagesItems();
+		
+		foreach ($this->pagesItems as $page => $data) {
+			if ($data['menu_item']) {
+				$options = array(
+						'icon' => $data['icon'],
+						'pos' => 'right',
+						'text' => $data['name'],
+						'href' => "index.php?page=$page"
+					);
+				$ui->contentAddHtml($ui->createButton($options));
+			}
+		}
+	}
 	
-	public function show() {
-		global $config;
-		
-		require_once ($config["homedir"] . '/include/functions_graph.php');
-		
+	public function show($error = false) {
+		$system = System::getInstance();
 		$ui = Ui::getInstance();
-		$system = System::getInstance();	
-			
+		
+		require_once ($system->getConfig("homedir") . '/include/functions_graph.php');
+		
 		$ui->createPage();
 		if ($system->getRequest('hide_logout', 0)) {
 			$left_button = null;
@@ -39,8 +146,9 @@ class Home {
 		}
 
 		$user_logged = '';
-		if (isset($config['id_user'])) {
-			$user_logged = '<span id="user_logged">' . $config['id_user'] . '</span>';
+		$id_user = $system->getConfig("id_user");
+		if (!empty($id_user)) {
+			$user_logged = "<span id=\"user_logged\">$id_user</span>";
 		}
 		
 		$ui->createHeader(__("Home"), $left_button, $user_logged);
@@ -56,49 +164,13 @@ class Home {
 			$ui->endForm();
 			
 			//List of buttons
-			$options = array('icon' => 'tactical_view',
-					'pos' => 'right',
-					'text' => __('Tactical view'),
-					'href' => 'index.php?page=tactical');
-			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'events',
-					'pos' => 'right',
-					'text' => __('Events'),
-					'href' => 'index.php?page=events');
-			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'groups',
-					'pos' => 'right',
-					'text' => __('Groups'),
-					'href' => 'index.php?page=groups');
-			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'alerts',
-					'pos' => 'right',
-					'text' => __('Alerts'),
-					'href' => 'index.php?page=alerts');
-			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'agents',
-					'pos' => 'right',
-					'text' => __('Agents'),
-					'href' => 'index.php?page=agents');
-			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'modules',
-					'pos' => 'right',
-					'text' => __('Modules'),
-					'href' => 'index.php?page=modules');
-			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'network_maps',
-					'pos' => 'right',
-					'text' => __('Networkmaps'),
-					'href' => 'index.php?page=networkmaps');
-			$ui->contentAddHtml($ui->createButton($options));
-			$options = array('icon' => 'visual_console',
-					'pos' => 'right',
-					'text' => __('Visual consoles'),
-					'href' => 'index.php?page=visualmaps');
-			$ui->contentAddHtml($ui->createButton($options));
+			$this->loadButtons($ui);
+
+			if (!empty($error)) {
+				$ui->addDialog($error);
+			}
 		$ui->endContent();
 		$ui->showPage();
-		return;
 	}
 }
 ?>

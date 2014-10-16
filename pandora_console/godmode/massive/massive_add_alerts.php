@@ -34,12 +34,33 @@ if (is_ajax ()) {
 	$recursion = (int) get_parameter ('recursion');
 	
 	if ($get_agents) {
-		$id_group = (int) get_parameter ('id_group');
+		$id_group = (int) get_parameter ('id_group', 0);
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		
-		$agents = agents_get_group_agents ( array_keys (users_get_groups ($config["id_user"], "AW", false)),
-			false, "", false, $recursion);
+		if ($id_group == 0) {
+			$agents = agents_get_group_agents (
+				array_keys(
+					users_get_groups(
+						$config["id_user"],
+						"AW",
+						true,
+						false)
+					),
+				false, "", false, $recursion);
+		}
+		else {
+			$agents = agents_get_group_agents (
+				array_keys(
+					users_get_groups(
+						$config["id_user"],
+						"AW",
+						true,
+						false,
+						array($id_group) )
+					),
+				false, "", false, $recursion);
+		}
 		
 		// Add keys prefix
 		if ($keys_prefix !== "") {

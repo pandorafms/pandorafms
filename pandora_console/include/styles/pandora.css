@@ -1938,7 +1938,9 @@ div#logo_text3 {
 
 /* Calendar background */
 table.scw {
-	background-color:  #3f3f3f;
+	background-color: #82b92e;
+	border: 0 !important;
+	border-radius: 4px;
 }
 
 /* Week number heading */
@@ -1950,7 +1952,7 @@ td.scwWeek {
 	color: #111 !important;
 }
 
-/* Today selector */                                      
+ Today selector 
 td.scwFoot {
 	background-color: #daedae;
 	color: #111;
@@ -1968,6 +1970,40 @@ tfoot.scwFoot {
 .scwFoot :hover{
         color: #3F3F3F !important;
 }
+
+table.scwCells {
+	background-color: #fff !important;
+	color: #3c3c3c !important;
+}
+
+table.scwCells:hover {
+	background-color: #fff !important;
+}
+
+td.scwCellsExMonth {
+	background-color: #eee !important;
+	color: #3c3c3c !important;
+}
+
+td.scwCellsWeekend {
+	background-color: #3c3c3c !important;
+	color: #fff !important;
+	border: 0 !important;
+}
+
+td.scwInputDate {
+	background-color: #82b92e !important;
+	color: #3c3c3c !important;
+	border: 0 !important;
+}
+
+td.scwFoot {
+	background-color: #fff !important;
+	color: #3c3c3c !important;
+	border: 0 !important;
+}
+
+
 
 /* Cells divs to set individual styles with the table objects */
 div.cellBold {

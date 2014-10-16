@@ -118,7 +118,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 			foreach ($module as $selected) {
 				
 				$output = "";
-				$work_period = 120000;
+				$work_period = SECONDS_1DAY;
 				if ($work_period > $period) {
 					$work_period = $period;
 				}
@@ -126,13 +126,16 @@ if (!empty ($export_btn) && !empty ($module)) {
 				$work_end = $end - $period + $work_period;
 				//Buffer to get data, anyway this will report a memory exhaustin
 				
+				$flag_last_time_slice = false;
 				while ($work_end <= $end) {
 					
 					$data = array (); // Reinitialize array for each module chunk
 					
 					if ($export_type == "avg") {
 						$arr = array ();
-						$arr["data"] = reporting_get_agentmodule_data_average ($selected, $work_period, $work_end);
+						$arr["data"] =
+							reporting_get_agentmodule_data_average(
+								$selected, $work_period, $work_end);
 						if ($arr["data"] === false) {
 							continue;
 						}
@@ -150,6 +153,8 @@ if (!empty ($export_btn) && !empty ($module)) {
 							$data = array_merge ($data, $data_single);
 						}
 					}
+					
+					
 					
 					foreach ($data as $key => $module) {
 						$output .= $rowstart;
@@ -174,11 +179,26 @@ if (!empty ($export_btn) && !empty ($module)) {
 					$output = "";
 					unset($data);
 					unset($data_single);
-					$work_end = $work_end + $work_period;
+					
+					// The last time slice is executed now exit of
+					// while loop
+					if ($flag_last_time_slice)
+						breaK;
+					
+					if (($work_end  + $work_period) > $end) {
+						// Get the last timelapse
+						$work_period = $end - $work_end;
+						$work_end = $end;
+						$flag_last_time_slice = true;
+					}
+					else {
+						$work_end = $work_end + $work_period;
+					}
 				}
 				unset ($output);
 				$output = "";
 			} // main foreach
+			
 			echo $dataend;
 			break;
 	}

@@ -62,6 +62,8 @@ $end_time = get_parameter_post ('end_time', 0);
 $export_type = get_parameter_post ('export_type', 'data');
 $export_btn = get_parameter ('export_btn', 0);
 
+$show_form = false;
+
 if (!empty ($export_btn) && !empty ($module)) {
 	
 	// Disable SQL cache
@@ -183,9 +185,10 @@ if (!empty ($export_btn) && !empty ($module)) {
 }
 elseif (!empty ($export_btn) && empty ($module)) {
 	ui_print_error_message (__('No modules specified'));
+	$show_form = true;
 }
 
-if (empty($export_btn)) {
+if (empty($export_btn) || $show_form) {
 	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form" id="export_form">';
 	
 	$table->width = '98%';
@@ -248,7 +251,7 @@ if (empty($export_btn)) {
 		$modules = array ();
 	}
 	
-	if(!empty($modules)) { //remove modules of type string because you cant calculate their average.
+	if (!empty($modules)) { //remove modules of type string because you cant calculate their average.
 		$i = 0;
 		foreach ($modules as $key=>$module) {
 			$id_module_type = modules_get_agentmodule_type ($key);

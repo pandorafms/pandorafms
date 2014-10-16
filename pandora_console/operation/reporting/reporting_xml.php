@@ -140,19 +140,13 @@ if (!$id_report) {
 
 $report = db_get_row ('treport', 'id_report', $id_report);
 
-$report["datetime"] = get_system_time();
-
-if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
+if (empty($report) || ! check_acl ($config['id_user'], $report['id_group'], "RR")) {
 	db_pandora_audit("ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;
 }
 
-if ($report['id_group'] != 0 &&
-	!is_user_admin ($config['id_user'])) {
-	include ("general/noaccess.php");
-	return;
-}
+$report["datetime"] = get_system_time();
 
 header ('Content-type: application/xml; charset="utf-8"', true);
 

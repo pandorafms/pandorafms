@@ -389,15 +389,15 @@ foreach ($contents as $content) {
 			
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
 			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
-			
+			html_debug_print($content, true);
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			$data["title"] = __('Custom graph');
 			$data["objdata"] = array();
-			
+			html_debug_print($graph, true);
 			$result = db_get_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
 			$modules = array ();
 			$weights = array ();
-			
+			html_debug_print($result, true);
 			if ($result === false) {
 				$result = array();
 			}
@@ -421,7 +421,7 @@ foreach ($contents as $content) {
 			
 			$sql_count = "SELECT COUNT(id_agente_modulo)
 				FROM tagente_datos
-				WHERE id_agente_modulo=".$content2['id_agent_module']." 
+				WHERE id_agente_modulo=".$content['id_agent_module']." 
 					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
 			$data_count = db_get_value_sql($sql_count);
 			
@@ -437,7 +437,7 @@ foreach ($contents as $content) {
 				
 				$sql = 	"SELECT *
 					FROM tagente_datos
-					WHERE id_agente_modulo=".$content2['id_agent_module']." 
+					WHERE id_agente_modulo=".$content['id_agent_module']." 
 						AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
 				
 				$data_module = db_get_all_rows_sql($sql);

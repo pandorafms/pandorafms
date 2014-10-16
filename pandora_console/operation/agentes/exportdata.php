@@ -201,7 +201,7 @@ if (empty($export_btn) || $show_form) {
 	$table->data = array ();
 	
 	//Group selector
-	$table->data[0][0] = '<b>'.__('Group').'</b>';
+	$table->data[0][0] = '<b>' . __('Group') . '</b>';
 	
 	$groups = users_get_groups ($config['id_user'], "RR", users_can_manage_group_all());
 	

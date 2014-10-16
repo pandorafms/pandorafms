@@ -35,6 +35,9 @@ function pluginreg_extension_main () {
 	$upload = false;
 	if (isset($_FILES['plugin_upload'])) {
 		$config["plugin_store"] = $config["attachment_store"] . "/plugin";
+		
+		$name_file = $_FILES['plugin_upload']['name'];
+		
 		$zip = zip_open($_FILES['plugin_upload']['tmp_name']);
 		$upload = true;
 	}
@@ -66,6 +69,8 @@ function pluginreg_extension_main () {
 			echo "<h2 class=error>".__("Cannot load INI file")."</h2>";
 		}
 		else {
+			$version = preg_replace("/.*[.]/", "", $name_file);
+			
 			$exec_path = $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
 			
 			$file_exec_path = $exec_path;
@@ -85,7 +90,9 @@ function pluginreg_extension_main () {
 			else {
 				// Verify if a plugin with the same name is already registered
 				
-				$sql0 = "SELECT COUNT(*) FROM tplugin WHERE name = '" . io_safe_input ($ini_array["plugin_definition"]["name"]) . "'";
+				$sql0 = "SELECT COUNT(*)
+					FROM tplugin
+					WHERE name = '" . io_safe_input ($ini_array["plugin_definition"]["name"]) . "'";
 				$result = db_get_sql ($sql0);
 				
 				
@@ -106,10 +113,44 @@ function pluginreg_extension_main () {
 						'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
 						'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
 					
+					switch ($version) {
+						case 'pspz':
+							break;
+						case 'pspz2':
+							// Fill the macros field.
+							$total_macros =
+								$ini_array["plugin_definition"]["total_macros_provided"];
+							
+							$macros = array();
+							for ($it_macros = 1; $it_macros <= $total_macros; $it_macros++) {
+								$label = "macro_" . $it_macros;
+								
+								$macro = array();
+								
+								$macro['macro'] = '_field' . $it_macros . '_';
+								$macro['hide'] =
+									$ini_array[$label]['hide'];
+								$macro['desc'] = io_safe_input(
+									$ini_array[$label]['description']);
+								$macro['help'] = io_safe_input(
+									$ini_array[$label]['help']);
+								$macro['value'] = io_safe_input(
+									$ini_array[$label]['value']);
+								
+								$macros[(string)$it_macros] = $macro;
+							}
+							
+							if (!empty($macros)) {
+								$values['macros'] = json_encode($macros);
+							}
+							
+							break;
+					}
+					
 					$create_id = db_process_sql_insert('tplugin', $values);
 					
-					for ($ax=1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++){
-						$label = "module".$ax;
+					for ($ax = 1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++) {
+						$label = "module" . $ax;
 						
 						$values = array(
 							'name' => io_safe_input ($ini_array[$label]["name"]),
@@ -135,6 +176,26 @@ function pluginreg_extension_main () {
 							'min_ff_event' => isset($ini_array[$label]["min_ff_event"]) ? $ini_array[$label]["min_ff_event"] : '',
 							'tcp_port' => isset($ini_array[$label]["tcp_port"]) ? $ini_array[$label]["tcp_port"] : '',
 							'id_plugin' => $create_id);
+						
+						switch ($version) {
+							case 'pspz':
+								break;
+							case 'pspz2':
+								if ($total_macros > 0) {
+									for ($it_macros = 1; $it_macros <= $total_macros; $it_macros++) {
+										$macro = "macro_" . $it_macros . "_value";
+										
+										// Set the value or use the default
+										if (isset($ini_array[$label][$macro])) {
+											$macros[(string)$it_macros]['value'] =
+												$ini_array[$label][$macro];
+										}
+									}
+									
+									$values['macros'] = json_encode($macros);
+								}
+								break;
+						}
 						
 						db_process_sql_insert('tnetwork_component', $values);
 						

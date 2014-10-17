@@ -712,8 +712,17 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			$.ajax({
 				type: "POST",
 				url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
-				data: "page=<?php echo $_GET['sec2']; ?>&ajax_treeview=1&type=" + 
-					type + "&id=" + div_id + "&less_branchs=" + less_branchs + "&id_father=" + id_father + "&status=" + status + "&search_free=" + search_free + "&server_name=" + server_name,
+				data: {
+					"page": "operation/tree",
+					"ajax_treeview": 1,
+					"type": type,
+					"id": div_id,
+					"less_branchs": less_branchs,
+					"id_father": id_father,
+					"status": status,
+					"search_free": search_free,
+					"server_name": server_name
+				},
 				success: function(msg) {
 					if (msg.length != 0) {
 						$('#tree_div'+id_father+'_'+type+'_'+div_id).hide();

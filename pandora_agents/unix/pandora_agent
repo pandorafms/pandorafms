@@ -111,6 +111,9 @@ my $ConfDir = '';
 # Pandora FMS agent configuration file
 my $ConfFile = 'pandora_agent.conf';
 
+# Set to 1 if broker agents are enabled.
+my $BrokerEnabled = 0;
+
 # Broker agent configuration files
 my @BrokerPid;
 
@@ -674,6 +677,11 @@ sub read_config (;$) {
 			log_message ('setup', "$1 is $2");
 			$Conf{$1} = $2;
 			
+			# Look for broker agents.
+			if ($1 eq 'broker_agent') {
+				$BrokerEnabled = 1;
+			}
+
 			# Remove trailing spaces
 			$Conf{$1} =~ s/\s*$//;
 		}
@@ -963,20 +971,22 @@ sub launch_tentacle_proxy () {
 ################################################################################
 sub check_collections () {
 
-	# Delete old collections
-	opendir (DIR, "$ConfDir/collections") || return;
- 	while (defined (my $file_name = readdir(DIR))) {
-		next if ($file_name eq '.' || $file_name eq '..');
+	# Delete old collections if there are no broker agents
+	if ($BrokerEnabled == 0) {
+		opendir (DIR, "$ConfDir/collections") || return;
+ 		while (defined (my $file_name = readdir(DIR))) {
+			next if ($file_name eq '.' || $file_name eq '..');
 
-		# Do not delete md5 files associated to a collection
-		$file_name =~ s/\.md5$//;
+			# Do not delete md5 files associated to a collection
+			$file_name =~ s/\.md5$//;
 
-		if (! defined ($Collections{$file_name})) {
-			rmrf ("$ConfDir/collections/$file_name");
-			unlink ("$ConfDir/collections/$file_name.md5");
+			if (! defined ($Collections{$file_name})) {
+				rmrf ("$ConfDir/collections/$file_name");
+				unlink ("$ConfDir/collections/$file_name.md5");
+			}
 		}
+		closedir (DIR);
 	}
-	closedir (DIR);
 
 	# Download new collections
 	while (my ($collection, $in_path) = each (%Collections)) {

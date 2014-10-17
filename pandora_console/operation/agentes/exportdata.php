@@ -59,6 +59,8 @@ $end_time = get_parameter_post ('end_time', 0);
 $export_type = get_parameter_post ('export_type', 'data');
 $export_btn = get_parameter ('export_btn', 0);
 
+$show_form = false;
+
 if (!empty ($export_btn) && !empty ($module)) {
 	
 	// Disable SQL cache
@@ -113,7 +115,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 			foreach ($module as $selected) {
 				
 				$output = "";
-				$work_period = 120000;
+				$work_period = SECONDS_1DAY;
 				if ($work_period > $period) {
 					$work_period = $period;
 				}
@@ -121,13 +123,16 @@ if (!empty ($export_btn) && !empty ($module)) {
 				$work_end = $end - $period + $work_period;
 				//Buffer to get data, anyway this will report a memory exhaustin
 				
+				$flag_last_time_slice = false;
 				while ($work_end <= $end) {
 					
 					$data = array (); // Reinitialize array for each module chunk
 					
 					if ($export_type == "avg") {
 						$arr = array ();
-						$arr["data"] = reporting_get_agentmodule_data_average ($selected, $work_period, $work_end);
+						$arr["data"] =
+							reporting_get_agentmodule_data_average(
+								$selected, $work_period, $work_end);
 						if ($arr["data"] === false) {
 							continue;
 						}
@@ -145,6 +150,8 @@ if (!empty ($export_btn) && !empty ($module)) {
 							$data = array_merge ($data, $data_single);
 						}
 					}
+					
+					
 					
 					foreach ($data as $key => $module) {
 						$output .= $rowstart;
@@ -169,20 +176,36 @@ if (!empty ($export_btn) && !empty ($module)) {
 					$output = "";
 					unset($data);
 					unset($data_single);
-					$work_end = $work_end + $work_period;
+					
+					// The last time slice is executed now exit of
+					// while loop
+					if ($flag_last_time_slice)
+						breaK;
+					
+					if (($work_end  + $work_period) > $end) {
+						// Get the last timelapse
+						$work_period = $end - $work_end;
+						$work_end = $end;
+						$flag_last_time_slice = true;
+					}
+					else {
+						$work_end = $work_end + $work_period;
+					}
 				}
 				unset ($output);
 				$output = "";
 			} // main foreach
+			
 			echo $dataend;
 			break;
 	}
 }
 elseif (!empty ($export_btn) && empty ($module)) {
 	ui_print_error_message (__('No modules specified'));
+	$show_form = true;
 }
 
-if (empty($export_btn)) {
+if (empty($export_btn) || $show_form) {
 	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form" id="export_form">';
 	
 	$table->width = '98%';
@@ -195,10 +218,10 @@ if (empty($export_btn)) {
 	$table->data = array ();
 	
 	//Group selector
-	$table->data[0][0] = '<b>'.__('Group').'</b>';
+	$table->data[0][0] = '<b>' . __('Group') . '</b>';
 	
 	$groups = users_get_groups ($config['id_user'], "RR", users_can_manage_group_all());
-
+	
 	$table->data[0][1] = html_print_select_groups($config['id_user'],
 		"RR", users_can_manage_group_all(), "group", $group, '', '', 0, true, false, true,
 		'w130', false);
@@ -245,7 +268,7 @@ if (empty($export_btn)) {
 		$modules = array ();
 	}
 	
-	if(!empty($modules)) { //remove modules of type string because you cant calculate their average.
+	if (!empty($modules)) { //remove modules of type string because you cant calculate their average.
 		$i = 0;
 		foreach ($modules as $key=>$module) {
 			$id_module_type = modules_get_agentmodule_type ($key);

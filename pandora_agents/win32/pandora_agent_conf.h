@@ -45,6 +45,7 @@ namespace Pandora {
 		list<Key_Value> *key_values;
 		list<Collection> *collection_list;	
 		list<Collection>::iterator collection_it;
+		bool broker_enabled;
 
 		Pandora_Agent_Conf             ();
 	public:
@@ -64,6 +65,7 @@ namespace Pandora {
 		
 		bool             isLastCollection      ();
 		bool			isInCollectionList(string name);
+		bool             isBrokerEnabled      ();
 	};
 }
 

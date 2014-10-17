@@ -1083,6 +1083,11 @@ Pandora_Windows_Service::purgeDiskCollections () {
 	struct stat file;
 	string tmp, filepath;
 	
+	/*Do not delete collections if there is a broker agent*/
+	if (conf->isBrokerEnabled()) {
+		return;
+	}	
+
 	filepath = Pandora::getPandoraInstallDir() +"collections\\";
 	/*Open the directory*/
 	dir = opendir (filepath.c_str ());

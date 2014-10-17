@@ -677,10 +677,13 @@ sub pandora_checkdb_consistency {
 			#---------------------------------------------------------------
 			# Delete the module
 			#---------------------------------------------------------------
-			db_do ($dbh, 'UPDATE tagente
-				SET notinit_count = notinit_count - 1
+			# Mark the agent for module and alert counters update
+			db_do ($dbh,
+				'UPDATE tagente
+				SET update_module_count = 1, update_alert_count = 1
 				WHERE id_agente = ?', $id_agente);
 			
+			# Delete the module
 			db_do ($dbh,
 				'DELETE FROM tagente_modulo
 				WHERE id_agente_modulo = ?', $id_agente_modulo);
@@ -710,6 +713,7 @@ sub pandora_checkdb_consistency {
 			86400 * $conf{'_days_delete_unknown'});
 		
 		foreach my $module (@modules) {
+			my $id_agente = $module->{'id_agente'};
 			my $id_agente_modulo = $module->{'id_agente_modulo'};
 			
 			# Skip policy modules
@@ -717,11 +721,20 @@ sub pandora_checkdb_consistency {
 				[$dbh, $id_agente_modulo]);
 			next if (defined($is_policy_module) && $is_policy_module);
 			
+			# Mark the agent for module and alert counters update
+			db_do ($dbh,
+				'UPDATE tagente
+				SET update_module_count = 1, update_alert_count = 1
+				WHERE id_agente = ?', $id_agente);
+
 			# Delete the module
 			db_do ($dbh,
 				'DELETE FROM tagente_modulo
 				WHERE disabled = 0
 					AND id_agente_modulo = ?', $id_agente_modulo);
+			
+			# Do a nanosleep here for 0,001 sec
+			usleep (100000);
 			
 			# Delete any alerts associated to the module
 			db_do ($dbh, 'DELETE FROM talert_template_modules

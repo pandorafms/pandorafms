@@ -33,6 +33,7 @@ using namespace Pandora_Strutils;
 Pandora::Pandora_Agent_Conf::Pandora_Agent_Conf () {
 	this->key_values = NULL;
 	this->collection_list = NULL;
+	this->broker_enabled = false;
 }
 
 /**
@@ -202,6 +203,7 @@ Pandora::Pandora_Agent_Conf::setFile (string *all_conf){
 					string path_broker, name_broker;
 					int pos_c;
 					int position = 0;
+					this->broker_enabled = true;
 				
 					name_broker = buffer.substr(pos+13);
 					path_broker = name_broker+".conf";
@@ -459,4 +461,15 @@ Pandora::Pandora_Agent_Conf::goNextCollection() {
 bool
 Pandora::Pandora_Agent_Conf::isLastCollection() {
 	return collection_it == collection_list->end();
+}
+
+/**
+ * Check whether there are broker agents configured.
+ *
+ * @return True if there is at least one broker agent.
+ * 
+ */
+bool
+Pandora::Pandora_Agent_Conf::isBrokerEnabled() {
+	return this->broker_enabled;
 }

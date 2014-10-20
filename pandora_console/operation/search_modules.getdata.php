@@ -64,6 +64,28 @@ if ($searchModules) {
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
 	$id_userGroups = array_keys($userGroups);
 	
+	$tags = tags_get_user_tags();
+	$sql_tags = "'no_check_tags' = 'no_check_tags'";
+	if (!empty($tags)) {
+		$sql_tags = "
+		(
+			t1.id_agente_modulo IN
+			(
+				SELECT tt.id_agente_modulo
+				FROM ttag_module AS tt
+				WHERE id_tag IN (" . implode(",", array_keys($tags)) . ")
+			)
+			
+			OR
+			
+			t1.id_agente_modulo NOT IN (
+				SELECT id_agente_modulo
+				FROM ttag_module
+			)
+		)
+		";
+	}
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$chunk_sql = '
@@ -74,7 +96,12 @@ if ($searchModules) {
 						ON t3.id_grupo = t2.id_grupo
 					INNER JOIN tagente_estado AS t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
-				WHERE (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
+				WHERE
+					' . $sql_tags . '
+					
+					AND
+					
+					(t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
 						OR 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil
@@ -84,7 +111,8 @@ if ($searchModules) {
 								FROM tperfil WHERE agent_view = 1
 							) 
 						)
-					) AND
+					)
+					AND
 					t1.nombre COLLATE utf8_general_ci LIKE "%' . $stringSearchSQL . '%" OR
 					t3.nombre LIKE "%' . $stringSearchSQL . '%"';
 			break;
@@ -97,7 +125,12 @@ if ($searchModules) {
 						ON t3.id_grupo = t2.id_grupo
 					INNER JOIN tagente_estado AS t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
-				WHERE (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
+				WHERE
+					' . $sql_tags . '
+					
+					AND
+					
+					(t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
 						OR 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil
@@ -120,7 +153,12 @@ if ($searchModules) {
 						ON t3.id_grupo = t2.id_grupo
 					INNER JOIN tagente_estado AS t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
-				WHERE ' . $subquery_enterprise . ' (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
+				WHERE
+					' . $sql_tags . '
+					
+					AND
+					
+					' . $subquery_enterprise . ' (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
 						OR 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil
@@ -136,9 +174,11 @@ if ($searchModules) {
 			break;
 	}
 	
-	$totalModules = db_get_value_sql("SELECT COUNT(t1.id_agente_modulo) AS count_modules " . $chunk_sql);
+	$totalModules = db_get_value_sql("
+		SELECT COUNT(t1.id_agente_modulo) AS count_modules " .
+		$chunk_sql);
 	
-	if(!$only_count) {
+	if (!$only_count) {
 		$select = "SELECT *, t1.nombre AS module_name, t2.nombre AS agent_name ";
 		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
 			" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);

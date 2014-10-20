@@ -357,6 +357,25 @@ global $__code_from;
 $__code_from = 'modules';
 $remote_conf = false;
 
+if ($__code_from !== 'policies') {
+	//Only check in the module editor.
+	
+	//Check ACL tags
+	$tag_acl = true;
+	
+	// If edit a existing module.
+	if (!empty($id_agent_module))
+		$tag_acl = tags_check_acl_by_module($id_agent_module);
+	
+	if (!$tag_acl) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access agent manager");
+		require ("general/noaccess.php");
+		return;
+	}
+}
+
+
 switch ($moduletype) {
 	case "dataserver":
 	case MODULE_DATA:

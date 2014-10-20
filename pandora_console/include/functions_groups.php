@@ -1553,7 +1553,7 @@ function groups_get_tree(&$groups, $parent = false) {
 	$return = array();
 	
 	foreach ($groups as $id => $group) {
-		if ($parent === false && (!isset($group['parent']) || $group['parent'] == 0)) {
+		if ($parent === false && (!isset($group['parent']) || $group['parent'] == 0 || !in_array($group['parent'], $groups))) {
 			$return[$id] = $group;
 			unset($groups[$id]);
 			$children = groups_get_tree($groups, $id);

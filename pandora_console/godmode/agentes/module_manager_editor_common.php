@@ -95,6 +95,8 @@ function add_component_selection ($id_network_component_type) {
 require_once ('include/functions_network_components.php');
 enterprise_include_once('include/functions_policies.php');
 
+// If code comes from policies disable export select
+global $__code_from;
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
@@ -368,8 +370,7 @@ $table_advanced->data[4][0] = __('Export target');
 // Default text message for export target select and disabled option
 $none_text = __('None');
 $disabled_export = false;
-// If code comes from policies disable export select
-global $__code_from;
+
 if ($__code_from == 'policies') {
 	$none_text = __('Not needed');
 	$disabled_export = true;

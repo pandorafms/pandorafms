@@ -908,3 +908,7 @@ function show_dialog_qrcode(dialog, text, where, width, height) {
 	
 	$(dialog).dialog( "open" );
 }
+
+function openURLTagWindow(url) {
+	window.open(url, '','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
+}

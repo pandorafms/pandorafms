@@ -4344,8 +4344,8 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	$data_groups = array();
 	if (!empty($groups)) {
 		$groups_aux = $groups;
-		$data_groups = groups_get_tree($groups_aux);
-		$groups_aux = $groups = null;
+		$data_groups = groups_get_tree($groups);
+		$groups_aux = null;
 	}
 
 	if (!empty($data_groups)) {
@@ -4606,7 +4606,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 			if (!isset($group['children']))
 				$group_aux['children'] = array();
 			if (!empty($group['children']))
-				$group_aux['children'] = iterate_group_array($group['children']);
+				$group_aux['children'] = iterate_group_array($group['children'], $data_agents);
 
 			$agents = extract_agents_with_group_id($data_agents, (int) $id);
 

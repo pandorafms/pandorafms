@@ -507,7 +507,8 @@ function tags_get_module_tags ($id_agent_module) {
 	if (empty($id_agent_module))
 		return false;
 	
-	$tags = db_get_all_rows_filter('ttag_module', array('id_agente_modulo' => $id_agent_module), false);
+	$tags = db_get_all_rows_filter('ttag_module',
+		array('id_agente_modulo' => $id_agent_module), false);
 	
 	if ($tags === false)
 		return array();
@@ -575,8 +576,8 @@ function tags_get_tags ($ids) {
 	$all_tags = tags_get_all_tags(true);
 	
 	$tags = array();
-	foreach($ids as $id) {
-		if(isset($all_tags[$id])) {
+	foreach ($ids as $id) {
+		if (isset($all_tags[$id])) {
 			$tags[$id] = $all_tags[$id];
 		}
 	}
@@ -635,7 +636,10 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  * @return mixed/string Tag ids
  */
  
-function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '') {
+function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
+	$return_mode = 'module_condition', $query_prefix = '',
+	$query_table = '') {
+	
 	global $config;
 	
 	if ($id_user == false) {
@@ -643,7 +647,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 	}
 	
 	if (is_user_admin ($id_user)) {
-		switch($return_mode) {
+		switch ($return_mode) {
 			case 'data':
 				return array();
 				break;
@@ -667,12 +671,12 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 	elseif (!is_array($id_group)) {
 		$id_group = (array) $id_group;
 	}
-
+	
 	$id_group_aux = array();
 	foreach ($id_group as $key=>$id) {
 		array_push($id_group_aux, $id);
 		$parent = db_get_value('parent','tgrupo','id_grupo',$id);
-
+		
 		if ($parent !== 0) {
 			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
 			if ($propagate == 1) {
@@ -933,7 +937,7 @@ function tags_has_user_acl_tags($id_user = false) {
 function tags_get_user_tags($id_user = false, $access = 'AR') {
 	global $config;
 	
-	if($id_user === false) {
+	if ($id_user === false) {
 		$id_user = $config['id_user'];
 	}
 	
@@ -966,8 +970,8 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 	
 	// Merge the tags to get an array with all of them
 	$user_tags_id = array();
-
-	foreach($tags as $t) {
+	
+	foreach ($tags as $t) {
 		if(empty($user_tags_id)) {
 			$user_tags_id = $t;
 		}
@@ -975,11 +979,11 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 			$user_tags_id = array_unique(array_merge($t,$user_tags_id));
 		}
 	}
-
+	
 	// Set the format id=>name to tags
 	$user_tags = array();
-	foreach($user_tags_id as $id) {
-		if(!isset($all_tags[$id])) {
+	foreach ($user_tags_id as $id) {
+		if (!isset($all_tags[$id])) {
 			continue;
 		}
 		$user_tags[$id] = $all_tags[$id];
@@ -987,6 +991,25 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 	
 	
 	return $user_tags;
+}
+
+function tags_check_acl_by_module($id_module = 0, $id_user = false,
+	$access = 'AW') {
+	
+	$return = false;
+	
+	if (!empty($id_module)) {
+		$tags = tags_get_module_tags($id_module);
+		$group = modules_get_agent_group($id_module);
+		
+		if ($id_user === false) {
+			$id_user = $config["id_user"];
+		}
+		
+		$return = tags_check_acl($id_user, $group, $access, $tags);
+	}
+	
+	return $return;
 }
 
 /**
@@ -1002,43 +1025,56 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 	global $config;
 	
-	if($id_user === false) {
+	if ($id_user === false) {
 		$id_user = $config['id_user'];
 	}
 	
 	// Get parents to check in propagate ACL cases
 	if (!is_array($id_group) && $id_group != 0) {
-			$id_group = array($id_group);
-			$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
-			$parents = groups_get_parents($group['parent'], true);
-			
-			foreach ($parents as $parent) {
-				$id_group[] = $parent['id_grupo'];
-			}
+		$id_group = array($id_group);
+		$group = db_get_row_filter('tgrupo',
+			array('id_grupo' => $id_group));
+		$parents = groups_get_parents($group['parent'], true);
+		
+		foreach ($parents as $parent) {
+			$id_group[] = $parent['id_grupo'];
+		}
 	}
 	
 	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
 	
 	// If there are wrong parameters or fail ACL check, return false
-	if($acls === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
+	if ($acls === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
 		return false;
 	}
 	
 	// If there are not tags restrictions or tags passed, return true
-	if(empty($acls) || empty($tags)) {
+	if (empty($acls) || empty($tags)) {
 		return true;
 	}
-
+	
 	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
 	if (is_array($id_group)) {
-
+		
 		foreach ($id_group  as $group) {
-			if($group > 0) {
-				if(isset($acls[$group])) {
-					foreach($tags as $tag) {
+			if ($group > 0) {
+				if (array_key_exists(0, $acls)) {
+					//There is a All group
+					
+					foreach ($tags as $tag) {
+						if (in_array($tag, $acls[0])) {
+							return true;
+						}
+						else {
+							return false;
+						}
+					}
+				}
+				else if (isset($acls[$group])) {
+					foreach ($tags as $tag) {
 						$tag = tags_get_id($tag);
-
-						if(in_array($tag, $acls[$group])) {
+						
+						if (in_array($tag, $acls[$group])) {
 							return true;
 						}
 					}
@@ -1046,24 +1082,26 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 				else {
 					return false;
 				}
-			} else {
-				foreach($acls as $acl_tags) {
-					foreach($tags as $tag) {
-							$tag = tags_get_id($tag);
-							if(in_array($tag, $acl_tags)) {
-								return true;
-							}
+			}
+			else {
+				foreach ($acls as $acl_tags) {
+					foreach ($tags as $tag) {
+						$tag = tags_get_id($tag);
+						if (in_array($tag, $acl_tags)) {
+							return true;
+						}
 					}
 				}
 			}
 		}
-	} else {
-		if($id_group > 0) {
-			if(isset($acls[$id_group])) {
-				foreach($tags as $tag) {
+	}
+	else {
+		if ($id_group > 0) {
+			if (isset($acls[$id_group])) {
+				foreach ($tags as $tag) {
 					$tag = tags_get_id($tag);
-
-					if(in_array($tag, $acls[$id_group])) {
+					
+					if (in_array($tag, $acls[$id_group])) {
 						return true;
 					}
 				}
@@ -1073,23 +1111,23 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 			}
 		}
 		else {
-			foreach($acls as $acl_tags) {
-				foreach($tags as $tag) {
+			foreach ($acls as $acl_tags) {
+				foreach ($tags as $tag) {
 					$tag = tags_get_id($tag);
-					if(in_array($tag, $acl_tags)) {
+					if (in_array($tag, $acl_tags)) {
 						return true;
 					}
 				}
 			}
 		}
-	}	
-
+	}
+	
 	return false;
 }
 
 function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p = false) {
 	global $config;
-
+	
 	if($id_user === false) {
 		$id_user = $config['id_user'];
 	}

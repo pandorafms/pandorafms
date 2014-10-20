@@ -1411,19 +1411,19 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$urls = array();
 		$urls['monitor_critical'] = "index.php?" .
 			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD;
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "&pure=" . $config['pure'];
 		$urls['monitor_warning'] = "index.php?" .
 			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING;
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING . "&pure=" . $config['pure'];
 		$urls['monitor_ok'] = "index.php?" .
 			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL;
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL . "&pure=" . $config['pure'];
 		$urls['monitor_unknown'] = "index.php?" .
 			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN;
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN . "&pure=" . $config['pure'];
 		$urls['monitor_not_init'] = "index.php?" .
 			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT;
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT . "&pure=" . $config['pure'];
 	}
 	else {
 		$urls = array();

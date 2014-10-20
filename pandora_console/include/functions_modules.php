@@ -725,6 +725,19 @@ function modules_get_agentmodule ($id_agentmodule) {
 	}
 }
 
+function modules_get_agent_group($id_agent_module) {
+	$return = false;
+	
+	$id_agent = modules_get_agentmodule_agent(
+		$id_agent_module);
+	
+	if (!empty($id_agent)) {
+		$return = agents_get_agent_group($id_agent);
+	}
+	
+	return $return;
+}
+
 /**
  * Check the module exists in the DB.
  * 

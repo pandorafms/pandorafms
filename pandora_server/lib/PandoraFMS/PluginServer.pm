@@ -205,10 +205,18 @@ sub data_consumer ($$) {
 		}
 	};
 	
+	# Get group info
+ 	my $group = undef;
+	
+	if (defined ($agent)) {
+		$group = get_db_single_row ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo = ?', $agent->{'id_grupo'});
+	}
+	
 	# Agent and module macros
 	my %macros = (_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentstatus_ => undef,
+				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				_modulegroup_ => undef,

@@ -1497,7 +1497,9 @@ function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string =
 		ORDER BY utimestamp DESC',
 		$id_agent_module, $utimestamp, $utimestamp - SECONDS_2DAY);
 	
-	return db_get_row_sql ($sql, true);
+	$search_in_history_db = db_search_in_history_db($utimestamp);
+
+	return db_get_row_sql ($sql, $search_in_history_db);
 }
 
 /**
@@ -1529,7 +1531,9 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
 		ORDER BY utimestamp ASC',
 		$id_agent_module, $utimestamp + $interval, $utimestamp);
 	
-	return db_get_row_sql ($sql, true);
+	$search_in_history_db = db_search_in_history_db($utimestamp);
+
+	return db_get_row_sql ($sql, $search_in_history_db);
 }
 
 /**
@@ -1550,6 +1554,7 @@ function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 	}
 	
 	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	switch ($module['id_tipo_modulo']) {
 		//generic_data_string
@@ -1586,7 +1591,7 @@ function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 			break;
 	}
 	
-	$values = db_get_all_rows_sql ($sql, true, false);
+	$values = db_get_all_rows_sql ($sql, $search_in_history_db, false);
 	
 	if ($values === false) {
 		return array ();

@@ -495,6 +495,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
 	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
@@ -539,7 +540,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'), 'AND', true);
+		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
 	
 	// Get module warning_min and critical_min
 	$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$agent_module_id);
@@ -913,6 +914,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	if ($date == 0)
 		$date = get_system_time();
 	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
 	
@@ -1063,7 +1065,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'), 'AND', true);
+			array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
 		if ($data === false) {
 			$data = array ();
 		}

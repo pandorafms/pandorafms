@@ -42,22 +42,23 @@ define ('AGENT_DISABLED',1);
 
 
 /* Error report codes */
-define ('NOERR',11111);
-define ('ERR_GENERIC',-10000);
-define ('ERR_EXIST',-20000);
-define ('ERR_INCOMPLETE', -30000);
-define ('ERR_DB', -40000);
-define ('ERR_DB_HOST', -40001);
-define ('ERR_DB_DB', -40002);
-define ('ERR_FILE', -50000);
-define ('ERR_NOCHANGES', -60000);
-define ('ERR_NODATA', -70000);
-define ('ERR_CONNECTION', -80000);
-define ('ERR_DISABLED', -90000);
-define ('ERR_WRONG', -100000);
-define ('ERR_WRONG_NAME', -100001);
-define ('ERR_WRONG_PARAMETERS', -100002);
-define ('ERR_ACL', -110000);
+define ('NOERR',				11111);
+define ('ERR_GENERIC',			-10000);
+define ('ERR_EXIST',			-20000);
+define ('ERR_INCOMPLETE',		-30000);
+define ('ERR_DB', 				-40000);
+define ('ERR_DB_HOST', 			-40001);
+define ('ERR_DB_DB', 			-40002);
+define ('ERR_FILE', 			-50000);
+define ('ERR_NOCHANGES',		-60000);
+define ('ERR_NODATA',			-70000);
+define ('ERR_CONNECTION',		-80000);
+define ('ERR_DISABLED',			-90000);
+define ('ERR_WRONG',			-100000);
+define ('ERR_WRONG_NAME',		-100001);
+define ('ERR_WRONG_PARAMETERS',	-100002);
+define ('ERR_ACL',				-110000);
+define ('ERR_AUTH',				-120000);
 
 /* Event status code */
 define ('EVENT_STATUS_NEW',0);

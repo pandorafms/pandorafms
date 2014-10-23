@@ -899,7 +899,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 								AND tpda.all_modules = 1
 								AND tpda.id_agent = tam.id_agente
 								AND tam.id_agente_modulo = $id_agent_module
-						UNION
+						UNION ALL
 							SELECT tpd.*
 							FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
 							WHERE tpd.id = tpdm.id_downtime
@@ -1221,7 +1221,7 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
 												OR (date_from <= '$start_date' AND date_to >= '$end_date')
 												OR (date_from <= '$start_date' AND date_to >= '$start_date')
 												OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
-							UNION
+							UNION ALL
 								SELECT tpd.*
 								FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
 								WHERE (tpd.id = tpdm.id_downtime

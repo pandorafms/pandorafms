@@ -3002,6 +3002,62 @@ function api_set_delete_module_template($id, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Delete an module assigned to a template. And return a message with the result of the operation.
+ *
+ * @param $id		Agent Name
+ * @param $id2		Alert Template Name
+ * @param $other	[0] : Module Name
+ * @param $trash1	Don't use
+ *
+ *  example:
+ *
+ * api.php?op=set&op2=delete_module_template_by_names&id=my_latest_agent&id2=test_template&other=memfree
+ *
+ */
+function api_set_delete_module_template_by_names($id, $id2, $other, $trash1) {
+
+	$result = 0;
+
+	if ($other['type'] != 'string') {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+
+	$idAgent = agents_get_agent_id($id);
+
+	$row = db_get_row_filter('talert_templates', array('name' => $id2));
+
+	if ($row === false) {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+
+	$idTemplate = $row['id'];
+	$idActionTemplate = $row['id_alert_action'];
+
+	$idAgentModule = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $other['data']));
+
+	if ($idAgentModule === false) {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+
+	$values = array(
+		'id_agent_module' => $idAgentModule,
+		'id_alert_template' => $idTemplate);
+
+	$result = db_process_sql_delete ('talert_template_modules', $values);
+
+	if ($result == 0) {
+		// TODO: Improve the error returning more info
+		returnError('error_delete_module_template_by_name', __('Error deleting module template.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Correct deleting of module template.')));
+	}
+}
+
+/**
  * Validate all alerts. And return a message with the result of the operation.
  * 
  * @param string Don't use.

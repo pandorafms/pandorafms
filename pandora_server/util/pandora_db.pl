@@ -224,7 +224,7 @@ sub pandora_purgedb ($$) {
 
     # Delete GIS  data
     $conf->{'_gis_purge'}= 15 if (!defined($conf->{'_gis_purge'}));
-    log_message ('PURGE', "Deleting old GID data (More than " . $conf->{'_gis_purge'} . " days).");
+    log_message ('PURGE', "Deleting old GIS data (More than " . $conf->{'_gis_purge'} . " days).");
 
     my $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_gis_purge'}));
 	db_do($dbh, "DELETE FROM tgis_data_history WHERE end_timestamp < '$gis_limit'");

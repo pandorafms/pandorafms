@@ -149,8 +149,15 @@ echo '</form>
 </div>
 </div>
 </div>';
-	
-echo '<div id="ver_num">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
+
+if (defined ('METACONSOLE')) {
+	echo '<div id="ver_num" style="text-align: center;">';
+}
+else {
+	echo '<div id="ver_num">';
+}
+
+echo $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 
 
 if (isset ($login_failed)) {

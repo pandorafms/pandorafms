@@ -58,10 +58,11 @@ pandora_manage_init(\%conf);
 pandora_load_config (\%conf);
 
 # Load enterprise module
+my $enterprise_msg;
 if (enterprise_load (\%conf) == 0) {
-	print "[*] Pandora FMS Enterprise module not available.\n\n";
+	$enterprise_msg = "[*] Pandora FMS Enterprise module not available.";
 } else {
-	print "[*] Pandora FMS Enterprise module loaded.\n\n";
+	$enterprise_msg = "[*] Pandora FMS Enterprise module loaded.";
 }
 
 # Connect to the DB
@@ -92,6 +93,10 @@ exit;
 # Print a help screen and exit.
 ##############################################################################
 sub help_screen{
+	print "\nPandora FMS CLI $version Copyright (c) 2013 Artica ST\n";
+	print "This program is Free Software, licensed under the terms of GPL License v2\n";
+	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
+	print "$enterprise_msg\n\n";
 	print "Usage: $0 <path to pandora_server.conf> [options] \n\n" unless $param ne '';
 	print "Available options by category:\n\n" unless $param ne '';
 	print "Available options for $param:\n\n" unless $param eq '';
@@ -225,10 +230,6 @@ sub pandora_manage_init ($) {
 	$conf->{'PID'}="";	# PID file not exist by default
 	$conf->{"quiet"}=0;	# Daemon 0 by default
    
-
-	print "\nPandora FMS CLI $version Copyright (c) 2013 Artica ST\n";
-	print "This program is Free Software, licensed under the terms of GPL License v2\n";
-	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
@@ -4001,8 +4002,6 @@ sub pandora_manage_main ($$$) {
 			exit;
 		}
 	}
-
-     print "\n[*] Successful execution. Exiting !\n\n";
 
     exit;
 }

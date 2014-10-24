@@ -52,6 +52,8 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $d
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	$datelimit = $date - $period;
+
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
@@ -63,7 +65,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $d
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 			' AND utimestamp > ' . (int) $datelimit .
 			' AND utimestamp < ' . (int) $date .
-		' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Uncompressed module data
@@ -155,7 +157,9 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period=0, $date 
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	$datelimit = $date - $period;
-	
+
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
 	$uncompressed_module = is_module_uncompressed ($module_type);
@@ -166,7 +170,7 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period=0, $date 
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 			' AND utimestamp > ' . (int) $datelimit .
 			' AND utimestamp < ' . (int) $date .
-		' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Uncompressed module data
@@ -233,7 +237,9 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period=0, $date 
 	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
+
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
@@ -245,7 +251,7 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period=0, $date 
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 			' AND utimestamp > ' . (int) $datelimit .
 			' AND utimestamp < ' . (int) $date .
-		' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Uncompressed module data
@@ -307,6 +313,8 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period=0, $date 
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	$datelimit = $date - $period;
+
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	$id_module_type = db_get_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
 	$module_name = db_get_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
@@ -326,7 +334,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period=0, $date 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module .
 			' AND utimestamp > ' . (int) $datelimit .
 			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', true);
+			' ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Uncompressed module data
@@ -414,6 +422,8 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	}
 	// Limit date to start searching data
 	$datelimit = $date - $period;
+
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get interval data
 	$sql = sprintf ('SELECT *
@@ -464,7 +474,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" OR TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
 	}
 	$sql .= ' ORDER BY utimestamp ASC';
-	$interval_data = db_get_all_rows_sql ($sql, true);
+	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
 	
 	if ($interval_data === false) {
 		$interval_data = array ();
@@ -578,6 +588,8 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	// Limit date to start searching data
 	$datelimit = $date - $period;
+
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get interval data
 	$sql = sprintf ('SELECT * FROM tagente_datos
@@ -631,7 +643,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	
 	$sql .= ' ORDER BY utimestamp ASC';
-	$interval_data = db_get_all_rows_sql ($sql, true);
+	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
 	
 	if ($interval_data === false) {
 		$interval_data = array ();
@@ -887,7 +899,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 								AND tpda.all_modules = 1
 								AND tpda.id_agent = tam.id_agente
 								AND tam.id_agente_modulo = $id_agent_module
-						UNION
+						UNION ALL
 							SELECT tpd.*
 							FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
 							WHERE tpd.id = tpdm.id_downtime
@@ -1209,7 +1221,7 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
 												OR (date_from <= '$start_date' AND date_to >= '$end_date')
 												OR (date_from <= '$start_date' AND date_to >= '$start_date')
 												OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
-							UNION
+							UNION ALL
 								SELECT tpd.*
 								FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
 								WHERE (tpd.id = tpdm.id_downtime
@@ -4996,13 +5008,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_unshift($table2->head, __('Date'));
 			
 			$datelimit = $report["datetime"] - $content['period'];
+			$search_in_history_db = db_search_in_history_db($datelimit);
 			
 			// This query gets information from the default and the historic database
 			$result = db_get_all_rows_sql('SELECT *
 				FROM tagente_datos
 				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
 					AND utimestamp > ' . $datelimit . '
-					AND utimestamp <= ' . $report["datetime"], true);
+					AND utimestamp <= ' . $report["datetime"], $search_in_history_db);
 			
 			// Adds string data if there is no numeric data	
 			if ((count($result) < 0) or (!$result)) {
@@ -5011,7 +5024,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					FROM tagente_datos_string
 					WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
 						AND utimestamp > ' . $datelimit . '
-						AND utimestamp <= ' . $report["datetime"], true);
+						AND utimestamp <= ' . $report["datetime"], $search_in_history_db);
 			} 
 			if ($result === false) {
 				$result = array();
@@ -7122,7 +7135,9 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 
 	if (empty ($date)) $date = get_system_time ();
 	
 	// Read module configuration
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
 	$module = db_get_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
 		FROM tagente_modulo
 		WHERE id_agente_modulo = ' . (int) $id_agent_module);
@@ -7146,7 +7161,7 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 		' AND utimestamp > ' . (int) $datelimit .
 		' AND utimestamp < ' . (int) $date .
-		' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Get previous data
@@ -7232,7 +7247,9 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 
 	if (empty ($date)) $date = get_system_time ();
 	
 	// Read module configuration
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
 	$module = db_get_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
 		FROM tagente_modulo
 		WHERE id_agente_modulo = ' . (int) $id_agent_module);
@@ -7256,7 +7273,7 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 		' AND utimestamp > ' . (int) $datelimit .
 		' AND utimestamp < ' . (int) $date .
-		' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Get previous data
@@ -7341,7 +7358,9 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period = 0, $date = 0
 	if (empty ($date)) $date = get_system_time ();
 	
 	// Read module configuration
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
 	$module = db_get_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
 		FROM tagente_modulo
 		WHERE id_agente_modulo = ' . (int) $id_agent_module);
@@ -7365,7 +7384,7 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period = 0, $date = 0
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 		' AND utimestamp > ' . (int) $datelimit .
 		' AND utimestamp < ' . (int) $date .
-		' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Get previous data
@@ -7441,7 +7460,9 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period = 0, $date = 0
 	if (empty ($date)) $date = get_system_time ();
 	
 	// Read module configuration
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
 	$module = db_get_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
 		FROM tagente_modulo
 		WHERE id_agente_modulo = ' . (int) $id_agent_module);
@@ -7465,7 +7486,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period = 0, $date = 0
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 		' AND utimestamp > ' . (int) $datelimit .
 		' AND utimestamp < ' . (int) $date .
-		' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Get previous data

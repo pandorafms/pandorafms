@@ -236,7 +236,11 @@ $table_data->data[] = $data;
 if (!empty($addresses)) {
 	$data = array();
 	$data[0] = '<b>' . __('Other IP addresses') . '</b>';
-	$data[1] = implode('<br>',$addresses);
+	$data[1] = '<div style="max-height: 150px; overflow-y: auto;">' .
+		implode('<br>',$addresses) .
+		'</div>';
+	//~ $table_data->data[] = '<div style="max-height: 200px; overflow: hidden;>' .
+		//~ $data . '</div>';
 	$table_data->data[] = $data;
 }
 
@@ -253,7 +257,7 @@ $table_data->data[] = $data;
 
 $has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]));
 
-if(enterprise_installed()) {
+if (enterprise_installed()) {
 	$data = array();
 	$data[0] = '<b>' . __('Remote configuration') . '</b>';
 	if (!$has_remote_conf) {
@@ -270,7 +274,8 @@ if ($config['activate_gis'] || $agent['url_address'] != '') {
 	$data = array();
 	// Position Information
 	if ($config['activate_gis']) {
-		$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
+		$dataPositionAgent =
+			gis_get_data_last_position_agent($agent['id_agente']);
 		
 		$data[0] = '<b>' . __('Position (Long, Lat)') . '</b>';
 		
@@ -306,15 +311,20 @@ if ($agent['timezone_offset'] != 0) {
 }
 
 // Custom fields
-$fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));
+$fields = db_get_all_rows_filter(
+	'tagent_custom_fields',
+	array('display_on_front' => 1));
 if ($fields === false) {
 	$fields = array ();
 }
 
 foreach ($fields as $field) {
 	$data = array();
-	$data[0] = '<b>' . $field['name'] . ui_print_help_tip (__('Custom field'), true) . '</b>';
-	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+	$data[0] = '<b>' . $field['name'] .
+		ui_print_help_tip (__('Custom field'), true) . '</b>';
+	$custom_value = db_get_value_filter(
+		'description', 'tagent_custom_data',
+		array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	if ($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>'.__('N/A').'</i>';
 	}
@@ -326,10 +336,11 @@ foreach ($fields as $field) {
 
 // START: TABLE INCIDENTS
 
-$last_incident = db_get_row_sql("SELECT * FROM tincidencia
-		WHERE estado IN (0,1)
-		AND id_agent=$id_agente
-		ORDER BY actualizacion DESC");
+$last_incident = db_get_row_sql("
+	SELECT * FROM tincidencia
+	WHERE estado IN (0,1)
+		AND id_agent = $id_agente
+	ORDER BY actualizacion DESC");
 
 if ($last_incident != false) {
 	
@@ -390,20 +401,20 @@ if (!empty($modules)) {
 			if ($matches[1]) {
 				$interface_name = $matches[1];
 				$interface_name_escaped = str_replace("/", "\/", $interface_name);
-
+				
 				if (!isset($interfaces[$interface_name])
 						|| (isset($interfaces[$interface_name])
 							&& preg_match ("/^ifOperStatus_$interface_name_escaped$/i", (string)$module['nombre'], $matches))) {
 					$interfaces[$interface_name] = $module;
 				}
-
+				
 			}
 		}
 	}
 	unset($modules);
-
+	
 	if (!empty($interfaces)) {
-
+		
 		$table_interface = new stdClass();
 		$table_interface->id = 'agent_interface_info';
 		$table_interface->class = 'databox';
@@ -413,15 +424,14 @@ if (!empty($modules)) {
 		$table_interface->style['interface_graph'] = 'width: 20px;';
 		$table_interface->head = array();
 		$options = array(
-				"class" => "closed",
-				"style" => "vertical-align:middle; cursor:pointer;"
-			);
+			"class" => "closed",
+			"style" => "vertical-align:middle; cursor:pointer;");
 		$table_interface->head[0] = html_print_image("images/go.png", true, $options) . "&nbsp;&nbsp;";
 		$table_interface->head[0] .= '<span style="vertical-align: middle;">' . __('Interface information') .' (SNMP)</span>';
 		$table_interface->head_colspan = array();
 		$table_interface->head_colspan[0] = 5;
 		$table_interface->data = array();
-
+		
 		foreach ($interfaces as $interface_name => $module) {
 			$interface_name_escaped = str_replace("/", "\/", $interface_name);
 			
@@ -447,7 +457,7 @@ if (!empty($modules)) {
 					$mac = $matches[0];
 				}
 			}
-
+			
 			// Get the ifInOctets and ifOutOctets modules of the interface
 			$columns = array(
 				"id_agente_modulo",
@@ -477,7 +487,7 @@ if (!empty($modules)) {
 			else {
 				$interface_traffic_modules = false;
 			}
-
+			
 			if ($interface_traffic_modules != false) {
 				$params = array(
 						'interface_name' => $interface_name,

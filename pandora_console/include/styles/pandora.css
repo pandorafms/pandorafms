@@ -2760,7 +2760,7 @@ table#policy_modules td * {
 }
 
 #news_board {
-	width: 530px;
+	min-width: 530px;
 }
 
 #right_column_logon_ok {

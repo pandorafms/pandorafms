@@ -733,7 +733,7 @@ sub create_pandora_agent($) {
 		my $if_desc = ($mac ne '' ? "MAC $mac " : '') . ($ip ne '' ? "IP $ip" : '');
 
 		# Check whether the module already exists.
-		my $module_id = get_agent_module_id($DBH, "if_${if_name}", $agent_id);
+		my $module_id = get_agent_module_id($DBH, "ifOperStatus_${if_name}", $agent_id);
 		next if ($module_id > 0);
 	
 		# Encode problematic characters.

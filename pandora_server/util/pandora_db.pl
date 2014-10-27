@@ -280,17 +280,41 @@ sub pandora_purgedb ($$) {
 	    defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
 		log_message ('PURGE', "Metaconsole enabled, ignoring reports.");
 	} else {
+		my @blacklist_types = ("'SLA_services'", "'custom_graph'", "'sql_graph_vbar'", "'sql_graph_hbar'",
+			"'sql_graph_pie'", "'database_serialized'", "'sql'", "'inventory'", "'inventory_changes'",
+			"'netflow_area'", "'netflow_pie'", "'netflow_data'", "'netflow_statistics'", "'netflow_summary'");
+		my $blacklist_types_str = join(',', @blacklist_types);
+		
+		# Deleted modules
 		log_message ('PURGE', "Delete contents in report that have some deleted modules.");
-		db_do ($dbh, "DELETE FROM treport_content WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
-		db_do ($dbh, "DELETE FROM treport_content_item WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
-		db_do ($dbh, "DELETE FROM treport_content_sla_combined WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo) AND id_agent_module != 0;");
+		db_do ($dbh, "DELETE FROM treport_content
+					  WHERE id_agent_module != 0
+						AND id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo)
+						AND type NOT IN ($blacklist_types_str);");
+		db_do ($dbh, "DELETE FROM treport_content_item
+					  WHERE id_agent_module != 0
+						AND id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo)
+						AND id_report_content NOT IN (SELECT id_rc FROM treport_content WHERE type IN ($blacklist_types_str));");
+		db_do ($dbh, "DELETE FROM treport_content_sla_combined
+					  WHERE id_agent_module != 0
+						AND id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo)
+						AND id_report_content NOT IN (SELECT id_rc FROM treport_content WHERE type = 'SLA_services');");
 		
+		# Deleted agents
 		log_message ('PURGE', "Delete contents in report that have some deleted agents.");
-		db_do ($dbh, "DELETE FROM treport_content WHERE id_agent NOT IN (SELECT id_agente FROM tagente) AND id_agent != 0;");
+		db_do ($dbh, "DELETE FROM treport_content
+					  WHERE id_agent != 0
+						AND id_agent NOT IN (SELECT id_agente FROM tagente)
+						AND type NOT IN ($blacklist_types_str);");
 		
+		# Empty contents
 		log_message ('PURGE', "Delete empty contents in report (like SLA or Exception).");
-		db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'exception' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
-		db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
+		db_do ($dbh, "DELETE FROM treport_content
+					  WHERE type LIKE 'exception'
+						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
+		db_do ($dbh, "DELETE FROM treport_content
+					  WHERE type IN ('SLA', 'SLA_monthly', 'SLA_services')
+						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
 	}
 	
 	

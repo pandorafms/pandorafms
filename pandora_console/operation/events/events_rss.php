@@ -76,6 +76,7 @@ function rss_error_handler ($errno, $errstr, $errfile, $errline, $error_human_de
 	$rss_feed .= "\n";
 	$rss_feed .= '<title>Error creating feed</title>';
 	$rss_feed .= "\n";
+	
 	if (empty($error_human_description)) {
 		$rss_feed .= '<description>There was an error creating the feed: '.$errno.' - '.$errstr.' in '.$errfile.' on line '.$errline.'</description>';
 	}
@@ -87,12 +88,14 @@ function rss_error_handler ($errno, $errstr, $errfile, $errline, $error_human_de
 	$rss_feed .= "\n";
 	$rss_feed .= '</item>';
 	$rss_feed .= "\n";
+	$rss_feed .= '</channel>';
+	$rss_feed .= "\n";
 	$rss_feed .= '</rss>';
 	
 	exit ($rss_feed); //Exit by displaying the feed
 }
 
-set_error_handler ('rss_error_handler', E_ALL); //Errors output as RSS
+set_error_handler ('rss_error_handler', E_ERROR); //Errors output as RSS
 
 $id_group = get_parameter ("id_group", 0); // group
 $event_type = get_parameter ("event_type", ''); // 0 all
@@ -122,7 +125,7 @@ $tag_without = array_diff($tag_without, array(0 => 0));
 
 $filter_only_alert = (int)get_parameter('filter_only_alert', -1);
 
-/////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 // Build the condition of the events query
 $sql_post = "";
 $meta = false;
@@ -132,11 +135,11 @@ $id_user = $user;
 require('events.build_query.php');
 
 // Now $sql_post have all the where condition
-/////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 $sql = "SELECT *
 	FROM tevento
-	WHERE 1=1 ".$sql_post."
+	WHERE 1=1 " . $sql_post . "
 	ORDER BY utimestamp DESC";
 
 $result = db_get_all_rows_sql ($sql);

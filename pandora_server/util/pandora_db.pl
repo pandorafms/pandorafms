@@ -222,6 +222,9 @@ sub pandora_purgedb ($$) {
     # Delete policy queue data
 	enterprise_hook("pandora_purge_policy_queue", [$dbh, $conf]);
 
+    # Delete policy queue data
+	enterprise_hook("pandora_purge_service_elements", [$dbh, $conf]);
+
     # Delete GIS  data
     $conf->{'_gis_purge'}= 15 if (!defined($conf->{'_gis_purge'}));
     log_message ('PURGE', "Deleting old GIS data (More than " . $conf->{'_gis_purge'} . " days).");

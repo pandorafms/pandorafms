@@ -131,8 +131,6 @@ use PandoraFMS::GIS qw(distance_moved);
 # For Reverse Geocoding
 use LWP::Simple;
 
-#use Data::Dumper;
-
 require Exporter;
 
 our @ISA = ("Exporter");
@@ -732,7 +730,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
 
-	if (!defined($alert->{'snmp_alert'})){
+	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
 		$field1 = $action->{'field1'} ? $action->{'field1'} : $alert->{'field1'};
 		$field2 = $action->{'field2'} ? $action->{'field2'} : $alert->{'field2'};
@@ -744,7 +742,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field8 = $action->{'field8'} ? $action->{'field8'} : $alert->{'field8'};
 		$field9 = $action->{'field9'} ? $action->{'field9'} : $alert->{'field9'};
 		$field10 = $action->{'field10'} ? $action->{'field10'} : $alert->{'field10'};
-	} else {
+	}
+	else {
 		$field1 = $alert->{'field1'} ? $alert->{'field1'} : $action->{'field1'};
 		$field2 = $alert->{'field2'} ? $alert->{'field2'} : $action->{'field2'};
 		$field3 = $alert->{'field3'} ? $alert->{'field3'} : $action->{'field3'};
@@ -941,7 +940,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		# Field 2 (event type)
 		my $event_type = $field2;
-		if($event_type eq "") {
+		if ($event_type eq "") {
 			$event_type = "alert_fired";
 		}
 		
@@ -971,7 +970,22 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Field 8 (comments);
 		my $comment = $field8;
 		
-		pandora_event ($pa_config, $event_text, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($fullagent) ? $fullagent->{'id_agente'} : 0), $priority, 0, 0, $event_type, 0, $dbh, $source, '', $comment, $id_extra, $tags);
+		pandora_event(
+			$pa_config,
+			$event_text,
+			(defined ($agent) ? $agent->{'id_grupo'} : 0),
+			(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
+			$priority,
+			(defined($alert) ? $alert->{'id'} : 0),
+			(defined($alert) ? $alert->{'id_agent_module'} : 0),
+			$event_type,
+			0,
+			$dbh,
+			$source,
+			'',
+			$comment,
+			$id_extra,
+			$tags);
 	# Validate event (field1: agent name; field2: module name)
 	} elsif ($clean_name eq "Validate Event") {
 		my $agent_id = -1;

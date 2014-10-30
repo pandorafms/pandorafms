@@ -731,7 +731,7 @@ $(document).ready( function() {
 			return;
 		}
 		meta = $('#hidden-meta').val();
-		history = $('#hidden-history').val();
+		history_var = $('#hidden-history').val();
 		
 		$tr = $(this).parents ("tr");
 		id = this.id.split ("-").pop ();
@@ -744,7 +744,7 @@ $(document).ready( function() {
 			"id" : id,
 			"similars" : <?php echo ($group_rep ? 1 : 0) ?>,
 			"meta" : meta,
-			"history" : history
+			"history" : history_var
 			},
 			function (data, status) {
 				if (data == "ok") {
@@ -795,7 +795,7 @@ function validate_event_advanced(id, new_status) {
 	var similar_ids;
 	similar_ids = $('#hidden-similar_ids_'+id).val();
 	meta = $('#hidden-meta').val();
-	var history = $('#hidden-history').val();
+	var history_var = $('#hidden-history').val();
 	
 	$("#status_img_"+id).attr ("src", "images/spinner.gif");
 	
@@ -805,7 +805,7 @@ function validate_event_advanced(id, new_status) {
 		"event_ids" : similar_ids,
 		"new_status" : new_status,
 		"meta" : meta,
-		"history" : history
+		"history" : history_var
 		},
 		function (data, status) {
 			if (data == "status_ok") {

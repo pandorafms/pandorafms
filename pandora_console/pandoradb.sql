@@ -1162,7 +1162,6 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
 	`name` varchar(50)  NOT NULL,
 	`id_group` INTEGER UNSIGNED NOT NULL,
 	`background` varchar(200)  NOT NULL,
-	`fullscreen` tinyint(1) UNSIGNED NOT NULL default 0,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
 	`width` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)

@@ -57,7 +57,6 @@ if (! $layout) {
 
 $id_group = $layout["id_group"];
 $layout_name = $layout["name"];
-$fullscreen = $layout["fullscreen"];
 $background = $layout["background"];
 $bwidth = $layout["width"];
 $bheight = $layout["height"];

@@ -1075,7 +1075,6 @@ CREATE TABLE "tlayout" (
 	"name" varchar(50)  NOT NULL,
 	"id_group" INTEGER NOT NULL,
 	"background" varchar(200)  NOT NULL,
-	"fullscreen" SMALLINT NOT NULL default 0,
 	"height" INTEGER NOT NULL default 0,
 	"width" INTEGER NOT NULL default 0
 );

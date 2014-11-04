@@ -1221,7 +1221,6 @@ CREATE TABLE tlayout (
 	name varchar(50)  NOT NULL,
 	id_group NUMBER(10, 0) NOT NULL,
 	background varchar(200)  NOT NULL,
-	fullscreen NUMBER(5, 0) default 0 NOT NULL,
 	height NUMBER(10, 0) default 0 NOT NULL,
 	width NUMBER(10, 0) default 0 NOT NULL
 );

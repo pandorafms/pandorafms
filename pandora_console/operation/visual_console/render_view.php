@@ -33,10 +33,12 @@ else {
 }
 
 if (!defined('METACONSOLE')) {
-	$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), $default_action);
+	$action = get_parameterBetweenListValues('action',
+		array('new', 'save', 'edit', 'update', 'delete'), $default_action);
 }
 else {
-	$action = get_parameterBetweenListValues('action2', array('new', 'save', 'edit', 'update', 'delete'), $default_action);
+	$action = get_parameterBetweenListValues('action2',
+		array('new', 'save', 'edit', 'update', 'delete'), $default_action);
 }
 
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
@@ -49,7 +51,8 @@ else
 
 // Get input parameter for layout id
 if (! $id_layout) {
-	db_pandora_audit("ACL Violation","Trying to access visual console without id layout");
+	db_pandora_audit("ACL Violation",
+		"Trying to access visual console without id layout");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -57,7 +60,8 @@ if (! $id_layout) {
 $layout = db_get_row ('tlayout', 'id', $id_layout);
 
 if (! $layout) {
-	db_pandora_audit("ACL Violation","Trying to access visual console without id layout");
+	db_pandora_audit("ACL Violation",
+		"Trying to access visual console without id layout");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -71,7 +75,8 @@ $bheight = $layout["height"];
 $pure_url = "&pure=" . $config["pure"];
 
 if (! check_acl ($config["id_user"], $id_group, "RR")) {
-	db_pandora_audit("ACL Violation", "Trying to access visual console without group access");
+	db_pandora_audit("ACL Violation",
+		"Trying to access visual console without group access");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -79,32 +84,40 @@ if (! check_acl ($config["id_user"], $id_group, "RR")) {
 // Render map
 $options = array();
 
-$options['consoles_list']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
-	html_print_image ("images/visual_console.png", true, array ("title" => __('Visual consoles list'))) .'</a>';
+$options['consoles_list']['text'] =
+	'<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
+	html_print_image ("images/visual_console.png", true,
+		array ("title" => __('Visual consoles list'))) . '</a>';
 
 if (check_acl ($config["id_user"], $id_group, "RW")) {
 	$url_base = 'index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&action=';
 	
-	$hash = md5($config["dbpass"] . $id_layout. $config["id_user"]);
+	$hash = md5($config["dbpass"] . $id_layout . $config["id_user"]);
 	
 	$options['public_link']['text'] = '<a href="' . ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]) . '" target="_blank">'.
-		html_print_image ("images/camera_mc.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
+		html_print_image ("images/camera_mc.png", true,
+			array ("title" => __('Show link to public Visual Console'))).'</a>';
 	$options['public_link']['active'] = false;
 	
 	$options['data']['text'] = '<a href="' . $url_base . $action . '&tab=data&id_visual_console=' . $id_layout . '">' . 
-		html_print_image ("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
+		html_print_image ("images/op_reporting.png", true,
+			array ("title" => __('Main data'))) .'</a>';
 	$options['list_elements']['text'] = '<a href="' . $url_base . $action . '&tab=list_elements&id_visual_console=' . $id_layout . '">' .
-		html_print_image ("images/list.png", true, array ("title" => __('List elements'))) .'</a>';
-
+		html_print_image ("images/list.png", true,
+			array ("title" => __('List elements'))) .'</a>';
+	
 	if (enterprise_installed()) {
 		$options['wizard_services']['text'] = '<a href="' . $url_base . $action . '&tab=wizard_services&id_visual_console=' . $id_layout . '">' .
-				html_print_image ("images/wand_services.png", true, array ("title" => __('Services wizard'))) .'</a>';
+			html_print_image ("images/wand_services.png", true,
+				array ("title" => __('Services wizard'))) .'</a>';
 	}
-
+	
 	$options['wizard']['text'] = '<a href="' . $url_base . $action . '&tab=wizard&id_visual_console=' . $id_layout . '">' .
-		html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>';
+		html_print_image ("images/wand.png", true,
+			array ("title" => __('Wizard'))) .'</a>';
 	$options['editor']['text'] = '<a href="' . $url_base . $action . '&tab=editor&id_visual_console=' . $id_layout . '">' .
-		html_print_image ("images/builder.png", true, array ("title" => __('Builder'))) .'</a>';
+		html_print_image ("images/builder.png", true,
+			array ("title" => __('Builder'))) .'</a>';
 }
 
 $options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">' . html_print_image ("images/operation.png", true, array ("title" => __('View'))) .'</a>';
@@ -117,7 +130,8 @@ if (!defined('METACONSOLE')) {
 	}
 	else {
 		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.((int)get_parameter('refr', 0)).'">'
-			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
+			. html_print_image ("images/normal_screen.png", true,
+				array ("title" => __('Back to normal mode')))
 			. "</a>";
 		
 		// In full screen, the manage options are not available
@@ -135,7 +149,11 @@ else {
 	ui_print_page_header ($layout_name, "images/visual_console.png", false, '', false, $options);
 }
 
+
+
 visual_map_print_visual_map ($id_layout);
+
+
 
 if ($config["pure"]) {
 	$values = array ();
@@ -153,9 +171,12 @@ if ($config["pure"]) {
 	$table->style[2] = 'text-align: center';
 	$table->data[0][0] = __('Autorefresh time');
 	
-	$table->data[0][1] = html_print_select ($values, 'refr', $refr, '', 'N/A', 0, true, false, false);
-	$table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
-	$table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
+	$table->data[0][1] = html_print_select ($values, 'refr', $refr, '',
+		'N/A', 0, true, false, false);
+	$table->data[0][2] = html_print_submit_button (__('Refresh'), '',
+		false, 'class="sub next"', true);
+	$table->data[0][2] .= html_print_input_hidden ('vc_refr',
+		$config["vc_refr"], true);
 	
 	echo '<div style="height:30px">&nbsp;</div>';
 	
@@ -232,7 +253,9 @@ $(document).ready (function () {
 	if ($config["pure"] && ((int)get_parameter('refr', 0)) > 0) {
 		?>
 		t = new Date();
-		t.setTime (t.getTime() + <?php echo ((int)get_parameter('refr', 0)) * 1000; ?>);
+		t.setTime (t.getTime() + <?php
+			echo ((int)get_parameter('refr', 0)) * 1000;
+		?>);
 		$("#countdown").countdown({
 			until: t,
 			format: 'MS',

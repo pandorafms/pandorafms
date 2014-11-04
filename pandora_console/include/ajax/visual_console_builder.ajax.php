@@ -612,7 +612,6 @@ switch ($action) {
 		$values['id_layout_linked'] = $map_linked;
 		$values['label_color'] = $label_color;
 		$values['parent_item'] = $parent;
-		$values['no_link_color'] = 1;
 		$values['enable_link'] = $enable_link;
 		
 		$values['id_custom_graph'] = $id_custom_graph;

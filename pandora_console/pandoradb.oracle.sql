@@ -1246,7 +1246,6 @@ CREATE TABLE tlayout_data (
 	id_layout_linked NUMBER(10, 0) default 0 NOT NULL,
 	parent_item NUMBER(10, 0) default 0 NOT NULL,
 	label_color varchar(20) DEFAULT '',
-	no_link_color NUMBER(5, 0) default 0 NOT NULL,
 	enable_link NUMBER(5, 0) default 1 NOT NULL,
 	id_metaconsole NUMBER(10, 0) default 0 NOT NULL,
 	id_group NUMBER(10, 0) default 0 NOT NULL,

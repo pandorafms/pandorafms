@@ -1186,7 +1186,6 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id_layout_linked` INTEGER unsigned NOT NULL default '0',
 	`parent_item` INTEGER UNSIGNED NOT NULL default 0,
 	`label_color` varchar(20) DEFAULT "",
-	`no_link_color` tinyint(1) UNSIGNED NOT NULL default 0,
 	`enable_link` tinyint(1) UNSIGNED NOT NULL default 1,
 	`id_metaconsole` int(10) NOT NULL default 0,
 	`id_group` INTEGER UNSIGNED NOT NULL default 0,

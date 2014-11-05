@@ -97,7 +97,7 @@ function visual_map_print_item($layoutData) {
 			break;
 	}
 	
-	switch ($type) {
+	switch($type) {
 		case STATIC_GRAPH:
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData,
@@ -112,18 +112,6 @@ function visual_map_print_item($layoutData) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" class="item static_graph" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
-			if ($layoutData['image'] != null) {
-				if (($width != 0) && ($height != 0)) 
-					echo html_print_image($img, true,
-						array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
-				else
-					echo html_print_image($img, true,
-						array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
-				echo '<br />';
-			}
-			echo io_safe_output($text);
-			echo "</div>";
 			break;
 		
 		case GROUP_ITEM:
@@ -140,18 +128,7 @@ function visual_map_print_item($layoutData) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" class="item group_item" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
-			if ($layoutData['image'] != null) {
-				if (($width != 0) && ($height != 0)) 
-					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
-				else
-					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
-				echo '<br />';
-			}
-			echo io_safe_output($text);
-			echo "</div>";
 			break;
-		
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
 			//Metaconsole db connection
@@ -191,24 +168,7 @@ function visual_map_print_item($layoutData) {
 				$percentile = format_numeric($module_value / $max_percentile * 100, 0);
 			else
 				$percentile = 100;
-			
-			echo '<div id="' . $id . '" class="item percentile_item" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
-			echo io_safe_output($text) . '<br />';
-			
-			ob_start();
-			if ($type == PERCENTILE_BUBBLE) {
-				echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
-			}
-			else {
-				echo progress_bar($percentile, $width, 15, '', 1, $value_text, $colorStatus);
-			}
-			$img = ob_get_clean();
-			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
-			echo $img;
-			echo '</div>';
-			
 			break;
-		
 		case MODULE_GRAPH:
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -237,7 +197,70 @@ function visual_map_print_item($layoutData) {
 			}
 			
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+			break;
+		case ICON:
+			if ($layoutData['image'] != null) {
+				$img = visual_map_get_image_status_element($layoutData,
+					$layoutData['status_calculated']);
+			}
 			
+			if (($width != 0) && ($height != 0)) {
+				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
+				$imageSize = 'width="' . $width . '" height="' . $height . '"';
+			}
+			break;
+	}
+	
+	
+	switch ($type) {
+		case STATIC_GRAPH:
+			echo '<div id="' . $id . '" class="item static_graph" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
+			if ($layoutData['image'] != null) {
+				if (($width != 0) && ($height != 0)) 
+					echo html_print_image($img, true,
+						array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
+				else
+					echo html_print_image($img, true,
+						array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
+				echo '<br />';
+			}
+			echo io_safe_output($text);
+			echo "</div>";
+			break;
+		
+		case GROUP_ITEM:
+			echo '<div id="' . $id . '" class="item group_item" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
+			if ($layoutData['image'] != null) {
+				if (($width != 0) && ($height != 0)) 
+					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
+				else
+					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
+				echo '<br />';
+			}
+			echo io_safe_output($text);
+			echo "</div>";
+			break;
+		
+		case PERCENTILE_BAR:
+		case PERCENTILE_BUBBLE:
+			echo '<div id="' . $id . '" class="item percentile_item" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
+			echo io_safe_output($text) . '<br />';
+			
+			ob_start();
+			if ($type == PERCENTILE_BUBBLE) {
+				echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
+			}
+			else {
+				echo progress_bar($percentile, $width, 15, '', 1, $value_text, $colorStatus);
+			}
+			$img = ob_get_clean();
+			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+			echo $img;
+			echo '</div>';
+			
+			break;
+		
+		case MODULE_GRAPH:
 			echo '<div id="' . $id . '" class="item module_graph" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo io_safe_output($text) . '<br />'; 
 			echo $img;
@@ -247,8 +270,8 @@ function visual_map_print_item($layoutData) {
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
-			$io_safe_output_text = io_safe_output($text);
 			echo '<div id="' . $id . '" class="item simple_value" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
+			$io_safe_output_text = io_safe_output($text);
 			echo $io_safe_output_text;
 			
 			//Metaconsole db connection
@@ -295,15 +318,6 @@ function visual_map_print_item($layoutData) {
 			echo "</div>";
 			break;
 		case ICON:
-			if ($layoutData['image'] != null) {
-				$img = visual_map_get_image_status_element($layoutData,
-					$layoutData['status_calculated']);
-			}
-			
-			if (($width != 0) && ($height != 0)) {
-				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
-				$imageSize = 'width="' . $width . '" height="' . $height . '"';
-			}
 			echo '<div id="' . $id . '" class="item icon" style="z-index: 1; left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				// If match with protocol://direction 

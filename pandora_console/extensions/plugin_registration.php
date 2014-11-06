@@ -111,6 +111,7 @@ function pluginreg_extension_main () {
 						'net_port_opt' => $ini_array["plugin_definition"]["port_opt"],
 						'user_opt' => $ini_array["plugin_definition"]["user_opt"],
 						'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
+						'parameters' => $ini_array["plugin_definition"]["parameters"],
 						'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
 					
 					switch ($version) {
@@ -237,6 +238,19 @@ function pluginreg_extension_main () {
 					for ($ax = 1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++) {
 						$label = "module" . $ax;
 						
+						$plugin_user = "";
+						if (isset($ini_array[$label]["plugin_user"]))
+							$plugin_user = $ini_array[$label]["plugin_user"];
+						$plugin_pass = "";
+						if (isset($ini_array[$label]["plugin_pass"]))
+							$plugin_pass = $ini_array[$label]["plugin_pass"];
+						$plugin_parameter = "";
+						if (isset($ini_array[$label]["plugin_parameter"]))
+							$plugin_pass = $ini_array[$label]["plugin_parameter"];
+						$unit = "";
+						if (isset($ini_array[$label]["unit"]))
+							$unit = $ini_array[$label]["unit"];
+						
 						$values = array(
 							'name' => io_safe_input ($ini_array[$label]["name"]),
 							'description' => io_safe_input ($ini_array[$label]["description"]),
@@ -247,9 +261,10 @@ function pluginreg_extension_main () {
 							'module_interval' => isset($ini_array[$label]["module_interval"]) ? $ini_array[$label]["module_interval"] : '',
 							'id_module_group' => $ini_array[$label]["id_module_group"],
 							'id_modulo' => $ini_array[$label]["id_modulo"], 
-							'plugin_user' => io_safe_input ($ini_array[$label]["plugin_user"]),
-							'plugin_pass' => io_safe_input ($ini_array[$label]["plugin_pass"]),
-							'plugin_parameter' => io_safe_input ($ini_array[$label]["plugin_parameter"]),
+							'plugin_user' => io_safe_input ($plugin_user),
+							'plugin_pass' => io_safe_input ($plugin_pass),
+							'plugin_parameter' => io_safe_input ($plugin_parameter),
+							'unit' => io_safe_input ($unit),
 							'max_timeout' => isset($ini_array[$label]["max_timeout"]) ? $ini_array[$label]["max_timeout"] : '',
 							'history_data' => isset($ini_array[$label]["history_data"]) ? $ini_array[$label]["history_data"] : '',
 							'min_warning' => isset($ini_array[$label]["min_warning"]) ? $ini_array[$label]["min_warning"] : '',
@@ -293,7 +308,6 @@ function pluginreg_extension_main () {
 									}
 									else if ($macro['desc'] == 'Plug-in Parameters') {
 										if (!empty($values['plugin_parameter'])) {
-											html_debug_print(111);
 											$macros_component[$key]['value'] = $values['plugin_parameter'];
 										}
 									}
@@ -313,7 +327,7 @@ function pluginreg_extension_main () {
 								}
 								break;
 						}
-						html_debug_print($macros_component);
+						
 						if (!empty($macros_component)) {
 							$values['macros'] = json_encode($macros_component);
 						}

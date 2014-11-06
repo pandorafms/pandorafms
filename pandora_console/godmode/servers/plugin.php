@@ -524,9 +524,13 @@ else {
 		}
 		if ($plugin_id != 0) {
 			// Delete all the modules with this plugin
-			$plugin_modules = db_get_all_rows_filter('tagente_modulo', array('id_plugin' => $plugin_id));
+			$plugin_modules = db_get_all_rows_filter(
+				'tagente_modulo', array('id_plugin' => $plugin_id));
 			
-			foreach($plugin_modules as $pm) {
+			if (empty($plugin_modules))
+				$plugin_modules = array();
+			
+			foreach ($plugin_modules as $pm) {
 				modules_delete_agent_module ($pm['id_agente_modulo']);
 			}
 		}

@@ -630,7 +630,23 @@ function add_macro_field(macro, row_model_id) {
 	// Change the text box id and value
 	$('#'+row_id).children().eq(1).children().attr('id','text-'+macro_macro);
 	$('#'+row_id).children().eq(1).children().attr('name',macro_macro);
-	if (macro['hide']) {
+	
+	macro_field_hide = false;
+	if (typeof(macro['hide']) == "string") {
+		if (macro['hide'].length == 0) {
+			macro_field_hide = false;
+		}
+		else {
+			if (parseInt(macro['hide'])) {
+				macro_field_hide = true;
+			}
+			else {
+				macro_field_hide = false;
+			}
+		}
+	}
+	
+	if (macro_field_hide) {
 		$('#'+row_id).children().eq(1).children().attr('type','password');
 	}
 	$('#'+row_id).children().eq(1).children().val(macro_value);

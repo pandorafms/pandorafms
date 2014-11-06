@@ -907,7 +907,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 					) tpdr
 					ORDER BY tpdr.id";
 
-	$downtimes = db_get_all_rows_sql($sql_downtime);
+	$downtimes = @db_get_all_rows_sql($sql_downtime);
 
 	if ($downtimes == false) {
 		$downtimes = array();
@@ -1248,7 +1248,7 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
 										OR (date_from <= '$end_date' AND date_to >= '$end_date')))";
 	}
 
-	$downtimes = db_get_all_rows_sql($sql_downtime);
+	$downtimes = @db_get_all_rows_sql($sql_downtime);
 	if ($downtimes == false) {
 		$downtimes = array();
 	}

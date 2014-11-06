@@ -115,6 +115,92 @@ function pluginreg_extension_main () {
 					
 					switch ($version) {
 						case 'pspz':
+							// Fixed the static parameters
+							// for
+							// the dinamic parameters of pandoras 5
+							
+							$total_macros = 0;
+							$macros = array();
+							
+							if (!isset($values['parameters']))
+								$values['parameters'] = "";
+							
+							if ($values['net_dst_opt'] != "") {
+								$total_macros++;
+								
+								$macro = array();
+								$macro['macro'] = '_field' . $total_macros . '_';
+								$macro['desc'] = 'Target IP';
+								$macro['help'] = '';
+								$macro['value'] = '';
+								
+								$values['parameters'] .=
+									$values['net_dst_opt'] . ' _field' . $total_macros . '_ ';
+								
+								$macros[(string)$total_macros] = $macro;
+							}
+							
+							if ($values['net_port_opt'] != "") {
+								$total_macros++;
+								
+								$macro = array();
+								$macro['macro'] = '_field' . $total_macros . '_';
+								$macro['desc'] = 'Port';
+								$macro['help'] = '';
+								$macro['value'] = '';
+								
+								$values['parameters'] .=
+									$values['net_port_opt'] . ' _field' . $total_macros . '_ ';
+								
+								$macros[(string)$total_macros] = $macro;
+							}
+							
+							if ($values['user_opt'] != "") {
+								$total_macros++;
+								
+								$macro = array();
+								$macro['macro'] = '_field' . $total_macros . '_';
+								$macro['desc'] = 'Username';
+								$macro['help'] = '';
+								$macro['value'] = '';
+								
+								$values['parameters'] .=
+									$values['user_opt'] . ' _field' . $total_macros . '_ ';
+								
+								$macros[(string)$total_macros] = $macro;
+							}
+							
+							if ($values['pass_opt'] != "") {
+								$total_macros++;
+								
+								$macro = array();
+								$macro['macro'] = '_field' . $total_macros . '_';
+								$macro['desc'] = 'Password';
+								$macro['help'] = '';
+								$macro['value'] = '';
+								
+								$values['parameters'] .=
+									$values['pass_opt'] . ' _field' . $total_macros . '_ ';
+								
+								$macros[(string)$total_macros] = $macro;
+							}
+							
+							// A last parameter is defined always to
+							// add the old "Plug-in parameters" in the
+							// side of the module
+							$total_macros++;
+							
+							$macro = array();
+							$macro['macro'] = '_field' . $total_macros . '_';
+							$macro['desc'] = 'Plug-in Parameters';
+							$macro['help'] = '';
+							$macro['value'] = '';
+							
+							$values['parameters'] .=
+								' _field' . $total_macros . '_';
+							
+							$macros[(string)$total_macros] = $macro;
+							
 							break;
 						case 'pspz2':
 							// Fill the macros field.
@@ -139,12 +225,11 @@ function pluginreg_extension_main () {
 								
 								$macros[(string)$it_macros] = $macro;
 							}
-							
-							if (!empty($macros)) {
-								$values['macros'] = json_encode($macros);
-							}
-							
 							break;
+					}
+					
+					if (!empty($macros)) {
+						$values['macros'] = json_encode($macros);
 					}
 					
 					$create_id = db_process_sql_insert('tplugin', $values);
@@ -177,8 +262,42 @@ function pluginreg_extension_main () {
 							'tcp_port' => isset($ini_array[$label]["tcp_port"]) ? $ini_array[$label]["tcp_port"] : '',
 							'id_plugin' => $create_id);
 						
+						$macros_component = $macros;
+						
 						switch ($version) {
 							case 'pspz':
+								// Fixed the static parameters
+								// for
+								// the dinamic parameters of pandoras 5
+								
+								foreach ($macros_component as $key => $macro) {
+									if ($macro['desc'] == 'Target IP') {
+										if (!empty($values['ip_target'])) {
+											$macros_component[$key]['value'] = $values['ip_target'];
+										}
+									}
+									else if ($macro['desc'] == 'Port') {
+										if (!empty($values['tcp_port'])) {
+											$macros_component[$key]['value'] = $values['tcp_port'];
+										}
+									}
+									else if ($macro['desc'] == 'Username') {
+										if (!empty($values['plugin_user'])) {
+											$macros_component[$key]['value'] = $values['plugin_user'];
+										}
+									}
+									else if ($macro['desc'] == 'Password') {
+										if (!empty($values['plugin_pass'])) {
+											$macros_component[$key]['value'] = $values['plugin_pass'];
+										}
+									}
+									else if ($macro['desc'] == 'Plug-in Parameters') {
+										if (!empty($values['plugin_parameter'])) {
+											html_debug_print(111);
+											$macros_component[$key]['value'] = $values['plugin_parameter'];
+										}
+									}
+								}
 								break;
 							case 'pspz2':
 								if ($total_macros > 0) {
@@ -187,22 +306,28 @@ function pluginreg_extension_main () {
 										
 										// Set the value or use the default
 										if (isset($ini_array[$label][$macro])) {
-											$macros[(string)$it_macros]['value'] =
+											$macros_component[(string)$it_macros]['value'] =
 												$ini_array[$label][$macro];
 										}
 									}
-									
-									$values['macros'] = json_encode($macros);
 								}
 								break;
+						}
+						html_debug_print($macros_component);
+						if (!empty($macros_component)) {
+							$values['macros'] = json_encode($macros_component);
 						}
 						
 						db_process_sql_insert('tnetwork_component', $values);
 						
-						echo "<h3 class=suc>".__("Module plugin registered"). " : ". $ini_array[$label]["name"] ."</h2>";
+						echo "<h3 class=suc>" .
+							__("Module plugin registered") . " : " . $ini_array[$label]["name"] .
+							"</h3>";
 					}
 					
-					echo "<h2 class=suc>".__("Plugin"). " ". $ini_array["plugin_definition"]["name"] . " ". __("Registered successfully")."</h2>";
+					echo "<h2 class=suc>" .
+							__("Plugin") . " " . $ini_array["plugin_definition"]["name"] . " " . __("Registered successfully") .
+						"</h2>";
 					unlink ($config["attachment_store"] . "/plugin_definition.ini");
 				}
 			}

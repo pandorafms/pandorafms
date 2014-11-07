@@ -412,6 +412,9 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period=0, $date 
  */
 function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
+
+	if (empty($id_agent_module))
+		return false;
 	
 	// Initialize variables
 	if (empty ($date)) {
@@ -578,6 +581,9 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
  */
 function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
+
+	if (empty($id_agent_module))
+		return false;
 	
 	// Initialize variables
 	if (empty ($date)) {
@@ -885,6 +891,9 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_date, $end_date, $check_services = false) {
 	global $config;
 
+	if (empty($id_agent_module))
+		return false;
+
 	require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
 
 	$malformed_planned_downtimes = planned_downtimes_get_malformed();
@@ -907,7 +916,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 					) tpdr
 					ORDER BY tpdr.id";
 
-	$downtimes = @db_get_all_rows_sql($sql_downtime);
+	$downtimes = db_get_all_rows_sql($sql_downtime);
 
 	if ($downtimes == false) {
 		$downtimes = array();
@@ -1248,7 +1257,7 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
 										OR (date_from <= '$end_date' AND date_to >= '$end_date')))";
 	}
 
-	$downtimes = @db_get_all_rows_sql($sql_downtime);
+	$downtimes = db_get_all_rows_sql($sql_downtime);
 	if ($downtimes == false) {
 		$downtimes = array();
 	}

@@ -131,7 +131,7 @@ function pluginreg_extension_main () {
 								
 								$macro = array();
 								$macro['macro'] = '_field' . $total_macros . '_';
-								$macro['desc'] = 'Target IP';
+								$macro['desc'] = 'Target IP from net';
 								$macro['help'] = '';
 								$macro['value'] = '';
 								
@@ -141,7 +141,37 @@ function pluginreg_extension_main () {
 								$macros[(string)$total_macros] = $macro;
 							}
 							
+							if ($values['ip_opt'] != "") {
+								$total_macros++;
+								
+								$macro = array();
+								$macro['macro'] = '_field' . $total_macros . '_';
+								$macro['desc'] = 'Target IP';
+								$macro['help'] = '';
+								$macro['value'] = '';
+								
+								$values['parameters'] .=
+									$values['ip_opt'] . ' _field' . $total_macros . '_ ';
+								
+								$macros[(string)$total_macros] = $macro;
+							}
+							
 							if ($values['net_port_opt'] != "") {
+								$total_macros++;
+								
+								$macro = array();
+								$macro['macro'] = '_field' . $total_macros . '_';
+								$macro['desc'] = 'Port from net';
+								$macro['help'] = '';
+								$macro['value'] = '';
+								
+								$values['parameters'] .=
+									$values['net_port_opt'] . ' _field' . $total_macros . '_ ';
+								
+								$macros[(string)$total_macros] = $macro;
+							}
+							
+							if ($values['port_opt'] != "") {
 								$total_macros++;
 								
 								$macro = array();
@@ -151,7 +181,7 @@ function pluginreg_extension_main () {
 								$macro['value'] = '';
 								
 								$values['parameters'] .=
-									$values['net_port_opt'] . ' _field' . $total_macros . '_ ';
+									$values['port_opt'] . ' _field' . $total_macros . '_ ';
 								
 								$macros[(string)$total_macros] = $macro;
 							}
@@ -246,7 +276,7 @@ function pluginreg_extension_main () {
 							$plugin_pass = $ini_array[$label]["plugin_pass"];
 						$plugin_parameter = "";
 						if (isset($ini_array[$label]["plugin_parameter"]))
-							$plugin_pass = $ini_array[$label]["plugin_parameter"];
+							$plugin_parameter = $ini_array[$label]["plugin_parameter"];
 						$unit = "";
 						if (isset($ini_array[$label]["unit"]))
 							$unit = $ini_array[$label]["unit"];
@@ -286,29 +316,46 @@ function pluginreg_extension_main () {
 								// the dinamic parameters of pandoras 5
 								
 								foreach ($macros_component as $key => $macro) {
+									if ($macro['desc'] == 'Target IP from net') {
+										if (!empty($values['ip_target'])) {
+											$macros_component[$key]['value'] =
+												io_safe_input($values['ip_target']);
+										}
+									}
 									if ($macro['desc'] == 'Target IP') {
 										if (!empty($values['ip_target'])) {
-											$macros_component[$key]['value'] = $values['ip_target'];
+											$macros_component[$key]['value'] =
+												io_safe_input($values['ip_target']);
+										}
+									}
+									else if ($macro['desc'] == 'Port from net') {
+										if (!empty($values['tcp_port'])) {
+											$macros_component[$key]['value'] =
+												io_safe_input($values['tcp_port']);
 										}
 									}
 									else if ($macro['desc'] == 'Port') {
 										if (!empty($values['tcp_port'])) {
-											$macros_component[$key]['value'] = $values['tcp_port'];
+											$macros_component[$key]['value'] =
+												io_safe_input($values['tcp_port']);
 										}
 									}
 									else if ($macro['desc'] == 'Username') {
 										if (!empty($values['plugin_user'])) {
-											$macros_component[$key]['value'] = $values['plugin_user'];
+											$macros_component[$key]['value'] =
+												io_safe_input($values['plugin_user']);
 										}
 									}
 									else if ($macro['desc'] == 'Password') {
 										if (!empty($values['plugin_pass'])) {
-											$macros_component[$key]['value'] = $values['plugin_pass'];
+											$macros_component[$key]['value'] =
+												io_safe_input($values['plugin_pass']);
 										}
 									}
 									else if ($macro['desc'] == 'Plug-in Parameters') {
 										if (!empty($values['plugin_parameter'])) {
-											$macros_component[$key]['value'] = $values['plugin_parameter'];
+											$macros_component[$key]['value'] =
+												io_safe_input($values['plugin_parameter']);
 										}
 									}
 								}
@@ -321,7 +368,7 @@ function pluginreg_extension_main () {
 										// Set the value or use the default
 										if (isset($ini_array[$label][$macro])) {
 											$macros_component[(string)$it_macros]['value'] =
-												$ini_array[$label][$macro];
+												io_safe_input($ini_array[$label][$macro]);
 										}
 									}
 								}

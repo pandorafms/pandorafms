@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-30 12:29+0100\n"
-"PO-Revision-Date: 2014-10-08 10:58+0000\n"
+"PO-Revision-Date: 2014-11-07 09:53+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-10-30 12:15+0000\n"
-"X-Generator: Launchpad (build 17211)\n"
+"X-Launchpad-Export-Date: 2014-11-08 00:25+0000\n"
+"X-Generator: Launchpad (build 17231)\n"
 
 #: ../../godmode/menu.php:28
 msgid "Manage monitoring"
@@ -5451,11 +5451,11 @@ msgstr "カスタムフィールド"
 
 #: ../../godmode/agentes/planned_downtime.list.php:40
 msgid "An error occurred while migrating the malformed planned downtimes"
-msgstr ""
+msgstr "不正な計画停止の移動でエラーが発生しました。"
 
 #: ../../godmode/agentes/planned_downtime.list.php:41
 msgid "Please run the migration again or contact with the administrator"
-msgstr ""
+msgstr "移動を再実行するか管理者に連絡してください。"
 
 #: ../../godmode/agentes/planned_downtime.list.php:81
 msgid "Succesful stopped the Downtime"
@@ -5553,11 +5553,11 @@ msgstr "警告: この計画停止を削除すると、今後の SLA レポー�
 
 #: ../../godmode/agentes/planned_downtime.list.php:552
 msgid "WARNING: There are malformed planned downtimes"
-msgstr ""
+msgstr "警告: 不正な計画停止があります。"
 
 #: ../../godmode/agentes/planned_downtime.list.php:552
 msgid "Do you want to migrate automatically the malformed items?"
-msgstr ""
+msgstr "不正な要素を自動的に移動しますか。"
 
 #: ../../godmode/agentes/agent_conf_gis.php:40
 #: ../../operation/agentes/gis_view.php:55
@@ -7345,7 +7345,7 @@ msgstr "データベース情報"
 
 #: ../../godmode/db/db_info.php:34
 msgid "Module data received"
-msgstr ""
+msgstr "データ受信モジュール"
 
 #: ../../godmode/reporting/graphs.php:39 ../../godmode/reporting/graphs.php:49
 #: ../../enterprise/godmode/reporting/graph_template_list.php:32
@@ -10879,11 +10879,11 @@ msgstr "ユーザの有効化で問題が発生しました"
 
 #: ../../godmode/users/user_list.php:228 ../../godmode/users/user_list.php:230
 msgid "Search by username, fullname or email"
-msgstr ""
+msgstr "ユーザ名、フルネーム、メールアドレスでの検索"
 
 #: ../../godmode/users/user_list.php:240
 msgid "Users control filter"
-msgstr ""
+msgstr "ユーザ制御フィルタ"
 
 #: ../../godmode/users/user_list.php:253
 #: ../../godmode/users/configure_user.php:398
@@ -14583,7 +14583,7 @@ msgstr "ファイル再生成"
 #: ../../enterprise/godmode/agentes/collection_manager.php:205
 #: ../../enterprise/godmode/agentes/collection_manager.php:206
 msgid "Need to regenerate"
-msgstr ""
+msgstr "再生成が必要です"
 
 #: ../../enterprise/godmode/agentes/collections.data.php:332
 #: ../../enterprise/godmode/agentes/collections.data.php:333
@@ -15507,7 +15507,7 @@ msgstr "削除待ちモジュールに追加しました。次回のポリシー
 
 #: ../../enterprise/godmode/policies/policy_modules.php:896
 msgid "Could not be added to deleted all modules."
-msgstr ""
+msgstr "全削除済モジュールへの追加ができませんでした。"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:910
 #: ../../enterprise/godmode/policies/policy_agents.php:95
@@ -16330,7 +16330,7 @@ msgstr "セクション"
 #: ../../enterprise/godmode/setup/setup_acl.php:81
 #: ../../enterprise/godmode/setup/setup_acl.php:182
 msgid "Mobile"
-msgstr ""
+msgstr "モバイル"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:85
 #: ../../enterprise/godmode/setup/setup_acl.php:103
@@ -18200,34 +18200,34 @@ msgstr "コンソール設定"
 #: ../../enterprise/meta/advanced/synchronizing.group.php:103
 #, php-format
 msgid "(Error Duplicate ID (%d) ) "
-msgstr ""
+msgstr "(重複 ID (%d) エラー) "
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:162
 #: ../../enterprise/meta/advanced/synchronizing.group.php:163
 #: ../../enterprise/meta/advanced/synchronizing.group.php:175
 #: ../../enterprise/meta/advanced/synchronizing.group.php:176
 msgid "Open for more details"
-msgstr ""
+msgstr "詳細を開く"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:166
 #, php-format
 msgid "Error creating %s groups"
-msgstr ""
+msgstr "%s グループの作成エラー"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:179
 #, php-format
 msgid "Error updating %s groups"
-msgstr ""
+msgstr "%s グループの更新エラー"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:188
 #: ../../enterprise/meta/advanced/synchronizing.group.php:189
 msgid "Open for more details in creation"
-msgstr ""
+msgstr "作成における詳細を開く"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:194
 #: ../../enterprise/meta/advanced/synchronizing.group.php:195
 msgid "Open for more details in update"
-msgstr ""
+msgstr "更新における詳細を開く"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:198
 #, php-format
@@ -18241,7 +18241,7 @@ msgstr "グループを作成(%s)/更新(%s)しました"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:217
 msgid "None update or create group"
-msgstr ""
+msgstr "更新または作成したグループがありません"
 
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:83
 msgid "redirected ip server in conf into source DB"
@@ -20554,14 +20554,14 @@ msgstr "日付"
 #: ../../enterprise/include/functions_reporting_pdf.php:3233
 #: ../../include/functions_reporting.php:4012
 msgid "This item is affected by a malformed planned downtime"
-msgstr ""
+msgstr "このアイテムは不正な計画停止に影響を受けます。"
 
 #: ../../enterprise/include/functions_reporting.php:1380
 #: ../../enterprise/include/functions_reporting.php:1885
 #: ../../enterprise/include/functions_reporting_pdf.php:3234
 #: ../../include/functions_reporting.php:4013
 msgid "Go to the planned downtimes section to solve this"
-msgstr ""
+msgstr "これを解決するために計画停止画面へ行く"
 
 #: ../../enterprise/include/functions_reporting.php:1511
 #: ../../include/functions_reporting.php:3750
@@ -21759,11 +21759,11 @@ msgstr "グループのレポート設定 "
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:42
 msgid "Error accesing to API, auth error."
-msgstr ""
+msgstr "API アクセス認証エラー"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:46
 msgid "Error accesing to API."
-msgstr ""
+msgstr "APIアクセスエラー。"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:57
 msgid "Database credentials not found"
@@ -21893,7 +21893,7 @@ msgstr "サービス %s のモジュール自動生成"
 #: ../../enterprise/include/functions_services.php:1093
 #: ../../enterprise/include/functions_services.php:1109
 msgid "Nonexistent"
-msgstr ""
+msgstr "なし"
 
 #: ../../enterprise/include/functions_services.php:904
 msgid "Critical (Alert)"
@@ -21927,7 +21927,7 @@ msgstr "正常ウエイト"
 #: ../../enterprise/include/functions_services.php:1093
 #: ../../enterprise/include/functions_services.php:1109
 msgid "This element should be deleted"
-msgstr ""
+msgstr "この要素は削除する必要があります"
 
 #: ../../enterprise/include/functions_services.php:1173
 #: ../../operation/agentes/status_monitor.php:1222
@@ -23156,7 +23156,7 @@ msgstr "F."
 
 #: ../../operation/agentes/estado_monitores.php:726
 msgid "For to view the list modules paginated, set in setup visuals."
-msgstr ""
+msgstr "ページ分割されたモジュール一覧表示は、画面設定で設定してください。"
 
 #: ../../operation/agentes/estado_monitores.php:727
 msgid "Full list of monitors"
@@ -23666,11 +23666,11 @@ msgstr "エージェントごとに生成されたイベント"
 
 #: ../../operation/events/events_rss.php:32
 msgid "Your IP is not into the IP list with API access."
-msgstr ""
+msgstr "API アクセスできる IP 一覧に入っていません。"
 
 #: ../../operation/events/events_rss.php:46
 msgid "The URL of your feed has bad hash."
-msgstr ""
+msgstr "フィードの URL に不正はハッシュがあります。"
 
 #: ../../operation/events/events.php:53
 msgid ""
@@ -27581,7 +27581,7 @@ msgstr "月"
 
 #: ../../include/functions_graph.php:1942
 msgid "History db"
-msgstr ""
+msgstr "ヒストリデータベース"
 
 #: ../../include/functions_graph.php:2116
 #: ../../include/functions_incidents.php:29
@@ -27964,7 +27964,7 @@ msgstr "不明状態"
 
 #: ../../include/functions.php:1026
 msgid "Agent created"
-msgstr ""
+msgstr "エージェント作成"
 
 #: ../../include/functions.php:1939
 msgid "custom"
@@ -29235,23 +29235,3 @@ msgstr "時間 (ミリ秒)"
 
 #~ msgid "Search text"
 #~ msgstr "検索文字列"
-
-#~ msgid "Check database consistency: Done"
-#~ msgstr "データベース整合性チェック: 完了"
-
-#~ msgid "Check tagente_estado table: Done"
-#~ msgstr "tagente_estado テーブルチェック: 完了"
-
-#~ msgid "Configuration change "
-#~ msgstr "設定変更 "
-
-#~ msgid "Error accesing to API"
-#~ msgstr "API アクセスエラー"
-
-#~ msgid "Mobile console disabled"
-#~ msgstr "モバイルコンソールは無効です"
-
-#~ msgid ""
-#~ "Mobile console is not available with ACL enterprise enabled. Please contact "
-#~ "with the administrator."
-#~ msgstr "モバイルコンソールは、Enterprise ACL が有効の場合は無効になります。管理者へ連絡してください。"

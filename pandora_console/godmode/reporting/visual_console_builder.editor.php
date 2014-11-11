@@ -86,7 +86,7 @@ foreach ($layoutDatas as $layoutData) {
 		continue;
 	
 	
-	visual_map_print_item($layoutData);
+	visual_map_print_item("write", $layoutData);
 	
 	
 	html_print_input_hidden('status_' . $layoutData['id'], $layoutData['status_calculated']);

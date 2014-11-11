@@ -121,6 +121,23 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$link = true;
 				}
 				break;
+			case ICON:
+				if ($layoutData['id_layout_linked'] > 0) {
+					$link = true;
+				}
+				elseif (preg_match('/<a.*href=["\'](.*)["\']>/', $layoutData['label'], $matches)) {
+					// Link to an URL
+					if ($layoutData['enable_link']) {
+						$link = true;
+					}
+				}
+				elseif (preg_match('/^.*(http:\/\/)((.)+).*$/i', $layoutData['label'])) {
+					// Link to an URL
+					if ($layoutData['enable_link']) {
+						$link = true;
+					}
+				}
+				break;
 		}
 	}
 	
@@ -210,6 +227,31 @@ function visual_map_print_item($mode = "read", $layoutData,
 						'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
 				}
 				break;
+			case ICON:
+				$url_icon = "";
+				if ($layoutData['id_layout_linked'] != 0) {
+					// Link to a map
+					if (empty($layoutData['id_metaconsole'])) {
+						$url = 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
+					}
+					else {
+						$pure = get_parameter('pure', 0);
+						$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layoutData["id_layout_linked"] . '&refr=0';
+					}
+				}
+				elseif (preg_match('/<a.*href=["\'](.*)["\']>/', $layoutData['label'], $matches)) {
+					// Link to an URL
+					if ($layoutData['enable_link']) {
+						$url = strip_tags($matches[1]);
+					}
+				}
+				elseif (preg_match('/^.*(http:\/\/)((.)+).*$/i', $layoutData['label'])) {
+					// Link to an URL
+					if ($layoutData['enable_link']) {
+						$url = strip_tags($layoutData['label']);
+					}
+				}
+				break;
 		}
 	}
 	
@@ -251,6 +293,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
+			
+			$z_index = 4;
 			break;
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
@@ -512,6 +556,25 @@ function visual_map_print_item($mode = "read", $layoutData,
 				// If match with protocol://direction 
 				if (preg_match('/^(http:\/\/)((.)+)$/i', $text)) {
 					echo '<a href="' . $label . '">' . '</a>' . '<br />';
+				}
+				
+				if ($proportion != 1) {
+					if (is_file($config['homedir'] . '/' . $img))
+						$infoImage = getimagesize($config['homedir'] . '/' . $img);
+					
+					if ($width != 0) {
+						$width = (integer)($proportion * $width);
+					}
+					else {
+						$width = (integer)($proportion * $infoImage[0]);
+					}
+					
+					if ($height != 0) {
+						$height = (integer)($proportion * $height);
+					}
+					else {
+						$height = (integer)($proportion * $infoImage[1]);
+					}
 				}
 				
 				if (($width != 0) && ($height != 0)) 
@@ -1441,84 +1504,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 			
 			
 			case ICON:
-				$z_index = 4;
-				if ($resizedMap)
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				
-				$endTagA = false;
-				if ($show_links) {
-					$url_icon = "";
-					if ($layout_data['id_layout_linked'] > 0) {
-						// Link to a map
-						if (empty($layout_data['id_metaconsole'])) {
-							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
-						}
-						else {
-							$pure = get_parameter('pure', 0);
-							echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
-						}
-						$endTagA = true;
-					}
-					elseif (preg_match('/<a.*href=["\'](.*)["\']>/', $layout_data['label'], $matches)) {
-						// Link to an URL
-						if ($layout_data['enable_link']) {
-							$url_icon = strip_tags($matches[1]);
-							
-							echo '<a href="' . $url_icon .'">';
-							$endTagA = true;
-						}
-					}
-					elseif (preg_match('/^.*(http:\/\/)((.)+).*$/i', $layout_data['label'])) {
-						// Link to an URL
-						if ($layout_data['enable_link']) {
-							$url_icon = strip_tags($layout_data['label']);
-							
-							echo '<a href="' . $url_icon .'">';
-							$endTagA = true;
-						}
-					}
-				}
-				
-				$img_style = array ();
-				$img_style["title"] = strip_tags($layout_data["label"]);
-				
-				if (!empty ($layout_data["width"])) {
-					$img_style["width"] = $layout_data["width"];
-				}
-				if (!empty ($layout_data["height"])) {
-					$img_style["height"] = $layout_data["height"];
-				}
-				
-				$img = "images/console/icons/".$layout_data["image"] . ".png";
-				
-				if (is_file($config['homedir'] . '/' . $img))
-					$infoImage = getimagesize($config['homedir'] . '/' . $img);
-				
-				if (!empty ($layout_data["width"])) {
-					if ($resizedMap)
-						$img_style["width"] = (integer)($proportion * $layout_data["width"]);
-					else
-						$img_style["width"] = $layout_data["width"];
-				}
-				else
-					$img_style["width"] = (integer)($proportion * $infoImage[0]);
-				
-				if (!empty ($layout_data["height"])) {
-					if ($resizedMap)
-						$img_style["height"] = (integer)($proportion * $img_style["height"]);
-					else
-						$img_style["height"] = $layout_data["height"];
-				}
-				else
-					$img_style["height"] = (integer)($proportion * $infoImage[1]);
-				
-				html_print_image ($metaconsole_hack . $img, false, $img_style);
-				
-				if ($endTagA) echo "</a>";
-				
-				echo "</div>";
+				visual_map_print_item("read", $layout_data,
+					$proportion, $show_links);
 				break;
 			
 			

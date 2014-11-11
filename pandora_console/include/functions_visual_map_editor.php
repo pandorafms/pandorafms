@@ -404,15 +404,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				WHERE id != ' . $visualConsole_id, 'map_linked', '', '', 'None', '0', true) .
 				'</td>';
 			
-			$form_items_advance['label_color_row'] = array();
-			$form_items_advance['label_color_row']['items'] = array(
-				'static_graph', 'percentile_bar', 'percentile_item',
-				'module_graph', 'simple_value', 'label', 'datos');
-			$form_items_advance['label_color_row']['html'] = '<td align="left">' .
-				__('Label color') . '</td>
-				<td align="left">' . html_print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', true) .
-				'</td>';
-			
 			//Insert and modify before the buttons to create or update.
 			if (enterprise_installed()) {
 				enterprise_visual_map_editor_modify_form_items_advance_palette($form_items_advance);

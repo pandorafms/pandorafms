@@ -517,8 +517,6 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$values['image'] = (string)$item->image;
 			if (isset($item->period))
 				$values['period'] = (string)$item->period;
-			if (isset($item->label_color))
-				$values['label_color'] = (string)$item->label_color;
 			if (isset($item->parent_item)) {
 				//Hack for link the items use the <other_id>OTHER_ID</other_id>
 				// and have too <parent_item>OTHER_ID</parent_item>

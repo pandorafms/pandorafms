@@ -9,3 +9,4 @@ ALTER TABLE "tlayout" DROP COLUMN "fullscreen";
 -- ---------------------------------------------------------------------
 
 ALTER TABLE "tlayout_data" DROP COLUMN "no_link_color";
+ALTER TABLE "tlayout_data" DROP COLUMN "label_color";

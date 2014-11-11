@@ -1097,7 +1097,6 @@ CREATE TABLE "tlayout_data" (
 	"id_agent" INTEGER NOT NULL default 0,
 	"id_layout_linked" INTEGER NOT NULL default 0,
 	"parent_item" INTEGER NOT NULL default 0,
-	"label_color" varchar(20) DEFAULT '',
 	"enable_link" SMALLINT NOT NULL default 1,
 	"id_metaconsole" INTEGER NOT NULL default 0,
 	"id_group" INTEGER NOT NULL default 0,

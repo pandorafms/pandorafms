@@ -291,9 +291,6 @@ function output_xml_visual_console($id) {
 		if ($item['parent_item'] != 0) {
 			echo "<parent_item>" . $item['parent_item'] . "</parent_item>\n";
 		}
-		if (!empty($item['label_color'])) {
-			echo "<label_color>" . $item['label_color'] . "</label_color>\n";
-		}
 		echo "</item>\n";
 	}
 	echo "</visual_map>\n";

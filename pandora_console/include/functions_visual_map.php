@@ -116,6 +116,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 					
 				}
 				break;
+			case LABEL:
+				if ($layoutData['id_layout_linked'] != 0) {
+					$link = true;
+				}
+				break;
 		}
 	}
 	
@@ -197,6 +202,13 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$url = $config['homeurl'] .
 					'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=' .
 					$layoutData['id_group'];
+				break;
+			case LABEL:
+				if ($layoutData['id_layout_linked'] != 0) {
+					// Link to a map
+					$url = $config['homeurl'] .
+						'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
+				}
 				break;
 		}
 	}
@@ -308,6 +320,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+			break;
+		case LABEL:
+			$z_index = 4;
 			break;
 	}
 	
@@ -1415,216 +1430,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				visual_map_print_item("read", $layout_data,
 					$proportion, $show_links);
 				break;
-				
-				
-				if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD)
-					$z_index = 3;
-				elseif ($status == VISUAL_MAP_STATUS_WARNING)
-					$z_index = 2;
-				elseif ($status == VISUAL_MAP_STATUS_CRITICAL_ALERT)
-					$z_index = 4;
-				else
-					$z_index = 1;
-				
-				// Draw image
-				if ($resizedMap)
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				
-				if ($show_links) {
-					if ((!empty($layout_data['id_agent'])
-						&& empty($layout_data['id_layout_linked']))
-						|| ($layout_data['type'] == GROUP_ITEM)) {
-						
-						if ($layout_data['enable_link']
-							&& can_user_access_node()) {
-							
-							$id_service = false;
-							if (!defined('METACONSOLE')) {
-								//Extract id service if it is a prediction module.
-								$id_service = db_get_value_filter(
-									'custom_integer_1',
-									'tagente_modulo',
-									array('id_agente_modulo' => $layout_data['id_agente_modulo'],
-										'prediction_module' => 1));
-							}
-							
-							if ($layout_data['type'] == GROUP_ITEM) {
-								$url = $config['homeurl'] .
-									'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=' .
-									$layout_data['id_group'];
-							}
-							else if (!empty($id_service)) {
-								//Link to an service page
-								if (empty($layout_data['id_metaconsole'])) {
-									$url = $config['homeurl'] .
-										'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-										$id_service . '&offset=0';
-								}
-								else {
-									$server = db_get_row('tmetaconsole_setup',
-										'id', $layout_data['id_metaconsole']);
-									
-									$url = $server["server_url"] . "/" .
-									'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-										$id_service . '&offset=0';
-								}
-							}
-							else if ($layout_data['id_agente_modulo'] != 0) {
-								// Link to an module
-								if (empty($layout_data['id_metaconsole'])) {
-									$url = $config['homeurl'] .
-										'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'];
-								}
-								else {
-									$url = ui_meta_get_url_console_child(
-										$layout_data['id_metaconsole'],
-										"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layout_data['id_agent']);
-								}
-							}
-							else {
-								// Link to an agent
-								if (empty($layout_data['id_metaconsole'])) {
-									$url = $config['homeurl'] .
-										'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $layout_data['id_agent'];
-								}
-								else {
-									$url = ui_meta_get_url_console_child(
-										$layout_data['id_metaconsole'],
-										"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layout_data['id_agent']);
-								}
-							}
-							
-							echo '<a href="' . $url . '">';
-						}
-					}
-					elseif ($layout_data['id_layout_linked'] > 0) {
-						// Link to a map
-						if (empty($layout_data['id_metaconsole'])) {
-							$url_vc = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layout_data["id_layout_linked"];
-						}
-						else {
-							$url_vc = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=1&id_visualmap=" . $layout_data["id_layout_linked"] . "&refr=0";
-						}
-						
-						echo "<a href=\"$url_vc\">";
-					}
-					else {
-						// A void object
-						echo '<a href="#">';
-					}
-				}
-				
-				$img_style = array ();
-				
-				$img_style["title"] = strip_tags($layout_data["label"]);
-				if ($layout_data['type'] == STATIC_GRAPH) {
-					if ($layout_data['id_agente_modulo'] != 0) {
-						$unit_text = trim(io_safe_output(
-							modules_get_unit($layout_data['id_agente_modulo'])));
-						
-						$value = modules_get_last_value($layout_data['id_agente_modulo']);
-						
-						if (!is_string($value)) {
-							$value = format_for_graph($value, 2);
-						}
-						
-						if (!empty($unit_text))
-							$value .= " " . $unit_text;
-						
-						$img_style["title"] .= " <br>" . __("Last value: ") .
-							$value;
-					}
-				}
-				
-				
-				if (!empty ($layout_data["width"])) {
-					$img_style["width"] = $layout_data["width"];
-				} 
-				if (!empty ($layout_data["height"])) {
-					$img_style["height"] = $layout_data["height"];
-				}
-				
-				$img = "images/console/icons/" . $layout_data["image"];
-				
-				switch ($status) {
-					case VISUAL_MAP_STATUS_CRITICAL_BAD:
-						$img .= "_bad.png";
-						break;
-					case VISUAL_MAP_STATUS_CRITICAL_ALERT:
-						$img = "4" . $img . "_bad.png";
-						break;
-					case VISUAL_MAP_STATUS_WARNING_ALERT:
-						$img = "4" . $img . "_warning.png";
-						break;
-					case VISUAL_MAP_STATUS_NORMAL:
-						$img .= "_ok.png";
-						break;
-					case VISUAL_MAP_STATUS_WARNING:
-						$img .= "_warning.png";
-						break;
-					case VISUAL_MAP_STATUS_UNKNOWN:
-					default:
-						// Default is Grey (Other)
-						$img .= ".png";
-						break;
-				}
-				
-				$borderStyle = '';
-				if (substr($img,0,1) == '4') {
-					$img_style['border'] = '2px solid ' . COL_ALERTFIRED .';';
-					$img = substr_replace($img, '', 0,1);
-				}
-				
-				if (is_file($config['homedir'] . '/' . $img))
-					$infoImage = getimagesize($config['homedir'] . '/' . $img);
-				
-				if (!empty ($layout_data["width"])) {
-					if ($resizedMap)
-						$img_style["width"] = (integer)($proportion * $layout_data["width"]);
-					else
-						$img_style["width"] = $layout_data["width"];
-				}
-				else
-					$img_style["width"] = (integer)($proportion * $infoImage[0]);
-				
-				if (!empty ($layout_data["height"])) {
-					if ($resizedMap)
-						$img_style["height"] = (integer)($proportion * $img_style["height"]);
-					else
-						$img_style["height"] = $layout_data["height"];
-				}
-				else
-					$img_style["height"] = (integer)($proportion * $infoImage[1]);
-				
-				html_print_image ($metaconsole_hack . $img, false, $img_style);
-				
-				echo "</div>";
-				
-				echo "</a>";
-				break;
 			
 			
 			
 			case LABEL:
-				$z_index = 4;
-				if ($resizedMap)
-					echo '<div style="left: 0px; top: 0px; text-align: left; z-index: '.$z_index.'; position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else
-					echo '<div style="left: 0px; top: 0px; text-align: left; z-index: '.$z_index.'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				
-				$endTagA = false;
-				if ($show_links) {
-					if ($layout_data['id_layout_linked'] > 0) {
-						// Link to a map
-						echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
-						$endTagA = true;
-					}
-				}
-				
-				if ($endTagA) echo "</a>";
-				echo "</div>";
+				visual_map_print_item("read", $layout_data,
+					$proportion, $show_links);
 				break;
 			
 			

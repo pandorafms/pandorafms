@@ -134,7 +134,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						$is_a_service = true;
 				}
 				
-				if ($layout_data['id_layout_linked'] != 0) {
+				if ($layoutData['id_layout_linked'] != 0) {
 					$is_a_link_to_other_visualconsole = true;
 				}
 				
@@ -351,8 +351,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 	
 	echo '<div id="' . $id . '" class="' . $class . '" ' .
 		'style="z-index: ' .$z_index . ';' .
-			'position: absolute; color: ' . $color . ';' .
-			'top: ' . $top . 'px; left: ' . $left . 'px;' .
+			'position: absolute; top: ' . $top . 'px; ' .
+			'left: ' . $left . 'px;' .
 			'text-align: center;' .
 			'display: inline-block; ' . $sizeStyle . '">';
 	

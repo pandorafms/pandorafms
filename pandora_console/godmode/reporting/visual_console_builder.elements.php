@@ -158,8 +158,18 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//First row
 	
-	//Label and color label
-	$table->data[$i + 1][0] = '';
+	//Label 
+	if ($layoutData['type'] != ICON) {
+		$table->data[$i + 1][0] = '<span style="width: 150px; display: block;">' .
+			html_print_input_hidden('label_' . $idLayoutData, $layoutData['label'], true) .
+			'<a href="javascript: show_dialog_label_editor(' . $idLayoutData . ');">' . __('Edit label') .'</a>' .                      
+			'</span>';
+	}
+	else {
+		//Icon haven't the label.
+		$table->data[$i + 1][0] = '';
+	}
+	
 	
 	
 	

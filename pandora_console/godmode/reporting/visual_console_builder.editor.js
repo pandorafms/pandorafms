@@ -39,7 +39,6 @@ function toggle_advance_options_palette(close) {
 
 // Main function, execute in event documentReady
 function visual_map_main() {
-	$(".label_color").attachColorPicker();
 	
 	//Get the list of posible parents
 	parents = Base64.decode($("input[name='parents_load']").val());
@@ -134,8 +133,6 @@ function update_button_palette_callback() {
 		case 'static_graph':
 			$("#text_" + idItem).html(values['label']);
 			
-			$("#" + idItem).css('color', values['label_color']);
-			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -169,8 +166,6 @@ function update_button_palette_callback() {
 			$("#simplevalue_" + idItem).html(getModuleValue(idItem,values['process_simple_value'], values['period']));
 			break;
 		case 'label':
-			$("#" + idItem).css('color', values['label_color']);
-			
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
@@ -240,7 +235,6 @@ function readFields() {
 	values['height'] = $("input[name=height]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
-	values['label_color'] = $("input[name=label_color]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
 	values['max_percentile'] = $("input[name=max_percentile]").val();
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
@@ -562,7 +556,6 @@ function loadFieldsFromDB(item) {
 					if (key == 'height') $("input[name=height]").val(val);
 					if (key == 'parent_item') $("select[name=parent]").val(val);
 					if (key == 'id_layout_linked') $("select[name=map_linked]").val(val);
-					if (key == 'label_color') $("input[name=label_color]").val(val);
 					if (key == 'width_percentile') $("input[name=width_percentile]").val(val);
 					if (key == 'max_percentile') $("input[name=max_percentile]").val(val);
 					if (key == 'width_module_graph') $("input[name=width_module_graph]").val(val);
@@ -751,9 +744,6 @@ function hiddenFields(item) {
 	$("#map_linked_row").css('display', 'none');
 	$("#map_linked_row."  + item).css('display', '');
 	
-	$("#label_color_row").css('display', 'none');
-	$("#label_color_row."  + item).css('display', '');
-	
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row."  + item).css('display', '');
 	
@@ -771,7 +761,7 @@ function hiddenFields(item) {
 	if (typeof(enterprise_hiddenFields) == 'function') {
 		enterprise_hiddenFields(item);
 	}
-
+	
 	var code_control = tinyMCE.activeEditor.controlManager.controls['text-label_code'];
 	if (item == 'label') {
 		code_control.setDisabled(false);
@@ -798,7 +788,6 @@ function cleanFields(item) {
 	$("input[name=height]").val(0);
 	$("select[name=parent]").val('');
 	$("select[name=map_linked]").val('');
-	$("input[name=label_color]").val('#000000');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("#preview").empty();
@@ -1213,8 +1202,7 @@ function createItem(type, values, id_data) {
 			
 			item = $('<div id="' + id_data
 				+ '" class="item ' + class_type + '" '
-				+ 'style="color: ' + values['label_color']
-				+ '; text-align: center; position: absolute; display: inline-block; '
+				+ 'style="text-align: center; position: absolute; display: inline-block; '
 				+ sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
@@ -1227,16 +1215,14 @@ function createItem(type, values, id_data) {
 			var imageSize = '';
 			
 			if (values['type_percentile'] == 'percentile') {
-				item = $('<div id="' + id_data + '" class="item percentile_item" style="color: ' + values['label_color'] + 
-						'; text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
 						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data, values)  + '" />' +
 						'</div>'
 				);
 			}
 			else {
-				item = $('<div id="' + id_data + '" class="item percentile_item" style="color: ' + values['label_color'] +
-					'; text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
 						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBubble(id_data, values)  + '" />' +
 						'</div>'
@@ -1247,7 +1233,7 @@ function createItem(type, values, id_data) {
 			sizeStyle = '';
 			imageSize = '';
 			
-			item = $('<div id="' + id_data + '" class="item module_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
 					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" style="border:1px solid #808080;" />' +
 				'</div>'
@@ -1257,7 +1243,7 @@ function createItem(type, values, id_data) {
 			sizeStyle = '';
 			imageSize = '';
 			
-			item = $('<div id="' + id_data + '" class="item simple_value" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item simple_value" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' +
 				'</div>'
 			);
@@ -1265,7 +1251,7 @@ function createItem(type, values, id_data) {
 		case 'label':
 			item = $('<div id="' + id_data + '" ' +
 						'class="item label" ' +
-						'style="color: ' + values['label_color'] + '; text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;"' +
+						'style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;"' +
 					'>' +
 					'<span id="text_' + id_data + '" class="text">' +
 						values['label'] +
@@ -1301,7 +1287,7 @@ function createItem(type, values, id_data) {
 				}
 			});
 			
-			item = $('<div id="' + id_data + '" class="item icon" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item icon" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
@@ -1474,7 +1460,6 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				$("#" + idElement).css('top', '0px').css('top', top + 'px');
 				$("#" + idElement).css('left', '0px').css('left', left + 'px');
 			}
-			$("#" + idElement).css('color', values['label_color']);
 			
 			//Update the lines
 			end_foreach = false;

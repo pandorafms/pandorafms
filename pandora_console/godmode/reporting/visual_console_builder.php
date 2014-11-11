@@ -197,7 +197,6 @@ switch ($activeTab) {
 					$values['id_agente_modulo'] = get_parameter('module_' . $id, 0);
 					$values['parent_item'] = get_parameter('parent_' . $id, 0);
 					$values['id_layout_linked'] = get_parameter('map_linked_' . $id, 0);
-					$values['label_color'] = get_parameter('label_color_' . $id, '#000000');
 					
 					if (enterprise_installed()) {
 						enterprise_visual_map_update_action_from_list_elements($type, $values);

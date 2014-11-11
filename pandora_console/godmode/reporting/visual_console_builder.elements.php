@@ -67,9 +67,6 @@ $table->size = array();
 $table->size['icon'] = '1%';
 $table->size[0] = '25%';
 
-$table->style = array();
-$table->style[1] = 'background-color: #ffffff;';
-
 $table->align = array();
 $table->align[0] = "left";
 $table->align[1] = "right";
@@ -162,17 +159,7 @@ foreach ($layoutDatas as $layoutData) {
 	//First row
 	
 	//Label and color label
-	if ($layoutData['type'] != ICON) {
-		$table->data[$i + 1][0] = '<span style="width: 150px; display: block;">' .
-			html_print_input_hidden('label_' . $idLayoutData, $layoutData['label'], true) .
-			'<a href="javascript: show_dialog_label_editor(' . $idLayoutData . ');">' . __('Edit label') .'</a>' .
-			html_print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData, '', 7, 7, false, '', 'style="visibility: hidden; width: 0px;" class="label_color"', true) . 
-			'</span>';
-	}
-	else {
-		//Icon haven't the label.
-		$table->data[$i + 1][0] = '';
-	}
+	$table->data[$i + 1][0] = '';
 	
 	
 	
@@ -395,9 +382,6 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 <script type="text/javascript">
 	$(document).ready (function () {
-		$(".label_color").attachColorPicker();
-		//$(".ColorPickerDivSample").css('float', 'right');
-		
 		
 		tinymce.init({
 			selector: "#tinyMCE_editor",

@@ -70,7 +70,12 @@ function visual_map_print_item($layoutData) {
 	
 	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
 	
+	if (!isset($layoutData['status_calculated'])) {
+		$layoutData['status_calculated'] =
+			visual_map_get_status_element($layoutData);
+	}
 	$status = $layoutData['status_calculated'];
+	
 	
 	switch ($status) {
 		case VISUAL_MAP_STATUS_CRITICAL_BAD:
@@ -99,6 +104,7 @@ function visual_map_print_item($layoutData) {
 	
 	switch($type) {
 		case STATIC_GRAPH:
+		case GROUP_ITEM:
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData,
 					$layoutData['status_calculated']);
@@ -113,15 +119,10 @@ function visual_map_print_item($layoutData) {
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
 			break;
-		
-		case GROUP_ITEM:
+		case ICON:
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData,
 					$layoutData['status_calculated']);
-				if (substr($img,0,1) == '4') {
-					$borderStyle ='border: 2px solid ' . COL_ALERTFIRED . ';';
-					$img = substr_replace($img, '', 0,1);
-				}
 			}
 			
 			if (($width != 0) && ($height != 0)) {
@@ -198,38 +199,53 @@ function visual_map_print_item($layoutData) {
 			
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			break;
+	}
+	
+	
+	$class = "item ";
+	switch ($type) {
+		case STATIC_GRAPH:
+			$class .= "static_graph";
+			break;
+		case GROUP_ITEM:
+			$class .= "group_item";
+			break;
+		case PERCENTILE_BAR:
+		case PERCENTILE_BUBBLE:
+			$class .= "percentile_item";
+			break;
+		case MODULE_GRAPH:
+			$class .= "module_graph";
+			break;
+		case SIMPLE_VALUE:
+		case SIMPLE_VALUE_MAX:
+		case SIMPLE_VALUE_MIN:
+		case SIMPLE_VALUE_AVG:
+			$class .= "simple_value";
+			break;
+		case LABEL:
+			$class .= "label";
+			break;
 		case ICON:
-			if ($layoutData['image'] != null) {
-				$img = visual_map_get_image_status_element($layoutData,
-					$layoutData['status_calculated']);
-			}
-			
-			if (($width != 0) && ($height != 0)) {
-				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
-				$imageSize = 'width="' . $width . '" height="' . $height . '"';
-			}
+			$class .= "icon";
+			break;
+		default:
+			//enterprise_hook
 			break;
 	}
 	
 	
+	echo '<div id="' . $id . '" class="' . $class . '" ' .
+		'style="z-index: 1;' .
+			'position: absolute; color: ' . $color . ';' .
+			'top: ' . $top . 'px; left: ' . $left . 'px;' .
+			'text-align: center;' .
+			'display: inline-block; ' . $sizeStyle . '">';
+	
+	
 	switch ($type) {
 		case STATIC_GRAPH:
-			echo '<div id="' . $id . '" class="item static_graph" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
-			if ($layoutData['image'] != null) {
-				if (($width != 0) && ($height != 0)) 
-					echo html_print_image($img, true,
-						array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
-				else
-					echo html_print_image($img, true,
-						array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
-				echo '<br />';
-			}
-			echo io_safe_output($text);
-			echo "</div>";
-			break;
-		
 		case GROUP_ITEM:
-			echo '<div id="' . $id . '" class="item group_item" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				if (($width != 0) && ($height != 0)) 
 					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
@@ -238,12 +254,10 @@ function visual_map_print_item($layoutData) {
 				echo '<br />';
 			}
 			echo io_safe_output($text);
-			echo "</div>";
 			break;
 		
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
-			echo '<div id="' . $id . '" class="item percentile_item" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo io_safe_output($text) . '<br />';
 			
 			ob_start();
@@ -256,21 +270,16 @@ function visual_map_print_item($layoutData) {
 			$img = ob_get_clean();
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			echo $img;
-			echo '</div>';
-			
 			break;
 		
 		case MODULE_GRAPH:
-			echo '<div id="' . $id . '" class="item module_graph" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo io_safe_output($text) . '<br />'; 
 			echo $img;
-			echo '</div>';
 			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
-			echo '<div id="' . $id . '" class="item simple_value" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			$io_safe_output_text = io_safe_output($text);
 			echo $io_safe_output_text;
 			
@@ -309,16 +318,11 @@ function visual_map_print_item($layoutData) {
 			if ($layoutData['id_metaconsole'] != 0) {
 				metaconsole_restore_db();
 			}
-			
-			echo '</div>';
 			break;
 		case LABEL:
-			echo '<div id="' . $id . '" class="item label" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			echo io_safe_output($text);
-			echo "</div>";
 			break;
 		case ICON:
-			echo '<div id="' . $id . '" class="item icon" style="z-index: 1; left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				// If match with protocol://direction 
 				if (preg_match('/^(http:\/\/)((.)+)$/i', $text)) {
@@ -336,13 +340,14 @@ function visual_map_print_item($layoutData) {
 						array("class" => "image", "id" => "image_" . $id));
 				echo '<br />';
 			}
-			echo "</div>";
 			break;
 		default:
 			enterprise_hook("enterprise_visual_map_print_item",
 				array($layoutData, $status, $colorStatus));
 			break;
 	}
+	
+	echo "</div>";
 	
 	//Add the line between elements.
 	if ($layoutData['parent_item'] != 0) {

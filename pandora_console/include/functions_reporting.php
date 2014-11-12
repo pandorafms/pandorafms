@@ -484,7 +484,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	}
 	
 	// Calculate planned downtime dates
-	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date, true);
+	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
 	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
@@ -760,7 +760,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	//------------------------------------------------------------------
 	
 	//--------Calculate planned downtime dates--------------------------
-	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date, true);
+	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
 
 	foreach ($downtime_dates as $downtime_date) {
 		// Delete data of the planned downtime and put the last data on the upper limit

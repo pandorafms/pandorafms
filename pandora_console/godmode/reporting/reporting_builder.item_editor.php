@@ -85,6 +85,8 @@ $sla_sorted_by = 0;
 $id_agents = '';
 $inventory_modules = array();
 $date = null;
+// Only avg is selected by default for the simple graphs
+$only_avg = true;
 
 //Added for events items
 $filter_event_validated = false;
@@ -171,8 +173,10 @@ switch ($action) {
 					$idAgentModule = $item['id_agent_module'];
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
-				case 'simple_baseline_graph':
 				case 'simple_graph':
+					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
+					// The break hasn't be forgotten.
+				case 'simple_baseline_graph':
 				case 'projection_graph':
 					$description = $item['description'];
 					$idAgentModule = $item['id_agent_module'];
@@ -1000,6 +1004,10 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_radio_button ('radiobutton_max_min_avg', 3, '', $top_n);
 				?>
 			</td>
+		</tr>
+		<tr id="row_only_avg" style="" class="datos">
+			<td><?php echo __('Only average');?></td>
+			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Value'); ?></td>
@@ -1873,6 +1881,7 @@ function chooseType() {
 	$("#row_show_resume").hide();
 	$("#row_show_graph").hide();
 	$("#row_max_min_avg").hide();
+	$("#row_only_avg").hide();
 	$("#row_quantity").hide();
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
@@ -1915,6 +1924,9 @@ function chooseType() {
 			$("#row_event_graphs").show();
 			break;
 		case 'simple_graph':
+			$("#row_only_avg").show();
+			// The break hasn't be forgotten, this element
+			// only should be shown on the simple graphs.
 		case 'simple_baseline_graph':
 			$("#row_description").show();
 			$("#row_agent").show();

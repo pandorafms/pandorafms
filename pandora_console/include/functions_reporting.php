@@ -3471,13 +3471,25 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$moduletype_name = modules_get_moduletype_name(
 				modules_get_agentmodule_type(
 					$content['id_agent_module']));
+
+			$only_avg = true;
+			// Due to database compatibility problems, the 'only_avg' value
+			// is stored into the json contained into the 'style' column.
+			if (isset($content['style'])) {
+				$style_json = io_safe_output($content['style']);
+				$style = json_decode($style_json, true);
+
+				if (isset($style['only_avg'])) {
+					$only_avg = (bool) $style['only_avg'];
+				}
+			}
 			
 			if (preg_match ("/string/", $moduletype_name)) {
 				
 				$urlImage = ui_get_full_url(false, false, false, false);
 				
 				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
-					false, $sizgraph_w, $sizgraph_h, '', '', false, 1, false,
+					false, $sizgraph_w, $sizgraph_h, '', '', false, $only_avg, false,
 					$report["datetime"], $only_image, $urlImage);
 				
 			}
@@ -3492,7 +3504,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					'',
 					'',
 					false,
-					true,
+					$only_avg,
 					true,
 					$report["datetime"],
 					'',

@@ -161,6 +161,43 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$link = true;
 				}
 				break;
+			case PERCENTILE_BAR:
+			case PERCENTILE_BUBBLE:
+				if (!empty($layoutData['id_agent'])
+					&& empty($layoutData['id_layout_linked'])) {
+					
+					
+					if ($layoutData['enable_link']
+						&& can_user_access_node()) {
+						
+						//Extract id service if it is a prediction module.
+						$id_service = db_get_value_filter('custom_integer_1',
+							'tagente_modulo',
+							array(
+								'id_agente_modulo' => $layoutData['id_agente_modulo'],
+								'prediction_module' => 1));
+						
+						if (!empty($id_service)) {
+							//Link to an service page
+							
+							$link = true;
+						}
+						else if ($layoutData['id_agente_modulo'] != 0) {
+							// Link to an module
+							$link = true;
+						}
+						else {
+							// Link to an agent
+							$link = true;
+						}
+					}
+				}
+				elseif ($layoutData['id_layout_linked'] > 0) {
+					// Link to a map
+					$link = true;
+				
+				}
+				break;
 		}
 	}
 	
@@ -288,9 +325,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 				if (!empty($id_service) && can_user_access_node()) {
 					
 					//Link to an service page
-					if (!empty($layout_data['id_metaconsole'])) {
+					if (!empty($layoutData['id_metaconsole'])) {
 						$server = db_get_row('tmetaconsole_setup',
-							'id', $layout_data['id_metaconsole']);
+							'id', $layoutData['id_metaconsole']);
 						
 						$url = $server["server_url"] . "/" .
 							'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
@@ -302,15 +339,15 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					
 				}
-				elseif ($layout_data['id_layout_linked'] > 0) {
+				elseif ($layoutData['id_layout_linked'] > 0) {
 					
 					// Link to a map
-					if (empty($layout_data['id_metaconsole'])) {
-						$url = 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"];
+					if (empty($layoutData['id_metaconsole'])) {
+						$url = 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
 					}
 					else {
 						$pure = get_parameter('pure', 0);
-						$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0';
+						$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layoutData["id_layout_linked"] . '&refr=0';
 					}
 				}
 				elseif ($layoutData['id_agente_modulo'] != 0) {
@@ -325,6 +362,78 @@ function visual_map_print_item($mode = "read", $layoutData,
 								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
 						}
 					}
+				break;
+			case PERCENTILE_BAR:
+			case PERCENTILE_BUBBLE:
+				if (!empty($layoutData['id_agent'])) {
+					
+					//Extract id service if it is a prediction module.
+					$id_service = db_get_value_filter('custom_integer_1',
+						'tagente_modulo',
+						array(
+							'id_agente_modulo' => $layoutData['id_agente_modulo'],
+							'prediction_module' => 1));
+					
+					
+					
+					if (!empty($id_service)) {
+						//Link to an service page
+						
+						if (!empty($layoutData['id_metaconsole'])) {
+							$server = db_get_row('tmetaconsole_setup',
+								'id', $layoutData['id_metaconsole']);
+							
+							$url =
+								$server["server_url"] . "/" .
+								'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+								$id_service . '&offset=0';
+						}
+						else {
+							$url = 'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+								$id_service . '&offset=0';
+						}
+					}
+					else if ($layoutData['id_agente_modulo'] != 0) {
+						// Link to an module
+						if (!empty($layoutData['id_metaconsole'])) {
+							$server = db_get_row('tmetaconsole_setup',
+								'id', $layoutData['id_metaconsole']);
+							
+							$url =
+								$server["server_url"] .
+								'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+						}
+						else {
+							$url =
+								$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+						}
+					}
+					else {
+						// Link to an agent
+						if (empty($layoutData['id_metaconsole'])) {
+							$url = $config['homeurl'] .
+								'index.php?' .
+								'sec=estado&amp;' .
+								'sec2=operation/agentes/ver_agente&amp;id_agente='.$layoutData['id_agent'];
+						}
+						else {
+							$url = ui_meta_get_url_console_child(
+								$layoutData['id_metaconsole'],
+								"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData['id_agent']);
+						}
+					}
+				}
+				elseif ($layoutData['id_layout_linked'] > 0) {
+					
+					// Link to a map
+					if (empty($layoutData['id_metaconsole'])) {
+						$url = 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
+					}
+					else {
+						$pure = get_parameter('pure', 0);
+						$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layoutData["id_layout_linked"] . '&refr=0';
+					}
+				}
 				break;
 		}
 	}

@@ -971,6 +971,11 @@ switch ($action) {
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
 								break;
+							case 'simple_graph':
+								// Warning. We are using this column to hold this value to avoid
+								// the modification of the database for compatibility reasons.
+								$style['only_avg'] = (int) get_parameter('only_avg');
+								break;
 						}
 						
 						$values['style'] = io_safe_input(json_encode($style));
@@ -1179,6 +1184,11 @@ switch ($action) {
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								break;
+							case 'simple_graph':
+								// Warning. We are using this column to hold this value to avoid
+								// the modification of the database for compatibility reasons.
+								$style['only_avg'] = (int) get_parameter('only_avg');
 								break;
 						}
 						

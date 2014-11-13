@@ -138,6 +138,29 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				break;
+			case SIMPLE_VALUE:
+			case SIMPLE_VALUE_MAX:
+			case SIMPLE_VALUE_MIN:
+			case SIMPLE_VALUE_AVG:
+				//Extract id service if it is a prediction module.
+				$id_service = db_get_value_filter('custom_integer_1',
+					'tagente_modulo',
+					array('id_agente_modulo' => $layoutData['id_agente_modulo'],
+						'prediction_module' => 1));
+				
+				if (!empty($id_service) && can_user_access_node()) {
+					if ($layoutData['enable_link']) {
+						$link = true;
+					}
+					
+				}
+				elseif ($layoutData['id_layout_linked'] > 0) {
+					$link = true;
+				}
+				elseif ($layoutData['enable_link'] && can_user_access_node()) {
+					$link = true;
+				}
+				break;
 		}
 	}
 	
@@ -251,6 +274,57 @@ function visual_map_print_item($mode = "read", $layoutData,
 						$url = strip_tags($layoutData['label']);
 					}
 				}
+				break;
+			case SIMPLE_VALUE:
+			case SIMPLE_VALUE_MAX:
+			case SIMPLE_VALUE_MIN:
+			case SIMPLE_VALUE_AVG:
+				//Extract id service if it is a prediction module.
+				$id_service = db_get_value_filter('custom_integer_1',
+					'tagente_modulo',
+					array('id_agente_modulo' => $layoutData['id_agente_modulo'],
+						'prediction_module' => 1));
+				
+				if (!empty($id_service) && can_user_access_node()) {
+					
+					//Link to an service page
+					if (!empty($layout_data['id_metaconsole'])) {
+						$server = db_get_row('tmetaconsole_setup',
+							'id', $layout_data['id_metaconsole']);
+						
+						$url = $server["server_url"] . "/" .
+							'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+							$id_service . '&offset=0';
+					}
+					else {
+						$url = 'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+							$id_service . '&offset=0';
+					}
+					
+				}
+				elseif ($layout_data['id_layout_linked'] > 0) {
+					
+					// Link to a map
+					if (empty($layout_data['id_metaconsole'])) {
+						$url = 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"];
+					}
+					else {
+						$pure = get_parameter('pure', 0);
+						$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0';
+					}
+				}
+				elseif ($layoutData['id_agente_modulo'] != 0) {
+						// Link to an module
+						if (empty($layoutData['id_metaconsole'])) {
+							$url = $config['homeurl'] .
+								'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+						}
+						else {
+							$url = ui_meta_get_url_console_child(
+								$layoutData['id_metaconsole'],
+								"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layoutData['id_agent']);
+						}
+					}
 				break;
 		}
 	}
@@ -1514,242 +1588,17 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 			case SIMPLE_VALUE_MAX:
 			case SIMPLE_VALUE_MIN:
 			case SIMPLE_VALUE_AVG:
-				
-				
-				//Metaconsole db connection
-				if ($layout_data['id_metaconsole'] != 0) {
-					$connection = db_get_row_filter ('tmetaconsole_setup',
-						array('id' => $layout_data['id_metaconsole']));
-					if (metaconsole_load_external_db($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				$unit_text = db_get_sql ('SELECT unit
-					FROM tagente_modulo
-					WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
-				
-				//Restore db connection
-				if ($layout_data['id_metaconsole'] != 0) {
-					metaconsole_restore_db();
-				}
-				
-				
-				$unit_text = trim(io_safe_output($unit_text));
-				
-				if ($resizedMap)
-					echo '<div style="left: 0px; top: 0px; z-index: 1; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else
-					echo '<div style="left: 0px; top: 0px; z-index: 1; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				
-				$endTagA = false;
-				
-				
-				if ($show_links) {
-					//Extract id service if it is a prediction module.
-					$id_service = db_get_value_filter('custom_integer_1',
-						'tagente_modulo',
-						array('id_agente_modulo' => $layout_data['id_agente_modulo'],
-							'prediction_module' => 1));
-					
-					if (!empty($id_service) && can_user_access_node()) {
-						
-						if ($layout_data['enable_link']) {
-							//Link to an service page
-							if (!empty($layout_data['id_metaconsole'])) {
-								$server = db_get_row('tmetaconsole_setup',
-									'id', $layout_data['id_metaconsole']);
-								
-								echo '<a href="' .
-									$server["server_url"] . "/" .
-									'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-									$id_service . '&offset=0">';
-							}
-							else {
-								echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-									$id_service . '&offset=0">';
-							}
-							
-							
-							$endTagA = true;
-						}
-						
-					}
-					elseif ($layout_data['id_layout_linked'] > 0) {
-						
-						// Link to a map
-						if (empty($layout_data['id_metaconsole'])) {
-							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
-						}
-						else {
-							$pure = get_parameter('pure', 0);
-							echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
-						}
-						$endTagA = true;
-					}
-				}
-				
-				$label_simple_value = io_safe_output($layout_data['label']);
-				if (strstr($label_simple_value, '(_VALUE_)') === false) {
-					//OLD MODE
-					$label_simple_value = '<strong>' . $label_simple_value . ' ';
-				}
-				else {
-					//NEW MODE WITH MACRO (_VALUE_)
-				}
-				
-				
-				//TODO: change interface to add a period parameter, now is set to 1 day
-				switch ($layout_data['type']) {
-					case SIMPLE_VALUE:
-						//Metaconsole db connection
-						if ($layout_data['id_metaconsole'] != 0) {
-							$connection = db_get_row_filter ('tmetaconsole_setup',
-								array('id' => $layout_data['id_metaconsole']));
-							if (metaconsole_load_external_db($connection) != NOERR) {
-								//ui_print_error_message ("Error connecting to ".$server_name);
-								continue;
-							}
-						}
-						
-						$value = db_get_value ('datos',
-							'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
-						
-						//Restore db connection
-						if ($layout_data['id_metaconsole'] != 0) {
-							metaconsole_restore_db();
-						}
-						
-						// If the value is a string, dont format it
-						if (!is_string($value)) {
-							$value = format_for_graph($value, 2);
-						}
-						
-						if (!empty($unit_text))
-							$value .= " " . $unit_text;
-						break;
-					case SIMPLE_VALUE_MAX:
-						
-						
-						//Metaconsole db connection
-						if ($layout_data['id_metaconsole'] != 0) {
-							$connection = db_get_row_filter ('tmetaconsole_setup',
-								array('id' => $layout_data['id_metaconsole']));
-							if (metaconsole_load_external_db($connection) != NOERR) {
-								//ui_print_error_message ("Error connecting to ".$server_name);
-								continue;
-							}
-						}
-						
-						$value = reporting_get_agentmodule_data_max(
-							$layout_data['id_agente_modulo'],
-							$layout_data['period'], 0);
-						
-						//Restore db connection
-						if ($layout_data['id_metaconsole'] != 0) {
-							metaconsole_restore_db();
-						}
-						
-						
-						if ($value === false) {
-							$value = __('Unknown');
-						}
-						else {
-							$value = format_for_graph($value, 2);
-							if (!empty($unit_text))
-								$value .= " " . $unit_text;
-						}
-						break;
-					case SIMPLE_VALUE_MIN:
-						
-						
-						//Metaconsole db connection
-						if ($layout_data['id_metaconsole'] != 0) {
-							$connection = db_get_row_filter ('tmetaconsole_setup',
-								array('id' => $layout_data['id_metaconsole']));
-							if (metaconsole_load_external_db($connection) != NOERR) {
-								//ui_print_error_message ("Error connecting to ".$server_name);
-								continue;
-							}
-						}
-						
-						$value = reporting_get_agentmodule_data_min(
-							$layout_data['id_agente_modulo'],
-							$layout_data['period'], 0);
-						
-						//Restore db connection
-						if ($layout_data['id_metaconsole'] != 0) {
-							metaconsole_restore_db();
-						}
-						
-						
-						if ($value === false) {
-							$value = __('Unknown');
-						}
-						else {
-							$value = format_for_graph($value, 2);
-							if (!empty($unit_text))
-								$value .= " " . $unit_text;
-						}
-						break;
-					case SIMPLE_VALUE_AVG:
-						
-						
-						//Metaconsole db connection
-						if ($layout_data['id_metaconsole'] != 0) {
-							$connection = db_get_row_filter ('tmetaconsole_setup',
-								array('id' => $layout_data['id_metaconsole']));
-							if (metaconsole_load_external_db($connection) != NOERR) {
-								//ui_print_error_message ("Error connecting to ".$server_name);
-								continue;
-							}
-						}
-						
-						$value = reporting_get_agentmodule_data_average(
-							$layout_data['id_agente_modulo'],
-							$layout_data['period'], 0);
-						
-						//Restore db connection
-						if ($layout_data['id_metaconsole'] != 0) {
-							metaconsole_restore_db();
-						}
-						
-						
-						
-						if ($value === false) {
-							$value = __('Unknown');
-						}
-						else {
-							$value = format_for_graph($value, 2);
-							if (!empty($unit_text))
-								$value .= " " . $unit_text;
-						}
-						break;
-				}
-				
-				if (strstr($label_simple_value, '(_VALUE_)') === false) {
-					//OLD MODE
-					$label_simple_value .= $value . '</strong>';
-				}
-				else {
-					//NEW MODE WITH MACRO (_VALUE_)
-					
-					$label_simple_value = str_replace('(_VALUE_)',
-						$value, $label_simple_value);
-				}
-				
-				echo $label_simple_value;
-				
-				if ($endTagA) echo '</a>';
-				
-				echo '</div>';
+				visual_map_print_item("read", $layout_data,
+					$proportion, $show_links);
 				break;
 			
 			
 			
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+				visual_map_print_item("read", $layout_data,
+					$proportion, $show_links);
+				break;
 				
 				
 				if ($resizedMap)

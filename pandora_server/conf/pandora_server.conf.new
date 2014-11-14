@@ -106,6 +106,10 @@ snmp_ignore_authfailure 1
 
 snmp_pdu_address 0
 
+# Path to the snmp_trapd binary. If set to manual, the server will not attemp to start snmp_trapd.
+
+#snmp_trapd manual
+
 # Activate (1) Pandora Network Server 
 
 networkserver 1

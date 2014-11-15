@@ -126,6 +126,7 @@ my %DefaultConf = (
 	'interval' => 300,
 	'debug' => 0,		
 	'agent_name' => hostname (),
+	'agent_name_cmd' => '',
 	'description' => '',
 	'group' => '',
 	'encoding' => 'UTF-8',
@@ -731,6 +732,20 @@ sub read_config (;$) {
 	
 	# Module, plugin and collection definitions
 	parse_conf_modules(\@file);
+
+	# If agent_name_cmd is defined, agent_name is set by command result.
+	if ($Conf{'agent_name_cmd'} ne '') {
+		my $result = `$Conf{'agent_name_cmd'}`;
+
+		# Use only the first line.
+		my ($temp_agent_name, $remain) = split(/\n/, $result);
+		chomp ($temp_agent_name);
+
+		# Remove white spaces of the first and last.
+		$temp_agent_name =~ s/^ *(.*?) *$/$1/;
+
+		$Conf{'agent_name'} = $temp_agent_name if ($temp_agent_name ne '');
+	}
 
 	# Update the agent MD5 since agent_name may have changed
 	$AgentMD5 = md5 ($Conf{'agent_name'});

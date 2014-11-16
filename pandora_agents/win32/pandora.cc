@@ -76,6 +76,19 @@ Key_Value::parseLine (string str) {
 }
 
 /**
+ * Parses a string by position and initialize the key and the value.
+ */
+void
+Key_Value::parseLineByPosition (string str, int pos) {
+	string    trimmedstr;
+
+	trimmedstr = trim (str);
+
+	key = trim (trimmedstr.substr (0, pos));
+	value = trim (trimmedstr.substr (pos));
+}
+
+/**
  * Get the key of the object.
  * 
  * @return The key

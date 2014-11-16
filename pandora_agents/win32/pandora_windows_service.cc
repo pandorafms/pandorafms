@@ -370,7 +370,7 @@ Pandora_Windows_Service::launchTentacleProxy() {
 string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
-	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name;
+	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd, temp_agent_name;
 	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
@@ -381,6 +381,27 @@ Pandora_Windows_Service::getXmlHeader () {
 	if (agent_name == "") {
 		agent_name = Pandora_Windows_Info::getSystemName ();
 	}
+
+	agent_name_cmd = conf->getValue ("agent_name_cmd");
+	if (agent_name_cmd != "") {
+		agent_name_cmd = "cmd.exe /c \"" + agent_name_cmd + "\"";
+		temp_agent_name = getCoordinatesFromCmdExec(agent_name_cmd);
+		// Delete carriage return if is provided
+		pos = temp_agent_name.find("\n");
+		if(pos != string::npos) {
+			temp_agent_name.erase(pos, temp_agent_name.size () - pos);
+		}
+		pos = temp_agent_name.find("\r");
+		if(pos != string::npos) {
+			temp_agent_name.erase(pos, temp_agent_name.size () - pos);
+		}
+		// Remove white spaces of the first and last.
+		temp_agent_name = trim(temp_agent_name);
+
+		if (temp_agent_name != "") {
+			agent_name = temp_agent_name;
+		}
+        }
 
 	// Get parent agent name
 	parent_agent_name = conf->getValue ("parent_agent_name");
@@ -448,7 +469,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	gis_exec = conf->getValue ("gis_exec");
 	
 	if(gis_exec != "") {
-		gis_result = getCoordinatesFromGisExec(gis_exec);
+		gis_result = getCoordinatesFromCmdExec(gis_exec);
 		if(gis_result != "") {
 			// Delete carriage return if is provided
 			pos = gis_result.find("\n");
@@ -461,7 +482,7 @@ Pandora_Windows_Service::getXmlHeader () {
 			}
 
 			// Process the result as "latitude,longitude,altitude"
-			pandoraDebug ("getCoordinatesFromGisExec: Parsing coordinates %s", gis_result.c_str ());
+			pandoraDebug ("getCoordinatesFromCmdExec: Parsing coordinates %s", gis_result.c_str ());
 			pos = gis_result.find(",");
 			if (pos != string::npos && pos != 0) {
 				latitude = gis_result;
@@ -515,7 +536,7 @@ Pandora_Windows_Service::getXmlHeader () {
 }
 
 string
-Pandora_Windows_Service::getCoordinatesFromGisExec (string gis_exec)
+Pandora_Windows_Service::getCoordinatesFromCmdExec (string cmd_exec)
 {
 	PROCESS_INFORMATION pi;
 	STARTUPINFO         si;	
@@ -541,7 +562,7 @@ Pandora_Windows_Service::getCoordinatesFromGisExec (string gis_exec)
 	job = CreateJobObject (&attributes, NULL);
 
 	if (job == NULL) {
-		pandoraLog ("getCoordinatesFromGisExec: CreateJobObject failed. Err: %d", GetLastError ());
+		pandoraLog ("getCoordinatesFromCmdExec: CreateJobObject failed. Err: %d", GetLastError ());
 		return "";
 	}
 
@@ -549,7 +570,7 @@ Pandora_Windows_Service::getCoordinatesFromGisExec (string gis_exec)
 	out = GetStdHandle (STD_OUTPUT_HANDLE); 
 
 	if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
-		pandoraLog ("getCoordinatesFromGisExec: CreatePipe failed. Err: %d", GetLastError ());
+		pandoraLog ("getCoordinatesFromCmdExec: CreatePipe failed. Err: %d", GetLastError ());
 		return "";
 	}
 
@@ -569,20 +590,20 @@ Pandora_Windows_Service::getCoordinatesFromGisExec (string gis_exec)
 	/* Set up members of the PROCESS_INFORMATION structure. */
 	ZeroMemory (&pi, sizeof (pi));
 	
-	pandoraDebug ("Executing gis_exec: %s", gis_exec.c_str ());
+	pandoraDebug ("Executing cmd_exec: %s", cmd_exec.c_str ());
 	
 	/* Create the child process. */
-	if (CreateProcess (NULL , (CHAR *)gis_exec.c_str (), NULL, NULL, TRUE,
+	if (CreateProcess (NULL , (CHAR *)cmd_exec.c_str (), NULL, NULL, TRUE,
 		CREATE_SUSPENDED | CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
-		pandoraLog ("getCoordinatesFromGisExec: %s CreateProcess failed. Err: %d",
-		gis_exec.c_str (), GetLastError ());
+		pandoraLog ("getCoordinatesFromCmdExec: %s CreateProcess failed. Err: %d",
+		cmd_exec.c_str (), GetLastError ());
 		return "";
 	} else {
 		char          buffer[BUFSIZE + 1];
 		unsigned long read, avail;
 
 		if (! AssignProcessToJobObject (job, pi.hProcess)) {
-			pandoraLog ("getCoordinatesFromGisExec: could not assign proccess to job (error %d)",
+			pandoraLog ("getCoordinatesFromCmdExec: could not assign proccess to job (error %d)",
 			GetLastError ());
 		}
 		ResumeThread (pi.hThread);
@@ -602,7 +623,7 @@ Pandora_Windows_Service::getCoordinatesFromGisExec (string gis_exec)
 			} else if(timeout < GetTickCount() - tickbase) {
 				/* STILL_ACTIVE */
 				TerminateProcess(pi.hThread, STILL_ACTIVE);
-				pandoraLog ("getCoordinatesFromGisExec: %s timed out (retcode: %d)", gis_exec.c_str (), STILL_ACTIVE);
+				pandoraLog ("getCoordinatesFromCmdExec: %s timed out (retcode: %d)", cmd_exec.c_str (), STILL_ACTIVE);
 				break;
 			}
 		}
@@ -611,12 +632,12 @@ Pandora_Windows_Service::getCoordinatesFromGisExec (string gis_exec)
 
 		if (retval != 0) {
 			if (! TerminateJobObject (job, 0)) {
-				pandoraLog ("getCoordinatesFromGisExec: TerminateJobObject failed. (error %d)",
+				pandoraLog ("getCoordinatesFromCmdExec: TerminateJobObject failed. (error %d)",
 				GetLastError ());
 			}
 			if (retval != STILL_ACTIVE) {
-				pandoraLog ("getCoordinatesFromGisExec: %s did not executed well (retcode: %d)",
-				gis_exec.c_str (), retval);
+				pandoraLog ("getCoordinatesFromCmdExec: %s did not executed well (retcode: %d)",
+				cmd_exec.c_str (), retval);
 			}
 			/* Close job, process and thread handles. */
 			CloseHandle (job);
@@ -1366,7 +1387,7 @@ Pandora_Windows_Service::checkAgentName(string filename){
 }
 int
 Pandora_Windows_Service::checkConfig (string file) {
-	int i, conf_size;
+	int i, conf_size, pos;
 	char *conf_str = NULL, *remote_conf_str = NULL, *remote_conf_md5 = NULL;
 	char agent_md5[33], conf_md5[33], flag;
 	string agent_name, conf_tmp_file, md5_tmp_file, temp_dir, tmp;
@@ -1390,13 +1411,37 @@ Pandora_Windows_Service::checkConfig (string file) {
 	}
 	agent_name = tmp;
 
+	/* Get agent name cmd */
+	tmp = conf->getValue ("agent_name_cmd");
+	if (!tmp.empty ()) {
+		tmp = "cmd.exe /c \"" + tmp + "\"";
+		tmp = getCoordinatesFromCmdExec(tmp);
+
+		// Delete carriage return if is provided
+		pos = tmp.find("\n");
+		if(pos != string::npos) {
+			tmp.erase(pos, tmp.size () - pos);
+		}
+		pos = tmp.find("\r");
+		if(pos != string::npos) {
+			tmp.erase(pos, tmp.size () - pos);
+		}
+
+		// Remove white spaces of the first and last.
+		tmp = trim (tmp);
+
+		if (tmp != "") {
+			agent_name = tmp;
+		}
+        }
+
 	/* Error getting agent name */
 	if (tmp.empty ()) {
 		pandoraDebug ("Pandora_Windows_Service::checkConfig: Error getting agent name");
 		return 0;
 	}
 
-	Pandora_File::md5 (tmp.c_str(), tmp.size(), agent_md5);
+	Pandora_File::md5 (agent_name.c_str(), agent_name.size(), agent_md5);
 
 	/* Calculate md5 hashes */
 	try {

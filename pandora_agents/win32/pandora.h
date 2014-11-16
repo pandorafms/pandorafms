@@ -60,6 +60,7 @@ namespace Pandora {
 		string value;
 	public:
 		void   parseLine (string str);
+		void   parseLineByPosition (string str, int pos);
 		string getKey    ();
 		string getValue  ();
 	};

@@ -220,6 +220,15 @@ Pandora::Pandora_Agent_Conf::setFile (string *all_conf){
 						}	
 				}
 
+			/*Check if is a agent_name_cmd"*/
+			pos = buffer.find("agent_name_cmd");
+			if (pos != string::npos){
+				Key_Value kv;
+				kv.parseLineByPosition(buffer, 14);
+				key_values->push_back (kv);
+				continue;
+			}
+
 			/*Check if is a collection*/
 			pos = buffer.find("file_collection");
 			if(pos != string::npos) {

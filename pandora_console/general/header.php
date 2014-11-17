@@ -375,15 +375,22 @@ config_check();
 		
 		<?php
 		if ($_GET["refr"]) {
+			$_get_refr = strip_tags($_GET["refr"]);
 		?>
+			refr_time = parseInt("<?php echo $_get_refr; ?>");
+			if (isNaN(refr_time)) {
+				refr_time = 0;
+			}
+			
 			t = new Date();
-			t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);
+			t.setTime (t.getTime () +
+				parseInt(<?php echo $config["refr"] * 1000; ?>));
 			$("#refrcounter").countdown ({until: t, 
 				layout: '%M%nn%M:%S%nn%S',
 				labels: ['', '', '', '', '', '', ''],
 				onExpiry: function () {
 						href = $("a.autorefresh").attr ("href");
-						href = href + <?php echo $_GET["refr"]; ?>;
+						href = href + refr_time;
 						$(document).attr ("location", href);
 					}
 				});

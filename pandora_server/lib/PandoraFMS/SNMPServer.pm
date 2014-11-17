@@ -222,6 +222,11 @@ sub pandora_snmptrapd {
 			return;
 		}
 		$oid =~ s/.* = OID: //;
+		if ($oid =~ m/^\.1\.3\.6\.1\.6\.3\.1\.1\.5\.([1-5])$/) {
+			$type = $1 - 1;
+		} else {
+			$type = 6;
+		}
 		$data = join("\t", @data);
 	}
 

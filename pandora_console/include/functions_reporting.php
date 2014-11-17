@@ -716,11 +716,12 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false ) {
 		$previous_value = $previous_data['datos'];
-		if ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
-				(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
-			$previous_known_status = 2;
-		}
-		elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
+		// if ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
+		// 		(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
+		// 	$previous_known_status = 2;
+		// }
+		// else
+		if (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
 			$previous_known_status = 1;
 		}
 		elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
@@ -818,10 +819,10 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		// 4 for the Unknown value and 5 for planned downtime
 		$previous_status = $first_data['status'];
 	}
-	elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
-			(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
-		$previous_status = 2;
-	}
+	// elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
+	// 		(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
+	// 	$previous_status = 2;
+	// }
 	elseif (($previous_value >= ($min_value + $percent)) && ($previous_value <= ($max_value - $percent))) { //1 when value is OK
 		$previous_status = 1;
 	}
@@ -845,10 +846,10 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 				$status = $data['status'];
 			}
 		}
-		elseif ((($value > ($min_value - $percent)) && ($value < ($min_value + $percent))) || 
-				(($value > ($max_value - $percent)) && ($value < ($max_value + $percent)))) { //2 when value is within the edges
-			$status = 2;
-		}
+		// elseif ((($value > ($min_value - $percent)) && ($value < ($min_value + $percent))) || 
+		// 		(($value > ($max_value - $percent)) && ($value < ($max_value + $percent)))) { //2 when value is within the edges
+		// 	$status = 2;
+		// }
 		elseif (($value >= ($min_value + $percent)) && ($value <= ($max_value - $percent))) { //1 when value is OK
 			$status = 1;
 		}
@@ -3760,14 +3761,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table1->head[3] = __('SLA Limit');
 				$table1->head[4] = __('SLA Compliance');
 				$table1->head[5] = __('Status');
-				$table1->head[6] = __('Criticity');
+				// $table1->head[6] = __('Criticity');
 				$table1->style[0] = 'text-align: left';
 				$table1->style[1] = 'text-align: left';
 				$table1->style[2] = 'text-align: right';
 				$table1->style[3] = 'text-align: right';
 				$table1->style[4] = 'text-align: right';
 				$table1->style[5] = 'text-align: right';
-				$table1->style[6] = 'text-align: center';
+				// $table1->style[6] = 'text-align: center';
 			}
 
 			// Table Planned Downtimes
@@ -4031,15 +4032,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$data_graph = array ();
-			$data_horin_graph = array();
+			// $data_horin_graph = array();
 			$data_graph[__('Inside limits')] = 0;
 			$data_graph[__('Out of limits')] = 0;
 			$data_graph[__('On the edge')] = 0;
 			$data_graph[__('Unknown')] = 0;
-			$data_horin_graph[__('Inside limits')] = 0;
-            $data_horin_graph[__('Out of limits')] = 0;
-            $data_horin_graph[__('On the edge')] = 0;
-            $data_horin_graph[__('Unknown')] = 0;
+			// $data_horin_graph[__('Inside limits')] = 0;
+			// $data_horin_graph[__('Out of limits')] = 0;
+			// $data_horin_graph[__('On the edge')] = 0;
+			// $data_horin_graph[__('Unknown')] = 0;
 			
 			$data_graph[__('Plannified downtime')] = 0;
 					
@@ -4110,35 +4111,35 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				//Fill the array data_graph for the pie graph
-				if ($sla_value === false) {
-					$data_graph[__('Unknown')]++;
-					$data_horin_graph[__('Unknown')]['g']++;
-				}
-				# Fix : 100% accurance is 'inside limits' although 10% was not overrun
-				else if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) ) {
-					$data_graph[__('Inside limits')]++;
-					$data_horin_graph[__('Inside limits')]['g']++;
-				}
-				else if ($sla_value <= ($sla['sla_limit']+10) && $sla_value >= ($sla['sla_limit']-10)) {
-					$data_graph[__('On the edge')]++;
-					$data_horin_graph[__('On the edge')]['g']++;
-				}
-				else if ($sla_value > ($sla['sla_limit']+10)) {
-					$data_graph[__('Inside limits')]++;
-					$data_horin_graph[__('Inside limits')]['g']++;
-				}
-				else if ($sla_value < ($sla['sla_limit']-10)) {
-					$data_graph[__('Out of limits')]++;
-					$data_horin_graph[__('Out of limits')]['g']++;
-				}
+				// if ($sla_value === false) {
+				// 	$data_graph[__('Unknown')]++;
+				// 	// $data_horin_graph[__('Unknown')]['g']++;
+				// }
+				// # Fix : 100% accurance is 'inside limits' although 10% was not overrun
+				// else if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) ) {
+				// 	$data_graph[__('Inside limits')]++;
+				// 	$data_horin_graph[__('Inside limits')]['g']++;
+				// }
+				// else if ($sla_value <= ($sla['sla_limit']+10) && $sla_value >= ($sla['sla_limit']-10)) {
+				// 	$data_graph[__('On the edge')]++;
+				// 	$data_horin_graph[__('On the edge')]['g']++;
+				// }
+				// else if ($sla_value > ($sla['sla_limit']+10)) {
+				// 	$data_graph[__('Inside limits')]++;
+				// 	$data_horin_graph[__('Inside limits')]['g']++;
+				// }
+				// else if ($sla_value < ($sla['sla_limit']-10)) {
+				// 	$data_graph[__('Out of limits')]++;
+				// 	$data_horin_graph[__('Out of limits')]['g']++;
+				// }
 				
-				if ($sla_value === false) {
-					if ($total_result_SLA != 'fail')
-						$total_result_SLA = 'unknown';
-				}
-				else if ($sla_value < $sla['sla_limit']) {
-					$total_result_SLA = 'fail';
-				}
+				// if ($sla_value === false) {
+				// 	if ($total_result_SLA != 'fail')
+				// 		$total_result_SLA = 'unknown';
+				// }
+				// else if ($sla_value < $sla['sla_limit']) {
+				// 	$total_result_SLA = 'fail';
+				// }
 				
 				$total_SLA += $sla_value;
 				
@@ -4151,37 +4152,37 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data[3] = $sla['sla_limit'].'%';
 					
 					if ($sla_value === false) {
-						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
-						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
-						$data[6] = html_print_image('images/status_sets/default/severity_maintenance.png',true,array('title'=>__('Unknown')));
+						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">';
+						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">'.__('Unknown').'</span>';
+						// $data[6] = html_print_image('images/status_sets/default/severity_maintenance.png',true,array('title'=>__('Unknown')));
 					}
 					else {
 						$data[4] = '';
 						$data[5] = '';
-						$data[6] = '';
+						// $data[6] = '';
 						
 						if ($sla_value >= $sla['sla_limit']) {
-							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
-							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
+							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_NORMAL.';">';
+							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_NORMAL.';">'.__('OK').'</span>';
 						}
 						else {
 							$sla_failed = true;
-							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
-							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
+							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">';
+							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">'.__('Fail').'</span>';
 						}
 						
 						// Print icon with status including edge
 						# Fix : 100% accurance is 'inside limits' although 10% was not overrun
-						if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) || ($sla_value > ($sla['sla_limit'] + $edge_interval))) {
-							$data[6] = html_print_image('images/status_sets/default/severity_normal.png',true,array('title'=>__('Inside limits')));
-						}
-						elseif (($sla_value <= $sla['sla_limit'] + $edge_interval)
-							&& ($sla_value >= $sla['sla_limit'] - $edge_interval)) {
-							$data[6] = html_print_image('images/status_sets/default/severity_warning.png',true,array('title'=>__('On the edge')));
-						}
-						else {
-							$data[6] = html_print_image('images/status_sets/default/severity_critical.png',true,array('title'=>__('Out of limits')));
-						}
+						// if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) || ($sla_value > ($sla['sla_limit'] + $edge_interval))) {
+						// 	$data[6] = html_print_image('images/status_sets/default/severity_normal.png',true,array('title'=>__('Inside limits')));
+						// }
+						// elseif (($sla_value <= $sla['sla_limit'] + $edge_interval)
+						// 	&& ($sla_value >= $sla['sla_limit'] - $edge_interval)) {
+						// 	$data[6] = html_print_image('images/status_sets/default/severity_warning.png',true,array('title'=>__('On the edge')));
+						// }
+						// else {
+						// 	$data[6] = html_print_image('images/status_sets/default/severity_critical.png',true,array('title'=>__('Out of limits')));
+						// }
 						
 						$data[4] .= format_numeric ($sla_value, 2). "%";
 					}
@@ -4218,42 +4219,42 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data);
 			}
 			
-			$data = array();
-			$data_pie_graph = json_encode ($data_graph);
+			// $data = array();
+			// $data_pie_graph = json_encode ($data_graph);
 			if ($show_graphs && !empty($slas)) {
-				$data[0] = pie3d_graph(false, $data_graph,
-					500, 150, __("other"),
-					ui_get_full_url(false, false, false, false),
-					$config['homedir'] .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']);
+				// $data[0] = pie3d_graph(false, $data_graph,
+				// 	500, 150, __("other"),
+				// 	ui_get_full_url(false, false, false, false),
+				// 	$config['homedir'] .  "/images/logo_vertical_water.png",
+				// 	$config['fontpath'], $config['font_size']);
 				
 				
-				//Print resume
-				$table_resume = null;
-				$table_resume->head[0] = __('Average Value');
+				// //Print resume
+				// $table_resume = null;
+				// $table_resume->head[0] = __('Average Value');
 				
-				$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
-				$table_resume->data[0][0] .= format_numeric($total_SLA / count($sla_showed), 2);
-				$table_resume->data[0][0] .= "%</span>";
+				// $table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
+				// $table_resume->data[0][0] .= format_numeric($total_SLA / count($sla_showed), 2);
+				// $table_resume->data[0][0] .= "%</span>";
 				
-				$data[1] = html_print_table($table_resume, true);
+				// $data[1] = html_print_table($table_resume, true);
 				
-				$table_resume = null;
-				$table_resume->head[0] = __('SLA Compliance');
+				// $table_resume = null;
+				// $table_resume->head[0] = __('SLA Compliance');
 				
-				if ($total_result_SLA == 'ok') {
-					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
-				}
-				if ($total_result_SLA == 'fail') {
-					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
-				}
-				if ($total_result_SLA == 'unknown') {
-					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
-				}
+				// if ($total_result_SLA == 'ok') {
+				// 	$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
+				// }
+				// if ($total_result_SLA == 'fail') {
+				// 	$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
+				// }
+				// if ($total_result_SLA == 'unknown') {
+				// 	$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
+				// }
 				
-				$data[2] = html_print_table($table_resume, true);
-				$next_row++;
-				array_push ($table->data, $data);
+				// $data[2] = html_print_table($table_resume, true);
+				// $next_row++;
+				// array_push ($table->data, $data);
 				
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;

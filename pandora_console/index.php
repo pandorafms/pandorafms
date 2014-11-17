@@ -167,25 +167,8 @@ if (strlen($search) > 0) {
 		$searchPage = true;
 }
 
-// Hash login process
-if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
-	$loginhash_data = get_parameter("loginhash_data", "");
-	$loginhash_user = get_parameter("loginhash_user", "");
-	
-	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
-		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
-		$_SESSION['id_usuario'] = $loginhash_user;
-		$config["id_user"] = $loginhash_user;
-	}
-	else {
-		require_once ('general/login_page.php');
-		db_pandora_audit("Logon Failed (loginhash", "", "system");
-		while (@ob_end_flush ());
-		exit ("</html>");
-	}
-}
-elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
-	// Login process 
+// Login process 
+if (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	include_once('include/functions_db.php'); //Include it to use escape_string_sql function
 	
 	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
@@ -331,8 +314,25 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		}
 	}
 }
+// Hash login process
+elseif (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
+	$loginhash_data = get_parameter("loginhash_data", "");
+	$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
+
+	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
+		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
+		$_SESSION['id_usuario'] = $loginhash_user;
+		$config["id_user"] = $loginhash_user;
+	}
+	else {
+		require_once ('general/login_page.php');
+		db_pandora_audit("Logon Failed (loginhash", "", "system");
+		while (@ob_end_flush ());
+		exit ("</html>");
+	}
+}
+// There is no user connected
 elseif (! isset ($config['id_user'])) {
-	// There is no user connected
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());
 	exit ("</html>");

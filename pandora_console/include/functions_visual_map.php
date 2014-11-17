@@ -198,6 +198,44 @@ function visual_map_print_item($mode = "read", $layoutData,
 				
 				}
 				break;
+			case MODULE_GRAPH:
+				if ((
+					($layoutData['id_layout_linked'] == "")
+					|| ($layoutData['id_layout_linked'] == 0))
+					&& can_user_access_node()) {
+					
+					if ($layoutData['enable_link']) {
+						
+						//Extract id service if it is a prediction module.
+						$id_service = db_get_value_filter('custom_integer_1',
+							'tagente_modulo',
+							array('id_agente_modulo' => $layoutData['id_agente_modulo'],
+								'prediction_module' => 1));
+						
+						if ($id_service === false) {
+							$id_service = 0;
+						}
+						
+						if ($id_service != 0) { 
+							//Link to an service page
+							if (!empty($layoutData['id_metaconsole'])) {
+								$link = true;
+							}
+							else {
+								$link = true;
+							}
+						}
+						else {
+							$link = true;
+						}
+					}
+				}
+				else {
+					// Link to a map
+					$link = true;
+				}
+				
+				break;
 		}
 	}
 	
@@ -435,6 +473,63 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				break;
+			case MODULE_GRAPH:
+				if ((
+					($layoutData['id_layout_linked'] == "")
+					|| ($layoutData['id_layout_linked'] == 0))
+					&& can_user_access_node()) {
+					
+					if ($layoutData['enable_link']) {
+						
+						//Extract id service if it is a prediction module.
+						$id_service = db_get_value_filter('custom_integer_1',
+							'tagente_modulo',
+							array('id_agente_modulo' => $layoutData['id_agente_modulo'],
+								'prediction_module' => 1));
+						
+						if (!empty($id_service)) {
+							//Link to an service page
+							if (!empty($layoutData['id_metaconsole'])) {
+								$server = db_get_row('tmetaconsole_setup',
+									'id', $layoutData['id_metaconsole']);
+								
+								$url = 
+									$server["server_url"] .
+									'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+									$id_service . '&offset=0';
+							}
+							else {
+								$url = $config['homeurl'] .
+									'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+									$id_service . '&offset=0';
+							}
+						}
+						else {
+							if (empty($layoutData['id_metaconsole'])) {
+								$url = $config['homeurl'] .
+									'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+							}
+							else {
+								$url = ui_meta_get_url_console_child(
+									$layoutData['id_metaconsole'],
+									"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layoutData["id_agent"].'&amp;tab=data');
+							}
+						}
+					}
+				}
+				else {
+					// Link to a map
+					if (empty($layoutData['id_metaconsole'])) {
+						$url = $config['homeurl'] .
+							'/index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
+					}
+					else {
+						$pure = get_parameter('pure', 0);
+						$url = $config['homeurl'] .
+							'/index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layoutData["id_layout_linked"] . '&refr=0';
+					}
+				}
+				break;
 		}
 	}
 	
@@ -520,6 +615,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$percentile = 100;
 			break;
 		case MODULE_GRAPH:
+			$width =
+				((integer)($proportion * $width));
+			$height =
+				((integer)($proportion * $height));
+			
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				$connection = db_get_row_filter ('tmetaconsole_setup',
@@ -585,8 +685,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 			//enterprise_hook
 			break;
 	}
-	
-	html_debug_print($proportion, true);
 	
 	$top = (int)($proportion * $top);
 	$left = (int)($proportion * $left);
@@ -1708,288 +1806,16 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				visual_map_print_item("read", $layout_data,
 					$proportion, $show_links);
 				break;
-				
-				
-				if ($resizedMap)
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				
-				
-				//Metaconsole db connection
-				if ($layout_data['id_metaconsole'] != 0) {
-					$connection = db_get_row_filter ('tmetaconsole_setup',
-						array('id' => $layout_data['id_metaconsole']));
-					if (metaconsole_load_external_db($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				$valor = db_get_sql ('SELECT datos
-					FROM tagente_estado
-					WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
-				
-				$unit_text = db_get_sql ('SELECT unit
-					FROM tagente_modulo
-					WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
-				
-				//Restore db connection
-				if ($layout_data['id_metaconsole'] != 0) {
-					metaconsole_restore_db();
-				}
-				
-				
-				$width = $layout_data['width'];
-				if ( $layout_data['height'] > 0)
-					$percentile = $valor / $layout_data['height'] * 100;
-				else
-					$percentile = 100;
-				
-				$percentile = round($percentile);
-				
-				$endTagA = false;
-				
-				echo io_safe_output($layout_data['label']);
-				echo "<br>";
-				
-				if ($show_links) {
-					if (!empty($layout_data['id_agent'])
-						&& empty($layout_data['id_layout_linked'])) {
-						
-						
-						if ($layout_data['enable_link']
-							&& can_user_access_node()) {
-							
-							//Extract id service if it is a prediction module.
-							$id_service = db_get_value_filter('custom_integer_1',
-								'tagente_modulo',
-								array(
-									'id_agente_modulo' => $layout_data['id_agente_modulo'],
-									'prediction_module' => 1));
-							
-							if ($id_service === false) {
-								$id_service = 0;
-							}
-							
-							if ($id_service != 0) {
-								//Link to an service page
-								
-								if (!empty($layout_data['id_metaconsole'])) {
-									$server = db_get_row('tmetaconsole_setup',
-										'id', $layout_data['id_metaconsole']);
-									
-									echo '<a href="' .
-										$server["server_url"] . "/" .
-										'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-										$id_service . '&offset=0">';
-								}
-								else {
-									echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-										$id_service . '&offset=0">';
-								}
-								$endTagA = true;
-							}
-							else if ($layout_data['id_agente_modulo'] != 0) {
-								// Link to an module
-								if (!empty($layout_data['id_metaconsole'])) {
-									$server = db_get_row('tmetaconsole_setup',
-										'id', $layout_data['id_metaconsole']);
-									
-									echo '<a href="' .
-										$server["server_url"] .
-										'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
-								}
-								else {
-									echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
-								}
-								$endTagA = true;
-							}
-							else {
-								// Link to an agent
-								if (empty($layout_data['id_metaconsole'])) {
-									$url = $config['homeurl'] .
-										'index.php?' .
-										'sec=estado&amp;' .
-										'sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data['id_agent'];
-								}
-								else {
-									$url = ui_meta_get_url_console_child(
-										$layout_data['id_metaconsole'],
-										"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layout_data['id_agent']);
-								}
-								echo '<a href="' . $url .'">';
-								$endTagA = true;
-							}
-						}
-					}
-					elseif ($layout_data['id_layout_linked'] > 0) {
-						
-						// Link to a map
-						if (empty($layout_data['id_metaconsole'])) {
-							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
-						}
-						else {
-							$pure = get_parameter('pure', 0);
-							echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
-						}
-						$endTagA = true;
-					
-					}
-					else {
-						// A void object
-						echo '<a href="#">';
-						$endTagA = true;
-					}
-				}
-				
-				$value_text = false;
-				if ($layout_data['image'] == 'percent') {
-					$value_text = false;
-				}
-				elseif ($layout_data['image'] == 'value') {
-					$unit_text = trim(io_safe_output($unit_text));
-					
-					$value_text = format_for_graph($valor, 2);
-					if (!empty($unit_text))
-						$value_text .= " " . $unit_text;
-				}
-				
-				if ($layout_data['type'] == 9) {
-					if ($resizedMap)
-						echo progress_bubble($percentile, ((integer)($proportion * $width)), $width, '', 1, $value_text, $colorStatus);
-					else
-						echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
-				}
-				else {
-					if ($resizedMap)
-						echo progress_bar($percentile, ((integer)($proportion * $width)), 15, '', 1, $value_text, $colorStatus);
-					else
-						echo progress_bar($percentile, $width, 15, '', 1, $value_text, $colorStatus);
-				}
-				
-				if ($endTagA) echo '</a>';
-				
-				echo '</div>';
-				break;
 			
 			
 			
 			case MODULE_GRAPH:
-				if ($resizedMap) {
-					$layout_data['width'] =
-						((integer)($proportion * $layout_data['width']));
-					$layout_data['height'] =
-						((integer)($proportion * $layout_data['height']));
-					$layout_data['pos_x'] =
-						((integer)($proportion * $layout_data['pos_x']));
-					$layout_data['pos_y'] =
-						((integer)($proportion * $layout_data['pos_y']));
-				}
-				
-				echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				
-				echo io_safe_output($layout_data['label']);
-				echo "<br>";
-				
-				$endTagA = false;
-				
-				if ($show_links) {
-					if ((
-						($layout_data['id_layout_linked'] == "")
-						|| ($layout_data['id_layout_linked'] == 0))
-						&& can_user_access_node()) {
-						
-						if ($layout_data['enable_link']) {
-						
-							//Extract id service if it is a prediction module.
-							$id_service = db_get_value_filter('custom_integer_1',
-								'tagente_modulo',
-								array('id_agente_modulo' => $layout_data['id_agente_modulo'],
-									'prediction_module' => 1));
-							
-							if ($id_service === false) {
-								$id_service = 0;
-							}
-							
-							if ($id_service != 0) { 
-								//Link to an service page
-								if (!empty($layout_data['id_metaconsole'])) {
-									$server = db_get_row('tmetaconsole_setup',
-										'id', $layout_data['id_metaconsole']);
-									
-									echo '<a href="' .
-										$server["server_url"] .
-										'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-										$id_service . '&offset=0">';
-								}
-								else {
-									echo '<a href="'.$config['homeurl'].'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-										$id_service . '&offset=0">';
-								}
-							}
-							else {
-								if (empty($layout_data['id_metaconsole'])) {
-									echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layout_data['id_agente_modulo'] . '">';
-								}
-								else {
-									$url = ui_meta_get_url_console_child(
-										$layout_data['id_metaconsole'],
-										"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data');
-									echo '<a href="' . $url . '">';
-								}
-							}
-						}
-					}
-					else {
-						// Link to a map
-						if (empty($layout_data['id_metaconsole'])) {
-							echo '<a href="'.$config['homeurl'].'/index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
-						}
-						else {
-							$pure = get_parameter('pure', 0);
-							echo '<a href="'.$config['homeurl'].'/index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
-						}
-					}
-				}
-				
-				
-				//Metaconsole db connection
-				if ($layout_data['id_metaconsole'] != 0) {
-					$connection = db_get_row_filter ('tmetaconsole_setup',
-						array('id' => $layout_data['id_metaconsole']));
-					if (metaconsole_load_external_db($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
-				// resulting fault image links :(
-				
-				if ($layout_data['id_custom_graph'] != 0) {
-					custom_graphs_print(
-						$layout_data['id_custom_graph'],
-						$layout_data['height'],
-						$layout_data['width'],
-						$layout_data['period'], null, false, 
-						0, true, $layout_data['image']);
-				}
-				else {	
-					echo grafico_modulo_sparse ($layout_data['id_agente_modulo'], $layout_data['period'],
-						false, $layout_data['width'], $layout_data['height'],
-						'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url, 1, false, '', false, 
-						false, true, $layout_data['image']);
-				}
-				//Restore db connection
-				if ($layout_data['id_metaconsole'] != 0) {
-					metaconsole_restore_db();
-				}
-				
-				
-				echo "</a>";
-				echo "</div>";
+				visual_map_print_item("read", $layout_data,
+					$proportion, $show_links);
 				break;
+			
+			
+			
 			default:
 				enterprise_hook("enterprise_visual_map_print_item",
 					array($layout_data, $status, $colorStatus,

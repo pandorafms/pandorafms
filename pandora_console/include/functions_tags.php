@@ -636,9 +636,7 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  * @return mixed/string Tag ids
  */
  
-function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
-	$return_mode = 'module_condition', $query_prefix = '',
-	$query_table = '') {
+function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '', $meta = false, $childrens_ids = array()) {
 	
 	global $config;
 	
@@ -692,6 +690,9 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 		return ERR_WRONG_PARAMETERS;
 	}
 	
+	if (!empty($childrens_ids)) {
+		$id_group = $childrens_ids;
+	}
 	$query = sprintf("SELECT tags, id_grupo 
 			FROM tusuario_perfil, tperfil
 			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
@@ -700,7 +701,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 			(tusuario_perfil.id_grupo IN (%s) OR tusuario_perfil.id_grupo = 0)
 			ORDER BY id_grupo", $id_user, $acl_column, implode(',',$id_group));
 	$tags = db_get_all_rows_sql($query);
-	
+
 	// If not profiles returned, the user havent acl permissions
 	if (empty($tags)) {
 		return ERR_ACL;
@@ -760,7 +761,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 			break;
 		case 'event_condition':
 			// Return the condition of the tags for tevento table
-			$condition = tags_get_acl_tags_event_condition($acltags);			
+			$condition = tags_get_acl_tags_event_condition($acltags, $meta);			
 			if(!empty($condition)) {
 				return " $query_prefix "."(".$condition.")";
 			}
@@ -836,7 +837,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
  * @return string SQL condition for tagente_module
  */
  
-function tags_get_acl_tags_event_condition($acltags) {
+function tags_get_acl_tags_event_condition($acltags, $meta = false) {
 	$condition = '';
 	
 	// Get all tags of the system
@@ -870,7 +871,7 @@ function tags_get_acl_tags_event_condition($acltags) {
 			//~ $tags_condition .= sprintf(' OR tags LIKE "%s %%"',io_safe_input($all_tags[$tag]));
 			//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s %%"',io_safe_input($all_tags[$tag]));
 			
-			$tags_condition .= sprintf('tags LIKE "%s"',io_safe_input($all_tags[$tag]));
+			$tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
 		}
 		
 		// If there is not tag condition ignore
@@ -882,7 +883,11 @@ function tags_get_acl_tags_event_condition($acltags) {
 			$condition .= ' OR ';
 		}
 		
-		$condition .= "($group_condition AND \n($tags_condition))\n";
+		if ($meta) {
+			$condition .= "($tags_condition)\n";
+		} else {
+			$condition .= "($group_condition AND \n($tags_condition))\n";
+		}
 	}
 	
 	//Commented because ACLs propagation don't work
@@ -1215,5 +1220,41 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 			}
 		}
 	}
+}
+
+/* This function checks event ACLs */
+function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $childrens_ids = array()) {
+	global $config;
+
+	if($id_user === false) {
+		$id_user = $config['id_user'];
+	}
+	
+	$tags_user = tags_get_acl_tags($id_user, $id_group, $access, 'data', '', '', false, $childrens_ids);
+
+	// If there are wrong parameters or fail ACL check, return false
+	if($tags_user === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
+		return false;
+	}
+
+	// If there are not tags restrictions or tags passed, return true
+	if(empty($tags_user) || empty($tags)) {
+		return true;
+	}
+	
+	$tags_user_ids = array();
+	foreach ($tags_user as $id=>$tag_user) {
+		$tags_user_ids[] = $tag_user[0];
+	}
+
+	if (in_array($id_group, $childrens_ids)) { //check group
+		foreach ($tags as $tag) {
+			$tag_id = tags_get_id($tag);
+			if (in_array($tag_id, $tags_user_ids)) { //check tag
+				return true;
+			}
+		}
+	}
+	return false;
 }
 ?>

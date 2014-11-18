@@ -220,7 +220,9 @@ if ($get_extended_event) {
 	global $config;
 	
 	$event_id = get_parameter('event_id',false);
-	
+	$childrens_ids = get_parameter('childrens_ids');
+	$childrens_ids = json_decode($childrens_ids);
+
 	if ($meta) {
 		$event = events_meta_get_event($event_id, false, $history);
 	}
@@ -295,8 +297,9 @@ if ($get_extended_event) {
 	$tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
 	$tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png',true).__('Agent fields')."</a></li>";
 	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
+
 	if (!$readonly && 
-		(tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags']))) {
+		(tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
 		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true).__('Responses')."</a></li>";
 	}
 	if ($event['custom_data'] != '') {
@@ -331,8 +334,8 @@ if ($get_extended_event) {
 	}
 	
 	if (!$readonly && 
-		(tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags']))) {
-		$responses = events_page_responses($event);
+	(tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
+		$responses = events_page_responses($event, $childrens_ids);
 	}
 	else {
 		$responses = '';
@@ -366,7 +369,7 @@ if ($get_extended_event) {
 	
 	$general = events_page_general($event);
 	
-	$comments = events_page_comments($event);
+	$comments = events_page_comments($event, $childrens_ids);
 	
 	$notifications = '<div id="notification_comment_error" style="display:none">'.ui_print_error_message(__('Error adding comment'),'',true).'</div>';
 	$notifications .= '<div id="notification_comment_success" style="display:none">'.ui_print_success_message(__('Comment added successfully'),'',true).'</div>';

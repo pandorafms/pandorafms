@@ -15,31 +15,34 @@
 
 $groups = users_get_groups($id_user, 'ER');
 
+$propagate = db_get_value('propagate','tgrupo','id_grupo',$id_group);
+
+if ($group > 0) {
+	if ($propagate) {
+		$childrens_ids = array($id_group);
+			
+		$childrens = groups_get_childrens($id_group);
+
+		if (!empty($childrens)) {
+			foreach ($childrens as $child) {
+				$childrens_ids[] = (int)$child['id_grupo'];
+			}
+		}
+	} else {
+		$childrens_ids = array();
+	}
+} else {
+	$childrens_ids = array_keys($groups);
+}
+
 //Group selection
 if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
-	
-	if ($meta) {
-		// In metaconsole the group search is performed by name
-		$group_name = groups_get_name ($id_group);
-		$sql_post = " AND group_name = '$group_name'";
+	if ($propagate) {
+		$sql_post = " AND id_grupo IN (" . implode(',', $childrens_ids) . ")";
 	}
 	else {
-		if ($recursion) {
-			$childrens_ids = array($id_group);
-			
-			$childrens = groups_get_childrens($id_group);
-			if (!empty($childrens)) {
-				foreach ($childrens as $child) {
-					$childrens_ids[] = $child['id_grupo'];
-				}
-			}
-			
-			$sql_post = " AND id_grupo IN (" . implode(',', $childrens_ids) . ")";
-		}
-		else {
-			//If a group is selected and it's in the groups allowed
-			$sql_post = " AND id_grupo = $id_group";
-		}
+		//If a group is selected and it's in the groups allowed
+		$sql_post = " AND id_grupo = $id_group";
 	}
 }
 else {
@@ -48,29 +51,7 @@ else {
 		$sql_post = "";
 	}
 	else {
-		if ($meta) {
-			// In metaconsole the group search is performed by name
-	
-			$sql_post = " AND group_name IN ( ";
-			$i = 0;
-			foreach ($groups as $group_id=>$group_name) {
-				if ($group_id == 0) {
-					continue;
-				}
-				if ($i==0) {
-					$sql_post .= "'$group_name'";
-				} else {
-					$sql_post .= ",'$group_name'";
-				}
-				$i++;
-			}
-			$sql_post.= ")";
-
-		} else {
-			//Otherwise select all groups the user has rights to.
-			$sql_post = " AND id_grupo IN (" .
-				implode (",", array_keys ($groups)) . ")";
-		}
+		$sql_post = " AND id_grupo IN (" . implode (",", array_keys ($groups)) . ")";
 	}
 }
 
@@ -159,6 +140,7 @@ else {
 	}
 }
 
+
 if ($id_user_ack != "0")
 	$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
 
@@ -187,6 +169,7 @@ else {
 	}
 }
 
+
 //Search by tag
 if (!empty($tag_with)) {
 	$sql_post .= ' AND ( ';
@@ -194,7 +177,7 @@ if (!empty($tag_with)) {
 	foreach ($tag_with as $id_tag) {
 		if ($first) $first = false;
 		else $sql_post .= " OR ";
-		$sql_post .= "tags LIKE '" . tags_get_name($id_tag) . "'";
+		$sql_post .= "tags = '" . tags_get_name($id_tag) . "'";
 	}
 	$sql_post .= ' ) ';
 }
@@ -226,8 +209,7 @@ else {
 	$group_array = array_keys($groups);
 }
 
-$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
-	'event_condition', 'AND');
+$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER', 'event_condition', 'AND', '', $meta);
 
 if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != ERR_ACL)&& ($tags_acls_condition != -110000)) {
 	$sql_post .= $tags_acls_condition;

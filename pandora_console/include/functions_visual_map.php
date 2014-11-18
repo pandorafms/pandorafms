@@ -54,9 +54,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	require_once ($config["homedir"] . '/include/functions_custom_graphs.php');
 	
-	//~ enterprise_hook("enterprise_visual_map_print_item",
-					//~ array($layout_data, $status, $colorStatus,
-						//~ 'operation', $resizedMap, $proportion));
 	
 	
 	$width = $layoutData['width'];
@@ -247,6 +244,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$link = true;
 				}
 				
+				break;
+			default:
+				if (!empty($element_enterprise)) {
+					$link = $element_enterprise['link'];
+				}
 				break;
 		}
 	}

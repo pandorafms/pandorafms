@@ -602,7 +602,7 @@ if (empty ($result)) {
 
 $allow_action = true;
 $allow_pagination = true;
-
+$id_group_filter = $id_group;
 require('events.build_table.php');
 
 enterprise_hook('close_meta_frame');

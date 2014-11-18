@@ -26,6 +26,7 @@ $selectModuleNameUp = '';
 $selectModuleNameDown = '';
 $selectAgentNameUp = '';
 $selectAgentNameDown = '';
+$is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 
 switch ($sortField) {
 	case 'module_name':
@@ -67,23 +68,28 @@ if ($searchModules) {
 	$tags = tags_get_user_tags();
 	$sql_tags = "'no_check_tags' = 'no_check_tags'";
 	if (!empty($tags)) {
-		$sql_tags = "
-		(
-			t1.id_agente_modulo IN
+		
+		if ($is_admin) {
+			$sql_tags = "1=1";
+		} else {
+			$sql_tags = "
 			(
-				SELECT tt.id_agente_modulo
-				FROM ttag_module AS tt
-				WHERE id_tag IN (" . implode(",", array_keys($tags)) . ")
+				t1.id_agente_modulo IN
+				(
+					SELECT tt.id_agente_modulo
+					FROM ttag_module AS tt
+					WHERE id_tag IN (" . implode(",", array_keys($tags)) . ")
+				)
+				
+				OR
+				
+				t1.id_agente_modulo IN (
+					SELECT id_agente_modulo
+					FROM ttag_module
+				)
 			)
-			
-			OR
-			
-			t1.id_agente_modulo NOT IN (
-				SELECT id_agente_modulo
-				FROM ttag_module
-			)
-		)
-		";
+			";
+		}
 	}
 	
 	switch ($config["dbtype"]) {

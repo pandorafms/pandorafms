@@ -1515,7 +1515,7 @@ function events_get_event_filter_select($manage = true){
 // Events pages functions to load modal window with advanced view of an event.
 // Called from include/ajax/events.php
 
-function events_page_responses ($event) {
+function events_page_responses ($event, $childrens_ids = array()) {
 	global $config;
 	/////////
 	// Responses
@@ -1531,7 +1531,7 @@ function events_page_responses ($event) {
 	$table_responses->style[1] = 'text-align: left; height: 23px; text-align: right;';
 	$table_responses->class = "alternate rounded_cells";
 	
-	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
+	if (tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) {
 		// Owner
 		$data = array();
 		$data[0] = __('Change owner');
@@ -1568,7 +1568,7 @@ function events_page_responses ($event) {
 	
 	$status_blocked = false;
 	
-	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
+	if (tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) {
 		// If the user has manager acls, the status can be changed to all possibilities always
 		$status = array(0 => __('New'), 2 => __('In process'), 1 => __('Validated'));
 	}
@@ -1607,7 +1607,7 @@ function events_page_responses ($event) {
 	
 	$table_responses->data[] = $data;
 	
-	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
+	if (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) {
 		// Delete
 		$data = array();
 		$data[0] = __('Delete event');
@@ -2256,7 +2256,7 @@ function events_page_general ($event) {
 	return $general;
 }
 
-function events_page_comments ($event) {
+function events_page_comments ($event, $childrens_ids = array()) {
 	////////////////////////////////////////////////////////////////////
 	// Comments
 	////////////////////////////////////////////////////////////////////
@@ -2344,7 +2344,7 @@ function events_page_comments ($event) {
 			break;
 	}
 	
-	if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {
+	if ((tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
 		$comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea("comment", 3, 10, '', 'style="min-height: 15px; width: 100%;"', true);
 		$comments_form .= '<br><div style="text-align:right;">'.html_print_button(__('Add comment'),'comment_button',false,'event_comment();','class="sub next"',true).'</div><br></div>';
 	}

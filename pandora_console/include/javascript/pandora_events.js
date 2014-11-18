@@ -12,6 +12,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 	var user_comment = $('#hidden-user_comment_'+event_id).val();
 	var event_rep = $('#hidden-event_rep_'+event_id).val();
 	var server_id = $('#hidden-server_id_'+event_id).val();
+	var childrens_ids = $('#hidden-childrens_ids').val();
 	
 	// Metaconsole mode flag
 	var meta = $('#hidden-meta').val();
@@ -32,6 +33,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 		"event_id": event_id,
 		"server_id": server_id,
 		"meta": meta,
+		"childrens_ids": childrens_ids,
 		"history": history},
 		function (data, status) {
 			$("#event_details_window").hide ()

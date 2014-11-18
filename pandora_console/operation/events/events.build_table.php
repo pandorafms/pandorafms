@@ -211,6 +211,7 @@ foreach ($result as $event) {
 	$data[$i] .= html_print_input_hidden('similar_ids_' . $event["id_evento"], $similar_ids, true);
 	$data[$i] .= html_print_input_hidden('timestamp_first_' . $event["id_evento"], $timestamp_first, true);
 	$data[$i] .= html_print_input_hidden('timestamp_last_' . $event["id_evento"], $timestamp_last, true);
+	$data[$i] .= html_print_input_hidden('childrens_ids', json_encode($childrens_ids), true);
 	
 	// Store server id if is metaconsole. 0 otherwise
 	if ($meta) {
@@ -528,15 +529,15 @@ foreach ($result as $event) {
 		
 		if(!$readonly) {
 			// Validate event
-			if (($event["estado"] != 1) && (tags_check_acl_event ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'], true) == 1)) {
+			if (($event["estado"] != 1) && (tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'], $childrens_ids))) {
 				$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
 				$data[$i] .= html_print_image ("images/ok.png", true,
 					array ("title" => __('Validate event')));
 				$data[$i] .= '</a>';
 			}
-			
+
 			// Delete event
-			if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
+			if ((tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'],$childrens_ids) == 1)) {
 				if($event['estado'] != 2) {
 					$data[$i] .= '<a class="delete_event" href="javascript:" id="delete-'.$event['id_evento'].'">';
 					$data[$i] .= html_print_image ("images/cross.png", true,
@@ -561,12 +562,12 @@ foreach ($result as $event) {
 		$i++;
 		
 		if(!$readonly) {
-			if (tags_check_acl_event ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
+			if (tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids) == 1) {
 				//Checkbox
 				// Class 'candeleted' must be the fist class to be parsed from javascript. Dont change
 				$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="candeleted chk_val"', true);
 			}
-			else if (tags_check_acl_event ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1) {
+			else if (tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'], $childrens_ids) == 1) {
 				//Checkbox
 				$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="chk_val"', true);
 			}

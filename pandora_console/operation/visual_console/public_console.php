@@ -159,7 +159,6 @@ $(document).ready (function () {
 	<?php
 	}
 	?>
-	draw_lines (lines, 'layout_map');
 });
 /* ]]> */
 </script>

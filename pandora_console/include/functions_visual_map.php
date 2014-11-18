@@ -54,6 +54,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	require_once ($config["homedir"] . '/include/functions_custom_graphs.php');
 	
+	//~ enterprise_hook("enterprise_visual_map_print_item",
+					//~ array($layout_data, $status, $colorStatus,
+						//~ 'operation', $resizedMap, $proportion));
+	
+	
 	$width = $layoutData['width'];
 	$height = $max_percentile = $layoutData['height'];
 	$top = $layoutData['pos_y'];
@@ -101,6 +106,13 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$colorStatus = COL_UNKNOWN;
 			break;
 	}
+	
+	$element_enterprise = array();
+	if (enterprise_installed()) {
+		$element_enterprise = enterprise_visual_map_print_item(
+			$mode, $layoutData, $proportion, $show_links);
+	}
+	
 	
 	$link = false;
 	$url = "#";
@@ -530,6 +542,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				break;
+			default:
+				if (!empty($element_enterprise)) {
+					$url = $element_enterprise['url'];
+				}
+				break;
 		}
 	}
 	
@@ -682,7 +699,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$class .= "icon";
 			break;
 		default:
-			//enterprise_hook
+			if (!empty($element_enterprise)) {
+				$class .= $element_enterprise['class'];
+			}
 			break;
 	}
 	
@@ -871,8 +890,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			break;
 		default:
-			enterprise_hook("enterprise_visual_map_print_item",
-				array($layoutData, $status, $colorStatus));
+			if (!empty($element_enterprise)) {
+				echo $element_enterprise['item'];
+			}
 			break;
 	}
 	
@@ -1743,85 +1763,88 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		$status = visual_map_get_status_element($layout_data);
 		
 		
-		switch ($status) {
-			case VISUAL_MAP_STATUS_CRITICAL_BAD:
-				//Critical (BAD)
-				$colorStatus = COL_CRITICAL;
-				break;
-			case VISUAL_MAP_STATUS_CRITICAL_ALERT:
-				//Critical (ALERT)
-				$colorStatus = COL_ALERTFIRED;
-				break;
-			case VISUAL_MAP_STATUS_NORMAL:
-				//Normal (OK)
-				$colorStatus = COL_NORMAL;
-				break;
-			case VISUAL_MAP_STATUS_WARNING:
-				//Warning
-				$colorStatus = COL_WARNING;
-				break;
-			case VISUAL_MAP_STATUS_UNKNOWN:
-			default:
-				//Unknown
-				$colorStatus = COL_UNKNOWN;
-				// Default is Grey (Other)
-				break;
-		}
+		//~ switch ($status) {
+			//~ case VISUAL_MAP_STATUS_CRITICAL_BAD:
+				//~ //Critical (BAD)
+				//~ $colorStatus = COL_CRITICAL;
+				//~ break;
+			//~ case VISUAL_MAP_STATUS_CRITICAL_ALERT:
+				//~ //Critical (ALERT)
+				//~ $colorStatus = COL_ALERTFIRED;
+				//~ break;
+			//~ case VISUAL_MAP_STATUS_NORMAL:
+				//~ //Normal (OK)
+				//~ $colorStatus = COL_NORMAL;
+				//~ break;
+			//~ case VISUAL_MAP_STATUS_WARNING:
+				//~ //Warning
+				//~ $colorStatus = COL_WARNING;
+				//~ break;
+			//~ case VISUAL_MAP_STATUS_UNKNOWN:
+			//~ default:
+				//~ //Unknown
+				//~ $colorStatus = COL_UNKNOWN;
+				//~ // Default is Grey (Other)
+				//~ break;
+		//~ }
 		
-		switch ($layout_data['type']) {
-			case GROUP_ITEM:
-			case STATIC_GRAPH:
-				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links);
-				break;
-			
-			
-			
-			case LABEL:
-				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links);
-				break;
-			
-			
-			
-			case ICON:
-				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links);
-				break;
-			
-			
-			
-			case SIMPLE_VALUE:
-			case SIMPLE_VALUE_MAX:
-			case SIMPLE_VALUE_MIN:
-			case SIMPLE_VALUE_AVG:
-				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links);
-				break;
-			
-			
-			
-			case PERCENTILE_BAR:
-			case PERCENTILE_BUBBLE:
-				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links);
-				break;
-			
-			
-			
-			case MODULE_GRAPH:
-				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links);
-				break;
-			
-			
-			
-			default:
-				enterprise_hook("enterprise_visual_map_print_item",
-					array($layout_data, $status, $colorStatus,
-						'operation', $resizedMap, $proportion));
-				break;
-		}
+		visual_map_print_item("read", $layout_data,
+			$proportion, $show_links);
+		
+		//~ switch ($layout_data['type']) {
+			//~ case GROUP_ITEM:
+			//~ case STATIC_GRAPH:
+				//~ visual_map_print_item("read", $layout_data,
+					//~ $proportion, $show_links);
+				//~ break;
+			//~ 
+			//~ 
+			//~ 
+			//~ case LABEL:
+				//~ visual_map_print_item("read", $layout_data,
+					//~ $proportion, $show_links);
+				//~ break;
+			//~ 
+			//~ 
+			//~ 
+			//~ case ICON:
+				//~ visual_map_print_item("read", $layout_data,
+					//~ $proportion, $show_links);
+				//~ break;
+			//~ 
+			//~ 
+			//~ 
+			//~ case SIMPLE_VALUE:
+			//~ case SIMPLE_VALUE_MAX:
+			//~ case SIMPLE_VALUE_MIN:
+			//~ case SIMPLE_VALUE_AVG:
+				//~ visual_map_print_item("read", $layout_data,
+					//~ $proportion, $show_links);
+				//~ break;
+			//~ 
+			//~ 
+			//~ 
+			//~ case PERCENTILE_BAR:
+			//~ case PERCENTILE_BUBBLE:
+				//~ visual_map_print_item("read", $layout_data,
+					//~ $proportion, $show_links);
+				//~ break;
+			//~ 
+			//~ 
+			//~ 
+			//~ case MODULE_GRAPH:
+				//~ visual_map_print_item("read", $layout_data,
+					//~ $proportion, $show_links);
+				//~ break;
+			//~ 
+			//~ 
+			//~ 
+			//~ default:
+				//~ enterprise_hook("enterprise_visual_map_print_item",
+					//~ array($layout_data, $status, $colorStatus,
+						//~ 'operation', $resizedMap, $proportion));
+				//~ break;
+		//~ }
 	}
 	
 	if ($draw_lines) {

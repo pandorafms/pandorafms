@@ -16,25 +16,21 @@
  * @param id_div Div to draw the lines in
  * @param editor Boolean variable to set other css selector in editor (when true).
  */
-function draw_line (line, id_div, editor) {
-	if (typeof(editor) == 'undefined') {
-		editor = false;
-		selector = 'margin-';
-	}
-	if (editor) {
-		selector = '';
-	}
+function draw_line (line, id_div) {
+	selector = '';
 	
 	//Check if the global var resize_map is defined
 	if (typeof(resize_map) == 'undefined') {
 		resize_map = 0;
 	}
-
+	
 	var lineThickness = 2;
 	if (line['thickness'])
 		lineThickness = line['thickness'];
 	
 	div = document.getElementById (id_div);
+	console.log(id_div);
+	console.log(div);
 	brush = new jsGraphics (div);
 	brush.setStroke (lineThickness);
 	brush.setColor (line['color']);
@@ -84,6 +80,7 @@ function draw_line (line, id_div, editor) {
 		y2 = parseInt($('#'+line['node_end']).css (selector + 'top')) + (height / 2);
 	}
 	
+	
 	brush.drawLine (x1, y1, x2, y2);
 	brush.paint ();
 }
@@ -96,8 +93,8 @@ function draw_line (line, id_div, editor) {
  * @param editor Boolean variable to set other css selector in editor (when true).
  */
 function draw_lines (lines, id_div, editor) {
-	jQuery.each (lines, function () {
-		draw_line (this, id_div, editor);
+	jQuery.each (lines, function (i, line) {
+		draw_line (line, id_div, editor);
 	});
 }
 

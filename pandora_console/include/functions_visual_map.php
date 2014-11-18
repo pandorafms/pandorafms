@@ -61,7 +61,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$top = $layoutData['pos_y'];
 	$left = $layoutData['pos_x'];
 	$id = $layoutData['id'];
-	$label = $layoutData['label'];
+	$label = io_safe_output($layoutData['label']);
 	$id_module = $layoutData['id_agente_modulo'];
 	$type = $layoutData['type'];
 	$period = $layoutData['period'];
@@ -728,7 +728,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				
 				
 				
-				$img_style_title = strip_tags($layoutData["label"]);
+				$img_style_title = strip_tags($label);
 				if ($layoutData['type'] == STATIC_GRAPH) {
 					if ($layoutData['id_agente_modulo'] != 0) {
 						$unit_text = trim(io_safe_output(
@@ -1621,7 +1621,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	
 	enterprise_include_once('include/functions_visual_map.php');
 	
-	//TODO: USE THE SAME CODE THAT THE VISUAL MAP EDITOR
 	global $config;
 	
 	$metaconsole_hack = '/';
@@ -1678,7 +1677,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		echo "<div style='width: 920px; overflow:auto; margin: 0 auto;'>";
 	}
 	
-	echo '<div id="layout_map"
+	echo '<div id="background"
 		style="margin:0px auto;
 			text-align:center;
 			z-index: 0;
@@ -1700,7 +1699,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		if ($resizedMap) {
 			//Hack to resize the text
 			$layout_data["label"] = str_replace(
-				'visual_font_size', 'resize_visual_font_size', $layout_data["label"]);
+				'visual_font_size', 'resize_visual_font_size',
+				$layout_data["label"]);
 		}
 		
 		//Check the items are from disabled or pending delete modules
@@ -1719,156 +1719,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				continue;
 		}
 		
-		$layout_data['label'] = io_safe_output($layout_data['label']);
-		
-		
-		
-		// *************************************************************
-		// Get parent status (Could be an agent, module, map,
-		// others doesnt have parent info)
-		// *************************************************************
-		
-		
-		if ($layout_data["parent_item"] != 0) {
-			$layout_data_parent = db_get_row_filter('tlayout_data',
-				array('id' => $layout_data["parent_item"]));
-			
-			$status_parent =
-				visual_map_get_status_element($layout_data_parent);
-			
-			$line['id'] = $layout_data['id'];
-			$line['node_begin'] = 'layout-data-' . $layout_data["parent_item"];
-			$line['node_end'] = 'layout-data-' . $layout_data["id"];
-			$line['thickness'] = empty($config["vc_line_thickness"]) ? 2 : $config["vc_line_thickness"];
-			switch ($status_parent) {
-				default:
-				case VISUAL_MAP_STATUS_UNKNOWN:
-					$line["color"] = COL_UNKNOWN; // Gray
-					break;
-				case VISUAL_MAP_STATUS_WARNING:
-					$line["color"] = COL_WARNING; // Yellow
-					break;
-				case VISUAL_MAP_STATUS_NORMAL:
-					$line["color"] = COL_NORMAL; // Green
-					break;
-				case VISUAL_MAP_STATUS_CRITICAL_ALERT:
-				case VISUAL_MAP_STATUS_CRITICAL_BAD:
-					$line["color"] = COL_CRITICAL; // Red
-					break;
-			}
-			array_push ($lines, $line);
-		}
-		
-		// *************************************************************
-		// Get STATUS of current object
-		// *************************************************************
-		$status = visual_map_get_status_element($layout_data);
-		
-		
-		//~ switch ($status) {
-			//~ case VISUAL_MAP_STATUS_CRITICAL_BAD:
-				//~ //Critical (BAD)
-				//~ $colorStatus = COL_CRITICAL;
-				//~ break;
-			//~ case VISUAL_MAP_STATUS_CRITICAL_ALERT:
-				//~ //Critical (ALERT)
-				//~ $colorStatus = COL_ALERTFIRED;
-				//~ break;
-			//~ case VISUAL_MAP_STATUS_NORMAL:
-				//~ //Normal (OK)
-				//~ $colorStatus = COL_NORMAL;
-				//~ break;
-			//~ case VISUAL_MAP_STATUS_WARNING:
-				//~ //Warning
-				//~ $colorStatus = COL_WARNING;
-				//~ break;
-			//~ case VISUAL_MAP_STATUS_UNKNOWN:
-			//~ default:
-				//~ //Unknown
-				//~ $colorStatus = COL_UNKNOWN;
-				//~ // Default is Grey (Other)
-				//~ break;
-		//~ }
-		
 		visual_map_print_item("read", $layout_data,
 			$proportion, $show_links);
-		
-		//~ switch ($layout_data['type']) {
-			//~ case GROUP_ITEM:
-			//~ case STATIC_GRAPH:
-				//~ visual_map_print_item("read", $layout_data,
-					//~ $proportion, $show_links);
-				//~ break;
-			//~ 
-			//~ 
-			//~ 
-			//~ case LABEL:
-				//~ visual_map_print_item("read", $layout_data,
-					//~ $proportion, $show_links);
-				//~ break;
-			//~ 
-			//~ 
-			//~ 
-			//~ case ICON:
-				//~ visual_map_print_item("read", $layout_data,
-					//~ $proportion, $show_links);
-				//~ break;
-			//~ 
-			//~ 
-			//~ 
-			//~ case SIMPLE_VALUE:
-			//~ case SIMPLE_VALUE_MAX:
-			//~ case SIMPLE_VALUE_MIN:
-			//~ case SIMPLE_VALUE_AVG:
-				//~ visual_map_print_item("read", $layout_data,
-					//~ $proportion, $show_links);
-				//~ break;
-			//~ 
-			//~ 
-			//~ 
-			//~ case PERCENTILE_BAR:
-			//~ case PERCENTILE_BUBBLE:
-				//~ visual_map_print_item("read", $layout_data,
-					//~ $proportion, $show_links);
-				//~ break;
-			//~ 
-			//~ 
-			//~ 
-			//~ case MODULE_GRAPH:
-				//~ visual_map_print_item("read", $layout_data,
-					//~ $proportion, $show_links);
-				//~ break;
-			//~ 
-			//~ 
-			//~ 
-			//~ default:
-				//~ enterprise_hook("enterprise_visual_map_print_item",
-					//~ array($layout_data, $status, $colorStatus,
-						//~ 'operation', $resizedMap, $proportion));
-				//~ break;
-		//~ }
 	}
 	
-	if ($draw_lines) {
-		/* If you want lines in the map, call using Javascript:
-		 draw_lines (lines, id_div);
-		 on body load, where id_div is the id of the div which holds the map */
-		echo '<script type="text/javascript">/* <![CDATA[ */'."\n";
-		
-		if ($resizedMap) {
-			echo 'var resize_map = 1;'."\n";
-		}
-		else {
-			echo 'var resize_map = 0;'."\n";
-		}
-		
-		echo 'var lines = Array ();'."\n";
-		
-		foreach ($lines as $line) {
-			echo 'lines.push (eval (' . json_encode ($line) . '));' . "\n";
-		}
-		echo '/* ]]> */</script>';
-	}
 	// End main div
 	echo "</div>";
 	
@@ -1877,7 +1731,20 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	if (defined('METACONSOLE')) {
 		echo "</div>";
 	}
-	
+	?>
+	<script language="javascript" type="text/javascript">
+		/* <![CDATA[ */
+		
+		var lines = Array();
+		
+		//Fixed to wait the load of images.
+		$(window).load(function() {
+				draw_lines(lines, 'background');
+			}
+		);
+		/* ]]> */
+	</script>
+	<?php
 }
 //End function
 

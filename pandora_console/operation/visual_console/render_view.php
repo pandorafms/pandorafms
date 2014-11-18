@@ -243,31 +243,30 @@ ui_require_javascript_file ('wz_jsgraphics');
 ui_require_javascript_file ('pandora_visual_console');
 ?>
 <script language="javascript" type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
-	$("#refr").change(function () {
-		$("#hidden-vc_refr").val($("#refr option:selected").val());
-	});
+	/* <![CDATA[ */
 	
-	<?php
-	if ($config["pure"] && ((int)get_parameter('refr', 0)) > 0) {
-		?>
-		t = new Date();
-		t.setTime (t.getTime() + <?php
-			echo ((int)get_parameter('refr', 0)) * 1000;
-		?>);
-		$("#countdown").countdown({
-			until: t,
-			format: 'MS',
-			description: '<?php echo __('Until refresh'); ?>'
-			});
+	
+	$(document).ready (function () {
+		$("#refr").change(function () {
+			$("#hidden-vc_refr").val($("#refr option:selected").val());
+		});
 		
 		<?php
-	}
-	?>
-	if (typeof(lines) != 'undefined') {
-		draw_lines (lines, 'layout_map');
-	}
-});
-/* ]]> */
+		if ($config["pure"] && ((int)get_parameter('refr', 0)) > 0) {
+			?>
+			t = new Date();
+			t.setTime (t.getTime() + <?php
+				echo ((int)get_parameter('refr', 0)) * 1000;
+			?>);
+			$("#countdown").countdown({
+				until: t,
+				format: 'MS',
+				description: '<?php echo __('Until refresh'); ?>'
+				});
+			
+			<?php
+		}
+		?>
+	});
+	/* ]]> */
 </script>

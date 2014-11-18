@@ -17,7 +17,7 @@ $groups = users_get_groups($id_user, 'ER');
 
 $propagate = db_get_value('propagate','tgrupo','id_grupo',$id_group);
 
-if ($group > 0) {
+if ($id_group > 0) {
 	if ($propagate) {
 		$childrens_ids = array($id_group);
 			
@@ -46,13 +46,7 @@ if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
 	}
 }
 else {
-	if (is_user_admin ($id_user)) {
-		//Do nothing if you're admin, you get full access
-		$sql_post = "";
-	}
-	else {
-		$sql_post = " AND id_grupo IN (" . implode (",", array_keys ($groups)) . ")";
-	}
+	$sql_post = " AND id_grupo IN (" . implode (",", array_keys ($groups)) . ")";
 }
 
 // Skip system messages if user is not PM
@@ -140,7 +134,6 @@ else {
 	}
 }
 
-
 if ($id_user_ack != "0")
 	$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
 
@@ -188,7 +181,7 @@ if (!empty($tag_without)) {
 		if ($first) $first = false;
 		else $sql_post .= " AND ";
 		
-		$sql_post .= "tags NOT LIKE '" . tags_get_name($id_tag) . "'";
+		$sql_post .= "tags <> '" . tags_get_name($id_tag) . "'";
 	}
 	$sql_post .= ' ) ';
 }

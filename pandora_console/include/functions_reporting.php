@@ -592,6 +592,10 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	if ($daysWeek === null) {
 		$daysWeek = array();
 	}
+
+	// Hotfix: The edge values are confuse to the users
+	$percent = 0;
+	
 	// Limit date to start searching data
 	$datelimit = $date - $period;
 
@@ -800,13 +804,13 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	// Get module type
 	$id_module_type = db_get_value('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	// If module is boolean don't create translation intervals (on the edge intervals)
-	if ($id_module_type == 2 or $id_module_type == 6 or $id_module_type == 9 or $id_module_type == 18){
-		$percent = 0;
-	}
-	else {
-		// Getting 10% of $diff --> $percent = ($diff/100)*10, so...
-		$percent = $diff / 10;
-	}
+	// if ($id_module_type == 2 or $id_module_type == 6 or $id_module_type == 9 or $id_module_type == 18){
+	//      $percent = 0;
+	// }
+	// else {
+	//      // Getting 10% of $diff --> $percent = ($diff/100)*10, so...
+	//      $percent = $diff / 10;
+	// }
 	
 	//Set initial conditions
 	$first_data = array_shift ($interval_data);

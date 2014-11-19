@@ -70,6 +70,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$borderStyle = '';
 	$imageSize = '';
 	
+	
 	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
 	
 	if (!isset($layoutData['status_calculated'])) {
@@ -1968,6 +1969,47 @@ function visual_map_get_layoutdata_x ($id_layoutdata) {
  */
 function visual_map_get_layoutdata_y ($id_layoutdata){
 	return (float) db_get_value ('pos_y', 'tlayout_data', 'id', (int) $id_layoutdata);
+}
+
+function visual_map_type_in_js($type) {
+	switch ($type) {
+		case STATIC_GRAPH:
+			return 'static_graph';
+			break;
+		case PERCENTILE_BAR:
+			return 'percentile_item';
+			break;
+		case MODULE_GRAPH:
+			return 'module_graph';
+			break;
+		case SIMPLE_VALUE:
+			return 'simple_value';
+			break;
+		case LABEL:
+			return 'label';
+			break;
+		case ICON:
+			return 'icon';
+			break;
+		case SIMPLE_VALUE_MAX:
+			return 'simple_value';
+			break;
+		case SIMPLE_VALUE_MIN:
+			return 'simple_value';
+			break;
+		case SIMPLE_VALUE_AVG:
+			return 'simple_value';
+			break;
+		case PERCENTILE_BUBBLE:
+			return 'percentile_item';
+			break;
+		case SERVICE:
+			return 'service';
+			break;
+		case GROUP_ITEM:
+			return 'group_item';
+		break;
+	}
 }
 
 ?>

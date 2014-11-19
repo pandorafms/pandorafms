@@ -387,6 +387,7 @@ function toggle_item_palette() {
 		activeToolboxButton('percentile_item', false);
 		activeToolboxButton('group_item', false);
 		
+		activeToolboxButton('copy_item', false);
 		activeToolboxButton('edit_item', false);
 		activeToolboxButton('delete_item', false);
 		activeToolboxButton('show_grid', false);
@@ -1597,6 +1598,45 @@ function updateDB(type, idElement , values, event) {
 	}
 }
 
+function copyDB(idItem) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole != 0) {
+		url_ajax = "../../ajax.php";
+	}
+	
+	parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "copy"});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	parameter.push ({name: "id_element", value: idItem});
+	
+	jQuery.ajax({
+		url: url_ajax,
+		async: false,
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			if (data['correct']) {
+				values = data['values'];
+				type = data['type'];
+				id = data['id_data'];
+				
+				createItem(type, values, id);
+				addItemSelectParents(id, data['text']);
+				
+				//Reload all events for the item and new item.
+				eventsItems();
+			}
+			else {
+				//TODO
+			}
+		}
+	});
+}
+
 function deleteDB(idElement) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
@@ -1698,6 +1738,7 @@ function eventsItems(drag) {
 				creationItem = null;
 				selectedItem = 'static_graph';
 				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
@@ -1706,6 +1747,7 @@ function eventsItems(drag) {
 				creationItem = null;
 				selectedItem = 'group_item';
 				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
@@ -1714,6 +1756,7 @@ function eventsItems(drag) {
 				creationItem = null;
 				selectedItem = 'percentile_item';
 				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
@@ -1722,6 +1765,7 @@ function eventsItems(drag) {
 				creationItem = null;
 				selectedItem = 'module_graph';
 				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
@@ -1730,6 +1774,7 @@ function eventsItems(drag) {
 				creationItem = null;
 				selectedItem = 'simple_value';
 				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
@@ -1738,6 +1783,7 @@ function eventsItems(drag) {
 				creationItem = null;
 				selectedItem = 'label';
 				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
@@ -1746,6 +1792,7 @@ function eventsItems(drag) {
 				creationItem = null;
 				selectedItem = 'icon';
 				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
@@ -1809,6 +1856,7 @@ function eventsItems(drag) {
 			if (selectedItem != null) {
 				creationItem = null;
 				idItem = $(event.target).attr('id');
+				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 			}
@@ -1867,6 +1915,7 @@ function eventsBackground() {
 		if (!is_opened_palette) {
 			unselectAll();
 			$("#background").css('border', '2px blue dotted');
+			activeToolboxButton('copy_item', false);
 			activeToolboxButton('edit_item', true);
 			activeToolboxButton('delete_item', false);
 			activeToolboxButton('show_grid', true);
@@ -1948,6 +1997,11 @@ function click_button_toolbox(id) {
 			toggle_item_palette();
 			break;
 		
+		
+		
+		case 'copy_item':
+			click_copy_item_callback();
+			break;
 		case 'edit_item':
 			toggle_item_palette();
 			break;
@@ -1976,6 +2030,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('service', false);
 				activeToolboxButton('group_item', false);
 				
+				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
 				activeToolboxButton('show_grid', false);
@@ -1993,6 +2048,7 @@ function click_button_toolbox(id) {
 					activeToolboxButton('show_grid', true);
 				}
 				if (selectedItem != null) {
+					activeToolboxButton('copy_item', true);
 					activeToolboxButton('edit_item', true);
 				}
 				
@@ -2119,6 +2175,10 @@ function showPreviewIcon(icon) {
 			}
 		});
 	}
+}
+
+function click_copy_item_callback() {
+	copyDB(idItem);
 }
 
 function showGrid() {

@@ -443,12 +443,15 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('show_grid', __('Show grid'), 'right', true, 'grid_min', true);
 		visual_map_print_button_editor('edit_item', __('Update item'), 'right', true, 'config_min', true);
 		visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
+		visual_map_print_button_editor('copy_item', __('Copy item'), 'right', true, 'delete_min', true);
 	echo '</div>';
 	echo '</div>';
 	echo '<div style="clear: right; margin-bottom: 10px;"></div>';
 }
 
-function visual_map_print_button_editor($idDiv, $label, $float = 'left', $disabled = false, $class= '', $imageButton = false) {
+function visual_map_print_button_editor($idDiv, $label, $float = 'left',
+	$disabled = false, $class= '', $imageButton = false) {
+	
 	if ($float == 'left') {
 		$margin = 'margin-right';
 	}

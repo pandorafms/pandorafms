@@ -758,6 +758,12 @@ input.icon_min {
 input.icon_min[disabled] {
 	background: #fefefe url(../../images/photo.disabled.png) no-repeat center !important;
 }
+input.copy_item {
+	background: #fefefe url(../../images/copy_visualmap.png) no-repeat center !important;
+}
+input.copy_item[disabled] {
+	background: #fefefe url(../../images/copy_visualmap.disabled.png) no-repeat center !important;
+}
 input.grid_min {
 	background: #fefefe url(../../images/grid.png) no-repeat center !important;
 }

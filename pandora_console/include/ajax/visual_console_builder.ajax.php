@@ -682,6 +682,43 @@ switch ($action) {
 	
 	
 	
+	case 'copy':
+		
+		$values = db_get_row_filter('tlayout_data',
+			array('id' => $id_element));
+		
+		unset($values['id']);
+		$values['pos_x'] = $values['pos_x'] + 20;
+		$values['pos_y'] = $values['pos_y'] + 20;
+		
+		$idData = db_process_sql_insert('tlayout_data', $values);
+		
+		$return = array();
+		if ($idData === false) {
+			$return['correct'] = 0;
+		}
+		else {
+			
+			$text = visual_map_create_internal_name_item($label, $type, $image, $agent, $id_module, $idData);
+			
+			$values['label'] = io_safe_output($values['label']);
+			$values['left'] = $values['pos_x'];
+			$values['top'] = $values['pos_y'];
+			$values['parent'] = $values['parent_item'];
+			$return['values'] = $values;
+			$return['correct'] = 1;
+			$return['id_data'] = $idData;
+			$return['text'] = $text;
+			$return['type'] = visual_map_type_in_js($values['type']);
+		}
+		
+		html_debug_print($return, true);
+		
+		echo json_encode($return);
+		break;
+	
+	
+	
 	case 'delete':
 		if (db_process_sql_delete('tlayout_data', array('id' => $id_element, 'id_layout' => $id_visual_console)) === false) {
 			$return['correct'] = 0;

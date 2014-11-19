@@ -29,8 +29,7 @@ function draw_line (line, id_div) {
 		lineThickness = line['thickness'];
 	
 	div = document.getElementById (id_div);
-	console.log(id_div);
-	console.log(div);
+	
 	brush = new jsGraphics (div);
 	brush.setStroke (lineThickness);
 	brush.setColor (line['color']);

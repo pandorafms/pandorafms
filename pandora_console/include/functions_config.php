@@ -1164,6 +1164,10 @@ function config_process_config () {
 		config_update_value ('event_storm_protection', 0);
 	}
 	
+	if (!isset($config['server_log_dir'])) {
+		config_update_value ('server_log_dir', "");
+	}
+	
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
 	}

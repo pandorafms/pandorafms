@@ -449,6 +449,8 @@ function config_update_config () {
 						$error_update[] = __('Networkmap max width');
 					if (!config_update_value ('short_module_graph_data', get_parameter('short_module_graph_data')))
 						$error_update[] = __('Shortened module graph data');
+					if (!config_update_value ('show_group_name', get_parameter('show_group_name')))
+						$error_update[] = __('Show the group name instead the group icon.');
 					
 					$interval_values = get_parameter ('interval_values');
 					
@@ -1182,6 +1184,15 @@ function config_process_config () {
 	
 	if (!isset($config['event_storm_protection'])) {
 		config_update_value ('event_storm_protection', 0);
+	}
+	
+	
+	if (!isset($config['server_log_dir'])) {
+		config_update_value ('server_log_dir', "");
+	}
+	
+	if (!isset($config['show_group_name'])) {
+		config_update_value ('show_group_name', 0);
 	}
 	
 	if (!isset($config['command_snapshot'])) {

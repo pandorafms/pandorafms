@@ -489,7 +489,9 @@ function ui_print_tags_warning ($return = false) {
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_group_icon ($id_group, $return = false, $path = "groups_small", $style='', $link = true) {
+function ui_print_group_icon ($id_group, $return = false, $path = "groups_small", $style='', $link = true, $force_show_image = false, $show_as_image = false) {
+	global $config;
+	
 	if ($id_group > 0)
 		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
@@ -505,11 +507,17 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	if ($link) 
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
-	if (empty ($icon))
-		$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;-&nbsp</span>';
+	if ($config['show_group_name']) {
+		$output .= '<span title="'. groups_get_name($id_group, true) .'">' .
+			groups_get_name($id_group, true) . '&nbsp</span>';
+	}
 	else {
-		$output .= html_print_image("images/" . $path . "/" . $icon . ".png",
-			true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)));
+		if (empty ($icon))
+			$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;-&nbsp</span>';
+		else {
+			$output .= html_print_image("images/" . $path . "/" . $icon . ".png",
+				true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)));
+		}
 	}
 	
 	if ($link) 

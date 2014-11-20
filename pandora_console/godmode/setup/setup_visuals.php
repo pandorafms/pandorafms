@@ -265,14 +265,19 @@ $table->data[$row][1] = html_print_input_text ('description_size_text', $config[
 
 $row++;
 
-$table->data[$row][0] = __('Item title size text') . ui_print_help_tip(__('When the item title name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[$row][1] = html_print_input_text ('item_title_size_text', $config["item_title_size_text"], '', 3, 3, true);
+$table->data[$row][0] = __('Item title size text') .
+	ui_print_help_tip(__('When the item title name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[$row][1] = html_print_input_text('item_title_size_text',
+	$config["item_title_size_text"], '', 3, 3, true);
 
 $row++;
 
-$table->data[$row][0] = __('GIS Labels') . ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
-$table->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('gis_label', 1, '', $config["gis_label"], true).'&nbsp;&nbsp;';
-$table->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('gis_label', 0, '', $config["gis_label"], true);
+$table->data[$row][0] = __('GIS Labels') .
+	ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
+$table->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('gis_label', 1, '', $config["gis_label"], true).'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('gis_label', 0, '', $config["gis_label"], true);
 
 $row++;
 
@@ -305,19 +310,34 @@ else {
 	$path_warning = $path . $gis_default_icon . ".warning.png";
 }
 
-$table->data[$row][1] = html_print_select($arraySelectIcon, "gis_default_icon", $gis_default_icon, "changeIcons();", __('None'), '', true) .  '&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .  '&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) . '&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
+$table->data[$row][1] = html_print_select($arraySelectIcon,
+	"gis_default_icon", $gis_default_icon, "changeIcons();", __('None'),
+		'', true) .
+	'&nbsp;' .
+	html_print_image($path_ok, true,
+		array("id" => "icon_ok",
+			"style" => "display:".$display_icons.";")) .  '&nbsp;' .
+	html_print_image($path_bad, true,
+		array("id" => "icon_bad",
+			"style" => "display:".$display_icons.";")) . '&nbsp;' .
+	html_print_image($path_warning, true,
+		array("id" => "icon_warning",
+			"style" => "display:".$display_icons.";"));
 
 $row++;
 
 // For 5.1 Autohidden menu feature
 
 $table->data['autohidden'][0] = __('Autohidden menu');
-$table->data['autohidden'][1] = html_print_checkbox('autohidden_menu', 1, $config['autohidden_menu'], true);
+$table->data['autohidden'][1] = html_print_checkbox('autohidden_menu',
+	1, $config['autohidden_menu'], true);
 
 // Juanma (07/05/2014) New feature: Table for custom front page for reports  
 
-$table->data[$row][0] = __('Custom report front page') . ui_print_help_tip(__('Custom report front page. It will be applied to all reports and templates by default.'), true);
-$table->data[$row][1] = html_print_checkbox('custom_report_front', 1, $config['custom_report_front'], true);
+$table->data[$row][0] = __('Custom report front page') .
+	ui_print_help_tip(__('Custom report front page. It will be applied to all reports and templates by default.'), true);
+$table->data[$row][1] = html_print_checkbox('custom_report_front', 1,
+	$config['custom_report_front'], true);
 
 $row++;
 
@@ -338,14 +358,24 @@ foreach ($dirFonts as $entryDir) {
 }
 
 $table->data[$row][0] = __('Custom report front') . ' - ' . __('Font family');
-$table->data[$row][1] = html_print_select ($_fonts, 'custom_report_front_font', $config['custom_report_front_font'], false, __('Default'), '', true);
+$table->data[$row][1] = html_print_select ($_fonts,
+	'custom_report_front_font', $config['custom_report_front_font'],
+	false, __('Default'), '', true);
 
 $row++;
 
-$table->data[$row][0] =  __('Custom report front') . ' - ' . __('Custom logo') .
+$table->data[$row][0] =  __('Custom report front') . ' - ' .
+	__('Custom logo') .
 	ui_print_help_tip(
 		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG) in upload tool in console."), true);
-$table->data[$row][1] = html_print_select ($customLogos, 'custom_report_front_logo', $config['custom_report_front_logo'], 'showPreview()', __('Default'), '', true);
+$table->data[$row][1] = html_print_select(
+	$customLogos,
+	'custom_report_front_logo',
+	$config['custom_report_front_logo'],
+	'showPreview()',
+	__('Default'),
+	'',
+	true);
 
 $row++;
 
@@ -353,7 +383,8 @@ $table->data[$row][0] =  __('Custom report front') . ' - ' . 'Preview';
 if (empty($config['custom_report_front_logo'])) {
 	$config['custom_report_front_logo'] = 'images/pandora_logo_white.jpg';
 }
-$table->data[$row][1] = '<span id="preview_image">' . html_print_image ($config['custom_report_front_logo'], true) . '</span>';
+$table->data[$row][1] = '<span id="preview_image">' .
+	html_print_image ($config['custom_report_front_logo'], true) . '</span>';
 
 $row++;
 
@@ -376,26 +407,32 @@ $table->data[$row][1] = html_print_textarea('custom_report_front_footer', 5, 15,
 $row++;
 
 $table->data[$row][0] = __('Paginate module view');
-$table->data[$row][1] = html_print_checkbox('paginate_module', 1, $config['paginate_module'], true);
+$table->data[$row][1] = html_print_checkbox('paginate_module', 1,
+	$config['paginate_module'], true);
 
 $row++;
 
 $table->data[$row][0] = __('Show QR Code icon in the header');
 $table->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('show_qr_code_header', 1, '', $config["show_qr_code_header"], true) .
+	html_print_radio_button ('show_qr_code_header', 1, '',
+		$config["show_qr_code_header"], true) .
 	'&nbsp;&nbsp;';
 $table->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('show_qr_code_header', 0, '', $config["show_qr_code_header"], true);
+	html_print_radio_button ('show_qr_code_header', 0, '',
+		$config["show_qr_code_header"], true);
 
 $row++;
 
-$table->data[$row][0] = __('Custom graphviz directory') . ui_print_help_tip (__("Custom directory where the graphviz binaries are stored."), true);
-$table->data[$row][1] = html_print_input_text ('graphviz_bin_dir', $config["graphviz_bin_dir"], '', 50, 255, true);
+$table->data[$row][0] = __('Custom graphviz directory') .
+	ui_print_help_tip (__("Custom directory where the graphviz binaries are stored."), true);
+$table->data[$row][1] = html_print_input_text ('graphviz_bin_dir',
+	$config["graphviz_bin_dir"], '', 50, 255, true);
 
 $row++;
 
 $table->data[$row][0] = __('Networkmap max width');
-$table->data[$row][1] = html_print_input_text ('networkmap_max_width', $config["networkmap_max_width"], '', 10, 20, true);
+$table->data[$row][1] = html_print_input_text ('networkmap_max_width',
+	$config["networkmap_max_width"], '', 10, 20, true);
 
 $row++;
 
@@ -423,11 +460,26 @@ if (!isset($config["short_module_graph_data"]))
 $table->data[$row][0] = __('Shortened module graph data');
 $table->data[$row][0] .= ui_print_help_tip(__('The data number of the module graphs will be rounded and shortened'), true);
 $table->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('short_module_graph_data', 1, '', $config["short_module_graph_data"], true) .
+	html_print_radio_button ('short_module_graph_data', 1, '',
+		$config["short_module_graph_data"], true) .
 	'&nbsp;&nbsp;';
 $table->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('short_module_graph_data', 0, '', $config["short_module_graph_data"], true);
+	html_print_radio_button ('short_module_graph_data', 0, '',
+		$config["short_module_graph_data"], true);
 
+$row++;
+
+
+$table->data[$row][0] = __('Show only the group name');
+$table->data[$row][0] .= ui_print_help_tip(
+	__('Show the group name instead the group icon.'), true);
+$table->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('show_group_name', 1, '',
+		$config["show_group_name"], true) .
+	'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('show_group_name', 0, '',
+		$config["show_group_name"], true);
 $row++;
 
 echo '<form id="form_setup" method="post">';
@@ -465,15 +517,16 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 // Juanma (07/05/2014) New feature: Custom front page for reports  
 function display_custom_report_front (show) {
-		
+	
 	if (show == true) {
 		$('#table2-32').show();
 		$('#table2-33').show();
 		$('#table2-34').show();
 		$('#table2-35').show();
 		$('#table2-36').show();
-		$('#table2-37').show();		
-	} else {
+		$('#table2-37').show();
+	}
+	else {
 		$('#table2-32').hide();
 		$('#table2-33').hide();
 		$('#table2-34').hide();
@@ -487,13 +540,18 @@ function display_custom_report_front (show) {
 function showPreview() {
 	var img_value = $('#custom_report_front_logo').val();
 	
-	jQuery.post (<?php echo "'" . ui_get_full_url(false, false, false, false) . "'" ?> + "/ajax.php",
-			{"page" : "<?php echo ENTERPRISE_DIR ?>/godmode/reporting/reporting_builder.template_advanced",
+	jQuery.post (
+		<?php
+		echo "'" . ui_get_full_url(false, false, false, false) . "'";
+		?> + "/ajax.php",
+		{
+			"page" : "<?php echo ENTERPRISE_DIR ?>/godmode/reporting/reporting_builder.template_advanced",
 			"get_image_path": "1",
-			"img_src" : img_value},
-			function (data, status) {
-				$("#preview_image").html(data);
-			}
+			"img_src" : img_value
+		},
+		function (data, status) {
+			$("#preview_image").html(data);
+		}
 	);
 	
 }
@@ -546,13 +604,15 @@ $(document).ready (function () {
 	});
 	
 	// Juanma (06/05/2014) New feature: Custom front page for reports  
-	var custom_report = $('#checkbox-custom_report_front').prop('checked');
+	var custom_report = $('#checkbox-custom_report_front')
+		.prop('checked');
 	display_custom_report_front(custom_report);
-
+	
 	$("#checkbox-custom_report_front").click( function()  {
-		var custom_report = $('#checkbox-custom_report_front').prop('checked');
+		var custom_report = $('#checkbox-custom_report_front')
+			.prop('checked');
 		display_custom_report_front(custom_report);
-	});		
+	});
 });
 
 function changeIcons() {
@@ -572,11 +632,16 @@ function changeIcons() {
 		$("#icon_warning").attr("style", "display:none;");
 	}
 	else {
-		$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
-		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
-		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
-		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
-		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
+		$("#icon_without_status").attr("src",
+			"<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_default").attr("src",
+			"<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_ok").attr("src",
+			"<?php echo $path; ?>" + icon + ".ok.png");
+		$("#icon_bad").attr("src",
+			"<?php echo $path; ?>" + icon + ".bad.png");
+		$("#icon_warning").attr("src",
+			"<?php echo $path; ?>" + icon + ".warning.png");
 		$("#icon_without_status").attr("style", "");
 		$("#icon_default").attr("style", "");
 		$("#icon_ok").attr("style", "");

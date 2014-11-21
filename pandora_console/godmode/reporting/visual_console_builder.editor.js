@@ -129,6 +129,8 @@ function update_button_palette_callback() {
 			
 			idElement = 0;
 			break;
+		case 'box_item':
+			break;
 		case 'group_item':
 		case 'static_graph':
 			$("#text_" + idItem).html(values['label']);
@@ -245,6 +247,14 @@ function readFields() {
 	values['id_group'] = $("select[name=group]").val();
 	values['id_custom_graph'] = parseInt(
 		$("#custom_graph option:selected").val());
+	values['width_box'] = parseInt(
+		$("input[name='width_box']").val());
+	values['height_box'] = parseInt(
+		$("input[name='height_box']").val());
+	values['border_color'] = $("input[name='border_color']").val();
+	values['border_width'] = parseInt(
+		$("input[name='border_width']").val());
+	values['fill_color'] = $("input[name='fill_color']").val();
 	
 	if (metaconsole != 0) {
 		values['metaconsole'] = 1;
@@ -271,6 +281,8 @@ function create_button_palette_callback() {
 	//VALIDATE DATA
 	var validate = true;
 	switch (creationItem) {
+		case 'box_item':
+			break;
 		case 'group_item':
 		case 'static_graph':
 			if ((values['label'] == '') && (values['image'] == '')) {
@@ -362,6 +374,7 @@ function toggle_item_palette() {
 		activeToolboxButton('icon', true);
 		activeToolboxButton('percentile_item', true);
 		activeToolboxButton('group_item', true);
+		activeToolboxButton('box_item', true);
 		
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -386,6 +399,7 @@ function toggle_item_palette() {
 		activeToolboxButton('icon', false);
 		activeToolboxButton('percentile_item', false);
 		activeToolboxButton('group_item', false);
+		activeToolboxButton('box_item', false);
 		
 		activeToolboxButton('copy_item', false);
 		activeToolboxButton('edit_item', false);
@@ -553,14 +567,22 @@ function loadFieldsFromDB(item) {
 							$('#' + periodId + '_manual').show();
 						}
 					}
-					if (key == 'width') $("input[name=width]").val(val);
-					if (key == 'height') $("input[name=height]").val(val);
-					if (key == 'parent_item') $("select[name=parent]").val(val);
-					if (key == 'id_layout_linked') $("select[name=map_linked]").val(val);
-					if (key == 'width_percentile') $("input[name=width_percentile]").val(val);
-					if (key == 'max_percentile') $("input[name=max_percentile]").val(val);
-					if (key == 'width_module_graph') $("input[name=width_module_graph]").val(val);
-					if (key == 'height_module_graph') $("input[name=height_module_graph]").val(val);
+					if (key == 'width')
+						$("input[name=width]").val(val);
+					if (key == 'height')
+						$("input[name=height]").val(val);
+					if (key == 'parent_item')
+						$("select[name=parent]").val(val);
+					if (key == 'id_layout_linked')
+						$("select[name=map_linked]").val(val);
+					if (key == 'width_percentile')
+						$("input[name=width_percentile]").val(val);
+					if (key == 'max_percentile')
+						$("input[name=max_percentile]").val(val);
+					if (key == 'width_module_graph')
+						$("input[name=width_module_graph]").val(val);
+					if (key == 'height_module_graph')
+						$("input[name=height_module_graph]").val(val);
 					
 					if (key == 'type_percentile') {
 						if (val == 'percentile') {
@@ -597,8 +619,19 @@ function loadFieldsFromDB(item) {
 							$("#id_server_name").val(val);
 						}
 					}
+					
+					if (key == 'width_box')
+						$("input[name='width_box']").val(val);
+					if (key == 'height_box')
+						$("input[name='height_box']").val(val);
+					if (key == 'border_color')
+						$("input[name='border_color']").val(val);
+					if (key == 'border_width')
+						$("input[name='border_width']").val(val);
+					if (key == 'fill_color')
+						$("input[name='fill_color']").val(val);
 				});
-
+				
 				if (data.type == 1) {
 					if (data.id_custom_graph > 0) {
 						$("input[name='radio_choice'][value='custom_graph']")
@@ -757,6 +790,18 @@ function hiddenFields(item) {
 	$("#custom_graph_row").css('display', 'none');
 	$("#custom_graph_row."  + item).css('display', '');
 	
+	$("#box_size_row").css('display', 'none');
+	$("#box_size_row."  + item).css('display', '');
+	
+	$("#border_color_row").css('display', 'none');
+	$("#border_color_row."  + item).css('display', '');
+	
+	$("#border_width_row").css('display', 'none');
+	$("#border_width_row."  + item).css('display', '');
+	
+	$("#fill_color_row").css('display', 'none');
+	$("#fill_color_row."  + item).css('display', '');
+	
 	$("input[name='radio_choice']").trigger('change');
 	
 	if (typeof(enterprise_hiddenFields) == 'function') {
@@ -791,6 +836,13 @@ function cleanFields(item) {
 	$("select[name=map_linked]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
+	$("input[name='width_box']").val(300);
+	$("input[name='height_box']").val(180);
+	$("input[name='border_color']").val('#000000');
+	$("input[name='border_width']").val(3);
+	$("input[name='fill_color']").val('#ffffff');
+	
+	
 	$("#preview").empty();
 	
 	
@@ -1138,6 +1190,8 @@ function createItem(type, values, id_data) {
 	}
 	
 	switch (type) {
+		case 'box_item':
+			break;
 		case 'group_item':
 		case 'static_graph':
 			if ((values['width'] == 0) && (values['height'] == 0)) {
@@ -1694,10 +1748,12 @@ function activeToolboxButton(id, active) {
 	}
 	
 	if (active) {
-		$("input." + id + "[name=button_toolbox2]").removeAttr('disabled');
+		$("input." + id + "[name=button_toolbox2]")
+			.removeAttr('disabled');
 	}
 	else {
-		$("input." + id + "[name=button_toolbox2]").attr('disabled', true);
+		$("input." + id + "[name=button_toolbox2]")
+			.attr('disabled', true);
 	}
 }
 
@@ -1734,6 +1790,15 @@ function eventsItems(drag) {
 			unselectAll();
 			$(divParent).css('border', '2px blue dotted');
 			
+			if ($(divParent).hasClass('box_item')) {
+				creationItem = null;
+				selectedItem = 'box_item';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('static_graph')) {
 				creationItem = null;
 				selectedItem = 'static_graph';
@@ -1824,6 +1889,9 @@ function eventsItems(drag) {
 			$(event.target).css('border', '2px blue dotted');
 			
 			selectedItem = null;
+			if ($(event.target).hasClass('box_item')) {
+				selectedItem = 'box_item';
+			}
 			if ($(event.target).hasClass('static_graph')) {
 				selectedItem = 'static_graph';
 			}
@@ -1994,6 +2062,10 @@ function click_button_toolbox(id) {
 			break;
 		case 'group_item':
 			toolbuttonActive = creationItem = 'group_item';
+			toggle_item_palette();
+			break;
+		case 'box_item':
+			toolbuttonActive = creationItem = 'box_item';
 			toggle_item_palette();
 			break;
 		

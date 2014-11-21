@@ -65,6 +65,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$id_module = $layoutData['id_agente_modulo'];
 	$type = $layoutData['type'];
 	$period = $layoutData['period'];
+	$border_width = $layoutData['border_width'];
+	$border_color = $layoutData['border_color'];
+	$fill_color = $layoutData['fill_color'];
 	
 	$sizeStyle = '';
 	$borderStyle = '';
@@ -553,7 +556,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 		}
 	}
 	
-	$z_index = 1;
+	//  + 1 for to avoid the box and lines items are on the top of
+	// others
+	$z_index = 1 + 1;
 	
 	switch ($type) {
 		case STATIC_GRAPH:
@@ -573,13 +578,13 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD)
-				$z_index = 3;
+				$z_index = 3 + 1;
 			elseif ($status == VISUAL_MAP_STATUS_WARNING)
-				$z_index = 2;
+				$z_index = 2 + 1;
 			elseif ($status == VISUAL_MAP_STATUS_CRITICAL_ALERT)
-				$z_index = 4;
+				$z_index = 4 + 1;
 			else
-				$z_index = 1;
+				$z_index = 1 + 1;
 			break;
 		case ICON:
 			if ($layoutData['image'] != null) {
@@ -592,7 +597,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
 			
-			$z_index = 4;
+			$z_index = 4 + 1;
 			break;
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
@@ -669,7 +674,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			break;
 		case LABEL:
-			$z_index = 4;
+			$z_index = 4 + 1;
+			break;
+		case BOX_ITEM:
+			$z_index = 1;
 			break;
 	}
 	
@@ -701,6 +709,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case ICON:
 			$class .= "icon";
 			break;
+		case BOX_ITEM:
+			$class .= "box_item";
+			break;
 		default:
 			if (!empty($element_enterprise)) {
 				$class .= $element_enterprise['class'];
@@ -723,6 +734,16 @@ function visual_map_print_item($mode = "read", $layoutData,
 	}
 	
 	switch ($type) {
+		case BOX_ITEM:
+			$style = "";
+			$style .= "width: " . $width . "px; ";
+			$style .= "height: " . $height . "px; ";
+			$style .= "border-style: solid; ";
+			$style .= "border-width: " . $border_width . "px; ";
+			$style .= "border-color: " . $border_color . "; ";
+			$style .= "background-color: " . $fill_color . "; ";
+			echo "<div style='" . $style . "'></div>";
+			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
 			if ($layoutData['image'] != null) {

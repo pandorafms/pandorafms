@@ -61,38 +61,38 @@ define ('ERR_ACL',				-110000);
 define ('ERR_AUTH',				-120000);
 
 /* Event status code */
-define ('EVENT_STATUS_NEW',0);
-define ('EVENT_STATUS_INPROCESS',2);
-define ('EVENT_STATUS_VALIDATED',1);
+define ('EVENT_STATUS_NEW',			0);
+define ('EVENT_STATUS_INPROCESS',	2);
+define ('EVENT_STATUS_VALIDATED',	1);
 
 /* Seconds in a time unit constants */
-define('SECONDS_1MINUTE', 60);
-define('SECONDS_2MINUTES', 120);
-define('SECONDS_5MINUTES', 300);
-define('SECONDS_10MINUTES', 600);
-define('SECONDS_15MINUTES', 900);
-define('SECONDS_30MINUTES', 1800);
-define('SECONDS_1HOUR', 3600);
-define('SECONDS_2HOUR', 7200);
-define('SECONDS_3HOUR', 10800);
-define('SECONDS_5HOUR', 18000);
-define('SECONDS_6HOURS', 21600);
-define('SECONDS_12HOURS', 43200);
-define('SECONDS_1DAY', 86400);
-define('SECONDS_2DAY', 172800);
-define('SECONDS_4DAY', 345600);
-define('SECONDS_5DAY', 432000);
-define('SECONDS_1WEEK', 604800);
-define('SECONDS_10DAY', 864000);
-define('SECONDS_2WEEK', 1209600);
-define('SECONDS_15DAYS', 1296000);
-define('SECONDS_1MONTH', 2592000);
-define('SECONDS_2MONTHS', 5184000);
-define('SECONDS_3MONTHS', 7776000);
-define('SECONDS_6MONTHS', 15552000);
-define('SECONDS_1YEAR', 31104000);
-define('SECONDS_2YEARS', 62208000);
-define('SECONDS_3YEARS', 93312000);
+define('SECONDS_1MINUTE',			60);
+define('SECONDS_2MINUTES',			120);
+define('SECONDS_5MINUTES',			300);
+define('SECONDS_10MINUTES',			600);
+define('SECONDS_15MINUTES',			900);
+define('SECONDS_30MINUTES',			1800);
+define('SECONDS_1HOUR',				3600);
+define('SECONDS_2HOUR',				7200);
+define('SECONDS_3HOUR',				10800);
+define('SECONDS_5HOUR',				18000);
+define('SECONDS_6HOURS',			21600);
+define('SECONDS_12HOURS',			43200);
+define('SECONDS_1DAY',				86400);
+define('SECONDS_2DAY',				172800);
+define('SECONDS_4DAY',				345600);
+define('SECONDS_5DAY',				432000);
+define('SECONDS_1WEEK',				604800);
+define('SECONDS_10DAY',				864000);
+define('SECONDS_2WEEK',				1209600);
+define('SECONDS_15DAYS',			1296000);
+define('SECONDS_1MONTH',			2592000);
+define('SECONDS_2MONTHS',			5184000);
+define('SECONDS_3MONTHS',			7776000);
+define('SECONDS_6MONTHS',			15552000);
+define('SECONDS_1YEAR',				31104000);
+define('SECONDS_2YEARS',			62208000);
+define('SECONDS_3YEARS',			93312000);
 
 
 
@@ -178,38 +178,39 @@ define('AGENT_STATUS_WARNING', 2);
 
 /* Visual maps contants */
 //The items kind
-define('STATIC_GRAPH', 0);
-define('PERCENTILE_BAR', 3);
-define('MODULE_GRAPH', 1);
-define('SIMPLE_VALUE', 2);
-define('LABEL', 4);
-define('ICON', 5);
-define('SIMPLE_VALUE_MAX', 6);
-define('SIMPLE_VALUE_MIN', 7);
-define('SIMPLE_VALUE_AVG', 8);
-define('PERCENTILE_BUBBLE', 9);
-define('SERVICE', 10); //Enterprise Item.
-define('GROUP_ITEM', 11);
+define('STATIC_GRAPH',		0);
+define('PERCENTILE_BAR',	3);
+define('MODULE_GRAPH',		1);
+define('SIMPLE_VALUE',		2);
+define('LABEL',				4);
+define('ICON',				5);
+define('SIMPLE_VALUE_MAX',	6);
+define('SIMPLE_VALUE_MIN',	7);
+define('SIMPLE_VALUE_AVG',	8);
+define('PERCENTILE_BUBBLE',	9);
+define('SERVICE',			10); //Enterprise Item.
+define('GROUP_ITEM',		11);
+define('BOX_ITEM',			12);
 //Some styles
-define('MIN_WIDTH',300);
-define('MIN_HEIGHT',120);
-define('MIN_WIDTH_CAPTION',420);
+define('MIN_WIDTH',			300);
+define('MIN_HEIGHT',		120);
+define('MIN_WIDTH_CAPTION',	420);
 //The process for simple value
-define('PROCESS_VALUE_NONE', 0);
-define('PROCESS_VALUE_MIN', 1);
-define('PROCESS_VALUE_MAX', 2);
-define('PROCESS_VALUE_AVG', 3);
+define('PROCESS_VALUE_NONE',	0);
+define('PROCESS_VALUE_MIN',		1);
+define('PROCESS_VALUE_MAX',		2);
+define('PROCESS_VALUE_AVG',		3);
 //Status
-define('VISUAL_MAP_STATUS_CRITICAL_BAD', 1);
-define('VISUAL_MAP_STATUS_CRITICAL_ALERT', 4);
-define('VISUAL_MAP_STATUS_NORMAL', 0);
-define('VISUAL_MAP_STATUS_WARNING', 2);
-define('VISUAL_MAP_STATUS_UNKNOWN', 3);
-define('VISUAL_MAP_STATUS_WARNING_ALERT', 10);
+define('VISUAL_MAP_STATUS_CRITICAL_BAD',	1);
+define('VISUAL_MAP_STATUS_CRITICAL_ALERT',	4);
+define('VISUAL_MAP_STATUS_NORMAL', 			0);
+define('VISUAL_MAP_STATUS_WARNING',			2);
+define('VISUAL_MAP_STATUS_UNKNOWN',			3);
+define('VISUAL_MAP_STATUS_WARNING_ALERT',	10);
 //Wizard
-define('VISUAL_MAP_WIZARD_PARENTS_NONE', 0);
-define('VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP', 1);
-define('VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP', 2);
+define('VISUAL_MAP_WIZARD_PARENTS_NONE',				0);
+define('VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP',			1);
+define('VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP',	2);
 
 
 

@@ -130,6 +130,11 @@ function update_button_palette_callback() {
 			idElement = 0;
 			break;
 		case 'box_item':
+			$("#" + idItem + " div").css('background-color', values['fill_color']);
+			$("#" + idItem + " div").css('border-color', values['border_color']);
+			$("#" + idItem + " div").css('border-width', values['border_width'] + "px");
+			$("#" + idItem + " div").css('height', values['height_box'] + "px");
+			$("#" + idItem + " div").css('width', values['width_box'] + "px");
 			break;
 		case 'group_item':
 		case 'static_graph':
@@ -624,12 +629,18 @@ function loadFieldsFromDB(item) {
 						$("input[name='width_box']").val(val);
 					if (key == 'height_box')
 						$("input[name='height_box']").val(val);
-					if (key == 'border_color')
+					if (key == 'border_color') {
 						$("input[name='border_color']").val(val);
+						$("#border_color_row .ColorPickerDivSample")
+							.css('background-color', val);
+					}
 					if (key == 'border_width')
 						$("input[name='border_width']").val(val);
-					if (key == 'fill_color')
+					if (key == 'fill_color') {
 						$("input[name='fill_color']").val(val);
+						$("#fill_color_row .ColorPickerDivSample")
+							.css('background-color', val);
+					}
 				});
 				
 				if (data.type == 1) {
@@ -1191,6 +1202,29 @@ function createItem(type, values, id_data) {
 	
 	switch (type) {
 		case 'box_item':
+			item = $('<div id="' + id_data + '" '
+				+ 'class="item box_item" '
+				+ 'style="text-align: center; '
+					+ 'position: absolute; ' 
+					+ 'display: inline-block; '
+					+ 'z-index: 1; '
+					+ 'top: ' + values['top'] + 'px; '
+					+ 'left: ' + values['left'] + 'px;">'
+					+ '<div '
+					+ 'style=" ' 
+					+ 'width: ' + values['width_box'] + 'px;'
+					+ 'height: ' + values['height_box'] + 'px;'
+					+ 'border-style: solid;'
+					+ 'border-width: ' + values['border_width'] + 'px;'
+					+ 'border-color: ' + values['border_color'] + ';'
+					+ 'background-color: ' + values['fill_color'] + ';'
+					+ '">'
+					+ '</div>'
+				+ '</div>'
+				+ '<input id="hidden-status_' + id_data + '" '
+					+ 'type="hidden" value="' + element_status + '" '
+					+ 'name="status_' + id_data + '">'
+			);
 			break;
 		case 'group_item':
 		case 'static_graph':
@@ -1359,7 +1393,8 @@ function createItem(type, values, id_data) {
 	}
 	
 	$("#background").append(item);
-	$(".item").css('z-index', '1');
+	$(".item").css('z-index', '2');
+	$(".box_item").css('z-index', '1');
 	
 	if (values['parent'] != 0) {
 		var line = {"id": id_data,
@@ -1434,9 +1469,15 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				&& (event != 'dragstop')) {
 				var element_status= null;
 				var parameter = Array();
-				parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-				parameter.push ({name: "get_element_status", value: "1"});
-				parameter.push ({name: "id_element", value: idElement});
+				parameter.push ({
+					name: "page",
+					value: "include/ajax/visual_console_builder.ajax"});
+				parameter.push ({
+					name: "get_element_status",
+					value: "1"});
+				parameter.push ({
+					name: "id_element",
+					value: idElement});
 				
 				if (metaconsole != 0) {
 					parameter.push ({name: "metaconsole", value: 1});

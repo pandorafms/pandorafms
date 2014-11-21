@@ -2030,6 +2030,9 @@ function visual_map_type_in_js($type) {
 		case GROUP_ITEM:
 			return 'group_item';
 		break;
+		case BOX_ITEM:
+			return 'box_item';
+		break;
 	}
 }
 

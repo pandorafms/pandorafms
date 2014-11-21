@@ -736,8 +736,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 	switch ($type) {
 		case BOX_ITEM:
 			$style = "";
-			$style .= "width: " . $width . "px; ";
-			$style .= "height: " . $height . "px; ";
+			$style .= "width: " . ($width * $proportion) . "px; ";
+			$style .= "height: " . ($height * $proportion) . "px; ";
 			$style .= "border-style: solid; ";
 			$style .= "border-width: " . $border_width . "px; ";
 			$style .= "border-color: " . $border_color . "; ";

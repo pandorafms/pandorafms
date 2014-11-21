@@ -71,6 +71,13 @@ $id_agent = get_parameter('id_agent', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
+$height_module_graph = get_parameter('id_custom_graph', null);
+$width_module_graph = get_parameter('id_custom_graph', null);
+$border_width = get_parameter('border_width', 0);
+$border_color = get_parameter('border_color', '');
+$fill_color = get_parameter('fill_color', '');
+$width_box = get_parameter('width_box', 0);
+$height_box = get_parameter('height_box', 0);
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
@@ -612,6 +619,15 @@ switch ($action) {
 		$values['id_custom_graph'] = $id_custom_graph;
 		
 		switch ($type) {
+			case 'box_item':
+				$values['type'] = BOX_ITEM;
+				$values['border_width'] = $border_width;
+				$values['border_color'] = $border_color;
+				$values['fill_color'] = $fill_color;
+				$values['period'] = $period;
+				$values['width'] = $width_box;
+				$values['height'] = $height_box;
+				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
 				$values['height'] = $height_module_graph;

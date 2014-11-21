@@ -2805,6 +2805,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
 	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
@@ -2846,7 +2847,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'));
+		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
 	if ($data === false) {
 		$data = array ();
 	}
@@ -3512,6 +3513,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	if ($date == 0)
 		$date = get_system_time();
 	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
 	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
@@ -3543,7 +3545,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'));
+		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
 	if ($data === false) {
 		$data = array ();
 	}

@@ -1189,6 +1189,9 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id_metaconsole` int(10) NOT NULL default 0,
 	`id_group` INTEGER UNSIGNED NOT NULL default 0,
 	`id_custom_graph` INTEGER UNSIGNED NOT NULL default 0,
+	`border_width` INTEGER UNSIGNED NOT NULL default 0,
+	`border_color` varchar(200) DEFAULT "",
+	`fill_color` varchar(200) DEFAULT "",
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

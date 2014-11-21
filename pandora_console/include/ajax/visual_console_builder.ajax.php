@@ -389,6 +389,14 @@ switch ($action) {
 					$values['id_layout_linked'] = $map_linked;
 				}
 				switch($type) {
+					case 'box_item':
+						$values['border_width'] = $border_width;
+						$values['border_color'] = $border_color;
+						$values['fill_color'] = $fill_color;
+						$values['period'] = $period;
+						$values['width'] = $width_box;
+						$values['height'] = $height_box;
+						break;
 					case 'group_item':
 						$values['id_group'] = $id_group;
 						break;
@@ -454,8 +462,18 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					// Don't change background color in graphs when move
-					if ($type == 'module_graph') {
-						unset($values['image']);
+					
+					switch($type) {
+						case 'module_graph':
+							unset($values['image']);
+							break;
+						case 'box_item':
+							unset($values['border_width']);
+							unset($values['border_color']);
+							unset($values['fill_color']);
+							unset($values['period']);
+							unset($values['width']);
+							unset($values['height']);
 					}
 				}
 				
@@ -471,9 +489,13 @@ switch ($action) {
 	case 'load':
 		switch ($type) {
 			case 'background':
-				$backgroundFields = db_get_row_filter('tlayout', array('id' => $id_visual_console), array('background', 'height', 'width'));
+				$backgroundFields = db_get_row_filter(
+					'tlayout',
+					array('id' => $id_visual_console),
+					array('background', 'height', 'width'));
 				echo json_encode($backgroundFields);
 				break;
+			case 'box_item':
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':
@@ -555,6 +577,13 @@ switch ($action) {
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
+						break;
+					case 'box_item':
+						$elementFields['width_box'] = $elementFields['width'];
+						$elementFields['height_box'] = $elementFields['height'];
+						$elementFields['border_color'] = $elementFields['border_color'];
+						$elementFields['border_width'] = $elementFields['border_width'];
+						$elementFields['fill_color'] = $elementFields['fill_color'];
 						break;
 					
 				}
@@ -726,9 +755,14 @@ switch ($action) {
 			$return['id_data'] = $idData;
 			$return['text'] = $text;
 			$return['type'] = visual_map_type_in_js($values['type']);
+			
+			switch ($values['type']) {
+				case BOX_ITEM:
+					$return['values']['width_box'] = $values['width'];
+					$return['values']['height_box'] = $values['height'];
+					break;
+			}
 		}
-		
-		html_debug_print($return, true);
 		
 		echo json_encode($return);
 		break;

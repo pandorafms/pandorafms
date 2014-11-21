@@ -1100,7 +1100,10 @@ CREATE TABLE "tlayout_data" (
 	"enable_link" SMALLINT NOT NULL default 1,
 	"id_metaconsole" INTEGER NOT NULL default 0,
 	"id_group" INTEGER NOT NULL default 0,
-	"id_custom_graph" INTEGER NOT NULL default 0
+	"id_custom_graph" INTEGER NOT NULL default 0,
+	"border_width" INTEGER NOT NULL default 0,
+	"border_color" varchar(200) DEFAULT "",
+	"fill_color" varchar(200) DEFAULT ""
 );
 
 -- ---------------------------------------------------------------------

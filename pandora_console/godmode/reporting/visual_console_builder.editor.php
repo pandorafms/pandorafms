@@ -85,8 +85,16 @@ foreach ($layoutDatas as $layoutData) {
 	if ($delete_pending_module == 1 || $disabled_module == 1)
 		continue;
 	
+	switch ($layoutData['type']) {
+		case LINE_ITEM:
+			visual_map_print_user_lines("write", $layoutData);
+			break;
+		default:
+			visual_map_print_item("write", $layoutData);
+			break;
+	}
 	
-	visual_map_print_item("write", $layoutData);
+	
 	
 	
 	html_print_input_hidden('status_' . $layoutData['id'], $layoutData['status_calculated']);

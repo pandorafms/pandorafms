@@ -1902,6 +1902,10 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 	if (empty($label))
 	{
 		switch ($type) {
+			case 'box_item':
+			case BOX_ITEM:
+				$text = __('Box');
+				break;
 			case 'module_graph':
 			case MODULE_GRAPH:
 				$text = __('Module graph');
@@ -2029,10 +2033,13 @@ function visual_map_type_in_js($type) {
 			break;
 		case GROUP_ITEM:
 			return 'group_item';
-		break;
+			break;
 		case BOX_ITEM:
 			return 'box_item';
-		break;
+			break;
+		case LINE_ITEM:
+			return 'line_item';
+			break;
 	}
 }
 

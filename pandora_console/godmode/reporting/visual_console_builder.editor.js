@@ -16,11 +16,15 @@ var is_opened_palette = false;
 var idItem = 0;
 var selectedItem = null;
 var lines = Array();
+var user_lines = Array();
 var toolbuttonActive = null;
 var autosave = true;
 var list_actions_pending_save = [];
 var temp_id_item = 0;
 var parents = {};
+
+var obj_js_user_lines = null;
+
 
 var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 
@@ -52,6 +56,8 @@ function visual_map_main() {
 			draw_lines(lines, 'background', true);
 		}
 	);
+	
+	obj_js_user_lines = new jsGraphics("background");
 	
 	$("input[name='radio_choice']").on('change', function() {
 		var radio_value = $("input[name='radio_choice']:checked").val();
@@ -260,6 +266,9 @@ function readFields() {
 	values['border_width'] = parseInt(
 		$("input[name='border_width']").val());
 	values['fill_color'] = $("input[name='fill_color']").val();
+	values['line_width'] = parseInt(
+		$("input[name='line_width']").val());
+	values['line_color'] = $("input[name='line_color']").val();
 	
 	if (metaconsole != 0) {
 		values['metaconsole'] = 1;
@@ -361,8 +370,130 @@ function create_button_palette_callback() {
 	}
 	
 	if (validate) {
-		insertDB(creationItem, values);
+		switch (creationItem) {
+			case 'line_item':
+				create_line('step_1', values);
+				break;
+			default:
+				insertDB(creationItem, values);
+				break;
+		}
+		
+		
 		toggle_item_palette();
+	}
+}
+
+function draw_user_lines(color, thickness, start_x, start_y , end_x, end_y) {
+	
+	obj_js_user_lines.clear();
+	
+	// Draw the previous lines
+	for (iterator = 0; iterator < user_lines.length; iterator++) {
+		
+		obj_js_user_lines.setStroke(user_lines[iterator]['line_width']);
+		obj_js_user_lines.setColor(user_lines[iterator]['line_color']);
+		obj_js_user_lines.drawLine(
+			user_lines[iterator]['start_x'],
+			user_lines[iterator]['start_y'],
+			user_lines[iterator]['end_x'],
+			user_lines[iterator]['end_y']);
+		
+	}
+	
+	obj_js_user_lines.setStroke(thickness);
+	obj_js_user_lines.setColor(color);
+	obj_js_user_lines.drawLine(start_x, start_y, end_x, end_y);
+	
+	obj_js_user_lines.paint();
+}
+
+function create_line(step, values) {
+	
+	$('.item').unbind('click');
+	$('.item').unbind('dblclick');
+	$('.item').unbind('dragstop');
+	$('.item').unbind('dragstart');
+	
+	$('#background').unbind('click');
+	$('#background').unbind('dblclick');
+	
+	
+	switch (step) {
+		case 'step_1':
+			$("#background *").css("cursor", "crosshair");
+			
+			
+			
+			$("#background *")
+				.on('mousemove', function(e) {
+					$('#div_step_1').css({
+						left:	e.pageX,
+						top:	e.pageY
+					});
+					$('#div_step_1').show();
+					
+					// 2 for the black border of background
+					values['line_start_x'] =
+						e.pageX - $("#background").position().left - 2;
+					values['line_start_y'] =
+						e.pageY - $("#background").position().top - 2;
+					
+				});
+			
+			
+			$("#background *")
+				.on('click', function(e) {
+					create_line('step_2', values);
+				});
+			
+			break;
+		case 'step_2':
+			$('#div_step_1').hide();
+			$("#background *").off('mousemove');
+			$("#background *").off('click');
+			
+			
+			$("#background *")
+				.on('mousemove', function(e) {
+					$('#div_step_2').css({
+						left:	e.pageX,
+						top:	e.pageY
+					});
+					$('#div_step_2').show();
+					
+					// 2 for the black border of background
+					values['line_end_x'] =
+						e.pageX - $("#background").position().left - 2;
+					values['line_end_y'] =
+						e.pageY - $("#background").position().top - 2;
+					
+					draw_user_lines(
+						values['line_color'],
+						values['line_width'],
+						values['line_start_x'],
+						values['line_start_y'],
+						values['line_end_x'] - 3,
+						values['line_end_y'] - 3);
+				});
+			
+			$("#background *")
+				.on('click', function(e) {
+					create_line('step_3', values);
+				});
+			break;
+		case 'step_3':
+			$('#div_step_2').hide();
+			$("#background *").off('mousemove');
+			$("#background *").off('click');
+			
+			$("#background *").css("cursor", "");
+			
+			insertDB("line_item", values);
+			
+			eventsItems();
+			eventsBackground();
+			break;
 	}
 }
 
@@ -641,6 +772,14 @@ function loadFieldsFromDB(item) {
 						$("#fill_color_row .ColorPickerDivSample")
 							.css('background-color', val);
 					}
+					if (key == 'line_width')
+						$("input[name='line_width']").val(val);
+					if (key == 'line_color') {
+						$("input[name='line_color']").val(val);
+						$("#line_color_row .ColorPickerDivSample")
+							.css('background-color', val);
+					}
+					
 				});
 				
 				if (data.type == 1) {
@@ -813,6 +952,16 @@ function hiddenFields(item) {
 	$("#fill_color_row").css('display', 'none');
 	$("#fill_color_row."  + item).css('display', '');
 	
+	$("#line_color_row").css('display', 'none');
+	$("#line_color_row."  + item).css('display', '');
+	
+	$("#line_width_row").css('display', 'none');
+	$("#line_width_row."  + item).css('display', '');
+	
+	
+	
+	
+	
 	$("input[name='radio_choice']").trigger('change');
 	
 	if (typeof(enterprise_hiddenFields) == 'function') {
@@ -852,6 +1001,8 @@ function cleanFields(item) {
 	$("input[name='border_color']").val('#000000');
 	$("input[name='border_width']").val(3);
 	$("input[name='fill_color']").val('#ffffff');
+	$("input[name='line_width']").val(3);
+	$("input[name='line_color']").val('#000000');
 	
 	
 	$("#preview").empty();
@@ -1447,6 +1598,21 @@ function insertDB(type, values) {
 					addItemSelectParents(id, data['text']);
 					//Reload all events for the item and new item.
 					eventsItems();
+					
+					switch (type) {
+						case 'line_item':
+							var line = {
+								"id": id,
+								"start_x":		values['line_start_x'],
+								"start_y":		values['line_start_y'],
+								"end_x":		values['line_end_x'],
+								"end_y":		values['line_end_y'],
+								"line_width":	values['line_width'],
+								"line_color":	values['line_color']};
+							
+							user_lines.push(line);
+							break;
+					}
 				}
 				else {
 					//TODO
@@ -1822,6 +1988,7 @@ function eventsItems(drag) {
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 	
 	$('.item').bind('click', function(event, ui) {
+		
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			var divParent = $(event.target);
@@ -1913,6 +2080,7 @@ function eventsItems(drag) {
 	
 	//Double click in the item
 	$('.item').bind('dblclick', function(event, ui) {
+		
 		event.stopPropagation();
 		if ((!is_opened_palette) && (autosave)) {
 			toggle_item_palette();
@@ -1924,6 +2092,7 @@ function eventsItems(drag) {
 	$(".item").draggable({containment: "#background", grid: drag});
 	
 	$('.item').bind('dragstart', function(event, ui) {
+		
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
@@ -1973,6 +2142,7 @@ function eventsItems(drag) {
 	});
 	
 	$('.item').bind('dragstop', function(event, ui) {
+		
 		event.stopPropagation();
 		
 		var values = {};
@@ -2107,6 +2277,10 @@ function click_button_toolbox(id) {
 			break;
 		case 'box_item':
 			toolbuttonActive = creationItem = 'box_item';
+			toggle_item_palette();
+			break;
+		case 'line_item':
+			toolbuttonActive = creationItem = 'line_item';
 			toggle_item_palette();
 			break;
 		

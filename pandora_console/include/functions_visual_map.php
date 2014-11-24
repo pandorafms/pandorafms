@@ -928,7 +928,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 	
 	//Add the line between elements.
 	if ($layoutData['parent_item'] != 0) {
-		$parent = db_get_row_filter('tlayout_data', array('id' => $layoutData['parent_item']));
+		$parent = db_get_row_filter('tlayout_data',
+			array('id' => $layoutData['parent_item']));
 		
 		echo '<script type="text/javascript">';
 		echo '$(document).ready (function() {
@@ -1631,6 +1632,24 @@ function visual_map_get_status_element($layoutData) {
 	return $status;
 }
 
+function visual_map_print_user_lines($mode = "read", $layout_data, $proportion = 1) {
+	
+	$line = array();
+	$line["id"] = $layout_data['id'];
+	$line["start_x"] = $layout_data['pos_x'] * $proportion;
+	$line["start_y"] = $layout_data['pos_y'] * $proportion;
+	$line["end_x"] = $layout_data['width'] * $proportion;
+	$line["end_y"] = $layout_data['height'] * $proportion;
+	$line["line_width"] = $layout_data['border_width'] * $proportion;
+	$line["line_color"] = $layout_data['border_color'];
+	
+	echo '<script type="text/javascript">';
+	echo '$(document).ready (function() {
+		user_lines.push(' . json_encode($line) . ');
+	});';
+	echo '</script>';
+}
+
 /**
  * Prints visual map
  *
@@ -1741,8 +1760,16 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				continue;
 		}
 		
-		visual_map_print_item("read", $layout_data,
-			$proportion, $show_links);
+		switch ($layout_data['type']) {
+			case LINE_ITEM:
+				visual_map_print_user_lines("read", $layout_data,
+					$proportion);
+				break;
+			default:
+				visual_map_print_item("read", $layout_data,
+					$proportion, $show_links);
+				break;
+		}
 	}
 	
 	// End main div
@@ -1759,9 +1786,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		
 		var lines = Array();
 		
+		var user_lines = Array();
+		
 		//Fixed to wait the load of images.
 		$(window).load(function() {
 				draw_lines(lines, 'background');
+				draw_user_lines_read();
 			}
 		);
 		/* ]]> */

@@ -54,6 +54,8 @@ function visual_map_main() {
 	//Fixed to wait the load of images.
 	$(window).load(function() {
 			draw_lines(lines, 'background', true);
+			
+			draw_user_lines("", 0, 0, 0 , 0, 0, true);
 		}
 	);
 	
@@ -384,7 +386,7 @@ function create_button_palette_callback() {
 	}
 }
 
-function draw_user_lines(color, thickness, start_x, start_y , end_x, end_y) {
+function draw_user_lines(color, thickness, start_x, start_y , end_x, end_y, only_defined_lines) {
 	
 	obj_js_user_lines.clear();
 	
@@ -401,9 +403,16 @@ function draw_user_lines(color, thickness, start_x, start_y , end_x, end_y) {
 		
 	}
 	
-	obj_js_user_lines.setStroke(thickness);
-	obj_js_user_lines.setColor(color);
-	obj_js_user_lines.drawLine(start_x, start_y, end_x, end_y);
+	
+	if (typeof(only_defined_lines) == "undefined") {
+		only_defined_lines = false;
+	}
+	
+	if (only_defined_lines) {
+		obj_js_user_lines.setStroke(thickness);
+		obj_js_user_lines.setColor(color);
+		obj_js_user_lines.drawLine(start_x, start_y, end_x, end_y);
+	}
 	
 	obj_js_user_lines.paint();
 }

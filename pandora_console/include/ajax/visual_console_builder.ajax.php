@@ -78,6 +78,12 @@ $border_color = get_parameter('border_color', '');
 $fill_color = get_parameter('fill_color', '');
 $width_box = get_parameter('width_box', 0);
 $height_box = get_parameter('height_box', 0);
+$line_start_x = (int)get_parameter('line_start_x', 0);
+$line_start_y = (int)get_parameter('line_start_y', 0);
+$line_end_x = (int)get_parameter('line_end_x', 0);
+$line_end_y = (int)get_parameter('line_end_y', 0);
+$line_width = (int)get_parameter('line_width', 0);
+$line_color = get_parameter('line_color', '');
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
@@ -648,6 +654,15 @@ switch ($action) {
 		$values['id_custom_graph'] = $id_custom_graph;
 		
 		switch ($type) {
+			case 'line_item':
+				$values['type'] = LINE_ITEM;
+				$values['border_width'] = $line_width;
+				$values['border_color'] = $line_color;
+				$values['pos_x'] = $line_start_x;
+				$values['pos_y'] = $line_start_y;
+				$values['width'] = $line_end_x;
+				$values['height'] = $line_end_y;
+				break;
 			case 'box_item':
 				$values['type'] = BOX_ITEM;
 				$values['border_width'] = $border_width;

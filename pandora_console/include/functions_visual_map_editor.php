@@ -58,7 +58,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'label' => __('Label'),
 				'icon' => __('Icon'),
 				'group_item' => __('Group'),
-				'box_item' => __('Box'));
+				'box_item' => __('Box'),
+				'line_item' => __('Line'));
 			
 			if (enterprise_installed()) {
 				enterprise_visual_map_editor_add_title_palette($titles);
@@ -76,35 +77,62 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			<?php
 			$form_items = array();
 			
+			$form_items['line_width_row'] = array();
+			$form_items['line_width_row']['items'] = array('datos', 'line_item');
+			$form_items['line_width_row']['html'] = '<td align="left">' . __('Width') . '</td>
+				<td align="left">' .
+				html_print_input_text('line_width', 3, '', 3, 5, true) .
+				'</td>';
+			
+			
+			$form_items['line_color_row'] = array();
+			$form_items['line_color_row']['items'] = array('datos', 'line_item');
+			$form_items['line_color_row']['html'] = 
+				'<td align="left" valign="top" style="">' .
+					__('Border color') .
+				'</td>' .
+				'<td align="left" style="">' .
+					html_print_input_text_extended ('line_color',
+						'#000000', 'text-line_color', '', 7, 7, false,
+						'', 'class="line_color"', true) .
+				'</td>';
+			
+			
 			$form_items['box_size_row'] = array();
-			$form_items['box_size_row']['items'] = array('box_item');
-			$form_items['box_size_row']['html'] = '<td align="left">' . __('Size') . '</td>
+			$form_items['box_size_row']['items'] = array('datos', 'box_item');
+			$form_items['box_size_row']['html'] =
+				'<td align="left">' . __('Size') . '</td>
 				<td align="left">' .
 				html_print_input_text('width_box', 300, '', 3, 5, true) . 
 				' X ' .
 				html_print_input_text('height_box', 180, '', 3, 5, true) .
 				'</td>';
 			
+			
 			$form_items['border_color_row'] = array();
-			$form_items['border_color_row']['items'] = array('box_item');
+			$form_items['border_color_row']['items'] = array('datos', 'box_item');
 			$form_items['border_color_row']['html'] = 
-				'<td align="left" valign="top" style="">' . __('Border color') . '</td>' .
+				'<td align="left" valign="top" style="">' .
+					__('Border color') .
+				'</td>' .
 				'<td align="left" style="">' .
-				html_print_input_text_extended ('border_color',
-					'#000000', 'text-border_color', '', 7, 7, false, '',
-					'class="border_color"', true) .
+					html_print_input_text_extended ('border_color',
+						'#000000', 'text-border_color', '', 7, 7, false,
+						'', 'class="border_color"', true) .
 				'</td>';
 			
+			
 			$form_items['border_width_row'] = array();
-			$form_items['border_width_row']['items'] = array('box_item');
-			$form_items['border_width_row']['html'] = '<td align="left">' . __('Border width') . '</td>
+			$form_items['border_width_row']['items'] = array('datos', 'box_item');
+			$form_items['border_width_row']['html'] =
+				'<td align="left">' . __('Border width') . '</td>
 				<td align="left">' .
 				html_print_input_text('border_width', 3, '', 3, 5, true) . 
 				'</td>';
 			
 			
 			$form_items['fill_color_row'] = array();
-			$form_items['fill_color_row']['items'] = array('box_item');
+			$form_items['fill_color_row']['items'] = array('datos', 'box_item');
 			$form_items['fill_color_row']['html'] = 
 				'<td align="left" valign="top" style="">' . __('Fill color') . '</td>' .
 				'<td align="left" style="">' .
@@ -466,7 +494,22 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 	</table>
 	<?php
 	//------------------------------------------------------------------------------
+	
+	
+	
+	
+	
 	echo '</div>';
+	
+	echo '<div id="div_step_1" class="forced_title_layer"
+		style="display: none; position: absolute; z-index: 99;">' .
+			__('Click start point<br />of the line') .
+		'</div>';
+	
+	echo '<div id="div_step_2" class="forced_title_layer"
+		style="display: none; position: absolute; z-index: 99;">' .
+			__('Click end point<br />of the line') .
+		'</div>';
 	
 	ui_require_css_file ('color-picker');
 	
@@ -476,6 +519,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 		$(document).ready (function () {
 			$(".border_color").attachColorPicker();
 			$(".fill_color").attachColorPicker();
+			$(".line_color").attachColorPicker();
 		});
 	</script>
 	<?php
@@ -494,6 +538,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
 		visual_map_print_button_editor('group_item', __('Group'), 'left', false, 'group_item_min', true);
 		visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
+		visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);
 		
 		enterprise_hook("enterprise_visual_map_editor_print_toolbox");
 		

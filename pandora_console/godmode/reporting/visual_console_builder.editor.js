@@ -408,7 +408,7 @@ function draw_user_lines(color, thickness, start_x, start_y , end_x, end_y, only
 		only_defined_lines = false;
 	}
 	
-	if (only_defined_lines) {
+	if (!only_defined_lines) {
 		obj_js_user_lines.setStroke(thickness);
 		obj_js_user_lines.setColor(color);
 		obj_js_user_lines.drawLine(start_x, start_y, end_x, end_y);

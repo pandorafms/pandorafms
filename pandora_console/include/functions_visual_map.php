@@ -62,7 +62,7 @@ function visual_map_print_user_line_handles($layoutData) {
 	
 	
 	//Handle of start
-	echo '<div id="handler_start_' . $id . '" class="item handle_start" ' .
+	echo '<div id="handler_start_' . $id . '" class="item handler_start" ' .
 		'style="z-index: ' .$z_index . ';' .
 			'position: absolute; top: ' . ($start_y - $radious_handle) . 'px; ' .
 			'left: ' . ($start_x - $radious_handle) . 'px;' .
@@ -74,7 +74,7 @@ function visual_map_print_user_line_handles($layoutData) {
 	echo "</div>";
 	
 	//Handle of end
-	echo '<div id="handler_end_' . $id . '" class="item handle_end" ' .
+	echo '<div id="handler_end_' . $id . '" class="item handler_end" ' .
 		'style="z-index: ' .$z_index . ';' .
 			'position: absolute; top: ' . ($end_y - $radious_handle) . 'px; ' .
 			'left: ' . ($end_x - $radious_handle) . 'px;' .

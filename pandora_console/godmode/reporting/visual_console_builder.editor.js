@@ -604,7 +604,18 @@ function toggle_item_palette() {
 			
 			item = selectedItem;
 			toolbuttonActive = item;
-			activeToolboxButton(toolbuttonActive, true);
+			
+			switch (item) {
+				case 'handler_start':
+				case 'handler_end':
+					activeToolboxButton('line_item', true);
+					break;
+				default:
+					activeToolboxButton(toolbuttonActive, true);
+					break;
+			}
+			
+			
 			$("#button_create_row").css('display', 'none');
 			$("#button_update_row").css('display', '');
 			cleanFields();

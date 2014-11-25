@@ -215,6 +215,7 @@ if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != E
 
 // Metaconsole fitlers
 if ($meta) {
+	
 	$enabled_nodes = db_get_all_rows_sql('
 		SELECT id
 		FROM tmetaconsole_setup

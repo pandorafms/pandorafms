@@ -1224,7 +1224,6 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 	}
 }
 
-/* This function checks event ACLs */
 function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $childrens_ids = array()) {
 	global $config;
 
@@ -1236,12 +1235,15 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 
 	// If there are wrong parameters or fail ACL check, return false
 	if($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
-		return false;
+		//return false;
+		$return = false;
 	}
 
 	// If there are not tags restrictions or tags passed, return true
-	if(empty($tags_user) || empty($tags)) {
+	//if(empty($tags_user) || empty($tags)) {
+	if(empty($tags_user)) {
 		return true;
+		//$return = true;
 	}
 	
 	$tags_user_ids = array();
@@ -1254,9 +1256,38 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 			$tag_id = tags_get_id($tag);
 			if (in_array($tag_id, $tags_user_ids)) { //check tag
 				return true;
+				//$return = true;
 			}
 		}
 	}
+	//return false;
+	$return = false;
+
+	if ($return == false) {
+
+		$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
+
+		if ($parent !== 0) {
+			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
+
+			if ($propagate == 1) {
+
+				$childrens_ids_parent = array($parent);
+					
+				$childrens = groups_get_childrens($parent);
+
+				if (!empty($childrens)) {
+					foreach ($childrens as $child) {
+						$childrens_ids_parent[] = (int)$child['id_grupo'];
+					}
+				}
+				//$acl_parent = tags_check_acl_event($id_user, $parent, $access, $tags,$p);
+				$acl_parent = tags_checks_event_acl($id_user, $parent, $access, $tags, $childrens_ids_parent);
+				return $acl_parent;
+			}
+		}
+	}
+
 	return false;
 }
 ?>

@@ -520,6 +520,7 @@ function toggle_item_palette() {
 		activeToolboxButton('percentile_item', true);
 		activeToolboxButton('group_item', true);
 		activeToolboxButton('box_item', true);
+		activeToolboxButton('line_item', true);
 		
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -545,6 +546,7 @@ function toggle_item_palette() {
 		activeToolboxButton('percentile_item', false);
 		activeToolboxButton('group_item', false);
 		activeToolboxButton('box_item', false);
+		activeToolboxButton('line_item', false);
 		
 		activeToolboxButton('copy_item', false);
 		activeToolboxButton('edit_item', false);
@@ -863,6 +865,7 @@ function setAspectRatioBackground(side) {
 }
 
 function hiddenFields(item) {
+	
 	//The method to hidden and show is
 	//a row have a id and multiple class
 	//then the steps is
@@ -872,100 +875,100 @@ function hiddenFields(item) {
 	//  or <tr id="title_panel_span_<item>">...</tr>
 	
 	$(".title_panel_span").css('display', 'none');
-	$("#title_panel_span_"  + item).css('display', 'inline'); 
+	$("#title_panel_span_" + item).css('display', 'inline'); 
 	
 	$("#label_row").css('display', 'none');
-	$("#label_row."  + item).css('display', '');
+	$("#label_row." + item).css('display', '');
 	
 	$("#image_row").css('display', 'none');
-	$("#image_row."  + item).css('display', '');
+	$("#image_row." + item).css('display', '');
 	
 	$("#enable_link_row").css('display', 'none');
-	$("#enable_link_row."  + item).css('display', '');
+	$("#enable_link_row." + item).css('display', '');
 	
 	$("#preview_row").css('display', 'none');
-	$("#preview_row."  + item).css('display', '');
+	$("#preview_row." + item).css('display', '');
 	
 	$("#position_row").css('display', 'none');
-	$("#position_row."  + item).css('display', '');
+	$("#position_row." + item).css('display', '');
 	
 	$("#agent_row").css('display', 'none');
-	$("#agent_row."  + item).css('display', '');
+	$("#agent_row." + item).css('display', '');
 	
 	$("#module_row").css('display', 'none');
-	$("#module_row."  + item).css('display', '');
+	$("#module_row." + item).css('display', '');
 	
 	$("#group_row").css('display', 'none');
-	$("#group_row."  + item).css('display', '');
+	$("#group_row." + item).css('display', '');
 	
 	$("#process_value_row").css('display', 'none');
-	$("#process_value_row."  + item).css('display', '');
+	$("#process_value_row." + item).css('display', '');
 	
 	$("#background_row_1").css('display', 'none');
-	$("#background_row_1."  + item).css('display', '');
+	$("#background_row_1." + item).css('display', '');
 	
 	$("#background_row_2").css('display', 'none');
-	$("#background_row_2."  + item).css('display', '');
+	$("#background_row_2." + item).css('display', '');
 	
 	$("#background_row_3").css('display', 'none');
-	$("#background_row_3."  + item).css('display', '');
+	$("#background_row_3." + item).css('display', '');
 	
 	$("#background_row_4").css('display', 'none');
-	$("#background_row_4."  + item).css('display', '');
+	$("#background_row_4." + item).css('display', '');
 	
 	$("#percentile_bar_row_1").css('display', 'none');
-	$("#percentile_bar_row_1."  + item).css('display', '');
+	$("#percentile_bar_row_1." + item).css('display', '');
 	
 	$("#percentile_bar_row_2").css('display', 'none');
-	$("#percentile_bar_row_2."  + item).css('display', '');
+	$("#percentile_bar_row_2." + item).css('display', '');
 	
 	$("#percentile_item_row_3").css('display', 'none');
-	$("#percentile_item_row_3."  + item).css('display', '');
+	$("#percentile_item_row_3." + item).css('display', '');
 	
 	$("#percentile_item_row_4").css('display', 'none');
-	$("#percentile_item_row_4."  + item).css('display', '');
+	$("#percentile_item_row_4." + item).css('display', '');
 	
 	$("#period_row").css('display', 'none');
-	$("#period_row."  + item).css('display', '');
+	$("#period_row." + item).css('display', '');
 	
 	$("#size_row").css('display', 'none');
-	$("#size_row."  + item).css('display', '');
+	$("#size_row." + item).css('display', '');
 	
 	$("#parent_row").css('display', 'none');
-	$("#parent_row."  + item).css('display', '');
+	$("#parent_row." + item).css('display', '');
 	
 	$("#map_linked_row").css('display', 'none');
-	$("#map_linked_row."  + item).css('display', '');
+	$("#map_linked_row." + item).css('display', '');
 	
 	$("#module_graph_size_row").css('display', 'none');
-	$("#module_graph_size_row."  + item).css('display', '');
+	$("#module_graph_size_row." + item).css('display', '');
 	
 	$("#background_color").css('display', 'none');
-	$("#background_color."  + item).css('display', '');
+	$("#background_color." + item).css('display', '');
 	
 	$("#radio_choice_graph").css('display', 'none');
-	$("#radio_choice_graph."  + item).css('display', '');
+	$("#radio_choice_graph." + item).css('display', '');
 	
 	$("#custom_graph_row").css('display', 'none');
-	$("#custom_graph_row."  + item).css('display', '');
+	$("#custom_graph_row." + item).css('display', '');
 	
 	$("#box_size_row").css('display', 'none');
-	$("#box_size_row."  + item).css('display', '');
+	$("#box_size_row." + item).css('display', '');
 	
 	$("#border_color_row").css('display', 'none');
-	$("#border_color_row."  + item).css('display', '');
+	$("#border_color_row." + item).css('display', '');
 	
 	$("#border_width_row").css('display', 'none');
-	$("#border_width_row."  + item).css('display', '');
+	$("#border_width_row." + item).css('display', '');
 	
 	$("#fill_color_row").css('display', 'none');
-	$("#fill_color_row."  + item).css('display', '');
+	$("#fill_color_row." + item).css('display', '');
 	
 	$("#line_color_row").css('display', 'none');
-	$("#line_color_row."  + item).css('display', '');
+	$("#line_color_row." + item).css('display', '');
 	
 	$("#line_width_row").css('display', 'none');
-	$("#line_width_row."  + item).css('display', '');
+	$("#line_width_row." + item).css('display', '');
 	
 	
 	
@@ -2079,6 +2082,20 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('handle_start')) {
+				creationItem = null;
+				selectedItem = 'handle_start';
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
+			if ($(divParent).hasClass('handle_end')) {
+				creationItem = null;
+				selectedItem = 'handle_end';
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			
 			//Maybe receive a click event any Enterprise item.
 			if (typeof(enterprise_click_item_callback) == 'function') {
@@ -2131,6 +2148,12 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('icon')) {
 				selectedItem = 'icon';
+			}
+			if ($(event.target).hasClass('handle_start')) {
+				selectedItem = 'handle_start';
+			}
+			if ($(event.target).hasClass('handle_end')) {
+				selectedItem = 'handle_end';
 			}
 			
 			if (selectedItem == null) {

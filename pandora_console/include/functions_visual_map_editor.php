@@ -78,7 +78,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items = array();
 			
 			$form_items['line_width_row'] = array();
-			$form_items['line_width_row']['items'] = array('datos', 'line_item');
+			$form_items['line_width_row']['items'] =
+				array('datos', 'line_item', 'handle_start', 'handle_end');
 			$form_items['line_width_row']['html'] = '<td align="left">' . __('Width') . '</td>
 				<td align="left">' .
 				html_print_input_text('line_width', 3, '', 3, 5, true) .
@@ -86,7 +87,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 			$form_items['line_color_row'] = array();
-			$form_items['line_color_row']['items'] = array('datos', 'line_item');
+			$form_items['line_color_row']['items'] =
+				array('datos', 'line_item', 'handle_start', 'handle_end');
 			$form_items['line_color_row']['html'] = 
 				'<td align="left" valign="top" style="">' .
 					__('Border color') .

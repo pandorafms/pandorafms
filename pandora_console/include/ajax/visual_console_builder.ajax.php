@@ -360,12 +360,29 @@ switch ($action) {
 				if ($label !== null) {
 					$values['label'] = $label;
 				}
-				if ($left !== null) {
-					$values['pos_x'] = $left;
+				
+				switch ($type) {
+					// -- line_item --
+					case 'handler_end':
+					// ---------------
+						if ($left !== null) {
+							$values['width'] = $left;
+						}
+						if ($top !== null) { 
+							$values['height'] = $top;
+						}
+						break;
+					default:
+						if ($left !== null) {
+							$values['pos_x'] = $left;
+						}
+						if ($top !== null) { 
+							$values['pos_y'] = $top;
+						}
+						break;
 				}
-				if ($top !== null) { 
-					$values['pos_y'] = $top;
-				}
+				
+				
 				
 				if (defined('METACONSOLE') && $metaconsole) {
 					if ($server_name !== null) {
@@ -394,7 +411,14 @@ switch ($action) {
 				if ($map_linked !== null) {
 					$values['id_layout_linked'] = $map_linked;
 				}
-				switch($type) {
+				switch ($type) {
+					// -- line_item --
+					case 'handler_start':
+					case 'handler_end':
+					// ---------------
+						$values['border_width'] = $line_width;
+						$values['border_color'] = $line_color;
+						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
 						$values['border_color'] = $border_color;
@@ -469,7 +493,7 @@ switch ($action) {
 					unset($values['label']);
 					// Don't change background color in graphs when move
 					
-					switch($type) {
+					switch ($type) {
 						case 'module_graph':
 							unset($values['image']);
 							break;
@@ -480,6 +504,14 @@ switch ($action) {
 							unset($values['period']);
 							unset($values['width']);
 							unset($values['height']);
+							break;
+						// -- line_item --
+						case 'handler_start':
+						case 'handler_end':
+						// ---------------
+							unset($values['border_width']);
+							unset($values['border_color']);
+							break;
 					}
 				}
 				
@@ -501,6 +533,10 @@ switch ($action) {
 					array('background', 'height', 'width'));
 				echo json_encode($backgroundFields);
 				break;
+			// -- line_item --
+			case 'handler_start':
+			case 'handler_end':
+			// ---------------
 			case 'box_item':
 			case 'percentile_bar':
 			case 'percentile_item':
@@ -590,6 +626,14 @@ switch ($action) {
 						$elementFields['border_color'] = $elementFields['border_color'];
 						$elementFields['border_width'] = $elementFields['border_width'];
 						$elementFields['fill_color'] = $elementFields['fill_color'];
+						break;
+					
+					// -- line_item --
+					case 'handler_start':
+					case 'handler_end':
+					// ---------------
+						$elementFields['line_width'] = $elementFields['border_width'];
+						$elementFields['line_color'] = $elementFields['border_color'];
 						break;
 					
 				}

@@ -1828,15 +1828,49 @@ function updateDB(type, idElement , values, event) {
 		parameter.push({name: key, value: val});
 	});
 	
-	if ((typeof(values['mov_left']) != 'undefined') &&
-		(typeof(values['mov_top']) != 'undefined')) {
-		top = parseInt($("#" + idElement).css('top').replace('px', ''));
-		left = parseInt($("#" + idElement).css('left').replace('px', ''));
-	}
-	else if ((typeof(values['absolute_left']) != 'undefined') &&
-		(typeof(values['absolute_top']) != 'undefined')) {
-		top = values['absolute_top'];
-		left = values['absolute_left'];
+	
+	switch (type) {
+		// -- line_item --
+		case 'handler_start':
+		// ---------------
+			if ((typeof(values['mov_left']) != 'undefined') &&
+				(typeof(values['mov_top']) != 'undefined')) {
+				top = parseInt($("#handler_start_" + idElement).css('top').replace('px', ''));
+				left = parseInt($("#handler_start_" + idElement).css('left').replace('px', ''));
+			}
+			else if ((typeof(values['absolute_left']) != 'undefined') &&
+				(typeof(values['absolute_top']) != 'undefined')) {
+				top = values['absolute_top'];
+				left = values['absolute_left'];
+			}
+			break;
+		// -- line_item --
+		case 'handler_end':
+		// ---------------
+			if ((typeof(values['mov_left']) != 'undefined') &&
+				(typeof(values['mov_top']) != 'undefined')) {
+				top = parseInt($("#handler_end_" + idElement).css('top').replace('px', ''));
+				left = parseInt($("#handler_end_" + idElement).css('left').replace('px', ''));
+			}
+			else if ((typeof(values['absolute_left']) != 'undefined') &&
+				(typeof(values['absolute_top']) != 'undefined')) {
+				top = values['absolute_top'];
+				left = values['absolute_left'];
+			}
+			break;
+		default:
+			
+			if ((typeof(values['mov_left']) != 'undefined') &&
+				(typeof(values['mov_top']) != 'undefined')) {
+				top = parseInt($("#" + idElement).css('top').replace('px', ''));
+				left = parseInt($("#" + idElement).css('left').replace('px', ''));
+			}
+			else if ((typeof(values['absolute_left']) != 'undefined') &&
+				(typeof(values['absolute_top']) != 'undefined')) {
+				top = values['absolute_top'];
+				left = values['absolute_left'];
+			}
+			break;
 	}
 	
 	if ((typeof(top) != 'undefined') && (typeof(left) != 'undefined')) {
@@ -1850,6 +1884,7 @@ function updateDB(type, idElement , values, event) {
 			values['left'] = left;
 		}
 	}
+	
 	
 	success_update = false;
 	if (!autosave) {
@@ -2082,16 +2117,20 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
-			if ($(divParent).hasClass('handle_start')) {
+			if ($(divParent).hasClass('handler_start')) {
+				idItem = $(divParent).attr('id')
+					.replace("handler_start_", "");
 				creationItem = null;
-				selectedItem = 'handle_start';
+				selectedItem = 'handler_start';
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
-			if ($(divParent).hasClass('handle_end')) {
+			if ($(divParent).hasClass('handler_end')) {
+				idItem = $(divParent).attr('id')
+					.replace("handler_end_", "");
 				creationItem = null;
-				selectedItem = 'handle_end';
+				selectedItem = 'handler_end';
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
@@ -2149,11 +2188,11 @@ function eventsItems(drag) {
 			if ($(event.target).hasClass('icon')) {
 				selectedItem = 'icon';
 			}
-			if ($(event.target).hasClass('handle_start')) {
-				selectedItem = 'handle_start';
+			if ($(event.target).hasClass('handler_start')) {
+				selectedItem = 'handler_start';
 			}
-			if ($(event.target).hasClass('handle_end')) {
-				selectedItem = 'handle_end';
+			if ($(event.target).hasClass('handler_end')) {
+				selectedItem = 'handler_end';
 			}
 			
 			if (selectedItem == null) {
@@ -2165,7 +2204,28 @@ function eventsItems(drag) {
 			
 			if (selectedItem != null) {
 				creationItem = null;
-				idItem = $(event.target).attr('id');
+				
+				switch (selectedItem) {
+					// -- line_item --
+					case 'handler_start':
+					// ---------------
+						idItem = $(event.target).attr('id')
+							.replace("handler_end_", "");
+						idItem = $(event.target).attr('id')
+							.replace("handler_start_", "");
+						break;
+					// -- line_item --
+					case 'handler_end':
+					// ---------------
+						idItem = $(event.target).attr('id')
+							.replace("handler_end_", "");
+						idItem = $(event.target).attr('id')
+							.replace("handler_end_", "");
+						break;
+					default:
+						idItem = $(event.target).attr('id');
+						break;
+				}
 				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);

@@ -1801,7 +1801,10 @@ function events_page_details ($event, $server = "") {
 	// If server is provided, get the hash parameters
 	if (!empty($server)) { 
 		$hashdata = metaconsole_get_server_hashdata($server);
-		$hashstring = "&amp;loginhash=auto&loginhash_data=" . $hashdata . "&loginhash_user=" . $config["id_user"];
+		$hashstring = "&amp;" .
+			"loginhash=auto&" .
+			"loginhash_data=" . $hashdata . "&" .
+			"loginhash_user=" . str_rot13($config["id_user"]);
 		$serverstring = $server['server_url'] . "/";
 	}
 	else {

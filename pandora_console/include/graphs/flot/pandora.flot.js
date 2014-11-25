@@ -1117,7 +1117,7 @@ function get_event_details (event_ids) {
 		inputs.push ("page=include/ajax/events");
 		
 		// Autologin
-		if($('#hidden-loginhash').val() != undefined) {
+		if ($('#hidden-loginhash').val() != undefined) {
 			inputs.push ("loginhash=" + $('#hidden-loginhash').val());
 			inputs.push ("loginhash_data=" + $('#hidden-loginhash_data').val());
 			inputs.push ("loginhash_user=" + $('#hidden-loginhash_user').val());
@@ -1139,7 +1139,7 @@ function get_event_details (event_ids) {
 	
 	return table;
 }
-	
+
 function adjust_left_width_canvas(adapter_id, adapted_id) {
 	adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').css('width');
 	

@@ -684,15 +684,23 @@ sub accept_connections {
 				error ("accept: $!.");
 			}
 
-			print_log ("Client connected from " . $t_client_socket->sockhost ());
+			print_log ("Client connected from " . $t_client_socket->peerhost ());
 
-			# Create a new thread and serve the client
-			$t_sem->down();
-			my $thr = threads->create(\&serve_client);
-			if (! defined ($thr)) {
-				error ("Error creating thread: $!.");
+			if ($t_use_libwrap && (! hosts_ctl($t_program_name, $t_client_socket))) {
+				print_log ("Connection from " . $t_client_socket->peerhost() . " is closed by tcpwrappers.");
+				$t_client_socket->close();
 			}
-			$thr->detach();
+			else {
+
+				# Create a new thread and serve the client
+				$t_sem->down();
+				my $thr = threads->create(\&serve_client);
+				if (! defined ($thr)) {
+					error ("Error creating thread: $!.");
+				}
+				$thr->detach();
+				$t_client_socket->close ();
+			}
 		}
 
 		usleep (1000);
@@ -704,15 +712,6 @@ sub accept_connections {
 ## Serve a connected client.
 ################################################################################
 sub serve_client() {
-
-	if ($t_use_libwrap) {
-		if (! hosts_ctl($t_program_name, $t_client_socket)) {
-			print_log ("Connection from " . $t_client_socket->sockhost() . " is closed by tcpwrappers.");
-			$t_client_socket->close ();
-			$t_sem->up();
-			return;
-		}
-	}
 
 	eval {		
 		# Add client socket to select queue
@@ -737,7 +736,6 @@ sub serve_client() {
 		}
 	};
 
-	$t_client_socket->close ();
 	$t_sem->up();
 }
 

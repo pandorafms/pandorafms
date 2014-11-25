@@ -191,8 +191,8 @@ if ($get_metaconsole_hash_data) {
 	}
 	
 	$pwd = $auth_token; // Create HASH login info
-	$user = $config["id_user"];
-	$hashdata = $user.$pwd;
+	$user = str_rot13($config["id_user"]);
+	$hashdata = $user . $pwd;
 	$hashdata = md5($hashdata);
 	$url_hash = "&loginhash=auto&loginhash_data=$hashdata&loginhash_user=$user";
 	

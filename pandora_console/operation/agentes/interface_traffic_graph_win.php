@@ -32,7 +32,7 @@ require_once ($config['homedir'] . '/include/functions_modules.php');
 // Hash login process
 if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
 	$loginhash_data = get_parameter("loginhash_data", "");
-	$loginhash_user = get_parameter("loginhash_user", "");
+	$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
 	
 	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
 		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
@@ -166,9 +166,13 @@ $interface_traffic_modules = array(
 		$side_layer_params['body_text'] .= html_print_input_hidden("params", base64_encode($params_json), true);
 		
 		if (isset($hash_connection_data)) {
-			$side_layer_params['body_text'] .= html_print_input_hidden("loginhash", "auto", true);
-			$side_layer_params['body_text'] .= html_print_input_hidden("loginhash_data", $loginhash_data, true);
-			$side_layer_params['body_text'] .= html_print_input_hidden("loginhash_user", $loginhash_user, true);
+			$side_layer_params['body_text'] .=
+				html_print_input_hidden("loginhash", "auto", true);
+			$side_layer_params['body_text'] .=
+				html_print_input_hidden("loginhash_data", $loginhash_data, true);
+			$side_layer_params['body_text'] .=
+				html_print_input_hidden("loginhash_user",
+					str_rot13($loginhash_user), true);
 		}
 		
 		// FORM TABLE
@@ -180,7 +184,7 @@ $interface_traffic_modules = array(
 		$table->style[1] = 'text-align:left;';
 		$table->styleTable = 'border-spacing: 4px;';
 		$table->class = 'alternate';
-
+		
 		$data = array();
 		$data[0] = __('Refresh time');
 		$data[1] = html_print_extended_select_for_time("refresh", $refresh, '', '', 0, 7, true);

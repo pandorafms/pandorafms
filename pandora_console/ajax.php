@@ -30,7 +30,7 @@ session_start ();
 if (isset ($_GET["loginhash"])) {
 	
 	$loginhash_data = get_parameter("loginhash_data", "");
-	$loginhash_user = get_parameter("loginhash_user", "");
+	$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
 	
 	if ($config["loginhash_pwd"] != ""
 		&& $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {

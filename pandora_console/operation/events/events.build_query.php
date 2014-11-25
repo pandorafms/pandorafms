@@ -202,7 +202,13 @@ else {
 	$group_array = array_keys($groups);
 }
 
-$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER', 'event_condition', 'AND', '', $meta);
+//$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER', 'event_condition', 'AND', '', $meta);
+if ($id_group == 0) {
+	$hierarchy = array_keys($groups);
+} else {
+	$hierarchy = groups_get_all_hierarchy_group ($id_group, array(), true);
+}
+$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER', 'event_condition', 'AND', '', $meta, $hierarchy, true);
 
 if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != ERR_ACL)&& ($tags_acls_condition != -110000)) {
 	$sql_post .= $tags_acls_condition;

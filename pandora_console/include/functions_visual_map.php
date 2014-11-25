@@ -47,6 +47,45 @@ function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	echo '</div>';
 }
 
+function visual_map_print_user_line_handles($layoutData) {
+	$id = $layoutData['id'];
+	
+	$start_x = $layoutData['pos_x'];
+	$start_y = $layoutData['pos_y'];
+	$end_x = $layoutData['width'];
+	$end_y = $layoutData['height'];
+	$z_index = 2;
+	
+	$sizeStyle = "";
+	
+	$radious_handle = 12 / 2;
+	
+	
+	//Handle of start
+	echo '<div id="handler_start_' . $id . '" class="item handle_start" ' .
+		'style="z-index: ' .$z_index . ';' .
+			'position: absolute; top: ' . ($start_y - $radious_handle) . 'px; ' .
+			'left: ' . ($start_x - $radious_handle) . 'px;' .
+			'text-align: center;' .
+			'display: inline-block; ' . $sizeStyle . '">';
+	
+	html_print_image("images/dot_red.png");
+	
+	echo "</div>";
+	
+	//Handle of end
+	echo '<div id="handler_end_' . $id . '" class="item handle_end" ' .
+		'style="z-index: ' .$z_index . ';' .
+			'position: absolute; top: ' . ($end_y - $radious_handle) . 'px; ' .
+			'left: ' . ($end_x - $radious_handle) . 'px;' .
+			'text-align: center;' .
+			'display: inline-block; ' . $sizeStyle . '">';
+	
+	html_print_image("images/dot_green.png");
+	
+	echo "</div>";
+}
+
 function visual_map_print_item($mode = "read", $layoutData,
 	$proportion = 1, $show_links = true) {
 	global $config;

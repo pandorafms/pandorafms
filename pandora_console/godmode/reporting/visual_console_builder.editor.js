@@ -111,8 +111,10 @@ function update_button_palette_callback() {
 	switch (selectedItem) {
 		case 'background':
 			if(values['width'] == 0 && values['height'] == 0) {
-				values['width'] = $("#hidden-background_original_width").val();
-				values['height'] = $("#hidden-background_original_height").val();
+				values['width'] =
+					$("#hidden-background_original_width").val();
+				values['height'] =
+					$("#hidden-background_original_height").val();
 			}
 			$("#background").css('width', values['width']);
 			$("#background").css('height', values['height']);
@@ -386,7 +388,35 @@ function create_button_palette_callback() {
 	}
 }
 
-function draw_user_lines(color, thickness, start_x, start_y , end_x, end_y, only_defined_lines) {
+function update_user_line(type, idElement, top, left) {
+	jQuery.each(user_lines, function(iterator, user_line) {
+		
+		if (user_line['id'] != idElement)
+			return;
+		
+		switch (type) {
+			// -- line_item --
+			case 'handler_start':
+			// ---------------
+				
+				user_lines[iterator]['start_x'] = left;
+				user_lines[iterator]['start_y'] = top;
+				
+				break;
+			// -- line_item --
+			case 'handler_end':
+			// ---------------
+				
+				user_lines[iterator]['end_x'] = left;
+				user_lines[iterator]['end_y'] = top;
+				
+				break;
+		}
+	});
+}
+
+function draw_user_lines(color, thickness, start_x, start_y , end_x,
+	end_y, only_defined_lines) {
 	
 	obj_js_user_lines.clear();
 	
@@ -1701,7 +1731,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				
 				var params = [];
 				params.push("get_image_path=1");
-				params.push("img_src=images/console/icons/" + values['image'] + suffix);
+				params.push("img_src=" +
+					"images/console/icons/" + values['image'] + suffix);
 				params.push("page=include/ajax/skins.ajax");
 				params.push("only_src=1");
 				jQuery.ajax ({
@@ -1787,6 +1818,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 			}
 			break;
 	}
+	
+	draw_user_lines("", 0, 0, 0 , 0, 0, true);
 }
 
 function updateDB(type, idElement , values, event) {
@@ -1835,35 +1868,53 @@ function updateDB(type, idElement , values, event) {
 		// ---------------
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
-				top = parseInt($("#handler_start_" + idElement).css('top').replace('px', ''));
-				left = parseInt($("#handler_start_" + idElement).css('left').replace('px', ''));
+				top = parseInt($("#handler_start_" + idElement)
+					.css('top').replace('px', ''));
+				left = parseInt($("#handler_start_" + idElement)
+					.css('left').replace('px', ''));
 			}
 			else if ((typeof(values['absolute_left']) != 'undefined') &&
 				(typeof(values['absolute_top']) != 'undefined')) {
 				top = values['absolute_top'];
 				left = values['absolute_left'];
 			}
+			
+			//Added the radious of image point of handler
+			top = top + 6;
+			left = left + 6;
+			
+			update_user_line(type, idElement, top, left);
 			break;
 		// -- line_item --
 		case 'handler_end':
 		// ---------------
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
-				top = parseInt($("#handler_end_" + idElement).css('top').replace('px', ''));
-				left = parseInt($("#handler_end_" + idElement).css('left').replace('px', ''));
+				top = parseInt($("#handler_end_" + idElement)
+					.css('top').replace('px', ''));
+				left = parseInt($("#handler_end_" + idElement)
+					.css('left').replace('px', ''));
 			}
 			else if ((typeof(values['absolute_left']) != 'undefined') &&
 				(typeof(values['absolute_top']) != 'undefined')) {
 				top = values['absolute_top'];
 				left = values['absolute_left'];
 			}
+			
+			//Added the radious of image point of handler
+			top = top + 6;
+			left = left + 6;
+			
+			update_user_line(type, idElement, top, left);
 			break;
 		default:
 			
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
-				top = parseInt($("#" + idElement).css('top').replace('px', ''));
-				left = parseInt($("#" + idElement).css('left').replace('px', ''));
+				top = parseInt($("#" + idElement)
+					.css('top').replace('px', ''));
+				left = parseInt($("#" + idElement)
+					.css('left').replace('px', ''));
 			}
 			else if ((typeof(values['absolute_left']) != 'undefined') &&
 				(typeof(values['absolute_top']) != 'undefined')) {

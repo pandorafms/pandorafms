@@ -31,7 +31,7 @@ require_once ($config['homedir'] . '/include/functions_modules.php');
 // Hash login process
 if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
 	$loginhash_data = get_parameter("loginhash_data", "");
-	$loginhash_user = get_parameter("loginhash_user", "");
+	$loginhash_user = str_rot13((get_parameter("loginhash_user", ""));
 	
 	if ($config["loginhash_pwd"] != ""
 		&& $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
@@ -220,9 +220,13 @@ $label = base64_decode(get_parameter('label', ''));
 		$params['body_text'] .= html_print_input_hidden ("label", $label);
 		
 		if (isset($hash_connection_data)) {
-			$params['body_text'] .= html_print_input_hidden("loginhash", "auto", true);
-			$params['body_text'] .= html_print_input_hidden("loginhash_data", $loginhash_data, true);
-			$params['body_text'] .= html_print_input_hidden("loginhash_user", $loginhash_user, true);
+			$params['body_text'] .=
+				html_print_input_hidden("loginhash", "auto", true);
+			$params['body_text'] .=
+				html_print_input_hidden("loginhash_data", $loginhash_data, true);
+			$params['body_text'] .=
+				html_print_input_hidden("loginhash_user",
+					str_rot13($loginhash_user), true);
 		}
 		
 		$params['body_text'] .= html_print_input_hidden ("id", $id, true);

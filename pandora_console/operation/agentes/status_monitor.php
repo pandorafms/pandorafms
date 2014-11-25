@@ -868,10 +868,13 @@ else {
 				$console_password = $auth_serialized["console_password"];
 			}
 			
-			$user = $config["id_user"];
+			$user = str_rot13($config["id_user"]);
 			$hashdata = $user.$pwd;
 			$hashdata = md5($hashdata);
-			$url_hash = "&loginhash=auto&loginhash_data=$hashdata&loginhash_user=$user";
+			$url_hash = "&" .
+				"loginhash=auto&" .
+				"loginhash_data=$hashdata&" .
+				"loginhash_user=$user";
 			
 			foreach ($result_server as $result_element_key => $result_element_value) {
 				
@@ -1052,8 +1055,17 @@ foreach ($result as $row) {
 	
 	// TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
 	if (defined('METACONSOLE')) {
-		$agent_link = '<a href="'. $row["server_url"] .'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='. $row["id_agent"] . '&amp;loginhash=auto&amp;loginhash_data=' . $row["hashdata"] . '&amp;loginhash_user=' . $row["user"] . '">'; 
-		$agent_name = ui_print_truncate_text($row["agent_name"], 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+		$agent_link = '<a href="'.
+			$row["server_url"] .'index.php?' .
+				'sec=estado&amp;' .
+				'sec2=operation/agentes/ver_agente&amp;' .
+				'id_agente='. $row["id_agent"] . '&amp;' .
+				'loginhash=auto&amp;' .
+				'loginhash_data=' . $row["hashdata"] . '&amp;' .
+				'loginhash_user=' . str_rot13($row["user"]) . '">'; 
+		$agent_name = ui_print_truncate_text($row["agent_name"],
+			'agent_small', false, true, false, '[&hellip;]',
+			'font-size:7.5pt;');
 		if (can_user_access_node ()) {
 			$data[1] = $agent_link . '<b>' . $agent_name . '</b></a>';
 		}

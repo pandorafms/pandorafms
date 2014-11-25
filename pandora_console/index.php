@@ -318,7 +318,7 @@ if (! isset ($config['id_user']) && isset ($_GET["login"])) {
 elseif (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 	$loginhash_data = get_parameter("loginhash_data", "");
 	$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
-
+	
 	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
 		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $loginhash_user;

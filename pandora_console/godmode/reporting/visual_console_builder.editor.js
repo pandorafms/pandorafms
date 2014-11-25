@@ -463,7 +463,6 @@ function create_line(step, values) {
 			$("#background *").css("cursor", "crosshair");
 			
 			
-			
 			$("#background *")
 				.on('mousemove', function(e) {
 					$('#div_step_1').css({
@@ -1322,6 +1321,34 @@ function getPercentileBubble(id_data, values) {
 	return img;
 }
 
+function get_image_url(img_src) {
+	var img_url= null;
+	var parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
+	parameter.push ({name: "get_image_path", value: "1"});
+	parameter.push ({name: "img_src", value: img_src});
+	parameter.push ({name: "only_src", value: "1"});
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole != 0) {
+		url_ajax = "../../ajax.php";
+	}
+	
+	
+	jQuery.ajax ({
+		type: 'POST',
+		url: url_ajax,
+		data: parameter,
+		async: false,
+		timeout: 10000,
+		success: function (data) {
+			img_url = data;
+		}
+	});
+	
+	return img_url;
+}
+
 function getImageElement(id_data) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
@@ -1653,6 +1680,41 @@ function insertDB(type, values) {
 								"line_color":	values['line_color']};
 							
 							user_lines.push(line);
+							
+							// Draw handlers
+							radious_handle = 6;
+							
+							// Draw handler start
+							var img_src= get_image_url("images/dot_red.png");
+							
+							item = $('<div id="handler_start_' + id + '" ' +
+								'class="item handler_start" ' +
+								'style="text-align: center; ' +
+									'position: absolute; ' +
+									'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
+									'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
+									
+									'<img src="' + img_src + '" />' + 
+									
+								'</div>'
+							);
+							$("#background").append(item);
+							
+							// Draw handler stop
+							var img_src= get_image_url("images/dot_green.png");
+							
+							item = $('<div id="handler_end_' + id + '" ' +
+								'class="item handler_end" ' +
+								'style="text-align: center; ' +
+									'position: absolute; ' +
+									'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
+									'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +
+									
+									'<img src="' + img_src + '" />' + 
+									
+								'</div>'
+							);
+							$("#background").append(item);
 							break;
 					}
 				}

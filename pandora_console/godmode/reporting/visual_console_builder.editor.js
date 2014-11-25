@@ -1732,7 +1732,19 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		url_ajax = "../../ajax.php";
 	}
 	
+	radious_handle = 6;
+	
 	switch (type) {
+		case 'handler_start':
+			$("#handler_start_" + idElement)
+				.css('top', top + 'px');
+			$("#handler_start_" + idElement)
+				.css('left', left + 'px');
+			break;
+		case 'handler_end':
+			$("#handler_end_" + idElement).css('top', (top - radious_handle) + 'px');
+			$("#handler_end_" + idElement).css('left', (left - radious_handle) + 'px');
+			break;
 		case 'group_item':
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
@@ -1905,6 +1917,16 @@ function updateDB(type, idElement , values, event) {
 			//Force to move action when resize a background, for to avoid
 			//lost the label.
 			case 'dragstop':
+				
+				switch (type) {
+					case 'handler_start':
+						idElement = idElement.replace("handler_start_", "");
+						break;
+					case 'handler_end':
+						idElement = idElement.replace("handler_end_", "");
+						break;
+				}
+				
 				action = "move";
 				break;
 		}
@@ -2011,11 +2033,10 @@ function updateDB(type, idElement , values, event) {
 			data: parameter,
 			type: "POST",
 			dataType: 'text',
-			success: function (data)
-				{
-					updateDB_visual(type, idElement , values, event, top, left);
-				}
-			});
+			success: function (data) {
+				updateDB_visual(type, idElement , values, event, top, left);
+			}
+		});
 	}
 }
 
@@ -2355,6 +2376,89 @@ function eventsItems(drag) {
 		values['mov_top'] = ui.position.top; 
 		
 		updateDB(selectedItem, idItem, values, 'dragstop');
+	});
+	
+	$('.item').bind('drag', function(event, ui) {
+		if ($(event.target).hasClass('handler_start')) {
+			selectedItem = 'handler_start';
+		}
+		if ($(event.target).hasClass('handler_end')) {
+			selectedItem = 'handler_end';
+		}
+		
+		var values = {};
+		values['mov_left'] = ui.position.left;
+		values['mov_top'] = ui.position.top; 
+		
+		switch (selectedItem) {
+			// -- line_item --
+			case 'handler_start':
+			// ---------------
+				idElement = $(event.target).attr('id')
+					.replace("handler_end_", "");
+				idElement = $(event.target).attr('id')
+					.replace("handler_start_", "");
+				break;
+			// -- line_item --
+			case 'handler_end':
+			// ---------------
+				idElement = $(event.target).attr('id')
+					.replace("handler_end_", "");
+				idElement = $(event.target).attr('id')
+					.replace("handler_end_", "");
+				break;
+		}
+		
+		switch (selectedItem) {
+			// -- line_item --
+			case 'handler_start':
+			// ---------------
+				if ((typeof(values['mov_left']) != 'undefined') &&
+					(typeof(values['mov_top']) != 'undefined')) {
+					var top = parseInt($("#handler_start_" + idElement)
+						.css('top').replace('px', ''));
+					var left = parseInt($("#handler_start_" + idElement)
+						.css('left').replace('px', ''));
+				}
+				else if ((typeof(values['absolute_left']) != 'undefined') &&
+					(typeof(values['absolute_top']) != 'undefined')) {
+					var top = values['absolute_top'];
+					var left = values['absolute_left'];
+				}
+				
+				//Added the radious of image point of handler
+				top = top + 6;
+				left = left + 6;
+				
+				update_user_line('handler_start', idElement, top, left);
+				
+				draw_user_lines("", 0, 0, 0 , 0, 0, true);
+				break;
+			// -- line_item --
+			case 'handler_end':
+			// ---------------
+				if ((typeof(values['mov_left']) != 'undefined') &&
+					(typeof(values['mov_top']) != 'undefined')) {
+					top = parseInt($("#handler_end_" + idElement)
+						.css('top').replace('px', ''));
+					left = parseInt($("#handler_end_" + idElement)
+						.css('left').replace('px', ''));
+				}
+				else if ((typeof(values['absolute_left']) != 'undefined') &&
+					(typeof(values['absolute_top']) != 'undefined')) {
+					top = values['absolute_top'];
+					left = values['absolute_left'];
+				}
+				
+				//Added the radious of image point of handler
+				top = top + 6;
+				left = left + 6;
+				
+				update_user_line('handler_end', idElement, top, left);
+				
+				draw_user_lines("", 0, 0, 0 , 0, 0, true);
+				break;
+		}
 	});
 }
 

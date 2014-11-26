@@ -110,6 +110,7 @@ use threads;
 use threads::shared;
 use JSON qw(decode_json encode_json);
 use MIME::Base64;
+use Text::ParseWords;
 
 # Debugging
 #use Data::Dumper;
@@ -893,7 +894,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$macros{_field9_} = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module);
 		$macros{_field10_} = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module);
 		
-		my $command = subst_alert_macros (decode_entities ($action->{'command'}), \%macros, $pa_config, $dbh, $agent, $module);
+		my @command_args = ();
+		# divide command into words based on quotes and whitespaces
+		foreach my $word (quotewords('\s+', 1, (decode_entities($action->{'command'})))) {
+			push @command_args, subst_alert_macros($word, \%macros, $pa_config, $dbh, $agent, $module);
+		}
+		my $command = join(' ', @command_args);
 		logger($pa_config, "Executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 8);
 		
 		eval {
@@ -3258,11 +3264,27 @@ sub subst_alert_macros ($$;$$$$) {
 
 	my $macro_regexp = join('|', keys %{$macros});
 
+	my $subst_func;
+	if ($string =~ m/^(?:(")(?:.*)"|(')(?:.*)')$/) {
+		my $quote = $1 ? $1 : $2;
+		$subst_func = sub {
+			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module);
+			$macro =~ s/'/'\\''/g; # close, escape, open
+			return decode_entities($quote . "'" . $macro . "'" . $quote); # close, quote, open
+		};
+	}
+	else {
+		$subst_func = sub {
+			my $macro = on_demand_macro($pa_config, $dbh, shift, $macros, $agent, $module);
+			return decode_entities($macro);
+		};
+	}
+
 	# Macro data may contain HTML entities
 	eval {
 		no warnings;
 		local $SIG{__DIE__};
-		$string =~ s/($macro_regexp)/decode_entities(on_demand_macro($pa_config, $dbh, $1, $macros, $agent, $module))/ige;
+		$string =~ s/($macro_regexp)/$subst_func->($1)/ige;
 	};
 
 	return $string;

@@ -868,13 +868,14 @@ else {
 				$console_password = $auth_serialized["console_password"];
 			}
 			
-			$user = str_rot13($config["id_user"]);
+			$user = $config["id_user"];
+			$user_rot13 = str_rot13($config["id_user"]);
 			$hashdata = $user.$pwd;
 			$hashdata = md5($hashdata);
 			$url_hash = "&" .
 				"loginhash=auto&" .
 				"loginhash_data=$hashdata&" .
-				"loginhash_user=$user";
+				"loginhash_user=$user_rot13";
 			
 			foreach ($result_server as $result_element_key => $result_element_value) {
 				

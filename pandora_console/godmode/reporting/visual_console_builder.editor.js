@@ -388,6 +388,21 @@ function create_button_palette_callback() {
 	}
 }
 
+function delete_user_line(idElement) {
+	var found = null;
+	
+	jQuery.each(user_lines, function(iterator, user_line) {
+		if (user_line['id'] == idElement) {
+			found = iterator;
+			return;
+		}
+	});
+	
+	if (found != null) {
+		user_lines.splice(found, 1);
+	}
+}
+
 function update_user_line(type, idElement, top, left) {
 	jQuery.each(user_lines, function(iterator, user_line) {
 		
@@ -2127,9 +2142,22 @@ function deleteDB(idElement) {
 							lines.splice(i, 1);
 						}
 					});
+					
+					if ($("#handler_start_" + idElement).length ||
+						$("#handler_end_" + idElement).length) {
+						
+						// Line item
+						
+						$("#handler_start_" + idElement).remove();
+						$("#handler_end_" + idElement).remove();
+						
+						delete_user_line(idElement);
+					}
+					
+					
 					refresh_lines(lines, 'background', true);
 					
-					
+					draw_user_lines("", 0, 0, 0 , 0, 0, true);
 					
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);

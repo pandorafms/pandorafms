@@ -143,6 +143,15 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 1]['icon'] =
 				html_print_image('images/photo.png', true, array('title' => __('Icon')));
 			break;
+		case BOX_ITEM:
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/box_item.png', true, array('title' => __('Box')));
+			break;
+		case LINE_ITEM:
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/line_item.png', true,
+					array('title' => __('Line')));
+			break;
 		default:
 			if (enterprise_installed()) {
 				$table->data[$i + 1]['icon'] =
@@ -158,44 +167,76 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//First row
 	
-	//Label 
-	if ($layoutData['type'] != ICON) {
-		$table->data[$i + 1][0] = '<span style="width: 150px; display: block;">' .
-			html_print_input_hidden('label_' . $idLayoutData, $layoutData['label'], true) .
-			'<a href="javascript: show_dialog_label_editor(' . $idLayoutData . ');">' . __('Edit label') .'</a>' .                      
-			'</span>';
+	//Label
+	switch ($layoutData['type']) {
+		case ICON:
+		case BOX_ITEM:
+		case LINE_ITEM:
+			// hasn't the label.
+			$table->data[$i + 1][0] = '';
+			break;
+		default:
+			$table->data[$i + 1][0] = '<span style="width: 150px; display: block;">' .
+				html_print_input_hidden('label_' . $idLayoutData, $layoutData['label'], true) .
+				'<a href="javascript: show_dialog_label_editor(' . $idLayoutData . ');">' . __('Edit label') .'</a>' .                      
+				'</span>';
+			break;
 	}
-	else {
-		//Icon haven't the label.
-		$table->data[$i + 1][0] = '';
-	}
-	
-	
 	
 	
 	//Image
-	if (($layoutData['type'] == STATIC_GRAPH) || ($layoutData['type'] == ICON)) {
-		$table->data[$i + 1][1] = html_print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true,  false, true, '', false, "width: 120px");
-	}
-	else {
-		$table->data[$i + 1][1] = '';
+	switch ($layoutData['type']) {
+		case STATIC_GRAPH:
+		case ICON:
+			$table->data[$i + 1][1] =
+				html_print_select ($images_list,
+					'image_' . $idLayoutData, $layoutData['image'], '',
+					'None', '', true,  false, true, '', false,
+					"width: 120px");
+			break;
+		default:
+			$table->data[$i + 1][1] = '';
+			break;
 	}
 	
 	
 	
 	//Width and height
-	$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
-		'x' .
-		html_print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 2, 5, true);
+	switch ($layoutData['type']) {
+		case LINE_ITEM:
+			// hasn't the width and height.
+			$table->data[$i + 1][2] = '';
+			break;
+		default:
+			$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
+				'x' .
+				html_print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 2, 5, true);
+			break;
+	}
 	
 	//Position
-	$table->data[$i + 1][3] = '(' . html_print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 2, 5, true) .
-		',' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 2, 5, true) .
-		')';
+	switch ($layoutData['type']) {
+		case LINE_ITEM:
+			// hasn't the width and height.
+			$table->data[$i + 1][3] = '';
+			break;
+		default:
+			$table->data[$i + 1][3] = '(' . html_print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 2, 5, true) .
+				',' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 2, 5, true) .
+				')';
+			break;
+	}
 	
 	//Parent
-	$table->data[$i + 1][4] = html_print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
-		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true, false, true, false, 'width: 120px;');
+	switch ($layoutData['type']) {
+		case BOX_ITEM:
+		case LINE_ITEM:
+			$table->data[$i + 1][4] = "";
+			break;
+		default:
+			$table->data[$i + 1][4] = html_print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
+				'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true, false, true, false, 'width: 120px;');
+	}
 	
 	//Delete row button
 	if (!defined('METACONSOLE')) {
@@ -217,8 +258,10 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Agent
 	switch ($layoutData['type']) {
+		case BOX_ITEM:
 		case ICON:
 		case LABEL:
+		case LINE_ITEM:
 			$table->data[$i + 2][0] = '';
 			break;
 		default:
@@ -268,6 +311,8 @@ foreach ($layoutDatas as $layoutData) {
 	switch ($layoutData['type']) {
 		case ICON:
 		case LABEL:
+		case BOX_ITEM:
+		case LINE_ITEM:
 			$table->data[$i + 2][1] = '';
 			break;
 		default:
@@ -328,9 +373,18 @@ foreach ($layoutDatas as $layoutData) {
 	}
 	
 	//Map linked
-	$table->data[$i + 2][4] = html_print_select_from_sql(
-		'SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
-		'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true,  false, true, '', false, "width: 120px");
+	switch ($layoutData['type']) {
+		case LINE_ITEM:
+		case BOX_ITEM:
+			$table->data[$i + 2][4] = "";
+			break;
+		default:
+			$table->data[$i + 2][4] = html_print_select_from_sql(
+				'SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
+				'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true,  false, true, '', false, "width: 120px");
+			break;
+	}
+	
 	$table->data[$i + 2][5] = '';
 	
 	if ($alternativeStyle) {

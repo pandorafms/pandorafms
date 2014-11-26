@@ -123,3 +123,25 @@ function refresh_lines (lines, id_div, editor) {
 	delete_lines (id_div);
 	draw_lines (lines, id_div, editor);
 }
+
+
+function draw_user_lines_read() {
+	var obj_js_user_lines = new jsGraphics("background");
+	
+	obj_js_user_lines.clear();
+	
+	// Draw the previous lines
+	for (iterator = 0; iterator < user_lines.length; iterator++) {
+		console.log(user_lines[iterator]);
+		obj_js_user_lines.setStroke(parseInt(user_lines[iterator]['line_width']));
+		obj_js_user_lines.setColor(user_lines[iterator]['line_color']);
+		obj_js_user_lines.drawLine(
+			parseInt(user_lines[iterator]['start_x']),
+			parseInt(user_lines[iterator]['start_y']),
+			parseInt(user_lines[iterator]['end_x']),
+			parseInt(user_lines[iterator]['end_y']));
+		
+	}
+	
+	obj_js_user_lines.paint();
+}

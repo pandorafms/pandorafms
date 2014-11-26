@@ -16,11 +16,15 @@ var is_opened_palette = false;
 var idItem = 0;
 var selectedItem = null;
 var lines = Array();
+var user_lines = Array();
 var toolbuttonActive = null;
 var autosave = true;
 var list_actions_pending_save = [];
 var temp_id_item = 0;
 var parents = {};
+
+var obj_js_user_lines = null;
+
 
 var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 
@@ -50,8 +54,12 @@ function visual_map_main() {
 	//Fixed to wait the load of images.
 	$(window).load(function() {
 			draw_lines(lines, 'background', true);
+			
+			draw_user_lines("", 0, 0, 0 , 0, 0, true);
 		}
 	);
+	
+	obj_js_user_lines = new jsGraphics("background");
 	
 	$("input[name='radio_choice']").on('change', function() {
 		var radio_value = $("input[name='radio_choice']:checked").val();
@@ -103,8 +111,10 @@ function update_button_palette_callback() {
 	switch (selectedItem) {
 		case 'background':
 			if(values['width'] == 0 && values['height'] == 0) {
-				values['width'] = $("#hidden-background_original_width").val();
-				values['height'] = $("#hidden-background_original_height").val();
+				values['width'] =
+					$("#hidden-background_original_width").val();
+				values['height'] =
+					$("#hidden-background_original_height").val();
 			}
 			$("#background").css('width', values['width']);
 			$("#background").css('height', values['height']);
@@ -128,6 +138,13 @@ function update_button_palette_callback() {
 			});
 			
 			idElement = 0;
+			break;
+		case 'box_item':
+			$("#" + idItem + " div").css('background-color', values['fill_color']);
+			$("#" + idItem + " div").css('border-color', values['border_color']);
+			$("#" + idItem + " div").css('border-width', values['border_width'] + "px");
+			$("#" + idItem + " div").css('height', values['height_box'] + "px");
+			$("#" + idItem + " div").css('width', values['width_box'] + "px");
 			break;
 		case 'group_item':
 		case 'static_graph':
@@ -245,6 +262,17 @@ function readFields() {
 	values['id_group'] = $("select[name=group]").val();
 	values['id_custom_graph'] = parseInt(
 		$("#custom_graph option:selected").val());
+	values['width_box'] = parseInt(
+		$("input[name='width_box']").val());
+	values['height_box'] = parseInt(
+		$("input[name='height_box']").val());
+	values['border_color'] = $("input[name='border_color']").val();
+	values['border_width'] = parseInt(
+		$("input[name='border_width']").val());
+	values['fill_color'] = $("input[name='fill_color']").val();
+	values['line_width'] = parseInt(
+		$("input[name='line_width']").val());
+	values['line_color'] = $("input[name='line_color']").val();
 	
 	if (metaconsole != 0) {
 		values['metaconsole'] = 1;
@@ -271,6 +299,8 @@ function create_button_palette_callback() {
 	//VALIDATE DATA
 	var validate = true;
 	switch (creationItem) {
+		case 'box_item':
+			break;
 		case 'group_item':
 		case 'static_graph':
 			if ((values['label'] == '') && (values['image'] == '')) {
@@ -344,8 +374,179 @@ function create_button_palette_callback() {
 	}
 	
 	if (validate) {
-		insertDB(creationItem, values);
+		switch (creationItem) {
+			case 'line_item':
+				create_line('step_1', values);
+				break;
+			default:
+				insertDB(creationItem, values);
+				break;
+		}
+		
+		
 		toggle_item_palette();
+	}
+}
+
+function delete_user_line(idElement) {
+	var found = null;
+	
+	jQuery.each(user_lines, function(iterator, user_line) {
+		if (user_line['id'] == idElement) {
+			found = iterator;
+			return;
+		}
+	});
+	
+	if (found != null) {
+		user_lines.splice(found, 1);
+	}
+}
+
+function update_user_line(type, idElement, top, left) {
+	jQuery.each(user_lines, function(iterator, user_line) {
+		
+		if (user_line['id'] != idElement)
+			return;
+		
+		switch (type) {
+			// -- line_item --
+			case 'handler_start':
+			// ---------------
+				
+				user_lines[iterator]['start_x'] = left;
+				user_lines[iterator]['start_y'] = top;
+				
+				break;
+			// -- line_item --
+			case 'handler_end':
+			// ---------------
+				
+				user_lines[iterator]['end_x'] = left;
+				user_lines[iterator]['end_y'] = top;
+				
+				break;
+		}
+	});
+}
+
+function draw_user_lines(color, thickness, start_x, start_y , end_x,
+	end_y, only_defined_lines) {
+	
+	obj_js_user_lines.clear();
+	
+	// Draw the previous lines
+	for (iterator = 0; iterator < user_lines.length; iterator++) {
+		
+		obj_js_user_lines.setStroke(user_lines[iterator]['line_width']);
+		obj_js_user_lines.setColor(user_lines[iterator]['line_color']);
+		obj_js_user_lines.drawLine(
+			user_lines[iterator]['start_x'],
+			user_lines[iterator]['start_y'],
+			user_lines[iterator]['end_x'],
+			user_lines[iterator]['end_y']);
+		
+	}
+	
+	
+	if (typeof(only_defined_lines) == "undefined") {
+		only_defined_lines = false;
+	}
+	
+	if (!only_defined_lines) {
+		obj_js_user_lines.setStroke(thickness);
+		obj_js_user_lines.setColor(color);
+		obj_js_user_lines.drawLine(start_x, start_y, end_x, end_y);
+	}
+	
+	obj_js_user_lines.paint();
+}
+
+function create_line(step, values) {
+	
+	$('.item').unbind('click');
+	$('.item').unbind('dblclick');
+	$('.item').unbind('dragstop');
+	$('.item').unbind('dragstart');
+	
+	$('#background').unbind('click');
+	$('#background').unbind('dblclick');
+	
+	
+	switch (step) {
+		case 'step_1':
+			$("#background *").css("cursor", "crosshair");
+			
+			
+			$("#background *")
+				.on('mousemove', function(e) {
+					$('#div_step_1').css({
+						left:	e.pageX,
+						top:	e.pageY
+					});
+					$('#div_step_1').show();
+					
+					// 2 for the black border of background
+					values['line_start_x'] =
+						e.pageX - $("#background").position().left - 2;
+					values['line_start_y'] =
+						e.pageY - $("#background").position().top - 2;
+					
+				});
+			
+			
+			$("#background *")
+				.on('click', function(e) {
+					create_line('step_2', values);
+				});
+			
+			break;
+		case 'step_2':
+			$('#div_step_1').hide();
+			$("#background *").off('mousemove');
+			$("#background *").off('click');
+			
+			
+			$("#background *")
+				.on('mousemove', function(e) {
+					$('#div_step_2').css({
+						left:	e.pageX,
+						top:	e.pageY
+					});
+					$('#div_step_2').show();
+					
+					// 2 for the black border of background
+					values['line_end_x'] =
+						e.pageX - $("#background").position().left - 2;
+					values['line_end_y'] =
+						e.pageY - $("#background").position().top - 2;
+					
+					draw_user_lines(
+						values['line_color'],
+						values['line_width'],
+						values['line_start_x'],
+						values['line_start_y'],
+						values['line_end_x'] - 3,
+						values['line_end_y'] - 3);
+				});
+			
+			$("#background *")
+				.on('click', function(e) {
+					create_line('step_3', values);
+				});
+			break;
+		case 'step_3':
+			$('#div_step_2').hide();
+			$("#background *").off('mousemove');
+			$("#background *").off('click');
+			
+			$("#background *").css("cursor", "");
+			
+			insertDB("line_item", values);
+			
+			eventsItems();
+			eventsBackground();
+			break;
 	}
 }
 
@@ -362,6 +563,8 @@ function toggle_item_palette() {
 		activeToolboxButton('icon', true);
 		activeToolboxButton('percentile_item', true);
 		activeToolboxButton('group_item', true);
+		activeToolboxButton('box_item', true);
+		activeToolboxButton('line_item', true);
 		
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -386,6 +589,8 @@ function toggle_item_palette() {
 		activeToolboxButton('icon', false);
 		activeToolboxButton('percentile_item', false);
 		activeToolboxButton('group_item', false);
+		activeToolboxButton('box_item', false);
+		activeToolboxButton('line_item', false);
 		
 		activeToolboxButton('copy_item', false);
 		activeToolboxButton('edit_item', false);
@@ -414,7 +619,18 @@ function toggle_item_palette() {
 			
 			item = selectedItem;
 			toolbuttonActive = item;
-			activeToolboxButton(toolbuttonActive, true);
+			
+			switch (item) {
+				case 'handler_start':
+				case 'handler_end':
+					activeToolboxButton('line_item', true);
+					break;
+				default:
+					activeToolboxButton(toolbuttonActive, true);
+					break;
+			}
+			
+			
 			$("#button_create_row").css('display', 'none');
 			$("#button_update_row").css('display', '');
 			cleanFields();
@@ -553,14 +769,22 @@ function loadFieldsFromDB(item) {
 							$('#' + periodId + '_manual').show();
 						}
 					}
-					if (key == 'width') $("input[name=width]").val(val);
-					if (key == 'height') $("input[name=height]").val(val);
-					if (key == 'parent_item') $("select[name=parent]").val(val);
-					if (key == 'id_layout_linked') $("select[name=map_linked]").val(val);
-					if (key == 'width_percentile') $("input[name=width_percentile]").val(val);
-					if (key == 'max_percentile') $("input[name=max_percentile]").val(val);
-					if (key == 'width_module_graph') $("input[name=width_module_graph]").val(val);
-					if (key == 'height_module_graph') $("input[name=height_module_graph]").val(val);
+					if (key == 'width')
+						$("input[name=width]").val(val);
+					if (key == 'height')
+						$("input[name=height]").val(val);
+					if (key == 'parent_item')
+						$("select[name=parent]").val(val);
+					if (key == 'id_layout_linked')
+						$("select[name=map_linked]").val(val);
+					if (key == 'width_percentile')
+						$("input[name=width_percentile]").val(val);
+					if (key == 'max_percentile')
+						$("input[name=max_percentile]").val(val);
+					if (key == 'width_module_graph')
+						$("input[name=width_module_graph]").val(val);
+					if (key == 'height_module_graph')
+						$("input[name=height_module_graph]").val(val);
 					
 					if (key == 'type_percentile') {
 						if (val == 'percentile') {
@@ -597,8 +821,33 @@ function loadFieldsFromDB(item) {
 							$("#id_server_name").val(val);
 						}
 					}
+					
+					if (key == 'width_box')
+						$("input[name='width_box']").val(val);
+					if (key == 'height_box')
+						$("input[name='height_box']").val(val);
+					if (key == 'border_color') {
+						$("input[name='border_color']").val(val);
+						$("#border_color_row .ColorPickerDivSample")
+							.css('background-color', val);
+					}
+					if (key == 'border_width')
+						$("input[name='border_width']").val(val);
+					if (key == 'fill_color') {
+						$("input[name='fill_color']").val(val);
+						$("#fill_color_row .ColorPickerDivSample")
+							.css('background-color', val);
+					}
+					if (key == 'line_width')
+						$("input[name='line_width']").val(val);
+					if (key == 'line_color') {
+						$("input[name='line_color']").val(val);
+						$("#line_color_row .ColorPickerDivSample")
+							.css('background-color', val);
+					}
+					
 				});
-
+				
 				if (data.type == 1) {
 					if (data.id_custom_graph > 0) {
 						$("input[name='radio_choice'][value='custom_graph']")
@@ -671,6 +920,7 @@ function setAspectRatioBackground(side) {
 }
 
 function hiddenFields(item) {
+	
 	//The method to hidden and show is
 	//a row have a id and multiple class
 	//then the steps is
@@ -680,82 +930,104 @@ function hiddenFields(item) {
 	//  or <tr id="title_panel_span_<item>">...</tr>
 	
 	$(".title_panel_span").css('display', 'none');
-	$("#title_panel_span_"  + item).css('display', 'inline'); 
+	$("#title_panel_span_" + item).css('display', 'inline'); 
 	
 	$("#label_row").css('display', 'none');
-	$("#label_row."  + item).css('display', '');
+	$("#label_row." + item).css('display', '');
 	
 	$("#image_row").css('display', 'none');
-	$("#image_row."  + item).css('display', '');
+	$("#image_row." + item).css('display', '');
 	
 	$("#enable_link_row").css('display', 'none');
-	$("#enable_link_row."  + item).css('display', '');
+	$("#enable_link_row." + item).css('display', '');
 	
 	$("#preview_row").css('display', 'none');
-	$("#preview_row."  + item).css('display', '');
+	$("#preview_row." + item).css('display', '');
 	
 	$("#position_row").css('display', 'none');
-	$("#position_row."  + item).css('display', '');
+	$("#position_row." + item).css('display', '');
 	
 	$("#agent_row").css('display', 'none');
-	$("#agent_row."  + item).css('display', '');
+	$("#agent_row." + item).css('display', '');
 	
 	$("#module_row").css('display', 'none');
-	$("#module_row."  + item).css('display', '');
+	$("#module_row." + item).css('display', '');
 	
 	$("#group_row").css('display', 'none');
-	$("#group_row."  + item).css('display', '');
+	$("#group_row." + item).css('display', '');
 	
 	$("#process_value_row").css('display', 'none');
-	$("#process_value_row."  + item).css('display', '');
+	$("#process_value_row." + item).css('display', '');
 	
 	$("#background_row_1").css('display', 'none');
-	$("#background_row_1."  + item).css('display', '');
+	$("#background_row_1." + item).css('display', '');
 	
 	$("#background_row_2").css('display', 'none');
-	$("#background_row_2."  + item).css('display', '');
+	$("#background_row_2." + item).css('display', '');
 	
 	$("#background_row_3").css('display', 'none');
-	$("#background_row_3."  + item).css('display', '');
+	$("#background_row_3." + item).css('display', '');
 	
 	$("#background_row_4").css('display', 'none');
-	$("#background_row_4."  + item).css('display', '');
+	$("#background_row_4." + item).css('display', '');
 	
 	$("#percentile_bar_row_1").css('display', 'none');
-	$("#percentile_bar_row_1."  + item).css('display', '');
+	$("#percentile_bar_row_1." + item).css('display', '');
 	
 	$("#percentile_bar_row_2").css('display', 'none');
-	$("#percentile_bar_row_2."  + item).css('display', '');
+	$("#percentile_bar_row_2." + item).css('display', '');
 	
 	$("#percentile_item_row_3").css('display', 'none');
-	$("#percentile_item_row_3."  + item).css('display', '');
+	$("#percentile_item_row_3." + item).css('display', '');
 	
 	$("#percentile_item_row_4").css('display', 'none');
-	$("#percentile_item_row_4."  + item).css('display', '');
+	$("#percentile_item_row_4." + item).css('display', '');
 	
 	$("#period_row").css('display', 'none');
-	$("#period_row."  + item).css('display', '');
+	$("#period_row." + item).css('display', '');
 	
 	$("#size_row").css('display', 'none');
-	$("#size_row."  + item).css('display', '');
+	$("#size_row." + item).css('display', '');
 	
 	$("#parent_row").css('display', 'none');
-	$("#parent_row."  + item).css('display', '');
+	$("#parent_row." + item).css('display', '');
 	
 	$("#map_linked_row").css('display', 'none');
-	$("#map_linked_row."  + item).css('display', '');
+	$("#map_linked_row." + item).css('display', '');
 	
 	$("#module_graph_size_row").css('display', 'none');
-	$("#module_graph_size_row."  + item).css('display', '');
+	$("#module_graph_size_row." + item).css('display', '');
 	
 	$("#background_color").css('display', 'none');
-	$("#background_color."  + item).css('display', '');
+	$("#background_color." + item).css('display', '');
 	
 	$("#radio_choice_graph").css('display', 'none');
-	$("#radio_choice_graph."  + item).css('display', '');
+	$("#radio_choice_graph." + item).css('display', '');
 	
 	$("#custom_graph_row").css('display', 'none');
-	$("#custom_graph_row."  + item).css('display', '');
+	$("#custom_graph_row." + item).css('display', '');
+	
+	$("#box_size_row").css('display', 'none');
+	$("#box_size_row." + item).css('display', '');
+	
+	$("#border_color_row").css('display', 'none');
+	$("#border_color_row." + item).css('display', '');
+	
+	$("#border_width_row").css('display', 'none');
+	$("#border_width_row." + item).css('display', '');
+	
+	$("#fill_color_row").css('display', 'none');
+	$("#fill_color_row." + item).css('display', '');
+	
+	$("#line_color_row").css('display', 'none');
+	$("#line_color_row." + item).css('display', '');
+	
+	$("#line_width_row").css('display', 'none');
+	$("#line_width_row." + item).css('display', '');
+	
+	
+	
+	
 	
 	$("input[name='radio_choice']").trigger('change');
 	
@@ -791,6 +1063,15 @@ function cleanFields(item) {
 	$("select[name=map_linked]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
+	$("input[name='width_box']").val(300);
+	$("input[name='height_box']").val(180);
+	$("input[name='border_color']").val('#000000');
+	$("input[name='border_width']").val(3);
+	$("input[name='fill_color']").val('#ffffff');
+	$("input[name='line_width']").val(3);
+	$("input[name='line_color']").val('#000000');
+	
+	
 	$("#preview").empty();
 	
 	
@@ -1066,6 +1347,34 @@ function getPercentileBubble(id_data, values) {
 	return img;
 }
 
+function get_image_url(img_src) {
+	var img_url= null;
+	var parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
+	parameter.push ({name: "get_image_path", value: "1"});
+	parameter.push ({name: "img_src", value: img_src});
+	parameter.push ({name: "only_src", value: "1"});
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole != 0) {
+		url_ajax = "../../ajax.php";
+	}
+	
+	
+	jQuery.ajax ({
+		type: 'POST',
+		url: url_ajax,
+		data: parameter,
+		async: false,
+		timeout: 10000,
+		success: function (data) {
+			img_url = data;
+		}
+	});
+	
+	return img_url;
+}
+
 function getImageElement(id_data) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
@@ -1138,6 +1447,31 @@ function createItem(type, values, id_data) {
 	}
 	
 	switch (type) {
+		case 'box_item':
+			item = $('<div id="' + id_data + '" '
+				+ 'class="item box_item" '
+				+ 'style="text-align: center; '
+					+ 'position: absolute; ' 
+					+ 'display: inline-block; '
+					+ 'z-index: 1; '
+					+ 'top: ' + values['top'] + 'px; '
+					+ 'left: ' + values['left'] + 'px;">'
+					+ '<div '
+					+ 'style=" ' 
+					+ 'width: ' + values['width_box'] + 'px;'
+					+ 'height: ' + values['height_box'] + 'px;'
+					+ 'border-style: solid;'
+					+ 'border-width: ' + values['border_width'] + 'px;'
+					+ 'border-color: ' + values['border_color'] + ';'
+					+ 'background-color: ' + values['fill_color'] + ';'
+					+ '">'
+					+ '</div>'
+				+ '</div>'
+				+ '<input id="hidden-status_' + id_data + '" '
+					+ 'type="hidden" value="' + element_status + '" '
+					+ 'name="status_' + id_data + '">'
+			);
+			break;
 		case 'group_item':
 		case 'static_graph':
 			if ((values['width'] == 0) && (values['height'] == 0)) {
@@ -1305,7 +1639,8 @@ function createItem(type, values, id_data) {
 	}
 	
 	$("#background").append(item);
-	$(".item").css('z-index', '1');
+	$(".item").css('z-index', '2');
+	$(".box_item").css('z-index', '1');
 	
 	if (values['parent'] != 0) {
 		var line = {"id": id_data,
@@ -1358,6 +1693,56 @@ function insertDB(type, values) {
 					addItemSelectParents(id, data['text']);
 					//Reload all events for the item and new item.
 					eventsItems();
+					
+					switch (type) {
+						case 'line_item':
+							var line = {
+								"id": id,
+								"start_x":		values['line_start_x'],
+								"start_y":		values['line_start_y'],
+								"end_x":		values['line_end_x'],
+								"end_y":		values['line_end_y'],
+								"line_width":	values['line_width'],
+								"line_color":	values['line_color']};
+							
+							user_lines.push(line);
+							
+							// Draw handlers
+							radious_handle = 6;
+							
+							// Draw handler start
+							var img_src= get_image_url("images/dot_red.png");
+							
+							item = $('<div id="handler_start_' + id + '" ' +
+								'class="item handler_start" ' +
+								'style="text-align: center; ' +
+									'position: absolute; ' +
+									'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
+									'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
+									
+									'<img src="' + img_src + '" />' + 
+									
+								'</div>'
+							);
+							$("#background").append(item);
+							
+							// Draw handler stop
+							var img_src= get_image_url("images/dot_green.png");
+							
+							item = $('<div id="handler_end_' + id + '" ' +
+								'class="item handler_end" ' +
+								'style="text-align: center; ' +
+									'position: absolute; ' +
+									'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
+									'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +
+									
+									'<img src="' + img_src + '" />' + 
+									
+								'</div>'
+							);
+							$("#background").append(item);
+							break;
+					}
 				}
 				else {
 					//TODO
@@ -1373,16 +1758,34 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		url_ajax = "../../ajax.php";
 	}
 	
+	radious_handle = 6;
+	
 	switch (type) {
+		case 'handler_start':
+			$("#handler_start_" + idElement)
+				.css('top', top + 'px');
+			$("#handler_start_" + idElement)
+				.css('left', left + 'px');
+			break;
+		case 'handler_end':
+			$("#handler_end_" + idElement).css('top', (top - radious_handle) + 'px');
+			$("#handler_end_" + idElement).css('left', (left - radious_handle) + 'px');
+			break;
 		case 'group_item':
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
 				&& (event != 'dragstop')) {
 				var element_status= null;
 				var parameter = Array();
-				parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-				parameter.push ({name: "get_element_status", value: "1"});
-				parameter.push ({name: "id_element", value: idElement});
+				parameter.push ({
+					name: "page",
+					value: "include/ajax/visual_console_builder.ajax"});
+				parameter.push ({
+					name: "get_element_status",
+					value: "1"});
+				parameter.push ({
+					name: "id_element",
+					value: idElement});
 				
 				if (metaconsole != 0) {
 					parameter.push ({name: "metaconsole", value: 1});
@@ -1428,7 +1831,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				
 				var params = [];
 				params.push("get_image_path=1");
-				params.push("img_src=images/console/icons/" + values['image'] + suffix);
+				params.push("img_src=" +
+					"images/console/icons/" + values['image'] + suffix);
 				params.push("page=include/ajax/skins.ajax");
 				params.push("only_src=1");
 				jQuery.ajax ({
@@ -1514,6 +1918,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 			}
 			break;
 	}
+	
+	draw_user_lines("", 0, 0, 0 , 0, 0, true);
 }
 
 function updateDB(type, idElement , values, event) {
@@ -1537,6 +1943,16 @@ function updateDB(type, idElement , values, event) {
 			//Force to move action when resize a background, for to avoid
 			//lost the label.
 			case 'dragstop':
+				
+				switch (type) {
+					case 'handler_start':
+						idElement = idElement.replace("handler_start_", "");
+						break;
+					case 'handler_end':
+						idElement = idElement.replace("handler_end_", "");
+						break;
+				}
+				
 				action = "move";
 				break;
 		}
@@ -1555,15 +1971,67 @@ function updateDB(type, idElement , values, event) {
 		parameter.push({name: key, value: val});
 	});
 	
-	if ((typeof(values['mov_left']) != 'undefined') &&
-		(typeof(values['mov_top']) != 'undefined')) {
-		top = parseInt($("#" + idElement).css('top').replace('px', ''));
-		left = parseInt($("#" + idElement).css('left').replace('px', ''));
-	}
-	else if ((typeof(values['absolute_left']) != 'undefined') &&
-		(typeof(values['absolute_top']) != 'undefined')) {
-		top = values['absolute_top'];
-		left = values['absolute_left'];
+	
+	switch (type) {
+		// -- line_item --
+		case 'handler_start':
+		// ---------------
+			if ((typeof(values['mov_left']) != 'undefined') &&
+				(typeof(values['mov_top']) != 'undefined')) {
+				top = parseInt($("#handler_start_" + idElement)
+					.css('top').replace('px', ''));
+				left = parseInt($("#handler_start_" + idElement)
+					.css('left').replace('px', ''));
+			}
+			else if ((typeof(values['absolute_left']) != 'undefined') &&
+				(typeof(values['absolute_top']) != 'undefined')) {
+				top = values['absolute_top'];
+				left = values['absolute_left'];
+			}
+			
+			//Added the radious of image point of handler
+			top = top + 6;
+			left = left + 6;
+			
+			update_user_line(type, idElement, top, left);
+			break;
+		// -- line_item --
+		case 'handler_end':
+		// ---------------
+			if ((typeof(values['mov_left']) != 'undefined') &&
+				(typeof(values['mov_top']) != 'undefined')) {
+				top = parseInt($("#handler_end_" + idElement)
+					.css('top').replace('px', ''));
+				left = parseInt($("#handler_end_" + idElement)
+					.css('left').replace('px', ''));
+			}
+			else if ((typeof(values['absolute_left']) != 'undefined') &&
+				(typeof(values['absolute_top']) != 'undefined')) {
+				top = values['absolute_top'];
+				left = values['absolute_left'];
+			}
+			
+			//Added the radious of image point of handler
+			top = top + 6;
+			left = left + 6;
+			
+			update_user_line(type, idElement, top, left);
+			break;
+		default:
+			
+			if ((typeof(values['mov_left']) != 'undefined') &&
+				(typeof(values['mov_top']) != 'undefined')) {
+				top = parseInt($("#" + idElement)
+					.css('top').replace('px', ''));
+				left = parseInt($("#" + idElement)
+					.css('left').replace('px', ''));
+			}
+			else if ((typeof(values['absolute_left']) != 'undefined') &&
+				(typeof(values['absolute_top']) != 'undefined')) {
+				top = values['absolute_top'];
+				left = values['absolute_left'];
+			}
+			break;
 	}
 	
 	if ((typeof(top) != 'undefined') && (typeof(left) != 'undefined')) {
@@ -1578,6 +2046,7 @@ function updateDB(type, idElement , values, event) {
 		}
 	}
 	
+	
 	success_update = false;
 	if (!autosave) {
 		list_actions_pending_save.push(parameter);
@@ -1590,11 +2059,10 @@ function updateDB(type, idElement , values, event) {
 			data: parameter,
 			type: "POST",
 			dataType: 'text',
-			success: function (data)
-				{
-					updateDB_visual(type, idElement , values, event, top, left);
-				}
-			});
+			success: function (data) {
+				updateDB_visual(type, idElement , values, event, top, left);
+			}
+		});
 	}
 }
 
@@ -1674,9 +2142,22 @@ function deleteDB(idElement) {
 							lines.splice(i, 1);
 						}
 					});
+					
+					if ($("#handler_start_" + idElement).length ||
+						$("#handler_end_" + idElement).length) {
+						
+						// Line item
+						
+						$("#handler_start_" + idElement).remove();
+						$("#handler_end_" + idElement).remove();
+						
+						delete_user_line(idElement);
+					}
+					
+					
 					refresh_lines(lines, 'background', true);
 					
-					
+					draw_user_lines("", 0, 0, 0 , 0, 0, true);
 					
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);
@@ -1694,10 +2175,12 @@ function activeToolboxButton(id, active) {
 	}
 	
 	if (active) {
-		$("input." + id + "[name=button_toolbox2]").removeAttr('disabled');
+		$("input." + id + "[name=button_toolbox2]")
+			.removeAttr('disabled');
 	}
 	else {
-		$("input." + id + "[name=button_toolbox2]").attr('disabled', true);
+		$("input." + id + "[name=button_toolbox2]")
+			.attr('disabled', true);
 	}
 }
 
@@ -1725,6 +2208,7 @@ function eventsItems(drag) {
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 	
 	$('.item').bind('click', function(event, ui) {
+		
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			var divParent = $(event.target);
@@ -1734,6 +2218,15 @@ function eventsItems(drag) {
 			unselectAll();
 			$(divParent).css('border', '2px blue dotted');
 			
+			if ($(divParent).hasClass('box_item')) {
+				creationItem = null;
+				selectedItem = 'box_item';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('static_graph')) {
 				creationItem = null;
 				selectedItem = 'static_graph';
@@ -1797,6 +2290,24 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('handler_start')) {
+				idItem = $(divParent).attr('id')
+					.replace("handler_start_", "");
+				creationItem = null;
+				selectedItem = 'handler_start';
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
+			if ($(divParent).hasClass('handler_end')) {
+				idItem = $(divParent).attr('id')
+					.replace("handler_end_", "");
+				creationItem = null;
+				selectedItem = 'handler_end';
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			
 			//Maybe receive a click event any Enterprise item.
 			if (typeof(enterprise_click_item_callback) == 'function') {
@@ -1807,6 +2318,7 @@ function eventsItems(drag) {
 	
 	//Double click in the item
 	$('.item').bind('dblclick', function(event, ui) {
+		
 		event.stopPropagation();
 		if ((!is_opened_palette) && (autosave)) {
 			toggle_item_palette();
@@ -1818,12 +2330,16 @@ function eventsItems(drag) {
 	$(".item").draggable({containment: "#background", grid: drag});
 	
 	$('.item').bind('dragstart', function(event, ui) {
+		
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
 			$(event.target).css('border', '2px blue dotted');
 			
 			selectedItem = null;
+			if ($(event.target).hasClass('box_item')) {
+				selectedItem = 'box_item';
+			}
 			if ($(event.target).hasClass('static_graph')) {
 				selectedItem = 'static_graph';
 			}
@@ -1845,6 +2361,12 @@ function eventsItems(drag) {
 			if ($(event.target).hasClass('icon')) {
 				selectedItem = 'icon';
 			}
+			if ($(event.target).hasClass('handler_start')) {
+				selectedItem = 'handler_start';
+			}
+			if ($(event.target).hasClass('handler_end')) {
+				selectedItem = 'handler_end';
+			}
 			
 			if (selectedItem == null) {
 				//Maybe receive a click event any Enterprise item.
@@ -1855,7 +2377,28 @@ function eventsItems(drag) {
 			
 			if (selectedItem != null) {
 				creationItem = null;
-				idItem = $(event.target).attr('id');
+				
+				switch (selectedItem) {
+					// -- line_item --
+					case 'handler_start':
+					// ---------------
+						idItem = $(event.target).attr('id')
+							.replace("handler_end_", "");
+						idItem = $(event.target).attr('id')
+							.replace("handler_start_", "");
+						break;
+					// -- line_item --
+					case 'handler_end':
+					// ---------------
+						idItem = $(event.target).attr('id')
+							.replace("handler_end_", "");
+						idItem = $(event.target).attr('id')
+							.replace("handler_end_", "");
+						break;
+					default:
+						idItem = $(event.target).attr('id');
+						break;
+				}
 				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
@@ -1864,6 +2407,7 @@ function eventsItems(drag) {
 	});
 	
 	$('.item').bind('dragstop', function(event, ui) {
+		
 		event.stopPropagation();
 		
 		var values = {};
@@ -1871,6 +2415,89 @@ function eventsItems(drag) {
 		values['mov_top'] = ui.position.top; 
 		
 		updateDB(selectedItem, idItem, values, 'dragstop');
+	});
+	
+	$('.item').bind('drag', function(event, ui) {
+		if ($(event.target).hasClass('handler_start')) {
+			selectedItem = 'handler_start';
+		}
+		if ($(event.target).hasClass('handler_end')) {
+			selectedItem = 'handler_end';
+		}
+		
+		var values = {};
+		values['mov_left'] = ui.position.left;
+		values['mov_top'] = ui.position.top; 
+		
+		switch (selectedItem) {
+			// -- line_item --
+			case 'handler_start':
+			// ---------------
+				idElement = $(event.target).attr('id')
+					.replace("handler_end_", "");
+				idElement = $(event.target).attr('id')
+					.replace("handler_start_", "");
+				break;
+			// -- line_item --
+			case 'handler_end':
+			// ---------------
+				idElement = $(event.target).attr('id')
+					.replace("handler_end_", "");
+				idElement = $(event.target).attr('id')
+					.replace("handler_end_", "");
+				break;
+		}
+		
+		switch (selectedItem) {
+			// -- line_item --
+			case 'handler_start':
+			// ---------------
+				if ((typeof(values['mov_left']) != 'undefined') &&
+					(typeof(values['mov_top']) != 'undefined')) {
+					var top = parseInt($("#handler_start_" + idElement)
+						.css('top').replace('px', ''));
+					var left = parseInt($("#handler_start_" + idElement)
+						.css('left').replace('px', ''));
+				}
+				else if ((typeof(values['absolute_left']) != 'undefined') &&
+					(typeof(values['absolute_top']) != 'undefined')) {
+					var top = values['absolute_top'];
+					var left = values['absolute_left'];
+				}
+				
+				//Added the radious of image point of handler
+				top = top + 6;
+				left = left + 6;
+				
+				update_user_line('handler_start', idElement, top, left);
+				
+				draw_user_lines("", 0, 0, 0 , 0, 0, true);
+				break;
+			// -- line_item --
+			case 'handler_end':
+			// ---------------
+				if ((typeof(values['mov_left']) != 'undefined') &&
+					(typeof(values['mov_top']) != 'undefined')) {
+					top = parseInt($("#handler_end_" + idElement)
+						.css('top').replace('px', ''));
+					left = parseInt($("#handler_end_" + idElement)
+						.css('left').replace('px', ''));
+				}
+				else if ((typeof(values['absolute_left']) != 'undefined') &&
+					(typeof(values['absolute_top']) != 'undefined')) {
+					top = values['absolute_top'];
+					left = values['absolute_left'];
+				}
+				
+				//Added the radious of image point of handler
+				top = top + 6;
+				left = left + 6;
+				
+				update_user_line('handler_end', idElement, top, left);
+				
+				draw_user_lines("", 0, 0, 0 , 0, 0, true);
+				break;
+		}
 	});
 }
 
@@ -1994,6 +2621,14 @@ function click_button_toolbox(id) {
 			break;
 		case 'group_item':
 			toolbuttonActive = creationItem = 'group_item';
+			toggle_item_palette();
+			break;
+		case 'box_item':
+			toolbuttonActive = creationItem = 'box_item';
+			toggle_item_palette();
+			break;
+		case 'line_item':
+			toolbuttonActive = creationItem = 'line_item';
 			toggle_item_palette();
 			break;
 		

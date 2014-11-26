@@ -57,7 +57,9 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'simple_value' => __('Simple value'),
 				'label' => __('Label'),
 				'icon' => __('Icon'),
-				'group_item' => __('Group'));
+				'group_item' => __('Group'),
+				'box_item' => __('Box'),
+				'line_item' => __('Line'));
 			
 			if (enterprise_installed()) {
 				enterprise_visual_map_editor_add_title_palette($titles);
@@ -74,6 +76,81 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 		<tbody>
 			<?php
 			$form_items = array();
+			
+			$form_items['line_width_row'] = array();
+			$form_items['line_width_row']['items'] =
+				array('datos', 'line_item', 'handler_start', 'handler_end');
+			$form_items['line_width_row']['html'] = '<td align="left">' . __('Width') . '</td>
+				<td align="left">' .
+				html_print_input_text('line_width', 3, '', 3, 5, true) .
+				'</td>';
+			
+			
+			$form_items['line_color_row'] = array();
+			$form_items['line_color_row']['items'] =
+				array('datos', 'line_item', 'handler_start', 'handler_end');
+			$form_items['line_color_row']['html'] = 
+				'<td align="left" valign="top" style="">' .
+					__('Border color') .
+				'</td>' .
+				'<td align="left" style="">' .
+					html_print_input_text_extended ('line_color',
+						'#000000', 'text-line_color', '', 7, 7, false,
+						'', 'class="line_color"', true) .
+				'</td>';
+			
+			
+			$form_items['box_size_row'] = array();
+			$form_items['box_size_row']['items'] = array('datos', 'box_item');
+			$form_items['box_size_row']['html'] =
+				'<td align="left">' . __('Size') . '</td>
+				<td align="left">' .
+				html_print_input_text('width_box', 300, '', 3, 5, true) . 
+				' X ' .
+				html_print_input_text('height_box', 180, '', 3, 5, true) .
+				'</td>';
+			
+			
+			$form_items['border_color_row'] = array();
+			$form_items['border_color_row']['items'] = array('datos', 'box_item');
+			$form_items['border_color_row']['html'] = 
+				'<td align="left" valign="top" style="">' .
+					__('Border color') .
+				'</td>' .
+				'<td align="left" style="">' .
+					html_print_input_text_extended ('border_color',
+						'#000000', 'text-border_color', '', 7, 7, false,
+						'', 'class="border_color"', true) .
+				'</td>';
+			
+			
+			$form_items['border_width_row'] = array();
+			$form_items['border_width_row']['items'] = array('datos', 'box_item');
+			$form_items['border_width_row']['html'] =
+				'<td align="left">' . __('Border width') . '</td>
+				<td align="left">' .
+				html_print_input_text('border_width', 3, '', 3, 5, true) . 
+				'</td>';
+			
+			
+			$form_items['fill_color_row'] = array();
+			$form_items['fill_color_row']['items'] = array('datos', 'box_item');
+			$form_items['fill_color_row']['html'] = 
+				'<td align="left" valign="top" style="">' . __('Fill color') . '</td>' .
+				'<td align="left" style="">' .
+				html_print_input_text_extended ('fill_color', '#ffffff',
+					'text-fill_color', '', 7, 7, false, '',
+					'class="fill_color"', true) .
+				'</td>';
+			
+			$form_items['module_graph_size_row'] = array();
+			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos');
+			$form_items['module_graph_size_row']['html'] = '<td align="left">' . __('Size') . '</td>
+				<td align="left">' .
+				html_print_input_text('width_module_graph', 300, '', 3, 5, true) . 
+				' X ' .
+				html_print_input_text('height_module_graph', 180, '', 3, 5, true) .
+				'</td>';
 			
 			
 			$form_items['label_row'] = array();
@@ -358,7 +435,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['position_row'] = array();
 			$form_items_advance['position_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'label', 'icon', 'datos');
+				'simple_value', 'label', 'icon', 'datos', 'box_item');
 			$form_items_advance['position_row']['html'] = '
 				<td align="left">' . __('Position') . '</td>
 				<td align="left">(' . html_print_input_text('left', '0', '', 3, 5, true) .
@@ -419,7 +496,35 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 	</table>
 	<?php
 	//------------------------------------------------------------------------------
+	
+	
+	
+	
+	
 	echo '</div>';
+	
+	echo '<div id="div_step_1" class="forced_title_layer"
+		style="display: none; position: absolute; z-index: 99;">' .
+			__('Click start point<br />of the line') .
+		'</div>';
+	
+	echo '<div id="div_step_2" class="forced_title_layer"
+		style="display: none; position: absolute; z-index: 99;">' .
+			__('Click end point<br />of the line') .
+		'</div>';
+	
+	ui_require_css_file ('color-picker');
+	
+	ui_require_jquery_file ('colorpicker');
+	?>
+	<script type="text/javascript">
+		$(document).ready (function () {
+			$(".border_color").attachColorPicker();
+			$(".fill_color").attachColorPicker();
+			$(".line_color").attachColorPicker();
+		});
+	</script>
+	<?php
 }
 
 function visual_map_editor_print_toolbox() {
@@ -434,6 +539,8 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
 		visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
 		visual_map_print_button_editor('group_item', __('Group'), 'left', false, 'group_item_min', true);
+		visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
+		visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);
 		
 		enterprise_hook("enterprise_visual_map_editor_print_toolbox");
 		
@@ -443,7 +550,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('show_grid', __('Show grid'), 'right', true, 'grid_min', true);
 		visual_map_print_button_editor('edit_item', __('Update item'), 'right', true, 'config_min', true);
 		visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
-		visual_map_print_button_editor('copy_item', __('Copy item'), 'right', true, 'delete_min', true);
+		visual_map_print_button_editor('copy_item', __('Copy item'), 'right', true, 'copy_item', true);
 	echo '</div>';
 	echo '</div>';
 	echo '<div style="clear: right; margin-bottom: 10px;"></div>';

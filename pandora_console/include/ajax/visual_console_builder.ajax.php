@@ -71,6 +71,19 @@ $id_agent = get_parameter('id_agent', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
+$height_module_graph = get_parameter('id_custom_graph', null);
+$width_module_graph = get_parameter('id_custom_graph', null);
+$border_width = get_parameter('border_width', 0);
+$border_color = get_parameter('border_color', '');
+$fill_color = get_parameter('fill_color', '');
+$width_box = get_parameter('width_box', 0);
+$height_box = get_parameter('height_box', 0);
+$line_start_x = (int)get_parameter('line_start_x', 0);
+$line_start_y = (int)get_parameter('line_start_y', 0);
+$line_end_x = (int)get_parameter('line_end_x', 0);
+$line_end_y = (int)get_parameter('line_end_y', 0);
+$line_width = (int)get_parameter('line_width', 0);
+$line_color = get_parameter('line_color', '');
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
@@ -347,12 +360,29 @@ switch ($action) {
 				if ($label !== null) {
 					$values['label'] = $label;
 				}
-				if ($left !== null) {
-					$values['pos_x'] = $left;
+				
+				switch ($type) {
+					// -- line_item --
+					case 'handler_end':
+					// ---------------
+						if ($left !== null) {
+							$values['width'] = $left;
+						}
+						if ($top !== null) { 
+							$values['height'] = $top;
+						}
+						break;
+					default:
+						if ($left !== null) {
+							$values['pos_x'] = $left;
+						}
+						if ($top !== null) { 
+							$values['pos_y'] = $top;
+						}
+						break;
 				}
-				if ($top !== null) { 
-					$values['pos_y'] = $top;
-				}
+				
+				
 				
 				if (defined('METACONSOLE') && $metaconsole) {
 					if ($server_name !== null) {
@@ -381,7 +411,22 @@ switch ($action) {
 				if ($map_linked !== null) {
 					$values['id_layout_linked'] = $map_linked;
 				}
-				switch($type) {
+				switch ($type) {
+					// -- line_item --
+					case 'handler_start':
+					case 'handler_end':
+					// ---------------
+						$values['border_width'] = $line_width;
+						$values['border_color'] = $line_color;
+						break;
+					case 'box_item':
+						$values['border_width'] = $border_width;
+						$values['border_color'] = $border_color;
+						$values['fill_color'] = $fill_color;
+						$values['period'] = $period;
+						$values['width'] = $width_box;
+						$values['height'] = $height_box;
+						break;
 					case 'group_item':
 						$values['id_group'] = $id_group;
 						break;
@@ -447,8 +492,26 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					// Don't change background color in graphs when move
-					if ($type == 'module_graph') {
-						unset($values['image']);
+					
+					switch ($type) {
+						case 'module_graph':
+							unset($values['image']);
+							break;
+						case 'box_item':
+							unset($values['border_width']);
+							unset($values['border_color']);
+							unset($values['fill_color']);
+							unset($values['period']);
+							unset($values['width']);
+							unset($values['height']);
+							break;
+						// -- line_item --
+						case 'handler_start':
+						case 'handler_end':
+						// ---------------
+							unset($values['border_width']);
+							unset($values['border_color']);
+							break;
 					}
 				}
 				
@@ -464,9 +527,17 @@ switch ($action) {
 	case 'load':
 		switch ($type) {
 			case 'background':
-				$backgroundFields = db_get_row_filter('tlayout', array('id' => $id_visual_console), array('background', 'height', 'width'));
+				$backgroundFields = db_get_row_filter(
+					'tlayout',
+					array('id' => $id_visual_console),
+					array('background', 'height', 'width'));
 				echo json_encode($backgroundFields);
 				break;
+			// -- line_item --
+			case 'handler_start':
+			case 'handler_end':
+			// ---------------
+			case 'box_item':
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':
@@ -549,6 +620,21 @@ switch ($action) {
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
 						break;
+					case 'box_item':
+						$elementFields['width_box'] = $elementFields['width'];
+						$elementFields['height_box'] = $elementFields['height'];
+						$elementFields['border_color'] = $elementFields['border_color'];
+						$elementFields['border_width'] = $elementFields['border_width'];
+						$elementFields['fill_color'] = $elementFields['fill_color'];
+						break;
+					
+					// -- line_item --
+					case 'handler_start':
+					case 'handler_end':
+					// ---------------
+						$elementFields['line_width'] = $elementFields['border_width'];
+						$elementFields['line_color'] = $elementFields['border_color'];
+						break;
 					
 				}
 				//Support for max, min and svg process on simple value items
@@ -612,6 +698,24 @@ switch ($action) {
 		$values['id_custom_graph'] = $id_custom_graph;
 		
 		switch ($type) {
+			case 'line_item':
+				$values['type'] = LINE_ITEM;
+				$values['border_width'] = $line_width;
+				$values['border_color'] = $line_color;
+				$values['pos_x'] = $line_start_x;
+				$values['pos_y'] = $line_start_y;
+				$values['width'] = $line_end_x;
+				$values['height'] = $line_end_y;
+				break;
+			case 'box_item':
+				$values['type'] = BOX_ITEM;
+				$values['border_width'] = $border_width;
+				$values['border_color'] = $border_color;
+				$values['fill_color'] = $fill_color;
+				$values['period'] = $period;
+				$values['width'] = $width_box;
+				$values['height'] = $height_box;
+				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
 				$values['height'] = $height_module_graph;
@@ -710,9 +814,14 @@ switch ($action) {
 			$return['id_data'] = $idData;
 			$return['text'] = $text;
 			$return['type'] = visual_map_type_in_js($values['type']);
+			
+			switch ($values['type']) {
+				case BOX_ITEM:
+					$return['values']['width_box'] = $values['width'];
+					$return['values']['height_box'] = $values['height'];
+					break;
+			}
 		}
-		
-		html_debug_print($return, true);
 		
 		echo json_encode($return);
 		break;

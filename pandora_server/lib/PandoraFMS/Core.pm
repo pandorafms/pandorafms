@@ -1588,18 +1588,14 @@ Start the planned downtime, the monthly type.
 sub pandora_planned_downtime_monthly_start($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	#my $local_time = localtime();
 	my @var_localtime = localtime(time);
 	my $year = $var_localtime[5]  + 1900;
 	my $month = $var_localtime[4];
 	
-	#my $number_day_month = $local_time->mday;
 	my $number_day_month = $var_localtime[3];
 	
-	#my $number_last_day_month = $local_time->month_last_day;
 	my $number_last_day_month = month_have_days($month, $year);
 	
-	#my $time = $local_time->hms;
 	my $time = sprintf("%02d:%02d:%02d", $var_localtime[2], $var_localtime[1], $var_localtime[0]);
 	
 	# Start pending downtimes
@@ -1607,60 +1603,36 @@ sub pandora_planned_downtime_monthly_start($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'monthly' . $RDBMS_QUOTE_STRING . '
 			AND executed = 0
-			AND periodically_day_from <= ?
-			AND periodically_day_to >= ?', 
-			$number_day_month, $number_day_month);
+			AND ((periodically_day_from = ? AND periodically_time_from <= ?) OR (periodically_day_from < ?))
+			AND ((periodically_day_to = ? AND periodically_time_to >= ?) OR (periodically_day_to > ?))',
+			$number_day_month, $time, $number_day_month,
+			$number_day_month, $time, $number_day_month);
 	
-	foreach my $downtime (@downtimes) {
-		#Convert to identical type.
+	foreach my $downtime (@downtimes) {	
+		if (!defined($downtime->{'description'})) {
+			$downtime->{'description'} = "N/A";
+		}
 		
-		#my $date_downtime = Time::Piece->strptime(
-		#	$downtime->{'periodically_time_from'},
-		#	"%H:%M:%S");
-		#my $date_now_time = Time::Piece->strptime(
-		#	$time,
-		#	"%H:%M:%S");
-		#
-		#if ($date_now_time >= $date_downtime) {
+		if (!defined($downtime->{'name'})) {
+			$downtime->{'name'} = "N/A";
+		}
+		
+		logger($pa_config, "Starting planned monthly downtime '" . $downtime->{'name'} . "'.", 10);
+		
+		db_do($dbh, 'UPDATE tplanned_downtime
+					SET executed = 1
+					WHERE id = ?', $downtime->{'id'});
+		pandora_event ($pa_config,
+			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		
-		if (
-			(($time gt $downtime->{'periodically_time_from'})
-				|| ($time eq $downtime->{'periodically_time_from'}))
-			&&
-			(($time lt $downtime->{'periodically_time_to'})
-				|| ($time eq $downtime->{'periodically_time_to'}))
-			) {
-			
-			if (!defined($downtime->{'description'})) {
-				$downtime->{'description'} = "N/A";
-			}
-			
-			if (!defined($downtime->{'name'})) {
-				$downtime->{'name'} = "N/A";
-			}
-			
-			logger($pa_config, "Starting planned monthly downtime '" . $downtime->{'name'} . "'.", 10);
-			
-			db_do($dbh, 'UPDATE tplanned_downtime
-				SET executed = 1
-				WHERE id = ?', $downtime->{'id'});
-			pandora_event ($pa_config,
-				"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
-			
-			
-			if ($downtime->{'type_downtime'} eq "quiet") {
-				pandora_planned_downtime_set_quiet_elements($pa_config,
-					$dbh, $downtime->{'id'});
-			}
-			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
-					
-					pandora_planned_downtime_set_disabled_elements($pa_config,
-						$dbh, $downtime);
-			}
-			
-			
+		if ($downtime->{'type_downtime'} eq "quiet") {
+			pandora_planned_downtime_set_quiet_elements($pa_config, $dbh, $downtime->{'id'});
+		}
+		elsif (($downtime->{'type_downtime'} eq "disable_agents")
+			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				
+			pandora_planned_downtime_set_disabled_elements($pa_config, $dbh, $downtime);
 		}
 	}
 }
@@ -1676,18 +1648,14 @@ Start the planned downtime, the montly type.
 sub pandora_planned_downtime_monthly_stop($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	#my $local_time = localtime();
 	my @var_localtime = localtime(time);
 	my $year = $var_localtime[5]  + 1900;
 	my $month = $var_localtime[4];
 	
-	#my $number_day_month = $local_time->mday;
 	my $number_day_month = $var_localtime[3];
 	
-	#my $number_last_day_month = $local_time->month_last_day;
 	my $number_last_day_month = month_have_days($month, $year);
 	
-	#my $time = $local_time->hms;
 	my $time = sprintf("%02d:%02d:%02d", $var_localtime[2], $var_localtime[1], $var_localtime[0]);
 	
 	#With this stop the planned downtime for 31 (or 30) day in months
@@ -1709,53 +1677,38 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'monthly' . $RDBMS_QUOTE_STRING . '
 			AND executed = 1
-			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING);
+			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
+			AND (((periodically_day_from = ? AND periodically_time_from > ?) OR (periodically_day_from > ?))
+				OR ((periodically_day_to = ? AND periodically_time_to < ?) OR (periodically_day_to < ?)))',
+			$number_day_month, $time, $number_day_month,
+			$number_day_month, $time, $number_day_month);
 	
 	foreach my $downtime (@downtimes) {
-		#Convert to identical type.
-		#my $date_downtime = Time::Piece->strptime(
-		#	$downtime->{'periodically_time_to'},
-		#	"%H:%M:%S");
-		#my $date_now_time = Time::Piece->strptime(
-		#	$time,
-		#	"%H:%M:%S");
-		#
-		#if ($date_now_time <= $date_downtime) {
-		if (($time gt $downtime->{'periodically_time_to'}) 
-			||
-			($time lt $downtime->{'periodically_time_from'})
-			||
-			($downtime->{'periodically_day_from'} > $number_day_month)
-			||
-			($downtime->{'periodically_day_to'} < $number_day_month)
-			) {
-			
-			if (!defined($downtime->{'description'})) {
-				$downtime->{'description'} = "N/A";
-			}
-			
-			if (!defined($downtime->{'name'})) {
-				$downtime->{'name'} = "N/A";
-			}
-			
-			logger($pa_config, "Stopping planned monthly downtime '" . $downtime->{'name'} . "'.", 10);
-			
-			db_do($dbh, 'UPDATE tplanned_downtime
-				SET executed = 0
-				WHERE id = ?', $downtime->{'id'});
-			pandora_event ($pa_config,
-				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
-			
-			if ($downtime->{'type_downtime'} eq "quiet") {
-				pandora_planned_downtime_unset_quiet_elements($pa_config,
-					$dbh, $downtime->{'id'});
-			}
-			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
-					
-					pandora_planned_downtime_unset_disabled_elements($pa_config,
-						$dbh, $downtime);
-			}
+		if (!defined($downtime->{'description'})) {
+			$downtime->{'description'} = "N/A";
+		}
+		
+		if (!defined($downtime->{'name'})) {
+			$downtime->{'name'} = "N/A";
+		}
+		
+		logger($pa_config, "Stopping planned monthly downtime '" . $downtime->{'name'} . "'.", 10);
+		
+		db_do($dbh, 'UPDATE tplanned_downtime
+					SET executed = 0
+					WHERE id = ?', $downtime->{'id'});
+		pandora_event ($pa_config,
+			"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+		
+		if ($downtime->{'type_downtime'} eq "quiet") {
+			pandora_planned_downtime_unset_quiet_elements($pa_config,
+				$dbh, $downtime->{'id'});
+		}
+		elsif (($downtime->{'type_downtime'} eq "disable_agents")
+			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				
+			pandora_planned_downtime_unset_disabled_elements($pa_config,
+				$dbh, $downtime);
 		}
 	}
 }
@@ -1769,13 +1722,11 @@ Start the planned downtime, the montly type.
 ########################################################################
 sub pandora_planned_downtime_weekly_start($$) {
 	my ($pa_config, $dbh) = @_;
-	#my $local_time = localtime();
+	
 	my @var_localtime = localtime(time);
 	
-	#my $number_day_week = $local_time->_wday;
 	my $number_day_week = $var_localtime[6];
 	
-	#my $time = $local_time->hms;
 	my $time = sprintf("%02d:%02d:%02d", $var_localtime[2], $var_localtime[1], $var_localtime[0]);
 	
 	my $found = 0;
@@ -1790,6 +1741,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0 ;
 		$found = 0;
 		
+		$number_day_week = $var_localtime[6];
 		if ($across_date && ($time lt $downtime->{'periodically_time_to'})) {
 			$number_day_week--;
 			$number_day_week = 6 if ($number_day_week == -1);
@@ -1826,15 +1778,6 @@ sub pandora_planned_downtime_weekly_start($$) {
 		
 		my $start_downtime = 0;
 		if ($found) {
-			#Convert to identical type.
-			#my $date_downtime = Time::Piece->strptime(
-			#	$downtime->{'periodically_time_from'},
-			#	"%H:%M:%S");
-			#my $date_now_time = Time::Piece->strptime(
-			#	$time,
-			#	"%H:%M:%S");
-			#
-			#if ($date_now_time >= $date_downtime) {
 			$start_downtime = 1 if (($across_date == 0)
 				&& ((($time gt $downtime->{'periodically_time_from'})
 				|| ($time eq $downtime->{'periodically_time_from'}))
@@ -1844,11 +1787,8 @@ sub pandora_planned_downtime_weekly_start($$) {
 			$start_downtime = 1 if (($across_date == 1)
 				&& ((($time gt $downtime->{'periodically_time_from'})
 				|| ($time eq $downtime->{'periodically_time_from'}))
-				|| (($time lt $downtime->{'periodically_time_to'
-})
-				|| ($time eq $downtime->{'periodically_time_to'}
-))));
-
+				|| (($time lt $downtime->{'periodically_time_to'})
+				|| ($time eq $downtime->{'periodically_time_to'}))));
 		}
 
 		if ($start_downtime) {
@@ -1856,7 +1796,6 @@ sub pandora_planned_downtime_weekly_start($$) {
 				$downtime->{'description'} = "N/A";
 			}
 
-#				logger($pa_config, "Starting planned weekly downtime '" . $downtime->{'name'} . "'.", 10);
 			if (!defined($downtime->{'name'})) {
 				$downtime->{'name'} = "N/A";
 			}
@@ -1891,16 +1830,15 @@ Stop the planned downtime, the montly type.
 ########################################################################
 sub pandora_planned_downtime_weekly_stop($$) {
 	my ($pa_config, $dbh) = @_;
-	#my $local_time = localtime();
+	
 	my @var_localtime = localtime(time);
 	
-	#my $number_day_week = $local_time->_wday;
 	my $number_day_week = $var_localtime[6];
 	
-	#my $time = $local_time->hms;
 	my $time = sprintf("%02d:%02d:%02d", $var_localtime[2], $var_localtime[1], $var_localtime[0]);
 	
 	my $found = 0;
+	my $stop_downtime = 0;
 	
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
@@ -1910,18 +1848,9 @@ sub pandora_planned_downtime_weekly_stop($$) {
 			AND executed = 1');
 	
 	foreach my $downtime (@downtimes) {
-		#Convert to identical type.
-		#my $date_downtime = Time::Piece->strptime(
-		#	$downtime->{'periodically_time_to'},
-		#	"%H:%M:%S");
-		#my $date_now_time = Time::Piece->strptime(
-		#	$time,
-		#	"%H:%M:%S");
-		#	
-		#if ($date_now_time <= $date_downtime) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0;
 
-		my $found = 0;
+		$found = 0;
 		$number_day_week = $var_localtime[6];
 		if ($across_date && ($time lt $downtime->{'periodically_time_from'})) {
 			$number_day_week--;
@@ -1957,7 +1886,7 @@ sub pandora_planned_downtime_weekly_stop($$) {
 				$found = 1;
 		}
 		
-		my $stop_downtime = 0;
+		$stop_downtime = 0;
 		if ($found) {
 			$stop_downtime = 1 if (($across_date == 0)
 				&& ((($time lt $downtime->{'periodically_time_from'})
@@ -1972,8 +1901,11 @@ sub pandora_planned_downtime_weekly_stop($$) {
 				|| ($time eq $downtime->{'periodically_time_to'}))));
 
 		}
+		else {
+			$stop_downtime = 1;
+		}
 
-		if ($stop_downtime){
+		if ($stop_downtime) {
 			if (!defined($downtime->{'description'})) {
 				$downtime->{'description'} = "N/A";
 			}

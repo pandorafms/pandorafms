@@ -600,6 +600,7 @@ sub send_data_proxy {
 ## Close the proxy socket.
 ################################################################################
 sub close_proxy {
+	$t_proxy_socket->shutdown (2);
 	$t_proxy_socket->close ();
 	print_log ("Proxy socket closed");
 	
@@ -612,6 +613,7 @@ sub close_proxy {
 sub stop_server {
 
 	foreach my $t_server_socket (@t_server_sockets) {
+		$t_server_socket->shutdown (2);
 		$t_server_socket->close ();
 	}
 	print_log ("Server going down");
@@ -688,6 +690,7 @@ sub accept_connections {
 
 			if ($t_use_libwrap && (! hosts_ctl($t_program_name, $t_client_socket))) {
 				print_log ("Connection from " . $t_client_socket->peerhost() . " is closed by tcpwrappers.");
+				$t_client_socket->shutdown (2);
 				$t_client_socket->close();
 			}
 			else {
@@ -736,6 +739,8 @@ sub serve_client() {
 		}
 	};
 
+	$t_client_socket->shutdown (2);
+	$t_client_socket->close ();
 	$t_sem->up();
 }
 
@@ -1485,6 +1490,7 @@ sub callback_start {
 sub callback_stop {
 
 	foreach my $t_server_socket (@t_server_sockets) {
+		$t_server_socket->shutdown (2);
 		$t_server_socket->close ();
 	}
 

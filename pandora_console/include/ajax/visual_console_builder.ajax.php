@@ -451,8 +451,14 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					// Don't change background color in graphs when move
-					if ($type == 'module_graph') {
-						unset($values['image']);
+					
+					switch ($type) {
+						case 'group_item':
+							unset($values['id_group']);
+							break;
+						case 'module_graph':
+							unset($values['image']);
+							break;
 					}
 				}
 				

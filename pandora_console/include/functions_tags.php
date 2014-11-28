@@ -1001,6 +1001,9 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 function tags_check_acl_by_module($id_module = 0, $id_user = false,
 	$access = 'AW') {
 	
+	global $config;
+	
+	
 	$return = false;
 	
 	if (!empty($id_module)) {
@@ -1011,7 +1014,7 @@ function tags_check_acl_by_module($id_module = 0, $id_user = false,
 			$id_user = $config["id_user"];
 		}
 		
-		$return = tags_check_acl($id_user, $group, $access, $tags);
+		$return = tags_check_acl($id_user, $group, $access, $tags, true);
 	}
 	
 	return $return;
@@ -1027,7 +1030,7 @@ function tags_check_acl_by_module($id_module = 0, $id_user = false,
  * 
  * @return bool true if the acl check has success, false otherwise
  */
-function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
+function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_tag = false) {
 	global $config;
 	
 	if ($id_user === false) {
@@ -1077,7 +1080,8 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 				}
 				else if (isset($acls[$group])) {
 					foreach ($tags as $tag) {
-						$tag = tags_get_id($tag);
+						if (!$flag_id_tag)
+							$tag = tags_get_id($tag);
 						
 						if (in_array($tag, $acls[$group])) {
 							return true;
@@ -1089,9 +1093,12 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 				}
 			}
 			else {
+				
 				foreach ($acls as $acl_tags) {
 					foreach ($tags as $tag) {
-						$tag = tags_get_id($tag);
+						if (!$flag_id_tag)
+							$tag = tags_get_id($tag);
+						
 						if (in_array($tag, $acl_tags)) {
 							return true;
 						}
@@ -1104,7 +1111,8 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 		if ($id_group > 0) {
 			if (isset($acls[$id_group])) {
 				foreach ($tags as $tag) {
-					$tag = tags_get_id($tag);
+					if (!$flag_id_tag)
+						$tag = tags_get_id($tag);
 					
 					if (in_array($tag, $acls[$id_group])) {
 						return true;
@@ -1118,7 +1126,9 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array()) {
 		else {
 			foreach ($acls as $acl_tags) {
 				foreach ($tags as $tag) {
-					$tag = tags_get_id($tag);
+					if (!$flag_id_tag)
+						$tag = tags_get_id($tag);
+					
 					if (in_array($tag, $acl_tags)) {
 						return true;
 					}

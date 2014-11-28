@@ -494,6 +494,9 @@ switch ($action) {
 					// Don't change background color in graphs when move
 					
 					switch ($type) {
+						case 'group_item':
+							unset($values['id_group']);
+							break;
 						case 'module_graph':
 							unset($values['image']);
 							break;

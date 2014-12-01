@@ -1172,13 +1172,10 @@ function groups_agent_unknown ($group_array) {
 	return $count > 0 ? $count : 0;
 }
 
-// Get ok agents by using the status code in modules.
-
-function groups_agent_ok ($group_array) {
+function groups_agent_total($group_array) {
 	
 	if (empty ($group_array)) {
 		return 0;
-		
 	}
 	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
@@ -1187,7 +1184,34 @@ function groups_agent_ok ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT COUNT(*)
+		FROM tagente
+		WHERE tagente.disabled = 0
+			AND id_grupo IN $group_clause");
+	
+	return $count > 0 ? $count : 0;
+}
+
+// Get ok agents by using the status code in modules.
+
+function groups_agent_ok ($group_array) {
+	
+	if (empty ($group_array)) {
+		return 0;
+	}
+	else if (!is_array ($group_array)) {
+		$group_array = array($group_array);
+	}
+	
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(" . $group_clause . ")";
+	
+	$count = db_get_sql ("SELECT COUNT(*)
+		FROM tagente
+		WHERE tagente.disabled = 0
+			AND normal_count = total_count
+			AND (notinit_count != 0)
+			AND id_grupo IN $group_clause");
 	
 	return $count > 0 ? $count : 0;
 }

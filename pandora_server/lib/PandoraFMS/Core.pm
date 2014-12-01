@@ -1140,6 +1140,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_known_status = $agent_status->{'last_known_status'};
 	my $last_error = defined ($module->{'last_error'}) ? $module->{'last_error'} : $agent_status->{'last_error'};
 	my $ff_start_utimestamp = $agent_status->{'ff_start_utimestamp'};
+	my $mark_for_update = 0;
 	
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
@@ -1194,8 +1195,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status = $new_status;
 		$last_status = $new_status;
 
-		# Update module status count
-		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
+		# Update module status count.
+		$mark_for_update = 1;
 	}
 	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
 	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
@@ -1204,8 +1205,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status = 0;
 		$last_status = $new_status;
 
-		# Update module status count
-		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
+		# Update module status count.
+		$mark_for_update = 1;
 	}
 	# If unknown modules receive data, restore status even if min_ff_event is not matched.
 	elsif ($status == 3) {
@@ -1214,8 +1215,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
 		$status = $new_status;
 
-		# Update module status count
-		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
+		# Update module status count.
+		$mark_for_update = 1;
 	} else {
 		$last_status = $new_status;
 	}
@@ -1259,6 +1260,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 	else {
 		logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
+	}
+
+	# Update module status count
+	if ($mark_for_update == 1) {
+		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
 	}
 }
 

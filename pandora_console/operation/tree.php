@@ -19,6 +19,8 @@ define('NORMAL', 0);
 define('WARNING', 2);
 define('CRITICAL', 1);
 define('UNKNOWN', 3);
+define('NOT_INIT', 5);
+
 
 global $config;
 
@@ -562,7 +564,13 @@ switch ($activeTab) {
 }
 
 if (! defined ('METACONSOLE')) {
-	$onheader = array('tag' => $tags_tab, 'os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
+	$onheader = array('tag' => $tags_tab,
+		'os' => $os_tab,
+		'group' => $group_tab,
+		'module_group' => $module_group_tab,
+		'policies' => $policies_tab,
+		'module' => $module_tab);
+	
 	ui_print_page_header(
 		__('Tree view') . " - " . __('Sort the agents by ') . $order,
 		"images/extensions.png",
@@ -570,7 +578,9 @@ if (! defined ('METACONSOLE')) {
 }
 else {
 	
-	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=monitoring&sec2=operation/tree', 'text' => __('Tree View')));
+	ui_meta_add_breadcrumb(array(
+		'link' => 'index.php?sec=monitoring&sec2=operation/tree',
+		'text' => __('Tree View')));
 	ui_meta_print_page_header($nav_bar);
 	
 	$img_style = array ("class" => "top", "width" => 16);
@@ -585,14 +595,16 @@ else {
 	
 	if (!in_array($activeTab, $allowed_tabs)) {
 		db_pandora_audit("HACK Attempt",
-		"Trying to access to not allowed tab on tree view");
+			"Trying to access to not allowed tab on tree view");
 		include ("general/noaccess.php");
+		
 		exit;
 	}
 	// End of tab check
 	
 	$group_tab = array('text' => "<a href='index.php?sec=monitoring&sec2=operation/tree&refr=0&tab=group&pure=$pure'>"
-		. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>",
+		. html_print_image ("images/group.png", true,
+		array ("title" => __('Groups'))) . "</a>",
 		'active' => $activeTab == "group");
 	
 	$subsections['group'] = $group_tab; 
@@ -600,7 +612,8 @@ else {
 	if ($config['enable_tags_tree']) {
 		$tags_tab = array(
 			'text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag&pure=$pure'>" .
-				html_print_image ("images/tag.png", true, array ("title" => __('Tags'))) . "</a>",
+			html_print_image ("images/tag.png", true,
+			array ("title" => __('Tags'))) . "</a>",
 			'active' => $activeTab == "tag");
 		
 		$subsections['tag'] = $tags_tab;
@@ -644,6 +657,7 @@ $fields[NORMAL] = __('Normal');
 $fields[WARNING] = __('Warning');
 $fields[CRITICAL] = __('Critical');
 $fields[UNKNOWN] = __('Unknown');
+$fields[NOT_INIT] = __('Not init');
 
 html_print_select ($fields, "status", $select_status);
 

@@ -973,6 +973,10 @@ tr.disabled_row_user * {
 	color: #808080;
 	font-weight: bold;
 }
+.blue {
+	color: #5AB7E5;
+	font-weight: bold;
+}
 .redb, .greenb, td.datos_id, td.datos2_id, f9b {
 	font-weight: bold;
 }

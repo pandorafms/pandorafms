@@ -477,9 +477,7 @@ function treeview_printTree($type) {
 	
 	
 	if (! defined ('METACONSOLE')) {
-		
 		$list = treeview_getData ($type);
-		
 	}
 	else {
 		$servers = db_get_all_rows_sql ("
@@ -568,11 +566,13 @@ function treeview_printTree($type) {
 				'total_count' => $item['_num_ok_'] +
 					$item['_num_critical_'] +
 					$item['_num_warning_'] +
-					$item['_num_unknown_'],
+					$item['_num_unknown_'] +
+					$item['_num_not_init_'],
 				'normal_count' => $item['_num_ok_'],
 				'critical_count' => $item['_num_critical_'],
 				'warning_count' => $item['_num_warning_'],
-				'unknown_count' => $item['_num_unknown_']);
+				'unknown_count' => $item['_num_unknown_'],
+				'not_init_count' => $item['_num_not_init_']);
 			
 			
 			reporting_tiny_stats($counts_info, false, $type);
@@ -599,21 +599,21 @@ function treeview_getData ($type) {
 	$search_free = get_parameter('search_free', '');
 	$select_status = get_parameter('status', -1);
 	$search_group = get_parameter('search_group', 0);
-
+	
 	if ($search_group) {
 		$avariableGroups[$search_group] = groups_get_name($search_group);
-	} else {
+	}
+	else {
 		$avariableGroups = users_get_groups ();
 	}
 	
 	//Get all groups
 	//$avariableGroups = users_get_groups ();
-		
+	
 	//Get all groups with agents
 	$full_groups = db_get_all_rows_sql("
 		SELECT DISTINCT id_grupo
-		FROM tagente
-		WHERE total_count > 0");
+		FROM tagente");
 	
 	if ($full_groups === false) {
 		return array ();
@@ -627,10 +627,12 @@ function treeview_getData ($type) {
 	
 	// We only want groups with agents, so we need the intesect of both arrays.
 	// Not for policies, we need all groups
-	if ($type != 'policies')
-		$avariableGroups = array_intersect_key($avariableGroups, $fgroups);
+	if ($type != 'policies') {
+		$avariableGroups = array_intersect_key($avariableGroups,
+			$fgroups);
+	}
 	
-	$avariableGroupsIds = implode(',',array_keys($avariableGroups));
+	$avariableGroupsIds = implode(',', array_keys($avariableGroups));
 	if ($avariableGroupsIds == '') {
 		$avariableGroupsIds == -1;
 	}
@@ -689,6 +691,19 @@ function treeview_getData ($type) {
 					$num_unknown = groups_agent_unknown($id_group);
 					
 					if ($num_unknown <= 0)
+						unset($avariableGroups[$id_group]);
+				}
+				break;
+			case NOT_INIT:
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('
+						SELECT id_grupo
+						FROM tgrupo
+						WHERE nombre ="' . $group_name . '"');
+					
+					$num_not_init = groups_agent_not_init($id_group);
+					
+					if ($num_not_init <= 0)
 						unset($avariableGroups[$id_group]);
 				}
 				break;
@@ -902,7 +917,8 @@ function treeview_getData ($type) {
 				array_push($list, array('id' => 0, 'name' => 'No policy'));
 			}
 			else {
-				$sql = "SELECT DISTINCT tpolicies.id,
+				$sql = "
+					SELECT DISTINCT tpolicies.id,
 						tpolicies.name
 					FROM tpolicies, tpolicy_modules, tagente_estado,
 						tagente, tagente_modulo
@@ -929,7 +945,8 @@ function treeview_getData ($type) {
 					case NORMAL:
 						foreach ($list as $policy_element) {
 							
-							$policy_agents_ok = policies_agents_ok($policy_element['id']);
+							$policy_agents_ok =
+								policies_agents_ok($policy_element['id']);
 							
 							if ($policy_agents_ok <= 0)
 								unset($list[$element]);
@@ -1104,7 +1121,9 @@ function treeview_getData ($type) {
 				$list[$key]['_id_'] = $id;
 				$list[$key]['_name_'] = $item['nombre'];
 				$list[$key]['_iconImg_'] = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle;'));
+				$list[$key]['_num_total_'] = groups_agent_total($id);
 				$list[$key]['_num_ok_'] = groups_agent_ok($id);
+				$list[$key]['_num_not_init_'] = groups_agent_not_init($id);
 				$list[$key]['_num_critical_'] = groups_agent_critical($id);
 				$list[$key]['_num_warning_'] = groups_agent_warning($id);
 				$list[$key]['_num_unknown_'] = groups_agent_unknown ($id);

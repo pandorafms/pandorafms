@@ -7749,7 +7749,7 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 	$out = '';
 	
 	// Depend the type of object, the stats will refer agents, modules...
-	switch($type) {
+	switch ($type) {
 		case 'agent':
 			$template_title['total_count'] = __('%d Total modules');
 			$template_title['normal_count'] = __('%d Normal modules');
@@ -7764,6 +7764,7 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 			$template_title['critical_count'] = __('%d Critical agents');
 			$template_title['warning_count'] = __('%d Warning agents');
 			$template_title['unknown_count'] = __('%d Unknown agents');
+			$template_title['not_init_count'] = __('%d not init agents');
 			$template_title['fired_count'] = __('%d Fired alerts');
 			break;
 	}
@@ -7797,6 +7798,13 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 		$stats[] = array('name' => 'unknown_count', 'count' => $unknown_count, 'title' => sprintf($template_title['unknown_count'], $unknown_count));
 	}
 	
+	if (isset($counts_info['not_init_count'])) {
+		$not_init_count = $counts_info['not_init_count'];
+		$stats[] = array('name' => 'not_init_count',
+			'count' => $not_init_count,
+			'title' => sprintf($template_title['not_init_count'], $not_init_count));
+	}
+	
 	if (isset($counts_info['fired_count'])) {
 		$fired_count = $counts_info['fired_count'];
 		$stats[] = array('name' => 'fired_count', 'count' => $fired_count, 'title' => sprintf($template_title['fired_count'], $fired_count));
@@ -7826,6 +7834,8 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 		$out .= ' ' . $separator . ' <span class="yellow forced_title" id="warning_count_' . $uniq_id . '" style="font-size: 7pt">' . $warning_count . '</span>';
 	if (isset($unknown_count) && $unknown_count > 0)
 		$out .= ' ' . $separator . ' <span class="grey forced_title" id="unknown_count_' . $uniq_id . '" style="font-size: 7pt">' . $unknown_count . '</span>';
+	if (isset($not_init_count) && $not_init_count > 0)
+		$out .= ' ' . $separator . ' <span class="blue forced_title" id="not_init_count_' . $uniq_id . '" style="font-size: 7pt">' . $not_init_count . '</span>';
 	if (isset($normal_count) && $normal_count > 0)
 		$out .= ' ' . $separator . ' <span class="green forced_title" id="normal_count_' . $uniq_id . '" style="font-size: 7pt">' . $normal_count . '</span>';
 	

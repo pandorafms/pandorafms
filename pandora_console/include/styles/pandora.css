@@ -2151,6 +2151,11 @@ tr.group_view_ok, .group_view_ok {
 	color: #fff;
 }
 
+tr.group_view_not_init, .group_view_not_init, tr.group_view_not_init, .group_view_not_init {
+	background-color: #5AB7E5;
+	color: #fff !important;
+}
+
 tr.group_view_warn, .group_view_warn, tr.group_view_warn.a, a.group_view_warn, tr.a.group_view_warn {
 	background-color: #ffea59;
 	color: #3F3F3F !important;

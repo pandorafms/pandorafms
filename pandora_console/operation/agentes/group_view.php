@@ -107,6 +107,7 @@ if (count($agents) > 0) {
 	echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "</th>";
 	echo "<th width='10%' style='min-width: 60px;'>" . __("Agents") . "</th>";
 	echo "<th width='10%' style='min-width: 60px;'>" . __("Agent unknown") . "</th>";
+	echo "<th width='10%' style='min-width: 60px;'>" . __("Agents not init") . "</th>";
 	echo "<th width='10%' style='min-width: 60px;'>" . __("Unknown") . "</th>";
 	echo "<th width='10%' style='min-width: 60px;'>" . __("Not Init") . "</th>";
 	echo "<th width='10%' style='min-width: 60px;'>" . __("Normal") . "</th>";

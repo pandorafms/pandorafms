@@ -39,7 +39,7 @@ if (tags_has_user_acl_tags()) {
 <table border="0" width="98%">
 	<tr>
 		
-		<td width="30%" style="padding-right: 10px;">
+		<td width="30%" style="padding-right: 10px;" valign="top">
 			
 			
 			<?php
@@ -238,8 +238,8 @@ return;
 
 //echo '<div id="left_column_logon_ok" id="leftcolumn">';
 echo '<div style="width:30%; float:left;" id="leftcolumn">';
-	
-	
+
+
 $data = reporting_get_group_stats ();
 
 ///////////////
@@ -289,11 +289,11 @@ $table->data[] = $tdata;
 
 html_print_table($table);
 unset($table);
-	
-	
-	
-	
-	
+
+
+
+
+
 echo '</div>';
 
 

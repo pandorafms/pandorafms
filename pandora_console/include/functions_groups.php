@@ -897,6 +897,10 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 		$group_class = 'group_view_ok';
 		$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
 	}
+	elseif ($data["agent_not_init"] > 0)  {
+		$group_class = 'group_view_not_init';
+		$status_image = ui_print_status_image ('agent_no_data_ball.png', "", true);
+	}
 	else {
 		$group_class = 'group_view_normal';
 		$status_image = ui_print_status_image ('agent_no_data_ball.png', "", true);
@@ -951,6 +955,19 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 		echo "<a class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group&status=" . AGENT_STATUS_UNKNOWN ."'>";
 		echo $data["agents_unknown"];
+		echo "</a>";
+		echo "</td>";
+	}
+	else {
+		echo "<td class='$group_class'></td>";
+	}
+	
+	// Agents not init
+	if ($data["agent_not_init"] > 0) {
+		echo "<td class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+		echo "<a class='group_view_data group_view_data_unk $group_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group&status=" . AGENT_STATUS_NOT_INIT ."'>";
+		echo $data["agent_not_init"];
 		echo "</a>";
 		echo "</td>";
 	}
@@ -1123,7 +1140,14 @@ function groups_agent_not_init ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND notinit_count>0 AND id_grupo IN $group_clause");	
+	$count = db_get_sql ("SELECT COUNT(*)
+		FROM tagente
+		WHERE disabled = 0
+			AND critical_count = 0
+			AND warning_count = 0
+			AND unknown_count = 0
+			AND (notinit_count > 0 OR total_count = 0)
+			AND id_grupo IN $group_clause");
 	
 	return $count > 0 ? $count : 0;
 }

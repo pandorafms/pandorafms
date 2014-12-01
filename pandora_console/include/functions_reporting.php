@@ -1803,7 +1803,8 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	}
 	
 	if ($id_group == 0) {
-		$id_group = array_keys (users_get_groups ($config['id_user'], $access, false));
+		$id_group = array_keys(
+			users_get_groups($config['id_user'], $access, false));
 	}
 	
 	// -----------------------------------------------------------------
@@ -1820,7 +1821,8 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 		foreach ($id_group as $group) {
 			$group_stat = db_get_all_rows_sql ("SELECT *
 				FROM tgroup_stat, tgrupo
-				WHERE tgrupo.id_grupo = tgroup_stat.id_group AND tgroup_stat.id_group = $group
+				WHERE tgrupo.id_grupo = tgroup_stat.id_group
+					AND tgroup_stat.id_group = $group
 				ORDER BY nombre");
 			
 			$data["monitor_checks"] += $group_stat[0]["modules"];

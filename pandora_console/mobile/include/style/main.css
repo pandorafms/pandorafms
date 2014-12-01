@@ -113,6 +113,13 @@ tr.group_view_crit, .group_view_crit {
 .group_view_norm * {
 	color: #000000 !important;
 }
+
+
+.group_view_not_init, .group_view_not_init * {
+	background-color: #5AB7E5;
+	color: #fff !important;
+}
+
 .ui-btn-up-group_view_normal, .ui-btn-hover-group_view_normal,
 .ui-btn-up-group_view_norm, .ui-btn-hover-group_view_norm {
 	background-color: #6EB432;

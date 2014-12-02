@@ -175,12 +175,15 @@ switch ($activeTab) {
 					$values['pos_x'] = get_parameter('left_' . $id, 0);
 					$values['pos_y'] = get_parameter('top_' . $id, 0);
 					$type = db_get_value('type', 'tlayout_data', 'id', $id);
-					switch($type) {
+					switch ($type) {
 						case MODULE_GRAPH:
 						case SIMPLE_VALUE_MAX:
 						case SIMPLE_VALUE_MIN:
 						case SIMPLE_VALUE_AVG:
 							$values['period'] = get_parameter('period_' . $id, 0);
+							break;
+						case GROUP_ITEM:
+							$values['id_group'] = get_parameter('group_' . $id, 0);
 							break;
 					}
 					$agentName = get_parameter('agent_' .  $id, '');

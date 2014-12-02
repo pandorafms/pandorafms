@@ -55,7 +55,7 @@ else {
 }
 $table->head = array();
 $table->head['icon'] = '';
-$table->head[0] = __('Label') . ' / ' . __('Agent');
+$table->head[0] = __('Label') . ' / ' . __('Agent') . ' / ' . __('Group');
 $table->head[1] = __('Image') . ' / ' . __('Module');
 $table->head[2] = __('Width x Height<br>Max value');
 $table->head[3] = __('Period') . ' / ' . __('Position');
@@ -146,6 +146,10 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 1]['icon'] =
 				html_print_image('images/photo.png', true, array('title' => __('Icon')));
 			break;
+		case GROUP_ITEM:
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/group_green.png', true, array('title' => __('Group')));
+			break;
 		default:
 			if (enterprise_installed()) {
 				$table->data[$i + 1]['icon'] =
@@ -177,11 +181,19 @@ foreach ($layoutDatas as $layoutData) {
 	
 	
 	//Image
-	if (($layoutData['type'] == STATIC_GRAPH) || ($layoutData['type'] == ICON)) {
-		$table->data[$i + 1][1] = html_print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true,  false, true, '', false, "width: 120px");
-	}
-	else {
-		$table->data[$i + 1][1] = '';
+	switch ($layoutData['type']) {
+		case STATIC_GRAPH:
+		case ICON:
+		case GROUP_ITEM:
+			$table->data[$i + 1][1] =
+				html_print_select ($images_list,
+					'image_' . $idLayoutData, $layoutData['image'], '',
+					'None', '', true,  false, true, '', false,
+					"width: 120px");
+			break;
+		default:
+			$table->data[$i + 1][1] = '';
+			break;
 	}
 	
 	
@@ -197,8 +209,21 @@ foreach ($layoutDatas as $layoutData) {
 		')';
 	
 	//Parent
-	$table->data[$i + 1][4] = html_print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
-		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true, false, true, false, 'width: 120px;');
+	switch ($layoutData['type']) {
+		case BOX_ITEM:
+		case LINE_ITEM:
+			$table->data[$i + 1][4] = "";
+			break;
+		default:
+			$table->data[$i + 1][4] = html_print_select_from_sql(
+					'SELECT id, label
+					FROM tlayout_data
+					WHERE id_layout = '. $idVisualConsole . '
+						AND id !=' . $idLayoutData,
+				'parent_' . $idLayoutData, $layoutData['parent_item'],
+				'', 'None', 0, true, false, true, false,
+				'width: 120px;');
+	}
 	
 	//Delete row button
 	if (!defined('METACONSOLE')) {
@@ -220,6 +245,16 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Agent
 	switch ($layoutData['type']) {
+		case GROUP_ITEM:
+			$own_info = get_user_info($config['id_user']);
+			if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, "PM"))
+				$return_all_group = false;
+			else
+				$return_all_group = true;
+			$table->data[$i + 2][0] = html_print_select_groups(false, "AR",
+				$return_all_group, 'group_' . $idLayoutData,
+				$layoutData['id_group'], '', '', 0, true);
+			break;
 		case ICON:
 		case LABEL:
 			$table->data[$i + 2][0] = '';
@@ -271,6 +306,7 @@ foreach ($layoutDatas as $layoutData) {
 	switch ($layoutData['type']) {
 		case ICON:
 		case LABEL:
+		case GROUP_ITEM:
 			$table->data[$i + 2][1] = '';
 			break;
 		default:

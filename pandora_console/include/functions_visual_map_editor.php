@@ -444,7 +444,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				')</td>';
 			
 			$form_items_advance['size_row'] = array();
-			$form_items_advance['size_row']['items'] = array('background',
+			$form_items_advance['size_row']['items'] = array(
+				'group_item', 'background',
 				'static_graph', 'icon datos');
 			$form_items_advance['size_row']['html'] = '<td align="left">' .
 				__('Size') .
@@ -459,7 +460,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$parents = visual_map_get_items_parents($visualConsole_id);
 			
 			$form_items_advance['parent_row'] = array();
-			$form_items_advance['parent_row']['items'] = array('static_graph',
+			$form_items_advance['parent_row']['items'] = array(
+				'group_item', 'static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'label', 'icon', 'datos');
 			$form_items_advance['parent_row']['html'] = '<td align="left">' .
@@ -471,8 +473,9 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			$form_items_advance['map_linked_row'] = array();
 			$form_items_advance['map_linked_row']['items'] = array(
-				'static_graph', 'percentile_bar', 'percentile_item',
-				'module_graph', 'simple_value', 'icon', 'label', 'datos');
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos');
 			$form_items_advance['map_linked_row']['html'] = '<td align="left">'.
 				__('Map linked') . '</td>' .
 				'<td align="left">' . html_print_select_from_sql (

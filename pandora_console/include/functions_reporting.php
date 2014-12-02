@@ -6842,7 +6842,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[1] = ui_print_group_icon ($agent_data['id_grupo'], true, '', '', false);
 			$data[2] = ui_print_os_icon ($agent_data["id_os"], true, true);
 			$data[3] = $agent_data['direccion'];
-			$data[4] = $agent_data['comentarios'];
+			$agent_data_comentarios = strip_tags(ui_bbcode_to_html($agent_data['comentarios']));
+			$data[4] = $agent_data_comentarios;
 			
 			if ($agent_data['disabled'] == 0)
 				$data[5] = __('Enabled');
@@ -6985,7 +6986,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data[1] = ui_print_group_icon ($agent_data['id_grupo'], true, '', '', false);
 				$data[2] = ui_print_os_icon ($agent_data["id_os"], true, true);
 				$data[3] = $agent_data['direccion'];
-				$data[4] = $agent_data['comentarios'];
+				$agent_data_comentarios = strip_tags(ui_bbcode_to_html($agent_data['comentarios']));
+				$data[4] = $agent_data_comentarios;
 				
 				if ($agent_data['disabled'] == 0)
 					$data[5] = __('Enabled');

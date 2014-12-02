@@ -82,6 +82,9 @@ else {
 		if ($custom_value === false || $custom_value == '') {
 			$custom_value = '<i>-'.__('empty').'-</i>';
 		}
+		else {
+			$custom_value = ui_bbcode_to_html($custom_value);
+		}
 		
 		$data[2] = $custom_value;
 		

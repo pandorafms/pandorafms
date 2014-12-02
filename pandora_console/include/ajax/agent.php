@@ -275,13 +275,16 @@ elseif ($search_agents && ($config['metaconsole'] == 1) && defined('METACONSOLE'
 		$filter_description = $filter;
 		switch ($config['dbtype']) {
 			case "mysql":
-				$filter_description[] = '(nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
+				$filter_description[] =
+					'(nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
 				break;
 			case "postgresql":
-				$filter_description[] = '(nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios LIKE \'%'.$string.'%\')';
+				$filter_description[] =
+					'(nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios LIKE \'%'.$string.'%\')';
 				break;
 			case "oracle":
-				$filter_description[] = '(UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
+				$filter_description[] =
+					'(UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
 				break;
 		}
 		$agents = agents_get_agents($filter_description,

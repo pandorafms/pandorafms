@@ -917,7 +917,7 @@ function api_set_create_custom_field($t1, $t2, $other, $returnType) {
 		$display_front = 0;
 		
 		if ($other['data'][1] != '') {
-				$display_front = $other['data'][1];
+			$display_front = $other['data'][1];
 		}
 		else {
 			returnError('error_parameter', 'Custom field display flag required');

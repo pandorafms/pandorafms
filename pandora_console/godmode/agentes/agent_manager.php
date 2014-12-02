@@ -268,7 +268,8 @@ $table->data[6][1] = html_print_select (servers_get_names (),
 
 // Description
 $table->data[7][0] = __('Description');
-$table->data[7][1] = html_print_input_text ('comentarios', $comentarios, '', 45, 255, true);
+$table->data[7][1] = html_print_input_text ('comentarios', $comentarios,
+	'', 45, 255, true);
 
 html_print_table ($table);
 unset($table);
@@ -376,10 +377,12 @@ if ($config['activate_gis']) {
 }
 
 $table->data[6][0] = __('Url address');
-$table->data[6][1] = html_print_input_text ('url_description', $url_description, '', 45, 255, true);
+$table->data[6][1] = html_print_input_text ('url_description',
+	$url_description, '', 45, 255, true);
 
 $table->data[7][0] = __('Quiet');
-$table->data[7][0] .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true);
+$table->data[7][0] .= ui_print_help_tip(
+	__('The agent still runs but the alerts and events will be stop'), true);
 $table->data[7][1] = html_print_checkbox('quiet', 1, $quiet, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
@@ -401,13 +404,16 @@ foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
 	
-	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+	$custom_value = db_get_value_filter('description',
+		'tagent_custom_data',
+		array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
 	if ($custom_value === false) {
 		$custom_value = '';
 	}
 	
-	$data[1] = html_print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
+	$data[1] = html_print_textarea ('customvalue_'.$field['id_field'],
+		2, 65, $custom_value, 'style="min-height: 30px;"', true);
 	
 	array_push ($table->data, $data);
 }
@@ -433,12 +439,14 @@ echo "</span>";
 
 if ($id_agente) {
 	
-	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
+	html_print_submit_button (__('Update'), 'updbutton', false,
+		'class="sub upd"');
 	html_print_input_hidden ('update_agent', 1);
 	html_print_input_hidden ('id_agente', $id_agente);
 }
 else {
-	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+	html_print_submit_button (__('Create'), 'crtbutton', false,
+		'class="sub wand"');
 	html_print_input_hidden ('create_agent', 1);
 }
 echo '</div></form>';
@@ -446,56 +454,90 @@ echo '</div></form>';
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
 ui_require_jquery_file ('bgiframe');
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ?>
 <script type="text/javascript">
-/* <![CDATA[ */
-
-//Use this function for change 3 icons when change the selectbox
-function changeIcons() {
-	icon = $("#icon_path :selected").val();
+	/* <![CDATA[ */
 	
-	$("#icon_without_status").attr("src", "images/spinner.png");
-	$("#icon_default").attr("src", "images/spinner.png");
-	$("#icon_ok").attr("src", "images/spinner.png");
-	$("#icon_bad").attr("src", "images/spinner.png");
-	$("#icon_warning").attr("src", "images/spinner.png");
+	//Use this function for change 3 icons when change the selectbox
+	function changeIcons() {
+		icon = $("#icon_path :selected").val();
+		
+		$("#icon_without_status").attr("src", "images/spinner.png");
+		$("#icon_default").attr("src", "images/spinner.png");
+		$("#icon_ok").attr("src", "images/spinner.png");
+		$("#icon_bad").attr("src", "images/spinner.png");
+		$("#icon_warning").attr("src", "images/spinner.png");
+		
+		if (icon.length == 0) {
+			$("#icon_without_status").attr("style", "display:none;");
+			$("#icon_default").attr("style", "display:none;");
+			$("#icon_ok").attr("style", "display:none;");
+			$("#icon_bad").attr("style", "display:none;");
+			$("#icon_warning").attr("style", "display:none;");
+		}
+		else {
+			$("#icon_without_status").attr("src",
+				"<?php echo $path; ?>" + icon + ".default.png");
+			$("#icon_default").attr("src",
+				"<?php echo $path; ?>" + icon + ".default.png");
+			$("#icon_ok").attr("src",
+				"<?php echo $path; ?>" + icon + ".ok.png");
+			$("#icon_bad").attr("src",
+				"<?php echo $path; ?>" + icon + ".bad.png");
+			$("#icon_warning").attr("src",
+				"<?php echo $path; ?>" + icon + ".warning.png");
+			$("#icon_without_status").attr("style", "");
+			$("#icon_default").attr("style", "");
+			$("#icon_ok").attr("style", "");
+			$("#icon_bad").attr("style", "");
+			$("#icon_warning").attr("style", "");
+		}
+		
+		//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
+	}
 	
-	if (icon.length == 0) {
-		$("#icon_without_status").attr("style", "display:none;");
-		$("#icon_default").attr("style", "display:none;");
-		$("#icon_ok").attr("style", "display:none;");
-		$("#icon_bad").attr("style", "display:none;");
-		$("#icon_warning").attr("style", "display:none;");
-	}
-	else {
-		$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
-		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
-		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
-		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
-		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
-		$("#icon_without_status").attr("style", "");
-		$("#icon_default").attr("style", "");
-		$("#icon_ok").attr("style", "");
-		$("#icon_bad").attr("style", "");
-		$("#icon_warning").attr("style", "");
+	function show_modules_not_learning_mode_context_help() {
+		if ($("input[name='modo'][value=1]").is(':checked')) {
+			$("#modules_not_learning_mode_context_help").hide();
+		}
+		else {
+			$("#modules_not_learning_mode_context_help").show();
+		}
 	}
 	
-	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
-}
-
-function show_modules_not_learning_mode_context_help() {
-	if ($("input[name='modo'][value=1]").is(':checked')) {
-		$("#modules_not_learning_mode_context_help").hide();
-	}
-	else {
-		$("#modules_not_learning_mode_context_help").show();
-	}
-}
-
-$(document).ready (function () {
-	$("select#id_os").pandoraSelectOS ();
+	$(document).ready (function () {
+		$("select#id_os").pandoraSelectOS ();
+		
+		paint_qrcode(
+			"<?php
+			echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente);
+			?>",
+			"#qr_code_agent_view", 128, 128);
+	});
 	
-	paint_qrcode("<?php echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente);  ?>", "#qr_code_agent_view", 128, 128);
-});
-/* ]]> */
+	$(document).ready(function() {
+		tinyMCE.init({
+			mode : "exact",
+			elements: <?php
+			
+			$elements = array('comentarios');
+			
+			foreach ($fields as $field) {
+				$elements[] = 'customvalue_' . $field['id_field'];
+			}
+			
+			echo '"' . implode(', ', $elements) . '"';
+			?>,
+			width: 300,
+			theme : "advanced",
+			theme_advanced_path : false,
+			statusbar : false,
+			plugins: "bbcode",
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left",
+			theme_advanced_buttons1 : "undo, redo, | , link, unlink"
+		});
+	});
+	/* ]]> */
 </script>

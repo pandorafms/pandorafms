@@ -143,7 +143,7 @@ class Agent {
 						$description .= '<i>' . __('N/A') . '</i>';
 					}
 					else {
-						$description .= $this->agent["comentarios"];
+						$description .= ui_bbcode_to_html($this->agent["comentarios"]);
 					}
 					
 					

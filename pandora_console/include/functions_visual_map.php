@@ -2246,6 +2246,10 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case LABEL:
 				$text = __('Label');
 				break;
+			case GROUP_ITEM:
+			case 'group_item':
+				$text = __('Group') . " - ";
+				break;
 			case 'icon':
 			case ICON:
 				$text = __('Icon') . " - " .
@@ -2285,8 +2289,12 @@ function visual_map_get_items_parents($idVisual) {
 			$agent = io_safe_output(agents_get_name($item['id_agent']));
 		}
 		
-		$return[$item['id']] = visual_map_create_internal_name_item($item['label'],
-			$item['type'], $item['image'], $agent, $item['id_agente_modulo'],
+		$return[$item['id']] = visual_map_create_internal_name_item(
+			$item['label'],
+			$item['type'],
+			$item['image'],
+			$agent,
+			$item['id_agente_modulo'],
 			$item['id']);
 	}
 	

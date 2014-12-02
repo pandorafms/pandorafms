@@ -208,6 +208,7 @@ foreach ($layoutDatas as $layoutData) {
 		',' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 2, 5, true) .
 		')';
 	
+	
 	//Parent
 	switch ($layoutData['type']) {
 		case BOX_ITEM:
@@ -215,14 +216,10 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 1][4] = "";
 			break;
 		default:
-			$table->data[$i + 1][4] = html_print_select_from_sql(
-					'SELECT id, label
-					FROM tlayout_data
-					WHERE id_layout = '. $idVisualConsole . '
-						AND id !=' . $idLayoutData,
+			$parents = visual_map_get_items_parents($idVisualConsole);
+			$table->data[$i + 1][4] = html_print_select($parents,
 				'parent_' . $idLayoutData, $layoutData['parent_item'],
-				'', 'None', 0, true, false, true, false,
-				'width: 120px;');
+				'', __('None'), 0, true);
 	}
 	
 	//Delete row button
@@ -242,6 +239,7 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Second row
 	$table->data[$i + 2]['icon'] = '';
+	
 	
 	//Agent
 	switch ($layoutData['type']) {

@@ -404,7 +404,8 @@ foreach ($fields as $field) {
 		$custom_value = '';
 	}
 	
-	$data[1] = html_print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
+	$data[1] = html_print_textarea ('customvalue_' . $field['id_field'],
+		2, 65, $custom_value, 'style="min-height: 30px;"', true);
 	
 	array_push ($table->data, $data);
 }
@@ -433,10 +434,12 @@ ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
 ui_require_jquery_file ('bgiframe');
+
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
-	
+
 //Use this function for change 3 icons when change the selectbox
 $(document).ready (function () {
 	$("#id_agents").change (function () {
@@ -530,7 +533,29 @@ function changeIcons() {
 		$("#icon_bad").attr("style", "");
 		$("#icon_warning").attr("style", "");
 	}
-	
-	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
 }
+
+$(document).ready(function() {
+	tinyMCE.init({
+		mode : "exact",
+		elements: <?php
+		
+		$elements = array('description');
+		
+		foreach ($fields as $field) {
+			$elements[] = 'customvalue_' . $field['id_field'];
+		}
+		
+		echo '"' . implode(', ', $elements) . '"';
+		?>,
+		width: 300,
+		theme : "advanced",
+		theme_advanced_path : false,
+		statusbar : false,
+		plugins: "bbcode",
+		theme_advanced_toolbar_location : "top",
+		theme_advanced_toolbar_align : "left",
+		theme_advanced_buttons1 : "undo, redo, | , link, unlink"
+	});
+});
 </script>

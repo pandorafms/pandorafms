@@ -113,7 +113,8 @@ $data[0] .= ui_print_help_tip(__('Agent statuses are re-calculated by the server
 $data[0] .= '</div>';
 $table_agent->rowspan[count($table_agent->data)][0] = 6;
 $table_agent->colspan[count($table_agent->data)][0] = 2;
-$table_agent->cellstyle[count($table_agent->data)][0] = 'width: 150px; text-align:center; padding: 0px; vertical-align: top;';
+$table_agent->cellstyle[count($table_agent->data)][0] =
+	'width: 150px; text-align:center; padding: 0px; vertical-align: top;';
 
 
 $data[2] = ui_print_os_icon ($agent["id_os"], false, true, true, false, false, false, array('title' => __('OS') . ': ' . get_os_name ($agent["id_os"])));
@@ -159,11 +160,14 @@ $table_agent->data[] = $data;
 $table_agent->rowclass[] = '';
 
 $data = array();
-$data[2] = html_print_image('images/default_list.png', true, array('title' => __('Description')));
+$data[2] = html_print_image('images/default_list.png', true,
+	array('title' => __('Description')));
 $table_agent->cellstyle[count($table_agent->data)][2] =
 	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
-$data[3] .= empty($agent["comentarios"]) ? '<em>' . __('N/A') . '</em>' : $agent["comentarios"];
+$data[3] .= empty($agent["comentarios"]) ?
+	'<em>' . __('N/A') . '</em>' :
+	ui_bbcode_to_html($agent["comentarios"]);
 $data[3] .= '</span>';
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 
@@ -576,9 +580,15 @@ if ($config["agentaccess"] && $access_agent > 0) {
 }
 
 $data[1] = html_print_table($table_contact, true);
-$data[1] .= empty($table_data->data) ? '' : '<br>' . html_print_table($table_data, true);
-$data[1] .= !isset($table_incident) ? '' : '<br>' . html_print_table($table_incident, true);
-$data[1] .= !isset($table_interface) ? '' : '<br>' . html_print_table($table_interface, true);
+$data[1] .= empty($table_data->data) ?
+	'' :
+	'<br>' . html_print_table($table_data, true);
+$data[1] .= !isset($table_incident) ?
+	'' :
+	'<br>' . html_print_table($table_incident, true);
+$data[1] .= !isset($table_interface) ?
+	'' :
+	'<br>' . html_print_table($table_interface, true);
 
 $table->rowspan[0][1] = 2;
 

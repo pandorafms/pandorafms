@@ -29,6 +29,19 @@ if (isset($config['homedir'])) {
 	require_once($config['homedir'] . '/include/functions_html.php');
 }
 
+function ui_bbcode_to_html($text, $allowed_tags = array('[url]')) {
+	$return = "";
+	
+	$return = $text;
+	
+	if (array_search('[url]', $allowed_tags) !== false) {
+		$return = str_replace('[/url]', '</a>', $return);
+		$return = preg_replace("/\[url=([^\]]*)\]/", "<a href=\"$1\">", $return);
+	}
+	
+	return $return;
+}
+
 /**
  * Truncate a text to num chars (pass as parameter) and if flag show tooltip is
  * true the html artifal to show the tooltip with rest of text.

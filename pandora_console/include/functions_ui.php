@@ -1550,7 +1550,9 @@ function ui_process_page_body ($string, $bitfield) {
  */
 function ui_pagination ($count, $url = false, $offset = 0,
 	$pagination = 0, $return = false, $offset_name = 'offset',
-	$print_total_items = true, $other_class = '') {
+	$print_total_items = true, $other_class = '',
+	$script = "",
+	$parameter_script = array('count' => '', 'offset' => 'offset_param')) {
 	
 	global $config;
 	
@@ -1624,9 +1626,24 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	
 	// Show GOTO FIRST PAGE button
 	if ($number_of_pages > $block_limit) {
-		$output .= "<a class='pagination $other_class offset_0' href='$url&amp;$offset_name=0'>" .
-			html_print_image ("images/go_first.png", true, array ("class" => "bot")) .
-			"</a>&nbsp;";
+		
+		if (!empty($script)) {
+			$script_modified = $script;
+			$script_modified = str_replace(
+				$parameter_script['count'], $count, $script_modified);
+			$script_modified = str_replace(
+				$parameter_script['offset'], 0, $script_modified);
+			
+			$output .= "<a class='pagination $other_class offset_0'
+				href='javascript: $script_modified;'>" .
+				html_print_image ("images/go_first.png", true, array ("class" => "bot")) .
+				"</a>&nbsp;";
+		}
+		else {
+			$output .= "<a class='pagination $other_class offset_0' href='$url&amp;$offset_name=0'>" .
+				html_print_image ("images/go_first.png", true, array ("class" => "bot")) .
+				"</a>&nbsp;";
+		}
 	}
 	
 	// Show PREVIOUS PAGE GROUP OF PAGES
@@ -1637,9 +1654,24 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	// Result << < 5 - 6 - 7 - 8 - [9] > >>
 	if ($ini_page >= $block_limit) {
 		$offset_previous_page = ($ini_page - 1) * $pagination;
-		$output .= "<a class='pagination $other_class offset_$offset_previous_page' href='$url&amp;$offset_name=$offset_previous_page'>" .
+		
+		if (!empty($script)) {
+			$script_modified = $script;
+			$script_modified = str_replace(
+				$parameter_script['count'], $count, $script_modified);
+			$script_modified = str_replace(
+				$parameter_script['offset'], $offset_previous_page, $script_modified);
+			
+			$output .= "<a class='pagination $other_class offset_$offset_previous_page'
+				href='javacript: $script_modified;'>" .
 				html_print_image ("images/go_previous.png", true, array ("class" => "bot")) .
 				"</a>";
+		}
+		else {
+			$output .= "<a class='pagination $other_class offset_$offset_previous_page' href='$url&amp;$offset_name=$offset_previous_page'>" .
+				html_print_image ("images/go_previous.png", true, array ("class" => "bot")) .
+				"</a>";
+		}
 	}
 	
 	
@@ -1657,7 +1689,21 @@ function ui_pagination ($count, $url = false, $offset = 0,
 		
 		$offset_page = $iterator * $pagination;
 		
-		$output .= "<a class='pagination $other_class offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
+		if (!empty($script)) {
+			$script_modified = $script;
+			$script_modified = str_replace(
+				$parameter_script['count'], $count, $script_modified);
+			$script_modified = str_replace(
+				$parameter_script['offset'], $offset_page, $script_modified);
+			
+			$output .= "<a class='pagination $other_class offset_$offset_page'
+				href='javascript: $script_modified;'>";
+		}
+		else {
+			
+			$output .= "<a class='pagination $other_class offset_$offset_page' href='$url&amp;$offset_name=$offset_page'>";
+			
+		}
 		
 		$output .= "[ $iterator ]";
 		
@@ -1674,18 +1720,48 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	// Result << < [15] - 16 - 17 - 18 - 19 > >>
 	if ($number_of_pages - $ini_page > $block_limit) {
 		$offset_next_page = ($end_page + 1) * $pagination;
-		$output .= "<a class='pagination $other_class offset_$offset_next_page' href='$url&amp;$offset_name=$offset_next_page'>" .
+		
+		if (!empty($script)) {
+			$script_modified = $script;
+			$script_modified = str_replace(
+				$parameter_script['count'], $count, $script_modified);
+			$script_modified = str_replace(
+				$parameter_script['offset'], $offset_next_page, $script_modified);
+			
+			$output .= "<a class='pagination $other_class offset_$offset_next_page'
+				href='javascript: $script_modified;'>" .
 				html_print_image ("images/go_next.png", true, array ("class" => "bot")) .
 				"</a>";
+		}
+		else {
+			$output .= "<a class='pagination $other_class offset_$offset_next_page' href='$url&amp;$offset_name=$offset_next_page'>" .
+				html_print_image ("images/go_next.png", true, array ("class" => "bot")) .
+				"</a>";
+		}
 	}
 	
 	//Show GOTO LAST PAGE button
 	if ($number_of_pages > $block_limit) {
 		$offset_lastpage = ($number_of_pages - 1) * $pagination;
 		
-		$output .= "<a class='pagination $other_class offset_$offset_lastpage' href='$url&amp;$offset_name=$offset_lastpage'>" .
-			html_print_image ("images/go_last.png", true, array ("class" => "bot")) .
-			"</a>";
+		
+		if (!empty($script)) {
+			$script_modified = $script;
+			$script_modified = str_replace(
+				$parameter_script['count'], $count, $script_modified);
+			$script_modified = str_replace(
+				$parameter_script['offset'], $offset_lastpage, $script_modified);
+			
+			$output .= "<a class='pagination $other_class offset_$offset_lastpage'
+				href='javascript: $script_modified;'>" .
+				html_print_image ("images/go_last.png", true, array ("class" => "bot")) .
+				"</a>";
+		}
+		else {
+			$output .= "<a class='pagination $other_class offset_$offset_lastpage' href='$url&amp;$offset_name=$offset_lastpage'>" .
+				html_print_image ("images/go_last.png", true, array ("class" => "bot")) .
+				"</a>";
+		}
 	}
 	
 	// End div and layout

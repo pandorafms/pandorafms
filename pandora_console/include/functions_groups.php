@@ -1652,4 +1652,34 @@ function groups_get_all_hierarchy_group ($id_group, $hierarchy = array(), $debug
 	}
 	return $hierarchy;
 }
+
+function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
+	global $config;
+
+	if ($id_group == 0) {
+		$hierarchy = groups_get_childrens($id_group);
+	} else {
+		$hierarchy[] = $id_group;
+		$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
+
+		if ($parent !== 0) {
+			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
+
+			if ($propagate == 1) {
+				//$childrens_ids_parent = array($parent);
+				$hierarchy[] = $parent;
+				$childrens = groups_get_childrens($parent);
+				if (!empty($childrens)) {
+					foreach ($childrens as $child) {
+						//$childrens_ids_parent[] = (int)$child['id_grupo'];
+						$hierarchy[] = (int)$child['id_grupo'];
+					}
+				}
+
+				$hierarchy = groups_get_all_hierarchy_group ($parent, $hierarchy);
+			}
+		}
+	}
+	return $hierarchy;
+}
 ?>

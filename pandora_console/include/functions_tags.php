@@ -636,8 +636,8 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  * @return mixed/string Tag ids
  */
  
-function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '', $meta = false, $childrens_ids = array()) {
-	
+function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '', $meta = false, $childrens_ids = array(), $force_group_and_tag = false) {
+
 	global $config;
 	
 	if ($id_user == false) {
@@ -670,29 +670,16 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 		$id_group = (array) $id_group;
 	}
 	
-	$id_group_aux = array();
-	foreach ($id_group as $key=>$id) {
-		array_push($id_group_aux, $id);
-		$parent = db_get_value('parent','tgrupo','id_grupo',$id);
-		
-		if ($parent !== 0) {
-			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
-			if ($propagate == 1) {
-				array_push($id_group_aux,$parent);
-			}
-		}
+	if ($id_group[0] != 0) {
+		$id_group = groups_get_all_hierarchy_group ($id_group[0]);
 	}
-	$id_group = $id_group_aux;
-	
+
 	$acl_column = get_acl_column($access);
 	
 	if (empty($acl_column)) {
 		return ERR_WRONG_PARAMETERS;
 	}
-	
-	if (!empty($childrens_ids)) {
-		$id_group = $childrens_ids;
-	}
+
 	$query = sprintf("SELECT tags, id_grupo 
 			FROM tusuario_perfil, tperfil
 			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
@@ -712,25 +699,37 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 	
 	$acltags = array();
 	foreach ($tags as $tagsone) {
-		if (empty($tagsone['tags'])) {
-			// If there arent tags restriction in all groups (group 0), return no condition
-			if ($tagsone['id_grupo'] == 0) {
-				switch ($return_mode) {
-					case 'data':
-						return array();
-						break;
-					case 'event_condition':
-					case 'module_condition':
-						return "";
-						break;
-				}
+		if ($force_group_and_tag) {
+			if (empty($tagsone['tags'])) {
+				// Do none
 			}
-			
-			$non_restriction_groups[] = $tagsone['id_grupo'];
-			continue;
+		}
+		else {
+			if (empty($tagsone['tags'])) {
+				// If there arent tags restriction in all groups (group 0), return no condition
+				if ($tagsone['id_grupo'] == 0) {
+					switch ($return_mode) {
+						case 'data':
+							return array();
+							break;
+						case 'event_condition':
+						case 'module_condition':
+							return "";
+							break;
+					}
+				}
+				
+				$non_restriction_groups[] = $tagsone['id_grupo'];
+				continue;
+			}
 		}
 		
 		$tags_array = explode(',',$tagsone['tags']);
+		if ($force_group_and_tag) {
+			if (empty($tagsone['tags'])) {
+				$tags_array = array();
+			}
+		}
 		
 		if (!isset($acltags[$tagsone['id_grupo']])) {
 			$acltags[$tagsone['id_grupo']] = $tags_array;
@@ -761,7 +760,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 			break;
 		case 'event_condition':
 			// Return the condition of the tags for tevento table
-			$condition = tags_get_acl_tags_event_condition($acltags, $meta);			
+			$condition = tags_get_acl_tags_event_condition($acltags, $meta, $force_group_and_tag);
 			if(!empty($condition)) {
 				return " $query_prefix "."(".$condition.")";
 			}
@@ -837,15 +836,17 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
  * @return string SQL condition for tagente_module
  */
  
-function tags_get_acl_tags_event_condition($acltags, $meta = false) {
+function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group_and_tag = false) {
+
+	global $config;
 	$condition = '';
-	
+
 	// Get all tags of the system
 	$all_tags = tags_get_all_tags(false);
 	
 	// Juanma (08/05/2014) Fix : Will have all groups  retrieved (also propagated ones)
 	$_groups_not_in = '';
-	
+
 	foreach ($acltags as $group_id => $group_tags) {
 		// Group condition (The module belongs to an agent of the group X)
 		// Juanma (08/05/2014) Fix : Get all groups (children also, Propagate ACL func!)
@@ -854,24 +855,49 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false) {
 		
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = '';
-		foreach ($group_tags as $tag) {
-			// If the tag ID doesnt exist, ignore
-			if (!isset($all_tags[$tag])) {
-				continue;
+		if (empty($group_tags)) {
+			$tags_condition = "id_grupo = ".$group_id;
+		} else {
+			foreach ($group_tags as $tag) {
+				// If the tag ID doesnt exist, ignore
+				if (!isset($all_tags[$tag])) {
+					continue;
+				}
+				
+				if ($tags_condition != '') {
+					$tags_condition .= " OR \n";
+				}
+				
+				//~ // Add as condition all the posibilities of the serialized tags
+				//~ $tags_condition .= sprintf('tags LIKE "%s,%%"',io_safe_input($all_tags[$tag]));
+				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s,%%"',io_safe_input($all_tags[$tag]));
+				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s"',io_safe_input($all_tags[$tag]));
+				//~ $tags_condition .= sprintf(' OR tags LIKE "%s %%"',io_safe_input($all_tags[$tag]));
+				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s %%"',io_safe_input($all_tags[$tag]));
+				
+				if ($force_group_and_tag) {
+					if (!empty($all_tags[$tag])) {
+						$tags_condition .= sprintf('(tags = "%s"',io_safe_input($all_tags[$tag]));
+						$childrens = groups_get_childrens($group_id, null, true);
+
+						if (empty($childrens)) {
+							$tags_condition .= sprintf(' AND id_grupo = %d )', $group_id);
+						} else {
+							$childrens_ids[] = $group_id;
+							foreach ($childrens as $child) {
+								$childrens_ids[] = (int)$child['id_grupo'];
+							}
+							$ids_str = implode(',', $childrens_ids);
+
+							$tags_condition .= sprintf(' AND id_grupo IN (%s) )', $ids_str);
+						}
+					} else {
+						$tags_condition .= "id_grupo = ".$group_id;
+					}
+				} else {
+					$tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
+				}
 			}
-			
-			if ($tags_condition != '') {
-				$tags_condition .= " OR \n";
-			}
-			
-			//~ // Add as condition all the posibilities of the serialized tags
-			//~ $tags_condition .= sprintf('tags LIKE "%s,%%"',io_safe_input($all_tags[$tag]));
-			//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s,%%"',io_safe_input($all_tags[$tag]));
-			//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s"',io_safe_input($all_tags[$tag]));
-			//~ $tags_condition .= sprintf(' OR tags LIKE "%s %%"',io_safe_input($all_tags[$tag]));
-			//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s %%"',io_safe_input($all_tags[$tag]));
-			
-			$tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
 		}
 		
 		// If there is not tag condition ignore
@@ -882,14 +908,8 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false) {
 		if ($condition != '') {
 			$condition .= ' OR ';
 		}
-	
-		//$condition .= "($group_condition AND \n($tags_condition))\n";
 		
-		if ($meta) {
-			$condition .= "($tags_condition)\n";
-		} else {
-			$condition .= "($group_condition AND \n($tags_condition))\n";
-		}
+		$condition .= "($tags_condition)\n";
 	}
 	
 	//Commented because ACLs propagation don't work
@@ -1142,6 +1162,7 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 	return false;
 }
 
+
 function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p = false) {
 	global $config;
 
@@ -1234,6 +1255,7 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 	}
 }
 
+/* This function checks event ACLs */
 function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $childrens_ids = array()) {
 	global $config;
 
@@ -1241,63 +1263,55 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 		$id_user = $config['id_user'];
 	}
 	
-	$tags_user = tags_get_acl_tags($id_user, $id_group, $access, 'data', '', '', false, $childrens_ids);
+	$tags_user = tags_get_acl_tags($id_user, $id_group, $access, 'data', '', '', true, $childrens_ids, true);
 
-	// If there are wrong parameters or fail ACL check, return false
-	if($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
-		//return false;
-		$return = false;
+	//check user without tags
+	$sql = "SELECT id_usuario FROM tusuario_perfil
+		WHERE id_usuario = '".$config["id_user"]."' AND tags = ''
+		AND id_perfil IN (SELECT id_perfil FROM tperfil WHERE ".get_acl_column($access)."=1)";
+	$user_has_perm_without_tags = db_get_all_rows_sql ($sql);
+	
+	if ($user_has_perm_without_tags) {
+		return true;
 	}
 
-	// If there are not tags restrictions or tags passed, return true
-	//if(empty($tags_user) || empty($tags)) {
-	if(empty($tags_user)) {
-		return true;
-		//$return = true;
+	$query = sprintf("SELECT tags, id_grupo 
+				FROM tusuario_perfil, tperfil
+				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
+					tusuario_perfil.id_usuario = '%s' AND 
+					tperfil.%s = 1
+				ORDER BY id_grupo", $id_user, get_acl_column($access));
+	$user_tags = db_get_all_rows_sql($query);
+
+	if ($user_tags === false) {
+		$user_tags = array();
 	}
 	
-	$tags_user_ids = array();
-	foreach ($tags_user as $id=>$tag_user) {
-		$tags_user_ids[] = $tag_user[0];
-	}
+	foreach ($user_tags as $user_tag) {
+		$tags_user = $user_tag['tags'];
+		$id_group_user = $user_tag['id_grupo'];
+		$childrens = groups_get_childrens($id_group_user, null, true);
 
-	if (in_array($id_group, $childrens_ids)) { //check group
-		foreach ($tags as $tag) {
-			$tag_id = tags_get_id($tag);
-			if (in_array($tag_id, $tags_user_ids)) { //check tag
-				return true;
-				//$return = true;
+		if (empty($childrens)) {
+			$group_ids = $id_group_user;
+		} else {
+			$childrens_ids[] = $id_group_user;
+			foreach ($childrens as $child) {
+				$childrens_ids[] = (int)$child['id_grupo'];
 			}
+			$group_ids = implode(',', $childrens_ids);
+		}
+		$sql = "SELECT id_usuario FROM tusuario_perfil
+					WHERE id_usuario = '".$config["id_user"]."' AND tags = $tags_user
+					AND id_perfil IN (SELECT id_perfil FROM tperfil WHERE ".get_acl_column($access)."=1)
+					AND id_grupo IN ($group_ids)";
+		$has_perm = db_get_value_sql ($sql);
+		
+		if ($has_perm) {
+			return true;
 		}
 	}
-	//return false;
-	$return = false;
-
-	if ($return == false) {
-
-		$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
-
-		if ($parent !== 0) {
-			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
-
-			if ($propagate == 1) {
-
-				$childrens_ids_parent = array($parent);
-					
-				$childrens = groups_get_childrens($parent);
-
-				if (!empty($childrens)) {
-					foreach ($childrens as $child) {
-						$childrens_ids_parent[] = (int)$child['id_grupo'];
-					}
-				}
-				//$acl_parent = tags_check_acl_event($id_user, $parent, $access, $tags,$p);
-				$acl_parent = tags_checks_event_acl($id_user, $parent, $access, $tags, $childrens_ids_parent);
-				return $acl_parent;
-			}
-		}
-	}
-
+	
 	return false;
 }
 ?>

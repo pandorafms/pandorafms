@@ -69,7 +69,8 @@ $table_agent->styleTable = 'padding:0px;';
 $table_agent->data = array();
 $data = array();
 
-$agent_name = ui_print_agent_name ($agent["id_agente"], true, 500, "font-size: medium;", true);
+$agent_name = ui_print_agent_name ($agent["id_agente"], true, 500,
+	"font-size: medium;", true);
 
 if ($agent['disabled']) {
 	$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
@@ -209,7 +210,7 @@ $table_contact->data[] = $data;
 
 $data[0] = '<b>' . __('Next contact') . '</b>';
 $progress = agents_get_next_contact($id_agente);
-$data[1] = progress_bar($progress, 200, 20);
+$data[1] = progress_bar($progress, 200, 20, '', 1, false, "#666666");
 
 if ($progress > 100) {
 	$data[1] .= clippy_context_help("agent_out_of_limits");

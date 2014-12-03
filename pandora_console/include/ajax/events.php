@@ -36,6 +36,7 @@ $get_response_description = (bool) get_parameter ('get_response_description');
 $get_event_name = (bool) get_parameter ('get_event_name');
 $meta = get_parameter ('meta', 0);
 $history = get_parameter ('history', 0);
+$table_events = get_parameter('table_events', 0);
 
 if ($get_event_name) {
 	$event_id = get_parameter ('event_id');
@@ -297,7 +298,7 @@ if ($get_extended_event) {
 	$tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
 	$tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png',true).__('Agent fields')."</a></li>";
 	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
-
+	
 	if (!$readonly && 
 		(tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
 		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true).__('Responses')."</a></li>";
@@ -493,5 +494,21 @@ if ($get_events_details) {
 	$out .= '</table>';
 	
 	echo $out;
+}
+
+if ($table_events) {
+	require_once ("include/functions_events.php");
+	require_once ("include/functions_graph.php");
+	
+	$id_agente = (int)get_parameter('id_agente', 0);
+	
+	// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
+	$groups = users_get_groups($config["id_user"]);
+	
+	$tags_condition = tags_get_acl_tags($config['id_user'],
+		array_keys($groups), 'ER', 'event_condition', 'AND');
+	
+	events_print_event_table ("estado <> 1 $tags_condition", 10, '100%',
+		false, $id_agente);
 }
 ?>

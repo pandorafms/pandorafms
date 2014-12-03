@@ -7752,6 +7752,13 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 	
 	// Depend the type of object, the stats will refer agents, modules...
 	switch ($type) {
+		case 'modules':
+			$template_title['total_count'] = __('%d Total modules');
+			$template_title['normal_count'] = __('%d Normal modules');
+			$template_title['critical_count'] = __('%d Critical modules');
+			$template_title['warning_count'] = __('%d Warning modules');
+			$template_title['unknown_count'] = __('%d Unknown modules');
+			break;
 		case 'agent':
 			$template_title['total_count'] = __('%d Total modules');
 			$template_title['normal_count'] = __('%d Normal modules');
@@ -7807,9 +7814,11 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 			'title' => sprintf($template_title['not_init_count'], $not_init_count));
 	}
 	
-	if (isset($counts_info['fired_count'])) {
-		$fired_count = $counts_info['fired_count'];
-		$stats[] = array('name' => 'fired_count', 'count' => $fired_count, 'title' => sprintf($template_title['fired_count'], $fired_count));
+	if (isset($template_title['fired_count'])) {
+		if (isset($counts_info['fired_count'])) {
+			$fired_count = $counts_info['fired_count'];
+			$stats[] = array('name' => 'fired_count', 'count' => $fired_count, 'title' => sprintf($template_title['fired_count'], $fired_count));
+		}
 	}
 	
 	$uniq_id = uniqid();

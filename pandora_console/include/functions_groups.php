@@ -1198,6 +1198,7 @@ function groups_agent_ok ($group_array) {
 	
 	if (empty ($group_array)) {
 		return 0;
+		
 	}
 	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
@@ -1206,12 +1207,7 @@ function groups_agent_ok ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	$count = db_get_sql ("SELECT COUNT(*)
-		FROM tagente
-		WHERE tagente.disabled = 0
-			AND normal_count = total_count
-			AND (notinit_count != 0)
-			AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo IN $group_clause");
 	
 	return $count > 0 ? $count : 0;
 }
@@ -1627,27 +1623,31 @@ function groups_get_tree(&$groups, $parent = false) {
 	return $return;
 }
 
-function groups_get_all_hierarchy_group ($id_group, $hierarchy = array(), $debug = false) {
+function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
 	global $config;
 
-	$hierarchy[] = $id_group;
-	$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
+	if ($id_group == 0) {
+		$hierarchy = groups_get_childrens($id_group);
+	} else {
+		$hierarchy[] = $id_group;
+		$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
 
-	if ($parent !== 0) {
-		$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
+		if ($parent !== 0) {
+			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
 
-		if ($propagate == 1) {
-			//$childrens_ids_parent = array($parent);
-			$hierarchy[] = $parent;
-			$childrens = groups_get_childrens($parent);
-			if (!empty($childrens)) {
-				foreach ($childrens as $child) {
-					//$childrens_ids_parent[] = (int)$child['id_grupo'];
-					$hierarchy[] = (int)$child['id_grupo'];
+			if ($propagate == 1) {
+				//$childrens_ids_parent = array($parent);
+				$hierarchy[] = $parent;
+				$childrens = groups_get_childrens($parent);
+				if (!empty($childrens)) {
+					foreach ($childrens as $child) {
+						//$childrens_ids_parent[] = (int)$child['id_grupo'];
+						$hierarchy[] = (int)$child['id_grupo'];
+					}
 				}
-			}
 
-			$hierarchy = groups_get_all_hierarchy_group ($parent, $hierarchy);
+				$hierarchy = groups_get_all_hierarchy_group ($parent, $hierarchy);
+			}
 		}
 	}
 	return $hierarchy;

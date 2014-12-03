@@ -17,20 +17,41 @@
 // Load global vars
 check_login();
 
-if (!isset($id_agente)){
+if (!isset($id_agente)) {
 	require ("general/noaccess.php");
 	exit;
 }
 
 require_once ("include/functions_events.php");
 
-echo "<h4 style='margin-top:0px !important;'>".__('Latest events for this agent')."</h4>";
-
-// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
-$groups = users_get_groups($config["id_user"]);
-
-$tags_condition = tags_get_acl_tags($config['id_user'], array_keys($groups), 'ER', 'event_condition', 'AND');
-
-events_print_event_table ("estado <> 1 $tags_condition", 10, '100%', false, $id_agente);
+ui_toggle(
+	"<div id='event_list'>" .
+		html_print_image('images/spinner.gif', true) .
+	"</div>",
+	__('Latest events for this agent'),
+	__('Latest events for this agent'),
+	false);
 
 ?>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var parameters = {};
+		
+		parameters["table_events"] = 1;
+		parameters["id_agente"] = <?php echo $id_agente; ?>;
+		parameters["page"] = "include/ajax/events";
+		
+		jQuery.ajax ({
+			data: parameters,
+			type: 'POST',
+			url: "ajax.php",
+			timeout: 10000,
+			dataType: 'html',
+			async: false,
+			success: function (data) {
+				$("#event_list").empty();
+				$("#event_list").html(data);
+			}
+		});
+	});
+</script>

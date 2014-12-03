@@ -222,9 +222,9 @@ if ($get_extended_event) {
 	$event_id = get_parameter('event_id',false);
 	$childrens_ids = get_parameter('childrens_ids');
 	$childrens_ids = json_decode($childrens_ids);
-
+	
 	if ($meta) {
-		$event = events_meta_get_event($event_id, false, $history);
+		$event = events_meta_get_event($event_id, false, $history, "ER");
 	}
 	else {
 		$event = events_get_event($event_id);

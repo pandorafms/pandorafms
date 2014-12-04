@@ -1189,6 +1189,8 @@ function groups_agent_total($group_array) {
 		WHERE tagente.disabled = 0
 			AND id_grupo IN $group_clause");
 	
+	
+	
 	return $count > 0 ? $count : 0;
 }
 
@@ -1207,7 +1209,13 @@ function groups_agent_ok ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT COUNT(*)
+		FROM tagente
+		WHERE tagente.disabled = 0
+			AND normal_count = total_count
+			AND id_grupo IN $group_clause");
+	
+	
 	
 	return $count > 0 ? $count : 0;
 }
@@ -1622,6 +1630,7 @@ function groups_get_tree(&$groups, $parent = false) {
 	
 	return $return;
 }
+
 
 function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
 	global $config;

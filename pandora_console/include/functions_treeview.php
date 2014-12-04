@@ -619,6 +619,8 @@ function treeview_getData ($type) {
 		return array ();
 	}
 	
+	
+	
 	$fgroups = array();
 	
 	foreach ($full_groups as $fg) {
@@ -830,7 +832,7 @@ function treeview_getData ($type) {
 				$list = array();
 			}
 			
-			array_push($list, array('id_mg' => 0, 'name' => 'Not assigned'));		
+			array_push($list, array('id_mg' => 0, 'name' => 'Not assigned'));
 			
 			break;
 		case 'policies':

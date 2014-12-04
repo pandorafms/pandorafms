@@ -226,55 +226,125 @@ switch ($opt) {
 		break;
 	case 'point_agent_info':
 		$id = get_parameter('id');
-		$row = db_get_row_sql('SELECT * FROM tagente WHERE id_agente = ' . $id);
-		$agentDataGIS =  gis_get_data_last_position_agent($row['id_agente']);
+		$agent = db_get_row_sql('SELECT * FROM tagente WHERE id_agente = ' . $id);
+		$agentDataGIS = gis_get_data_last_position_agent($agent['id_agente']);
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
-		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['id_agente'] . '">'.$row['nombre'].'</a><br />';
-		
+		$returnJSON['content'] = '';
+
+		$content = '';
+
+		$table = new StdClass();
+		$table->class = 'blank';
+		$table->style = array();
+		$table->style[0] = 'font-weight: bold';
+		$table->rowstyle = array();
+		$table->data = array();
+
+		// Agent name
+		$row = array();
+		$row[] = __('Agent');
+		$row[] = '<a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente='
+			. $agent['id_agente'] . '">'.$agent['nombre'].'</a>';
+		$table->data[] = $row;
+
+		// Position
+		$row = array();
+		$row[] = __('Position (Lat, Long, Alt)');
+
 		//it's positioned in default position of map.
 		if ($agentDataGIS === false) {
-			$returnJSON['content'] .= __('Position (Lat, Long, Alt)') . ': ' . __("Default position of map.") . '<br />';
+			$row[] = __("Default position of map.");
 		}
-		else 
-		{
-			$returnJSON['content'] .= __('Position (Lat, Long, Alt)') . ': (' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';
+		else {
+			$row[] = '(' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_altitude'] . ')';
 		}
+		$table->data[] = $row;
+
+		// IP
 		$agent_ip_address = agents_get_address ($id);
 		if ($agent_ip_address || $agent_ip_address != '') {
-			$returnJSON['content'] .= __('IP Address') . ': '.
-				agents_get_address ($id).'<br />';
+			$row = array();
+			$row[] = __('IP Address');
+			$row[] = agents_get_address($id);
+			$table->data[] = $row;
 		}
-		$returnJSON['content'] .= __('OS').': ' .
-			ui_print_os_icon($row['id_os'], true, true);
-		
-		$osversion_offset = strlen($row["os_version"]);
+
+		// OS
+		$row = array();
+		$row[] = __('OS');
+		$osversion_offset = strlen($agent["os_version"]);
 		if ($osversion_offset > 15) {
 			$osversion_offset = $osversion_offset - 15;
 		}
 		else {
 			$osversion_offset = 0;
 		}
-		$returnJSON['content'] .= '&nbsp;( <i><span title="' . $row["os_version"] . '">' .
-			substr($row["os_version"],$osversion_offset,15).'</span></i>)<br />';
-		$agent_description = $row['comentarios'];
-		if ($agent_description || $agent_description != '') {
-			$returnJSON['content'] .= __('Description').': '.$agent_description.'<br />';
+		$row[] = ui_print_os_icon($agent['id_os'], true, true)
+			. '&nbsp;(<i><span title="' . $agent["os_version"] . '">'
+			. substr($agent["os_version"],$osversion_offset,15).'</span></i>)';
+		$table->data[] = $row;
+
+		// URL
+		$agent_url = $agent['url_address'];
+		if (!empty($agent_url)) {
+			$row = array();
+			$row[] = __('URL');
+			$row[] = "<a href=\"$agent_url\">" . ui_print_truncate_text($agent_url, 20) . "</a>";
+			$table->data[] = $row;
 		}
-		$returnJSON['content'] .= __('Group').': ' .
-			ui_print_group_icon ($row["id_grupo"], true) .
-			'&nbsp;(<strong>'.groups_get_name ($row["id_grupo"]).'</strong>)<br />';
-		$returnJSON['content'] .= __('Agent Version').': '.$row["agent_version"].'<br />';
-		$returnJSON['content'] .= __('Last contact') . ": ";
-		if ($row["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") {
-			$returnJSON['content'] .=__('Never') ." <br />";
+
+		// Description
+		$agent_description = $agent['comentarios'];
+		if ($agent_description || $agent_description != '') {
+			$row = array();
+			$row[] = __('Description');
+			$row[] = $agent_description;
+			$table->data[] = $row;
+		}
+
+		// Group
+		$row = array();
+		$row[] = __('Group');
+		$row[] = groups_get_name($agent["id_grupo"]);
+		$table->data[] = $row;
+
+		// Agent version
+		$row = array();
+		$row[] = __('Agent Version');
+		$row[] = $agent["agent_version"];
+		$table->data[] = $row;
+
+		// Last contact
+		$row = array();
+		$row[] = __('Last contact');
+		if ($agent["ultimo_contacto"] == "01-01-1970 00:00:00") {
+			$row[] = __('Never');
 		}
 		else {
- 			$returnJSON['content'] .= $row["ultimo_contacto_remoto"] ." <br />";
+			$row[] = $agent["ultimo_contacto"];
 		}
-		$returnJSON['content'] .= __('Remote').': '. $row["ultimo_contacto"];
-		
+		$table->data[] = $row;
+
+		// Last remote contact
+		$row = array();
+		$row[] = __('Remote');
+		if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") {
+			$row[] = __('Never');
+		}
+		else {
+			$row[] = $agent["ultimo_contacto_remoto"];
+		}
+		$table->data[] = $row;
+
+		// To remove the grey background color of the classes datos and datos2
+		for ($i = 0; $i < count($table->data); $i++)
+			$table->rowstyle[] = 'background-color: inherit;';
+
+		// Save table
+		$returnJSON['content'] = html_print_table($table, true);
+
 		echo json_encode($returnJSON);
 		break;
 	case 'get_map_connection_data':

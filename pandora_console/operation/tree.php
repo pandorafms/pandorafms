@@ -513,24 +513,24 @@ if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT
 $img_style = array ("class" => "top", "width" => 16);
 $activeTab = get_parameter('sort_by','group');
 
-$os_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=os'>"
+$os_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=os&pure=$pure'>"
 	. html_print_image ("images/operating_system.png", true, array ("title" => __('OS'))) . "</a>", 'active' => $activeTab == "os");
 
-$group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=group'>"
+$group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=group&pure=$pure'>"
 	. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 'active' => $activeTab == "group");
 
-$module_group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=module_group'>"
+$module_group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=module_group&pure=$pure'>"
 	. html_print_image ("images/module_group.png", true, array ("title" => __('Module groups'))) . "</a>", 'active' => $activeTab == "module_group");
 
 if ($enterpriseEnable) {
-	$policies_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=policies'>"
+	$policies_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=policies&pure=$pure'>"
 		. html_print_image ("images/policies_mc.png", true, array ("title" => __('Policies'))) . "</a>", 'active' => $activeTab == "policies");
 }
 else {
 	$policies_tab = '';
 }
 
-$module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by=module'>"
+$module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by=module&pure=$pure'>"
 	. html_print_image("images/brick.png",
 		true,
 		array("title" => __('Modules'))) . "</a>",

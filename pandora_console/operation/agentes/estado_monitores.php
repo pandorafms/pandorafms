@@ -209,7 +209,8 @@ switch ($config["dbtype"]) {
 $groups = users_get_groups($config["id_user"]);
 
 $tags_sql = tags_get_acl_tags($config['id_user'],
-	array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo');
+	array_keys($groups), 'AR', 'module_condition', 'AND',
+	'tagente_modulo', false, array(), true);
 
 $status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
 $status_text_monitor = get_parameter('status_text_monitor', '');

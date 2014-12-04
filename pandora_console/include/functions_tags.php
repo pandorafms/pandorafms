@@ -636,8 +636,11 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  * @return mixed/string Tag ids
  */
  
-function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '', $meta = false, $childrens_ids = array(), $force_group_and_tag = false) {
-
+function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
+	$return_mode = 'module_condition', $query_prefix = '',
+	$query_table = '', $meta = false, $childrens_ids = array(),
+	$force_group_and_tag = false) {
+	
 	global $config;
 	
 	if ($id_user == false) {
@@ -673,13 +676,13 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 	if ($id_group[0] != 0) {
 		$id_group = groups_get_all_hierarchy_group ($id_group[0]);
 	}
-
+	
 	$acl_column = get_acl_column($access);
 	
 	if (empty($acl_column)) {
 		return ERR_WRONG_PARAMETERS;
 	}
-
+	
 	$query = sprintf("SELECT tags, id_grupo 
 			FROM tusuario_perfil, tperfil
 			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
@@ -688,7 +691,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 			(tusuario_perfil.id_grupo IN (%s) OR tusuario_perfil.id_grupo = 0)
 			ORDER BY id_grupo", $id_user, $acl_column, implode(',',$id_group));
 	$tags = db_get_all_rows_sql($query);
-
+	
 	// If not profiles returned, the user havent acl permissions
 	if (empty($tags)) {
 		return ERR_ACL;
@@ -755,14 +758,14 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 			// Return the condition of the tags for tagente_modulo table
 			$condition = tags_get_acl_tags_module_condition($acltags, $query_table);
 			if (!empty($condition)) {
-				return " $query_prefix ".$condition;
+				return " $query_prefix " . $condition;
 			}
 			break;
 		case 'event_condition':
 			// Return the condition of the tags for tevento table
 			$condition = tags_get_acl_tags_event_condition($acltags, $meta, $force_group_and_tag);
-			if(!empty($condition)) {
-				return " $query_prefix "."(".$condition.")";
+			if (!empty($condition)) {
+				return " $query_prefix " . "(" . $condition . ")";
 			}
 			break;
 	}
@@ -784,7 +787,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 	}
 	
 	$condition = '';
-
+	
 	// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression)   
 	$i = 0;
 	foreach ($acltags as $group_id => $group_tags) {
@@ -796,8 +799,12 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 		if ($i == 0)
 			$condition .= ' ( ';
 		
+		
+		
+		
+		
 		// Group condition (The module belongs to an agent of the group X)
-		// Juanma (08/05/2014) Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition		
+		// Juanma (08/05/2014) Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition
 		if (!array_key_exists(0, $acltags)) {
 			// Juanma (08/05/2014) Fix: get all groups recursively (Acl proc func!)
 			$group_condition = sprintf('%sid_agente IN (SELECT id_agente FROM tagente WHERE id_grupo IN (%s))', $modules_table, implode(',', array_values(groups_get_id_recursive($group_id))));
@@ -806,10 +813,20 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 			//Avoid the user profiles with all group access.
 			$group_condition = " 1 = 1 ";
 		}
-		// Tags condition (The module has at least one of the restricted tags)
-		$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, implode(',',$group_tags));
 		
-		$condition .= "($group_condition AND \n$tags_condition)\n";
+		
+		//When the acl is only group without tags
+		if (empty($group_tags)) {
+			$condition .= "($group_condition)\n";
+		}
+		else {
+			// Tags condition (The module has at least one of the restricted tags)
+			$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, implode(',',$group_tags));
+			
+			$condition .= "($group_condition AND \n$tags_condition)\n";
+		}
+		
+		
 		
 		$i++;
 	}
@@ -817,7 +834,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 	// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
 	if (!empty($acltags))
 		$condition .= ' ) ';
-		
+	
 	//Avoid the user profiles with all group access.
 	//if (!empty($condition)) {
 	if (!empty($condition) &&

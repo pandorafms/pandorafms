@@ -209,6 +209,9 @@ dataserver_threads 2
 
 #nmap c:\pandora_server\bin\nmap.exe
 
+# Path to the fping binary. Used by the Enterprise ICMP Server.
+#fping c:\pandora_server\bin\Fping.exe
+
 # snmpget: Needed to do SNMP checks.
 
 #snmpget c:\pandora_server\bin\snmpget.exe

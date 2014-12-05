@@ -56,7 +56,7 @@ $table->head[1] = __('Status');
 $table->head[2] = __('Type');
 $table->head[3] = __('Load') . ui_print_help_tip (__("Modules running on this server / Total modules of this type"), true);
 $table->head[4] = __('Modules');
-$table->head[5] = __('Lag') . ui_print_help_tip (__("Max. Delay(sec)/Modules delayed"), true);
+$table->head[5] = __('Lag') . ui_print_help_tip (__("Avg. Delay(sec)/Modules delayed"), true);
 $table->head[6] = __('T/Q') . ui_print_help_tip (__("Threads / Queued modules currently"), true);
 // This will have a column of data such as "6 hours"
 $table->head[7] = __('Updated');

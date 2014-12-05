@@ -870,6 +870,21 @@ else {
 }
 
 
+/* Log viewer tab */
+if (enterprise_installed() && $config['log_collector']) {
+	$is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
+	$agent_has_logs = (bool) db_get_value('id_agent', 'tagent_module_log', 'id_agent', $id_agente);
+
+	if ($agent_has_logs && !$is_windows) {
+		$log_viewer_tab = array();
+		$log_viewer_tab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente.'">'
+			. html_print_image("images/gm_log.png", true, array("title" => __('Log Viewer')))
+			. '</a>';
+		$log_viewer_tab['active'] = $tab == 'log_viewer';
+	}
+}
+
+
 $onheader = array('manage' => $managetab,
 	'main' => $maintab, 
 	'alert' => $alerttab,
@@ -887,6 +902,10 @@ if ($total_incidents) {
 }
 if ($agent['url_address'] != '') {
 	$onheader['url_address'] = $urladdresstab;
+}
+// If the log viewer tab exists
+if (isset($log_viewer_tab) && !empty($log_viewer_tab)) {
+	$onheader['log_viewer'] = $log_viewer_tab;
 }
 
 //Tabs for extensions
@@ -1028,6 +1047,10 @@ switch ($tab) {
 		break;
 	case "url_address":
 		require("operation/agentes/url_address.php");
+		break;
+	case "log_viewer":
+		$embebed_into_agent_view = true;
+		enterprise_include ("operation/log/log_viewer.php");
 		break;
 	case "extension":
 		$found = false;

@@ -267,6 +267,8 @@ sub pandora_load_config {
 	$pa_config->{"nmap_timing_template"} = 2; # > 5.1
 	$pa_config->{"recon_timing_template"} = 3; # > 5.1
 
+	$pa_config->{"fping"} = "/usr/bin/fping"; # > 5.1SP2
+
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
 
@@ -617,6 +619,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^nmap\s(.*)/i) {
 			$pa_config->{'nmap'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^fping\s(.*)/i) {
+			$pa_config->{'fping'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^nmap_timing_template\s([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 

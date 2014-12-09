@@ -3231,7 +3231,7 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
 	if ($id == "") {
 		returnError('error_stop_downtime', __('Error stopping downtime. Id_downtime cannot be left blank.'));
-		return;	
+		return;
 	}
 	
 	$date_stop = date ("Y-m-j",get_system_time ());
@@ -3246,7 +3246,24 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
 	if ($result_update < 0)
 		returnError('error_stop_downtime', 'Error stopping downtime.');
 	else
-		returnData('string', array('type' => 'string', 'data' => __('Downtime stopped.')));		
+		returnData('string', array('type' => 'string', 'data' => __('Downtime stopped.')));
+}
+
+function api_set_tag($id, $thrash1, $other, $thrash3) {
+	$values = array();
+	$values['name'] = $id;
+	$values['description'] = $other['data'][0];
+	$values['url'] = $other['data'][1];
+	$values['email'] = $other['data'][2];
+	$values['phone'] = $other['data'][3];
+	
+	$id_tag = tags_create_tag($values);
+	
+	if (empty($id_tag))
+		returnError('error_set_tag', 'Error set tag.');
+	else
+		returnData('string',
+			array('type' => 'string', 'data' => $id_tag));
 }
 
 /**
@@ -3264,7 +3281,7 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function api_set_add_agent_policy($id, $thrash1, $other, $thrash3) {
+function api_set_add_agent_policy($id, $thrash1, $other, $thrash2) {
 	if ($id == "") {
 		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_policy cannot be left blank.'));
 		return;

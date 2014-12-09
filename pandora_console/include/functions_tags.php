@@ -197,13 +197,13 @@ function tags_create_tag($values) {
 	if (empty($values)) {
 		return false;
 	}
-
-	//No create tag if the tag exists	
+	
+	//No create tag if the tag exists
 	if (tags_get_id($values["name"])) {
 		return false;
 	}
 	
-	return db_process_sql_insert('ttag',$values);
+	return db_process_sql_insert('ttag', $values);
 }
 
 /**

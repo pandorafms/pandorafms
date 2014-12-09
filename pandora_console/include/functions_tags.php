@@ -532,7 +532,8 @@ function tags_get_policy_module_tags ($id_policy_module) {
 	if (empty($id_policy_module))
 		return false;
 	
-	$tags = db_get_all_rows_filter('ttag_policy_module', array('id_policy_module' => $id_policy_module), false);
+	$tags = db_get_all_rows_filter('ttag_policy_module',
+		array('id_policy_module' => $id_policy_module), false);
 	
 	if ($tags === false)
 		return false;
@@ -559,8 +560,8 @@ function tags_get_all_tags ($return_url = false) {
 	$return = array();
 	foreach ($tags as $tag) {
 		$return[$tag['id_tag']] = $tag['name'];
-		if($return_url) {
-			$return[$tag['id_tag']] .= ' '.$tag['url'];
+		if ($return_url) {
+			$return[$tag['id_tag']] .= ' ' . $tag['url'];
 		}
 	}
 	

@@ -1466,13 +1466,22 @@ function html_print_table (&$table, $return = false) {
 				if (!isset ($style[$key])) {
 					$style[$key] = '';
 				}
-
-				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="' . $class . ' ' . $cellclass[$keyrow][$key] . '">'. $item .'</td>'."\n";
+				
+				$output .= '<td ' .
+					'id="' . $tableid . '-' . $keyrow . '-' . $key . '" ' .
+					'style="' . $cellstyle[$keyrow][$key] .
+						$style[$key] . $valign[$key] . $align[$key] .
+						$size[$key] . $wrap[$key] . '" ' .
+					$colspan[$keyrow][$key] . ' ' .
+					$rowspan[$keyrow][$key] . ' ' .
+					'class="' . $class . ' ' .
+						$cellclass[$keyrow][$key] . '">' .
+					$item . '</td>' . "\n";
 			}
-			$output .= '</tr>'."\n";
+			$output .= '</tr>' . "\n";
 		}
 	}
-	$output .= '</tbody></table>'."\n";
+	$output .= '</tbody></table>' . "\n";
 	
 	if ($return) 
 		return $output;

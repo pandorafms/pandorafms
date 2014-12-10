@@ -1497,9 +1497,10 @@ CREATE TABLE "ttag" (
 -- Table "ttag_module"
 -- ---------------------------------------------------------------------
 
-CREATE TABLE "ttag_module" ( 
- "id_tag" INTEGER NOT NULL, 
- "id_agente_modulo" INTEGER NOT NULL DEFAULT 0, 
+CREATE TABLE "ttag_module" (
+ "id_tag" INTEGER NOT NULL,
+ "id_agente_modulo" INTEGER NOT NULL DEFAULT 0,
+ "id_policy_module" INTEGER NOT NULL DEFAULT 0,
    PRIMARY KEY  (id_tag, id_agente_modulo)
 ); 
 

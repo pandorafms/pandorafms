@@ -1700,10 +1700,11 @@ CREATE OR REPLACE TRIGGER ttag_inc BEFORE INSERT ON ttag REFERENCING NEW AS NEW 
 -- Table "ttag_module"
 -- ---------------------------------------------------------------------
 
-CREATE TABLE ttag_module ( 
- id_tag NUMBER(10, 0) NOT NULL, 
- id_agente_modulo NUMBER(10, 0) DEFAULT 0 NOT NULL, 
-   PRIMARY KEY  (id_tag, id_agente_modulo)
+CREATE TABLE ttag_module (
+	id_tag NUMBER(10, 0) NOT NULL,
+	id_agente_modulo NUMBER(10, 0) DEFAULT 0 NOT NULL,
+	id_policy_module NUMBER(10, 0) DEFAULT 0 NOT NULL,
+	PRIMARY KEY  (id_tag, id_agente_modulo)
 ); 
 
 CREATE INDEX ttag_module_id_ag_modulo_idx ON ttag_module(id_agente_modulo);
@@ -1713,9 +1714,9 @@ CREATE INDEX ttag_module_id_ag_modulo_idx ON ttag_module(id_agente_modulo);
 -- ---------------------------------------------------------------------
 
 CREATE TABLE ttag_policy_module ( 
- id_tag NUMBER(10, 0) NOT NULL, 
- id_policy_module NUMBER(10, 0) DEFAULT 0 NOT NULL, 
-   PRIMARY KEY  (id_tag, id_policy_module)
+	id_tag NUMBER(10, 0) NOT NULL, 
+	id_policy_module NUMBER(10, 0) DEFAULT 0 NOT NULL, 
+	PRIMARY KEY  (id_tag, id_policy_module)
 ); 
 
 CREATE INDEX ttag_poli_mod_id_pol_mo_idx ON ttag_policy_module(id_policy_module);

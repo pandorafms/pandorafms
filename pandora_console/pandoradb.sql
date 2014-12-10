@@ -1583,9 +1583,10 @@ CREATE TABLE IF NOT EXISTS `ttag` (
 -- -----------------------------------------------------
 -- Table `ttag_module`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ttag_module` ( 
-	`id_tag` int(10) NOT NULL, 
-	`id_agente_modulo` int(10) NOT NULL DEFAULT 0, 
+CREATE TABLE IF NOT EXISTS `ttag_module` (
+	`id_tag` int(10) NOT NULL,
+	`id_agente_modulo` int(10) NOT NULL DEFAULT 0,
+	`id_policy_module` int(10) NOT NULL DEFAULT 0,
 	PRIMARY KEY  (id_tag, id_agente_modulo),
 	KEY `idx_id_agente_modulo` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 

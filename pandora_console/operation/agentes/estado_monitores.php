@@ -19,6 +19,8 @@ global $config;
 //Ajax tooltip to deploy modules's tag info.
 if (is_ajax ()) {
 	$get_tag_tooltip = (bool) get_parameter ('get_tag_tooltip', 0);
+	$get_relations_tooltip = (bool) get_parameter ('get_relations_tooltip', 0);
+	
 	
 	if ($get_tag_tooltip) {
 		$id_agente_modulo = (int) get_parameter ('id_agente_modulo');
@@ -26,18 +28,32 @@ if (is_ajax ()) {
 			return;
 		$tags = tags_get_module_tags($id_agente_modulo);
 		
+		
 		if ($tags === false)
 			$tags = array();
 		
 		echo '<h3>' . __("Tag's information") . '</h3>';
+		echo "<table border='0'>";
 		foreach ($tags as $tag) {
-			echo tags_get_name($tag).'<br>';
+			echo "<tr>";
+			
+			echo "<td>";
+			if (tags_get_module_policy_tags($tag, $id_agente_modulo)) {
+				html_print_image('images/policies.png', false, array('style' => 'vertical-align: middle;'));
+			}
+			echo "</td>";
+			
+			echo "<td>";
+			echo tags_get_name($tag);
+			echo "</td>";
+			
+			echo "</tr>";
 		}
+		echo "</table>";
 		
 		return;
 	}
 	
-	$get_relations_tooltip = (bool) get_parameter ('get_relations_tooltip', 0);
 	
 	if ($get_relations_tooltip) {
 		$id_agente_modulo = (int) get_parameter ('id_agente_modulo');

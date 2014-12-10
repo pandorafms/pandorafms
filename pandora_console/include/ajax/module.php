@@ -1065,6 +1065,16 @@ if ($list_modules) {
 	
 	?>
 	<script type="text/javascript">
+		/* <![CDATA[ */
+		$("a.tag_details").cluetip ({
+			arrows: true,
+			attribute: 'href',
+			cluetipClass: 'default'
+		})
+		.click (function () {
+			return false;
+		});
+		
 		function toggle_full_value(id) {
 			text = $("#hidden_value_module_" + id).html();
 			old_text = $("#value_module_text_" + id).html();
@@ -1073,6 +1083,7 @@ if ($list_modules) {
 			
 			$("#value_module_text_" + id).html(text);
 		}
+		/* ]]> */
 	</script>
 	<?php
 	if (empty ($table->data)) {

@@ -234,7 +234,8 @@ ui_require_jquery_file ('cluetip');
 		arrows: true,
 		attribute: 'href',
 		cluetipClass: 'default'
-	}).click (function () {
+	})
+	.click (function () {
 		return false;
 	});
 /* ]]> */

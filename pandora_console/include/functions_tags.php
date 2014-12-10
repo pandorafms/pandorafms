@@ -521,6 +521,17 @@ function tags_get_module_tags ($id_agent_module) {
 	return $return;
 }
 
+function tags_get_module_policy_tags($id_tag, $id_module) {
+	if (empty($id_tag))
+		return false;
+	
+	$id_module_policy = db_get_value_filter('id_policy_module',
+		'ttag_module',
+		array('id_tag' => $id_tag, 'id_agente_modulo' => $id_module));
+	
+	return $id_module_policy;
+}
+
 /**
  * Select all tags of a policy module. 
  * 

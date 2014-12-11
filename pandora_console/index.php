@@ -191,15 +191,14 @@ if (! isset ($config['id_user'])) {
 				if (isset ($_SESSION['prepared_login_da']['id_user'])
 						&& isset ($_SESSION['prepared_login_da']['timestamp'])) {
 
-					$config["prepared_login_da"] = $_SESSION["prepared_login_da"];
 					// The user has a maximum of 5 minutes to introduce the double auth code
 					$dauth_period = SECONDS_2MINUTES;
 					$now = time();
-					$dauth_time = $config['prepared_login_da']['timestamp'];
+					$dauth_time = $_SESSION['prepared_login_da']['timestamp'];
 
 					if ($now - $dauth_period < $dauth_time) {
 						// Nick
-						$nick = $config["prepared_login_da"]['id_user'];
+						$nick = $_SESSION["prepared_login_da"]['id_user'];
 						// Code
 						$code = (string) get_parameter_post ("auth_code");
 
@@ -215,6 +214,10 @@ if (! isset ($config['id_user'])) {
 								$login_screen = 'double_auth';
 								// Error message
 								$config["auth_error"] = __("Invalid code");
+
+								if (!isset($_SESSION['prepared_login_da']['attempts']))
+									$_SESSION['prepared_login_da']['attempts'] = 0;
+								$_SESSION['prepared_login_da']['attempts']++;
 							}
 						}
 						else {
@@ -222,11 +225,15 @@ if (! isset ($config['id_user'])) {
 							$login_screen = 'double_auth';
 							// Error message
 							$config["auth_error"] = __("The code shouldn't be empty");
+
+							if (!isset($_SESSION['prepared_login_da']['attempts']))
+								$_SESSION['prepared_login_da']['attempts'] = 0;
+							$_SESSION['prepared_login_da']['attempts']++;
 						}
 					}
 					else {
 						// Expired login
-						unset ($_SESSION['prepared_login_da'], $config["prepared_login_da"]);
+						unset ($_SESSION['prepared_login_da']);
 
 						// Error message
 						$config["auth_error"] = __('Expired login');
@@ -253,7 +260,7 @@ if (! isset ($config['id_user'])) {
 				$login_failed = true;
 				require_once ('general/login_page.php');
 				db_pandora_audit("Logon Failed", "Invalid double auth login: "
-					.$_SESSION['remote_addr'], $_SESSION['remote_addr']);
+					.$_SERVER['REMOTE_ADDR'], $_SERVER['REMOTE_ADDR']);
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
@@ -318,7 +325,8 @@ if (! isset ($config['id_user'])) {
 				// Store this values in the session to know if the user login was correct
 				$_SESSION['prepared_login_da'] = array(
 						'id_user' => $nick_in_db,
-						'timestamp' => time()
+						'timestamp' => time(),
+						'attempts' => 0
 					);
 
 				// Load the page to introduce the double auth code

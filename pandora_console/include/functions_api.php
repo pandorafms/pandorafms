@@ -3249,6 +3249,56 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
 		returnData('string', array('type' => 'string', 'data' => __('Downtime stopped.')));
 }
 
+function api_set_add_tag_module($id, $id2, $thrash1, $thrash2) {
+	$id_module = $id;
+	$id_tag = $id2;
+	
+	$exists = db_get_row_filter('ttag_module',
+		array('id_agente_modulo' => $id_module,
+			'id_tag' => $id_tag));
+	
+	if (empty($exists)) {
+		db_process_sql_insert('ttag_module',
+			array('id_agente_modulo' => $id_module,
+			'id_tag' => $id_tag));
+		
+		$exists = db_get_row_filter('ttag_module',
+			array('id_agente_modulo' => $id_module,
+				'id_tag' => $id_tag));
+	}
+	
+	if (empty($exists))
+		returnError('error_set_tag_module', 'Error set tag module.');
+	else
+		returnData('string',
+			array('type' => 'string', 'data' => 1));
+}
+
+function api_set_remove_tag_module($id, $id2, $thrash1, $thrash2) {
+	$id_module = $id;
+	$id_tag = $id2;
+	
+	$row = db_get_row_filter('ttag_module',
+		array('id_agente_modulo' => $id_module,
+			'id_tag' => $id_tag));
+	
+	$correct = 0;
+	
+	if (!empty($row)) {
+		
+		// Avoid to delete from policies
+		
+		if ($row['id_policy_module'] == 0) {
+			$correct = db_process_sql_delete('ttag_module',
+				array('id_agente_modulo' => $id_module,
+					'id_tag' => $id_tag));
+		}
+	}
+	
+	returnData('string',
+		array('type' => 'string', 'data' => $correct));
+}
+
 function api_set_tag($id, $thrash1, $other, $thrash3) {
 	$values = array();
 	$values['name'] = $id;

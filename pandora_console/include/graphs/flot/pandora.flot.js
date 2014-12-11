@@ -65,7 +65,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 				clickable: true
 			}
 		};
-
+		
 		if (width < 400) {
 			conf_pie.legend.labelFormatter = function(label, series) {
 					return label + " (" + series.percent.toFixed(1) + "%)";
@@ -127,12 +127,13 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	}
 }
 
-function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_mark, separator, separator2) {
+function pandoraFlotHBars(graph_id, values, labels, water_mark,
+	maxvalue, water_mark, separator, separator2) {
 	
 	values = values.split(separator2);
 	var datas = new Array();
 	
-	for(i=0;i<values.length;i++) {
+	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		var aux = new Array();
 		$.each(serie.reverse(),function(i,v) {
@@ -141,7 +142,15 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 		
 		datas.push({ 
 			data: aux, 
-			bars: { show: true, horizontal: true, fillColor: { colors: [ { opacity: 0.7 }, { opacity: 1 } ] }, lineWidth:1, steps:false } 
+			bars: {
+				show: true,
+				horizontal: true,
+				fillColor: {
+					colors: [ { opacity: 0.7 }, { opacity: 1 } ]
+				},
+				lineWidth: 1,
+				steps: false
+			} 
 		});
 	}
 	
@@ -149,22 +158,22 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 	
 	var stack = 0, bars = true, lines = false, steps = false;
 	
-	var options = { 
-			series: { 
-				shadowSize: 0.1 
+	var options = {
+			series: {
+				shadowSize: 0.1
 			},
 			
-			grid: { 
-				hoverable: true, 
+			grid: {
+				hoverable: true,
 				borderWidth:1,
 				borderColor: '#666',
 				tickColor: '#eee'
 				},
-			xaxes: [ { 
+			xaxes: [ {
 					tickFormatter: yFormatter,
 					color: '#000'
 					} ],
-			yaxes: [ { 
+			yaxes: [ {
 					tickFormatter: xFormatter,
 					tickSize: 1,
 					color: '#000'
@@ -177,59 +186,83 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 					  //tickFormatter: dFormatter
 					} ]
 					,
-			legend: { 
+			legend: {
 				show: false
-				}
+			}
 		};
 	
-	var plot = $.plot($('#'+graph_id),datas, options );
+	// Fixed to avoid the graphs with all 0 datas
+	// the X axis show negative part instead to
+	// show the axis only the positive part.
+	if (maxvalue == 0) {
+		options['xaxes'][0]['min'] = 0;
+		
+		// Fixed the values with a lot of decimals in the situation
+		// with all 0 values.
+		options['xaxes'][0]['tickDecimals'] = 0;
+	}
+	
+	
+	var plot = $.plot($('#' + graph_id), datas, options );
+	
 	
 	// Adjust the top of yaxis tick to set it in the middle of the bars
-	yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
+	yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
+		.css('height').split('px')[0];
 	
 	i = 0;
-	$('#'+graph_id+' .yAxis .tickLabel').each(function() {
+	$('#' + graph_id + ' .yAxis .tickLabel').each(function() {
 		tickTop = $(this).css('top').split('px')[0];
-		tickNewTop = parseInt(parseInt(tickTop) - (yAxisHeight/2)-3);
-		$(this).css('top', tickNewTop+'px');
+		tickNewTop = parseInt(parseInt(tickTop) - (yAxisHeight / 2) - 3);
+		$(this).css('top', tickNewTop + 'px');
 		
 		valuesNewTop = parseInt(parseInt(tickTop) - (yAxisHeight));
 		
-		$('#value_'+i+'_'+graph_id).css('top',parseInt(plot.offset().top) + parseInt(valuesNewTop));
+		$('#value_' + i + '_' + graph_id)
+			.css('top',parseInt(plot.offset().top) + parseInt(valuesNewTop));
 		
 		pixelPerValue = parseInt(plot.width()) / maxvalue;
 		
-		inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
-		label_width = ($('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);		
+		inCanvasValuePos = parseInt(pixelPerValue *
+			($('#value_' + i + '_' + graph_id).html()));
+		label_width = ($('#value_' + i + '_' + graph_id)
+			.css('width').split('px')[0] - 3);
 		
 		label_left_offset = plot.offset().left + inCanvasValuePos + 5; //Label located on right side of bar + 5 pixels
 		
 		//If label fit into the bar just recalculate left position to fit on right side of bar
 		if (inCanvasValuePos > label_width) {
-			label_left_offset = plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3;
+			label_left_offset = plot.offset().left + inCanvasValuePos
+				- $('#value_' + i + '_' + graph_id).css('width').split('px')[0] - 3;
 		}
 		
-		$('#value_'+i+'_'+graph_id).css('left',label_left_offset);
+		$('#value_' + i + '_' + graph_id)
+			.css('left', label_left_offset);
 		i++;
 	});
 	
 	// When resize the window, adjust the values
-	$('#'+graph_id).parent().resize(function () {
+	$('#' + graph_id).parent().resize(function () {
 		i = 0;
 		pixelPerValue = parseInt(plot.width()) / maxvalue;
 		
-		$('#'+graph_id+' .yAxis .tickLabel').each(function() {			
-			inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
-			label_width = ($('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);		
+		$('#' + graph_id + ' .yAxis .tickLabel').each(function() {
+			inCanvasValuePos = parseInt(pixelPerValue *
+				($('#value_' + i + '_' + graph_id).html()));
+			label_width = ($('#value_' + i + '_' + graph_id)
+				.css('width').split('px')[0] - 3);
 			
 			label_left_offset = plot.offset().left + inCanvasValuePos + 5; //Label located on right side of bar + 5 pixels
 			
 			//If label fit into the bar just recalculate left position to fit on right side of bar
 			if (inCanvasValuePos > label_width) {
-				label_left_offset = plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3;
+				label_left_offset = plot.offset().left + inCanvasValuePos
+					- $('#value_' + i + '_' + graph_id)
+						.css('width').split('px')[0] - 3;
 			}
 			
-			$('#value_'+i+'_'+graph_id).css('left',label_left_offset);
+			$('#value_' + i + '_' + graph_id)
+				.css('left', label_left_offset);
 			i++;
 		});
 	});
@@ -248,21 +281,27 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 		return v;
 	}
 	
-	function lFormatter(v, axis) {
-		return '<div style=color:#000>'+v+'</div>';
-	}
-	
 	// Events
-	$('#'+graph_id).bind('plothover',  function (event, pos, item) {
-		$('.values_'+graph_id).css('font-weight', '');
+	$('#' + graph_id).bind('plothover',  function (event, pos, item) {
+		$('.values_' + graph_id).css('font-weight', '');
 		if (item != null) {
 			index = item.dataIndex;
-			$('#value_'+index+'_'+graph_id).css('font-weight', 'bold');
+			$('#value_' + index + '_' + graph_id)
+				.css('font-weight', 'bold');
 		}
 	});
 	
 	if (water_mark) {
-		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
+		set_watermark(graph_id, plot,
+			$('#watermark_image_' + graph_id).attr('src'));
+	}
+	
+	if (maxvalue == 0) {
+		
+		// Fixed the position for the graphs with all values in
+		// bars is 0.
+		
+		$(".values_" + graph_id).css("left", (plot.offset().left + 5) + "px");
 	}
 }
 

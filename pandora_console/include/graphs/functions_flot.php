@@ -490,7 +490,8 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 		$watermark = 'false';
 	}
 	
-	// Set a weird separator to serialize and unserialize passing data from php to javascript
+	// Set a weird separator to serialize and unserialize passing data
+	// from php to javascript
 	$separator = ';;::;;';
 	$separator2 = ':,:,,,:,:';
 	
@@ -507,15 +508,15 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 		$i--;
 		
 		foreach ($values as $key => $value) {
-			$jsvar = "data_".$graph_id."_".$key;
+			$jsvar = "data_" . $graph_id . "_" . $key;
 			
 			if ($multicolor) {
-				for ($j = count($graph_data) - 1; $j>=0; $j--) {
+				for ($j = count($graph_data) - 1; $j >= 0; $j--) {
 					if ($j == $i) {
-						$data[$jsvar.$i][$j] = $value;
+						$data[$jsvar . $i][$j] = $value;
 					}
 					else {
-						$data[$jsvar.$i][$j] = 0;
+						$data[$jsvar . $i][$j] = 0;
 					}
 				}
 			}
@@ -553,7 +554,8 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	
-	$return .= "pandoraFlotHBars('$graph_id', '$values', '$labels', false, $max, '$water_mark', '$separator', '$separator2')";
+	$return .= "pandoraFlotHBars('$graph_id', '$values', '$labels',
+		false, $max, '$water_mark', '$separator', '$separator2')";
 	
 	$return .= "</script>";
 	

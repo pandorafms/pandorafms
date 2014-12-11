@@ -2225,4 +2225,55 @@ function print_audit_csv ($data) {
 	}
 }
 
+/**
+ * Validate the code given to surpass the 2 step authentication
+ *
+ * @param string User name
+ * @param string Code given by the authenticator app
+ *
+ * @return	-1 if the parameters introduced are incorrect,
+ * 			there is a problem accessing the user secret or
+ *			if an exception are launched.
+ *			true if the code is valid.
+ *			false if the code is invalid.
+ */
+function validate_double_auth_code ($user, $code) {
+	global $config;
+	require_once ($config['homedir'].'/include/auth/GAuth/Auth.php');
+	$result = false;
+
+	if (empty($user) || empty($code)) {
+		$result = -1;
+	}
+	else {
+		$secret = db_get_value('secret', 'tuser_double_auth', 'id_user', $user);
+
+		if ($secret === false) {
+			$result = -1;
+		}
+		else if (!empty($secret)) {
+			try {
+				$gAuth = new \GAuth\Auth($secret);
+				$result = $gAuth->validateCode($code);
+			} catch (Exception $e) {
+				$result = -1;
+			}
+		}
+	}
+	
+	return $result;
+}
+
+/**
+ * Get if the 2 step authentication is enabled for the user given
+ *
+ * @param string User name
+ *
+ * @return true if the user has the double auth enabled or false otherwise.
+ */
+function is_double_auth_enabled ($user) {
+	$result = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $user);
+	
+	return $result;
+}
 ?>

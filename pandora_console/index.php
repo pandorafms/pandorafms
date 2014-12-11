@@ -204,7 +204,7 @@ if (! isset ($config['id_user'])) {
 						$code = (string) get_parameter_post ("auth_code");
 
 						if (!empty($code)) {
-							$result = login_validate_double_auth_code($nick, $code);
+							$result = validate_double_auth_code($nick, $code);
 
 							if ($result === true) {
 								// Double auth success
@@ -314,7 +314,7 @@ if (! isset ($config['id_user'])) {
 			//login ok and password has not expired
 
 			// Double auth check
-			if ((!isset ($double_auth_success) || !$double_auth_success) && login_is_double_auth_enabled($nick_in_db)) {
+			if ((!isset ($double_auth_success) || !$double_auth_success) && is_double_auth_enabled($nick_in_db)) {
 				// Store this values in the session to know if the user login was correct
 				$_SESSION['prepared_login_da'] = array(
 						'id_user' => $nick_in_db,

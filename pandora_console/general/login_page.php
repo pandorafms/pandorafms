@@ -199,9 +199,16 @@ if (isset ($login_failed)) {
 	echo '</div>';
 }
 
-ui_require_css_file ('dialog');
-ui_require_css_file ('jquery-ui-1.10.0.custom');
-ui_require_jquery_file('jquery-ui-1.10.0.custom');
+if (defined ('METACONSOLE')) {
+	ui_require_css_file ('../../dialog');
+	ui_require_css_file ('../../jquery-ui-1.10.0.custom');
+	ui_require_jquery_file('../../jquery-ui-1.10.0.custom');
+}
+else {
+	ui_require_css_file ('dialog');
+	ui_require_css_file ('jquery-ui-1.10.0.custom');
+	ui_require_jquery_file('jquery-ui-1.10.0.custom');
+}
 ?>
 
 <?php

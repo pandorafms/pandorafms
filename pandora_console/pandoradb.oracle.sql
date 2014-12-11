@@ -1047,6 +1047,17 @@ CREATE TABLE tusuario_perfil (
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tusuario_perfil_inc BEFORE INSERT ON tusuario_perfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tusuario_perfil_s.nextval INTO :NEW.ID_UP FROM dual; END tusuario_perfil_inc;;
 
+-- ----------------------------------------------------------------------
+-- Table `tuser_double_auth`
+-- ----------------------------------------------------------------------
+CREATE TABLE tuser_double_auth (
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_user VARCHAR2(60) NOT NULL REFERENCES tusuario(id_user) ON DELETE CASCADE,
+	secret VARCHAR2(20) NOT NULL
+);
+CREATE SEQUENCE tuser_double_auth_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tuser_double_auth_inc BEFORE INSERT ON tuser_double_auth REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tuser_double_auth_s.nextval INTO :NEW.ID FROM dual; END tuser_double_auth_inc;;
+
 -- ---------------------------------------------------------------------
 -- Table "tnews"
 -- ---------------------------------------------------------------------

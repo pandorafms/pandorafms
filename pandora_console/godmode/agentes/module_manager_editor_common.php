@@ -296,12 +296,13 @@ $table_advanced->width = '98%';
 $table_advanced->class = 'databox_color';
 $table_advanced->data = array ();
 $table_advanced->style = array ();
-$table_advanced->style[0] = 'font-weight: bold; vertical-align: top';
-$table_advanced->style[3] = 'font-weight: bold; vertical-align: top';
+$table_advanced->style[0] =
+	$table_advanced->style[3] =
+	$table_advanced->style[5] = 'font-weight: bold; vertical-align: top';
 $table_advanced->colspan = array ();
 
 $table_advanced->data[0][0] = __('Description');
-$table_advanced->colspan[0][1] = 4;
+$table_advanced->colspan[0][1] = 6;
 $table_advanced->data[0][1] = html_print_textarea ('description', 2, 65,
 	$description, $disabledTextBecauseInPolicy, true);
 
@@ -313,6 +314,7 @@ $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
 $table_advanced->data[1][3] = __('Unit');
 $table_advanced->data[1][4] = html_print_input_text ('unit', $unit,
 	'', 20, 65, true);
+$table_advanced->colspan[1][4] = 3;
 
 $module_id_policy_module = 0;
 if (isset($module['id_policy_module'])) {
@@ -358,6 +360,7 @@ $table_advanced->data[2][1] .= html_print_input_hidden ('moduletype', $moduletyp
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] = html_print_input_text ('post_process',
 	$post_process, '', 15, 25, true, $disabledBecauseInPolicy);
+$table_advanced->colspan[2][4] = 3;
 
 $table_advanced->data[3][0] = __('Min. Value');
 $table_advanced->colspan[3][1] = 2;
@@ -365,6 +368,7 @@ $table_advanced->colspan[3][1] = 2;
 $table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, true, $disabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value below this number is discarted.'), true);
 $table_advanced->data[3][3] = __('Max. Value');
 $table_advanced->data[3][4] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value over this number is discarted.'), true);
+$table_advanced->colspan[3][4] = 3;
 
 $table_advanced->data[4][0] = __('Export target');
 // Default text message for export target select and disabled option
@@ -393,6 +397,7 @@ else {
 $table_advanced->data[4][3] = __('Throw unknown events');
 $table_advanced->data[4][4] = html_print_checkbox('throw_unknown_events',
 	1, $throw_unknown_events_check, true);
+$table_advanced->colspan[4][4] = 3;
 
 $table_advanced->data[5][0] = __('FF interval') . ' ' . ui_print_help_icon ('ff_interval', true);
 $table_advanced->data[5][1] = html_print_input_text ('module_ff_interval', $ff_interval,
@@ -410,6 +415,7 @@ if (preg_match ('/async/', $module_type_name) || $edit) {
 if (!preg_match ('/async/', $module_type_name) || $edit) {
 	$table_advanced->data[5][4] .= '<span id="ff_timeout_disable">' . __('Disabled') . ui_print_help_tip (__('This value can be set only in the async modules.'), true) . '</span>';
 }
+$table_advanced->colspan[5][4] = 3;
 
 /* Tags */
 // This var comes from module_manager_editor.php or policy_modules.php
@@ -420,13 +426,21 @@ if ($__code_from == 'modules') {
 	$__table_modules = 'ttag_module';
 	$__id_where = 'b.id_agente_modulo';
 	$__id = (int)$id_agent_module;
-// Code comes from policy module editor
+	
+	$__sql = " AND b.id_policy_module = 0";
+	$__sql_policy = " AND b.id_policy_module != 0";
+	
 }
 else {
+	// Code comes from policy module editor
+	
 	global $__id_pol_mod;
 	$__table_modules= 'ttag_policy_module';
 	$__id_where = 'b.id_policy_module';
 	$__id = $__id_pol_mod;
+	
+	$__sql = "";
+	
 }
 
 if (!tags_has_user_acl_tags($config["id_user"])) {
@@ -468,49 +482,68 @@ else {
 			true, true, false, false, 'width: 200px', '5');
 	}
 }
-$table_advanced->data[6][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
+$table_advanced->data[6][2] = html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table_advanced->data[6][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
 
 $table_advanced->data[6][3] = '<b>' . __('Tags selected') . '</b>';
-$table_advanced->data[6][4] =  html_print_select_from_sql (
+$table_advanced->data[6][4] = html_print_select_from_sql (
 	"SELECT a.id_tag, name 
 	FROM ttag a, $__table_modules b
 	WHERE a.id_tag = b.id_tag AND $__id_where = $__id
+		$__sql
 	ORDER BY name",
 	'id_tag_selected[]', '', '','','', true, true, false,
 	false, 'width: 200px', '5');
+
+if ($__code_from == 'modules') {
+	$table_advanced->data[6][5] = '<b>' . __('Tags from policy') . '</b>';
+	$table_advanced->data[6][6] = html_print_select_from_sql (
+		"SELECT a.id_tag, name 
+		FROM ttag a, $__table_modules b
+		WHERE a.id_tag = b.id_tag AND $__id_where = $__id
+			$__sql_policy
+		ORDER BY name",
+		'id_tag_policy[]', '', '','','', true, true, false,
+		false, 'width: 200px', '5');
+}
+
 $table_advanced->data[7][0] = __('Quiet');
-$table_advanced->data[7][0] .= ui_print_help_tip(__('The module still stores data but the alerts and events will be stop'), true);
-$table_advanced->colspan[7][1] = 4;
+$table_advanced->data[7][0] .= ui_print_help_tip(
+	__('The module still stores data but the alerts and events will be stop'), true);
+$table_advanced->colspan[7][1] = 7;
 $table_advanced->data[7][1] = html_print_checkbox('quiet_module', 1,
 	$quiet_module, true);
 
-$table_advanced->data[8][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
+$table_advanced->data[8][0] = __('Critical instructions') .
+	ui_print_help_tip(__("Instructions when the status is critical"), true);
 $table_advanced->data[8][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
-$table_advanced->colspan[8][1] = 4;
+$table_advanced->colspan[8][1] = 6;
 
-$table_advanced->data[9][0] = __('Warning instructions'). ui_print_help_tip(__("Instructions when the status is warning"), true);
+$table_advanced->data[9][0] = __('Warning instructions') .
+	ui_print_help_tip(__("Instructions when the status is warning"), true);
 $table_advanced->data[9][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
-$table_advanced->colspan[9][1] = 4;
+$table_advanced->colspan[9][1] = 6;
 
 $table_advanced->data[10][0] = __('Unknown instructions'). ui_print_help_tip(__("Instructions when the status is unknown"), true);
 $table_advanced->data[10][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
-$table_advanced->colspan[10][1] = 4;
+$table_advanced->colspan[10][1] = 6;
 
-$table_advanced->data[11][0] = __('Cron') . ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+$table_advanced->data[11][0] = __('Cron') .
+	ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
 $table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true);
-$table_advanced->colspan[11][1] = 4;
+$table_advanced->colspan[11][1] = 6;
 
 $table_advanced->data[12][0] = __('Timeout');
 $table_advanced->data[12][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true). ' ' . ui_print_help_tip (__('Seconds that agent will wait for the execution of the module.'), true);
 $table_advanced->data[12][2] = '';
 $table_advanced->data[12][3] = __('Retries');
 $table_advanced->data[12][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true). ' ' . ui_print_help_tip (__('Number of retries that the module will attempt to run.'), true);
+$table_advanced->colspan[12][4] = 3;
 
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$table_advanced->data[13][0] = __('Category');
 	$table_advanced->data[13][1] = html_print_select(categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true); 
-	$table_advanced->colspan[13][1] = 4;
+	$table_advanced->colspan[13][1] = 6;
 }
 else {
 	// Store in a hidden field if is not visible to avoid delete the value

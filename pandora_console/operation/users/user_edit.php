@@ -520,7 +520,7 @@ function show_double_auth_info () {
 
 	// Load the info page
 	var request = $.ajax({
-		url: 'ajax.php',
+		url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 		type: 'POST',
 		dataType: 'html',
 		data: {
@@ -539,14 +539,14 @@ function show_double_auth_info () {
 			}
 			// data is a number, convert it to integer to do the compare
 			else if (Number(data) === -1) {
-				$dialogContainer.html("<?php echo __('Authentication error'); ?>");
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Authentication error') . '</div></b>'; ?>");
 			}
 			else {
-				$dialogContainer.html("<?php echo __('Error'); ?>");
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Error') . '</div></b>'; ?>");
 			}
 		},
 		error: function(xhr, textStatus, errorThrown) {
-			$dialogContainer.html("<?php echo __('There was an error loading the data'); ?>");
+			$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('There was an error loading the data') . '</div></b>'; ?>");
 		}
 	});
 
@@ -585,7 +585,7 @@ function show_double_auth_activation () {
 
 	// Load the info page
 	var request = $.ajax({
-		url: 'ajax.php',
+		url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 		type: 'POST',
 		dataType: 'html',
 		data: {
@@ -604,14 +604,14 @@ function show_double_auth_activation () {
 			}
 			// data is a number, convert it to integer to do the compare
 			else if (Number(data) === -1) {
-				$dialogContainer.html("<?php echo __('Authentication error'); ?>");
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Authentication error') . '</div></b>'; ?>");
 			}
 			else {
-				$dialogContainer.html("<?php echo __('Error'); ?>");
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Error') . '</div></b>'; ?>");
 			}
 		},
 		error: function(xhr, textStatus, errorThrown) {
-			$dialogContainer.html("<?php echo __('There was an error loading the data'); ?>");
+			$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('There was an error loading the data') . '</div></b>'; ?>");
 		}
 	});
 
@@ -662,7 +662,7 @@ function show_double_auth_deactivation () {
 
 		// Deactivate the double auth
 		request = $.ajax({
-			url: 'ajax.php',
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 			type: 'POST',
 			dataType: 'json',
 			data: {

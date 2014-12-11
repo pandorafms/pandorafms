@@ -225,7 +225,7 @@ if ($get_double_auth_info_page) {
 		$("#"+containerID).html("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
 
 		$.ajax({
-			url: 'ajax.php',
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 			type: 'POST',
 			dataType: 'html',
 			data: {
@@ -320,7 +320,7 @@ if ($get_double_auth_generation_page) {
 		$("#"+containerID).html("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
 
 		$.ajax({
-			url: 'ajax.php',
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 			type: 'POST',
 			dataType: 'html',
 			data: {
@@ -364,7 +364,7 @@ if ($get_double_auth_generation_page) {
 		$("#"+containerID).html("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
 
 		$.ajax({
-			url: 'ajax.php',
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 			type: 'POST',
 			dataType: 'html',
 			data: {
@@ -458,7 +458,7 @@ if ($get_double_auth_validation_page) {
 		$("div#button-container").find("img").show();
 
 		$.ajax({
-			url: 'ajax.php',
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 			type: 'POST',
 			dataType: 'json',
 			data: {

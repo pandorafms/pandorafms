@@ -348,13 +348,14 @@ function modules_delete_agent_module ($id_agent_module) {
  * 
  * @return True if the module was updated. False if not.
  */
-function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false, $tags = false) {
+function modules_update_agent_module ($id, $values,
+	$onlyNoDeletePending = false, $tags = false) {
 	
 	$update_tags = false;
 	$return_tag = true;
 	if ($tags !== false) {
 		$update_tags = true;
-		$return_tag = tags_update_module_tag ($id, $tags);
+		$return_tag = tags_update_module_tag($id, $tags, false, false);
 	}
 	
 	if ($return_tag === false) {

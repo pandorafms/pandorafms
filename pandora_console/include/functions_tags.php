@@ -439,14 +439,23 @@ function tags_insert_policy_module_tag ($id_agent_module, $tags) {
  * 
  * @return bool True or false if something goes wrong.
  */
-function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false) {
+function tags_update_module_tag ($id_agent_module, $tags,
+	$autocommit = false, $update_policy_tags = true) {
 	$errn = 0;
 	
 	if (empty($tags))
 		$tags = array();
 	
-	/* First delete module tag entries */
-	$result_tag = db_process_sql_delete ('ttag_module', array('id_agente_modulo' => $id_agent_module));
+	if ($update_policy_tags) {
+		/* First delete module tag entries */
+		$result_tag = db_process_sql_delete('ttag_module',
+			array('id_agente_modulo' => $id_agent_module));
+	}
+	else {
+		$result_tag = db_process_sql_delete('ttag_module',
+			array('id_agente_modulo' => $id_agent_module,
+				'id_policy_module' => '0'));
+	}
 	
 	$values = array();
 	foreach ($tags as $tag) {

@@ -13,20 +13,82 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-if (is_ajax ()) {
-	$get_plugin_description = get_parameter('get_plugin_description');
-	$id_plugin = get_parameter('id_plugin');
-	
-	$description = db_get_value_filter('description', 'tplugin', array('id' => $id_plugin));
-	$preload = io_safe_output($description);
-	$preload = str_replace ("\n", "<br>", $preload);
-	
-	echo $preload;
-	return;
-}
-
 // Load global vars
 global $config;
+
+if (is_ajax ()) {
+	$get_plugin_description = get_parameter('get_plugin_description');
+	$get_list_modules_and_component_locked_plugin = (bool)
+		get_parameter('get_list_modules_and_component_locked_plugin', 0);
+	
+	if ($get_plugin_description) {
+		$id_plugin = get_parameter('id_plugin');
+		
+		$description = db_get_value_filter('description', 'tplugin', array('id' => $id_plugin));
+		$preload = io_safe_output($description);
+		$preload = str_replace ("\n", "<br>", $preload);
+		
+		echo $preload;
+		return;
+	}
+	
+	if ($get_list_modules_and_component_locked_plugin) {
+		$id_plugin = (int)get_parameter('id_plugin', 0);
+		
+		$network_components = db_get_all_rows_filter(
+			'tnetwork_component',
+			array('id_plugin' => $id_plugin));
+		if (empty($network_components)) {
+			$network_components = array();
+		}
+		$modules = db_get_all_rows_filter(
+			'tagente_modulo',
+			array('delete_pending' => 0, 'id_plugin' => $id_plugin));
+		if (empty($modules)) {
+			$modules = array();
+		}
+		
+		$table = null;
+		$table->width = "100%";
+		$table->head[0] = __('Network Components');
+		$table->data = array();
+		foreach ($network_components as $net_comp) {
+			$table->data[] = array($net_comp['name']);
+		}
+		if (!empty($table->data)) {
+			html_print_table($table);
+			
+			echo "<br />";
+		}
+		
+		$table = null;
+		$table->width = "100%";
+		$table->head[0] = __('Agent');
+		$table->head[1] = __('Module');
+		foreach ($modules as $mod) {
+			$agent_name = '<a href="' .
+				$config['homeurl'] .
+					"/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $mod['id_agente']
+				. '">' .
+				modules_get_agentmodule_agent_name(
+					$mod['id_agente_modulo']) .
+				'</a>';
+			
+			
+			$table->data[] = array(
+				$agent_name,
+				$mod['nombre']
+				);
+		}
+		if (!empty($table->data)) {
+			html_print_table($table);
+		}
+		
+		return;
+	}
+}
+
+
 require_once ($config['homedir'] . "/include/functions_filemanager.php");
 
 check_login ();
@@ -544,8 +606,9 @@ else {
 		echo "<th>" . __('Name') . "</th>";
 		echo "<th>" . __('Type') . "</th>";
 		echo "<th>" . __('Command') . "</th>";
-		echo "<th style='width:70px;'>" .
-			'<span title="Operations">' . __('Op.') . '</span>' . "</th>";
+		echo "<th style='width: 90px;'>" .
+			'<span title="Operations">' . __('Op.') . '</span>' .
+			"</th>";
 		$color = 0;
 		
 		foreach ($rows as $row) {
@@ -569,15 +632,34 @@ else {
 				echo __('Nagios');
 			echo "</td><td class=$tdcolor>";
 			echo $row["execute"];
-			echo "</td><td class=$tdcolor>";
+			echo "</td>";
+			echo "<td class='$tdcolor' align='center'>";
+			
+			//Show it is locket
+			$modules_using_plugin = db_get_value_filter(
+				'count(*)',
+				'tagente_modulo',
+				array('delete_pending' => 0, 'id_plugin' => $row["id"]));
+			$components_using_plugin = db_get_value_filter(
+				'count(*)',
+				'tnetwork_component',
+				array('id_plugin' => $row["id"]));
+			if (($components_using_plugin + $modules_using_plugin) > 0) {
+				echo "<a href='javascript: show_locked_dialog(" . $row['id'] . ");'>";
+				html_print_image('images/lock.png');
+				echo "</a>";
+			}
 			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&view=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "'>" . html_print_image('images/config.png', true, array("title" => __("Edit"))) . "</a>&nbsp;&nbsp;";
 			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "' onclick='javascript: if (!confirm(\"" . __('All the modules that are using this plugin will be deleted') . '. ' . __('Are you sure?') . "\")) return false;'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
-			echo "</td></tr>";
+			echo "</td>";
+			echo "</tr>";
 		}
 		echo "</table>";
 	}
 	else {
-		echo '<div class="nf">'. __('There are no plugins in the system') . '</div>';
+		echo '<div class="nf">' .
+			__('There are no plugins in the system') .
+			'</div>';
 		echo "<br>";
 	}
 	echo "<table width='98%'>";
@@ -585,6 +667,11 @@ else {
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=" . $config['pure'] . "'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
 	echo "</td></tr></table>";
+	
+	echo "<div id='dialog_locked' title='" .
+		sprintf(__('List of modules and components created by "%s" '), $row["name"]) .
+		"' style='display: none; text-align: left;'>";
+	echo "</div>";
 	
 	enterprise_hook('close_meta_frame');
 }
@@ -626,7 +713,41 @@ ui_require_javascript_file('pandora_modules');
 		
 	});
 	
-	<?php 
+	function show_locked_dialog(id_plugin) {
+		var parameters = {};
+		parameters['page'] = "godmode/servers/plugin";
+		parameters["get_list_modules_and_component_locked_plugin"] = 1;
+		parameters["id_plugin"] = id_plugin;
+		
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			data: parameters,
+			dataType: "html",
+			success: function(data) {
+				$("#dialog_locked")
+					.html(data);
+				$("#dialog_locked")
+					.dialog ({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						width: 650,
+						height: 500
+					})
+					.show ();
+			}
+		});
+	}
+	
+	<?php
+	if (!isset($locked)) {
+		$locked = false;
+	}
 	if ($locked) {
 		?>
 		$('.command_advanced_conf').click(function() {

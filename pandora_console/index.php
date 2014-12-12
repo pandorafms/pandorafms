@@ -268,7 +268,7 @@ if (! isset ($config['id_user'])) {
 		
 		if (isset ($double_auth_success) && $double_auth_success) {
 			// This values are true cause there are checked before complete the 2nd auth step
-			$nick_in_db = $config["prepared_login_da"]['id_user'];
+			$nick_in_db = $_SESSION["prepared_login_da"]['id_user'];
 			$expired_pass = false;
 		}
 		else {
@@ -319,7 +319,7 @@ if (! isset ($config['id_user'])) {
 		}
 		else if (($nick_in_db !== false) && (!$expired_pass)) {
 			//login ok and password has not expired
-
+			
 			// Double auth check
 			if ((!isset ($double_auth_success) || !$double_auth_success) && is_double_auth_enabled($nick_in_db)) {
 				// Store this values in the session to know if the user login was correct

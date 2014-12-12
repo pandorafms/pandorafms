@@ -150,6 +150,7 @@ INSERT INTO tconfig_os VALUES (16, 'VMware', 'VMware Architecture', 'so_vmware.p
 INSERT INTO tconfig_os VALUES (17, 'Router', 'Generic router', 'so_router.png');
 INSERT INTO tconfig_os VALUES (18, 'Switch', 'Generic switch', 'so_switch.png');
 INSERT INTO tconfig_os VALUES (19, 'Satellite', 'Satellite agent', 'satellite.png');
+INSERT INTO tconfig_os VALUES (20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png');
 COMMIT;
 END;;
 

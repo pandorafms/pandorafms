@@ -2548,6 +2548,18 @@ div.nodata_container {
 	#padding: 10px;
 }
 
+#rmf_data {
+	width: 40%; 
+	height: 80%; 
+	position: absolute; 
+	top:0; 
+	right:20px;
+	overflow: auto;
+	
+	#background-color: #fff;
+	#padding: 10px;
+}
+
 /* Subtab styles */
 
 ul.subsubmenu {

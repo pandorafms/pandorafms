@@ -1896,6 +1896,17 @@ function dame_nombre_pluginid ($id_plugin) {
 }
 
 /**
+ * Get the operating system id.
+ *
+ * @param string Operating system name.
+ *
+ * @return id Id of the given operating system.
+ */
+function get_os_id ($os_name) {
+	return (string) db_get_value ('id_os', 'tconfig_os', 'name', $os_name);
+}
+
+/**
  * Get the operating system name.
  *
  * @param int Operating system id.

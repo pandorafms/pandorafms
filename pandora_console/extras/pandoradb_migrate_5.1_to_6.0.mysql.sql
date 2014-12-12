@@ -14,3 +14,9 @@ ALTER TABLE tlayout_data ADD COLUMN `border_width` INTEGER UNSIGNED NOT NULL def
 ALTER TABLE tlayout_data ADD COLUMN `border_color` varchar(200) DEFAULT "";
 ALTER TABLE tlayout_data ADD COLUMN `fill_color` varchar(200) DEFAULT "";
 
+-- ---------------------------------------------------------------------
+-- Table `tconfig_os`
+-- ---------------------------------------------------------------------
+
+INSERT INTO `tconfig_os` (`name`, `description`, `icon_name`) VALUES ('Mainframe', 'Mainframe agent', 'so_mainframe.png');
+

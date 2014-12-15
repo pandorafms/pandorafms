@@ -163,10 +163,10 @@ if ($update_pressed || $open_filter) {
 $table = html_get_predefined_table('transparent', 2);
 $table->styleTable = 'width: 23px; float: right; background: #ECECEC;';
 $table->width = '98%';
-$table->style[0] = 'text-align:left;';
-$table->style[1] = 'text-align:right;';
+$table->style[0] = 'text-align: left;';
+$table->style[1] = 'text-align: right;';
 
-$table->data[0][1] = '<a id="events_graph_link" href="javascript:show_events_graph_dialog()">' . html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a>';
+$table->data[0][1] = '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a>';
 $table->cellstyle[0][1] = 'background: #ECECEC;';
 
 html_print_table($table);
@@ -610,7 +610,8 @@ enterprise_hook('close_meta_frame');
 unset($table);
 
 // Values to be used from javascript library
-html_print_input_hidden('ajax_file', ui_get_full_url("ajax.php", false, false, false));
+html_print_input_hidden('ajax_file',
+	ui_get_full_url("ajax.php", false, false, false));
 html_print_input_hidden('meta', (int)$meta);
 html_print_input_hidden('history', (int)$history);
 

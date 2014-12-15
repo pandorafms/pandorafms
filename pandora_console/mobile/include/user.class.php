@@ -19,22 +19,12 @@ class User {
 	private $user;
 	private $logged = false;
 	private $errorLogin = false;
+	private $loginTime = false;
 	private $logout_action = false;
+	private $needDoubleAuth = false;
+	private $errorDoubleAuth = false;
 	
-	public function __construct($user = null, $password = null) {
-		$this->user = $user;
-		$this->errorLogin = false;
-		
-		if (process_user_login($this->user, $password)) {
-			$this->logged = true;
-			$this->hackInjectConfig();
-		}
-		else {
-			$this->logged = false;
-		}
-	}
-	
-	public static function getInstance() {
+	public static function getInstance () {
 		if (!(self::$instance instanceof self)) {
 			//Check if in the session
 			$system = System::getInstance();
@@ -51,22 +41,22 @@ class User {
 		return self::$instance;
 	}
 	
-	public function hackInjectConfig() {
-		//hack to compatibility with pandora
+	public function saveLogin () {
 		
 		if ($this->logged) {
-			global $config;
-			
 			$system = System::getInstance();
-			
-			$config['id_user'] = $this->user;
-			
-			$system->setSessionBase('id_usuario', $this->user);
 			$system->setSession('user', $this);
+			
+			if (!$this->needDoubleAuth) {
+				//hack to compatibility with pandora
+				global $config;
+				$config['id_user'] = $this->user;
+				$system->setSessionBase('id_usuario', $this->user);
+			}
 		}
 	}
 	
-	public function isLogged() {
+	public function isLogged () {
 		$system = System::getInstance();
 		
 		$autologin = $system->getRequest('autologin', false);
@@ -74,15 +64,13 @@ class User {
 			$user = $system->getRequest('user', null);
 			$password = $system->getRequest('password', null);
 			
-			if ($this->checkLogin($user, $password)) {
-				$this->hackInjectConfig();
-			}
+			$this->login($user, $password);
 		}
 		
 		return $this->logged;
 	}
-	
-	public function checkLogin($user = null, $password = null) {
+
+	public function login ($user = null, $password = null) {
 		$system = System::getInstance();
 		
 		if (($user == null) && ($password == null)) {
@@ -92,44 +80,126 @@ class User {
 		}
 		
 		if (!empty($user) && !empty($password)) {
-			if (process_user_login($user, $password) !== false) {
+			$user_in_db = process_user_login($user, $password);
+			if ($user_in_db !== false) {
 				
 				$this->logged = true;
-				$this->user = $user;
+				$this->user = $user_in_db;
+				$this->loginTime = time();
 				$this->errorLogin = false;
+
+				// The user login was successful, but the second step is not completed
+				if ($this->isDobleAuthRequired()) {
+					$this->needDoubleAuth = true;
+				}
 			}
 			else {
 				
 				$this->logged = false;
+				$this->loginTime = false;
 				$this->errorLogin = true;
+				$this->needDoubleAuth = false;
+				$this->errorDoubleAuth = false;
 			}
 		}
 		
-		if ($this->logged) {
-			$this->hackInjectConfig();
-			
-			if (! check_acl($system->getConfig('id_user'), 0, "AR")) {
-				db_pandora_audit("ACL Violation",
-					"Trying to access Agent Data view");
-				require ("../general/noaccess.php");
-				return;
-			}
-		}
+		$this->saveLogin();
 		
 		return $this->logged;
 	}
-	
-	public function logout() {
-		$this->user = null;
-		$this->logged = false;
-		$this->errorLogin = false;
-		$this->logout_action = true;
-		
-		$system = System::getInstance();
-		$system->setSession('user', null);
+
+	public function getLoginTime () {
+		return $this->loginTime;
 	}
 	
-	public function showLogin() {
+	public function isWaitingDoubleAuth () {
+		return $this->needDoubleAuth;
+	}
+	
+	public function isDobleAuthRequired ($user = false) {
+		if (empty($user) && !empty($this->user))
+			$user = $this->user;
+
+		if (!empty($user))
+			return (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $user);
+		else
+			return false;
+	}
+
+	public function validateDoubleAuthCode ($user = null, $code = null) {
+
+		if (!$this->needDoubleAuth) {
+			return true;
+		}
+
+		$system = System::getInstance();
+		require_once ($system->getConfig('homedir').'/include/auth/GAuth/Auth.php');
+
+		$result = false;
+
+		if (empty($user)) {
+			$user = $this->user;
+		}
+		if (empty($code)) {
+			$code = $system->getRequest('auth_code', null);
+		}
+
+		if (!empty($user) && !empty($code)) {
+			$secret = db_get_value('secret', 'tuser_double_auth', 'id_user', $user);
+
+			if ($secret === false) {
+				$result = false;
+				$this->errorDoubleAuth = array(
+						'title_text' => __('Double authentication failed'),
+						'content_text' => __('Secret code not found') .". "
+							.__('Please contact the administrator to reset your double authentication')
+					);
+			}
+			else if (!empty($secret)) {
+				try {
+					$gAuth = new \GAuth\Auth($secret);
+					$result = $gAuth->validateCode($code);
+
+					// Double auth success
+					if ($result) {
+						$this->needDoubleAuth = false;
+						$this->saveLogin();
+					}
+					else {
+						$result = false;
+						$this->errorDoubleAuth = array(
+								'title_text' => __('Double authentication failed'),
+								'content_text' => __('Invalid code')
+							);
+					}
+				} catch (Exception $e) {
+					$result = false;
+					$this->errorDoubleAuth = array(
+							'title_text' => __('Double authentication failed'),
+							'content_text' => __('There was an error checking the code')
+						);
+				}
+			}
+		}
+		
+		return $result;
+	}
+	
+	public function logout () {
+		$this->user = null;
+		$this->logged = false;
+		$this->loginTime = false;
+		$this->errorLogin = false;
+		$this->logout_action = true;
+		$this->needDoubleAuth = false;
+		$this->errorDoubleAuth = false;
+
+		$system = System::getInstance();
+		$system->setSession('user', null);
+		$system->sessionDestroy();
+	}
+	
+	public function showLoginPage () {
 		global $pandora_version;
 		
 		$ui = Ui::getInstance();
@@ -191,16 +261,65 @@ class User {
 		$this->errorLogin = false;
 		$this->logout_action = false;
 	}
-	
-	public function getIdUser() {
+
+	public function showDoubleAuthPage () {
+		global $pandora_version;
+		
+		$ui = Ui::getInstance();
+		
+		$ui->createPage();
+		if (!empty($this->errorDoubleAuth)) {
+			$options['type'] = 'onStart';
+			$options['title_text'] = $this->errorDoubleAuth['title_text'];
+			$options['content_text'] = $this->errorDoubleAuth['content_text'] . "<br>";
+			$ui->addDialog($options);
+		}
+		$left_button = $ui->createHeaderButton(
+				array('icon' => 'back',
+					'pos' => 'left',
+					'text' => __('Logout'),
+					'href' => 'index.php?action=logout'));
+		$ui->createHeader('', $left_button);
+		$ui->showFooter(false);
+		$ui->beginContent();
+			$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
+				html_print_image ("mobile/images/pandora_mobile_console.png",
+					true, array ("alt" => "logo", "border" => 0)) .
+					'</div>');
+			$ui->contentAddHtml('<div id="login_container">');
+			$ui->beginForm();
+			$ui->formAddHtml(html_print_input_hidden('action', 'double_auth', true));
+			$options = array(
+				'name' => 'auth_code',
+				'value' => '',
+				'placeholder' => __('Authenticator code'),
+				'label' => __('Authenticator code')
+				);
+			$ui->formAddInputPassword($options);
+			$options = array(
+				'value' => __('Check code'),
+				'icon' => 'arrow-r',
+				'icon_pos' => 'right',
+				'name' => 'auth_code_btn'
+				);
+			$ui->formAddSubmitButton($options);
+			$ui->endForm();
+			$ui->contentAddHtml('</div>');
+		$ui->endContent();
+		$ui->showPage();
+		
+		$this->errorDoubleAuth = false;
+	}
+
+	public function getIdUser () {
 		return $this->user; //Oldies methods
 	}
 	
-	public function isInGroup($access = "AR", $id_group = 0, $name_group = false) {
+	public function isInGroup ($access = "AR", $id_group = 0, $name_group = false) {
 		return (bool)check_acl($this->user, $id_group, $access);
 	}
 	
-	public function getIdGroups($access = "AR", $all = false) {
+	public function getIdGroups ($access = "AR", $all = false) {
 		return array_keys(users_get_groups($this->user, $access, $all));
 	}
 }

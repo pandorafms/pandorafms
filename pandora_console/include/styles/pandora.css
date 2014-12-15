@@ -2820,3 +2820,17 @@ table#policy_modules td * {
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
 }
+
+#dialog-double_auth-container {
+	width: 100%;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.center_align {
+	text-align: center;
+}
+
+.left_align {
+	text-align: left;
+}

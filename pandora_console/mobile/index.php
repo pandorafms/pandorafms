@@ -43,13 +43,32 @@ $enterpriseHook = enterprise_include('mobile/operation/home.php');
 
 $system = System::getInstance();
 
+require_once($system->getConfig('homedir').'/include/constants.php');
+
 $user = User::getInstance();
-$user->hackInjectConfig();
+$user->saveLogin();
 
 $page = $system->getRequest('page', 'home');
 $action = $system->getRequest('action');
-if (!$user->isLogged()) {
-	$action = 'login';
+
+// The logout action has priority
+if ($action != 'logout') {
+	if (!$user->isLogged()) {
+		$action = 'login';
+	}
+	else if ($user->isWaitingDoubleAuth()) {
+		$dauth_period = SECONDS_2MINUTES;
+		$now = time();
+		$dauth_time = $user->getLoginTime();
+
+		if ($now - $dauth_period < $dauth_time) {
+			$action = 'double_auth';
+		}
+		// Expired login
+		else {
+			$action = 'logout';
+		}
+	}
 }
 
 if ($action != "ajax") {
@@ -107,11 +126,45 @@ switch ($action) {
 		return;
 		break;
 	case 'login':
-		if (!$user->checkLogin()) {
-			$user->showLogin();
+		if ($user->login() && $user->isLogged()) {
+			if ($user->isWaitingDoubleAuth()) {
+				if ($user->validateDoubleAuthCode()) {
+					$user_language = get_user_language ($system->getConfig('id_user'));
+					if (file_exists ('../include/languages/'.$user_language.'.mo')) {
+						$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
+						$l10n->load_tables();
+					}
+					if (class_exists("HomeEnterprise"))
+						$home = new HomeEnterprise();
+					else
+						$home = new Home();
+					$home->show();
+				}
+				else {
+					$user->showDoubleAuthPage();
+				}
+			}
+			else {
+				$user_language = get_user_language ($system->getConfig('id_user'));
+				if (file_exists ('../include/languages/'.$user_language.'.mo')) {
+					$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
+					$l10n->load_tables();
+				}
+				if (class_exists("HomeEnterprise"))
+					$home = new HomeEnterprise();
+				else
+					$home = new Home();
+				$home->show();
+			}
+
 		}
 		else {
-			if ($user->isLogged()) {
+			$user->showLoginPage();
+		}
+		break;
+	case 'double_auth':
+		if ($user->isLogged()) {
+			if ($user->validateDoubleAuthCode()) {
 				$user_language = get_user_language ($system->getConfig('id_user'));
 				if (file_exists ('../include/languages/'.$user_language.'.mo')) {
 					$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
@@ -124,13 +177,16 @@ switch ($action) {
 				$home->show();
 			}
 			else {
-				$user->showLoginFail();
+				$user->showDoubleAuthPage();
 			}
+		}
+		else {
+			$user->showLoginPage();
 		}
 		break;
 	case 'logout':
 		$user->logout();
-		$user->showLogin();
+		$user->showLoginPage();
 		break;
 	default:
 		if (class_exists("Enterprise")) {

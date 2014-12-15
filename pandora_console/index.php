@@ -167,175 +167,290 @@ if (strlen($search) > 0) {
 		$searchPage = true;
 }
 
-// Login process 
-if (! isset ($config['id_user']) && isset ($_GET["login"])) {
-	include_once('include/functions_db.php'); //Include it to use escape_string_sql function
-	
-	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
-	$nick = get_parameter_post ("nick"); //This is the variable with the login
-	$pass = get_parameter_post ("pass"); //This is the variable with the password
-	$nick = db_escape_string_sql($nick);
-	$pass = db_escape_string_sql($pass);
-	
-	// process_user_login is a virtual function which should be defined in each auth file.
-	// It accepts username and password. The rest should be internal to the auth file.
-	// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
-	// process_user_login should return false in case of errors or invalid login, the nickname if correct
-	$nick_in_db = process_user_login ($nick, $pass);
-	
-	$expired_pass = false;
-	
-	if (($nick_in_db != false) && ((!is_user_admin($nick)
-		|| $config['enable_pass_policy_admin']))
-		&& (defined('PANDORA_ENTERPRISE'))
-		&& ($config['enable_pass_policy'])) {
-		include_once(ENTERPRISE_DIR . "/include/auth/mysql.php");
+// Login process
+if (! isset ($config['id_user'])) {
+	if (isset ($_GET["login"])) {
+		include_once('include/functions_db.php'); //Include it to use escape_string_sql function
 		
-		$blocked = login_check_blocked($nick);
-		
-		if ($blocked) {
-			require_once ('general/login_page.php');
-			db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
-			while (@ob_end_flush ());
-			exit ("</html>");
+		$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
+		$nick = get_parameter_post ("nick"); //This is the variable with the login
+		$pass = get_parameter_post ("pass"); //This is the variable with the password
+		$nick = db_escape_string_sql($nick);
+		$pass = db_escape_string_sql($pass);
+
+		//Since now, only the $pass variable are needed
+		unset ($_GET['pass'], $_POST['pass'], $_REQUEST['pass']);
+
+		// If the auth_code exists, we assume the user has come through the double auth page
+		if (isset ($_POST['auth_code'])) {
+			$double_auth_success = false;
+
+			// The double authentication is activated and the user has surpassed the first step (the login).
+			// Now the authentication code provided will be checked.
+			if (isset ($_SESSION['prepared_login_da'])) {
+				if (isset ($_SESSION['prepared_login_da']['id_user'])
+						&& isset ($_SESSION['prepared_login_da']['timestamp'])) {
+
+					// The user has a maximum of 5 minutes to introduce the double auth code
+					$dauth_period = SECONDS_2MINUTES;
+					$now = time();
+					$dauth_time = $_SESSION['prepared_login_da']['timestamp'];
+
+					if ($now - $dauth_period < $dauth_time) {
+						// Nick
+						$nick = $_SESSION["prepared_login_da"]['id_user'];
+						// Code
+						$code = (string) get_parameter_post ("auth_code");
+
+						if (!empty($code)) {
+							$result = validate_double_auth_code($nick, $code);
+
+							if ($result === true) {
+								// Double auth success
+								$double_auth_success = true;
+							}
+							else {
+								// Screen
+								$login_screen = 'double_auth';
+								// Error message
+								$config["auth_error"] = __("Invalid code");
+
+								if (!isset($_SESSION['prepared_login_da']['attempts']))
+									$_SESSION['prepared_login_da']['attempts'] = 0;
+								$_SESSION['prepared_login_da']['attempts']++;
+							}
+						}
+						else {
+							// Screen
+							$login_screen = 'double_auth';
+							// Error message
+							$config["auth_error"] = __("The code shouldn't be empty");
+
+							if (!isset($_SESSION['prepared_login_da']['attempts']))
+								$_SESSION['prepared_login_da']['attempts'] = 0;
+							$_SESSION['prepared_login_da']['attempts']++;
+						}
+					}
+					else {
+						// Expired login
+						unset ($_SESSION['prepared_login_da']);
+
+						// Error message
+						$config["auth_error"] = __('Expired login');
+					}
+				}
+				else {
+					// If the code doesn't exist, remove the prepared login
+					unset ($_SESSION['prepared_login_da']);
+
+					// Error message
+					$config["auth_error"] = __('Login error');
+				}
+			}
+			// If $_SESSION['prepared_login_da'] doesn't exist, the user have to do the login again
+			else {
+				// Error message
+				$config["auth_error"] = __('Login error');
+			}
+
+			// Remove the authenticator code
+			unset ($_POST['auth_code'], $code);
+
+			if (!$double_auth_success) {
+				$login_failed = true;
+				require_once ('general/login_page.php');
+				db_pandora_audit("Logon Failed", "Invalid double auth login: "
+					.$_SERVER['REMOTE_ADDR'], $_SERVER['REMOTE_ADDR']);
+				while (@ob_end_flush ());
+				exit ("</html>");
+			}
 		}
 		
-		//Checks if password has expired
-		$check_status = check_pass_status($nick, $pass);
-		
-		switch ($check_status) {
-			case PASSSWORD_POLICIES_FIRST_CHANGE: //first change
-			case PASSSWORD_POLICIES_EXPIRED: //pass expired
-				$expired_pass = true;
-				login_change_password($nick);
-				break;
+		if (isset ($double_auth_success) && $double_auth_success) {
+			// This values are true cause there are checked before complete the 2nd auth step
+			$nick_in_db = $_SESSION["prepared_login_da"]['id_user'];
+			$expired_pass = false;
 		}
-	}
-	
-	if (($nick_in_db !== false) && $expired_pass) {
-		//login ok and password has expired
-		
-		require_once ('general/login_page.php');
-		db_pandora_audit("Password expired",
-			"Password expired: " . $nick, $nick);
-		while (@ob_end_flush ());
-		exit ("</html>");
-	}
-	else if (($nick_in_db !== false) && (!$expired_pass)) {
-		//login ok and password has not expired
-		$process_login = true;
-		
-		echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
-		
-		unset ($_GET["sec2"]);
-		$_GET["sec"] = "general/logon_ok";
-		$home_page ='';
-		if (isset($nick)) {
-			$user_info = users_get_user_by_id($nick);
-			$home_page = io_safe_output($user_info['section']);
-			$home_url = $user_info['data_section'];
-			if ($home_page != '') {
-				switch($home_page) {
-					case 'Event list':
-						$_GET["sec"] = "eventos";
-						$_GET["sec2"] = "operation/events/events";
-						break;
-					case 'Group view':
-						$_GET["sec"] = "estado";
-						$_GET["sec2"] = "operation/agentes/group_view";
-						break;
-					case 'Alert detail':
-						$_GET["sec"] = "estado";
-						$_GET["sec2"] = "operation/agentes/alerts_status";
-						break;
-					case 'Tactical view':
-						$_GET["sec"] = "estado";
-						$_GET["sec2"] = "operation/agentes/tactical";
-						break;
-					case 'Default':
-						$_GET["sec"] = "general/logon_ok";
-						break;
-					case 'Dashboard':
-						$_GET["sec"] = "dashboard";
-						$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
-						break;
-					case 'Visual console':
-						$_GET["sec"] = "visualc";
-						$_GET["sec2"] = "operation/visual_console/index";
-						break;
-					case 'Other':
-						$home_url = io_safe_output($home_url);
-						parse_str ($home_url, $res);
-						$_GET["sec"] = $res["sec"];
-						$_GET["sec2"] = $res["sec2"];
+		else {
+			// process_user_login is a virtual function which should be defined in each auth file.
+			// It accepts username and password. The rest should be internal to the auth file.
+			// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
+			// process_user_login should return false in case of errors or invalid login, the nickname if correct
+			$nick_in_db = process_user_login ($nick, $pass);
+			
+			$expired_pass = false;
+			
+			if (($nick_in_db != false) && ((!is_user_admin($nick)
+				|| $config['enable_pass_policy_admin']))
+				&& (defined('PANDORA_ENTERPRISE'))
+				&& ($config['enable_pass_policy'])) {
+				include_once(ENTERPRISE_DIR . "/include/auth/mysql.php");
+				
+				$blocked = login_check_blocked($nick);
+				
+				if ($blocked) {
+					require_once ('general/login_page.php');
+					db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
+					while (@ob_end_flush ());
+					exit ("</html>");
+				}
+				
+				//Checks if password has expired
+				$check_status = check_pass_status($nick, $pass);
+				
+				switch ($check_status) {
+					case PASSSWORD_POLICIES_FIRST_CHANGE: //first change
+					case PASSSWORD_POLICIES_EXPIRED: //pass expired
+						$expired_pass = true;
+						login_change_password($nick);
 						break;
 				}
 			}
-			else {
-				$_GET["sec"] = "general/logon_ok";
-			}
-		}
-		db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
-		$_SESSION['id_usuario'] = $nick_in_db;
-		$config['id_user'] = $nick_in_db;
-		//Remove everything that might have to do with people's passwords or logins
-		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
-		
-		$user_language = get_user_language($config['id_user']);
-		
-		$l10n = NULL;
-		if (file_exists ('./include/languages/' . $user_language . '.mo')) {
-			$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
-			$l10n->load_tables();
-		}
-	}
-	else { //login wrong
-		$blocked = false;
-		
-		if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && defined('PANDORA_ENTERPRISE')) {
-			$blocked = login_check_blocked($nick);
 		}
 		
-		if (!$blocked) {
-			if (defined('PANDORA_ENTERPRISE')) {
-				login_check_failed($nick); //Checks failed attempts
-			}
-			$login_failed = true;
+		if (($nick_in_db !== false) && $expired_pass) {
+			//login ok and password has expired
+			
 			require_once ('general/login_page.php');
-			db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+			db_pandora_audit("Password expired",
+				"Password expired: " . $nick, $nick);
 			while (@ob_end_flush ());
 			exit ("</html>");
+		}
+		else if (($nick_in_db !== false) && (!$expired_pass)) {
+			//login ok and password has not expired
+			
+			// Double auth check
+			if ((!isset ($double_auth_success) || !$double_auth_success) && is_double_auth_enabled($nick_in_db)) {
+				// Store this values in the session to know if the user login was correct
+				$_SESSION['prepared_login_da'] = array(
+						'id_user' => $nick_in_db,
+						'timestamp' => time(),
+						'attempts' => 0
+					);
+
+				// Load the page to introduce the double auth code
+				$login_screen = 'double_auth';
+				require_once ('general/login_page.php');
+				while (@ob_end_flush ());
+				exit ("</html>");
+			}
+
+			//login ok and password has not expired
+			$process_login = true;
+			
+			echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
+			
+			unset ($_GET["sec2"]);
+			$_GET["sec"] = "general/logon_ok";
+			$home_page ='';
+			if (isset($nick)) {
+				$user_info = users_get_user_by_id($nick);
+				$home_page = io_safe_output($user_info['section']);
+				$home_url = $user_info['data_section'];
+				if ($home_page != '') {
+					switch($home_page) {
+						case 'Event list':
+							$_GET["sec"] = "eventos";
+							$_GET["sec2"] = "operation/events/events";
+							break;
+						case 'Group view':
+							$_GET["sec"] = "estado";
+							$_GET["sec2"] = "operation/agentes/group_view";
+							break;
+						case 'Alert detail':
+							$_GET["sec"] = "estado";
+							$_GET["sec2"] = "operation/agentes/alerts_status";
+							break;
+						case 'Tactical view':
+							$_GET["sec"] = "estado";
+							$_GET["sec2"] = "operation/agentes/tactical";
+							break;
+						case 'Default':
+							$_GET["sec"] = "general/logon_ok";
+							break;
+						case 'Dashboard':
+							$_GET["sec"] = "dashboard";
+							$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
+							break;
+						case 'Visual console':
+							$_GET["sec"] = "visualc";
+							$_GET["sec2"] = "operation/visual_console/index";
+							break;
+						case 'Other':
+							$home_url = io_safe_output($home_url);
+							parse_str ($home_url, $res);
+							$_GET["sec"] = $res["sec"];
+							$_GET["sec2"] = $res["sec2"];
+							break;
+					}
+				}
+				else {
+					$_GET["sec"] = "general/logon_ok";
+				}
+			}
+			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
+			$_SESSION['id_usuario'] = $nick_in_db;
+			$config['id_user'] = $nick_in_db;
+			//Remove everything that might have to do with people's passwords or logins
+			unset ($pass, $login_good);
+			
+			$user_language = get_user_language($config['id_user']);
+			
+			$l10n = NULL;
+			if (file_exists ('./include/languages/' . $user_language . '.mo')) {
+				$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
+				$l10n->load_tables();
+			}
+		}
+		else { //login wrong
+			$blocked = false;
+			
+			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && defined('PANDORA_ENTERPRISE')) {
+				$blocked = login_check_blocked($nick);
+			}
+			
+			if (!$blocked) {
+				if (defined('PANDORA_ENTERPRISE')) {
+					login_check_failed($nick); //Checks failed attempts
+				}
+				$login_failed = true;
+				require_once ('general/login_page.php');
+				db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+				while (@ob_end_flush ());
+				exit ("</html>");
+			}
+			else {
+				require_once ('general/login_page.php');
+				db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+				while (@ob_end_flush ());
+				exit ("</html>");
+			}
+		}
+	}
+	// Hash login process
+	elseif (isset ($_GET["loginhash"])) {
+		$loginhash_data = get_parameter("loginhash_data", "");
+		$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
+		
+		if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
+			db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
+			$_SESSION['id_usuario'] = $loginhash_user;
+			$config["id_user"] = $loginhash_user;
 		}
 		else {
 			require_once ('general/login_page.php');
-			db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+			db_pandora_audit("Logon Failed (loginhash", "", "system");
 			while (@ob_end_flush ());
 			exit ("</html>");
 		}
 	}
-}
-// Hash login process
-elseif (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
-	$loginhash_data = get_parameter("loginhash_data", "");
-	$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
-	
-	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
-		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
-		$_SESSION['id_usuario'] = $loginhash_user;
-		$config["id_user"] = $loginhash_user;
-	}
+	// There is no user connected
 	else {
 		require_once ('general/login_page.php');
-		db_pandora_audit("Logon Failed (loginhash", "", "system");
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
-}
-// There is no user connected
-elseif (! isset ($config['id_user'])) {
-	require_once ('general/login_page.php');
-	while (@ob_end_flush ());
-	exit ("</html>");
 }
 
 // Log off

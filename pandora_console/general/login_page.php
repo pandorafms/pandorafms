@@ -35,6 +35,7 @@ switch ($login_screen) {
 		$logo_title = __('Go to Pandora FMS Website');
 		break;
 	case 'logout':
+	case 'double_auth':
 		$logo_link = 'index.php';
 		$logo_title = __('Go to Login');
 		break;
@@ -128,6 +129,22 @@ echo '
 			echo '<p class="log_in">';
 			echo __('Your session is over. Please close your browser window to close this Pandora session.').'<br /><br />';
 			echo '</p>';
+			break;
+		case 'double_auth':
+			if (!empty ($page) && !empty ($sec)) {
+				foreach ($_POST as $key => $value) {
+					html_print_input_hidden ($key, $value);
+				}
+			}
+			echo '<div class="login_double_auth_code_text">';
+			echo __('Authenticator code') . '<br>';
+			echo '</div>';
+			echo '<div class="login_double_auth_code">';
+			html_print_input_text_extended ("auth_code", '', "auth_code", '', '', '' , false, '', 'class="login login_password"', false, true);
+			echo '</div>';
+			echo '<div class="login_button">';
+			html_print_submit_button(__("Check code") . '&nbsp;&nbsp;>', "login_button", false, 'class="sub next_login"');
+			echo '</div>';
 			break;
 		default:
 			if (isset($error_info)) {

@@ -337,6 +337,23 @@ if (!$meta) {
 	$table->data[] = $data;
 }
 
+// Double auth
+$double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
+$data = array();
+$data[0] = __('Double authentication');
+$data[0] .= '<br>';
+$data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true);
+if ($double_auth_enabled) {
+	$data[0] .= '&nbsp;&nbsp;';
+	$data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
+}
+// Dialog
+$data[0] .= "<div id=\"dialog-double_auth\"><div id=\"dialog-double_auth-container\"></div></div>";
+$table->colspan[count($table->data)][0] = 3;
+$table->rowclass[] = '';
+$table->rowstyle[] = 'font-weight: bold;';
+$table->data[] = $data;
+
 $data = array();
 $data[0] = __('Comments');
 $table->colspan[count($table->data)][0] = 3;
@@ -431,6 +448,17 @@ $(document).ready (function () {
 			$("#text-block_size").removeAttr('disabled');
 		}
 	}
+
+	$("input#checkbox-double_auth").change(function (e) {
+		e.preventDefault();
+
+		if (this.checked) {
+			show_double_auth_activation();
+		}
+		else {
+			show_double_auth_deactivation();
+		}
+	});
 	
 	show_data_section();
 });
@@ -480,5 +508,210 @@ function show_data_section () {
 			$("#visual_console").css("display", "none");
 			break;
 	}
+}
+
+function show_double_auth_info () {
+	var userID = "<?php echo $config['id_user']; ?>";
+
+	var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+	var $dialogContainer = $("div#dialog-double_auth-container");
+
+	$dialogContainer.html($loadingSpinner);
+
+	// Load the info page
+	var request = $.ajax({
+		url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+		type: 'POST',
+		dataType: 'html',
+		data: {
+			page: 'include/ajax/double_auth.ajax',
+			id_user: userID,
+			get_double_auth_data_page: 1,
+			containerID: $dialogContainer.prop('id')
+		},
+		complete: function(xhr, textStatus) {
+			
+		},
+		success: function(data, textStatus, xhr) {
+			// isNaN = is not a number
+			if (isNaN(data)) {
+				$dialogContainer.html(data);
+			}
+			// data is a number, convert it to integer to do the compare
+			else if (Number(data) === -1) {
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Authentication error') . '</div></b>'; ?>");
+			}
+			else {
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Error') . '</div></b>'; ?>");
+			}
+		},
+		error: function(xhr, textStatus, errorThrown) {
+			$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('There was an error loading the data') . '</div></b>'; ?>");
+		}
+	});
+
+	$("div#dialog-double_auth")
+		.append($dialogContainer)
+		.dialog({
+			resizable: true,
+			draggable: true,
+			modal: true,
+			title: "<?php echo __('Double autentication information'); ?>",
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			},
+			width: 400,
+			height: 375,
+			close: function(event, ui) {
+				// Abort the ajax request
+				if (typeof request != 'undefined')
+					request.abort();
+				// Remove the contained html
+				$dialogContainer.empty();
+			}
+		})
+		.show();
+
+}
+
+function show_double_auth_activation () {
+	var userID = "<?php echo $config['id_user']; ?>";
+
+	var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+	var $dialogContainer = $("div#dialog-double_auth-container");
+
+	$dialogContainer.html($loadingSpinner);
+
+	// Load the info page
+	var request = $.ajax({
+		url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+		type: 'POST',
+		dataType: 'html',
+		data: {
+			page: 'include/ajax/double_auth.ajax',
+			id_user: userID,
+			get_double_auth_info_page: 1,
+			containerID: $dialogContainer.prop('id')
+		},
+		complete: function(xhr, textStatus) {
+			
+		},
+		success: function(data, textStatus, xhr) {
+			// isNaN = is not a number
+			if (isNaN(data)) {
+				$dialogContainer.html(data);
+			}
+			// data is a number, convert it to integer to do the compare
+			else if (Number(data) === -1) {
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Authentication error') . '</div></b>'; ?>");
+			}
+			else {
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Error') . '</div></b>'; ?>");
+			}
+		},
+		error: function(xhr, textStatus, errorThrown) {
+			$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('There was an error loading the data') . '</div></b>'; ?>");
+		}
+	});
+
+	$("div#dialog-double_auth").dialog({
+			resizable: true,
+			draggable: true,
+			modal: true,
+			title: "<?php echo __('Double autentication activation'); ?>",
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			},
+			width: 500,
+			height: 400,
+			close: function(event, ui) {
+				// Abort the ajax request
+				if (typeof request != 'undefined')
+					request.abort();
+				// Remove the contained html
+				$dialogContainer.empty();
+
+				document.location.reload();
+			}
+		})
+		.show();
+}
+
+function show_double_auth_deactivation () {
+	var userID = "<?php echo $config['id_user']; ?>";
+
+	var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+	var $dialogContainer = $("div#dialog-double_auth-container");
+
+	var message = "<p><?php echo __('Are you sure?') . '<br>' . __('The double authentication will be deactivated'); ?></p>";
+	var $button = $("<input type=\"button\" value=\"<?php echo __('Deactivate'); ?>\" />");
+
+	$dialogContainer
+		.empty()
+		.append(message)
+		.append($button);
+
+	var request;
+
+	$button.click(function(e) {
+		e.preventDefault();
+
+		$dialogContainer.html($loadingSpinner);
+
+		// Deactivate the double auth
+		request = $.ajax({
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				page: 'include/ajax/double_auth.ajax',
+				id_user: userID,
+				deactivate_double_auth: 1
+			},
+			complete: function(xhr, textStatus) {
+				
+			},
+			success: function(data, textStatus, xhr) {
+				if (data === -1) {
+					$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('Authentication error') . '</div></b>'; ?>");
+				}
+				else if (data) {
+					$dialogContainer.html("<?php echo '<b><div class=\"green\">' . __('The double autentication was deactivated successfully') . '</div></b>'; ?>");
+				}
+				else {
+					$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('There was an error deactivating the double autentication') . '</div></b>'; ?>");
+				}
+			},
+			error: function(xhr, textStatus, errorThrown) {
+				$dialogContainer.html("<?php echo '<b><div class=\"red\">' . __('There was an error deactivating the double autentication') . '</div></b>'; ?>");
+			}
+		});
+	});
+	
+
+	$("div#dialog-double_auth").dialog({
+			resizable: true,
+			draggable: true,
+			modal: true,
+			title: "<?php echo __('Double autentication activation'); ?>",
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			},
+			width: 300,
+			height: 150,
+			close: function(event, ui) {
+				// Abort the ajax request
+				if (typeof request != 'undefined')
+					request.abort();
+				// Remove the contained html
+				$dialogContainer.empty();
+
+				document.location.reload();
+			}
+		})
+		.show();
 }
 </script>

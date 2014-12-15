@@ -1000,6 +1000,18 @@ CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
+-- Table `tuser_double_auth`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(60) NOT NULL,
+	`secret` varchar(20) NOT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE (`id_user`),
+	FOREIGN KEY (`id_user`) REFERENCES tusuario(`id_user`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
 -- Table `tnews`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnews` (

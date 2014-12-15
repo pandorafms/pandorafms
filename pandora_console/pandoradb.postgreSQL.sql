@@ -926,6 +926,15 @@ CREATE TABLE "tusuario_perfil" (
 	"tags" text NOT NULL
 );
 
+-- ----------------------------------------------------------------------
+-- Table `tuser_double_auth`
+-- ----------------------------------------------------------------------
+CREATE TABLE "tuser_double_auth" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"id_user" varchar(60) NOT NULL UNIQUE REFERENCES "tusuario"("id_user") ON DELETE CASCADE,
+	"secret" varchar(20) NOT NULL
+);
+
 -- -----------------------------------------------------
 -- Table `tnews`
 -- -----------------------------------------------------

@@ -321,6 +321,8 @@ function config_update_config () {
 						$error_update[] = __('User');
 					if (!config_update_value ('rintegria_pass', get_parameter ('rintegria_pass')))
 						$error_update[] = __('Password');
+					if (!config_update_value ('double_auth_enabled', get_parameter ('double_auth_enabled')))
+						$error_update[] = __('Double authentication');
 					/////////////
 					break;
 				case 'perf':

@@ -154,6 +154,7 @@ sub help_screen{
     help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
+	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	print "\nEVENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json>]", 'Add event');
     help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events'); 
@@ -3363,6 +3364,23 @@ sub cli_enable_eacl ($$) {
 }
 
 ###############################################################################
+# Disable double authentication
+# Related option: --disable_double_auth
+###############################################################################
+sub cli_disable_double_auth () {
+	my $user_id = @ARGV[2];
+
+	print_log "[INFO] Disabling double authentication for the user '$user_id'\n\n";
+
+	$user_id = safe_input($user_id);
+	
+	# Delete the user secret
+	my $result = db_do ($dbh, 'DELETE FROM tuser_double_auth WHERE id_user = ?', $user_id);
+	
+	exit;
+}
+
+###############################################################################
 # Enable user
 # Related option: --enable_user
 ###############################################################################
@@ -3691,21 +3709,25 @@ sub pandora_manage_main ($$$) {
 		}
 		elsif ($param eq '--disable_alerts') {
 			param_check($ltotal, 0);
-	        cli_disable_alerts ($conf, $dbh);
-	    }
+			cli_disable_alerts ($conf, $dbh);
+		}
 		elsif ($param eq '--enable_alerts') {
 			param_check($ltotal, 0);
-	        cli_enable_alerts ($conf, $dbh);
-		} 
+			cli_enable_alerts ($conf, $dbh);
+		}
 		elsif ($param eq '--disable_eacl') {
 			param_check($ltotal, 0);
-	        	cli_disable_eacl ($conf, $dbh);
-		} 
+			cli_disable_eacl ($conf, $dbh);
+		}
 		elsif ($param eq '--enable_eacl') {
 			param_check($ltotal, 0);
-            		cli_enable_eacl ($conf, $dbh);
-		} 
-        elsif ($param eq '--disable_group') {
+			cli_enable_eacl ($conf, $dbh);
+		}
+		elsif ($param eq '--disable_double_auth') {
+			param_check($ltotal, 1);
+			cli_disable_double_auth();
+		}
+		elsif ($param eq '--disable_group') {
 			param_check($ltotal, 1);
 			cli_disable_group();
 		}

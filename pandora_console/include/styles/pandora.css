@@ -2834,3 +2834,50 @@ table#policy_modules td * {
 .left_align {
 	text-align: left;
 }
+
+/* Tree view styles */
+.tree-group {
+	margin-left: 16px;
+}
+
+.tree-node {
+	white-space: nowrap;
+
+	background-image: url(../../images/tree/branch.png);
+	background-position: 0px 0px;
+	background-repeat: repeat-y;
+}
+
+.tree-last {
+	background: 0 0;
+}
+
+.leaf-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.node-content, .leaf-icon {
+	display: inline-block;
+}
+
+.tree-node.leaf-open>.leaf-icon {
+	background-image: url(../../images/tree/last_expanded.png);
+}
+
+.tree-node.leaf-closed>.leaf-icon {
+	background-image: url(../../images/tree/last_closed.png);
+}
+
+.tree-node.leaf-loading>.leaf-icon {
+	background-image: url(../../images/tree/last_expanded.png);
+}
+
+.tree-node.leaf-empty>.leaf-icon {
+	background-image: url(../../images/tree/last_leaf.png);
+}
+
+.tree-node>.leaf-icon {
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+}

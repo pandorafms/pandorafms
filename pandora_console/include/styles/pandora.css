@@ -2838,6 +2838,7 @@ table#policy_modules td * {
 /* Tree view styles */
 .tree-group {
 	margin-left: 16px;
+	padding-top: 4px;
 }
 
 .tree-node {
@@ -2865,8 +2866,16 @@ table#policy_modules td * {
 	background-image: url(../../images/tree/last_expanded.png);
 }
 
+.tree-node.tree-first.leaf-open>.leaf-icon {
+	background-image: url(../../images/tree/first_expanded.png);
+}
+
 .tree-node.leaf-closed>.leaf-icon {
 	background-image: url(../../images/tree/last_closed.png);
+}
+
+.tree-node.tree-first.leaf-closed>.leaf-icon {
+	background-image: url(../../images/tree/first_closed.png);
 }
 
 .tree-node.leaf-loading>.leaf-icon {
@@ -2875,6 +2884,10 @@ table#policy_modules td * {
 
 .tree-node.leaf-empty>.leaf-icon {
 	background-image: url(../../images/tree/last_leaf.png);
+}
+
+.tree-node.tree-first.leaf-empty>.leaf-icon {
+	background-image: url(../../images/tree/first_leaf.png);
 }
 
 .tree-node>.leaf-icon {

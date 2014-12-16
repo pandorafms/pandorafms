@@ -278,8 +278,12 @@ function groups_get_parents($parent, $onlyPropagate = false, $groups = null) {
 			continue;
 		}
 		
-		if (($group['id_grupo'] == $parent) && ($group['propagate'] || !$onlyPropagate)) {
-			$return = $return + array($group['id_grupo'] => $group) + groups_get_parents($group['parent'], $onlyPropagate, $groups);
+		if (($group['id_grupo'] == $parent)
+			&& ($group['propagate'] || !$onlyPropagate)) {
+			
+			$return = $return +
+				array($group['id_grupo'] => $group) +
+				groups_get_parents($group['parent'], $onlyPropagate, $groups);
 		}
 	}
 	
@@ -1303,7 +1307,9 @@ function groups_monitor_ok ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	$count = db_get_sql ("SELECT SUM(normal_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT SUM(normal_count)
+		FROM tagente
+		WHERE disabled = 0 AND id_grupo IN $group_clause");
 	
 	return $count > 0 ? $count : 0;
 }
@@ -1326,7 +1332,9 @@ function groups_monitor_critical ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	$count = db_get_sql ("SELECT SUM(critical_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT SUM(critical_count)
+		FROM tagente
+		WHERE disabled = 0 AND id_grupo IN $group_clause");
 	
 	return $count > 0 ? $count : 0;
 }
@@ -1372,7 +1380,9 @@ function groups_monitor_unknown ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	$count = db_get_sql ("SELECT SUM(unknown_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT SUM(unknown_count)
+		FROM tagente
+		WHERE disabled = 0 AND id_grupo IN $group_clause");
 	
 	return $count > 0 ? $count : 0;
 }

@@ -14,6 +14,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
+
+require_once("tree2.php");
+return;
+////////////////////////////////////////////////////////////////////////
+
+
 define('ALL', -1);
 define('NORMAL', 0);
 define('WARNING', 2);

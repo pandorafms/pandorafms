@@ -28,23 +28,34 @@ TreeController = {
 					return;
 				}
 
-				function _processGroup (container, elements) {
+				function _processGroup (container, elements, rootGroup) {
 					var $group = $("<ul></ul>");
-					$group
-						.addClass("tree-group")
-						.hide();
+					
+					if (typeof rootGroup != 'undefinded' && rootGroup == true) {
+						$group
+							.addClass("tree-root")
+							.hide();
+					}
+					else {
+						rootGroup = false;
+						$group
+							.addClass("tree-group")
+							.hide();
+					}
 
 					container.append($group);
 
-					var last;
+					var lastNode;
+					var firstNode;
 					elements.forEach(function(element, index) {
-						last = index == elements.length - 1 ? true : false;
-						element.jqObject = _processNode($group, element, last);
+						lastNode = index == elements.length - 1 ? true : false;
+						firstNode = rootGroup && index == 0 ? true : false;
+						element.jqObject = _processNode($group, element, lastNode, firstNode);
 					}, $group);
 
 					return $group;
 				}
-				function _processNode (container, element, last) {
+				function _processNode (container, element, lastNode, firstNode) {
 					var $node = $("<li></li>");
 					var $leafIcon = $("<div></div>");
 					var $content = $("<div></div>");
@@ -68,8 +79,11 @@ TreeController = {
 						.append($leafIcon)
 						.append($content);
 
-					if (typeof last != 'undefinded' && last == true) {
+					if (typeof lastNode != 'undefinded' && lastNode == true) {
 						$node.addClass("tree-last");
+					}
+					if (typeof firstNode != 'undefinded' && firstNode == true) {
+						$node.addClass("tree-first");
 					}
 
 					container.append($node);
@@ -174,41 +188,10 @@ TreeController = {
 
 				this.recipient.empty();
 
-				var $loadingImage = $('<img src="images/spinner.gif" />');
-
-				var $children = _processGroup(this.recipient, this.tree);
+				var $children = _processGroup(this.recipient, this.tree, true);
 				$children.show();
 
 				this.recipient.data('children', $children);
-
-				// $.ajax({
-				// 	url: this.ajaxURL,
-				// 	type: 'POST',
-				// 	dataType: 'json',
-				// 	data: {
-				// 		page: this.ajaxPage,
-				// 		getChildren: 1,
-				// 		type: element.type
-				// 	},
-				// 	complete: function(xhr, textStatus) {
-				// 		$loadingImage.remove();
-				// 	},
-				// 	success: function(data, textStatus, xhr) {
-				// 		if (data.success) {
-				// 			var $children = _processGroup(this.recipient, data.elements);
-				// 			$children.show();
-
-				// 			this.recipient.data('children', $children);
-				// 		}
-				// 		else {
-				// 			$loadingImage.remove();
-				// 			this.recipient.html("<div>" + this.errorMessage + "</div>");
-				// 		}
-				// 	},
-				// 	error: function(xhr, textStatus, errorThrown) {
-				// 		this.recipient.html("<div>" + this.errorMessage + "</div>");
-				// 	}
-				// });
 			},
 			load: function () {
 				this.reload();
@@ -216,16 +199,6 @@ TreeController = {
 			changeTree: function (tree) {
 				this.tree = tree;
 				this.reload();
-			},
-			addLeaf: function (leaf) {
-				// this.tree.unshift(leaf);
-				// this.reload();
-			},
-			removeLeaf: function (leafID) {
-				if (leafID != 0 && this.tree.length > 0) {
-					this.tree.splice(leafID, 1);
-					this.reload();
-				}
 			},
 			init: function (data) {
 				if (typeof data.recipient != 'undefined' && data.recipient.length > 0) {

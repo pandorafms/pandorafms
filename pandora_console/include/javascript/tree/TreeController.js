@@ -28,7 +28,7 @@ TreeController = {
 				if (typeof this.recipient == 'undefined' || this.recipient.length == 0) {
 					return;
 				}
-
+				
 				function _processGroup (container, elements, baseURL, rootGroup) {
 					var $group = $("<ul></ul>");
 					
@@ -44,9 +44,9 @@ TreeController = {
 							.addClass("tree-group")
 							.hide();
 					}
-
+					
 					container.append($group);
-
+					
 					var lastNode;
 					var firstNode;
 					elements.forEach(function(element, index) {
@@ -54,17 +54,17 @@ TreeController = {
 						firstNode = rootGroup && index == 0 ? true : false;
 						element.jqObject = _processNode($group, element, lastNode, firstNode);
 					}, $group);
-
+					
 					return $group;
 				}
 				function _processNode (container, element, lastNode, firstNode) {
 					var $node = $("<li></li>");
 					var $leafIcon = $("<div></div>");
 					var $content = $("<div></div>");
-
+					
 					// Leaf icon
 					$leafIcon.addClass("leaf-icon");
-
+					
 					// Content
 					$content.addClass("node-content");
 					switch (element.type) {
@@ -75,28 +75,28 @@ TreeController = {
 							$content.append(element.name);
 							break;
 					}
-
+					
 					$node
 						.addClass("tree-node")
 						.append($leafIcon)
 						.append($content);
-
+					
 					if (typeof lastNode != 'undefinded' && lastNode == true) {
 						$node.addClass("tree-last");
 					}
 					if (typeof firstNode != 'undefinded' && firstNode == true) {
 						$node.addClass("tree-first");
 					}
-
+					
 					container.append($node);
-
+					
 					if (typeof element.children != 'undefined' && element.children.length > 0) {
 						$node.addClass("leaf-closed");
-
+						
 						// Add children
 						var $children = _processGroup($node, element.children, this.baseURL);
 						$node.data('children', $children);
-
+						
 						$leafIcon.click(function () {
 							if ($node.hasClass("leaf-open")) {
 								$node
@@ -116,14 +116,14 @@ TreeController = {
 					}
 					else if (typeof element.searchChildren != 'undefined' && element.searchChildren) {
 						$node.addClass("leaf-closed");
-
+						
 						$leafIcon.click(function () {
 							if (! $node.hasClass("children-loaded")) {
 								$node
 									.removeClass("leaf-closed")
 									.removeClass("leaf-error")
 									.addClass("leaf-loading");
-
+								
 								$.ajax({
 									url: this.ajaxURL,
 									type: 'POST',
@@ -140,10 +140,10 @@ TreeController = {
 									success: function(data, textStatus, xhr) {
 										if (data.success) {
 											$node.addClass("leaf-open");
-
+											
 											var $children = _processGroup($node, data.elements, this.baseURL);
 											$children.slideDown();
-
+											
 											$node.data('children', $children);
 										}
 										else {
@@ -176,10 +176,10 @@ TreeController = {
 					else {
 						$node.addClass("leaf-empty");
 					}
-
+					
 					return $node;
 				}
-
+				
 				if (this.recipient.length == 0) {
 					return;
 				}
@@ -187,12 +187,11 @@ TreeController = {
 					this.recipient.html("<div>" + this.emptyMessage + "</div>");
 					return;
 				}
-
+				
 				this.recipient.empty();
-
 				var $children = _processGroup(this.recipient, this.tree, this.baseURL, true);
 				$children.show();
-
+				
 				this.recipient.data('children', $children);
 			},
 			load: function () {

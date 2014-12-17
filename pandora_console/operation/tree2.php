@@ -16,7 +16,7 @@
 
 global $config;
 
-require_once("include/class/tree.class.php");
+require_once("include/class/Tree.class.php");
 
 $tab = get_parameter('tab', 'group');
 $search = get_parameter('search', '');
@@ -120,13 +120,43 @@ html_print_table($table);
 
 // --------------------- form filter -----------------------------------
 
-
-
-$tree = new Tree($tab);
-$tree->set_filter(array(
-	'status' => $status,
-	'search' => $search));
-$json_tree = $tree->get_json();
-
-html_debug_print($json_tree);
+ui_require_javascript_file("TreeController", "include/javascript/tree/");
+html_print_image('images/spinner.gif', false, array('class' => "loading_tree"));
+echo "<div id='tree-controller-recipient'>";
+echo "</div>";
 ?>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var treeController = TreeController.getController();
+		
+		var parameters = {};
+		parameters['page'] = "include/ajax/tree.ajax";
+		parameters['getChildren'] = 1;
+		parameters['filter'] = {};
+		parameters['filter']['type'] = "<?php echo $tab; ?>";
+		parameters['filter']['search'] = "<?php echo $search; ?>";
+		parameters['filter']['status'] = "<?php echo $status; ?>";
+		
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+			data: parameters,
+			success: function(data) {
+				if (data.success) {
+					$(".loading_tree").hide();
+					
+					treeController.init({
+						recipient: $("div#tree-controller-recipient"),
+						page: page,
+						tree: data.tree
+					});
+				}
+			},
+			dataType: "json"
+		});
+		
+		
+		
+		
+	});
+</script>

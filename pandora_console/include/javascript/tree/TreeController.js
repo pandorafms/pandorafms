@@ -21,6 +21,7 @@ TreeController = {
 			tree: [],
 			emptyMessage: "Empty",
 			errorMessage: "Error",
+			baseURL: "",
 			ajaxURL: "ajax.php",
 			ajaxPage: "include/ajax/tree.ajax.php",
 			reload: function () {
@@ -28,13 +29,14 @@ TreeController = {
 					return;
 				}
 
-				function _processGroup (container, elements, rootGroup) {
+				function _processGroup (container, elements, baseURL, rootGroup) {
 					var $group = $("<ul></ul>");
 					
 					if (typeof rootGroup != 'undefinded' && rootGroup == true) {
 						$group
 							.addClass("tree-root")
-							.hide();
+							.hide()
+							.prepend('<img src="'+(baseURL.length > 0 ? baseURL + '/' : '')+'images/pandora.ico.gif" />');
 					}
 					else {
 						rootGroup = false;
@@ -92,7 +94,7 @@ TreeController = {
 						$node.addClass("leaf-closed");
 
 						// Add children
-						var $children = _processGroup($node, element.children);
+						var $children = _processGroup($node, element.children, this.baseURL);
 						$node.data('children', $children);
 
 						$leafIcon.click(function () {
@@ -139,7 +141,7 @@ TreeController = {
 										if (data.success) {
 											$node.addClass("leaf-open");
 
-											var $children = _processGroup($node, data.elements);
+											var $children = _processGroup($node, data.elements, this.baseURL);
 											$children.slideDown();
 
 											$node.data('children', $children);
@@ -188,7 +190,7 @@ TreeController = {
 
 				this.recipient.empty();
 
-				var $children = _processGroup(this.recipient, this.tree, true);
+				var $children = _processGroup(this.recipient, this.tree, this.baseURL, true);
 				$children.show();
 
 				this.recipient.data('children', $children);
@@ -212,6 +214,9 @@ TreeController = {
 				}
 				if (typeof data.errorMessage != 'undefined' && data.errorMessage.length > 0) {
 					this.errorMessage = data.errorMessage;
+				}
+				if (typeof data.baseURL != 'undefined' && data.baseURL.length > 0) {
+					this.baseURL = data.baseURL;
 				}
 				if (typeof data.ajaxURL != 'undefined' && data.ajaxURL.length > 0) {
 					this.ajaxURL = data.ajaxURL;

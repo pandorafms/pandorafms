@@ -18,56 +18,54 @@ class Tree {
 	private $tree = array();
 	private $filter = array();
 	private $root = null;
+	private $children = "on_demand";
 	
-	public function  __construct($type, $root = null) {
+	public function  __construct($type, $childrenMethod = "on_demand", $root = null) {
 		$this->type = $type;
 		$this->root = $root;
+		$this->childrenMethod = $childrenMethod;
 	}
 	
-	public function set_type($type) {
+	public function setType($type) {
 		$this->type = $type;
 	}
 	
-	public function set_filter($filter) {
+	public function setFilter($filter) {
 		$this->filter = $filter;
 	}
 	
-	public function get_data() {
+	public function getData() {
 		switch ($this->type) {
 			case 'os':
-				$this->get_data_os();
+				$this->getDataOS();
 				break;
 			case 'group':
-				$this->get_data_group();
+				$this->getDataGroup();
 				break;
 			case 'module_group':
-				$this->get_data_module_group();
+				$this->getDataModuleGroup();
 				break;
 			case 'module':
-				$this->get_data_module();
+				$this->getDataModule();
 				break;
 			case 'tag':
-				$this->get_data_tag();
+				$this->getDataTag();
 				break;
 		}
 	}
 	
-	public function get_data_os() {
+	public function getDataOS() {
 	}
 	
-	public function get_data_group() {
+	private function getRecursiveGroup($parent, $limit = null) {
 		$filter = array();
 		
-		if (!empty($this->root)) {
-			$filter['parent'] = $this->root;
-		}
-		else {
-			$filter['parent'] = 0;
-		}
+		
+		$filter['parent'] = $parent;
+		
 		if (!empty($this->filter['search'])) {
 			$filter['nombre'] = "%" . $this->filter['search'] . "%";
 		}
-		
 		
 		// First filter by name and father
 		$groups = db_get_all_rows_filter('tgrupo',
@@ -76,11 +74,14 @@ class Tree {
 		if (empty($groups))
 			$groups = array();
 		
+		
 		// Filter by status
 		$status = AGENT_STATUS_ALL;
 		if (!empty($this->filter['status'])) {
 			$status = $this->filter['status'];
 		}
+		
+		
 		
 		if ($status != AGENT_STATUS_ALL) {
 			foreach ($groups as $iterator => $group) {
@@ -126,33 +127,97 @@ class Tree {
 				
 				if ($remove_group)
 					unset($groups[$iterator]);
+				else {
+					if (is_null($limit)) {
+						$groups[$iterator]['children'] =
+							$this->getRecursiveGroup($group['id_grupo']);
+					}
+					else if ($limit >= 1) {
+						$groups[$iterator]['children'] =
+							$this->getRecursiveGroup(
+								$group['id_grupo'],
+								($limit - 1));
+					}
+				}
+			}
+		}
+		else {
+			foreach ($groups as $iterator => $group) {
+				if (is_null($limit)) {
+					$groups[$iterator]['children'] =
+						$this->getRecursiveGroup($group['id_grupo']);
+				}
+				else if ($limit >= 1) {
+					$groups[$iterator]['children'] =
+						$this->getRecursiveGroup(
+							$group['id_grupo'],
+							($limit - 1));
+				}
 			}
 		}
 		
+		
+		return $groups;
+	}
+	
+	public function getDataGroup() {
+		
+		if (!empty($this->root)) {
+			$parent = $this->root;
+		}
+		else {
+			$parent = 0;
+		}
+		
+		switch ($this->childrenMethod) {
+			case 'on_demand':
+				$groups = $this->getRecursiveGroup($parent, 1);
+				foreach ($groups as $iterator => $group) {
+					if (!empty($group['children'])) {
+						$groups[$iterator]['searchChildren'] = 1;
+						// I hate myself
+						unset($groups[$iterator]['children']);
+					}
+					else {
+						$groups[$iterator]['searchChildren'] = 0;
+						// I hate myself
+						unset($groups[$iterator]['children']);
+					}
+				}
+				break;
+		}
 		// Make the data
 		$this->tree = array();
 		foreach ($groups as $group) {
 			$data = array();
 			$data['id'] = $group['id_grupo'];
+			$data['type'] = 'group';
 			$data['name'] = $group['nombre'];
+			$data['searchChildren'] = $group['searchChildren'];
 			
 			$this->tree[] = $data;
 		}
 	}
 	
-	public function get_data_module_group() {
+	public function getDataModuleGroup() {
 	}
 	
-	public function get_data_module() {
+	public function getDataModule() {
 	}
 	
-	public function get_data_tag() {
+	public function getDataTag() {
 	}
 	
-	public function get_json() {
-		$this->get_data();
+	public function getJSON() {
+		$this->getData();
 		
 		return json_encode($this->tree);
+	}
+	
+	public function getArray() {
+		$this->getData();
+		
+		return $this->tree;
 	}
 }
 ?>

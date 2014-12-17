@@ -13,21 +13,23 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-require_once("include/class/tree.class.php");
+require_once("include/class/Tree.class.php");
 
-$get_data = (bool)get_parameter('get_data', 0);
+$getChildren = (bool)get_parameter('getChildren', 0);
 
-if ($get_data) {
-	$tab = get_parameter('type', 'group');
-	$search = get_parameter('search', '');
-	$status = (int)get_parameter('status', AGENT_STATUS_ALL);
+if ($getChildren) {
+	$filter = get_parameter('filter',
+		array('type' => 'groupz',
+			'search' => '',
+			'status' => AGENT_STATUS_ALL));
 	$root = (int)get_parameter('root', 0);
+	$method = get_parameter('method', 'on_demand');
 	
-	$tree = new Tree($tab);
-	$tree->set_filter(array(
-		'status' => $status,
-		'search' => $search));
-	echo $tree->get_json();
+	$tree = new Tree($filter['type'], $method, $root);
+	$tree->setFilter(array(
+		'status' => $filter['status'],
+		'search' => $filter['search']));
+	echo json_encode(array('success' => 1, 'tree' => $tree->getArray()));
 	return;
 }
 ?>

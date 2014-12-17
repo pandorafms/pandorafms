@@ -2836,6 +2836,11 @@ table#policy_modules td * {
 }
 
 /* Tree view styles */
+.tree-root {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
 .tree-group {
 	margin-left: 16px;
 	padding-top: 4px;

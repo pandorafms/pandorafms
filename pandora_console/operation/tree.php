@@ -692,9 +692,7 @@ ui_include_time_picker();
 ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 
 ui_require_javascript_file("TreeController", "include/javascript/tree/");
-echo "<div id='tree-controller-recipient'>";
-//echo html_print_image ("images/pandora.ico.gif", true);
-echo "</div>";
+echo "<div id='tree-controller-recipient'></div>";
 ?>
 
 <script language="javascript" type="text/javascript">

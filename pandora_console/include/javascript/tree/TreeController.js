@@ -36,7 +36,7 @@ TreeController = {
 				}
 
 				// Load branch
-				function _processGroup (container, detailContainer, elements, baseURL, rootGroup) {
+				function _processGroup (container, elements, rootGroup) {
 					var $group = $("<ul></ul>");
 					
 					// First group
@@ -44,7 +44,7 @@ TreeController = {
 						$group
 							.addClass("tree-root")
 							.hide()
-							.prepend('<img src="'+(baseURL.length > 0 ? baseURL : '')+'images/pandora.ico.gif" />');
+							.prepend('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/pandora.ico.gif" />');
 					}
 					// Normal group
 					else {
@@ -61,13 +61,13 @@ TreeController = {
 					elements.forEach(function(element, index) {
 						lastNode = index == elements.length - 1 ? true : false;
 						firstNode = rootGroup && index == 0 ? true : false;
-						element.jqObject = _processNode($group, detailContainer, element, lastNode, firstNode);
+						element.jqObject = _processNode($group, element, lastNode, firstNode);
 					}, $group);
 
 					return $group;
 				}
 				// Load leaf
-				function _processNode (container, detailContainer, element, lastNode, firstNode) {
+				function _processNode (container, element, lastNode, firstNode) {
 					var $node = $("<li></li>");
 					var $leafIcon = $("<div></div>");
 					var $content = $("<div></div>");
@@ -89,7 +89,7 @@ TreeController = {
 							break;
 					}
 					// If exist the detail container, show the data
-					if (typeof detailContainer != 'undefined' && detailContainer.length > 0) {
+					if (typeof controller.detailRecipient != 'undefined' && controller.detailRecipient.length > 0) {
 						$content.click(function (e) {
 							TreeNodeDetailController.getController().init({
 								recipient: controller.detailRecipient,
@@ -120,7 +120,7 @@ TreeController = {
 						$node.addClass("leaf-closed");
 
 						// Add children
-						var $children = _processGroup($node, detailContainer, element.children, this.baseURL);
+						var $children = _processGroup($node, element.children);
 						$node.data('children', $children);
 
 						$leafIcon.click(function () {
@@ -171,7 +171,7 @@ TreeController = {
 										if (data.success) {
 											$node.addClass("leaf-open");
 
-											var $children = _processGroup($node, detailContainer, data.tree, controller.baseURL);
+											var $children = _processGroup($node, data.tree);
 											$children.slideDown();
 
 											$node.data('children', $children);
@@ -210,20 +210,20 @@ TreeController = {
 					return $node;
 				}
 
-				if (this.recipient.length == 0) {
+				if (controller.recipient.length == 0) {
 					return;
 				}
-				else if (this.tree.length == 0) {
-					this.recipient.html("<div>" + this.emptyMessage + "</div>");
+				else if (controller.tree.length == 0) {
+					controller.recipient.html("<div>" + controller.emptyMessage + "</div>");
 					return;
 				}
 
-				this.recipient.empty();
+				controller.recipient.empty();
 
-				var $children = _processGroup(this.recipient, this.detailContainer, this.tree, this.baseURL, true);
+				var $children = _processGroup(this.recipient, this.tree, true);
 				$children.show();
 
-				this.recipient.data('children', $children);
+				controller.recipient.data('children', $children);
 			},
 			load: function () {
 				this.reload();
@@ -257,7 +257,7 @@ TreeController = {
 				if (typeof data.ajaxPage != 'undefined' && data.ajaxPage.length > 0) {
 					this.ajaxPage = data.ajaxPage;
 				}
-				if (typeof data.filter != 'undefined' && data.filter.length > 0) {
+				if (typeof data.filter != 'undefined') {
 					this.filter = data.filter;
 				}
 				
@@ -328,7 +328,7 @@ TreeNodeDetailController = {
 					type: 'POST',
 					dataType: 'json',
 					data: {
-						page: this.ajaxURL,
+						page: this.ajaxPage,
 						getDetail: 1,
 						type: this.type,
 						id: this.id
@@ -440,6 +440,8 @@ TreeNodeDetailController = {
 					this.ajaxPage = data.ajaxPage;
 				}
 
+				if (typeof TreeNodeDetailController.controllers[this.type] == 'undefined')
+					TreeNodeDetailController.controllers[this.type] = {};
 				TreeNodeDetailController.controllers[this.type][this.id] = this;
 				this.load();
 			},

@@ -693,6 +693,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 
 ui_require_javascript_file("TreeController", "include/javascript/tree/");
 echo "<div id='tree-controller-recipient'></div>";
+echo "<div id='tree-controller-detail-recipient'></div>";
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -1053,6 +1054,10 @@ echo "<div id='tree-controller-recipient'></div>";
 	var treeController = TreeController.getController();
 	treeController.init({
 		recipient: $("div#tree-controller-recipient"),
-		tree: tree
+		detailRecipient: $("div#tree-controller-detail-recipient"),
+		tree: tree,
+		baseURL: "<?php echo $config['homeurl'].'/'; ?>",
+		ajaxURL: "<?php echo $config['homeurl']; ?>/ajax.php",
+		ajaxPage: "<?php echo $config['homeurl']; ?>/include/ajax/tree.ajax.php"
 	});
 </script>

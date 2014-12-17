@@ -12,6 +12,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+var TreeController;
+var TreeNodeDetailController;
+
 TreeController = {
 	controllers: [],
 	getController: function () {
@@ -24,20 +27,25 @@ TreeController = {
 			baseURL: "",
 			ajaxURL: "ajax.php",
 			ajaxPage: "include/ajax/tree.ajax.php",
+			detailRecipient: '',
 			reload: function () {
+				// Bad recipient
 				if (typeof this.recipient == 'undefined' || this.recipient.length == 0) {
 					return;
 				}
-
-				function _processGroup (container, elements, baseURL, rootGroup) {
+				
+				// Load branch
+				function _processGroup (container, detailContainer, elements, baseURL, rootGroup) {
 					var $group = $("<ul></ul>");
 					
+					// First group
 					if (typeof rootGroup != 'undefinded' && rootGroup == true) {
 						$group
 							.addClass("tree-root")
 							.hide()
-							.prepend('<img src="'+(baseURL.length > 0 ? baseURL + '/' : '')+'images/pandora.ico.gif" />');
+							.prepend('<img src="'+(baseURL.length > 0 ? baseURL : '')+'images/pandora.ico.gif" />');
 					}
+					// Normal group
 					else {
 						rootGroup = false;
 						$group
@@ -52,12 +60,13 @@ TreeController = {
 					elements.forEach(function(element, index) {
 						lastNode = index == elements.length - 1 ? true : false;
 						firstNode = rootGroup && index == 0 ? true : false;
-						element.jqObject = _processNode($group, element, lastNode, firstNode);
+						element.jqObject = _processNode($group, detailRecipient, element, lastNode, firstNode);
 					}, $group);
 
 					return $group;
 				}
-				function _processNode (container, element, lastNode, firstNode) {
+				// Load leaf
+				function _processNode (container, detailContainer, element, lastNode, firstNode) {
 					var $node = $("<li></li>");
 					var $leafIcon = $("<div></div>");
 					var $content = $("<div></div>");
@@ -74,6 +83,22 @@ TreeController = {
 						case 'agent':
 							$content.append(element.name);
 							break;
+						default:
+							$content.append(element.name);
+							break;
+					}
+					// If exist the detail container, show the data
+					if (typeof detailContainer != 'undefined' && detailContainer.length > 0) {
+						$content.click(function (e) {
+							TreeNodeDetailController.getController().init({
+								recipient: controller.detailRecipient,
+								type: element.type,
+								id: element.id,
+								baseURL: controller.baseURL,
+								ajaxURL: controller.ajaxURL,
+								ajaxPage: controller.ajaxPage
+							});
+						});
 					}
 
 					$node
@@ -94,7 +119,7 @@ TreeController = {
 						$node.addClass("leaf-closed");
 
 						// Add children
-						var $children = _processGroup($node, element.children, this.baseURL);
+						var $children = _processGroup($node, this.detailContainer, element.children, this.baseURL);
 						$node.data('children', $children);
 
 						$leafIcon.click(function () {
@@ -141,7 +166,7 @@ TreeController = {
 										if (data.success) {
 											$node.addClass("leaf-open");
 
-											var $children = _processGroup($node, data.elements, this.baseURL);
+											var $children = _processGroup($node, this.detailContainer, data.elements, this.baseURL);
 											$children.slideDown();
 
 											$node.data('children', $children);
@@ -190,7 +215,7 @@ TreeController = {
 
 				this.recipient.empty();
 
-				var $children = _processGroup(this.recipient, this.tree, this.baseURL, true);
+				var $children = _processGroup(this.recipient, this.detailContainer, this.tree, this.baseURL, true);
 				$children.show();
 
 				this.recipient.data('children', $children);
@@ -205,6 +230,9 @@ TreeController = {
 			init: function (data) {
 				if (typeof data.recipient != 'undefined' && data.recipient.length > 0) {
 					this.recipient = data.recipient;
+				}
+				if (typeof data.detailRecipient != 'undefined' && data.detailRecipient.length > 0) {
+					this.detailRecipient = data.detailRecipient;
 				}
 				if (typeof data.tree != 'undefined' && data.tree.length > 0) {
 					this.tree = data.tree;
@@ -229,14 +257,207 @@ TreeController = {
 				this.load();
 			},
 			remove: function () {
-				if (typeof this.recipient == 'undefined' || this.recipient.length > 0) {
-					return;
+				if (typeof this.recipient != 'undefined' && this.recipient.length > 0) {
+					this.recipient.empty();
 				}
 				
-				this.recipient.empty();
 				if (this.index > -1) {
 					TreeController.controllers.splice(this.index, 1);
 				}
+			}
+		}
+		return controller;
+	}
+}
+
+// The controllers will be inside the 'controllers' object,
+// ordered by ['type']['id']
+TreeNodeDetailController = {
+	controllers: {},
+	controllerExist: function (type, id) {
+		if (typeof this.controllers[type][id] != 'undefined') {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	removeControllers: function () {
+		TreeNodeDetailController.controllers.forEach(function(elements, type) {
+			elements.forEach(function(element, id) {
+				element.remove();
+			});
+		});
+	},
+	getController: function () {
+		var controller = {
+			recipient: '',
+			type: 'none',
+			id: -1,
+			emptyMessage: "Empty",
+			errorMessage: "Error",
+			baseURL: "",
+			ajaxURL: "ajax.php",
+			ajaxPage: "include/ajax/tree.ajax.php",
+			container: '',
+			reload: function () {
+				// Label
+				var $label = $("<div></div>");
+				$label
+					.addClass("tree-element-detail-label")
+					.click(function (e) {
+						if ($label.hasClass('tree-element-detail-loaded'))
+							controller.toggle();
+					});
+
+				// Content
+				var $content = $("<div></div>");
+				$content.addClass("tree-element-detail-content");
+
+				$label.addClass('tree-element-detail-loading');
+				$.ajax({
+					url: this.ajaxURL,
+					type: 'POST',
+					dataType: 'json',
+					data: {
+						page: this.ajaxURL,
+						getDetail: 1,
+						type: this.type,
+						id: this.id
+					},
+					complete: function(xhr, textStatus) {
+						$label.removeClass('tree-element-detail-loading');
+					},
+					success: function(data, textStatus, xhr) {
+						if (data.success) {
+							$label.addClass('tree-element-detail-loaded');
+							$content.append(data.html);
+							controller.open();
+						}
+						else {
+							$label.addClass('tree-element-detail-error');
+							$content.html(controller.errorMessage);
+						}
+					},
+					error: function(xhr, textStatus, errorThrown) {
+						$label.addClass('tree-element-detail-error');
+						$content.html(controller.errorMessage);
+					}
+				});
+				
+
+				// Container
+				this.container = $("<div></div>");
+				this.container
+					.addClass("tree-element-detail")
+					.append($label)
+					.data('label', $label)
+					.append($content)
+					.data('content', $content)
+					.hide();
+
+				this.recipient.append(this.container);
+				this.open();
+			},
+			load: function () {
+				this.reload();
+			},
+			toggle: function () {
+				if (typeof this.container != 'undefined' && this.container.length > 0) {
+					return false;
+				}
+				if (this.container.isClosed) {
+					this.open();
+				}
+				else {
+					this.close();
+				}
+			},
+			open: function () {
+				if (typeof this.container != 'undefined' && this.container.length > 0) {
+					return false;
+				}
+				if (this.container.isClosed) {
+					this.container.data('content').slideLeft();
+					this.container.isClosed = false;
+				}
+			},
+			close: function () {
+				if (typeof this.container != 'undefined' && this.container.length > 0) {
+					return false;
+				}
+				if (!this.container.isClosed) {
+					this.container.data('content').slideRight();
+					this.container.isClosed = true;
+				}
+			},
+			init: function (data) {
+				// Remove the other controllers
+				TreeNodeDetailController.removeControllers();
+
+				// Required
+				if (typeof data.recipient != 'undefined' && data.recipient.length > 0) {
+					this.recipient = data.recipient;
+				}
+				else {
+					return false;
+				}
+				// Required
+				if (typeof data.type != 'undefined' && data.type.length > 0) {
+					this.type = data.type;
+				}
+				else {
+					return false;
+				}
+				// Required
+				if (typeof data.id != 'undefined' && data.id.length > 0) {
+					this.id = data.id;
+				}
+				else {
+					return false;
+				}
+				if (typeof data.emptyMessage != 'undefined' && data.emptyMessage.length > 0) {
+					this.emptyMessage = data.emptyMessage;
+				}
+				if (typeof data.errorMessage != 'undefined' && data.errorMessage.length > 0) {
+					this.errorMessage = data.errorMessage;
+				}
+				if (typeof data.baseURL != 'undefined' && data.baseURL.length > 0) {
+					this.baseURL = data.baseURL;
+				}
+				if (typeof data.ajaxURL != 'undefined' && data.ajaxURL.length > 0) {
+					this.ajaxURL = data.ajaxURL;
+				}
+				if (typeof data.ajaxPage != 'undefined' && data.ajaxPage.length > 0) {
+					this.ajaxPage = data.ajaxPage;
+				}
+
+				TreeNodeDetailController.controllers[this.type][this.id] = this;
+				this.load();
+			},
+			remove: function () {
+				if (typeof this.recipient != 'undefined' && this.recipient.length > 0) {
+					this.recipient.empty();
+				}
+				if (this.type != 'none' && this.id > -1) {
+					delete TreeNodeDetailController.controllers[this.type][this.id];
+				}
+			},
+			closeOther: function () {
+				TreeNodeDetailController.controllers.forEach(function(elements, type) {
+					elements.forEach(function(element, id) {
+						if (this.type != type && this.id != id)
+							element.close();
+					}, this);
+				}, this);
+			},
+			removeOther: function () {
+				TreeNodeDetailController.controllers.forEach(function(elements, type) {
+					elements.forEach(function(element, id) {
+						if (this.type != type && this.id != id)
+							element.remove();
+					}, this);
+				}, this);
 			}
 		}
 		return controller;

@@ -18,14 +18,14 @@ require_once("include/class/Tree.class.php");
 $getChildren = (bool)get_parameter('getChildren', 0);
 
 if ($getChildren) {
+	$type = get_parameter('type', 'group');
 	$filter = get_parameter('filter',
-		array('type' => 'groupz',
-			'search' => '',
+		array('search' => '',
 			'status' => AGENT_STATUS_ALL));
-	$root = (int)get_parameter('root', 0);
+	$id = (int)get_parameter('id', 0);
 	$method = get_parameter('method', 'on_demand');
 	
-	$tree = new Tree($filter['type'], $method, $root);
+	$tree = new Tree($type, $method, $id);
 	$tree->setFilter(array(
 		'status' => $filter['status'],
 		'search' => $filter['search']));

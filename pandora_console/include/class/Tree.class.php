@@ -18,7 +18,7 @@ class Tree {
 	private $tree = array();
 	private $filter = array();
 	private $root = null;
-	private $children = "on_demand";
+	private $childrenMethod = "on_demand";
 	
 	public function  __construct($type, $childrenMethod = "on_demand", $root = null) {
 		$this->type = $type;

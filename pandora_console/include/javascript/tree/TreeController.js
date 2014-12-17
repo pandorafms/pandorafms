@@ -26,7 +26,7 @@ TreeController = {
 			errorMessage: "Error",
 			baseURL: "",
 			ajaxURL: "ajax.php",
-			ajaxPage: "include/ajax/tree.ajax.php",
+			ajaxPage: "include/ajax/tree.ajax",
 			detailRecipient: '',
 			reload: function () {
 				// Bad recipient
@@ -60,7 +60,7 @@ TreeController = {
 					elements.forEach(function(element, index) {
 						lastNode = index == elements.length - 1 ? true : false;
 						firstNode = rootGroup && index == 0 ? true : false;
-						element.jqObject = _processNode($group, detailRecipient, element, lastNode, firstNode);
+						element.jqObject = _processNode($group, detailContainer, element, lastNode, firstNode);
 					}, $group);
 					
 					return $group;
@@ -119,7 +119,7 @@ TreeController = {
 						$node.addClass("leaf-closed");
 						
 						// Add children
-						var $children = _processGroup($node, this.detailContainer, element.children, this.baseURL);
+						var $children = _processGroup($node, detailContainer, element.children, this.baseURL);
 						$node.data('children', $children);
 						
 						$leafIcon.click(function () {
@@ -142,7 +142,9 @@ TreeController = {
 					else if (typeof element.searchChildren != 'undefined' && element.searchChildren) {
 						$node.addClass("leaf-closed");
 						
-						$leafIcon.click(function () {
+						$leafIcon.click(function (e) {
+							e.preventDefault();
+
 							if (! $node.hasClass("children-loaded")) {
 								$node
 									.removeClass("leaf-closed")
@@ -150,23 +152,24 @@ TreeController = {
 									.addClass("leaf-loading");
 								
 								$.ajax({
-									url: this.ajaxURL,
+									url: controller.ajaxURL,
 									type: 'POST',
 									dataType: 'json',
 									data: {
-										page: this.ajaxPage,
+										page: controller.ajaxPage,
 										getChildren: 1,
 										id: element.id,
 										type: element.type
 									},
 									complete: function(xhr, textStatus) {
 										$node.removeClass("leaf-loading");
+										$node.addClass("children-loaded")
 									},
 									success: function(data, textStatus, xhr) {
 										if (data.success) {
 											$node.addClass("leaf-open");
 
-											var $children = _processGroup($node, this.detailContainer, data.elements, this.baseURL);
+											var $children = _processGroup($node, detailContainer, data.tree, controller.baseURL);
 											$children.slideDown();
 											
 											$node.data('children', $children);
@@ -298,7 +301,7 @@ TreeNodeDetailController = {
 			errorMessage: "Error",
 			baseURL: "",
 			ajaxURL: "ajax.php",
-			ajaxPage: "include/ajax/tree.ajax.php",
+			ajaxPage: "include/ajax/tree.ajax",
 			container: '',
 			reload: function () {
 				// Label

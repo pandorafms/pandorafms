@@ -139,7 +139,7 @@ echo "</div>";
 		
 		$.ajax({
 			type: "POST",
-			url: "<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+			url: "<?php echo $config['homeurl']; ?>/ajax.php",
 			data: parameters,
 			success: function(data) {
 				if (data.success) {
@@ -148,7 +148,9 @@ echo "</div>";
 					treeController.init({
 						recipient: $("div#tree-controller-recipient"),
 						page: page,
-						tree: data.tree
+						tree: data.tree,
+						baseURL: "<?php echo $config['homeurl']; ?>/",
+						ajaxURL: "<?php echo $config['homeurl']; ?>/ajax.php"
 					});
 				}
 			},

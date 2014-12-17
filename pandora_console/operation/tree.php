@@ -1056,8 +1056,7 @@ echo "<div id='tree-controller-detail-recipient'></div>";
 		recipient: $("div#tree-controller-recipient"),
 		detailRecipient: $("div#tree-controller-detail-recipient"),
 		tree: tree,
-		baseURL: "<?php echo $config['homeurl'].'/'; ?>",
-		ajaxURL: "<?php echo $config['homeurl']; ?>/ajax.php",
-		ajaxPage: "<?php echo $config['homeurl']; ?>/include/ajax/tree.ajax.php"
+		baseURL: "<?php echo $config['homeurl']; ?>/",
+		ajaxURL: "<?php echo $config['homeurl']; ?>/ajax.php"
 	});
 </script>

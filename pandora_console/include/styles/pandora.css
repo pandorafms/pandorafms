@@ -2895,6 +2895,10 @@ table#policy_modules td * {
 	background-image: url(../../images/tree/first_leaf.png);
 }
 
+.tree-node.leaf-error>.leaf-icon {
+	background-image: url(../../images/tree/last_leaf.png);
+}
+
 .tree-node>.leaf-icon {
 	background-position: 0px 0px;
 	background-repeat: no-repeat;

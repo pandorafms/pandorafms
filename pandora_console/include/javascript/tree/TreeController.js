@@ -28,12 +28,13 @@ TreeController = {
 			ajaxURL: "ajax.php",
 			ajaxPage: "include/ajax/tree.ajax",
 			detailRecipient: '',
+			filter: {},
 			reload: function () {
 				// Bad recipient
 				if (typeof this.recipient == 'undefined' || this.recipient.length == 0) {
 					return;
 				}
-				
+
 				// Load branch
 				function _processGroup (container, detailContainer, elements, baseURL, rootGroup) {
 					var $group = $("<ul></ul>");
@@ -52,9 +53,9 @@ TreeController = {
 							.addClass("tree-group")
 							.hide();
 					}
-					
+
 					container.append($group);
-					
+
 					var lastNode;
 					var firstNode;
 					elements.forEach(function(element, index) {
@@ -62,7 +63,7 @@ TreeController = {
 						firstNode = rootGroup && index == 0 ? true : false;
 						element.jqObject = _processNode($group, detailContainer, element, lastNode, firstNode);
 					}, $group);
-					
+
 					return $group;
 				}
 				// Load leaf
@@ -70,10 +71,10 @@ TreeController = {
 					var $node = $("<li></li>");
 					var $leafIcon = $("<div></div>");
 					var $content = $("<div></div>");
-					
+
 					// Leaf icon
 					$leafIcon.addClass("leaf-icon");
-					
+
 					// Content
 					$content.addClass("node-content");
 					switch (element.type) {
@@ -100,28 +101,28 @@ TreeController = {
 							});
 						});
 					}
-					
+
 					$node
 						.addClass("tree-node")
 						.append($leafIcon)
 						.append($content);
-					
+
 					if (typeof lastNode != 'undefinded' && lastNode == true) {
 						$node.addClass("tree-last");
 					}
 					if (typeof firstNode != 'undefinded' && firstNode == true) {
 						$node.addClass("tree-first");
 					}
-					
+
 					container.append($node);
-					
+
 					if (typeof element.children != 'undefined' && element.children.length > 0) {
 						$node.addClass("leaf-closed");
-						
+
 						// Add children
 						var $children = _processGroup($node, detailContainer, element.children, this.baseURL);
 						$node.data('children', $children);
-						
+
 						$leafIcon.click(function () {
 							if ($node.hasClass("leaf-open")) {
 								$node
@@ -141,7 +142,7 @@ TreeController = {
 					}
 					else if (typeof element.searchChildren != 'undefined' && element.searchChildren) {
 						$node.addClass("leaf-closed");
-						
+
 						$leafIcon.click(function (e) {
 							e.preventDefault();
 
@@ -150,7 +151,7 @@ TreeController = {
 									.removeClass("leaf-closed")
 									.removeClass("leaf-error")
 									.addClass("leaf-loading");
-								
+
 								$.ajax({
 									url: controller.ajaxURL,
 									type: 'POST',
@@ -159,7 +160,8 @@ TreeController = {
 										page: controller.ajaxPage,
 										getChildren: 1,
 										id: element.id,
-										type: element.type
+										type: element.type,
+										filter: controller.filter
 									},
 									complete: function(xhr, textStatus) {
 										$node.removeClass("leaf-loading");
@@ -171,7 +173,7 @@ TreeController = {
 
 											var $children = _processGroup($node, detailContainer, data.tree, controller.baseURL);
 											$children.slideDown();
-											
+
 											$node.data('children', $children);
 										}
 										else {
@@ -204,10 +206,10 @@ TreeController = {
 					else {
 						$node.addClass("leaf-empty");
 					}
-					
+
 					return $node;
 				}
-				
+
 				if (this.recipient.length == 0) {
 					return;
 				}
@@ -215,12 +217,12 @@ TreeController = {
 					this.recipient.html("<div>" + this.emptyMessage + "</div>");
 					return;
 				}
-				
+
 				this.recipient.empty();
 
 				var $children = _processGroup(this.recipient, this.detailContainer, this.tree, this.baseURL, true);
 				$children.show();
-				
+
 				this.recipient.data('children', $children);
 			},
 			load: function () {
@@ -254,6 +256,9 @@ TreeController = {
 				}
 				if (typeof data.ajaxPage != 'undefined' && data.ajaxPage.length > 0) {
 					this.ajaxPage = data.ajaxPage;
+				}
+				if (typeof data.filter != 'undefined' && data.filter.length > 0) {
+					this.filter = data.filter;
 				}
 				
 				this.index = TreeController.controllers.push(this) - 1;

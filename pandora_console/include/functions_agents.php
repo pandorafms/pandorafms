@@ -367,7 +367,8 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	
 	$where = db_format_array_where_clause_sql ($filter, 'AND', '');
 	
-	$where_nogroup = db_format_array_where_clause_sql ($filter_nogroup, 'AND', '');
+	$where_nogroup = db_format_array_where_clause_sql(
+		$filter_nogroup, 'AND', '');
 	
 	if ($where_nogroup == '') {
 		$where_nogroup = '1 = 1';

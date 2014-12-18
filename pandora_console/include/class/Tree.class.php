@@ -68,7 +68,6 @@ class Tree {
 	private function getRecursiveGroup($parent, $limit = null) {
 		$filter = array();
 		
-		
 		$filter['parent'] = $parent;
 		
 		if (!empty($this->filter['search'])) {
@@ -82,30 +81,28 @@ class Tree {
 		if (empty($groups))
 			$groups = array();
 		
-		
 		// Filter by status
-		$status = AGENT_STATUS_ALL;
+		$filter_status = AGENT_STATUS_ALL;
 		if (!empty($this->filter['status'])) {
-			$status = $this->filter['status'];
+			$filter_status = $this->filter['status'];
 		}
 		
-		
-		
-		if ($status != AGENT_STATUS_ALL) {
-			foreach ($groups as $iterator => $group) {
-				$groups[$iterator]['count_ok'] =
-					groups_monitor_ok(array($group['id_grupo']));
-				$groups[$iterator]['count_critical'] =
-					groups_monitor_critical(array($group['id_grupo']));
-				$groups[$iterator]['count_warning'] =
-					groups_monitor_warning(array($group['id_grupo']));
-				$groups[$iterator]['count_unknown'] =
-					groups_monitor_unknown(array($group['id_grupo']));
-				$groups[$iterator]['count_not_init'] =
-					groups_monitor_not_init(array($group['id_grupo']));
-				
+		foreach ($groups as $iterator => $group) {
+			$groups[$iterator]['counters'] = array();
+			$groups[$iterator]['counters']['ok'] =
+				groups_monitor_ok(array($group['id_grupo']));
+			$groups[$iterator]['counters']['critical'] =
+				groups_monitor_critical(array($group['id_grupo']));
+			$groups[$iterator]['counters']['warning'] =
+				groups_monitor_warning(array($group['id_grupo']));
+			$groups[$iterator]['counters']['unknown'] =
+				groups_monitor_unknown(array($group['id_grupo']));
+			$groups[$iterator]['counters']['not_init'] =
+				groups_monitor_not_init(array($group['id_grupo']));
+			
+			if ($filter_status != AGENT_STATUS_ALL) {
 				$remove_group = true;
-				switch ($status) {
+				switch ($filter_status) {
 					case AGENT_STATUS_NORMAL:
 						if (($count_critical == 0) &&
 							($count_warning == 0) &&
@@ -132,38 +129,21 @@ class Tree {
 							$remove_group = false;
 						break;
 				}
-				
 				if ($remove_group)
 					unset($groups[$iterator]);
-				else {
-					if (is_null($limit)) {
-						$groups[$iterator]['children'] =
-							$this->getRecursiveGroup($group['id_grupo']);
-					}
-					else if ($limit >= 1) {
-						$groups[$iterator]['children'] =
-							$this->getRecursiveGroup(
-								$group['id_grupo'],
-								($limit - 1));
-					}
-				}
+			}
+
+			if (is_null($limit)) {
+				$groups[$iterator]['children'] =
+					$this->getRecursiveGroup($group['id_grupo']);
+			}
+			else if ($limit >= 1) {
+				$groups[$iterator]['children'] =
+					$this->getRecursiveGroup(
+						$group['id_grupo'],
+						($limit - 1));
 			}
 		}
-		else {
-			foreach ($groups as $iterator => $group) {
-				if (is_null($limit)) {
-					$groups[$iterator]['children'] =
-						$this->getRecursiveGroup($group['id_grupo']);
-				}
-				else if ($limit >= 1) {
-					$groups[$iterator]['children'] =
-						$this->getRecursiveGroup(
-							$group['id_grupo'],
-							($limit - 1));
-				}
-			}
-		}
-		
 		
 		return $groups;
 	}
@@ -177,9 +157,9 @@ class Tree {
 			$parent = 0;
 		}
 		
+		$groups = $this->getRecursiveGroup($parent, 1);
 		switch ($this->childrenMethod) {
 			case 'on_demand':
-				$groups = $this->getRecursiveGroup($parent, 1);
 				foreach ($groups as $iterator => $group) {
 					if (!empty($group['children'])) {
 						$groups[$iterator]['searchChildren'] = 1;
@@ -198,14 +178,18 @@ class Tree {
 		
 		switch ($this->countAgentStatusMethod) {
 			case 'on_demand':
-				// I hate myself
-				unset($groups[$iterator]['count_ok']);
-				unset($groups[$iterator]['count_critical']);
-				unset($groups[$iterator]['count_warning']);
-				unset($groups[$iterator]['count_unknown']);
-				unset($groups[$iterator]['count_not_init']);
-				
-				$groups[$iterator]['count_agent_status_method'] = 'on_demand';
+				foreach ($groups as $iterator => $group) {
+					if (!empty($group['counters'])) {
+						$groups[$iterator]['searchCounters'] = 1;
+						// I hate myself
+						unset($groups[$iterator]['counters']);
+					}
+					else {
+						$groups[$iterator]['searchCounters'] = 0;
+						// I hate myself
+						unset($groups[$iterator]['counters']);
+					}
+				}
 				break;
 		}
 		
@@ -217,6 +201,7 @@ class Tree {
 			$data['type'] = 'group';
 			$data['name'] = $group['nombre'];
 			$data['searchChildren'] = $group['searchChildren'];
+			$data['searchCounters'] = $group['searchCounters'];
 			
 			$this->tree[] = $data;
 		}

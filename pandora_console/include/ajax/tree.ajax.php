@@ -50,44 +50,6 @@ if (is_ajax ()) {
 		return;
 	}
 	
-	if ($get_detail) {
-		require_once($config['homedir']."/include/functions_treeview.php");
-
-		// Clean the output
-		ob_clean();
-
-		$id = (int) get_parameter('id');
-		$type = (string) get_parameter('type');
-
-		$server = array();
-		if (defined ('METACONSOLE')) {
-			$server_name = (string) get_parameter('server');
-			$server = metaconsole_get_connection($server_name);
-			metaconsole_connect($server);
-		}
-
-		switch ($type) {
-			case 'agent':
-				treeview_printTable($id, $server);
-				break;
-			case 'module':
-				treeview_printModuleTable($id, $server);
-				break;
-			case 'alert':
-				treeview_printAlertsTable($id, $server);
-				break;
-			default:
-				// Nothing
-				break;
-		}
-
-		if (!empty($server) && defined ('METACONSOLE')) {
-			metaconsole_restore_db();
-		}
-
-		return;
-	}
-	
 	if ($getGroupStatus) {
 		$id = (int)get_parameter('id', 0);
 		$type = get_parameter('type', 'group');
@@ -131,6 +93,44 @@ if (is_ajax ()) {
 				echo json_encode($status);
 				break;
 		}
+		return;
+	}
+	
+	if ($get_detail) {
+		require_once($config['homedir']."/include/functions_treeview.php");
+		
+		// Clean the output
+		ob_clean();
+		
+		$id = (int) get_parameter('id');
+		$type = (string) get_parameter('type');
+		
+		$server = array();
+		if (defined ('METACONSOLE')) {
+			$server_name = (string) get_parameter('server');
+			$server = metaconsole_get_connection($server_name);
+			metaconsole_connect($server);
+		}
+		
+		switch ($type) {
+			case 'agent':
+				treeview_printTable($id, $server);
+				break;
+			case 'module':
+				treeview_printModuleTable($id, $server);
+				break;
+			case 'alert':
+				treeview_printAlertsTable($id, $server);
+				break;
+			default:
+				// Nothing
+				break;
+		}
+		
+		if (!empty($server) && defined ('METACONSOLE')) {
+			metaconsole_restore_db();
+		}
+		
 		return;
 	}
 	

@@ -131,7 +131,7 @@ echo "</div>";
 ?>
 <script type="text/javascript">
 	$(".loading_tree").hide();
-	
+
 	var treeController = TreeController.getController();
 
 	processTreeSearch();
@@ -150,12 +150,8 @@ echo "</div>";
 		parameters['getChildren'] = 1;
 		parameters['filter'] = {};
 		parameters['type'] = "<?php echo $tab; ?>";
-		parameters['filter']['search'] = function () {
-			return $("input#text-search").val();
-		};
-		parameters['filter']['status'] = function () {
-			return $("select#status").val();
-		};
+		parameters['filter']['search'] = $("input#text-search").val();
+		parameters['filter']['status'] = $("select#status").val();
 		
 		$.ajax({
 			type: "POST",

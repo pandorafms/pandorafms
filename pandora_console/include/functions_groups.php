@@ -1217,6 +1217,7 @@ function groups_agent_ok ($group_array) {
 		FROM tagente
 		WHERE tagente.disabled = 0
 			AND normal_count = total_count
+			AND total_count != 0
 			AND id_grupo IN $group_clause");
 	
 	

@@ -19,11 +19,19 @@ class Tree {
 	private $filter = array();
 	private $root = null;
 	private $childrenMethod = "on_demand";
+	private $countModuleStatusMethod = "on_demand";
+	private $countAgentStatusMethod = "on_demand";
 	
-	public function  __construct($type, $childrenMethod = "on_demand", $root = null) {
+	public function  __construct($type, $root = null,
+		$childrenMethod = "on_demand",
+		$countModuleStatusMethod = "on_demand",
+		$countAgentStatusMethod = "on_demand") {
+		
 		$this->type = $type;
 		$this->root = $root;
 		$this->childrenMethod = $childrenMethod;
+		$this->countModuleStatusMethod = $countModuleStatusMethod;
+		$this->countAgentStatusMethod = $countAgentStatusMethod;
 	}
 	
 	public function setType($type) {
@@ -85,16 +93,16 @@ class Tree {
 		
 		if ($status != AGENT_STATUS_ALL) {
 			foreach ($groups as $iterator => $group) {
-				$count_ok = groups_monitor_ok(
-					array($group['id_grupo']));
-				$count_critical = groups_monitor_critical(
-					array($group['id_grupo']));
-				$count_warning = groups_monitor_warning(
-					array($group['id_grupo']));
-				$count_unknown = groups_monitor_unknown(
-					array($group['id_grupo']));
-				$count_not_init = groups_monitor_not_init(
-						array($group['id_grupo']));
+				$groups[$iterator]['count_ok'] =
+					groups_monitor_ok(array($group['id_grupo']));
+				$groups[$iterator]['count_critical'] =
+					groups_monitor_critical(array($group['id_grupo']));
+				$groups[$iterator]['count_warning'] =
+					groups_monitor_warning(array($group['id_grupo']));
+				$groups[$iterator]['count_unknown'] =
+					groups_monitor_unknown(array($group['id_grupo']));
+				$groups[$iterator]['count_not_init'] =
+					groups_monitor_not_init(array($group['id_grupo']));
 				
 				$remove_group = true;
 				switch ($status) {
@@ -185,7 +193,22 @@ class Tree {
 					}
 				}
 				break;
+			
 		}
+		
+		switch ($this->countAgentStatusMethod) {
+			case 'on_demand':
+				// I hate myself
+				unset($groups[$iterator]['count_ok']);
+				unset($groups[$iterator]['count_critical']);
+				unset($groups[$iterator]['count_warning']);
+				unset($groups[$iterator]['count_unknown']);
+				unset($groups[$iterator]['count_not_init']);
+				
+				$groups[$iterator]['count_agent_status_method'] = 'on_demand';
+				break;
+		}
+		
 		// Make the data
 		$this->tree = array();
 		foreach ($groups as $group) {

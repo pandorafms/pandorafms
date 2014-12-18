@@ -116,7 +116,9 @@ $table->data[0][3] = html_print_input_text(
 $table->data[0][4] = html_print_submit_button(
 	__('Filter'), "uptbutton", false, 'class="sub search"', true);
 
+echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
 html_print_table($table);
+echo '</form>';
 
 // --------------------- form filter -----------------------------------
 
@@ -128,16 +130,32 @@ echo "<div id='tree-controller-detail-recipient'>";
 echo "</div>";
 ?>
 <script type="text/javascript">
-	$(document).ready(function() {
-		var treeController = TreeController.getController();
-		
+	$(".loading_tree").hide();
+	
+	var treeController = TreeController.getController();
+
+	processTreeSearch();
+
+	$("form#tree_search").submit(function(e) {
+		e.preventDefault();
+
+		processTreeSearch();
+	});
+
+	function processTreeSearch () {
+		$(".loading_tree").show();
+
 		var parameters = {};
 		parameters['page'] = "include/ajax/tree.ajax";
 		parameters['getChildren'] = 1;
 		parameters['filter'] = {};
-		parameters['filter']['type'] = "<?php echo $tab; ?>";
-		parameters['filter']['search'] = "<?php echo $search; ?>";
-		parameters['filter']['status'] = "<?php echo $status; ?>";
+		parameters['type'] = "<?php echo $tab; ?>";
+		parameters['filter']['search'] = function () {
+			return $("input#text-search").val();
+		};
+		parameters['filter']['status'] = function () {
+			return $("select#status").val();
+		};
 		
 		$.ajax({
 			type: "POST",
@@ -155,13 +173,14 @@ echo "</div>";
 						baseURL: "<?php echo $config['homeurl']; ?>/",
 						ajaxURL: "<?php echo $config['homeurl']; ?>/ajax.php",
 						filter: {
-							search: "<?php echo $tab; ?>",
-							status: "<?php echo $status; ?>"
+							search: parameters['filter']['search'],
+							status: parameters['filter']['status']
 						}
 					});
 				}
 			},
 			dataType: "json"
 		});
-	});
+	}
+
 </script>

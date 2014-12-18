@@ -68,6 +68,7 @@ class Tree {
 	private function getRecursiveGroup($parent, $limit = null) {
 		$filter = array();
 		
+		
 		$filter['parent'] = $parent;
 		
 		if (!empty($this->filter['search'])) {
@@ -81,11 +82,14 @@ class Tree {
 		if (empty($groups))
 			$groups = array();
 		
+		
 		// Filter by status
 		$filter_status = AGENT_STATUS_ALL;
 		if (!empty($this->filter['status'])) {
 			$filter_status = $this->filter['status'];
 		}
+		
+		
 		
 		foreach ($groups as $iterator => $group) {
 			$groups[$iterator]['counters'] = array();
@@ -129,6 +133,7 @@ class Tree {
 							$remove_group = false;
 						break;
 				}
+				
 				if ($remove_group)
 					unset($groups[$iterator]);
 			}
@@ -145,7 +150,16 @@ class Tree {
 			}
 		}
 		
-		return $groups;
+		if ($parent == 0) {
+			$agents = array();
+		}
+		else {
+			$agents = $this->getDataAgents('group', $parent);
+		}
+		
+		$data = array_merge($groups, $agents);
+		
+		return $data;
 	}
 	
 	public function getDataGroup() {
@@ -157,19 +171,19 @@ class Tree {
 			$parent = 0;
 		}
 		
-		$groups = $this->getRecursiveGroup($parent, 1);
+		$data = $this->getRecursiveGroup($parent, 1);
 		switch ($this->childrenMethod) {
 			case 'on_demand':
-				foreach ($groups as $iterator => $group) {
-					if (!empty($group['children'])) {
-						$groups[$iterator]['searchChildren'] = 1;
+				foreach ($data as $iterator => $item) {
+					if (!empty($item['children'])) {
+						$data[$iterator]['searchChildren'] = 1;
 						// I hate myself
-						unset($groups[$iterator]['children']);
+						unset($data[$iterator]['children']);
 					}
 					else {
-						$groups[$iterator]['searchChildren'] = 0;
+						$data[$iterator]['searchChildren'] = 0;
 						// I hate myself
-						unset($groups[$iterator]['children']);
+						unset($data[$iterator]['children']);
 					}
 				}
 				break;
@@ -195,16 +209,38 @@ class Tree {
 		
 		// Make the data
 		$this->tree = array();
-		foreach ($groups as $group) {
-			$data = array();
-			$data['id'] = $group['id_grupo'];
-			$data['type'] = 'group';
-			$data['name'] = $group['nombre'];
-			$data['searchChildren'] = $group['searchChildren'];
-			$data['searchCounters'] = $group['searchCounters'];
+		foreach ($data as $item) {
+			$temp = array();
+			$temp['id'] = $item['id_grupo'];
+			$temp['type'] = 'group';
+			$temp['name'] = $item['nombre'];
+			$temp['searchChildren'] = $item['searchChildren'];
+			$temp['searchCounters'] = $item['searchCounters'];
 			
-			$this->tree[] = $data;
+			$this->tree[] = $temp;
 		}
+	}
+	
+	public function getDataAgents($type, $id) {
+		switch ($type) {
+			case 'group':
+				$filter = array(
+					'id_grupo' => $id,
+					'status' => $this->filter['status'],
+					'nombre' => "%" . $this->filter['search'] . "%"
+					);
+				$agents = agents_get_agents($filter);
+				if (empty($agents)) {
+					$agents = array();
+				}
+				break;
+		}
+		
+		foreach ($agents as $iterator => $agent) {
+			$agents[$iterator]['type'] = 'agent';
+		}
+		
+		return $agents;
 	}
 	
 	public function getDataModuleGroup() {

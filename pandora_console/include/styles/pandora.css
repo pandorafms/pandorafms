@@ -2869,18 +2869,22 @@ table#policy_modules td * {
 
 .tree-node.leaf-open>.leaf-icon {
 	background-image: url(../../images/tree/last_expanded.png);
+	cursor: pointer;
 }
 
 .tree-node.tree-first.leaf-open>.leaf-icon {
 	background-image: url(../../images/tree/first_expanded.png);
+	cursor: pointer;
 }
 
 .tree-node.leaf-closed>.leaf-icon {
 	background-image: url(../../images/tree/last_closed.png);
+	cursor: pointer;
 }
 
 .tree-node.tree-first.leaf-closed>.leaf-icon {
 	background-image: url(../../images/tree/first_closed.png);
+	cursor: pointer;
 }
 
 .tree-node.leaf-loading>.leaf-icon {

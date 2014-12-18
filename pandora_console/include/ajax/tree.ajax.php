@@ -77,7 +77,7 @@ if (is_ajax ()) {
 				elseif ($data["monitor_warning"] > 0) {
 					$status['status'] = 'warning';
 				}
-				elseif (($data["monitor_unknown"] > 0) ||  ($data["agents_unknown"] > 0)) {
+				elseif (($data["monitor_unknown"] > 0) || ($data["agents_unknown"] > 0)) {
 					$status['status'] = 'unknown';
 				}
 				elseif ($data["monitor_ok"] > 0)  {

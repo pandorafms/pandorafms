@@ -79,15 +79,76 @@ TreeController = {
 					$content.addClass("node-content");
 					switch (element.type) {
 						case 'group':
+							if (typeof element.icon != 'undefined' && element.icon.length > 0) {
+								$content.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+									+'images/groups_small/'+element.icon+'.png" />')
+							}
 							$content.append(element.name);
 							break;
 						case 'agent':
+							$content.append(element.name);
+						case 'module':
 							$content.append(element.name);
 							break;
 						default:
 							$content.append(element.name);
 							break;
 					}
+
+					// Load the status counters
+					if (typeof element.counters != 'undefined' && element.counters.length > 0) {
+						var $counters = $("<div></div>");
+						$counters.addClass('tree-node-counters');
+
+
+						$content.append($counters);
+					}
+					// Load the counters asynchronously
+					else if (typeof element.searchCounters != 'undefined' && element.searchCounters) {
+						var $counters = $("<div></div>");
+						$counters
+							.addClass('tree-node-counters')
+							.append(' (')
+							.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/spinner.gif" />')
+							.append(')');
+
+						// $.ajax({
+						// 	url: controller.ajaxURL,
+						// 	type: 'POST',
+						// 	dataType: 'json',
+						// 	data: {
+						// 		page: controller.ajaxPage,
+						// 		getChildren: 1,
+						// 		id: element.id,
+						// 		type: element.type,
+						// 		filter: controller.filter
+						// 	},
+						// 	complete: function(xhr, textStatus) {
+								
+						// 	},
+						// 	success: function(data, textStatus, xhr) {
+						// 		if (data.success) {
+
+						// 			if (typeof data.counters != 'undefined' && data.counters.length > 0) {
+										
+						// 			}
+						// 			else {
+										
+						// 			}
+						// 		}
+						// 		else {
+									
+						// 		}
+						// 	},
+						// 	error: function(xhr, textStatus, errorThrown) {
+								
+						// 	}
+						// });
+
+
+						$content.append($counters);
+					}
+
 					// If exist the detail container, show the data
 					if (typeof controller.detailRecipient != 'undefined' && controller.detailRecipient.length > 0) {
 						$content.click(function (e) {
@@ -123,7 +184,9 @@ TreeController = {
 						var $children = _processGroup($node, element.tree);
 						$node.data('children', $children);
 
-						$leafIcon.click(function () {
+						$leafIcon.click(function (e) {
+							e.preventDefault();
+
 							if ($node.hasClass("leaf-open")) {
 								$node
 									.removeClass("leaf-open")
@@ -165,7 +228,7 @@ TreeController = {
 									},
 									complete: function(xhr, textStatus) {
 										$node.removeClass("leaf-loading");
-										$node.addClass("children-loaded")
+										$node.addClass("children-loaded");
 									},
 									success: function(data, textStatus, xhr) {
 										if (data.success) {

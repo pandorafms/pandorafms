@@ -143,6 +143,10 @@ echo "</div>";
 	});
 
 	function processTreeSearch () {
+		// Clear the tree
+		if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
+			treeController.recipient.empty();
+
 		$(".loading_tree").show();
 
 		var parameters = {};

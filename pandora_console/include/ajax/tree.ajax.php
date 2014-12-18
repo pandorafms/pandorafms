@@ -16,30 +16,85 @@
 // Only accesible by ajax
 if (is_ajax ()) {
 	global $config;
-
+	
 	// Login check
 	check_login ();
 	
-	require_once("include/class/Tree.class.php");
-
+	require_once($config['homedir'] . "/include/class/Tree.class.php");
+	require_once($config['homedir'] . "/include/functions_reporting.php");
+	
 	$getChildren = (bool)get_parameter('getChildren', 0);
-
+	$getGroupStatus = (bool)get_parameter('getGroupStatus', 0);
+	
 	if ($getChildren) {
 		$type = get_parameter('type', 'group');
 		$filter = get_parameter('filter',
 			array('search' => '',
 				'status' => AGENT_STATUS_ALL));
 		$id = (int)get_parameter('id', 0);
-		$method = get_parameter('method', 'on_demand');
+		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
+		$countModuleStatusMethod = get_parameter('countModuleStatusMethod', 'on_demand');
+		$countAgentStatusMethod = get_parameter('countAgentStatusMethod', 'on_demand');
 		
-		$tree = new Tree($type, $method, $id);
+		$tree = new Tree($type,
+			$id,
+			$childrenMethod,
+			$countModuleStatusMethod,
+			$countAgentStatusMethod
+			);
 		$tree->setFilter(array(
 			'status' => $filter['status'],
 			'search' => $filter['search']));
 		echo json_encode(array('success' => 1, 'tree' => $tree->getArray()));
 		return;
 	}
-
+	
+	if ($getGroupStatus) {
+		$id = (int)get_parameter('id', 0);
+		$type = get_parameter('type', 'group');
+		$id = 0;
+		
+		$status = array();
+		
+		switch ($type) {
+			case 'group':
+				$data = reporting_get_group_stats($id);
+				
+				$status['unknown'] = $data['agents_unknown'];
+				$status['critical'] = $data['agent_critical'];
+				$status['warning'] = $data['agent_warning'];
+				$status['not_init'] = $data['agent_not_init'];
+				$status['ok'] = $data['agent_ok'];
+				$status['total'] = $data['total_agents'];
+				
+				if ($data["monitor_alerts_fired"] > 0) {
+					$status['status'] = 'alert_fired';
+				}
+				elseif ($data["monitor_critical"] > 0) {
+					$status['status'] = 'critical';
+				}
+				elseif ($data["monitor_warning"] > 0) {
+					$status['status'] = 'warning';
+				}
+				elseif (($data["monitor_unknown"] > 0) ||  ($data["agents_unknown"] > 0)) {
+					$status['status'] = 'unknown';
+				}
+				elseif ($data["monitor_ok"] > 0)  {
+					$status['status'] = 'ok';
+				}
+				elseif ($data["agent_not_init"] > 0)  {
+					$status['status'] = 'not_init';
+				}
+				else {
+					$status['status'] = 'none';
+				}
+				
+				echo json_encode($status);
+				break;
+		}
+		return;
+	}
+	
 	return;
 }
 ?>

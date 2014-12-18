@@ -151,7 +151,7 @@ TreeController = {
 									.removeClass("leaf-closed")
 									.removeClass("leaf-error")
 									.addClass("leaf-loading");
-									
+
 								$.ajax({
 									url: controller.ajaxURL,
 									type: 'POST',
@@ -170,9 +170,9 @@ TreeController = {
 									success: function(data, textStatus, xhr) {
 										if (data.success) {
 
-											if (typeof element.tree != 'undefined' && element.tree.length > 0) {
+											if (typeof data.tree != 'undefined' && data.tree.length > 0) {
 												$node.addClass("leaf-open");
-
+												
 												var $children = _processGroup($node, data.tree);
 												$children.slideDown();
 
@@ -267,7 +267,6 @@ TreeController = {
 					this.filter = data.filter;
 				}
 				
-				this.index = TreeController.controllers.push(this) - 1;
 				this.load();
 			},
 			remove: function () {
@@ -280,6 +279,8 @@ TreeController = {
 				}
 			}
 		}
+		controller.index = TreeController.controllers.push(controller) - 1;
+
 		return controller;
 	}
 }

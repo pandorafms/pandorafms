@@ -2852,10 +2852,23 @@ table#policy_modules td * {
 	background-image: url(../../images/tree/branch.png);
 	background-position: 0px 0px;
 	background-repeat: repeat-y;
+
+	min-height: 26px;
 }
 
 .tree-last {
 	background: 0 0;
+}
+.node-content {
+	padding: 3px;
+}
+
+.node-content:hover {
+	background-color: #9AB8DF;
+
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
 }
 
 .leaf-icon {

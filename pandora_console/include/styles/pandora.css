@@ -2880,6 +2880,10 @@ table#policy_modules td * {
 	display: inline-block;
 }
 
+.node-content>img, .node-content>div {
+	display: inline;
+}
+
 .tree-node.leaf-open>.leaf-icon {
 	background-image: url(../../images/tree/last_expanded.png);
 	cursor: pointer;

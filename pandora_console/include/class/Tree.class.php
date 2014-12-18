@@ -68,6 +68,7 @@ class Tree {
 	private function getRecursiveGroup($parent, $limit = null) {
 		$filter = array();
 		
+		
 		$filter['parent'] = $parent;
 		
 		if (!empty($this->filter['search'])) {
@@ -77,15 +78,18 @@ class Tree {
 		// First filter by name and father
 		$groups = db_get_all_rows_filter('tgrupo',
 			$filter,
-			array('id_grupo', 'nombre', 'icon'));
+			array('id_grupo', 'nombre'));
 		if (empty($groups))
 			$groups = array();
+		
 		
 		// Filter by status
 		$filter_status = AGENT_STATUS_ALL;
 		if (!empty($this->filter['status'])) {
 			$filter_status = $this->filter['status'];
 		}
+		
+		
 		
 		foreach ($groups as $iterator => $group) {
 			$groups[$iterator]['counters'] = array();
@@ -181,38 +185,12 @@ class Tree {
 						// I hate myself
 						unset($data[$iterator]['children']);
 					}
-				}
-				break;
-			
-		}
-		
-		switch ($this->countAgentStatusMethod) {
-			case 'on_demand':
-				foreach ($groups as $iterator => $group) {
-					if (!empty($group['counters'])) {
-						$groups[$iterator]['searchCounters'] = 1;
-						// I hate myself
-						unset($groups[$iterator]['counters']);
-					}
-					else {
-						$groups[$iterator]['searchCounters'] = 0;
-						// I hate myself
-						unset($groups[$iterator]['counters']);
-					}
-				}
-				break;
-		}
-		
-		// Make the data
-		$this->tree = array();
-		foreach ($data as $item) {
-			$temp = array();
-			$temp['id'] = $item['id_grupo'];
-			$temp['type'] = 'group';
-			$temp['name'] = $item['nombre'];
-			$temp['icon'] = $item['icon'];
-			$temp['searchChildren'] = $item['searchChildren'];
-			$temp['searchCounters'] = $item['searchCounters'];
+					break;
+				case 'live':
+					$temp['searchChildren'] = 0;
+					$temp['children'] = $item['children'];
+					break;
+			}
 			
 			$this->tree[] = $temp;
 		}

@@ -67,28 +67,8 @@ if (is_ajax ()) {
 				$status['not_init'] = $data['agent_not_init'];
 				$status['ok'] = $data['agent_ok'];
 				$status['total'] = $data['total_agents'];
-				
-				if ($data["monitor_alerts_fired"] > 0) {
-					$status['status'] = 'alert_fired';
-				}
-				elseif ($data["monitor_critical"] > 0) {
-					$status['status'] = 'critical';
-				}
-				elseif ($data["monitor_warning"] > 0) {
-					$status['status'] = 'warning';
-				}
-				elseif (($data["monitor_unknown"] > 0) || ($data["agents_unknown"] > 0)) {
-					$status['status'] = 'unknown';
-				}
-				elseif ($data["monitor_ok"] > 0)  {
-					$status['status'] = 'ok';
-				}
-				elseif ($data["agent_not_init"] > 0)  {
-					$status['status'] = 'not_init';
-				}
-				else {
-					$status['status'] = 'none';
-				}
+				$status['status'] = $data['status'];
+				$status['alert_fired'] = $data['alert_fired'];
 				
 				echo json_encode($status);
 				break;

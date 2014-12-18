@@ -298,11 +298,15 @@ TreeNodeDetailController = {
 		}
 	},
 	removeControllers: function () {
-		TreeNodeDetailController.controllers.forEach(function(elements, type) {
-			elements.forEach(function(element, id) {
-				element.remove();
+		if (TreeNodeDetailController.controllers.length > 0) {
+			TreeNodeDetailController.controllers.forEach(function(elements, type) {
+				if (elements.length > 0) {
+					elements.forEach(function(element, id) {
+						element.remove();
+					});
+				}
 			});
-		});
+		}
 	},
 	getController: function () {
 		var controller = {
@@ -457,24 +461,37 @@ TreeNodeDetailController = {
 					this.recipient.empty();
 				}
 				if (this.type != 'none' && this.id > -1) {
-					delete TreeNodeDetailController.controllers[this.type][this.id];
+					try {
+						delete TreeNodeDetailController.controllers[this.type][this.id];
+					}
+					catch (error) {
+						// console.log('Item not deleted');
+					}
 				}
 			},
 			closeOther: function () {
-				TreeNodeDetailController.controllers.forEach(function(elements, type) {
-					elements.forEach(function(element, id) {
-						if (this.type != type && this.id != id)
-							element.close();
+				if (TreeNodeDetailController.controllers.length > 0) {
+					TreeNodeDetailController.controllers.forEach(function(elements, type) {
+						if (elements.length > 0) {
+							elements.forEach(function(element, id) {
+								if (this.type != type && this.id != id)
+									element.close();
+							}, this);
+						}
 					}, this);
-				}, this);
+				}
 			},
 			removeOther: function () {
-				TreeNodeDetailController.controllers.forEach(function(elements, type) {
-					elements.forEach(function(element, id) {
-						if (this.type != type && this.id != id)
-							element.remove();
+				if (TreeNodeDetailController.controllers.length > 0) {
+					TreeNodeDetailController.controllers.forEach(function(elements, type) {
+						if (elements.length > 0) {
+							elements.forEach(function(element, id) {
+								if (this.type != type && this.id != id)
+									element.remove();
+							}, this);
+						}
 					}, this);
-				}, this);
+				}
 			}
 		}
 		return controller;

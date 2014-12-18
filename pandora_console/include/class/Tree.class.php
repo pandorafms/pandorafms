@@ -70,7 +70,7 @@ class Tree {
 		// First filter by name and father
 		$groups = db_get_all_rows_filter('tgrupo',
 			$filter,
-			array('id_grupo', 'nombre'));html_debug_print($groups, true);
+			array('id_grupo', 'nombre'));
 		if (empty($groups))
 			$groups = array();
 		

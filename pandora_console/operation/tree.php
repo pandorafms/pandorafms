@@ -691,9 +691,6 @@ enterprise_hook('close_meta_frame');
 ui_include_time_picker();
 ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 
-ui_require_javascript_file("TreeController", "include/javascript/tree/");
-echo "<div id='tree-controller-recipient'></div>";
-echo "<div id='tree-controller-detail-recipient'></div>";
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -971,92 +968,4 @@ echo "<div id='tree-controller-detail-recipient'></div>";
 			return false;
 		});
 	}
-
-	var tree = [
-		{
-			id: 1,
-			name: "group1",
-			type: "group",
-			children: [
-				{
-					id: 1,
-					name: "agent1",
-					type: "agent",
-					children: [
-						{
-							id: 5,
-							name: "agent5",
-							type: "agent"
-						}
-					]
-				},
-				{
-					id: 2,
-					name: "agent2",
-					type: "agent"
-				}
-			]
-		},
-		{
-			id: 2,
-			name: "group2",
-			type: "group",
-			children: []
-		},
-		{
-			id: 3,
-			name: "group3",
-			type: "group",
-			children: []
-		},
-		{
-			id: 4,
-			name: "group4",
-			type: "group",
-			children: [
-				{
-					id: 3,
-					name: "agent3",
-					type: "agent"
-				},
-				{
-					id: 4,
-					name: "agent4",
-					type: "agent",
-						children: [
-							{
-								id: 6,
-								name: "agent6",
-								type: "agent"
-							},
-							{
-								id: 7,
-								name: "agent7",
-								type: "agent",
-									children: [
-										{
-											id: 8,
-											name: "agent8",
-											type: "agent"
-										},
-										{
-											id: 9,
-											name: "agent9",
-											type: "agent"
-										}
-									]
-							}
-						]
-				}
-			]
-		}
-	];
-	var treeController = TreeController.getController();
-	treeController.init({
-		recipient: $("div#tree-controller-recipient"),
-		detailRecipient: $("div#tree-controller-detail-recipient"),
-		tree: tree,
-		baseURL: "<?php echo $config['homeurl']; ?>/",
-		ajaxURL: "<?php echo $config['homeurl']; ?>/ajax.php"
-	});
 </script>

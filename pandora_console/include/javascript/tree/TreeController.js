@@ -116,11 +116,11 @@ TreeController = {
 
 					container.append($node);
 
-					if (typeof element.children != 'undefined' && element.children.length > 0) {
+					if (typeof element.tree != 'undefined' && element.tree.length > 0) {
 						$node.addClass("leaf-closed");
 
 						// Add children
-						var $children = _processGroup($node, element.children);
+						var $children = _processGroup($node, element.tree);
 						$node.data('children', $children);
 
 						$leafIcon.click(function () {
@@ -146,7 +146,7 @@ TreeController = {
 						$leafIcon.click(function (e) {
 							e.preventDefault();
 
-							if (! $node.hasClass("children-loaded")) {
+							if (! $node.hasClass("children-loaded") && ! $node.hasClass("leaf-empty")) {
 								$node
 									.removeClass("leaf-closed")
 									.removeClass("leaf-error")
@@ -169,12 +169,18 @@ TreeController = {
 									},
 									success: function(data, textStatus, xhr) {
 										if (data.success) {
-											$node.addClass("leaf-open");
 
-											var $children = _processGroup($node, data.tree);
-											$children.slideDown();
+											if (typeof element.tree != 'undefined' && element.tree.length > 0) {
+												$node.addClass("leaf-open");
 
-											$node.data('children', $children);
+												var $children = _processGroup($node, data.tree);
+												$children.slideDown();
+
+												$node.data('children', $children);
+											}
+											else {
+												$node.addClass("leaf-empty");
+											}
 										}
 										else {
 											$node.addClass("leaf-error");
@@ -185,7 +191,7 @@ TreeController = {
 									}
 								});
 							}
-							else {
+							else if (! $node.hasClass("leaf-empty")) {
 								if ($node.hasClass("leaf-open")) {
 									$node
 										.removeClass("leaf-open")

@@ -151,7 +151,7 @@ TreeController = {
 									.removeClass("leaf-closed")
 									.removeClass("leaf-error")
 									.addClass("leaf-loading");
-
+									
 								$.ajax({
 									url: controller.ajaxURL,
 									type: 'POST',

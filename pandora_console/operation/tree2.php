@@ -123,28 +123,29 @@ echo '</form>';
 // --------------------- form filter -----------------------------------
 
 ui_require_javascript_file("TreeController", "include/javascript/tree/");
-html_print_image('images/spinner.gif', false, array('class' => "loading_tree"));
+html_print_image('images/spinner.gif', false,
+	array('class' => "loading_tree",
+		'style' => 'display: none;'));
 echo "<div id='tree-controller-recipient'>";
 echo "</div>";
 echo "<div id='tree-controller-detail-recipient'>";
 echo "</div>";
 ?>
 <script type="text/javascript">
-	$(".loading_tree").hide();
-
 	var treeController = TreeController.getController();
-
+	
 	processTreeSearch();
-
+	
 	$("form#tree_search").submit(function(e) {
 		e.preventDefault();
-
+	
 		processTreeSearch();
 	});
-
+	
 	function processTreeSearch () {
+		$("#tree-controller-recipient").empty();
 		$(".loading_tree").show();
-
+		
 		var parameters = {};
 		parameters['page'] = "include/ajax/tree.ajax";
 		parameters['getChildren'] = 1;

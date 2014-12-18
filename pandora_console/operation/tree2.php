@@ -123,32 +123,32 @@ echo '</form>';
 // --------------------- form filter -----------------------------------
 
 ui_require_javascript_file("TreeController", "include/javascript/tree/");
-html_print_image('images/spinner.gif', false, array('class' => "loading_tree"));
+html_print_image('images/spinner.gif', false,
+	array('class' => "loading_tree",
+		'style' => 'display: none;'));
 echo "<div id='tree-controller-recipient'>";
 echo "</div>";
 echo "<div id='tree-controller-detail-recipient'>";
 echo "</div>";
 ?>
 <script type="text/javascript">
-	$(".loading_tree").hide();
-
 	var treeController = TreeController.getController();
-
+	
 	processTreeSearch();
-
+	
 	$("form#tree_search").submit(function(e) {
 		e.preventDefault();
-
+	
 		processTreeSearch();
 	});
-
+	
 	function processTreeSearch () {
 		// Clear the tree
 		if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
 			treeController.recipient.empty();
 
 		$(".loading_tree").show();
-
+		
 		var parameters = {};
 		parameters['page'] = "include/ajax/tree.ajax";
 		parameters['getChildren'] = 1;
@@ -159,7 +159,7 @@ echo "</div>";
 		
 		$.ajax({
 			type: "POST",
-			url: "<?php echo $config['homeurl']; ?>/ajax.php",
+			url: "<?php echo $config['homeurl']; ?>ajax.php",
 			data: parameters,
 			success: function(data) {
 				if (data.success) {
@@ -170,8 +170,8 @@ echo "</div>";
 						detailRecipient: $("div#tree-controller-detail-recipient"),
 						page: page,
 						tree: data.tree,
-						baseURL: "<?php echo $config['homeurl']; ?>/",
-						ajaxURL: "<?php echo $config['homeurl']; ?>/ajax.php",
+						baseURL: "<?php echo $config['homeurl']; ?>",
+						ajaxURL: "<?php echo $config['homeurl']; ?>ajax.php",
 						filter: {
 							search: parameters['filter']['search'],
 							status: parameters['filter']['status']

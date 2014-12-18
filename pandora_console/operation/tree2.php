@@ -126,9 +126,9 @@ ui_require_javascript_file("TreeController", "include/javascript/tree/");
 html_print_image('images/spinner.gif', false,
 	array('class' => "loading_tree",
 		'style' => 'display: none;'));
-echo "<div id='tree-controller-recipient'>";
+echo "<div id='tree-controller-recipient' style='float: left;'>";
 echo "</div>";
-echo "<div id='tree-controller-detail-recipient'>";
+echo "<div id='tree-controller-detail-recipient' style='float: right;'>";
 echo "</div>";
 ?>
 <script type="text/javascript">
@@ -159,7 +159,7 @@ echo "</div>";
 		
 		$.ajax({
 			type: "POST",
-			url: "<?php echo $config['homeurl']; ?>ajax.php",
+			url: "<?php echo $config['homeurl']; ?>/ajax.php",
 			data: parameters,
 			success: function(data) {
 				if (data.success) {
@@ -170,8 +170,8 @@ echo "</div>";
 						detailRecipient: $("div#tree-controller-detail-recipient"),
 						page: page,
 						tree: data.tree,
-						baseURL: "<?php echo $config['homeurl']; ?>",
-						ajaxURL: "<?php echo $config['homeurl']; ?>ajax.php",
+						baseURL: "<?php echo $config['homeurl']; ?>/",
+						ajaxURL: "<?php echo $config['homeurl']; ?>/ajax.php",
 						filter: {
 							search: parameters['filter']['search'],
 							status: parameters['filter']['status']

@@ -77,7 +77,7 @@ class Tree {
 		// First filter by name and father
 		$groups = db_get_all_rows_filter('tgrupo',
 			$filter,
-			array('id_grupo', 'nombre'));
+			array('id_grupo', 'nombre', 'icon'));
 		if (empty($groups))
 			$groups = array();
 		
@@ -200,6 +200,7 @@ class Tree {
 			$data['id'] = $group['id_grupo'];
 			$data['type'] = 'group';
 			$data['name'] = $group['nombre'];
+			$data['icon'] = $group['icon'];
 			$data['searchChildren'] = $group['searchChildren'];
 			$data['searchCounters'] = $group['searchCounters'];
 			

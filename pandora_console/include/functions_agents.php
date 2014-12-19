@@ -1861,7 +1861,7 @@ function agents_get_agent_group ($id_agent) {
  * @return mixed The incidents attached or false
  */
 function agents_get_count_incidents ($id_agent) {
-	if (empty($id_agent)){
+	if (empty($id_agent)) {
 		return false;
 	}
 	

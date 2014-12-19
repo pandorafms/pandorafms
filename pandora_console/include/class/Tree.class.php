@@ -228,7 +228,8 @@ class Tree {
 					'status' => $this->filter['status'],
 					'nombre' => "%" . $this->filter['search'] . "%"
 					);
-				$agents = agents_get_agents($filter);
+				$agents = agents_get_agents($filter,
+					array('id_agente', 'nombre', 'id_os'));
 				if (empty($agents)) {
 					$agents = array();
 				}
@@ -239,6 +240,45 @@ class Tree {
 			$agents[$iterator]['type'] = 'agent';
 			$agents[$iterator]['id'] = $agents[$iterator]['id_agente'];
 			$agents[$iterator]['name'] = $agents[$iterator]['nombre'];
+			$agents[$iterator]['icon'] =
+				ui_print_os_icon(
+					$agents[$iterator]["id_os"], false, true, true,
+					false, true, true);
+			
+			$agents[$iterator]['counters'] = array();
+			$agents[$iterator]['counters']['unknown'] =
+				agents_monitor_unknown($agents[$iterator]['id']);
+			$agents[$iterator]['counters']['critical'] =
+				agents_monitor_critical($agents[$iterator]['id']);
+			$agents[$iterator]['counters']['warning'] =
+				agents_monitor_warning($agents[$iterator]['id']);
+			$agents[$iterator]['counters']['not_init'] =
+				agents_monitor_notinit($agents[$iterator]['id']);
+			$agents[$iterator]['counters']['ok'] =
+				agents_monitor_ok($agents[$iterator]['id']);
+			$agents[$iterator]['counters']['total'] =
+				agents_monitor_total($agents[$iterator]['id']);
+			switch (agents_get_status($agents[$iterator]['id'])) {
+				case AGENT_STATUS_NORMAL:
+					$agents[$iterator]['status'] = "ok";
+					break;
+				case AGENT_STATUS_WARNING:
+					$agents[$iterator]['status'] = "warning";
+					break;
+				case AGENT_STATUS_CRITICAL:
+					$agents[$iterator]['status'] = "critical";
+					break;
+				case AGENT_STATUS_UNKNOWN:
+					$agents[$iterator]['status'] = "unknown";
+					break;
+				case AGENT_STATUS_NOT_INIT:
+					$agents[$iterator]['status'] = "not_init";
+					break;
+				default:
+					$agents[$iterator]['status'] = "none";
+					break;
+			}
+			
 		}
 		
 		return $agents;

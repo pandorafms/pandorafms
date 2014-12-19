@@ -22,6 +22,7 @@ if (is_ajax ()) {
 	
 	require_once($config['homedir'] . "/include/class/Tree.class.php");
 	require_once($config['homedir'] . "/include/functions_reporting.php");
+	require_once($config['homedir'] . "/include/functions_os.php");
 	
 	$getChildren = (bool)get_parameter('getChildren', 0);
 	$getGroupStatus = (bool)get_parameter('getGroupStatus', 0);

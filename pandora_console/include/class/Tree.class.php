@@ -63,6 +63,9 @@ class Tree {
 	}
 	
 	public function getDataOS() {
+		$list_os = os_get_os();
+		
+		html_debug_print($list_os);
 	}
 	
 	private function getRecursiveGroup($parent, $limit = null) {

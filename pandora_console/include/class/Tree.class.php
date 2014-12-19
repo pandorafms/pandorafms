@@ -303,6 +303,8 @@ class Tree {
 				agents_monitor_ok($agents[$iterator]['id']);
 			$agents[$iterator]['counters']['total'] =
 				agents_monitor_total($agents[$iterator]['id']);
+			$agents[$iterator]['counters']['alerts'] =
+				agents_get_alerts_fired($agents[$iterator]['id']);
 			switch (agents_get_status($agents[$iterator]['id'])) {
 				case AGENT_STATUS_NORMAL:
 					$agents[$iterator]['status'] = "ok";
@@ -323,6 +325,7 @@ class Tree {
 					$agents[$iterator]['status'] = "none";
 					break;
 			}
+			
 			
 			$agents[$iterator]['children'] = array();
 			if ($agents[$iterator]['counters']['total'] > 0) {

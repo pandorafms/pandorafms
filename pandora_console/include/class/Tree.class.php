@@ -94,6 +94,8 @@ class Tree {
 		foreach ($groups as $iterator => $group) {
 			$data = reporting_get_group_stats($group['id_grupo']);
 			
+			$groups[$iterator]['icon'] = groups_get_icon($group['id_grupo']) . '.png';
+			
 			$groups[$iterator]['counters'] = array();
 			
 			$groups[$iterator]['counters']['unknown'] = $data['agents_unknown'];
@@ -184,6 +186,7 @@ class Tree {
 			$temp['id'] = $item['id'];
 			$temp['type'] = $item['type'];
 			$temp['name'] = $item['name'];
+			$temp['icon'] = $item['icon'];
 			$temp['status'] = $item['status'];
 			switch ($this->countAgentStatusMethod) {
 				case 'on_demand':

@@ -401,12 +401,16 @@ function groups_get_icon ($id_group) {
 function groups_get_all($groupWithAgents = false) {
 	global $config;
 	
-	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
+	$sql = 'SELECT id_grupo, nombre
+		FROM tgrupo';
 	
 	global $config;
 	
 	if ($groupWithAgents)
-	$sql .= ' WHERE id_grupo IN (SELECT id_grupo FROM tagente GROUP BY id_grupo)';
+	$sql .= ' WHERE id_grupo IN (
+		SELECT id_grupo
+		FROM tagente
+		GROUP BY id_grupo)';
 	
 	switch ($config['dbtype']) {
 		case "mysql":

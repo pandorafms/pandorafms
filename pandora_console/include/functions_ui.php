@@ -588,7 +588,12 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  * 
  * @return string HTML with icon of the OS
  */
-function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false, $relative = false, $options = false) {
+function ui_print_os_icon ($id_os, $name = true, $return = false,
+	$apply_skin = true, $networkmap = false, $only_src = false,
+	$relative = false, $options = false) {
+	
+	
+	
 	$subfolter = 'os_icons';
 	if ($networkmap) {
 		$subfolter = 'networkmap';
@@ -598,7 +603,8 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
 		if ($only_src) {
-			$output = html_print_image("images/" . $subfolter . "/unknown.png", false, $options, true, $relative);
+			$output = html_print_image("images/" . $subfolter . "/unknown.png",
+				true, $options, true, $relative);
 		}
 		else {
 			return "-";

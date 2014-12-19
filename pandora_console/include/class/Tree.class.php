@@ -92,52 +92,52 @@ class Tree {
 		
 		
 		foreach ($groups as $iterator => $group) {
+			$data = reporting_get_group_stats($group['id_grupo']);
+			
 			$groups[$iterator]['counters'] = array();
-			$groups[$iterator]['counters']['ok'] =
-				groups_monitor_ok(array($group['id_grupo']));
-			$groups[$iterator]['counters']['critical'] =
-				groups_monitor_critical(array($group['id_grupo']));
-			$groups[$iterator]['counters']['warning'] =
-				groups_monitor_warning(array($group['id_grupo']));
-			$groups[$iterator]['counters']['unknown'] =
-				groups_monitor_unknown(array($group['id_grupo']));
-			$groups[$iterator]['counters']['not_init'] =
-				groups_monitor_not_init(array($group['id_grupo']));
+			
+			$groups[$iterator]['counters']['unknown'] = $data['agents_unknown'];
+			$groups[$iterator]['counters']['critical'] = $data['agent_critical'];
+			$groups[$iterator]['counters']['warning'] = $data['agent_warning'];
+			$groups[$iterator]['counters']['not_init'] = $data['agent_not_init'];
+			$groups[$iterator]['counters']['ok'] = $data['agent_ok'];
+			$groups[$iterator]['counters']['total'] = $data['total_agents'];
+			$groups[$iterator]['status'] = $data['status'];
+			
+			
+			
 			
 			if ($filter_status != AGENT_STATUS_ALL) {
 				$remove_group = true;
 				switch ($filter_status) {
 					case AGENT_STATUS_NORMAL:
-						if (($count_critical == 0) &&
-							($count_warning == 0) &&
-							($count_unknown == 0) &&
-							($count_not_init == 0)) {
-							
+						if ($groups[$iterator]['status'] === "ok")
 							$remove_group = false;
-						}
 						break;
 					case AGENT_STATUS_WARNING:
-						if ($count_warning > 0)
+						if ($groups[$iterator]['status'] === "warning")
 							$remove_group = false;
 						break;
 					case AGENT_STATUS_CRITICAL:
-						if ($count_critical > 0)
+						if ($groups[$iterator]['status'] === "critical")
 							$remove_group = false;
 						break;
 					case AGENT_STATUS_UNKNOWN:
-						if ($count_unknown > 0)
+						if ($groups[$iterator]['status'] === "unknown")
 							$remove_group = false;
 						break;
 					case AGENT_STATUS_NOT_INIT:
-						if ($count_not_init > 0)
+						if ($groups[$iterator]['status'] === "not_init")
 							$remove_group = false;
 						break;
 				}
 				
-				if ($remove_group)
+				if ($remove_group) {
 					unset($groups[$iterator]);
+					continue;
+				}
 			}
-
+			
 			if (is_null($limit)) {
 				$groups[$iterator]['children'] =
 					$this->getRecursiveGroup($group['id_grupo']);
@@ -148,6 +148,10 @@ class Tree {
 						$group['id_grupo'],
 						($limit - 1));
 			}
+			
+			$groups[$iterator]['type'] = 'group';
+			$groups[$iterator]['name'] = $groups[$iterator]['nombre'];
+			$groups[$iterator]['id'] = $groups[$iterator]['id_grupo'];
 		}
 		
 		if ($parent == 0) {
@@ -172,18 +176,35 @@ class Tree {
 		}
 		
 		$data = $this->getRecursiveGroup($parent, 1);
-		switch ($this->childrenMethod) {
-			case 'on_demand':
-				foreach ($data as $iterator => $item) {
+		
+		// Make the data
+		$this->tree = array();
+		foreach ($data as $item) {
+			$temp = array();
+			$temp['id'] = $item['id'];
+			$temp['type'] = $item['type'];
+			$temp['name'] = $item['name'];
+			$temp['status'] = $item['status'];
+			switch ($this->countAgentStatusMethod) {
+				case 'on_demand':
+					$temp['searchCounters'] = 1;
+					break;
+				case 'live':
+					$temp['searchCounters'] = 0;
+					$temp['counters'] = $item['counters'];
+					break;
+			}
+			switch ($this->childrenMethod) {
+				case 'on_demand':
 					if (!empty($item['children'])) {
-						$data[$iterator]['searchChildren'] = 1;
+						$temp['searchChildren'] = 1;
 						// I hate myself
-						unset($data[$iterator]['children']);
+						// No add children
 					}
 					else {
-						$data[$iterator]['searchChildren'] = 0;
+						$temp['searchChildren'] = 0;
 						// I hate myself
-						unset($data[$iterator]['children']);
+						// No add children
 					}
 					break;
 				case 'live':
@@ -213,6 +234,8 @@ class Tree {
 		
 		foreach ($agents as $iterator => $agent) {
 			$agents[$iterator]['type'] = 'agent';
+			$agents[$iterator]['id'] = $agents[$iterator]['id_agente'];
+			$agents[$iterator]['name'] = $agents[$iterator]['nombre'];
 		}
 		
 		return $agents;

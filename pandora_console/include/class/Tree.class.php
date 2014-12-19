@@ -53,8 +53,8 @@ class Tree {
 			case 'module_group':
 				$this->getDataModuleGroup();
 				break;
-			case 'module':
-				$this->getDataModule();
+			case 'agent':
+				$this->getDataModules();
 				break;
 			case 'tag':
 				$this->getDataTag();
@@ -220,6 +220,51 @@ class Tree {
 		}
 	}
 	
+	public function getDataModules() {
+		$modules =
+			agents_get_modules($this->root, array('nombre', 'id_tipo_modulo'));
+		
+		if (empty($modules))
+			$modules = array();
+		
+		$this->tree = array();
+		foreach ($modules as $id => $module) {
+			$temp = array();
+			
+			$temp['type'] = 'module';
+			$temp['id'] = $id;
+			$temp['name'] = $module['nombre'];
+			$temp['icon'] = modules_get_type_icon(
+				$module['id_tipo_modulo']);
+			$temp['value'] = modules_get_last_value($id);
+			switch (modules_get_status($id)) {
+				case AGENT_MODULE_STATUS_CRITICAL_BAD:
+				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+					$temp['status'] = "critical";
+					break;
+				default:
+				case AGENT_MODULE_STATUS_NORMAL:
+				case AGENT_MODULE_STATUS_NORMAL_ALERT:
+					$temp['status'] = "ok";
+					break;
+				case AGENT_MODULE_STATUS_WARNING:
+				case AGENT_MODULE_STATUS_WARNING_ALERT:
+					$temp['status'] = "warning";
+					break;
+				case AGENT_MODULE_STATUS_UNKNOWN:
+					$temp['status'] = "unknown";
+					break;
+				case AGENT_MODULE_STATUS_NO_DATA:
+				case AGENT_MODULE_STATUS_NOT_INIT:
+					$temp['status'] = "not_init";
+					break;
+			}
+			$temp['children'] = array();
+			
+			$this->tree[] = $temp;
+		}
+	}
+	
 	public function getDataAgents($type, $id) {
 		switch ($type) {
 			case 'group':
@@ -279,15 +324,28 @@ class Tree {
 					break;
 			}
 			
+			$agents[$iterator]['children'] = array();
+			if ($agents[$iterator]['counters']['total'] > 0) {
+				
+				
+				switch ($this->childrenMethod) {
+					case 'on_demand':
+						$agents[$iterator]['children'] = 1;
+						break;
+					case 'live':
+						$modules =
+							agents_get_modules($agents[$iterator]['id_agente']);
+						// TO DO
+						break;
+				}
+			}
+			
 		}
 		
 		return $agents;
 	}
 	
 	public function getDataModuleGroup() {
-	}
-	
-	public function getDataModule() {
 	}
 	
 	public function getDataTag() {

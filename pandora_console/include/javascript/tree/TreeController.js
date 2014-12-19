@@ -81,12 +81,13 @@ TreeController = {
 						case 'group':
 							if (typeof element.icon != 'undefined' && element.icon.length > 0) {
 								$content.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
-									+'images/groups_small/'+element.icon+'.png" />')
+									+'images/groups_small/'+element.icon+'" />')
 							}
 							$content.append(element.name);
 							break;
 						case 'agent':
 							$content.append(element.name);
+							break;
 						case 'module':
 							$content.append(element.name);
 							break;
@@ -96,7 +97,7 @@ TreeController = {
 					}
 
 					// Load the status counters
-					if (typeof element.counters != 'undefined' && element.counters.length > 0) {
+					if (typeof element.counters != 'undefined') {
 						var $counters = $("<div></div>");
 						$counters.addClass('tree-node-counters');
 

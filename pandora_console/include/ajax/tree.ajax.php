@@ -35,7 +35,7 @@ if (is_ajax ()) {
 		$id = (int)get_parameter('id', 0);
 		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
 		$countModuleStatusMethod = get_parameter('countModuleStatusMethod', 'on_demand');
-		$countAgentStatusMethod = get_parameter('countAgentStatusMethod', 'on_demand');
+		$countAgentStatusMethod = get_parameter('countAgentStatusMethod', 'live');
 		
 		$tree = new Tree($type,
 			$id,

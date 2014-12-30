@@ -156,6 +156,9 @@ echo "</div>";
 		parameters['type'] = "<?php echo $tab; ?>";
 		parameters['filter']['search'] = $("input#text-search").val();
 		parameters['filter']['status'] = $("select#status").val();
+		parameters['childrenMethod'] = 'live';
+		parameters['countModuleStatusMethod'] = 'live';
+		parameters['countAgentStatusMethod'] = 'live';
 		
 		$.ajax({
 			type: "POST",

@@ -2924,3 +2924,46 @@ table#policy_modules td * {
 	background-position: 0px 0px;
 	background-repeat: no-repeat;
 }
+
+.tree-node-counters, .tree-node-counter {
+	display: inline;
+}
+
+.tree-node-counters {
+	
+}
+
+.tree-node-counter {
+	font-weight: bold;
+	font-size: 7pt;
+}
+
+
+/* The items with the class 'spinner' will rotate */
+/* Not supported on IE9 and below */
+.spinner {
+	-webkit-animation: spinner 2s infinite linear;
+	animation: spinner 2s infinite linear;
+}
+
+@-webkit-keyframes spinner {
+	0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	100% {
+		-webkit-transform: rotate(359deg);
+		transform: rotate(359deg);
+	}
+}
+
+@keyframes spinner {
+	0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	100% {
+		-webkit-transform: rotate(359deg);
+		transform: rotate(359deg);
+	}
+}

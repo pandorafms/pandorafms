@@ -103,7 +103,6 @@ if (is_ajax ()) {
 			metaconsole_connect($server);
 		}
 		
-		treeview_printTable($id_agent, $server);
 		treeview_printModuleTable($id_module, $server);
 		
 		

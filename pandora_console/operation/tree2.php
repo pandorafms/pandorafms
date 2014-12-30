@@ -170,11 +170,48 @@ echo "</div>";
 						detailRecipient: $("div#tree-controller-detail-recipient"),
 						page: page,
 						tree: data.tree,
-						baseURL: "<?php echo $config['homeurl']; ?>",
-						ajaxURL: "<?php echo $config['homeurl']; ?>ajax.php",
+						baseURL: "<?php echo $config['homeurl'].'/'; ?>",
+						ajaxURL: "<?php echo $config['homeurl'].'/'; ?>ajax.php",
 						filter: {
 							search: parameters['filter']['search'],
 							status: parameters['filter']['status']
+						},
+						counterTitles: {
+							total: {
+								agents: "<?php echo __('Total agents'); ?>",
+								modules: "<?php echo __('Total modules'); ?>",
+								none: "<?php echo __('Total'); ?>"
+							},
+							fired: {
+								agents: "<?php echo __('Fired alerts'); ?>",
+								modules: "<?php echo __('Fired alerts'); ?>",
+								none: "<?php echo __('Fired alerts'); ?>"
+							},
+							critical: {
+								agents: "<?php echo __('Critical agents'); ?>",
+								modules: "<?php echo __('Critical modules'); ?>",
+								none: "<?php echo __('Critical'); ?>"
+							},
+							warning: {
+								agents: "<?php echo __('Warning agents'); ?>",
+								modules: "<?php echo __('Warning modules'); ?>",
+								none: "<?php echo __('Warning'); ?>"
+							},
+							unknown: {
+								agents: "<?php echo __('Unknown agents'); ?>",
+								modules: "<?php echo __('Unknown modules'); ?>",
+								none: "<?php echo __('Unknown'); ?>"
+							},
+							not_init: {
+								agents: "<?php echo __('Not init agents'); ?>",
+								modules: "<?php echo __('Not init modules'); ?>",
+								none: "<?php echo __('Not init'); ?>"
+							},
+							ok: {
+								agents: "<?php echo __('Normal agents'); ?>",
+								modules: "<?php echo __('Normal modules'); ?>",
+								none: "<?php echo __('Normal'); ?>"
+							}
 						}
 					});
 				}

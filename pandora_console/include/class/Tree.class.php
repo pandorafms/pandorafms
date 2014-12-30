@@ -68,10 +68,8 @@ class Tree {
 		html_debug_print($list_os);
 	}
 	
-	private function getRecursiveGroup($parent, $limit = null) {
+	private function getGroupsRecursive($parent, $limit = null, $get_agents = true) {
 		$filter = array();
-		
-		
 		$filter['parent'] = $parent;
 		
 		if (!empty($this->filter['search'])) {
@@ -79,12 +77,9 @@ class Tree {
 		}
 		
 		// First filter by name and father
-		$groups = db_get_all_rows_filter('tgrupo',
-			$filter,
-			array('id_grupo', 'nombre'));
+		$groups = db_get_all_rows_filter('tgrupo', $filter, array('id_grupo', 'nombre'));
 		if (empty($groups))
 			$groups = array();
-		
 		
 		// Filter by status
 		$filter_status = AGENT_STATUS_ALL;
@@ -92,26 +87,24 @@ class Tree {
 			$filter_status = $this->filter['status'];
 		}
 		
-		
-		
 		foreach ($groups as $iterator => $group) {
-			$data = reporting_get_group_stats($group['id_grupo']);
-			
+			// Counters
+			$group_stats = reporting_get_group_stats($group['id_grupo']);
+
+			$groups[$iterator]['counters'] = array();
+			if (!empty($group_stats)) {
+				$groups[$iterator]['counters']['unknown'] = $group_stats['agents_unknown'];
+				$groups[$iterator]['counters']['critical'] = $group_stats['agent_critical'];
+				$groups[$iterator]['counters']['warning'] = $group_stats['agent_warning'];
+				$groups[$iterator]['counters']['not_init'] = $group_stats['agent_not_init'];
+				$groups[$iterator]['counters']['ok'] = $group_stats['agent_ok'];
+				$groups[$iterator]['counters']['total'] = $group_stats['total_agents'];
+			}
+
+			$groups[$iterator]['status'] = $group_stats['status'];
 			$groups[$iterator]['icon'] = groups_get_icon($group['id_grupo']) . '.png';
 			
-			$groups[$iterator]['counters'] = array();
-			
-			$groups[$iterator]['counters']['unknown'] = $data['agents_unknown'];
-			$groups[$iterator]['counters']['critical'] = $data['agent_critical'];
-			$groups[$iterator]['counters']['warning'] = $data['agent_warning'];
-			$groups[$iterator]['counters']['not_init'] = $data['agent_not_init'];
-			$groups[$iterator]['counters']['ok'] = $data['agent_ok'];
-			$groups[$iterator]['counters']['total'] = $data['total_agents'];
-			$groups[$iterator]['status'] = $data['status'];
-			
-			
-			
-			
+			// Filter by status
 			if ($filter_status != AGENT_STATUS_ALL) {
 				$remove_group = true;
 				switch ($filter_status) {
@@ -145,13 +138,36 @@ class Tree {
 			
 			if (is_null($limit)) {
 				$groups[$iterator]['children'] =
-					$this->getRecursiveGroup($group['id_grupo']);
+					$this->getGroupsRecursive($group['id_grupo']);
 			}
 			else if ($limit >= 1) {
 				$groups[$iterator]['children'] =
-					$this->getRecursiveGroup(
+					$this->getGroupsRecursive(
 						$group['id_grupo'],
 						($limit - 1));
+			}
+
+			switch ($this->countAgentStatusMethod) {
+				case 'on_demand':
+					$groups[$iterator]['searchCounters'] = 1;
+					break;
+				case 'live':
+					$groups[$iterator]['searchCounters'] = 0;
+					break;
+			}
+			switch ($this->childrenMethod) {
+				case 'on_demand':
+					// if (!empty($groups[$iterator]['children'])) {
+					// 	$groups[$iterator]['searchChildren'] = 1;
+					// }
+					// else {
+					// 	$groups[$iterator]['searchChildren'] = 0;
+					// }
+					$groups[$iterator]['searchChildren'] = 0;
+					break;
+				case 'live':
+					$groups[$iterator]['searchChildren'] = 0;
+					break;
 			}
 			
 			$groups[$iterator]['type'] = 'group';
@@ -159,120 +175,97 @@ class Tree {
 			$groups[$iterator]['id'] = $groups[$iterator]['id_grupo'];
 		}
 		
-		if ($parent == 0) {
-			$agents = array();
+		if (!empty($parent) && $get_agents) {
+			$agents = $this->getAgents($parent, 'group');
+
+			if (!empty($agents))
+				$groups = array_merge($groups, $agents);
 		}
-		else {
-			$agents = $this->getDataAgents('group', $parent);
-		}
-		
-		$data = array_merge($groups, $agents);
-		
-		return $data;
+
+		return $groups;
 	}
 	
 	public function getDataGroup() {
-		
-		if (!empty($this->root)) {
-			$parent = $this->root;
-		}
-		else {
+		// Get the parent
+		if (empty($this->root))
 			$parent = 0;
-		}
-		
-		$data = $this->getRecursiveGroup($parent, 1);
-		
-		// Make the data
-		$this->tree = array();
-		foreach ($data as $item) {
-			$temp = array();
-			$temp['id'] = $item['id'];
-			$temp['type'] = $item['type'];
-			$temp['name'] = $item['name'];
-			$temp['icon'] = $item['icon'];
-			$temp['status'] = $item['status'];
-			switch ($this->countAgentStatusMethod) {
-				case 'on_demand':
-					$temp['searchCounters'] = 1;
-					break;
-				case 'live':
-					$temp['searchCounters'] = 0;
-					$temp['counters'] = $item['counters'];
-					break;
-			}
-			switch ($this->childrenMethod) {
-				case 'on_demand':
-					if (!empty($item['children'])) {
-						$temp['searchChildren'] = 1;
-						// I hate myself
-						// No add children
-					}
-					else {
-						$temp['searchChildren'] = 0;
-						// I hate myself
-						// No add children
-					}
-					break;
-				case 'live':
-					$temp['searchChildren'] = 0;
-					$temp['children'] = $item['children'];
-					break;
-			}
-			
-			$this->tree[] = $temp;
-		}
+		else
+			$parent = $this->root;
+
+		$groups = $this->getGroupsRecursive($parent);
+
+		if (empty($groups))
+			$groups = array();
+
+		$this->tree = $groups;
 	}
-	
-	public function getDataModules() {
-		$modules =
-			agents_get_modules($this->root, array('nombre', 'id_tipo_modulo'));
+
+	public function getModules ($parent = 0) {
+		$modules = array();
+
+		$modules_aux = agents_get_modules($parent, array('nombre', 'id_tipo_modulo'));
 		
-		if (empty($modules))
-			$modules = array();
+		if (empty($modules_aux))
+			$modules_aux = array();
 		
-		$this->tree = array();
-		foreach ($modules as $id => $module) {
-			$temp = array();
-			
-			$temp['type'] = 'module';
-			$temp['id'] = $id;
-			$temp['name'] = $module['nombre'];
-			$temp['icon'] = modules_get_type_icon(
-				$module['id_tipo_modulo']);
-			$temp['value'] = modules_get_last_value($id);
+		// Process the modules
+		foreach ($modules_aux as $id => $module) {
+			$module['type'] = 'module';
+			$module['id'] = $id;
+			$module['name'] = $module['nombre'];
+			$module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
+			$module['value'] = modules_get_last_value($id);
+
+			// Status
 			switch (modules_get_status($id)) {
 				case AGENT_MODULE_STATUS_CRITICAL_BAD:
 				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-					$temp['status'] = "critical";
-					break;
-				default:
-				case AGENT_MODULE_STATUS_NORMAL:
-				case AGENT_MODULE_STATUS_NORMAL_ALERT:
-					$temp['status'] = "ok";
+					$module['status'] = "critical";
 					break;
 				case AGENT_MODULE_STATUS_WARNING:
 				case AGENT_MODULE_STATUS_WARNING_ALERT:
-					$temp['status'] = "warning";
+					$module['status'] = "warning";
 					break;
 				case AGENT_MODULE_STATUS_UNKNOWN:
-					$temp['status'] = "unknown";
+					$module['status'] = "unknown";
 					break;
 				case AGENT_MODULE_STATUS_NO_DATA:
 				case AGENT_MODULE_STATUS_NOT_INIT:
-					$temp['status'] = "not_init";
+					$module['status'] = "not_init";
+					break;
+				case AGENT_MODULE_STATUS_NORMAL:
+				case AGENT_MODULE_STATUS_NORMAL_ALERT:
+				default:
+					$module['status'] = "ok";
 					break;
 			}
-			$temp['children'] = array();
-			
-			$this->tree[] = $temp;
+
+			$modules[] = $module;
 		}
+
+		return $modules;
 	}
 	
-	public function getDataAgents($type, $id) {
-		switch ($type) {
+	public function getDataModules() {
+		// Get the parent
+		if (empty($this->root))
+			$parent = 0;
+		else
+			$parent = $this->root;
+
+		//$modules = $this->getModules($parent);
+
+		if (empty($modules))
+			$modules = array();
+
+		$this->tree = $modules;
+	}
+
+	public function getAgents ($parent = 0, $parentType = '') {
+		switch ($parentType) {
 			case 'group':
 				$filter = array(
-					'id_grupo' => $id,
+					'id_grupo' => $parent,
 					'status' => $this->filter['status'],
 					'nombre' => "%" . $this->filter['search'] . "%"
 					);
@@ -282,17 +275,19 @@ class Tree {
 					$agents = array();
 				}
 				break;
+			default:
+				return array();
+				break;
 		}
 		
 		foreach ($agents as $iterator => $agent) {
 			$agents[$iterator]['type'] = 'agent';
 			$agents[$iterator]['id'] = $agents[$iterator]['id_agente'];
 			$agents[$iterator]['name'] = $agents[$iterator]['nombre'];
-			$agents[$iterator]['icon'] =
-				ui_print_os_icon(
-					$agents[$iterator]["id_os"], false, true, true,
-					false, true, true);
+			$agents[$iterator]['icon'] = ui_print_os_icon( $agents[$iterator]["id_os"],
+				false, true, true, false, true, true);
 			
+			// Counters
 			$agents[$iterator]['counters'] = array();
 			$agents[$iterator]['counters']['unknown'] =
 				agents_monitor_unknown($agents[$iterator]['id']);
@@ -308,6 +303,8 @@ class Tree {
 				agents_monitor_total($agents[$iterator]['id']);
 			$agents[$iterator]['counters']['alerts'] =
 				agents_get_alerts_fired($agents[$iterator]['id']);
+
+			// Status
 			switch (agents_get_status($agents[$iterator]['id'])) {
 				case AGENT_STATUS_NORMAL:
 					$agents[$iterator]['status'] = "ok";
@@ -329,19 +326,26 @@ class Tree {
 					break;
 			}
 			
-			
+			// Children
 			$agents[$iterator]['children'] = array();
 			if ($agents[$iterator]['counters']['total'] > 0) {
-				
-				
 				switch ($this->childrenMethod) {
 					case 'on_demand':
-						$agents[$iterator]['children'] = 1;
+						$agents[$iterator]['searchChildren'] = 1;
 						break;
 					case 'live':
-						$modules =
-							agents_get_modules($agents[$iterator]['id_agente']);
-						// TO DO
+						$agents[$iterator]['searchChildren'] = 0;
+						$agents[$iterator]['children'] = $this->getModules($agents[$iterator]['id']);
+						break;
+				}
+			}
+			else {
+				switch ($this->childrenMethod) {
+					case 'on_demand':
+						$agents[$iterator]['searchChildren'] = 0;
+						break;
+					case 'live':
+						$agents[$iterator]['searchChildren'] = 0;
 						break;
 				}
 			}
@@ -349,6 +353,10 @@ class Tree {
 		}
 		
 		return $agents;
+	}
+	
+	public function getDataAgents($type, $id) {
+		
 	}
 	
 	public function getDataModuleGroup() {

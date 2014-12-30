@@ -15,22 +15,41 @@ my $SFREE=($SUSED/$STOTAL)*100;
 $SFREE = floor($SFREE); 
 $FREEP = floor($FREEP);
 
+# Added 30/Dec/2014, slerena
+# Available memory as FreeMemory + Cached + SwapCached.
+my $freemem=`cat /proc/meminfo | grep 'MemFree' | awk '{ print \$2 } '`;
+my $cached=`cat /proc/meminfo | grep '^Cached:' | awk '{ print \$2 } '`;
+my $cachedswap=`cat /proc/meminfo | grep '^SwapCached:' | awk '{ print \$2 }'`;
+my $available=$freemem+$cached+$cachedwap;
+my $available_percent = floor(($available / $STOTAL)*100);
+
+
 print "<module>\n";
 print "<name>FreeMemory</name>\n";
 print "<type>generic_data</type>\n";
-print "<description>Free memory %</description>\n";
+print "<description>Free memory %. Note most linux use 99% of available memory by default, check Availablememory module for more accurate information on available physical memory on system</description>\n";
 print "<unit>%</unit>\n";
 print "<min_critical>0</min_critical>\n";
-print "<max_critical>5</max_critical>\n";
+print "<max_critical>2</max_critical>\n";
 print "<data>$FREEP</data>\n";
 print "</module>\n";
 
 print "<module>\n";
 print "<name>FreeSwap</name>\n";
 print "<type>generic_data</type>\n";
-print "<description>Free Swapy %</description>\n";
+print "<description>Free Swap %</description>\n";
+print "<unit>%</unit>\n";
+print "<min_critical>0</min_critical>\n";
+print "<max_critical>5</max_critical>\n";
+print "<data>$SFREE</data>\n";
+print "</module>\n";
+
+print "<module>\n";
+print "<name>AvailableMemory</name>\n";
+print "<type>generic_data</type>\n";
+print "<description>Available Physical Memory % (Free+Cached+CachedSwap)</description>\n";
 print "<unit>%</unit>\n";
 print "<min_critical>0</min_critical>\n";
 print "<max_critical>10</max_critical>\n";
-print "<data>$SFREE</data>\n";
+print "<data>$available_percent</data>\n";
 print "</module>\n";

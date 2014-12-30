@@ -29,6 +29,7 @@ TreeController = {
 			ajaxPage: "include/ajax/tree.ajax",
 			detailRecipient: '',
 			filter: {},
+			counterTitles: {},
 			reload: function () {
 				// Bad recipient
 				if (typeof this.recipient == 'undefined' || this.recipient.length == 0) {
@@ -66,6 +67,226 @@ TreeController = {
 
 					return $group;
 				}
+
+				// Load leaf counters
+				function _processNodeCounters (container, counters, type) {
+					if (typeof counters != 'undefined') {
+						
+						function _processNodeCounterTitle (container, elementType, counterType) {
+							var defaultCounterTitles = {
+								total: {
+									agents: "Total agents",
+									modules: "Total modules",
+									none: "Total"
+								},
+								fired: {
+
+								},
+								critical: {
+									agents: "Critical agents",
+									modules: "Critical modules",
+									none: "Critical"
+								},
+								warning: {
+									agents: "Warning agents",
+									modules: "Warning modules",
+									none: "Warning"
+								},
+								unknown: {
+									agents: "Unknown agents",
+									modules: "Unknown modules",
+									none: "Unknown"
+								},
+								not_init: {
+									agents: "Not init agents",
+									modules: "Not init modules",
+									none: "Not init"
+								},
+								ok: {
+									agents: "Normal agents",
+									modules: "Normal modules",
+									none: "Normal"
+								}
+							}
+
+							try {
+								var title = '';
+								switch (elementType) {
+									case "group":
+										if (typeof controller.counterTitles != 'undefined'
+												&& typeof controller.counterTitles[counterType] != 'undefined'
+												&& typeof controller.counterTitles[counterType].agents != 'undefined') {
+											title = controller.counterTitles[counterType].agents;
+										}
+										else {
+											title = defaultCounterTitles[counterType].agents;
+										}
+										break;
+									case "agent":
+										if (typeof controller.counterTitles != 'undefined'
+												&& typeof controller.counterTitles[counterType] != 'undefined'
+												&& typeof controller.counterTitles[counterType].modules != 'undefined') {
+											title = controller.counterTitles[counterType].modules;
+										}
+										else {
+											title = defaultCounterTitles[counterType].modules;
+										}
+										break;
+									default:
+										if (typeof controller.counterTitles != 'undefined'
+												&& typeof controller.counterTitles[counterType] != 'undefined'
+												&& typeof controller.counterTitles[counterType].none != 'undefined') {
+											title = controller.counterTitles[counterType].none;
+										}
+										else {
+											title = defaultCounterTitles[counterType].none;
+										}
+										break;
+								}
+								if (title.length > 0) {
+									container
+										.prop("title", title)
+										.addClass("forced_title")
+										.data("use_title_for_force_title", 1); // Trick to make easier the 'force title' output
+								}
+							}
+							catch (error) {
+								// console.log(error);
+							}
+						}
+
+						var $counters = $("<div></div>");
+						$counters.addClass('tree-node-counters');
+
+						if (typeof counters.total != 'undefined'
+								&& counters.total > 0) {
+							var $totalCounter = $("<div></div>");
+							$totalCounter
+								.addClass('tree-node-counter')
+								.addClass('total')
+								.html(counters.total);
+							
+							_processNodeCounterTitle($totalCounter, type, "total");
+							
+							// Open the parentheses
+							$counters.append(" (");
+
+							$counters.append($totalCounter);
+
+							if (typeof counters.fired != 'undefined'
+									&& counters.fired > 0) {
+								var $firedCounter = $("<div></div>");
+								$firedCounter
+									.addClass('tree-node-counter')
+									.addClass('fired')
+									.addClass('orange')
+									.html(counters.fired);
+
+								_processNodeCounterTitle($firedCounter, type, "fired");
+
+								$counters
+									.append(" : ")
+									.append($firedCounter);
+							}
+							if (typeof counters.critical != 'undefined'
+									&& counters.critical > 0) {
+								var $criticalCounter = $("<div></div>");
+								$criticalCounter
+									.addClass('tree-node-counter')
+									.addClass('critical')
+									.addClass('red')
+									.html(counters.critical);
+
+								_processNodeCounterTitle($criticalCounter, type, "critical");
+								
+								$counters
+									.append(" : ")
+									.append($criticalCounter);
+							}
+							if (typeof counters.warning != 'undefined'
+									&& counters.warning > 0) {
+								var $warningCounter = $("<div></div>");
+								$warningCounter
+									.addClass('tree-node-counter')
+									.addClass('warning')
+									.addClass('yellow')
+									.html(counters.warning);
+
+								_processNodeCounterTitle($warningCounter, type, "warning");
+								
+								$counters
+									.append(" : ")
+									.append($warningCounter);
+							}
+							if (typeof counters.unknown != 'undefined'
+									&& counters.unknown > 0) {
+								var $unknownCounter = $("<div></div>");
+								$unknownCounter
+									.addClass('tree-node-counter')
+									.addClass('unknown')
+									.addClass('grey')
+									.html(counters.unknown);
+
+								_processNodeCounterTitle($unknownCounter, type, "unknown");
+								
+								$counters
+									.append(" : ")
+									.append($unknownCounter);
+							}
+							if (typeof counters.not_init != 'undefined'
+									&& counters.not_init > 0) {
+								var $notInitCounter = $("<div></div>");
+								$notInitCounter
+									.addClass('tree-node-counter')
+									.addClass('not_init')
+									.addClass('blue')
+									.html(counters.not_init);
+
+								_processNodeCounterTitle($notInitCounter, type, "not_init");
+								
+								$counters
+									.append(" : ")
+									.append($notInitCounter);
+							}
+							if (typeof counters.ok != 'undefined'
+									&& counters.ok > 0) {
+								var $okCounter = $("<div></div>");
+								$okCounter
+									.addClass('tree-node-counter')
+									.addClass('ok')
+									.addClass('green')
+									.html(counters.ok);
+
+								_processNodeCounterTitle($okCounter, type, "ok");
+								
+								$counters
+									.append(" : ")
+									.append($okCounter);
+							}
+
+							// Close the parentheses
+							$counters.append(")");
+						}
+
+						// Add the counters html to the container
+						container.append($counters);
+					}
+					// Load the counters asynchronously
+					// else if (typeof element.searchCounters != 'undefined' && element.searchCounters) {
+					// 	var $counters = $("<div></div>");
+					// 	$counters
+					// 		.addClass('tree-node-counters')
+					// 		.append(' (')
+					// 		.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/spinner.gif" />')
+					// 		.append(')');
+
+					// 	$content.append($counters);
+					// }
+
+					// Add again the hover event to the 'force_callback' elements
+					forced_title_callback();
+				}
+
 				// Load leaf
 				function _processNode (container, element, lastNode, firstNode) {
 					var $node = $("<li></li>");
@@ -97,59 +318,8 @@ TreeController = {
 					}
 
 					// Load the status counters
-					if (typeof element.counters != 'undefined') {
-						var $counters = $("<div></div>");
-						$counters.addClass('tree-node-counters');
-
-
-						$content.append($counters);
-					}
-					// Load the counters asynchronously
-					else if (typeof element.searchCounters != 'undefined' && element.searchCounters) {
-						var $counters = $("<div></div>");
-						$counters
-							.addClass('tree-node-counters')
-							.append(' (')
-							.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/spinner.gif" />')
-							.append(')');
-
-						// $.ajax({
-						// 	url: controller.ajaxURL,
-						// 	type: 'POST',
-						// 	dataType: 'json',
-						// 	data: {
-						// 		page: controller.ajaxPage,
-						// 		getChildren: 1,
-						// 		id: element.id,
-						// 		type: element.type,
-						// 		filter: controller.filter
-						// 	},
-						// 	complete: function(xhr, textStatus) {
-								
-						// 	},
-						// 	success: function(data, textStatus, xhr) {
-						// 		if (data.success) {
-
-						// 			if (typeof data.counters != 'undefined' && data.counters.length > 0) {
-										
-						// 			}
-						// 			else {
-										
-						// 			}
-						// 		}
-						// 		else {
-									
-						// 		}
-						// 	},
-						// 	error: function(xhr, textStatus, errorThrown) {
-								
-						// 	}
-						// });
-
-
-						$content.append($counters);
-					}
-
+					_processNodeCounters($content, element.counters, element.type);
+					
 					// If exist the detail container, show the data
 					if (typeof controller.detailRecipient != 'undefined' && controller.detailRecipient.length > 0) {
 						$content.click(function (e) {
@@ -513,6 +683,9 @@ TreeNodeDetailController = {
 				}
 				if (typeof data.ajaxPage != 'undefined' && data.ajaxPage.length > 0) {
 					this.ajaxPage = data.ajaxPage;
+				}
+				if (typeof data.counterTitles != 'undefined') {
+					this.counterTitles = data.counterTitles;
 				}
 
 				if (typeof TreeNodeDetailController.controllers[this.type] == 'undefined')

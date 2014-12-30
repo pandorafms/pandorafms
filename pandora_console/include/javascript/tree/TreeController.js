@@ -80,7 +80,9 @@ TreeController = {
 									none: "Total"
 								},
 								fired: {
-
+									agents: "Alert fired",
+									modules: "Alert fired",
+									none: "Alert fired"
 								},
 								critical: {
 									agents: "Critical agents",
@@ -348,11 +350,11 @@ TreeController = {
 
 					container.append($node);
 
-					if (typeof element.tree != 'undefined' && element.tree.length > 0) {
+					if (typeof element.children != 'undefined' && element.children.length > 0) {
 						$node.addClass("leaf-closed");
 
 						// Add children
-						var $children = _processGroup($node, element.tree);
+						var $children = _processGroup($node, element.children);
 						$node.data('children', $children);
 
 						$leafIcon.click(function (e) {
@@ -395,13 +397,18 @@ TreeController = {
 										getChildren: 1,
 										id: element.id,
 										type: element.type,
-										filter: controller.filter
+										filter: controller.filter,
+										childrenMethod: 'live',
+										countModuleStatusMethod: 'live',
+										countAgentStatusMethod: 'live'
 									},
 									complete: function(xhr, textStatus) {
 										$node.removeClass("leaf-loading");
 										$node.addClass("children-loaded");
 									},
 									success: function(data, textStatus, xhr) {
+										data = $.parseJSON(data);
+
 										if (data.success) {
 
 											if (typeof data.tree != 'undefined' && data.tree.length > 0) {

@@ -64,7 +64,7 @@ TreeController = {
 						firstNode = rootGroup && index == 0 ? true : false;
 						element.jqObject = _processNode($group, element, lastNode, firstNode);
 					}, $group);
-
+					
 					return $group;
 				}
 
@@ -284,9 +284,6 @@ TreeController = {
 
 					// 	$content.append($counters);
 					// }
-
-					// Add again the hover event to the 'force_callback' elements
-					forced_title_callback();
 				}
 
 				// Load leaf
@@ -471,6 +468,9 @@ TreeController = {
 				$children.show();
 
 				controller.recipient.data('children', $children);
+
+				// Add again the hover event to the 'force_callback' elements
+				forced_title_callback();
 			},
 			load: function () {
 				this.reload();

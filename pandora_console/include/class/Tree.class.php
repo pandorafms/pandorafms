@@ -81,6 +81,7 @@ class Tree {
 
 		$list_os = os_get_os();
 
+		// Transform the os array to use the item id as key
 		if (!empty($list_os)) {
 			$list_os_aux = array();
 			foreach ($list_os as $os) {
@@ -125,7 +126,7 @@ class Tree {
 
 			$this->processModule($module);
 
-			// Module group
+			// OS item
 			if ($actual_os_root['id'] === (int)$value['id_os']) {
 				// Agent
 				if (empty($actual_agent) || $actual_agent['id'] !== (int)$value['id_agente']) {
@@ -151,6 +152,7 @@ class Tree {
 						$actual_os_root['counters'][$actual_agent['status']]++;
 				}
 				else {
+					// Add the module to the agent
 					$actual_agent['children'][] = $module;
 				}
 			}
@@ -163,13 +165,14 @@ class Tree {
 					$nodes[] = $actual_os_root;
 				}
 
-				// Create new module group
+				// Create new os item
 				$actual_os_root = array();
 				$actual_os_root['id'] = (int) $value['id_os'];
+				$actual_os_root['type'] = $this->type;
 
 				if (isset($list_os[$actual_os_root['id']])) {
 					$actual_os_root['name'] = $list_os[$actual_os_root['id']]['name'];
-					$actual_os_root['icon'] = $list_os[$actual_os_root['id']]['icon'];
+					$actual_os_root['icon'] = $list_os[$actual_os_root['id']]['icon_name'];
 				}
 				else {
 					$actual_os_root['name'] = __('Other');
@@ -204,9 +207,9 @@ class Tree {
 					$actual_os_root['counters'][$actual_agent['status']]++;
 			}
 		}
-		// If there is an agent and a module group open and not saved
+		// If there is an agent and an os item opened and not saved
 		if ($actual_os_root['id'] !== null) {
-			// Add the last agent to the module group
+			// Add the last agent to the os item
 			$actual_os_root['children'][] = $actual_agent;
 			// Add the last os to the branch
 			$nodes[] = $actual_os_root;
@@ -709,6 +712,7 @@ class Tree {
 				// Create new module group
 				$actual_module_group_root = array();
 				$actual_module_group_root['id'] = (int) $module['id_module_group'];
+				$actual_module_group_root['type'] = $this->type;
 
 				if (isset($module_groups[$module['id_module_group']])) {
 					$actual_module_group_root['name'] = $module_groups[$module['id_module_group']];
@@ -734,7 +738,7 @@ class Tree {
 					$actual_module_group_root['counters'][$actual_agent['status']]++;
 			}
 		}
-		// If there is an agent and a module group open and not saved
+		// If there is an agent and a module group opened and not saved
 		if ($actual_module_group_root['id'] !== null) {
 			// Add the last agent to the module group
 			$actual_module_group_root['children'][] = $actual_agent;

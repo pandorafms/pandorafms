@@ -65,9 +65,154 @@ class Tree {
 	}
 	
 	public function getDataOS() {
-		$list_os = os_get_os();
 		
-		html_debug_print($list_os);
+		// Get the parent
+		if (empty($this->root))
+			$parent = 0;
+		else
+			$parent = $this->root;
+
+		// ACL Group
+		$group_acl =  "";
+		if (!empty($this->userGroups)) {
+			$user_groups_str = implode(",", $this->userGroups);
+			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+		}
+
+		$list_os = os_get_os();
+
+		if (!empty($list_os)) {
+			$list_os_aux = array();
+			foreach ($list_os as $os) {
+				$list_os_aux[$os['id_os']] = $os;
+			}
+			if (!empty($list_os_aux)) {
+				$list_os = $list_os_aux;
+				unset($list_os_aux);
+			}
+		}
+		if (!empty($list_os)) {
+			$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo,
+						tam.id_tipo_modulo, ta.id_os,
+						ta.id_agente, ta.nombre AS agent_name
+					FROM tagente ta, tagente_modulo tam
+					WHERE ta.id_agente = tam.id_agente
+						$group_acl
+					ORDER BY ta.id_os ASC, ta.id_agente ASC";
+			$data = db_process_sql($sql);
+		}
+
+		if (empty($data)) {
+			$data = array();
+		}
+
+		$nodes = array();
+		$actual_os_root = array(
+				'id' => null,
+				'name' => '',
+				'icon' => '',
+				'children' => array(),
+				'counters' => array()
+			);
+		$actual_agent = array();
+		foreach ($data as $key => $value) {
+
+			// Module
+			$module = array();
+			$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
+			$module['nombre'] = $value['module_name'];
+			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
+
+			$this->processModule($module);
+
+			// Module group
+			if ($actual_os_root['id'] === (int)$value['id_os']) {
+				// Agent
+				if (empty($actual_agent) || $actual_agent['id'] !== (int)$value['id_agente']) {
+					// Add the last agent to the agent module
+					if (!empty($actual_agent))
+						$actual_os_root['children'][] = $actual_agent;
+
+					// Create the new agent
+					$actual_agent = array();
+					$actual_agent['id_agente'] = (int) $value['id_agente'];
+					$actual_agent['nombre'] = $value['agent_name'];
+					$actual_agent['children'] = array();
+
+					$this->processAgent(&$actual_agent, array(), false);
+
+					// Add the module to the agent
+					$actual_agent['children'][] = $module;
+
+					// Increase counters
+					$actual_os_root['counters']['total']++;
+
+					if (isset($actual_os_root['counters'][$actual_agent['status']]))
+						$actual_os_root['counters'][$actual_agent['status']]++;
+				}
+				else {
+					$actual_agent['children'][] = $module;
+				}
+			}
+			else {
+				// The first iteration don't enter here
+				if ($actual_os_root['id'] !== null) {
+					// Add the agent to the module group
+					$actual_os_root['children'][] = $actual_agent;
+					// Add the os the branch
+					$nodes[] = $actual_os_root;
+				}
+
+				// Create new module group
+				$actual_os_root = array();
+				$actual_os_root['id'] = (int) $value['id_os'];
+
+				if (isset($list_os[$actual_os_root['id']])) {
+					$actual_os_root['name'] = $list_os[$actual_os_root['id']]['name'];
+					$actual_os_root['icon'] = $list_os[$actual_os_root['id']]['icon'];
+				}
+				else {
+					$actual_os_root['name'] = __('Other');
+					$actual_os_root['icon'] = 'so_other.png';
+				}
+				
+				// Create the new agent
+				$actual_agent = array();
+				$actual_agent['id_agente'] = (int) $value['id_agente'];
+				$actual_agent['nombre'] = $value['agent_name'];
+				$actual_agent['children'] = array();
+
+				$this->processAgent(&$actual_agent, array(), false);
+
+				// Add the module to the agent
+				$actual_agent['children'][] = $module;
+
+				// Initialize counters
+				$actual_os_root['counters'] = array();
+				$actual_os_root['counters']['total'] = 0;
+				$actual_os_root['counters']['alerts'] = 0;
+				$actual_os_root['counters']['critical'] = 0;
+				$actual_os_root['counters']['warning'] = 0;
+				$actual_os_root['counters']['unknown'] = 0;
+				$actual_os_root['counters']['not_init'] = 0;
+				$actual_os_root['counters']['ok'] = 0;
+
+				// Increase counters
+				$actual_os_root['counters']['total']++;
+
+				if (isset($actual_os_root['counters'][$actual_agent['status']]))
+					$actual_os_root['counters'][$actual_agent['status']]++;
+			}
+		}
+		// If there is an agent and a module group open and not saved
+		if ($actual_os_root['id'] !== null) {
+			// Add the last agent to the module group
+			$actual_os_root['children'][] = $actual_agent;
+			// Add the last os to the branch
+			$nodes[] = $actual_os_root;
+		}
+
+		$this->tree = $nodes;
 	}
 	
 	private function getGroupsRecursive($parent, $limit = null, $get_agents = true) {

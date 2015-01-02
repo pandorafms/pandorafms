@@ -585,8 +585,8 @@ class Tree {
 				// Increase counters
 				$actual_module_group_root['counters']['total']++;
 
-				if (isset($actual_module_group_root['counters'][$agent['status']]))
-					$actual_module_group_root['counters'][$agent['status']]++;
+				if (isset($actual_module_group_root['counters'][$actual_agent['status']]))
+					$actual_module_group_root['counters'][$actual_agent['status']]++;
 			}
 		}
 		// If there is an agent and a module group open and not saved

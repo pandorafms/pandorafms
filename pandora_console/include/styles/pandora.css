@@ -2925,6 +2925,11 @@ table#policy_modules td * {
 	background-repeat: no-repeat;
 }
 
+.tree-node>.node-content>img {
+	max-height: 20px;
+	max-width: 20px;
+}
+
 .tree-node-counters, .tree-node-counter {
 	display: inline;
 }

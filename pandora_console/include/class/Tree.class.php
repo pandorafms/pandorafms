@@ -207,9 +207,9 @@ class Tree {
 
 	private function processModule (&$module) {
 		$module['type'] = 'module';
-		$module['id'] = $module['id_agente_modulo'];
+		$module['id'] = (int) $module['id_agente_modulo'];
 		$module['name'] = $module['nombre'];
-		$module['id_module_type'] = $module['id_tipo_modulo'];
+		$module['id_module_type'] = (int) $module['id_tipo_modulo'];
 		// $module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
 		$module['value'] = modules_get_last_value($module['id']);
 
@@ -353,7 +353,7 @@ class Tree {
 
 	private function processAgent (&$agent, $modulesFilter = array(), $searchChildren = true) {
 		$agent['type'] = 'agent';
-		$agent['id'] = $agent['id_agente'];
+		$agent['id'] = (int) $agent['id_agente'];
 		$agent['name'] = $agent['nombre'];
 		
 		// Counters
@@ -512,17 +512,6 @@ class Tree {
 
 			$this->processModule($module);
 
-
-
-
-			// $agent = array();
-			// $agent['id_agente'] = $value['id_agente'];
-			// $agent['nombre'] = $value['agent_name'];
-
-			// $this->processAgent(&$agent, array(), false);
-
-			// $agent['children'] = array($module);
-
 			// Module group
 			if ($actual_module_group_root['id'] === $module['id_module_group']) {
 				// Agent
@@ -533,7 +522,7 @@ class Tree {
 
 					// Create the new agent
 					$actual_agent = array();
-					$actual_agent['id_agente'] = $value['id_agente'];
+					$actual_agent['id_agente'] = (int) $value['id_agente'];
 					$actual_agent['nombre'] = $value['agent_name'];
 					$actual_agent['children'] = array();
 
@@ -553,15 +542,28 @@ class Tree {
 				}
 			}
 			else {
+				// The first iteration don't enter here
 				if ($actual_module_group_root['id'] !== null) {
+					// Add the agent to the module group
 					$actual_module_group_root['children'][] = $actual_agent;
+					// Add the module group to the branch
 					$nodes[] = $actual_module_group_root;
 				}
 
+				// Create the new agent
+				$actual_agent = array();
+				$actual_agent['id_agente'] = (int) $value['id_agente'];
+				$actual_agent['nombre'] = $value['agent_name'];
+				$actual_agent['children'] = array();
+
+				$this->processAgent(&$actual_agent, array(), false);
+
+				// Add the module to the agent
+				$actual_agent['children'][] = $module;
+
 				// Create new module group
 				$actual_module_group_root = array();
-				$actual_module_group_root['id'] = $module['id_module_group'];
-				$actual_module_group_root['children'] = array($agent);
+				$actual_module_group_root['id'] = (int) $module['id_module_group'];
 
 				if (isset($module_groups[$module['id_module_group']])) {
 					$actual_module_group_root['name'] = $module_groups[$module['id_module_group']];
@@ -587,8 +589,11 @@ class Tree {
 					$actual_module_group_root['counters'][$agent['status']]++;
 			}
 		}
+		// If there is an agent and a module group open and not saved
 		if ($actual_module_group_root['id'] !== null) {
+			// Add the last agent to the module group
 			$actual_module_group_root['children'][] = $actual_agent;
+			// Add the last module group to the branch
 			$nodes[] = $actual_module_group_root;
 		}
 

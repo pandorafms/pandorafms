@@ -21,6 +21,8 @@ class Tree {
 	private $childrenMethod = "on_demand";
 	private $countModuleStatusMethod = "on_demand";
 	private $countAgentStatusMethod = "on_demand";
+
+	private $userGroups;
 	
 	public function  __construct($type, $root = null,
 		$childrenMethod = "on_demand",
@@ -53,7 +55,7 @@ class Tree {
 			case 'module_group':
 				$this->getDataModuleGroup();
 				break;
-			case 'agent':
+			case 'module':
 				$this->getDataModules();
 				break;
 			case 'tag':
@@ -75,6 +77,9 @@ class Tree {
 		if (!empty($this->filter['search'])) {
 			$filter['nombre'] = "%" . $this->filter['search'] . "%";
 		}
+		// ACL groups
+		if (!empty($this->userGroups))
+			$filter['id_grupo'] = $this->userGroups;
 		
 		// First filter by name and father
 		$groups = db_get_all_rows_filter('tgrupo', $filter, array('id_grupo', 'nombre'));
@@ -200,48 +205,59 @@ class Tree {
 		$this->tree = $groups;
 	}
 
-	public function getModules ($parent = 0) {
+	private function processModule (&$module) {
+		$module['type'] = 'module';
+		$module['id'] = $module['id_agente_modulo'];
+		$module['name'] = $module['nombre'];
+		$module['id_module_type'] = $module['id_tipo_modulo'];
+		// $module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
+		$module['value'] = modules_get_last_value($module['id']);
+
+		// Status
+		switch (modules_get_status($module['id'])) {
+			case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+				$module['status'] = "critical";
+				break;
+			case AGENT_MODULE_STATUS_WARNING:
+			case AGENT_MODULE_STATUS_WARNING_ALERT:
+				$module['status'] = "warning";
+				break;
+			case AGENT_MODULE_STATUS_UNKNOWN:
+				$module['status'] = "unknown";
+				break;
+			case AGENT_MODULE_STATUS_NO_DATA:
+			case AGENT_MODULE_STATUS_NOT_INIT:
+				$module['status'] = "not_init";
+				break;
+			case AGENT_MODULE_STATUS_NORMAL:
+			case AGENT_MODULE_STATUS_NORMAL_ALERT:
+			default:
+				$module['status'] = "ok";
+				break;
+		}
+	}
+
+	private function processModules ($modules_aux, &$modules) {
+		if (!empty($modules_aux)) {
+			foreach ($modules_aux as $module) {
+				$this->processModule($module);
+				$modules[] = $module;
+			}
+		}
+	}
+
+	public function getModules ($parent = 0, $filter = array()) {
 		$modules = array();
 
-		$modules_aux = agents_get_modules($parent, array('nombre', 'id_tipo_modulo'));
+		$modules_aux = agents_get_modules($parent,
+			array('id_agente_modulo', 'nombre', 'id_tipo_modulo'), $filter);
 		
 		if (empty($modules_aux))
 			$modules_aux = array();
 		
 		// Process the modules
-		foreach ($modules_aux as $id => $module) {
-			$module['type'] = 'module';
-			$module['id'] = $id;
-			$module['name'] = $module['nombre'];
-			$module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
-			$module['value'] = modules_get_last_value($id);
-
-			// Status
-			switch (modules_get_status($id)) {
-				case AGENT_MODULE_STATUS_CRITICAL_BAD:
-				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-					$module['status'] = "critical";
-					break;
-				case AGENT_MODULE_STATUS_WARNING:
-				case AGENT_MODULE_STATUS_WARNING_ALERT:
-					$module['status'] = "warning";
-					break;
-				case AGENT_MODULE_STATUS_UNKNOWN:
-					$module['status'] = "unknown";
-					break;
-				case AGENT_MODULE_STATUS_NO_DATA:
-				case AGENT_MODULE_STATUS_NOT_INIT:
-					$module['status'] = "not_init";
-					break;
-				case AGENT_MODULE_STATUS_NORMAL:
-				case AGENT_MODULE_STATUS_NORMAL_ALERT:
-				default:
-					$module['status'] = "ok";
-					break;
-			}
-
-			$modules[] = $module;
-		}
+		$this->processModules($modules_aux, $modules);
 
 		return $modules;
 	}
@@ -253,24 +269,181 @@ class Tree {
 		else
 			$parent = $this->root;
 
-		//$modules = $this->getModules($parent);
+		// ACL Group
+		$group_acl =  "";
+		if (!empty($this->userGroups)) {
+			$user_groups_str = implode(",", $this->userGroups);
+			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+		}
 
-		if (empty($modules))
-			$modules = array();
+		$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo, tam.id_tipo_modulo,
+					ta.id_agente, ta.nombre AS agent_name
+				FROM tagente ta, tagente_modulo tam
+				WHERE ta.id_agente = tam.id_agente
+					$group_acl
+				ORDER BY tam.nombre";
+		$data = db_process_sql($sql);
+
+		if (empty($data)) {
+			$data = array();
+		}
+
+		$modules = array();
+		$actual_module_root = array(
+				'name' => '',
+				'children' => array(),
+				'counters' => array()
+			);
+		foreach ($data as $key => $value) {
+			$agent = array();
+			$agent['id_agente'] = $value['id_agente'];
+			$agent['nombre'] = $value['agent_name'];
+
+			$this->processAgent(&$agent, array(), false);
+
+			$module = array();
+			$module['id_agente_modulo'] = $value['id_agente_modulo'];
+			$module['nombre'] = $value['module_name'];
+			$module['id_tipo_modulo'] = $value['id_tipo_modulo'];
+
+			$this->processModule($module);
+
+			$agent['children'] = array($module);
+
+			if ($actual_module_root['name'] == $module['name']) {
+				$actual_module_root['children'][] = $agent;
+
+				// Increase counters
+				$actual_module_root['counters']['total']++;
+
+				if (isset($actual_module_root['counters'][$agent['status']]))
+					$actual_module_root['counters'][$agent['status']]++;
+			}
+			else {
+				if (!empty($actual_module_root['name']))
+					$modules[] = $actual_module_root;
+
+				$actual_module_root = array();
+				$actual_module_root['name'] = $module['name'];
+				$actual_module_root['children'] = array($agent);
+
+				// Initialize counters
+				$actual_module_root['counters'] = array();
+				$actual_module_root['counters']['total'] = 0;
+				$actual_module_root['counters']['alerts'] = 0;
+				$actual_module_root['counters']['critical'] = 0;
+				$actual_module_root['counters']['warning'] = 0;
+				$actual_module_root['counters']['unknown'] = 0;
+				$actual_module_root['counters']['not_init'] = 0;
+				$actual_module_root['counters']['ok'] = 0;
+
+				// Increase counters
+				$actual_module_root['counters']['total']++;
+
+				if (isset($actual_module_root['counters'][$agent['status']]))
+					$actual_module_root['counters'][$agent['status']]++;
+			}
+		}
+		if (!empty($actual_module_root['name'])) {
+			$modules[] = $actual_module_root;
+		}
 
 		$this->tree = $modules;
+	}
+
+	private function processAgent (&$agent, $modulesFilter = array(), $searchChildren = true) {
+		$agent['type'] = 'agent';
+		$agent['id'] = $agent['id_agente'];
+		$agent['name'] = $agent['nombre'];
+		
+		// Counters
+		$agent['counters'] = array();
+		$agent['counters']['unknown'] =
+			agents_monitor_unknown($agent['id']);
+		$agent['counters']['critical'] =
+			agents_monitor_critical($agent['id']);
+		$agent['counters']['warning'] =
+			agents_monitor_warning($agent['id']);
+		$agent['counters']['not_init'] =
+			agents_monitor_notinit($agent['id']);
+		$agent['counters']['ok'] =
+			agents_monitor_ok($agent['id']);
+		$agent['counters']['total'] =
+			agents_monitor_total($agent['id']);
+		$agent['counters']['alerts'] =
+			agents_get_alerts_fired($agent['id']);
+
+		// Status
+		switch (agents_get_status($agent['id'])) {
+			case AGENT_STATUS_NORMAL:
+				$agent['status'] = "ok";
+				break;
+			case AGENT_STATUS_WARNING:
+				$agent['status'] = "warning";
+				break;
+			case AGENT_STATUS_CRITICAL:
+				$agent['status'] = "critical";
+				break;
+			case AGENT_STATUS_UNKNOWN:
+				$agent['status'] = "unknown";
+				break;
+			case AGENT_STATUS_NOT_INIT:
+				$agent['status'] = "not_init";
+				break;
+			default:
+				$agent['status'] = "none";
+				break;
+		}
+		
+		// Children
+		$agent['children'] = array();
+		if ($agent['counters']['total'] > 0) {
+			switch ($this->childrenMethod) {
+				case 'on_demand':
+					$agent['searchChildren'] = 1;
+					break;
+				case 'live':
+					$agent['searchChildren'] = 0;
+
+					if ($searchChildren)
+						$agent['children'] = $this->getModules($agent['id'], $modulesFilter);
+					break;
+			}
+		}
+		else {
+			switch ($this->childrenMethod) {
+				case 'on_demand':
+					$agent['searchChildren'] = 0;
+					break;
+				case 'live':
+					$agent['searchChildren'] = 0;
+					break;
+			}
+		}
+	}
+
+	private function processAgents (&$agents, $modulesFilter = array()) {
+		if (!empty($agents)) {
+			foreach ($agents as $iterator => $agent) {
+				$this->processAgent($agents[$iterator], $modulesFilter);
+			}
+		}
 	}
 
 	public function getAgents ($parent = 0, $parentType = '') {
 		switch ($parentType) {
 			case 'group':
+				// ACL Groups
+				if (!empty($this->userGroups) && !empty($parent)) {
+					if (!isset($this->userGroups[$parent]))
+						return array();
+				}
 				$filter = array(
 					'id_grupo' => $parent,
 					'status' => $this->filter['status'],
 					'nombre' => "%" . $this->filter['search'] . "%"
 					);
-				$agents = agents_get_agents($filter,
-					array('id_agente', 'nombre', 'id_os'));
+				$agents = agents_get_agents($filter, array('id_agente', 'nombre'));
 				if (empty($agents)) {
 					$agents = array();
 				}
@@ -280,77 +453,7 @@ class Tree {
 				break;
 		}
 		
-		foreach ($agents as $iterator => $agent) {
-			$agents[$iterator]['type'] = 'agent';
-			$agents[$iterator]['id'] = $agents[$iterator]['id_agente'];
-			$agents[$iterator]['name'] = $agents[$iterator]['nombre'];
-			$agents[$iterator]['icon'] = ui_print_os_icon( $agents[$iterator]["id_os"],
-				false, true, true, false, true, true);
-			
-			// Counters
-			$agents[$iterator]['counters'] = array();
-			$agents[$iterator]['counters']['unknown'] =
-				agents_monitor_unknown($agents[$iterator]['id']);
-			$agents[$iterator]['counters']['critical'] =
-				agents_monitor_critical($agents[$iterator]['id']);
-			$agents[$iterator]['counters']['warning'] =
-				agents_monitor_warning($agents[$iterator]['id']);
-			$agents[$iterator]['counters']['not_init'] =
-				agents_monitor_notinit($agents[$iterator]['id']);
-			$agents[$iterator]['counters']['ok'] =
-				agents_monitor_ok($agents[$iterator]['id']);
-			$agents[$iterator]['counters']['total'] =
-				agents_monitor_total($agents[$iterator]['id']);
-			$agents[$iterator]['counters']['alerts'] =
-				agents_get_alerts_fired($agents[$iterator]['id']);
-
-			// Status
-			switch (agents_get_status($agents[$iterator]['id'])) {
-				case AGENT_STATUS_NORMAL:
-					$agents[$iterator]['status'] = "ok";
-					break;
-				case AGENT_STATUS_WARNING:
-					$agents[$iterator]['status'] = "warning";
-					break;
-				case AGENT_STATUS_CRITICAL:
-					$agents[$iterator]['status'] = "critical";
-					break;
-				case AGENT_STATUS_UNKNOWN:
-					$agents[$iterator]['status'] = "unknown";
-					break;
-				case AGENT_STATUS_NOT_INIT:
-					$agents[$iterator]['status'] = "not_init";
-					break;
-				default:
-					$agents[$iterator]['status'] = "none";
-					break;
-			}
-			
-			// Children
-			$agents[$iterator]['children'] = array();
-			if ($agents[$iterator]['counters']['total'] > 0) {
-				switch ($this->childrenMethod) {
-					case 'on_demand':
-						$agents[$iterator]['searchChildren'] = 1;
-						break;
-					case 'live':
-						$agents[$iterator]['searchChildren'] = 0;
-						$agents[$iterator]['children'] = $this->getModules($agents[$iterator]['id']);
-						break;
-				}
-			}
-			else {
-				switch ($this->childrenMethod) {
-					case 'on_demand':
-						$agents[$iterator]['searchChildren'] = 0;
-						break;
-					case 'live':
-						$agents[$iterator]['searchChildren'] = 0;
-						break;
-				}
-			}
-			
-		}
+		$this->processAgents($agents);
 		
 		return $agents;
 	}
@@ -360,6 +463,136 @@ class Tree {
 	}
 	
 	public function getDataModuleGroup() {
+		// Get the parent
+		if (empty($this->root))
+			$parent = 0;
+		else
+			$parent = $this->root;
+
+		// ACL Group
+		$group_acl =  "";
+		if (!empty($this->userGroups)) {
+			$user_groups_str = implode(",", $this->userGroups);
+			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+		}
+
+		$module_groups = modules_get_modulegroups();
+
+		if (!empty($module_groups)) {
+			$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo,
+						tam.id_tipo_modulo, tam.id_module_group,
+						ta.id_agente, ta.nombre AS agent_name
+					FROM tagente ta, tagente_modulo tam
+					WHERE ta.id_agente = tam.id_agente
+						$group_acl
+					ORDER BY tam.id_module_group ASC, ta.id_agente ASC";
+			$data = db_process_sql($sql);
+		}
+
+		if (empty($data)) {
+			$data = array();
+		}
+
+		$nodes = array();
+		$actual_module_group_root = array(
+				'id' => null,
+				'name' => '',
+				'children' => array(),
+				'counters' => array()
+			);
+		$actual_agent = array();
+		foreach ($data as $key => $value) {
+
+			// Module
+			$module = array();
+			$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
+			$module['nombre'] = $value['module_name'];
+			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
+			$module['id_module_group'] = (int) $value['id_module_group'];
+
+			$this->processModule($module);
+
+
+
+
+			// $agent = array();
+			// $agent['id_agente'] = $value['id_agente'];
+			// $agent['nombre'] = $value['agent_name'];
+
+			// $this->processAgent(&$agent, array(), false);
+
+			// $agent['children'] = array($module);
+
+			// Module group
+			if ($actual_module_group_root['id'] === $module['id_module_group']) {
+				// Agent
+				if (empty($actual_agent) || $actual_agent['id'] !== (int)$value['id_agente']) {
+					// Add the last agent to the agent module
+					if (!empty($actual_agent))
+						$actual_module_group_root['children'][] = $actual_agent;
+
+					// Create the new agent
+					$actual_agent = array();
+					$actual_agent['id_agente'] = $value['id_agente'];
+					$actual_agent['nombre'] = $value['agent_name'];
+					$actual_agent['children'] = array();
+
+					$this->processAgent(&$actual_agent, array(), false);
+
+					// Add the module to the agent
+					$actual_agent['children'][] = $module;
+
+					// Increase counters
+					$actual_module_group_root['counters']['total']++;
+
+					if (isset($actual_module_group_root['counters'][$actual_agent['status']]))
+						$actual_module_group_root['counters'][$actual_agent['status']]++;
+				}
+				else {
+					$actual_agent['children'][] = $module;
+				}
+			}
+			else {
+				if ($actual_module_group_root['id'] !== null) {
+					$actual_module_group_root['children'][] = $actual_agent;
+					$nodes[] = $actual_module_group_root;
+				}
+
+				// Create new module group
+				$actual_module_group_root = array();
+				$actual_module_group_root['id'] = $module['id_module_group'];
+				$actual_module_group_root['children'] = array($agent);
+
+				if (isset($module_groups[$module['id_module_group']])) {
+					$actual_module_group_root['name'] = $module_groups[$module['id_module_group']];
+				}
+				else {
+					$actual_module_group_root['name'] = __('Not assigned');
+				}
+				
+				// Initialize counters
+				$actual_module_group_root['counters'] = array();
+				$actual_module_group_root['counters']['total'] = 0;
+				$actual_module_group_root['counters']['alerts'] = 0;
+				$actual_module_group_root['counters']['critical'] = 0;
+				$actual_module_group_root['counters']['warning'] = 0;
+				$actual_module_group_root['counters']['unknown'] = 0;
+				$actual_module_group_root['counters']['not_init'] = 0;
+				$actual_module_group_root['counters']['ok'] = 0;
+
+				// Increase counters
+				$actual_module_group_root['counters']['total']++;
+
+				if (isset($actual_module_group_root['counters'][$agent['status']]))
+					$actual_module_group_root['counters'][$agent['status']]++;
+			}
+		}
+		if ($actual_module_group_root['id'] !== null) {
+			$actual_module_group_root['children'][] = $actual_agent;
+			$nodes[] = $actual_module_group_root;
+		}
+
+		$this->tree = $nodes;
 	}
 	
 	public function getDataTag() {

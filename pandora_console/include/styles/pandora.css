@@ -2936,6 +2936,7 @@ table#policy_modules td * {
 .tree-node-counter {
 	font-weight: bold;
 	font-size: 7pt;
+	cursor: default;
 }
 
 

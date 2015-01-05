@@ -29,3 +29,8 @@ CREATE TABLE "tuser_double_auth" (
 	"id_user" varchar(60) NOT NULL UNIQUE REFERENCES "tusuario"("id_user") ON DELETE CASCADE,
 	"secret" varchar(20) NOT NULL
 );
+
+-- ----------------------------------------------------------------------
+-- Table `ttipo_modulo`
+-- ----------------------------------------------------------------------
+INSERT INTO "ttipo_modulo" VALUES (5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png');

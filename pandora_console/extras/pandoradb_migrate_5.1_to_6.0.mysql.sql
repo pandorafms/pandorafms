@@ -43,3 +43,9 @@ CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
 	UNIQUE (`id_user`),
 	FOREIGN KEY (`id_user`) REFERENCES tusuario(`id_user`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `ttipo_modulo`
+-- ----------------------------------------------------------------------
+INSERT INTO `ttipo_modulo` VALUES (5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png');
+

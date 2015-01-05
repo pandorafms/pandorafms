@@ -21,6 +21,7 @@ if (is_ajax ()) {
 	check_login ();
 	
 	require_once($config['homedir'] . "/include/class/Tree.class.php");
+	enterprise_include_once("include/class/Tree.class.php");
 	require_once($config['homedir'] . "/include/functions_reporting.php");
 	require_once($config['homedir'] . "/include/functions_os.php");
 	
@@ -38,12 +39,23 @@ if (is_ajax ()) {
 		$countModuleStatusMethod = get_parameter('countModuleStatusMethod', 'on_demand');
 		$countAgentStatusMethod = get_parameter('countAgentStatusMethod', 'live');
 		
-		$tree = new Tree($type,
-			$id,
-			$childrenMethod,
-			$countModuleStatusMethod,
-			$countAgentStatusMethod
-			);
+		if (class_exists('TreeEnterprise')) {
+			$tree = new TreeEnterprise($type,
+					$id,
+					$childrenMethod,
+					$countModuleStatusMethod,
+					$countAgentStatusMethod
+				);
+		}
+		else {
+			$tree = new Tree($type,
+					$id,
+					$childrenMethod,
+					$countModuleStatusMethod,
+					$countAgentStatusMethod
+				);
+		}
+		
 		$tree->setFilter(array(
 			'status' => $filter['status'],
 			'search' => $filter['search']));

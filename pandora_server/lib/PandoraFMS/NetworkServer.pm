@@ -102,7 +102,7 @@ sub data_producer ($) {
 		WHERE server_name = ?
 		AND tagente_modulo.id_agente = tagente.id_agente
 		AND tagente.disabled = 0
-		AND tagente_modulo.id_tipo_modulo > 4
+		AND tagente_modulo.id_tipo_modulo > 5
 		AND tagente_modulo.id_tipo_modulo < 19 '
 		. (defined ($network_filter) ? $network_filter : ' ') .
 		'AND tagente_modulo.disabled = 0
@@ -116,7 +116,7 @@ sub data_producer ($) {
 		AND tagente_modulo.id_agente = tagente.id_agente
 		AND tagente.disabled = 0
 		AND tagente_modulo.disabled = 0
-		AND tagente_modulo.id_tipo_modulo > 4
+		AND tagente_modulo.id_tipo_modulo > 5
 		AND tagente_modulo.id_tipo_modulo < 19 '
 		. (defined ($network_filter) ? $network_filter : ' ') .
 		'AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo

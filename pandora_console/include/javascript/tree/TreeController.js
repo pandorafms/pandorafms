@@ -301,7 +301,7 @@ TreeController = {
 						case 'group':
 							if (typeof element.icon != 'undefined' && element.icon.length > 0) {
 								$content.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
-									+'images/groups_small/'+element.icon+'" /> ')
+									+'images/groups_small/'+element.icon+'" /> ');
 							}
 							$content.append(element.name);
 							break;
@@ -314,7 +314,18 @@ TreeController = {
 						case 'os':
 							if (typeof element.icon != 'undefined' && element.icon.length > 0) {
 								$content.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
-									+'images/os_icons/'+element.icon+'" /> ')
+									+'images/os_icons/'+element.icon+'" /> ');
+							}
+							$content.append(element.name);
+							break;
+						case 'tag':
+							if (typeof element.icon != 'undefined' && element.icon.length > 0) {
+								$content.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+									+'images/os_icons/'+element.icon+'" /> ');
+							}
+							else {
+								$content.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+									+'images/tag_red.png" /> ');
 							}
 							$content.append(element.name);
 							break;

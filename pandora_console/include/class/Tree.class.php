@@ -229,7 +229,7 @@ class Tree {
 		$this->tree = $nodes;
 	}
 	
-	private function getGroupsRecursive($parent, $limit = null, $get_agents = true) {
+	protected function getGroupsRecursive($parent, $limit = null, $get_agents = true) {
 		$filter = array();
 		$filter['parent'] = $parent;
 		
@@ -367,7 +367,7 @@ class Tree {
 		$this->tree = $groups;
 	}
 
-	private function processModule (&$module) {
+	protected function processModule (&$module) {
 		$module['type'] = 'module';
 		$module['id'] = (int) $module['id_agente_modulo'];
 		$module['name'] = $module['nombre'];
@@ -400,7 +400,7 @@ class Tree {
 		}
 	}
 
-	private function processModules ($modules_aux, &$modules) {
+	protected function processModules ($modules_aux, &$modules) {
 		if (!empty($modules_aux)) {
 			foreach ($modules_aux as $module) {
 				$this->processModule($module);
@@ -409,7 +409,7 @@ class Tree {
 		}
 	}
 
-	private function getModules ($parent = 0, $filter = array()) {
+	protected function getModules ($parent = 0, $filter = array()) {
 		$modules = array();
 
 		$modules_aux = agents_get_modules($parent,
@@ -518,7 +518,7 @@ class Tree {
 		$this->tree = $modules;
 	}
 
-	private function processAgent (&$agent, $modulesFilter = array(), $searchChildren = true) {
+	protected function processAgent (&$agent, $modulesFilter = array(), $searchChildren = true) {
 		$agent['type'] = 'agent';
 		$agent['id'] = (int) $agent['id_agente'];
 		$agent['name'] = $agent['nombre'];
@@ -589,7 +589,7 @@ class Tree {
 		}
 	}
 
-	private function processAgents (&$agents, $modulesFilter = array()) {
+	protected function processAgents (&$agents, $modulesFilter = array()) {
 		if (!empty($agents)) {
 			foreach ($agents as $iterator => $agent) {
 				$this->processAgent($agents[$iterator], $modulesFilter);
@@ -597,7 +597,7 @@ class Tree {
 		}
 	}
 
-	private function getAgents ($parent = 0, $parentType = '') {
+	protected function getAgents ($parent = 0, $parentType = '') {
 		switch ($parentType) {
 			case 'group':
 				// ACL Groups

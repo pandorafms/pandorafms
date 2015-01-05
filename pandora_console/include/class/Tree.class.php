@@ -14,15 +14,15 @@
 // GNU General Public License for more details.
 
 class Tree {
-	private $type = null;
-	private $tree = array();
-	private $filter = array();
-	private $root = null;
-	private $childrenMethod = "on_demand";
-	private $countModuleStatusMethod = "on_demand";
-	private $countAgentStatusMethod = "on_demand";
+	protected $type = null;
+	protected $tree = array();
+	protected $filter = array();
+	protected $root = null;
+	protected $childrenMethod = "on_demand";
+	protected $countModuleStatusMethod = "on_demand";
+	protected $countAgentStatusMethod = "on_demand";
 
-	private $userGroups;
+	protected $userGroups;
 	
 	public function  __construct($type, $root = null,
 		$childrenMethod = "on_demand",
@@ -61,10 +61,16 @@ class Tree {
 			case 'tag':
 				$this->getDataTag();
 				break;
+			default:
+				$this->getDataExtended();
 		}
 	}
+
+	protected function getDataExtended () {
+		// Override this method to add new types
+	}
 	
-	public function getDataOS() {
+	private function getDataOS() {
 		
 		// Get the parent
 		if (empty($this->root))
@@ -75,7 +81,7 @@ class Tree {
 		// ACL Group
 		$group_acl =  "";
 		if (!empty($this->userGroups)) {
-			$user_groups_str = implode(",", $this->userGroups);
+			$user_groups_str = implode(",", array_keys($this->userGroups));
 			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 		}
 
@@ -98,10 +104,12 @@ class Tree {
 						ta.id_agente, ta.nombre AS agent_name
 					FROM tagente ta, tagente_modulo tam
 					WHERE ta.id_agente = tam.id_agente
+						AND ta.disabled = 0
+						AND tam.disabled = 0
 						$group_acl
 					ORDER BY ta.id_os ASC, ta.id_agente ASC";
 			$data = db_process_sql($sql);
-		}
+		}html_debug_print($group_acl, true);
 
 		if (empty($data)) {
 			$data = array();
@@ -130,7 +138,7 @@ class Tree {
 			if ($actual_os_root['id'] === (int)$value['id_os']) {
 				// Agent
 				if (empty($actual_agent) || $actual_agent['id'] !== (int)$value['id_agente']) {
-					// Add the last agent to the agent module
+					// Add the last agent to the os item
 					if (!empty($actual_agent))
 						$actual_os_root['children'][] = $actual_agent;
 
@@ -157,9 +165,9 @@ class Tree {
 				}
 			}
 			else {
-				// The first iteration don't enter here
+				// The first iteration doesn't enter here
 				if ($actual_os_root['id'] !== null) {
-					// Add the agent to the module group
+					// Add the agent to the os item
 					$actual_os_root['children'][] = $actual_agent;
 					// Add the os the branch
 					$nodes[] = $actual_os_root;
@@ -227,7 +235,7 @@ class Tree {
 		}
 		// ACL groups
 		if (!empty($this->userGroups))
-			$filter['id_grupo'] = $this->userGroups;
+			$filter['id_grupo'] = array_keys($this->userGroups);
 		
 		// First filter by name and father
 		$groups = db_get_all_rows_filter('tgrupo', $filter, array('id_grupo', 'nombre'));
@@ -338,7 +346,7 @@ class Tree {
 		return $groups;
 	}
 	
-	public function getDataGroup() {
+	private function getDataGroup() {
 		// Get the parent
 		if (empty($this->root))
 			$parent = 0;
@@ -395,7 +403,7 @@ class Tree {
 		}
 	}
 
-	public function getModules ($parent = 0, $filter = array()) {
+	private function getModules ($parent = 0, $filter = array()) {
 		$modules = array();
 
 		$modules_aux = agents_get_modules($parent,
@@ -410,7 +418,7 @@ class Tree {
 		return $modules;
 	}
 	
-	public function getDataModules() {
+	private function getDataModules() {
 		// Get the parent
 		if (empty($this->root))
 			$parent = 0;
@@ -420,7 +428,7 @@ class Tree {
 		// ACL Group
 		$group_acl =  "";
 		if (!empty($this->userGroups)) {
-			$user_groups_str = implode(",", $this->userGroups);
+			$user_groups_str = implode(",", array_keys($this->userGroups));
 			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 		}
 
@@ -428,6 +436,8 @@ class Tree {
 					ta.id_agente, ta.nombre AS agent_name
 				FROM tagente ta, tagente_modulo tam
 				WHERE ta.id_agente = tam.id_agente
+					AND ta.disabled = 0
+					AND tam.disabled = 0
 					$group_acl
 				ORDER BY tam.nombre";
 		$data = db_process_sql($sql);
@@ -578,7 +588,7 @@ class Tree {
 		}
 	}
 
-	public function getAgents ($parent = 0, $parentType = '') {
+	private function getAgents ($parent = 0, $parentType = '') {
 		switch ($parentType) {
 			case 'group':
 				// ACL Groups
@@ -606,11 +616,7 @@ class Tree {
 		return $agents;
 	}
 	
-	public function getDataAgents($type, $id) {
-		
-	}
-	
-	public function getDataModuleGroup() {
+	private function getDataModuleGroup() {
 		// Get the parent
 		if (empty($this->root))
 			$parent = 0;
@@ -620,7 +626,7 @@ class Tree {
 		// ACL Group
 		$group_acl =  "";
 		if (!empty($this->userGroups)) {
-			$user_groups_str = implode(",", $this->userGroups);
+			$user_groups_str = implode(",", array_keys($this->userGroups));
 			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 		}
 
@@ -632,6 +638,8 @@ class Tree {
 						ta.id_agente, ta.nombre AS agent_name
 					FROM tagente ta, tagente_modulo tam
 					WHERE ta.id_agente = tam.id_agente
+						AND ta.disabled = 0
+						AND tam.disabled = 0
 						$group_acl
 					ORDER BY tam.id_module_group ASC, ta.id_agente ASC";
 			$data = db_process_sql($sql);
@@ -690,7 +698,7 @@ class Tree {
 				}
 			}
 			else {
-				// The first iteration don't enter here
+				// The first iteration doesn't enter here
 				if ($actual_module_group_root['id'] !== null) {
 					// Add the agent to the module group
 					$actual_module_group_root['children'][] = $actual_agent;
@@ -749,7 +757,7 @@ class Tree {
 		$this->tree = $nodes;
 	}
 	
-	public function getDataTag() {
+	private function getDataTag() {
 	}
 	
 	public function getJSON() {

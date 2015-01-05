@@ -16,14 +16,17 @@
 
 global $config;
 
-require_once("include/class/Tree.class.php");
-
 $tab = get_parameter('tab', 'group');
 $search = get_parameter('search', '');
 $status = get_parameter('status', AGENT_STATUS_ALL);
 
 
 // ---------------------Tabs -------------------------------------------
+$enterpriseEnable = false;
+if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
+	$enterpriseEnable = true;
+}
+
 $url = 'index.php?' .
 	'sec=estado&' .
 	'sec2=operation/tree&' .
@@ -61,6 +64,14 @@ $tabs['tag'] = array(
 		html_print_image("images/tag.png", true,
 			array("title" => __('Tags'))) . "</a>",
 	'active' => ($tab == "tag"));
+
+if ($enterpriseEnable) {
+	$tabs['policies'] = array(
+		'text' => "<a href='" . sprintf($url, "policies") . "'>" .
+			html_print_image("images/policies_mc.png", true,
+				array("title" => __('Policies'))) . "</a>",
+		'active' => ($tab == "policies"));
+}
 
 $header_title = "";
 switch ($tab) {

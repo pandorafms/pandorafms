@@ -2861,6 +2861,7 @@ table#policy_modules td * {
 }
 .node-content {
 	padding: 3px;
+	height: 20px;
 }
 
 .node-content:hover {

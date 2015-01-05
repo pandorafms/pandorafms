@@ -107,7 +107,7 @@ class Tree {
 						AND ta.disabled = 0
 						AND tam.disabled = 0
 						$group_acl
-					ORDER BY ta.id_os ASC, ta.id_agente ASC";
+					ORDER BY ta.id_os ASC, ta.nombre ASC";
 			$data = db_process_sql($sql);
 		}
 
@@ -439,7 +439,7 @@ class Tree {
 					AND ta.disabled = 0
 					AND tam.disabled = 0
 					$group_acl
-				ORDER BY tam.nombre";
+				ORDER BY tam.nombre ASC, ta.nombre ASC";
 		$data = db_process_sql($sql);
 
 		if (empty($data)) {
@@ -641,7 +641,7 @@ class Tree {
 						AND ta.disabled = 0
 						AND tam.disabled = 0
 						$group_acl
-					ORDER BY tam.id_module_group ASC, ta.id_agente ASC";
+					ORDER BY tam.nombre ASC, ta.nombre ASC";
 			$data = db_process_sql($sql);
 		}
 
@@ -782,7 +782,7 @@ class Tree {
 					AND ta.disabled = 0
 					AND tam.disabled = 0
 					$group_acl
-				ORDER BY tt.name ASC, ta.id_agente ASC";
+				ORDER BY tt.name ASC, ta.nombre ASC";
 		$data = db_process_sql($sql);
 
 		if (empty($data)) {

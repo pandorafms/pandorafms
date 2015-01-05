@@ -758,6 +758,137 @@ class Tree {
 	}
 	
 	private function getDataTag() {
+		// Get the parent
+		if (empty($this->root))
+			$parent = 0;
+		else
+			$parent = $this->root;
+
+		// ACL Group
+		$group_acl =  "";
+		if (!empty($this->userGroups)) {
+			$user_groups_str = implode(",", array_keys($this->userGroups));
+			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+		}
+
+		$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo,
+					tam.id_tipo_modulo, tam.id_module_group,
+					ta.id_agente, ta.nombre AS agent_name,
+					tt.name AS tag_name, tt.id_tag
+				FROM tagente ta, tagente_modulo tam, ttag_module ttm, ttag tt
+				WHERE ta.id_agente = tam.id_agente
+					AND tam.id_agente_modulo = ttm.id_agente_modulo
+					AND ttm.id_tag = tt.id_tag
+					AND ta.disabled = 0
+					AND tam.disabled = 0
+					$group_acl
+				ORDER BY tt.name ASC, ta.id_agente ASC";
+		$data = db_process_sql($sql);
+
+		if (empty($data)) {
+			$data = array();
+		}
+
+		$nodes = array();
+		$actual_tag_root = array(
+				'id' => null,
+				'name' => '',
+				'children' => array(),
+				'counters' => array()
+			);
+		$actual_agent = array();
+		foreach ($data as $key => $value) {
+
+			// Module
+			$module = array();
+			$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
+			$module['nombre'] = $value['module_name'];
+			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
+			$module['id_module_group'] = (int) $value['id_module_group'];
+
+			$this->processModule($module);
+
+			// Tag
+			if ($actual_tag_root['id'] === (int)$value['id_tag']) {
+				// Agent
+				if (empty($actual_agent) || $actual_agent['id'] !== (int)$value['id_agente']) {
+					// Add the last agent to the tag
+					if (!empty($actual_agent))
+						$actual_tag_root['children'][] = $actual_agent;
+
+					// Create the new agent
+					$actual_agent = array();
+					$actual_agent['id_agente'] = (int) $value['id_agente'];
+					$actual_agent['nombre'] = $value['agent_name'];
+					$actual_agent['children'] = array();
+
+					$this->processAgent(&$actual_agent, array(), false);
+
+					// Add the module to the agent
+					$actual_agent['children'][] = $module;
+
+					// Increase counters
+					$actual_tag_root['counters']['total']++;
+
+					if (isset($actual_tag_root['counters'][$actual_agent['status']]))
+						$actual_tag_root['counters'][$actual_agent['status']]++;
+				}
+				else {
+					$actual_agent['children'][] = $module;
+				}
+			}
+			else {
+				// The first iteration doesn't enter here
+				if ($actual_tag_root['id'] !== null) {
+					// Add the agent to the tag
+					$actual_tag_root['children'][] = $actual_agent;
+					// Add the tag to the branch
+					$nodes[] = $actual_tag_root;
+				}
+
+				// Create the new agent
+				$actual_agent = array();
+				$actual_agent['id_agente'] = (int) $value['id_agente'];
+				$actual_agent['nombre'] = $value['agent_name'];
+				$actual_agent['children'] = array();
+
+				$this->processAgent(&$actual_agent, array(), false);
+
+				// Add the module to the agent
+				$actual_agent['children'][] = $module;
+
+				// Create new tag
+				$actual_tag_root = array();
+				$actual_tag_root['id'] = (int) $value['id_tag'];
+				$actual_tag_root['name'] = $value['tag_name'];
+				$actual_tag_root['type'] = $this->type;
+
+				// Initialize counters
+				$actual_tag_root['counters'] = array();
+				$actual_tag_root['counters']['total'] = 0;
+				$actual_tag_root['counters']['alerts'] = 0;
+				$actual_tag_root['counters']['critical'] = 0;
+				$actual_tag_root['counters']['warning'] = 0;
+				$actual_tag_root['counters']['unknown'] = 0;
+				$actual_tag_root['counters']['not_init'] = 0;
+				$actual_tag_root['counters']['ok'] = 0;
+
+				// Increase counters
+				$actual_tag_root['counters']['total']++;
+
+				if (isset($actual_tag_root['counters'][$actual_agent['status']]))
+					$actual_tag_root['counters'][$actual_agent['status']]++;
+			}
+		}
+		// If there is an agent and a tag opened and not saved
+		if ($actual_tag_root['id'] !== null) {
+			// Add the last agent to the tag
+			$actual_tag_root['children'][] = $actual_agent;
+			// Add the last tag to the branch
+			$nodes[] = $actual_tag_root;
+		}
+
+		$this->tree = $nodes;
 	}
 	
 	public function getJSON() {

@@ -79,6 +79,9 @@ class Tree {
 			$parent = $this->root;
 
 		// ACL Group
+		if (isset($this->userGroups) && $this->userGroups === false)
+			return array();
+
 		$group_acl =  "";
 		if (!empty($this->userGroups)) {
 			$user_groups_str = implode(",", array_keys($this->userGroups));
@@ -234,6 +237,9 @@ class Tree {
 			$filter['nombre'] = "%" . $this->filter['search'] . "%";
 		}
 		// ACL groups
+		if (isset($this->userGroups) && $this->userGroups === false)
+			return array();
+
 		if (!empty($this->userGroups))
 			$filter['id_grupo'] = array_keys($this->userGroups);
 		
@@ -426,6 +432,9 @@ class Tree {
 			$parent = $this->root;
 
 		// ACL Group
+		if (isset($this->userGroups) && $this->userGroups === false)
+			return array();
+
 		$group_acl =  "";
 		if (!empty($this->userGroups)) {
 			$user_groups_str = implode(",", array_keys($this->userGroups));
@@ -592,6 +601,9 @@ class Tree {
 		switch ($parentType) {
 			case 'group':
 				// ACL Groups
+				if (isset($this->userGroups) && $this->userGroups === false)
+					return array();
+
 				if (!empty($this->userGroups) && !empty($parent)) {
 					if (!isset($this->userGroups[$parent]))
 						return array();
@@ -624,6 +636,9 @@ class Tree {
 			$parent = $this->root;
 
 		// ACL Group
+		if (isset($this->userGroups) && $this->userGroups === false)
+			return array();
+
 		$group_acl =  "";
 		if (!empty($this->userGroups)) {
 			$user_groups_str = implode(",", array_keys($this->userGroups));
@@ -765,6 +780,9 @@ class Tree {
 			$parent = $this->root;
 
 		// ACL Group
+		if (isset($this->userGroups) && $this->userGroups === false)
+			return array();
+
 		$group_acl =  "";
 		if (!empty($this->userGroups)) {
 			$user_groups_str = implode(",", array_keys($this->userGroups));

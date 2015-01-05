@@ -109,7 +109,7 @@ class Tree {
 						$group_acl
 					ORDER BY ta.id_os ASC, ta.id_agente ASC";
 			$data = db_process_sql($sql);
-		}html_debug_print($group_acl, true);
+		}
 
 		if (empty($data)) {
 			$data = array();

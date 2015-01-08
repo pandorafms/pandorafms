@@ -383,8 +383,9 @@ class Tree {
 		$module['id'] = (int) $module['id_agente_modulo'];
 		$module['name'] = $module['nombre'];
 		$module['id_module_type'] = (int) $module['id_tipo_modulo'];
+		$module['server_type'] = (int) $module['id_modulo'];
 		// $module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
-		$module['value'] = modules_get_last_value($module['id']);
+		// $module['value'] = modules_get_last_value($module['id']);
 
 		// Status
 		switch (modules_get_status($module['id'])) {

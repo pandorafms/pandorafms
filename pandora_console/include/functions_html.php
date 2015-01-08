@@ -1752,24 +1752,17 @@ function html_print_image ($src, $return = false, $options = false,
 			else {
 				$options['class'] = 'forced_title';
 			}
-			
-			if (!isset ($options['id'])) {
-				$options['id'] = uniqid();
-			}
-			
-			$params = array(
-				'id' => 'forced_title_' . $options['id'], 
-				'class' => 'forced_title_layer', 
-				'content' => $options["title"],
-				'hidden' => true);
-			$output = html_print_div($params, true) . $output;
+
+			// New way to show the force_title (cleaner and better performance)
+			$output .= 'title="'.io_safe_input_html($options["title"]).'" ';
+			$output .= 'data-use_title_for_force_title="1" ';
 		}
 		
 		//Valid attributes (invalid attributes get skipped)
-		$attrs = array ("height", "longdesc", "usemap","width","id",
-			"class","lang","xml:lang", "onclick", "ondblclick",
+		$attrs = array ("height", "longdesc", "usemap", "width", "id",
+			"class", "lang", "xml:lang", "onclick", "ondblclick",
 			"onmousedown", "onmouseup", "onmouseover", "onmousemove", 
-			"onmouseout", "onkeypress", "onkeydown", "onkeyup","pos_tree");
+			"onmouseout", "onkeypress", "onkeydown", "onkeyup", "pos_tree");
 		
 		foreach ($attrs as $attribute) {
 			if (isset ($options[$attribute])) {

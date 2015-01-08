@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "5.1SP2 PS151231";
+my $version = "5.1SP2 PS150108";
 
 # Pandora server configuration
 my %conf;
@@ -79,167 +79,193 @@ sub pandora_purgedb ($$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	my $ulimit_access_timestamp = time() - 86400;
 	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
-	
-	# Delete old numeric data
-	pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
-
-	# Delete old export data
-	pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
-	
-	# Delete extended session data
-	if (enterprise_load (\%conf) != 0) {
-		db_do ($dbh, "DELETE FROM tsesion_extended
-			WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion );");
-		
-		log_message ('PURGE', 'Deleting old extended session data.');
-	}
-	
-	# Delete inventory data, only if enterprise is enabled
-	# We use the same value than regular data purge interval
 	my $first_mark;
 	my $total_time;
 	my $purge_steps;
 	my $purge_count;
 	
+	# Delete extended session data
 	if (enterprise_load (\%conf) != 0) {
+		db_do ($dbh, "DELETE FROM tsesion_extended
+			WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion );");
+		log_message ('PURGE', 'Deleting old extended session data.');
+	}
+		
+	# Delete old data
+	if ($conf->{'_days_purge'} > 0) {
 
-        log_message ('PURGE', 'Deleting old inventory data.');
+		# Delete old numeric data
+		pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
 
-	    # This could be very timing consuming, so make 
-        # this operation in $BIG_OPERATION_STEP 
-	    # steps (100 fixed by default)
-	    # Starting from the oldest record on the table
+		# Delete old export data
+		pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
+	
+		# Delete old inventory data
+		if (enterprise_load (\%conf) != 0) {
 
-	    $first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_inventory ORDER BY utimestamp ASC LIMIT 1');
-	    if (defined ($first_mark)) {
-		    $total_time = $ulimit_timestamp - $first_mark;
-		    $purge_steps = int($total_time / $BIG_OPERATION_STEP);
-		    if ($purge_steps > 0) {
-			    for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++) {
-				    db_do ($dbh, "DELETE FROM tagente_datos_inventory WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-				    log_message ('PURGE', "Inventory data deletion Progress %$ax\r");
-				    # Do a nanosleep here for 0,01 sec
-					usleep (10000);
-			    }
-		        log_message ('', "\n");
+		    log_message ('PURGE', 'Deleting old inventory data.');
+
+			# This could be very timing consuming, so make 
+		    # this operation in $BIG_OPERATION_STEP 
+			# steps (100 fixed by default)
+			# Starting from the oldest record on the table
+
+			$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_inventory ORDER BY utimestamp ASC LIMIT 1');
+			if (defined ($first_mark)) {
+				$total_time = $ulimit_timestamp - $first_mark;
+				$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+				if ($purge_steps > 0) {
+					for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++) {
+						db_do ($dbh, "DELETE FROM tagente_datos_inventory WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
+						log_message ('PURGE', "Inventory data deletion Progress %$ax\r");
+						# Do a nanosleep here for 0,01 sec
+						usleep (10000);
+					}
+				    log_message ('', "\n");
+				} else {
+					log_message ('PURGE', 'No data to purge in tagente_datos_inventory.');
+				}
 			} else {
-				log_message ('PURGE', 'No data to purge in tagente_datos_inventory.');
+				log_message ('PURGE', 'No data in tagente_datos_inventory.');
 			}
-	    } else {
-		    log_message ('PURGE', 'No data in tagente_datos_inventory.');
-	    }
-    }
+		}
 
 
-	#
-	# Now the log4x data
-	#
-	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC LIMIT 1');
-	if (defined ($first_mark)) {
-		$total_time = $ulimit_timestamp - $first_mark;
-		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-		if ($purge_steps > 0) {
-			for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-				db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-				log_message ('PURGE', "Log4x data deletion progress %$ax\r");
-				# Do a nanosleep here for 0,01 sec
-				usleep (10000);
+		#
+		# Now the log4x data
+		#
+		$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC LIMIT 1');
+		if (defined ($first_mark)) {
+			$total_time = $ulimit_timestamp - $first_mark;
+			$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+			if ($purge_steps > 0) {
+				for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+					db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
+					log_message ('PURGE', "Log4x data deletion progress %$ax\r");
+					# Do a nanosleep here for 0,01 sec
+					usleep (10000);
+				}
+				log_message ('', "\n");
+			} else {
+				log_message ('PURGE', 'No data to purge in tagente_datos_log4x.');
 			}
-			log_message ('', "\n");
-		} else {
-			log_message ('PURGE', 'No data to purge in tagente_datos_log4x.');
+		}
+		else {
+			log_message ('PURGE', 'No data in tagente_datos_log4x.');
 		}
 	}
 	else {
-		log_message ('PURGE', 'No data in tagente_datos_log4x.');
+		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');
 	}
 
-    # String data deletion
-    if (!defined($conf->{'_string_purge'})){
-        $conf->{'_string_purge'} = 7;
-    }
-	$ulimit_access_timestamp = time() - 86400;
-	$ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
-	pandora_delete_old_module_data ($dbh, 'tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
+	# String data deletion
+	if (!defined($conf->{'_string_purge'})){
+		$conf->{'_string_purge'} = 7;
+	}
+	if ($conf->{'_string_purge'} > 0) {
+		$ulimit_access_timestamp = time() - 86400;
+		$ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
+		pandora_delete_old_module_data ($dbh, 'tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
+	}
+	else {
+		log_message ('PURGE', 'string_purge is set to 0. Old string data will not be deleted.');
+	}
 
-    # Delete event data
-    if (!defined($conf->{'_event_purge'})){
-        $conf->{'_event_purge'}= 10;
-    }
+	# Delete event data
+	if (!defined($conf->{'_event_purge'})){
+		$conf->{'_event_purge'}= 10;
+	}
+	if ($conf->{'_event_purge'} > 0) {
+		my $event_limit = time() - 86400 * $conf->{'_event_purge'};
+		my $events_table = 'tevento';
+		
+		# If is installed enterprise version and enabled metaconsole, 
+		# check the events history copy and set the name of the metaconsole events table
+		if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
+			defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
+		
+			# If events history is enabled, save the new events (not validated or in process) to history database
+			if(defined($conf->{'_metaconsole_events_history'}) && $conf->{'_metaconsole_events_history'} eq '1') {
+				log_message ('PURGE', "Moving old not validated events to history table (More than " . $conf->{'_event_purge'} . " days).");
 
-    my $event_limit = time() - 86400 * $conf->{'_event_purge'};
-    my $events_table = 'tevento';
-    
-	# If is installed enterprise version and enabled metaconsole, 
-	# check the events history copy and set the name of the metaconsole events table
-    if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
-		defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
-	
-		# If events history is enabled, save the new events (not validated or in process) to history database
-		if(defined($conf->{'_metaconsole_events_history'}) && $conf->{'_metaconsole_events_history'} eq '1') {
-			log_message ('PURGE', "Moving old not validated events to history table (More than " . $conf->{'_event_purge'} . " days).");
-
-			my @events = get_db_rows ($dbh, 'SELECT * FROM tmetaconsole_event WHERE estado = 0 AND utimestamp < ?', $event_limit);
-			foreach my $event (@events) {
-				db_process_insert($dbh, 'id_evento', 'tmetaconsole_event_history', $event);
-				db_do($dbh, "DELETE FROM tmetaconsole_event WHERE id_evento =".$event->{'id_evento'});
+				my @events = get_db_rows ($dbh, 'SELECT * FROM tmetaconsole_event WHERE estado = 0 AND utimestamp < ?', $event_limit);
+				foreach my $event (@events) {
+					db_process_insert($dbh, 'id_evento', 'tmetaconsole_event_history', $event);
+					db_do($dbh, "DELETE FROM tmetaconsole_event WHERE id_evento =".$event->{'id_evento'});
+				}
 			}
+			
+			$events_table = 'tmetaconsole_event';
 		}
 		
-		$events_table = 'tmetaconsole_event';
+		log_message ('PURGE', "Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days).", '');
+
+		# Delete with buffer to avoid problems with performance
+		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
+		while($events_to_delete > 0) {
+			db_do($dbh, "DELETE FROM $events_table WHERE utimestamp < ? LIMIT ?", $event_limit, $BIG_OPERATION_STEP);
+			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
+			
+			# Mark the progress
+			log_message ('', ".");
+			
+			# Do not overload the MySQL server
+			usleep (10000);
+		}
+		log_message ('', "\n");
+	}
+	else {
+		log_message ('PURGE', 'event_purge is set to 0. Old events will not be deleted.');
+	}
+
+	# Delete audit data
+	$conf->{'_audit_purge'}= 7 if (!defined($conf->{'_audit_purge'}));
+	if ($conf->{'_audit_purge'} > 0) {
+		log_message ('PURGE', "Deleting old audit data (More than " . $conf->{'_audit_purge'} . " days).");
+		my $audit_limit = time() - 86400 * $conf->{'_audit_purge'};
+		db_do($dbh, "DELETE FROM tsesion WHERE utimestamp < $audit_limit");
+	}
+	else {
+		log_message ('PURGE', 'audit_purge is set to 0. Old audit data will not be deleted.');
+	}
+
+	# Delete SNMP trap data
+	$conf->{'_trap_purge'}= 7 if (!defined($conf->{'_trap_purge'}));
+	if ($conf->{'_trap_purge'} > 0) {
+		log_message ('PURGE', "Deleting old SNMP traps (More than " . $conf->{'_trap_purge'} . " days).");
+
+		my $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_trap_purge'}));
+		db_do($dbh, "DELETE FROM ttrap WHERE timestamp < '$trap_limit'");
+	}
+	else {
+		log_message ('PURGE', 'trap_purge is set to 0. Old SNMP traps will not be deleted.');
 	}
 	
-	log_message ('PURGE', "Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days).", '');
-
-	# Delete with buffer to avoid problems with performance
-	my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
-	while($events_to_delete > 0) {
-		db_do($dbh, "DELETE FROM $events_table WHERE utimestamp < ? LIMIT ?", $event_limit, $BIG_OPERATION_STEP);
-		$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
-		
-		# Mark the progress
-		log_message ('', ".");
-		
-		# Do not overload the MySQL server
-		usleep (10000);
-	}
-	log_message ('', "\n");
-
-    # Delete audit data
-    $conf->{'_audit_purge'}= 7 if (!defined($conf->{'_audit_purge'}));
-	log_message ('PURGE', "Deleting old audit data (More than " . $conf->{'_audit_purge'} . " days).");
-
-    my $audit_limit = time() - 86400 * $conf->{'_audit_purge'};
-	db_do($dbh, "DELETE FROM tsesion WHERE utimestamp < $audit_limit");
-
-    # Delete SNMP trap data
-    $conf->{'_trap_purge'}= 7 if (!defined($conf->{'_trap_purge'}));
-    log_message ('PURGE', "Deleting old SNMP traps data (More than " . $conf->{'_trap_purge'} . " days).");
-
-    my $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_trap_purge'}));
-	db_do($dbh, "DELETE FROM ttrap WHERE timestamp < '$trap_limit'");
-	
-    # Delete policy queue data
+	# Delete policy queue data
 	enterprise_hook("pandora_purge_policy_queue", [$dbh, $conf]);
 
-    # Delete policy queue data
+	# Delete policy queue data
 	enterprise_hook("pandora_purge_service_elements", [$dbh, $conf]);
 
-    # Delete GIS  data
-    $conf->{'_gis_purge'}= 15 if (!defined($conf->{'_gis_purge'}));
-    log_message ('PURGE', "Deleting old GIS data (More than " . $conf->{'_gis_purge'} . " days).");
+	# Delete GIS  data
+	$conf->{'_gis_purge'}= 15 if (!defined($conf->{'_gis_purge'}));
+	if ($conf->{'_gis_purge'} > 0) {
+		log_message ('PURGE', "Deleting old GIS data (More than " . $conf->{'_gis_purge'} . " days).");
+		my $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_gis_purge'}));
+		db_do($dbh, "DELETE FROM tgis_data_history WHERE end_timestamp < '$gis_limit'");
+	}
+	else {
+		log_message ('PURGE', 'gis_purge is set to 0. Old GIS data will not be deleted.');
+	}
 
-    my $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_gis_purge'}));
-	db_do($dbh, "DELETE FROM tgis_data_history WHERE end_timestamp < '$gis_limit'");
-
-    # Delete pending modules
+	# Delete pending modules
 	log_message ('PURGE', "Deleting pending delete modules (data table).", '');
 	my @deleted_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1');
 	foreach my $module (@deleted_modules) {
-        
-        my $buffer = 1000;
-        my $id_module = $module->{'id_agente_modulo'};
-        
+	    
+	    my $buffer = 1000;
+	    my $id_module = $module->{'id_agente_modulo'};
+	    
 		log_message ('', ".");
 		
 		while(1) {
@@ -268,7 +294,7 @@ sub pandora_purgedb ($$) {
 				# Do a nanosleep here for 0,01 sec
 				usleep (10000);
 			}
-		    log_message ('', "\n");
+			log_message ('', "\n");
 		} else {
 			log_message ('PURGE', "No agent access data to purge.");
 		}
@@ -280,7 +306,7 @@ sub pandora_purgedb ($$) {
 	
 	# Purge the reports
    	if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
-	    defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
+		defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
 		log_message ('PURGE', "Metaconsole enabled, ignoring reports.");
 	} else {
 		my @blacklist_types = ("'SLA_services'", "'custom_graph'", "'sql_graph_vbar'", "'sql_graph_hbar'",
@@ -323,15 +349,20 @@ sub pandora_purgedb ($$) {
 	
 	
 	# Delete old netflow data
-	log_message ('PURGE', "Deleting old netflow data.");
-	if (! defined ($conf->{'_netflow_path'}) || ! -d $conf->{'_netflow_path'}) {
-		log_message ('!', "Netflow data directory does not exist, skipping.");
-	}
-	elsif (! -x $conf->{'_netflow_nfexpire'}) {
-		log_message ('!', "Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping.");
+	if ($conf->{'_netflow_max_lifetime'} > 0) {
+		log_message ('PURGE', "Deleting old netflow data.");
+		if (! defined ($conf->{'_netflow_path'}) || ! -d $conf->{'_netflow_path'}) {
+			log_message ('!', "Netflow data directory does not exist, skipping.");
+		}
+		elsif (! -x $conf->{'_netflow_nfexpire'}) {
+			log_message ('!', "Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping.");
+		}
+		else {
+			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -e "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
+		}
 	}
 	else {
-		`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -e "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
+		log_message ('PURGE', 'netflow_max_lifetime is set to 0. Old netflow data will not be deleted.');
 	}
 	
 	
@@ -341,7 +372,8 @@ sub pandora_purgedb ($$) {
 	if (! defined ($conf->{'_log_dir'}) || ! -d $conf->{'_log_dir'}) {
 		log_message ('!', "Log data directory does not exist, skipping.");
 	}
-	elsif ($conf->{'_log_max_lifetime'} != 0) {
+	elsif ($conf->{'_log_max_lifetime'} > 0) {
+		log_message ('PURGE', 'Deleting log data older than ' . $conf->{'_log_max_lifetime'} . ' days.');
 		
 		# Calculate the limit date
 		my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time() - $conf->{'_log_max_lifetime'} * 86400); 
@@ -364,6 +396,9 @@ sub pandora_purgedb ($$) {
 		
 		# Purge the log dir
 		pandora_purge_log_dir ($conf->{'_log_dir'}, $limits);
+	}
+	else {
+		log_message ('PURGE', 'log_max_lifetime is set to 0. Old log data will not be deleted.');
 	}
 }
 

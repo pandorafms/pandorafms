@@ -88,6 +88,12 @@ class Tree {
 			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 		}
 
+		// Agent name filter
+		$agent_search = "";
+		if (!empty($this->filter['search'])) {
+			$agent_search = " AND ta.nombre LIKE '%".$this->filter['search']."%' ";
+		}
+
 		$list_os = os_get_os();
 
 		// Transform the os array to use the item id as key
@@ -109,6 +115,7 @@ class Tree {
 					WHERE ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
 						AND tam.disabled = 0
+						$agent_search
 						$group_acl
 					ORDER BY ta.id_os ASC, ta.nombre ASC";
 			$data = db_process_sql($sql);
@@ -233,9 +240,9 @@ class Tree {
 		$filter = array();
 		$filter['parent'] = $parent;
 		
-		if (!empty($this->filter['search'])) {
-			$filter['nombre'] = "%" . $this->filter['search'] . "%";
-		}
+		// if (!empty($this->filter['search'])) {
+		// 	$filter['nombre'] = "%" . $this->filter['search'] . "%";
+		// }
 		// ACL groups
 		if (isset($this->userGroups) && $this->userGroups === false)
 			return array();
@@ -244,15 +251,15 @@ class Tree {
 			$filter['id_grupo'] = array_keys($this->userGroups);
 		
 		// First filter by name and father
-		$groups = db_get_all_rows_filter('tgrupo', $filter, array('id_grupo', 'nombre'));
+		$groups = db_get_all_rows_filter('tgrupo', $filter, array('id_grupo', 'nombre', 'icon'));
 		if (empty($groups))
 			$groups = array();
 		
 		// Filter by status
-		$filter_status = AGENT_STATUS_ALL;
-		if (!empty($this->filter['status'])) {
-			$filter_status = $this->filter['status'];
-		}
+		// $filter_status = AGENT_STATUS_ALL;
+		// if (!empty($this->filter['status'])) {
+		// 	$filter_status = $this->filter['status'];
+		// }
 		
 		foreach ($groups as $iterator => $group) {
 			// Counters
@@ -269,39 +276,39 @@ class Tree {
 			}
 
 			$groups[$iterator]['status'] = $group_stats['status'];
-			$groups[$iterator]['icon'] = groups_get_icon($group['id_grupo']) . '.png';
+			$groups[$iterator]['icon'] = !empty($group['icon']) ? $group['icon'] . '.png' : 'without_group.png';
 			
-			// Filter by status
-			if ($filter_status != AGENT_STATUS_ALL) {
-				$remove_group = true;
-				switch ($filter_status) {
-					case AGENT_STATUS_NORMAL:
-						if ($groups[$iterator]['status'] === "ok")
-							$remove_group = false;
-						break;
-					case AGENT_STATUS_WARNING:
-						if ($groups[$iterator]['status'] === "warning")
-							$remove_group = false;
-						break;
-					case AGENT_STATUS_CRITICAL:
-						if ($groups[$iterator]['status'] === "critical")
-							$remove_group = false;
-						break;
-					case AGENT_STATUS_UNKNOWN:
-						if ($groups[$iterator]['status'] === "unknown")
-							$remove_group = false;
-						break;
-					case AGENT_STATUS_NOT_INIT:
-						if ($groups[$iterator]['status'] === "not_init")
-							$remove_group = false;
-						break;
-				}
+			// // Filter by status
+			// if ($filter_status != AGENT_STATUS_ALL) {
+			// 	$remove_group = true;
+			// 	switch ($filter_status) {
+			// 		case AGENT_STATUS_NORMAL:
+			// 			if ($groups[$iterator]['status'] === "ok")
+			// 				$remove_group = false;
+			// 			break;
+			// 		case AGENT_STATUS_WARNING:
+			// 			if ($groups[$iterator]['status'] === "warning")
+			// 				$remove_group = false;
+			// 			break;
+			// 		case AGENT_STATUS_CRITICAL:
+			// 			if ($groups[$iterator]['status'] === "critical")
+			// 				$remove_group = false;
+			// 			break;
+			// 		case AGENT_STATUS_UNKNOWN:
+			// 			if ($groups[$iterator]['status'] === "unknown")
+			// 				$remove_group = false;
+			// 			break;
+			// 		case AGENT_STATUS_NOT_INIT:
+			// 			if ($groups[$iterator]['status'] === "not_init")
+			// 				$remove_group = false;
+			// 			break;
+			// 	}
 				
-				if ($remove_group) {
-					unset($groups[$iterator]);
-					continue;
-				}
-			}
+			// 	if ($remove_group) {
+			// 		unset($groups[$iterator]);
+			// 		continue;
+			// 	}
+			// }
 			
 			if (is_null($limit)) {
 				$groups[$iterator]['children'] =
@@ -309,9 +316,7 @@ class Tree {
 			}
 			else if ($limit >= 1) {
 				$groups[$iterator]['children'] =
-					$this->getGroupsRecursive(
-						$group['id_grupo'],
-						($limit - 1));
+					$this->getGroupsRecursive($group['id_grupo'], ($limit - 1));
 			}
 
 			switch ($this->countAgentStatusMethod) {
@@ -368,8 +373,11 @@ class Tree {
 	}
 
 	protected function processModule (&$module) {
+		global $config;
+
 		$module['type'] = 'module';
 		$module['id'] = (int) $module['id_agente_modulo'];
+		$module['agentID'] = (int) $module['id_agente'];
 		$module['name'] = $module['nombre'];
 		$module['id_module_type'] = (int) $module['id_tipo_modulo'];
 		// $module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
@@ -398,6 +406,23 @@ class Tree {
 				$module['status'] = "ok";
 				break;
 		}
+
+		// Link to the Module graph
+		$graphType = return_graphtype($module['id']);
+		$winHandle = dechex(crc32($module['id'] . $module['name']));
+		
+		$moduleGraphURL = $config['homeurl'] .
+			"/operation/agentes/stat_win.php?" .
+			"type=$graphType&" .
+			"period=86400&" .
+			"id=" . $module['id'] . "&" .
+			"label=" . rawurlencode(urlencode(base64_encode($module['name']))) . "&" .
+			"refresh=600";
+
+		$module['moduleGraph'] = array(
+				'url' => $moduleGraphURL,
+				'handle' => $winHandle
+			);
 	}
 
 	protected function processModules ($modules_aux, &$modules) {
@@ -441,12 +466,19 @@ class Tree {
 			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 		}
 
+		// Agent name filter
+		$agent_search = "";
+		if (!empty($this->filter['search'])) {
+			$agent_search = " AND ta.nombre LIKE '%".$this->filter['search']."%' ";
+		}
+
 		$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo, tam.id_tipo_modulo,
 					ta.id_agente, ta.nombre AS agent_name
 				FROM tagente ta, tagente_modulo tam
 				WHERE ta.id_agente = tam.id_agente
 					AND ta.disabled = 0
 					AND tam.disabled = 0
+					$agent_search
 					$group_acl
 				ORDER BY tam.nombre ASC, ta.nombre ASC";
 		$data = db_process_sql($sql);
@@ -540,8 +572,10 @@ class Tree {
 		$agent['counters']['alerts'] =
 			agents_get_alerts_fired($agent['id']);
 
+		$agent['statusRaw'] = agents_get_status($agent['id']);
+
 		// Status
-		switch (agents_get_status($agent['id'])) {
+		switch ($agent['statusRaw']) {
 			case AGENT_STATUS_NORMAL:
 				$agent['status'] = "ok";
 				break;
@@ -608,11 +642,13 @@ class Tree {
 					if (!isset($this->userGroups[$parent]))
 						return array();
 				}
-				$filter = array(
-					'id_grupo' => $parent,
-					'status' => $this->filter['status'],
-					'nombre' => "%" . $this->filter['search'] . "%"
-					);
+				$filter = array();
+				$filter['id_grupo'] = $parent;
+				if (isset($this->filter['status']) && $this->filter['status'] != -1)
+					$filter['status'] = $this->filter['status'];
+				if (!empty($this->filter['search']))
+					$filter['nombre'] = "%" . $this->filter['search'] . "%";
+				
 				$agents = agents_get_agents($filter, array('id_agente', 'nombre'));
 				if (empty($agents)) {
 					$agents = array();
@@ -645,6 +681,12 @@ class Tree {
 			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 		}
 
+		// Agent name filter
+		$agent_search = "";
+		if (!empty($this->filter['search'])) {
+			$agent_search = " AND ta.nombre LIKE '%".$this->filter['search']."%' ";
+		}
+
 		$module_groups = modules_get_modulegroups();
 
 		if (!empty($module_groups)) {
@@ -655,6 +697,7 @@ class Tree {
 					WHERE ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
 						AND tam.disabled = 0
+						$agent_search
 						$group_acl
 					ORDER BY tam.nombre ASC, ta.nombre ASC";
 			$data = db_process_sql($sql);
@@ -789,6 +832,12 @@ class Tree {
 			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 		}
 
+		// Agent name filter
+		$agent_search = "";
+		if (!empty($this->filter['search'])) {
+			$agent_search = " AND ta.nombre LIKE '%".$this->filter['search']."%' ";
+		}
+
 		$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo,
 					tam.id_tipo_modulo, tam.id_module_group,
 					ta.id_agente, ta.nombre AS agent_name,
@@ -799,6 +848,7 @@ class Tree {
 					AND ttm.id_tag = tt.id_tag
 					AND ta.disabled = 0
 					AND tam.disabled = 0
+					$agent_search
 					$group_acl
 				ORDER BY tt.name ASC, ta.nombre ASC";
 		$data = db_process_sql($sql);

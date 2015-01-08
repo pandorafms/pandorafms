@@ -309,7 +309,43 @@ TreeController = {
 							$content.append(element.name);
 							break;
 						case 'module':
-							$content.append(element.name);
+							// Graph pop-up
+							var $graphImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+									+'images/chart_curve.png" /> ');
+							$graphImage
+								.addClass('module-graph')
+								.click(function (e) {
+									e.preventDefault();
+
+									try {
+										winopeng(element.moduleGraph.url, element.moduleGraph.handle);
+									}
+									catch (error) {
+										console.log(error);
+									}
+								});
+							
+							// Data pop-up
+							var $dataImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+									+'images/binary.png" /> ');
+							$dataImage
+								.addClass('module-data')
+								.click(function (e) {
+									e.preventDefault();
+
+									try {
+										if ($("#module_details_window").length > 0)
+											show_module_detail_dialog(element.id, element.agentID, '', 0, 86400);
+									}
+									catch (error) {
+										console.log(error);
+									}
+								});
+
+							$content
+								.append($graphImage)
+								.append($dataImage)
+								.append(element.name);
 							break;
 						case 'os':
 							if (typeof element.icon != 'undefined' && element.icon.length > 0) {

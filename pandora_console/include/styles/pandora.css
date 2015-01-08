@@ -2931,15 +2931,26 @@ table#policy_modules td * {
 	max-width: 20px;
 }
 
-.tree-node-counters, .tree-node-counter {
+.tree-node>.node-content>img.module-data,
+.tree-node>.node-content>img.module-graph {
+	cursor: pointer;
+	padding-right: 3px;
+}
+
+.tree-node>.node-content>.tree-node-counters,
+.tree-node>.node-content>.tree-node-counters>.tree-node-counter {
 	display: inline;
 }
 
-.tree-node-counters {
+.tree-node>.node-content>.tree-node-counters {
 	
 }
 
-.tree-node-counter {
+.tree-node>.node-content>img {
+	vertical-align: middle;
+}
+
+.tree-node>.node-content>.tree-node-counters>.tree-node-counter {
 	font-weight: bold;
 	font-size: 7pt;
 	cursor: default;

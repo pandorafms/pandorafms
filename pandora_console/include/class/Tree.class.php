@@ -34,6 +34,13 @@ class Tree {
 		$this->childrenMethod = $childrenMethod;
 		$this->countModuleStatusMethod = $countModuleStatusMethod;
 		$this->countAgentStatusMethod = $countAgentStatusMethod;
+		
+		$userGroups = users_get_groups();
+
+		if (empty($userGroups))
+			$this->userGroups = false;
+		else
+			$this->userGroups = $userGroups;
 
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");

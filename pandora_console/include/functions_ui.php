@@ -1237,7 +1237,7 @@ function ui_process_page_head ($string, $bitfield) {
 			$_GET['sec2'] == 'operation/snmpconsole/snmp_view' ||
 			$_GET['sec2'] == 'enterprise/dashboard/main_dashboard') {
 			
-			$query = ui_get_url_refresh (false);
+			$query = ui_get_url_refresh (false, false);
 			$output .= '<meta http-equiv="refresh" content="' . 
 				$config_refr . '; URL=' . $query . '" />';
 			
@@ -1250,8 +1250,8 @@ function ui_process_page_head ($string, $bitfield) {
 		<meta http-equiv="Content-Style-Type" content="text/css" />
 		<meta name="resource-type" content="document" />
 		<meta name="distribution" content="global" />
-		<meta name="author" content="Sancho Lerena" />
-		<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others" />
+		<meta name="author" content="Pandora FMS Developer team" />
+		<meta name="copyright" content="(c) Artica Soluciones Tecnologicas" />
 		<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
 		<meta name="robots" content="index, follow" />
 		<link rel="icon" href="images/pandora.ico" type="image/ico" />
@@ -2135,8 +2135,13 @@ function ui_toggle($code, $name, $title = '', $hidden_default = true, $return = 
 function ui_get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	// Agent selection filters and refresh
 	global $config;
-	$url = '';
-	
+
+	// slerena, 8/Ene/2015 - Need to put index.php on URL which have it.
+	if (strpos($_SERVER['REQUEST_URI'], 'index.php') === false)
+		$url = '';
+	else
+		$url = 'index.php';
+
 	if (sizeof ($_REQUEST)) {
 		//Some (old) browsers don't like the ?&key=var
 		$url .= '?';
@@ -2215,6 +2220,7 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
 	}
 	
 	$url = htmlspecialchars ($url);
+
 	if (! $relative) {
 		return ui_get_full_url ($url);
 	}

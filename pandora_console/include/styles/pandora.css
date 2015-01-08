@@ -2937,6 +2937,10 @@ table#policy_modules td * {
 	padding-right: 3px;
 }
 
+.tree-node>.node-content>img.module-server-type {
+	padding-right: 3px;
+}
+
 .tree-node>.node-content>.tree-node-counters,
 .tree-node>.node-content>.tree-node-counters>.tree-node-counter {
 	display: inline;

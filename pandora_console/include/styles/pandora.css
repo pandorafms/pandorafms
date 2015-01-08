@@ -2860,8 +2860,7 @@ table#policy_modules td * {
 	background: 0 0;
 }
 .node-content {
-	padding: 3px;
-	height: 20px;
+	height: 25px;
 }
 
 .node-content:hover {
@@ -2873,7 +2872,7 @@ table#policy_modules td * {
 }
 
 .leaf-icon {
-	width: 20px;
+	width: 18px;
 	height: 20px;
 }
 

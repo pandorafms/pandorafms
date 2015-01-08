@@ -638,6 +638,16 @@ TreeNodeDetailController = {
 				var $content = $("<div></div>");
 				$content.addClass("tree-element-detail-content");
 
+				// Container
+				this.container = $("<div></div>");
+				this.container
+					.addClass("tree-element-detail")
+					.append($label)
+					.data('label', $label)
+					.append($content)
+					.data('content', $content)
+					.hide();
+
 				$label.addClass('tree-element-detail-loading');
 				$.ajax({
 					url: this.ajaxURL,
@@ -655,7 +665,8 @@ TreeNodeDetailController = {
 					success: function(data, textStatus, xhr) {
 						if (data.success) {
 							$label.addClass('tree-element-detail-loaded');
-							$content.append(data.html);
+							$content.html(data.html);
+
 							controller.open();
 						}
 						else {
@@ -669,17 +680,6 @@ TreeNodeDetailController = {
 					}
 				});
 				
-
-				// Container
-				this.container = $("<div></div>");
-				this.container
-					.addClass("tree-element-detail")
-					.append($label)
-					.data('label', $label)
-					.append($content)
-					.data('content', $content)
-					.hide();
-
 				this.recipient.append(this.container);
 				this.open();
 			},
@@ -734,7 +734,7 @@ TreeNodeDetailController = {
 					return false;
 				}
 				// Required
-				if (typeof data.id != 'undefined' && data.id.length > 0) {
+				if (typeof data.id != 'undefined' && (data.id.length > 0 || !isNaN(data.id))) {
 					this.id = data.id;
 				}
 				else {

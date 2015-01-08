@@ -707,7 +707,7 @@ class Tree {
 						AND tam.disabled = 0
 						$agent_search
 						$group_acl
-					ORDER BY tam.nombre ASC, ta.nombre ASC";
+					ORDER BY tam.id_module_group ASC, tam.nombre ASC, ta.nombre ASC";
 			$data = db_process_sql($sql);
 		}
 
@@ -786,7 +786,7 @@ class Tree {
 
 				// Create new module group
 				$actual_module_group_root = array();
-				$actual_module_group_root['id'] = (int) $module['id_module_group'];
+				$actual_module_group_root['id'] = $module['id_module_group'];
 				$actual_module_group_root['type'] = $this->type;
 
 				if (isset($module_groups[$module['id_module_group']])) {

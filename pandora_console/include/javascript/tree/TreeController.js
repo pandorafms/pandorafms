@@ -309,6 +309,16 @@ TreeController = {
 							$content.append(element.name);
 							break;
 						case 'module':
+							// Server type
+							if (typeof element.serverTypeHTML != 'undefined'
+									&& element.serverTypeHTML.length > 0
+									&& element.serverTypeHTML != '--') {
+								var $serverTypeImage = $(element.serverTypeHTML);
+								$serverTypeImage.addClass("module-server-type");
+
+								$content.append($serverTypeImage)
+							}
+
 							// Graph pop-up
 							var $graphImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
 									+'images/chart_curve.png" /> ');
@@ -335,7 +345,7 @@ TreeController = {
 
 									try {
 										if ($("#module_details_window").length > 0)
-											show_module_detail_dialog(element.id, element.agentID, '', 0, 86400);
+											show_module_detail_dialog(element.id, '', '', 0, 86400);
 									}
 									catch (error) {
 										console.log(error);

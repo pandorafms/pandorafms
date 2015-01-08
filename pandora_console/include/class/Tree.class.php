@@ -34,6 +34,9 @@ class Tree {
 		$this->childrenMethod = $childrenMethod;
 		$this->countModuleStatusMethod = $countModuleStatusMethod;
 		$this->countAgentStatusMethod = $countAgentStatusMethod;
+
+		global $config;
+		include_once($config['homedir']."/include/functions_servers.php");
 	}
 	
 	public function setType($type) {
@@ -109,7 +112,7 @@ class Tree {
 		}
 		if (!empty($list_os)) {
 			$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo,
-						tam.id_tipo_modulo, ta.id_os,
+						tam.id_tipo_modulo, ta.id_os, tam.id_modulo,
 						ta.id_agente, ta.nombre AS agent_name
 					FROM tagente ta, tagente_modulo tam
 					WHERE ta.id_agente = tam.id_agente
@@ -141,6 +144,7 @@ class Tree {
 			$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
 			$module['nombre'] = $value['module_name'];
 			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
+			$module['server_type'] = (int) $value['id_modulo'];
 
 			$this->processModule($module);
 
@@ -377,7 +381,6 @@ class Tree {
 
 		$module['type'] = 'module';
 		$module['id'] = (int) $module['id_agente_modulo'];
-		$module['agentID'] = (int) $module['id_agente'];
 		$module['name'] = $module['nombre'];
 		$module['id_module_type'] = (int) $module['id_tipo_modulo'];
 		// $module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
@@ -406,6 +409,9 @@ class Tree {
 				$module['status'] = "ok";
 				break;
 		}
+
+		// HTML of the server type image
+		$module['serverTypeHTML'] = servers_show_type($module['server_type']);
 
 		// Link to the Module graph
 		$graphType = return_graphtype($module['id']);
@@ -438,7 +444,7 @@ class Tree {
 		$modules = array();
 
 		$modules_aux = agents_get_modules($parent,
-			array('id_agente_modulo', 'nombre', 'id_tipo_modulo'), $filter);
+			array('id_agente_modulo', 'nombre', 'id_tipo_modulo', 'id_modulo'), $filter);
 		
 		if (empty($modules_aux))
 			$modules_aux = array();
@@ -472,7 +478,8 @@ class Tree {
 			$agent_search = " AND ta.nombre LIKE '%".$this->filter['search']."%' ";
 		}
 
-		$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo, tam.id_tipo_modulo,
+		$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo,
+					tam.id_tipo_modulo, tam.id_modulo,
 					ta.id_agente, ta.nombre AS agent_name
 				FROM tagente ta, tagente_modulo tam
 				WHERE ta.id_agente = tam.id_agente
@@ -501,9 +508,10 @@ class Tree {
 			$this->processAgent(&$agent, array(), false);
 
 			$module = array();
-			$module['id_agente_modulo'] = $value['id_agente_modulo'];
+			$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
 			$module['nombre'] = $value['module_name'];
-			$module['id_tipo_modulo'] = $value['id_tipo_modulo'];
+			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
+			$module['server_type'] = (int) $value['id_modulo'];
 
 			$this->processModule($module);
 
@@ -691,7 +699,7 @@ class Tree {
 
 		if (!empty($module_groups)) {
 			$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo,
-						tam.id_tipo_modulo, tam.id_module_group,
+						tam.id_tipo_modulo, tam.id_module_group, tam.id_modulo,
 						ta.id_agente, ta.nombre AS agent_name
 					FROM tagente ta, tagente_modulo tam
 					WHERE ta.id_agente = tam.id_agente
@@ -723,6 +731,7 @@ class Tree {
 			$module['nombre'] = $value['module_name'];
 			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
 			$module['id_module_group'] = (int) $value['id_module_group'];
+			$module['server_type'] = (int) $value['id_modulo'];
 
 			$this->processModule($module);
 
@@ -839,7 +848,7 @@ class Tree {
 		}
 
 		$sql = "SELECT tam.nombre AS module_name, tam.id_agente_modulo,
-					tam.id_tipo_modulo, tam.id_module_group,
+					tam.id_tipo_modulo, tam.id_module_group, tam.id_modulo,
 					ta.id_agente, ta.nombre AS agent_name,
 					tt.name AS tag_name, tt.id_tag
 				FROM tagente ta, tagente_modulo tam, ttag_module ttm, ttag tt
@@ -873,6 +882,7 @@ class Tree {
 			$module['nombre'] = $value['module_name'];
 			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
 			$module['id_module_group'] = (int) $value['id_module_group'];
+			$module['server_type'] = (int) $value['id_modulo'];
 
 			$this->processModule($module);
 

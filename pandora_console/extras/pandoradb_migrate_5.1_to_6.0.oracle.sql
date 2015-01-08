@@ -36,3 +36,8 @@ CREATE OR REPLACE TRIGGER tuser_double_auth_inc BEFORE INSERT ON tuser_double_au
 -- Table `ttipo_modulo`
 -- ----------------------------------------------------------------------
 INSERT INTO ttipo_modulo VALUES (5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png');
+
+-- ---------------------------------------------------------------------
+-- Table `tusuario`
+-- ---------------------------------------------------------------------
+ALTER TABLE tusuario ADD COLUMN strict_acl NUMBER(5,0) DEFAULT 0;

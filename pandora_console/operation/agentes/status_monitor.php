@@ -34,6 +34,8 @@ enterprise_include_once ('include/functions_metaconsole.php');
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header (__("Monitor detail"), "images/brick.png", false);
@@ -42,8 +44,6 @@ else {
 	
 	ui_meta_print_header(__("Monitor view"));
 }
-
-
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
@@ -68,6 +68,11 @@ $offset = (int) get_parameter ('offset', 0);
 $status = (int) get_parameter ('status', 4);
 $modulegroup = get_parameter ('modulegroup', -1);
 $tag_filter = get_parameter('tag_filter', 0);
+if ($tag_filter) {
+	if ($ag_group && $strict_user) {
+		$tag_filter = 0;
+	}
+}
 $refr = get_parameter('refr', 0);
 // Sort functionality
 
@@ -108,6 +113,7 @@ else {
 	$id_ag_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $ag_group);
 }
 
+
 // Agent group selector
 if (!defined('METACONSOLE')) {
 	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
@@ -119,8 +125,9 @@ if (!defined('METACONSOLE')) {
 	}
 }
 else {
+
 	if ($ag_group != "0" && check_acl ($config["id_user"], $id_ag_group, "AR")) {
-		$sql_conditions_group = sprintf (" AND tagente.id_grupo IN ( SELECT id_grupo FROM tgrupo where nombre = '%s') ", $ag_group);
+		$sql_conditions_group = sprintf (" AND tagente.id_grupo IN (%s) ", $ag_group);
 	}
 	elseif ($user_groups != '') {
 		// User has explicit permission on group 1 ?
@@ -200,7 +207,7 @@ if ($tag_filter !== 0) {
 		$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
 				FROM ttag_module
-				WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
+				WHERE ttag_module.id_tag IN ($tag_filter)
 			)";
 	}
 	else {
@@ -213,14 +220,13 @@ if ($tag_filter !== 0) {
 	}
 }
 
-if (defined('METACONSOLE') && $ag_group !== 0) {
-	$ag_group = groups_get_id($ag_group);
-}
-
 // Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 $groups = users_get_groups($config["id_user"]);
-
-$sql_conditions_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+if ($ag_group !== 0) {
+	$sql_conditions_tags = tags_get_acl_tags($config['id_user'], $ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
+} else {
+	$sql_conditions_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
+}
 
 if (is_numeric($sql_conditions_tags)) {
 	$sql_conditions_tags = ' AND 1 = 0';
@@ -229,6 +235,11 @@ if (is_numeric($sql_conditions_tags)) {
 // Two modes of filter. All the filters and only ACLs filter
 $sql_conditions_all = $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
 $sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
+
+if (!$strict_user) {
+	$sql_conditions_all =  $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_custom_fields;
+	$sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_custom_fields;
+}
 
 // Get count to paginate
 if (!defined('METACONSOLE')) 
@@ -334,22 +345,7 @@ if (defined('METACONSOLE')) {
 		
 		// Get all info for filters of all nodes
 		$modules_temp = db_get_all_rows_sql($sql);
-		
-		# Fix : only user tags have to be shown in these component
-		$_tags = tags_get_user_tags();
-		
-		
-		if (!empty($_tags)) {
 			
-			foreach ($_tags as $_tag) {
-				
-				$tags_temp[]['name'] = $_tag;
-				
-			}
-			
-		}
-		
-		
 		$rows_temp = db_get_all_rows_sql("SELECT distinct name
 			FROM tmodule_group
 			ORDER BY name");
@@ -377,8 +373,6 @@ if (defined('METACONSOLE')) {
 		
 		if (!empty($modules_temp))
 			$modules = array_merge($modules, $modules_temp);
-		if (!empty($tags_temp))
-			$tags = array_merge($tags, $tags_temp);
 		
 		metaconsole_restore_db();
 	}
@@ -388,27 +382,16 @@ if (defined('METACONSOLE')) {
 		unset($groups_select[$key_group_all]);
 }
 
-if (!defined('METACONSOLE')) {
-	echo '
-		<td valign="middle">' . __('Group') . '</td>
-		<td valign="middle">' . 
-			html_print_select_groups(false, "AR", true, "ag_group",
-				$ag_group, '',  '', '0', true, false, false, 'w130',
-				false, 'width:150px;') . '
-		</td>';
-}
-else {
-	echo '
-		<td valign="middle">' . __('Group') . '</td>
-		<td valign="middle">' .
-			html_print_select($groups_select, "ag_group",
-				io_safe_output($ag_group_metaconsole), '', __('All'), '0', true, false, false, 'w130',
-				false, 'width:150px;') . '
-		</td>';
-}
+echo '
+<td valign="middle">' . __('Group') . '</td>
+<td valign="middle">' . 
+	html_print_select_groups($config['id_user'], "AR", true, "ag_group",
+		$ag_group, '',  '', '0', true, false, false, 'w130',
+		false, 'width:150px;', false, false,
+		'id_grupo', $strict_user) . '
+</td>';
+		
 echo '<td>' . __('Monitor status') . "</td>";
-
-
 
 echo "<td>";
 
@@ -421,10 +404,8 @@ $fields[AGENT_MODULE_STATUS_NOT_NORMAL] = __('Not normal'); //default
 $fields[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 
 html_print_select ($fields, "status", $status, '', __('All'), -1,
-	false, false, true, '', false, 'width: 125px;');
+	false, false, true, '', false, 'width: 150px;');
 echo '</td>';
-
-
 
 echo '<td valign="middle">' . __('Module group') . '</td>';
 echo '<td valign="middle">';
@@ -440,16 +421,12 @@ if (!defined('METACONSOLE')) {
 
 $rows_select[0] = __('Not assigned');
 
-html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'), -1);
+html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'),-1,false, false, true, '', false, 'width: 120px;');
 echo '</td>';
-
-
 
 echo '</tr>';
 
 echo '<tr>';
-
-
 
 echo '<td valign="middle">' . __('Module name') . '</td>';
 echo '<td valign="middle">';
@@ -463,32 +440,6 @@ html_print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 echo '</td>';
 
 
-
-echo '<td valign="middle" align="right">' .
-	__('Tags') .
-	ui_print_help_tip(__('Only it is show tags in use.'), true) .
-	'</td>';
-echo '<td>';
-
-if (!defined('METACONSOLE')) {
-	$tags = tags_get_user_tags();
-}
-
-if (empty($tags)) {
-	echo __('No tags');
-}
-else {
-	if (!defined('METACONSOLE'))
-		html_print_select ($tags, "tag_filter",
-			$tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
-	else
-		html_print_select (index_array($tags, 'name', 'name'), "tag_filter",
-			$tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
-}
-echo '</td>';
-
-
-
 echo '<td valign="middle" align="right">' .
 	__('Search') .
 	'</td>';
@@ -496,7 +447,21 @@ echo '<td valign="middle">';
 html_print_input_text ("ag_freestring", $ag_freestring, '', 20,30, false);
 echo '</td>';
 
+echo '<td valign="middle" align="right" id="tag_td">' .
+	__('Tags') .
+	ui_print_help_tip(__('Only it is show tags in use.'), true);
+echo '<td>';
 
+$tags = tags_get_user_tags();
+
+if (empty($tags)) {
+	echo __('No tags');
+}
+else {
+
+	html_print_select ($tags, "tag_filter", $tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
+}
+echo '</td>';
 
 echo '<td valign="middle">';
 html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
@@ -732,6 +697,7 @@ switch ($config["dbtype"]) {
 			$sql_from . $sql_conditions_all . "
 			ORDER BY " . $order['field'] . " " . $order['order'] . "
 			LIMIT ".$offset.",".$limit_sql;
+
 		break;
 	case "postgresql":
 		if (strstr($config['dbversion'], "8.4") !== false) {
@@ -841,7 +807,7 @@ else {
 		WHERE disabled = 0");
 	if ($servers === false)
 		$servers = array();
-	
+
 	$result = array();
 	$count_modules = 0;
 	foreach ($servers as $server) {
@@ -940,10 +906,6 @@ if (! defined ('METACONSOLE')) {
 	$table->head[3] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
 }
-
-/*
-$table->head[4] = __('Tags');
-*/
 
 $table->head[5] = __('Interval'); 
 if (! defined ('METACONSOLE')) {
@@ -1188,7 +1150,6 @@ foreach ($result as $row) {
 		
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		if (defined('METACONSOLE'))
-			//$data[7] .= "&nbsp;<a href='" . $row['server_url'] . "index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . $row["user"] . "&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 			$data[7] .= "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agent'].", \"" . $row['server_name'] . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 		else
 			$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
@@ -1257,8 +1218,6 @@ foreach ($result as $row) {
 					}
 				}
 				
-				
-				
 				if ($module_value == $sub_string) {
 					$salida = $module_value;
 				}
@@ -1307,12 +1266,37 @@ else {
 
 echo "<div id='monitor_details_window'></div>";
 
+//strict user hidden
+echo '<div id="strict_hidden" style="display:none;">';
+html_print_input_text('strict_user_hidden', $strict_user);
+echo '</div>';
+
+
 enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file('pandora_modules');
 
 ?>
 <script type="text/javascript">
+	$(document).ready (function () {
+		if ($('#ag_group').val() != 0) {
+			$("#tag_filter").css('display', 'none');
+			$("#tag_td").css('display', 'none');
+		}
+	});
+	
+	$('#ag_group').change (function (){
+		strict_user = $("#text-strict_user_hidden").val();
+
+		if (($("#ag_group").val() != 0) && (strict_user != 0)) {
+			$("#tag_filter").css('display', 'none');
+			$("#tag_td").css('display', 'none');
+		} else {
+			$("#tag_filter").css('display', '');
+			$("#tag_td").css('display', '');
+		}
+	});
+
 	function toggle_full_value(id) {
 		text = $("#hidden_value_module_" + id).html();
 		old_text = $("#value_module_text_" + id).html();

@@ -123,6 +123,7 @@ if ($new_user && $config['admin_can_add_user']) {
 	$user_info['is_admin'] = 0;
 	$user_info['language'] = 'default';
 	$user_info["not_login"] = false;
+	$user_info["strict_acl"] = false;
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$user_info['id_skin'] = '';
 	}
@@ -172,6 +173,7 @@ if ($create_user) {
 		}
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
+	$values["strict_acl"] = (bool)get_parameter ('strict_acl', false);
 	
 	if ($id == '') {
 		ui_print_error_message (__('User ID cannot be empty'));
@@ -235,6 +237,11 @@ if ($create_user) {
 		$password_confirm = '';
 		
 		if($result) {
+			if ($values["strict_acl"]) {
+				if ($values['is_admin']) {
+					ui_print_info_message (__('Strict ACL is not recommended for admin users because performance could be affected.'));
+				}
+			}
 			$user_info = get_user_info ($id);
 			$new_user = false;
 		}
@@ -269,6 +276,7 @@ if ($update_user) {
 		$values['metaconsole_access_node'] = get_parameter ('metaconsole_access_node', '0');
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
+	$values["strict_acl"] = (bool)get_parameter ('strict_acl', false);
 	
 	$res1 = update_user ($id, $values);
 	
@@ -334,6 +342,25 @@ if ($update_user) {
 		ui_print_result_message ($res1,
 			__('User info successfully updated'),
 			__('Error updating user info (no change?)'));
+	}
+	
+	if ($values['strict_acl']) {
+		$count_groups = 0;
+		$count_tags = 0;
+		
+		$profiles = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
+		if ($profiles === false) {
+			$profiles = array ();
+		}
+		foreach ($profiles as $profile) {
+			$count_groups = $count_groups+1;
+			$arr_tags = explode(',', $profile['tags']);
+			$count_tags = $count_tags + count($arr_tags);
+		}
+
+		if (($count_groups > 3) && ($count_tags > 10)) {
+			ui_print_info_message(__('Strict ACL is not recommended for this user. Performance could be affected.'));
+		}
 	}
 	
 	$user_info = $values;
@@ -496,6 +523,10 @@ $table->data[13][0] = __('Not Login');
 $table->data[13][0] .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
 $table->data[13][1] = html_print_checkbox('not_login', 1, $user_info["not_login"], true);
 
+$table->data[14][0] = __('Strict ACL');
+$table->data[14][0] .= ui_print_help_tip(__('With this option enabled, the user will can access to accurate information. It is not recommended for admin users because performance could be affected'), true);
+$table->data[14][1] = html_print_checkbox('strict_acl', 1, $user_info["strict_acl"], true);
+	
 if($meta) {
 	enterprise_include('include/functions_metaconsole.php');
 	$data = array();

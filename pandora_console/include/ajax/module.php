@@ -67,23 +67,15 @@ if ($search_modules) {
 
 
 if ($get_module_detail) {
-	
-	ui_include_time_picker();
-	
-	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
-	
-	ui_require_jquery_file ("ui-timepicker-addon");
 	// This script is included manually to be included after jquery and avoid error
-	echo '<script type="text/javascript" src="' .
-		ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' .
-		get_user_language(), false, false, false) . '"></script>';
+	ui_include_time_picker();
 	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 	
-	$module_id = get_parameter ('id_module');
-	$period = get_parameter ("period", 86400);
+	$module_id = (int) get_parameter('id_module');
+	$period = (int) get_parameter("period", 86400);
 	$group = agents_get_agentmodule_group ($module_id);
-	$agentId = get_parameter("id_agent");
-	$server_name = get_parameter('server_name');
+	$agentId = (int) get_parameter("id_agent");
+	$server_name = (string) get_parameter('server_name');
 	
 	if (defined ('METACONSOLE')) {
 		$server = metaconsole_get_connection ($server_name);

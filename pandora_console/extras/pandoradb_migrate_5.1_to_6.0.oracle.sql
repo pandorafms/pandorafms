@@ -31,3 +31,13 @@ CREATE TABLE tuser_double_auth (
 );
 CREATE SEQUENCE tuser_double_auth_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tuser_double_auth_inc BEFORE INSERT ON tuser_double_auth REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tuser_double_auth_s.nextval INTO :NEW.ID FROM dual; END tuser_double_auth_inc;;
+
+-- ----------------------------------------------------------------------
+-- Table `ttipo_modulo`
+-- ----------------------------------------------------------------------
+INSERT INTO ttipo_modulo VALUES (5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png');
+
+-- ---------------------------------------------------------------------
+-- Table `tusuario`
+-- ---------------------------------------------------------------------
+ALTER TABLE tusuario ADD COLUMN strict_acl NUMBER(5,0) DEFAULT 0;

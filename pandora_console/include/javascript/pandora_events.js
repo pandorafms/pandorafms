@@ -465,10 +465,10 @@ function event_comment() {
 	var params = [];
 	params.push("page=include/ajax/events");
 	params.push("add_comment=1");
-	params.push("event_id="+event_id);
-	params.push("comment="+comment);
-	params.push("meta="+meta);
-	params.push("history="+history);
+	params.push("event_id=" + event_id);
+	params.push("comment=" + comment);
+	params.push("meta=" + meta);
+	params.push("history=" + history);
 	
 	$('#button-comment_button').attr('disabled','disabled');
 	$('#response_loading').show();

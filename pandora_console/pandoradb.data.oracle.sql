@@ -269,7 +269,7 @@ INSERT INTO ttipo_modulo VALUES (1,'generic_data',0,'Generic data','mod_data.png
 INSERT INTO ttipo_modulo VALUES (2,'generic_proc',1,'Generic boolean','mod_proc.png');
 INSERT INTO ttipo_modulo VALUES (3,'generic_data_string',2,'Generic string','mod_string.png');
 INSERT INTO ttipo_modulo VALUES (4,'generic_data_inc',0,'Generic data incremental','mod_data_inc.png');
-
+INSERT INTO ttipo_modulo VALUES (5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png');
 INSERT INTO ttipo_modulo VALUES (6,'remote_icmp_proc',4,'Remote ICMP network agent, boolean data','mod_icmp_proc.png');
 INSERT INTO ttipo_modulo VALUES (7,'remote_icmp',3,'Remote ICMP network agent (latency)','mod_icmp_data.png');
 INSERT INTO ttipo_modulo VALUES (8,'remote_tcp',3,'Remote TCP network agent, numeric data','mod_tcp_data.png');

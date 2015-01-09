@@ -33,18 +33,23 @@ Where options:\n
 	-create_event 
 	-name <event_name>			: Free text
 	-group <id_group>			: Group ID (use 0 for 'all') 
-	-agent						:Agent ID
+	-agent						: Agent ID
 	
 Optional parameters:
 	
 	[-status <status>]			: 0 New, 1 Validated, 2 In process
 	[-user <id_user>]			: User comment (use in combination with -comment option)
-	[type <event_type>]			: unknown, alert_fired, alert_recovered, alert_ceased
-								alert_manual_validation, system, error, new_agent
-								configuration_change, going_unknown, going_down_critical,
-								going_down_warning, going_up_normal
-	[-criticity <criticity>] 	: 0 Maintance, 1 Informative, 2 Normal,
-								3 Warning, 4 Crit, 5 Minor, 6 Major
+	[-type <event_type>]		: unknown, alert_fired, alert_recovered, alert_ceased
+								  alert_manual_validation, system, error, new_agent
+								  configuration_change, going_unknown, going_down_critical,
+								  going_down_warning, going_up_normal
+	[-criticity <criticity>] 	: 0 Maintance,
+								  1 Informative,
+								  2 Normal,
+								  3 Warning,
+								  4 Crit,
+								  5 Minor,
+								  6 Major
 	[-am <id_agent_module>]		: ID Agent Module linked to event
 	[-alert <id_alert_am>]		: ID Alert Module linked to event
 	[-c_instructions <critical_instructions>]
@@ -53,18 +58,14 @@ Optional parameters:
 	[-user_comment <comment>]
 	[-owner_user <user for the event>]
 	[-source <source>]			: (By default 'Pandora')
-	[-tag <tags>]				: Tag (must exist in the system to be imported)";
+	[-tag <tags>]				: Tag (must exist in the system to be imported)
+	[-custom_data <custom_data>]: Custom data should be a base 64 encoded JSON document
+	[-server_id <server_id>]	: The pandora node server_id";
 	
 	print "Credential/API syntax: \n\n\t";
 	print "<credentials>: API credentials separated by comma: <api_pass>,<user>,<pass>\n\n";
 	
 	print "Example of event generation:\n\n";
-	
-	#~ print "\t./pandora_revent.pl -p http://192.168.70.160/pandora_console/include/api.php -u pot12,admin,pandora \
-#~ \t-create_event -name \"Sample event executed from commandline\" -group 2 -type \"system\" -agent 2 \
-#~ \t-user \"admin\" -status 0 -am 0 -alert 9 -criticity 3 -comment \"User comments\" -tag \"tags\" \
-#~ \t-source \"Commandline\" -extra 3 -c_instructions \"Critical instructions\" \
-#~ \t-w_instructions \"Warning instructions\" -u_instructions \"Unknown instructions\" -owner \"other\" ";
 	
 	print "\t./pandora_revent.pl -p http://localhost/pandora_console/include/api.php -u 1234,admin,pandora \
 	\t-create_event -name \"SampleEvent\" -group 2 -agent 189 -status 0 -user \"admin\" -type \"system\" \
@@ -136,6 +137,8 @@ sub tool_api_main () {
 	my $id_event;
 	my $option = $ARGV[4];
 	my $call_api;
+	my $custom_data = "";
+	my $server_id = 0;
 	
 	#~ help or api path (required)
 	if ($ARGV[0] eq '-h') {
@@ -232,6 +235,12 @@ sub tool_api_main () {
 			if ($line eq '-owner_user') {
 				$owner_user = $ARGV[$i + 1];
 			}
+			if ($line eq '-custom_data') {
+				$custom_data = $ARGV[$i + 1];
+			}
+			if ($line eq '-server_id') {
+				$server_id = $ARGV[$i + 1];
+			}
 			
 			$i++;
 		}
@@ -264,7 +273,10 @@ sub tool_api_main () {
 			"|" . $user_comment .
 			"|" . $owner_user .
 			"|" . $source .
-			"|" . $tags;
+			"|" . $tags .
+			"|" . $custom_data .
+			"|" . $server_id;
+		
 		$call_api = $api_path . '?' .
 			'op=set&' .
 			'op2=create_event&' .

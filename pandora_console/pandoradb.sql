@@ -982,6 +982,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`metaconsole_agents_manager` tinyint(1) unsigned NOT NULL default 0,
 	`metaconsole_assigned_server` int(10) unsigned NOT NULL default 0,
 	`metaconsole_access_node` tinyint(1) unsigned NOT NULL default 0,
+	`strict_acl` tinyint(1) unsigned NOT NULL DEFAULT 0,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

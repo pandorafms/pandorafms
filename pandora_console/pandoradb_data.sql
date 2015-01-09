@@ -38,7 +38,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('graph_res','5'),
 ('step_compact','1'),
 ('db_scheme_version','6.0dev'),
-('db_scheme_build','PD141213'),
+('db_scheme_build','PD150108'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
@@ -133,7 +133,7 @@ INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES
 (16, 'VMware', 'VMware Architecture', 'so_vmware.png'),
 (17, 'Router', 'Generic router', 'so_router.png'),
 (18, 'Switch', 'Generic switch', 'so_switch.png'),
-(19, 'Satellite', 'Satellite agent', 'satellite.png');
+(19, 'Satellite', 'Satellite agent', 'satellite.png'),
 (20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png');
 UNLOCK TABLES;
 
@@ -241,7 +241,7 @@ INSERT INTO `ttipo_modulo` VALUES
 (2,'generic_proc',1,'Generic boolean','mod_proc.png'),
 (3,'generic_data_string',2,'Generic string','mod_string.png'),
 (4,'generic_data_inc',0,'Generic numeric incremental','mod_data_inc.png'),
-
+(5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png'),
 (6,'remote_icmp_proc',4,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),
 (7,'remote_icmp',3,'Remote ICMP network agent (latency)','mod_icmp_data.png'),
 (8,'remote_tcp',3,'Remote TCP network agent, numeric data','mod_tcp_data.png'),

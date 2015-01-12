@@ -333,16 +333,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		
 		$node_ref[$agent['id_agente']] = $node_count;
 		
-		// Save node parent information to define edges later
-		if ($agent['id_parent'] != "0" &&
-			array_key_exists($agent['id_parent'], $node_ref)) {
-			
-			$parents[$node_count] = $node_ref[$agent['id_parent']];
-		}
-		else {
-			$orphans[$node_count] = 1;
-		}
-		
 		$agent['id_node'] = $node_count;
 		$agent['type'] = 'agent';
 		
@@ -386,6 +376,19 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				// Add node
 				$nodes[$node_count] = $module;
 			}
+		}
+	}
+	
+	// Addded the relationship of parents of agents
+	foreach ($agents as $agent) {
+		if ($agent['id_parent'] != "0" &&
+			array_key_exists($agent['id_parent'], $node_ref)) {
+			
+			
+			$parents[$node_ref[$agent['id_agente']]] = $node_ref[$agent['id_parent']];
+		}
+		else {
+			$orphans[$node_ref[$agent['id_agente']]] = 1;
 		}
 	}
 	

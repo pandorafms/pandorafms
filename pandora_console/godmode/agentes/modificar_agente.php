@@ -143,10 +143,10 @@ html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 
 echo "<td>";
 echo __('Show Agents') . '&nbsp;';
 $fields = array(
-		"2" => "Everyone",
-		"1" => "Only disabled",
-		"0" => "Only enabled",
-		);
+        2 => __('Everyone'),
+        1 => __('Only disabled'),
+        0 => __('Only enabled'),
+    );
 html_print_select($fields,"disabled",$disabled,'this.form.submit()');
 
 echo "</td>";

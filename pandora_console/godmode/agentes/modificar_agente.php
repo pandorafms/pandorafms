@@ -23,6 +23,7 @@ $ag_group = get_parameter ("ag_group_refresh", -1);
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $recursion = get_parameter('recursion');
+$disabled = get_parameter('disabled');
 
 if ($ag_group == -1 )
 	$ag_group = (int) get_parameter ("ag_group", -1);
@@ -138,6 +139,16 @@ if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "PM"))
 else
 	$return_all_group = true;
 html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false, 'width:100px;');
+echo "<td>";
+echo __('Show Agents') . '&nbsp;';
+$fields = array(
+        2 => __('Everyone'),
+        1 => __('Only disabled'),
+        0 => __('Only enabled'),
+    );
+html_print_select($fields,"disabled",$disabled,'this.form.submit()');
+
+echo "</td>";
 
 echo "<td>";
 echo __('Recursion') . '&nbsp;';
@@ -245,6 +256,16 @@ $search_sql = '';
 if ($search != "") {
 	$search_sql = " AND ( nombre " . $order_collation . "
 		LIKE '%$search%' OR direccion LIKE '%$search%') ";
+}
+
+if ($disabled==1)
+{ 
+	$search_sql = " AND disabled = ". $disabled . $search_sql;
+}
+else{
+	if ($disabled==0){
+		$search_sql = " AND disabled = 0" . $search_sql;
+	}
 }
 
 // Show only selected groups
@@ -395,23 +416,23 @@ if (($config['dbtype'] == 'oracle') && ($agents !== false)) {
 }
 
 // Prepare pagination
-ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort", $offset);
+ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&recursion=$recursion&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled", $offset);
 
 if ($agents !== false) {
 	
 	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='98%' class='databox'>";
 	echo "<th>".__('Agent name') . ' ' .
-		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
-		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 	echo "</th>";
 	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
 	echo "<th>".__('OS'). ' ' .
-		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
-		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
 	echo "</th>";
 	echo "<th>".__('Group'). ' ' .
-			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
-			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
+			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
+			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
 		echo "</th>";
 	echo "<th>" . __('Description') . "</th>";
 	echo "<th>" . __('Actions') . "</th>";
@@ -529,18 +550,18 @@ if ($agents !== false) {
 		
 		if ($agent['disabled']) {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			enable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort''>".
+			enable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled''>".
 				html_print_image('images/lightbulb_off.png', true, array('alt' => __('Enable agent'), 'title' => __('Enable agent'))) ."</a>";
 		}
 		else {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			disable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'>".
+			disable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'>".
 				html_print_image('images/lightbulb.png', true, array('alt' => __('Disable agent'), 'title' => __('Disable agent'))) ."</a>";
 		}
 		
 		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
 			echo "&nbsp;&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
+			borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 			echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			echo html_print_image('images/cross.png', true, array("border" => '0')) . "</a>";
 		}
@@ -548,7 +569,7 @@ if ($agents !== false) {
 		echo "</td>";
 	}
 	echo "</table>";
-	ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
+	ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled", $offset);
 	echo "<table width='98%'><tr><td align='right'>";
 }
 else {

@@ -306,9 +306,33 @@ TreeController = {
 							$content.append(element.name);
 							break;
 						case 'agent':
+							// Status image
+							if (typeof element.statusImageHTML != 'undefined'
+									&& element.statusImageHTML.length > 0) {
+								var $statusImage = $(element.statusImageHTML);
+								$statusImage.addClass("agent-status");
+
+								$content.append($statusImage);
+							}
+							// Alerts fired image
+							if (typeof element.alertImageHTML != 'undefined'
+									&& element.alertImageHTML.length > 0) {
+								var $alertImage = $(element.alertImageHTML);
+								$alertImage.addClass("agent-alerts-fired");
+
+								$content.append($alertImage);
+							}
 							$content.append(element.name);
 							break;
 						case 'module':
+							// Status image
+							if (typeof element.statusImageHTML != 'undefined'
+									&& element.statusImageHTML.length > 0) {
+								var $statusImage = $(element.statusImageHTML);
+								$statusImage.addClass("module-status");
+
+								$content.append($statusImage);
+							}
 							// Server type
 							if (typeof element.serverTypeHTML != 'undefined'
 									&& element.serverTypeHTML.length > 0
@@ -316,7 +340,7 @@ TreeController = {
 								var $serverTypeImage = $(element.serverTypeHTML);
 								$serverTypeImage.addClass("module-server-type");
 
-								$content.append($serverTypeImage)
+								$content.append($serverTypeImage);
 							}
 
 							// Graph pop-up

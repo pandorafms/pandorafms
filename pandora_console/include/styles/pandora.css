@@ -2860,7 +2860,7 @@ table#policy_modules td * {
 	background: 0 0;
 }
 .node-content {
-	height: 25px;
+	height: 21px;
 }
 
 .node-content:hover {
@@ -2927,7 +2927,7 @@ table#policy_modules td * {
 
 .tree-node>.node-content>img {
 	max-height: 20px;
-	max-width: 20px;
+	/*max-width: 20px;*/
 }
 
 .tree-node>.node-content>img.module-data,
@@ -2936,7 +2936,10 @@ table#policy_modules td * {
 	padding-right: 3px;
 }
 
-.tree-node>.node-content>img.module-server-type {
+.tree-node>.node-content>img.module-server-type,
+.tree-node>.node-content>img.agent-status,
+.tree-node>.node-content>img.agent-alerts-fired,
+.tree-node>.node-content>img.module-status {
 	padding-right: 3px;
 }
 

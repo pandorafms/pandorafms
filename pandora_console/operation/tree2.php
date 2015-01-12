@@ -167,7 +167,7 @@ echo "</div>";
 		parameters['getChildren'] = 1;
 		parameters['filter'] = {};
 		parameters['type'] = "<?php echo $tab; ?>";
-		parameters['filter']['search'] = $("input#text-search").val();
+		parameters['filter']['searchAgent'] = $("input#text-search").val();
 		parameters['filter']['status'] = $("select#status").val();
 		parameters['childrenMethod'] = 'live';
 		parameters['countModuleStatusMethod'] = 'live';

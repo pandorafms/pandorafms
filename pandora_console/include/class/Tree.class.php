@@ -63,31 +63,60 @@ class Tree {
 		$module['id_module_type'] = (int) $module['id_tipo_modulo'];
 		$module['server_type'] = (int) $module['id_modulo'];
 		// $module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
-		// $module['value'] = modules_get_last_value($module['id']);
+
+		if (!isset($module['status']))
+			$module['status'] = modules_get_status($module['id']);
+		if (!isset($module['value']))
+			$module['value'] = modules_get_last_value($module['id']);
 
 		// Status
-		switch (modules_get_status($module['id'])) {
-			case AGENT_MODULE_STATUS_CRITICAL_BAD:
+		switch ($module['status']) {
 			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-				$module['status'] = "critical";
+				$module['alert'] = 1;
+			case AGENT_MODULE_STATUS_CRITICAL_BAD:
+				$statusType = STATUS_MODULE_CRITICAL_BALL;
+				$statusTitle = __('CRITICAL');
+				$module['statusText'] = "critical";
 				break;
-			case AGENT_MODULE_STATUS_WARNING:
 			case AGENT_MODULE_STATUS_WARNING_ALERT:
-				$module['status'] = "warning";
+				$module['alert'] = 1;
+			case AGENT_MODULE_STATUS_WARNING:
+				$statusType = STATUS_MODULE_WARNING_BALL;
+				$statusTitle = __('WARNING');
+				$module['statusText'] = "warning";
 				break;
 			case AGENT_MODULE_STATUS_UNKNOWN:
-				$module['status'] = "unknown";
+				$statusType = STATUS_MODULE_UNKNOWN_BALL;
+				$statusTitle = __('UNKNOWN');
+				$module['statusText'] = "unknown";
 				break;
 			case AGENT_MODULE_STATUS_NO_DATA:
 			case AGENT_MODULE_STATUS_NOT_INIT:
-				$module['status'] = "not_init";
+				$statusType = STATUS_MODULE_NO_DATA_BALL;
+				$statusTitle = __('NO DATA');
+				$module['statusText'] = "not_init";
 				break;
-			case AGENT_MODULE_STATUS_NORMAL:
 			case AGENT_MODULE_STATUS_NORMAL_ALERT:
+				$module['alert'] = 1;
+			case AGENT_MODULE_STATUS_NORMAL:
 			default:
-				$module['status'] = "ok";
+				$statusType = STATUS_MODULE_OK_BALL;
+				$statusTitle = __('NORMAL');
+				$module['statusText'] = "ok";
 				break;
 		}
+
+		if ($statusType !== STATUS_MODULE_UNKNOWN_BALL
+				&& $statusType !== STATUS_MODULE_NO_DATA_BALL) {
+			if (is_numeric($module["value"])) {
+				$statusTitle .= " : " . format_for_graph($module["value"]);
+			}
+			else {
+				$statusTitle .= " : " . substr(io_safe_output($module["value"]),0,42);
+			}
+		}
+		
+		$module['statusImageHTML'] = ui_print_status_image($statusType, $statusTitle, true);
 
 		// HTML of the server type image
 		$module['serverTypeHTML'] = servers_show_type($module['server_type']);
@@ -111,12 +140,29 @@ class Tree {
 	}
 
 	protected function processModules ($modules_aux, &$modules) {
+		$counters = false;
+
 		if (!empty($modules_aux)) {
+			$counters = array(
+					'critical' => 0,
+					'warning' => 0,
+					'ok' => 0,
+					'not_init' => 0,
+					'unknown' => 0,
+					'alerts' => 0
+				);
+
 			foreach ($modules_aux as $module) {
 				$this->processModule($module);
 				$modules[] = $module;
+
+				if (isset($counters[$module['statusText']]))
+					$counters[$module['statusText']]++;
+				if ($module['alert'])
+					$counters['alerts']++;
 			}
 		}
+		return $counters;
 	}
 
 	protected function getModules ($parent = 0, $filter = array()) {
@@ -261,8 +307,8 @@ class Tree {
 				$filter['id_grupo'] = $parent;
 				if (isset($this->filter['status']) && $this->filter['status'] != -1)
 					$filter['status'] = $this->filter['status'];
-				if (!empty($this->filter['search']))
-					$filter['nombre'] = "%" . $this->filter['search'] . "%";
+				if (!empty($this->filter['searchAgent']))
+					$filter['nombre'] = "%" . $this->filter['searchAgent'] . "%";
 				
 				$agents = agents_get_agents($filter, array('id_agente', 'nombre'));
 				if (empty($agents)) {
@@ -468,11 +514,14 @@ class Tree {
 					tam.id_tipo_modulo, tam.id_modulo,
 					ta.id_agente, ta.nombre AS agent_name, ta.fired_count,
 					ta.normal_count, ta.warning_count, ta.critical_count,
-					ta.unknown_count, ta.notinit_count, ta.total_count
+					ta.unknown_count, ta.notinit_count, ta.total_count,
+					tae.estado, tae.datos
 				FROM tagente_modulo AS tam
 				INNER JOIN tagente AS ta
 					ON ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
+				INNER JOIN tagente_estado AS tae
+					ON tae.id_agente_modulo = tam.id_agente_modulo
 				WHERE tam.disabled = 0
 					$agent_search
 					$module_search
@@ -502,6 +551,8 @@ class Tree {
 			$module['nombre'] = $value['module_name'];
 			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
 			$module['server_type'] = (int) $value['id_modulo'];
+			$module['status'] = (int) $value['estado'];
+			$module['value'] = $value['data'];
 
 			$this->processModule($module);
 
@@ -576,11 +627,14 @@ class Tree {
 					ta.id_agente, ta.nombre AS agent_name, ta.fired_count,
 					ta.normal_count, ta.warning_count, ta.critical_count,
 					ta.unknown_count, ta.notinit_count, ta.total_count,
-					tmg.id_mg, tmg.name AS module_group_name
+					tmg.id_mg, tmg.name AS module_group_name,
+					tae.estado, tae.datos
 				FROM tagente_modulo AS tam
 				INNER JOIN tagente AS ta
 					ON ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
+				INNER JOIN tagente_estado AS tae
+					ON tae.id_agente_modulo = tam.id_agente_modulo
 				LEFT JOIN tmodule_group AS tmg
 					ON tmg.id_mg = tam.id_module_group
 				WHERE tam.disabled = 0
@@ -611,6 +665,8 @@ class Tree {
 			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
 			$module['id_module_group'] = (int) $value['id_mg'];
 			$module['server_type'] = (int) $value['id_modulo'];
+			$module['status'] = (int) $value['estado'];
+			$module['value'] = $value['data'];
 
 			$this->processModule($module);
 
@@ -731,11 +787,14 @@ class Tree {
 					ta.id_agente, ta.nombre AS agent_name, ta.fired_count,
 					ta.normal_count, ta.warning_count, ta.critical_count,
 					ta.unknown_count, ta.notinit_count, ta.total_count,
-					tos.id_os, tos.name AS os_name, tos.icon_name AS os_icon
+					tos.id_os, tos.name AS os_name, tos.icon_name AS os_icon,
+					tae.estado, tae.datos
 				FROM tagente_modulo AS tam
 				INNER JOIN tagente AS ta
 					ON ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
+				INNER JOIN tagente_estado AS tae
+					ON tae.id_agente_modulo = tam.id_agente_modulo
 				LEFT JOIN tconfig_os AS tos
 					ON tos.id_os = ta.id_os
 				WHERE tam.disabled = 0
@@ -766,6 +825,8 @@ class Tree {
 			$module['nombre'] = $value['module_name'];
 			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
 			$module['server_type'] = (int) $value['id_modulo'];
+			$module['status'] = (int) $value['estado'];
+			$module['value'] = $value['datos'];
 
 			$this->processModule($module);
 
@@ -889,11 +950,14 @@ class Tree {
 					ta.id_agente, ta.nombre AS agent_name, ta.fired_count,
 					ta.normal_count, ta.warning_count, ta.critical_count,
 					ta.unknown_count, ta.notinit_count, ta.total_count,
-					tt.id_tag, tt.name AS tag_name
+					tt.id_tag, tt.name AS tag_name,
+					tae.estado, tae.estado
 				FROM tagente_modulo AS tam
 				INNER JOIN tagente AS ta
 					ON ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
+				INNER JOIN tagente_estado AS tae
+					ON tae.id_agente_modulo = tam.id_agente_modulo
 				INNER JOIN ttag_module AS ttm
 					ON ttm.id_agente_modulo = tam.id_agente_modulo
 				INNER JOIN ttag AS tt
@@ -925,6 +989,8 @@ class Tree {
 			$module['nombre'] = $value['module_name'];
 			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
 			$module['server_type'] = (int) $value['id_modulo'];
+			$module['status'] = (int) $value['estado'];
+			$module['value'] = $value['datos'];
 
 			$this->processModule($module);
 

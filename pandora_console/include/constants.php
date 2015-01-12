@@ -260,6 +260,31 @@ define ('STATUS_SERVER_OK', 'server_ok.png');
 define ('STATUS_SERVER_DOWN', 'server_down.png');
 
 
+/* Status images (ball) */
+//For modules
+define ('STATUS_MODULE_OK_BALL', 'module_ok_ball.png');
+define ('STATUS_MODULE_CRITICAL_BALL', 'module_critical_ball.png');
+define ('STATUS_MODULE_WARNING_BALL', 'module_warning_ball.png');
+define ('STATUS_MODULE_NO_DATA_BALL', 'module_no_data_ball.png');
+define ('STATUS_MODULE_UNKNOWN_BALL', 'module_unknown_ball.png');
+//For agents
+define ('STATUS_AGENT_CRITICAL_BALL', 'agent_critical_ball.png');
+define ('STATUS_AGENT_WARNING_BALL', 'agent_warning_ball.png');
+define ('STATUS_AGENT_DOWN_BALL', 'agent_down_ball.png');
+define ('STATUS_AGENT_UNKNOWN_BALL', 'agent_unknown_ball.png');
+define ('STATUS_AGENT_OK_BALL', 'agent_ok_ball.png');
+define ('STATUS_AGENT_NO_DATA_BALL', 'agent_no_data_ball.png');
+define ('STATUS_AGENT_NO_MONITORS_BALL', 'agent_no_monitors_ball.png');
+define ('STATUS_AGENT_NOT_INIT_BALL', 'agent_notinit_ball.png');
+//For alerts
+define ('STATUS_ALERT_FIRED_BALL', 'alert_fired_ball.png');
+define ('STATUS_ALERT_NOT_FIRED_BALL', 'alert_not_fired_ball.png');
+define ('STATUS_ALERT_DISABLED_BALL', 'alert_disabled_ball.png');
+//For servers
+define ('STATUS_SERVER_OK_BALL', 'server_ok_ball.png');
+define ('STATUS_SERVER_DOWN_BALL', 'server_down_ball.png');
+
+
 
 /* Events criticity */
 define ('EVENT_CRIT_MAINTENANCE', 0);

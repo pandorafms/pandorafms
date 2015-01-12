@@ -2028,6 +2028,18 @@ function agents_tree_view_alert_img ($alert_fired) {
 	}
 }
 
+//Returns the alert ball image to display tree view
+
+function agents_tree_view_alert_img_ball ($alert_fired) {
+	
+	if ($alert_fired) {
+		return ui_print_status_image (STATUS_ALERT_FIRED_BALL, __('Alert fired'), true);
+	}
+	else {
+		return ui_print_status_image (STATUS_ALERT_NOT_FIRED_BALL, __('Alert not fired'), true);
+	}
+}
+
 //Returns the status image to display tree view
 
 function agents_tree_view_status_img ($critical, $warning, $unknown, $total, $notinit) {
@@ -2048,7 +2060,33 @@ function agents_tree_view_status_img ($critical, $warning, $unknown, $total, $no
 			__('At least one module is in UKNOWN status'), true);
 	}
 	else {
-		return ui_print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
+		return ui_print_status_image (STATUS_AGENT_OK,
+			__('All Monitors OK'), true);
+	}
+}
+
+//Returns the status ball image to display tree view
+
+function agents_tree_view_status_img_ball ($critical, $warning, $unknown, $total, $notinit) {
+	if ($total == 0 || $total == $notinit) {
+		return ui_print_status_image (STATUS_AGENT_NO_MONITORS_BALL,
+			__('No Monitors'), true);
+	}
+	if ($critical > 0) {
+		return ui_print_status_image (STATUS_AGENT_CRITICAL_BALL,
+			__('At least one module in CRITICAL status'), true);
+	}
+	else if ($warning > 0) {
+		return ui_print_status_image (STATUS_AGENT_WARNING_BALL,
+			__('At least one module in WARNING status'), true);
+	}
+	else if ($unknown > 0) {
+		return ui_print_status_image (STATUS_AGENT_DOWN_BALL,
+			__('At least one module is in UKNOWN status'), true);
+	}
+	else {
+		return ui_print_status_image (STATUS_AGENT_OK_BALL,
+			__('All Monitors OK'), true);
 	}
 }
 

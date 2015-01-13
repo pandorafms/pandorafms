@@ -94,7 +94,8 @@ if ($edit_filter > -2) {
 	$table->data[0][1] = html_print_input_text ('description', $description, '', 60, 100, true);
 	$table->data[1][0] = __('Filter');
 	$table->data[1][1] = html_print_input_text ('filter', $filter, '', 60, 100, true);
-	
+	$table->data[1][1] .= ui_print_help_tip (__("This field contains a substring, could be part of a IP address, a numeric OID, or a plain substring") . SEPARATOR_COLUMN, true);
+
 	echo '<form action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters" method="post">';
 	html_print_input_hidden ('update_filter', $edit_filter);
 	html_print_table ($table);

@@ -1931,7 +1931,7 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 	foreach ($result as $data) {
 		switch ($data['type']) {
 			case GROUP_ITEM:
-				if (($data["id_layout_linked"] == 0) {
+				if ($data["id_layout_linked"] == 0) {
 					$group_status = groups_get_status($data['id_group']);
 					switch ($group_status) {
 						case AGENT_STATUS_ALERT_FIRED:

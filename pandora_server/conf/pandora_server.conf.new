@@ -78,8 +78,9 @@ dbhost 127.0.0.1
 
 verbosity 3
 
-# Master Server, 1 if master server (normal mode), 0 for slave mode (slave in multi-server setup)
-
+# Master Server priority. The running server with the highest master value will
+# be the master. Ties are broken at random.  If set to 0, this server will
+# never become master.
 master 1
 
 # Activate Pandora SNMP console (depending on snmptrapd)

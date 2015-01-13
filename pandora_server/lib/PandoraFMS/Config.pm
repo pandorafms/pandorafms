@@ -850,8 +850,8 @@ sub pandora_load_config {
 		if ($pa_config->{"pandora_check"} == 1) {
 			print " [*] MD5 Security enabled.\n";
 		}
-		if ($pa_config->{"pandora_master"} == 1) {
-			print " [*] This server is running in MASTER mode.\n";
+		if ($pa_config->{"pandora_master"} != 0) {
+			print " [*] This server is running with MASTER priority " . $pa_config->{"pandora_master"} . "\n";
 		}
 	}
 

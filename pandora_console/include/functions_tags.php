@@ -517,8 +517,6 @@ function tags_get_module_tags ($id, $policy = false) {
 	if (empty($id))
 		return false;
 	
-	html_debug_print(func_get_args());
-	
 	if ($policy) {
 		$tags = db_get_all_rows_filter('ttag_policy_module',
 			array('id_policy_module' => $id), false);

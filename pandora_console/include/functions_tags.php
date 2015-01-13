@@ -417,7 +417,8 @@ function tags_insert_policy_module_tag ($id_agent_module, $tags) {
 		
 		$values['id_tag'] = $tag;
 		$values['id_policy_module'] = $id_agent_module;
-		$result_tag = db_process_sql_insert('ttag_policy_module', $values, false);
+		$result_tag = db_process_sql_insert('ttag_policy_module',
+			$values, false);
 		if ($result_tag === false)
 			$errn++;
 	}
@@ -503,12 +504,20 @@ function tags_update_policy_module_tag ($id_policy_module, $tags, $autocommit = 
  *
  * @return mixed Array with module tags or false if something goes wrong.
  */
-function tags_get_module_tags ($id_agent_module) {
-	if (empty($id_agent_module))
+function tags_get_module_tags ($id, $policy = false) {
+	if (empty($id))
 		return false;
 	
-	$tags = db_get_all_rows_filter('ttag_module',
-		array('id_agente_modulo' => $id_agent_module), false);
+	html_debug_print(func_get_args());
+	
+	if ($policy) {
+		$tags = db_get_all_rows_filter('ttag_policy_module',
+			array('id_policy_module' => $id), false);
+	}
+	else {
+		$tags = db_get_all_rows_filter('ttag_module',
+			array('id_agente_modulo' => $id), false);
+	}
 	
 	if ($tags === false)
 		return array();

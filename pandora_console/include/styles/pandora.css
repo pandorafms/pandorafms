@@ -2856,7 +2856,7 @@ table#policy_modules td * {
 	min-height: 26px;
 }
 
-.tree-last {
+.tree-node:last-child {
 	background: 0 0;
 }
 .node-content {

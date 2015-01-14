@@ -31,9 +31,7 @@ if (is_ajax ()) {
 	
 	if ($getChildren) {
 		$type = get_parameter('type', 'group');
-		$filter = get_parameter('filter',
-			array('search' => '',
-				'status' => AGENT_STATUS_ALL));
+		$filter = get_parameter('filter', array('searchAgent' => '', 'statusAgent' => AGENT_STATUS_ALL));
 		$id = (int)get_parameter('id', 0);
 		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
 		$countModuleStatusMethod = get_parameter('countModuleStatusMethod', 'on_demand');
@@ -57,8 +55,9 @@ if (is_ajax ()) {
 		}
 		
 		$tree->setFilter(array(
-			'status' => $filter['status'],
-			'search' => $filter['search']));
+				'statusAgent' => $filter['statusAgent'],
+				'searchAgent' => $filter['searchAgent'])
+			);
 		echo json_encode(array('success' => 1, 'tree' => $tree->getArray()));
 		return;
 	}

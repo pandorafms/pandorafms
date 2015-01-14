@@ -20,10 +20,14 @@ function vnc_view() {
 
 	$display = get_parameter("display", 0);
 	echo "<form method=post>";
-	echo __("VNC Display (:0 by default)");
+	echo "<table class=databox width=500>";
+	echo "<tr><td>";
+	echo __("VNC Display (:0 by default)") . "&nbsp;";
 	echo "<input type=text name=display value=$display>";
-	echo "<input type=submit value='".__("Send")."'>";
-	echo "</form>";
+	echo "</td><td>";
+	echo "<input type=submit class='sub next' value='".__("Send")."'>";
+	echo "</td>";
+	echo "</tr></table>";
 	$port = 5800 + $display;
 	echo "<iframe src='http://$ipAgent:$port' width='100%' height=600>";
 	echo "</iframe>";

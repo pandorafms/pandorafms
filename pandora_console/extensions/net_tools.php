@@ -83,37 +83,75 @@ function whereis_the_command ($command) {
 function main_net_tools () {
 	
 	$id_agente = get_parameter ("id_agente");
-	$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
-	if ($ip == "") {
+	$principal_ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
+	
+	$list_address = db_get_all_rows_sql ("select id_a from taddress_agent where id_agent = " . $id_agente);
+	foreach ($list_address as $address){
+		$ids []= join(",",$address);
+	}
+	$ids_address = implode(",",$ids);
+	$ips = db_get_all_rows_sql ("select ip from taddress where id_a in (" . $ids_address . ")");
+
+	if ($ips == "") {
 		echo "<div class='error' style='margin-top:5px'>" . __('The agent hasn\'t got IP') . "</div>";
 		return;
 	}
+	echo "
+		<script type='text/javascript'>
+			function mostrarColumns(ValueSelect){
+				value = ValueSelect.value;
+				if ( value==3 ) {
+					document.getElementById('netToolTable').width=800;
+					document.getElementById('snmpcolumn').style.display='block';
+				}
+				else{
+					document.getElementById('netToolTable').width=650;
+					document.getElementById('snmpcolumn').style.display='none';
+				}
+			}
+		</script>";
+		
 	echo "<div>";
 	echo "<form name='actionbox' method='post'>";
-	echo "<table class=databox width=650>";
+	echo "<table class=databox width=650 id=netToolTable>";
 	echo "<tr><td>";
 	echo __("Operation");
 	ui_print_help_tip(__('You can set the command path in the menu Administration -&gt; Extensions -&gt; Config Network Tools'));
-	echo "<td>";
-	echo "<select name='operation'>";
+	echo "</td><td>";
+	echo "<select name='operation' onChange='mostrarColumns(this);'>";
 	echo "<option value='1'>" . __("Traceroute");
 	echo "<option value='2'>" . __("Ping host & Latency");
 	echo "<option value='3'>" . __("SNMP Interface status");
 	echo "<option value='4'>" . __("Basic TCP Port Scan");
 	echo "<option value='5'>" . __("DiG/Whois Lookup");
 	echo "</select>";
+	echo "</td>";
 	echo "<td>";
-	echo __("SNMP Community");
-	echo "<td>";
+	echo __("IP address");
+	echo "</td><td>";
+	echo "<select name='select_ips'>";
+	foreach($ips as $ip){
+		if ($ip['ip'] == $principal_ip){
+			echo "<option value='". $ip['ip'] ."' selected = 'selected'>" . $ip['ip'];
+		}else{
+			echo "<option value='". $ip['ip'] ."'>" . $ip['ip'];
+		}
+	}
+	echo "</select>";
+	echo "</td>";
+	echo "<td id='snmpcolumn' style=\"display:none;\">";
+	echo __("SNMP Community") . "&nbsp;";
 	echo "<input name=community type=text value='public'>";
-	echo "<td>";
+	echo "</td><td>";
 	echo "<input name=submit type=submit class='sub next' value='".__('Execute')."'>";
+	echo "</td>";
 	echo "</tr></table>";
 	echo "</form>";
 	
 	
 	$operation = get_parameter ("operation", 0);
 	$community = get_parameter ("community", "public");
+	$ip = get_parameter("select_ips");
 	
 	switch($operation) {
 		case 1:

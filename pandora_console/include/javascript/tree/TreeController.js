@@ -49,7 +49,6 @@ TreeController = {
 					}
 					// Normal group
 					else {
-						rootGroup = false;
 						$group
 							.addClass("tree-group")
 							.hide();
@@ -57,12 +56,8 @@ TreeController = {
 
 					container.append($group);
 
-					var lastNode;
-					var firstNode;
 					elements.forEach(function(element, index) {
-						lastNode = index == elements.length - 1 ? true : false;
-						firstNode = rootGroup && index == 0 ? true : false;
-						element.jqObject = _processNode($group, element, lastNode, firstNode);
+						element.jqObject = _processNode($group, element);
 					}, $group);
 					
 					return $group;
@@ -287,7 +282,7 @@ TreeController = {
 				}
 
 				// Load leaf
-				function _processNode (container, element, lastNode, firstNode) {
+				function _processNode (container, element) {
 					var $node = $("<li></li>");
 					var $leafIcon = $("<div></div>");
 					var $content = $("<div></div>");
@@ -302,6 +297,9 @@ TreeController = {
 							if (typeof element.icon != 'undefined' && element.icon.length > 0) {
 								$content.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
 									+'images/groups_small/'+element.icon+'" /> ');
+							}
+							else if (typeof element.iconHTML != 'undefined' && element.iconHTML.length > 0) {
+								$content.append(element.iconHTML);
 							}
 							$content.append(element.name);
 							break;
@@ -426,48 +424,49 @@ TreeController = {
 						.append($leafIcon)
 						.append($content);
 
-					if (typeof lastNode != 'undefinded' && lastNode == true) {
-						$node.addClass("tree-last");
-					}
-					if (typeof firstNode != 'undefinded' && firstNode == true) {
-						$node.addClass("tree-first");
-					}
-
 					container.append($node);
 
+					$node.addClass("leaf-empty");
+
 					if (typeof element.children != 'undefined' && element.children.length > 0) {
-						$node.addClass("leaf-closed");
+						$node
+							.removeClass("leaf-empty")
+							.addClass("leaf-closed");
 
 						// Add children
 						var $children = _processGroup($node, element.children);
 						$node.data('children', $children);
 
-						$leafIcon.click(function (e) {
-							e.preventDefault();
+						if (typeof element.searchChildren == 'undefined' || !element.searchChildren) {
+							$leafIcon.click(function (e) {
+								e.preventDefault();
 
-							if ($node.hasClass("leaf-open")) {
-								$node
-									.removeClass("leaf-open")
-									.addClass("leaf-closed")
-									.data('children')
-										.slideUp();
-							}
-							else {
-								$node
-									.removeClass("leaf-closed")
-									.addClass("leaf-open")
-									.data('children')
-										.slideDown();
-							}
-						});
+								if ($node.hasClass("leaf-open")) {
+									$node
+										.removeClass("leaf-open")
+										.addClass("leaf-closed")
+										.data('children')
+											.slideUp();
+								}
+								else {
+									$node
+										.removeClass("leaf-closed")
+										.addClass("leaf-open")
+										.data('children')
+											.slideDown();
+								}
+							});
+						}
 					}
-					else if (typeof element.searchChildren != 'undefined' && element.searchChildren) {
-						$node.addClass("leaf-closed");
+					if (typeof element.searchChildren != 'undefined' && element.searchChildren) {
+						$node
+							.removeClass("leaf-empty")
+							.addClass("leaf-closed");
 
 						$leafIcon.click(function (e) {
 							e.preventDefault();
 
-							if (! $node.hasClass("children-loaded") && ! $node.hasClass("leaf-empty")) {
+							if (!$node.hasClass("children-loaded") && !$node.hasClass("leaf-empty")) {
 								$node
 									.removeClass("leaf-closed")
 									.removeClass("leaf-error")
@@ -492,17 +491,30 @@ TreeController = {
 										$node.addClass("children-loaded");
 									},
 									success: function(data, textStatus, xhr) {
-										data = $.parseJSON(data);
-
 										if (data.success) {
-
 											if (typeof data.tree != 'undefined' && data.tree.length > 0) {
 												$node.addClass("leaf-open");
-												
-												var $children = _processGroup($node, data.tree);
-												$children.slideDown();
 
-												$node.data('children', $children);
+												var $group = $node.find("ul.tree-group");
+
+												if ($group.length <= 0) {
+													$group = $("<ul></ul>");
+													$group
+														.addClass("tree-group")
+														.hide();
+													$node.append($group);
+												}
+												
+												data.tree.forEach(function(element, index) {
+													element.jqObject = _processNode($group, element);
+												}, $group);
+
+												$group.slideDown();
+
+												$node.data('children', $group);
+												
+												// Add again the hover event to the 'force_callback' elements
+												forced_title_callback();
 											}
 											else {
 												$node.addClass("leaf-empty");
@@ -534,9 +546,6 @@ TreeController = {
 								}
 							}
 						});
-					}
-					else {
-						$node.addClass("leaf-empty");
 					}
 
 					return $node;

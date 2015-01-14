@@ -24,6 +24,9 @@ class Tree {
 
 	protected $userGroups;
 	
+	protected $strictACL = false;
+	protected $acltags = false;
+	
 	public function  __construct($type, $root = null,
 		$childrenMethod = "on_demand",
 		$countModuleStatusMethod = "on_demand",
@@ -64,8 +67,6 @@ class Tree {
 		$module['server_type'] = (int) $module['id_modulo'];
 		// $module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
 
-		if (!isset($module['status']))
-			$module['status'] = modules_get_status($module['id']);
 		if (!isset($module['value']))
 			$module['value'] = modules_get_last_value($module['id']);
 
@@ -186,42 +187,44 @@ class Tree {
 		$agent['name'] = $agent['nombre'];
 		
 		// Counters
-		$agent['counters'] = array();
+		if (empty($agent['counters'])) {
+			$agent['counters'] = array();
 
-		if (isset($agent['unknown_count']))
-			$agent['counters']['unknown'] = $agent['unknown_count'];
-		else
-			$agent['counters']['unknown'] = agents_monitor_unknown($agent['id']);
+			if (isset($agent['unknown_count']))
+				$agent['counters']['unknown'] = $agent['unknown_count'];
+			else
+				$agent['counters']['unknown'] = agents_monitor_unknown($agent['id']);
 
-		if (isset($agent['critical_count']))
-			$agent['counters']['critical'] = $agent['critical_count'];
-		else
-			$agent['counters']['critical'] = agents_monitor_critical($agent['id']);
+			if (isset($agent['critical_count']))
+				$agent['counters']['critical'] = $agent['critical_count'];
+			else
+				$agent['counters']['critical'] = agents_monitor_critical($agent['id']);
 
-		if (isset($agent['warning_count']))
-			$agent['counters']['warning'] = $agent['warning_count'];
-		else
-			$agent['counters']['warning'] = agents_monitor_warning($agent['id']);
+			if (isset($agent['warning_count']))
+				$agent['counters']['warning'] = $agent['warning_count'];
+			else
+				$agent['counters']['warning'] = agents_monitor_warning($agent['id']);
 
-		if (isset($agent['notinit_count']))
-			$agent['counters']['not_init'] = $agent['notinit_count'];
-		else
-			$agent['counters']['not_init'] = agents_monitor_notinit($agent['id']);
+			if (isset($agent['notinit_count']))
+				$agent['counters']['not_init'] = $agent['notinit_count'];
+			else
+				$agent['counters']['not_init'] = agents_monitor_notinit($agent['id']);
 
-		if (isset($agent['normal_count']))
-			$agent['counters']['ok'] = $agent['normal_count'];
-		else
-			$agent['counters']['ok'] = agents_monitor_ok($agent['id']);
+			if (isset($agent['normal_count']))
+				$agent['counters']['ok'] = $agent['normal_count'];
+			else
+				$agent['counters']['ok'] = agents_monitor_ok($agent['id']);
 
-		if (isset($agent['total_count']))
-			$agent['counters']['total'] = $agent['total_count'];
-		else
-			$agent['counters']['total'] = agents_monitor_total($agent['id']);
+			if (isset($agent['total_count']))
+				$agent['counters']['total'] = $agent['total_count'];
+			else
+				$agent['counters']['total'] = agents_monitor_total($agent['id']);
 
-		if (isset($agent['fired_count']))
-			$agent['counters']['alerts'] = $agent['fired_count'];
-		else
-			$agent['counters']['alerts'] = agents_get_alerts_fired($agent['id']);
+			if (isset($agent['fired_count']))
+				$agent['counters']['alerts'] = $agent['fired_count'];
+			else
+				$agent['counters']['alerts'] = agents_get_alerts_fired($agent['id']);
+		}
 
 		// Status image
 		$agent['statusImageHTML'] = agents_tree_view_status_img_ball(
@@ -258,28 +261,30 @@ class Tree {
 		}
 		
 		// Children
-		$agent['children'] = array();
-		if ($agent['counters']['total'] > 0) {
-			switch ($this->childrenMethod) {
-				case 'on_demand':
-					$agent['searchChildren'] = 1;
-					break;
-				case 'live':
-					$agent['searchChildren'] = 0;
+		if (empty($agent['children'])) {
+			$agent['children'] = array();
+			if ($agent['counters']['total'] > 0) {
+				switch ($this->childrenMethod) {
+					case 'on_demand':
+						$agent['searchChildren'] = 1;
+						break;
+					case 'live':
+						$agent['searchChildren'] = 0;
 
-					if ($searchChildren)
-						$agent['children'] = $this->getModules($agent['id'], $modulesFilter);
-					break;
+						if ($searchChildren)
+							$agent['children'] = $this->getModules($agent['id'], $modulesFilter);
+						break;
+				}
 			}
-		}
-		else {
-			switch ($this->childrenMethod) {
-				case 'on_demand':
-					$agent['searchChildren'] = 0;
-					break;
-				case 'live':
-					$agent['searchChildren'] = 0;
-					break;
+			else {
+				switch ($this->childrenMethod) {
+					case 'on_demand':
+						$agent['searchChildren'] = 0;
+						break;
+					case 'live':
+						$agent['searchChildren'] = 0;
+						break;
+				}
 			}
 		}
 	}
@@ -293,6 +298,18 @@ class Tree {
 	}
 
 	protected function getAgents ($parent = 0, $parentType = '') {
+		// Agent name filter
+		$agent_search = "";
+		if (!empty($this->filter['searchAgent'])) {
+			$agent_search = " AND ta.nombre LIKE '%".$this->filter['searchAgent']."%' ";
+		}
+		
+		// Module name filter
+		$module_search = "";
+		if (!empty($this->filter['searchModule'])) {
+			$module_search = " AND tam.nombre LIKE '%".$this->filter['searchModule']."%' ";
+		}
+
 		switch ($parentType) {
 			case 'group':
 				// ACL Groups
@@ -303,24 +320,139 @@ class Tree {
 					if (!isset($this->userGroups[$parent]))
 						return array();
 				}
-				$filter = array();
-				$filter['id_grupo'] = $parent;
-				if (isset($this->filter['status']) && $this->filter['status'] != -1)
-					$filter['status'] = $this->filter['status'];
-				if (!empty($this->filter['searchAgent']))
-					$filter['nombre'] = "%" . $this->filter['searchAgent'] . "%";
+				// TODO: Check ACL
 				
-				$agents = agents_get_agents($filter, array('id_agente', 'nombre'));
-				if (empty($agents)) {
-					$agents = array();
+				// Get the agents. The modules are optional (LEFT JOIN), like their status
+				$sql = "SELECT ta.id_agente, ta.nombre AS agent_name, ta.fired_count,
+							ta.normal_count, ta.warning_count, ta.critical_count,
+							ta.unknown_count, ta.notinit_count, ta.total_count,
+							tam.id_agente_modulo, tam.nombre AS module_name,
+							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos
+						FROM tagente AS ta
+						LEFT JOIN tagente_modulo AS tam
+								LEFT JOIN tagente_estado AS tae
+									ON tam.id_agente_modulo IS NOT NULL
+										AND tam.id_agente_modulo = tae.id_agente_modulo
+							ON tam.disabled = 0
+								AND ta.id_agente = tam.id_agente
+								$module_search
+						WHERE ta.id_grupo = $parent
+							AND ta.disabled = 0
+							$agent_search
+						ORDER BY ta.nombre ASC, ta.id_agente ASC, tam.nombre ASC, tam.id_agente_modulo ASC";
+				$data = db_process_sql($sql);
+				break;
+			case 'tag':
+				$groups_clause = "";
+				if (!empty($this->acltags)) {
+					$i = 0;
+					$groups = array();
+					foreach ($this->acltags as $group_id => $tags) {
+						if (!empty($tags)) {
+							$tags_arr = explode(',', $tags);
+
+							if (in_array($id_tag, $tags_arr))
+								$groups[] = $group_id;
+						}
+					}
+					if (!empty($groups)) {
+						$groups_str = implode(",", $groups);
+						$groups_clause = " AND ta.id_grupo IN ($groups_str)"; 
+					}
 				}
+
+				// Get the agents. The modules are required (INNER JOIN), although their status
+				$sql = "SELECT ta.id_agente, ta.nombre AS agent_name, ta.fired_count,
+							ta.normal_count, ta.warning_count, ta.critical_count,
+							ta.unknown_count, ta.notinit_count, ta.total_count,
+							tam.id_agente_modulo, tam.nombre AS module_name,
+							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos
+						FROM tagente AS ta
+						INNER JOIN tagente_modulo AS tam
+							ON tam.disabled = 0
+								AND ta.id_agente = tam.id_agente
+								$module_search
+						INNER JOIN ttag_module AS ttm
+							ON ttm.id_tag = $parent
+								AND tam.id_agente_modulo = ttm.id_agente_modulo
+						LEFT JOIN tagente_estado AS tae
+							ON tam.id_agente_modulo = tae.id_agente_modulo
+						WHERE ta.disabled = 0
+							$groups_clause
+							$agent_search
+						ORDER BY ta.nombre ASC, ta.id_agente ASC, tam.nombre ASC, tam.id_agente_modulo ASC";
+				$data = db_process_sql($sql);
 				break;
 			default:
 				return array();
 				break;
 		}
+
+		if (empty($data))
+			return array();
 		
-		$this->processAgents($agents);
+		$agents = array();
+		$actual_agent = array();
+		foreach ($data as $key => $value) {
+
+			if (empty($actual_agent) || $actual_agent['id_agente'] != (int)$value['id_agente']) {
+				if (!empty($actual_agent)) {
+					$this->processAgent(&$actual_agent, array(), false);
+					$agents[] = $actual_agent;
+				}
+
+				$actual_agent = array();
+				$actual_agent['id_agente'] = (int) $value['id_agente'];
+				$actual_agent['nombre'] = $value['agent_name'];
+
+				$actual_agent['children'] = array();
+
+				// Initialize counters
+				$actual_agent['counters'] = array();
+				$actual_agent['counters']['total'] = 0;
+				$actual_agent['counters']['alerts'] = 0;
+				$actual_agent['counters']['critical'] = 0;
+				$actual_agent['counters']['warning'] = 0;
+				$actual_agent['counters']['unknown'] = 0;
+				$actual_agent['counters']['not_init'] = 0;
+				$actual_agent['counters']['ok'] = 0;
+
+				// $actual_agent['counters'] = array();
+				// $actual_agent['counters']['total'] = (int) $value['total_count'];
+				// $actual_agent['counters']['alerts'] = (int) $value['fired_count_count'];
+				// $actual_agent['counters']['critical'] = (int) $value['critical_count'];
+				// $actual_agent['counters']['warning'] = (int) $value['warning_count'];
+				// $actual_agent['counters']['unknown'] = (int) $value['unknown_count'];
+				// $actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
+				// $actual_agent['counters']['ok'] = (int) $value['normal_count'];
+			}
+
+			if (empty($value['id_agente_modulo']))
+				continue;
+
+			$module = array();
+			$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
+			$module['nombre'] = $value['module_name'];
+			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
+			$module['server_type'] = (int) $value['id_modulo'];
+			$module['status'] = (int) $value['estado'];
+			$module['value'] = $value['data'];
+
+			$this->processModule($module);
+
+			$actual_agent['children'][] = $module;
+			$actual_agent['counters']['total']++;
+
+			if (isset($actual_agent['counters'][$module['statusText']]))
+				$actual_agent['counters'][$module['statusText']]++;
+
+			if ($module['alert'])
+				$actual_agent['counters']['alerts']++;
+		}
+		if (!empty($actual_agent)) {
+			$this->processAgent(&$actual_agent, array(), false);
+			$agents[] = $actual_agent;
+		}
 		
 		return $agents;
 	}
@@ -473,18 +605,167 @@ class Tree {
 	}
 	
 	private function getDataGroup() {
+		global $config;
+
 		// Get the parent
 		if (empty($this->root))
 			$parent = 0;
 		else
 			$parent = $this->root;
 
-		$groups = $this->getGroupsRecursive($parent);
+		// Get all groups
+		if (empty($parent)) {
+			require_once($config['homedir']."/include/functions_groups.php");
 
-		if (empty($groups))
-			$groups = array();
+			// Return all the children groups
+			function __searchChildren(&$groups, $id) {
+				$children = array();
+				foreach ($groups as $key => $group) {
+					if (isset($group['_parent_id_']) && $group['_parent_id_'] == $id) {
+						$processed_group = array();
+						$processed_group['id'] = $group['_id_'];
+						$processed_group['parentID'] = $group['_parent_id_'];
+						$processed_group['name'] = $group['_name_'];
+						$processed_group['iconHTML'] = $group['_iconImg_'];
+						$processed_group['type'] = 'group';
+						$processed_group['searchChildren'] = 1;
 
-		$this->tree = $groups;
+						$counters = array();
+						if (isset($group['_agents_unknown_']))
+							$counters['unknown'] = $group['_agents_unknown_'];
+
+						if (isset($group['_agents_critical_']))
+							$counters['critical'] = $group['_agents_critical_'];
+
+						if (isset($group['_agents_warning_']))
+							$counters['warning'] = $group['_agents_warning_'];
+
+						if (isset($group['_agents_not_init_']))
+							$counters['not_init'] = $group['_agents_not_init_'];
+
+						if (isset($group['_agents_ok_']))
+							$counters['ok'] = $group['_agents_ok_'];
+
+						if (isset($group['_total_agents_']))
+							$counters['total'] = $group['_total_agents_'];
+
+						if (isset($group['_monitors_alerts_fired_']))
+							$counters['alerts'] = $group['_monitors_alerts_fired_'];
+
+						$children = __searchChildren($groups, $group['_id_']);html_debug_print($children, true);
+						if (!empty($children)) {
+							$processed_group['children'] = $children;
+
+							foreach ($children as $key => $child) {
+								if (isset($child['counters'])) {
+									foreach ($child['counters'] as $type => $value) {
+										if (isset($counters[$type]))
+											$counters[$type] += $value;
+									}
+								}
+							}
+						}
+
+						if (!empty($counters))
+							$processed_group['counters'] = $counters;
+
+						$children[] = $processed_group;
+						unset($groups[$key]);
+					}
+				}
+				return $children;
+			}
+
+			if (! defined ('METACONSOLE')) {
+				$groups = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
+			} else {
+
+			}
+			//$groups = group_get_groups_list($config['id_user'], true, 'AR', true, false, 'tree');
+
+			// Build the group hierarchy
+			foreach ($groups as $key => $group) {
+				if (empty($group['_is_tag_']))
+					$children = __searchChildren($groups, $group['_id_']);
+
+				if (!empty($children))
+					$groups[$key]['children'] = $children;
+			}
+
+			// Process the groups for the tree
+			$processed_groups = array();
+			foreach ($groups as $key => $group) {
+				$processed_group = array();
+				$processed_group['id'] = $group['_id_'];
+				$processed_group['name'] = $group['_name_'];
+				$processed_group['searchChildren'] = 1;
+
+				if (!empty($group['_iconImg_']))
+					$processed_group['iconHTML'] = $group['_iconImg_'];
+
+				if (!empty($group['_parent_id_']))
+					$processed_group['parentID'] = $group['_parent_id_'];
+
+				if (empty($group['_is_tag_']))
+					$processed_group['type'] = 'group';
+				else
+					$processed_group['type'] = 'tag';
+
+				$counters = array();
+				if (isset($group['_agents_unknown_']))
+					$counters['unknown'] = $group['_agents_unknown_'];
+
+				if (isset($group['_agents_critical_']))
+					$counters['critical'] = $group['_agents_critical_'];
+
+				if (isset($group['_agents_warning_']))
+					$counters['warning'] = $group['_agents_warning_'];
+
+				if (isset($group['_agents_not_init_']))
+					$counters['not_init'] = $group['_agents_not_init_'];
+
+				if (isset($group['_agents_ok_']))
+					$counters['ok'] = $group['_agents_ok_'];
+
+				if (isset($group['_total_agents_']))
+					$counters['total'] = $group['_total_agents_'];
+
+				if (isset($group['_monitors_alerts_fired_']))
+					$counters['alerts'] = $group['_monitors_alerts_fired_'];
+
+				if (!empty($group['children'])) {
+					$processed_group['children'] = $group['children'];
+
+					if ($processed_group['type'] == 'group') {
+						foreach ($processed_group['children'] as $key => $child) {
+							if (isset($child['counters'])) {
+								foreach ($child['counters'] as $type => $value) {
+									if (isset($counters[$type]))
+										$counters[$type] += $value;
+								}
+							}
+						}
+					}
+				}
+
+				if (!empty($counters))
+					$processed_group['counters'] = $counters;
+
+				$processed_groups[] = $processed_group;
+			}
+			$groups = $processed_groups;
+
+			// $groups = $this->getGroupsRecursive($parent);
+
+			if (empty($groups))
+				$groups = array();
+
+			$this->tree = $groups;
+		}
+		// Get the group agents
+		else {
+			$this->tree = $this->getAgents($parent, $this->type);
+		}
 	}
 
 	private function getDataModules() {
@@ -520,12 +801,12 @@ class Tree {
 				INNER JOIN tagente AS ta
 					ON ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
+						$agent_search
+						$group_acl
 				INNER JOIN tagente_estado AS tae
 					ON tae.id_agente_modulo = tam.id_agente_modulo
 				WHERE tam.disabled = 0
-					$agent_search
 					$module_search
-					$group_acl
 				ORDER BY tam.nombre ASC, ta.nombre ASC";
 		$data = db_process_sql($sql);
 
@@ -543,6 +824,15 @@ class Tree {
 			$agent = array();
 			$agent['id_agente'] = (int) $value['id_agente'];
 			$agent['nombre'] = $value['agent_name'];
+
+			$agent['counters'] = array();
+			$agent['counters']['total'] = (int) $value['total_count'];
+			$agent['counters']['alerts'] = (int) $value['fired_count_count'];
+			$agent['counters']['critical'] = (int) $value['critical_count'];
+			$agent['counters']['warning'] = (int) $value['warning_count'];
+			$agent['counters']['unknown'] = (int) $value['unknown_count'];
+			$agent['counters']['not_init'] = (int) $value['notinit_count'];
+			$agent['counters']['ok'] = (int) $value['normal_count'];
 
 			$this->processAgent(&$agent, array(), false);
 
@@ -633,14 +923,14 @@ class Tree {
 				INNER JOIN tagente AS ta
 					ON ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
+						$agent_search
+						$group_acl
 				INNER JOIN tagente_estado AS tae
 					ON tae.id_agente_modulo = tam.id_agente_modulo
 				LEFT JOIN tmodule_group AS tmg
 					ON tmg.id_mg = tam.id_module_group
 				WHERE tam.disabled = 0
-					$agent_search
 					$module_search
-					$group_acl
 				ORDER BY tmg.name ASC, tmg.id_mg ASC, ta.nombre ASC, tam.nombre ASC";
 		$data = db_process_sql($sql);
 
@@ -684,6 +974,15 @@ class Tree {
 					$actual_agent['nombre'] = $value['agent_name'];
 					$actual_agent['children'] = array();
 
+					$actual_agent['counters'] = array();
+					$actual_agent['counters']['total'] = (int) $value['total_count'];
+					$actual_agent['counters']['alerts'] = (int) $value['fired_count_count'];
+					$actual_agent['counters']['critical'] = (int) $value['critical_count'];
+					$actual_agent['counters']['warning'] = (int) $value['warning_count'];
+					$actual_agent['counters']['unknown'] = (int) $value['unknown_count'];
+					$actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
+					$actual_agent['counters']['ok'] = (int) $value['normal_count'];
+
 					$this->processAgent(&$actual_agent, array(), false);
 
 					// Add the module to the agent
@@ -713,6 +1012,15 @@ class Tree {
 				$actual_agent['id_agente'] = (int) $value['id_agente'];
 				$actual_agent['nombre'] = $value['agent_name'];
 				$actual_agent['children'] = array();
+
+				$actual_agent['counters'] = array();
+				$actual_agent['counters']['total'] = (int) $value['total_count'];
+				$actual_agent['counters']['alerts'] = (int) $value['fired_count_count'];
+				$actual_agent['counters']['critical'] = (int) $value['critical_count'];
+				$actual_agent['counters']['warning'] = (int) $value['warning_count'];
+				$actual_agent['counters']['unknown'] = (int) $value['unknown_count'];
+				$actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
+				$actual_agent['counters']['ok'] = (int) $value['normal_count'];
 
 				$this->processAgent(&$actual_agent, array(), false);
 
@@ -793,14 +1101,14 @@ class Tree {
 				INNER JOIN tagente AS ta
 					ON ta.id_agente = tam.id_agente
 						AND ta.disabled = 0
+						$agent_search
+						$group_acl
 				INNER JOIN tagente_estado AS tae
 					ON tae.id_agente_modulo = tam.id_agente_modulo
 				LEFT JOIN tconfig_os AS tos
 					ON tos.id_os = ta.id_os
 				WHERE tam.disabled = 0
-					$agent_search
 					$module_search
-					$group_acl
 				ORDER BY tos.icon_name ASC, tos.id_os ASC, ta.nombre ASC, tam.nombre";
 		$data = db_process_sql($sql);
 
@@ -844,6 +1152,15 @@ class Tree {
 					$actual_agent['nombre'] = $value['agent_name'];
 					$actual_agent['children'] = array();
 
+					$actual_agent['counters'] = array();
+					$actual_agent['counters']['total'] = (int) $value['total_count'];
+					$actual_agent['counters']['alerts'] = (int) $value['fired_count_count'];
+					$actual_agent['counters']['critical'] = (int) $value['critical_count'];
+					$actual_agent['counters']['warning'] = (int) $value['warning_count'];
+					$actual_agent['counters']['unknown'] = (int) $value['unknown_count'];
+					$actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
+					$actual_agent['counters']['ok'] = (int) $value['normal_count'];
+				
 					$this->processAgent(&$actual_agent, array(), false);
 
 					// Add the module to the agent
@@ -889,6 +1206,15 @@ class Tree {
 				$actual_agent['nombre'] = $value['agent_name'];
 				$actual_agent['children'] = array();
 
+				$actual_agent['counters'] = array();
+				$actual_agent['counters']['total'] = (int) $value['total_count'];
+				$actual_agent['counters']['alerts'] = (int) $value['fired_count_count'];
+				$actual_agent['counters']['critical'] = (int) $value['critical_count'];
+				$actual_agent['counters']['warning'] = (int) $value['warning_count'];
+				$actual_agent['counters']['unknown'] = (int) $value['unknown_count'];
+				$actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
+				$actual_agent['counters']['ok'] = (int) $value['normal_count'];
+				
 				$this->processAgent(&$actual_agent, array(), false);
 
 				// Add the module to the agent
@@ -923,84 +1249,123 @@ class Tree {
 	}
 	
 	private function getDataTag() {
-		// ACL Group
-		if (isset($this->userGroups) && $this->userGroups === false)
-			return array();
 
-		$group_acl =  "";
-		if (!empty($this->userGroups)) {
-			$user_groups_str = implode(",", array_keys($this->userGroups));
-			$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
-		}
+		// Get the parent
+		if (empty($this->root))
+			$parent = 0;
+		else
+			$parent = $this->root;
 
-		// Agent name filter
-		$agent_search = "";
-		if (!empty($this->filter['searchAgent'])) {
-			$agent_search = " AND ta.nombre LIKE '%".$this->filter['searchAgent']."%' ";
-		}
-		
-		// Module name filter
-		$module_search = "";
-		if (!empty($this->filter['searchModule'])) {
-			$module_search = " AND tam.nombre LIKE '%".$this->filter['searchModule']."%' ";
-		}
-		
-		$sql = "SELECT tam.id_agente_modulo, tam.nombre AS module_name,
-					tam.id_tipo_modulo, tam.id_modulo,
-					ta.id_agente, ta.nombre AS agent_name, ta.fired_count,
-					ta.normal_count, ta.warning_count, ta.critical_count,
-					ta.unknown_count, ta.notinit_count, ta.total_count,
-					tt.id_tag, tt.name AS tag_name,
-					tae.estado, tae.estado
-				FROM tagente_modulo AS tam
-				INNER JOIN tagente AS ta
-					ON ta.id_agente = tam.id_agente
-						AND ta.disabled = 0
-				INNER JOIN tagente_estado AS tae
-					ON tae.id_agente_modulo = tam.id_agente_modulo
-				INNER JOIN ttag_module AS ttm
-					ON ttm.id_agente_modulo = tam.id_agente_modulo
-				INNER JOIN ttag AS tt
-					ON tt.id_tag = ttm.id_tag
-				WHERE tam.disabled = 0
-					$agent_search
-					$module_search
-					$group_acl
-				ORDER BY tt.name ASC, tt.id_tag ASC, ta.nombre ASC, tam.nombre ASC";
-		$data = db_process_sql($sql);
+		// Get all groups
+		if (empty($parent)) {
+			// ACL Group
+			if (isset($this->userGroups) && $this->userGroups === false)
+				return array();
 
-		if (empty($data)) {
-			$data = array();
-		}
+			$group_acl =  "";
+			if (!empty($this->userGroups)) {
+				$user_groups_str = implode(",", array_keys($this->userGroups));
+				$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+			}
 
-		$nodes = array();
-		$actual_tag_root = array(
-				'id' => null,
-				'name' => '',
-				'children' => array(),
-				'counters' => array()
-			);
-		$actual_agent = array();
-		foreach ($data as $key => $value) {
+			// Agent name filter
+			$agent_search = "";
+			if (!empty($this->filter['searchAgent'])) {
+				$agent_search = " AND ta.nombre LIKE '%".$this->filter['searchAgent']."%' ";
+			}
+			
+			// Module name filter
+			$module_search = "";
+			if (!empty($this->filter['searchModule'])) {
+				$module_search = " AND tam.nombre LIKE '%".$this->filter['searchModule']."%' ";
+			}
+			
+			$sql = "SELECT tam.id_agente_modulo, tam.nombre AS module_name,
+						tam.id_tipo_modulo, tam.id_modulo,
+						ta.id_agente, ta.nombre AS agent_name, ta.fired_count,
+						ta.normal_count, ta.warning_count, ta.critical_count,
+						ta.unknown_count, ta.notinit_count, ta.total_count,
+						tt.id_tag, tt.name AS tag_name,
+						tae.estado, tae.estado
+					FROM tagente_modulo AS tam
+					INNER JOIN tagente AS ta
+						ON ta.id_agente = tam.id_agente
+							AND ta.disabled = 0
+					INNER JOIN tagente_estado AS tae
+						ON tae.id_agente_modulo = tam.id_agente_modulo
+					INNER JOIN ttag_module AS ttm
+						ON ttm.id_agente_modulo = tam.id_agente_modulo
+					INNER JOIN ttag AS tt
+						ON tt.id_tag = ttm.id_tag
+					WHERE tam.disabled = 0
+						$agent_search
+						$module_search
+						$group_acl
+					ORDER BY tt.name ASC, tt.id_tag ASC, ta.nombre ASC, tam.nombre ASC";
+			$data = db_process_sql($sql);
 
-			// Module
-			$module = array();
-			$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
-			$module['nombre'] = $value['module_name'];
-			$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
-			$module['server_type'] = (int) $value['id_modulo'];
-			$module['status'] = (int) $value['estado'];
-			$module['value'] = $value['datos'];
+			if (empty($data)) {
+				$data = array();
+			}
 
-			$this->processModule($module);
+			$nodes = array();
+			$actual_tag_root = array(
+					'id' => null,
+					'name' => '',
+					'children' => array(),
+					'counters' => array()
+				);
+			$actual_agent = array();
+			foreach ($data as $key => $value) {
 
-			// Tag
-			if ($actual_tag_root['id'] === (int)$value['id_tag']) {
-				// Agent
-				if (empty($actual_agent) || $actual_agent['id'] !== (int)$value['id_agente']) {
-					// Add the last agent to the tag
-					if (!empty($actual_agent))
+				// Module
+				$module = array();
+				$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
+				$module['nombre'] = $value['module_name'];
+				$module['id_tipo_modulo'] = (int) $value['id_tipo_modulo'];
+				$module['server_type'] = (int) $value['id_modulo'];
+				$module['status'] = (int) $value['estado'];
+				$module['value'] = $value['datos'];
+
+				$this->processModule($module);
+
+				// Tag
+				if ($actual_tag_root['id'] === (int)$value['id_tag']) {
+					// Agent
+					if (empty($actual_agent) || $actual_agent['id'] !== (int)$value['id_agente']) {
+						// Add the last agent to the tag
+						if (!empty($actual_agent))
+							$actual_tag_root['children'][] = $actual_agent;
+
+						// Create the new agent
+						$actual_agent = array();
+						$actual_agent['id_agente'] = (int) $value['id_agente'];
+						$actual_agent['nombre'] = $value['agent_name'];
+						$actual_agent['children'] = array();
+
+						$this->processAgent(&$actual_agent, array(), false);
+
+						// Add the module to the agent
+						$actual_agent['children'][] = $module;
+
+						// Increase counters
+						$actual_tag_root['counters']['total']++;
+
+						if (isset($actual_tag_root['counters'][$actual_agent['status']]))
+							$actual_tag_root['counters'][$actual_agent['status']]++;
+					}
+					else {
+						$actual_agent['children'][] = $module;
+					}
+				}
+				else {
+					// The first iteration doesn't enter here
+					if ($actual_tag_root['id'] !== null) {
+						// Add the agent to the tag
 						$actual_tag_root['children'][] = $actual_agent;
+						// Add the tag to the branch
+						$nodes[] = $actual_tag_root;
+					}
 
 					// Create the new agent
 					$actual_agent = array();
@@ -1013,68 +1378,42 @@ class Tree {
 					// Add the module to the agent
 					$actual_agent['children'][] = $module;
 
+					// Create new tag
+					$actual_tag_root = array();
+					$actual_tag_root['id'] = (int) $value['id_tag'];
+					$actual_tag_root['name'] = $value['tag_name'];
+					$actual_tag_root['type'] = $this->type;
+
+					// Initialize counters
+					$actual_tag_root['counters'] = array();
+					$actual_tag_root['counters']['total'] = 0;
+					$actual_tag_root['counters']['alerts'] = 0;
+					$actual_tag_root['counters']['critical'] = 0;
+					$actual_tag_root['counters']['warning'] = 0;
+					$actual_tag_root['counters']['unknown'] = 0;
+					$actual_tag_root['counters']['not_init'] = 0;
+					$actual_tag_root['counters']['ok'] = 0;
+
 					// Increase counters
 					$actual_tag_root['counters']['total']++;
 
 					if (isset($actual_tag_root['counters'][$actual_agent['status']]))
 						$actual_tag_root['counters'][$actual_agent['status']]++;
 				}
-				else {
-					$actual_agent['children'][] = $module;
-				}
 			}
-			else {
-				// The first iteration doesn't enter here
-				if ($actual_tag_root['id'] !== null) {
-					// Add the agent to the tag
-					$actual_tag_root['children'][] = $actual_agent;
-					// Add the tag to the branch
-					$nodes[] = $actual_tag_root;
-				}
-
-				// Create the new agent
-				$actual_agent = array();
-				$actual_agent['id_agente'] = (int) $value['id_agente'];
-				$actual_agent['nombre'] = $value['agent_name'];
-				$actual_agent['children'] = array();
-
-				$this->processAgent(&$actual_agent, array(), false);
-
-				// Add the module to the agent
-				$actual_agent['children'][] = $module;
-
-				// Create new tag
-				$actual_tag_root = array();
-				$actual_tag_root['id'] = (int) $value['id_tag'];
-				$actual_tag_root['name'] = $value['tag_name'];
-				$actual_tag_root['type'] = $this->type;
-
-				// Initialize counters
-				$actual_tag_root['counters'] = array();
-				$actual_tag_root['counters']['total'] = 0;
-				$actual_tag_root['counters']['alerts'] = 0;
-				$actual_tag_root['counters']['critical'] = 0;
-				$actual_tag_root['counters']['warning'] = 0;
-				$actual_tag_root['counters']['unknown'] = 0;
-				$actual_tag_root['counters']['not_init'] = 0;
-				$actual_tag_root['counters']['ok'] = 0;
-
-				// Increase counters
-				$actual_tag_root['counters']['total']++;
-
-				if (isset($actual_tag_root['counters'][$actual_agent['status']]))
-					$actual_tag_root['counters'][$actual_agent['status']]++;
+			// If there is an agent and a tag opened and not saved
+			if ($actual_tag_root['id'] !== null) {
+				// Add the last agent to the tag
+				$actual_tag_root['children'][] = $actual_agent;
+				// Add the last tag to the branch
+				$nodes[] = $actual_tag_root;
 			}
-		}
-		// If there is an agent and a tag opened and not saved
-		if ($actual_tag_root['id'] !== null) {
-			// Add the last agent to the tag
-			$actual_tag_root['children'][] = $actual_agent;
-			// Add the last tag to the branch
-			$nodes[] = $actual_tag_root;
-		}
 
-		$this->tree = $nodes;
+			$this->tree = $nodes;
+		}
+		else {
+			$this->tree = $this->getAgents($parent, $this->type);
+		}
 	}
 	
 	public function getJSON() {

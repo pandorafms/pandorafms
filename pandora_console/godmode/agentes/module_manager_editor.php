@@ -462,7 +462,7 @@ html_print_table ($table_simple);
 ui_toggle(html_print_table ($table_advanced, true),
 	__('Advanced options'));
 ui_toggle(html_print_table ($table_macros, true),
-	__('Module macros') . ui_print_help_icon ('module_macros', true));
+	__('Custom macros') . ui_print_help_icon ('module_macros', true));
 ui_toggle(html_print_table ($table_new_relations, true) .
 	html_print_table ($table_relations, true), __('Module relations'));
 

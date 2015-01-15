@@ -69,14 +69,16 @@ if ($get_module_detail) {
 	
 	ui_include_time_picker();
 	
-	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
+	ui_require_jquery_file("ui.datepicker-" . get_user_language(),
+		"include/javascript/i18n/");
 	
 	ui_require_jquery_file ("ui-timepicker-addon");
 	// This script is included manually to be included after jquery and avoid error
 	echo '<script type="text/javascript" src="' .
 		ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' .
 		get_user_language(), false, false, false) . '"></script>';
-	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
+	ui_require_jquery_file("ui.datepicker-" . get_user_language(),
+		"include/javascript/i18n/");
 	
 	$module_id = get_parameter ('id_module');
 	$period = get_parameter ("period", 86400);
@@ -86,7 +88,8 @@ if ($get_module_detail) {
 	
 	if (defined ('METACONSOLE')) {
 		$server = metaconsole_get_connection ($server_name);
-		$conexion = mysql_connect ($server['dbhost'], $server['dbuser'], $server['dbpass']);
+		$conexion = mysql_connect ($server['dbhost'], $server['dbuser'],
+			$server['dbpass']);
 		$select_db = mysql_select_db ($server['dbname'], $conexion);
 	}
 	else {
@@ -119,25 +122,33 @@ if ($get_module_detail) {
 		SECONDS_2YEARS =>__('2 years'),
 		SECONDS_3YEARS =>__('3 years'));
 	
-	$formtable->data[0][0] = html_print_radio_button_extended ("selection_mode", 'fromnow', '', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Choose a time from now");
+	$formtable->data[0][0] = html_print_radio_button_extended (
+		"selection_mode", 'fromnow', '', $selection_mode, false, '',
+		'style="margin-right: 15px;"', true) . __("Choose a time from now");
 	$formtable->data[0][1] = html_print_select ($periods, 'period', $period, '', '', 0, true, false, false);
 	$formtable->data[0][2] = '';
 	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name . "\", 0, -1)'>". html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
 	$formtable->rowspan[0][3] = 2;
 	$formtable->cellstyle[0][3] = 'vertical-align: middle;';
 	
-	$formtable->data[1][0] = html_print_radio_button_extended ("selection_mode", 'range','', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Specify time range");
+	$formtable->data[1][0] = html_print_radio_button_extended(
+		"selection_mode", 'range','', $selection_mode, false, '',
+		'style="margin-right: 15px;"', true) . __("Specify time range");
 	$formtable->data[1][1] = __('Timestamp from:');
 	
-	$formtable->data[1][2] = html_print_input_text ('date_from', $date_from, '', 10, 10, true);
-	$formtable->data[1][2] .= html_print_input_text ('time_from', $time_from, '', 9, 7, true);
+	$formtable->data[1][2] = html_print_input_text('date_from',
+		$date_from, '', 10, 10, true);
+	$formtable->data[1][2] .= html_print_input_text('time_from',
+		$time_from, '', 9, 7, true);
 	
 	$formtable->data[1][1] .= '<br />';
 	$formtable->data[1][1] .= __('Timestamp to:');
 	
 	$formtable->data[1][2] .= '<br />';
-	$formtable->data[1][2] .= html_print_input_text ('date_to', $date_to, '', 10, 10, true);
-	$formtable->data[1][2] .= html_print_input_text ('time_to', $time_to, '', 9, 7, true);
+	$formtable->data[1][2] .= html_print_input_text('date_to', $date_to,
+		'', 10, 10, true);
+	$formtable->data[1][2] .= html_print_input_text('time_to', $time_to,
+		'', 9, 7, true);
 	
 	html_print_table($formtable);
 	
@@ -152,136 +163,43 @@ if ($get_module_detail) {
 	$datetime_from = strtotime ($date_from . ' ' . $time_from);
 	$datetime_to = strtotime ($date_to . ' ' . $time_to);
 	
-	if ($moduletype_name == "log4x") {
-		$table->width = "100%";
-		
-		if ($selection_mode == "fromnow") {
-			$sql_body = sprintf ("FROM tagente_datos_log4x
-				WHERE id_agente_modulo = %d AND utimestamp > %d
-				ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
-		}
-		else {
-			$sql_body = sprintf ("FROM tagente_datos_log4x
-				WHERE id_agente_modulo = %d AND utimestamp >= %d
-					AND utimestamp <= %d
-				ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
-		}
 	
-		$columns = array(
-			"Timestamp" => array("utimestamp", "modules_format_timestamp", "align" => "center" ),
-			"Sev" => array("severity", "modules_format_data", "align" => "center", "width" => "70px"),
-			"Message"=> array("message", "modules_format_verbatim", "align" => "left", "width" => "45%"),
-			"StackTrace" => array("stacktrace", "modules_format_verbatim", "align" => "left", "width" => "50%")
-		);
-	}
-	else if (preg_match ("/string/", $moduletype_name)) {
-		
-		if ($selection_mode == "fromnow") {
-			$sql_body = sprintf (" FROM tagente_datos_string
-				WHERE id_agente_modulo = %d AND utimestamp > %d
-				ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
-		}
-		else {
-			$sql_body = sprintf (" FROM tagente_datos_string
-				WHERE id_agente_modulo = %d AND utimestamp >= %d
-					AND utimestamp <= %d
-				ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
-		}
-		
-		$columns = array(
-			"Timestamp" => array(
-				"utimestamp",
-				"modules_format_timestamp",
-				"align" => "left"),
-			"Data" => array(
-				"datos",
-				"modules_format_data",
-				"align" => "left"),
-			"Time" => array(
-				"utimestamp",
-				"modules_format_time",
-				"align" => "center")
-		);
+	$columns = array(
+		"Timestamp" => array(
+			"utimestamp",
+			"modules_format_timestamp",
+			"align" => "left"),
+		"Data" => array(
+			"datos",
+			"modules_format_data",
+			"align" => "left"),
+		"Time" => array(
+			"utimestamp",
+			"modules_format_time",
+			"align" => "center")
+	);
+	
+	if ($selection_mode == "fromnow") {
+		$date = get_system_time();
+		$period = $period;
 	}
 	else {
-		if ($selection_mode == "fromnow") {
-			$sql_body = sprintf (" FROM tagente_datos
-				WHERE id_agente_modulo = %d
-					AND utimestamp > %d
-				ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
-		}
-		else {
-			$sql_body = sprintf (" FROM tagente_datos
-				WHERE id_agente_modulo = %d
-					AND utimestamp >= %d AND utimestamp <= %d
-				ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
-		}
-		
-		$columns = array(
-			"Timestamp" => array(
-				"utimestamp",
-				"modules_format_timestamp",
-				"align" => "left"),
-			"Data" => array(
-				"datos",
-				"modules_format_data",
-				"align" => "left"),
-			"Time" => array(
-				"utimestamp",
-				"modules_format_time",
-				"align" => "center")
-		);
+		$date = $datetime_from;
+		$period = $datetime_to - $datetime_from;
 	}
 	
+	$count = modules_get_agentmodule_data ($module_id, $period,
+		$date, true, $conexion);
 	
-	$sql_body = io_safe_output($sql_body);
-	// Clean all codification characters
+	$module_data = modules_get_agentmodule_data ($module_id, $period,
+		$date, false, $conexion, 'DESC');
 	
-	$sql = "SELECT * " . $sql_body;
-	
-	switch ($config['dbtype']) {
-		case "mysql":
-			$sql_count = "SELECT count(*) " . $sql_body;
-			break;
-		case "postgresql":
-			$sql_body = str_replace("ORDER BY utimestamp DESC",
-				"GROUP BY utimestamp ORDER BY utimestamp DESC",
-				$sql_body);
-			$sql_count = "SELECT count(DISTINCT utimestamp) " . $sql_body;
-			break;
-		case "oracle":
-			$sql_count = "SELECT count(*) " . $sql_body;
-			break;
+	if (empty($module_data)) {
+		$result = array();
 	}
-	
-	$count = db_get_value_sql ($sql_count, $conexion);
-	
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql .= " LIMIT " . $offset . "," . $block_size;
-			break;
-		case "postgresql":
-			$sql .= " LIMIT " . $block_size . " OFFSET " . $offset;
-			break;
-		case "oracle":
-			$set = array();
-			$set['limit'] = $block_size;
-			$set['offset'] = $offset;
-			$sql = oracle_recode_query ($sql, $set);
-			break;
-	}
-	
-	$result = db_get_all_rows_sql ($sql, false, true, $conexion);
-	
-	if ($result === false) {
-		$result = array ();
-	}
-	
-	if (($config['dbtype'] == 'oracle') && ($result !== false)) {
-		for ($i=0; $i < count($result); $i++) {
-			unset($result[$i]['rnum']);
-		}
+	else {
+		// Paginate the result
+		$result = array_slice($module_data, $offset, $block_size);
 	}
 	
 	$table->width = '98%';
@@ -300,8 +218,8 @@ if ($get_module_detail) {
 		$index++;
 	}
 	
-	$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
-		'nombre', 'web_content_string');
+	$id_type_web_content_string = db_get_value('id_tipo',
+		'ttipo_modulo', 'nombre', 'web_content_string');
 	
 	foreach ($result as $row) {
 		$data = array ();

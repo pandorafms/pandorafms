@@ -368,13 +368,36 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 	$nothing = '', $nothing_value = 0, $return = false,
 	$multiple = false, $sort = true, $class = '', $disabled = false,
 	$style = false, $option_style = false, $id_group = false,
-	$keys_field = 'id_grupo') {
+	$keys_field = 'id_grupo', $strict_user = false) {
 	
 	global $config;
-	
+
 	$fields = users_get_groups_for_select($id_user, $privilege,
 		$returnAllGroup, true, $id_group, $keys_field);
-	
+
+	if ($strict_user) {
+		foreach ($fields as $id => $group_name) {
+			$sql = "SELECT tags FROM tusuario_perfil WHERE id_usuario = '$id_user' AND id_grupo = $id";
+			$group_has_tag = db_get_value_sql ($sql);
+			if (!$group_has_tag) {
+
+				$sql_parent = "SELECT parent FROM tgrupo WHERE id_grupo = $id AND propagate = 1";
+				$id_parent = db_get_value_sql($sql_parent);
+
+				if ($id_parent) {
+					$sql_parent_aux = "SELECT tags FROM tusuario_perfil WHERE id_usuario = '$id_user' AND id_grupo = $id_parent";
+					$parent_has_tag = db_get_value_sql ($sql_parent_aux);
+
+					if ($parent_has_tag) {
+						unset($fields[$id]);
+					}
+				}
+			} else {
+				unset($fields[$id]);
+			}
+		}
+	}
+
 	$output = html_print_select ($fields, $name, $selected, $script,
 		$nothing, $nothing_value, $return, $multiple, false, $class,
 		$disabled, $style, $option_style);
@@ -1466,22 +1489,13 @@ function html_print_table (&$table, $return = false) {
 				if (!isset ($style[$key])) {
 					$style[$key] = '';
 				}
-				
-				$output .= '<td ' .
-					'id="' . $tableid . '-' . $keyrow . '-' . $key . '" ' .
-					'style="' . $cellstyle[$keyrow][$key] .
-						$style[$key] . $valign[$key] . $align[$key] .
-						$size[$key] . $wrap[$key] . '" ' .
-					$colspan[$keyrow][$key] . ' ' .
-					$rowspan[$keyrow][$key] . ' ' .
-					'class="' . $class . ' ' .
-						$cellclass[$keyrow][$key] . '">' .
-					$item . '</td>' . "\n";
+
+				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="' . $class . ' ' . $cellclass[$keyrow][$key] . '">'. $item .'</td>'."\n";
 			}
-			$output .= '</tr>' . "\n";
+			$output .= '</tr>'."\n";
 		}
 	}
-	$output .= '</tbody></table>' . "\n";
+	$output .= '</tbody></table>'."\n";
 	
 	if ($return) 
 		return $output;

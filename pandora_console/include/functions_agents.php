@@ -114,8 +114,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', 
-	$allModules = false, $orderby = false, $idGroup = false, $count = false) {
+function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', $allModules = false, $orderby = false, $idGroup = false, $count = false, $strict_user = false, $tag = false) {
 	global $config;
 	
 	if (is_array($filter)) {
@@ -149,7 +148,10 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			$filter .= '';
 			break;
 	}
-	
+
+	if ($tag) {
+		$filter .= ' AND (id_agent_module IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN ('.$tag.')))';
+	}	
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
@@ -157,7 +159,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	if (($id_agent !== false) && ($idGroup !== false)) {
 		$groups = users_get_groups($config["id_user"]);
 		
-		$where_tags = tags_get_acl_tags($config['id_user'], $groups, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -168,12 +169,15 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 				FROM tagente_modulo WHERE delete_pending = 0';
 		}
 		
-		// If there are any errors add imposible condition
-		if(in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL))) {
-			$subQuery .= ' AND 1 = 0';
-		} 
-		else {
-			$subQuery .= $where_tags;
+		if ($strict_user) {
+			$where_tags = tags_get_acl_tags($config['id_user'], $groups, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+			// If there are any errors add imposible condition
+			if(in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL))) {
+				$subQuery .= ' AND 1 = 0';
+			} 
+			else {
+				$subQuery .= $where_tags;
+			}
 		}
 	}
 	else if ($id_agent === false) {
@@ -210,7 +214,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 	
-	
 	$sql = sprintf ("SELECT %s
 		FROM talert_template_modules
 			INNER JOIN tagente_modulo t2
@@ -222,7 +225,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		WHERE id_agent_module in (%s) %s %s %s",
 		$selectText, $subQuery, $where, $filter, $orderbyText);
 	$alerts = db_get_all_rows_sql ($sql);
-	
+
 	if ($alerts === false)
 		return array ();
 	
@@ -1176,8 +1179,6 @@ function agents_get_modules ($id_agent = null, $details = false,
 				$where);
 			break;
 	}
-	
-	//html_debug_print($sql);
 	
 	$result = db_get_all_rows_sql ($sql);
 	

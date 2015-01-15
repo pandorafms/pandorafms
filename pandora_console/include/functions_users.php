@@ -140,13 +140,13 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
 	if (empty ($id_user)) {
 		global $config;
-		
+	
 		$id_user = null;
 		if (isset($config['id_user'])) {
 			$id_user = $config['id_user'];
 		}
 	}
-	
+
 	if (isset($id_groups)) {
 		//Get recursive id groups
 		$list_id_groups = array();
@@ -161,11 +161,12 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 	else {
 		$groups = db_get_all_rows_in_table ('tgrupo', 'parent, nombre');
 	}
-	
+
 	$user_groups = array ();
 	
-	if (!$groups)
+	if (!$groups) {
 		return $user_groups;
+	}
 	
 	if ($returnAllGroup) { //All group
 		if ($returnAllColumns) {
@@ -180,7 +181,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		// Add the All group to the beginning to be always the first
 		array_unshift($groups, $groupall);
 	}
-	
+
 	foreach ($groups as $group) {
 		if ($privilege === false) {
 			if ($returnAllColumns) {
@@ -199,7 +200,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			}
 		}
 	}
-	
+
 	return $user_groups;
 }
 

@@ -34,17 +34,13 @@ function validateAlert() {
 	}
 }
 
-function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $tag_filter = false, $return = false, $strict_user = false) {
-	
-	global $config;
-	require_once ($config['homedir'] . "/include/functions_tags.php");
-	
+function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $return = false) {
 	$table->width = '100%';
 	$table->data = array ();
 	$table->style = array ();
 	
 	$table->data[0][0] = __('Group');
-	$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "ag_group", $id_group, '', '', '', true, false, false, '', false, '', false, false, 'id_grupo', $strict_user);
+	$table->data[0][1] = html_print_select_groups(false, "AR", true, "ag_group", $id_group, '', '', '', true);
 	
 	$alert_status_filter = array();
 	$alert_status_filter['all_enabled'] = __('All (Enabled)');
@@ -60,18 +56,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	
 	$table->data[0][2] = __('Status');
 	$table->data[0][3] = html_print_select ($alert_status_filter, "filter", $filter, '', '', '', true);
-	
-	$table->data[0][4] = __('Tags') . ui_print_help_tip(__('Only it is show tags in use.'), true);
-
-	$tags = tags_get_user_tags();
-
-	if (empty($tags)) {
-		$table->data[0][4] .= __('No tags');
-	}
-	else {
-		$table->data[0][4] .= html_print_select ($tags, "tag_filter", $tag_filter, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
-	}
-
+	$table->data[0][4] = '';
 	$table->data[1][0] = __('Free text for search') .
 		ui_print_help_tip(
 			__("Filter by agent name, module name, template name or action name"),

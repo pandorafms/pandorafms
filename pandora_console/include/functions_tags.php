@@ -62,40 +62,18 @@ function tags_agent_unknown ($id_tag) {
  * 
  * @return mixed Returns count of agents with this tag or false if they aren't.
  */
-function tags_total_agents ($id_tag, $groups_and_tags = array()) {
+function tags_total_agents ($id_tag) {
 	
 	// Avoid mysql error
 	if (empty($id_tag))
 		return;
 	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-	
 	$total_agents = "SELECT COUNT(DISTINCT tagente.id_agente) 
 		FROM tagente, tagente_modulo, ttag_module 
 		WHERE tagente.id_agente = tagente_modulo.id_agente
-		AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-		AND ttag_module.id_tag = " . $id_tag .
-		$groups_clause;
-
+			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+			AND ttag_module.id_tag = " . $id_tag;
+	
 	return db_get_sql ($total_agents);	
 }
 
@@ -106,37 +84,15 @@ function tags_total_agents ($id_tag, $groups_and_tags = array()) {
  * 
  * @return mixed Returns count of agents in normal status or false if they aren't.
  */
-function tags_agent_ok ($id_tag, $groups_and_tags = array()) {
+function tags_agent_ok ($id_tag) {
 	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-			
 	return db_get_sql ("SELECT COUNT(*)
 		FROM tagente, tagente_modulo, ttag_module 
 		WHERE tagente.id_agente = tagente_modulo.id_agente
 			AND tagente.disabled=0
 			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 			AND ttag_module.id_tag = $id_tag
-			AND normal_count=total_count
-			$groups_clause");
+			AND normal_count=total_count");
 }
 
  /**
@@ -146,7 +102,7 @@ function tags_agent_ok ($id_tag, $groups_and_tags = array()) {
  * 
  * @return mixed Returns count of agents in warning status or false if they aren't.
  */
-function tags_agent_warning ($id_tag, $groups_and_tags = array()) {
+function tags_agent_warning ($id_tag) {
 	 
 	return db_get_sql ("SELECT COUNT(*)
 		FROM tagente, tagente_modulo, ttag_module 
@@ -241,13 +197,13 @@ function tags_create_tag($values) {
 	if (empty($values)) {
 		return false;
 	}
-
-	//No create tag if the tag exists	
+	
+	//No create tag if the tag exists
 	if (tags_get_id($values["name"])) {
 		return false;
 	}
 	
-	return db_process_sql_insert('ttag',$values);
+	return db_process_sql_insert('ttag', $values);
 }
 
 /**
@@ -710,7 +666,10 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  * @return mixed/string Tag ids
  */
  
-function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '', $meta = false, $childrens_ids = array(), $force_group_and_tag = false) {
+function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
+	$return_mode = 'module_condition', $query_prefix = '',
+	$query_table = '', $meta = false, $childrens_ids = array(),
+	$force_group_and_tag = false) {
 	
 	global $config;
 	
@@ -730,10 +689,6 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 		}
 	}
 	
-	if ($id_group[0] != 0) {
-		$id_group = groups_get_all_hierarchy_group ($id_group[0]);
-	}
-	
 	if ((string)$id_group === "0") {
 		$id_group = array_keys(users_get_groups($id_user, $access, false));
 		
@@ -746,6 +701,10 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 	}
 	elseif (!is_array($id_group)) {
 		$id_group = (array) $id_group;
+	}
+	
+	if ($id_group[0] != 0) {
+		$id_group = groups_get_all_hierarchy_group ($id_group[0]);
 	}
 	
 	$acl_column = get_acl_column($access);
@@ -762,7 +721,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 			(tusuario_perfil.id_grupo IN (%s) OR tusuario_perfil.id_grupo = 0)
 			ORDER BY id_grupo", $id_user, $acl_column, implode(',',$id_group));
 	$tags = db_get_all_rows_sql($query);
-
+	
 	// If not profiles returned, the user havent acl permissions
 	if (empty($tags)) {
 		return ERR_ACL;
@@ -827,7 +786,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 			break;
 		case 'module_condition':
 			// Return the condition of the tags for tagente_modulo table
-			$condition = tags_get_acl_tags_module_condition($acltags, $query_table, true);
+			$condition = tags_get_acl_tags_module_condition($acltags, $query_table);
 			if (!empty($condition)) {
 				return " $query_prefix " . $condition;
 			}
@@ -868,7 +827,11 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 		
 		// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
 		if ($i == 0)
-			$condition .= ' ( ';	
+			$condition .= ' ( ';
+		
+		
+		
+		
 		
 		// Group condition (The module belongs to an agent of the group X)
 		// Juanma (08/05/2014) Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition
@@ -880,22 +843,21 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 			//Avoid the user profiles with all group access.
 			$group_condition = " 1 = 1 ";
 		}
-			
+		
+		
 		//When the acl is only group without tags
 		if (empty($group_tags)) {
 			$condition .= "($group_condition)\n";
 		}
 		else {
-			if (is_array($group_tags)) {
-				$group_tags_query = implode(',',$group_tags);
-			} else {
-				$group_tags_query = $group_tags;
-			}
 			// Tags condition (The module has at least one of the restricted tags)
-			$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, $group_tags_query);
+			$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, implode(',',$group_tags));
 			
 			$condition .= "($group_condition AND \n$tags_condition)\n";
-		}		
+		}
+		
+		
+		
 		$i++;
 	}
 	
@@ -943,10 +905,6 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 		if (empty($group_tags)) {
 			$tags_condition = "id_grupo = ".$group_id;
 		} else {
-			if (!is_array($group_tags)) {
-				$group_tags = explode(',', $group_tags);
-			}
-
 			foreach ($group_tags as $tag) {
 				// If the tag ID doesnt exist, ignore
 				if (!isset($all_tags[$tag])) {
@@ -1052,14 +1010,14 @@ function tags_has_user_acl_tags($id_user = false) {
  */
 function tags_get_user_tags($id_user = false, $access = 'AR') {
 	global $config;
-
+	
 	if ($id_user === false) {
 		$id_user = $config['id_user'];
 	}
 	
 	// Get all tags to have the name of all of them
 	$all_tags = tags_get_all_tags();
-
+	
 	// If at least one of the profiles of this access flag hasent
 	// tags restrictions, the user can see all tags
 	$acl_column = get_acl_column($access);
@@ -1072,18 +1030,18 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 			FROM tusuario_perfil, tperfil
 			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
 			tusuario_perfil.id_usuario = '%s' AND 
-			tperfil.%s = 1 AND tags <> ''", 
+			tperfil.%s = 1 AND tags = ''", 
 			$id_user, $acl_column);
 			
 	$profiles_without_tags = db_get_value_sql($query);
-
-	if ($profiles_without_tags == 0) {
+	
+	if ($profiles_without_tags > 0) {
 		return $all_tags;
 	}
-
+	
 	// Get the tags of the required access flag for each group
-	$tags =  tags_get_acl_tags($id_user, 0, $access, 'data','','', true, array(), true);
-
+	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
+	
 	// Merge the tags to get an array with all of them
 	$user_tags_id = array();
 	
@@ -1104,7 +1062,8 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 		}
 		$user_tags[$id] = $all_tags[$id];
 	}
-		
+	
+	
 	return $user_tags;
 }
 
@@ -1400,431 +1359,5 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 	}
 	
 	return false;
-}
-
-/**
- * Get unknown agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search unknown agents
- * 
- * @return mixed Returns count of unknown agents with this tag or false if they aren't.
- */
-function tags_get_unknown_agents ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-	
-	$total_agents = "SELECT COUNT(DISTINCT tagente.id_agente) 
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-			AND ttag_module.id_tag = " . $id_tag . " 
-			AND tagente.critical_count=0
-			AND tagente.warning_count=0
-			AND tagente.unknown_count>0
-			$groups_clause";
-
-	return db_get_sql ($total_agents);	
-}
-
-function tags_monitors_ok ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND id_grupo IN ($groups_id)"; 
-	}
-			
-	$sql = "SELECT COUNT(*) FROM tagente_modulo, tagente_estado
-			WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo
-			AND tagente_estado.estado = 0
-			AND tagente_modulo.id_agente IN (SELECT id_agente FROM tagente
-							WHERE disabled = 0
-							$groups_clause) 
-			AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module
-							WHERE ttag_module.id_tag = " . $id_tag .")";
-			
-	$count = db_get_sql ($sql);
-
-	return $count;	
-}
-
-function tags_monitors_critical ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND id_grupo IN ($groups_id)"; 
-	}
-	
-	$sql = "SELECT COUNT(*) FROM tagente_modulo, tagente_estado
-			WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo
-			AND tagente_estado.estado = 1
-			AND tagente_modulo.id_agente IN (SELECT id_agente FROM tagente
-							WHERE disabled = 0
-							$groups_clause) 
-			AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module
-							WHERE ttag_module.id_tag = " . $id_tag .")";
-			
-	$count = db_get_sql ($sql);
-			
-	return $count;	
-}
-
-function tags_monitors_warning ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND id_grupo IN ($groups_id)"; 
-	}
-			
-	$sql = "SELECT COUNT(*) FROM tagente_modulo, tagente_estado
-			WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo
-			AND tagente_estado.estado = 2
-			AND tagente_modulo.id_agente IN (SELECT id_agente FROM tagente
-							WHERE disabled = 0
-							$groups_clause) 
-			AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module
-							WHERE ttag_module.id_tag = " . $id_tag .")";
-			
-	$count = db_get_sql ($sql);
-			
-	return $count;	
-}
-
-function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-		
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-							
-	$sql = "SELECT COUNT(talert_template_modules.id)
-		FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-		WHERE tagente_modulo.id_agente = tagente.id_agente
-		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-		AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
-		AND talert_template_modules.disabled = 0 
-		AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-		AND times_fired > 0 
-		AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag = $id_tag)
-		$groups_clause";
-
-	$count = db_get_sql ($sql);
-			
-	return $count;	
-}
-
-/* Return array with groups and their tags */
-function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $strict_user = false) {
-	
-	global $config;
-	
-	if ($id_user == false) {
-		$id_user = $config['id_user'];
-	}
-	
-	$acl_column = get_acl_column($access);
-
-	$query = sprintf("SELECT tags, id_grupo 
-				FROM tusuario_perfil, tperfil
-				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-					tusuario_perfil.id_usuario = '%s' AND 
-					tperfil.%s = 1
-				ORDER BY id_grupo", $id_user, $acl_column);
-	$tags_and_groups = db_get_all_rows_sql($query);
-
-	if ($tags_and_groups == false) {
-		$tags_and_groups = array();
-	}
-	
-	$acltags = array();
-	
-	if ((count($tags_and_groups) == 1) && ($tags_and_groups[0]['id_grupo'] == 0) && ($tags_and_groups[0]['tags'] == '')){ //user with all groups without tags
-		$all_groups = groups_get_all();
-
-		foreach ($all_groups as $id => $name) {
-			$acltags[$id] = '';
-		}
-	} else {
-		foreach ($tags_and_groups as $group_tag) {
-			$acltags[$group_tag['id_grupo']] = $group_tag['tags'];
-			$propagate = db_get_value('propagate', 'tgrupo', 'id_grupo', $group_tag['id_grupo']);
-
-			if ($propagate) {
-				$sql = "SELECT id_grupo FROM tgrupo WHERE parent  = " .$group_tag['id_grupo'];
-				$children = db_get_all_rows_sql($sql);
-
-				if ($children == false) {
-					$children = array();
-				}
-				foreach ($children as $group) {
-					$acltags[$group['id_grupo']] = $group_tag['tags'];
-				}
-			}
-		}
-	}
-	
-	return $acltags;
-}
-
-/**
- * Get unknown agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search unknown agents
- * 
- * @return mixed Returns count of unknown agents with this tag or false if they aren't.
- */
-function tags_get_critical_agents ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-	
-	$total_agents = "SELECT COUNT(DISTINCT tagente.id_agente) 
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-			AND ttag_module.id_tag = " . $id_tag . " 
-			AND tagente.critical_count>0
-			$groups_clause";
-
-	return db_get_sql ($total_agents);	
-}
-
-function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-		
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-								
-	$sql = "SELECT COUNT(talert_template_modules.id)
-		FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-		WHERE tagente_modulo.id_agente = tagente.id_agente
-		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-		AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
-		AND	talert_template_modules.disabled = 0 
-		AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
-		AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag = $id_tag)
-		$groups_clause";
-
-	$count = db_get_sql ($sql);
-			
-	return $count;	
-}
-
-/**
- * Get agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search total agents
- * 
- * @return mixed Returns count of agents with this tag or false if they aren't.
- */
-function tags_get_all_user_agents ($id_tag, $id_user = false, $groups_and_tags = array(), $filter = false, $fields = false, $meta = true, $strict_user = true) {
-	
-	global $config;
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-		
-	if (empty($id_user)) {
-		$id_user = $config['id_user'];
-	}
-	
-	if (!is_array ($fields)) {
-		$fields = array ();
-		$fields[0] = "id_agente";
-		$fields[1] = "nombre";
-	}
-	$select_fields = implode(',',$fields);
-	
-	$groups_clause = "";
-	if ($strict_user) {
-		if (!empty($groups_and_tags)) {
-			$groups_clause = " AND ".tags_get_acl_tags_module_condition($groups_and_tags, "tagente_modulo"); 		 
-		}
-	} else {
-		$groups_clause = " AND tagente.id_grupo IN (".implode(',',$groups_and_tags).")";
-	}
-	
-	$search_sql = "";
-	$void_agents = "";
-	if ($filter) {
-		if (($filter['search']) != "") {
-			$string = io_safe_input ($filter['search']);
-			$search_sql = ' AND (tagente.nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
-		}
-		
-		if (isset($filter['show_void_agents'])) {
-			if (!$filter['show_void_agents']) {
-				$void_agents = " AND tagente_modulo.delete_pending = 0";
-			}
-		}
-	}
-		
-	$user_agents_sql = "SELECT ".$select_fields ."
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-		AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-		AND ttag_module.id_tag = " . $id_tag .
-		$groups_clause . $search_sql . $void_agents .
-		" ORDER BY tagente.nombre ASC";
-	
-	$user_agents = db_get_all_rows_sql($user_agents_sql);
-	
-	if (!$meta){
-		$user_agents_aux = array();
-		if ($user_agents === false) {
-			$user_agents = array();
-		}
-		foreach ($user_agents as $ua) {
-			$user_agents_aux[$ua['id_agente']] = $ua['nombre'];
-		} 
-		return $user_agents_aux;
-	}
-	return $user_agents;
 }
 ?>

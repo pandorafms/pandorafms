@@ -49,7 +49,3 @@ CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
 -- ----------------------------------------------------------------------
 INSERT INTO `ttipo_modulo` VALUES (5,'generic_data_inc_abs',0,'Generic numeric incremental (absolute)','mod_data_inc_abs.png');
 
--- ---------------------------------------------------------------------
--- Table `tusuario`
--- ---------------------------------------------------------------------
-ALTER TABLE `tusuario` ADD COLUMN `strict_acl` tinyint(1) DEFAULT 0;

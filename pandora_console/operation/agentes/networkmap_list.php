@@ -100,7 +100,7 @@ $table->size[] = '80%';
 $table->size[] = '60px';
 $table->size[] = '30px';
 
-if (check_acl ($config["id_user"], 0, "AW")) {
+if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
 	$table->size[] = '30px';
 	$table->size[] = '30px';
 }
@@ -109,7 +109,7 @@ $table->head = array();
 $table->head[] = __('Name');
 $table->head[] = __('Type');
 $table->head[] = __('Group');
-if (check_acl ($config["id_user"], 0, "AW")) {
+if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
 	$table->head[] = __('Edit');
 	$table->head[] = __('Delete');
 }
@@ -154,7 +154,7 @@ else {
 		$data[] = $network_map['type'];
 		
 		$data[] = ui_print_group_icon ($network_map['id_group'], true);
-		if (check_acl ($config["id_user"], 0, "AW")) {
+		if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
 			$data[] = '<a href="index.php?sec=network&sec2=operation/agentes/networkmap&tab=edit&edit_networkmap=1&id_networkmap=' . $network_map['id_networkmap'] . '" alt="' . __('Config') . '">' . html_print_image("images/config.png", true) . '</a>';
 			$data[] = '<a href="index.php?sec=network&sec2=operation/agentes/networkmap_list&delete_networkmap=1&id_networkmap=' . $network_map['id_networkmap'] . '" alt="' . __('Delete') . '" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
 		}
@@ -166,7 +166,7 @@ else {
 }
 
 // Create networkmap form
-if (check_acl ($config['id_user'], 0, "AW")) {
+if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
 	$networkmap_types = networkmap_get_types();
 	echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap">';
 	echo "<table style='width: 100%' class='databox'>";

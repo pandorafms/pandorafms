@@ -1558,6 +1558,27 @@ function networkmap_delete_networkmap ($id_networkmap) {
 }
 
 /**
+ * Deletes a network map if the property is that user.
+ * 
+ * @param string User id that call this funtion. 
+ * @param int Map id to be deleted.
+ *
+ * @return bool True if the map was deleted, false the map is not yours.
+ */
+function networkmap_delete_user_networkmap ($id_user = '', $id_networkmap) {
+	if ($id_user == '') {
+		$id_user = $config['id_user'];
+	}
+	$id_networkmap = safe_int ($id_networkmap);
+	if (empty ($id_networkmap))
+		return false;
+	$networkmap = networkmap_get_networkmap ($id_networkmap);
+	if ($networkmap === false)
+		return false;
+	return @db_process_sql_delete ('tnetwork_map', array ('id_networkmap' => $id_networkmap, 'id_user' => $id_user));
+}
+
+/**
  * Updates a network map.
  *
  * @param int Map id.

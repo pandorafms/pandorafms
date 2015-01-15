@@ -68,7 +68,7 @@ $url = 'index.php?sec=' . $sec . '&sec2=' . $sec2 . '&refr=' . $refr .
 	'&filter=' . $filter . '&filter_standby=' . $filter_standby .
 	'&ag_group=' . $id_group .'&tag_filter=' .$tag_filter;
 
-if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) {
+if (($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) || ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "LM"))) {
 	forceExecution($id_group);
 }
 
@@ -130,11 +130,11 @@ else {
 }
 
 if ($alert_validate) {
-	if (check_acl ($config["id_user"], $id_group, "AW") == 0) {
-		ui_print_error_message(__('Insufficient permissions to validate alerts'));
+	if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM") ) {
+		validateAlert();
 	}
 	else {
-		validateAlert();
+		ui_print_error_message(__('Insufficient permissions to validate alerts'));
 	}
 }
 
@@ -554,7 +554,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 	
 	if (!defined('METACONSOLE')) {
-		if (check_acl ($config["id_user"], $id_group, "AW")) {
+		if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM") ) {
 			if (count($alerts['alerts_simple']) > 0) {
 				echo '<div class="action-buttons" style="width: '.$table->width.';">';
 				html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub ok"', false);

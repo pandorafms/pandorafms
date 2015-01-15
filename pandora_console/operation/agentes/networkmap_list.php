@@ -81,7 +81,7 @@ $delete_networkmap = get_parameter ('delete_networkmap', 0);
 
 if ($delete_networkmap) {
 	if (check_acl ($config['id_user'], 0, "RW")) {
-		$result = networkmap_delete_user_networkmap($id_networkmap);
+		$result = networkmap_delete_user_networkmap($config['id_user'], $id_networkmap);
 	}else{
 		if (check_acl ($config['id_user'], 0, "RM")) {
 			$result = networkmap_delete_networkmap($id_networkmap);

@@ -38,11 +38,19 @@ require_once ($config['homedir'] . '/include/functions_users.php');
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 $filter = get_parameter ("filter", "all_enabled");
 $filter_standby = get_parameter ("filter_standby", "all");
 $offset_simple = (int) get_parameter_get ("offset_simple", 0);
 $id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
 $free_search = get_parameter("free_search", '');
+$tag_filter = get_parameter("tag_filter", 0);
+if ($tag_filter) {
+	if ($id_group && $strict_user) {
+		$tag_filter = 0;
+	}
+}
 
 $sec2 = get_parameter_get ('sec2');
 $sec2 = safe_url_extraclean ($sec2);
@@ -56,11 +64,12 @@ $tab = get_parameter_get ("tab", null);
 
 $refr = (int)get_parameter('refr', 0);
 $pure = get_parameter('pure', 0);
+
 $url = 'index.php?sec=' . $sec . '&sec2=' . $sec2 . '&refr=' . $refr .
 	'&filter=' . $filter . '&filter_standby=' . $filter_standby .
-	'&ag_group=' . $id_group;
+	'&ag_group=' . $id_group .'&tag_filter=' .$tag_filter;
 
-if (($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) || ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "LM"))) {
+if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) {
 	forceExecution($id_group);
 }
 
@@ -122,11 +131,11 @@ else {
 }
 
 if ($alert_validate) {
-	if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM") ) {
-		validateAlert();
+	if (check_acl ($config["id_user"], $id_group, "AW") == 0) {
+		ui_print_error_message(__('Insufficient permissions to validate alerts'));
 	}
 	else {
-		ui_print_error_message(__('Insufficient permissions to validate alerts'));
+		validateAlert();
 	}
 }
 
@@ -325,48 +334,32 @@ else {
 if (defined('METACONSOLE')) {
 	require_once ($config['homedir'] . '/enterprise/meta/include/functions_alerts_meta.php');
 	if ($idAgent != 0) {
-		$alerts['alerts_simple'] = alerts_meta_get_alerts ($agents,
-			$filter_alert, $options_simple, $whereAlertSimple, false, false,
-			$idGroup);
-		
-		
-		$countAlertsSimple = alerts_meta_get_alerts ($agents, $filter_alert,
-			false, $whereAlertSimple, false, false, $idGroup, true);
+		$alerts['alerts_simple'] = alerts_meta_get_alerts ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user);
+
+		$countAlertsSimple = alerts_meta_get_alerts ($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user);
 	}
 	else {
 		$id_groups = array_keys(
 			users_get_groups($config["id_user"], 'AR', false));
+
+		$alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
 		
-		$alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups,
-			$filter_alert, $options_simple, $whereAlertSimple, false,
-			false, $idGroup);
-		
-		$countAlertsSimple = alerts_meta_get_group_alerts($id_groups,
-			$filter_alert, false, $whereAlertSimple, false, false,
-			$idGroup, true);
+		$countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);
 	}
 }
 else {
 	if ($idAgent != 0) {
-		$alerts['alerts_simple'] = agents_get_alerts_simple ($idAgent,
-			$filter_alert, $options_simple, $whereAlertSimple, false, false,
-			$idGroup);
+		$alerts['alerts_simple'] = agents_get_alerts_simple ($idAgent, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
 		
-		$countAlertsSimple = agents_get_alerts_simple ($idAgent,
-			$filter_alert, false, $whereAlertSimple, false, false,
-			$idGroup, true);
+		$countAlertsSimple = agents_get_alerts_simple ($idAgent, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);
 	}
 	else {
 		$id_groups = array_keys(
 			users_get_groups($config["id_user"], 'AR', false));
 		
-		$alerts['alerts_simple'] = get_group_alerts($id_groups,
-			$filter_alert, $options_simple, $whereAlertSimple, false,
-			false, $idGroup);
+		$alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
 		
-		$countAlertsSimple = get_group_alerts($id_groups,
-			$filter_alert, false, $whereAlertSimple, false, false,
-			$idGroup, true);
+		$countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);
 	}
 }
 
@@ -381,10 +374,7 @@ if ($pure) {
 // Filter form
 if ($print_agent) {
 	echo '<br>';
-	ui_toggle(
-		printFormFilterAlert(
-			$id_group, $filter, $free_search, $url, $filter_standby, true),
-		__('Alert control filter'), __('Toggle filter(s)'));
+	ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Alert control filter'), __('Toggle filter(s)'));
 }
 
 $table->width = '100%';
@@ -428,26 +418,14 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		// Sort buttons are only for normal console
 		if (!defined('METACONSOLE')) {
 			$table->head[3] .= ' ' .
-				'<a href="' . $url . '&sort_field=agent&sort=up">' .
-					html_print_image("images/sort_up.png", true,
-						array("style" => $selectAgentUp)) . '</a>' .
-				'<a href="' . $url . '&sort_field=agent&sort=down">' .
-					html_print_image("images/sort_down.png", true,
-						array("style" => $selectAgentDown)) . '</a>';
+				'<a href="' . $url . '&sort_field=agent&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 			$table->head[4] .= ' ' .
-				'<a href="' . $url . '&sort_field=module&sort=up">' .
-					html_print_image("images/sort_up.png", true,
-						array("style" =>$selectModuleUp)) . '</a>' .
-				'<a href="' . $url . '&sort_field=module&sort=down">' .
-					html_print_image("images/sort_down.png", true,
-						array("style" => $selectModuleDown)) . '</a>';
+				'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" =>$selectModuleUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 			$table->head[5] .= ' ' .
-				'<a href="' . $url . '&sort_field=template&sort=up">' .
-					html_print_image("images/sort_up.png", true,
-						array("style" =>$selectTemplateUp)) . '</a>' .
-				'<a href="' . $url . '&sort_field=template&sort=down">' .
-					html_print_image("images/sort_down.png", true,
-						array("style" => $selectTemplateDown)) . '</a>';
+				'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" =>$selectTemplateUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		}
 	}
 	else {
@@ -477,19 +455,11 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		// Sort buttons are only for normal console
 		if (!defined('METACONSOLE')) {
 			$table->head[3] .= ' ' .
-				'<a href="' . $url . '&sort_field=module&sort=up">' .
-					html_print_image("images/sort_up.png", true,
-						array("style" => $selectModuleUp)) . '</a>' .
-				'<a href="' . $url . '&sort_field=module&sort=down">' .
-					html_print_image("images/sort_down.png", true,
-						array("style" => $selectModuleDown)) . '</a>';
+				'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 			$table->head[4] .= ' ' .
-				'<a href="' . $url . '&sort_field=template&sort=up">' .
-					html_print_image("images/sort_up.png", true,
-						array("style" => $selectTemplateUp)) . '</a>' .
-				'<a href="' . $url . '&sort_field=template&sort=down">' .
-					html_print_image("images/sort_down.png", true,
-						array("style" => $selectTemplateDown)) . '</a>';
+				'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+				'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		}
 	}
 }
@@ -584,7 +554,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 	
 	if (!defined('METACONSOLE')) {
-		if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM") ) {
+		if (check_acl ($config["id_user"], $id_group, "AW")) {
 			if (count($alerts['alerts_simple']) > 0) {
 				echo '<div class="action-buttons" style="width: '.$table->width.';">';
 				html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
@@ -598,6 +568,17 @@ if (!empty ($table->data)) {
 else {
 	echo '<div class="nf">'.__('No alerts found').'</div>';
 }
+
+//strict user hidden
+echo '<div id="strict_hidden" style="display:none;">';
+html_print_input_text('strict_user_hidden', $strict_user);
+if (defined('METACONSOLE')) {
+	$is_meta = true;
+} else {
+	$is_meta = false;
+}
+html_print_input_text('is_meta_hidden', $is_meta);
+echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
@@ -615,5 +596,32 @@ $(document).ready (function () {
 	}).click (function () {
 		return false;
 	});
+	
+	if ($('#ag_group').val() != 0) {
+		$("#tag_filter").css('display', 'none');
+		$("#table2-0-4").css('display', 'none');
+	}
+});
+
+	
+$('#ag_group').change (function (){
+	strict_user = $("#text-strict_user_hidden").val();
+	is_meta = $("#text-is_meta_hidden").val();
+
+	if (($("#ag_group").val() != 0) && (strict_user != 0)) {
+		$("#tag_filter").css('display', 'none');
+		if (is_meta) {
+			$("#table1-0-4").css('display', 'none');
+		} else {
+			$("#table2-0-4").css('display', 'none');
+		}
+	} else {
+		$("#tag_filter").css('display', '');
+		if (is_meta) {
+			$("#table1-0-4").css('display', '');
+		} else {
+			$("#table2-0-4").css('display', '');
+		}
+	}
 });
 </script>

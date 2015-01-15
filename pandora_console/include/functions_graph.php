@@ -2369,7 +2369,9 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	}
 	
 	// Add tags condition to filter
-	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
+	$user_strict = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $user_strict);
+	$tags_condition = " AND (".tags_get_acl_tags_event_condition($acltags, false, $user_strict).")";
 	
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
@@ -2463,7 +2465,9 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
 	$filter = str_replace  ( "\\" , "", $filter);
 	
 	// Add tags condition to filter
-	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
+	$user_strict = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $user_strict);
+	$tags_condition = " AND (".tags_get_acl_tags_event_condition($acltags, false, $user_strict).")";
 	$filter .= $tags_condition;
 	
 	$data = array ();

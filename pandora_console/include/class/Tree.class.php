@@ -397,7 +397,7 @@ class Tree {
 
 			if (empty($actual_agent) || $actual_agent['id_agente'] != (int)$value['id_agente']) {
 				if (!empty($actual_agent)) {
-					$this->processAgent(&$actual_agent, array(), false);
+					$this->processAgent($actual_agent, array(), false);
 					$agents[] = $actual_agent;
 				}
 
@@ -450,7 +450,7 @@ class Tree {
 				$actual_agent['counters']['alerts']++;
 		}
 		if (!empty($actual_agent)) {
-			$this->processAgent(&$actual_agent, array(), false);
+			$this->processAgent($actual_agent, array(), false);
 			$agents[] = $actual_agent;
 		}
 		
@@ -834,7 +834,7 @@ class Tree {
 			$agent['counters']['not_init'] = (int) $value['notinit_count'];
 			$agent['counters']['ok'] = (int) $value['normal_count'];
 
-			$this->processAgent(&$agent, array(), false);
+			$this->processAgent($agent, array(), false);
 
 			$module = array();
 			$module['id_agente_modulo'] = (int) $value['id_agente_modulo'];
@@ -983,7 +983,7 @@ class Tree {
 					$actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
 					$actual_agent['counters']['ok'] = (int) $value['normal_count'];
 
-					$this->processAgent(&$actual_agent, array(), false);
+					$this->processAgent($actual_agent, array(), false);
 
 					// Add the module to the agent
 					$actual_agent['children'][] = $module;
@@ -1022,7 +1022,7 @@ class Tree {
 				$actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
 				$actual_agent['counters']['ok'] = (int) $value['normal_count'];
 
-				$this->processAgent(&$actual_agent, array(), false);
+				$this->processAgent($actual_agent, array(), false);
 
 				// Add the module to the agent
 				$actual_agent['children'][] = $module;
@@ -1161,7 +1161,7 @@ class Tree {
 					$actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
 					$actual_agent['counters']['ok'] = (int) $value['normal_count'];
 				
-					$this->processAgent(&$actual_agent, array(), false);
+					$this->processAgent($actual_agent, array(), false);
 
 					// Add the module to the agent
 					$actual_agent['children'][] = $module;
@@ -1215,7 +1215,7 @@ class Tree {
 				$actual_agent['counters']['not_init'] = (int) $value['notinit_count'];
 				$actual_agent['counters']['ok'] = (int) $value['normal_count'];
 				
-				$this->processAgent(&$actual_agent, array(), false);
+				$this->processAgent($actual_agent, array(), false);
 
 				// Add the module to the agent
 				$actual_agent['children'][] = $module;
@@ -1343,7 +1343,7 @@ class Tree {
 						$actual_agent['nombre'] = $value['agent_name'];
 						$actual_agent['children'] = array();
 
-						$this->processAgent(&$actual_agent, array(), false);
+						$this->processAgent($actual_agent, array(), false);
 
 						// Add the module to the agent
 						$actual_agent['children'][] = $module;
@@ -1373,7 +1373,7 @@ class Tree {
 					$actual_agent['nombre'] = $value['agent_name'];
 					$actual_agent['children'] = array();
 
-					$this->processAgent(&$actual_agent, array(), false);
+					$this->processAgent($actual_agent, array(), false);
 
 					// Add the module to the agent
 					$actual_agent['children'][] = $module;

@@ -2997,7 +2997,7 @@ sub cli_get_agent_modules() {
 	exist_check($id_agent,'agent',$agent_name);
 	
 	my $modules = pandora_get_agent_modules ($dbh, $id_agent);
-
+	
 	if(scalar(@{$modules}) == 0) {
 		print_log "[INFO] The agent '$agent_name' have not modules\n\n";
 	}
@@ -3008,49 +3008,56 @@ sub cli_get_agent_modules() {
 	}
 }
 
-##############################################################################
+########################################################################
 # Show all the modules of a policy
 # Related option: --get_policy_modules
-##############################################################################
+########################################################################
 
 sub cli_get_policy_modules() {
 	my $policy_name = @ARGV[2];
 	
-	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
-	exist_check($policy_id,'policy',$policy_name);
+	my $policy_id = enterprise_hook('get_policy_id',
+		[$dbh, safe_input($policy_name)]);
+	exist_check($policy_id, 'policy', $policy_name);
 	
-	my $policy_modules = enterprise_hook('get_policy_modules',[$dbh, $policy_id]);
-	exist_check(scalar(@{$policy_modules})-1,'modules in policy',$policy_name);
+	my $policy_modules = enterprise_hook(
+		'get_policy_modules', [$dbh, $policy_id]);
+	
+	if (defined($policy_modules)) {
+		exist_check(scalar(@{$policy_modules}) - 1, 'modules in policy',
+			$policy_name);
+	}
 	
 	print "id_policy_module, module_name\n";
 	foreach my $module (@{$policy_modules}) {
-		print $module->{'id'}.",".safe_output($module->{'name'})."\n";
+		print $module->{'id'} . "," . safe_output($module->{'name'}) . "\n";
 	}
 }
 
-##############################################################################
-# Show all the policies (without parameters) or the policies of given agent
+########################################################################
+# Show all the policies (without parameters) or the policies of given
+# agent.
 # Related option: --get_policies
-##############################################################################
+########################################################################
 
 sub cli_get_policies() {
 	my $agent_name = @ARGV[2];
 	my $policies;
-
-	if(defined($agent_name)) {
+	
+	if (defined($agent_name)) {
 		my $id_agent = get_agent_id($dbh,$agent_name);
 		exist_check($id_agent,'agent',$agent_name);
 		
-		$policies = enterprise_hook('get_agent_policies',[$dbh,$id_agent]);
-
-		if(scalar(@{$policies}) == 0) {
+		$policies = enterprise_hook('get_agent_policies', [$dbh,$id_agent]);
+		
+		if (scalar(@{$policies}) == 0) {
 			print_log "[INFO] No policies found on agent '$agent_name'\n\n";
 			exit;
 		}
 	}
 	else {
-		$policies = enterprise_hook('get_policies',[$dbh]);
-		if(scalar(@{$policies}) == 0) {
+		$policies = enterprise_hook('get_policies', [$dbh]);
+		if (scalar(@{$policies}) == 0) {
 			print_log "[INFO] No policies found\n\n";
 			exit;
 		}

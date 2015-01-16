@@ -622,149 +622,215 @@ class Tree {
 				$children = array();
 				foreach ($groups as $key => $group) {
 					if (isset($group['_parent_id_']) && $group['_parent_id_'] == $id) {
-						$processed_group = array();
-						$processed_group['id'] = $group['_id_'];
-						$processed_group['parentID'] = $group['_parent_id_'];
-						$processed_group['name'] = $group['_name_'];
-						$processed_group['iconHTML'] = $group['_iconImg_'];
-						$processed_group['type'] = 'group';
-						$processed_group['searchChildren'] = 1;
-
-						$counters = array();
-						if (isset($group['_agents_unknown_']))
-							$counters['unknown'] = $group['_agents_unknown_'];
-
-						if (isset($group['_agents_critical_']))
-							$counters['critical'] = $group['_agents_critical_'];
-
-						if (isset($group['_agents_warning_']))
-							$counters['warning'] = $group['_agents_warning_'];
-
-						if (isset($group['_agents_not_init_']))
-							$counters['not_init'] = $group['_agents_not_init_'];
-
-						if (isset($group['_agents_ok_']))
-							$counters['ok'] = $group['_agents_ok_'];
-
-						if (isset($group['_total_agents_']))
-							$counters['total'] = $group['_total_agents_'];
-
-						if (isset($group['_monitors_alerts_fired_']))
-							$counters['alerts'] = $group['_monitors_alerts_fired_'];
-
-						$children = __searchChildren($groups, $group['_id_']);html_debug_print($children, true);
-						if (!empty($children)) {
-							$processed_group['children'] = $children;
-
-							foreach ($children as $key => $child) {
-								if (isset($child['counters'])) {
-									foreach ($child['counters'] as $type => $value) {
-										if (isset($counters[$type]))
-											$counters[$type] += $value;
-									}
-								}
-							}
-						}
-
-						if (!empty($counters))
-							$processed_group['counters'] = $counters;
-
-						$children[] = $processed_group;
-						unset($groups[$key]);
+						$children[] = __getProcessedItem($key, $groups);
 					}
 				}
 				return $children;
 			}
 
-			if (! defined ('METACONSOLE')) {
-				$groups = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
-			} else {
+			function __getProcessedItem($itemKey, &$items) {
+				if (!isset($items[$itemKey])) {
+					return false;
+				}
+				else {
+					$item = $items[$itemKey];
+					unset($items[$itemKey]);
+				}
 
-			}
-			//$groups = group_get_groups_list($config['id_user'], true, 'AR', true, false, 'tree');
+				$processed_item = array();
+				$processed_item['id'] = $item['_id_'];
+				$processed_item['name'] = $item['_name_'];
+				$processed_item['searchChildren'] = 1;
 
-			// Build the group hierarchy
-			foreach ($groups as $key => $group) {
-				if (empty($group['_is_tag_']))
-					$children = __searchChildren($groups, $group['_id_']);
-
-				if (!empty($children))
-					$groups[$key]['children'] = $children;
-			}
-
-			// Process the groups for the tree
-			$processed_groups = array();
-			foreach ($groups as $key => $group) {
-				$processed_group = array();
-				$processed_group['id'] = $group['_id_'];
-				$processed_group['name'] = $group['_name_'];
-				$processed_group['searchChildren'] = 1;
-
-				if (!empty($group['_iconImg_']))
-					$processed_group['iconHTML'] = $group['_iconImg_'];
-
-				if (!empty($group['_parent_id_']))
-					$processed_group['parentID'] = $group['_parent_id_'];
-
-				if (empty($group['_is_tag_']))
-					$processed_group['type'] = 'group';
-				else
-					$processed_group['type'] = 'tag';
+				if (isset($item['_is_tag_']) && $item['_is_tag_']) {
+					$processed_item['type'] = 'tag';
+				}
+				else {
+					$processed_item['type'] = 'group';
+					$processed_item['parentID'] = $item['_parent_id_'];
+					$processed_item['iconHTML'] = $item['_iconImg_'];
+				}
 
 				$counters = array();
-				if (isset($group['_agents_unknown_']))
-					$counters['unknown'] = $group['_agents_unknown_'];
+				if (isset($item['_agents_unknown_']))
+					$counters['unknown'] = $item['_agents_unknown_'];
+				if (isset($item['_agents_critical_']))
+					$counters['critical'] = $item['_agents_critical_'];
+				if (isset($item['_agents_warning_']))
+					$counters['warning'] = $item['_agents_warning_'];
+				if (isset($item['_agents_not_init_']))
+					$counters['not_init'] = $item['_agents_not_init_'];
+				if (isset($item['_agents_ok_']))
+					$counters['ok'] = $item['_agents_ok_'];
+				if (isset($item['_total_agents_']))
+					$counters['total'] = $item['_total_agents_'];
+				if (isset($item['_monitors_alerts_fired_']))
+					$counters['alerts'] = $item['_monitors_alerts_fired_'];
 
-				if (isset($group['_agents_critical_']))
-					$counters['critical'] = $group['_agents_critical_'];
+				$children = __searchChildren($items, $item['_id_']);
+				if (!empty($children)) {
+					$processed_item['children'] = $children;
 
-				if (isset($group['_agents_warning_']))
-					$counters['warning'] = $group['_agents_warning_'];
-
-				if (isset($group['_agents_not_init_']))
-					$counters['not_init'] = $group['_agents_not_init_'];
-
-				if (isset($group['_agents_ok_']))
-					$counters['ok'] = $group['_agents_ok_'];
-
-				if (isset($group['_total_agents_']))
-					$counters['total'] = $group['_total_agents_'];
-
-				if (isset($group['_monitors_alerts_fired_']))
-					$counters['alerts'] = $group['_monitors_alerts_fired_'];
-
-				if (!empty($group['children'])) {
-					$processed_group['children'] = $group['children'];
-
-					if ($processed_group['type'] == 'group') {
-						foreach ($processed_group['children'] as $key => $child) {
-							if (isset($child['counters'])) {
-								foreach ($child['counters'] as $type => $value) {
-									if (isset($counters[$type]))
-										$counters[$type] += $value;
-								}
+					foreach ($children as $key => $child) {
+						if (isset($child['counters'])) {
+							foreach ($child['counters'] as $type => $value) {
+								if (isset($counters[$type]))
+									$counters[$type] += $value;
 							}
 						}
 					}
 				}
 
 				if (!empty($counters))
-					$processed_group['counters'] = $counters;
+					$processed_item['counters'] = $counters;
 
-				$processed_groups[] = $processed_group;
+				return $processed_item;
 			}
-			$groups = $processed_groups;
 
-			// $groups = $this->getGroupsRecursive($parent);
+			if (! defined ('METACONSOLE')) {
+				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
 
-			if (empty($groups))
-				$groups = array();
+				// Build the group hierarchy
+				$processed_items = array();
+				foreach ($items as $key => $item) {
+					if (empty($item['_parent_id_']))
+						$processed_items[] = __getProcessedItem($key, $items);
+				}
+				$items = $processed_items;
+			}
+			else {
+				//enterprise_include_once("include/functions_metaconsole.php");
+				$servers = metaconsole_get_servers();
 
-			$this->tree = $groups;
+				$item_list = array();
+				foreach ($servers as $server) {
+					if (metaconsole_connect($server) != NOERR)
+						continue;
+
+					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
+
+					// Build the group hierarchy
+					$processed_items = array();
+					foreach ($items as $key => $item) {
+						if (empty($item['_parent_id_']))
+							$processed_items[] = __getProcessedItem($key, $items);
+					}
+					$item_list[$server['id']] = $processed_items;
+
+					metaconsole_restore_db();
+				}
+
+				function __getMergedItems($items) {
+					// This variable holds the result
+					$mergedItems = array();
+
+					foreach ($items as $key => $child) {
+
+						$childrenAux = array();
+
+						// Store the item in a temporary element
+						$resultItem = $child;
+						// Remove the item
+						unset($items[$key]);
+
+						// The 'id' parameter will be stored as 'server_id' => 'id'
+						$resultItem['id'] = array();
+						$resultItem['id'][$child['server_id']] = $child['id'];
+
+						// Initialize counters if any of it don't exist
+						if (!isset($resultItem['counters']))
+							$resultItem['counters'] = array();
+						if (!isset($resultItem['counters']['unknown']))
+							$resultItem['counters']['unknown'] = 0;
+						if (!isset($resultItem['counters']['critical']))
+							$resultItem['counters']['critical'] = 0;
+						if (!isset($resultItem['counters']['warning']))
+							$resultItem['counters']['warning'] = 0;
+						if (!isset($resultItem['counters']['not_init']))
+							$resultItem['counters']['not_init'] = 0;
+						if (!isset($resultItem['counters']['ok']))
+							$resultItem['counters']['ok'] = 0;
+						if (!isset($resultItem['counters']['total']))
+							$resultItem['counters']['total'] = 0;
+						if (!isset($resultItem['counters']['alerts']))
+							$resultItem['counters']['alerts'] = 0;
+
+						// Iterate over the list to search items that match the actual item
+						foreach ($items as $key2 => $child2) {
+							// Skip the actual or empty items
+							if (!isset($key) || !isset($key2) || $key == $key2)
+								continue;
+
+							// Match with the name
+							if ($child['name'] == $child2['name'] && $child['type'] == $child2['type']) {
+								// Add the matched ids
+								$resultItem['id'][$child2['server_id']] = $child2['id'];
+
+								// Add the matched counters
+								if (isset($child2['counters']) && !child2($item['counters'])) {
+									foreach ($child2['counters'] as $type => $value) {
+										if (isset($resultItem['counters'][$type]))
+											$resultItem['counters'][$type] += $value;
+									}
+								}
+
+								// Add the matched children
+								if (isset($child2['children']))
+									$childrenAux += $child2['children'];
+
+								// Remove the item
+								unset($items[$key2]);
+							}
+						}
+						// Get the merged children (recursion)
+						if (!empty($childrenAux))
+							$resultItem['children'] = __getMergedItems($childrenAux);
+
+						// Add the resulting item
+						$mergedItems[] = $resultItem;
+					}
+
+					return $mergedItems;
+				}
+
+				$items = __getMergedItems($item_list);
+
+				html_debug_print($items, true);
+			}
+			
+			if (empty($items))
+				$items = array();
+
+			$this->tree = $items;
 		}
 		// Get the group agents
 		else {
-			$this->tree = $this->getAgents($parent, $this->type);
+			if (! defined ('METACONSOLE')) {
+				$this->tree = $this->getAgents($parent, $this->type);
+			}
+			else {
+				function cmpSortAgentNames($a, $b) {
+				    return strcmp($a["name"], $b["name"]);
+				}
+				
+				$agents = array();
+				foreach ($parent as $server_id => $group_id) {
+					$server = metaconsole_get_servers($server_id);
+
+					if (!empty($server)) {
+						if (metaconsole_connect($server) != NOERR)
+							continue;
+
+						$agents += $this->tree = $this->getAgents($group_id, $this->type);
+
+						metaconsole_restore_db();
+					}
+				}
+				if (!empty($agents))
+					usort($agents, "cmpSortAgentNames");
+
+				$this->tree = $agents;
+			}
 		}
 	}
 
@@ -1412,7 +1478,32 @@ class Tree {
 			$this->tree = $nodes;
 		}
 		else {
-			$this->tree = $this->getAgents($parent, $this->type);
+			if (! defined ('METACONSOLE')) {
+				$this->tree = $this->getAgents($parent, $this->type);
+			}
+			else {
+				function cmpSortAgentNames($a, $b) {
+					return strcmp($a["name"], $b["name"]);
+				}
+
+				$agents = array();
+				foreach ($parent as $server_id => $tag_id) {
+					$server = metaconsole_get_servers($server_id);
+
+					if (!empty($server)) {
+						if (metaconsole_connect($server) != NOERR)
+							continue;
+
+						$agents += $this->tree = $this->getAgents($tag_id, $this->type);
+
+						metaconsole_restore_db();
+					}
+				}
+				if (!empty($agents))
+					usort($agents, "cmpSortAgentNames");
+
+				$this->tree = $agents;
+			}
 		}
 	}
 	

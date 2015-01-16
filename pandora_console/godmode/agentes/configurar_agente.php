@@ -208,7 +208,9 @@ if ($create_agent) {
 				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
 			}
 			// Create address for this agent in taddress
-			agents_add_address ($id_agente, $direccion_agente);
+			if ( $direccion_agente != ''){
+				agents_add_address ($id_agente, $direccion_agente);
+			}
 			
 			$agent_created_ok = true;
 			

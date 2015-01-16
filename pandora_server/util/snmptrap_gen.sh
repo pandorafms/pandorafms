@@ -14,7 +14,7 @@ if [ $# -lt 2 ]
 then
 	echo " "
 	echo "Syntax error: "
-	echo "SNMP Trap generator  <# traps> <target ip> [<source_ip>]"
+	echo "SNMP Trap generator use: ./snmptrap_gen <# No traps> <target ip> [<source_ip>]"
 	echo "If <source_ip> is not provided, it will forge fake IP's"
 	echo " "
 	exit -1

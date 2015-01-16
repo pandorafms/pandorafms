@@ -54,6 +54,32 @@ ui_print_page_header (__("Tactical view"), "images/op_monitoring.png", false, ""
 $all_data = group_get_groups_list($config['id_user'], $user_strict, 'AR', true, false, 'tactical');
 
 $data = array();
+$data['monitor_checks'] = 0;
+$data['monitor_not_init'] = 0;
+$data['monitor_unknown'] = 0;
+$data['monitor_ok'] = 0;
+$data['monitor_bad'] = 0;
+$data['monitor_warning'] = 0;
+$data['monitor_critical'] = 0;
+$data['monitor_not_normal'] = 0;
+$data['monitor_alerts'] = 0;
+$data['monitor_alerts_fired'] = 0;
+$data['monitor_alerts_fire_count'] = 0;
+$data['total_agents'] = 0;
+$data['total_alerts'] = 0;
+$data['total_checks'] = 0;
+$data['alerts'] = 0;
+$data['agents_unknown'] = 0;
+$data['monitor_health'] = 0;
+$data['alert_level'] = 0;
+$data['module_sanity'] = 0;
+$data['server_sanity'] = 0;
+$data['agent_ok'] = 0;
+$data['agent_warning'] = 0;
+$data['agent_critical'] = 0;
+$data['agent_unknown'] = 0;
+$data['agent_not_init'] = 0;
+$data['global_health'] = 0;
 foreach ($all_data as $item) {
 	$data['monitor_checks'] += $item['_monitor_checks_'];
 	$data['monitor_not_init'] += $item['_monitors_not_init_'];
@@ -65,10 +91,16 @@ foreach ($all_data as $item) {
 	$data['monitor_not_normal'] += $item['_monitor_not_normal_'];
 	$data['monitor_alerts'] += $item['_monitors_alerts_'];
 	$data['monitor_alerts_fired'] += $item['_monitors_alerts_fired_'];
-	$data['monitor_alerts_fire_count'] += $item['_monitor_alerts_fire_count_'];
-	$data['total_agents'] += $item['_total_agents_'];
-	$data['total_alerts'] += $item['_total_alerts_'];
-	$data['total_checks'] += $item['_total_checks_'];
+
+	if (isset($item['_total_agents_']))
+		$data['total_agents'] += $item['_total_agents_'];
+	
+	if (isset($item['_total_alerts_']))
+		$data['total_alerts'] += $item['_total_alerts_'];
+	
+	if (isset($item['_total_checks_']))
+		$data['total_checks'] += $item['_total_checks_'];
+
 	$data['alerts'] += $item['_alerts_'];
 	$data['agents_unknown'] += $item['_agents_unknown_'];
 	$data['monitor_health'] += $item['_monitor_health_'];
@@ -81,7 +113,6 @@ foreach ($all_data as $item) {
 	$data['agent_unknown'] += $item['_agents_unknown_'];
 	$data['agent_not_init'] += $item['_agents_not_init_'];
 	$data['global_health'] += $item['_global_health_'];
-	
 }
 
 echo '<table border=0 style="width:100%;"><tr>';

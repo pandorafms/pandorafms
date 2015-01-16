@@ -52,8 +52,17 @@ if (isset ($_GET["update_netgroup"])) {
 	}
 }
 
+if ($config["realtimestats"] == 0) {
+	$updated_time ="<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
+	$updated_time .= __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+	$updated_time .= "</a>"; 
+}
+else {
+	$updated_time = __("Updated at realtime");
+}
+
 // Header
-ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $updated_time );
+ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $updated_time);
 
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
@@ -117,7 +126,7 @@ if (!empty($result_groups)) {
 			
 			// Force
 			echo "<td class='group_view_data' style='text-align: center; vertica-align: middle;'>";
-			if (check_acl ($config['id_user'], $id_group, "AW")) {
+			if (!isset($data['_is_tag_']) && check_acl ($config['id_user'], $data['_id_'], "AW")) {
 				echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$data['_id_'].'">' .
 					html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
 			}
@@ -142,7 +151,11 @@ if (!empty($result_groups)) {
 			
 			$group_name = "<b><span style='font-size: 7.5pt'>" . ui_print_truncate_text($data['_name_'], 50) . "</span></b>";
 
-			echo $link . $deep . $data['_iconImg_'] ."&nbsp;" . $group_name . "</a>";
+			$item_icon = '';
+			if (isset($data['_iconImg_']) && !empty($data['_iconImg_']))
+				$item_icon = $data['_iconImg_'];
+
+			echo $link . $deep . $item_icon ."&nbsp;" . $group_name . "</a>";
 
 			echo "</td>";
 			

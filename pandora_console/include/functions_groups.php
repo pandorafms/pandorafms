@@ -1890,6 +1890,23 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 		$i = 1;
 		$list[0]['_id_'] = 0;
 		$list[0]['_name_'] = __('All');
+
+		$list[0]['_agents_unknown_'] = 0;
+		$list[0]['_monitors_alerts_fired_'] = 0;
+		$list[0]['_total_agents_'] = 0;
+		$list[0]['_monitors_ok_'] = 0;
+		$list[0]['_monitors_critical_'] = 0;
+		$list[0]['_monitors_warning_'] = 0;
+		$list[0]['_monitors_unknown_'] = 0;
+		$list[0]['_monitors_not_init_'] = 0;
+		$list[0]['_agents_not_init_'] = 0;
+
+		if ($mode == 'tactical') {
+			$list[0]['_agents_ok_'] = 0;
+			$list[0]['_agents_warning_'] = 0;
+			$list[0]['_agents_critical_'] = 0;
+			$list[0]['_monitors_alerts_'] = 0;
+		}
 	} else {
 		$i = 0;
 	}
@@ -1983,7 +2000,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				$list[0]['_monitors_warning_'] += $list[$i]['_monitors_warning_'];
 				$list[0]['_monitors_unknown_'] += $list[$i]['_monitors_unknown_'];
 				$list[0]['_monitors_not_init_'] += $list[$i]['_monitors_not_init_'];
-				$list[0]['_agents_not_init'] += $list[$i]['_agents_not_init'];
+				$list[0]['_agents_not_init_'] += $list[$i]['_agents_not_init_'];
 
 				if ($mode == 'tactical') {
 					$list[0]['_agents_ok_'] += $group_stat[0]["normal"];
@@ -2026,6 +2043,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				$list[$i]['_agents_critical_'] = groups_agent_critical ($id, $user_strict, $id);
 				$list[$i]['_monitors_alerts_'] = groups_monitor_alerts ($id, $user_strict, $id);
 				
+				// TODO
 				//~ $list[$i]["_total_checks_"] 
 				//~ $list[$i]["_total_alerts_"]
 				
@@ -2083,7 +2101,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				$list[0]['_monitors_warning_'] += $list[$i]['_monitors_warning_'];
 				$list[0]['_monitors_unknown_'] += $list[$i]['_monitors_unknown_'];
 				$list[0]['_monitors_not_init_'] = $list[$i]['_monitors_not_init_'];
-				$list[0]['_agents_not_init_'] += $list[$i]['_agents_not_init'];
+				$list[0]['_agents_not_init_'] += $list[$i]['_agents_not_init_'];
 				
 				if ($mode == 'tactical') {
 					$list[0]['_agents_ok_'] += $list[$i]['_agents_ok_'];

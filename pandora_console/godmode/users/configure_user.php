@@ -423,7 +423,7 @@ if ($config['admin_can_make_admin']) {
 	if ($own_info['is_admin'] || $user_info['is_admin']) {
 		$table->data[6][1] = html_print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
 		$table->data[6][1] .= __('Administrator');
-		$table->data[6][1] .= ui_print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
+		$table->data[6][1] .= ui_print_help_tip (__("This user has permissions to manage all. An admin user should not requiere additional group permissions, except for using Enterprise ACL."), true);
 		$table->data[6][1] .= '<br />';
 	}
 	$table->data[6][1] .= html_print_radio_button ('is_admin', 0, '', $user_info['is_admin'], true);

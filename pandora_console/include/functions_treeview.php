@@ -527,7 +527,7 @@ function treeview_printTree($type) {
 		$first = true;
 		foreach ($list as $item) {
 			$lessBranchs = 0;
-			$tree_img_id = "tree_image_" . $type . "_" . $item['_id_'];
+			$tree_img_id = "tree_image_" . $type . "__" . $item['_id_'];
 			if ($first) {
 				if ($item != end($list)) {
 					$img = html_print_image ("operation/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_img_id, "pos_tree" => "0"));
@@ -581,7 +581,7 @@ function treeview_printTree($type) {
 			
 			echo ') '. "</a>";
 			
-			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
+			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "__" . $id . "'></div>";
 			echo "</li>\n";
 		}
 		echo "</ul>\n";

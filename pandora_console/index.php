@@ -372,6 +372,9 @@ if (! isset ($config['id_user'])) {
 						case 'Dashboard':
 							$_GET["sec"] = "dashboard";
 							$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
+							$id_dashboard_select =
+								db_get_value('id', 'tdashboard', 'name', $home_url);
+							$_GET['id_dashboard_select'] = $id_dashboard_select;
 							break;
 						case 'Visual console':
 							$_GET["sec"] = "visualc";

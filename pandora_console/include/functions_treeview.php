@@ -527,23 +527,24 @@ function treeview_printTree($type) {
 		$first = true;
 		foreach ($list as $item) {
 			$lessBranchs = 0;
+			$tree_img_id = "tree_image_" . $type . "_" . $item['_id_'];
 			if ($first) {
 				if ($item != end($list)) {
-					$img = html_print_image ("operation/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $item['_id_'], "pos_tree" => "0"));
+					$img = html_print_image ("operation/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_image_id, "pos_tree" => "0"));
 					$first = false;
 				}
 				else {
 					$lessBranchs = 1;
-					$img = html_print_image ("operation/tree/one_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $item['_id_'], "pos_tree" => "1"));
+					$img = html_print_image ("operation/tree/one_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_img_id, "pos_tree" => "1"));
 				}
 			}
 			else {
 				if ($item != end($list))
-					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $item['_id_'], "pos_tree" => "2"));
+					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_img_id, "pos_tree" => "2"));
 				else
 				{
 					$lessBranchs = 1;
-					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $item['_id_'], "pos_tree" => "3"));
+					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_img_id, "pos_tree" => "3"));
 				}
 			}
 			

@@ -224,11 +224,12 @@ if (is_ajax ()) {
 				}
 				
 				$less = $lessBranchs;
+				$tree_img_id = "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"];
 				if ($count != $countRows)
-					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "2"));
+					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_img_id, "pos_tree" => "2"));
 				else {
 					$less = $less + 2; // $less = $less or 0b10
-					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "3"));
+					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_img_id, "pos_tree" => "3"));
 				}
 				echo "<li style='margin: 0; padding: 0;'>";
 				echo "<a onfocus='JavaScript: this.blur()'
@@ -702,13 +703,11 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	 * id_father int use in js and ajax php, its useful when you have a two subtrees with same agent for diferent each one
 	 */
 	function loadSubTree(type, div_id, less_branchs, id_father, server_name) {
-		hiddenDiv = $('#tree_div' + id_father + '_' + type + '_' + div_id)
-			.attr('hiddenDiv');
-		loadDiv = $('#tree_div' + id_father + '_' + type + '_' + div_id)
-			.attr('loadDiv');
+		var id = id_father + '_' + type + '_' + div_id;
+		var hiddenDiv = $('#tree_div' + id).attr('hiddenDiv');
+		var loadDiv = $('#tree_div' + id).attr('loadDiv');
 		
-		pos = parseInt($('#tree_image' + id_father + '_' + type + '_' + div_id)
-			.attr('pos_tree'));
+		var pos = parseInt($('#tree_image' + id).attr('pos_tree'));
 		
 		//If has yet ajax request running
 		if (loadDiv == 2)
@@ -717,12 +716,12 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		if (loadDiv == 0) {
 			
 			//Put an spinner to simulate loading process
-			$('#tree_div' + id_father + '_' + type + '_' + div_id)
+			$('#tree_div' + id)
 				.html("<img style='padding-top:10px;padding-bottom:10px;padding-left:20px;' src=images/spinner.gif>");
-			$('#tree_div' + id_father + '_' + type + '_' + div_id)
+			$('#tree_div' + id)
 				.show('normal');
 			
-			$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 2);
+			$('#tree_div'+id).attr('loadDiv', 2);
 			$.ajax({
 				type: "POST",
 				url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
@@ -739,9 +738,9 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 				},
 				success: function(msg) {
 					if (msg.length != 0) {
-						$('#tree_div'+id_father+'_'+type+'_'+div_id).hide();
-						$('#tree_div'+id_father+'_'+type+'_'+div_id).html(msg);
-						$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
+						$('#tree_div'+id).hide();
+						$('#tree_div'+id).html(msg);
+						$('#tree_div'+id).show('normal');
 						
 						//change image of tree [+] to [-]
 						<?php if (! defined ('METACONSOLE')) {
@@ -753,20 +752,20 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 						?>
 						switch (pos) {
 							case 0:
-								$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/first_expanded.png');
+								$('#tree_image'+id).attr('src',icon_path+'/first_expanded.png');
 								break;
 							case 1:
-								$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/one_expanded.png');
+								$('#tree_image'+id).attr('src',icon_path+'/one_expanded.png');
 								break;
 							case 2:
-								$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/expanded.png');
+								$('#tree_image'+id).attr('src',icon_path+'/expanded.png');
 								break;
 							case 3:
-								$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/last_expanded.png');
+								$('#tree_image'+id).attr('src',icon_path+'/last_expanded.png');
 								break;
 						}
-						$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddendiv',0);
-						$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 1);
+						$('#tree_div'+id).attr('hiddendiv',0);
+						$('#tree_div'+id).attr('loadDiv', 1);
 					}
 					
 					// Refresh forced title callback to work with html code created dinamicly
@@ -784,22 +783,22 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			}
 			?>
 			if (hiddenDiv == 0) {
-				$('#tree_div'+id_father+'_'+type+'_'+div_id).hide('normal');
-				$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv',1);
+				$('#tree_div'+id).hide('normal');
+				$('#tree_div'+id).attr('hiddenDiv',1);
 				
 				//change image of tree [-] to [+]
 				switch (pos) {
 					case 0:
-						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/first_closed.png');
+						$('#tree_image'+id).attr('src',icon_path+'/first_closed.png');
 						break;
 					case 1:
-						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/one_closed.png');
+						$('#tree_image'+id).attr('src',icon_path+'/one_closed.png');
 						break;
 					case 2:
-						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/closed.png');
+						$('#tree_image'+id).attr('src',icon_path+'/closed.png');
 						break;
 					case 3:
-						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/last_closed.png');
+						$('#tree_image'+id).attr('src',icon_path+'/last_closed.png');
 						break;
 				}
 			}
@@ -807,21 +806,21 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 				//change image of tree [+] to [-]
 				switch (pos) {
 					case 0:
-						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/first_expanded.png');
+						$('#tree_image'+id).attr('src',icon_path+'/first_expanded.png');
 						break;
 					case 1:
-						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/one_expanded.png');
+						$('#tree_image'+id).attr('src',icon_path+'/one_expanded.png');
 						break;
 					case 2:
-						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/expanded.png');
+						$('#tree_image'+id).attr('src',icon_path+'/expanded.png');
 						break;
 					case 3:
-						$('#tree_image'+id_father+'_'+type+'_'+div_id).attr('src',icon_path+'/last_expanded.png');
+						$('#tree_image'+id).attr('src',icon_path+'/last_expanded.png');
 						break;
 				}
 				
-				$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
-				$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv',0);
+				$('#tree_div'+id).show('normal');
+				$('#tree_div'+id).attr('hiddenDiv',0);
 			}
 		}
 	}

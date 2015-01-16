@@ -1062,7 +1062,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 			$url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'];
 		}
 		
-		$node = "\n" . $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
+		$node = "\n" . $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
 		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="'.$url.'",
 		 tooltip="' . $url_tooltip . '"];' . "\n";
@@ -1696,7 +1696,8 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask, $fields = array()) {
 		$("area[title!='<?php echo 'Pandora FMS'; ?>']").cluetip ({
 			arrows: true,
 			attribute: 'title',
-			cluetipClass: 'default'
+			cluetipClass: 'default',
+			positionBy: "bottomTop"
 		});
 	});
 	/* ]]> */

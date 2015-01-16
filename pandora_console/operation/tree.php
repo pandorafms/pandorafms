@@ -224,7 +224,7 @@ if (is_ajax ()) {
 				}
 				
 				$less = $lessBranchs;
-				$tree_img_id = "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"];
+				$tree_img_id = "tree_image" . $id . "_agent_" . $type . "_" . $row["server_name"] . "_" . $row["id_agente"];
 				if ($count != $countRows)
 					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_img_id, "pos_tree" => "2"));
 				else {
@@ -263,7 +263,7 @@ if (is_ajax ()) {
 					html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 				}
 				echo "</a>";
-				echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div" . $id . "_agent_" . $type . "_" . $row["id_agente"] . "'></div>";
+				echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div" . $id . "_agent_" . $type . "_" . $row["server_name"] . "_" . $row["id_agente"] . "'></div>";
 				echo "</li>";
 			}
 			
@@ -703,7 +703,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	 * id_father int use in js and ajax php, its useful when you have a two subtrees with same agent for diferent each one
 	 */
 	function loadSubTree(type, div_id, less_branchs, id_father, server_name) {
-		var id = id_father + '_' + type + '_' + div_id;
+		var id = id_father + '_' + type + '_' + server_name + '_' + div_id;
 		var hiddenDiv = $('#tree_div' + id).attr('hiddenDiv');
 		var loadDiv = $('#tree_div' + id).attr('loadDiv');
 		

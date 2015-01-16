@@ -530,7 +530,7 @@ function treeview_printTree($type) {
 			$tree_img_id = "tree_image_" . $type . "_" . $item['_id_'];
 			if ($first) {
 				if ($item != end($list)) {
-					$img = html_print_image ("operation/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_image_id, "pos_tree" => "0"));
+					$img = html_print_image ("operation/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => $tree_img_id, "pos_tree" => "0"));
 					$first = false;
 				}
 				else {

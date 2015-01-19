@@ -742,8 +742,6 @@ class Tree {
 
 					foreach ($items as $key => $child) {
 
-						$childrenAux = array();
-
 						// Store the item in a temporary element
 						$resultItem = $child;
 						// Remove the item
@@ -751,7 +749,7 @@ class Tree {
 
 						// The 'id' parameter will be stored as 'server_id' => 'id'
 						$resultItem['id'] = array();
-						$resultItem['id'][$child['server_id']] = $child['id'];
+						$resultItem['id'][$resultItem['server_id']] = $resultItem['id'];
 
 						// Initialize counters if any of it don't exist
 						if (!isset($resultItem['counters']))
@@ -770,6 +768,10 @@ class Tree {
 							$resultItem['counters']['total'] = 0;
 						if (!isset($resultItem['counters']['alerts']))
 							$resultItem['counters']['alerts'] = 0;
+
+						// Add the children
+						if (!isset($resultItem['children']))
+							$resultItem['children'] = array();
 
 						// Iterate over the list to search items that match the actual item
 						foreach ($items as $key2 => $child2) {
@@ -792,14 +794,14 @@ class Tree {
 
 								// Add the matched children
 								if (isset($child2['children']))
-									$childrenAux += $child2['children'];
+									$resultItem['children'] += $child2['children'];
 
 								// Remove the item
 								unset($items[$key2]);
 							}
 						}
 						// Get the merged children (recursion)
-						if (!empty($childrenAux))
+						if (!empty($resultItem['children']))
 							$resultItem['children'] = __getMergedItems($childrenAux);
 
 						// Add the resulting item

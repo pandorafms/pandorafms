@@ -749,7 +749,7 @@ class Tree {
 
 						// The 'id' parameter will be stored as 'server_id' => 'id'
 						$resultItem['id'] = array();
-						$resultItem['id'][$resultItem['server_id']] = $resultItem['id'];
+						$resultItem['id'][$child['server_id']] = $child['id'];
 
 						// Initialize counters if any of it don't exist
 						if (!isset($resultItem['counters']))

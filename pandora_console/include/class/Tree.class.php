@@ -297,7 +297,7 @@ class Tree {
 		}
 	}
 
-	protected function getAgents ($parent = 0, $parentType = '') {
+	protected function getAgents ($parent = 0, $parentType = '', $server_id = false) {
 		// Agent name filter
 		$agent_search = "";
 		if (!empty($this->filter['searchAgent'])) {
@@ -340,7 +340,6 @@ class Tree {
 							AND ta.disabled = 0
 							$agent_search
 						ORDER BY ta.nombre ASC, ta.id_agente ASC, tam.nombre ASC, tam.id_agente_modulo ASC";
-				$data = db_process_sql($sql);
 				break;
 			case 'tag':
 				$groups_clause = "";
@@ -381,11 +380,20 @@ class Tree {
 							$groups_clause
 							$agent_search
 						ORDER BY ta.nombre ASC, ta.id_agente ASC, tam.nombre ASC, tam.id_agente_modulo ASC";
-				$data = db_process_sql($sql);
 				break;
 			default:
 				return array();
 				break;
+		}
+		if (! defined ('METACONSOLE')) {
+			$data = db_process_sql($sql);
+		}
+		else if ($server_id) {
+			$server = metaconsole_get_servers($server_id);
+			if (metaconsole_connect($server) != NOERR) {
+				$data = db_process_sql($sql);
+				metaconsole_restore_db();
+			}
 		}
 
 		if (empty($data))
@@ -825,7 +833,7 @@ class Tree {
 						if (metaconsole_connect($server) != NOERR)
 							continue;
 
-						$agents += $this->tree = $this->getAgents($group_id, $this->type);
+						$agents += $this->tree = $this->getAgents($group_id, $this->type, $server_id);
 
 						metaconsole_restore_db();
 					}

@@ -717,7 +717,7 @@ class Tree {
 					$processed_items = array();
 					foreach ($items as $key => $item) {
 						if (empty($item['_parent_id_']))
-							$processed_items[] = __getProcessedItem($key, $items);
+							$processed_items[] = __getProcessedItem($key, $items, $server['id']);
 					}
 					$item_list += $processed_items;
 

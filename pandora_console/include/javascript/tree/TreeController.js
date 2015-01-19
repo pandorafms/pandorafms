@@ -66,6 +66,8 @@ TreeController = {
 
 				// Load leaf counters
 				function _processNodeCounters (container, counters, type) {
+					var hasCounters = false;
+
 					if (typeof counters != 'undefined') {
 						
 						function _processNodeCounterTitle (container, elementType, counterType) {
@@ -264,11 +266,15 @@ TreeController = {
 
 							// Close the parentheses
 							$counters.append(")");
+
+							hasCounters = true;
 						}
 
 						// Add the counters html to the container
 						container.append($counters);
 					}
+
+					return hasCounters;
 					// Load the counters asynchronously
 					// else if (typeof element.searchCounters != 'undefined' && element.searchCounters) {
 					// 	var $counters = $("<div></div>");

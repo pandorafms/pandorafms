@@ -63,8 +63,8 @@ if ($#df < 0) {
 foreach my $row (@df) {
 	my @columns = split (' ', $row);
 	exit 1 if ($#columns < 4);
-	if (defined ($filesystems{$columns[0]}) || ($all_filesystems == 1 && !defined ($excluded_filesystems{$columns[0]}))) {
-		$filesystems{$columns[0]} = $columns[4] ;
+	if (defined ($filesystems{$columns[5]}) || ($all_filesystems == 1 && !defined ($excluded_filesystems{$columns[5]}))) {
+		$filesystems{$columns[5]} = $columns[4] ;
 	}
 }
 

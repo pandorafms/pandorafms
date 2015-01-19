@@ -92,7 +92,7 @@ sub data_producer ($) {
 	my @tasks;
 	my @rows;
 	
-	if ($pa_config->{'pandora_master'} != 1) {
+	if (pandora_is_master($pa_config) == 0) {
 		@rows = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo,
 				tagente_modulo.flag, last_execution_try
 			FROM tagente, tagente_modulo, tagente_estado

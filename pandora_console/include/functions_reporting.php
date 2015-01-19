@@ -1563,7 +1563,7 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	return $output;
 }
 
-function reporting_get_stats_alerts($data) {
+function reporting_get_stats_alerts($data, $links = false) {
 	global $config;
 	
 	// Link URLS
@@ -1581,8 +1581,13 @@ function reporting_get_stats_alerts($data) {
 	}
 	else {
 		$urls = array();
-		$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
-		$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
+		if ($links) {
+			$urls['monitor_alerts'] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&pure=" . $config['pure'];
+			$urls['monitor_alerts_fired'] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&filter=fired&pure=" . $config['pure'];
+		} else {
+			$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
+			$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
+		}
 	}
 	
 	// Alerts table
@@ -8044,5 +8049,263 @@ function reporting_network_interfaces_table ($content, $report, $mini, $item_tit
 			}
 		}
 	}
+}
+
+function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_height = 150, $links = false) {
+	global $config;
+	
+	if ($links == false) {
+		$links = array();
+	}
+	
+	$table_agent = html_get_predefined_table();
+		
+	$agent_data = array();
+	$agent_data[0] = html_print_image('images/agent_critical.png', true, array('title' => __('Agents critical')));
+	$agent_data[1] = "<a style='color: #bc0000;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['agent_critical'])."</span></b></a>";
+	$agent_data[2] = html_print_image('images/agent_warning.png', true, array('title' => __('Agents warning')));
+	$agent_data[3] = "<a style='color: #aba900;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['agent_warning'])."</span></b></a>";
+
+	$table_agent->data[] = $agent_data;
+	
+	$agent_data = array();
+	$agent_data[0] = html_print_image('images/agent_ok.png', true, array('title' => __('Agents ok')));
+	$agent_data[1] = "<a style='color: #6ec300;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['agent_ok'])."</span></b></a>";
+	$agent_data[2] = html_print_image('images/agent_unknown.png', true, array('title' => __('Agents unknown')));
+	$agent_data[3] = "<a style='color: #886666;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['agent_unknown'])."</span></b></a>";
+	$table_agent->data[] = $agent_data;
+	
+	$agent_data = array();
+	$agent_data[0] = html_print_image('images/agent_notinit.png', true, array('title' => __('Agents not init')));
+	$agent_data[1] = "<a style='color: #729fcf;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
+	$table_agent->data[] = $agent_data;
+	
+	$agents_data = '<fieldset class="databox tactical_set">
+					<legend>' . 
+						__('Agents by status') . 
+					'</legend>' . 
+					html_print_table($table_agent, true) . '</fieldset>';
+					
+	return $agents_data;
+}
+
+function reporting_get_total_agents_and_monitors ($data, $graph_width = 250, $graph_height = 150) {
+	global $config;
+	
+	$total_agent = $data['agent_ok'] + $data['agent_warning'] + $data['agent_critical'] + $data['gent_unknown'] + $data['agent_not_init'];
+	$total_module = $data['monitor_ok'] + $data['monitor_warning'] + $data['monitor_critical'] + $data['monitor_unknown'] + $data['monitor_not_init'];
+			
+	$table_total = html_get_predefined_table();
+		
+	$total_data = array();
+	$total_data[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents')));
+	$total_data[1] = $total_agent <= 0 ? '-' : $total_agent;
+	$total_data[2] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')));
+	$total_data[3] = $total_module <= 0 ? '-' : $total_module;
+	$table_total->data[] = $total_data;
+	$total_agent_module = '<fieldset class="databox tactical_set">
+					<legend>' . 
+						__('Total agents and monitors') . 
+					'</legend>' . 
+					html_print_table($table_total, true) . '</fieldset>';
+					
+	return $total_agent_module;	
+}
+
+function reporting_get_total_servers ($num_servers) {
+	global $config;
+	
+	$table_node = html_get_predefined_table();
+		
+	$node_data = array();
+	$node_data[0] = html_print_image('images/server_export.png', true, array('title' => __('Nodes')));
+	$node_data[1] = "<b><span style='font-size: 12pt; font-weight: bold; color: black;'>".format_numeric($num_servers)."</span></b>";
+	$table_node->data[] = $node_data;
+	$node_overview = '<fieldset class="databox tactical_set">
+					<legend>' . 
+						__('Node overview') . 
+					'</legend>' . 
+					html_print_table($table_node, true) . '</fieldset>';
+	return $node_overview;
+}
+
+function reporting_get_events ($data, $links = false) {
+	global $config;
+
+	$table_events->width = "100%";
+	
+	$table_events->data[0][0] = html_print_image('images/agent_critical.png', true, array('title' => __('Critical events')));
+	$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #bc0000;' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['critical'])."</span></b></a>";
+
+	$table_events->data[0][1] = html_print_image('images/agent_warning.png', true, array('title' => __('Warning events')));
+	$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #aba900;' href='" . $links['warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['warning'])."</span></b></a>";
+	$table_events->data[0][2] = html_print_image('images/agent_ok.png', true, array('title' => __('OK events')));
+	$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #6ec300;' href='" . $links['normal'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['normal'])."</span></b></a>";
+	$table_events->data[0][3] = html_print_image('images/agent_unknown.png', true, array('title' => __('Unknown events')));
+	$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #886666;' href='" . $links['unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['unknown'])."</span></b></a>";
+	$table_events->data[0][4] = html_print_image('images/agent_notinit.png', true, array('title' => __('Not init events')));
+	$table_events->data[0][4] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #729fcf;' href='" . $links['not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['not_init'])."</span></b></a>";
+	
+	$event_view = '<fieldset class="databox tactical_set">
+					<legend>' . 
+						__('Events by criticity') . 
+					'</legend>' . 
+					html_print_table($table_events, true) . '</fieldset>';
+					
+	return $event_view;
+}
+
+function reporting_get_last_activity() {
+	global $config;
+			
+	// Show last activity from this user
+	
+	$table->width = '100%';
+	$table->data = array ();
+	$table->size = array ();
+	$table->size[2] = '150px';
+	$table->size[3] = '130px';
+	$table->size[5] = '200px';
+	$table->head = array ();
+	$table->head[0] = __('User');
+	$table->head[1] = '';
+	$table->head[2] = __('Action');
+	$table->head[3] = __('Date');
+	$table->head[4] = __('Source IP');
+	$table->head[5] = __('Comments');
+	$table->title = '<span>' . __('Last activity in Pandora FMS console') . '</span>';
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion,utimestamp
+				FROM tsesion
+				WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - " . SECONDS_1WEEK . ") 
+					AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 5", $config["id_user"]);
+			break;
+		case "postgresql":
+			$sql = sprintf ("SELECT \"id_usuario\", accion, fecha, \"ip_origen\", descripcion, utimestamp
+				FROM tsesion
+				WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - " . SECONDS_1WEEK . ") 
+					AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 5", $config["id_user"]);
+			break;
+		case "oracle":
+			$sql = sprintf ("SELECT id_usuario, accion, fecha, ip_origen, descripcion, utimestamp
+				FROM tsesion
+				WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - " . SECONDS_1WEEK . ") 
+					AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC", $config["id_user"]);
+			break;
+	}
+	
+	$sessions = db_get_all_rows_sql ($sql);
+	
+	if ($sessions === false)
+		$sessions = array (); 
+	
+	foreach ($sessions as $session) {
+		$data = array ();
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "oracle":
+				$session_id_usuario = $session['id_usuario'];
+				$session_ip_origen = $session['ip_origen'];
+				break;
+			case "postgresql":
+				$session_id_usuario = $session['id_usuario'];
+				$session_ip_origen = $session['ip_origen'];
+				break;
+		}
+		
+		
+		$data[0] = '<strong>' . $session_id_usuario . '</strong>';
+		$data[1] = ui_print_session_action_icon ($session['accion'], true);
+		$data[2] = $session['accion'];
+		$data[3] =  ui_print_help_tip($session['fecha'], true) . human_time_comparation($session['utimestamp'], 'tiny');
+		$data[4] = $session_ip_origen;
+		$data[5] = io_safe_output ($session['descripcion']);
+		
+		array_push ($table->data, $data);
+	}
+
+	 return html_print_table ($table, true);
+	
+}
+
+function reporting_get_event_histogram ($events) {
+	global $config;
+	include_once ('../../include/graphs/functions_gd.php');
+	$max_value = count($events);
+
+	$ttl = 1;
+	$urlImage = ui_get_full_url(false, true, false, false);
+
+	$colors = array(
+		EVENT_CRIT_MAINTENANCE => COL_MAINTENANCE,
+		EVENT_CRIT_INFORMATIONAL => COL_INFORMATIONAL,
+		EVENT_CRIT_NORMAL => COL_MINOR,
+		EVENT_CRIT_MINOR => COL_NORMAL,
+		EVENT_CRIT_WARNING => COL_WARNING,
+		EVENT_CRIT_MAJOR => COL_MAJOR,
+		EVENT_CRIT_CRITICAL => COL_CRITICAL
+	);
+					
+	foreach ($events as $data) {
+	
+		switch ($data['criticity']) {
+			case 0:
+				$color = EVENT_CRIT_MAINTENANCE;
+			break;
+			case 1:
+				$color = EVENT_CRIT_INFORMATIONAL;
+			break;
+			case 2:
+				$color = EVENT_CRIT_NORMAL;
+			break;
+			case 3:
+				$color = EVENT_CRIT_WARNING;
+			break;
+			case 4:
+				$color = EVENT_CRIT_CRITICAL;
+			break;
+			case 5:
+				$color = EVENT_CRIT_MINOR;
+			break;
+			case 6:
+				$color = EVENT_CRIT_MAJOR;
+			break;
+			case 20:
+				$color = EVENT_CRIT_NOT_NORMAL;
+			break;
+			case 34:
+				$color = EVENT_CRIT_WARNING_OR_CRITICAL;
+			break;
+		}
+		$graph_data[] = array(
+			'data' => $color,
+			'utimestamp' => 1
+		);
+	}
+
+	$table->width = '100%';
+	$table->data = array ();
+	$table->size = array ();
+	$table->head = array ();
+	$table->title = '<span>' . __('Events info (1hr.)') . '</span>';
+	$table->data[0][0] = "" ;
+	
+	if (!empty($graph_data)) {
+		$slicebar = slicesbar_graph($graph_data, $max_value, 700, 25, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
+		$table->data[0][0] = $slicebar;
+	} else {
+		$table->data[0][0] = __('No events');
+	}
+	
+	$event_graph = '<fieldset class="databox tactical_set">
+					<legend>' . 
+						__('Events info (1hr)') . 
+					'</legend>' . 
+					html_print_table($table, true) . '</fieldset>';
+					
+	return $event_graph;
 }
 ?>

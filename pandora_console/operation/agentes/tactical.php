@@ -32,6 +32,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
  
 $is_admin = check_acl ($config['id_user'], 0, "PM");
+$user_strict = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 $force_refresh = get_parameter ("force_refresh", "");
 if ($force_refresh == 1) {
@@ -49,10 +50,69 @@ else {
 
 // Header
 ui_print_page_header (__("Tactical view"), "images/op_monitoring.png", false, "", false, $updated_time);
-$data = reporting_get_group_stats();
 
-if (tags_has_user_acl_tags()) {
-	ui_print_tags_warning();
+$all_data = group_get_groups_list($config['id_user'], $user_strict, 'AR', true, false, 'tactical');
+
+$data = array();
+$data['monitor_checks'] = 0;
+$data['monitor_not_init'] = 0;
+$data['monitor_unknown'] = 0;
+$data['monitor_ok'] = 0;
+$data['monitor_bad'] = 0;
+$data['monitor_warning'] = 0;
+$data['monitor_critical'] = 0;
+$data['monitor_not_normal'] = 0;
+$data['monitor_alerts'] = 0;
+$data['monitor_alerts_fired'] = 0;
+$data['monitor_alerts_fire_count'] = 0;
+$data['total_agents'] = 0;
+$data['total_alerts'] = 0;
+$data['total_checks'] = 0;
+$data['alerts'] = 0;
+$data['agents_unknown'] = 0;
+$data['monitor_health'] = 0;
+$data['alert_level'] = 0;
+$data['module_sanity'] = 0;
+$data['server_sanity'] = 0;
+$data['agent_ok'] = 0;
+$data['agent_warning'] = 0;
+$data['agent_critical'] = 0;
+$data['agent_unknown'] = 0;
+$data['agent_not_init'] = 0;
+$data['global_health'] = 0;
+foreach ($all_data as $item) {
+	$data['monitor_checks'] += $item['_monitor_checks_'];
+	$data['monitor_not_init'] += $item['_monitors_not_init_'];
+	$data['monitor_unknown'] += $item['_monitors_unknown_'];
+	$data['monitor_ok'] += $item['_monitors_ok_'];
+	$data['monitor_bad'] += $item['_monitor_bad_'];
+	$data['monitor_warning'] += $item['_monitors_warning_'];
+	$data['monitor_critical'] += $item['_monitors_critical_'];
+	$data['monitor_not_normal'] += $item['_monitor_not_normal_'];
+	$data['monitor_alerts'] += $item['_monitors_alerts_'];
+	$data['monitor_alerts_fired'] += $item['_monitors_alerts_fired_'];
+
+	if (isset($item['_total_agents_']))
+		$data['total_agents'] += $item['_total_agents_'];
+	
+	if (isset($item['_total_alerts_']))
+		$data['total_alerts'] += $item['_total_alerts_'];
+	
+	if (isset($item['_total_checks_']))
+		$data['total_checks'] += $item['_total_checks_'];
+
+	$data['alerts'] += $item['_alerts_'];
+	$data['agents_unknown'] += $item['_agents_unknown_'];
+	$data['monitor_health'] += $item['_monitor_health_'];
+	$data['alert_level'] += $item['_alert_level_'];
+	$data['module_sanity'] += $item['_module_sanity_'];
+	$data['server_sanity'] += $item['_server_sanity_'];
+	$data['agent_ok'] += $item['_agents_ok_'];
+	$data['agent_warning'] += $item['_agents_warning_'];
+	$data['agent_critical'] += $item['_agents_critical_'];
+	$data['agent_unknown'] += $item['_agents_unknown_'];
+	$data['agent_not_init'] += $item['_agents_not_init_'];
+	$data['global_health'] += $item['_global_health_'];
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
@@ -123,9 +183,11 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // ---------------------------------------------------------------------
 // Last events information
 // ---------------------------------------------------------------------
-$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 
-events_print_event_table ("estado<>1 $tags_condition", 10, "100%");
+$acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $user_strict);
+$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
+
+events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%");
 
 // ---------------------------------------------------------------------
 // Server information

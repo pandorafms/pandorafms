@@ -40,4 +40,4 @@ INSERT INTO ttipo_modulo VALUES (5,'generic_data_inc_abs',0,'Generic numeric inc
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
 -- ---------------------------------------------------------------------
-ALTER TABLE tusuario ADD COLUMN strict_acl NUMBER(5,0) DEFAULT 0;
+ALTER TABLE tusuario ADD COLUMN strict_acl NUMBER(5, 0) DEFAULT 0;

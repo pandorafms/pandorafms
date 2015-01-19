@@ -43,7 +43,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "6.0dev";
-my $pandora_build = "150108";
+my $pandora_build = "150116";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -850,8 +850,8 @@ sub pandora_load_config {
 		if ($pa_config->{"pandora_check"} == 1) {
 			print " [*] MD5 Security enabled.\n";
 		}
-		if ($pa_config->{"pandora_master"} == 1) {
-			print " [*] This server is running in MASTER mode.\n";
+		if ($pa_config->{"pandora_master"} != 0) {
+			print " [*] This server is running with MASTER priority " . $pa_config->{"pandora_master"} . "\n";
 		}
 	}
 

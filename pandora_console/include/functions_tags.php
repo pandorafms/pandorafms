@@ -107,7 +107,7 @@ function tags_total_agents ($id_tag, $groups_and_tags = array()) {
  * @return mixed Returns count of agents in normal status or false if they aren't.
  */
 function tags_agent_ok ($id_tag, $groups_and_tags = array()) {
-	
+
 	$groups_clause = "";
 	if (!empty($groups_and_tags)) {
 		$i = 0;
@@ -556,12 +556,18 @@ function tags_update_policy_module_tag ($id_policy_module, $tags, $autocommit = 
  *
  * @return mixed Array with module tags or false if something goes wrong.
  */
-function tags_get_module_tags ($id_agent_module) {
-	if (empty($id_agent_module))
+function tags_get_module_tags ($id, $policy = false) {
+	if (empty($id))
 		return false;
 	
-	$tags = db_get_all_rows_filter('ttag_module',
-		array('id_agente_modulo' => $id_agent_module), false);
+	if ($policy) {
+		$tags = db_get_all_rows_filter('ttag_policy_module',
+			array('id_policy_module' => $id), false);
+	}
+	else {
+		$tags = db_get_all_rows_filter('ttag_module',
+			array('id_agente_modulo' => $id), false);
+	}
 	
 	if ($tags === false)
 		return array();
@@ -859,7 +865,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 		
 		// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
 		if ($i == 0)
-			$condition .= ' ( ';	
+			$condition .= ' ( ';
 		
 		// Group condition (The module belongs to an agent of the group X)
 		// Juanma (08/05/2014) Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition
@@ -886,7 +892,8 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 			$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, $group_tags_query);
 			
 			$condition .= "($group_condition AND \n$tags_condition)\n";
-		}		
+		}
+				
 		$i++;
 	}
 	
@@ -1058,7 +1065,7 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 	if(empty($acl_column)) {
 		return array();
 	}
-	
+
 	$query = sprintf("SELECT count(*) 
 			FROM tusuario_perfil, tperfil
 			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
@@ -1067,7 +1074,7 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 			$id_user, $acl_column);
 			
 	$profiles_without_tags = db_get_value_sql($query);
-
+	
 	if ($profiles_without_tags == 0) {
 		return $all_tags;
 	}
@@ -1095,7 +1102,8 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 		}
 		$user_tags[$id] = $all_tags[$id];
 	}
-		
+	
+	
 	return $user_tags;
 }
 
@@ -1608,7 +1616,6 @@ function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
 
 /* Return array with groups and their tags */
 function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $strict_user = false) {
-	
 	global $config;
 	
 	if ($id_user == false) {
@@ -1756,7 +1763,7 @@ function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array()) {
 function tags_get_all_user_agents ($id_tag, $id_user = false, $groups_and_tags = array(), $filter = false, $fields = false, $meta = true, $strict_user = true) {
 	
 	global $config;
-	
+
 	// Avoid mysql error
 	if (empty($id_tag))
 		return;
@@ -1775,7 +1782,7 @@ function tags_get_all_user_agents ($id_tag, $id_user = false, $groups_and_tags =
 	$groups_clause = "";
 	if ($strict_user) {
 		if (!empty($groups_and_tags)) {
-			$groups_clause = " AND ".tags_get_acl_tags_module_condition($groups_and_tags, "tagente_modulo"); 		 
+			$groups_clause = " AND ".tags_get_acl_tags_module_condition($groups_and_tags, "tagente_modulo"); 	 
 		}
 	} else {
 		$groups_clause = " AND tagente.id_grupo IN (".implode(',',$groups_and_tags).")";
@@ -1795,7 +1802,7 @@ function tags_get_all_user_agents ($id_tag, $id_user = false, $groups_and_tags =
 			}
 		}
 	}
-		
+	
 	$user_agents_sql = "SELECT ".$select_fields ."
 		FROM tagente, tagente_modulo, ttag_module 
 		WHERE tagente.id_agente = tagente_modulo.id_agente
@@ -1803,9 +1810,10 @@ function tags_get_all_user_agents ($id_tag, $id_user = false, $groups_and_tags =
 		AND ttag_module.id_tag = " . $id_tag .
 		$groups_clause . $search_sql . $void_agents .
 		" ORDER BY tagente.nombre ASC";
-	
+
+	//return db_get_sql ($user_agents);	
 	$user_agents = db_get_all_rows_sql($user_agents_sql);
-	
+
 	if (!$meta){
 		$user_agents_aux = array();
 		if ($user_agents === false) {

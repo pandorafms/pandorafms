@@ -574,7 +574,7 @@ if (isset($module_macros)) {
 		}
 	}
 }
-$table_macros->data[$macro_count][0] = '<span>'.__('Add module macro').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png',true).'</a>';
+$table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png',true).'</a>';
 $table_macros->colspan[$macro_count][0] = 5;
 $macro_count++;
 

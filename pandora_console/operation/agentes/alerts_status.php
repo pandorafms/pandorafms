@@ -64,6 +64,7 @@ $tab = get_parameter_get ("tab", null);
 
 $refr = (int)get_parameter('refr', 0);
 $pure = get_parameter('pure', 0);
+
 $url = 'index.php?sec=' . $sec . '&sec2=' . $sec2 . '&refr=' . $refr .
 	'&filter=' . $filter . '&filter_standby=' . $filter_standby .
 	'&ag_group=' . $id_group .'&tag_filter=' .$tag_filter;
@@ -336,12 +337,11 @@ if (defined('METACONSOLE')) {
 		$alerts['alerts_simple'] = alerts_meta_get_alerts ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user);
 
 		$countAlertsSimple = alerts_meta_get_alerts ($agents, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user);
-		
 	}
 	else {
 		$id_groups = array_keys(
 			users_get_groups($config["id_user"], 'AR', false));
-		
+
 		$alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
 		
 		$countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);

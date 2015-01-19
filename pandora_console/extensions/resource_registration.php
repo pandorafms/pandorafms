@@ -654,7 +654,7 @@ function process_upload_xml_component($xml) {
 					$tcp_send = $snmp_version;
 					$plugin_user = $auth_user;
 					$plugin_pass = $auth_password;
-					$plugin_parameter = $auth_method;
+					$plugin_parameters = $auth_method;
 					$custom_string_1 = $privacy_method;
 					$custom_string_2 = $privacy_pass;
 					$custom_string_3 = $security_level;

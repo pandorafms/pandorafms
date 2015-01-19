@@ -115,6 +115,7 @@ require_once ($ownDir. 'functions_config.php');
 
 date_default_timezone_set("Europe/Madrid");
 
+
 config_process_config();
 
 if (!isset($config["homeurl_static"])) {
@@ -142,32 +143,9 @@ else {
 $config["global_block_size"] = $config["block_size"];
 $config["global_flash_charts"] = $config["flash_charts"];
 
+
 if (isset ($config['id_user'])) {
-	$userinfo = get_user_info ($config['id_user']);
-	
-	// Refresh the last_connect info in the user table 
-	// if last update was more than 5 minutes ago
-	if($userinfo['last_connect'] < (time()-SECONDS_1MINUTE)) {
-		update_user($config['id_user'], array('last_connect' => time()));
-	}
-	
-	// If block_size or flash_chart are provided then override global settings
-	if (!empty($userinfo["block_size"]) && ($userinfo["block_size"] != 0))
-		$config["block_size"] = $userinfo["block_size"];
-	
-	if ($userinfo["flash_chart"] != -1)
-		$config["flash_charts"] = $userinfo["flash_chart"];
-	
-	// Each user could have it's own timezone)
-	if (isset($userinfo["timezone"])) {
-		if ($userinfo["timezone"] != "") {
-			date_default_timezone_set($userinfo["timezone"]);
-		}
-	}
-	
-	if (defined('METACONSOLE')) {
-		$config['metaconsole_access'] = $userinfo["metaconsole_access"];
-	}
+	config_user_set_custom_config();
 } 
 
 // Check if inventory_changes_blacklist is setted, if not create it

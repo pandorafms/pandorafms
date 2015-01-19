@@ -66,7 +66,7 @@ TreeController = {
 
 				// Load leaf counters
 				function _processNodeCounters (container, counters, type) {
-					var hasCounters = true;
+					var hasCounters = false;
 
 					if (typeof counters != 'undefined') {
 						

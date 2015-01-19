@@ -802,7 +802,7 @@ class Tree {
 						}
 						// Get the merged children (recursion)
 						if (!empty($resultItem['children']))
-							$resultItem['children'] = __getMergedItems($childrenAux);
+							$resultItem['children'] = __getMergedItems($resultItem['children']);
 
 						// Add the resulting item
 						$mergedItems[] = $resultItem;

@@ -30,6 +30,7 @@ TreeController = {
 			detailRecipient: '',
 			filter: {},
 			counterTitles: {},
+			shouldHaveCounters: true,
 			reload: function () {
 				// Bad recipient
 				if (typeof this.recipient == 'undefined' || this.recipient.length == 0) {
@@ -403,7 +404,10 @@ TreeController = {
 					}
 
 					// Load the status counters
-					_processNodeCounters($content, element.counters, element.type);
+					var hasCounters = _processNodeCounters($content, element.counters, element.type);
+
+					if (controller.shouldHaveCounters && !hasCounters)
+						return;
 					
 					// If exist the detail container, show the data
 					if (typeof controller.detailRecipient != 'undefined' && controller.detailRecipient.length > 0) {
@@ -790,6 +794,9 @@ TreeNodeDetailController = {
 				}
 				if (typeof data.counterTitles != 'undefined') {
 					this.counterTitles = data.counterTitles;
+				}
+				if (typeof data.shouldHaveCounters != 'undefined') {
+					this.shouldHaveCounters = data.shouldHaveCounters;
 				}
 
 				if (typeof TreeNodeDetailController.controllers[this.type] == 'undefined')

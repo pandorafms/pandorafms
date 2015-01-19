@@ -595,6 +595,13 @@ else {
 			foreach ($plugin_modules as $pm) {
 				modules_delete_agent_module ($pm['id_agente_modulo']);
 			}
+			if (enterprise_installed()) {
+				enterprise_include_once('include/functions_policies.php');
+				$policies_ids = db_get_all_rows_filter('tpolicy_modules', array('id_plugin' => $plugin_id));
+				foreach($policies_ids as $policies_id) {
+					policies_change_delete_pending_module ($policies_id['id']);
+				}
+			}
 		}
 	}
 	

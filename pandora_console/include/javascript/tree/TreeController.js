@@ -412,7 +412,7 @@ TreeController = {
 					// Load the status counters
 					var hasCounters = _processNodeCounters($content, element.counters, element.type);
 
-					if ((elementType == "group" || elementType == "tag")
+					if ((element.type == "group" || element.type == "tag")
 							&& (controller.shouldHaveCounters && !hasCounters))
 						return;
 					

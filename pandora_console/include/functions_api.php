@@ -969,19 +969,23 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 }
 
 /**
- * Get all agents, and print all the result like a csv.
+ * Get all agents, and print all the result like a csv or other type for example json.
  * 
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
  * @param array $other it's array, $other as param are the filters available <filter_so>;<filter_group>;<filter_modules_states>;<filter_name>;<filter_policy>;<csv_separator> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
- *  example:
+ *  example for CSV:
  *  
  *  api.php?op=get&op2=all_agents&return_type=csv&other=1|2|warning|j|2|~&other_mode=url_encode_separator_|
  * 
- * @param $thrash3 Don't use.
+ *  example for JSON:
+ * 
+ * 	api.php?op=get&op2=all_agents&return_type=json&other=1|2|warning|j|2|~&other_mode=url_encode_separator_|
+ * 
+ * @param $returnType.
  */
-function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
+function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	
 	$where = '';
 	
@@ -1097,7 +1101,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	if (count($result_agents) > 0 and $result_agents !== false) {
 		$data = array('type' => 'array', 'data' => $result_agents);
 		
-		returnData('csv', $data, $separator);
+		returnData($returnType, $data, $separator);
 	}
 	else {
 		returnError('error_all_agents', 'No agents retrieved.');

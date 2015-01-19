@@ -66,7 +66,7 @@ TreeController = {
 
 				// Load leaf counters
 				function _processNodeCounters (container, counters, type) {
-					var hasCounters = false;
+					var hasCounters = true;
 
 					if (typeof counters != 'undefined') {
 						
@@ -412,7 +412,8 @@ TreeController = {
 					// Load the status counters
 					var hasCounters = _processNodeCounters($content, element.counters, element.type);
 
-					if (controller.shouldHaveCounters && !hasCounters)
+					if ((elementType == "group" || elementType == "tag")
+							&& (controller.shouldHaveCounters && !hasCounters))
 						return;
 					
 					// If exist the detail container, show the data

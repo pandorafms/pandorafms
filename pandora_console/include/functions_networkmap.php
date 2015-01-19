@@ -333,16 +333,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		
 		$node_ref[$agent['id_agente']] = $node_count;
 		
-		// Save node parent information to define edges later
-		if ($agent['id_parent'] != "0" &&
-			array_key_exists($agent['id_parent'], $node_ref)) {
-			
-			$parents[$node_count] = $node_ref[$agent['id_parent']];
-		}
-		else {
-			$orphans[$node_count] = 1;
-		}
-		
 		$agent['id_node'] = $node_count;
 		$agent['type'] = 'agent';
 		
@@ -386,6 +376,19 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				// Add node
 				$nodes[$node_count] = $module;
 			}
+		}
+	}
+	
+	// Addded the relationship of parents of agents
+	foreach ($agents as $agent) {
+		if ($agent['id_parent'] != "0" &&
+			array_key_exists($agent['id_parent'], $node_ref)) {
+			
+			
+			$parents[$node_ref[$agent['id_agente']]] = $node_ref[$agent['id_parent']];
+		}
+		else {
+			$orphans[$node_ref[$agent['id_agente']]] = 1;
 		}
 	}
 	
@@ -1552,6 +1555,27 @@ function networkmap_delete_networkmap ($id_networkmap) {
 	if ($networkmap === false)
 		return false;
 	return @db_process_sql_delete ('tnetwork_map', array ('id_networkmap' => $id_networkmap));
+}
+
+/**
+ * Deletes a network map if the property is that user.
+ * 
+ * @param string User id that call this funtion. 
+ * @param int Map id to be deleted.
+ *
+ * @return bool True if the map was deleted, false the map is not yours.
+ */
+function networkmap_delete_user_networkmap ($id_user = '', $id_networkmap) {
+	if ($id_user == '') {
+		$id_user = $config['id_user'];
+	}
+	$id_networkmap = safe_int ($id_networkmap);
+	if (empty ($id_networkmap))
+		return false;
+	$networkmap = networkmap_get_networkmap ($id_networkmap);
+	if ($networkmap === false)
+		return false;
+	return @db_process_sql_delete ('tnetwork_map', array ('id_networkmap' => $id_networkmap, 'id_user' => $id_user));
 }
 
 /**

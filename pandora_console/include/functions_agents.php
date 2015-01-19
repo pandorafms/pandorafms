@@ -159,7 +159,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	if (($id_agent !== false) && ($idGroup !== false)) {
 		$groups = users_get_groups($config["id_user"]);
 		
-		//$where_tags = tags_get_acl_tags($config['id_user'], $groups, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -215,7 +214,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 	
-	
 	$sql = sprintf ("SELECT %s
 		FROM talert_template_modules
 			INNER JOIN tagente_modulo t2
@@ -227,7 +225,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		WHERE id_agent_module in (%s) %s %s %s",
 		$selectText, $subQuery, $where, $filter, $orderbyText);
 	$alerts = db_get_all_rows_sql ($sql);
-	
+
 	if ($alerts === false)
 		return array ();
 	
@@ -1182,8 +1180,6 @@ function agents_get_modules ($id_agent = null, $details = false,
 				$where);
 			break;
 	}
-	
-	//html_debug_print($sql);
 	
 	$result = db_get_all_rows_sql ($sql);
 	

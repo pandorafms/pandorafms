@@ -165,6 +165,7 @@ our @EXPORT = qw(
 	pandora_get_module_phone_tags
 	pandora_get_module_email_tags
 	pandora_get_os
+	pandora_is_master
 	pandora_mark_agent_for_alert_update
 	pandora_mark_agent_for_module_update
 	pandora_module_keep_alive
@@ -189,6 +190,7 @@ our @EXPORT = qw(
 	pandora_reset_server
 	pandora_server_keep_alive
 	pandora_set_event_storm_protection
+	pandora_set_master
 	pandora_update_agent
 	pandora_update_agent_address
 	pandora_update_agent_alert_count
@@ -224,6 +226,9 @@ our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not exe
 
 # Event storm protection (no alerts or events)
 our $EventStormProtection :shared = 0;
+
+# Current master server
+my $Master :shared = 0;
 
 ##########################################################################
 # Return the agent given the IP address.
@@ -4220,6 +4225,43 @@ sub pandora_self_monitoring ($$) {
 	print XMLFILE $xml_output;
 	close (XMLFILE);
 }
+
+##########################################################################
+=head2 C<< set_master (I<$pa_config>, I<$dbh>) >> 
+
+Set the current master server.
+
+=cut
+##########################################################################
+sub pandora_set_master ($$) {
+	my ($pa_config, $dbh) = @_;
+	
+	my $current_master = get_db_value ($dbh, 'SELECT name FROM tserver 
+	                                  WHERE master <> 0 AND status = 1
+									  ORDER BY master DESC LIMIT 1');
+	return unless defined($current_master) and ($current_master ne $Master);
+
+	logger($pa_config, "Server $current_master is the current master.", 1);
+	$Master = $current_master;
+}
+
+##########################################################################
+=head2 C<< is_master (I<$pa_config>) >> 
+
+Returns 1 if this server is the current master, 0 otherwise.
+
+=cut
+##########################################################################
+sub pandora_is_master ($) {
+	my ($pa_config) = @_;
+
+	if ($Master eq $pa_config->{'servername'}) {
+		return 1;
+	}
+
+	return 0;
+}
+
 
 ##########################################################################
 =head2 C<< pandora_module_unknown (I<$pa_config>, I<$dbh>) >> 

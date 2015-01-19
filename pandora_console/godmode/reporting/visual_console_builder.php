@@ -448,7 +448,7 @@ else {
 }
 
 // Hash for auto-auth in public link
-$hash = md5($config["dbpass"] . $id_layout . $config["id_user"]);
+$hash = md5($config["dbpass"] . $idVisualConsole . $config["id_user"]);
 
 $buttons = array();
 
@@ -456,7 +456,7 @@ $buttons['consoles_list'] = array('active' => false,
 	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
 		html_print_image ("images/visual_console.png", true, array ("title" => __('Visual consoles list'))) .'</a>');
 $buttons['public_link'] = array('active' => false,
-	'text' => '<a href="' . ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]) . '">'.
+	'text' => '<a href="' . ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$idVisualConsole.'&id_user='.$config["id_user"]) . '">'.
 		html_print_image ("images/camera_mc.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>');
 $buttons['data'] = array('active' => false,
 	'text' => '<a href="' . $url_base . $action . '&tab=data&id_visual_console=' . $idVisualConsole . '">' . 

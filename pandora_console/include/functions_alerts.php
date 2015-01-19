@@ -1573,8 +1573,6 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 	if ($id_group !== false) {
 		$groups = users_get_groups($config["id_user"], "AR");
 
-		//$where_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
-
 		if ($id_group != 0) {
 			if (is_array($id_group)) {
 				if (in_array(0, $id_group)) {
@@ -1596,6 +1594,7 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 								FROM tagente
 								WHERE
 									id_grupo IN (' . implode(',', $id_group) . '))';
+
 				}
 			}
 			else {
@@ -1666,7 +1665,7 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 		WHERE id_agent_module in (%s) %s %s %s",
 	$selectText, $subQuery, $where, $filter, $orderbyText);
 	$alerts = db_get_all_rows_sql ($sql);
-	
+
 	if ($alerts === false)
 		return array ();
 	

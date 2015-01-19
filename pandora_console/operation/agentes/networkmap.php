@@ -229,7 +229,7 @@ $combolist .= '</form>';
 
 $buttons['combolist'] = $combolist;
 
-if (check_acl ($config['id_user'], 0, "AW")) {
+if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
 	$buttons['addmap'] = array('active' => $activeTab == false,
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 		html_print_image("images/add_mc.png", true, array ("title" => __('Add map'))) .'</a>');

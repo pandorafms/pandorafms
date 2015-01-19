@@ -335,10 +335,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				else if ($is_a_link_to_other_visualconsole) {
 					if (empty($layout_data['id_metaconsole'])) {
-						$url_vc = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layout_data["id_layout_linked"];
+						$url = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layoutData["id_layout_linked"];
 					}
 					else {
-						$url_vc = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=1&id_visualmap=" . $layout_data["id_layout_linked"] . "&refr=0";
+						$url = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=1&id_visualmap=" . $layoutData["id_layout_linked"] . "&refr=0";
 					}
 				}
 				else {
@@ -371,9 +371,24 @@ function visual_map_print_item($mode = "read", $layoutData,
 				
 				break;
 			case GROUP_ITEM:
-				$url = $config['homeurl'] .
-					'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=' .
-					$layoutData['id_group'];
+				$is_a_link_to_other_visualconsole = false;
+				if ($layoutData['id_layout_linked'] != 0) {
+					$is_a_link_to_other_visualconsole = true;
+				}
+				
+				if ($is_a_link_to_other_visualconsole) {
+					if (empty($layout_data['id_metaconsole'])) {
+						$url = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layoutData["id_layout_linked"];
+					}
+					else {
+						$url = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=1&id_visualmap=" . $layoutData["id_layout_linked"] . "&refr=0";
+					}
+				}
+				else {
+					$url = $config['homeurl'] .
+						'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=' .
+						$layoutData['id_group'];
+				}
 				break;
 			case LABEL:
 				if ($layoutData['id_layout_linked'] != 0) {
@@ -1916,34 +1931,78 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 	
 	$id_layout = (int) $id_layout;
 	
-	$result = db_get_all_rows_filter ('tlayout_data', array ('id_layout' => $id_layout),
-		array ('id_agente_modulo', 'parent_item', 'id_layout_linked', 'id_agent', 'type'));
+	$result = db_get_all_rows_filter ('tlayout_data',
+		array ('id_layout' => $id_layout),
+		array (
+			'id_agente_modulo',
+			'id_group',
+			'parent_item',
+			'id_layout_linked',
+			'id_agent',
+			'type'));
 	if ($result === false)
 		return VISUAL_MAP_STATUS_NORMAL;
 	
-	foreach ($result as $rownum => $data) {
-		if (($data["id_layout_linked"] == 0 && $data["id_agente_modulo"] == 0 && $data["id_agent"] == 0) || $data['type'] != 0)
-			continue;
-		// Other Layout (Recursive!)
-		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
-			$status = visual_map_get_layout_status ($data["id_layout_linked"], $depth);
+	foreach ($result as $data) {
+		switch ($data['type']) {
+			case GROUP_ITEM:
+				if ($data["id_layout_linked"] == 0) {
+					$group_status = groups_get_status($data['id_group']);
+					switch ($group_status) {
+						case AGENT_STATUS_ALERT_FIRED:
+							$status = VISUAL_MAP_STATUS_CRITICAL_ALERT;
+							break;
+						case AGENT_STATUS_CRITICAL:
+							$status = VISUAL_MAP_STATUS_CRITICAL_BAD;
+							break;
+						case AGENT_STATUS_WARNING:
+							$status = VISUAL_MAP_STATUS_WARNING;
+							break;
+						case AGENT_STATUS_UNKNOWN:
+							$status = VISUAL_MAP_STATUS_UNKNOWN;
+							break;
+						case AGENT_STATUS_NORMAL:
+						default:
+							$status = VISUAL_MAP_STATUS_NORMAL;
+							break;
+					}
+				}
+				else {
+					$status = visual_map_get_layout_status(
+						$data["id_layout_linked"], $depth);
+				}
+				break;
+			default:
+				if (($data["id_layout_linked"] == 0 &&
+					$data["id_agente_modulo"] == 0 &&
+					$data["id_agent"] == 0) ||
+					$data['type'] != 0)
+				continue;
+				
+				// Other Layout (Recursive!)
+				if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
+					$status = visual_map_get_layout_status($data["id_layout_linked"], $depth);
+				}
+				// Module
+				elseif ($data["id_agente_modulo"] != 0) {
+					$status = modules_get_agentmodule_status($data["id_agente_modulo"]);
+				
+				}
+				// Agent
+				else {
+					//--------------------------------------------------
+					// ADDED NO CHECK ACL FOR AVOID CHECK TAGS THAT
+					// MAKE VERY SLOW THE VISUALMAPS WITH ACL TAGS
+					//--------------------------------------------------
+					
+					$status = agents_get_status($data["id_agent"], true);
+				}
+				break;
 		}
-		// Module
-		elseif ($data["id_agente_modulo"] != 0) {
-			$status = modules_get_agentmodule_status ($data["id_agente_modulo"]);
 		
-		}
-		// Agent
-		else {
-			//--------------------------------------------------
-			// ADDED NO CHECK ACL FOR AVOID CHECK TAGS THAT
-			// MAKE VERY SLOW THE VISUALMAPS WITH ACL TAGS
-			//--------------------------------------------------
-			
-			$status = agents_get_status ($data["id_agent"], true);
-		}
 		if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD)
 			return VISUAL_MAP_STATUS_CRITICAL_BAD;
+		
 		if ($status > $temp_total)
 			$temp_total = $status;
 	}

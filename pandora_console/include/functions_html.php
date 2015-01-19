@@ -371,7 +371,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 	$keys_field = 'id_grupo', $strict_user = false) {
 	
 	global $config;
-	
+
 	$fields = users_get_groups_for_select($id_user, $privilege,
 		$returnAllGroup, true, $id_group, $keys_field);
 

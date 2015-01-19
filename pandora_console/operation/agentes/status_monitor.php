@@ -907,6 +907,10 @@ if (! defined ('METACONSOLE')) {
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
 }
 
+/*
+$table->head[4] = __('Tags');
+*/
+
 $table->head[5] = __('Interval'); 
 if (! defined ('METACONSOLE')) {
 	$table->head[5] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up"))  . '</a>' .

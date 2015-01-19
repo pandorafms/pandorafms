@@ -911,7 +911,7 @@ CREATE TABLE "tusuario" (
 	"metaconsole_assigned_server" INTEGER NOT NULL default 0,
 	"metaconsole_access_node" SMALLINT DEFAULT 0,
 	"metaconsole_access" type_tusuario_metaconsole_access default 'basic',
-	"strict_acl" SMALLINT NOT NULL default 0
+	"strict_acl" SMALLINT DEFAULT 0
 );
 
 -- -----------------------------------------------------

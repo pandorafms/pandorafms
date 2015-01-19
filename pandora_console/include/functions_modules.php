@@ -875,7 +875,8 @@ function modules_is_string_type ($id_type) {
  * @return string The name of the icon.
  */
 function modules_get_type_icon ($id_type) {
-	return (string) db_get_value ('icon', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+	return (string) db_get_value ('icon', 'ttipo_modulo', 'id_tipo',
+		(int) $id_type);
 }
 
 /**

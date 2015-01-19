@@ -14,6 +14,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
+
+require_once("tree2.php");
+return;
+////////////////////////////////////////////////////////////////////////
+
+
 define('ALL', -1);
 define('NORMAL', 0);
 define('WARNING', 2);
@@ -96,7 +103,6 @@ if (is_ajax ()) {
 			metaconsole_connect($server);
 		}
 		
-		treeview_printTable($id_agent, $server);
 		treeview_printModuleTable($id_module, $server);
 		
 		

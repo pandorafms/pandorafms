@@ -66,4 +66,12 @@ function os_get_name($id_os) {
 	return db_get_value ('name', 'tconfig_os', 'id_os', (int) $id_os);
 }
 
+
+function os_get_os() {
+	$op_systems = db_get_all_rows_in_table('tconfig_os');
+	if (empty($op_systems))
+		$op_systems = array();
+	
+	return $op_systems;
+}
 ?>

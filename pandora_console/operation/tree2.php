@@ -186,7 +186,7 @@ echo "</div>";
 						detailRecipient: $("div#tree-controller-detail-recipient"),
 						page: page,
 						tree: data.tree,
-						baseURL: "<?php echo ui_get_full_url('', false, false, false); ?>",
+						baseURL: "<?php echo ui_get_full_url(false, false, false, false); ?>",
 						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 						filter: {
 							search: parameters['filter']['search'],

@@ -1414,8 +1414,8 @@ function config_check () {
 
 function config_return_in_bytes($val) {
 	$val = trim($val);
-	$last = strtolower($val[strlen($val)-1]);
-	switch($last) {
+	$last = strtolower($val[strlen($val) - 1]);
+	switch ($last) {
 		// The 'G' modifier is available since PHP 5.1.0
 		case 'g':
 			$val *= 1024;
@@ -1424,8 +1424,37 @@ function config_return_in_bytes($val) {
 		case 'k':
 			$val *= 1024;
 	}
-
+	
 	return $val;
 }
 
+function config_user_set_custom_config() {
+	global $config;
+	
+	$userinfo = get_user_info ($config['id_user']);
+	
+	// Refresh the last_connect info in the user table 
+	// if last update was more than 5 minutes ago
+	if ($userinfo['last_connect'] < (time()-SECONDS_1MINUTE)) {
+		update_user($config['id_user'], array('last_connect' => time()));
+	}
+	
+	// If block_size or flash_chart are provided then override global settings
+	if (!empty($userinfo["block_size"]) && ($userinfo["block_size"] != 0))
+		$config["block_size"] = $userinfo["block_size"];
+	
+	if ($userinfo["flash_chart"] != -1)
+		$config["flash_charts"] = $userinfo["flash_chart"];
+	
+	// Each user could have it's own timezone)
+	if (isset($userinfo["timezone"])) {
+		if ($userinfo["timezone"] != "") {
+			date_default_timezone_set($userinfo["timezone"]);
+		}
+	}
+	
+	if (defined('METACONSOLE')) {
+		$config['metaconsole_access'] = $userinfo["metaconsole_access"];
+	}
+}
 ?>

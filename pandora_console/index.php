@@ -69,6 +69,7 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 session_start ();
 require_once ("include/config.php");
 
+
 // If metaconsole activated, redirect to it
 if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
@@ -177,34 +178,34 @@ if (! isset ($config['id_user'])) {
 		$pass = get_parameter_post ("pass"); //This is the variable with the password
 		$nick = db_escape_string_sql($nick);
 		$pass = db_escape_string_sql($pass);
-
+		
 		//Since now, only the $pass variable are needed
 		unset ($_GET['pass'], $_POST['pass'], $_REQUEST['pass']);
-
+		
 		// If the auth_code exists, we assume the user has come through the double auth page
 		if (isset ($_POST['auth_code'])) {
 			$double_auth_success = false;
-
+			
 			// The double authentication is activated and the user has surpassed the first step (the login).
 			// Now the authentication code provided will be checked.
 			if (isset ($_SESSION['prepared_login_da'])) {
 				if (isset ($_SESSION['prepared_login_da']['id_user'])
 						&& isset ($_SESSION['prepared_login_da']['timestamp'])) {
-
+					
 					// The user has a maximum of 5 minutes to introduce the double auth code
 					$dauth_period = SECONDS_2MINUTES;
 					$now = time();
 					$dauth_time = $_SESSION['prepared_login_da']['timestamp'];
-
+					
 					if ($now - $dauth_period < $dauth_time) {
 						// Nick
 						$nick = $_SESSION["prepared_login_da"]['id_user'];
 						// Code
 						$code = (string) get_parameter_post ("auth_code");
-
+						
 						if (!empty($code)) {
 							$result = validate_double_auth_code($nick, $code);
-
+							
 							if ($result === true) {
 								// Double auth success
 								$double_auth_success = true;
@@ -214,7 +215,7 @@ if (! isset ($config['id_user'])) {
 								$login_screen = 'double_auth';
 								// Error message
 								$config["auth_error"] = __("Invalid code");
-
+								
 								if (!isset($_SESSION['prepared_login_da']['attempts']))
 									$_SESSION['prepared_login_da']['attempts'] = 0;
 								$_SESSION['prepared_login_da']['attempts']++;
@@ -225,7 +226,7 @@ if (! isset ($config['id_user'])) {
 							$login_screen = 'double_auth';
 							// Error message
 							$config["auth_error"] = __("The code shouldn't be empty");
-
+							
 							if (!isset($_SESSION['prepared_login_da']['attempts']))
 								$_SESSION['prepared_login_da']['attempts'] = 0;
 							$_SESSION['prepared_login_da']['attempts']++;
@@ -234,7 +235,7 @@ if (! isset ($config['id_user'])) {
 					else {
 						// Expired login
 						unset ($_SESSION['prepared_login_da']);
-
+						
 						// Error message
 						$config["auth_error"] = __('Expired login');
 					}
@@ -242,7 +243,7 @@ if (! isset ($config['id_user'])) {
 				else {
 					// If the code doesn't exist, remove the prepared login
 					unset ($_SESSION['prepared_login_da']);
-
+					
 					// Error message
 					$config["auth_error"] = __('Login error');
 				}
@@ -252,10 +253,10 @@ if (! isset ($config['id_user'])) {
 				// Error message
 				$config["auth_error"] = __('Login error');
 			}
-
+			
 			// Remove the authenticator code
 			unset ($_POST['auth_code'], $code);
-
+			
 			if (!$double_auth_success) {
 				$login_failed = true;
 				require_once ('general/login_page.php');
@@ -328,14 +329,14 @@ if (! isset ($config['id_user'])) {
 						'timestamp' => time(),
 						'attempts' => 0
 					);
-
+				
 				// Load the page to introduce the double auth code
 				$login_screen = 'double_auth';
 				require_once ('general/login_page.php');
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
-
+			
 			//login ok and password has not expired
 			$process_login = true;
 			
@@ -395,6 +396,13 @@ if (! isset ($config['id_user'])) {
 			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
+			
+			//==========================================================
+			//-------- SET THE CUSTOM CONFIGS OF USER ------------------
+			
+			config_user_set_custom_config();
+			//==========================================================
+			
 			//Remove everything that might have to do with people's passwords or logins
 			unset ($pass, $login_good);
 			

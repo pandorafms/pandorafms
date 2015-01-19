@@ -25,14 +25,14 @@ if (is_ajax ()) {
 	require_once($config['homedir'] . "/include/functions_reporting.php");
 	require_once($config['homedir'] . "/include/functions_os.php");
 	
-	$getChildren = (bool)get_parameter('getChildren', 0);
-	$getGroupStatus = (bool)get_parameter('getGroupStatus', 0);
+	$getChildren = (bool) get_parameter('getChildren', 0);
+	$getGroupStatus = (bool) get_parameter('getGroupStatus', 0);
 	$get_detail = (bool) get_parameter('getDetail');
 	
 	if ($getChildren) {
 		$type = get_parameter('type', 'group');
 		$filter = get_parameter('filter', array('searchAgent' => '', 'statusAgent' => AGENT_STATUS_ALL));
-		$id = (int)get_parameter('id', 0);
+		$id = get_parameter('id', 0);
 		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
 		$countModuleStatusMethod = get_parameter('countModuleStatusMethod', 'on_demand');
 		$countAgentStatusMethod = get_parameter('countAgentStatusMethod', 'live');

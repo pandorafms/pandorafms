@@ -806,7 +806,7 @@ class Tree {
 						$mergedItems[] = $resultItem;
 					}
 					
-					usort($mergedItems, "cmpSortNames");
+					//usort($mergedItems, "cmpSortNames");
 
 					return $mergedItems;
 				}

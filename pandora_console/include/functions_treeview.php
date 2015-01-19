@@ -274,18 +274,11 @@ function treeview_printTable($id_agente, $server_data = array()) {
 		$url_hash = metaconsole_get_servers_url_hash($server_data);
 	}
 	
-	require_once ("include/functions_agents.php");
+	require_once ($config["homedir"] . "/include/functions_agents.php");
 	require_once ($config["homedir"] . '/include/functions_graph.php');
-	include_graphs_dependencies();
 	require_once ($config['homedir'] . '/include/functions_groups.php');
 	require_once ($config['homedir'] . '/include/functions_gis.php');
-	
-	$agent = db_get_row ("tagente", "id_agente", $id_agente);
-	
-	if ($agent === false) {
-		ui_print_error_message(__('There was a problem loading agent'));
-		return;
-	}
+	include_graphs_dependencies();
 	
 	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
 	
@@ -300,11 +293,21 @@ function treeview_printTable($id_agente, $server_data = array()) {
 		return;
 	}
 	
-	echo '<div id="id_div3" width="450px">';
-	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox alternate" style="width:90%; min-width: 300px;">';
-	//Agent name
-	echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
+	$agent = db_get_row ("tagente", "id_agente", $id_agente);
 	
+	if ($agent === false) {
+		ui_print_error_message(__('There was a problem loading agent'));
+		return;
+	}
+
+	$table = new StdClass();
+	$table->width = "100%";
+	$table->style = array();
+	$table->style['title'] = 'font-weight: bold;';
+	$table->head = array();
+	$table->data = array();
+
+	// Agent name
 	if ($agent['disabled']) {
 		$cellName = "<em>";
 	}
@@ -317,12 +320,13 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	if ($agent['disabled']) {
 		$cellName .= ui_print_help_tip(__('Disabled'), true) . "</em>";
 	}
-	
-	echo '<td class="datos"><b>'.$cellName.'</b></td>';
-	
+
+	$row = array();
+	$row['title'] = __('Agent name');
+	$row['data'] = $cellName;
+	$table->data['name'] = $row;
+
 	//Addresses
-	echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';
-	echo '<td class="datos2" colspan="2">';
 	$ips = array();
 	$addresses = agents_get_addresses ($id_agente);
 	$address = agents_get_address($id_agente);
@@ -333,95 +337,115 @@ function treeview_printTable($id_agente, $server_data = array()) {
 		}
 	}
 	
-	echo $address;
-	
 	if (!empty($addresses)) {
-		ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>',$addresses));
+		$address .= ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>',$addresses), true);
 	}
 	
-	echo '</td></tr>';
+	$row = array();
+	$row['title'] = __('IP Address');
+	$row['data'] = $address;
+	$table->data['address'] = $row;
 	
 	// Agent Interval
-	echo '<tr><td class="datos"><b>'.__('Interval').'</b></td>';
-	echo '<td class="datos" colspan="2">'.human_time_description_raw ($agent["intervalo"]).'</td></tr>';
+	$row = array();
+	$row['title'] = __('Interval');
+	$row['data'] = human_time_description_raw ($agent["intervalo"]);
+	$table->data['interval'] = $row;
 	
 	// Comments
-	echo '<tr><td class="datos2"><b>' . __('Description') . '</b></td>';
-	echo '<td class="datos2" colspan="2">' . $agent["comentarios"] . '</td></tr>';
-	
+	$row = array();
+	$row['title'] = __('Description');
+	$row['data'] = $agent["comentarios"];
+	$table->data['description'] = $row;
 	
 	// Last contact
-	echo '<tr><td class="datos2"><b>' . __('Last contact') . " / " . __('Remote') . '</b></td><td class="datos2 f9" colspan="2">';
-	
-	ui_print_timestamp ($agent["ultimo_contacto"]);
-	
-	echo " / ";
-	
+	$last_contact = ui_print_timestamp($agent["ultimo_contacto"], true);
+
 	if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") { 
-		echo __('Never');
+		$last_remote_contact = __('Never');
 	}
 	else {
-		ui_print_timestamp ($agent["ultimo_contacto_remoto"]);
+		$last_remote_contact = ui_print_timestamp ($agent["ultimo_contacto_remoto"], true);
 	}
-	echo '</td></tr>';
+
+	$row = array();
+	$row['title'] = __('Last contact') . " / " . __('Remote');
+	$row['data'] = "$last_contact / $last_remote_contact";
+	$table->data['contact'] = $row;
 	
 	// Next contact (agent)
 	$progress = agents_get_next_contact($id_agente);
 	
-	echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
-	echo '<td class="datos f9" colspan="2">' . progress_bar($progress, 150, 20) . '</td></tr>';
+	$row = array();
+	$row['title'] = __('Next agent contact');
+	$row['data'] = progress_bar($progress, 150, 20);
+	$table->data['next_contact'] = $row;
 	
 	//End of table
-	echo '</table></div>';
-	
+	$agent_table = html_print_table($table, true);
+
 	if (can_user_access_node () && check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
-		echo '<div style="width:90%; text-align: right; min-width: 300px;">';
-		echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
-				html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"');
-		echo '</form>';
-		echo '</div>';
+		$go_to_agent = '<div style="text-align: right;">';
+		$go_to_agent .= '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
+		$go_to_agent .= html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
+		$go_to_agent .= '</form>';
+		$go_to_agent .= '</div>';
+
+		$agent_table .= $go_to_agent;
 	}
+	$agent_table .= "<br>";
+	
+	// print agent data toggle
+	ui_toggle($agent_table, __('Agent data'), '', false);
+
 	
 	// Advanced data
-	$advanced = '<div id="id_div3" width="450px">';
-	$advanced .= '<table cellspacing="4" cellpadding="4" border="0" class="databox alternate" style="width:90%;">';
-	
+	$table = new StdClass();
+	$table->width = "100%";
+	$table->style = array();
+	$table->style['title'] = 'font-weight: bold;';
+	$table->head = array();
+	$table->data = array();
+
 	// Agent version
-	$advanced .= '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
-	$advanced .= '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
+	$row = array();
+	$row['title'] = __('Agent Version');
+	$row['data'] = $agent["agent_version"];
+	$table->data['agent_version'] = $row;
 	
 	// Position Information
 	if ($config['activate_gis']) {
 		$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
 		
-		$advanced .= '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
-		$advanced .= '<td class="datos2" colspan="2">';
-		
-		if ($dataPositionAgent === false) {
-			$advanced .= __('There is no GIS data.');
-		}
-		else {
-			$advanced .= '<a href="' . $console_url . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
+		if ($dataPositionAgent !== false) {
+			$position = '<a href="' . $console_url . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
 			if ($dataPositionAgent['description'] != "")
-				$advanced .= $dataPositionAgent['description'];
+				$position .= $dataPositionAgent['description'];
 			else
-				$advanced .= $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
-			$advanced .= "</a>";
+				$position .= $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
+			$position .= "</a>";
+
+			$row = array();
+			$row['title'] = __('Position (Long, Lat)');
+			$row['data'] = $position;
+			$table->data['agent_position'] = $row;
 		}
-		
-		$advanced .= '</td></tr>';
 	}
 	
 	// If the url description is setted
 	if ($agent['url_address'] != '') {
-		$advanced .= '<tr><td class="datos"><b>'.__('Url address').'</b></td>';	
-		$advanced .= '<td class="datos2" colspan="2"><a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a></td></tr>';
+		$row = array();
+		$row['title'] = __('Url address');
+		$row['data'] = '<a href='.$agent["url_address"].'>'.$agent["url_address"].'</a>';
+		$table->data['agent_address'] = $row;
 	}
 	
 	// Timezone Offset
 	if ($agent['timezone_offset'] != 0) {
-		$advanced .= '<tr><td class="datos2"><b>'.__('Timezone Offset'). '</b></td>';
-		$advanced .= '<td class="datos2" colspan="2">'.$agent["timezone_offset"].'</td></tr>';
+		$row = array();
+		$row['title'] = __('Timezone Offset');
+		$row['data'] = $agent["timezone_offset"];
+		$table->data['agent_timezone_offset'] = $row;
 	}
 	
 	// Custom fields
@@ -431,39 +455,39 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	}
 	if ($fields) {
 		foreach ($fields as $field) {
-			$advanced .= '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
 			$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
-			if ($custom_value === false || $custom_value == '') {
-				$custom_value = '<i>-'.__('empty').'-</i>';
+			if (!empty($custom_value)) {
+				$row = array();
+				$row['title'] = $field['name'] . ui_print_help_tip (__('Custom field'), true);
+				$row['data'] = $custom_value;
+				$table->data['custom_field_'.$field['id_field']] = $row;
 			}
-			$advanced .= '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
 		}
 	}
 	
 	//End of table advanced
-	$advanced .= '</table></div><br>';
+	$table_advanced = html_print_table($table, true);
+	$table_advanced .= "<br>";
 	
-	ui_toggle($advanced, __('Advanced information'));
+	ui_toggle($table_advanced, __('Advanced information'));
 	
 	// Blank space below title, DONT remove this, this
 	// Breaks the layout when Flash charts are enabled :-o
 	//echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
 			
 	if ($config["agentaccess"]) {
-		$access_graph = '<div style="width: 290px; margin-left: 30px;">';
+		$access_graph = '<div style="margin-left: 10px;">';
 		$access_graph .= graphic_agentaccess($id_agente, 290, 110, 86400, true);
 		$access_graph .= '</div><br>';
 				
 		ui_toggle($access_graph, __('Agent access rate (24h)'));
 	}
 	
-	$events_graph = '<div style="width: 290px; height: 15px; margin-left: 30px; position: static;">';
+	$events_graph = '<div style="margin-left: 10px;">';
 	$events_graph .= graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
-	$events_graph .= '</div><br><br>';
+	$events_graph .= '</div><br>';
 	
 	ui_toggle($events_graph, __('Events (24h)'));
-		
-	echo '<br>';
 	
 	return;
 }

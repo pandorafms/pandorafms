@@ -2022,6 +2022,32 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	
 	$data["server_sanity"] = format_numeric (100 - $data["module_sanity"], 1);
 	
+	
+	$data['alert_fired'] = 0;
+	if ($data["monitor_alerts_fired"] > 0) {
+		$data['alert_fired'] = 1;
+	}
+	
+	
+	if ($data["monitor_critical"] > 0) {
+		$data['status'] = 'critical';
+	}
+	elseif ($data["monitor_warning"] > 0) {
+		$data['status'] = 'warning';
+	}
+	elseif (($data["monitor_unknown"] > 0) ||  ($data["agents_unknown"] > 0)) {
+		$data['status'] = 'unknown';
+	}
+	elseif ($data["monitor_ok"] > 0)  {
+		$data['status'] = 'ok';
+	}
+	elseif ($data["agent_not_init"] > 0)  {
+		$data['status'] = 'not_init';
+	}
+	else {
+		$data['status'] = 'none';
+	}
+	
 	return ($data);
 }
 

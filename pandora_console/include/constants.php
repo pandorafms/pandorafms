@@ -19,25 +19,25 @@
  */
 
 /* Enterprise hook constant */
-define ('ENTERPRISE_NOT_HOOK', -1);
+define ('ENTERPRISE_NOT_HOOK',	-1);
 
 
 /**/
-define('DATE_FORMAT', 'Y/m/d');
-define('DATE_FORMAT_JS', 'yy/mm/d');
-define('TIME_FORMAT', 'H:i:s');
-define('TIME_FORMAT_JS', 'HH:mm:ss');
+define('DATE_FORMAT',		'Y/m/d');
+define('DATE_FORMAT_JS',	'yy/mm/d');
+define('TIME_FORMAT',		'H:i:s');
+define('TIME_FORMAT_JS',	'HH:mm:ss');
 
 /* Events state constants */
-define ('EVENT_NEW', 0);
-define ('EVENT_VALIDATE', 1);
-define ('EVENT_PROCESS', 2);
+define ('EVENT_NEW',		0);
+define ('EVENT_VALIDATE',	1);
+define ('EVENT_PROCESS',	2);
 
 
 
 /* Agents disabled status */
-define ('AGENT_ENABLED',0);
-define ('AGENT_DISABLED',1);
+define ('AGENT_ENABLED',	0);
+define ('AGENT_DISABLED',	1);
 
 
 
@@ -97,10 +97,10 @@ define('SECONDS_3YEARS',			93312000);
 
 
 /* Separator constats */
-define('SEPARATOR_COLUMN', ';');
-define('SEPARATOR_ROW', chr(10)); //chr(10) = '\n'
-define('SEPARATOR_COLUMN_CSV', "#");
-define('SEPARATOR_ROW_CSV', "@\n");
+define('SEPARATOR_COLUMN',		';');
+define('SEPARATOR_ROW',			chr(10)); //chr(10) = '\n'
+define('SEPARATOR_COLUMN_CSV',	"#");
+define('SEPARATOR_ROW_CSV',		"@\n");
 
 
 
@@ -108,72 +108,72 @@ define('SEPARATOR_ROW_CSV', "@\n");
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
-		define ('BACKUP_DIR', 'attachment/backups');
-		define ('BACKUP_FULLPATH', $config['homedir'] . '/' . BACKUP_DIR);
+		define ('BACKUP_DIR',		'attachment/backups');
+		define ('BACKUP_FULLPATH',	$config['homedir'] . '/' . BACKUP_DIR);
 		break;
 	case "oracle":
-		define ('BACKUP_DIR', 'DATA_PUMP_DIR');
-		define ('BACKUP_FULLPATH', 'DATA_PUMP_DIR');
+		define ('BACKUP_DIR',		'DATA_PUMP_DIR');
+		define ('BACKUP_FULLPATH',	'DATA_PUMP_DIR');
 		break;
 }
 
 
 
 /* Color constants */
-define('COL_CRITICAL','#f85858');
-define('COL_WARNING','#ffea59');
-define('COL_WARNING_DARK','#FFB900');
-define('COL_NORMAL','#6EB432');
-define('COL_NOTINIT','#3BA0FF');
-define('COL_UNKNOWN','#AAAAAA');
-define('COL_ALERTFIRED','#FF8800');
-define('COL_MINOR','#F099A2');
-define('COL_MAJOR','#C97A4A');
-define('COL_INFORMATIONAL','#E4E4E4');
-define('COL_MAINTENANCE','#3BA0FF');
+define('COL_CRITICAL',		'#f85858');
+define('COL_WARNING',		'#ffea59');
+define('COL_WARNING_DARK',	'#FFB900');
+define('COL_NORMAL',		'#6EB432');
+define('COL_NOTINIT',		'#3BA0FF');
+define('COL_UNKNOWN',		'#AAAAAA');
+define('COL_ALERTFIRED',	'#FF8800');
+define('COL_MINOR',			'#F099A2');
+define('COL_MAJOR',			'#C97A4A');
+define('COL_INFORMATIONAL',	'#E4E4E4');
+define('COL_MAINTENANCE',	'#3BA0FF');
 
-define('COL_GRAPH1', '#C397F2');
-define('COL_GRAPH2', '#FFE66C');
-define('COL_GRAPH3', '#92CCA3');
-define('COL_GRAPH4', '#EA6D5B');
-define('COL_GRAPH5', '#6BD8DD');
-define('COL_GRAPH6', '#F49B31');
-define('COL_GRAPH7', '#999999');
-define('COL_GRAPH8', '#F2B8C1');
-define('COL_GRAPH9', '#C4E8C1');
-define('COL_GRAPH10', '#C1DBE5');
-define('COL_GRAPH11', '#C9C1e0');
-define('COL_GRAPH12', '#F45B95');
-define('COL_GRAPH13', '#E83128');
+define('COL_GRAPH1',	'#C397F2');
+define('COL_GRAPH2',	'#FFE66C');
+define('COL_GRAPH3',	'#92CCA3');
+define('COL_GRAPH4',	'#EA6D5B');
+define('COL_GRAPH5',	'#6BD8DD');
+define('COL_GRAPH6',	'#F49B31');
+define('COL_GRAPH7',	'#999999');
+define('COL_GRAPH8',	'#F2B8C1');
+define('COL_GRAPH9',	'#C4E8C1');
+define('COL_GRAPH10',	'#C1DBE5');
+define('COL_GRAPH11',	'#C9C1e0');
+define('COL_GRAPH12',	'#F45B95');
+define('COL_GRAPH13',	'#E83128');
 
 
 /* The styles */
 /* Size of text in characters for truncate */
-define('GENERIC_SIZE_TEXT', 25);
+define('GENERIC_SIZE_TEXT',	25);
 
 
 
 /* Agent module status */
-define('AGENT_MODULE_STATUS_CRITICAL_BAD', 1);
-define('AGENT_MODULE_STATUS_CRITICAL_ALERT', 100);
-define('AGENT_MODULE_STATUS_NO_DATA', 4);
-define('AGENT_MODULE_STATUS_NORMAL', 0);
-define('AGENT_MODULE_STATUS_NORMAL_ALERT', 300);
-define('AGENT_MODULE_STATUS_NOT_NORMAL', 6);
-define('AGENT_MODULE_STATUS_WARNING', 2);
-define('AGENT_MODULE_STATUS_WARNING_ALERT', 200);
-define('AGENT_MODULE_STATUS_UNKNOWN', 3);
-define('AGENT_MODULE_STATUS_NOT_INIT', 5);
+define('AGENT_MODULE_STATUS_CRITICAL_BAD',		1);
+define('AGENT_MODULE_STATUS_CRITICAL_ALERT',	100);
+define('AGENT_MODULE_STATUS_NO_DATA',			4);
+define('AGENT_MODULE_STATUS_NORMAL',			0);
+define('AGENT_MODULE_STATUS_NORMAL_ALERT',		300);
+define('AGENT_MODULE_STATUS_NOT_NORMAL',		6);
+define('AGENT_MODULE_STATUS_WARNING',			2);
+define('AGENT_MODULE_STATUS_WARNING_ALERT',		200);
+define('AGENT_MODULE_STATUS_UNKNOWN',			3);
+define('AGENT_MODULE_STATUS_NOT_INIT',			5);
 
 /* Agent status */
-define('AGENT_STATUS_ALL', -1);
-define('AGENT_STATUS_CRITICAL', 1);
-define('AGENT_STATUS_NORMAL', 0);
-define('AGENT_STATUS_NOT_INIT', 5);
-define('AGENT_STATUS_NOT_NORMAL', 6);
-define('AGENT_STATUS_UNKNOWN', 3);
-define('AGENT_STATUS_ALERT_FIRED', 4);
-define('AGENT_STATUS_WARNING', 2);
+define('AGENT_STATUS_ALL',			-1);
+define('AGENT_STATUS_CRITICAL',		1);
+define('AGENT_STATUS_NORMAL',		0);
+define('AGENT_STATUS_NOT_INIT',		5);
+define('AGENT_STATUS_NOT_NORMAL',	6);
+define('AGENT_STATUS_UNKNOWN',		3);
+define('AGENT_STATUS_ALERT_FIRED',	4);
+define('AGENT_STATUS_WARNING',		2);
 
 
 /* Visual maps contants */
@@ -258,6 +258,31 @@ define ('STATUS_ALERT_DISABLED', 'alert_disabled.png');
 //For servers
 define ('STATUS_SERVER_OK', 'server_ok.png');
 define ('STATUS_SERVER_DOWN', 'server_down.png');
+
+
+/* Status images (ball) */
+//For modules
+define ('STATUS_MODULE_OK_BALL', 'module_ok_ball.png');
+define ('STATUS_MODULE_CRITICAL_BALL', 'module_critical_ball.png');
+define ('STATUS_MODULE_WARNING_BALL', 'module_warning_ball.png');
+define ('STATUS_MODULE_NO_DATA_BALL', 'module_no_data_ball.png');
+define ('STATUS_MODULE_UNKNOWN_BALL', 'module_unknown_ball.png');
+//For agents
+define ('STATUS_AGENT_CRITICAL_BALL', 'agent_critical_ball.png');
+define ('STATUS_AGENT_WARNING_BALL', 'agent_warning_ball.png');
+define ('STATUS_AGENT_DOWN_BALL', 'agent_down_ball.png');
+define ('STATUS_AGENT_UNKNOWN_BALL', 'agent_unknown_ball.png');
+define ('STATUS_AGENT_OK_BALL', 'agent_ok_ball.png');
+define ('STATUS_AGENT_NO_DATA_BALL', 'agent_no_data_ball.png');
+define ('STATUS_AGENT_NO_MONITORS_BALL', 'agent_no_monitors_ball.png');
+define ('STATUS_AGENT_NOT_INIT_BALL', 'agent_notinit_ball.png');
+//For alerts
+define ('STATUS_ALERT_FIRED_BALL', 'alert_fired_ball.png');
+define ('STATUS_ALERT_NOT_FIRED_BALL', 'alert_not_fired_ball.png');
+define ('STATUS_ALERT_DISABLED_BALL', 'alert_disabled_ball.png');
+//For servers
+define ('STATUS_SERVER_OK_BALL', 'server_ok_ball.png');
+define ('STATUS_SERVER_DOWN_BALL', 'server_down_ball.png');
 
 
 

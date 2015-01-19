@@ -628,7 +628,7 @@ class Tree {
 				return $children;
 			}
 
-			function __getProcessedItem($itemKey, &$items) {
+			function __getProcessedItem($itemKey, &$items, $server_id = false) {
 				if (!isset($items[$itemKey])) {
 					return false;
 				}
@@ -641,6 +641,10 @@ class Tree {
 				$processed_item['id'] = $item['_id_'];
 				$processed_item['name'] = $item['_name_'];
 				$processed_item['searchChildren'] = 1;
+
+				if (defined ('METACONSOLE') && $server_id) {
+					$processed_item['server_id'] = $server_id;
+				}
 
 				if (isset($item['_is_tag_']) && $item['_is_tag_']) {
 					$processed_item['type'] = 'tag';
@@ -715,7 +719,7 @@ class Tree {
 						if (empty($item['_parent_id_']))
 							$processed_items[] = __getProcessedItem($key, $items);
 					}
-					$item_list[$server['id']] = $processed_items;
+					$item_list += $processed_items;
 
 					metaconsole_restore_db();
 				}

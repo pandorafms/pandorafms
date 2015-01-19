@@ -626,11 +626,11 @@ class Tree {
 			require_once($config['homedir']."/include/functions_groups.php");
 
 			// Return all the children groups
-			function __searchChildren(&$groups, $id) {
+			function __searchChildren(&$groups, $id, $server_id = false) {
 				$children = array();
 				foreach ($groups as $key => $group) {
 					if (isset($group['_parent_id_']) && $group['_parent_id_'] == $id) {
-						$children[] = __getProcessedItem($key, $groups);
+						$children[] = __getProcessedItem($key, $groups, $server_id);
 					}
 				}
 				return $children;
@@ -679,7 +679,7 @@ class Tree {
 				if (isset($item['_monitors_alerts_fired_']))
 					$counters['alerts'] = $item['_monitors_alerts_fired_'];
 
-				$children = __searchChildren($items, $item['_id_']);
+				$children = __searchChildren($items, $item['_id_'], $server_id);
 				if (!empty($children)) {
 					$processed_item['children'] = $children;
 

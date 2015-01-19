@@ -1506,7 +1506,7 @@ class Tree {
 						if (metaconsole_connect($server) != NOERR)
 							continue;
 
-						$agents += $this->tree = $this->getAgents($tag_id, $this->type);
+						$agents += $this->tree = $this->getAgents($tag_id, $this->type, $server_id);
 
 						metaconsole_restore_db();
 					}

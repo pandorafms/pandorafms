@@ -2019,7 +2019,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				}
 			}
 			
-			if ($mode == 'group' || $mode == 'tree')  {
+			if ($mode == 'group')  {
 				if (! defined ('METACONSOLE')) {
 					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
 						unset($list[$i]);
@@ -2123,7 +2123,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				}
 			}
 			
-			if ($mode == 'group' || $mode == 'tree') {
+			if ($mode == 'group') {
 				if (! defined ('METACONSOLE')) {
 					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
 						unset($list[$i]);
@@ -2180,7 +2180,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				}
 			}
 			
-			if ($mode == 'group' || $mode == 'tree') {
+			if ($mode == 'group') {
 				if (! defined ('METACONSOLE')) {
 					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
 						unset($list[$i]);

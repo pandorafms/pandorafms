@@ -621,6 +621,10 @@ class Tree {
 		else
 			$parent = $this->root;
 
+		function cmpSortNames($a, $b) {
+			return strcmp($a["name"], $b["name"]);
+		}
+
 		// Get all groups
 		if (empty($parent)) {
 			require_once($config['homedir']."/include/functions_groups.php");
@@ -801,13 +805,13 @@ class Tree {
 						// Add the resulting item
 						$mergedItems[] = $resultItem;
 					}
+					
+					usort($mergedItems, "cmpSortNames");
 
 					return $mergedItems;
 				}
 
 				$items = __getMergedItems($item_list);
-
-				html_debug_print($items, true);
 			}
 			
 			if (empty($items))
@@ -821,10 +825,6 @@ class Tree {
 				$this->tree = $this->getAgents($parent, $this->type);
 			}
 			else {
-				function cmpSortAgentNames($a, $b) {
-				    return strcmp($a["name"], $b["name"]);
-				}
-				
 				$agents = array();
 				foreach ($parent as $server_id => $group_id) {
 					$server = metaconsole_get_servers($server_id);
@@ -839,7 +839,7 @@ class Tree {
 					}
 				}
 				if (!empty($agents))
-					usort($agents, "cmpSortAgentNames");
+					usort($agents, "cmpSortNames");
 
 				$this->tree = $agents;
 			}

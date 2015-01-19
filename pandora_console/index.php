@@ -342,57 +342,65 @@ if (! isset ($config['id_user'])) {
 			
 			echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
 			
-			unset ($_GET["sec2"]);
-			$_GET["sec"] = "general/logon_ok";
-			$home_page ='';
-			if (isset($nick)) {
-				$user_info = users_get_user_by_id($nick);
-				$home_page = io_safe_output($user_info['section']);
-				$home_url = $user_info['data_section'];
-				if ($home_page != '') {
-					switch($home_page) {
-						case 'Event list':
-							$_GET["sec"] = "eventos";
-							$_GET["sec2"] = "operation/events/events";
-							break;
-						case 'Group view':
-							$_GET["sec"] = "estado";
-							$_GET["sec2"] = "operation/agentes/group_view";
-							break;
-						case 'Alert detail':
-							$_GET["sec"] = "estado";
-							$_GET["sec2"] = "operation/agentes/alerts_status";
-							break;
-						case 'Tactical view':
-							$_GET["sec"] = "estado";
-							$_GET["sec2"] = "operation/agentes/tactical";
-							break;
-						case 'Default':
-							$_GET["sec"] = "general/logon_ok";
-							break;
-						case 'Dashboard':
-							$_GET["sec"] = "dashboard";
-							$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
-							$id_dashboard_select =
-								db_get_value('id', 'tdashboard', 'name', $home_url);
-							$_GET['id_dashboard_select'] = $id_dashboard_select;
-							break;
-						case 'Visual console':
-							$_GET["sec"] = "visualc";
-							$_GET["sec2"] = "operation/visual_console/index";
-							break;
-						case 'Other':
-							$home_url = io_safe_output($home_url);
-							parse_str ($home_url, $res);
-							$_GET["sec"] = $res["sec"];
-							$_GET["sec2"] = $res["sec2"];
-							break;
+			if (!isset($_GET["sec2"]) && !isset($_GET["sec"])) {
+				// Avoid the show homepage when the user go to
+				// a specific section of pandora
+				// for example when timeout the sesion
+				
+				unset ($_GET["sec2"]);
+				$_GET["sec"] = "general/logon_ok";
+				$home_page ='';
+				if (isset($nick)) {
+					$user_info = users_get_user_by_id($nick);
+					$home_page = io_safe_output($user_info['section']);
+					$home_url = $user_info['data_section'];
+					if ($home_page != '') {
+						switch ($home_page) {
+							case 'Event list':
+								$_GET["sec"] = "eventos";
+								$_GET["sec2"] = "operation/events/events";
+								break;
+							case 'Group view':
+								$_GET["sec"] = "estado";
+								$_GET["sec2"] = "operation/agentes/group_view";
+								break;
+							case 'Alert detail':
+								$_GET["sec"] = "estado";
+								$_GET["sec2"] = "operation/agentes/alerts_status";
+								break;
+							case 'Tactical view':
+								$_GET["sec"] = "estado";
+								$_GET["sec2"] = "operation/agentes/tactical";
+								break;
+							case 'Default':
+								$_GET["sec"] = "general/logon_ok";
+								break;
+							case 'Dashboard':
+								$_GET["sec"] = "dashboard";
+								$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
+								$id_dashboard_select =
+									db_get_value('id', 'tdashboard', 'name', $home_url);
+								$_GET['id_dashboard_select'] = $id_dashboard_select;
+								break;
+							case 'Visual console':
+								$_GET["sec"] = "visualc";
+								$_GET["sec2"] = "operation/visual_console/index";
+								break;
+							case 'Other':
+								$home_url = io_safe_output($home_url);
+								parse_str ($home_url, $res);
+								$_GET["sec"] = $res["sec"];
+								$_GET["sec2"] = $res["sec2"];
+								break;
+						}
+					}
+					else {
+						$_GET["sec"] = "general/logon_ok";
 					}
 				}
-				else {
-					$_GET["sec"] = "general/logon_ok";
-				}
+				
 			}
+			
 			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
@@ -491,8 +499,8 @@ if ($process_login) {
 	
 	require_once("include/functions_update_manager.php");
 	enterprise_include_once("include/functions_update_manager.php");
-
-	if ($config["autoupdate"] == 1) {	
+	
+	if ($config["autoupdate"] == 1) {
 		if (enterprise_installed()) {
 			$result = update_manager_check_online_enterprise_packages_available();
 		}
@@ -630,6 +638,8 @@ else {
 			$home_page = io_safe_output($user_info['section']);
 			$home_url = $user_info['data_section'];
 		}
+		
+		
 		
 		if ($home_page != '') {
 			switch ($home_page) {

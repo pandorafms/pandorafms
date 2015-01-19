@@ -492,7 +492,7 @@ TreeController = {
 									},
 									success: function(data, textStatus, xhr) {
 										if (data.success) {
-											var $group = $node.find("ul.tree-group");
+											var $group = $node.children("ul.tree-group");
 
 											if ((typeof data.tree != 'undefined' && data.tree.length > 0) || $group.length > 0) {
 												$node.addClass("leaf-open");

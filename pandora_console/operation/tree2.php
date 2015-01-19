@@ -175,7 +175,7 @@ echo "</div>";
 		
 		$.ajax({
 			type: "POST",
-			url: "<?php echo $config['homeurl']; ?>ajax.php",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 			data: parameters,
 			success: function(data) {
 				if (data.success) {
@@ -186,8 +186,8 @@ echo "</div>";
 						detailRecipient: $("div#tree-controller-detail-recipient"),
 						page: page,
 						tree: data.tree,
-						baseURL: "<?php echo $config['homeurl'].'/'; ?>",
-						ajaxURL: "<?php echo $config['homeurl'].'/'; ?>ajax.php",
+						baseURL: "<?php echo ui_get_full_url('', false, false, false); ?>",
+						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 						filter: {
 							search: parameters['filter']['search'],
 							status: parameters['filter']['status']

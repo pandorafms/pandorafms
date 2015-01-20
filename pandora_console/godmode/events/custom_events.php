@@ -92,7 +92,7 @@ if ($fields_selected[0]!='') {
 				$result = __('Alert');
 				break;
 			case 'criticity':
-				$result = __('Criticity');
+				$result = __('Severity');
 				break;
 			case 'user_comment':
 				$result = __('Comment');

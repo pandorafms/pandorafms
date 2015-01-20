@@ -101,8 +101,10 @@ noscript {
 
 .termframe {
   float: left;
-  background-color: #567953;
   padding: 0.2ex;
+  background-color: none repeat scroll 0% 0% #82B92E;
+	border-top-right-radius: 5px;
+	border-top-left-radius: 5px;
 }
 
 .termframe p {

@@ -12,6 +12,7 @@ function parse_alert_command (command, classs) {
 	$('.' + classs).each(function() {
 		// Only render values different from ''
 		if ($(this).val() == '') {
+			nfield++;
 			return;
 		}
 		var field = '_field' + nfield + '_';

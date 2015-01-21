@@ -168,10 +168,7 @@ echo "</div>";
 		parameters['filter'] = {};
 		parameters['type'] = "<?php echo $tab; ?>";
 		parameters['filter']['searchAgent'] = $("input#text-search").val();
-		parameters['filter']['status'] = $("select#status").val();
-		parameters['childrenMethod'] = 'live';
-		parameters['countModuleStatusMethod'] = 'live';
-		parameters['countAgentStatusMethod'] = 'live';
+		parameters['filter']['statusAgent'] = $("select#status").val();
 		
 		$.ajax({
 			type: "POST",

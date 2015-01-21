@@ -31,27 +31,17 @@ if (is_ajax ()) {
 	
 	if ($getChildren) {
 		$type = get_parameter('type', 'group');
+		$rootType = get_parameter('rootType', '');
+		$id = get_parameter('id', -1);
+		$rootID = get_parameter('rootID', -1);
 		$filter = get_parameter('filter', array('searchAgent' => '', 'statusAgent' => AGENT_STATUS_ALL));
-		$id = get_parameter('id', 0);
 		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
-		$countModuleStatusMethod = get_parameter('countModuleStatusMethod', 'on_demand');
-		$countAgentStatusMethod = get_parameter('countAgentStatusMethod', 'live');
 		
 		if (class_exists('TreeEnterprise')) {
-			$tree = new TreeEnterprise($type,
-					$id,
-					$childrenMethod,
-					$countModuleStatusMethod,
-					$countAgentStatusMethod
-				);
+			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $childrenMethod);
 		}
 		else {
-			$tree = new Tree($type,
-					$id,
-					$childrenMethod,
-					$countModuleStatusMethod,
-					$countAgentStatusMethod
-				);
+			$tree = new Tree($type, $rootType, $id, $rootID, $childrenMethod);
 		}
 		
 		$tree->setFilter(array(

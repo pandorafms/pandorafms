@@ -193,6 +193,7 @@ ui_toggle($html_toggle,
 		parameters["sort"] = sort_rows;
 		parameters["status_filter_monitor"] = filter_status;
 		parameters["status_text_monitor"] = filter_text;
+		parameters["status_module_group"] = filter_group;
 		parameters["page"] = "include/ajax/module";
 		
 		
@@ -218,6 +219,7 @@ ui_toggle($html_toggle,
 	
 	function filter_modules() {
 		filter_status = $("#status_filter_monitor").val();
+		filter_group = $("#status_module_group").val();
 		filter_text = $("input[name='status_text_monitor']").val();
 		
 		var parameters = {};
@@ -228,6 +230,7 @@ ui_toggle($html_toggle,
 		parameters["sort"] = sort_rows;
 		parameters["status_filter_monitor"] = filter_status;
 		parameters["status_text_monitor"] = filter_text;
+		parameters["status_module_group"] = filter_group;
 		parameters["filter_monitors"] = 1;
 		parameters["monitors_change_filter"] = 1;
 		parameters["page"] = "include/ajax/module";
@@ -255,6 +258,7 @@ ui_toggle($html_toggle,
 	
 	function reset_filter_modules() {
 		$("#status_filter_monitor").val(-1);
+		$("#status_module_group").val(-1);
 		$("input[name='status_text_monitor']").val("");
 		
 		filter_modules();
@@ -270,6 +274,7 @@ ui_toggle($html_toggle,
 		parameters["sort"] = sort_rows;
 		parameters["status_filter_monitor"] = filter_status;
 		parameters["status_text_monitor"] = filter_text;
+		parameters["status_module_group"] = filter_group;
 		parameters["filter_monitors"] = 0;
 		parameters["monitors_change_filter"] = 0;
 		parameters["page"] = "include/ajax/module";
@@ -408,7 +413,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 </script>
 <?php
 function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
-	$status_text_monitor = '') {
+	$status_text_monitor = '', $status_module_group=-1) {
 	
 	$form_text = '';
 	
@@ -431,14 +436,24 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	$table->data[0][2] = __('Free text for search (*):');
 	
 	$table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
-	
-	$table->data[0][4] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
-	$table->data[0][4] .= '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd"', true);
+	$table->data[0][4] = __('Module group');
+	$rows = db_get_all_rows_sql("SELECT *
+		FROM tmodule_group ORDER BY name");
+	$rows = io_safe_output($rows);
+	$rows_select = array();
+	if (!empty($rows)){
+		$rows_select[-1] = __('All');
+		foreach ($rows as $module_group)
+			$rows_select[$module_group['id_mg']] = __($module_group['name']);
+	}
+	$table->data[0][5] = html_print_select ($rows_select,'status_module_group', $status_module_group, '', '',0, true);
+	$table->data[0][6] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
+	$table->data[0][7] .= '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd"', true);
 	$form_text .= html_print_table($table, true);
 	
 	$filter_hidden = false;
 	
-	if ($status_filter_monitor == -1 && $status_text_monitor == '') {
+	if ($status_filter_monitor == -1 && $status_text_monitor == '' && $status_module_group == -1 ) {
 		$filter_hidden = true;
 	}
 	

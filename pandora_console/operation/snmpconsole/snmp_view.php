@@ -580,6 +580,13 @@ if ($traps !== false) {
 				</tr>';
 		}
 		
+		if ($trap["text"] != "") {
+			$string .= '<tr>
+					<td align="left" valign="top">' . '<b>' . __('Text:') . '</td>
+					<td align="left">' . $trap['text'] . '</td>
+				</tr>';
+		}
+		
 		if ($trap["type"] != "") {
 			$trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 			

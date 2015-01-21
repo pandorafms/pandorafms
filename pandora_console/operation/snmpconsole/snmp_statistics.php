@@ -162,7 +162,7 @@ unset($table_source);
 // By OID
 $table_oid = new StdClass();
 $table_oid->width = '100%';
-$table_oid->head[] = __("Traps received by OID") . " - " . sprintf(__('Top %d'), 25);
+$table_oid->head[] = __("Traps received by Enterprise String") . " - " . sprintf(__('Top %d'), 25);
 $table_oid->head_colspan[] = 2;
 $table_oid->headstyle[] = "background-color: #82b92e";
 $table_oid->size = array();
@@ -175,7 +175,7 @@ $table_oid_row = array();
 $table_oid_data = new StdClass();
 $table_oid_data->width = '100%';
 $table_oid_data->head = array();
-$table_oid_data->head['oid'] = __('Trap OID');
+$table_oid_data->head['oid'] = __('Trap Enterprise String');
 $table_oid_data->head['num'] = __('Number');
 $table_oid_data->data = array();
 

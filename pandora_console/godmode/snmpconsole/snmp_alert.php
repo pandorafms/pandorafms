@@ -515,7 +515,7 @@ if ($create_alert || $update_alert) {
 	//echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
 	
 	// OID
-	echo '<tr id="tr-oid"><td class="datos2">'.__('OID').'</td><td class="datos2">';
+	echo '<tr id="tr-oid"><td class="datos2">'.__('Enterprise String').'</td><td class="datos2">';
 	html_print_input_text ("oid", $oid, '', 50, 255);
 	echo '</td></tr>';
 	
@@ -548,18 +548,20 @@ if ($create_alert || $update_alert) {
 	html_print_input_text ("single_value", $single_value, '', 20);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #1
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
-	echo ui_print_help_icon ("field_match_snmp", true);
-	
-	echo '</td><td class="datos">';
+	//  Variable bindings/Data #1
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data') .
+			ui_print_help_icon ("field_match_snmp", true) .
+		'</td>' .
+		'<td class="datos">';
 	echo '#';
 	html_print_input_text ("order_1", $order_1, '', 4);
 	html_print_input_text ("custom_oid_data_1", $custom_oid_data_1, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #2
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	//  Variable bindings/Data #2
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Variable bindings/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
@@ -568,8 +570,8 @@ if ($create_alert || $update_alert) {
 	html_print_input_text ("custom_oid_data_2", $custom_oid_data_2, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #3
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	//  Variable bindings/Data #3
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Variable bindings/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
@@ -578,8 +580,10 @@ if ($create_alert || $update_alert) {
 	html_print_input_text ("custom_oid_data_3", $custom_oid_data_3, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #4
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	//  Variable bindings/Data #4
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
@@ -588,8 +592,10 @@ if ($create_alert || $update_alert) {
 	html_print_input_text ("custom_oid_data_4", $custom_oid_data_4, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #5
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	//  Variable bindings/Data #5
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
@@ -598,8 +604,10 @@ if ($create_alert || $update_alert) {
 	html_print_input_text ("custom_oid_data_5", $custom_oid_data_5, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #6
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #6
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data');
 	//echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
@@ -608,112 +616,128 @@ if ($create_alert || $update_alert) {
 	html_print_input_text ("custom_oid_data_6", $custom_oid_data_6, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #7
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #7
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_7", $order_7, '', 4);
 	html_print_input_text ("custom_oid_data_7", $custom_oid_data_7, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #8
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #8
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_8", $order_8, '', 4);
 	html_print_input_text ("custom_oid_data_8", $custom_oid_data_8, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #9
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #9
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_9", $order_9, '', 4);
 	html_print_input_text ("custom_oid_data_9", $custom_oid_data_9, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #10
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #10
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_10", $order_10, '', 4);
 	html_print_input_text ("custom_oid_data_10", $custom_oid_data_10, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #11
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #11
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' .
+			__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_11", $order_11, '', 4);
 	html_print_input_text ("custom_oid_data_11", $custom_oid_data_11, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #12
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #12
+	echo '<tr id="tr-custom_value">' .
+		'<td class="datos"  valign="top">' . __('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_12", $order_12, '', 4);
 	html_print_input_text ("custom_oid_data_12", $custom_oid_data_12, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #13
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #13
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">' .
+		__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_13", $order_13, '', 4);
 	html_print_input_text ("custom_oid_data_13", $custom_oid_data_13, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #14
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #14
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">' .
+		__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_14", $order_14, '', 4);
 	html_print_input_text ("custom_oid_data_14", $custom_oid_data_14, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #15
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #15
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">' .
+		__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_15", $order_15, '', 4);
 	html_print_input_text ("custom_oid_data_15", $custom_oid_data_15, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #16
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #16
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">' .
+		__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_16", $order_16, '', 4);
 	html_print_input_text ("custom_oid_data_16", $custom_oid_data_16, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #17
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	// Variable bindings/Data #17
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">' .
+		__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_17", $order_17, '', 4);
 	html_print_input_text ("custom_oid_data_17", $custom_oid_data_17, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #18
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	//  Variable bindings/Data #18
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_18", $order_18, '', 4);
 	html_print_input_text ("custom_oid_data_18", $custom_oid_data_18, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #19
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	//  Variable bindings/Data #19
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_19", $order_19, '', 4);
 	html_print_input_text ("custom_oid_data_19", $custom_oid_data_19, '', 60);
 	echo '</td></tr>';
 	
-	//  Custom OID/Data #20
-	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom OID/Data');
+	//  Variable bindings/Data #20
+	echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Variable bindings/Data');
 	echo '</td><td class="datos">';
 	echo '#';
 	html_print_input_text ("order_20", $order_20, '', 4);
@@ -842,7 +866,7 @@ else {
 	$table_filter->width = "98%";
 	$table_filter->data = array();
 	$table_filter->data[0][0] = __('Free search') . ui_print_help_tip(
-		__('Search by these fields description, OID, Custom Value, SNMP Agent (IP), Single value, each Custom OIDs/Datas.'), true);
+		__('Search by these fields description, OID, Custom Value, SNMP Agent (IP), Single value, each Variable bindings/Datas.'), true);
 	$table_filter->data[0][1] =
 		html_print_input_text('free_search', $free_search, '', 30, 100, true);
 	$table_filter->data[0][2] = __('Trap type');
@@ -954,10 +978,10 @@ else {
 	$table->size[2] = "90px";
 	$table->align[2] = 'center';
 	
-	$table->head[3] = __('OID');
+	$table->head[3] = __('Enterprise String');
 	$table->align[3] = 'center';
 	
-	$table->head[4] = __('Custom Value/OID');
+	$table->head[4] = __('Custom Value/Enterprise String');
 	$table->align[4] = 'center';
 	
 	$table->head[5] = __('Description');

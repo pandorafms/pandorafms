@@ -49,7 +49,7 @@ foreach ($user_groups as $id=>$name) {
 		$str_user_groups .= $id;
 	}
 	else {
-		$str_user_groups .= ','.$id;
+		$str_user_groups .= ',' . $id;
 	}
 	$i++;
 }
@@ -320,18 +320,22 @@ $table->data[2][3] = '<strong>'.__('Free search').'</strong>' . ui_print_help_ti
 $table->data[2][4] = html_print_input_text ('free_search_string', $free_search_string, '', 40, 0, true);
 
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other)
-$table->data[4][1] = '<strong>'.__('Type').'</strong>' . ui_print_help_tip(__('Search by trap type'), true);
+$table->data[4][1] = '<strong>'.__('Trap type').'</strong>' . ui_print_help_tip(__('Search by trap type'), true);
 $trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 $table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
 
-$table->data[3][3] = '<strong>'.__('Group by OID/IP').'</strong>';
+$table->data[3][3] = '<strong>'.__('Group by Enterprise String/IP').'</strong>';
 $table->data[3][4] = __('Yes') . '&nbsp;'.
 	html_print_radio_button ('group_by', 1, '', $group_by, true) .
 	'&nbsp;&nbsp;';
 $table->data[3][4] .= __('No') . '&nbsp;' .
 	html_print_radio_button ('group_by', 0, '', $group_by, true);
 
-$filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.((int)get_parameter('refr', 0)).'&pure='.$config["pure"].'&tab='.$tab.'">';
+$filter = '<form method="POST" action="index.php?' .
+	'sec=snmpconsole&' .
+	'sec2=operation/snmpconsole/snmp_view&' .
+	'refr=' . ((int)get_parameter('refr', 0)) . '&' .
+	'pure=' . $config["pure"] . '">';
 $filter .= html_print_table($table, true);
 $filter .= '<div style="width: ' . $table->width . '; text-align: right;">';
 $filter .= html_print_submit_button(__('Update'), 'search', false, 'class="sub upd"', true);
@@ -347,7 +351,8 @@ $trapcount = (int) db_get_value_sql($sql_count);
 
 // No traps 
 if (empty ($traps)) {
-	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
+	echo '<div class="nf">' .
+		__('There are no SNMP traps in database') . '</div>';
 	return;
 }
 
@@ -368,7 +373,9 @@ $url_snmp = "index.php?" .
 	"group_by=" . $group_by . "&" .
 	"free_search_string=" . $free_search_string;
 
-$urlPagination = $url_snmp . "&pagination=" . $pagination . "&offset=" . $offset;
+$urlPagination = $url_snmp . "&" .
+	"pagination=" . $pagination . "&" .
+	"offset=" . $offset;
 
 ui_pagination ($trapcount, $urlPagination, $offset, $pagination);
 
@@ -391,7 +398,7 @@ $table->head[1] = __('SNMP Agent');
 $table->align[1] = "center";
 $table->size[1] = '15%';
 
-$table->head[2] = __('OID');
+$table->head[2] = __('Enterprise String');
 $table->align[2] = "center";
 $table->size[2] = '18%';
 
@@ -401,7 +408,7 @@ if ($group_by) {
 	$table->size[3] = '5%';
 }
 
-$table->head[4] = __('Value');
+$table->head[4] = __('Trap subtype');
 $table->align[4] = "center";
 $table->size[4] = '10%';
 
@@ -421,7 +428,9 @@ $table->head[8] = __('Action');
 $table->align[8] = "center";
 $table->size[8] = '10%';
 
-$table->head[9] = html_print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
+$table->head[9] = html_print_checkbox_extended ("allbox", 1, false,
+	false, "javascript:CheckAll();",
+	'class="chk" title="'.__('All').'"', true);
 $table->align[9] = "center";
 $table->size[9] = '5%';
 
@@ -430,7 +439,7 @@ $table->style[8] = "background: #F3F3F3; color: #111 !important;";
 // Skip offset records
 $idx = 0;
 if ($traps !== false) {
-
+	
 	foreach ($traps as $trap) {
 		$data = array ();
 		if (empty($trap["description"])){
@@ -532,10 +541,10 @@ if ($traps !== false) {
 				$data[8] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
 			}
 		}
-
+		
 		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . html_print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
-                $data[8] .= enterprise_hook ('editor_link', array ($trap));
-
+		$data[8] .= enterprise_hook ('editor_link', array ($trap));
+		
 		
 		$data[9] = html_print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
 		
@@ -544,7 +553,8 @@ if ($traps !== false) {
 		//Hiden file for description
 		$string = '<table style="border:solid 1px #D3D3D3;" width="90%" class="toggle">
 			<tr>
-				<td align="left" valign="top" width="15%" ><b>' . __('Custom data:') . '</b></td>
+				<td align="left" valign="top" width="15%">' .
+					'<b>' . __('Variable bindings:') . '</b></td>
 				<td align="left" >';
 		
 		if ($group_by) {
@@ -558,7 +568,8 @@ if ($traps !== false) {
 			"free_search_string=" . $free_search_string;
 			
 			$string .= '<a href='.$new_url.'>'.__('See more details').'</a>';
-		} else {	
+		}
+		else {
 			// Print binding vars separately
 			$binding_vars = explode ("\t", $trap['oid_custom']);
 			foreach ($binding_vars as $var) {
@@ -569,7 +580,7 @@ if ($traps !== false) {
 		$string .= '</td>
 			</tr>
 			<tr>
-				<td align="left" valign="top">' . '<b>' . __('OID:') . '</td>
+				<td align="left" valign="top">' . '<b>' . __('Enterprise String:') . '</td>
 				<td align="left"> ' . $trap['oid'] . '</td>
 			</tr>';
 		
@@ -613,7 +624,10 @@ if ($traps !== false) {
 					$desc_trap_type = __('Other');
 					break;
 			}
-			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Type:') . '</td><td align="left">' . $desc_trap_type . '</td></tr>';
+			$string .= '<tr><td align="left" valign="top">' .
+				'<b>' . __('Trap type:') . '</b>' .
+				'</td>' .
+				'<td align="left">' . $desc_trap_type . '</td></tr>';
 		}
 		
 		if ($group_by) {
@@ -650,7 +664,7 @@ if ($traps !== false) {
 					<td align="left" valign="top">' . '<b>' . __('Last trap:') . '</td>
 					<td align="left">' . $last_trap . '</td>
 				</tr>';
-
+		
 		}
 		$string .=  '</table>';
 		

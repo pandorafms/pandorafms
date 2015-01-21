@@ -425,7 +425,7 @@ function tags_insert_module_tag ($id_agent_module, $tags) {
 	
 	$values = array();
 	
-	if($tags == false) {
+	if ($tags == false) {
 		$tags = array();
 	}
 	
@@ -440,6 +440,8 @@ function tags_insert_module_tag ($id_agent_module, $tags) {
 		if ($result_tag === false)
 			$errn++;
 	}
+	
+	return $errn;
 }
 
 /**

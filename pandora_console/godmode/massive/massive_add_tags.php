@@ -46,15 +46,15 @@ function process_manage_add ($id_agents, $modules, $id_tags) {
 	
 	$modules_id = array();
 	
-	foreach($modules as $module) {
-		foreach($id_agents as $id_agent) {
+	foreach ($modules as $module) {
+		foreach ($id_agents as $id_agent) {
 			 $module_id = modules_get_agentmodule_id($module, $id_agent);
 			 $modules_id[] = $module_id['id_agente_modulo'];
 		}
 	}
 	
 	if (count($modules) == 1 && $modules[0] == '0') {
-		foreach($id_agents as $id_agent) {
+		foreach ($id_agents as $id_agent) {
 			$modules_temp = agents_get_modules($id_agent);
 			foreach ($modules_temp as $id_module => $name_module) {
 				$modules_id[] = $id_module;
@@ -65,7 +65,7 @@ function process_manage_add ($id_agents, $modules, $id_tags) {
 	
 	$conttotal = 0;
 	$contsuccess = 0;
-	foreach($modules_id as $id_module) {
+	foreach ($modules_id as $id_module) {
 		$err_count = tags_insert_module_tag($id_module, $id_tags);
 		
 		if ($err_count == 0) {

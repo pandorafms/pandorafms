@@ -403,6 +403,14 @@ function tags_delete_tag ($id_tag) {
 	
 }
 
+function tags_remove_tag($id_tag, $id_module) {
+	$result = (bool)db_process_sql_delete('ttag_module',
+		array('id_tag' => $id_tag, 
+			'id_agente_modulo' => $id_module));
+	
+	return $result;
+}
+
 /**
  * Get tag's total count.  
  *
@@ -656,6 +664,34 @@ function tags_get_tags ($ids) {
 	}
 	
 	return $tags;
+}
+
+function tags_get_agents($id_tag, $id_policy_module = 0) {
+	
+	$agents = db_get_all_rows_sql("
+		SELECT id_agente
+		FROM tagente
+		WHERE id_agente IN (
+			SELECT t1.id_agente
+			FROM tagente_modulo AS t1
+			WHERE t1.id_agente_modulo IN (
+				SELECT t2.id_agente_modulo
+				FROM ttag_module AS t2
+				WHERE id_tag = " . $id_tag . "
+					AND id_policy_module = " . $id_policy_module . "))");
+	
+	if (empty($agents)) {
+		return array();
+	}
+	
+	
+	$temp = array();
+	foreach ($agents as $agent) {
+		$temp[] = $agent['id_agente'];
+	}
+	$agents = $temp;
+	
+	return $agents;
 }
 
 /**

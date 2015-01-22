@@ -1274,348 +1274,226 @@ class Tree {
 	private function getDataGroup() {
 		global $config;
 
-		if (! defined ('METACONSOLE')) {
-			// Groups
-			if ($this->id == -1) {
+		function cmpSortNames($a, $b) {
+			return strcmp($a["name"], $b["name"]);
+		}
 
-				// Return all the children groups
-				function __searchChildrenB(&$groups, $id, $server_id = false) {
-					$children = array();
-					foreach ($groups as $key => $group) {
-						if (isset($group['parent']) && $group['parent'] == $id) {
-							$children_aux = __getProcessedItemB($key, $groups, $server_id);
-							if (!empty($children_aux))
-								$children[] = $children_aux;
+		function __searchChildren(&$groups, $id, $server_id = false) {
+			$children = array();
+			foreach ($groups as $key => $group) {
+				if (isset($group['parent']) && $group['parent'] == $id) {
+					$children_aux = __getProcessedItem($key, $groups, $server_id);
+					if (!empty($children_aux))
+						$children[] = $children_aux;
+				}
+			}
+			return $children;
+		}
+
+		function __getProcessedItem($itemKey, &$items, $server_id = false) {
+			if (!isset($items[$itemKey])) {
+				return false;
+			}
+			else {
+				$item = $items[$itemKey];
+				unset($items[$itemKey]);
+			}
+
+			$processed_item = array();
+			$processed_item['id'] = $item['id'];
+			$processed_item['rootID'] = $item['id'];
+			$processed_item['name'] = $item['name'];
+			$processed_item['agentsNum'] = (int) $item['num_agents'];
+			$processed_item['searchChildren'] = 1;
+
+			if (defined ('METACONSOLE') && $server_id) {
+				$processed_item['server_id'] = $server_id;
+			}
+
+			if (isset($item['_is_tag_']) && $item['_is_tag_']) {
+				$processed_item['type'] = 'tag';
+				$processed_item['rootType'] = 'tag';
+			}
+			else {
+				$processed_item['type'] = 'group';
+				$processed_item['rootType'] = 'group';
+				$processed_item['parentID'] = $item['parent'];
+
+				if (!empty($item['icon']))
+					$processed_item['icon'] = $item['icon'].".png";
+				else
+					$processed_item['icon'] = "without_group.png";
+			}
+
+			// $counters = array();
+			// if (isset($item['_agents_unknown_']))
+			// 	$counters['unknown'] = $item['_agents_unknown_'];
+			// if (isset($item['_agents_critical_']))
+			// 	$counters['critical'] = $item['_agents_critical_'];
+			// if (isset($item['_agents_warning_']))
+			// 	$counters['warning'] = $item['_agents_warning_'];
+			// if (isset($item['_agents_not_init_']))
+			// 	$counters['not_init'] = $item['_agents_not_init_'];
+			// if (isset($item['_agents_ok_']))
+			// 	$counters['ok'] = $item['_agents_ok_'];
+			// if (isset($item['_total_agents_']))
+			// 	$counters['total'] = $item['_total_agents_'];
+			// if (isset($item['_monitors_alerts_fired_']))
+			// 	$counters['alerts'] = $item['_monitors_alerts_fired_'];
+
+			$children = __searchChildren($items, $item['id'], $server_id);
+			if (!empty($children)) {
+				$processed_item['children'] = $children;
+
+				foreach ($children as $key => $child) {
+					if (isset($child['counters'])) {
+						foreach ($child['counters'] as $type => $value) {
+							if (isset($counters[$type]))
+								$counters[$type] += $value;
 						}
 					}
-					return $children;
+					if (isset($child['agentsNum']))
+						$processed_item['agentsNum'] += $child['agentsNum'];
 				}
+			}
 
-				function __getProcessedItemB($itemKey, &$items, $server_id = false) {
-					if (!isset($items[$itemKey])) {
-						return false;
-					}
-					else {
-						$item = $items[$itemKey];
-						unset($items[$itemKey]);
-					}
+			if (!empty($counters))
+				$processed_item['counters'] = $counters;
 
-					$processed_item = array();
-					$processed_item['id'] = $item['id'];
-					$processed_item['rootID'] = $item['id'];
-					$processed_item['name'] = $item['name'];
-					$processed_item['agentsNum'] = $item['num_agents'];
-					$processed_item['searchChildren'] = 1;
+			return $processed_item;
+		}
 
-					if (defined ('METACONSOLE') && $server_id) {
-						$processed_item['server_id'] = $server_id;
-					}
+		function __getMergedItems($items) {
+			// This variable holds the result
+			$mergedItems = array();
 
-					if (isset($item['_is_tag_']) && $item['_is_tag_']) {
-						$processed_item['type'] = 'tag';
-						$processed_item['rootType'] = 'tag';
-					}
-					else {
-						$processed_item['type'] = 'group';
-						$processed_item['rootType'] = 'group';
-						$processed_item['parentID'] = $item['parent'];
+			foreach ($items as $key => $child) {
 
-						if (!empty($item['icon']))
-							$processed_item['icon'] = $item['icon'].".png";
-						else
-							$processed_item['icon'] = "without_group.png";
-					}
+				// Store the item in a temporary element
+				$resultItem = $child;
+				// Remove the item
+				unset($items[$key]);
 
-					// $counters = array();
-					// if (isset($item['_agents_unknown_']))
-					// 	$counters['unknown'] = $item['_agents_unknown_'];
-					// if (isset($item['_agents_critical_']))
-					// 	$counters['critical'] = $item['_agents_critical_'];
-					// if (isset($item['_agents_warning_']))
-					// 	$counters['warning'] = $item['_agents_warning_'];
-					// if (isset($item['_agents_not_init_']))
-					// 	$counters['not_init'] = $item['_agents_not_init_'];
-					// if (isset($item['_agents_ok_']))
-					// 	$counters['ok'] = $item['_agents_ok_'];
-					// if (isset($item['_total_agents_']))
-					// 	$counters['total'] = $item['_total_agents_'];
-					// if (isset($item['_monitors_alerts_fired_']))
-					// 	$counters['alerts'] = $item['_monitors_alerts_fired_'];
+				// The 'id' parameter will be stored as 'server_id' => 'id'
+				// $resultItem['id'] = array();
+				// $resultItem['id'][$child['server_id']] = $child['id'];
+				$resultItem['rootID'] = array();
+				$resultItem['rootID'][$child['server_id']] = $child['rootID'];
 
-					$children = __searchChildrenB($items, $item['id'], $server_id);
-					if (!empty($children)) {
-						$processed_item['children'] = $children;
+				// Initialize counters if any of it don't exist
+				if (!isset($resultItem['counters']))
+					$resultItem['counters'] = array();
+				if (!isset($resultItem['counters']['unknown']))
+					$resultItem['counters']['unknown'] = 0;
+				if (!isset($resultItem['counters']['critical']))
+					$resultItem['counters']['critical'] = 0;
+				if (!isset($resultItem['counters']['warning']))
+					$resultItem['counters']['warning'] = 0;
+				if (!isset($resultItem['counters']['not_init']))
+					$resultItem['counters']['not_init'] = 0;
+				if (!isset($resultItem['counters']['ok']))
+					$resultItem['counters']['ok'] = 0;
+				if (!isset($resultItem['counters']['total']))
+					$resultItem['counters']['total'] = 0;
+				if (!isset($resultItem['counters']['alerts']))
+					$resultItem['counters']['alerts'] = 0;
 
-						foreach ($children as $key => $child) {
-							if (isset($child['counters'])) {
-								foreach ($child['counters'] as $type => $value) {
-									if (isset($counters[$type]))
-										$counters[$type] += $value;
-								}
+				// Add the children
+				if (!isset($resultItem['children']))
+					$resultItem['children'] = array();
+
+				// Iterate over the list to search items that match the actual item
+				foreach ($items as $key2 => $child2) {
+					// Skip the actual or empty items
+					if (!isset($key) || !isset($key2) || $key == $key2)
+						continue;
+
+					// Match with the name
+					if ($child['name'] == $child2['name'] && $child['type'] == $child2['type']) {
+						// Add the matched ids
+						// $resultItem['id'][$child2['server_id']] = $child2['id'];
+						$resultItem['rootID'][$child2['server_id']] = $child2['rootID'];
+
+						// Add the matched counters
+						if (isset($child2['counters']) && !child2($item['counters'])) {
+							foreach ($child2['counters'] as $type => $value) {
+								if (isset($resultItem['counters'][$type]))
+									$resultItem['counters'][$type] += $value;
 							}
-							if (isset($child['agentsNum']))
-								$processed_item['agentsNum'] += $child['agentsNum'];
 						}
+
+						// Add the matched children
+						if (isset($child2['children']))
+							$resultItem['children'] += $child2['children'];
+
+						// Sum the agents number
+						if (isset($child2['agentsNum']))
+							$resultItem['agentsNum'] += $child2['agentsNum'];
+
+						// Remove the item
+						unset($items[$key2]);
 					}
-
-					if (!empty($counters))
-						$processed_item['counters'] = $counters;
-
-					if (empty($processed_item['agentsNum']))
-						$processed_item = array();
-
-					return $processed_item;
 				}
+				// Get the merged children (recursion)
+				if (!empty($resultItem['children']))
+					$resultItem['children'] = __getMergedItems($resultItem['children']);
 
+				// Add the resulting item
+				if (!empty($resultItem) && !empty($resultItem['agentsNum']))
+					$mergedItems[] = $resultItem;
+			}
+			
+			//usort($mergedItems, "cmpSortNames");
+
+			return $mergedItems;
+		}
+
+		$processed_items = array();
+
+		// Groups
+		if ($this->id == -1) {
+			if (! defined ('METACONSOLE')) {
 				$items = $this->getItems();
 
 				// Build the group hierarchy
-				$processed_items = array();
 				foreach ($items as $key => $item) {
 					if (empty($item['parent'])) {
-						$processed_item = __getProcessedItemB($key, $items);
+						$processed_item = __getProcessedItem($key, $items);
 
 						if (!empty($processed_item) && !empty($processed_item['agentsNum']))
 							$processed_items[] = $processed_item;
 					}
 				}
-				$processed_items;
-
-				// foreach ($items as $key => $item) {
-				// 	$processed_item = array();
-				// 	$processed_item['id'] = $item['id_grupo'];
-				// 	$processed_item['name'] = $item['nombre'];
-				// 	$processed_item['type'] = $this->type;
-				// 	$processed_item['rootID'] = $item['id_grupo'];
-				// 	$processed_item['rootType'] = $this->rootType;
-				// 	$processed_item['searchChildren'] = 1;
-
-				// 	$processed_items[] = $processed_item;
-				// }
-			}
-			// Agents
-			else {
-				$items = $this->getItems();
-				$this->processAgents($items);
-				$processed_items = $items;
-			}
-			
-			$this->tree = $processed_items;
-		}
-
-		return;
-
-		function cmpSortNames($a, $b) {
-			return strcmp($a["name"], $b["name"]);
-		}
-
-		// Get all groups
-		if ($this->id == -1) {
-			require_once($config['homedir']."/include/functions_groups.php");
-
-			// Return all the children groups
-			function __searchChildren(&$groups, $id, $server_id = false) {
-				$children = array();
-				foreach ($groups as $key => $group) {
-					if (isset($group['_parent_id_']) && $group['_parent_id_'] == $id) {
-						$children[] = __getProcessedItem($key, $groups, $server_id);
-					}
-				}
-				return $children;
-			}
-
-			function __getProcessedItem($itemKey, &$items, $server_id = false) {
-				if (!isset($items[$itemKey])) {
-					return false;
-				}
-				else {
-					$item = $items[$itemKey];
-					unset($items[$itemKey]);
-				}
-
-				$processed_item = array();
-				$processed_item['id'] = $item['_id_'];
-				$processed_item['rootID'] = $item['_id_'];
-				$processed_item['name'] = $item['_name_'];
-				$processed_item['searchChildren'] = 1;
-
-				if (defined ('METACONSOLE') && $server_id) {
-					$processed_item['server_id'] = $server_id;
-				}
-
-				if (isset($item['_is_tag_']) && $item['_is_tag_']) {
-					$processed_item['type'] = 'tag';
-					$processed_item['rootType'] = 'tag';
-				}
-				else {
-					$processed_item['type'] = 'group';
-					$processed_item['rootType'] = 'group';
-					$processed_item['parentID'] = $item['_parent_id_'];
-					$processed_item['iconHTML'] = $item['_iconImg_'];
-				}
-
-				$counters = array();
-				if (isset($item['_agents_unknown_']))
-					$counters['unknown'] = $item['_agents_unknown_'];
-				if (isset($item['_agents_critical_']))
-					$counters['critical'] = $item['_agents_critical_'];
-				if (isset($item['_agents_warning_']))
-					$counters['warning'] = $item['_agents_warning_'];
-				if (isset($item['_agents_not_init_']))
-					$counters['not_init'] = $item['_agents_not_init_'];
-				if (isset($item['_agents_ok_']))
-					$counters['ok'] = $item['_agents_ok_'];
-				if (isset($item['_total_agents_']))
-					$counters['total'] = $item['_total_agents_'];
-				if (isset($item['_monitors_alerts_fired_']))
-					$counters['alerts'] = $item['_monitors_alerts_fired_'];
-
-				$children = __searchChildren($items, $item['_id_'], $server_id);
-				if (!empty($children)) {
-					$processed_item['children'] = $children;
-
-					foreach ($children as $key => $child) {
-						if (isset($child['counters'])) {
-							foreach ($child['counters'] as $type => $value) {
-								if (isset($counters[$type]))
-									$counters[$type] += $value;
-							}
-						}
-					}
-				}
-
-				if (!empty($counters))
-					$processed_item['counters'] = $counters;
-
-				return $processed_item;
-			}
-
-			if (! defined ('METACONSOLE')) {
-				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
-
-				// Build the group hierarchy
-				$processed_items = array();
-				foreach ($items as $key => $item) {
-					if (empty($item['_parent_id_']))
-						$processed_items[] = __getProcessedItem($key, $items);
-				}
-				$items = $processed_items;
 			}
 			else {
-				//enterprise_include_once("include/functions_metaconsole.php");
-				$servers = metaconsole_get_servers();
+				$rootIDs = $this->rootID;
 
 				$item_list = array();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-
-					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
+				foreach ($rootIDs as $serverID => $rootID) {
+					$this->rootID = $rootID;
+					$items = $this->getItems($serverID);
 
 					// Build the group hierarchy
 					$processed_items = array();
 					foreach ($items as $key => $item) {
-						if (empty($item['_parent_id_']))
-							$processed_items[] = __getProcessedItem($key, $items, $server['id']);
+						if (empty($item['parent']))
+							$processed_items[] = __getProcessedItem($key, $items, $serverID);
 					}
 					$item_list += $processed_items;
-
-					metaconsole_restore_db();
 				}
+				$this->rootID = $rootIDs;
+				if (!empty($item_list))
+					usort($item_list, "cmpSortNames");
 
-				function __getMergedItems($items) {
-					// This variable holds the result
-					$mergedItems = array();
-
-					foreach ($items as $key => $child) {
-
-						// Store the item in a temporary element
-						$resultItem = $child;
-						// Remove the item
-						unset($items[$key]);
-
-						// The 'id' parameter will be stored as 'server_id' => 'id'
-						// $resultItem['id'] = array();
-						// $resultItem['id'][$child['server_id']] = $child['id'];
-						$resultItem['rootID'] = array();
-						$resultItem['rootID'][$child['server_id']] = $child['rootID'];
-
-						// Initialize counters if any of it don't exist
-						if (!isset($resultItem['counters']))
-							$resultItem['counters'] = array();
-						if (!isset($resultItem['counters']['unknown']))
-							$resultItem['counters']['unknown'] = 0;
-						if (!isset($resultItem['counters']['critical']))
-							$resultItem['counters']['critical'] = 0;
-						if (!isset($resultItem['counters']['warning']))
-							$resultItem['counters']['warning'] = 0;
-						if (!isset($resultItem['counters']['not_init']))
-							$resultItem['counters']['not_init'] = 0;
-						if (!isset($resultItem['counters']['ok']))
-							$resultItem['counters']['ok'] = 0;
-						if (!isset($resultItem['counters']['total']))
-							$resultItem['counters']['total'] = 0;
-						if (!isset($resultItem['counters']['alerts']))
-							$resultItem['counters']['alerts'] = 0;
-
-						// Add the children
-						if (!isset($resultItem['children']))
-							$resultItem['children'] = array();
-
-						// Iterate over the list to search items that match the actual item
-						foreach ($items as $key2 => $child2) {
-							// Skip the actual or empty items
-							if (!isset($key) || !isset($key2) || $key == $key2)
-								continue;
-
-							// Match with the name
-							if ($child['name'] == $child2['name'] && $child['type'] == $child2['type']) {
-								// Add the matched ids
-								// $resultItem['id'][$child2['server_id']] = $child2['id'];
-								$resultItem['rootID'][$child2['server_id']] = $child2['rootID'];
-
-								// Add the matched counters
-								if (isset($child2['counters']) && !child2($item['counters'])) {
-									foreach ($child2['counters'] as $type => $value) {
-										if (isset($resultItem['counters'][$type]))
-											$resultItem['counters'][$type] += $value;
-									}
-								}
-
-								// Add the matched children
-								if (isset($child2['children']))
-									$resultItem['children'] += $child2['children'];
-
-								// Remove the item
-								unset($items[$key2]);
-							}
-						}
-						// Get the merged children (recursion)
-						if (!empty($resultItem['children']))
-							$resultItem['children'] = __getMergedItems($resultItem['children']);
-
-						// Add the resulting item
-						$mergedItems[] = $resultItem;
-					}
-					
-					//usort($mergedItems, "cmpSortNames");
-
-					return $mergedItems;
-				}
-
-				$items = __getMergedItems($item_list);
+				$processed_items = __getMergedItems($item_list);
 			}
-			
-			if (empty($items))
-				$items = array();
-
-			$this->tree = $items;
 		}
-		// Get the group agents
+		// Agents
 		else {
 			if (! defined ('METACONSOLE')) {
 				$items = $this->getItems();
 				$this->processAgents($items);
+				$processed_items = $items;
 			}
 			else {
 				$rootIDs = $this->rootID;
@@ -1628,10 +1506,12 @@ class Tree {
 				$this->rootID = $rootIDs;
 				if (!empty($items))
 					usort($items, "cmpSortNames");
+				$this->processAgents($items);
+				$processed_items = $items;
 			}
-
-			$this->tree = $items;
 		}
+		
+		$this->tree = $processed_items;
 	}
 
 	private function getDataModules() {

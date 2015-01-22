@@ -420,6 +420,10 @@ TreeController = {
 					// if ((element.type == "group" || element.type == "tag")
 					// 		&& (controller.shouldHaveCounters && !hasCounters))
 					// 	return;
+					if ((element.type == "group" || element.type == "tag")
+							&& (element.agentsNum <= 0))
+						return;
+
 					
 					// If exist the detail container, show the data
 					if (typeof controller.detailRecipient != 'undefined' && controller.detailRecipient.length > 0) {

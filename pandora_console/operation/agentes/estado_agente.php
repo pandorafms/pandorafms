@@ -416,11 +416,6 @@ $table->head[8] = __('Last contact'). ' ' .
 
 $table->align = array ();
 
-//Only for AW flag
-if (check_acl ($config["id_user"], $group_id, "AW")) {
-	$table->head[9] = __('R');
-	$table->align[9] = "center";
-}
 
 $table->align[2] = "center";
 $table->align[3] = "center";
@@ -499,25 +494,6 @@ foreach ($agents as $agent) {
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!
 	// $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
-	
-	//Only for AW flag
-	if (check_acl ($config["id_user"], $group_id, "AW")) {
-		// Has remote configuration ?
-		$data[9]="";
-		
-		if (enterprise_installed()) {
-			if (config_agents_has_remote_configuration($agent["id_agente"])) {
-				$data[9] = "<a href='index.php?" .
-					"sec=estado&" .
-					"sec2=godmode/agentes/configurar_agente&" .
-					"tab=remote_configuration&" .
-					"id_agente=" . $agent["id_agente"] . "&" .
-					"disk_conf=1'>".
-				html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
-			}
-		}
-		
-	}
 	
 	array_push ($table->data, $data);
 }

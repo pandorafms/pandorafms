@@ -56,7 +56,7 @@ TreeController = {
 					}
 
 					container.append($group);
-
+					
 					elements.forEach(function(element, index) {
 						element.jqObject = _processNode($group, element);
 					}, $group);
@@ -417,9 +417,9 @@ TreeController = {
 					// Load the status counters
 					var hasCounters = _processNodeCounters($content, element.counters, element.type);
 
-					if ((element.type == "group" || element.type == "tag")
-							&& (controller.shouldHaveCounters && !hasCounters))
-						return;
+					// if ((element.type == "group" || element.type == "tag")
+					// 		&& (controller.shouldHaveCounters && !hasCounters))
+					// 	return;
 					
 					// If exist the detail container, show the data
 					if (typeof controller.detailRecipient != 'undefined' && controller.detailRecipient.length > 0) {
@@ -570,6 +570,7 @@ TreeController = {
 					return;
 				}
 				else if (controller.tree.length == 0) {
+					controller.recipient.empty();
 					controller.recipient.html("<div>" + controller.emptyMessage + "</div>");
 					return;
 				}
@@ -598,7 +599,7 @@ TreeController = {
 				if (typeof data.detailRecipient != 'undefined' && data.detailRecipient.length > 0) {
 					this.detailRecipient = data.detailRecipient;
 				}
-				if (typeof data.tree != 'undefined' && data.tree.length > 0) {
+				if (typeof data.tree != 'undefined') {
 					this.tree = data.tree;
 				}
 				if (typeof data.emptyMessage != 'undefined' && data.emptyMessage.length > 0) {

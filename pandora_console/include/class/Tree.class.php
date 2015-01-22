@@ -815,16 +815,7 @@ class Tree {
 		if (empty($sql))
 			return array();
 
-		if (! defined ('METACONSOLE')) {
-			$data = db_process_sql($sql);
-		}
-		else if ($server_id) {
-			$server = metaconsole_get_servers($server_id);
-			if (metaconsole_connect($server) != NOERR) {
-				$data = db_process_sql($sql);
-				metaconsole_restore_db();
-			}
-		}
+		$data = db_process_sql($sql);
 
 		if (empty($data))
 			return array();
@@ -1470,15 +1461,20 @@ class Tree {
 
 				$item_list = array();
 				foreach ($servers as $server) {
-					$items = $this->getItems($server['id']);
+					if (metaconsole_connect($server) == NOERR)
+						continue;
+
+					$items = $this->getItems();
 
 					// Build the group hierarchy
 					$processed_items = array();
 					foreach ($items as $key => $item) {
 						if (empty($item['parent']))
-							$processed_items[] = __getProcessedItem($key, $items, $serverID);
+							$processed_items[] = __getProcessedItem($key, $items, $server['id']);
 					}
 					$item_list += $processed_items;
+
+					metaconsole_restore_db();
 				}
 				
 				if (!empty($item_list))
@@ -1499,13 +1495,22 @@ class Tree {
 
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
+					$server = metaconsole_get_servers($serverID);
+					if (metaconsole_connect($server) == NOERR)
+						continue;
+
 					$this->rootID = $rootID;
-					$items += $this->getItems($serverID);
+					$newItems = $this->getItems();
+					$this->processAgents($newItems);
+					$items += $newItems;
+
+					metaconsole_restore_db();
 				}
 				$this->rootID = $rootIDs;
+				
 				if (!empty($items))
 					usort($items, "cmpSortNames");
-				$this->processAgents($items);
+				
 				$processed_items = $items;
 			}
 		}
@@ -1513,6 +1518,92 @@ class Tree {
 		$this->tree = $processed_items;
 	}
 
+	private function getDataTag() {
+
+		function cmpSortTagNames($a, $b) {
+			return strcmp($a["name"], $b["name"]);
+		}
+
+		$processed_items = array();
+
+		// Tags
+		if ($this->id == -1) {
+			$items = $this->getItems();
+
+			foreach ($items as $key => $item) {
+				$processed_item = array();
+				$processed_item['id'] = $item['id'];
+				$processed_item['name'] = $item['name'];
+				$processed_item['type'] = $this->type;
+				$processed_item['rootID'] = $item['id'];
+				$processed_item['rootType'] = $this->rootType;
+				$processed_item['searchChildren'] = 1;
+
+				$processed_items[] = $processed_item;
+			}
+		}
+		// Agents
+		else {
+			if (! defined ('METACONSOLE')) {
+				$items = $this->getItems();
+				$this->processAgents($items);
+				$processed_items = $items;
+			}
+			else {
+				$rootIDs = $this->rootID;
+
+				$items = array();
+				foreach ($rootIDs as $serverID => $rootID) {
+					$server = metaconsole_get_servers($serverID);
+					if (metaconsole_connect($server) == NOERR)
+						continue;
+
+					$this->rootID = $rootID;
+					$newItems = $this->getItems();
+					$this->processAgents($newItems);
+					$items += $newItems;
+
+					metaconsole_restore_db();
+				}
+				$this->rootID = $rootIDs;
+
+				if (!empty($items))
+					usort($items, "cmpSortTagNames");
+
+				$processed_items = $items;
+			}
+		}
+		
+		$this->tree = $processed_items;
+
+			// if (! defined ('METACONSOLE')) {
+			// 	$this->tree = $this->getAgents($parent, $this->type);
+			// }
+			// else {
+			// 	function cmpSortAgentNames($a, $b) {
+			// 		return strcmp($a["name"], $b["name"]);
+			// 	}
+
+			// 	$agents = array();
+			// 	foreach ($parent as $server_id => $tag_id) {
+			// 		$server = metaconsole_get_servers($server_id);
+
+			// 		if (!empty($server)) {
+			// 			if (metaconsole_connect($server) != NOERR)
+			// 				continue;
+
+			// 			$agents += $this->tree = $this->getAgents($tag_id, $this->type, $server_id);
+
+			// 			metaconsole_restore_db();
+			// 		}
+			// 	}
+			// 	if (!empty($agents))
+			// 		usort($agents, "cmpSortAgentNames");
+
+			// 	$this->tree = $agents;
+			// }
+	}
+	
 	private function getDataModules() {
 		$items = $this->getItems();
 		$processed_items = array();
@@ -1614,62 +1705,6 @@ class Tree {
 		}
 
 		$this->tree = $processed_items;
-	}
-	
-	private function getDataTag() {
-		$items = $this->getItems();
-		$processed_items = array();
-
-		// Tags
-		if ($this->id == -1) {
-			$processed_items = array();
-
-			foreach ($items as $key => $item) {
-				$processed_item = array();
-				$processed_item['id'] = $item['id'];
-				$processed_item['name'] = $item['name'];
-				$processed_item['type'] = $this->type;
-				$processed_item['rootID'] = $item['id'];
-				$processed_item['rootType'] = $this->rootType;
-				$processed_item['searchChildren'] = 1;
-
-				$processed_items[] = $processed_item;
-			}
-		}
-		// Agents
-		else {
-			$this->processAgents($items);
-			$processed_items = $items;
-		}
-		
-		$this->tree = $processed_items;
-
-			// if (! defined ('METACONSOLE')) {
-			// 	$this->tree = $this->getAgents($parent, $this->type);
-			// }
-			// else {
-			// 	function cmpSortAgentNames($a, $b) {
-			// 		return strcmp($a["name"], $b["name"]);
-			// 	}
-
-			// 	$agents = array();
-			// 	foreach ($parent as $server_id => $tag_id) {
-			// 		$server = metaconsole_get_servers($server_id);
-
-			// 		if (!empty($server)) {
-			// 			if (metaconsole_connect($server) != NOERR)
-			// 				continue;
-
-			// 			$agents += $this->tree = $this->getAgents($tag_id, $this->type, $server_id);
-
-			// 			metaconsole_restore_db();
-			// 		}
-			// 	}
-			// 	if (!empty($agents))
-			// 		usort($agents, "cmpSortAgentNames");
-
-			// 	$this->tree = $agents;
-			// }
 	}
 	
 	public function getJSON() {

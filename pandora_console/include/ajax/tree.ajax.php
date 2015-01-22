@@ -34,8 +34,15 @@ if (is_ajax ()) {
 		$rootType = get_parameter('rootType', '');
 		$id = get_parameter('id', -1);
 		$rootID = get_parameter('rootID', -1);
-		$filter = get_parameter('filter', array('searchAgent' => '', 'statusAgent' => AGENT_STATUS_ALL));
 		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
+
+		$default_filters = array(
+				'searchAgent' => '',
+				'statusAgent' => AGENT_STATUS_ALL,
+				'searchModule' => '',
+				'statusModule' => -1,
+			);
+		$filter = get_parameter('filter', $default_filters);
 		
 		if (class_exists('TreeEnterprise')) {
 			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $childrenMethod);
@@ -44,10 +51,7 @@ if (is_ajax ()) {
 			$tree = new Tree($type, $rootType, $id, $rootID, $childrenMethod);
 		}
 		
-		$tree->setFilter(array(
-				'statusAgent' => $filter['statusAgent'],
-				'searchAgent' => $filter['searchAgent'])
-			);
+		$tree->setFilter($filter);
 		echo json_encode(array('success' => 1, 'tree' => $tree->getArray()));
 		return;
 	}

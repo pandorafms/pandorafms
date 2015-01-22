@@ -17,8 +17,10 @@
 global $config;
 
 $tab = get_parameter('tab', 'group');
-$search = get_parameter('search', '');
-$status = get_parameter('status', AGENT_STATUS_ALL);
+$search_agent = get_parameter('searchAgent', '');
+$status_agent = get_parameter('statusAgent', AGENT_STATUS_ALL);
+$search_module = get_parameter('searchModule', '');
+$status_module = get_parameter('statusModule', -1);
 
 
 // ---------------------Tabs -------------------------------------------
@@ -105,27 +107,46 @@ ui_print_page_header(
 // --------------------- form filter -----------------------------------
 $table = null;
 $table->width = "100%";
+$table->data = array();
+$table->rowspan = array();
 
-$table->data[0][0] = __('Agent status');
-$fields = array ();
-$fields[AGENT_STATUS_ALL] = __('All'); //default
-$fields[AGENT_STATUS_NORMAL] = __('Normal'); 
-$fields[AGENT_STATUS_WARNING] = __('Warning');
-$fields[AGENT_STATUS_CRITICAL] = __('Critical');
-$fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
-$fields[AGENT_STATUS_NOT_INIT] = __('Not init');
-$table->data[0][1] = html_print_select($fields,
-	"status",
-	$status,
-	'',
-	'',
-	0,
-	true);
-$table->data[0][2] = __('Search agent');
-$table->data[0][3] = html_print_input_text(
-	"search", $search, '', 40, 30, true);
-$table->data[0][4] = html_print_submit_button(
-	__('Filter'), "uptbutton", false, 'class="sub search"', true);
+// Agent filter
+$agent_status_arr = array();
+$agent_status_arr[AGENT_STATUS_ALL] = __('All'); //default
+$agent_status_arr[AGENT_STATUS_NORMAL] = __('Normal'); 
+$agent_status_arr[AGENT_STATUS_WARNING] = __('Warning');
+$agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
+$agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
+$agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
+
+$row = array();
+$row[] = __('Agent status');
+$row[] = html_print_select($agent_status_arr, "status_agent", $status_agent, '', '', 0, true);
+$row[] = __('Search agent');
+$row[] = html_print_input_text("search_agent", $search_agent, '', 40, 30, true);
+
+// Button
+$row[] = html_print_submit_button(__('Filter'), "uptbutton", false, 'class="sub search"', true);
+$table->rowspan[][count($row)-1] = 2;
+
+$table->data[] = $row;
+
+// Module filter
+$module_status_arr = array();
+$module_status_arr[-1] = __('All'); //default
+$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
+$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
+$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+
+$row = array();
+$row[] = __('Module status');
+$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
+$row[] = __('Search module');
+$row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true);
+
+$table->data[] = $row;
 
 echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
 html_print_table($table);
@@ -167,8 +188,10 @@ echo "</div>";
 		parameters['getChildren'] = 1;
 		parameters['filter'] = {};
 		parameters['type'] = "<?php echo $tab; ?>";
-		parameters['filter']['searchAgent'] = $("input#text-search").val();
-		parameters['filter']['statusAgent'] = $("select#status").val();
+		parameters['filter']['searchAgent'] = $("input#text-search_agent").val();
+		parameters['filter']['statusAgent'] = $("select#status_agent").val();
+		parameters['filter']['searchModule'] = $("input#text-search_module").val();
+		parameters['filter']['statusModule'] = $("select#status_module").val();
 		
 		$.ajax({
 			type: "POST",
@@ -185,10 +208,7 @@ echo "</div>";
 						tree: data.tree,
 						baseURL: "<?php echo ui_get_full_url(false, false, false, false); ?>",
 						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-						filter: {
-							search: parameters['filter']['search'],
-							status: parameters['filter']['status']
-						},
+						filter: parameters['filter'],
 						counterTitles: {
 							total: {
 								agents: "<?php echo __('Total agents'); ?>",

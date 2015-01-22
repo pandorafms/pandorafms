@@ -1466,12 +1466,11 @@ class Tree {
 				}
 			}
 			else {
-				$rootIDs = $this->rootID;
+				$servers = metaconsole_get_servers();
 
 				$item_list = array();
-				foreach ($rootIDs as $serverID => $rootID) {
-					$this->rootID = $rootID;
-					$items = $this->getItems($serverID);
+				foreach ($servers as $server) {
+					$items = $this->getItems($server['id']);
 
 					// Build the group hierarchy
 					$processed_items = array();
@@ -1481,7 +1480,7 @@ class Tree {
 					}
 					$item_list += $processed_items;
 				}
-				$this->rootID = $rootIDs;
+				
 				if (!empty($item_list))
 					usort($item_list, "cmpSortNames");
 

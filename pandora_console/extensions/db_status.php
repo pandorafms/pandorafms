@@ -14,6 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+/*
 function extension_db_status_extension_tables() {
 	return array(
 		'tbackup',
@@ -25,6 +26,7 @@ function extension_db_status_extension_tables() {
 		'tuser_task_scheduled',
 		);
 }
+*/
 
 function extension_db_status() {
 	global $config;
@@ -158,14 +160,15 @@ function extension_db_check_tables_differences($connection_test,
 	global $config;
 	
 	// --------- Check the tables --------------------------------------
-	$result = mysql_query("SHOW TABLES");
+	mysql_select_db($db_name_test, $connection_test);
+	$result = mysql_query("SHOW TABLES", $connection_test);
 	$tables_test = array();
 	while ($row = mysql_fetch_array ($result)) {
 		$tables_test[] = $row[0];
 	}
 	mysql_free_result ($result);
-	$tables_test = array_merge($tables_test,
-		extension_db_status_extension_tables());
+	//~ $tables_test = array_merge($tables_test,
+		//~ extension_db_status_extension_tables());
 	
 	
 	mysql_select_db($db_name_system, $connection_system);
@@ -176,11 +179,11 @@ function extension_db_check_tables_differences($connection_test,
 	}
 	mysql_free_result ($result);
 	
-	$diff_tables = array_diff($tables_system, $tables_test);
+	$diff_tables = array_diff($tables_test, $tables_system);
 	
-	html_debug_print($tables_test);
-	html_debug_print($tables_system);
-	html_debug_print($diff_tables);
+	//~ html_debug_print($tables_test);
+	//~ html_debug_print($tables_system);
+	//~ html_debug_print($diff_tables);
 	
 	ui_print_result_message(
 		empty($diff_tables),
@@ -189,27 +192,98 @@ function extension_db_check_tables_differences($connection_test,
 			implode(", ", $diff_tables)));
 	
 	// --------------- Check the fields -------------------------------
+	$correct_fields = true;
 	
-	//~ mysql_select_db($db_name, $connection);
-	//~ foreach ($tables_system as $table) {
-		//~ $result = mysql_query("EXPLAIN " . $table);
-		//~ 
-		//~ $fields_system = array();
-		//~ while ($row = mysql_fetch_array ($result)) {
-			//~ $fields_system[] = $row[0];
-		//~ }
-		//~ mysql_free_result ($result);
-		//~ 
-		//~ $result = mysql_query("EXPLAIN " . $table);
-		//~ 
-		//~ $fields_system = array();
-		//~ while ($row = mysql_fetch_array ($result)) {
-			//~ $fields_system[] = $row[0];
-		//~ }
-		//~ mysql_free_result ($result);
-	//~ }
+	foreach ($tables_system as $table) {
+		
+		mysql_select_db($db_name_test, $connection_test);
+		$result = mysql_query("EXPLAIN " . $table, $connection_test);
+		$fields_test = array();
+		if (!empty($result)) {
+			while ($row = mysql_fetch_array ($result)) {
+				$fields_test[$row[0]] = array(
+					'field ' => $row[0],
+					'type' => $row[1],
+					'null' => $row[2],
+					'key' => $row[3],
+					'default' => $row[4],
+					'extra' => $row[5]);
+			}
+			mysql_free_result ($result);
+		}
+		
+		
+		
+		mysql_select_db($db_name_system, $connection_system);
+		$result = mysql_query("EXPLAIN " . $table, $connection_system);
+		$fields_system = array();
+		if (!empty($result)) {
+			while ($row = mysql_fetch_array ($result)) {
+				$fields_system[$row[0]] = array(
+					'field ' => $row[0],
+					'type' => $row[1],
+					'null' => $row[2],
+					'key' => $row[3],
+					'default' => $row[4],
+					'extra' => $row[5]);
+			}
+			mysql_free_result ($result);
+		}
+		
+		foreach ($fields_test as $name_field => $field_test) {
+			if (!isset($fields_system[$name_field])) {
+				$correct_fields = false;
+				
+				ui_print_error_message(
+					__('Unsuccessful the table %s has not the field %s',
+					$table, $name_field));
+			}
+			else {
+				$correct_fields = false;
+				$field_system = $fields_system[$name_field];
+				
+				$diff = array_diff($field_test, $field_system);
+				
+				if (!empty($diff)) {
+					foreach ($diff as $config_field => $value) {
+						switch ($config_field) {
+							case 'type':
+								ui_print_error_message(
+									__('Unsuccessful the field %s in the table %s must be setted the type with %s.',
+									$name_field, $table, $value));
+								break;
+							case 'null':
+								ui_print_error_message(
+									__('Unsuccessful the field %s in the table %s must be setted the null values with %s.',
+									$name_field, $table, $value));
+								break;
+							case 'key':
+								ui_print_error_message(
+									__('Unsuccessful the field %s in the table %s must be setted the key as defined in the SQL file.',
+									$name_field, $table));
+								break;
+							case 'default':
+								ui_print_error_message(
+									__('Unsuccessful the field %s in the table %s must be setted the default value as %s.',
+									$name_field, $table, $value));
+								break;
+							case 'extra':
+								ui_print_error_message(
+									__('Unsuccessful the field %s in the table %s must be setted as defined in the SQL file.',
+									$name_field, $table));
+								break;
+						}
+					}
+				}
+			}
+		}
+	}
 	
-	
+	if ($correct_fields) {
+		ui_print_success_message(
+			__('Successful all the tables have the correct fields')
+		);
+	}
 }
 
 function extension_db_status_execute_sql_file($url, $connection) {

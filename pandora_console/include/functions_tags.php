@@ -433,7 +433,7 @@ function tags_insert_module_tag ($id_agent_module, $tags) {
 	
 	$values = array();
 	
-	if ($tags == false) {
+	if($tags == false) {
 		$tags = array();
 	}
 	
@@ -588,17 +588,6 @@ function tags_get_module_tags ($id, $policy = false) {
 	}
 	
 	return $return;
-}
-
-function tags_get_module_policy_tags($id_tag, $id_module) {
-	if (empty($id_tag))
-		return false;
-	
-	$id_module_policy = db_get_value_filter('id_policy_module',
-		'ttag_module',
-		array('id_tag' => $id_tag, 'id_agente_modulo' => $id_module));
-	
-	return $id_module_policy;
 }
 
 /**
@@ -1798,14 +1787,15 @@ function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array()) {
  * 
  * @return mixed Returns count of agents with this tag or false if they aren't.
  */
-function tags_get_all_user_agents ($id_tag, $id_user = false, $groups_and_tags = array(), $filter = false, $fields = false, $meta = true, $strict_user = true) {
+function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_and_tags = array(), $filter = false, $fields = false, $meta = true, $strict_user = true, $return_all_fields = false) {
 	
 	global $config;
 
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-		
+	if (empty($id_tag)) {
+		$tag_filter = '';
+	} else {
+		$tag_filter = " AND ttag_module.id_tag = " . $id_tag;
+	}
 	if (empty($id_user)) {
 		$id_user = $config['id_user'];
 	}
@@ -1815,17 +1805,60 @@ function tags_get_all_user_agents ($id_tag, $id_user = false, $groups_and_tags =
 		$fields[0] = "id_agente";
 		$fields[1] = "nombre";
 	}
-	$select_fields = implode(',',$fields);
 	
+	$select_fields = implode(',',$fields);
+
 	$groups_clause = "";
 	if ($strict_user) {
 		if (!empty($groups_and_tags)) {
-			$groups_clause = " AND ".tags_get_acl_tags_module_condition($groups_and_tags, "tagente_modulo"); 	 
+			$groups_clause = " AND ".tags_get_acl_tags_module_condition($groups_and_tags, "tagente_modulo"); 		 
 		}
 	} else {
 		$groups_clause = " AND tagente.id_grupo IN (".implode(',',$groups_and_tags).")";
 	}
 	
+	if (!empty($filter['id_group'])) {
+		$groups_clause .= " AND tagente.id_grupo IN (".$filter['id_group'].")";
+	}
+
+	$status_sql = '';
+	if (isset($filter['status'])) {
+		switch ($filter['status']) {
+			case AGENT_STATUS_NORMAL:
+				$status_sql =
+					" AND (normal_count = total_count)";
+				break;
+			case AGENT_STATUS_WARNING:
+				$status_sql =
+					"AND (critical_count = 0 AND warning_count > 0)";
+				break;
+			case AGENT_STATUS_CRITICAL:
+				$status_sql =
+					"AND (critical_count > 0)";
+				break;
+			case AGENT_STATUS_UNKNOWN:
+				$status_sql =
+					"AND (critical_count = 0 AND warning_count = 0
+						AND unknown_count > 0)";
+				break;
+			case AGENT_STATUS_NOT_NORMAL:
+				$status_sql = " AND (normal_count <> total_count)";
+				break;
+			case AGENT_STATUS_NOT_INIT:
+				$status_sql = "AND (notinit_count = total_count)";
+				break;
+		}
+
+	}
+	if (!empty($filter['group_by'])) {
+		$group_by = " GROUP BY ".$filter['group_by'];
+	}
+
+	$id_agent_search = '';
+	if (!empty($filter['id_agent'])) {
+		$id_agent_search = " AND tagente.id_agente = ".$filter['id_agent'];
+	}
+
 	$search_sql = "";
 	$void_agents = "";
 	if ($filter) {
@@ -1840,28 +1873,103 @@ function tags_get_all_user_agents ($id_tag, $id_user = false, $groups_and_tags =
 			}
 		}
 	}
-	
+
 	$user_agents_sql = "SELECT ".$select_fields ."
 		FROM tagente, tagente_modulo, ttag_module 
 		WHERE tagente.id_agente = tagente_modulo.id_agente
 		AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-		AND ttag_module.id_tag = " . $id_tag .
+		". $tag_filter .
 		$groups_clause . $search_sql . $void_agents .
+		$status_sql .
+		$group_by .
 		" ORDER BY tagente.nombre ASC";
 
 	//return db_get_sql ($user_agents);	
-	$user_agents = db_get_all_rows_sql($user_agents_sql);
+	$user_agents = db_get_all_rows_sql($user_agents_sql);	
 
+	if ($user_agents == false) {
+		$user_agents = array();
+	}
+	if ($return_all_fields) {
+		return $user_agents;
+	}
 	if (!$meta){
 		$user_agents_aux = array();
-		if ($user_agents === false) {
-			$user_agents = array();
-		}
+
 		foreach ($user_agents as $ua) {
 			$user_agents_aux[$ua['id_agente']] = $ua['nombre'];
 		} 
 		return $user_agents_aux;
 	}
 	return $user_agents;
+}
+
+function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields = false, $filter = false, $return_all_fields = false) {
+	
+	global $config;
+	
+	// Avoid mysql error
+	if (empty($id_agent))
+		return;
+	
+	if (!is_array ($fields)) {
+		$fields = array ();
+		$fields[0] = "id_agente_modulo";
+		$fields[1] = "nombre";
+	}
+	$select_fields = implode(',',$fields);
+
+	if ($filter) {
+		$filter_sql = '';
+		if (isset($filter['disabled'])) {
+			$filter_sql .= " AND disabled = ".$filter['disabled'];
+		}
+		if (isset($filter['nombre'])) {
+			$filter_sql .= ' AND nombre LIKE "' .$filter['nombre'].'"';
+		}
+
+	}
+	
+	$tag_filter = "";
+	if (!empty($groups_and_tags)) {
+		$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agent);
+		if (isset($groups_and_tags[$agent_group]) && ($groups_and_tags[$agent_group] != '')) {
+			//~ $tag_filter = " AND ttag_module.id_tag IN (".$groups_and_tags[$agent_group].")";
+			$tag_filter = " AND id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (".$groups_and_tags[$agent_group]."))";
+		}
+	}
+		
+	$agent_modules_sql = "SELECT ".$select_fields ."
+		FROM tagente_modulo 
+		WHERE id_agente=". $id_agent .
+		$tag_filter .
+		$filter_sql ."
+		ORDER BY nombre";
+		
+	$agent_modules = db_get_all_rows_sql($agent_modules_sql);
+	
+	if ($agent_modules == false) {
+		$agent_modules = array();
+	}
+	
+	if ($return_all_fields) {
+		$result = array();
+		foreach ($agent_modules as $am) {
+			$am['status'] = modules_get_agentmodule_status($am['id_agente_modulo']);
+			$am['isinit'] = modules_get_agentmodule_is_init($am['id_agente_modulo']);
+			if ($am['isinit']) {
+				
+			}
+			$result[$am['id_agente_modulo']] = $am;
+		}
+		return $result;
+	}
+	
+	$result = array();
+	foreach ($agent_modules as $am) {
+		$result[$am['id_agente_modulo']] = $am['nombre'];
+	}
+		
+	return $result;	
 }
 ?>

@@ -28,6 +28,8 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 
 require_once ('include/functions_networkmap.php');
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 if ($activeTab == "radial_dynamic") {
 	include_once("include/functions_graph.php");
 	
@@ -39,7 +41,7 @@ if ($activeTab == "radial_dynamic") {
 	if (!empty($module_group))
 		$filter['module_group'] = $module_group;
 	
-	echo graph_monitor_wheel(600, 650, $filter);
+	echo graph_monitor_wheel(600, 650, $filter, $strict_user);
 	
 	echo "</div>";
 	return;
@@ -56,7 +58,7 @@ if (!isset($text_filter)) {
 $graph = networkmap_generate_hash(__('Pandora FMS'), $group, $simple,
 	$font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen,
 	$pure, $id_networkmap, $show_snmp_modules, true, true,
-	$text_filter);
+	$text_filter, $strict_user);
 
 networkmap_print_jsdata($graph);
 

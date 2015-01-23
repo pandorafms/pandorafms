@@ -28,6 +28,8 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 
 require_once ('include/functions_networkmap.php');	
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 $name = '';	
 $pure = (int) get_parameter ('pure', 0);
 $activeTab = get_parameter ('tab', 'topology');
@@ -143,7 +145,7 @@ if ($save_networkmap || $update_networkmap) {
 	}
 }
 
-$networkmaps = networkmap_get_networkmaps();
+$networkmaps = networkmap_get_networkmaps('','', true, $strict_user);
 
 $nomaps = false;
 if ($networkmaps === false) {
@@ -197,7 +199,7 @@ else {
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;pure=1&amp;tab='.$activeTab.'">' . 
 			html_print_image("images/full_screen.png", true, array ('title' => __('Full screen'))) .'</a>');
 }
-if ($config['enterprise_installed']) {
+if (($config['enterprise_installed']) && (!$strict_user)) {
 	$buttons['policies'] = array('active' => $activeTab == 'policies',
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=policies&amp;pure='.$pure.'">' . 
 			html_print_image("images/policies_mc.png", true, array ("title" => __('Policies view'))) .'</a>');
@@ -215,9 +217,11 @@ $buttons['dinamic'] = array('active' => $activeTab == 'dinamic',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=dinamic&amp;pure='.$pure.'">' . 
 		html_print_image("images/dynamic_network_icon.png", true, array ("title" => __('Dynamic view'))) .'</a>');
 
-$buttons['radial_dinamic'] = array('active' => $activeTab == 'radial_dynamic',
-	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=radial_dynamic&amp;pure='.$pure.'">' . 
-		html_print_image("images/radial_dynamic_network_icon.png", true, array ("title" => __('Radial dynamic view'))) .'</a>');
+if (!$strict_user) {
+	$buttons['radial_dinamic'] = array('active' => $activeTab == 'radial_dynamic',
+		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=radial_dynamic&amp;pure='.$pure.'">' . 
+			html_print_image("images/radial_dynamic_network_icon.png", true, array ("title" => __('Radial dynamic view'))) .'</a>');
+}
 
 $combolist = '<form name="query_sel" method="post" action="index.php?sec=network&sec2=operation/agentes/networkmap">';
 
@@ -295,7 +299,7 @@ if (!empty($name)) {
 ui_print_page_header (__('Network map') . " - " . $title,
 	"images/op_network.png", false, "network_map", false, $buttons);
 
-if (tags_has_user_acl_tags()) {
+if ((tags_has_user_acl_tags()) && (!$strict_user)) {
 	ui_print_tags_warning();
 }
 

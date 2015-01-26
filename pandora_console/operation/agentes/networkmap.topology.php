@@ -28,6 +28,8 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 
 require_once ('include/functions_networkmap.php');
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 // Set filter
 $filter = networkmap_get_filter ($layout);
 
@@ -39,7 +41,7 @@ if (!isset($text_filter)) {
 $graph = networkmap_generate_dot(__('Pandora FMS'), $group, $simple,
 	$font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen,
 	$pure, $id_networkmap, $show_snmp_modules, true, true,
-	$text_filter, $l2_network, null, $dont_show_subgroups);
+	$text_filter, $l2_network, null, $dont_show_subgroups, $strict_user);
 
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));

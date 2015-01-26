@@ -33,6 +33,7 @@ $alert = alerts_get_alert_agent_module($id_alert);
 $template = alerts_get_alert_template ($alert['id_alert_template']);
 $actions = alerts_get_alert_agent_module_actions ($id_alert);
 $agent_name = modules_get_agentmodule_agent_name ($alert['id_agent_module']);
+$agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
 $module_name = modules_get_agentmodule_name ($alert['id_agent_module']);
 
 // Default action
@@ -57,8 +58,14 @@ $table_details->style = array();
 $table_details->style[0] = 'font-weight: bold;';
 $data = array();
 
+$data[0] = __('List alerts');
+$data[1] ='<a style=" font-size: 7pt;" href="index.php?sec=galertas&sec2=godmode/alerts/alert_list" title="'.__('List alerts').
+'"><b><span style=" font-size: 7pt;">'.__('List alerts').'</span></b></a>';
+$table_details->data[] = $data;
+
 $data[0] = __('Agent');
-$data[1] = $agent_name;
+$data[1] ='<a style=" font-size: 7pt;" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent.
+'" title="'.$agent_name.'"><b><span style=" font-size: 7pt;">'.$agent_name.'</span></b></a>';
 $table_details->data[] = $data;
 
 $data[0] = __('Module');

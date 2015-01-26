@@ -119,6 +119,8 @@ $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter ('status', -1);
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 $onheader = array();
 
 if (check_acl ($config['id_user'], 0, "AW")) {
@@ -139,8 +141,10 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 
 ui_print_page_header ( __("Agent detail"), "images/agent_mc.png", false, "agent_status", false, $onheader);
 
-if (tags_has_user_acl_tags()) {
-	ui_print_tags_warning();
+if (!$strict_user) {
+	if (tags_has_user_acl_tags()) {
+		ui_print_tags_warning();
+	}
 }
 
 // User is deleting agent
@@ -342,43 +346,72 @@ else {
 	$groups = array_keys($user_groups);
 }
 
-$total_agents = 0;
-$agents = false;
 
-$total_agents = agents_get_agents(array (
-	'disabled' => 0,
-	'id_grupo' => $groups,
-	'search' => $search_sql,
-	'status' => $status),
-	array ('COUNT(*) as total'), 'AR', false);
-$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+if ($strict_user) {
 
-
-$agents = agents_get_agents(array (
-	'order' => 'nombre ' . $order_collation . ' ASC',
-	'id_grupo' => $groups,
-	'disabled' => 0,
-	'status' => $status,
-	'search' => $search_sql,
-	'offset' => (int) get_parameter ('offset'),
-	'limit' => (int) $config['block_size']  ),
+	$filter = array (
+		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		'disabled' => 0,
+		'status' => $status,
+		'search' => $search,
+		'offset' => (int) get_parameter ('offset'),
+		'limit' => (int) $config['block_size']);
+		
+	if ($group_id > 0) {
+		$groups = array($group_id);
+		if ($recursion) {
+			$groups = groups_get_id_recursive($group_id, true);
+		}
+		$filter['id_group'] = implode(',', $groups);
+	}
+		
+	$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
+			'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count');
+			
+	$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+			
+	$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 	
-	array ('id_agente',
-		'id_grupo',
-		'id_os',
-		'ultimo_contacto',
-		'intervalo',
-		'comentarios description',
-		'quiet',
-		'normal_count',
-		'warning_count',
-		'critical_count',
-		'unknown_count',
-		'notinit_count',
-		'total_count',
-		'fired_count'),
-	'AR',
-	$order);
+	$total_agents = count($agents);
+
+} else {
+	$total_agents = 0;
+	$agents = false;
+
+	$total_agents = agents_get_agents(array (
+		'disabled' => 0,
+		'id_grupo' => $groups,
+		'search' => $search_sql,
+		'status' => $status),
+		array ('COUNT(*) as total'), 'AR', false);
+	$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+	
+	$agents = agents_get_agents(array (
+		'order' => 'nombre ' . $order_collation . ' ASC',
+		'id_grupo' => $groups,
+		'disabled' => 0,
+		'status' => $status,
+		'search' => $search_sql,
+		'offset' => (int) get_parameter ('offset'),
+		'limit' => (int) $config['block_size']  ),
+		
+		array ('id_agente',
+			'id_grupo',
+			'id_os',
+			'ultimo_contacto',
+			'intervalo',
+			'comentarios description',
+			'quiet',
+			'normal_count',
+			'warning_count',
+			'critical_count',
+			'unknown_count',
+			'notinit_count',
+			'total_count',
+			'fired_count'),
+		'AR',
+		$order);
+}
 
 if (empty ($agents)) {
 	$agents = array ();
@@ -415,12 +448,6 @@ $table->head[8] = __('Last contact'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array ();
-
-//Only for AW flag
-if (check_acl ($config["id_user"], $group_id, "AW")) {
-	$table->head[9] = __('R');
-	$table->align[9] = "center";
-}
 
 $table->align[2] = "center";
 $table->align[3] = "center";
@@ -478,7 +505,7 @@ foreach ($agents as $agent) {
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	
-	$data[5] = reporting_tiny_stats($agent, true);
+	$data[5] = reporting_tiny_stats($agent, true, 'agent', ':', $strict_user);
 	
 	
 	$data[6] = $status_img;
@@ -499,25 +526,6 @@ foreach ($agents as $agent) {
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!
 	// $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
-	
-	//Only for AW flag
-	if (check_acl ($config["id_user"], $group_id, "AW")) {
-		// Has remote configuration ?
-		$data[9]="";
-		
-		if (enterprise_installed()) {
-			if (config_agents_has_remote_configuration($agent["id_agente"])) {
-				$data[9] = "<a href='index.php?" .
-					"sec=estado&" .
-					"sec2=godmode/agentes/configurar_agente&" .
-					"tab=remote_configuration&" .
-					"id_agente=" . $agent["id_agente"] . "&" .
-					"disk_conf=1'>".
-				html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
-			}
-		}
-		
-	}
 	
 	array_push ($table->data, $data);
 }

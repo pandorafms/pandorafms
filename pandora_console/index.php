@@ -69,6 +69,7 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 session_start ();
 require_once ("include/config.php");
 
+
 // If metaconsole activated, redirect to it
 if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
@@ -177,34 +178,34 @@ if (! isset ($config['id_user'])) {
 		$pass = get_parameter_post ("pass"); //This is the variable with the password
 		$nick = db_escape_string_sql($nick);
 		$pass = db_escape_string_sql($pass);
-
+		
 		//Since now, only the $pass variable are needed
 		unset ($_GET['pass'], $_POST['pass'], $_REQUEST['pass']);
-
+		
 		// If the auth_code exists, we assume the user has come through the double auth page
 		if (isset ($_POST['auth_code'])) {
 			$double_auth_success = false;
-
+			
 			// The double authentication is activated and the user has surpassed the first step (the login).
 			// Now the authentication code provided will be checked.
 			if (isset ($_SESSION['prepared_login_da'])) {
 				if (isset ($_SESSION['prepared_login_da']['id_user'])
 						&& isset ($_SESSION['prepared_login_da']['timestamp'])) {
-
+					
 					// The user has a maximum of 5 minutes to introduce the double auth code
 					$dauth_period = SECONDS_2MINUTES;
 					$now = time();
 					$dauth_time = $_SESSION['prepared_login_da']['timestamp'];
-
+					
 					if ($now - $dauth_period < $dauth_time) {
 						// Nick
 						$nick = $_SESSION["prepared_login_da"]['id_user'];
 						// Code
 						$code = (string) get_parameter_post ("auth_code");
-
+						
 						if (!empty($code)) {
 							$result = validate_double_auth_code($nick, $code);
-
+							
 							if ($result === true) {
 								// Double auth success
 								$double_auth_success = true;
@@ -214,7 +215,7 @@ if (! isset ($config['id_user'])) {
 								$login_screen = 'double_auth';
 								// Error message
 								$config["auth_error"] = __("Invalid code");
-
+								
 								if (!isset($_SESSION['prepared_login_da']['attempts']))
 									$_SESSION['prepared_login_da']['attempts'] = 0;
 								$_SESSION['prepared_login_da']['attempts']++;
@@ -225,7 +226,7 @@ if (! isset ($config['id_user'])) {
 							$login_screen = 'double_auth';
 							// Error message
 							$config["auth_error"] = __("The code shouldn't be empty");
-
+							
 							if (!isset($_SESSION['prepared_login_da']['attempts']))
 								$_SESSION['prepared_login_da']['attempts'] = 0;
 							$_SESSION['prepared_login_da']['attempts']++;
@@ -234,7 +235,7 @@ if (! isset ($config['id_user'])) {
 					else {
 						// Expired login
 						unset ($_SESSION['prepared_login_da']);
-
+						
 						// Error message
 						$config["auth_error"] = __('Expired login');
 					}
@@ -242,7 +243,7 @@ if (! isset ($config['id_user'])) {
 				else {
 					// If the code doesn't exist, remove the prepared login
 					unset ($_SESSION['prepared_login_da']);
-
+					
 					// Error message
 					$config["auth_error"] = __('Login error');
 				}
@@ -252,10 +253,10 @@ if (! isset ($config['id_user'])) {
 				// Error message
 				$config["auth_error"] = __('Login error');
 			}
-
+			
 			// Remove the authenticator code
 			unset ($_POST['auth_code'], $code);
-
+			
 			if (!$double_auth_success) {
 				$login_failed = true;
 				require_once ('general/login_page.php');
@@ -328,73 +329,88 @@ if (! isset ($config['id_user'])) {
 						'timestamp' => time(),
 						'attempts' => 0
 					);
-
+				
 				// Load the page to introduce the double auth code
 				$login_screen = 'double_auth';
 				require_once ('general/login_page.php');
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
-
+			
 			//login ok and password has not expired
 			$process_login = true;
 			
 			echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
 			
-			unset ($_GET["sec2"]);
-			$_GET["sec"] = "general/logon_ok";
-			$home_page ='';
-			if (isset($nick)) {
-				$user_info = users_get_user_by_id($nick);
-				$home_page = io_safe_output($user_info['section']);
-				$home_url = $user_info['data_section'];
-				if ($home_page != '') {
-					switch($home_page) {
-						case 'Event list':
-							$_GET["sec"] = "eventos";
-							$_GET["sec2"] = "operation/events/events";
-							break;
-						case 'Group view':
-							$_GET["sec"] = "estado";
-							$_GET["sec2"] = "operation/agentes/group_view";
-							break;
-						case 'Alert detail':
-							$_GET["sec"] = "estado";
-							$_GET["sec2"] = "operation/agentes/alerts_status";
-							break;
-						case 'Tactical view':
-							$_GET["sec"] = "estado";
-							$_GET["sec2"] = "operation/agentes/tactical";
-							break;
-						case 'Default':
-							$_GET["sec"] = "general/logon_ok";
-							break;
-						case 'Dashboard':
-							$_GET["sec"] = "dashboard";
-							$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
-							$id_dashboard_select =
-								db_get_value('id', 'tdashboard', 'name', $home_url);
-							$_GET['id_dashboard_select'] = $id_dashboard_select;
-							break;
-						case 'Visual console':
-							$_GET["sec"] = "visualc";
-							$_GET["sec2"] = "operation/visual_console/index";
-							break;
-						case 'Other':
-							$home_url = io_safe_output($home_url);
-							parse_str ($home_url, $res);
-							$_GET["sec"] = $res["sec"];
-							$_GET["sec2"] = $res["sec2"];
-							break;
+			if (!isset($_GET["sec2"]) && !isset($_GET["sec"])) {
+				// Avoid the show homepage when the user go to
+				// a specific section of pandora
+				// for example when timeout the sesion
+				
+				unset ($_GET["sec2"]);
+				$_GET["sec"] = "general/logon_ok";
+				$home_page ='';
+				if (isset($nick)) {
+					$user_info = users_get_user_by_id($nick);
+					$home_page = io_safe_output($user_info['section']);
+					$home_url = $user_info['data_section'];
+					if ($home_page != '') {
+						switch ($home_page) {
+							case 'Event list':
+								$_GET["sec"] = "eventos";
+								$_GET["sec2"] = "operation/events/events";
+								break;
+							case 'Group view':
+								$_GET["sec"] = "estado";
+								$_GET["sec2"] = "operation/agentes/group_view";
+								break;
+							case 'Alert detail':
+								$_GET["sec"] = "estado";
+								$_GET["sec2"] = "operation/agentes/alerts_status";
+								break;
+							case 'Tactical view':
+								$_GET["sec"] = "estado";
+								$_GET["sec2"] = "operation/agentes/tactical";
+								break;
+							case 'Default':
+								$_GET["sec"] = "general/logon_ok";
+								break;
+							case 'Dashboard':
+								$_GET["sec"] = "dashboard";
+								$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
+								$id_dashboard_select =
+									db_get_value('id', 'tdashboard', 'name', $home_url);
+								$_GET['id_dashboard_select'] = $id_dashboard_select;
+								break;
+							case 'Visual console':
+								$_GET["sec"] = "visualc";
+								$_GET["sec2"] = "operation/visual_console/index";
+								break;
+							case 'Other':
+								$home_url = io_safe_output($home_url);
+								parse_str ($home_url, $res);
+								$_GET["sec"] = $res["sec"];
+								$_GET["sec2"] = $res["sec2"];
+								break;
+						}
+					}
+					else {
+						$_GET["sec"] = "general/logon_ok";
 					}
 				}
-				else {
-					$_GET["sec"] = "general/logon_ok";
-				}
+				
 			}
+			
 			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
+			
+			//==========================================================
+			//-------- SET THE CUSTOM CONFIGS OF USER ------------------
+			
+			config_user_set_custom_config();
+			//==========================================================
+			
 			//Remove everything that might have to do with people's passwords or logins
 			unset ($pass, $login_good);
 			
@@ -483,8 +499,8 @@ if ($process_login) {
 	
 	require_once("include/functions_update_manager.php");
 	enterprise_include_once("include/functions_update_manager.php");
-
-	if ($config["autoupdate"] == 1) {	
+	
+	if ($config["autoupdate"] == 1) {
 		if (enterprise_installed()) {
 			$result = update_manager_check_online_enterprise_packages_available();
 		}
@@ -622,6 +638,8 @@ else {
 			$home_page = io_safe_output($user_info['section']);
 			$home_url = $user_info['data_section'];
 		}
+		
+		
 		
 		if ($home_page != '') {
 			switch ($home_page) {

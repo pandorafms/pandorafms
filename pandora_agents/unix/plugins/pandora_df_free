@@ -34,7 +34,7 @@ if ($#ARGV < 0) {
 # Parse command line parameters
 my %filesystems;
 foreach my $fs (@ARGV) {
-	$filesystems{$fs} = '-1%';
+	$filesystems{$fs} = '0%';
 }
 
 # Retrieve filesystem information
@@ -51,7 +51,7 @@ if ($#df < 0) {
 foreach my $row (@df) {
 	my @columns = split (' ', $row);
 	exit 1 if ($#columns < 4);
-	$filesystems{$columns[5]} = $columns[4] if (defined ($filesystems{$columns[0]}) || $all_filesystems == 1);
+	$filesystems{$columns[5]} = $columns[4] if (defined ($filesystems{$columns[5]}) || $all_filesystems == 1);
 }
 
 my $free;

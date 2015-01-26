@@ -476,6 +476,7 @@ if ($list_modules) {
 	$status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
 	$status_text_monitor = get_parameter('status_text_monitor', '');
 	$filter_monitors = (bool)get_parameter('filter_monitors', false);
+	$status_module_group = get_parameter('status_module_group', -1);
 	$monitors_change_filter = (bool)get_parameter('monitors_change_filter', false);
 	
 	$status_filter_sql = '1 = 1';
@@ -484,6 +485,13 @@ if ($list_modules) {
 	}
 	elseif ($status_filter_monitor != -1) {
 		$status_filter_sql = 'tagente_estado.estado = ' . $status_filter_monitor;
+	}
+	
+	if($status_module_group != -1){
+	$status_module_group_filter = 'id_module_group = ' . $status_module_group;
+	}
+	else{
+		$status_module_group_filter = 'id_module_group >= 0';
 	}
 	
 	$status_text_monitor_sql = '%';
@@ -496,19 +504,21 @@ if ($list_modules) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf("
-				SELECT COUNT(*)
-				FROM tagente_estado,
-					(SELECT *
-					FROM tagente_modulo
-					WHERE id_agente = %d AND nombre LIKE \"%s\" AND delete_pending = 0
-						AND disabled = 0) tagente_modulo 
-				LEFT JOIN tmodule_group
-					ON tagente_modulo.id_module_group = tmodule_group.id_mg 
-				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-					AND %s %s 
-					AND tagente_estado.estado != %d  
-				ORDER BY tagente_modulo.id_module_group , %s  %s",
-				$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
+					SELECT COUNT(*)
+						FROM tagente_estado,
+							(SELECT *
+							FROM tagente_modulo
+							WHERE id_agente = %d AND nombre LIKE \"%s\" AND delete_pending = 0
+								AND disabled = 0 AND %s) tagente_modulo 
+						LEFT JOIN tmodule_group
+							ON tagente_modulo.id_module_group = tmodule_group.id_mg 
+						WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+							AND %s %s 
+							AND tagente_estado.estado != %d  
+							AND tagente_modulo.%s 
+						ORDER BY tagente_modulo.id_module_group , %s  %s",
+					$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
+					$status_module_group_filter, $order['field'], $order['order']);
 			break;
 		case "postgresql":
 			$sql = sprintf("
@@ -518,22 +528,23 @@ if ($list_modules) {
 					FROM tagente_modulo
 					WHERE id_agente = %d AND nombre LIKE '%s'
 						AND delete_pending = 0
-						AND disabled = 0) tagente_modulo 
+						AND disabled = 0 AND %s) tagente_modulo 
 				LEFT JOIN tmodule_group
 					ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 					AND %s %s 
 					AND tagente_estado.estado != %d
+					AND tagente_modulo.%s 
 				GROUP BY tagente_modulo.id_module_group,
 					tagente_modulo.nombre
 				ORDER BY tagente_modulo.id_module_group , %s  %s",
-				$id_agente, $status_text_monitor_sql, $status_filter_sql,
-				$tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'],
+				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql,
+				$tags_sql, AGENT_MODULE_STATUS_NO_DATA,$status_module_group_filter,$order['field'],
 				$order['order']);
 			break;
 		case "oracle":
 			$sql = sprintf ("
-				SELECT COUNT(*)" .
+					SELECT COUNT(*)" .
 				" FROM tagente_estado, tagente_modulo
 					LEFT JOIN tmodule_group
 					ON tmodule_group.id_mg = tagente_modulo.id_module_group
@@ -544,8 +555,10 @@ if ($list_modules) {
 					AND tagente_modulo.delete_pending = 0
 					AND tagente_modulo.disabled = 0
 					AND tagente_estado.estado != %d 
+					AND tagente_modulo.%s 
 				ORDER BY tagente_modulo.id_module_group , %s %s
-				", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
+				", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
+				$status_module_group_filter,$order['field'], $order['order']);
 			break;
 	}
 	
@@ -566,14 +579,17 @@ if ($list_modules) {
 					(SELECT *
 					FROM tagente_modulo
 					WHERE id_agente = %d AND nombre LIKE \"%s\" AND delete_pending = 0
-						AND disabled = 0) tagente_modulo 
+						AND disabled = 0 AND %s) tagente_modulo 
 				LEFT JOIN tmodule_group
 					ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 					AND %s %s 
 					AND tagente_estado.estado != %d  
+					AND tagente_modulo.%s 
 				ORDER BY tagente_modulo.id_module_group , %s  %s",
-				$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
+				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
+				$status_module_group_filter, $order['field'], $order['order']);
+
 			break;
 		case "postgresql":
 			$sql = sprintf("
@@ -582,14 +598,16 @@ if ($list_modules) {
 					(SELECT *
 					FROM tagente_modulo
 					WHERE id_agente = %d AND nombre LIKE '%s' AND delete_pending = 0
-						AND disabled = 0) tagente_modulo 
+						AND disabled = 0 AND %s) tagente_modulo 
 				LEFT JOIN tmodule_group
 					ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 					AND %s %s 
 					AND tagente_estado.estado != %d  
+					AND tagente_modulo.%s 
 				ORDER BY tagente_modulo.id_module_group , %s  %s",
-				$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
+				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
+				$status_module_group_filter, $order['field'], $order['order']);
 			break;
 		// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 		case "oracle":
@@ -598,7 +616,7 @@ if ($list_modules) {
 			$fields_tmodule_group = oracle_list_all_field_table('tmodule_group', 'string');
 			
 			$sql = sprintf ("
-				SELECT " . $fields_tagente_estado . ', ' . $fields_tagente_modulo . ', ' . $fields_tmodule_group .
+					SELECT " . $fields_tagente_estado . ', ' . $fields_tagente_modulo . ', ' . $fields_tmodule_group .
 				" FROM tagente_estado, tagente_modulo
 					LEFT JOIN tmodule_group
 					ON tmodule_group.id_mg = tagente_modulo.id_module_group
@@ -609,8 +627,10 @@ if ($list_modules) {
 					AND tagente_modulo.delete_pending = 0
 					AND tagente_modulo.disabled = 0
 					AND tagente_estado.estado != %d 
+					AND tagente_modulo.%s 
 				ORDER BY tagente_modulo.id_module_group , %s %s
-				", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, AGENT_MODULE_STATUS_NO_DATA, $order['field'], $order['order']);
+				", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, AGENT_MODULE_STATUS_NO_DATA,
+				 $status_module_group_filter, $order['field'], $order['order']);
 			break;
 	}
 	
@@ -649,23 +669,24 @@ if ($list_modules) {
 	}
 	
 	$table->head[2] = __('Type') . ' ' .
-		'<a href="' . $url . '&sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up")) . '</a>' .
-		'<a href="' . $url . '&sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
+		'<a href="' . $url . '&sort_field=type&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up")) . '</a>' .
+		'<a href="' . $url . '&sort_field=type&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
 	$table->head[3] = __('Module name') . ' ' .
-		'<a href="javascript: order_module_list(\'name\', \'up\');">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up")) . '</a>' .
-		'<a href="javascript: order_module_list(\'name\', \'down\');">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+		'<a href="' . $url . '&sort_field=name&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up")) . '</a>' .
+		'<a href="' . $url . '&sort_field=name&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 	$table->head[4] = __('Description');
 	$table->head[5] = __('Status') . ' ' .
-		'<a href="' . $url . '&sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
-		'<a href="' . $url . '&sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
+		'<a href="' . $url . '&sort_field=status&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
+		'<a href="' . $url . '&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
 	$table->head[6] = __('Warn'); 
 	$table->head[7] = __('Data') . ' ' .
-		'<a href="' . $url . '&sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up")) . '</a>' .
-		'<a href="' . $url . '&sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
+		'<a href="' . $url . '&sort_field=data&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up")) . '</a>' .
+		'<a href="' . $url . '&sort_field=data&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
 	$table->head[8] = __('Graph');
 	$table->head[9] = __('Last contact') . ' ' .
-		'<a href="' . $url . '&sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
-		'<a href="' . $url . '&sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
+		'<a href="' . $url . '&sort_field=last_contact&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
+		'<a href="' . $url . '&sort_field=last_contact&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
+
 	
 	$table->align = array("left", "left", "center", "left", "left", "center");
 	
@@ -1011,7 +1032,8 @@ if ($list_modules) {
 			"id_agente=" . $id_agente . "&" .
 			"refr=&filter_monitors=1&" .
 			"status_filter_monitor=" . $status_filter_monitor . "&" .
-			"status_text_monitor=" . $status_text_monitor;
+			"status_text_monitor=" . $status_text_monitor . "&".
+			"status_module_group=" . $status_module_group;
 		
 		if ($paginate_module) {
 			ui_pagination ($count_modules, false, 0, 0, false, 'offset',

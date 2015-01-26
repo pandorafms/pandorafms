@@ -73,6 +73,8 @@ if (is_ajax()) {
 	return;
 }
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 ui_print_page_header(__('Network map'), "images/op_network.png", false, "network_map", false);
 
 // Delete networkmap action
@@ -118,7 +120,7 @@ $type_search = get_parameter('type_filter', '0');
 			</td>
 			<td class='datos'>
 				<?php
-				$networkmap_filter_types = networkmap_get_filter_types();
+				$networkmap_filter_types = networkmap_get_filter_types($strict_user);
 				html_print_select($networkmap_filter_types, 'type_filter',
 					$type_search, '', __('All'), 0, false);
 				?>
@@ -200,7 +202,11 @@ else {
 		// If enterprise not loaded then skip this code
 		if ($network_map['type'] == 'policies' and (!defined('PANDORA_ENTERPRISE')))
 			continue;
-		
+	
+		if (($network_map['type'] == 'radial_dynamic' || $network_map['type'] == 'policies') && ($strict_user)) {
+			continue;
+		}
+			
 		$data = array();
 		$data[0] = '<b><a href="index.php?sec=network&sec2=operation/agentes/networkmap&tab=view&id_networkmap=' . $network_map['id_networkmap'] . '">' . $network_map['name'] . '</a></b>';
 		$data[1] = $network_map['type'];
@@ -234,7 +240,7 @@ if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0,
 			'create' => __('Create'),
 			'delete' => __('Delete')
 		);
-	$networkmap_types = networkmap_get_types();
+	$networkmap_types = networkmap_get_types($strict_user);
 	$delete_options = array(
 			'selected' => __('Delete selected')
 		);

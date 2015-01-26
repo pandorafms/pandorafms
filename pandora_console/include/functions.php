@@ -2177,7 +2177,7 @@ function get_news($arguments) {
 	$modal = get_argument ('modal', $arguments, false);
 	$limit = get_argument ('limit', $arguments, 99999999);
 	
-	$id_group = array_keys(users_get_groups($id_user, 'AR', true));
+	$id_group = array_keys(users_get_groups($id_user, false, true));
 	$id_group = implode(',',$id_group);
 	$current_datetime = date('Y-m-d H:i:s', time());
 	$modal = (int) $modal;

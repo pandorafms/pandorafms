@@ -113,7 +113,7 @@ function networkmap_generate_hash($pandora_name, $group = 0,
 	$graph = networkmap_generate_dot($pandora_name, $group,
 		$simple, $font_size, $layout, $nooverlap, $zoom, $ranksep,
 		$center, $regen, $pure, $id_networkmap, $show_snmp_modules,
-		$cut_names, $relative, $text_filter);
+		$cut_names, $relative, $text_filter, false, null, false, $strict_user);
 	
 	$return = array();
 	if (!empty($graph)) {
@@ -234,7 +234,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false, $text_filter = '', $l2_network = false, $ip_mask = null,
-	$dont_show_subgroups = false) {
+	$dont_show_subgroups = false, $strict_user = false) {
 	
 	global $config;
 	
@@ -281,12 +281,35 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		//Order by id_parent ascendant for to avoid the bugs
 		//because the first agents to process in the next
 		//foreach loop are without parent (id_parent = 0)
+
+		// Get agents data
+		if ($strict_user) {
+			if ($dont_show_subgroups)
+				$filter['id_group'] = $group;
+			else {
+				if (!empty($childrens)) {
+					foreach ($childrens as $children) {
+						$filter_id_groups[$children] = $children;
+					}
+				} 
+				$filter_id_groups[$group] = $group;
+				$filter['id_group'] = implode(',', $filter_id_groups);
+			}
+
+			$filter['group_by'] = 'tagente.id_agente';
+			$fields = array ('tagente.id_grupo, tagente.nombre, tagente.id_os, tagente.id_parent, tagente.id_agente, 
+						tagente.normal_count, tagente.warning_count, tagente.critical_count,
+						tagente.unknown_count, tagente.total_count, tagente.notinit_count');
+			$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
+		} else {
+			$agents = agents_get_agents ($filter,
+				array ('id_grupo, nombre, id_os, id_parent, id_agente,
+					normal_count, warning_count, critical_count,
+					unknown_count, total_count, notinit_count'), 'AR',
+					array('field' => 'id_parent', 'order' => 'ASC'));
+		}
 		
-		$agents = agents_get_agents ($filter,
-			array ('id_grupo, nombre, id_os, id_parent, id_agente,
-				normal_count, warning_count, critical_count,
-				unknown_count, total_count, notinit_count'), 'AR',
-				array('field' => 'id_parent', 'order' => 'ASC'));
 	}
 	else if ($group == -666) {
 		$agents = false;
@@ -295,21 +318,28 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$agents = networkmap_get_new_nodes_from_ip_mask($ip_mask,
 			array ('id_grupo, nombre, id_os, id_parent, id_agente,
 				normal_count, warning_count, critical_count,
-				unknown_count, total_count, notinit_count'));
+				unknown_count, total_count, notinit_count'), $strict_user);
 	}
 	else {
 		//Order by id_parent ascendant for to avoid the bugs
 		//because the first agents to process in the next
 		//foreach loop are without parent (id_parent = 0)
 		
-		$agents = agents_get_agents ($filter,
-			array ('id_grupo, nombre, id_os, id_parent, id_agente, 
-				normal_count, warning_count, critical_count,
-				unknown_count, total_count, notinit_count'), 'AR',
-				array('field' => 'id_parent', 'order' => 'ASC'));
+		if ($strict_user) {
+			$filter['group_by'] = 'tagente.id_agente';
+			$fields = array ('tagente.id_grupo, tagente.nombre, tagente.id_os, tagente.id_parent, tagente.id_agente, 
+						tagente.normal_count, tagente.warning_count, tagente.critical_count,
+						tagente.unknown_count, tagente.total_count, tagente.notinit_count');
+			$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
+		} else {
+			$agents = agents_get_agents ($filter,
+				array ('id_grupo, nombre, id_os, id_parent, id_agente,
+					normal_count, warning_count, critical_count,
+					unknown_count, total_count, notinit_count'), 'AR',
+					array('field' => 'id_parent', 'order' => 'ASC'));
+		}
 	}
-	
-	
 	
 	if ($agents === false)
 		//return false;
@@ -343,10 +373,14 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			
 			$filter = array();
 			$filter['disabled'] = 0;
-			
+
 			// Get agent modules data
-			$modules = agents_get_modules($agent['id_agente'], '*',
-				$filter, true, true);
+			if ($strict_user) {
+				$modules = tags_get_agent_modules ($agent['id_agente'], $acltags, false, $filter, false);
+			} else {
+				$modules = agents_get_modules($agent['id_agente'], '*', $filter, true, true);
+			}			
+						
 			if ($modules === false)
 				$modules = array();
 			
@@ -611,10 +645,13 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0,
 	$depth = 'all', $id_networkmap = 0, $dont_show_subgroups = 0,
-	$text_filter = '') {
+	$text_filter = '', $strict_user = false) {
 	
 	global $config;
-	
+
+	if ($strict_user) {
+		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+	}
 	$parents = array();
 	$orphans = array();
 	
@@ -654,7 +691,11 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 		$filter['id_grupo'] = $id_groups;
 	}
 	else {
-		$groups = db_get_all_rows_in_table ('tgrupo');
+		if ($strict_user) {
+			$groups = users_get_groups ($config['id_user'],"AR", false, true);
+		} else {
+			$groups = db_get_all_rows_in_table ('tgrupo');
+		}
 		if ($groups === false) {
 			$groups = array();
 		}
@@ -676,7 +717,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 		// Add node
 		$nodes_groups[$group2['id_grupo']] = $group2;
 	}
-	
+
 	$node_count = 0;
 	
 	$groups_hiden = array();
@@ -702,12 +743,19 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 	}
 	
 	if ($depth != 'group') {
+		if ($strict_user) {
+			$filter['group_by'] = 'tagente.nombre';
+			$fields = array ('tagente.id_grupo, tagente.nombre, tagente.id_os, tagente.id_agente, 
+						tagente.normal_count, tagente.warning_count, tagente.critical_count,
+						tagente.unknown_count, tagente.total_count, tagente.notinit_count');
+			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
+		} else {
 		// Get agents data
 		$agents = agents_get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_agente, 
 				normal_count, warning_count, critical_count,
 				unknown_count, total_count, notinit_count'));
-		
+		}	
 		if ($agents === false)
 			$agents = array();
 		
@@ -741,7 +789,13 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 			}
 			
 			// Get agent modules data
-			$modules = agents_get_modules ($agent['id_agente'], false, array('disabled' => 0), true, false);
+			if ($strict_user) {
+				$filter['disabled'] = 0;
+				$modules = tags_get_agent_modules ($agent['id_agente'], $acltags, false, $filter, false);
+			} else {
+				$modules = agents_get_modules ($agent['id_agente'], false, array('disabled' => 0), true, false);
+			}
+
 			// Parse modules
 			foreach ($modules as $key => $module) {
 				$node_count ++;
@@ -784,7 +838,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 	
 	// Create void statistics array
 	$stats = array();
-	
+
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
 		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
@@ -795,7 +849,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 		}
 		switch ($node['type']) {
 			case 'group':
-				$graph .= networkmap_create_group_node ($node , $simple, $font_size) .
+				$graph .= networkmap_create_group_node ($node , $simple, $font_size, $metaconsole = false, null, $strict_user) .
 					"\n\t\t";
 				$stats['groups'][] = $node['id_grupo'];
 				break;
@@ -878,12 +932,12 @@ function networkmap_create_transparent_edge($head, $tail) {
 }
 
 // Returns a group node definition
-function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
+function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null, $strict_user = false) {
 	global $config;
 	global $hack_networkmap_mobile;
 	
-	$status = groups_get_status ($group['id_grupo']);
-	
+	$status = groups_get_status ($group['id_grupo'], $strict_user);
+
 	// Set node status
 	switch ($status) {
 		case 0: 
@@ -963,11 +1017,21 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $me
 }
 
 // Returns a node definition
-function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cut_names = true, $relative = false, $metaconsole = false, $id_server = null) {
+function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cut_names = true, $relative = false, $metaconsole = false, $id_server = null, $strict_user = false) {
 	global $config;
 	global $hack_networkmap_mobile;
 	
-	$status = agents_get_status_from_counts($agent);
+	if ($strict_user) {
+		$strict_data['normal_count'] = groups_agent_ok ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
+		$strict_data['warning_count'] = groups_agent_warning ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
+		$strict_data['critical_count'] = groups_agent_critical ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
+		$strict_data['unknown_count'] = groups_agent_unknown ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
+		$strict_data['notinit_count'] = groups_agent_not_init ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
+		$strict_data['total_count'] = groups_agent_total ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
+		$status = agents_get_status_from_counts($strict_data);
+	} else {
+		$status = agents_get_status_from_counts($agent);
+	}
 	
 	if (defined('METACONSOLE')) {
 		$server_data = db_get_row('tmetaconsole_setup', 'id',
@@ -1062,7 +1126,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 			$url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'];
 		}
 		
-		$node = "\n" . $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
+		$node = "\n" . $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
 		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="'.$url.'",
 		 tooltip="' . $url_tooltip . '"];' . "\n";
@@ -1500,7 +1564,7 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
  *
  * @return Networkmap with the given id. False if not available or readable.
  */
-function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
+function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = true, $strict_user = false) {
 	global $config;
 	
 	if ($id_user == '') {
@@ -1527,11 +1591,17 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 	$networkmaps = array();
 	foreach ($networkmaps_raw as $key => $networkmapitem) {
 		if ($optgrouped) {
+			if ((($networkmapitem['type'] == 'policies') || ($networkmapitem['type'] == 'radial_dynamic')) && ($strict_user)) {
+				continue;
+			}
 			$networkmaps[$networkmapitem['id_networkmap']] = 
 				array('name' => $networkmapitem['name'], 
 					'optgroup' => $networkmapitem['type']);
 		}
 		else {
+			if ((($networkmapitem['type'] == 'policies') || ($networkmapitem['type'] == 'radial_dynamic')) && ($strict_user)) {
+				continue;
+			}
 			$networkmaps[$networkmapitem['id_networkmap']] =
 				$networkmapitem['name'];
 		}
@@ -1600,7 +1670,7 @@ function networkmap_update_networkmap ($id_networkmap, $values) {
  * 
  * @return Array Networkmap diferent types.
  */
-function networkmap_get_types () {
+function networkmap_get_types ($strict_user = false) {
 	$networkmap_types = array();
 	
 	$is_enterprise = enterprise_include_once('include/functions_policies.php');
@@ -1608,9 +1678,11 @@ function networkmap_get_types () {
 	$networkmap_types['topology'] = __('Create a new topology map');
 	$networkmap_types['groups'] = __('Create a new group map');
 	$networkmap_types['dinamic'] = __('Create a new dynamic map');
-	$networkmap_types['radial_dynamic'] = __('Create a new radial dynamic map');
+	if (!$strict_user) {
+		$networkmap_types['radial_dynamic'] = __('Create a new radial dynamic map');
+	}
 	
-	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
+	if (($is_enterprise !== ENTERPRISE_NOT_HOOK) && (!$strict_user)) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_types');
 		
 		$networkmap_types = array_merge($networkmap_types, $enterprise_types);
@@ -1624,7 +1696,7 @@ function networkmap_get_types () {
  * 
  * @return Array Networkmap diferent types.
  */
-function networkmap_get_filter_types () {
+function networkmap_get_filter_types ($strict_user = false) {
 	$networkmap_types = array();
 	
 	$is_enterprise = enterprise_include_once('include/functions_policies.php');
@@ -1632,9 +1704,11 @@ function networkmap_get_filter_types () {
 	$networkmap_types['topology'] = __('Topology');
 	$networkmap_types['groups'] = __('Group');
 	$networkmap_types['dinamic'] = __('Dynamic');
-	$networkmap_types['radial_dynamic'] = __('Radial dynamic');
+	if (!$strict_user) {
+		$networkmap_types['radial_dynamic'] = __('Radial dynamic');
+	}
 	
-	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
+	if (($is_enterprise !== ENTERPRISE_NOT_HOOK) && (!$strict_user)) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_filter_types');
 		
 		$networkmap_types = array_merge($networkmap_types, $enterprise_types);
@@ -1659,28 +1733,48 @@ function networkmap_cidr_match($ip, $cidr_mask) {
 	return ($ip & $mask) == $subnet;
 }
 
-function networkmap_get_new_nodes_from_ip_mask($ip_mask, $fields = array()) {
+function networkmap_get_new_nodes_from_ip_mask($ip_mask, $fields = array(), $strict_user = false) {
 	$list_ip_masks = explode(",", $ip_mask);
 	
 	$list_address = db_get_all_rows_in_table('taddress');
 	if (empty($address))
 		$address = array();
+
+	if ($strict_user) {
+		$filter['group_by'] = 'tagente.id_agente';
+		$fields = array ('tagente.id_agente');
+		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+		$user_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 	
+		foreach ($all_user_agents as $agent) {
+			$user_agents[$agent['id_agente']] = $agent['id_agente'];
+		}
+	}
+
 	$agents = array();
 	foreach ($list_address as $address) {
 		foreach ($list_ip_masks as $ip_mask) {
 			if (networkmap_cidr_match($address['ip'], $ip_mask)) {
-				
+				$id_agent = db_get_value_filter('id_agent', 'taddress_agent', array('id_a' => $address['id_a']));
+						
 				if (empty($fields)) {
-					$agents[] = db_get_value_filter('id_agent',
-						'taddress_agent', array('id_a' => $address['id_a']));
+					if ($strict_user) {
+						if (array_key_exists($id_agent, $user_agents)) {
+							$agents[] = db_get_value_filter('id_agent', 'taddress_agent', array('id_a' => $address['id_a']));
+						}
+					} else {
+						$agents[] = db_get_value_filter('id_agent', 'taddress_agent', array('id_a' => $address['id_a']));
+					}
+
 				}
 				else {
-					$id_agent = db_get_value_filter('id_agent',
-						'taddress_agent', array('id_a' => $address['id_a']));
-					
-					$agents[] = db_get_row('tagente', 'id_agente',
-						$id_agent, $fields);
+					if ($strict_user) {
+						if (array_key_exists($id_agent, $user_agents)) {
+							$agents[] = db_get_row('tagente', 'id_agente', $id_agent, $fields);
+						}
+					} else {
+						$agents[] = db_get_row('tagente', 'id_agente', $id_agent, $fields);
+					}
 				}
 			}
 		}

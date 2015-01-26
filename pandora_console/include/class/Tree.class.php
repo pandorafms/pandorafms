@@ -1894,7 +1894,7 @@ class Tree {
 						$resultItem['rootID'][$item2['server_id']] = $item2['rootID'];
 
 						// Add the matched counters
-						if (isset($item2['counters']) && !empty($item2['counters']) {
+						if (isset($item2['counters']) && !empty($item2['counters'])) {
 							foreach ($item2['counters'] as $type => $value) {
 								if (isset($resultItem['counters'][$type]))
 									$resultItem['counters'][$type] += $value;

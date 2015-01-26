@@ -119,6 +119,8 @@ $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter ('status', -1);
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 $onheader = array();
 
 if (check_acl ($config['id_user'], 0, "AW")) {
@@ -139,8 +141,10 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 
 ui_print_page_header ( __("Agent detail"), "images/agent_mc.png", false, "agent_status", false, $onheader);
 
-if (tags_has_user_acl_tags()) {
-	ui_print_tags_warning();
+if (!$strict_user) {
+	if (tags_has_user_acl_tags()) {
+		ui_print_tags_warning();
+	}
 }
 
 // User is deleting agent
@@ -342,43 +346,72 @@ else {
 	$groups = array_keys($user_groups);
 }
 
-$total_agents = 0;
-$agents = false;
 
-$total_agents = agents_get_agents(array (
-	'disabled' => 0,
-	'id_grupo' => $groups,
-	'search' => $search_sql,
-	'status' => $status),
-	array ('COUNT(*) as total'), 'AR', false);
-$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+if ($strict_user) {
 
-
-$agents = agents_get_agents(array (
-	'order' => 'nombre ' . $order_collation . ' ASC',
-	'id_grupo' => $groups,
-	'disabled' => 0,
-	'status' => $status,
-	'search' => $search_sql,
-	'offset' => (int) get_parameter ('offset'),
-	'limit' => (int) $config['block_size']  ),
+	$filter = array (
+		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		'disabled' => 0,
+		'status' => $status,
+		'search' => $search,
+		'offset' => (int) get_parameter ('offset'),
+		'limit' => (int) $config['block_size']);
+		
+	if ($group_id > 0) {
+		$groups = array($group_id);
+		if ($recursion) {
+			$groups = groups_get_id_recursive($group_id, true);
+		}
+		$filter['id_group'] = implode(',', $groups);
+	}
+		
+	$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
+			'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count');
+			
+	$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+			
+	$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 	
-	array ('id_agente',
-		'id_grupo',
-		'id_os',
-		'ultimo_contacto',
-		'intervalo',
-		'comentarios description',
-		'quiet',
-		'normal_count',
-		'warning_count',
-		'critical_count',
-		'unknown_count',
-		'notinit_count',
-		'total_count',
-		'fired_count'),
-	'AR',
-	$order);
+	$total_agents = count($agents);
+
+} else {
+	$total_agents = 0;
+	$agents = false;
+
+	$total_agents = agents_get_agents(array (
+		'disabled' => 0,
+		'id_grupo' => $groups,
+		'search' => $search_sql,
+		'status' => $status),
+		array ('COUNT(*) as total'), 'AR', false);
+	$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+	
+	$agents = agents_get_agents(array (
+		'order' => 'nombre ' . $order_collation . ' ASC',
+		'id_grupo' => $groups,
+		'disabled' => 0,
+		'status' => $status,
+		'search' => $search_sql,
+		'offset' => (int) get_parameter ('offset'),
+		'limit' => (int) $config['block_size']  ),
+		
+		array ('id_agente',
+			'id_grupo',
+			'id_os',
+			'ultimo_contacto',
+			'intervalo',
+			'comentarios description',
+			'quiet',
+			'normal_count',
+			'warning_count',
+			'critical_count',
+			'unknown_count',
+			'notinit_count',
+			'total_count',
+			'fired_count'),
+		'AR',
+		$order);
+}
 
 if (empty ($agents)) {
 	$agents = array ();
@@ -472,7 +505,7 @@ foreach ($agents as $agent) {
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	
-	$data[5] = reporting_tiny_stats($agent, true);
+	$data[5] = reporting_tiny_stats($agent, true, 'agent', ':', $strict_user);
 	
 	
 	$data[6] = $status_img;

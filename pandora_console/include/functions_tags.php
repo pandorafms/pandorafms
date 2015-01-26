@@ -1850,8 +1850,33 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 		}
 
 	}
+	$disabled_sql = '';
+	if (!empty($filter['disabled'])) {
+		$disabled_sql = " AND disabled = ".$filter['disabled'];
+	}
+	
+	$order_by_condition = '';
+	if (!empty($filter['order'])) {
+		$order_by_condition = " ORDER BY ".$filter['order'];
+	} else {
+		$order_by_condition = " ORDER BY tagente.nombre ASC";
+	}
+	$limit_sql = '';
+	if (isset($filter['offset'])) {
+		$offset = $filter['offset'];
+	}
+	if (isset($filter['limit'])) {
+		$limit = $filter['limit'];
+	}
+	
+	if (isset($offset) && isset($limit)) {
+		$limit_sql = " LIMIT $offset, $limit "; 
+	}
+	
 	if (!empty($filter['group_by'])) {
 		$group_by = " GROUP BY ".$filter['group_by'];
+	} else {
+		$group_by = " GROUP BY tagente.nombre";
 	}
 
 	$id_agent_search = '';
@@ -1874,6 +1899,16 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 		}
 	}
 
+	//~ $user_agents_sql = "SELECT ".$select_fields ."
+		//~ FROM tagente, tagente_modulo, ttag_module 
+		//~ WHERE tagente.id_agente = tagente_modulo.id_agente
+		//~ AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+		//~ ". $tag_filter .
+		//~ $groups_clause . $search_sql . $void_agents .
+		//~ $status_sql .
+		//~ $group_by .
+		//~ " ORDER BY tagente.nombre ASC";
+		
 	$user_agents_sql = "SELECT ".$select_fields ."
 		FROM tagente, tagente_modulo, ttag_module 
 		WHERE tagente.id_agente = tagente_modulo.id_agente
@@ -1881,10 +1916,11 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 		". $tag_filter .
 		$groups_clause . $search_sql . $void_agents .
 		$status_sql .
+		$disabled_sql .
 		$group_by .
-		" ORDER BY tagente.nombre ASC";
+		$order_by_condition .
+		$limit_sql;
 
-	//return db_get_sql ($user_agents);	
 	$user_agents = db_get_all_rows_sql($user_agents_sql);	
 
 	if ($user_agents == false) {
@@ -1904,7 +1940,7 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	return $user_agents;
 }
 
-function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields = false, $filter = false, $return_all_fields = false) {
+function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields = false, $filter = false, $return_all_fields = false, $get_filter_status = -1) {
 	
 	global $config;
 	
@@ -1914,18 +1950,18 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 	
 	if (!is_array ($fields)) {
 		$fields = array ();
-		$fields[0] = "id_agente_modulo";
-		$fields[1] = "nombre";
+		$fields[0] = "tagente_modulo.id_agente_modulo";
+		$fields[1] = "tagente_modulo.nombre";
 	}
 	$select_fields = implode(',',$fields);
 
 	if ($filter) {
 		$filter_sql = '';
 		if (isset($filter['disabled'])) {
-			$filter_sql .= " AND disabled = ".$filter['disabled'];
+			$filter_sql .= " AND tagente_modulo.disabled = ".$filter['disabled'];
 		}
 		if (isset($filter['nombre'])) {
-			$filter_sql .= ' AND nombre LIKE "' .$filter['nombre'].'"';
+			$filter_sql .= ' AND tagente_modulo.nombre LIKE "' .$filter['nombre'].'"';
 		}
 
 	}
@@ -1935,16 +1971,28 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 		$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agent);
 		if (isset($groups_and_tags[$agent_group]) && ($groups_and_tags[$agent_group] != '')) {
 			//~ $tag_filter = " AND ttag_module.id_tag IN (".$groups_and_tags[$agent_group].")";
-			$tag_filter = " AND id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (".$groups_and_tags[$agent_group]."))";
+			$tag_filter = " AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (".$groups_and_tags[$agent_group]."))";
 		}
 	}
 		
-	$agent_modules_sql = "SELECT ".$select_fields ."
-		FROM tagente_modulo 
-		WHERE id_agente=". $id_agent .
-		$tag_filter .
-		$filter_sql ."
-		ORDER BY nombre";
+	if ($get_filter_status != -1) {
+		$agent_modules_sql = "SELECT ".$select_fields ."
+			FROM tagente_modulo, tagente_estado
+			WHERE tagente_modulo.id_agente=". $id_agent .
+			" AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			 AND tagente_estado.estado = ".$get_filter_status .
+			$tag_filter .
+			$filter_sql ."
+			ORDER BY nombre";
+	} else {
+
+		$agent_modules_sql = "SELECT ".$select_fields ."
+			FROM tagente_modulo 
+			WHERE id_agente=". $id_agent .
+			$tag_filter .
+			$filter_sql ."
+			ORDER BY nombre";
+	}
 		
 	$agent_modules = db_get_all_rows_sql($agent_modules_sql);
 	

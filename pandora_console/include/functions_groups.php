@@ -1893,6 +1893,8 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 		}
 	}
 
+	$list = array();
+	
 	if ($list_groups == false) {
 		$list_groups = array();
 	}

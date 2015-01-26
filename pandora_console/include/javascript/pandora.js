@@ -177,7 +177,8 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
-	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
+	$('#module').append ($('<option></option>')
+		.html ("Loading...").attr ("value", 0));
 	
 	
 	// Check if homedir was received like a JSON

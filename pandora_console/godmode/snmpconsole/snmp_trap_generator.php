@@ -68,7 +68,7 @@ $table->data[0][1] = html_print_input_text('snmp_host_address', $snmp_host_addre
 $table->data[1][0] = __('Community');
 $table->data[1][1] = html_print_input_text('snmp_community', $snmp_community, '', 50, 255, true);
 
-$table->data[2][0] = __('OID');
+$table->data[2][0] = __('Enterprise String');
 $table->data[2][1] = html_print_input_text('snmp_oid', $snmp_oid, '', 50, 255, true);
 
 $table->data[3][0] = __('SNMP Agent');

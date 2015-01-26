@@ -44,7 +44,7 @@ $data[3] = html_print_select ($snmp_versions, 'snmp_version', $snmp_version,
 push_table_row ($data, 'snmp_port');
 
 $data = array ();
-$data[0] = __('SNMP OID');
+$data[0] = __('SNMP Enterprise String');
 $data[1] = html_print_input_text ('snmp_oid', $snmp_oid, '', 30, 400, true);
 //$table->colspan['snmp_2'][1] = 3;
 $data[2] = __('SNMP community');

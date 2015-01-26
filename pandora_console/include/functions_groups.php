@@ -537,12 +537,22 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
  *
  * @return int Status of the agents.
  */
-function groups_get_status ($id_group = 0) {
+function groups_get_status ($id_group = 0, $strict_user = false) {
 	global $config;
 	
 	require_once ($config['homedir'].'/include/functions_reporting.php');
 	
-	$data = reporting_get_group_stats($id_group);
+	if ($strict_user) {
+		$acltags = tags_get_user_module_and_tags ($config['id_user'], 'AR', $strict_user);
+		$group_status = group_get_data ($config['id_user'], $strict_user, $acltags, false, 'group');
+		$data['monitor_alerts_fired'] = $groups_status['_monitors_alerts_fired_'];
+		$data['agent_critical'] = $groups_status['_agents_critical_'];
+		$data['agent_warning'] = $groups_status['_agents_warning_'];
+		$data['agent_unknown'] = $groups_status['_agents_unknown_'];
+		
+	} else {
+		$data = reporting_get_group_stats($id_group);
+	}
 	
 	if ($data['monitor_alerts_fired'] > 0) {
 		return AGENT_STATUS_ALERT_FIRED;
@@ -1394,7 +1404,6 @@ function groups_monitor_ok ($group_array, $strict_user = false, $id_group_strict
 	
 
 	if ($strict_user) {
-		$tags_clause = "AND tagente_modulo.id_agente_modulo NOT IN (SELECT id_agente_modulo FROM ttag_module)";
 		$count = db_get_sql ("SELECT COUNT(*) FROM tagente_modulo, tagente_estado
 							WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo
 							AND tagente_estado.estado = 0
@@ -1796,8 +1805,6 @@ function groups_get_tree(&$groups, $parent = false) {
 	
 	return $return;
 }
-
-
 function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
 	global $config;
 	
@@ -1831,7 +1838,6 @@ function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
 
 function group_get_data ($id_user = false, $user_strict = false, $acltags, $returnAllGroup = false, $mode = 'group') {
 	global $config;
-
 	if ($id_user == false) {
 		$id_user = $config['id_user'];
 	}
@@ -1887,6 +1893,8 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 		}
 	}
 
+	$list = array();
+	
 	if ($list_groups == false) {
 		$list_groups = array();
 	}

@@ -1683,8 +1683,8 @@ class Tree {
 				unset($items[$key]);
 
 				// The 'id' parameter will be stored as 'server_id' => 'id'
-				// $resultItem['id'] = array();
-				// $resultItem['id'][$child['server_id']] = $child['id'];
+				$resultItem['id'] = array();
+				$resultItem['id'][$child['server_id']] = $child['id'];
 				$resultItem['rootID'] = array();
 				$resultItem['rootID'][$child['server_id']] = $child['rootID'];
 
@@ -1719,7 +1719,7 @@ class Tree {
 					// Match with the name
 					if ($child['name'] == $child2['name'] && $child['type'] == $child2['type']) {
 						// Add the matched ids
-						// $resultItem['id'][$child2['server_id']] = $child2['id'];
+						$resultItem['id'][$child2['server_id']] = $child2['id'];
 						$resultItem['rootID'][$child2['server_id']] = $child2['rootID'];
 
 						// Add the matched counters
@@ -1732,7 +1732,7 @@ class Tree {
 
 						// Add the matched children
 						if (isset($child2['children']))
-							$resultItem['children'] += $child2['children'];
+							$resultItem['children'] = array_merge($resultItem['children'], $child2['children']);
 
 						// Sum the agents number
 						if (isset($child2['agentsNum']))
@@ -1751,7 +1751,7 @@ class Tree {
 					$mergedItems[] = $resultItem;
 			}
 			
-			//usort($mergedItems, "cmpSortNames");
+			usort($mergedItems, "cmpSortNames");
 
 			return $mergedItems;
 		}
@@ -1789,7 +1789,8 @@ class Tree {
 						if (empty($item['parent']))
 							$processed_items[] = __getProcessedItem($key, $items, $server['id']);
 					}
-					$item_list += $processed_items;
+					//$item_list += $processed_items;
+					$item_list = array_merge($item_list, $processed_items);
 
 					metaconsole_restore_db();
 				}
@@ -1819,7 +1820,8 @@ class Tree {
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
 					$this->processAgents($newItems);
-					$items += $newItems;
+					//$items += $newItems;
+					$items = array_merge($items, $newItems);
 
 					metaconsole_restore_db();
 				}

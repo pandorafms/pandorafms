@@ -660,7 +660,7 @@ class Tree {
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
-									GROUP BY tmg.id_mg
+									GROUP BY tmg.name
 									ORDER BY $order_fields";
 						}
 						else {
@@ -761,6 +761,7 @@ class Tree {
 									$module_status_join
 									WHERE tam.disabled = 0
 										$module_search_filter
+									GROUP BY tam.nombre
 									ORDER BY $order_fields";
 						}
 						else {

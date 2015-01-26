@@ -660,7 +660,7 @@ class Tree {
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
-									GROUP BY tmg.name
+									GROUP BY tmg.id_mg
 									ORDER BY $order_fields";
 						}
 						else {

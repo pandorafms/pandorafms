@@ -1197,7 +1197,7 @@ class Tree {
 		}
 		else if ($server_id) {
 			$server = metaconsole_get_servers($server_id);
-			if (metaconsole_connect($server) != NOERR) {
+			if (metaconsole_connect($server) == NOERR) {
 				$data = db_process_sql($sql);
 				metaconsole_restore_db();
 			}
@@ -1564,7 +1564,7 @@ class Tree {
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
 					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) == NOERR)
+					if (metaconsole_connect($server) != NOERR)
 						continue;
 
 					$this->rootID = $rootID;
@@ -1778,7 +1778,7 @@ class Tree {
 
 				$item_list = array();
 				foreach ($servers as $server) {
-					if (metaconsole_connect($server) == NOERR)
+					if (metaconsole_connect($server) != NOERR)
 						continue;
 
 					$items = $this->getItems();
@@ -1813,7 +1813,7 @@ class Tree {
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
 					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) == NOERR)
+					if (metaconsole_connect($server) != NOERR)
 						continue;
 
 					$this->rootID = $rootID;
@@ -1872,7 +1872,7 @@ class Tree {
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
 					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) == NOERR)
+					if (metaconsole_connect($server) != NOERR)
 						continue;
 
 					$this->rootID = $rootID;

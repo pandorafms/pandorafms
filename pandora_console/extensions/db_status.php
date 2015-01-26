@@ -191,6 +191,23 @@ function extension_db_check_tables_differences($connection_test,
 		__('Unsuccessful the DB Pandora has not all tables. The tables lost are (%s)',
 			implode(", ", $diff_tables)));
 	
+	if (!empty($diff_tables)) {
+		foreach ($diff_tables as $table) {
+			mysql_select_db($db_name_test, $connection_test);
+			$result = mysql_query("SHOW CREATE TABLE " . $table, $connection_test);
+			$tables_test = array();
+			while ($row = mysql_fetch_array ($result)) {
+				ui_print_info_message(
+					__('You can execute this SQL query for to fix.') . "<br />" .
+					'<pre>' .
+						$row[1] .
+					'</pre>'
+				);
+			}
+			mysql_free_result ($result);
+		}
+	}
+	
 	// --------------- Check the fields -------------------------------
 	$correct_fields = true;
 	
@@ -237,6 +254,12 @@ function extension_db_check_tables_differences($connection_test,
 				ui_print_error_message(
 					__('Unsuccessful the table %s has not the field %s',
 					$table, $name_field));
+				ui_print_info_message(
+					__('You can execute this SQL query for to fix.') . "<br />" .
+					'<pre>' .
+						"ALTER TABLE " . $table . " ADD COLUMN " . $name_field . " text;" .
+					'</pre>'
+				);
 			}
 			else {
 				$correct_fields = false;
@@ -251,26 +274,55 @@ function extension_db_check_tables_differences($connection_test,
 								ui_print_error_message(
 									__('Unsuccessful the field %s in the table %s must be setted the type with %s.',
 									$name_field, $table, $value));
+								ui_print_info_message(
+									__('You can execute this SQL query for to fix.') . "<br />" .
+									'<pre>' .
+										"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . " " . $value . ";" .
+									'</pre>'
+								);
 								break;
 							case 'null':
 								ui_print_error_message(
 									__('Unsuccessful the field %s in the table %s must be setted the null values with %s.',
 									$name_field, $table, $value));
+								if ($value == "no") {
+									ui_print_info_message(
+										__('You can execute this SQL query for to fix.') . "<br />" .
+										'<pre>' .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . "INT NULL;" .
+										'</pre>'
+									);
+								}
+								else {
+									ui_print_info_message(
+										__('You can execute this SQL query for to fix.') . "<br />" .
+										'<pre>' .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . "INT NOT NULL;" .
+										'</pre>'
+									);
+								}
+								
 								break;
 							case 'key':
 								ui_print_error_message(
 									__('Unsuccessful the field %s in the table %s must be setted the key as defined in the SQL file.',
 									$name_field, $table));
+								ui_print_info_message(
+									__('Please check the SQL file for to know the kind of key needed.'));
 								break;
 							case 'default':
 								ui_print_error_message(
 									__('Unsuccessful the field %s in the table %s must be setted the default value as %s.',
 									$name_field, $table, $value));
+								ui_print_info_message(
+									__('Please check the SQL file for to know the kind of default value needed.'));
 								break;
 							case 'extra':
 								ui_print_error_message(
 									__('Unsuccessful the field %s in the table %s must be setted as defined in the SQL file.',
 									$name_field, $table));
+								ui_print_info_message(
+									__('Please check the SQL file for to know the kind of extra config needed.'));
 								break;
 						}
 					}

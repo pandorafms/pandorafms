@@ -44,10 +44,13 @@ class Tree {
 
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
-		require_once($config['homedir']."/include/functions_tags.php");
 
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
-		$this->acltags = tags_get_user_module_and_tags($config['id_user'], 'AR');
+
+		if ($this->strictACL) {
+			require_once($config['homedir']."/include/functions_tags.php");
+			$this->acltags = tags_get_user_module_and_tags($config['id_user'], 'AR');
+		}
 	}
 	
 	public function setType($type) {
@@ -254,73 +257,97 @@ class Tree {
 
 				// ACL Group
 				$group_acl =  "";
-				if (!empty($this->userGroups)) {
-					$user_groups_str = implode(",", array_keys($this->userGroups));
-					$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+				if (!$this->strictACL) {
+					if (!empty($this->userGroups)) {
+						$user_groups_str = implode(",", array_keys($this->userGroups));
+						$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+					}
+					else {
+						$group_acl = "AND ta.id_grupo = -1";
+					}
 				}
 				else {
-					$group_acl = "AND ta.id_grupo = -1";
+					if (!empty($this->acltags)) {
+						$groups = array();
+						foreach ($this->acltags as $group_id => $tags_str) {
+							if (empty($tags_str))
+								$groups[] = $group_id;
+						}
+						if (!empty($groups)) {
+							$user_groups_str = implode(",", $groups);
+							$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+						}
+						else {
+							$group_acl = "AND ta.id_grupo = -1";
+						}
+					}
+					else {
+						$group_acl = "AND ta.id_grupo = -1";
+					}
 				}
 
 				switch ($type) {
 					// Get the agents of a group
 					case 'group':
-							if (empty($rootID) || $rootID == -1) {
-								$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon, COUNT(ta.id_agente) AS num_agents';
-								$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
+						if (empty($rootID) || $rootID == -1) {
+							if ($this->strictACL)
+								return false;
 
-								// Add the agent counters to the columns
-								$agent_table = "SELECT tac.id_agente
-												FROM tagente AS tac
-												$modules_join
-												WHERE tac.disabled = 0
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter
-													AND tac.id_os = tos.id_os";
-								//$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
-								if (!empty($counter_columns))
-									$columns .= ", $counter_columns";
+							$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon, COUNT(ta.id_agente) AS num_agents';
+							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
 
-								// WARNING: THE AGENTS JOIN ARE NOT FILTERING BY tg.id_grupo = ta.id_grupo
-
-								$sql = "SELECT $columns
-										FROM tgrupo AS tg
-										LEFT JOIN tagente AS ta
-												LEFT JOIN tagente_modulo AS tam
-													ON tam.disabled = 0
-														AND ta.id_agente = tam.id_agente
-														$module_search_filter
-												$module_status_join
-											ON ta.disabled = 0
-												AND tg.id_grupo = ta.id_grupo
+							// Add the agent counters to the columns
+							$agent_table = "SELECT tac.id_agente
+											FROM tagente AS tac
+											$modules_join
+											WHERE tac.disabled = 0
 												$group_acl
 												$agent_search_filter
 												$agent_status_filter
-										GROUP BY tg.id_grupo
-										ORDER BY $order_fields";
-							}
-							else {
-								$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.fired_count,
-									ta.normal_count, ta.warning_count, ta.critical_count,
-									ta.unknown_count, ta.notinit_count, ta.total_count';
-								$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
+												AND tac.id_os = tos.id_os";
+							//$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
+							if (!empty($counter_columns))
+								$columns .= ", $counter_columns";
 
-								$sql = "SELECT $columns
-										FROM tagente AS ta
-										LEFT JOIN tagente_modulo AS tam
-											ON tam.disabled = 0
-												AND ta.id_agente = tam.id_agente
-												$module_search_filter
-										$module_status_join
-										WHERE ta.disabled = 0
-											AND ta.id_grupo = $rootID
+							// WARNING: THE AGENTS JOIN ARE NOT FILTERING BY tg.id_grupo = ta.id_grupo
+
+							$sql = "SELECT $columns
+									FROM tgrupo AS tg
+									LEFT JOIN tagente AS ta
+											LEFT JOIN tagente_modulo AS tam
+												ON tam.disabled = 0
+													AND ta.id_agente = tam.id_agente
+													$module_search_filter
+											$module_status_join
+										ON ta.disabled = 0
+											AND tg.id_grupo = ta.id_grupo
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
-										GROUP BY ta.id_agente
-										ORDER BY $order_fields";
-							}
+									GROUP BY tg.id_grupo
+									ORDER BY $order_fields";
+						}
+						else {
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.fired_count,
+								ta.normal_count, ta.warning_count, ta.critical_count,
+								ta.unknown_count, ta.notinit_count, ta.total_count';
+							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
+
+							$sql = "SELECT $columns
+									FROM tagente AS ta
+									LEFT JOIN tagente_modulo AS tam
+										ON tam.disabled = 0
+											AND ta.id_agente = tam.id_agente
+											$module_search_filter
+									$module_status_join
+									WHERE ta.disabled = 0
+										AND ta.id_grupo = $rootID
+										$group_acl
+										$agent_search_filter
+										$agent_status_filter
+									GROUP BY ta.id_agente
+									ORDER BY $order_fields";
+						}
 						break;
 					// Get the modules of an agent
 					case 'agent':
@@ -370,18 +397,46 @@ class Tree {
 
 				// ACL Group
 				$group_acl =  "";
-				if (!empty($this->userGroups)) {
-					$user_groups_str = implode(",", array_keys($this->userGroups));
-					$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+				if (!$this->strictACL) {
+					if (!empty($this->userGroups)) {
+						$user_groups_str = implode(",", array_keys($this->userGroups));
+						$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+					}
+					else {
+						$group_acl = "AND ta.id_grupo = -1";
+					}
 				}
 				else {
-					$group_acl = "AND ta.id_grupo = -1";
+					if (!empty($this->acltags) && !empty($rootID) && $rootID != -1) {
+						$groups = array();
+						foreach ($this->acltags as $group_id => $tags_str) {
+							if (!empty($tags_str)) {
+								$tags = explode(",", $tags_str);
+
+								if (in_array($rootID, $tags))
+									$groups[] = $group_id;
+							}
+						}
+						if (!empty($groups)) {
+							$user_groups_str = implode(",", $groups);
+							$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+						}
+						else {
+							$group_acl = "AND ta.id_grupo = -1";
+						}
+					}
+					else {
+						$group_acl = "AND ta.id_grupo = -1";
+					}
 				}
 
 				switch ($type) {
 					// Get the agents of a tag
 					case 'tag':
 						if (empty($rootID) || $rootID == -1) {
+							if ($this->strictACL)
+								return false;
+
 							$columns = 'tt.id_tag AS id, tt.name AS name';
 							$order_fields = 'tt.name ASC, tt.id_tag ASC';
 
@@ -1217,27 +1272,41 @@ class Tree {
 	}
 	
 	public function getData() {
-		switch ($this->type) {
-			case 'os':
-				$this->getDataOS();
-				break;
-			case 'group':
-				$this->getDataGroup();
-				break;
-			case 'module_group':
-				$this->getDataModuleGroup();
-				break;
-			case 'module':
-				$this->getDataModules();
-				break;
-			case 'tag':
-				$this->getDataTag();
-				break;
-			case 'agent':
-				$this->getDataAgent();
-				break;
-			default:
-				$this->getDataExtended();
+
+		if (! $this->strictACL) {
+			switch ($this->type) {
+				case 'os':
+					$this->getDataOS();
+					break;
+				case 'group':
+					$this->getDataGroup();
+					break;
+				case 'module_group':
+					$this->getDataModuleGroup();
+					break;
+				case 'module':
+					$this->getDataModules();
+					break;
+				case 'tag':
+					$this->getDataTag();
+					break;
+				case 'agent':
+					$this->getDataAgent();
+					break;
+				default:
+					$this->getDataExtended();
+			}
+		}
+		else {
+			switch ($this->type) {
+				case 'group':
+				case 'tag':
+					$this->getDataStrict();
+					break;
+				case 'agent':
+					$this->getDataAgent();
+					break;
+			}
 		}
 	}
 
@@ -1259,6 +1328,260 @@ class Tree {
 			$processed_items = $items;
 		}
 
+		$this->tree = $processed_items;
+	}
+
+	private function getDataStrict () {
+		global $config;
+
+		require_once($config['homedir']."/include/functions_groups.php");
+
+		function cmpSortNames($a, $b) {
+			return strcmp($a["name"], $b["name"]);
+		}
+
+		// Return all the children groups
+		function __searchChildren(&$groups, $id, $server_id = false) {
+			$children = array();
+			foreach ($groups as $key => $group) {
+				if (isset($group['_parent_id_']) && $group['_parent_id_'] == $id) {
+					$children_aux = __getProcessedItem($key, $groups, $server_id);
+					if (!empty($children_aux))
+						$children[] = $children_aux;
+				}
+			}
+			return $children;
+		}
+
+		function __getProcessedItem($itemKey, &$items, $server_id = false) {
+			if (!isset($items[$itemKey])) {
+				return false;
+			}
+			else {
+				$item = $items[$itemKey];
+				unset($items[$itemKey]);
+			}
+			$processed_item = array();
+			$processed_item['id'] = $item['_id_'];
+			$processed_item['rootID'] = $item['_id_'];
+			$processed_item['name'] = $item['_name_'];
+			$processed_item['searchChildren'] = 1;
+
+			//$processed_item['agentsNum'] = (int) $item['num_agents'];
+
+			if (defined ('METACONSOLE') && $server_id) {
+				$processed_item['server_id'] = $server_id;
+			}
+			if (isset($item['_is_tag_']) && $item['_is_tag_']) {
+				$processed_item['type'] = 'tag';
+				$processed_item['rootType'] = 'tag';
+			}
+			else {
+				$processed_item['type'] = 'group';
+				$processed_item['rootType'] = 'group';
+				$processed_item['parentID'] = $item['_parent_id_'];
+
+				if (!empty($item['_iconImg_']))
+					$processed_item['iconHTML'] = $item['_iconImg_'];
+				else
+					$processed_item['icon'] = "without_group.png";
+			}
+
+			$counters = array();
+			if (isset($item['_agents_unknown_']))
+				$counters['unknown'] = $item['_agents_unknown_'];
+			if (isset($item['_agents_critical_']))
+				$counters['critical'] = $item['_agents_critical_'];
+			if (isset($item['_agents_warning_']))
+				$counters['warning'] = $item['_agents_warning_'];
+			if (isset($item['_agents_not_init_']))
+				$counters['not_init'] = $item['_agents_not_init_'];
+			if (isset($item['_agents_ok_']))
+				$counters['ok'] = $item['_agents_ok_'];
+			if (isset($item['_total_agents_']))
+				$counters['total'] = $item['_total_agents_'];
+			if (isset($item['_monitors_alerts_fired_']))
+				$counters['alerts'] = $item['_monitors_alerts_fired_'];
+
+			$children = __searchChildren($items, $item['_id_'], $server_id);
+			if (!empty($children)) {
+				$processed_item['children'] = $children;
+
+				foreach ($children as $key => $child) {
+					if (isset($child['counters'])) {
+						foreach ($child['counters'] as $type => $value) {
+							if (isset($counters[$type]))
+								$counters[$type] += $value;
+						}
+					}
+				}
+			}
+
+			if (!empty($counters))
+				$processed_item['counters'] = $counters;
+
+			return $processed_item;
+		}
+
+		function __getMergedItems($items) {
+			// This variable holds the result
+			$mergedItems = array();
+			foreach ($items as $key => $child) {
+				// Store the item in a temporary element
+				$resultItem = $child;
+
+				// Remove the item
+				unset($items[$key]);
+
+				// The 'id' parameter will be stored as 'server_id' => 'id'
+				$resultItem['id'] = array();
+				$resultItem['id'][$child['server_id']] = $child['id'];
+				$resultItem['rootID'] = array();
+				$resultItem['rootID'][$child['server_id']] = $child['rootID'];
+
+				// Initialize counters if any of it don't exist
+				if (!isset($resultItem['counters']))
+					$resultItem['counters'] = array();
+				if (!isset($resultItem['counters']['unknown']))
+					$resultItem['counters']['unknown'] = 0;
+				if (!isset($resultItem['counters']['critical']))
+					$resultItem['counters']['critical'] = 0;
+				if (!isset($resultItem['counters']['warning']))
+					$resultItem['counters']['warning'] = 0;
+				if (!isset($resultItem['counters']['not_init']))
+					$resultItem['counters']['not_init'] = 0;
+				if (!isset($resultItem['counters']['ok']))
+					$resultItem['counters']['ok'] = 0;
+				if (!isset($resultItem['counters']['total']))
+					$resultItem['counters']['total'] = 0;
+				if (!isset($resultItem['counters']['alerts']))
+					$resultItem['counters']['alerts'] = 0;
+
+				// Add the children
+				if (!isset($resultItem['children']))
+					$resultItem['children'] = array();
+
+				// Iterate over the list to search items that match the actual item
+				foreach ($items as $key2 => $child2) {
+					// Skip the actual or empty items
+					if (!isset($key) || !isset($key2) || $key == $key2)
+						continue;
+
+					// Match with the name
+					if ($child['name'] == $child2['name'] && $child['type'] == $child2['type']) {
+						// Add the matched ids
+						$resultItem['id'][$child2['server_id']] = $child2['id'];
+						$resultItem['rootID'][$child2['server_id']] = $child2['rootID'];
+
+						// Add the matched counters
+						if (isset($child2['counters']) && !child2($item['counters'])) {
+							foreach ($child2['counters'] as $type => $value) {
+								if (isset($resultItem['counters'][$type]))
+									$resultItem['counters'][$type] += $value;
+							}
+						}
+						// Add the matched children
+						if (isset($child2['children']))
+							$resultItem['children'] += $child2['children'];
+
+						// Remove the item
+						unset($items[$key2]);
+					}
+				}
+				// Get the merged children (recursion)
+				if (!empty($resultItem['children']))
+					$resultItem['children'] = __getMergedItems($resultItem['children']);
+
+				// Add the resulting item
+				if (!empty($resultItem) && !empty($resultItem['counters']['total']))
+					$mergedItems[] = $resultItem;
+			}
+
+			usort($mergedItems, "cmpSortNames");
+
+			return $mergedItems;
+		}
+		
+		// Data retrieving
+
+		$processed_items = array();
+
+		// Groups and tags
+		if ($this->id == -1) {
+			if (! defined ('METACONSOLE')) {
+				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
+
+				// Build the group and tag hierarchy
+				$processed_items = array();
+				foreach ($items as $key => $item) {
+					if (empty($item['_parent_id_'])) {
+						$processed_item = __getProcessedItem($key, $items);
+
+						if (!empty($processed_item)
+								&& isset($processed_item['counters'])
+								&& isset($processed_item['counters']['total'])
+								&& !empty($processed_item['counters']['total'])) {
+							$processed_items[] = $processed_item;
+						}
+					}
+				}
+			}
+			else {
+				$unmerged_items = array();
+
+				$servers = metaconsole_get_servers();
+				foreach ($servers as $server) {
+					if (metaconsole_connect($server) != NOERR)
+						continue;
+
+					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
+
+					// Build the group hierarchy
+					$processed_items = array();
+					foreach ($items as $key => $item) {
+						if (empty($item['_parent_id_']))
+							$processed_items[] = __getProcessedItem($key, $items, $server['id']);
+					}
+					$unmerged_items += $processed_items;
+
+					metaconsole_restore_db();
+				}
+				
+				$processed_items = __getMergedItems($unmerged_items);
+			}
+		}
+		// Agents
+		else {
+			if (! defined ('METACONSOLE')) {
+				$items = $this->getItems();
+				$this->processAgents($items);
+				$processed_items = $items;
+			}
+			else {
+				$rootIDs = $this->rootID;
+
+				$items = array();
+				foreach ($rootIDs as $serverID => $rootID) {
+					$server = metaconsole_get_servers($serverID);
+					if (metaconsole_connect($server) == NOERR)
+						continue;
+
+					$this->rootID = $rootID;
+					$newItems = $this->getItems();
+					$this->processAgents($newItems);
+					$items += $newItems;
+
+					metaconsole_restore_db();
+				}
+				$this->rootID = $rootIDs;
+
+				if (!empty($items))
+					usort($items, "cmpSortTagNames");
+
+				$processed_items = $items;
+			}
+		}
+		
 		$this->tree = $processed_items;
 	}
 	
@@ -1297,23 +1620,16 @@ class Tree {
 			$processed_item['agentsNum'] = (int) $item['num_agents'];
 			$processed_item['searchChildren'] = 1;
 
+			$processed_item['type'] = 'group';
+			$processed_item['rootType'] = 'group';
+			$processed_item['parentID'] = $item['parent'];
+
+			if (!empty($item['icon']))
+				$processed_item['icon'] = $item['icon'].".png";
+			else
+				$processed_item['icon'] = "without_group.png";
 			if (defined ('METACONSOLE') && $server_id) {
 				$processed_item['server_id'] = $server_id;
-			}
-
-			if (isset($item['_is_tag_']) && $item['_is_tag_']) {
-				$processed_item['type'] = 'tag';
-				$processed_item['rootType'] = 'tag';
-			}
-			else {
-				$processed_item['type'] = 'group';
-				$processed_item['rootType'] = 'group';
-				$processed_item['parentID'] = $item['parent'];
-
-				if (!empty($item['icon']))
-					$processed_item['icon'] = $item['icon'].".png";
-				else
-					$processed_item['icon'] = "without_group.png";
 			}
 
 			// $counters = array();

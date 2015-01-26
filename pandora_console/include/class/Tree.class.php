@@ -1846,22 +1846,133 @@ class Tree {
 			return strcmp($a["name"], $b["name"]);
 		}
 
+		function __getMergedTags ($items) {
+			// This variable holds the result
+			$mergedItems = array();
+
+			foreach ($items as $key => $item) {
+
+				// Store the item in a temporary element
+				$resultItem = $item;
+				// Remove the item
+				unset($items[$key]);
+
+				// The 'id' parameter will be stored as 'server_id' => 'id'
+				$resultItem['id'] = array();
+				$resultItem['id'][$item['server_id']] = $item['id'];
+				$resultItem['rootID'] = array();
+				$resultItem['rootID'][$item['server_id']] = $item['rootID'];
+
+				// Initialize counters if any of it don't exist
+				if (!isset($resultItem['counters']))
+					$resultItem['counters'] = array();
+				if (!isset($resultItem['counters']['unknown']))
+					$resultItem['counters']['unknown'] = 0;
+				if (!isset($resultItem['counters']['critical']))
+					$resultItem['counters']['critical'] = 0;
+				if (!isset($resultItem['counters']['warning']))
+					$resultItem['counters']['warning'] = 0;
+				if (!isset($resultItem['counters']['not_init']))
+					$resultItem['counters']['not_init'] = 0;
+				if (!isset($resultItem['counters']['ok']))
+					$resultItem['counters']['ok'] = 0;
+				if (!isset($resultItem['counters']['total']))
+					$resultItem['counters']['total'] = 0;
+				if (!isset($resultItem['counters']['alerts']))
+					$resultItem['counters']['alerts'] = 0;
+
+				// Iterate over the list to search items that match the actual item
+				foreach ($items as $key2 => $item2) {
+					// Skip the actual or empty items
+					if (!isset($key) || !isset($key2) || $key == $key2)
+						continue;
+
+					// Match with the name
+					if ($item['name'] == $item2['name']) {
+						// Add the matched ids
+						$resultItem['id'][$item2['server_id']] = $item2['id'];
+						$resultItem['rootID'][$item2['server_id']] = $item2['rootID'];
+
+						// Add the matched counters
+						if (isset($item2['counters']) && !empty($item2['counters']) {
+							foreach ($item2['counters'] as $type => $value) {
+								if (isset($resultItem['counters'][$type]))
+									$resultItem['counters'][$type] += $value;
+							}
+						}
+
+						// Sum the agents number
+						if (isset($child2['agentsNum']))
+							$resultItem['agentsNum'] += $child2['agentsNum'];
+
+						// Remove the item
+						unset($items[$key2]);
+					}
+				}
+
+				// Add the resulting item
+				if (!empty($resultItem) && !empty($resultItem['agentsNum']))
+					$mergedItems[] = $resultItem;
+			}
+			
+			usort($mergedItems, "cmpSortNames");
+
+			return $mergedItems;
+		}
+
 		$processed_items = array();
 
 		// Tags
 		if ($this->id == -1) {
-			$items = $this->getItems();
+			if (! defined ('METACONSOLE')) {
+				$items = $this->getItems();
 
-			foreach ($items as $key => $item) {
-				$processed_item = array();
-				$processed_item['id'] = $item['id'];
-				$processed_item['name'] = $item['name'];
-				$processed_item['type'] = $this->type;
-				$processed_item['rootID'] = $item['id'];
-				$processed_item['rootType'] = $this->rootType;
-				$processed_item['searchChildren'] = 1;
+				foreach ($items as $key => $item) {
+					$processed_item = array();
+					$processed_item['id'] = $item['id'];
+					$processed_item['name'] = $item['name'];
+					$processed_item['type'] = $this->type;
+					$processed_item['rootID'] = $item['id'];
+					$processed_item['rootType'] = $this->rootType;
+					$processed_item['searchChildren'] = 1;
 
-				$processed_items[] = $processed_item;
+					$processed_items[] = $processed_item;
+				}
+			}
+			else {
+				$servers = metaconsole_get_servers();
+
+				$item_list = array();
+				foreach ($servers as $server) {
+					if (metaconsole_connect($server) != NOERR)
+						continue;
+
+					$items = $this->getItems();
+
+					$processed_items = array();
+					foreach ($items as $key => $item) {
+						$processed_item = array();
+						$processed_item['id'] = $item['id'];
+						$processed_item['name'] = $item['name'];
+						$processed_item['type'] = $this->type;
+						$processed_item['rootID'] = $item['id'];
+						$processed_item['rootType'] = $this->rootType;
+						$processed_item['server_id'] = $server['id'];
+						$processed_item['searchChildren'] = 1;
+
+						$processed_items[] = $processed_item;
+					}
+					$items = $processed_items;
+
+					$item_list = array_merge($item_list, $items);
+
+					metaconsole_restore_db();
+				}
+
+				if (!empty($item_list))
+					usort($item_list, "cmpSortNames");
+
+				$processed_items = __getMergedTags($item_list);
 			}
 		}
 		// Agents

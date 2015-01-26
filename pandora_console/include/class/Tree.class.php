@@ -1790,7 +1790,10 @@ class Tree {
 							$processed_items[] = __getProcessedItem($key, $items, $server['id']);
 					}
 					//$item_list += $processed_items;
-					$item_list = array_merge($item_list, $processed_items);
+					//$item_list = array_merge($item_list, $processed_items);
+					foreach ($processed_items as $processed_item) {
+						$item_list[] = $processed_item;
+					}
 
 					metaconsole_restore_db();
 				}

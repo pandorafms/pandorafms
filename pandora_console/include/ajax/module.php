@@ -121,7 +121,7 @@ if ($get_module_detail) {
 	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name . "\", 0, -1)'>". html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
 	$formtable->rowspan[0][3] = 2;
 	$formtable->cellstyle[0][3] = 'vertical-align: middle;';
-	
+	/*
 	$formtable->data[1][0] = html_print_radio_button_extended(
 		"selection_mode", 'range','', $selection_mode, false, '',
 		'style="margin-right: 15px;"', true) . __("Specify time range");
@@ -140,7 +140,7 @@ if ($get_module_detail) {
 		'', 10, 10, true);
 	$formtable->data[1][2] .= html_print_input_text('time_to', $time_to,
 		'', 9, 7, true);
-	
+	*/
 	html_print_table($formtable);
 	
 	$moduletype_name = modules_get_moduletype_name(
@@ -156,12 +156,8 @@ if ($get_module_detail) {
 	
 	
 	$columns = array(
-		"Timestamp" => array(
-			"utimestamp",
-			"modules_format_timestamp",
-			"align" => "left"),
 		"Data" => array(
-			"datos",
+			"data",
 			"modules_format_data",
 			"align" => "left"),
 		"Time" => array(
@@ -266,7 +262,7 @@ if ($get_module_detail) {
 		ui_print_error_message(__('No available data to show'));
 	}
 	else {
-		ui_pagination ($count, false, $offset, 0, false, 'offset', true, 'binary_dialog');
+		ui_pagination (count($count), false, $offset, 0, false, 'offset', true, 'binary_dialog');
 		html_print_table($table);
 	}
 	
@@ -356,6 +352,7 @@ if ($get_id_tag) {
 	echo $tag_id;
 	return;
 }
+<<<<<<< HEAD
 
 if ($list_modules) {
 	include_once($config['homedir'] . "/include/functions_modules.php");
@@ -1058,4 +1055,5 @@ if ($list_modules) {
 	
 	
 }
+
 ?>

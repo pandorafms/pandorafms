@@ -2679,4 +2679,28 @@ function events_get_count_events_validated ($filter, $period, $date,
 	
 	return $return;
 }
+
+function events_checks_event_tags($event_data, $acltags) {
+	global $config;
+	
+	if (empty($acltags[$event_data['id_grupo']])) {
+			return true;
+	} else {
+		$tags_arr_acl = explode(',',$acltags[$event_data['id_grupo']]);
+		$tags_arr_event = explode(',',$event_data['tags']);
+
+		foreach ($tags_arr_acl as $tag) {
+			$tag_name = tags_get_name($tag);
+			if (in_array($tag_name, $tags_arr_event)) {
+				return true;
+			} else {
+				$has_tag = false;
+			}
+		}
+		if (!$has_tag) {
+			return false;
+		}
+	}
+	return false;
+}
 ?>

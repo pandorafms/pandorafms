@@ -901,7 +901,8 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 				
 				if ($force_group_and_tag) {
 					if (!empty($all_tags[$tag])) {
-						$tags_condition .= sprintf('(tags = "%s"',io_safe_input($all_tags[$tag]));
+						//~ $tags_condition .= sprintf('(tags = "%s"',io_safe_input($all_tags[$tag]));
+						$tags_condition .= "(tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
 						$childrens = groups_get_childrens($group_id, null, true);
 
 						if (empty($childrens)) {
@@ -919,7 +920,8 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 						$tags_condition .= "id_grupo = ".$group_id;
 					}
 				} else {
-					$tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
+					//~ $tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
+					$tags_condition .= "tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
 				}
 			}
 		}
@@ -1337,5 +1339,57 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 	}
 	
 	return false;
+}
+
+/* Return array with groups and their tags */
+function tags_get_user_module_and_tags ($id_user = false, $access = 'AR') {
+	global $config;
+	
+	if ($id_user == false) {
+		$id_user = $config['id_user'];
+	}
+	
+	$acl_column = get_acl_column($access);
+
+	$query = sprintf("SELECT tags, id_grupo 
+				FROM tusuario_perfil, tperfil
+				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
+					tusuario_perfil.id_usuario = '%s' AND 
+					tperfil.%s = 1
+				ORDER BY id_grupo", $id_user, $acl_column);
+	$tags_and_groups = db_get_all_rows_sql($query);
+
+	if ($tags_and_groups == false) {
+		$tags_and_groups = array();
+	}
+	
+	$acltags = array();
+	
+	if ((count($tags_and_groups) == 1) && ($tags_and_groups[0]['id_grupo'] == 0) && ($tags_and_groups[0]['tags'] == '')){ //user with all groups without tags
+		$all_groups = groups_get_all();
+
+		foreach ($all_groups as $id => $name) {
+			$acltags[$id] = '';
+		}
+	} else {
+		foreach ($tags_and_groups as $group_tag) {
+			$acltags[$group_tag['id_grupo']] = $group_tag['tags'];
+			$propagate = db_get_value('propagate', 'tgrupo', 'id_grupo', $group_tag['id_grupo']);
+
+			if ($propagate) {
+				$sql = "SELECT id_grupo FROM tgrupo WHERE parent  = " .$group_tag['id_grupo'];
+				$children = db_get_all_rows_sql($sql);
+
+				if ($children == false) {
+					$children = array();
+				}
+				foreach ($children as $group) {
+					$acltags[$group['id_grupo']] = $group_tag['tags'];
+				}
+			}
+		}
+	}
+	
+	return $acltags;
 }
 ?>

@@ -184,7 +184,7 @@ $formtable->size[2] = '30%';
 
 $formtable->data[0][0] = html_print_radio_button_extended ("selection_mode", 'fromnow', '', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Choose a time from now");
 $formtable->data[0][1] = html_print_extended_select_for_time ('period', $period, '', '', '0', 10, true);
-/*
+
 $formtable->data[1][0] = html_print_radio_button_extended ("selection_mode", 'range','', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Specify time range");
 $formtable->data[1][1] = __('Timestamp from:');
 
@@ -197,7 +197,7 @@ $formtable->data[1][1] .= __('Timestamp to:');
 $formtable->data[1][2] .= '<br />';
 $formtable->data[1][2] .= html_print_input_text ('date_to', $date_to, '', 10, 10, true);
 $formtable->data[1][2] .= html_print_input_text ('time_to', $time_to, '', 9, 7, true);
-*/
+
 if (preg_match ("/string/", $moduletype_name) || $moduletype_name == "log4x") {
 	$formtable->data[2][0] = __('Free text for search');
 	$formtable->data[2][1] = html_print_input_text ("freestring", $freestring, '', 20,30, true);

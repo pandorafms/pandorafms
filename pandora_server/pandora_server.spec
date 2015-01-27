@@ -19,7 +19,6 @@ Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-buildroot
 BuildArch:          noarch 
 PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
-BuildRequires:      sysvinit cron rsyslog sysconfig
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl

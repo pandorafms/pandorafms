@@ -1153,11 +1153,9 @@ foreach ($result as $row) {
 			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
 		
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
-		if (defined('METACONSOLE'))
-			$data[7] .= "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agent'].", \"" . $row['server_name'] . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
-		else
-			$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 		
+		$data[7] .= "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agent'].", \"" . $row['server_name'] . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
+			
 	}
 	
 	$data[8] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);

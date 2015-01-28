@@ -82,7 +82,12 @@ foreach ($servers as $server) {
 	}
 	
 	// Type
-	$data[2] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
+	if ($server['type'] == 'data'){
+		$data[2] = '<span style="white-space:nowrap;">'.$server["img"].'</span> (<span style="font-size:8px;">' . $server["version"]. '</span>)';
+	}
+	else{
+		$data[2] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
+	}
 	if ($server["master"] == 1)
 		$data[2] .= ui_print_help_tip (__("This is a master server"), true);
 	

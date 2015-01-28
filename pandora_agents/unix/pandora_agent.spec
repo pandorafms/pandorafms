@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_agent_unix
 %define version     6.0dev
-%define release     150126
+%define release     150128
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -19,7 +19,6 @@ Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
 PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
-BuildRequires:      sysvinit cron rsyslog sysconfig
 Requires:           coreutils unzip
 AutoReq:            0
 Provides:           %{name}-%{version}

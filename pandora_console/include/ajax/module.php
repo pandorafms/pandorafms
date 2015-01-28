@@ -156,12 +156,8 @@ if ($get_module_detail) {
 	
 	
 	$columns = array(
-		"Timestamp" => array(
-			"utimestamp",
-			"modules_format_timestamp",
-			"align" => "left"),
 		"Data" => array(
-			"datos",
+			"data",
 			"modules_format_data",
 			"align" => "left"),
 		"Time" => array(
@@ -266,7 +262,7 @@ if ($get_module_detail) {
 		ui_print_error_message(__('No available data to show'));
 	}
 	else {
-		ui_pagination ($count, false, $offset, 0, false, 'offset', true, 'binary_dialog');
+		ui_pagination (count($count), false, $offset, 0, false, 'offset', true, 'binary_dialog');
 		html_print_table($table);
 	}
 	

@@ -361,7 +361,7 @@ function servers_get_info ($id_server = -1) {
 		switch ($server['server_type']) {
 			case SERVER_TYPE_DATA:
 				$server["img"] = html_print_image ("images/data.png", true, array ("title" => __('Data server')));
-				$server["type"] = "data";
+				$server["type"] = "<span style='font-size:8px;'>" . $server['version']. "</span>";
 				$id_modulo = 1;
 				break;
 			case SERVER_TYPE_NETWORK:

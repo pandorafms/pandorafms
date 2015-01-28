@@ -1547,7 +1547,7 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  *
  * @return array The module value and the timestamp
  */
-function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0) {
+function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0, $trash, $conexion = false, $order = 'ASC') {
 	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
 		$id_agent_module);
 	
@@ -1571,8 +1571,8 @@ function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 				FROM tagente_datos_string
 				WHERE id_agente_modulo = %d
 					AND utimestamp > %d AND utimestamp <= %d
-				ORDER BY utimestamp ASC",
-			$id_agent_module, $datelimit, $date);
+				ORDER BY utimestamp %s",
+			$id_agent_module, $datelimit, $date, $order);
 			break;
 		//log4x
 		case 24:
@@ -1580,20 +1580,20 @@ function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 				FROM tagente_datos_log4x
 				WHERE id_agente_modulo = %d
 					AND utimestamp > %d AND utimestamp <= %d
-				ORDER BY utimestamp ASC",
-			$id_agent_module, $datelimit, $date);
+				ORDER BY utimestamp %s",
+			$id_agent_module, $datelimit, $date, $order);
 			break;
 		default:
 			$sql = sprintf ("SELECT datos AS data, utimestamp
 				FROM tagente_datos
 				WHERE id_agente_modulo = %d
 					AND utimestamp > %d AND utimestamp <= %d
-				ORDER BY utimestamp ASC",
-			$id_agent_module, $datelimit, $date);
+				ORDER BY utimestamp %s",
+			$id_agent_module, $datelimit, $date, $order);
 			break;
 	}
 	
-	$values = db_get_all_rows_sql ($sql, $search_in_history_db, false);
+	$values = db_get_all_rows_sql ($sql, $search_in_history_db, false, $conexion);
 	
 	if ($values === false) {
 		return array ();

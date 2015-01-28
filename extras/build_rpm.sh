@@ -19,8 +19,5 @@ rpmbuild -ba $CODEHOME/pandora_agents/unix/pandora_agent.spec || exit 1
 # Enterprise console
 rpmbuild -ba $PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.spec || exit 1
 
-# Enterprise server
-rpmbuild -ba $PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec || exit 1
-
 exit 0
 

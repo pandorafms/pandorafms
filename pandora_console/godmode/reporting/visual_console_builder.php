@@ -41,11 +41,15 @@ else {
 $id_layout = 0;
 
 if (!defined('METACONSOLE')) {
-	$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
+	$action_name_parameter = 'action';
 }
 else {
-	$action = get_parameterBetweenListValues('action2', array('new', 'save', 'edit', 'update', 'delete'), 'new');
+	$action_name_parameter = 'action2';
 }
+
+$action = get_parameterBetweenListValues($action_name_parameter,
+	array('new', 'save', 'edit', 'update', 'delete', 'multiple_delete'),
+	'new');
 
 $activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'wizard_services', 'editor'), 'data');
 
@@ -137,6 +141,32 @@ switch ($activeTab) {
 	
 	case 'list_elements':
 		switch ($action) {
+			case 'multiple_delete':
+				$delete_items_json = io_safe_output(
+					get_parameter("id_item_json",
+						json_encode(array())));
+				
+				$delete_items = json_decode($delete_items_json, true);
+				$id_visual_console = (int)get_parameter(
+					'id_visual_console', 0);
+				
+				if (!empty($delete_items)) {
+					$result = (bool)db_process_sql_delete(
+						'tlayout_data',
+						array('id_layout' => $id_visual_console,
+							'id' => $delete_items));
+					
+				}
+				else {
+					$result = false;
+				}
+				
+				$statusProcessInDB = array(
+					'flag' => true,
+					'message' => ui_print_result_message($result,
+						__('Successfully multiple delete.'),
+						__('Unsuccessfull multiple delete.'), '', true));
+				break;
 			case 'update':
 				//Update background
 				
@@ -161,7 +191,7 @@ switch ($activeTab) {
 				$idsElements = db_get_all_rows_filter('tlayout_data',
 					array('id_layout' => $idVisualConsole), array('id'));
 				
-				if ($idsElements === false){
+				if ($idsElements === false) {
 					$idsElements = array();
 				}
 				
@@ -498,11 +528,11 @@ if (!defined('METACONSOLE')) {
 		$buttons);
 }
 
-//The source code for PAINT THE PAGE
 if ($statusProcessInDB !== null) {
 	echo $statusProcessInDB['message'];
 }
 
+//The source code for PAINT THE PAGE
 switch ($activeTab) {
 	case 'wizard':
 		require_once($config['homedir'] . '/godmode/reporting/visual_console_builder.wizard.php');

@@ -60,7 +60,10 @@ $table->head[1] = __('Image') . ' / ' . __('Module');
 $table->head[2] = __('Width x Height<br>Max value');
 $table->head[3] = __('Period') . ' / ' . __('Position');
 $table->head[4] = __('Parent') . ' / ' . __('Map linked');
-$table->head[5] = '<span title="' . __('Action') . '">' .
+$table->head[5] = "";
+$table->head[5] .= html_print_checkbox('head_multiple_delete',
+	'', false, true, false, 'toggle_checkbox_multiple_delete();');
+$table->head[5] .= '<span title="' . __('Action') . '">' .
 	__('A.') . '</span>';
 
 $table->size = array();
@@ -224,16 +227,35 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Delete row button
 	if (!defined('METACONSOLE')) {
-		$table->data[$i + 1][5] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' .
-			$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
-			'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
+		$url_delete = "index.php?" .
+			"sec=reporting&" .
+			"sec2=godmode/reporting/visual_console_builder&" .
+			"tab=" . $activeTab  . "&" .
+			"action=delete&" .
+			"id_visual_console=" . $visualConsole["id"] . "&" .
+			"id_element=" . $idLayoutData;
+		
+		$table->data[$i + 1][5] = "";
+		$table->data[$i + 1][5] .= html_print_checkbox('multiple_delete_items', $idLayoutData, false, true);
+		$table->data[$i + 1][5] .= '<a href="' . $url_delete . '" ' . 
+			'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
+				html_print_image('images/cross.png', true) . '</a>';
 	}
 	else {
-		$pure = get_parameter('pure', 0);
+		$url_delete = "index.php?" .
+			"operation=edit_visualmap&" .
+			"sec=screen&" .
+			"sec2=screens/screens&" .
+			"action=visualmap&" .
+			"pure=" . (int)get_parameter('pure', 0) . "&" .
+			"tab=list_elements&" .
+			"action2=delete&" .
+			"id_visual_console=" . $visualConsole["id"] . "&" .
+			"id_element=" . $idLayoutData;
 		
-		$table->data[$i + 1][5] = '<a href="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap' .
-			'&pure=' . $pure . '&tab=list_elements&action2=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
-			'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
+		$table->data[$i + 1][5] = '<a href="' . $url_delete . '" ' . 
+			'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
+				html_print_image('images/cross.png', true) . '</a>';
 	}
 	
 	
@@ -398,15 +420,55 @@ if (!defined('METACONSOLE')) {
 else {
 	html_print_input_hidden ('action2', 'update');
 }
+
+echo "<br>";
+
 html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
 html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
+echo "&nbsp;";
+html_print_button(__('Delete'), 'delete', false, 'submit_delete_multiple_items();', 'class="sub delete"');
 echo '</div>';
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
+echo "&nbsp;";
+html_print_button(__('Delete'), 'delete', false, 'submit_delete_multiple_items();', 'class="sub delete"');
 echo '</div>';
 echo '</form>';
+
+// Form for multiple delete
+if (!defined('METACONSOLE')) {
+	$url_multiple_delete = "index.php?" .
+		"sec=reporting&" .
+		"sec2=godmode/reporting/visual_console_builder&" .
+		"tab=" . $activeTab  . "&" .
+		"id_visual_console=" . $visualConsole["id"];
+	
+	echo '<form id="form_multiple_delete" method="post" action="' . $url_multiple_delete . '">';
+}
+else {
+	$url_multiple_delete = "index.php?" .
+		"operation=edit_visualmap&" .
+		"sec=screen&" .
+		"sec2=screens/screens&" .
+		"action=visualmap&" .
+		"pure=0&" .
+		"tab=list_elements&" .
+		"id_visual_console=" . $idVisualConsole;
+	
+	echo "<form id='form_multiple_delete' method='post' action=" . $url_multiple_delete . ">";
+}
+if (!defined('METACONSOLE')) {
+	html_print_input_hidden ('action', 'multiple_delete');
+}
+else {
+	html_print_input_hidden ('action2', 'multiple_delete');
+}
+html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
+html_print_input_hidden('id_item_json', '');
+echo '</form>';
+
 
 //Trick for it have a traduct text for javascript.
 echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
@@ -495,5 +557,24 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 		$("#tinyMCE_editor").val(label);
 		tinyMCE.activeEditor.setContent(label);
 		$("#dialog_label_editor").dialog("open");
+	}
+	
+	function toggle_checkbox_multiple_delete() {
+		checked_head_multiple = $("input[name='head_multiple_delete']")
+			.is(":checked");
+		
+		$("input[name='multiple_delete_items']")
+			.prop("checked", checked_head_multiple);
+	}
+	
+	function submit_delete_multiple_items() {
+		delete_items = [];
+		jQuery.each($("input[name='multiple_delete_items']:checked"), function(i, item) {
+			delete_items.push($(item).val());
+		});
+		
+		
+		$("input[name='id_item_json']").val(JSON.stringify(delete_items));
+		$("#form_multiple_delete").submit();
 	}
 </script>

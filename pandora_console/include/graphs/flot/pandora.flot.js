@@ -1118,7 +1118,7 @@ function adjust_menu(graph_id, plot, parent_height) {
 		.css('top',
 			((offset_between_graph_and_div_graph_container - menu_height - 5) + 'px'));
 	
-	$('#legend_' + graph_id).css('width',plot.width());
+	//$('#legend_' + graph_id).css('width',plot.width());
 	
 	$('#menu_' + graph_id)
 		.css('left',plot.width() - $('#menu_'+graph_id).width() + 10);

@@ -45,6 +45,9 @@ class Tree {
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
 
+		if (defined("METACONSOLE"))
+			enterprise_include_once("meta/include/functions_ui_meta.php");
+
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 
 		if ($this->strictACL) {
@@ -150,7 +153,7 @@ class Tree {
 					// Not init
 					$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
 					$agents_not_init_count = "($agent_table
-														$agent_not_init_filter) AS total_not_init_count";
+												$agent_not_init_filter) AS total_not_init_count";
 					$columns = "$agents_not_init_count, $agents_fired_count, $agents_total_count";
 					break;
 				case AGENT_STATUS_CRITICAL:
@@ -377,9 +380,10 @@ class Tree {
 									ORDER BY $order_fields";
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.fired_count,
-								ta.normal_count, ta.warning_count, ta.critical_count,
-								ta.unknown_count, ta.notinit_count, ta.total_count';
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
@@ -508,9 +512,10 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.fired_count,
-								ta.normal_count, ta.warning_count, ta.critical_count,
-								ta.unknown_count, ta.notinit_count, ta.total_count';
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
@@ -603,9 +608,10 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.fired_count,
-								ta.normal_count, ta.warning_count, ta.critical_count,
-								ta.unknown_count, ta.notinit_count, ta.total_count';
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
@@ -701,9 +707,10 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.fired_count,
-								ta.normal_count, ta.warning_count, ta.critical_count,
-								ta.unknown_count, ta.notinit_count, ta.total_count';
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
@@ -802,9 +809,10 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.fired_count,
-								ta.normal_count, ta.warning_count, ta.critical_count,
-								ta.unknown_count, ta.notinit_count, ta.total_count';
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
@@ -887,7 +895,6 @@ class Tree {
 										$module_status_join);
 		}
 		
-		html_debug_print($sql, true);
 		return $sql;
 	}
 
@@ -928,7 +935,7 @@ class Tree {
 		return strcmp($a["name"], $b["name"]);
 	}
 
-	protected function getGroupsChildren($groups, $parent_id, $server_id = false) {
+	protected function getGroupsChildren($groups, $parent_id, $server = false) {
 		$children = array();
 		foreach ($groups as $key => $group) {
 			unset($groups[$key]);
@@ -936,7 +943,7 @@ class Tree {
 			if ((isset($group['parent']) && $group['parent'] == $parent_id)
 					|| (isset($group['_parent_id_']) && $group['_parent_id_'] == $parent_id)) {
 
-				$children_aux = $this->getProcessedItem($group, $server_id, $groups);
+				$children_aux = $this->getProcessedItem($group, $server, $groups);
 				if (!empty($children_aux))
 					$children[] = $children_aux;
 			}
@@ -945,7 +952,7 @@ class Tree {
 		return $children;
 	}
 
-	protected function getProcessedItem ($item, $server_id = false, $items = array()) {
+	protected function getProcessedItem ($item, $server = false, $items = array()) {
 		$processed_item = array();
 		$processed_item['id'] = $item['id'];
 		$processed_item['name'] = $item['name'];
@@ -972,8 +979,8 @@ class Tree {
 				$processed_item['icon'] = "without_group.png";
 		}
 
-		if (defined ('METACONSOLE') && $server_id) {
-			$processed_item['server_id'] = $server_id;
+		if (defined("METACONSOLE") && !empty($server)) {
+			$processed_item['server_id'] = $server['id'];
 		}
 
 		$counters = array();
@@ -994,7 +1001,7 @@ class Tree {
 		
 		if ($processed_item['type'] == 'group' && !empty($items)) {
 
-			$children = $this->getGroupsChildren($items, $item['id'], $server_id);
+			$children = $this->getGroupsChildren($items, $item['id'], $server);
 			if (!empty($children)) {
 				$processed_item['children'] = $children;
 
@@ -1109,7 +1116,7 @@ class Tree {
 		return $mergedItems;
 	}
 
-	protected function processModule (&$module) {
+	protected function processModule (&$module, $server = false) {
 		global $config;
 
 		$module['type'] = 'module';
@@ -1119,7 +1126,11 @@ class Tree {
 		$module['server_type'] = (int) $module['id_modulo'];
 		$module['status'] = $module['estado'];
 		$module['value'] = $module['datos'];
-		// $module['icon'] = modules_get_type_icon($module['id_tipo_modulo']);
+
+		if (defined("METACONSOLE") && !empty($server)) {
+			$module['server_id'] = $server['id'];
+			$module['server_name'] = $server['server_name'];
+		}
 
 		if (!isset($module['value']))
 			$module['value'] = modules_get_last_value($module['id']);
@@ -1179,28 +1190,44 @@ class Tree {
 		// Link to the Module graph
 		$graphType = return_graphtype($module['id']);
 		$winHandle = dechex(crc32($module['id'] . $module['name']));
-		
-		$moduleGraphURL = $config['homeurl'] .
-			"/operation/agentes/stat_win.php?" .
-			"type=$graphType&" .
-			"period=86400&" .
-			"id=" . $module['id'] . "&" .
-			"label=" . rawurlencode(urlencode(base64_encode($module['name']))) . "&" .
-			"refresh=600";
 
-		$module['moduleGraph'] = array(
-				'url' => $moduleGraphURL,
-				'handle' => $winHandle
-			);
-	}
+		if (!defined('METACONSOLE')) {
+			$moduleGraphURL = $config['homeurl'] .
+				"/operation/agentes/stat_win.php?" .
+				"type=$graphType&" .
+				"period=86400&" .
+				"id=" . $module['id'] . "&" .
+				"label=" . rawurlencode(urlencode(base64_encode($module['name']))) . "&" .
+				"refresh=600";
+		}
+		else if (!empty($server)) {
+			$moduleGraphURL = ui_meta_get_url_console_child(
+				$server, null, null, null, null,
+				"operation/agentes/stat_win.php?" .
+				"type=$graph_type&" .
+				"period=86400&" .
+				"id=" . $module["id"] . "&" .
+				"label=" . rawurlencode(urlencode(base64_encode($module['name']))) . "&" .
+				"refresh=600");
+		}
 
-	protected function processModules (&$modules) {
-		foreach ($modules as $iterator => $module) {
-			$this->processModule($modules[$iterator]);
+		if (!empty($moduleGraphURL)) {
+			$module['moduleGraph'] = array(
+					'url' => $moduleGraphURL,
+					'handle' => $winHandle
+				);
 		}
 	}
-	
-	protected function processAgent (&$agent, $server_id = false) {
+
+	protected function processModules (&$modules, $server = false) {
+		foreach ($modules as $iterator => $module) {
+			$this->processModule($modules[$iterator], $server);
+		}
+	}
+
+	protected function processAgent (&$agent, $server = false) {
+		global $config;
+
 		$agent['type'] = 'agent';
 		$agent['id'] = (int) $agent['id'];
 		$agent['name'] = $agent['name'];
@@ -1209,9 +1236,9 @@ class Tree {
 		$agent['rootType'] = $this->rootType;
 
 		$id = $agent['id'];
-		if ($server_id) {
+		if (defined("METACONSOLE") && !empty($server)) {
 			$agent['id'] = array();
-			$agent['id'][$server_id] = $id;
+			$agent['id'][$server['id']] = $id;
 		}
 		
 		// Counters
@@ -1265,6 +1292,10 @@ class Tree {
 		// Alerts fired image
 		$agent["alertImageHTML"] = agents_tree_view_alert_img_ball($agent['counters']['alerts']);
 
+		// Quiet image
+		if (isset($agent['quiet']) && $agent['quiet'])
+			$agent['quietImageHTML'] = html_print_image("/images/dot_green.disabled.png", true, array("title" => __('Quiet')));
+
 		// Status
 		$agent['statusRaw'] = agents_get_status($id);
 		switch ($agent['statusRaw']) {
@@ -1317,10 +1348,10 @@ class Tree {
 		}
 	}
 
-	protected function processAgents (&$agents, $server_id = false) {
+	protected function processAgents (&$agents, $server = false) {
 		if (!empty($agents)) {
 			foreach ($agents as $iterator => $agent) {
-				$this->processAgent($agents[$iterator], $server_id);
+				$this->processAgent($agents[$iterator], $server);
 			}
 		}
 	}
@@ -1394,7 +1425,7 @@ class Tree {
 
 					$this->id = $id;
 					$newItems = $this->getItems();
-					$this->processModules($newItems);
+					$this->processModules($newItems, $server);
 					$items = array_merge($items, $newItems);
 
 					metaconsole_restore_db();
@@ -1519,7 +1550,7 @@ class Tree {
 							if (isset($item['_monitors_alerts_fired_']))
 								$item['total_fired_count'] = $item['_monitors_alerts_fired_'];
 
-							$processed_items[] = $this->getProcessedItem($item, $server['id'], $items);
+							$processed_items[] = $this->getProcessedItem($item, $server, $items);
 						}
 					}
 					$unmerged_items += $processed_items;
@@ -1549,7 +1580,7 @@ class Tree {
 
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
-					$this->processAgents($newItems, $serverID);
+					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
 
 					metaconsole_restore_db();
@@ -1606,7 +1637,7 @@ class Tree {
 						if (empty($item['parent'])) {
 							
 							unset($items[$key]);
-							$processed_items[] = $this->getProcessedItem($item, $server['id'], $items);
+							$processed_items[] = $this->getProcessedItem($item, $server, $items);
 						}
 					}
 					
@@ -1637,7 +1668,7 @@ class Tree {
 
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
-					$this->processAgents($newItems, $serverID);
+					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
 
 					metaconsole_restore_db();
@@ -1696,7 +1727,7 @@ class Tree {
 							}
 						}
 
-						$processed_item = $this->getProcessedItem($item, $server['id']);
+						$processed_item = $this->getProcessedItem($item, $server);
 						$processed_items[] = $processed_item;
 					}
 					$item_list = array_merge($item_list, $processed_items);
@@ -1726,7 +1757,7 @@ class Tree {
 
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
-					$this->processAgents($newItems, $serverID);
+					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
 
 					metaconsole_restore_db();
@@ -1814,7 +1845,7 @@ class Tree {
 											'_articapandora_'.ord('!').'_pandoraartica_'),
 									io_safe_output($item['name']));
 
-						$processed_item = $this->getProcessedItem($item, $server['id']);
+						$processed_item = $this->getProcessedItem($item, $server);
 						$processed_item['id'] = $name;
 						$processed_item['rootID'] = $name;
 
@@ -1847,7 +1878,7 @@ class Tree {
 
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
-					$this->processAgents($newItems, $serverID);
+					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
 
 					metaconsole_restore_db();
@@ -1906,7 +1937,7 @@ class Tree {
 							}
 						}
 
-						$processed_item = $this->getProcessedItem($item, $server['id']);
+						$processed_item = $this->getProcessedItem($item, $server);
 						$processed_items[] = $processed_item;
 					}
 					$item_list = array_merge($item_list, $processed_items);
@@ -1936,7 +1967,7 @@ class Tree {
 
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
-					$this->processAgents($newItems, $serverID);
+					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
 
 					metaconsole_restore_db();
@@ -1996,7 +2027,7 @@ class Tree {
 							}
 						}
 
-						$processed_item = $this->getProcessedItem($item, $server['id']);
+						$processed_item = $this->getProcessedItem($item, $server);
 						$processed_item['icon'] = $item['os_icon'];
 						$processed_items[] = $processed_item;
 					}
@@ -2027,7 +2058,7 @@ class Tree {
 
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
-					$this->processAgents($newItems, $serverID);
+					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
 
 					metaconsole_restore_db();

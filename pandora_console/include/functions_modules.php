@@ -1545,7 +1545,7 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  *
  * @return array The module value and the timestamp
  */
-function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0, $trash, $conexion = false, $order = 'ASC') {
+function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0, $trash=false, $conexion = false, $order = 'ASC') {
 	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
 		$id_agent_module);
 	

@@ -79,14 +79,15 @@ if ($get_module_detail) {
 	
 	if (defined ('METACONSOLE')) {
 		$server = metaconsole_get_connection ($server_name);
-		$conexion = mysql_connect ($server['dbhost'], $server['dbuser'],
-			$server['dbpass']);
-		$select_db = mysql_select_db ($server['dbname'], $conexion);
+
+		if (metaconsole_connect($server) != NOERR)
+			return;
+		$conexion = false;
 	}
 	else {
 		$conexion = false;
 	}
-	
+	html_debug_print($conexion, true);
 	$selection_mode = get_parameter('selection_mode', 'fromnow');
 	$date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
 	$time_from = (string) get_parameter ('time_from', date ('h:iA'));
@@ -266,6 +267,7 @@ if ($get_module_detail) {
 		html_print_table($table);
 	}
 	
+	metaconsole_restore_db();
 	return;
 }
 

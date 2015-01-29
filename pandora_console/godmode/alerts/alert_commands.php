@@ -61,7 +61,7 @@ if (is_ajax ()) {
 		$fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode(io_safe_output($command['fields_descriptions']), true);
 		
 		// Fields values are stored in json
-		$fields_values = empty($command['fields_values']) ? '' : json_decode(io_safe_output($command['fields_values']), true);
+		$fields_values = empty($command['fields_values']) ? '' : io_safe_output(json_decode($command['fields_values'], true));
 		
 		$fields_rows = array();
 		for ($i = 1; $i <= 10; $i++) {

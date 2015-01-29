@@ -100,7 +100,7 @@ $(document).ready (function () {
 				draggable: true,
 				modal: true,
 				height: 350,
-				width: 650,
+				width: 720,
 				overlay: {
 					opacity: 0.5,
 					background: "black"

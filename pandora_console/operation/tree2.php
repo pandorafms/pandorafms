@@ -105,7 +105,8 @@ ui_print_page_header(
 
 
 // --------------------- form filter -----------------------------------
-$table = null;
+$table = new StdClass();
+// $table->class = "blank";
 $table->width = "100%";
 $table->data = array();
 $table->rowspan = array();
@@ -160,9 +161,18 @@ ui_require_javascript_file("TreeController", "include/javascript/tree/");
 html_print_image('images/spinner.gif', false,
 	array('class' => "loading_tree",
 		'style' => 'display: none;'));
-echo "<div id='tree-controller-recipient' style='float: left;'>";
-echo "</div>";
-echo "<div id='tree-controller-detail-recipient' style='float: right;'>";
+
+echo "<div class='tree-table'>";
+echo 	"<div class='tree-table-row'>";
+echo 		"<div class='tree-table-cell tree-table-cell-tree'>";
+echo 			"<div id='tree-controller-recipient'>";
+echo 			"</div>";
+echo 		"</div>";
+echo 		"<div class='tree-table-cell tree-table-cell-detail'>";
+echo 			"<div id='tree-controller-detail-recipient'>";
+echo 			"</div>";
+echo 		"</div>";
+echo 	"</div>";
 echo "</div>";
 ?>
 <script type="text/javascript">
@@ -215,7 +225,7 @@ echo "</div>";
 								modules: "<?php echo __('Total modules'); ?>",
 								none: "<?php echo __('Total'); ?>"
 							},
-							fired: {
+							alerts: {
 								agents: "<?php echo __('Fired alerts'); ?>",
 								modules: "<?php echo __('Fired alerts'); ?>",
 								none: "<?php echo __('Fired alerts'); ?>"

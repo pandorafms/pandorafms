@@ -267,7 +267,9 @@ if ($get_module_detail) {
 		html_print_table($table);
 	}
 	
-	metaconsole_restore_db();
+	if (defined ('METACONSOLE'))
+		metaconsole_restore_db();
+	
 	return;
 }
 

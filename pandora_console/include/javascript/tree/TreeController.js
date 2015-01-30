@@ -385,12 +385,12 @@ TreeController = {
 										e.preventDefault();
 
 										try {
-											var serverName = element.server_name.length > 0 ? element.server_name : '';console.log(serverName);
+											var serverName = element.serverName.length > 0 ? element.serverName : '';
 											if ($("#module_details_window").length > 0)
 												show_module_detail_dialog(element.id, '', serverName, 0, 86400);
 										}
 										catch (error) {
-											console.log(error);
+											// console.log(error);
 										}
 									});
 							}
@@ -434,6 +434,7 @@ TreeController = {
 										recipient: controller.detailRecipient,
 										type: element.type,
 										id: element.id,
+										serverID: element.serverID,
 										baseURL: controller.baseURL,
 										ajaxURL: controller.ajaxURL,
 										ajaxPage: controller.ajaxPage
@@ -506,6 +507,7 @@ TreeController = {
 										id: element.id,
 										type: element.type,
 										rootID: element.rootID,
+										serverID: element.serverID,
 										rootType: element.rootType,
 										filter: controller.filter
 									},
@@ -661,8 +663,8 @@ TreeNodeDetailController = {
 	},
 	removeControllers: function () {
 		try {
-			$.each(TreeNodeDetailController.controllers, function(type, elements) {console.log(elements);console.log(type);
-				$.each(elements, function(id, element) {console.log(element);console.log(id);
+			$.each(TreeNodeDetailController.controllers, function(type, elements) {
+				$.each(elements, function(id, element) {
 					element.remove();
 				});
 			});
@@ -676,6 +678,7 @@ TreeNodeDetailController = {
 			recipient: '',
 			type: 'none',
 			id: -1,
+			serverID: -1,
 			emptyMessage: "Empty",
 			errorMessage: "Error",
 			baseURL: "",
@@ -716,7 +719,8 @@ TreeNodeDetailController = {
 						page: this.ajaxPage,
 						getDetail: 1,
 						type: this.type,
-						id: this.id
+						id: this.id,
+						serverID: this.serverID
 					},
 					complete: function(xhr, textStatus) {
 						$label.removeClass('tree-element-detail-loading');
@@ -793,6 +797,9 @@ TreeNodeDetailController = {
 				}
 				else {
 					return false;
+				}
+				if (typeof data.serverID != 'undefined' && (data.serverID.length > 0 || !isNaN(data.serverID))) {
+					this.serverID = data.serverID;
 				}
 				if (typeof data.emptyMessage != 'undefined' && data.emptyMessage.length > 0) {
 					this.emptyMessage = data.emptyMessage;

@@ -66,7 +66,7 @@ switch ($status) {
 }
 
 if ($search != "") {
-	$sql_post .= " AND (evento LIKE '%" . io_safe_input($search) . "%' OR id_evento LIKE '%$search%')";
+	$sql_post .= ' AND (evento LIKE "%'. io_safe_input($search) . '%"'. ' OR id_evento LIKE "%$search%")';
 }
 
 if ($event_type != "") {

@@ -23,6 +23,8 @@ $status_agent = get_parameter('statusAgent', AGENT_STATUS_ALL);
 $search_module = get_parameter('searchModule', '');
 $status_module = get_parameter('statusModule', -1);
 
+$strict_acl = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
+
 // ---------------------Tabs -------------------------------------------
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
@@ -38,71 +40,82 @@ $url = 'index.php?' .
 
 $tabs = array();
 
-$tabs['tag'] = array(
-	'text' => "<a href='" . sprintf($url, "tag") . "'>" .
-		html_print_image("images/tag.png", true,
-			array("title" => __('Tags'))) . "</a>",
-	'active' => ($tab == "tag"));
+if (!$strict_acl) {
+	$tabs['tag'] = array(
+		'text' => "<a href='" . sprintf($url, "tag") . "'>" .
+			html_print_image("images/tag.png", true,
+				array("title" => __('Tags'))) . "</a>",
+		'active' => ($tab == "tag"));
 
-$tabs['os'] = array(
-	'text' => "<a href='" . sprintf($url, "os") . "'>" .
-		html_print_image("images/operating_system.png", true,
-			array("title" => __('OS'))) . "</a>",
-	'active' => ($tab == "os"));
+	$tabs['os'] = array(
+		'text' => "<a href='" . sprintf($url, "os") . "'>" .
+			html_print_image("images/operating_system.png", true,
+				array("title" => __('OS'))) . "</a>",
+		'active' => ($tab == "os"));
 
-$tabs['group'] = array(
-	'text' => "<a href='" . sprintf($url, "group") . "'>" .
-		html_print_image("images/group.png", true,
-			array("title" => __('Groups'))) . "</a>",
-	'active' => ($tab == "group"));
+	$tabs['group'] = array(
+		'text' => "<a href='" . sprintf($url, "group") . "'>" .
+			html_print_image("images/group.png", true,
+				array("title" => __('Groups'))) . "</a>",
+		'active' => ($tab == "group"));
 
-$tabs['module_group'] = array(
-	'text' => "<a href='" . sprintf($url, "module_group") . "'>" .
-		html_print_image("images/module_group.png", true,
-			array("title" => __('Module groups'))) . "</a>",
-	'active' => ($tab == "module_group"));
+	$tabs['module_group'] = array(
+		'text' => "<a href='" . sprintf($url, "module_group") . "'>" .
+			html_print_image("images/module_group.png", true,
+				array("title" => __('Module groups'))) . "</a>",
+		'active' => ($tab == "module_group"));
 
-$tabs['module'] = array(
-	'text' => "<a href='" . sprintf($url, "module") . "'>" .
-		html_print_image("images/brick.png", true,
-			array("title" => __('Modules'))) . "</a>",
-	'active' => ($tab == "module"));
+	$tabs['module'] = array(
+		'text' => "<a href='" . sprintf($url, "module") . "'>" .
+			html_print_image("images/brick.png", true,
+				array("title" => __('Modules'))) . "</a>",
+		'active' => ($tab == "module"));
 
-if ($enterpriseEnable) {
-	$tabs['policies'] = array(
-		'text' => "<a href='" . sprintf($url, "policies") . "'>" .
-			html_print_image("images/policies_mc.png", true,
-				array("title" => __('Policies'))) . "</a>",
-		'active' => ($tab == "policies"));
+	if ($enterpriseEnable) {
+		$tabs['policies'] = array(
+			'text' => "<a href='" . sprintf($url, "policies") . "'>" .
+				html_print_image("images/policies_mc.png", true,
+					array("title" => __('Policies'))) . "</a>",
+			'active' => ($tab == "policies"));
+	}
 }
 
-$header_title = __('Tree view') . " - " . __('Sort the agents by %s');
+$header_title = __('Tree view');
+$header_sub_title = __('Sort the agents by %s');
 switch ($tab) {
 	case 'tag':
-		$header_title = sprintf($header_title, __('tags'));
+		$header_sub_title = sprintf($header_sub_title, __('tags'));
 		break;
 	case 'os':
-		$header_title = sprintf($header_title, __('OS'));
+		$header_sub_title = sprintf($header_sub_title, __('OS'));
 		break;
 	case 'group':
-		$header_title = sprintf($header_title, __('groups'));
+		$header_sub_title = sprintf($header_sub_title, __('groups'));
 		break;
 	case 'module_group':
-		$header_title = sprintf($header_title, __('module groups'));
+		$header_sub_title = sprintf($header_sub_title, __('module groups'));
 		break;
 	case 'module':
-		$header_title = sprintf($header_title, __('modules'));
+		$header_sub_title = sprintf($header_sub_title, __('modules'));
 		break;
 	case 'policies':
 		if ($enterpriseEnable)
-			$header_title = sprintf($header_title, __('policies'));
+			$header_sub_title = sprintf($header_sub_title, __('policies'));
 		break;
 }
 
-if (defined('METACONSOLE'))
-	ui_meta_print_header($header_title, "", $tabs);
-else
+if (defined('METACONSOLE')) {
+	if ($strict_acl)
+		$header_sub_title = '';
+
+	ui_meta_print_header($header_title, $header_sub_title, $tabs);
+}
+else{
+	if (!$strict_acl)
+		$header_title = $header_title ." - ". $header_sub_title;
+
 	ui_print_page_header($header_title, "images/extensions.png", false, "", false, $tabs);
+}
 // ---------------------Tabs -------------------------------------------
 
 
@@ -128,8 +141,8 @@ else {
 }
 
 // --------------------- form filter -----------------------------------
+
 $table = new StdClass();
-// $table->class = "blank";
 $table->width = "100%";
 $table->data = array();
 $table->rowspan = array();
@@ -174,9 +187,11 @@ $table->data[] = $row;
 
 enterprise_hook('open_meta_frame');
 
-echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
-html_print_table($table);
-echo '</form>';
+if (!$strict_acl) {
+	echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
+	html_print_table($table);
+	echo '</form>';
+}
 // --------------------- form filter -----------------------------------
 
 ui_include_time_picker();

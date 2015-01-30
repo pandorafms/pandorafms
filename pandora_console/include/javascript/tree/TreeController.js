@@ -372,6 +372,8 @@ TreeController = {
 											// console.log(error);
 										}
 									});
+
+								$content.append($graphImage);
 							}
 							
 							// Data pop-up
@@ -393,12 +395,38 @@ TreeController = {
 											// console.log(error);
 										}
 									});
+
+								$content.append($dataImage);
 							}
 
-							$content
-								.append($graphImage)
-								.append($dataImage)
-								.append(element.name);
+							// Alerts
+							if (typeof element.alertsImageHTML != 'undefined'
+									&& element.alertsImageHTML.length > 0) {
+
+								var $alertsImage = $(element.alertsImageHTML);
+
+								$alertsImage
+									.addClass("module-alerts")
+									.click(function (e) {
+										TreeNodeDetailController.getController().init({
+											recipient: controller.detailRecipient,
+											type: 'alert',
+											id: element.id,
+											serverID: element.serverID,
+											baseURL: controller.baseURL,
+											ajaxURL: controller.ajaxURL,
+											ajaxPage: controller.ajaxPage
+										});
+
+										// Avoid the execution of the module detail event
+										e.stopPropagation();
+									})
+									.css('cursor', 'pointer');
+
+								$content.append($alertsImage);
+							}
+
+							$content.append(element.name);
 							break;
 						case 'os':
 							if (typeof element.icon != 'undefined' && element.icon.length > 0) {

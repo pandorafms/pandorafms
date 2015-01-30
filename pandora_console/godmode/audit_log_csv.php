@@ -10,21 +10,14 @@
 // You cannnot redistribute it without written permission of copyright holder.
 // ============================================================================
 
-if (file_exists("../../../include/config.php"))
-	require ("../../../include/config.php");
-else  {
-	//TODO FIX AND SET AS RELATIVE DIRECTORY
-	if (file_exists("/var/www/pandora_console/include/config.php"))
-		require ("/var/www/pandora_console/include/config.php");
-	if (file_exists("/srv/www/htdocs/pandora_console/include/config.php"))
-		require ("/srv/www/htdocs/pandora_console/include/config.php");
-}
+$ownDir = dirname(__FILE__) . '/';
+$ownDir = str_replace("\\", "/", $ownDir);
+require_once ($ownDir.'../include/config.php');
 
 global $config;
-
 require_once ($config["homedir"]."/include/functions.php");
 require_once ($config["homedir"]."/include/functions_db.php");
-require_once ($config["homedir"]."/enterprise/include/functions_reporting_csv.php");
+enterprise_include ($config["homedir"]."/enterprise/include/functions_reporting_csv.php");
 require_once ($config["homedir"]."/include/auth/mysql.php");
 
 error_reporting(E_ALL);

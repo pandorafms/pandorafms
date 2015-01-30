@@ -894,9 +894,9 @@ class Tree {
 				break;
 				default:
 					$sql = $this->getSqlExtended($item_for_count, $type, $rootType, $parent, $rootID, 
-										$serverID, $agent_search_filter, $agent_status_filter,
-										$agents_join, $module_search_filter, $module_status_filter,
-										$modules_join, $module_status_join);
+										$agent_search_filter, $agent_status_filter, $agents_join,
+										$module_search_filter, $module_status_filter, $modules_join,
+										$module_status_join);
 		}
 		
 		return $sql;
@@ -904,15 +904,15 @@ class Tree {
 
 	// Override this method
 	protected function getSqlExtended ($item_for_count, $type, $rootType, $parent, $rootID, 
-										$serverID, $agent_search_filter, $agent_status_filter,
-										$agents_join, $module_search_filter, $module_status_filter,
-										$modules_join, $module_status_join) {
+										$agent_search_filter, $agent_status_filter, $agents_join,
+										$module_search_filter, $module_status_filter, $modules_join,
+										$module_status_join) {
 		return false;
 	}
 
 	protected function getItems ($item_for_count = false) {
 		$sql = $this->getSql($item_for_count);
-
+		
 		if (empty($sql))
 			return array();
 
@@ -1079,11 +1079,8 @@ class Tree {
 				// Match with the name and type
 				if ($item['name'] == $item2['name'] && $item['type'] == $item2['type']) {
 					// Add the matched ids
-					$resultItem['id'] = array();
 					$resultItem['id'][$item2['serverID']] = $item2['id'];
-					$resultItem['rootID'] = array();
 					$resultItem['rootID'][$item2['serverID']] = $item2['rootID'];
-					$resultItem['serverID'] = array();
 					$resultItem['serverID'][$item2['serverID']] = $item2['rootID'];
 
 					// Add the matched counters
@@ -1225,6 +1222,13 @@ class Tree {
 					'url' => $moduleGraphURL,
 					'handle' => $winHandle
 				);
+		}
+
+		// Alerts fired image
+		$has_alerts = (bool) db_get_value('COUNT(DISTINCT(id_agent_module))', 'talert_template_modules', 'id_agent_module', $module['id']);
+							
+		if ($has_alerts) {
+			$module['alertsImageHTML'] = html_print_image("images/bell.png", true, array("title" => __('Module alerts')));
 		}
 	}
 
@@ -1423,7 +1427,7 @@ class Tree {
 				$items = array();
 
 				if ($this->serverID !== false) {
-					
+
 					$server = metaconsole_get_servers($this->serverID);
 					if (metaconsole_connect($server) == NOERR) {
 						db_clean_cache();

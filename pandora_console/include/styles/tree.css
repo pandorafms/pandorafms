@@ -107,7 +107,8 @@
 .tree-node>.node-content>img.agent-status,
 .tree-node>.node-content>img.agent-alerts-fired,
 .tree-node>.node-content>img.agent-quiet,
-.tree-node>.node-content>img.module-status {
+.tree-node>.node-content>img.module-status,
+.tree-node>.node-content>img.module-alerts {
 	padding-right: 3px;
 }
 

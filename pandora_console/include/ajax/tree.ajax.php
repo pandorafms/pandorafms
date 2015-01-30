@@ -34,6 +34,7 @@ if (is_ajax ()) {
 		$rootType = get_parameter('rootType', '');
 		$id = get_parameter('id', -1);
 		$rootID = get_parameter('rootID', -1);
+		$serverID = get_parameter('serverID', false);
 		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
 
 		$default_filters = array(
@@ -45,40 +46,14 @@ if (is_ajax ()) {
 		$filter = get_parameter('filter', $default_filters);
 		
 		if (class_exists('TreeEnterprise')) {
-			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $childrenMethod);
+			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $serverID, $childrenMethod);
 		}
 		else {
-			$tree = new Tree($type, $rootType, $id, $rootID, $childrenMethod);
+			$tree = new Tree($type, $rootType, $id, $rootID, $serverID, $childrenMethod);
 		}
 		
 		$tree->setFilter($filter);
 		echo json_encode(array('success' => 1, 'tree' => $tree->getArray()));
-		return;
-	}
-	
-	if ($getGroupStatus) {
-		$id = (int)get_parameter('id', 0);
-		$type = get_parameter('type', 'group');
-		$id = 0;
-		
-		$status = array();
-		
-		switch ($type) {
-			case 'group':
-				$data = reporting_get_group_stats($id);
-				
-				$status['unknown'] = $data['agents_unknown'];
-				$status['critical'] = $data['agent_critical'];
-				$status['warning'] = $data['agent_warning'];
-				$status['not_init'] = $data['agent_not_init'];
-				$status['ok'] = $data['agent_ok'];
-				$status['total'] = $data['total_agents'];
-				$status['status'] = $data['status'];
-				$status['alert_fired'] = $data['alert_fired'];
-				
-				echo json_encode($status);
-				break;
-		}
 		return;
 	}
 	
@@ -92,7 +67,9 @@ if (is_ajax ()) {
 		if (defined ('METACONSOLE')) {
 			$server_id = (int) get_parameter('serverID');
 			$server = metaconsole_get_servers($server_id);
-			metaconsole_connect($server);
+			
+			if (metaconsole_connect($server) != NOERR)
+				return;
 		}
 		
 		ob_clean();

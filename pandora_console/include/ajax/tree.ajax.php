@@ -27,13 +27,14 @@ if (is_ajax ()) {
 	
 	$getChildren = (bool) get_parameter('getChildren', 0);
 	$getGroupStatus = (bool) get_parameter('getGroupStatus', 0);
-	$get_detail = (bool) get_parameter('getDetail');
+	$getDetail = (bool) get_parameter('getDetail');
 	
 	if ($getChildren) {
 		$type = get_parameter('type', 'group');
 		$rootType = get_parameter('rootType', '');
 		$id = get_parameter('id', -1);
 		$rootID = get_parameter('rootID', -1);
+		$serverID = get_parameter('serverID', false);
 		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
 
 		$default_filters = array(
@@ -45,10 +46,10 @@ if (is_ajax ()) {
 		$filter = get_parameter('filter', $default_filters);
 		
 		if (class_exists('TreeEnterprise')) {
-			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $childrenMethod);
+			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $serverID, $childrenMethod);
 		}
 		else {
-			$tree = new Tree($type, $rootType, $id, $rootID, $childrenMethod);
+			$tree = new Tree($type, $rootType, $id, $rootID, $serverID, $childrenMethod);
 		}
 		
 		$tree->setFilter($filter);
@@ -56,61 +57,38 @@ if (is_ajax ()) {
 		return;
 	}
 	
-	if ($getGroupStatus) {
-		$id = (int)get_parameter('id', 0);
-		$type = get_parameter('type', 'group');
-		$id = 0;
-		
-		$status = array();
-		
-		switch ($type) {
-			case 'group':
-				$data = reporting_get_group_stats($id);
-				
-				$status['unknown'] = $data['agents_unknown'];
-				$status['critical'] = $data['agent_critical'];
-				$status['warning'] = $data['agent_warning'];
-				$status['not_init'] = $data['agent_not_init'];
-				$status['ok'] = $data['agent_ok'];
-				$status['total'] = $data['total_agents'];
-				$status['status'] = $data['status'];
-				$status['alert_fired'] = $data['alert_fired'];
-				
-				echo json_encode($status);
-				break;
-		}
-		return;
-	}
-	
-	if ($get_detail) {
+	if ($getDetail) {
 		require_once($config['homedir']."/include/functions_treeview.php");
-		
-		// Clean the output
-		ob_clean();
 		
 		$id = (int) get_parameter('id');
 		$type = (string) get_parameter('type');
 		
 		$server = array();
 		if (defined ('METACONSOLE')) {
-			$server_name = (string) get_parameter('server');
-			$server = metaconsole_get_connection($server_name);
-			metaconsole_connect($server);
+			$server_id = (int) get_parameter('serverID');
+			$server = metaconsole_get_servers($server_id);
+			
+			if (metaconsole_connect($server) != NOERR)
+				return;
 		}
 		
-		switch ($type) {
-			case 'agent':
-				treeview_printTable($id, $server);
-				break;
-			case 'module':
-				treeview_printModuleTable($id, $server);
-				break;
-			case 'alert':
-				treeview_printAlertsTable($id, $server);
-				break;
-			default:
-				// Nothing
-				break;
+		ob_clean();
+		
+		if (!empty($id) && !empty($type)) {
+			switch ($type) {
+				case 'agent':
+					treeview_printTable($id, $server);
+					break;
+				case 'module':
+					treeview_printModuleTable($id, $server);
+					break;
+				case 'alert':
+					treeview_printAlertsTable($id, $server);
+					break;
+				default:
+					// Nothing
+					break;
+			}
 		}
 		
 		if (!empty($server) && defined ('METACONSOLE')) {

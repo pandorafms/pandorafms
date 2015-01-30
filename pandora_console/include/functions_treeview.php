@@ -562,18 +562,13 @@ function treeview_printTree($type) {
 			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\", \"\")'>";
 			
 			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' (';
-			
+				
 			$counts_info = array(
-				'total_count' => $item['_num_ok_'] +
-					$item['_num_critical_'] +
-					$item['_num_warning_'] +
-					$item['_num_unknown_'] +
-					$item['_num_not_init_'],
+				'total_count' => $item['_num_total_'],
 				'normal_count' => $item['_num_ok_'],
 				'critical_count' => $item['_num_critical_'],
 				'warning_count' => $item['_num_warning_'],
-				'unknown_count' => $item['_num_unknown_'],
-				'not_init_count' => $item['_num_not_init_']);
+				'unknown_count' => $item['_num_unknown_']);
 			
 			
 			reporting_tiny_stats($counts_info, false, $type);

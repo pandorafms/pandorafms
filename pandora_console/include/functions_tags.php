@@ -1417,7 +1417,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 			$group_ids = implode(',', $childrens_ids);
 		}
 		$sql = "SELECT id_usuario FROM tusuario_perfil
-					WHERE id_usuario = '".$config["id_user"]."' AND tags = $tags_user
+					WHERE id_usuario = '".$config["id_user"]."' AND tags = '$tags_user'
 					AND id_perfil IN (SELECT id_perfil FROM tperfil WHERE ".get_acl_column($access)."=1)
 					AND id_grupo IN ($group_ids)";
 		$has_perm = db_get_value_sql ($sql);

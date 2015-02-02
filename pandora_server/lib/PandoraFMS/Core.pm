@@ -2005,6 +2005,7 @@ sub pandora_update_server ($$$$$$;$$) {
 	$queue_size = 0 unless defined ($queue_size);
 
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+	my $version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'};
 	
 	# First run
 	if ($server_id == 0) { 
@@ -2014,7 +2015,7 @@ sub pandora_update_server ($$$$$$;$$) {
 		if (! defined ($server)) {
 			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules)
 						VALUES (?, ?, ?, ?, ?, ?)', $server_name, $server_type,
-						'Autocreated at startup', $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'}, $num_threads, $queue_size);
+						'Autocreated at startup', $version, $num_threads, $queue_size);
 		
 			$server = get_db_single_row ($dbh, 'SELECT status FROM tserver WHERE id_server = ?', $server_id);
 			if (! defined ($server)) {
@@ -2023,15 +2024,14 @@ sub pandora_update_server ($$$$$$;$$) {
 			}
 		}
 		
-		my $version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'};
 		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?
 				WHERE id_server = ?',
 				1, $timestamp, $pa_config->{'pandora_master'}, $timestamp, $version, $num_threads, $queue_size, $server_id);
 		return;
 	}
 	
-	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, threads = ?, queued_modules = ?
-			WHERE id_server = ?', $status, $timestamp, $pa_config->{'pandora_master'}, $num_threads, $queue_size, $server_id);
+	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, version = ?, threads = ?, queued_modules = ?
+			WHERE id_server = ?', $status, $timestamp, $pa_config->{'pandora_master'}, $version, $num_threads, $queue_size, $server_id);
 }
 
 ##########################################################################

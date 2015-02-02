@@ -385,143 +385,59 @@ if ($last_incident != false) {
 
 // START: TABLE INTERFACES
 
-$columns = array(
-		"id_agente_modulo",
-		"nombre",
-		"descripcion",
-		"ip_target"
-	);
-$filter = array(
-		"id_agente" => $id_agente,
-		"id_tipo_modulo" => (int)db_get_value("id_tipo", "ttipo_modulo", "nombre", "remote_snmp_proc"),
-		"disabled" => 0
-	);
-$modules = agents_get_modules($id_agente, $columns, $filter, true, false);
-$interfaces = array();
+$network_interfaces_by_agents = agents_get_network_interfaces(array($agent));
 
-if (!empty($modules)) {
-	foreach ($modules as $key => $module) {
-		// Trying to get the interface name from the module name
-		if (preg_match ("/_(.+)$/", (string)$module['nombre'], $matches)) {
-			if ($matches[1]) {
-				$interface_name = $matches[1];
-				$interface_name_escaped = str_replace("/", "\/", $interface_name);
-				
-				if (!isset($interfaces[$interface_name])
-						|| (isset($interfaces[$interface_name])
-							&& preg_match ("/^ifOperStatus_$interface_name_escaped$/i", (string)$module['nombre'], $matches))) {
-					$interfaces[$interface_name] = $module;
-				}
-				
-			}
-		}
-	}
-	unset($modules);
+$network_interfaces = array();
+if (!empty($network_interfaces_by_agents) && !empty($network_interfaces_by_agents[$id_agente])) {
+	$network_interfaces = $network_interfaces_by_agents[$id_agente]['interfaces'];
+}
+
+if (!empty($network_interfaces)) {
+	$table_interface = new stdClass();
+	$table_interface->id = 'agent_interface_info';
+	$table_interface->class = 'databox';
+	$table_interface->width = '100%';
+	$table_interface->style = array();
+	$table_interface->style['interface_status'] = 'width: 30px;';
+	$table_interface->style['interface_graph'] = 'width: 20px;';
+	$table_interface->head = array();
+	$options = array(
+		"class" => "closed",
+		"style" => "vertical-align:middle; cursor:pointer;");
+	$table_interface->head[0] = html_print_image("images/go.png", true, $options) . "&nbsp;&nbsp;";
+	$table_interface->head[0] .= '<span style="vertical-align: middle;">' . __('Interface information') .' (SNMP)</span>';
+	$table_interface->head_colspan = array();
+	$table_interface->head_colspan[0] = 5;
+	$table_interface->data = array();
 	
-	if (!empty($interfaces)) {
-		
-		$table_interface = new stdClass();
-		$table_interface->id = 'agent_interface_info';
-		$table_interface->class = 'databox';
-		$table_interface->width = '100%';
-		$table_interface->style = array();
-		$table_interface->style['interface_status'] = 'width: 30px;';
-		$table_interface->style['interface_graph'] = 'width: 20px;';
-		$table_interface->head = array();
-		$options = array(
-			"class" => "closed",
-			"style" => "vertical-align:middle; cursor:pointer;");
-		$table_interface->head[0] = html_print_image("images/go.png", true, $options) . "&nbsp;&nbsp;";
-		$table_interface->head[0] .= '<span style="vertical-align: middle;">' . __('Interface information') .' (SNMP)</span>';
-		$table_interface->head_colspan = array();
-		$table_interface->head_colspan[0] = 5;
-		$table_interface->data = array();
-		
-		foreach ($interfaces as $interface_name => $module) {
-			$interface_name_escaped = str_replace("/", "\/", $interface_name);
-			
-			$module_id = $module['id_agente_modulo'];
-			$db_status = modules_get_agentmodule_status($module_id);
-			$module_value = modules_get_last_value ($module_id);
-			modules_get_status($module_id, $db_status, $module_value, $status, $title);
-			$status = ui_print_status_image($status, $title, true);
-			
-			$ip_target = "--";
-			// Trying to get something like an IP from the description
-			if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", (string)$module['descripcion'], $matches) ||
-				preg_match ("/(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:?)|\2))(?4){5}((?4){2}|(25[0-5]|
-					(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i", (string)$module['descripcion'], $matches)) {
-				if ($matches[0]) {
-					$ip_target = $matches[0];
-				}
-			}
-			$mac = "--";
-			// Trying to get something like a mac from the description
-			if (preg_match ("/([0-9a-f]{1,2}[\.:-]){5}([0-9a-f]{1,2})/i", (string)$module['descripcion'], $matches)) {
-				if ($matches[0]) {
-					$mac = $matches[0];
-				}
-			}
-			
-			// Get the ifInOctets and ifOutOctets modules of the interface
-			$columns = array(
-				"id_agente_modulo",
-				"nombre"
-			);
-			$interface_traffic_modules = agents_get_modules($id_agente, $columns, "nombre LIKE 'if%Octets_$interface_name'");
-			if (!empty($interface_traffic_modules) && count($interface_traffic_modules) >= 2) {
-				$interface_traffic_modules_aux = array('in' => '', 'out' => '');
-				foreach ($interface_traffic_modules as $interface_traffic_module) {
-					$interface_name_escaped = str_replace("/", "\/", $interface_name);
-					if (preg_match ("/^if(.+)Octets_$interface_name_escaped$/i", $interface_traffic_module['nombre'], $matches)) {
-						if (strtolower($matches[1]) == 'in') {
-							$interface_traffic_modules_aux['in'] = $interface_traffic_module['id_agente_modulo'];
-						}
-						elseif (strtolower($matches[1]) == 'out') {
-							$interface_traffic_modules_aux['out'] = $interface_traffic_module['id_agente_modulo'];
-						}
-					}
-				}
-				if (!empty($interface_traffic_modules_aux['in']) && !empty($interface_traffic_modules_aux['out'])) {
-					$interface_traffic_modules = $interface_traffic_modules_aux;
-				}
-				else {
-					$interface_traffic_modules = false;
-				}
-			}
-			else {
-				$interface_traffic_modules = false;
-			}
-			
-			if ($interface_traffic_modules != false) {
-				$params = array(
-						'interface_name' => $interface_name,
-						'agent_id' => $id_agente,
-						'traffic_module_in' => $interface_traffic_modules_aux['in'],
-						'traffic_module_out' => $interface_traffic_modules_aux['out']
-					);
-				$params_json = json_encode($params);
-				$params_encoded = base64_encode($params_json);
-				$win_handle = dechex(crc32($module_id.$interface_name));
-				$graph_link = "<a href=\"javascript:winopeng('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle')\">" .
-					html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";
-			}
-			else {
-				$graph_link = "";
-			}
-			
-			$data = array();
-			$data['interface_name'] = "<strong>" . $interface_name . "</strong>";
-			$data['interface_status'] = $status;
-			$data['interface_graph'] = $graph_link;
-			$data['interface_ip'] = $ip_target;
-			$data['interface_mac'] = $mac;
-			$table_interface->data[] = $data;
+	foreach ($network_interfaces as $interface_name => $interface) {
+		if (!empty($interface['traffic'])) {
+			$params = array(
+					'interface_name' => $interface_name,
+					'agent_id' => $id_agente,
+					'traffic_module_in' => $interface['traffic']['in'],
+					'traffic_module_out' => $interface['traffic']['out']
+				);
+			$params_json = json_encode($params);
+			$params_encoded = base64_encode($params_json);
+			$win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+			$graph_link = "<a href=\"javascript:winopeng('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle')\">" .
+				html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";
 		}
+		else {
+			$graph_link = "";
+		}
+		
+		$data = array();
+		$data['interface_name'] = "<strong>" . $interface_name . "</strong>";
+		$data['interface_status'] = $interface['status_image'];
+		$data['interface_graph'] = $graph_link;
+		$data['interface_ip'] = $interface['ip'];
+		$data['interface_mac'] = $interface['mac'];
+		$table_interface->data[] = $data;
 	}
-	
 	// This javascript piece of code is used to make expandible the body of the table
-	?>
+?>
 	<script type="text/javascript">
 		$(document).ready (function () {
 			$("#agent_interface_info").find("tbody").hide();
@@ -540,7 +456,7 @@ if (!empty($modules)) {
 				.css('cursor', 'pointer');
 		});
 	</script>
-	<?php
+<?php
 }
 
 // END: TABLE INTERFACES

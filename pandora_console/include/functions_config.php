@@ -830,6 +830,26 @@ function config_process_config () {
 		config_update_value ( 'flash_charts', true);
 	}
 	
+	if (!isset ($config["login_background"])) {
+		config_update_value ('login_background', '');
+	}
+	
+	if (!isset ($config["paginate_module"])) {
+		config_update_value ('paginate_module', false);
+	}
+	
+	if (!isset ($config["graphviz_bin_dir"])) {
+		config_update_value ('graphviz_bin_dir', "");
+	}
+	
+	if (!isset ($config["fixed_header"])) {
+		config_update_value ('fixed_header', false);
+	}
+	
+	if (!isset ($config["fixed_menu"])) {
+		config_update_value ('fixed_menu', false);
+	}
+	
 	if (!isset ($config["custom_logo"])) {
 		config_update_value ('custom_logo', 'pandora_logo_head.png');
 	}

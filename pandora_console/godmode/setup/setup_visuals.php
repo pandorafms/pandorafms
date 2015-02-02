@@ -213,7 +213,9 @@ $table->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('flash_chart
 $row++;
 
 $table->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
-$table->data[$row][1] = html_print_select (list_files ('images/custom_logo', "png", 1, 0), 'custom_logo', $config["custom_logo"], '', '', '', true);
+$table->data[$row][1] = html_print_select(
+	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
+	$config["custom_logo"], '', '', '', true);
 
 $row++;
 
@@ -224,7 +226,9 @@ $backgrounds_list_png = list_files("images/backgrounds", "png", 1, 0);
 $backgrounds_list = array_merge($backgrounds_list_jpg, $backgrounds_list_png);
 $backgrounds_list = array_merge($backgrounds_list, $backgrounds_list_gif);
 asort($backgrounds_list);
-$table->data[$row][1] = html_print_select ($backgrounds_list, 'login_background', $config["login_background"], '', __('Default'), '', true);
+$table->data[$row][1] = html_print_select ($backgrounds_list,
+	'login_background', $config["login_background"], '', __('Default'),
+	'', true);
 
 $row++;
 

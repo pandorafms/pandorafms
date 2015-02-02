@@ -92,8 +92,8 @@ $table->data[1][1] = html_print_select (index_array ($templates, 'id', 'name'),
 $table->data[1][1] .= ' <a class="template_details invisible" href="#">' .
 	html_print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
 if (check_acl ($config['id_user'], 0, "LM")) {
-	$table->data[1][1] .= html_print_image ('images/add.png', true);
 	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
+	$table->data[1][1] .= html_print_image ('images/add.png', true);
 	$table->data[1][1] .= __('Create Template');
 	$table->data[1][1] .= '</a>';
 }
@@ -160,7 +160,7 @@ $(document).ready (function () {
 	
 	$("select#template").change (function () {
 		id = this.value;
-		$a = $(this).siblings ("a");
+		$a = $(this).siblings ("a.template_details");
 		if (id == 0) {
 			$a.hide ();
 			return;

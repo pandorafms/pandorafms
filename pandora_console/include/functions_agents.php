@@ -2263,19 +2263,18 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 				modules_get_status($module_id, $db_status, $module_value, $status, $title);
 				$status_image = ui_print_status_image($status, $title, true);
 				
-				$ip_target = "";
-				if (isset($module['ip_target']) && !empty($module['ip_target'])) {
-					$ip_target = $module['ip_target'];
-				}
+				$ip_target = "--";
 				// Trying to get something like an IP from the description
-				else if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $module_description, $matches)
+				if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $module_description, $matches)
 						|| preg_match ("/(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:?)|\2))(?4){5}((?4){2}|(25[0-5]|
-							(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i", $module_description, $matches)) {
-					if ($matches[0]) {
-						$ip_target = $matches[0];
-					}
+							(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i", $module_description, $matches) && $matches[0]) {
+					
+					$ip_target = $matches[0];
 				}
-				$mac = "";
+				// else if (isset($module['ip_target']) && !empty($module['ip_target'])) {
+				// 	$ip_target = $module['ip_target'];
+				// }
+				$mac = "--";
 				// Trying to get something like a mac from the description
 				if (preg_match ("/([0-9a-f]{1,2}[\.:-]){5}([0-9a-f]{1,2})/i", $module_description, $matches)) {
 					if ($matches[0]) {

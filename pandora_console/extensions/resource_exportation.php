@@ -17,15 +17,9 @@
 if (isset($_GET['get_ptr'])) {
 	if ($_GET['get_ptr'] == 1) {
 		
-		if (file_exists("../include/config.php"))
-			require ("../include/config.php");
-		else {
-			//TODO FIX AND SET AS RELATIVE DIRECTORY
-			if (file_exists("/var/www/pandora_console/include/config.php"))
-				require ("/var/www/pandora_console/include/config.php");
-			if (file_exists("/srv/www/htdocs/pandora_console/include/config.php"))
-				require ("/srv/www/htdocs/pandora_console/include/config.php");
-		}
+		$ownDir = dirname(__FILE__) . '/';
+		$ownDir = str_replace("\\", "/", $ownDir);
+		require_once ($ownDir.'../include/config.php');
 		
 		if (! isset ($_SESSION["id_usuario"])) {
 			session_start ();

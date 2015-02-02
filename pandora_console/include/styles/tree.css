@@ -5,7 +5,7 @@
 
 .tree-group {
 	margin-left: 16px;
-	padding-top: 4px;
+	padding-top: 1px;
 }
 
 .tree-node {
@@ -22,11 +22,16 @@
 	background: 0 0;
 }
 .node-content {
-	height: 21px;
+	height: 16px;
+}
+
+.node-content>img {
+	position: relative;
+	top: -2px;
 }
 
 .node-content:hover {
-	background-color: #9AB8DF;
+	background-color: #FFF;
 
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -101,7 +106,9 @@
 .tree-node>.node-content>img.module-server-type,
 .tree-node>.node-content>img.agent-status,
 .tree-node>.node-content>img.agent-alerts-fired,
-.tree-node>.node-content>img.module-status {
+.tree-node>.node-content>img.agent-quiet,
+.tree-node>.node-content>img.module-status,
+.tree-node>.node-content>img.module-alerts {
 	padding-right: 3px;
 }
 
@@ -122,4 +129,43 @@
 	font-weight: bold;
 	font-size: 7pt;
 	cursor: default;
+}
+
+div.tree-table {
+	display: table;
+	width: 98%;
+	margin-top: 10px;
+}
+
+div.tree-table-row {
+	display: table-row;
+}
+
+div.tree-table-cell {
+	display: table-cell;
+	vertical-align: top;
+}
+
+div.tree-table-cell.tree-table-cell-tree {
+	/*width: 70%;*/
+	max-width: 600px;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+div.tree-table-cell.tree-table-cell-detail {
+	padding-left: 10px;
+	width: 350px;
+}
+
+div.tree-element-detail-closed {
+	display: none;
+}
+
+div#tree-controller-recipient {
+	text-align: left;
+}
+
+div#tree-controller-detail-recipient {
+	/*text-align: right;*/
 }

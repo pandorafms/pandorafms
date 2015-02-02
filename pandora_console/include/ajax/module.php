@@ -79,14 +79,15 @@ if ($get_module_detail) {
 	
 	if (defined ('METACONSOLE')) {
 		$server = metaconsole_get_connection ($server_name);
-		$conexion = mysql_connect ($server['dbhost'], $server['dbuser'],
-			$server['dbpass']);
-		$select_db = mysql_select_db ($server['dbname'], $conexion);
+
+		if (metaconsole_connect($server) != NOERR)
+			return;
+		$conexion = false;
 	}
 	else {
 		$conexion = false;
 	}
-	
+	html_debug_print($conexion, true);
 	$selection_mode = get_parameter('selection_mode', 'fromnow');
 	$date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
 	$time_from = (string) get_parameter ('time_from', date ('h:iA'));
@@ -159,11 +160,13 @@ if ($get_module_detail) {
 		"Data" => array(
 			"data",
 			"modules_format_data",
-			"align" => "left"),
+			"align" => "left",
+			"width" => 500),
 		"Time" => array(
 			"utimestamp",
 			"modules_format_time",
-			"align" => "center")
+			"align" => "left",
+			"width" => 500)
 	);
 	
 	if ($selection_mode == "fromnow") {
@@ -235,21 +238,21 @@ if ($get_module_detail) {
 				$datos = "<span style='font-family: mono,monospace;'>" . $datos . "</span>";
 				
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
-				$data[$attr[1]] = $datos;
+				$data[] = $datos;
 			}
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web
 				//without HTML entities
 				
-				$data[$attr[1]] = io_safe_input($row[$attr[0]]);
+				$data[] = io_safe_input($row[$attr[0]]);
 			}
 			else {
 				// Just a string of alphanumerical data... just do print
 				//Fixed the data from Selenium Plugin
 				if ($row[$attr[0]] != strip_tags($row[$attr[0]]))
-					$data[$attr[1]] = io_safe_input($row[$attr[0]]);
+					$data[] = io_safe_input($row[$attr[0]]);
 				else
-					$data[$attr[1]] = $row[$attr[0]];
+					$data[] = $row[$attr[0]];
 			}
 		}
 		
@@ -265,6 +268,9 @@ if ($get_module_detail) {
 		ui_pagination (count($count), false, $offset, 0, false, 'offset', true, 'binary_dialog');
 		html_print_table($table);
 	}
+	
+	if (defined ('METACONSOLE'))
+		metaconsole_restore_db();
 	
 	return;
 }

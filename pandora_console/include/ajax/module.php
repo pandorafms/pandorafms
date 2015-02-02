@@ -168,11 +168,13 @@ if ($get_module_detail) {
 		"Data" => array(
 			"data",
 			"modules_format_data",
-			"align" => "left"),
+			"align" => "left",
+			"width" => 500),
 		"Time" => array(
 			"utimestamp",
 			"modules_format_time",
-			"align" => "left")
+			"align" => "left",
+			"width" => 500)
 	);
 	
 	if ($selection_mode == "fromnow") {

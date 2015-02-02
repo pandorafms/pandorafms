@@ -172,7 +172,7 @@ if ($get_module_detail) {
 		"Time" => array(
 			"utimestamp",
 			"modules_format_time",
-			"align" => "center")
+			"align" => "left")
 	);
 	
 	if ($selection_mode == "fromnow") {
@@ -244,21 +244,21 @@ if ($get_module_detail) {
 				$datos = "<span style='font-family: mono,monospace;'>" . $datos . "</span>";
 				
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
-				$data[$attr[1]] = $datos;
+				$data[] = $datos;
 			}
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web
 				//without HTML entities
 				
-				$data[$attr[1]] = io_safe_input($row[$attr[0]]);
+				$data[] = io_safe_input($row[$attr[0]]);
 			}
 			else {
 				// Just a string of alphanumerical data... just do print
 				//Fixed the data from Selenium Plugin
 				if ($row[$attr[0]] != strip_tags($row[$attr[0]]))
-					$data[$attr[1]] = io_safe_input($row[$attr[0]]);
+					$data[] = io_safe_input($row[$attr[0]]);
 				else
-					$data[$attr[1]] = $row[$attr[0]];
+					$data[] = $row[$attr[0]];
 			}
 		}
 		

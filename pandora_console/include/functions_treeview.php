@@ -521,6 +521,58 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	$events_graph .= '</div><br>';
 	
 	ui_toggle($events_graph, __('Events (24h)'));
+
+	// Table network interfaces
+	$network_interfaces_by_agents = agents_get_network_interfaces(array($agent));
+
+	$network_interfaces = array();
+	if (!empty($network_interfaces_by_agents) && !empty($network_interfaces_by_agents[$id_agente])) {
+		$network_interfaces = $network_interfaces_by_agents[$id_agente]['interfaces'];
+	}
+
+	if (!empty($network_interfaces)) {
+		$table = new stdClass();
+		$table->id = 'agent_interface_info';
+		$table->class = 'databox';
+		$table->width = '100%';
+		$table->style = array();
+		$table->style['interface_status'] = 'width: 30px;';
+		$table->style['interface_graph'] = 'width: 20px;';
+		$table->head = array();
+		$table->data = array();
+		
+		foreach ($network_interfaces as $interface_name => $interface) {
+			if (!empty($interface['traffic'])) {
+				$params = array(
+						'interface_name' => $interface_name,
+						'agent_id' => $id_agente,
+						'traffic_module_in' => $interface['traffic']['in'],
+						'traffic_module_out' => $interface['traffic']['out']
+					);
+				$params_json = json_encode($params);
+				$params_encoded = base64_encode($params_json);
+				$win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+				$graph_link = "<a href=\"javascript:winopeng('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle')\">" .
+					html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";
+			}
+			else {
+				$graph_link = "";
+			}
+			
+			$data = array();
+			$data['interface_name'] = "<strong>" . $interface_name . "</strong>";
+			$data['interface_status'] = $interface['status_image'];
+			$data['interface_graph'] = $graph_link;
+			$data['interface_ip'] = $interface['ip'];
+			$data['interface_mac'] = $interface['mac'];
+			$table->data[] = $data;
+		}
+		//End of table network interfaces
+		$table_interfaces = html_print_table($table, true);
+		$table_interfaces .= "<br>";
+
+		ui_toggle($table_interfaces, __('Interface information') . ' (SNMP)');
+	}
 	
 	return;
 }

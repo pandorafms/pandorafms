@@ -757,6 +757,9 @@ TreeNodeDetailController = {
 						$label.addClass('tree-element-detail-loaded');
 						$content.html(data);
 
+						// Add again the hover event to the 'force_callback' elements
+						forced_title_callback();
+						
 						controller.open();
 					},
 					error: function(xhr, textStatus, errorThrown) {

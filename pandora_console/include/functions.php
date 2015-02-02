@@ -1938,7 +1938,7 @@ function get_periods ($custom = true, $show_default = true) {
 	if ($custom) {
 		$periods[-1] = __('custom');
 	}
-
+	
 	if (empty($config['interval_values'])) {
 		if ($show_default) {
 			$periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');

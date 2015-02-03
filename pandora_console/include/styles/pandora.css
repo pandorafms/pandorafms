@@ -155,9 +155,44 @@ div#error_buttons a{
 	margin: 14px;
 }
 
-div#noaccess {
-	width: 350px;
-	padding-left: 40px;
+#noaccess {
+	position: relative;
+	margin-top:25px;
+	left: 15px;
+	padding-top: 5px;
+	background-color: #FFFFFF;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+}
+
+#noaccess-title {
+	color: #FFF;
+	font-weight: bold;
+	padding-top: 5px;
+	margin-left: 5px;
+	background: none repeat scroll 0% 0% #82B92E;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	text-align: center;
+}
+
+#noaccess-text {
+	font-size: 12px;
+	text-align: justify;
+	padding-top: 25px;
+	padding-right: 50px;
+	float:right;
+}
+
+#noaccess-image {
+	position: relative;
+	left: 10px;
+	top: 10px;
+	float:left;
 }
 div#activity{
 	padding-top: 0px;

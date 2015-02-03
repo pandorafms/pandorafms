@@ -27,7 +27,7 @@ $_SESSION["alert_msg"] = "";
 
 // Global errors/warnings checking.
 config_check();
-
+$login = get_parameter('login', 0);
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 0px; height: 100%" border="0">
 	<tr>
@@ -82,6 +82,9 @@ config_check();
 				$servers["up"] = (int) servers_check_status ();
 				$servers["down"] = $servers["all"] - $servers["up"];
 				if ($servers["up"] == 0) {
+					if (!$login){
+						$server_clippy = clippy_context_help("servers_down");
+					}
 					//All Servers down or no servers at all
 					$servers_check_img = html_print_image("images/header_down.png", true, array("alt" => 'cross', "class" => 'bot', 'title' => __('All systems').': '.__('Down')));
 				}
@@ -232,40 +235,40 @@ config_check();
 				}
 				
 				$table->data[0][3] = $maintenance_img;
-				
+				$table->data[0][4] = $server_clippy;
 				// Main help icon
-				$table->data[0][4] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
+				$table->data[0][5] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
 				
 				// Logout
-				$table->data[0][5] = '<a class="white" href="' . ui_get_full_url('index.php?bye=bye') . '">';
-				$table->data[0][5] .= html_print_image("images/header_logout.png", true, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
-				$table->data[0][5] .= '</a>';
+				$table->data[0][6] = '<a class="white" href="' . ui_get_full_url('index.php?bye=bye') . '">';
+				$table->data[0][6] .= html_print_image("images/header_logout.png", true, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
+				$table->data[0][6] .= '</a>';
 				
 				// User
 				if (is_user_admin ($config["id_user"]) == 1)
-					$table->data[0][6] = html_print_image("images/header_user_admin.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
+					$table->data[0][7] = html_print_image("images/header_user_admin.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
 				else
-					$table->data[0][6] = html_print_image("images/header_user.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
+					$table->data[0][7] = html_print_image("images/header_user.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
 				
-				$table->data[0][6] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit">' . $table->data[0][6] . '</a>';
+				$table->data[0][7] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit">' . $table->data[0][7] . '</a>';
 				
-				$table->data[0][7] = '<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white_bold"> (' . $config["id_user"] . ')</a>';
+				$table->data[0][8] = '<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white_bold"> (' . $config["id_user"] . ')</a>';
 				
 				// Chat messages
-				$table->data[0][8] = "<span id='icon_new_messages_chat' style='display: none;'>";
-				$table->data[0][8] .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-				$table->data[0][8] .= html_print_image('images/header_chat.png', true, array("title" => __('New chat message')));
-				$table->data[0][8] .= "</a>";
-				$table->data[0][8] .= "</span>";
+				$table->data[0][9] = "<span id='icon_new_messages_chat' style='display: none;'>";
+				$table->data[0][9] .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
+				$table->data[0][9] .= html_print_image('images/header_chat.png', true, array("title" => __('New chat message')));
+				$table->data[0][9] .= "</a>";
+				$table->data[0][9] .= "</span>";
 				
 				// Messages
 				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
 					echo '<div id="dialog_messages" style="display: none"></div>';
 					
-					$table->data[0][9] = '<a href="ajax.php?page=operation/messages/message_list" title="' . __("Message overview") . '" id="show_messages_dialog">';
-					$table->data[0][9] .= html_print_image ("images/header_email.png", true, array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot", 'style' => 'width:24px;'));
-					$table->data[0][9] .= '</a>';
+					$table->data[0][10] = '<a href="ajax.php?page=operation/messages/message_list" title="' . __("Message overview") . '" id="show_messages_dialog">';
+					$table->data[0][10] .= html_print_image ("images/header_email.png", true, array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot", 'style' => 'width:24px;'));
+					$table->data[0][10] .= '</a>';
 				}
 				
 				
@@ -301,7 +304,7 @@ config_check();
 				
 				$table->data[0]['searchbar'] = $search_bar;
 				
-				$table->data[0][11] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
+				$table->data[0][12] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
 				
 				html_print_table($table);
 				

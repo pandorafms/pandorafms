@@ -29,9 +29,9 @@ function clippy_servers_down() {
 	//==================================================================
 	//Help tour about the monitoring with a ping (step 3)
 	//------------------------------------------------------------------
-	$return_tours['tours']['servers_all_down'] = array();
-	$return_tours['tours']['servers_all_down']['steps'] = array();
-	$return_tours['tours']['servers_all_down']['steps'][] = array(
+	$return_tours['tours']['servers_down'] = array();
+	$return_tours['tours']['servers_down']['steps'] = array();
+	$return_tours['tours']['servers_down']['steps'][] = array(
 		'init_step_context' => true,
 		'intro' => '<table>' .
 			'<tr>' .
@@ -41,15 +41,15 @@ function clippy_servers_down() {
 			'</tr>' .
 			'<tr>' .
 			'<td class="context_help_body">' .
-			__('For example its world') .
+			__('Can you up all servers. You go to terminal in linux and execute the next command: "sudo /etc/init.d/pandora_server restart". It\'s possible need introduce root pass.') .
 			'</td>' .
 			'</tr>' .
 			'</table>'
 		);
-	$return_tours['tours']['servers_all_down']['conf'] = array();
-	$return_tours['tours']['servers_all_down']['conf']['autostart'] = true;
-	$return_tours['tours']['servers_all_down']['conf']['show_bullets'] = 0;
-	$return_tours['tours']['servers_all_down']['conf']['show_step_numbers'] = 0;
+	$return_tours['tours']['servers_down']['conf'] = array();
+	$return_tours['tours']['servers_down']['conf']['autostart'] = true;
+	$return_tours['tours']['servers_down']['conf']['show_bullets'] = 0;
+	$return_tours['tours']['servers_down']['conf']['show_step_numbers'] = 0;
 	//==================================================================
 	
 	return $return_tours;

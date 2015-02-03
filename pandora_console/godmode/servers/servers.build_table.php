@@ -14,6 +14,9 @@
 // GNU General Public License for more details.
 
 // Load global vars
+
+require_once ('include/functions_clippy.php');
+
 global $config;
 
 check_login();
@@ -29,7 +32,8 @@ global $tiny;
 
 $servers = servers_get_info();
 if ($servers === false) {
-	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
+	$server_clippy = clippy_context_help("servers_down");
+	echo "<div class='nf'>".__('There are no servers configured into the database').$server_clippy."</div>";
 	return;
 }
 
@@ -109,6 +113,9 @@ foreach ($servers as $server) {
 	}
 	
 	$data[6] = $server['threads'].' : '.$server['queued_modules'];
+	if ($server['queued_modules'] > 200){
+		$data[6] .= clippy_context_help("server_queued_modules");
+	}
 	$data[7] = ui_print_timestamp ($server['keepalive'], true);
 	
 	//Only Pandora Administrator can delete servers

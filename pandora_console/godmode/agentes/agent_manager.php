@@ -245,7 +245,9 @@ $table->data[3][1] = html_print_select_groups(false, "AR", false, 'grupo', $grup
 $table->data[4][0] = __('Interval');
 
 $table->data[4][1] = html_print_extended_select_for_time ('intervalo', $intervalo, '', '', '0', 10, true);
-
+if($intervalo<300){
+	$table->data[4][1] .= clippy_context_help("interval_agent_min");
+}
 $table->data[5][0] = __('OS');
 $table->data[5][1] = html_print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
 	'id_os', $id_os, '', '', '0', true);

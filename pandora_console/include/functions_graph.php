@@ -3609,11 +3609,18 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 		
-		$count = 0;	
-		$total = 0;	
+		$count = 0;
+		$total = 0;
 		// Read data that falls in the current interval
-		while (isset($data[$j]) && isset ($data[$j]) !== null && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
-			$last_known = $data[$j];
+		while (isset($data[$j]) &&
+			isset ($data[$j]) !== null &&
+			$data[$j]['utimestamp'] >= $timestamp &&
+			$data[$j]['utimestamp'] <= ($timestamp + $interval)) {
+			
+			// ---------------------------------------------------------
+			// FIX TICKET #1749
+			$last_known = $count;
+			// ---------------------------------------------------------
 			$count++;
 			$j++;
 		}

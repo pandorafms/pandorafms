@@ -265,22 +265,6 @@ Pandora_Windows_Service::pandora_init () {
 	debug = conf->getValue ("debug");
 	setPandoraDebug (is_enabled (debug));
 		
-	/*Check if proxy mode is set*/
-	proxy_mode = conf->getValue ("proxy_mode");
-	if (proxy_mode != "" && this->tentacle_proxy == false) {
-		launchTentacleProxy();	
-	}
-	
-	/* Launch UDP Server */
-	udp_server_enabled = conf->getValue ("udp_server");
-	if (udp_server_enabled.compare ("1") == 0 && this->udp_server == NULL) {
-		udp_server_port = conf->getValue ("udp_server_port");
-		udp_server_addr = conf->getValue ("udp_server_address");
-		udp_server_auth_addr = conf->getValue ("udp_server_auth_address");
-		this->udp_server = new UDP_Server (this, udp_server_addr, udp_server_auth_addr, atoi (udp_server_port.c_str ()));
-		((UDP_Server *)this->udp_server)->start ();
-	}
-	
 	if (first_run == 1) {
 		first_run = 0;
 
@@ -295,6 +279,22 @@ Pandora_Windows_Service::pandora_init () {
 		srand ((unsigned) time (0));
 
 		pandoraLog ("Pandora agent started");
+	}
+
+	/*Check if proxy mode is set*/
+	proxy_mode = conf->getValue ("proxy_mode");
+	if (proxy_mode != "" && this->tentacle_proxy == false) {
+		launchTentacleProxy();	
+	}
+	
+	/* Launch UDP Server */
+	udp_server_enabled = conf->getValue ("udp_server");
+	if (udp_server_enabled.compare ("1") == 0 && this->udp_server == NULL) {
+		udp_server_port = conf->getValue ("udp_server_port");
+		udp_server_addr = conf->getValue ("udp_server_address");
+		udp_server_auth_addr = conf->getValue ("udp_server_auth_address");
+		this->udp_server = new UDP_Server (this, udp_server_addr, udp_server_auth_addr, atoi (udp_server_port.c_str ()));
+		((UDP_Server *)this->udp_server)->start ();
 	}
 }
 

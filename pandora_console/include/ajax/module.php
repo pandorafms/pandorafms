@@ -161,12 +161,12 @@ if ($get_module_detail) {
 			"data",
 			"modules_format_data",
 			"align" => "left",
-			"width" => 500),
+			"width" => "230px"),
 		"Time" => array(
 			"utimestamp",
 			"modules_format_time",
 			"align" => "left",
-			"width" => 500)
+			"width" => "50px")
 	);
 	
 	if ($selection_mode == "fromnow") {
@@ -229,13 +229,14 @@ if ($get_module_detail) {
 				
 				
 				// Detect string data with \n and convert to <br>'s
-				$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);
-				$datos = preg_replace ('/\s/i','&nbsp;',$datos);
+				$datos = $row[$attr[0]];
+				//$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);
+				//$datos = preg_replace ('/\s/i','&nbsp;',$datos);
 				
 				// Because this *SHIT* of print_table monster, I cannot format properly this cells
 				// so, eat this, motherfucker :))
 				
-				$datos = "<span style='font-family: mono,monospace;'>" . $datos . "</span>";
+				$datos =  io_safe_input($datos);
 				
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
 				$data[] = $datos;

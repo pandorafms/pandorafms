@@ -53,3 +53,8 @@ INSERT INTO `ttipo_modulo` VALUES (5,'generic_data_inc_abs',0,'Generic numeric i
 -- Table `tusuario`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tusuario` ADD COLUMN `strict_acl` tinyint(1) DEFAULT 0;
+
+-- ---------------------------------------------------------------------
+-- Table `talert_commands`
+-- ---------------------------------------------------------------------
+UPDATE `talert_commands` SET `fields_descriptions` = '[\"Destination&#x20;address\",\"Subject\",\"Text\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]', `fields_values` = '[\"\",\"\",\"_html_editor_\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]' WHERE `id` = 1 AND `name` = 'eMail';

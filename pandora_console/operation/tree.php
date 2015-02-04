@@ -188,9 +188,12 @@ $table->data[] = $row;
 enterprise_hook('open_meta_frame');
 
 if (!$strict_acl) {
-	echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
-	html_print_table($table);
-	echo '</form>';
+	$form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
+	$form_html .= html_print_table($table, true);
+	$form_html .= '</form>';
+
+	echo "<br>";
+	ui_toggle($form_html, __('Tree search'));
 }
 // --------------------- form filter -----------------------------------
 

@@ -913,3 +913,13 @@ function show_dialog_qrcode(dialog, text, where, width, height) {
 function openURLTagWindow(url) {
 	window.open(url, '','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
 }
+
+function removeTinyMCE(elementID) {console.log(elementID);
+	if (elementID.length > 0 && !isEmptyObject(tinyMCE))
+		tinyMCE.EditorManager.execCommand('mceRemoveControl', true, elementID);
+}
+
+function addTinyMCE(elementID) {
+	if (elementID.length > 0 && !isEmptyObject(tinyMCE))
+		tinyMCE.EditorManager.execCommand('mceAddControl', true, elementID);
+}

@@ -199,6 +199,7 @@ echo '</form>';
 enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file ('pandora_alerts');
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ?>
 
 <script type="text/javascript">
@@ -238,47 +239,65 @@ $(document).ready (function () {
 				render_command_preview (original_command);
 				command_description = js_html_entity_decode (data["description"]);
 				render_command_description(command_description);
-				
-				
+
 				for (i = 1; i <= 10; i++) {
 					var old_value = '';
 					var old_recovery_value = '';
 					var field_row = data["fields_rows"][i];
-					
+					var $table_macros_field = $('#table_macros-field' + i);
+
+					// If the row is empty, hide it
+					if (field_row == '') {
+						$table_macros_field.hide();
+						continue;
+					}
+
 					// Only keep the value if is provided from hidden (first time)
 					if (($("[name=field" + i + "_value]").attr('id'))
-						== ("hidden-field" + i + "_value")) {
+							== ("hidden-field" + i + "_value")) {
 						old_value = $("[name=field" + i + "_value]").val();
 					}
 					
 					if (($("[name=field" + i + "_recovery_value]").attr('id'))
-						== ("hidden-field" + i + "_recovery_value")) {
+							== ("hidden-field" + i + "_recovery_value")) {
 						old_recovery_value = $("[name=field" + i + "_recovery_value]").val();
 					}
+
+					// Replace the old column with the new
+					$table_macros_field.replaceWith(field_row);
+
+					$("[name=field" + i + "_value]").val(old_value);
+					$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
 					
-					// If the row is empty, hide de row
-					if (field_row == '') {
-						$('#table_macros-field' + i).hide();
+					// Add help hint only in first field
+					if (i == 1) {
+						var td_content = $table_macros_field.find('td').eq(0);
+						
+						$(td_content)
+							.html(
+								$(td_content).html() + $('#help_alert_macros_hint').html());
 					}
-					else {
-						$('#table_macros-field' + i).replaceWith(field_row);
-						$("[name=field" + i + "_value]").val(old_value);
-						$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
-						
-						
-						// Add help hint only in first field
-						if (i == 1) {
-							var td_content = $('#table_macros-field' + i)
-								.find('td').eq(0);
-							
-							$(td_content)
-								.html(
-									$(td_content).html() + $('#help_alert_macros_hint').html());
-						}
-						
-						$('#table_macros-field' + i).show();
-					}
+					
+					$table_macros_field.show();
 				}
+				
+				tinyMCE.init({
+					selector: 'textarea.tiny-mce-editor',
+					theme : "advanced",
+					plugins : "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+					theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
+					theme_advanced_buttons2 : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
+					theme_advanced_buttons3 : "",
+					theme_advanced_toolbar_location : "top",
+					theme_advanced_toolbar_align : "left",
+					theme_advanced_resizing : true,
+					theme_advanced_statusbar_location : "bottom",
+					force_p_newlines : false,
+					forced_root_block : '',
+					inline_styles : true,
+					valid_children : "+body[style]",
+					element_format : "html"
+				});
 				
 				render_command_preview(original_command);
 				render_command_recovery_preview(original_command);
@@ -292,10 +311,7 @@ $(document).ready (function () {
 			},
 			"json"
 		);
-	});
-	
-	// Charge the fields of the command
-	$("#id_command").trigger('change');
+	}).change();
 });
 
 </script>

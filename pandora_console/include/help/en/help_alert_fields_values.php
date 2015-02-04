@@ -14,3 +14,6 @@ value1,tag1;value2,tag2;value3,tag3
 Example:
 <br><br>
 1,Number one;2,Number two;3,Number three;4,Number four
+
+<br><br>
+Also is possible to configure the field as a HTML editor by introducing the value <i>_html_editor_</i>.

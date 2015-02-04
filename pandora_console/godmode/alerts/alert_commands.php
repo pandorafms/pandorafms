@@ -65,8 +65,12 @@ if (is_ajax ()) {
 		
 		$fields_rows = array();
 		for ($i = 1; $i <= 10; $i++) {
-			if (!empty($fields_descriptions[$i - 1])) {
-				$fdesc = $fields_descriptions[$i - 1] .
+
+			$field_description = $fields_descriptions[$i - 1];
+			$field_value = $fields_values[$i - 1];
+
+			if (!empty($field_description)) {
+				$fdesc = $field_description .
 					' <br><span style="font-size:xx-small; font-weight:normal;">' . sprintf(__('Field %s'), $i) . '</span>';
 			}
 			else {
@@ -79,22 +83,53 @@ if (is_ajax ()) {
 				}
 			}
 			
-			if (!empty($fields_values[$i-1])) {
-				$fields_value_select = array();
-				$fv = $fields_values[$i-1];
-				$fv = explode(';', $fv);
-				
-				if (empty($fv)) {
-					$fv = array();
+			if (!empty($field_value)) {
+				$field_value = io_safe_output($field_value);
+				// HTML type
+				if (preg_match ("/^_html_editor_$/i", $field_value)) {
+
+					$editor_type_chkbx = "<div style=\"padding: 4px 0px;\"><b><small>";
+					$editor_type_chkbx .= __('Basic') . "&nbsp;&nbsp;";
+					$editor_type_chkbx .= html_print_radio_button_extended ('editor_type_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_value')", '', true);
+					$editor_type_chkbx .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+					$editor_type_chkbx .= __('Advanced') . "&nbsp;&nbsp;";
+					$editor_type_chkbx .= html_print_radio_button_extended ('editor_type_value_'.$i, 0, '', true, false, "addTinyMCE('textarea_field".$i."_value')", '', true);
+					$editor_type_chkbx .= "</small></b></div>";
+					$ffield = $editor_type_chkbx;
+					$ffield .= html_print_textarea ('field'.$i.'_value', 1, 1, '', 'class="fields"', true);
+
+					$editor_type_chkbx = "<div style=\"padding: 4px 0px;\"><b><small>";
+					$editor_type_chkbx .= __('Basic') . "&nbsp;&nbsp;";
+					$editor_type_chkbx .= html_print_radio_button_extended ('editor_type_recovery_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_recovery_value')", '', true);
+					$editor_type_chkbx .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+					$editor_type_chkbx .= __('Advanced') . "&nbsp;&nbsp;";
+					$editor_type_chkbx .= html_print_radio_button_extended ('editor_type_recovery_value_'.$i, 0, '', true, false, "addTinyMCE('textarea_field".$i."_recovery_value')", '', true);
+					$editor_type_chkbx .= "</small></b></div>";
+					$rfield = $editor_type_chkbx;
+					$rfield .= html_print_textarea ('field'.$i.'_recovery_value', 1, 1, '', 'class="fields_recovery"', true);
 				}
-				
-				foreach ($fv as $fv_option) {
-					$fv_option = explode(',', $fv_option);
-					$fields_value_select[$fv_option[0]] = $fv_option[1];
+				// Select type
+				else {
+					$fields_value_select = array();
+					$fv = explode(';', $field_value);
+					
+					if (!empty($fv)) {
+						foreach ($fv as $fv_option) {
+							$fv_option = explode(',', $fv_option);
+
+							if (empty($fv_option))
+								continue;
+
+							if (!isset($fv_option[1]))
+								$fv_option[1] = $fv_option[0];
+
+							$fields_value_select[$fv_option[0]] = $fv_option[1];
+						}
+					}
+					
+					$ffield = html_print_select($fields_value_select, 'field'.$i.'_value', '', '', '', 0, true, false, false);
+					$rfield = html_print_select($fields_value_select, 'field'.$i.'_recovery_value', '', '', '', 0, true, false, false);
 				}
-				
-				$ffield = html_print_select($fields_value_select, 'field'.$i.'_value', '', '', '', 0, true, false, false);
-				$rfield = html_print_select($fields_value_select, 'field'.$i.'_recovery_value', '', '', '', 0, true, false, false);
 			}
 			else {
 				$ffield = html_print_textarea ('field'.$i.'_value', 1, 1, '', 'style="min-height:40px" class="fields"', true);

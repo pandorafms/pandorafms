@@ -335,6 +335,9 @@ $table->class = 'databox';
 $table->data = array();
 $table->data[0][] = __('Name:') . '&nbsp;' .
 	html_print_input_text ('name', $name, '', 25, 50, true);
+if ($activeTab == 'groups'){
+	$table->data[0][0] .= clippy_context_help("topology_group");
+}
 $table->data[0][] = __('Group:') . '&nbsp;' .
 	html_print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
 if ($activeTab == 'groups' || $activeTab == 'policies' || $activeTab == 'radial_dynamic') {

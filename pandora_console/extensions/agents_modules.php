@@ -71,18 +71,18 @@ function mainAgentsModules() {
 	
 	$groups = users_get_groups ();
 	
-	$filter_module_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
+	$filter_module_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
 	$filter_module_groups .= '<b>'.__('Module group').'</b>';
 	$filter_module_groups .= html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 		'modulegroup', $modulegroup, 'this.form.submit()',__('All'), 0, true, false, true, false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
 	$filter_module_groups .= '</form>';
 	
-	$filter_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
+	$filter_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
 	$filter_groups .= '<b>'.__('Group').'</b>';
 	$filter_groups .= html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false , 'width: 100px; margin-right: 10px;; margin-top: 5px;');
 	$filter_groups .= '</form>';
 	
-	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
+	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
 	$comborefr .= '<b>'.__('Refresh').'</b>';
 	$comborefr .= html_print_select (
 		array('30' => '30 ' . __('seconds'),
@@ -122,18 +122,24 @@ function mainAgentsModules() {
 	// Prepare old-style table
 	
 	$agents = '';
-	if ($group_id > 0) {
-		$agents = agents_get_group_agents($group_id);
-		$agents = array_keys($agents);
-	}
+	$agents = agents_get_group_agents($group_id,array('disabled' => 0));
+	$agents = array_keys($agents);
 	
-	$filter_module_groups = false;
+	$filter_module_group = array('disabled' => 0);
 	
 	if ($modulegroup > 0) {
-		$filter_module_groups['id_module_group'] = $modulegroup;
+		$filter_module_group['id_module_group'] = $modulegroup;
 	}
-	
-	$all_modules = agents_get_modules($agents, false, $filter_module_groups, true, false);
+	$count = 0;
+	foreach ($agents as $agent){
+		$module = agents_get_modules($agent, false, $filter_module_group, true, false);
+		if ($module == false){
+			unset($agents[$count]);
+		}
+		$count++;
+	}
+
+	$all_modules = agents_get_modules($agents, false, $filter_module_group, true, false);
 	
 	$modules_by_name = array();
 	$name = '';
@@ -154,9 +160,9 @@ function mainAgentsModules() {
 	if ($config["pure"] == 1) {
 		$block = count($modules_by_name);
 	}
-	
+
 	$filter_groups = array ('offset' => (int) $offset,
-		'limit' => (int) $config['block_size']);
+		'limit' => (int) $config['block_size'], 'disabled' => 0,'id_agente'=>$agents);
 	
 	if ($group_id > 0) {
 		$filter_groups['id_grupo'] = $group_id;
@@ -207,9 +213,10 @@ function mainAgentsModules() {
 	
 	echo "</tr>";
 	
-	$filter_agents = false;
+	$filter_agents = array('offset' => (int) $offset,
+		'limit' => (int) $config['block_size'], 'disabled' => 0);
 	if ($group_id > 0) {
-		$filter_agents = array('id_grupo' => $group_id);
+		$filter_agents['id_grupo'] = $group_id;
 	}
 	// Prepare pagination
 	ui_pagination ((int)count(agents_get_agents ($filter_agents)));
@@ -244,7 +251,7 @@ function mainAgentsModules() {
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" .
 			ui_print_truncate_text(io_safe_output($agent['nombre']), 'agent_size_text_small', true, true, true, '...', 'font-size:10px; font-weight: bold;') .
 			"</a></td>";
-		$agent_modules = agents_get_modules($agent['id_agente']);
+		$agent_modules = agents_get_modules($agent['id_agente'], false, $filter_module_group, true, false);
 		
 		$nmodules = 0;
 		

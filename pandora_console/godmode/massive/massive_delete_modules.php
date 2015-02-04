@@ -372,6 +372,9 @@ else {
 
 <script type="text/javascript">
 /* <![CDATA[ */
+
+var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
+
 $(document).ready (function () {
 	$("#id_agents").change(agent_changed_by_multiple_agents);
 	$("#module_name").change(module_changed_by_multiple_modules);
@@ -541,6 +544,20 @@ $(document).ready (function () {
 	
 	$("#status_agents").change(function() {
 		$("#groups_select").trigger("change");
+	});
+	
+	$("#form_modules").submit(function() {
+		var get_parameters_count = window.location.href.slice(
+			window.location.href.indexOf('?') + 1).split('&').length;
+		var post_parameters_count = $("#form_modules").serializeArray().length;
+		
+		var count_parameters =
+			get_parameters_count + post_parameters_count;
+		
+		if (count_parameters > limit_parameters_massive) {
+			alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
+			return false;
+		}
 	});
 });
 /* ]]> */

@@ -37,7 +37,7 @@ if (is_ajax ()) {
 			return;
 		}
 		
-		if(is_array($id_agents) && count($id_agents) == 1 && $id_agents[0] == '') {
+		if (is_array($id_agents) && count($id_agents) == 1 && $id_agents[0] == '') {
 			$id_agents = false;
 		}
 		
@@ -56,7 +56,7 @@ $recursion = get_parameter ('recursion');
 $add = (bool) get_parameter_post ('add');
 
 if ($add) {
-	if(empty($id_agents) || $id_agents[0] == 0)
+	if (empty($id_agents) || $id_agents[0] == 0)
 		ui_print_result_message (false, '', __('Could not be added').". ".__('No agents selected'));
 	else {
 		$actions = get_parameter ('action');
@@ -76,9 +76,9 @@ if ($add) {
 			
 			$options = array();
 			
-			if($fires_min > 0)
+			if ($fires_min > 0)
 				$options['fires_min'] = $fires_min;
-			if($fires_max > 0)
+			if ($fires_max > 0)
 				$options['fires_max'] = $fires_max;
 				
 			if (empty($agent_alerts_id)) {
@@ -87,9 +87,9 @@ if ($add) {
 			else {
 				$results = true;
 				foreach ($agent_alerts_id as $agent_alert_id) {
-					foreach($actions as $action) {
+					foreach ($actions as $action) {
 						$result = alerts_add_alert_agent_module_action($agent_alert_id, $action, $options);
-						if($result === false)
+						if ($result === false)
 							$results = false;
 					}
 				}
@@ -169,14 +169,14 @@ html_print_table ($table);
 $sql = 'SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo IN (SELECT id_agent_module FROM talert_template_modules)';
 $agents_with_templates = db_get_all_rows_sql($sql);
 $agents_with_templates_json = array();
-foreach($agents_with_templates as $ag) {
+foreach ($agents_with_templates as $ag) {
 	$agents_with_templates_json[] = $ag['id_agente'];
 }
 $agents_with_templates_json = json_encode($agents_with_templates_json);
 
 echo "<input type='hidden' id='hidden-agents_with_templates' value='$agents_with_templates_json'>";
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+echo '<div class="action-buttons" style="width: '. $table->width . '" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 html_print_input_hidden ('add', 1);
 html_print_submit_button (__('Add'), 'go', false, 'class="sub add"');
 echo '</div>';
@@ -189,7 +189,24 @@ ui_require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">
+var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
+
 $(document).ready (function () {
+	$("#form_alerts").submit(function() {
+		var get_parameters_count = window.location.href.slice(
+			window.location.href.indexOf('?') + 1).split('&').length;
+		var post_parameters_count = $("#form_alerts").serializeArray().length;
+		
+		var count_parameters =
+			get_parameters_count + post_parameters_count;
+		
+		if (count_parameters > limit_parameters_massive) {
+			alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
+			return false;
+		}
+	});
+	
+	
 	update_alerts();
 	
 	var recursion;

@@ -40,11 +40,6 @@ $options_alerts = array(
 	'enable_disable_alerts' => __('Massive alert enable/disable'),
 	'standby_alerts' => __('Massive alert setting standby'));
 
-$options_tags = array(
-	'add_tags' => __('Massive tags addition'),
-	'delete_tags' => __('Massive tags deletion')
-	);
-
 $options_agents = array(
 	'edit_agents' => __('Massive agents edition'),
 	'delete_agents' => __('Massive agents deletion'));
@@ -94,9 +89,6 @@ if ($satellite_options != ENTERPRISE_NOT_HOOK) {
 if (in_array($option, array_keys($options_alerts))) {
 	$tab = 'massive_alerts';
 }
-elseif (in_array($option, array_keys($options_tags))) {
-	$tab = 'massive_tags';
-}
 elseif (in_array($option, array_keys($options_agents))) {
 	$tab = 'massive_agents';
 }
@@ -120,9 +112,6 @@ else {
 }
 
 switch ($tab) {
-	case 'massive_tags':
-		$options = $options_tags;
-		break;
 	case 'massive_alerts':
 		$options = $options_alerts;
 		break;
@@ -151,29 +140,24 @@ if ($option == '') {
 	$option = array_shift(array_keys($options));
 }
 
-$tagstab = array('text' =>
-	'<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_tags">' .
-		html_print_image ('images/tag.png', true,
-			array('title' => __('Tags operations'))) . '</a>',
-	'active' => $tab == 'massive_tags');
-
-
-$alertstab = array('text' =>
-	'<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">' .
-		html_print_image ('images/op_alerts.png', true,
-			array('title' => __('Alerts operations'))) . '</a>',
-	'active' => $tab == 'massive_alerts');
+$alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
+	. html_print_image ('images/op_alerts.png', true,
+		array ('title' => __('Alerts operations')))
+	. '</a>', 'active' => $tab == 'massive_alerts');
 
 $userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
-	. html_print_image ('images/op_workspace.png', true, array ('title' => __('Users operations')))
+	. html_print_image ('images/op_workspace.png', true,
+		array ('title' => __('Users operations')))
 	. '</a>', 'active' => $tab == 'massive_users');
 
 $agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
-	. html_print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))
+	. html_print_image ('images/bricks.png', true,
+		array ('title' => __('Agents operations')))
 	. '</a>', 'active' => $tab == 'massive_agents');
 
 $modulestab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
-	. html_print_image ('images/brick.png', true, array ('title' => __('Modules operations')))
+	. html_print_image ('images/brick.png', true,
+		array ('title' => __('Modules operations')))
 	. '</a>', 'active' => $tab == 'massive_modules');
 
 
@@ -200,7 +184,6 @@ $onheader['massive_modules'] = $modulestab;
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$onheader['user_agents'] = $userstab;
 }
-$onheader['massive_tags'] = $tagstab;
 $onheader['massive_alerts'] = $alertstab;
 $onheader['policies'] = $policiestab;
 $onheader['snmp'] = $snmptab;
@@ -312,12 +295,6 @@ switch ($option) {
 		break;
 	case 'copy_modules':
 		require_once ('godmode/massive/massive_copy_modules.php');
-		break;
-	case 'add_tags':
-		require_once ('godmode/massive/massive_add_tags.php');
-		break;
-	case 'delete_tags':
-		require_once ('godmode/massive/massive_delete_tags.php');
 		break;
 	default:
 		if (!enterprise_hook('massive_operations', array($option))) {

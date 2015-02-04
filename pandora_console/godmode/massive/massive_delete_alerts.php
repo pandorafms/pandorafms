@@ -248,7 +248,25 @@ ui_require_jquery_file ('pandora.controls');
 
 <script type="text/javascript">
 /* <![CDATA[ */
+var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
+
+
 $(document).ready (function () {
+	$("#form_alerts").submit(function() {
+		var get_parameters_count = window.location.href.slice(
+			window.location.href.indexOf('?') + 1).split('&').length;
+		var post_parameters_count = $("#form_alerts").serializeArray().length;
+		
+		var count_parameters =
+			get_parameters_count + post_parameters_count;
+		
+		if (count_parameters > limit_parameters_massive) {
+			alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
+			return false;
+		}
+	});
+	
+	
 	$("#id_agents").change(agent_changed_by_multiple_agents_with_alerts);
 	
 	$("#id_alert_template").change (function () {

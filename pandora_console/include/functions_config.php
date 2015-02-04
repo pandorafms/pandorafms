@@ -186,6 +186,8 @@ function config_update_config () {
 						$error_update[] = __('Tutorial mode');
 					if (!config_update_value ('past_planned_downtimes', get_parameter('past_planned_downtimes')))
 						$error_update[] = __('Allow create planned downtimes in the past');
+					if (!config_update_value ('limit_parameters_massive', get_parameter('limit_parameters_massive')))
+						$error_update[] = __('Limit parameters massive');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
@@ -771,6 +773,10 @@ function config_process_config () {
 	
 	if (!isset ($config["font_size"])) {
 		config_update_value ('font_size', 6);
+	}
+	
+	if (!isset ($config["limit_parameters_massive"])) {
+		config_update_value ('limit_parameters_massive', ini_get("max_input_vars") / 2);
 	}
 	
 	/* 

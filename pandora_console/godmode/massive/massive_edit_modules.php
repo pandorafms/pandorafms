@@ -524,7 +524,9 @@ $table->data['edit11'][3] = html_print_input_text(
 	ui_print_help_tip (
 		__('Seconds that agent will wait for the execution of the module.'), true);
 
-echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
+echo '<form method="post" ' .
+	'action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" ' .
+	'id="form_edit">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -551,7 +553,24 @@ else {
 
 <script type="text/javascript">
 /* <![CDATA[ */
+var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
+
 $(document).ready (function () {
+	$("#form_edit").submit(function() {
+		var get_parameters_count = window.location.href.slice(
+			window.location.href.indexOf('?') + 1).split('&').length;
+		var post_parameters_count = $("#form_edit").serializeArray().length;
+		
+		var count_parameters =
+			get_parameters_count + post_parameters_count;
+		
+		if (count_parameters > limit_parameters_massive) {
+			alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
+			return false;
+		}
+	});
+	
+	
 	$("#id_agents").change(agent_changed_by_multiple_agents);
 	$("#module_name").change(module_changed_by_multiple_modules);
 	

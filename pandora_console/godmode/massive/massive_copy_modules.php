@@ -38,6 +38,8 @@ $destiny_recursion = get_parameter ('destiny_recursion');
 
 $do_operation = (bool) get_parameter ('do_operation');
 
+
+
 if ($do_operation) {
 	$result = agents_process_manage_config($source_id_agent,
 		$destiny_id_agents);
@@ -92,12 +94,20 @@ $agents = ( $source_id_group ?
 	agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW", false))) );
 $table->data[0][7] = html_print_select ($agents, 'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
-echo '<form action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=copy_modules" id="manage_config_form" method="post">';
+echo '<form ' .
+	'action="index.php?' .
+	'sec=gmassive&' .
+	'sec2=godmode/massive/massive_operations&' .
+	'option=copy_modules" ' .
+	'id="manage_config_form" ' .
+	'method="post">';
 
 echo '<fieldset id="fieldset_source">';
-echo '<legend><span>'.__('Source');
-ui_print_help_icon ('manageconfig');
-echo '</span></legend>';
+echo '<legend>';
+echo '<span>' .
+	__('Source') . ui_print_help_icon('manageconfig', true) .
+	'</span>';
+echo '</legend>';
 html_print_table ($table);
 echo '</fieldset>';
 
@@ -166,12 +176,14 @@ $table->size[0] = '20%';
 $table->size[1] = '30%';
 $table->size[2] = '20%';
 $table->size[3] = '30%';
+
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AW", true, 'destiny_id_group',
 	$destiny_id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("destiny_recursion", 1,
 	$destiny_recursion, true, false);
+
 $status_list = array ();
 $status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
 $status_list[AGENT_STATUS_WARNING] = __('Warning');
@@ -182,6 +194,7 @@ $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
 $table->data[1][0] = __('Status');
 $table->data[1][1] = html_print_select($status_list,
 	'status_agents_destiny', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
+
 $table->data[2][0] = __('Agent');
 $table->data[2][0] .= '<span id="destiny_agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image ("images/spinner.png", true);
@@ -204,6 +217,7 @@ html_print_table ($table);
 echo '</fieldset>';
 
 echo '<div class="action-buttons" style="width: ' . $table->width . '">';
+
 html_print_input_hidden ('do_operation', 1);
 html_print_submit_button (__('Copy'), 'go', false, 'class="sub wand"');
 echo '</div>';
@@ -219,6 +233,9 @@ ui_require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 var module_alerts;
+var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
+
+
 $(document).ready (function () {
 	var source_recursion;
 	$("#checkbox-source_recursion").click(function () {
@@ -394,7 +411,23 @@ $(document).ready (function () {
 	});
 	
 	$("#manage_config_form").submit (function () {
+		var get_parameters_count = window.location.href.slice(
+			window.location.href.indexOf('?') + 1).split('&').length;
+		var post_parameters_count = $("#manage_config_form").serializeArray().length;
+		
+		var count_parameters =
+			get_parameters_count + post_parameters_count;
+		
+		if (count_parameters > limit_parameters_massive) {
+			alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
+			return false;
+		}
+		
+		
+		
+		
 		$("h3:not([id=message])").remove ();
+		
 		if ($("#source_id_agent").attr ("value") == 0) {
 			$("#message").showMessage ("<?php echo __('No source agent to copy') ?>");
 			return false;
@@ -419,6 +452,7 @@ $(document).ready (function () {
 		}
 		
 		$("#message").hide ();
+		
 		return true;
 	});
 });

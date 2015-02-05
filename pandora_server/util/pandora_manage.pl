@@ -116,9 +116,9 @@ sub help_screen{
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout>]", 'Add data server module to agent');
-	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>]", 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>]", 'Add snmp network module to agent');
-	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical>]", 'Add plug-in module to agent');
+	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>]", 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>]", 'Add snmp network module to agent');
+	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout>]", 'Add plug-in module to agent');
     help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime>]", 'Insert data to module');
     help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
@@ -1169,21 +1169,22 @@ sub cli_create_network_module($) {
 	my $in_policy = shift;
 	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
 	$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
-	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical);
+	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events, $each_ff,
+	$ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
 		$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning,
-		$ff_threshold_critical) = @ARGV[2..25];
+		$ff_threshold_critical, $timeout, $retries) = @ARGV[2..27];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $description, 
 		$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning,
-		$ff_threshold_critical) = @ARGV[2..24];
+		$ff_threshold_critical, $timeout, $retries) = @ARGV[2..26];
 	}
 	
 	my $module_name_def;
@@ -1293,6 +1294,8 @@ sub cli_create_network_module($) {
 	$parameters{'min_ff_event_normal'} = $ff_threshold_normal unless !defined ($ff_threshold_normal);
 	$parameters{'min_ff_event_warning'} = $ff_threshold_warning unless !defined ($ff_threshold_warning);
 	$parameters{'min_ff_event_critical'} = $ff_threshold_critical unless !defined ($ff_threshold_critical);
+	$parameters{'max_timeout'} = $timeout unless !defined ($timeout);
+	$parameters{'max_retries'} = $retries unless !defined ($retries);
 	
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
@@ -1313,21 +1316,21 @@ sub cli_create_snmp_module($) {
 		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
-	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical);
+	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
 		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical) = @ARGV[2..34];
+		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries) = @ARGV[2..36];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $version, $community, 
 		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical) = @ARGV[2..33];
+		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries) = @ARGV[2..35];
 	}
 	
 	my $module_name_def;
@@ -1442,6 +1445,8 @@ sub cli_create_snmp_module($) {
 	$parameters{'min_ff_event_normal'} = $ff_threshold_normal unless !defined ($ff_threshold_normal);
 	$parameters{'min_ff_event_warning'} = $ff_threshold_warning unless !defined ($ff_threshold_warning);
 	$parameters{'min_ff_event_critical'} = $ff_threshold_critical unless !defined ($ff_threshold_critical);
+	$parameters{'max_timeout'} = $timeout unless !defined ($timeout);
+	$parameters{'max_retries'} = $retries unless !defined ($retries);
 	
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
@@ -1462,21 +1467,21 @@ sub cli_create_plugin_module($) {
 		$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
 		$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
 		$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
-	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical);
+	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
 			$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
 			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
 			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical) = @ARGV[2..29];
+		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout) = @ARGV[2..30];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $plugin_name,
 			$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
 			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
 			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical) = @ARGV[2..28];
+		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout) = @ARGV[2..29];
 	}
 	
 	my $module_name_def;
@@ -1582,6 +1587,7 @@ sub cli_create_plugin_module($) {
 	$parameters{'min_ff_event_normal'} = $ff_threshold_normal unless !defined ($ff_threshold_normal);
 	$parameters{'min_ff_event_warning'} = $ff_threshold_warning unless !defined ($ff_threshold_warning);
 	$parameters{'min_ff_event_critical'} = $ff_threshold_critical unless !defined ($ff_threshold_critical);
+	$parameters{'max_timeout'} = $timeout unless !defined ($timeout);
 	
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
@@ -2039,6 +2045,12 @@ sub pandora_check_network_module_fields($) {
 		}
 		$field_value->{'field'} = 'tcp_port';
 	}
+	elsif($field_value->{'field'} eq 'timeout') {
+		$field_value->{'field'} = 'max_timeout';
+	}
+	elsif($field_value->{'field'} eq 'retries') {
+		$field_value->{'field'} = 'max_retries';
+	}
 	else {
 		print_log "[ERROR] The field '".$field_value->{'field'}."' is not available for network modules\n\n";
 		exit;
@@ -2106,6 +2118,12 @@ sub pandora_check_snmp_module_fields($) {
 		}
 		$field_value->{'field'} = 'tcp_port';
 	}
+	elsif($field_value->{'field'} eq 'timeout') {
+		$field_value->{'field'} = 'max_timeout';
+	}
+	elsif($field_value->{'field'} eq 'retries') {
+		$field_value->{'field'} = 'max_retries';
+	}
 	else {
 		print_log "[ERROR] The field '".$field_value->{'field'}."' is not available for SNMP modules\n\n";
 		exit;
@@ -2158,6 +2176,9 @@ sub pandora_check_plugin_module_fields($) {
 	}
 	elsif($field_value->{'field'} eq 'module_port') {
 		$field_value->{'field'} = 'tcp_port';
+	}
+	elsif($field_value->{'field'} eq 'timeout') {
+		$field_value->{'field'} = 'max_timeout';
 	}
 	else {
 		print_log "[ERROR] The field '".$field_value->{'field'}."' is not available for plugin modules\n\n";
@@ -3726,15 +3747,15 @@ sub pandora_manage_main ($$$) {
 			cli_create_data_module(0);
 		}
 		elsif ($param eq '--create_network_module') {
-			param_check($ltotal, 24, 20);
+			param_check($ltotal, 26, 20);
 			cli_create_network_module(0);
 		}
 		elsif ($param eq '--create_snmp_module') {
-			param_check($ltotal, 33, 28);
+			param_check($ltotal, 35, 28);
 			cli_create_snmp_module(0);
 		}
 		elsif ($param eq '--create_plugin_module') {
-			param_check($ltotal, 28, 19);
+			param_check($ltotal, 29, 19);
 			cli_create_plugin_module(0);
 		}
 		elsif ($param eq '--delete_module') {

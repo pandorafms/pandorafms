@@ -321,6 +321,87 @@ function api_get_module_last_value($idAgentModule, $trash1, $other = ';', $retur
 	}
 }
 
+/*** DB column mapping table used by tree_agents (and get module_properties) ***/
+
+/* agent related field mappings (output field => column designation for 'tagente') */
+$agent_field_column_mapping = array(
+	/* agent_id is not in this list (because it is mandatory) */
+	/* agent_id_group is not in this list  */
+	'agent_name' => 'nombre as agent_name',
+	'agent_direction' => 'direccion as agent_direction',
+	'agent_comentary' => 'comentarios as agent_comentary',
+	'agent_last_contant' => 'ultimo_contacto as agent_last_contant',
+	'agent_mode' => 'modo as agent_mode',
+	'agent_interval' => 'intervalo as agent_interval',
+	'agent_id_os' => 'id_os as agent_id_os',
+	'agent_os_version' => 'os_version as agent_os_version',
+	'agent_version' => 'agent_version as agent_version',
+	'agent_last_remote_contact' => 'ultimo_contacto_remoto as agent_last_remote_contact',
+	'agent_disabled' => 'disabled as agent_disabled',
+	'agent_id_parent' => 'id_parent as agent_id_parent',
+	'agent_custom_id' => 'custom_id as agent_custom_id',
+	'agent_server_name' => 'server_name as agent_server_name',
+	'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection');
+
+/* module related field mappings 1/2 (output field => column for 'tagente_modulo') */
+$module_field_column_mampping = array(
+	/* module_id_agent_modulo  is not in this list */
+	'module_id_agent' => 'id_agente as module_id_agent',
+	'module_id_module_type' => 'id_tipo_modulo as module_id_module_type',
+	'module_description' => 'descripcion as module_description',
+	'module_name' => 'nombre as module_name',
+	'module_max' => 'max as module_max',
+	'module_min' => 'min as module_min',
+	'module_interval' => 'module_interval',
+	'module_tcp_port' => 'tcp_port as module_tcp_port',
+	'module_tcp_send' => 'tcp_send as module_tcp_send',
+	'module_tcp_rcv' => 'tcp_rcv as module_tcp_rcv',
+	'module_snmp_community' => 'snmp_community as module_snmp_community',
+	'module_snmp_oid' => 'snmp_oid as module_snmp_oid',
+	'module_ip_target' => 'ip_target as module_ip_target',
+	'module_id_module_group' => 'id_module_group as module_id_module_group',
+	'module_flag' => 'flag as module_flag',
+	'module_id_module' => 'id_modulo as module_id_module',
+	'module_disabled' => 'disabled as module_disabled',
+	'module_id_export' => 'id_export as module_id_export',
+	'module_plugin_user' => 'plugin_user as module_plugin_user',
+	'module_plugin_pass' => 'plugin_pass as module_plugin_pass',
+	'module_plugin_parameter' => 'plugin_parameter as module_plugin_parameter',
+	'module_id_plugin' => 'id_plugin as module_id_plugin',
+	'module_post_process' => 'post_process as module_post_process',
+	'module_prediction_module' => 'prediction_module as module_prediction_module',
+	'module_max_timeout' => 'max_timeout as module_max_timeout',
+	'module_max_retries' => 'max_retries as module_max_retries',
+	'module_custom_id' => 'custom_id as module_custom_id',
+	'module_history_data' => 'history_data as module_history_data',
+	'module_min_warning' => 'min_warning as module_min_warning',
+	'module_max_warning' => 'max_warning as module_max_warning',
+	'module_str_warning' => 'str_warning as module_str_warning',
+	'module_min_critical' => 'min_critical as module_min_critical',
+	'module_max_critical' => 'max_critical as module_max_critical',
+	'module_str_critical' => 'str_critical as module_str_critical',
+	'module_min_ff_event' => 'min_ff_event as module_min_ff_event',
+	'module_delete_pending' => 'delete_pending as module_delete_pending',
+	'module_plugin_macros' => 'macros as module_plugin_macros',
+	'module_macros' => 'module_macros as module_macros');
+
+/* module related field mappings 2/2 (output field => column for 'tagente_estado') */
+$estado_fields_to_columns_mapping = array(
+	/* module_id_agent_modulo  is not in this list */
+	'module_id_agent_state' => 'id_agente_estado as module_id_agent_state',
+	'module_data' => 'datos as module_data',
+	'module_timestamp' => 'timestamp as module_timestamp',
+	'module_state' => 'estado as module_state',
+	'module_last_try' => 'last_try as module_last_try',
+	'module_utimestamp' => 'utimestamp as module_utimestamp',
+	'module_current_interval' => 'current_interval as module_current_interval',
+	'module_running_by' => 'running_by as module_running_by',
+	'module_last_execution_try' => 'last_execution_try as module_last_execution_try',
+	'module_status_changes' => 'status_changes as module_status_changes',
+	'module_last_status' => 'last_status as module_last_status');
+
+/*** end of DB column mapping table ***/
+
 /**
  * 
  * @param $trash1
@@ -509,86 +590,18 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 	
 	/* agent related field mappings (output field => column designation for 'tagente') */
 	
-	$agent_field_column_mapping = array(
-		/* agent_id is not in this list (because it is mandatory) */
-		/* agent_id_group is not in this list  */
-		'agent_name' => 'nombre as agent_name',
-		'agent_direction' => 'direccion as agent_direction',
-		'agent_comentary' => 'comentarios as agent_comentary',
-		'agent_last_contant' => 'ultimo_contacto as agent_last_contant',
-		'agent_mode' => 'modo as agent_mode',
-		'agent_interval' => 'intervalo as agent_interval',
-		'agent_id_os' => 'id_os as agent_id_os',
-		'agent_os_version' => 'os_version as agent_os_version',
-		'agent_version' => 'agent_version as agent_version',
-		'agent_last_remote_contact' => 'ultimo_contacto_remoto as agent_last_remote_contact',
-		'agent_disabled' => 'disabled as agent_disabled',
-		'agent_id_parent' => 'id_parent as agent_id_parent',
-		'agent_custom_id' => 'custom_id as agent_custom_id',
-		'agent_server_name' => 'server_name as agent_server_name',
-		'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection');
+	global $agent_field_column_mapping;
 	
 	/* module related field mappings 1/2 (output field => column for 'tagente_modulo') */
 	
-	$module_field_column_mampping = array(
-		/* 'module_id_agent_modulo (id_agente_modulo) is not in this list */
-		'module_id_agent' => 'id_agente as module_id_agent',
-		'module_id_module_type' => 'id_tipo_modulo as module_id_module_type',
-		'module_description' => 'descripcion as module_description',
-		'module_name' => 'nombre as module_name',
-		'module_max' => 'max as module_max',
-		'module_min' => 'min as module_min',
-		'module_interval' => 'module_interval',
-		'module_tcp_port' => 'tcp_port as module_tcp_port',
-		'module_tcp_send' => 'tcp_send as module_tcp_send',
-		'module_tcp_rcv' => 'tcp_rcv as module_tcp_rcv',
-		'module_snmp_community' => 'snmp_community as module_snmp_community',
-		'module_snmp_oid' => 'snmp_oid as module_snmp_oid',
-		'module_ip_target' => 'ip_target as module_ip_target',
-		'module_id_module_group' => 'id_module_group as module_id_module_group',
-		'module_flag' => 'flag as module_flag',
-		'module_id_module' => 'id_modulo as module_id_module',
-		'module_disabled' => 'disabled as module_disabled',
-		'module_id_export' => 'id_export as module_id_export',
-		'module_plugin_user' => 'plugin_user as module_plugin_user',
-		'module_plugin_pass' => 'plugin_pass as module_plugin_pass',
-		'module_plugin_parameter' => 'plugin_parameter as module_plugin_parameter',
-		'module_id_plugin' => 'id_plugin as module_id_plugin',
-		'module_post_process' => 'post_process as module_post_process',
-		'module_prediction_module' => 'prediction_module as module_prediction_module',
-		'module_max_timeout' => 'max_timeout as module_max_timeout',
-		'module_max_retries' => 'max_retries as module_max_retries',
-		'module_custom_id' => 'custom_id as module_custom_id',
-		'module_history_data' => 'history_data as module_history_data',
-		'module_min_warning' => 'min_warning as module_min_warning',
-		'module_max_warning' => 'max_warning as module_max_warning',
-		'module_str_warning' => 'str_warning as module_str_warning',
-		'module_min_critical' => 'min_critical as module_min_critical',
-		'module_max_critical' => 'max_critical as module_max_critical',
-		'module_str_critical' => 'str_critical as module_str_critical',
-		'module_min_ff_event' => 'min_ff_event as module_min_ff_event',
-		'module_delete_pending' => 'delete_pending as module_delete_pending',
-		'module_plugin_macros' => 'macros as module_plugin_macros',
-		'module_macros' => 'module_macros as module_macros');
+	global $module_field_column_mampping;
 	
 	/* module related field mappings 2/2 (output field => column for 'tagente_estado') */
-	
-	$estado_fields_to_columns_mapping = array(
-		/* 'module_id_agent_modulo (id_agente_modulo) is not in this list */
-		'module_id_agent_state' => 'id_agente_estado as module_id_agent_state',
-		'module_data' => 'datos as module_data',
-		'module_timestamp' => 'timestamp as module_timestamp',
-		'module_state' => 'estado as module_state',
-		'module_last_try' => 'last_try as module_last_try',
-		'module_utimestamp' => 'utimestamp as module_utimestamp',
-		'module_current_interval' => 'current_interval as module_current_interval',
-		'module_running_by' => 'running_by as module_running_by',
-		'module_last_execution_try' => 'last_execution_try as module_last_execution_try',
-		'module_status_changes' => 'status_changes as module_status_changes',
-		'module_last_status' => 'last_status as module_last_status');
+
+	global	$estado_fields_to_columns_mapping;
 	
 	/* alert related field mappings (output field => column for 'talert_template_modules', ... ) */
-	
+
 	$alert_fields_to_columns_mapping = array(
 		/*** 'alert_id_agent_module (id_agent_module) is not in this list ***/
 		'alert_template_modules_id'  => 't1.id as alert_template_modules_id',
@@ -650,11 +663,10 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 		'alert_commands_name'	=> 't5.name as alert_commands_name',
 		'alert_commands_description'  => 't5.description as alert_commands_description');
 	
-	
 	if ($fields == false) {
 		$fields = $master_fields;
 	}
-	
+
 	/** construct column list to query for tagente, tagente_modulo, tagente_estado and alert-related tables **/
 	{
 		$agent_additional_columns  = "";
@@ -757,6 +769,219 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 			}
 		}
 	}
+	$data = array('type' => 'array', 'data' => $returnVar);
+	
+	$data['list_index'] = $fields;
+	
+	returnData($returnType, $data, $separator);
+}
+
+/**
+ * 
+ * @param $id_module
+ * @param $trahs2
+ * @param mixed $other If $other is string is only the separator,
+ *  but if it's array, $other as param is <separator>;<replace_return>;(<field_1>,<field_2>...<field_n>) in this order
+ *  and separator char (after text ; ) must be diferent that separator (and other) url (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  return csv with fields type_row,group_id and agent_name, separate with ";" and the return of the text replace for " "
+ *  api.php?op=get&op2=module_properties&id=1116&return_type=csv&other=;| |module_id_agent,module_name,module_description,module_last_try,module_data&other_mode=url_encode_separator_|
+ *  	
+ * @param $returnType
+ * @return unknown_type
+ */
+function api_get_module_properties($id_module, $trahs2, $other, $returnType)
+{
+	if ($other['type'] == 'array') {
+		$separator = $other['data'][0];
+		$returnReplace = $other['data'][1];
+		if (trim($other['data'][2]) == '')
+			$fields = false;
+		else {
+			$fields = explode(',', $other['data'][2]);
+			foreach($fields as $index => $field)
+				$fields[$index] = trim($field);
+		}
+		
+	}
+	else {
+		if (strlen($other['data']) == 0)
+			$separator = ';'; //by default
+		else
+			$separator = $other['data'];
+		$returnReplace = ' ';
+		$fields = false;
+	}
+	get_module_properties($id_module, $fields, $separator, $returnType, $returnReplace);
+}
+/**
+ * 
+ * @param $agent_name
+ * @param $module_name
+ * @param mixed $other If $other is string is only the separator,
+ *  but if it's array, $other as param is <separator>;<replace_return>;(<field_1>,<field_2>...<field_n>) in this order
+ *  and separator char (after text ; ) must be diferent that separator (and other) url (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  return csv with fields type_row,group_id and agent_name, separate with ";" and the return of the text replace for " "
+ *  api.php?op=get&op2=module_properties_by_name&id=sample_agent&id2=sample_module&return_type=csv&other=;| |module_id_agent,module_name,module_str_critical,module_str_warning&other_mode=url_encode_separator_|
+ *  	
+ * @param $returnType
+ * @return unknown_type
+ */
+function api_get_module_properties_by_name($agent_name, $module_name, $other, $returnType)
+{
+	if ($other['type'] == 'array') {
+		$separator = $other['data'][0];
+		$returnReplace = $other['data'][1];
+		if (trim($other['data'][2]) == '')
+			$fields = false;
+		else {
+			$fields = explode(',', $other['data'][2]);
+			foreach($fields as $index => $field)
+				$fields[$index] = trim($field);
+		}
+		
+	}
+	else {
+		if (strlen($other['data']) == 0)
+			$separator = ';'; //by default
+		else
+			$separator = $other['data'];
+		$returnReplace = ' ';
+		$fields = false;
+	}
+
+	$agent_id = agents_get_agent_id($agent_name);
+	$tagente_modulo = modules_get_agentmodule_id ($module_name, $agent_id);
+	$module_id = $tagente_modulo['id_agente_modulo'];
+
+	if( $agent_id > 0 && $module_id > 0 ) {
+		get_module_properties($module_id, $fields, $separator, $returnType, $returnReplace);
+	}
+	else {
+		if( ! $agent_id || $agent_id < 0 ) {
+			returnError('error_get_module_properties_by_name', __('Does not exist agent with this name.'));
+		} else {
+			returnError('error_get_module_properties_by_name', __('Does not exist module with this name.'));
+		}
+	}
+}
+
+/*
+ * subroutine for api_get_module_properties() and api_get_module_properties_by_name().
+ */
+function get_module_properties($id_module, $fields, $separator, $returnType, $returnReplace)
+{
+	/** NOTE: if you want to add an output field, you have to add it to;
+	    1. $module_properties_master_fields (field name in order)
+	    2. Update field_column_mapping array (arraies are shared with get_tree_agents()).
+	       Each entry is  (DB coloum name => query fragment)
+	 **/
+	
+	/* all of output field names */
+	$module_properties_master_fields = array(
+		'module_id_agent_modulo',
+		'module_id_agent',
+		'module_id_module_type',
+		'module_description',
+		'module_name',
+		'module_max',
+		'module_min',
+		'module_interval',
+		'module_tcp_port',
+		'module_tcp_send',
+		'module_tcp_rcv',
+		'module_snmp_community',
+		'module_snmp_oid',
+		'module_ip_target',
+		'module_id_module_group',
+		'module_flag',
+		'module_id_module',
+		'module_disabled',
+		'module_id_export',
+		'module_plugin_user',
+		'module_plugin_pass',
+		'module_plugin_parameter',
+		'module_id_plugin',
+		'module_post_process',
+		'module_prediction_module',
+		'module_max_timeout',
+		'module_max_retries',
+		'module_custom_id',
+		'module_history_data',
+		'module_min_warning',
+		'module_max_warning',
+		'module_str_warning',
+		'module_min_critical',
+		'module_max_critical',
+		'module_str_critical',
+		'module_min_ff_event',
+		'module_delete_pending',
+		'module_id_agent_state',
+		'module_data',
+		'module_timestamp',
+		'module_state',
+		'module_last_try',
+		'module_utimestamp',
+		'module_current_interval',
+		'module_running_by',
+		'module_last_execution_try',
+		'module_status_changes',
+		'module_last_status',
+		'module_plugin_macros',
+		'module_macros' );
+
+	/* module related field mappings 1/2 (output field => column for 'tagente_modulo') */
+
+	global $module_field_column_mampping;
+	
+	/* module related field mappings 2/2 (output field => column for 'tagente_estado') */
+
+	global $estado_fields_to_columns_mapping;
+
+	if ($fields == false) {
+		$fields = $module_properties_master_fields;
+	}
+	
+	/* construct column list to query for tagente, tagente_modulo, tagente_estado and alert-related tables */
+	$module_additional_columns = "";
+	$estado_additional_columns = "";
+	foreach ($fields as $fld ) {
+		if (array_key_exists ($fld, $module_field_column_mampping ) ) {
+			$module_additional_columns .= (", " . $module_field_column_mampping[$fld]);
+		}
+		if (array_key_exists ($fld, $estado_fields_to_columns_mapping ) ) {
+			$estado_additional_columns .= (", " . $estado_fields_to_columns_mapping[$fld]);
+		}
+	}
+	
+	/* query to the DB */
+	$returnVar = array();
+	$modules = db_get_all_rows_sql('SELECT *
+		FROM (SELECT id_agente_modulo as module_id_agent_modulo ' .  $module_additional_columns . '
+				FROM tagente_modulo 
+				WHERE id_agente_modulo = ' . $id_module . ') AS t1 
+			INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo ' .  $estado_additional_columns . '
+				FROM tagente_estado
+				WHERE id_agente_modulo = ' . $id_module . ') AS t2
+			ON t1.module_id_agent_modulo = t2.module_id_agent_modulo');
+
+	if ($modules === false) $modules = array();
+	$modules = str_replace('\n', $returnReplace, $modules);
+
+	foreach ($modules as &$module) {
+		$module['type_row']  = 'module';
+
+		if( $module['module_macros'] ) {
+			$module['module_macros'] = base64_decode( $module['module_macros']);
+		}
+
+		$returnVar[] = $module;
+		
+	}
+
 	$data = array('type' => 'array', 'data' => $returnVar);
 	
 	$data['list_index'] = $fields;

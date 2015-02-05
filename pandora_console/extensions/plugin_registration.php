@@ -69,6 +69,7 @@ function pluginreg_extension_main () {
 			echo "<h2 class=error>".__("Cannot load INI file")."</h2>";
 		}
 		else {
+			
 			$version = preg_replace("/.*[.]/", "", $name_file);
 			
 			$exec_path = $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
@@ -113,6 +114,7 @@ function pluginreg_extension_main () {
 						'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
 						'parameters' => $ini_array["plugin_definition"]["parameters"],
 						'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
+					
 					
 					switch ($version) {
 						case 'pspz':
@@ -265,130 +267,138 @@ function pluginreg_extension_main () {
 					
 					$create_id = db_process_sql_insert('tplugin', $values);
 					
-					for ($ax = 1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++) {
-						$label = "module" . $ax;
-						
-						$plugin_user = "";
-						if (isset($ini_array[$label]["plugin_user"]))
-							$plugin_user = $ini_array[$label]["plugin_user"];
-						$plugin_pass = "";
-						if (isset($ini_array[$label]["plugin_pass"]))
-							$plugin_pass = $ini_array[$label]["plugin_pass"];
-						$plugin_parameter = "";
-						if (isset($ini_array[$label]["plugin_parameter"]))
-							$plugin_parameter = $ini_array[$label]["plugin_parameter"];
-						$unit = "";
-						if (isset($ini_array[$label]["unit"]))
-							$unit = $ini_array[$label]["unit"];
-						
-						$values = array(
-							'name' => io_safe_input ($ini_array[$label]["name"]),
-							'description' => io_safe_input ($ini_array[$label]["description"]),
-							'id_group' => $ini_array[$label]["id_group"],
-							'type' => $ini_array[$label]["type"],
-							'max' => isset($ini_array[$label]["max"]) ? $ini_array[$label]["max"] : '',
-							'min' => isset($ini_array[$label]["min"]) ? $ini_array[$label]["min"] : '',
-							'module_interval' => isset($ini_array[$label]["module_interval"]) ? $ini_array[$label]["module_interval"] : '',
-							'id_module_group' => $ini_array[$label]["id_module_group"],
-							'id_modulo' => $ini_array[$label]["id_modulo"], 
-							'plugin_user' => io_safe_input ($plugin_user),
-							'plugin_pass' => io_safe_input ($plugin_pass),
-							'plugin_parameter' => io_safe_input ($plugin_parameter),
-							'unit' => io_safe_input ($unit),
-							'max_timeout' => isset($ini_array[$label]["max_timeout"]) ? $ini_array[$label]["max_timeout"] : '',
-							'history_data' => isset($ini_array[$label]["history_data"]) ? $ini_array[$label]["history_data"] : '',
-							'min_warning' => isset($ini_array[$label]["min_warning"]) ? $ini_array[$label]["min_warning"] : '',
-							'max_warning' => isset($ini_array[$label]["max_warning"]) ? $ini_array[$label]["max_warning"] : '',
-							'str_warning' => isset($ini_array[$label]["str_warning"]) ? $ini_array[$label]["str_warning"] : '',
-							'min_critical' => isset($ini_array[$label]["min_critical"]) ? $ini_array[$label]["min_critical"] : '',
-							'max_critical' => isset($ini_array[$label]["max_critical"]) ? $ini_array[$label]["max_critical"] : '',
-							'str_critical' => isset($ini_array[$label]["str_critical"]) ? $ini_array[$label]["str_critical"] : '',
-							'min_ff_event' => isset($ini_array[$label]["min_ff_event"]) ? $ini_array[$label]["min_ff_event"] : '',
-							'tcp_port' => isset($ini_array[$label]["tcp_port"]) ? $ini_array[$label]["tcp_port"] : '',
-							'id_plugin' => $create_id);
-						
-						$macros_component = $macros;
-						
-						switch ($version) {
-							case 'pspz':
-								// Fixed the static parameters
-								// for
-								// the dinamic parameters of pandoras 5
-								
-								foreach ($macros_component as $key => $macro) {
-									if ($macro['desc'] == 'Target IP from net') {
-										if (!empty($values['ip_target'])) {
-											$macros_component[$key]['value'] =
-												io_safe_input($values['ip_target']);
-										}
-									}
-									if ($macro['desc'] == 'Target IP') {
-										if (!empty($values['ip_target'])) {
-											$macros_component[$key]['value'] =
-												io_safe_input($values['ip_target']);
-										}
-									}
-									else if ($macro['desc'] == 'Port from net') {
-										if (!empty($values['tcp_port'])) {
-											$macros_component[$key]['value'] =
-												io_safe_input($values['tcp_port']);
-										}
-									}
-									else if ($macro['desc'] == 'Port') {
-										if (!empty($values['tcp_port'])) {
-											$macros_component[$key]['value'] =
-												io_safe_input($values['tcp_port']);
-										}
-									}
-									else if ($macro['desc'] == 'Username') {
-										if (!empty($values['plugin_user'])) {
-											$macros_component[$key]['value'] =
-												io_safe_input($values['plugin_user']);
-										}
-									}
-									else if ($macro['desc'] == 'Password') {
-										if (!empty($values['plugin_pass'])) {
-											$macros_component[$key]['value'] =
-												io_safe_input($values['plugin_pass']);
-										}
-									}
-									else if ($macro['desc'] == 'Plug-in Parameters') {
-										if (!empty($values['plugin_parameter'])) {
-											$macros_component[$key]['value'] =
-												io_safe_input($values['plugin_parameter']);
-										}
-									}
-								}
-								break;
-							case 'pspz2':
-								if ($total_macros > 0) {
-									for ($it_macros = 1; $it_macros <= $total_macros; $it_macros++) {
-										$macro = "macro_" . $it_macros . "_value";
-										
-										// Set the value or use the default
-										if (isset($ini_array[$label][$macro])) {
-											$macros_component[(string)$it_macros]['value'] =
-												io_safe_input($ini_array[$label][$macro]);
-										}
-									}
-								}
-								break;
-						}
-						
-						if (!empty($macros_component)) {
-							$values['macros'] = json_encode($macros_component);
-						}
-						
-						db_process_sql_insert('tnetwork_component', $values);
-						
-						echo "<h3 class=suc>" .
-							__("Module plugin registered") . " : " . $ini_array[$label]["name"] .
-							"</h3>";
+					if (empty($create_id)) {
+						ui_print_error_message(
+							__('Plug-in Remote Registered unsuccessfull'));
+						ui_print_info_message(
+							__('Please check the syntax of file "plugin_definition.ini"'));
 					}
-					
-					echo "<h2 class=suc>" .
-							__("Plugin") . " " . $ini_array["plugin_definition"]["name"] . " " . __("Registered successfully") .
-						"</h2>";
+					else {
+						for ($ax = 1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++) {
+							$label = "module" . $ax;
+							
+							$plugin_user = "";
+							if (isset($ini_array[$label]["plugin_user"]))
+								$plugin_user = $ini_array[$label]["plugin_user"];
+							$plugin_pass = "";
+							if (isset($ini_array[$label]["plugin_pass"]))
+								$plugin_pass = $ini_array[$label]["plugin_pass"];
+							$plugin_parameter = "";
+							if (isset($ini_array[$label]["plugin_parameter"]))
+								$plugin_parameter = $ini_array[$label]["plugin_parameter"];
+							$unit = "";
+							if (isset($ini_array[$label]["unit"]))
+								$unit = $ini_array[$label]["unit"];
+							
+							$values = array(
+								'name' => io_safe_input ($ini_array[$label]["name"]),
+								'description' => io_safe_input ($ini_array[$label]["description"]),
+								'id_group' => $ini_array[$label]["id_group"],
+								'type' => $ini_array[$label]["type"],
+								'max' => isset($ini_array[$label]["max"]) ? $ini_array[$label]["max"] : '',
+								'min' => isset($ini_array[$label]["min"]) ? $ini_array[$label]["min"] : '',
+								'module_interval' => isset($ini_array[$label]["module_interval"]) ? $ini_array[$label]["module_interval"] : '',
+								'id_module_group' => $ini_array[$label]["id_module_group"],
+								'id_modulo' => $ini_array[$label]["id_modulo"], 
+								'plugin_user' => io_safe_input ($plugin_user),
+								'plugin_pass' => io_safe_input ($plugin_pass),
+								'plugin_parameter' => io_safe_input ($plugin_parameter),
+								'unit' => io_safe_input ($unit),
+								'max_timeout' => isset($ini_array[$label]["max_timeout"]) ? $ini_array[$label]["max_timeout"] : '',
+								'history_data' => isset($ini_array[$label]["history_data"]) ? $ini_array[$label]["history_data"] : '',
+								'min_warning' => isset($ini_array[$label]["min_warning"]) ? $ini_array[$label]["min_warning"] : '',
+								'max_warning' => isset($ini_array[$label]["max_warning"]) ? $ini_array[$label]["max_warning"] : '',
+								'str_warning' => isset($ini_array[$label]["str_warning"]) ? $ini_array[$label]["str_warning"] : '',
+								'min_critical' => isset($ini_array[$label]["min_critical"]) ? $ini_array[$label]["min_critical"] : '',
+								'max_critical' => isset($ini_array[$label]["max_critical"]) ? $ini_array[$label]["max_critical"] : '',
+								'str_critical' => isset($ini_array[$label]["str_critical"]) ? $ini_array[$label]["str_critical"] : '',
+								'min_ff_event' => isset($ini_array[$label]["min_ff_event"]) ? $ini_array[$label]["min_ff_event"] : '',
+								'tcp_port' => isset($ini_array[$label]["tcp_port"]) ? $ini_array[$label]["tcp_port"] : '',
+								'id_plugin' => $create_id);
+							
+							$macros_component = $macros;
+							
+							switch ($version) {
+								case 'pspz':
+									// Fixed the static parameters
+									// for
+									// the dinamic parameters of pandoras 5
+									
+									foreach ($macros_component as $key => $macro) {
+										if ($macro['desc'] == 'Target IP from net') {
+											if (!empty($values['ip_target'])) {
+												$macros_component[$key]['value'] =
+													io_safe_input($values['ip_target']);
+											}
+										}
+										if ($macro['desc'] == 'Target IP') {
+											if (!empty($values['ip_target'])) {
+												$macros_component[$key]['value'] =
+													io_safe_input($values['ip_target']);
+											}
+										}
+										else if ($macro['desc'] == 'Port from net') {
+											if (!empty($values['tcp_port'])) {
+												$macros_component[$key]['value'] =
+													io_safe_input($values['tcp_port']);
+											}
+										}
+										else if ($macro['desc'] == 'Port') {
+											if (!empty($values['tcp_port'])) {
+												$macros_component[$key]['value'] =
+													io_safe_input($values['tcp_port']);
+											}
+										}
+										else if ($macro['desc'] == 'Username') {
+											if (!empty($values['plugin_user'])) {
+												$macros_component[$key]['value'] =
+													io_safe_input($values['plugin_user']);
+											}
+										}
+										else if ($macro['desc'] == 'Password') {
+											if (!empty($values['plugin_pass'])) {
+												$macros_component[$key]['value'] =
+													io_safe_input($values['plugin_pass']);
+											}
+										}
+										else if ($macro['desc'] == 'Plug-in Parameters') {
+											if (!empty($values['plugin_parameter'])) {
+												$macros_component[$key]['value'] =
+													io_safe_input($values['plugin_parameter']);
+											}
+										}
+									}
+									break;
+								case 'pspz2':
+									if ($total_macros > 0) {
+										for ($it_macros = 1; $it_macros <= $total_macros; $it_macros++) {
+											$macro = "macro_" . $it_macros . "_value";
+											
+											// Set the value or use the default
+											if (isset($ini_array[$label][$macro])) {
+												$macros_component[(string)$it_macros]['value'] =
+													io_safe_input($ini_array[$label][$macro]);
+											}
+										}
+									}
+									break;
+							}
+							
+							if (!empty($macros_component)) {
+								$values['macros'] = json_encode($macros_component);
+							}
+							
+							db_process_sql_insert('tnetwork_component', $values);
+							
+							echo "<h3 class=suc>" .
+								__("Module plugin registered") . " : " . $ini_array[$label]["name"] .
+								"</h3>";
+						}
+						
+						echo "<h2 class=suc>" .
+								__("Plugin") . " " . $ini_array["plugin_definition"]["name"] . " " . __("Registered successfully") .
+							"</h2>";
+					}
 					unlink ($config["attachment_store"] . "/plugin_definition.ini");
 				}
 			}

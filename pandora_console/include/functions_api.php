@@ -7966,4 +7966,71 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
 	}
 }
 
+/**
+ * Get a module graph image encoded with base64.
+ * The value returned by this function will be always a string.
+ *
+ * @param int $id Id of the module.
+ * @param $thrash2 Don't use.
+ * @param array $other Array array('type' => 'string', 'data' => '<Graph seconds>').
+ * @param $thrash4 Don't use.
+ *
+ * example:
+ *  api.php?op=get&op2=module_graph&id=1&other=3600
+ *
+ */
+function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (is_nan($id_module) || $id_module <= 0) {
+		returnError('error_module_graph', __(''));
+		return;
+	}
+
+	$id_exist = (bool) db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
+
+	if (!$id_exist) {
+		// returnError('id_not_found');
+		return;
+	}
+
+	$graph_seconds =(!empty($other) && isset($other['data'])) ? $other['data'] : 0;
+
+	if (is_nan($graph_seconds) || $graph_seconds <= 0) {
+		// returnError('error_module_graph', __(''));
+		return;
+	}
+	
+	// Get the html item
+	$graph_html = grafico_modulo_sparse($id_module, $graph_seconds, false, 600, 300, '',
+									'', false, false, true, time(), '', 0, 0, true, true,
+									ui_get_full_url(false) . '/', 1, false, '', false, true);
+
+	$graph_image_file_encoded = false;
+
+	// Get the src of the html item
+	if (preg_match("/<img src='(.+)'>/", $graph_html, $matches)) {
+		if (isset($matches) && isset($matches[1])) {
+			$file_url = $matches[1];
+			// Get the file
+			$graph_image_file = file_get_contents($file_url);
+
+			if ($graph_image_file !== false) {
+				// Encode the file
+				$graph_image_file_encoded = base64_encode($graph_image_file);
+				unset($graph_image_file);
+			}
+		}
+	}
+	
+	if (empty($graph_image_file_encoded)) {
+		// returnError('error_module_graph', __(''));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));
+	}
+}
+
 ?>

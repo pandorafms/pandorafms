@@ -7996,7 +7996,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		return;
 	}
 
-	$graph_seconds =(!empty($other) && isset($other['data'])) ? $other['data'] : 0;
+	$graph_seconds =(!empty($other) && isset($other['data'])) ? $other['data'] : 3600; // 1 hour by default
 
 	if (is_nan($graph_seconds) || $graph_seconds <= 0) {
 		// returnError('error_module_graph', __(''));

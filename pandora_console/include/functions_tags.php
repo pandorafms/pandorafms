@@ -880,7 +880,9 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = '';
 		if (empty($group_tags)) {
-			$tags_condition = "id_grupo = ".$group_id;
+			if($group_id>0){
+				$tags_condition = "id_grupo = ".$group_id;
+			}
 		} else {
 			foreach ($group_tags as $tag) {
 				// If the tag ID doesnt exist, ignore

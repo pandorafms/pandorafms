@@ -1525,6 +1525,8 @@ function agents_get_addresses ($id_agent) {
  * return -1 if the data are wrong
  */
 function agents_get_status_from_counts($agent) {
+	
+	
 	// Check if in the data there are all the necessary values
 	if (!isset($agent['normal_count']) && 
 		!isset($agent['warning_count']) &&
@@ -1534,11 +1536,11 @@ function agents_get_status_from_counts($agent) {
 		!isset($agent['total_count'])) {
 		return -1;
 	}
-
+	
 	# Juanma (05/05/2014) Fix:  This status is not init! 0 modules or all not init
 	if ($agent['notinit_count'] == $agent['total_count']) {
 		return AGENT_MODULE_STATUS_NOT_INIT;
-	}	
+	}
 	if ($agent['critical_count'] > 0) {
 		return AGENT_MODULE_STATUS_CRITICAL_BAD;
 	}
@@ -1549,6 +1551,9 @@ function agents_get_status_from_counts($agent) {
 		return AGENT_MODULE_STATUS_UNKNOWN;
 	}
 	else if ($agent['normal_count'] == $agent['total_count']) {
+		return AGENT_MODULE_STATUS_NORMAL;
+	}
+	else if ($agent['normal_count'] + $agent['notinit_count'] == $agent['total_count']) {
 		return AGENT_MODULE_STATUS_NORMAL;
 	}
 	//~ else if($agent['notinit_count'] == $agent['total_count']) {

@@ -3488,7 +3488,16 @@ sub cli_stop_downtime () {
 # Related option: --get_module_data
 ###############################################################################
 sub cli_module_get_data () {
-	my ($agent_name,$module_name,$interval,$csv_separator) = @ARGV[2..5];
+	my ($agent_name, $module_name, $interval, $csv_separator) = @ARGV[2..5];
+	
+	$csv_separator = '|' unless defined($csv_separator);
+	
+	if ($interval <= 0) {
+		print_log "[ERROR] Interval must be a possitive value\n\n";
+		exit;
+	}
+	
+	
 	
 	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id, 'agent name', $agent_name);
@@ -3496,20 +3505,49 @@ sub cli_module_get_data () {
 	my $module_id = get_agent_module_id($dbh, $module_name, $agent_id);
 	exist_check($module_id, 'module name', $module_name);
 	
-	if($interval <= 0) {
-		print_log "[ERROR] Interval must be a possitive value\n\n";
-	}
-	
-	$csv_separator = '|' unless defined($csv_separator);
-
 	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $agent_id);
 	
-	my @data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-		FROM tagente_datos 
-		WHERE id_agente_modulo = $id_agent_module 
-		AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
-		ORDER BY utimestamp DESC");
-
+	my $module_type_id = get_db_value($dbh,
+		"SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?;",
+		$id_agent_module);
+	
+	my $module_type = get_db_value($dbh,
+		"SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?",
+		$module_type_id);
+	
+	my @data = NULL;
+	if ($module_type eq "log4x") {
+		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+			FROM tagente_datos_log4x 
+			WHERE id_agente_modulo = $id_agent_module 
+			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+			ORDER BY utimestamp DESC");
+	}
+	elsif ($module_type =~ m/_string/) {
+		print("aaaa\n");
+		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+			FROM tagente_datos_string 
+			WHERE id_agente_modulo = $id_agent_module 
+			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+			ORDER BY utimestamp DESC");
+	}
+	elsif ($module_type =~ m/_inc$/) {
+		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+			FROM tagente_datos_inc 
+			WHERE id_agente_modulo = $id_agent_module 
+			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+			ORDER BY utimestamp DESC");
+	}
+	else {
+		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
+			FROM tagente_datos 
+			WHERE id_agente_modulo = $id_agent_module 
+			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+			ORDER BY utimestamp DESC");
+	}
+	
+	
+	
 	foreach my $data_timestamp (@data) {
 		print $data_timestamp->{'utimestamp'};
 		print $csv_separator;
@@ -3517,7 +3555,7 @@ sub cli_module_get_data () {
 		print "\n";
 	}
 	
-    exit;
+	exit;
 }
 
 ##############################################################################

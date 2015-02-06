@@ -65,25 +65,40 @@ $id_profile = (int) get_parameter ('id');
 
 // Profile deletion
 if ($delete_profile) {
-	// Delete profile
-	$profile = db_get_row('tperfil', 'id_perfil', $id_profile);
-	$sql = sprintf ('DELETE FROM tperfil WHERE id_perfil = %d', $id_profile);
-	$ret = db_process_sql ($sql);
-	if ($ret === false) {
-		ui_print_error_message(__('There was a problem deleting the profile'));
+	
+	$count_users_admin_in_profile = db_get_value_sql("
+		SELECT COUNT(*)
+		FROM tusuario
+		WHERE is_admin = 1 AND id_user IN (
+			SELECT id_usuario
+			FROM tusuario_perfil
+			WHERE id_perfil = " . $id_profile . ")");
+	
+	if ($count_users_admin_in_profile >= 1) {
+		ui_print_error_message(
+			__('Unsucessful delete profile. Because the profile is used by some admin users.'));
 	}
 	else {
-		db_pandora_audit("Profile management",
-			"Delete profile ". $profile['name']);
+		// Delete profile
+		$profile = db_get_row('tperfil', 'id_perfil', $id_profile);
+		$sql = sprintf ('DELETE FROM tperfil WHERE id_perfil = %d', $id_profile);
+		$ret = db_process_sql ($sql);
+		if ($ret === false) {
+			ui_print_error_message(__('There was a problem deleting the profile'));
+		}
+		else {
+			db_pandora_audit("Profile management",
+				"Delete profile ". $profile['name']);
+			
+			ui_print_success_message(__('Successfully deleted'));
+		}
 		
-		ui_print_success_message(__('Successfully deleted'));
+		//Delete profile from user data
+		$sql = sprintf ('DELETE FROM tusuario_perfil WHERE id_perfil = %d', $id_profile);
+		db_process_sql ($sql);
+		
+		$id_profile = 0;
 	}
-	
-	//Delete profile from user data
-	$sql = sprintf ('DELETE FROM tusuario_perfil WHERE id_perfil = %d', $id_profile);
-	db_process_sql ($sql);
-	
-	$id_profile = 0;
 }
 
 // Store the variables when create or update

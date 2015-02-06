@@ -1331,14 +1331,25 @@ ui_require_javascript_file('pandora_modules');
 	
 	// Show the modal window of an module
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
-		if (period == -1) {
-			period = $('#period').val();
-		}
+		var extra_parameters = '';
+		var f = new Date();
+		period = $('#period').val();
+		var selection_mode = $('input[name=selection_mode]:checked').val();
+		if(!selection_mode){selection_mode='fromnow';}
+		var date_from = $('#text-date_from').val();
+		if(!date_from){date_from =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();}
+		var time_from = $('#text-time_from').val();
+		if(!time_from){time_from = f.getHours() + ":"  + f.getMinutes();}
+		var date_to = $('#text-date_to').val();
+		if(!date_to){date_to =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();}
+		var time_to = $('#text-time_to').val();
+		if(!time_to){time_to = f.getHours() + ":"  + f.getMinutes();}
+		extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
 		
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
+			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period + extra_parameters,
 			dataType: "html",
 			success: function(data) {
 				$("#monitor_details_window").hide ()

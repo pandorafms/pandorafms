@@ -160,7 +160,7 @@ function mainAgentsModules() {
 	if ($config["pure"] == 1) {
 		$block = count($modules_by_name);
 	}
-
+	
 	$filter_groups = array ('offset' => (int) $offset,
 		'limit' => (int) $config['block_size'], 'disabled' => 0,'id_agente'=>$agents);
 	
@@ -184,8 +184,22 @@ function mainAgentsModules() {
 	
 	if ($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
-		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='" . ($nagents + 1) . "'>" .
-			"<a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=" . $new_hor_offset . "&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
+		echo "<th width='20px' " .
+			"style='vertical-align:top; padding-top: 35px;' " .
+			"rowspan='" . ($nagents + 1) . "'>" .
+			"<a href='index.php?" .
+				"extension_in_menu=estado&" .
+				"sec=extensions&" .
+				"sec2=extensions/agents_modules&" .
+				"refr=0&" .
+				"hor_offset=" . $new_hor_offset . "&" .
+				"offset=" . $offset . "&" .
+				"group_id=" . $group_id . "&" .
+				"modulegroup=" . $modulegroup . "'>" .
+				html_print_image("images/darrowleft.png", true,
+					array('title' => __('Previous modules'))) . 
+			"</a>" .
+			"</th>";
 	}
 	$nmodules = 0;
 	foreach ($modules_by_name as $module) {
@@ -208,7 +222,22 @@ function mainAgentsModules() {
 	
 	if (($hor_offset + $block) < $nmodules) {
 		$new_hor_offset = $hor_offset+$block;
-		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
+		echo "<th width='20px' " .
+			"style='vertical-align:top; padding-top: 35px;' " .
+			"rowspan='".($nagents+1)."'>" .
+			"<a href='index.php?" .
+				"extension_in_menu=estado&" .
+				"sec=extensions&".
+				"sec2=extensions/agents_modules&".
+				"hor_offset=" . $new_hor_offset . "&".
+				"offset=" . $offset . "&" .
+				"group_id=" . $group_id . "&" .
+				"modulegroup=" . $modulegroup . "'>" .
+				html_print_image(
+					"images/darrowright.png", true,
+					array('title' => __('More modules'))) .
+			"</a>" .
+			"</th>";
 	}
 	
 	echo "</tr>";
@@ -306,7 +335,7 @@ function mainAgentsModules() {
 	echo "</table>";
 	
 	echo "<div class='legend_basic' style='width: 96%'>";
-
+	
 	echo "<table>";
 	echo "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
 	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module has fired alerts") . "</td></tr>";

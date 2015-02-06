@@ -885,18 +885,21 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	}
 	
 	// Show the modal window of an module
-	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, selection_mode) {
 		var extra_parameters = '';
-		if (period == -1) {
-			period = $('#period').val();
-			var selection_mode = $('input[name=selection_mode]:checked').val();
-			var date_from = $('#text-date_from').val();
-			var time_from = $('#text-time_from').val();
-			var date_to = $('#text-date_to').val();
-			var time_to = $('#text-time_to').val();
-			
-			extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
-		}
+		var f = new Date();
+		period = $('#period').val();
+		var selection_mode = $('input[name=selection_mode]:checked').val();
+		if(!selection_mode){selection_mode='fromnow';}
+		var date_from = $('#text-date_from').val();
+		if(!date_from){date_from =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();}
+		var time_from = $('#text-time_from').val();
+		if(!time_from){time_from = f.getHours() + ":"  + f.getMinutes();}
+		var date_to = $('#text-date_to').val();
+		if(!date_to){date_to =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();}
+		var time_to = $('#text-time_to').val();
+		if(!time_to){time_to = f.getHours() + ":"  + f.getMinutes();}
+		extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
 		
 		$.ajax({
 			type: "POST",
@@ -919,7 +922,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 						height: 500
 					})
 					.show ();
-					refresh_pagination_callback (module_id, id_agent, server_name);
+					refresh_pagination_callback (module_id, id_agent, server_name, period, selection_mode);
 					datetime_picker_callback();
 					forced_title_callback();
 			}
@@ -944,7 +947,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	}
 	datetime_picker_callback();
 	
-	function refresh_pagination_callback (module_id, id_agent, server_name) {
+	function refresh_pagination_callback (module_id, id_agent, server_name, period, selection_mode) {
 		
 		$(".binary_dialog").click( function() {
 			
@@ -956,7 +959,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			
 			var period = $('#period').val();
 			
-			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period, selection_mode);
 			return false;
 		});
 	}

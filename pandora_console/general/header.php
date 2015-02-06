@@ -246,7 +246,7 @@ config_check();
 				else
 					$table->data[0][6] = html_print_image("images/header_user.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
 				
-				$table->data[0][6] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit">' . $table->data[0][7] . '</a>';
+				$table->data[0][6] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit">' . $table->data[0][6] . '</a>';
 				
 				$table->data[0][7] = '<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white_bold"> (' . $config["id_user"] . ')</a>';
 				

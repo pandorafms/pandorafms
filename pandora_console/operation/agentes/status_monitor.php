@@ -956,6 +956,10 @@ $id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
 	'nombre', 'web_content_string');
 
 foreach ($result as $row) {
+	//Avoid unset, null and false value
+	if (empty($row['server_name']))
+		$row['server_name'] = "";
+	
 	$is_web_content_string = (bool)db_get_value_filter('id_agente_modulo',
 		'tagente_modulo',
 		array('id_agente_modulo' => $row['id_agente_modulo'],
@@ -1154,8 +1158,14 @@ foreach ($result as $row) {
 		
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		
-		$data[7] .= "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agent'].", \"" . $row['server_name'] . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
-			
+		$data[7] .= "<a href='javascript: " .
+			"show_module_detail_dialog(" .
+				$row["id_agente_modulo"] . ", ".
+				$row['id_agent'] . ", \"" .
+				$row['server_name'] . "\", 0, 86400)'>" .
+			html_print_image ("images/binary.png", true,
+				array ("border" => "0", "alt" => "")) . "</a>";
+		
 	}
 	
 	$data[8] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);

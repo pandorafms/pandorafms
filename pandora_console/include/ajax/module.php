@@ -182,8 +182,8 @@ if ($get_module_detail) {
 		$period = $period;
 	}
 	else {
-		$date = $datetime_from;
 		$period = $datetime_to - $datetime_from;
+		$date = $datetime_from + $period;
 	}
 	
 	$count = modules_get_agentmodule_data ($module_id, $period,

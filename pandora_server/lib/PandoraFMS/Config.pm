@@ -344,7 +344,7 @@ sub pandora_load_config {
 	$pa_config->{"async_recovery"} = 1; # 5.1SP1
 
 	# Console API connection
-	$pa_config->{"console_api_url"} = 'http://localhost/pandora/include/api.php'; # 6.0
+	$pa_config->{"console_api_url"} = 'http://localhost/pandora_console/include/api.php'; # 6.0
 	$pa_config->{"console_api_pass"} = ''; # 6.0
 	$pa_config->{"console_user"} = 'admin'; # 6.0
 	$pa_config->{"console_pass"} = 'pandora'; # 6.0

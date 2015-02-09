@@ -325,6 +325,7 @@ sub pandora_daemonize {
 # param2 - Destination email addres
 # param3 - Email subject
 # param4 - Email Message body
+# param4 - Email content type
 ########################################################################
 
 sub pandora_sendmail {
@@ -333,9 +334,14 @@ sub pandora_sendmail {
 	my $to_address = $_[1];
 	my $subject = $_[2];
 	my $message = $_[3];
+	my $content_type = $_[4];
 	
 	$subject = decode_entities ($subject);
-	$message = decode_entities ($message);
+
+	# If content type is defined, the message will be custom
+	if (! defined($content_type)) {
+		$message = decode_entities ($message);
+	}
 	
 	my %mail = ( To	=> $to_address,
 		Message		=> $message,
@@ -346,9 +352,13 @@ sub pandora_sendmail {
 		From		=> $pa_config->{"mta_from"},
 	);
 	
+	if (defined($content_type)) {
+		$mail{'Content-Type'} = $content_type;
+	}
+
 	# Check if message has non-ascii chars.
 	# non-ascii chars should be encoded in UTF-8.
-	if ($message =~ /[^[:ascii:]]/o) {
+	if ($message =~ /[^[:ascii:]]/o && !defined($content_type)) {
 		$mail{Message} = encode("UTF-8", $mail{Message});
 		$mail{'Content-Type'} = 'text/plain; charset="UTF-8"';
 	}

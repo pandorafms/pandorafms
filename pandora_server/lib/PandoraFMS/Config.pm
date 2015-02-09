@@ -267,7 +267,7 @@ sub pandora_load_config {
 	$pa_config->{"nmap_timing_template"} = 2; # > 5.1
 	$pa_config->{"recon_timing_template"} = 3; # > 5.1
 
-	$pa_config->{"fping"} = "/usr/bin/fping"; # > 5.1SP2
+	$pa_config->{"fping"} = "/usr/sbin/fping"; # > 5.1SP2
 
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";

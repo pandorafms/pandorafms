@@ -599,6 +599,90 @@ function html_print_select_from_sql ($sql, $name, $selected = '',
 		$disabled, $style,'', $size);
 }
 
+function html_print_extended_select_for_post_process($name, $selected = '',
+	$script = '', $nothing = '', $nothing_value = '0', $size = false,
+	$return = false, $select_style = false, $unique_name = true,
+	$disabled = false) {
+	
+	global $config;
+	
+	require_once("include/functions_post_process.php");
+	
+	
+	$fields = post_process_get_custom_values();
+	$selected_float = (float)$selected;
+	$found = false;
+	foreach ($fields as $value => $text) {
+		$value = (float)$value;
+		
+		
+		
+		if ($value == $selected_float) {
+			$found = true;
+			break;
+		}
+	}
+	if (!$found) {
+		$fields[floatval($selected)] = floatval($selected);
+	}
+	
+	
+	if ($unique_name === true) {
+		$uniq_name = uniqid($name);
+	}
+	else {
+		$uniq_name = $name;
+	}
+	
+	
+	
+	
+	ob_start();
+	
+	echo '<div id="' . $uniq_name . '_default" style="width:100%;display:inline;">';
+		html_print_select ($fields, $uniq_name . '_select', $selected,
+			"" . $script, $nothing, $nothing_value, false, false, false,
+			'', $disabled, 'font-size: xx-small;' . $select_style);
+		echo ' <a href="javascript:">' .
+			html_print_image('images/pencil.png', true,
+				array('class' => $uniq_name . '_toggler',
+					'alt' => __('Custom'),
+					'title' => __('Custom'),
+					'style' => 'width: 18px;')) .
+			'</a>';
+	echo '</div>';
+	
+	echo '<div id="' . $uniq_name . '_manual" style="width:100%;display:inline;">';
+		html_print_input_text ($uniq_name . '_text', $selected, '', 20);
+		
+		html_print_input_hidden($name, $selected, false, $uniq_name);
+		echo ' <a href="javascript:">' .
+			html_print_image('images/default_list.png', true,
+				array('class' => $uniq_name . '_toggler',
+					'alt' => __('List'),
+					'title' => __('List'),
+					'style' => 'width: 18px;')) . '</a>';
+	echo '</div>';
+	
+	echo "<script type='text/javascript'>
+		$(document).ready (function () {
+			post_process_select_init('$uniq_name');
+			post_process_select_events('$uniq_name');
+		});
+		
+	</script>";
+	
+	$returnString = ob_get_clean();
+	
+	
+	
+	
+	if ($return)
+		return $returnString;
+	else
+		echo $returnString;
+}
+
 /**
  * Render a pair of select for times and text box for set the time more fine.
  * 
@@ -615,8 +699,10 @@ function html_print_select_from_sql ($sql, $name, $selected = '',
  * @return string HTML code if return parameter is true.
  */
 
-function html_print_extended_select_for_time ($name, $selected = '', $script = '', $nothing = '',
-	$nothing_value = '0', $size = false, $return = false, $select_style = false, $unique_name = true) {
+function html_print_extended_select_for_time ($name, $selected = '',
+	$script = '', $nothing = '', $nothing_value = '0', $size = false,
+	$return = false, $select_style = false, $unique_name = true) {
+	
 	global $config;
 	
 	$fields = get_periods();
@@ -635,7 +721,7 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 		SECONDS_1YEAR => __('years'));
 	
 	// The advanced control is only for admins
-	if(!is_user_admin($config['id_user'])) {
+	if (!is_user_admin($config['id_user'])) {
 		unset($fields[-1]);
 		
 		$returnString = html_print_select ($fields, $name, $selected,"" . $script,

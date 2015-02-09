@@ -456,6 +456,41 @@ function config_update_config () {
 					if (!config_update_value ('show_group_name', get_parameter('show_group_name')))
 						$error_update[] = __('Show the group name instead the group icon.');
 					
+					
+					
+					//--------------------------------------------------
+					// CUSTOM VALUES POST PROCESS
+					//--------------------------------------------------
+					$custom_value =  get_parameter('custom_value');
+					$custom_text = get_parameter('custom_text');
+					$custom_value_add = (bool)get_parameter('custom_value_add', 0);
+					$custom_value_to_delete = get_parameter('custom_value_to_delete', 0);
+					
+					$custom_value = str_replace(',', '.', $custom_value);
+					
+					if ($custom_value_add) {
+						require_once("include/functions_post_process.php");
+						
+						if (!post_process_add_custom_value(
+							$custom_text, (string)$custom_value))
+								$error_update[] = __('Add the custom post process');
+					}
+					
+					if ($custom_value_to_delete > 0) {
+						require_once("include/functions_post_process.php");
+						
+						if (!post_process_delete_custom_value($custom_value_to_delete)) {
+							$error_update[] = __('Delete the custom post process');
+						}
+					}
+					//--------------------------------------------------
+					
+					
+					
+					
+					//--------------------------------------------------
+					// CUSTOM INTERVAL VALUES
+					//--------------------------------------------------
 					$interval_values = get_parameter ('interval_values');
 					
 					// Add new interval value if is provided
@@ -489,8 +524,12 @@ function config_update_config () {
 						$interval_values = implode(',',$interval_values_array);
 					}
 					
-				if (!config_update_value ('interval_values', $interval_values))
-					$error_update[] = __('Delete interval');
+					if (!config_update_value ('interval_values', $interval_values))
+						$error_update[] = __('Delete interval');
+					//--------------------------------------------------
+				
+				
+				
 				
 				// Juanma (06/05/2014) New feature: Custom front page for reports  	
 				if (!config_update_value ('custom_report_front', get_parameter('custom_report_front')))
@@ -1243,6 +1282,11 @@ function config_process_config () {
 	
 	if (!isset($config['tutorial_mode'])) {
 		config_update_value ('tutorial_mode', 'full');
+	}
+	
+	if (!isset($config['post_process_custom_values'])) {
+		config_update_value ('post_process_custom_values',
+			json_encode(array()));
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

@@ -28,6 +28,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 //Constant with fonts directory
 define ('_MPDF_TTFONTPATH', $config['homedir'] . '/include/fonts/');
 
+require_once("include/functions_post_process.php");
 
 // Load enterprise extensions
 enterprise_include ('godmode/setup/setup_visuals.php');
@@ -125,10 +126,45 @@ $row++;
 $table->data[$row][0] = __('Graphic resolution (1-low, 5-high)');
 $table->data[$row][1] = html_print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
 
+//----------------------------------------------------------------------
+// CUSTOM VALUES POST PROCESS
+//----------------------------------------------------------------------
 $row++;
+$table->data[$row][0] = __('Custom values post process');
+$table->data[$row][1] = "<table>";
+$table->data[$row][1] .= __('Value') . ':&nbsp;' .
+	html_print_input_text ('custom_value', '', '', 25, 50, true);
+$table->data[$row][1] .= '&nbsp;' . __('Text') . ':&nbsp;' .
+	html_print_input_text ('custom_text', '', '', 25, 50, true);
+$table->data[$row][1] .= "&nbsp;";
+$table->data[$row][1] .= html_print_input_hidden(
+	'custom_value_add', '', true);
+$table->data[$row][1] .= html_print_button (__('Add'),
+	'custom_value_add_btn', false, "", 'class="sub next"', true);
 
+$table->data[$row][1] .= '<br /><br />';
+
+$table->data[$row][1] .= __('Delete custom values') . ': ';
+$table->data[$row][1] .= html_print_select(
+	post_process_get_custom_values(), 'custom_values', "", "", '', '',
+	true);
+$count_custom_postprocess = post_process_get_custom_values();
+$table->data[$row][1] .= html_print_button (__('Delete'),
+	'custom_values_del_btn',
+	empty($count_custom_postprocess), "",
+	'class="sub cancel"', true);
+// This hidden field will be filled from jQuery before submit
+$table->data[$row][1] .= html_print_input_hidden(
+	'custom_value_to_delete', '', true);
+$table->data[$row][1] .= "</table>";
+//----------------------------------------------------------------------
+
+
+//----------------------------------------------------------------------
+// CUSTOM INTERVAL VALUES
+//----------------------------------------------------------------------
+$row++;
 $table->data[$row][0] = __('Interval values');
-
 $units = array(
 	1 => __('seconds'),
 	SECONDS_1MINUTE => __('minutes'),
@@ -136,7 +172,6 @@ $units = array(
 	SECONDS_1DAY => __('days'),
 	SECONDS_1MONTH => __('months'),
 	SECONDS_1YEAR => __('years'));
-
 $table->data[$row][1] = __('Add new custom value to intervals') . ': ';
 $table->data[$row][1] .= html_print_input_text ('interval_value', '', '', 5, 5, true);
 $table->data[$row][1] .= html_print_select ($units, 'interval_unit', 1, "", '', '', true, false, false);
@@ -150,9 +185,11 @@ $table->data[$row][1] .= html_print_button (__('Delete'), 'interval_del_btn', em
 $table->data[$row][1] .= html_print_input_hidden ('interval_values', $config["interval_values"], true);
 // This hidden field will be filled from jQuery before submit
 $table->data[$row][1] .= html_print_input_hidden ('interval_to_delete', '', true);
+//----------------------------------------------------------------------
+
+
 
 $row++;
-
 $table->data[$row][0] = __('Style template');
 $table->data[$row][1] = html_print_select (themes_get_css (), 'style', $config["style"].'.css', '', '', '', true);
 
@@ -597,6 +634,31 @@ $(document).ready (function () {
 	$("#form_setup #text-graph_color9").attachColorPicker();
 	$("#form_setup #text-graph_color10").attachColorPicker();
 	
+	
+	//------------------------------------------------------------------
+	// CUSTOM VALUES POST PROCESS
+	//------------------------------------------------------------------
+	$("#button-custom_values_del_btn").click( function()  {
+		var interval_selected = $('#custom_values').val();
+		$('#hidden-custom_value_to_delete').val(interval_selected);
+		
+		$("input[name='custom_value']").val("");
+		$("input[name='custom_text']").val("");
+		
+		$('#submit-update_button').trigger('click');
+	});
+	
+	$("#button-custom_value_add_btn").click( function() {
+		$('#hidden-custom_value_add').val(1);
+		
+		$('#submit-update_button').trigger('click');
+	});
+	//------------------------------------------------------------------
+	
+	
+	//------------------------------------------------------------------
+	// CUSTOM INTERVAL VALUES
+	//------------------------------------------------------------------
 	$("#button-interval_del_btn").click( function()  {
 		var interval_selected = $('#intervals option:selected').val();
 		$('#hidden-interval_to_delete').val(interval_selected);
@@ -606,6 +668,8 @@ $(document).ready (function () {
 	$("#button-interval_add_btn").click( function() {
 		$('#submit-update_button').trigger('click');
 	});
+	//------------------------------------------------------------------
+	
 	
 	// Juanma (06/05/2014) New feature: Custom front page for reports  
 	var custom_report = $('#checkbox-custom_report_front')

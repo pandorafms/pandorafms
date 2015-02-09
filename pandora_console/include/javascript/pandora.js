@@ -493,6 +493,69 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
 		);
 }
 
+
+function post_process_select_init(name) {
+	// Manual mode is hidden by default
+	
+	$('#' + name + '_manual').hide();
+	$('#' + name + '_default').show();
+}
+
+function post_process_select_events(name) {
+	$('.' + name + '_toggler').click(function() {
+		var value = $('#text-' + name + '_text').val();
+		
+		var count = $('#' + name + '_select option')
+			.filter(function(i, item) {
+				
+				if (Number($(item).val()) == Number(value))
+					return true;
+				else return false;
+			})
+			.length;
+		
+		if (count != 1) {
+			$('#' + name + '_select')
+				.append($("<option>").val(value).text(value));
+			
+		}
+		
+		$('#' + name + '_select option')
+			.filter(function(i, item) {
+				
+				if (Number($(item).val()) == Number(value))
+					return true;
+				else return false;
+			})
+			.prop("selected", true);
+		
+		//~ $('#' + name + '_select').val(value);
+		
+		toggleBoth(name);
+		$('#text-' + name + '_text').focus();
+	});
+	
+	// When select a default period, is setted in seconds
+	$('#' + name + '_select').change(function() {
+		var value = $('#' + name + '_select').val();
+		
+		$('.' + name).val(value); 
+		$('#text-' + name + '_text').val(value);
+	});
+	
+	$('#text-' + name + '_text').keyup (function () {
+		var value = $('#text-' + name + '_text').val();
+		
+		if (isNaN(value)) {
+			value = 0;
+			$('#text-' + name + '_text').val(value);
+		}
+		else {
+			$('.' + name).val(value);
+		}
+	});
+}
+
 /**
  * Init values for html_extended_select_for_time
  * 
@@ -550,7 +613,7 @@ function period_select_events(name) {
 			$('#text-'+name+'_text').focus();
 		}
 		
-		$('.'+name).val(value); 
+		$('.'+name).val(value);
 		$('#text-'+name+'_text').val(value);
 		adjustTextUnits(name);
 	});

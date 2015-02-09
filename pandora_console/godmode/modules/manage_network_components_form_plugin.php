@@ -25,7 +25,8 @@ $data[1] = html_print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY na
 // Store the macros in base64 into a hidden control to move between pages
 $data[1] .= html_print_input_hidden('macros',base64_encode($macros),true);
 $data[2] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true, ui_get_full_url(false, false, false, false));
-$data[3] = html_print_input_text ('post_process', $post_process, '', 12, 25, true);
+$data[3] = html_print_extended_select_for_post_process('post_process',
+		$post_process, '', __('Empty'), '0', false, true, false, true);
 
 push_table_row ($data, 'plugin_1');
 

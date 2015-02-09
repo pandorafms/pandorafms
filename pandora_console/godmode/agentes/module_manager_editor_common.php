@@ -358,8 +358,10 @@ else {
 $table_advanced->data[2][1] .= html_print_input_hidden ('moduletype', $moduletype, true);
 
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
-$table_advanced->data[2][4] = html_print_input_text ('post_process',
-	$post_process, '', 15, 25, true, $disabledBecauseInPolicy);
+$table_advanced->data[2][4] =
+	html_print_extended_select_for_post_process('post_process',
+		$post_process, '', __('Empty'), '0', false, true, false, true,
+		$disabledBecauseInPolicy);
 $table_advanced->colspan[2][4] = 3;
 
 $table_advanced->data[3][0] = __('Min. Value');
@@ -1005,7 +1007,7 @@ function delete_relation (num_row, id_relation) {
 
 function validate_post_process() {
 	var post_process = $("#text-post_process").val();
-	var new_post_process = post_process.replace(',','.');
+	var new_post_process = post_process.replace(',', '.');
 	$("#text-post_process").val(new_post_process);
 }
 

@@ -54,7 +54,8 @@ push_table_row ($data, 'wmi_3');
 
 $data = array();
 $data[0] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true, ui_get_full_url(false, false, false, false));
-$data[1] = html_print_input_text ('post_process', $post_process, '', 12, 25, true);
+$data[1] = html_print_extended_select_for_post_process('post_process',
+	$post_process, '', __('Empty'), '0', false, true, false, true);
 $data[2] = $data[3] = '';
 push_table_row($data, 'field_process');
 ?>

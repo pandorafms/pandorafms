@@ -1433,10 +1433,10 @@ Pandora_Windows_Service::checkConfig (string file) {
 		if (tmp != "") {
 			agent_name = tmp;
 		}
-        }
+	}
 
 	/* Error getting agent name */
-	if (tmp.empty ()) {
+	if (agent_name.empty ()) {
 		pandoraDebug ("Pandora_Windows_Service::checkConfig: Error getting agent name");
 		return 0;
 	}

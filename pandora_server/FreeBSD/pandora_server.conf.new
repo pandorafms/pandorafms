@@ -247,8 +247,11 @@ xprobe2 /usr/local/bin/xprobe2
 
 nmap /usr/local/bin/nmap
 
+# Default path is /usr/sbin/fping for installation default in distro Centos , if you are installing in other distribution, 
+# you install fping in /usr/bin/fping and change the path in this line.
 # Path to the fping binary. Used by the Enterprise ICMP Server.
-fping /usr/bin/fping
+fping /usr/sbin/fping
+# fping /usr/bin/fping
 
 # A value that specifies how aggressive nmap should be from 1 to 5. 1 means slower but more reliable, 5 means faster but less reliable. 2 by default.
 nmap_timing_template 2

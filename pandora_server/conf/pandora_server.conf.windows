@@ -292,8 +292,8 @@ async_recovery 1
 # Console API credentials.
 # Required for some features like the module graphs macros.
 
-# console_api_url: Api URL (http://localhost/pandora/include/api.php by default)
-console_api_url http://localhost/pandora/include/api.php
+# console_api_url: Api URL (http://localhost/pandora_console/include/api.php by default)
+console_api_url http://localhost/pandora_console/include/api.php
 
 # console_api_pass: Api pass
 # console_api_pass 1234

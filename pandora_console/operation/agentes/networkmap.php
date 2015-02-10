@@ -26,7 +26,8 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 	exit;
 }
 
-require_once ('include/functions_networkmap.php');	
+require_once ('include/functions_networkmap.php');
+require_once ('include/functions_clippy.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 

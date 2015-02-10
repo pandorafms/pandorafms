@@ -39,29 +39,28 @@ if (is_ajax()) {
 	$delete_networkmaps = (bool) get_parameter('delete_networkmaps');
 	if ($delete_networkmaps) {
 		if ( check_acl ($config['id_user'], 0, "RW") ||  check_acl ($config['id_user'], 0, "RM") ) {
-			if (check_acl ($config['id_user'], 0, "RW")) {
-				$result = false;
-				$results = array();
-				$ids_networkmap = (array) get_parameter ('ids_networkmap');
-
-				foreach ($ids_networkmap as $id) {
-					$results[$id] = (bool) networkmap_delete_user_networkmap($config['id_user'], $id);
-				}
-				echo json_encode($results);
-				return;
-			}else{
-				if (check_acl ($config['id_user'], 0, "RM")) {
+			if (check_acl ($config['id_user'], 0, "RM")) {
 					$result = false;
 					$results = array();
 					$ids_networkmap = (array) get_parameter ('ids_networkmap');
-
 					foreach ($ids_networkmap as $id) {
 						$results[$id] = (bool) networkmap_delete_networkmap($id);
 					}
 					echo json_encode($results);
 					return;
 				}
-		}
+			else{
+				if (check_acl ($config['id_user'], 0, "RW")) {
+					$result = false;
+					$results = array();
+					$ids_networkmap = (array) get_parameter ('ids_networkmap');
+					foreach ($ids_networkmap as $id) {
+						$results[$id] = (bool) networkmap_delete_user_networkmap($config['id_user'], $id);
+					}
+					echo json_encode($results);
+					return;
+				}
+			}
 		}else{
 		db_pandora_audit("ACL Violation",
 				"Trying to access Networkmap deletion");
@@ -69,7 +68,6 @@ if (is_ajax()) {
 			return;
 		}
 	}
-
 	return;
 }
 
@@ -82,19 +80,19 @@ $id_networkmap = get_parameter ('id_networkmap', 0);
 $delete_networkmap = get_parameter ('delete_networkmap', 0);
 
 if ($delete_networkmap) {
-	if (check_acl ($config['id_user'], 0, "RW")) {
+	if (is_user_admin ($config['id_user'])){
+		$result = networkmap_delete_networkmap($id_networkmap);
+	}
+	elseif (check_acl ($config['id_user'], 0, "RM")) {
+		$result = networkmap_delete_networkmap($id_networkmap);
+	}elseif (check_acl ($config['id_user'], 0, "RW")) {
 		$result = networkmap_delete_user_networkmap($config['id_user'], $id_networkmap);
-	}else{
-		if (check_acl ($config['id_user'], 0, "RM")) {
-			$result = networkmap_delete_networkmap($id_networkmap);
-		}
 	}
 	$message = ui_print_result_message ($result,
 		__('Network map deleted successfully'),
 		__('Could not delete network map'), '', true);
 		
 	echo $message;
-	
 	$id_networkmap = 0;
 }
 

@@ -1146,6 +1146,7 @@ function groups_agent_not_init ($group_array) {
 			AND critical_count = 0
 			AND warning_count = 0
 			AND unknown_count = 0
+			AND normal_count = 0
 			AND (notinit_count > 0 OR total_count = 0)
 			AND id_grupo IN $group_clause");
 	

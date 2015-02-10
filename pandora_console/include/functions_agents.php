@@ -248,7 +248,11 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
  * 
  * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
  */
-function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC'), $return = false) {
+function agents_get_agents ($filter = false, $fields = false,
+	$access = 'AR',
+	$order = array('field' => 'nombre', 'order' => 'ASC'),
+	$return = false) {
+	
 	global $config;
 	
 	if (! is_array ($filter)) {
@@ -294,7 +298,11 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 						AND unknown_count > 0";
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
-				$status_sql = "normal_count <> total_count";
+				$status_sql =
+					"(
+						normal_count <> total_count
+						AND
+						(normal_count + notinit_count) <> total_count)";
 				break;
 			case AGENT_STATUS_NOT_INIT:
 				$status_sql = "notinit_count = total_count";

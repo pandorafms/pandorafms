@@ -385,7 +385,8 @@ if (empty ($agents)) {
 }
 
 // Prepare pagination
-ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
+ui_pagination ($total_agents,
+	ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 
 // Show data.
 $table->cellpadding = 4;

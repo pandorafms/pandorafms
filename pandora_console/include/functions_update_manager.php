@@ -245,7 +245,10 @@ function update_manager_check_online_free_packages_available() {
 	//~ html_debug_print($http_status, true);
 	//~ html_debug_print($result, true);
 	
-	if ($http_status >= 400 && $http_status < 500) {
+	if ($result === false) {
+		return false;
+	}
+	elseif ($http_status >= 400 && $http_status < 500) {
 		return false;
 	}
 	elseif ($http_status >= 500) {
@@ -299,18 +302,27 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 	//~ html_debug_print($http_status, true);
 	//~ html_debug_print($result, true);
 	
-	
-	if ($http_status >= 400 && $http_status < 500) {
+	if ($result === false) {
+		if ($is_ajax) {
+			echo __("Could not connect to internet");
+		}
+		else {
+			$update_message = __("Could not connect to internet");
+		}
+	}
+	else if ($http_status >= 400 && $http_status < 500) {
 		if ($is_ajax) {
 			echo __("Server not found.");
-		} else {
+		}
+		else {
 			$update_message = __("Server not found.");
 		}
 	}
 	elseif ($http_status >= 500) {
 		if ($is_ajax) {
 			echo $result;
-		} else {
+		}
+		else {
 			$update_message = $result;
 		}
 	}

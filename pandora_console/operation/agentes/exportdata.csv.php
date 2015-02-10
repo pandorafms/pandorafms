@@ -112,7 +112,7 @@ if (!empty ($module)) {
 		
 		$work_end = $end - $period + $work_period;
 		//Buffer to get data, anyway this will report a memory exhaustin
-		
+		$flag_last_time_slice = false;
 		while ($work_end <= $end) {
 			
 			$data = array (); // Reinitialize array for each module chunk
@@ -154,7 +154,18 @@ if (!empty ($module)) {
 			$output = "";
 			unset($data);
 			unset($data_single);
-			$work_end = $work_end + $work_period;
+			if ($flag_last_time_slice)
+				break;
+			
+			if (($work_end  + $work_period) > $end) {
+				// Get the last timelapse
+				$work_period = $end - $work_end;
+				$work_end = $end;
+				$flag_last_time_slice = true;
+			}
+			else {
+				$work_end = $work_end + $work_period;
+			}
 		}
 		unset ($output);
 		$output = "";

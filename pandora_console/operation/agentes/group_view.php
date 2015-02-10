@@ -67,7 +67,8 @@ ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $u
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 //Groups and tags
-$result_groups = group_get_groups_list($config['id_user'], $strict_user, 'AR', true, true);
+$result_groups = group_get_groups_list($config['id_user'], $strict_user,
+	'AR', true, true);
 
 $count = count($result_groups);
 
@@ -95,7 +96,7 @@ if (!empty($result_groups)) {
 		echo "<th width='10%' style='min-width: 60px;'>" . __("Alert fired") . "</th>";
 		
 		foreach ($result_groups as $data) {
-
+			
 			// Calculate entire row color
 			if ($data["_monitors_alerts_fired_"] > 0){
 				$color_class = 'group_view_alrm';
@@ -150,13 +151,13 @@ if (!empty($result_groups)) {
 			}
 			
 			$group_name = "<b><span style='font-size: 7.5pt'>" . ui_print_truncate_text($data['_name_'], 50) . "</span></b>";
-
+			
 			$item_icon = '';
 			if (isset($data['_iconImg_']) && !empty($data['_iconImg_']))
 				$item_icon = $data['_iconImg_'];
-
+			
 			echo $link . $deep . $item_icon ."&nbsp;" . $group_name . "</a>";
-
+			
 			echo "</td>";
 			
 			// Total agents

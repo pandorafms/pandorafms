@@ -348,7 +348,7 @@ else {
 
 
 if ($strict_user) {
-
+	
 	$filter = array (
 		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
 		'disabled' => 0,
@@ -364,27 +364,30 @@ if ($strict_user) {
 		}
 		$filter['id_group'] = implode(',', $groups);
 	}
-		
+	
 	$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
-			'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count');
-			
+		'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count');
+	
 	$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
-			
+	
 	$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 	
 	$total_agents = count($agents);
-
-} else {
+	
+}
+else {
 	$total_agents = 0;
 	$agents = false;
-
+	
+	
 	$total_agents = agents_get_agents(array (
 		'disabled' => 0,
 		'id_grupo' => $groups,
 		'search' => $search_sql,
 		'status' => $status),
 		array ('COUNT(*) as total'), 'AR', false);
-	$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+	$total_agents = isset ($total_agents[0]['total']) ?
+		$total_agents[0]['total'] : 0;
 	
 	$agents = agents_get_agents(array (
 		'order' => 'nombre ' . $order_collation . ' ASC',
@@ -418,7 +421,8 @@ if (empty ($agents)) {
 }
 
 // Prepare pagination
-ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
+ui_pagination ($total_agents,
+	ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 
 // Show data.
 $table->cellpadding = 4;

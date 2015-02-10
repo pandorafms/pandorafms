@@ -1158,24 +1158,36 @@ function groups_agent_not_init ($group_array, $strict_user = false, $id_group_st
 	$group_clause = "(" . $group_clause . ")";
 	
 	if ($strict_user) {
-		$tags_clause = " AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo
-												WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM ttag_module))";
-		$sql = "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 
-						AND id_grupo=$id_group_strict
-						AND critical_count = 0 
-						AND warning_count = 0 
-						AND unknown_count = 0
-						AND (notinit_count > 0 OR total_count = 0)
-						$tags_clause";
-
+		$tags_clause = " AND tagente.id_agente IN (
+			SELECT id_agente
+			FROM tagente_modulo
+			WHERE id_agente_modulo NOT IN (
+				SELECT id_agente_modulo
+				FROM ttag_module))";
+		
+		$sql = "
+			SELECT COUNT(*)
+			FROM tagente
+			WHERE tagente.disabled = 0 
+				AND id_grupo = $id_group_strict
+				AND critical_count = 0
+				AND warning_count = 0
+				AND unknown_count = 0
+				AND normal_count = 0
+				AND (notinit_count > 0 OR total_count = 0)
+				$tags_clause";
+		
 		$count = db_get_sql ($sql);
-	} else {
-		$count = db_get_sql ("SELECT COUNT(*)
+	}
+	else {
+		$count = db_get_sql ("
+			SELECT COUNT(*)
 			FROM tagente
 			WHERE disabled = 0
 				AND critical_count = 0
 				AND warning_count = 0
 				AND unknown_count = 0
+				AND normal_count = 0
 				AND (notinit_count > 0 OR total_count = 0)
 				AND id_grupo IN $group_clause");
 	}
@@ -1860,10 +1872,11 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 			}
 		}
 	}
-
+	
 	if ($user_strict) {
 		$user_groups_ids = implode(',',array_keys($groups_without_tags));
-	} else {
+	}
+	else {
 		$user_groups_ids = implode(',',array_keys($acltags));
 	}
 	
@@ -1892,7 +1905,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				break;
 		}
 	}
-
+	
 	$list = array();
 	
 	if ($list_groups == false) {
@@ -1903,7 +1916,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 		$i = 1;
 		$list[0]['_id_'] = 0;
 		$list[0]['_name_'] = __('All');
-
+		
 		$list[0]['_agents_unknown_'] = 0;
 		$list[0]['_monitors_alerts_fired_'] = 0;
 		$list[0]['_total_agents_'] = 0;
@@ -1913,14 +1926,15 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 		$list[0]['_monitors_unknown_'] = 0;
 		$list[0]['_monitors_not_init_'] = 0;
 		$list[0]['_agents_not_init_'] = 0;
-
+		
 		if ($mode == 'tactical') {
 			$list[0]['_agents_ok_'] = 0;
 			$list[0]['_agents_warning_'] = 0;
 			$list[0]['_agents_critical_'] = 0;
 			$list[0]['_monitors_alerts_'] = 0;
 		}
-	} else {
+	}
+	else {
 		$i = 0;
 	}
 	foreach ($list_groups as $key => $item) {
@@ -1936,10 +1950,10 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 			$list[$i]['_id_'] = $id;
 			$list[$i]['_name_'] = $item['nombre'];
 			$list[$i]['_iconImg_'] = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle;'));
-
+			
 			if ($mode == 'tree' && !empty($item['parent']))
 				$list[$i]['_parent_id_'] = $item['parent'];
-
+			
 			$list[$i]['_agents_unknown_'] = $group_stat[0]["unknown"];
 			$list[$i]['_monitors_alerts_fired_'] = $group_stat[0]["alerts_fired"];
 			$list[$i]['_total_agents_'] = $group_stat[0]["agents"];
@@ -1965,17 +1979,17 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 			if ($mode == 'tactical') {
 				// Get total count of monitors for this group, except disabled.	
 				$list[$i]["_monitor_checks_"] = $list[$i]["_monitors_not_init_"] + $list[$i]["_monitors_unknown_"] + $list[$i]["_monitors_warning_"] + $list[$i]["_monitors_critical_"] + $list[$i]["_monitors_ok_"];
-
+				
 				// Calculate not_normal monitors
 				$list[$i]["_monitor_not_normal_"] = $list[$i]["_monitor_checks_"] - $list[$i]["_monitors_ok_"];
-
+				
 				if ($list[$i]["_monitors_unknown_"] > 0 && $list[$i]["_monitor_checks_"] > 0) {
 					$list[$i]["_monitor_health_"] = format_numeric (100 - ($list[$i]["_monitor_not_normal_"] / ($list[$i]["_monitor_checks_"] / 100)), 1);
 				}
 				else {
 					$list[$i]["_monitor_health_"] = 100;
 				}
-
+				
 				if ($list[$i]["_monitors_not_init_"] > 0 && $list[$i]["_monitor_checks_"] > 0) {
 					$list[$i]["_module_sanity_"] = format_numeric (100 - ($list[$i]["_monitors_not_init_"] / ($list[$i]["_monitor_checks_"] / 100)), 1);
 				}
@@ -1995,16 +2009,16 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 					$list[$i]["_alert_level_"] = 100;
 					$list[$i]["_alerts_"] = 0;
 				}
-
+				
 				$list[$i]["_monitor_bad_"] = $list[$i]["_monitors_critical_"] + $list[$i]["_monitors_warning_"];
-
+				
 				if ($list[$i]["_monitor_bad_"] > 0 && $list[$i]["_monitor_checks_"] > 0) {
 					$list[$i]["_global_health_"] = format_numeric (100 - ($list[$i]["_monitor_bad_"] / ($list[$i]["_monitor_checks_"] / 100)), 1);
 				}
 				else {
 					$list[$i]["_global_health_"] = 100;
 				}
-
+				
 				$list[$i]["_server_sanity_"] = format_numeric (100 - $list[$i]["_module_sanity_"], 1);
 			}
 			
@@ -2018,7 +2032,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				$list[0]['_monitors_unknown_'] += $list[$i]['_monitors_unknown_'];
 				$list[0]['_monitors_not_init_'] += $list[$i]['_monitors_not_init_'];
 				$list[0]['_agents_not_init_'] += $list[$i]['_agents_not_init_'];
-
+				
 				if ($mode == 'tactical' || $mode == 'tree') {
 					$list[0]['_agents_ok_'] += $group_stat[0]["normal"];
 					$list[0]['_agents_warning_'] += $group_stat[0]["warning"];
@@ -2032,21 +2046,23 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
 						unset($list[$i]);
 					}
-				} else {
+				}
+				else {
 					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)) {
 						unset($list[$i]);
 					}
 				}
 			}
 			
-		} else {
+		}
+		else {
 			$list[$i]['_id_'] = $id;
 			$list[$i]['_name_'] = $item['nombre'];
 			$list[$i]['_iconImg_'] = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle;'));
-
+			
 			if ($mode == 'tree' && !empty($item['parent']))
 				$list[$i]['_parent_id_'] = $item['parent'];
-
+			
 			$list[$i]['_monitors_ok_'] = groups_monitor_ok($id, $user_strict, $id);
 			$list[$i]['_monitors_critical_'] = groups_monitor_critical($id, $user_strict, $id);
 			$list[$i]['_monitors_warning_'] = groups_monitor_warning($id, $user_strict, $id);
@@ -2069,17 +2085,17 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				
 				// Get total count of monitors for this group, except disabled.	
 				$list[$i]["_monitor_checks_"] = $list[$i]["_monitors_not_init_"] + $list[$i]["_monitors_unknown_"] + $list[$i]["_monitors_warning_"] + $list[$i]["_monitors_critical_"] + $list[$i]["_monitors_ok_"];
-
+				
 				// Calculate not_normal monitors
 				$list[$i]["_monitor_not_normal_"] = $list[$i]["_monitor_checks_"] - $list[$i]["_monitors_ok_"];
-
+				
 				if ($list[$i]["_monitors_unknown_"] > 0 && $list[$i]["_monitor_checks_"] > 0) {
 					$list[$i]["_monitor_health_"] = format_numeric (100 - ($list[$i]["_monitor_not_normal_"] / ($list[$i]["_monitor_checks_"] / 100)), 1);
 				}
 				else {
 					$list[$i]["_monitor_health_"] = 100;
 				}
-
+				
 				if ($list[$i]["_monitors_not_init_"] > 0 && $list[$i]["_monitor_checks_"] > 0) {
 					$list[$i]["_module_sanity_"] = format_numeric (100 - ($list[$i]["_monitors_not_init_"] / ($list[$i]["_monitor_checks_"] / 100)), 1);
 				}
@@ -2099,16 +2115,16 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 					$list[$i]["_alert_level_"] = 100;
 					$list[$i]["_alerts_"] = 0;
 				}
-
+				
 				$list[$i]["_monitor_bad_"] = $list[$i]["_monitors_critical_"] + $list[$i]["_monitors_warning_"];
-
+				
 				if ($list[$i]["_monitor_bad_"] > 0 && $list[$i]["_monitor_checks_"] > 0) {
 					$list[$i]["_global_health_"] = format_numeric (100 - ($list[$i]["_monitor_bad_"] / ($list[$i]["_monitor_checks_"] / 100)), 1);
 				}
 				else {
 					$list[$i]["_global_health_"] = 100;
 				}
-
+				
 				$list[$i]["_server_sanity_"] = format_numeric (100 - $list[$i]["_module_sanity_"], 1);
 			}
 			
@@ -2149,12 +2165,12 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 	if ($user_strict) {
 		foreach ($user_tags as $group_id => $tag_name) {
 			$id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
-	
+			
 			$list[$i]['_id_'] = $id;
 			$list[$i]['_name_'] = $tag_name;
 			$list[$i]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle;'));
 			$list[$i]['_is_tag_'] = 1;
-
+			
 			$list[$i]['_total_agents_'] = tags_total_agents ($id, $acltags);
 			$list[$i]['_agents_unknown_'] = tags_get_unknown_agents ($id, $acltags);
 			$list[$i]['_monitors_ok_'] = tags_monitors_ok ($id, $acltags);
@@ -2193,7 +2209,8 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
 						unset($list[$i]);
 					}
-				} else {
+				}
+				else {
 					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)) {
 						unset($list[$i]);
 					}
@@ -2208,17 +2225,20 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 
 function group_get_groups_list($id_user = false, $user_strict = false, $access = 'AR', $force_group_and_tag = true, $returnAllGroup = false, $mode = 'group') {
 	global $config;
-
+	
 	if ($id_user == false) {
 		$id_user = $config['id_user'];
 	}
-
+	
 	$acltags = tags_get_user_module_and_tags ($id_user, $access, $user_strict);
-
+	
 	if (! defined ('METACONSOLE')) {
-		$result_list = group_get_data ($id_user, $user_strict, $acltags, $returnAllGroup, $mode);
+		$result_list = group_get_data ($id_user, $user_strict, $acltags,
+			$returnAllGroup, $mode);
+		
 		return $result_list;
-	} else {
+	}
+	else {
 		$servers = db_get_all_rows_sql ("
 			SELECT *
 			FROM tmetaconsole_setup
@@ -2230,15 +2250,16 @@ function group_get_groups_list($id_user = false, $user_strict = false, $access =
 		
 		$result_list = array ();
 		foreach ($servers as $server) {
-
+			
 			if (metaconsole_connect($server) != NOERR) {
 				continue;
 			}
-			$server_list = group_get_data ($id_user, $user_strict, $acltags, $returnAllGroup, $mode);
-
+			$server_list = group_get_data ($id_user, $user_strict,
+				$acltags, $returnAllGroup, $mode);
+			
 			foreach ($server_list as $server_item) {
 				if (! isset ($result_list[$server_item['_name_']])) {
-
+					
 					$result_list[$server_item['_name_']] = $server_item;
 				}
 				else {
@@ -2271,9 +2292,9 @@ function group_get_groups_list($id_user = false, $user_strict = false, $access =
 				}
 			}
 			metaconsole_restore_db();
-
+			
 		}
-
+		
 		return $result_list;
 	}
 }
@@ -2284,7 +2305,8 @@ function groups_get_group_deep ($id_group) {
 	
 	if (empty($parents)) {
 		$deep = "";
-	} else {
+	}
+	else {
 		$deep = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", count($parents));
 	}
 	

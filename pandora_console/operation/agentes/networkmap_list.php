@@ -35,19 +35,19 @@ $id_networkmap = get_parameter ('id_networkmap', 0);
 $delete_networkmap = get_parameter ('delete_networkmap', 0);
 
 if ($delete_networkmap) {
-	if (check_acl ($config['id_user'], 0, "RW")) {
+	if (is_user_admin ($config['id_user'])){
+		$result = networkmap_delete_networkmap($id_networkmap);
+	}
+	elseif (check_acl ($config['id_user'], 0, "RM")) {
+		$result = networkmap_delete_networkmap($id_networkmap);
+	}elseif (check_acl ($config['id_user'], 0, "RW")) {
 		$result = networkmap_delete_user_networkmap($config['id_user'], $id_networkmap);
-	}else{
-		if (check_acl ($config['id_user'], 0, "RM")) {
-			$result = networkmap_delete_networkmap($id_networkmap);
-		}
 	}
 	$message = ui_print_result_message ($result,
 		__('Network map deleted successfully'),
 		__('Could not delete network map'), '', true);
 		
 	echo $message;
-	
 	$id_networkmap = 0;
 }
 

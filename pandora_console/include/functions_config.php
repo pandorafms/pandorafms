@@ -1227,6 +1227,23 @@ function config_process_config () {
 		config_update_value ('tutorial_mode', 'full');
 	}
 	
+	if (!isset($config['update_manager_proxy_server'])) {
+		config_update_value ('update_manager_proxy_server',
+			"");
+	}
+	if (!isset($config['update_manager_proxy_port'])) {
+		config_update_value ('update_manager_proxy_port',
+			"");
+	}
+	if (!isset($config['update_manager_proxy_user'])) {
+		config_update_value ('update_manager_proxy_user',
+			"");
+	}
+	if (!isset($config['update_manager_proxy_password'])) {
+		config_update_value ('update_manager_proxy_password',
+			"");
+	}
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }

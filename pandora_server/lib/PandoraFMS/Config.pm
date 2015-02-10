@@ -343,6 +343,12 @@ sub pandora_load_config {
 	# Auto-recovery of asynchronous modules.
 	$pa_config->{"async_recovery"} = 1; # 5.1SP1
 
+	# Console API connection
+	$pa_config->{"console_api_url"} = 'http://localhost/pandora_console/include/api.php'; # 6.0
+	$pa_config->{"console_api_pass"} = ''; # 6.0
+	$pa_config->{"console_user"} = 'admin'; # 6.0
+	$pa_config->{"console_pass"} = 'pandora'; # 6.0
+
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -813,6 +819,18 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^async_recovery\s+([0-1])/i) {
 			$pa_config->{'async_recovery'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^console_api_url\s(.*)/i) {
+			$pa_config->{'console_api_url'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^console_api_pass\s(.*)/i) {
+			$pa_config->{'console_api_pass'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^console_user\s(.*)/i) {
+			$pa_config->{'console_user'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^console_pass\s(.*)/i) {
+			$pa_config->{'console_pass'}= safe_input($1);
 		}
 	} # end of loop for parameter #
 

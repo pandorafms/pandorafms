@@ -132,6 +132,17 @@ use PandoraFMS::GIS qw(distance_moved);
 # For Reverse Geocoding
 use LWP::Simple;
 
+# For api calls
+use IO::Socket::INET6;
+use LWP::UserAgent;
+use HTTP::Request::Common;
+
+# For IPv6 support in Net::HTTP.
+BEGIN {
+	$Net::HTTP::SOCKET_CLASS = 'IO::Socket::INET6';
+	require Net::HTTP;
+}
+
 require Exporter;
 
 our @ISA = ("Exporter");
@@ -928,18 +939,107 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Email
 	} elsif ($clean_name eq "eMail") {
+		# Address
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
+		# Subject
 		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
+		# Message
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		
+		# Check for _module_graph_Xh_ macros
+		my $module_graph_list = {};
+		my $macro_regexp = "_modulegraph_(\\d+)h_";
+		
+		# API connection
+		my $ua = new LWP::UserAgent;
+		my $url ||= $pa_config->{"console_api_url"};
+		
+		my $params = {};
+		$params->{"apipass"} ||= $pa_config->{"console_api_pass"};
+		$params->{"user"} ||= $pa_config->{"console_user"};
+		$params->{"pass"} ||= $pa_config->{"console_pass"};
+		$params->{"op"} = "get";
+		$params->{"op2"} = "module_graph";
+		$params->{"id"} = $module->{'id_agente_modulo'};
+		
+		my $subst_func = sub {
+			my $hours = shift;
+			my $period = $hours * 3600; # Hours to seconds
+			$params->{"other"} = $period;
+			
+			my $cid = 'module_graph_' . $hours . 'h';
+			
+			if (! exists($module_graph_list->{$cid}) && defined $url) {
+				# Get the module graph image in base 64
+				my $response = $ua->post($url, $params);
+				
+				if ($response->is_success) {
+					$module_graph_list->{$cid} = $response->decoded_content();
+					
+					return '<img src="cid:'.$cid.'">';
+				}
+			}
+			
+			return '';
+		};
+		
+		# Macro data may contain HTML entities
+		eval {
+			no warnings;
+			local $SIG{__DIE__};
+			$field3 =~ s/$macro_regexp/$subst_func->($1)/ige;
+		};
+		
+		# Default content type
+		my $content_type = 'text/html; charset="iso-8859-1"';
+		
+		# Check if message has non-ascii chars.
+		# non-ascii chars should be encoded in UTF-8.
+		if ($field3 =~ /[^[:ascii:]]/o) {
+			$field3 = encode("UTF-8", $field3);
+			$content_type = 'text/html; charset="UTF-8"';
+		}
+		
+		# Build the mail with attached content
+		if (keys(%{$module_graph_list}) > 0) {
+			my $boundary = "====" . time() . "====";
+			my $html_content_type = $content_type;
+			$content_type = 'multipart/related; boundary="'.$boundary.'"';
+			$boundary = "--" . $boundary;
+			
+			$field3 = $boundary . "\n"
+					. "Content-Type: " . $html_content_type . "\n"
+					. "Content-Transfer-Encoding: quoted-printable\n\n"
+					. $field3 . "\n";
+
+			
+			foreach my $cid (keys %{$module_graph_list}) {
+				my $filename = $cid . ".png";
+				
+				$field3 .= $boundary . "\n"
+						. "Content-Type: image/png; name=\"" . $filename . "\"\n"
+						. "Content-Disposition: inline; filename=\"" . $filename . "\"\n"
+						. "Content-Transfer-Encoding: base64\n"
+						. "Content-ID: <" . $cid . ">\n"
+						. "Content-Location: " . $filename . "\n\n"
+						. $module_graph_list->{$cid} . "\n";
+
+				delete $module_graph_list->{$cid};
+			}
+			undef %{$module_graph_list};
+			
+			$field3 .= $boundary . "--\n";
+		}
+		
 		if ($pa_config->{"mail_in_separate"} != 0){
 			foreach my $address (split (',', $field1)) {
 				# Remove blanks
 				$address =~ s/ +//g;
-				pandora_sendmail ($pa_config, $address, $field2, $field3);
+				pandora_sendmail ($pa_config, $address, $field2, $field3, $content_type);
 			}
 		}
 		else {
-			pandora_sendmail ($pa_config, $field1, $field2, $field3);
+			pandora_sendmail ($pa_config, $field1, $field2, $field3, $content_type);
 		}
 	
 	# Pandora FMS Event

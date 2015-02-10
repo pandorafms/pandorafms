@@ -289,3 +289,17 @@ restart_delay 60
 # interval will become normal. Set to 0 to disable.
 async_recovery 1
 
+# Console API credentials.
+# Required for some features like the module graphs macros.
+
+# console_api_url: Api URL (http://localhost/pandora_console/include/api.php by default)
+console_api_url http://localhost/pandora_console/include/api.php
+
+# console_api_pass: Api pass
+# console_api_pass 1234
+
+# console_user: Console user name (admin by default)
+console_user admin
+
+# console_pass: Console password (pandora by default)
+console_pass pandora

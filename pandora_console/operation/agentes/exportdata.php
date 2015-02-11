@@ -137,6 +137,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 							reporting_get_agentmodule_data_average(
 								$selected, $work_period, $work_end);
 						if ($arr["data"] === false) {
+							$work_end = $work_end + $work_period;
 							continue;
 						}
 						$arr["module_name"] = modules_get_agentmodule_name ($selected);

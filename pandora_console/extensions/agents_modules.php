@@ -64,9 +64,9 @@ function mainAgentsModules() {
 	$modulegroup = get_parameter('modulegroup', 0);
 	$refr = get_parameter('refr', 30); // By default 30 seconds
 	
-	$group_id = get_parameter('group_id', 0);
-	$offset = get_parameter('offset', 0);
-	$hor_offset = get_parameter('hor_offset', 0);
+	$group_id = (int)get_parameter('group_id', 0);
+	$offset = (int)get_parameter('offset', 0);
+	$hor_offset = (int)get_parameter('hor_offset', 0);
 	$block = 20;
 	
 	$groups = users_get_groups ();

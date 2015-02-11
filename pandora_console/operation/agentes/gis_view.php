@@ -31,8 +31,8 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 ui_require_javascript_file('openlayers.pandora');
 
 /* Get the parameters */
-$period = get_parameter ("period", 86400);
-$agentId = get_parameter('id_agente');
+$period = (int)get_parameter ("period", 86400);
+$agentId = (int)get_parameter('id_agente');
 $agent_name = agents_get_name($id_agente); 
 $agentData = gis_get_data_last_position_agent($id_agente);
 
@@ -117,7 +117,7 @@ $sql = sprintf ("
 	FROM tgis_data_history
 	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)  
 	ORDER BY end_timestamp DESC
-	LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
+	LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], (int)get_parameter ('offset'));
 $result = db_get_all_rows_sql ($sql, true);
 
 

@@ -253,6 +253,7 @@ $table->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", tr
 $table->data[$row][1] = html_print_select(
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
 	$config["custom_logo"], '', '', '', true);
+$table->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', false, '', '', true);
 
 $row++;
 
@@ -266,6 +267,7 @@ asort($backgrounds_list);
 $table->data[$row][1] = html_print_select ($backgrounds_list,
 	'login_background', $config["login_background"], '', __('Default'),
 	'', true);
+$table->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'login_background_preview', false, '', '', true);
 
 $row++;
 
@@ -719,5 +721,85 @@ function changeIcons() {
 	
 	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
 }
+
+// Dialog loaders for the images previews
+
+$("#button-custom_logo_preview").click (function (e) {
+	var icon_name = $("select#custom_logo option:selected").val();
+	var icon_path = "<?php echo $config['homeurl']; ?>/images/custom_logo/" + icon_name;
+
+	if (icon_name == "")
+		return;
+
+	$dialog = $("<div></div>");
+	$image = $("<img src=\"" + icon_path + "\">");
+	$image
+		.css('max-width', '500px')
+		.css('max-height', '500px');
+
+	try {
+		$dialog
+			.hide()
+			.html($image)
+			.dialog({
+				title: "<?php echo __('Logo preview'); ?>",
+				resizable: true,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				width: $image.width,
+				close: function () {
+					$dialog
+						.empty()
+						.remove();
+				}
+			}).show();
+	}
+	catch (err) {
+		// console.log(err);
+	}
+});
+
+$("#button-login_background_preview").click (function (e) {
+	var icon_name = $("select#login_background option:selected").val();
+	var icon_path = "<?php echo $config['homeurl']; ?>/images/backgrounds/" + icon_name;
+
+	if (icon_name == "")
+		return;
+
+	$dialog = $("<div></div>");
+	$image = $("<img src=\"" + icon_path + "\">");
+	$image
+		.css('max-width', '500px')
+		.css('max-height', '500px');
+
+	try {
+		$dialog
+			.hide()
+			.html($image)
+			.dialog({
+				title: "<?php echo __('Background preview'); ?>",
+				resizable: true,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				width: $image.width,
+				close: function () {
+					$dialog
+						.empty()
+						.remove();
+				}
+			}).show();
+	}
+	catch (err) {
+		// console.log(err);
+	}
+});
 
 </script>

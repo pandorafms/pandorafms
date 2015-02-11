@@ -105,7 +105,7 @@ if (!empty ($module)) {
 	foreach ($module as $selected) {
 		
 		$output = "";
-		$work_period = 120000;
+		$work_period = SECONDS_1DAY;
 		if ($work_period > $period) {
 			$work_period = $period;
 		}
@@ -120,6 +120,7 @@ if (!empty ($module)) {
 				$arr = array ();
 				$arr["data"] = reporting_get_agentmodule_data_average ($selected, $work_period, $work_end);
 				if ($arr["data"] === false) {
+					$work_end = $work_end + $work_period;
 					continue;
 				}
 				$arr["module_name"] = modules_get_agentmodule_name ($selected);

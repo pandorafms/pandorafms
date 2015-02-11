@@ -34,6 +34,21 @@ if ($memory_limit < 500) {
 		sprintf(__('Your PHP has set memory limit in %s. For avoid problems with big updates please set to 500M'), ini_get("memory_limit"))
 	);
 }
+$post_max_size = ini_get("post_max_size");
+$post_max_size = str_replace("M", "", $post_max_size);
+if ($memory_limit < 100) {
+	ui_print_error_message(
+		sprintf(__('Your PHP has set post parameter max size limit in %s. For avoid problems with big updates please set to 100M'), ini_get("post_max_size"))
+	);
+}
+$upload_max_filesize = ini_get("upload_max_filesize");
+$upload_max_filesize = str_replace("M", "", $upload_max_filesize);
+if ($memory_limit < 100) {
+	ui_print_error_message(
+		sprintf(__('Your PHP has set maximum allowed size for uploaded files limit in %s. For avoid problems with big updates please set to 100M'), ini_get("upload_max_filesize"))
+	);
+}
+
 
 /* Translators: Do not translade Update Manager, it's the name of the program */
 ui_print_info_message(

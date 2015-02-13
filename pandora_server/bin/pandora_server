@@ -70,7 +70,8 @@ sub pandora_shutdown () {
 		$server->downEvent ();
 		$server->stop ();
 	}
-	
+	@Servers = ();
+
 	# Stop the netflow daemon
 	pandora_stop_netflow_daemon ();
 	

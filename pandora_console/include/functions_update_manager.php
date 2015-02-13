@@ -238,10 +238,10 @@ function update_manager_check_online_free_packages_available() {
 	if (issset($config['update_manager_proxy_server'])) {
 		curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
 	}
-	if (issset($config['update_manager_proxy_port'])) {
+	if (isset($config['update_manager_proxy_port'])) {
 		curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
 	}
-	if (issset($config['update_manager_proxy_user'])) {
+	if (isset($config['update_manager_proxy_user'])) {
 		curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'] . ':' . $config['update_manager_proxy_password']);
 	}
 	
@@ -301,13 +301,13 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 	curl_setopt($curlObj, CURLOPT_POST, true);
 	curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
 	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
-	if (issset($config['update_manager_proxy_server'])) {
+	if (isset($config['update_manager_proxy_server'])) {
 		curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
 	}
-	if (issset($config['update_manager_proxy_port'])) {
+	if (isset($config['update_manager_proxy_port'])) {
 		curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
 	}
-	if (issset($config['update_manager_proxy_user'])) {
+	if (isset($config['update_manager_proxy_user'])) {
 		curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'] . ':' . $config['update_manager_proxy_password']);
 	}
 	

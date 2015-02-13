@@ -211,6 +211,7 @@ $iconsets["default"] = __('Colors');
 $iconsets["faces"] = __('Faces');
 $iconsets["color_text"] = __('Colors and text');
 $table->data[$row][1] = html_print_select ($iconsets, 'status_images_set', $config["status_images_set"], '', '', '', true);
+$table->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'status_set_preview', false, '', '', true);
 
 $row++;
 
@@ -750,7 +751,61 @@ $("#button-gis_icon_preview").click (function (e) {
 			.append($icon_warning)
 			.append($icon_bad)
 			.dialog({
-				title: "<?php echo __('Background preview'); ?>",
+				title: "<?php echo __('Gis icons preview'); ?>",
+				resizable: true,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				close: function () {
+					$dialog
+						.empty()
+						.remove();
+				}
+			}).show();
+	}
+	catch (err) {
+		// console.log(err);
+	}
+});
+
+$("#button-status_set_preview").click (function (e) {
+	var icon_dir = $("select#status_images_set option:selected").val();
+	var icon_path = "<?php echo $config['homeurl']; ?>/images/status_sets/" + icon_dir + "/";
+
+	if (icon_dir == "")
+		return;
+
+	$dialog = $("<div></div>");
+	$icon_unknown_ball = $("<img src=\"" + icon_path + "agent_down_ball.png\">");
+	$icon_unknown = $("<img src=\"" + icon_path + "agent_down.png\">");
+	$icon_ok_ball = $("<img src=\"" + icon_path + "agent_ok_ball.png\">");
+	$icon_ok = $("<img src=\"" + icon_path + "agent_ok.png\">");
+	$icon_warning_ball = $("<img src=\"" + icon_path + "agent_warning_ball.png\">");
+	$icon_warning = $("<img src=\"" + icon_path + "agent_warning.png\">");
+	$icon_bad_ball = $("<img src=\"" + icon_path + "agent_critical_ball.png\">");
+	$icon_bad = $("<img src=\"" + icon_path + "agent_critical.png\">");
+
+	try {
+		$dialog
+			.hide()
+			.empty()
+			.append($icon_unknown_ball)
+			.append($icon_unknown)
+			.append('&nbsp;')
+			.append($icon_ok_ball)
+			.append($icon_ok)
+			.append('&nbsp;')
+			.append($icon_warning_ball)
+			.append($icon_warning)
+			.append('&nbsp;')
+			.append($icon_bad_ball)
+			.append($icon_bad)
+			.css('vertical-align', 'middle')
+			.dialog({
+				title: "<?php echo __('Status set preview'); ?>",
 				resizable: true,
 				draggable: true,
 				modal: true,

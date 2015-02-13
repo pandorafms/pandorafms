@@ -100,28 +100,39 @@ B<< References (I<C implementation>): >>
 =cut
 ##########################################################################
 sub distance_moved ($$$$$$$) {
-	my ($pa_config, $last_longitude, $last_latitude, $last_altitude, $longitude, $latitude, $altitude) = @_;
-
-
+	my ($pa_config, $last_longitude, $last_latitude, $last_altitude,
+		$longitude, $latitude, $altitude) = @_;
+	
+	if (!is_numeric($last_longitude) &&
+		!is_numeric($longitude) &&
+		!is_numeric($last_latitude) &&
+		!is_numeric($latitude)) {
+		return 0;
+	}
+	
 	my $long_difference = $last_longitude - $longitude;
 	my $lat_difference = $last_latitude - $latitude;
 	#my $alt_difference = $last_altitude - $altitude;
-   
-
-	my $long_aux = sin ($long_difference*$to_half_radians);
-	my $lat_aux = sin ($lat_difference*$to_half_radians);
+	
+	
+	my $long_aux = sin ($long_difference * $to_half_radians);
+	my $lat_aux = sin ($lat_difference * $to_half_radians);
 	$long_aux *= $long_aux;
 	$lat_aux *= $lat_aux;
 	# Temporary value to make sorter the asin formula.
-	my $asinaux = sqrt($lat_aux + cos($last_latitude*$to_radians) * cos($latitude*$to_radians) * $long_aux );
+	my $asinaux = sqrt($lat_aux +
+		cos($last_latitude*$to_radians) * cos($latitude * $to_radians) * $long_aux );
 	# Assure the aux value is not greater than 1 
-	if ($asinaux > 1) { $asinaux = 1; }
+	if ($asinaux > 1) {
+		$asinaux = 1;
+	}
 	# We use: asin(x)  = atan2(x, sqrt(1-x*x))
 	my $dist_in_rad = 2.0 * atan2($asinaux, sqrt (1 - $asinaux * $asinaux));
 	my $dist_in_meters = $earth_radius_in_meters * $dist_in_rad;
-		
-	logger($pa_config, "Distance moved:" . $dist_in_meters ." meters", 10);
-
+	
+	logger($pa_config,
+		"Distance moved:" . $dist_in_meters ." meters", 10);
+	
 	return $dist_in_meters;
 }
 

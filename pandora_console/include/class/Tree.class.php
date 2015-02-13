@@ -1137,7 +1137,11 @@ class Tree {
 			$module['serverID'] = $server['id'];
 			$module['serverName'] = $server['server_name'];
 		}
-
+		else{
+			$module['serverName'] = false;
+			$module['serverID'] = false;
+		}
+		
 		if (!isset($module['value']))
 			$module['value'] = modules_get_last_value($module['id']);
 

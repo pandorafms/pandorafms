@@ -157,53 +157,57 @@ if ($create_modules) {
 			$ifPhysAddress = $interfaces[$id]['ifPhysAddress']['value'];
 		}
 		foreach ($modules as $module) {
-			$oid_array = explode('.',$module);
-			$oid_array[count($oid_array)-1] = $id;
-			$oid = implode('.',$oid_array);
+			$oid_array = explode('.', $module);
+			$oid_array[count($oid_array) - 1] = $id;
+			$oid = implode('.', $oid_array);
 			
 			// Get the name
-			$name_array = explode('::',$oid_array[0]);
+			$name_array = explode('::', $oid_array[0]);
 			$name = $name_array[1] . "_" . $ifname;
 			
 			// Clean the name
 			$name = str_replace  ( "\""  , "" , $name);
 			
 			// Proc moduletypes
-			if (preg_match  ( "/Status/", $name_array[1]))
+			if (preg_match ("/Status/", $name_array[1]))
 				$module_type = 18;
 			
-			elseif (preg_match  ( "/Present/", $name_array[1]))
+			elseif (preg_match ("/Present/", $name_array[1]))
 				$module_type = 18;
 			
-			elseif (preg_match  ( "/PromiscuousMode/", $name_array[1]))
+			elseif (preg_match("/PromiscuousMode/", $name_array[1]))
 				$module_type = 18;
 			
 			// String moduletypes
-			elseif (preg_match  ( "/Alias/", $name_array[1]))
+			elseif (preg_match("/Alias/", $name_array[1]))
 				$module_type = 17;
 			
-			elseif (preg_match  ( "/Address/", $name_array[1]))
+			elseif (preg_match("/Address/", $name_array[1]))
 				$module_type = 17;
 			
-			elseif (preg_match  ( "/Name/", $name_array[1]))
+			elseif (preg_match("/Name/", $name_array[1]))
 				$module_type = 17;
 			
-			elseif (preg_match  ( "/Specific/", $name_array[1]))
+			elseif (preg_match("/Specific/", $name_array[1]))
 				$module_type = 17;
 			
-			elseif (preg_match  ( "/Descr/", $name_array[1]))
+			elseif (preg_match("/Descr/", $name_array[1]))
 				$module_type = 17;
 			
 			// Specific counters (ends in s)
-			elseif (preg_match  ( "/s$/", $name_array[1]))
+			elseif (preg_match("/s$/", $name_array[1]))
 				$module_type = 16;
 			
 			// Otherwise, numeric
 			else
 				$module_type = 15;
 			
+			if (preg_match("/Octets/", $name_array[1])) {
+				$values['unit'] = "Bytes";
+			}
+			
 			$values['id_tipo_modulo'] = $module_type;
-
+			
 			if (!empty($ifPhysAddress))
 				$values['descripcion'] = io_safe_input("(".$ip_target." - ".$ifPhysAddress." - ".$name.") " . $interfaces[$id]['ifDescr']['value']);
 			else

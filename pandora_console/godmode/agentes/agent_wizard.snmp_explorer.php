@@ -75,8 +75,8 @@ $static_snmp_descriptions = array(
 	'ssRawContexts' => 'Number of context switches',
 	'ssCpuRawUser' => 'user CPU time',
 	'ssCpuRawSystem' => 'system CPU time',
-	'ssCpuRawIdle' => 'idle CPU time'
-	);
+	'ssCpuRawIdle' => 'idle CPU time',
+	'sysUpTime' => 'system Up time');
 
 $static_snmp_oids = array(
 	'Load-1' => '.1.3.6.1.4.1.2021.10.1.5.1',
@@ -98,8 +98,11 @@ $static_snmp_oids = array(
 	'ssRawContexts' => '.1.3.6.1.4.1.2021.11.60.0',
 	'ssCpuRawUser' => '.1.3.6.1.4.1.2021.11.50.0',
 	'ssCpuRawSystem' => '.1.3.6.1.4.1.2021.11.52.0',
-	'ssCpuRawIdle' => '.1.3.6.1.4.1.2021.11.53.0'
-	);
+	'ssCpuRawIdle' => '.1.3.6.1.4.1.2021.11.53.0',
+	'sysUpTime' => '1.3.6.1.2.1.1.3.0');
+
+$static_snmp_post_process = array(
+	'sysUpTime' => "0.00000011574074");
 
 // Using plugin
 if (!empty($plugin)) {
@@ -450,6 +453,10 @@ if ($create_modules) {
 			
 			$module_values['descripcion'] = $static_snmp_descriptions[$snmpdata_name];
 			$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
+			if (isset($static_snmp_post_process[$snmpdata_name])) {
+				$module_values['post_process'] = 
+					$static_snmp_post_process[$snmpdata_name];
+			}
 			
 			//Average use of CPUs is a plugin module
 			switch ($snmpdata_name) {
@@ -460,7 +467,7 @@ if ($create_modules) {
 					
 					$macros = json_decode($plugin['macros'], true);
 					
-					foreach($macros as $k => $macro) {
+					foreach ($macros as $k => $macro) {
 						switch($macro['macro']) {
 							case '_field1_':
 								// Field 1 is the IP Address
@@ -656,7 +663,8 @@ if ($create_modules) {
 			unset($module_values['ip_target']); //ip_target
 			unset($module_values['tcp_send']); //snmp_version
 			
-			$result = modules_create_agent_module($id_agent, io_safe_input($disk), $module_values);
+			$result = modules_create_agent_module($id_agent,
+				io_safe_input($disk), $module_values);
 			
 			$results[$result][] = $disk;
 		}

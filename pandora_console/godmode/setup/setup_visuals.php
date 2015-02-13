@@ -677,6 +677,7 @@ $("#button-custom_logo_preview").click (function (e) {
 					opacity: 0.5,
 					background: "black"
 				},
+				minHeight: 1,
 				width: $image.width,
 				close: function () {
 					$dialog
@@ -716,6 +717,7 @@ $("#button-login_background_preview").click (function (e) {
 					opacity: 0.5,
 					background: "black"
 				},
+				minHeight: 1,
 				width: $image.width,
 				close: function () {
 					$dialog
@@ -759,6 +761,7 @@ $("#button-gis_icon_preview").click (function (e) {
 					opacity: 0.5,
 					background: "black"
 				},
+				minHeight: 1,
 				close: function () {
 					$dialog
 						.empty()
@@ -813,6 +816,7 @@ $("#button-status_set_preview").click (function (e) {
 					opacity: 0.5,
 					background: "black"
 				},
+				minHeight: 1,
 				close: function () {
 					$dialog
 						.empty()

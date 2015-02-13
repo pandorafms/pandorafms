@@ -48,7 +48,7 @@ require_once ('include/functions_gis.php');
 $table->width = '98%';
 $table->data = array ();
 
-$row = 1;
+$row = 0;
 
 $table->data[$row][0] = __('Date format string') . ui_print_help_icon("date_format", true);
 $table->data[$row][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
@@ -400,18 +400,18 @@ foreach ($dirFonts as $entryDir) {
 	}
 }
 
-$table->data[$row][0] = __('Custom report front') . ' - ' . __('Font family');
-$table->data[$row][1] = html_print_select ($_fonts,
+// Font
+$table->data['custom_report_front-font'][0] = __('Custom report front') . ' - ' . __('Font family');
+$table->data['custom_report_front-font'][1] = html_print_select ($_fonts,
 	'custom_report_front_font', $config['custom_report_front_font'],
 	false, __('Default'), '', true);
 
-$row++;
-
-$table->data[$row][0] =  __('Custom report front') . ' - ' .
+// Logo
+$table->data['custom_report_front-logo'][0] =  __('Custom report front') . ' - ' .
 	__('Custom logo') .
 	ui_print_help_tip(
 		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG) in upload tool in console."), true);
-$table->data[$row][1] = html_print_select(
+$table->data['custom_report_front-logo'][1] = html_print_select(
 	$customLogos,
 	'custom_report_front_logo',
 	$config['custom_report_front_logo'],
@@ -420,34 +420,29 @@ $table->data[$row][1] = html_print_select(
 	'',
 	true);
 
-$row++;
-
-$table->data[$row][0] =  __('Custom report front') . ' - ' . 'Preview';
+// Preview
+$table->data['custom_report_front-preview'][0] =  __('Custom report front') . ' - ' . 'Preview';
 if (empty($config['custom_report_front_logo'])) {
 	$config['custom_report_front_logo'] = 'images/pandora_logo_white.jpg';
 }
-$table->data[$row][1] = '<span id="preview_image">' .
+$table->data['custom_report_front-preview'][1] = '<span id="preview_image">' .
 	html_print_image ($config['custom_report_front_logo'], true) . '</span>';
 
-$row++;
-
-$table->data[$row][0] =  __('Custom report front') . ' - ' . __('Header');
-$table->data[$row][1] = html_print_textarea('custom_report_front_header', 5, 15,
+// Header
+$table->data['custom_report_front-header'][0] =  __('Custom report front') . ' - ' . __('Header');
+$table->data['custom_report_front-header'][1] = html_print_textarea('custom_report_front_header', 5, 15,
 	$config['custom_report_front_header'], 'style="width: 38em;"', true);
 
-$row++;
-
-$table->data[$row][0] =  __('Custom report front') . ' - ' . __('First page');
-$table->data[$row][1] = html_print_textarea('custom_report_front_firstpage', 15, 15,
+// First page
+$table->data['custom_report_front-first_page'][0] =  __('Custom report front') . ' - ' . __('First page');
+$table->data['custom_report_front-first_page'][1] = html_print_textarea('custom_report_front_firstpage', 15, 15,
 	$config['custom_report_front_firstpage'], 'style="width: 38em; height: 20em;"', true);
 
-$row++;
-
-$table->data[$row][0] =  __('Custom report front') . ' - ' . __('Footer');
-$table->data[$row][1] = html_print_textarea('custom_report_front_footer', 5, 15,
+// Footer
+$table->data['custom_report_front-footer'][0] =  __('Custom report front') . ' - ' . __('Footer');
+$table->data['custom_report_front-footer'][1] = html_print_textarea('custom_report_front_footer', 5, 15,
 	$config['custom_report_front_footer'], 'style="width: 38em;"', true);
 
-$row++;
 
 $table->data[$row][0] = __('Paginate module view');
 $table->data[$row][1] = html_print_checkbox('paginate_module', 1,
@@ -562,20 +557,20 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 function display_custom_report_front (show) {
 	
 	if (show == true) {
-		$('#table2-32').show();
-		$('#table2-33').show();
-		$('#table2-34').show();
-		$('#table2-35').show();
-		$('#table2-36').show();
-		$('#table2-37').show();
+		$('tr#table2-custom_report_front-font').show();
+		$('tr#table2-custom_report_front-logo').show();
+		$('tr#table2-custom_report_front-preview').show();
+		$('tr#table2-custom_report_front-header').show();
+		$('tr#table2-custom_report_front-first_page').show();
+		$('tr#table2-custom_report_front-footer').show();
 	}
 	else {
-		$('#table2-32').hide();
-		$('#table2-33').hide();
-		$('#table2-34').hide();
-		$('#table2-35').hide();
-		$('#table2-36').hide();
-		$('#table2-37').hide();
+		$('tr#table2-custom_report_front-font').hide();
+		$('tr#table2-custom_report_front-logo').hide();
+		$('tr#table2-custom_report_front-preview').hide();
+		$('tr#table2-custom_report_front-header').hide();
+		$('tr#table2-custom_report_front-first_page').hide();
+		$('tr#table2-custom_report_front-footer').hide();
 	}
 	
 }

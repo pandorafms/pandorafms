@@ -77,7 +77,7 @@ class Agent {
 					$agent_id = $system->getRequest('agent_id', '0');
 					$width = $system->getRequest('width', '400');
 					graph_graphic_agentevents(
-						$this->id, $width, 30, 86400, ui_get_full_url(false));
+						$this->id, $width, 30, SECONDS_1DAY, ui_get_full_url(false));
 					exit;
 			}
 		}

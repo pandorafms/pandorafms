@@ -399,10 +399,6 @@ function set_user_language() {
  */
 function human_time_description_raw ($seconds, $exactly = false, $units = 'large') {
 	
-	//Miguel: I think that I can kill this unicorns and magical numbers
-	//		because this function may call without loaded the
-	//		constants.php file.
-	
 	switch ($units) {
 		case 'large':
 			$secondsString = __('seconds');
@@ -434,44 +430,44 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 	if ($exactly) {
 		$returnDate = '';
 		
-		$years = floor($seconds / 31104000);
+		$years = floor($seconds / SECONDS_1YEAR);
 		
 		if ($years != 0) {
-			$seconds = $seconds - ($years * 31104000);
+			$seconds = $seconds - ($years * SECONDS_1YEAR);
 			
 			$returnDate .= "$years $yearsString ";
 		}
 		
-		$months = floor($seconds / 2592000);
+		$months = floor($seconds / SECONDS_1MONTH);
 		
 		if ($months != 0) {
-			$seconds = $seconds - ($months * 2592000);
+			$seconds = $seconds - ($months * SECONDS_1MONTH);
 			
 			$returnDate .= "$months $monthsString ";
 		}
 		
-		$days = floor($seconds / 86400);
+		$days = floor($seconds / SECONDS_1DAY);
 		
 		if ($days != 0) {
-			$seconds = $seconds - ($days * 86400);
+			$seconds = $seconds - ($days * SECONDS_1DAY);
 			
 			$returnDate .= "$days $daysString ";
 		}
 		
 		$returnTime = '';
 		
-		$hours = floor($seconds / 3600);
+		$hours = floor($seconds / SECONDS_1HOUR);
 		
 		if ($hours != 0) {
-			$seconds = $seconds - ($hours * 3600);
+			$seconds = $seconds - ($hours * SECONDS_1HOUR);
 			
 			$returnTime .= "$hours $hoursString ";
 		}
 		
-		$mins = floor($seconds / 60);
+		$mins = floor($seconds / SECONDS_1MINUTE);
 		
 		if ($mins != 0) {
-			$seconds = $seconds - ($mins * 60);
+			$seconds = $seconds - ($mins * SECONDS_1MINUTE);
 			
 			if ($hours == 0) {
 				$returnTime .= "$mins $minutesString ";
@@ -512,26 +508,26 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		
 	}
 	
-	if ($seconds < 60)
+	if ($seconds < SECONDS_1MINUTE)
 		return format_numeric ($seconds, 0)." " . $secondsString;
 	
-	if ($seconds < 3600) {
+	if ($seconds < SECONDS_1HOUR) {
 		$minutes = floor($seconds / 60);
-		$seconds = $seconds % 60;
+		$seconds = $seconds % SECONDS_1MINUTE;
 		if ($seconds == 0)
 			return $minutes.' ' . $minutesString;
 		$seconds = sprintf ("%02d", $seconds);
 		return $minutes.' '. $minutesString . ' ' .$seconds.' ' . $secondsString;
 	}
 	
-	if ($seconds < 86400)
-		return format_numeric ($seconds / 3600, 0)." " . $hoursString;
+	if ($seconds < SECONDS_1DAY)
+		return format_numeric ($seconds / SECONDS_1HOUR, 0)." " . $hoursString;
 	
-	if ($seconds < 2592000)
-		return format_numeric ($seconds / 86400, 0) . " " . $daysString;
+	if ($seconds < SECONDS_1MONTH)
+		return format_numeric ($seconds / SECONDS_1DAY, 0) . " " . $daysString;
 	
-	if ($seconds < 15552000)
-		return format_numeric ($seconds / 2592000, 0)." ". $monthsString;
+	if ($seconds < SECONDS_6MONTHS)
+		return format_numeric ($seconds / SECONDS_1MONTH, 0)." ". $monthsString;
 	
 	return "+6 " . $monthsString;
 }
@@ -578,44 +574,44 @@ function human_time_description_alerts ($seconds, $exactly = false, $units = 'ti
 	if ($exactly) {
 		$returnDate = '';
 		
-		$years = floor($seconds / 31104000);
+		$years = floor($seconds / SECONDS_1YEAR);
 		
 		if ($years != 0) {
-			$seconds = $seconds - ($years * 31104000);
+			$seconds = $seconds - ($years * SECONDS_1YEAR);
 			
 			$returnDate .= "$years $yearsString ";
 		}
 		
-		$months = floor($seconds / 2592000);
+		$months = floor($seconds / SECONDS_1MONTH);
 		
 		if ($months != 0) {
-			$seconds = $seconds - ($months * 2592000);
+			$seconds = $seconds - ($months * SECONDS_1MONTH);
 			
 			$returnDate .= "$months $monthsString ";
 		}
 		
-		$days = floor($seconds / 86400);
+		$days = floor($seconds / SECONDS_1DAY);
 		
 		if ($days != 0) {
-			$seconds = $seconds - ($days * 86400);
+			$seconds = $seconds - ($days * SECONDS_1DAY);
 			
 			$returnDate .= "$days $daysString ";
 		}
 		
 		$returnTime = '';
 		
-		$hours = floor($seconds / 3600);
+		$hours = floor($seconds / SECONDS_1HOUR);
 		
 		if ($hours != 0) {
-			$seconds = $seconds - ($hours * 3600);
+			$seconds = $seconds - ($hours * SECONDS_1HOUR);
 			
 			$returnTime .= "$hours $hoursString ";
 		}
 		
-		$mins = floor($seconds / 60);
+		$mins = floor($seconds / SECONDS_1MINUTE);
 		
 		if ($mins != 0) {
-			$seconds = $seconds - ($mins * 60);
+			$seconds = $seconds - ($mins * SECONDS_1MINUTE);
 			
 			if ($hours == 0) {
 				$returnTime .= "$mins $minutesString ";
@@ -659,23 +655,23 @@ function human_time_description_alerts ($seconds, $exactly = false, $units = 'ti
 	if ($seconds < 60)
 		return format_numeric ($seconds, 0)." " . $secondsString;
 	
-	if ($seconds < 3600) {
-		$minutes = floor($seconds / 60);
-		$seconds = $seconds % 60;
+	if ($seconds < SECONDS_1HOUR) {
+		$minutes = floor($seconds / SECONDS_1MINUTE);
+		$seconds = $seconds % SECONDS_1MINUTE;
 		if ($seconds == 0)
 			return $minutes.' ' . $minutesString;
 		$seconds = sprintf ("%02d", $seconds);
 		return $minutes.' '. $minutesString . ' ' .$seconds.' ' . $secondsString;
 	}
 	
-	if ($seconds < 86400)
-		return format_numeric ($seconds / 3600, 0)." " . $hoursString;
+	if ($seconds < SECONDS_1DAY)
+		return format_numeric ($seconds / SECONDS_1HOUR, 0)." " . $hoursString;
 	
-	if ($seconds < 2592000)
-		return format_numeric ($seconds / 86400, 0) . " " . $daysString;
+	if ($seconds < SECONDS_1MONTH)
+		return format_numeric ($seconds / SECONDS_1DAY, 0) . " " . $daysString;
 	
-	if ($seconds < 15552000)
-		return format_numeric ($seconds / 2592000, 0)." ". $monthsString;
+	if ($seconds < SECONDS_6MONTHS)
+		return format_numeric ($seconds / SECONDS_1MONTH, 0)." ". $monthsString;
 	
 	return "+6 " . $monthsString;
 }

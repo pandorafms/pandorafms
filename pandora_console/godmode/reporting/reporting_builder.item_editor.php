@@ -63,10 +63,10 @@ $top_n_value = 10;
 $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
 $modulegroup = 0;
-$period = 86400;
+$period = SECONDS_1DAY;
 // Added support for projection graphs
-$period_pg = 432000;
-$projection_period = 432000;
+$period_pg = SECONDS_5DAY;
+$projection_period = SECONDS_5DAY;
 $only_display_wrong = 0;
 // Added support for prediction date report
 $min_interval = '0.00';

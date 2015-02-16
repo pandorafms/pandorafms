@@ -217,47 +217,47 @@ define('VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP',	2);
 
 /* Service constants */
 //Status
-define('SERVICE_STATUS_UNKNOWN', -1);
-define('SERVICE_STATUS_NORMAL', 0);
-define('SERVICE_STATUS_CRITICAL', 1);
-define('SERVICE_STATUS_WARNING', 2);
-define('SERVICE_STATUS_ALERT', 4);
+define('SERVICE_STATUS_UNKNOWN',			-1);
+define('SERVICE_STATUS_NORMAL',				0);
+define('SERVICE_STATUS_CRITICAL',			1);
+define('SERVICE_STATUS_WARNING',			2);
+define('SERVICE_STATUS_ALERT',				4);
 //Default weights
-define('SERVICE_WEIGHT_CRITICAL', 1);
-define('SERVICE_WEIGHT_WARNING', 0.5);
-define('SERVICE_ELEMENT_WEIGHT_CRITICAL', 1);
-define('SERVICE_ELEMENT_WEIGHT_WARNING', 0.5);
-define('SERVICE_ELEMENT_WEIGHT_OK', 0);
-define('SERVICE_ELEMENT_WEIGHT_UNKNOWN', 0);
+define('SERVICE_WEIGHT_CRITICAL',			1);
+define('SERVICE_WEIGHT_WARNING',			0.5);
+define('SERVICE_ELEMENT_WEIGHT_CRITICAL',	1);
+define('SERVICE_ELEMENT_WEIGHT_WARNING',	0.5);
+define('SERVICE_ELEMENT_WEIGHT_OK',			0);
+define('SERVICE_ELEMENT_WEIGHT_UNKNOWN',	0);
 //Modes
-define('SERVICE_MODE_MANUAL', 0);
-define('SERVICE_MODE_AUTO', 1);
-define('SERVICE_MODE_SIMPLE', 2);
+define('SERVICE_MODE_MANUAL',				0);
+define('SERVICE_MODE_AUTO',					1);
+define('SERVICE_MODE_SIMPLE',				2);
 
 
 /* Status images */
 //For modules
-define ('STATUS_MODULE_OK', 'module_ok.png');
-define ('STATUS_MODULE_CRITICAL', 'module_critical.png');
-define ('STATUS_MODULE_WARNING', 'module_warning.png');
-define ('STATUS_MODULE_NO_DATA', 'module_no_data.png');
-define ('STATUS_MODULE_UNKNOWN', 'module_unknown.png');
+define ('STATUS_MODULE_OK',			'module_ok.png');
+define ('STATUS_MODULE_CRITICAL',	'module_critical.png');
+define ('STATUS_MODULE_WARNING',	'module_warning.png');
+define ('STATUS_MODULE_NO_DATA',	'module_no_data.png');
+define ('STATUS_MODULE_UNKNOWN',	'module_unknown.png');
 //For agents
-define ('STATUS_AGENT_CRITICAL', 'agent_critical.png');
-define ('STATUS_AGENT_WARNING', 'agent_warning.png');
-define ('STATUS_AGENT_DOWN', 'agent_down.png');
-define ('STATUS_AGENT_UNKNOWN', 'agent_unknown.png');
-define ('STATUS_AGENT_OK', 'agent_ok.png');
-define ('STATUS_AGENT_NO_DATA', 'agent_no_data.png');
-define ('STATUS_AGENT_NO_MONITORS', 'agent_no_monitors.png');
-define ('STATUS_AGENT_NOT_INIT', 'agent_notinit.png');
+define ('STATUS_AGENT_CRITICAL',	'agent_critical.png');
+define ('STATUS_AGENT_WARNING',		'agent_warning.png');
+define ('STATUS_AGENT_DOWN',		'agent_down.png');
+define ('STATUS_AGENT_UNKNOWN',		'agent_unknown.png');
+define ('STATUS_AGENT_OK',			'agent_ok.png');
+define ('STATUS_AGENT_NO_DATA',		'agent_no_data.png');
+define ('STATUS_AGENT_NO_MONITORS',	'agent_no_monitors.png');
+define ('STATUS_AGENT_NOT_INIT',	'agent_notinit.png');
 //For alerts
-define ('STATUS_ALERT_FIRED', 'alert_fired.png');
-define ('STATUS_ALERT_NOT_FIRED', 'alert_not_fired.png');
-define ('STATUS_ALERT_DISABLED', 'alert_disabled.png');
+define ('STATUS_ALERT_FIRED',		'alert_fired.png');
+define ('STATUS_ALERT_NOT_FIRED',	'alert_not_fired.png');
+define ('STATUS_ALERT_DISABLED',	'alert_disabled.png');
 //For servers
-define ('STATUS_SERVER_OK', 'server_ok.png');
-define ('STATUS_SERVER_DOWN', 'server_down.png');
+define ('STATUS_SERVER_OK',			'server_ok.png');
+define ('STATUS_SERVER_DOWN',		'server_down.png');
 
 
 /* Status images (ball) */

@@ -60,17 +60,17 @@ function cron_next_execution ($cron) {
 			}
 			
 			// Move to the next day of the month
-			$nex_time_wd += 86400;
+			$nex_time_wd += SECONDS_1DAY;
 			list ($nex_mon_wd, $nex_wday) = explode (" ", date ("m w", $nex_time_wd));
 		}
 		while ($mday == '*' && $nex_mon_wd == $nex_mon);
 		
 		$count++;
 	}
-	while ($count < 60);
+	while ($count < SECONDS_1MINUTE);
 	
 	// Something went wrong, default to 5 minutes
-	return 300;
+	return SECONDS_5MINUTES;
 }
 
 // Get the next execution date for the given cron entry in seconds since epoch.
@@ -134,13 +134,13 @@ function cron_next_execution_date ($cron, $cur_time = false) {
 			return $next_time;
 		}
 		if ($min == '*' && $hour == '*' && $wday == '*' && $mday == '*' && $mon == '*') {
-			list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + 60));
+			list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + SECONDS_1MINUTE));
 		}
 		else if ($hour == '*' && $wday == '*' && $mday == '*' && $mon == '*') {
-	 		list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + 3600));
+	 		list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + SECONDS_1HOUR));
 		}
 		else if ($mday == '*' && $mon == '*') {
-	 		list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + 86400));
+	 		list ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = explode (" ", date ("i H d m Y", $next_time + SECONDS_1DAY));
 		}
 		else if ($mon == '*') {
 			$nex_mon = $nex_mon + 1;
@@ -154,10 +154,10 @@ function cron_next_execution_date ($cron, $cur_time = false) {
 		}
 		$count++;
 	}
-	while ($count < 86400);
+	while ($count < SECONDS_1DAY);
 	
 	// Something went wrong, default to 5 minutes
-	return $cur_time + 300;
+	return $cur_time + SECONDS_5MINUTES;
 }
 
 ?>

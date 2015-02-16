@@ -523,9 +523,9 @@ function servers_get_info ($id_server = -1) {
 						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 						break;
 					case "oracle":
-						$server["lag"] = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp from trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["lag"] = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - utimestamp from trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . "))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 						
-						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . "))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
 						break;
 				}
 			}
@@ -566,7 +566,7 @@ function servers_get_info ($id_server = -1) {
 								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) > current_interval");
 							break;
 						case "oracle":
-							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
 								WHERE utimestamp > 0
 								AND tagente.disabled = 0
 								AND tagente.id_agente = tagente_estado.id_agente
@@ -574,8 +574,8 @@ function servers_get_info ($id_server = -1) {
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 								AND current_interval > 0
 								AND running_by = ".$server["id_server"]."
-								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp) < ( current_interval * 10)
-								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) - utimestamp) * (86400)) > current_interval");
+								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - utimestamp) < ( current_interval * 10)
+								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) - utimestamp) * (" . SECONDS_1DAY . ")) > current_interval");
 							break;
 					}
 				}
@@ -609,7 +609,7 @@ function servers_get_info ($id_server = -1) {
 								AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp) > (current_interval * 1.1)");
 							break;
 						case "oracle":
-							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
+							$result = db_get_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo, tagente
 								WHERE utimestamp > 0
 								AND tagente.disabled = 0
 								AND tagente.id_agente = tagente_estado.id_agente
@@ -617,9 +617,9 @@ function servers_get_info ($id_server = -1) {
 								AND tagente_modulo.id_tipo_modulo < 5 
 								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 								AND current_interval > 0
-								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp) < ( current_interval * 10)
+								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - utimestamp) < ( current_interval * 10)
 								AND running_by = ".$server["id_server"]."
-								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp) > (current_interval * 1.1)");
+								AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - utimestamp) > (current_interval * 1.1)");
 							break;
 					}
 				}

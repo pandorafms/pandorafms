@@ -1374,7 +1374,7 @@ function oracle_get_system_time() {
 		return $time;
 	
 	if ($config["timesource"] == "sql") {
-		$time = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) as dt FROM dual");
+		$time = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) as dt FROM dual");
 		if (empty ($time)) {
 			return time ();
 		}

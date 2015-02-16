@@ -1152,9 +1152,28 @@ foreach ($result as $row) {
 		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
 		
 		if (defined('METACONSOLE'))
-			$link ="winopeng('" . $row['server_url'] . "operation/agentes/stat_win.php?type=$graph_type&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . str_rot13($row["user"]) . "&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
+			$link ="winopeng('" .
+				$row['server_url'] . "operation/agentes/stat_win.php?" .
+				"type=$graph_type&" .
+				"period=" . SECONDS_1DAY . "&" .
+				"loginhash=auto&" .
+				"loginhash_data=" . $row["hashdata"] . "&" .
+				"loginhash_user=" . str_rot13($row["user"]) . "&" .
+				"id=" . $row["id_agente_modulo"] . "&" .
+				"label=" . rawurlencode(
+					urlencode(
+						base64_encode($row["module_name"]))) . "&" .
+				"refresh=" . SECONDS_10MINUTES . "', 'day_".$win_handle."')";
 		else
-			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
+			$link ="winopeng('" .
+				"operation/agentes/stat_win.php?" .
+				"type=$graph_type&" .
+				"period=" . SECONDS_1DAY . "&" .
+				"id=".$row["id_agente_modulo"]."&" .
+				"label=" . rawurlencode(
+					urlencode(
+						base64_encode($row["module_name"]))) . "&" .
+				"refresh=" . SECONDS_10MINUTES . "', 'day_".$win_handle."')";
 		
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		
@@ -1162,13 +1181,15 @@ foreach ($result as $row) {
 			"show_module_detail_dialog(" .
 				$row["id_agente_modulo"] . ", ".
 				$row['id_agent'] . ", \"" .
-				$row['server_name'] . "\", 0, 86400)'>" .
+				$row['server_name'] . "\", 0, " . SECONDS_1DAY . ")'>" .
 			html_print_image ("images/binary.png", true,
 				array ("border" => "0", "alt" => "")) . "</a>";
 		
 	}
 	
-	$data[8] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
+	$data[8] = ui_print_module_warn_value($row['max_warning'],
+		$row['min_warning'], $row['str_warning'], $row['max_critical'],
+		$row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
 		$salida = format_numeric($row["datos"]);

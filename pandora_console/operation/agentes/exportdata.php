@@ -299,15 +299,19 @@ if (empty($export_btn) || $show_form) {
 	//Start date selector
 	$table->data[3][0] = '<b>'.__('Begin date').'</b>';
 	
-	$table->data[3][1] = html_print_input_text ('start_date', date ("Y-m-d", get_system_time () - 86400), false, 10, 10, true);
+	$table->data[3][1] = html_print_input_text ('start_date',
+		date ("Y-m-d", get_system_time () - SECONDS_1DAY), false, 10, 10, true);
 	$table->data[3][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-start_date'),this);"));
-	$table->data[3][1] .= html_print_input_text ('start_time', date ("H:i", get_system_time () - 86400), false, 10, 5, true);
+	$table->data[3][1] .= html_print_input_text ('start_time',
+		date ("H:i", get_system_time () - SECONDS_1DAY), false, 10, 5, true);
 	
 	//End date selector
 	$table->data[4][0] = '<b>'.__('End date').'</b>';
-	$table->data[4][1] = html_print_input_text ('end_date', date ("Y-m-d", get_system_time ()), false, 10, 10, true);
+	$table->data[4][1] = html_print_input_text ('end_date',
+		date ("Y-m-d", get_system_time ()), false, 10, 10, true);
 	$table->data[4][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-end_date'),this);"));
-	$table->data[4][1] .= html_print_input_text ('end_time', date ("H:i", get_system_time ()), false, 10, 5, true);
+	$table->data[4][1] .= html_print_input_text ('end_time',
+		date ("H:i", get_system_time ()), false, 10, 5, true);
 	
 	//Export type
 	$table->data[5][0] = '<b>'.__('Export type').'</b>';

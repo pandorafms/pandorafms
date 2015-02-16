@@ -115,7 +115,7 @@ $label = base64_decode(get_parameter('label', ''));
 		if ($show_other) {
 			$avg_only = 0;
 		}
-		$period = get_parameter ("period", 86400);
+		$period = get_parameter ("period", SECONDS_1DAY);
 		$id = get_parameter ("id", 0);
 		$width = get_parameter ("width", 555);
 		$height = get_parameter ("height", 245);

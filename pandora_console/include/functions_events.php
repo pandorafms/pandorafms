@@ -734,7 +734,7 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						unknown_instructions, source, tags, custom_data,
 						server_id) 
 					VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d,
-						ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)),
+						ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (' . SECONDS_1DAY . ')),
 						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
 						"%s", "%s", %d)',
 					$id_agent, $id_group, $event, $status, $id_user,
@@ -786,7 +786,7 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data) 
 					VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d,
-						ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)),
+						ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (' . SECONDS_1DAY . ')),
 						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
 						"%s", "%s")',
 					$id_agent, $id_group, $event, $status, $id_user,
@@ -2035,7 +2035,14 @@ function events_page_details ($event, $server = "") {
 		if (isset($module["module_name"])) {
 			$module_module_name = $module["module_name"];
 		}
-		$link ="winopeng('" . $serverstring . "operation/agentes/stat_win.php?type=" . $graph_type."&period=86400&id=" . $module["id_agente_modulo"] . "&label=" . rawurlencode(urlencode(base64_encode($module_module_name))) . $hashstring . "&refresh=600','day_".$win_handle."')";
+		$link ="winopeng('" . $serverstring .
+			"operation/agentes/stat_win.php?type=" . $graph_type."&" .
+			"period=" . SECONDS_1DAY . "&" .
+			"id=" . $module["id_agente_modulo"] . "&" .
+			"label=" . rawurlencode(
+				urlencode(
+					base64_encode($module_module_name))) . $hashstring . "&" .
+			"refresh=" . SECONDS_10MINUTES . "','day_".$win_handle."')";
 		
 		$data[1] = '<a href="javascript:'.$link.'">';
 		$data[1] .= html_print_image('images/chart_curve.png',true);

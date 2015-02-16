@@ -73,7 +73,7 @@ else {
 	$name = "Pandora FMS combined graph";
 	$width = 550;
 	$height = 210;
-	$period = 86400;
+	$period = SECONDS_1DAY;
 	//$alerts= "";
 	$events = 0;
 	$factor = 1;

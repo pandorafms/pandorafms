@@ -471,14 +471,15 @@ $table->style = array_fill(0, 3, 'vertical-align: top;');
 
 $data = array();
 $data[0] = html_print_table($table_agent, true);
-$data[0] .= '<fieldset class="databox" style="position: static;">
-				<legend style="text-align:left; color: #666;">' . 
-					__('Events (24h)') . 
-				'</legend>' . 
-				'<div style="margin: auto; text-align:center; width: 300px;">' .
-				graph_graphic_agentevents ($id_agente, 300, 15, 86400, '', true) . 
-				'</div>' . 
-			'</fieldset>';
+$data[0] .=
+	'<fieldset class="databox" style="position: static;">
+		<legend style="text-align:left; color: #666;">' . 
+			__('Events (24h)') . 
+		'</legend>' . 
+		'<div style="margin: auto; text-align:center; width: 300px;">' .
+		graph_graphic_agentevents ($id_agente, 300, 15, SECONDS_1DAY, '', true) . 
+		'</div>' . 
+	'</fieldset>';
 
 // ACCESS RATE GRAPH
 $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
@@ -486,14 +487,15 @@ $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
 	WHERE id_agent = " . $id_agente);
 
 if ($config["agentaccess"] && $access_agent > 0) {
-	$data[0] .= '<fieldset class="databox" style="position: static;">
-					<legend style="text-align:left; color: #666;">' . 
-						__('Agent access rate (24h)') . 
-					'</legend>' . 
-					'<div style="margin: auto; text-align:center; width: 300px;">' .
-					graphic_agentaccess($id_agente, 300, 100, 86400, true) . 
-					'</div>' . 
-				'</fieldset>';
+	$data[0] .=
+		'<fieldset class="databox" style="position: static;">
+			<legend style="text-align:left; color: #666;">' . 
+				__('Agent access rate (24h)') . 
+			'</legend>' . 
+			'<div style="margin: auto; text-align:center; width: 300px;">' .
+			graphic_agentaccess($id_agente, 300, 100, SECONDS_1DAY, true) . 
+			'</div>' . 
+		'</fieldset>';
 }
 
 $data[1] = html_print_table($table_contact, true);

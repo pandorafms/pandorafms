@@ -156,7 +156,7 @@ if ($delete_template) {
 	$id = get_parameter ('id');
 	$al_template = alerts_get_alert_template($id);
 	
-	if ($al_template !== false){
+	if ($al_template !== false) {
 		// If user tries to delete a template with group=ALL then must have "PM" access privileges
 		if ($al_template['id_group'] == 0) {
 			if (! check_acl ($config['id_user'], 0, "PM")) {

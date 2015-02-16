@@ -72,7 +72,7 @@ if ($get_module_detail) {
 	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 	
 	$module_id = (int) get_parameter('id_module');
-	$period = (int) get_parameter("period", 86400);
+	$period = (int) get_parameter("period", SECONDS_1DAY);
 	$group = agents_get_agentmodule_group ($module_id);
 	$agentId = (int) get_parameter("id_agent");
 	$server_name = (string) get_parameter('server_name');
@@ -975,11 +975,26 @@ if ($list_modules) {
 			} else {
 				$draw_events = 0;
 			}
-			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".rawurlencode(urlencode(base64_encode($module["nombre"])))."&amp;refresh=600&amp;draw_events=$draw_events','day_".$win_handle."')";
+			$link ="winopeng('" .
+				"operation/agentes/stat_win.php?" .
+				"type=$graph_type&amp;" .
+				"period=" . SECONDS_1DAY . "&amp;" .
+				"id=" . $module["id_agente_modulo"] . "&amp;" .
+				"label=" . rawurlencode(
+					urlencode(
+						base64_encode($module["nombre"]))) . "&amp;" .
+				"refresh=" . SECONDS_10MINUTES . "&amp;" .
+				"draw_events=$draw_events', 'day_".$win_handle."')";
 			
 			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 			$server_name = '';
-			$data[8] .= "<a href='javascript: show_module_detail_dialog(" . $module["id_agente_modulo"] . ", ". $id_agente.", \"" . $server_name . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
+			$data[8] .= "<a href='javascript: " .
+				"show_module_detail_dialog(" .
+					$module["id_agente_modulo"] . ", ".
+					$id_agente . ", " .
+					"\"" . $server_name . "\", " .
+					0 . ", " .
+					SECONDS_1DAY . ")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 		}
 		
 		if ($module['estado'] == 3) {

@@ -83,7 +83,7 @@ $filter['advanced_filter'] = get_parameter('advanced_filter','');
 // Read chart configuration
 $chart_type = get_parameter('chart_type', 'netflow_area');
 $max_aggregates = (int) get_parameter('max_aggregates', 0);
-$period = (int) get_parameter('period', '86400');
+$period = (int) get_parameter('period', SECONDS_1DAY);
 $update_date = (int) get_parameter('update_date', 0);
 $date = get_parameter_post ('date', date (DATE_FORMAT, get_system_time ()));
 $time = get_parameter_post ('time', date (TIME_FORMAT, get_system_time ()));
@@ -104,7 +104,7 @@ $start_date = $end_date - $period;
 if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header (__('Netflow live view'), "images/op_netflow.png", false, "", false, array ());
-
+	
 	$is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
 	if ($is_windows) {
 		ui_print_error_message(__('Not supported in Windows systems'));
@@ -124,7 +124,7 @@ if (! defined ('METACONSOLE')) {
 			ui_print_error_message(sprintf(__('Make sure nfdump version 1.6.8 or newer is installed!')));
 		}
 	}
-
+	
 }
 else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
@@ -179,7 +179,7 @@ enterprise_hook('open_meta_frame');
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
 	echo "<table class='databox' width='99%'>";
-
+	
 	if (defined ('METACONSOLE')) {
 		$list_servers = array();
 		
@@ -208,10 +208,12 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		
 		echo "<tr>";
 		echo "<td>" . '<b>'.__('Connection').'</b>' . "</td>";
-		echo "<td>" . html_print_select($list_servers, 'connection_name', $connection_name, '', '', 0, true, false, false) . "</td>";
+		echo "<td>" . html_print_select($list_servers,
+			'connection_name', $connection_name, '', '', 0, true, false,
+			false) . "</td>";
 		echo "</tr>";
 	}
-
+	
 	echo "<tr>";
 	
 	echo "<td>" .

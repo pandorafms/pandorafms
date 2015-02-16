@@ -31,7 +31,7 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 ui_require_javascript_file('openlayers.pandora');
 
 /* Get the parameters */
-$period = (int)get_parameter ("period", 86400);
+$period = (int)get_parameter ("period", SECONDS_1DAY);
 $agentId = (int)get_parameter('id_agente');
 $agent_name = agents_get_name($id_agente); 
 $agentData = gis_get_data_last_position_agent($id_agente);
@@ -74,7 +74,7 @@ switch ($config["dbtype"]) {
 		break;
 	case "oracle":
 		$timestampLastOperation = db_get_value_sql(
-			"SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
+			"SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) from dual");
 		break;
 }
 

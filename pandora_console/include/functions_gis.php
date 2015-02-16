@@ -604,7 +604,7 @@ function gis_add_path($layerName, $idAgent, $lastPosition = null, $history_time 
 				$where = 'start_timestamp >= to_timestamp(ceil(date_part("epoch", CURRENT_TIMESTAMP)) - ' . $history_time . ')';
 				break;
 			case "oracle":
-				$where = 'start_timestamp >= to_timestamp(\'01-01-1970 00:00:00\', \'DD-MM-YYYY HH24:MI:SS\') + NUMTODSINTERVAL((ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)) - ' . $history_time . '),\'SECOND\')';
+				$where = 'start_timestamp >= to_timestamp(\'01-01-1970 00:00:00\', \'DD-MM-YYYY HH24:MI:SS\') + NUMTODSINTERVAL((ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (' . SECONDS_1DAY . ')) - ' . $history_time . '),\'SECOND\')';
 				break;
 		}
 	}
@@ -938,7 +938,7 @@ function gis_get_conection_conf($idConnection) {
  *
  * @return boolean True ok and false fail. 
  */
-function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $centerInAgent = true, $history_time = 86400) {
+function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $centerInAgent = true, $history_time = SECONDS_1DAY) {
 	$defaultMap = db_get_all_rows_sql("
 		SELECT t1.*, t3.conection_name, t3.connection_type,
 			t3.conection_data, t3.num_zoom_levels

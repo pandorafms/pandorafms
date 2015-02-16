@@ -506,25 +506,27 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	
 	// Blank space below title, DONT remove this, this
 	// Breaks the layout when Flash charts are enabled :-o
-	//echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
+	//echo '<div id="id_div" style="height: 10px">&nbsp;</div>';
 			
 	if ($config["agentaccess"]) {
 		$access_graph = '<div style="margin-left: 10px;">';
-		$access_graph .= graphic_agentaccess($id_agente, 290, 110, 86400, true);
+		$access_graph .= graphic_agentaccess($id_agente, 290, 110,
+			SECONDS_1DAY, true);
 		$access_graph .= '</div><br>';
-				
+		
 		ui_toggle($access_graph, __('Agent access rate (24h)'));
 	}
 	
 	$events_graph = '<div style="margin-left: 10px;">';
-	$events_graph .= graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
+	$events_graph .= graph_graphic_agentevents ($id_agente, 290, 15,
+		SECONDS_1DAY, '', true);
 	$events_graph .= '</div><br>';
 	
 	ui_toggle($events_graph, __('Events (24h)'));
-
+	
 	// Table network interfaces
 	$network_interfaces_by_agents = agents_get_network_interfaces(array($agent));
-
+	
 	$network_interfaces = array();
 	if (!empty($network_interfaces_by_agents) && !empty($network_interfaces_by_agents[$id_agente])) {
 		$network_interfaces = $network_interfaces_by_agents[$id_agente]['interfaces'];
@@ -1604,89 +1606,3 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 	return $sql;
 }
 ?>
-
-<script language="javascript" type="text/javascript">
-	$(document).ready (function () {
-
-/*
-		module_id = $('#text-id_module').val();
-		id_agent = $('#text-id_agent').val();
-		server_name = $('#text-server_name').val();	
-
-		$("#submit-upd_button").click( function() {	
-			show_module_detail_dialog(module_id, id_agent, server_name, 0, 86400);
-		});
-
-		$("#submit-updbutton_period").click( function() {
-			//refresh_period_callback();
-
-			var period = $('#period').val();
-			console.log(period);
-			show_module_detail_dialog(module_id, id_agent, server_name, 0, period);
-
-		});
-*/
-
-	});
-
-/*
-	// Show the modal window of an module
-	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
-		$.ajax({
-			type: "POST",
-			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
-			dataType: "html",
-			success: function(data){	
-				$("#module_details_window").hide ()
-					.empty ()
-					.append (data)
-					.dialog ({
-						resizable: true,
-						draggable: true,
-						modal: true,
-						overlay: {
-							opacity: 0.5,
-							background: "black"
-						},
-						width: 620,
-						height: 500
-					})
-					.show ();
-					refresh_pagination_callback ();
-					
-			}
-		});
-	}
-	
-	function refresh_pagination_callback () {
-		$(".pagination").click( function() {	
-			
-			var classes = $(this).attr('class');
-			classes = classes.split(' ');
-			var offset_class = classes[1];
-			offset_class = offset_class.split('_');
-			var offset = offset_class[1];
-			
-			var period = $('#period').val();
-			//console.log(period);
-			
-			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
-			return false;
-		});
-	}
-	
-	function refresh_period_callback () {
-
-		$("#submit-updbutton_period").click( function() {
-			var period = $('#period').val();
-			console.log(period);
-			show_module_detail_dialog(module_id, id_agent, server_name, 0, period);
-			return false;
-		});
-
-	}
-*/
-	
-
-</script>

@@ -222,31 +222,32 @@ function io_safe_output($value, $utf8 = true)
 	if (! mb_check_encoding ($value, 'UTF-8'))
 		$value = utf8_encode ($value);
 	
-	if ($utf8) {
-		$valueHtmlEncode =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
-	}
-	else {
-		$valueHtmlEncode =  html_entity_decode ($value, ENT_QUOTES);
-	}
-	
 	//Replace the html entitie of ( for the char
-	$valueHtmlEncode = str_replace("&#40;", '(', $valueHtmlEncode);
+	$value = str_replace("&#40;", '(', $value);
 	
 	//Replace the html entitie of ) for the char
-	$valueHtmlEncode = str_replace("&#41;", ')', $valueHtmlEncode);
+	$value = str_replace("&#41;", ')', $value);
 	
 	//Replace the html entitie of < for the char
-	$valueHtmlEncode = str_replace("&lt;", '<', $valueHtmlEncode);
+	$value = str_replace("&lt;", '<', $value);
 	
 	//Replace the html entitie of > for the char
-	$valueHtmlEncode = str_replace("&gt;", '>', $valueHtmlEncode);
+	$value = str_replace("&gt;", '>', $value);
 	
 	//Revert html entities to chars
-	for ($i=0;$i<33;$i++) {
-		$valueHtmlEncode = str_ireplace("&#x".dechex($i).";",io_html_to_ascii(dechex($i)), $valueHtmlEncode);			
+	for ($i = 0; $i < 33; $i++) {
+		$value = str_ireplace("&#x" . dechex($i) . ";",
+			io_html_to_ascii(dechex($i)), $value);
 	}
 	
-	return $valueHtmlEncode;
+	if ($utf8) {
+		$value =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
+	}
+	else {
+		$value =  html_entity_decode ($value, ENT_QUOTES);
+	}
+	
+	return $value;
 }
 
 /**

@@ -206,6 +206,7 @@ $id_name = (string) get_parameter('id_name', '');
 $open_filter = (int) get_parameter('open_filter', 0);
 $date_from = (string)get_parameter('date_from', '');
 $date_to = (string)get_parameter('date_to', '');
+$server_id = (int)get_parameter('server_id', 0);
 
 $text_agent = (string) get_parameter("text_agent", __("All"));
 $id_agent = get_parameter('id_agent', 0);

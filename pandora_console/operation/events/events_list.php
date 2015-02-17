@@ -344,6 +344,11 @@ else {
 	$events_filter .= html_print_input_hidden('open_filter', 'false', true);
 }
 
+
+
+
+//----------------------------------------------------------------------
+//- INI ADVANCE FILTER -------------------------------------------------
 $table_advanced->id = 'events_filter_form_advanced';
 $table_advanced->width = '98%';
 $table_advanced->cellspacing = 4;
@@ -389,7 +394,10 @@ if (!$meta) {
 		$text_module, false, true, '', array(), true);
 }
 else {
-	$data[1] .= '';
+	$data[1] = __('Server') . '<br>';
+	$data[1] .= html_print_select_from_sql(
+		'SELECT id, server_name FROM tmetaconsole_setup',
+		'server_id', $server_id, 'script', __('All'), '0', true);
 }
 
 $table_advanced->data[] = $data;
@@ -436,6 +444,11 @@ $data[1] = '<fieldset class="databox" style="width: 310px;">' .
 	'</fieldset>';
 $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
+//- END ADVANCE FILTER -------------------------------------------------
+
+
+
+
 
 $table->id = 'events_filter_form';
 $table->width = '100%';
@@ -483,7 +496,8 @@ $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = array();
-$data[0] = ui_toggle(html_print_table($table_advanced, true), __('Advanced options'), '', true, true);
+$data[0] = ui_toggle(html_print_table($table_advanced, true),
+	__('Advanced options'), '', true, true);
 $table->colspan[count($table->data)][0] = 3;
 $table->cellstyle[count($table->data)][0] = 'padding-top: 15px;';
 $table->data[] = $data;
@@ -503,10 +517,14 @@ if (check_acl ($config["id_user"], 0, "EW")) {
 }
 $data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a><br>';
 if (empty($id_name)) {
-	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('No filter loaded') . '</span>]';
+	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' .
+		__('No filter loaded') .
+		'</span>]';
 }
 else {
-	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('Filter loaded') . ': ' . $id_name . '</span>]';
+	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' .
+		__('Filter loaded') . ': ' . $id_name .
+		'</span>]';
 }
 $data[0] .= '</div>';
 

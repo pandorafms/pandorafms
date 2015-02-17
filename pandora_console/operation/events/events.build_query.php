@@ -226,6 +226,9 @@ if ($meta) {
 		$sql_post .= ' AND server_id IN (' .
 			implode(',',$enabled_nodes_id) . ')';
 	}
+	
+	if ($server_id) {
+		$sql_post .= " AND server_id = " . $server_id;
+	}
 }
-
 ?>

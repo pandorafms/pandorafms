@@ -16,6 +16,7 @@
 if(!isset($table->width)) {
 	$table->width = '100%';
 }
+
 $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;

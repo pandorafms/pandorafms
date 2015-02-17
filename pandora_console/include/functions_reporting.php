@@ -4635,7 +4635,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[$next_row][0] = 3;
-
+			
 			$table2->class = 'databox';
 			$table2->width = '100%';
 			
@@ -4645,21 +4645,23 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table2->head = explode('|', $content['header_definition']);
 			}
 			
+			
+			
 			if ($content['treport_custom_sql_id'] != 0) {
 				switch ($config["dbtype"]) {
 					case "mysql":
-						$sql = io_safe_output (db_get_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						$sql = patched_io_safe_output (db_get_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 						break;
 					case "postgresql":
-						$sql = io_safe_output (db_get_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						$sql = patched_io_safe_output (db_get_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 						break;
 					case "oracle":
-						$sql = io_safe_output (db_get_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+						$sql = patched_io_safe_output (db_get_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 						break;
 				}
 			}
 			else {
-				$sql = io_safe_output ($content['external_source']);
+				$sql = patched_io_safe_output ($content['external_source']);
 			}
 			
 			// Do a security check on SQL coming from the user

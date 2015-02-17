@@ -249,6 +249,54 @@ function io_safe_output($value, $utf8 = true)
 	return $valueHtmlEncode;
 }
 
+//----------------------------------------------------------
+// Work arround.
+// 
+// It is the function from 6.0 and it is used in this
+// part of code only.
+//----------------------------------------------------------
+function patched_io_safe_output($value, $utf8 = true) {
+	if (is_numeric($value))
+		return $value;
+	
+	if (is_array($value)) {
+		array_walk($value, "io_safe_output_array");
+		
+		return $value;
+	}
+	
+	if (! mb_check_encoding ($value, 'UTF-8'))
+		$value = utf8_encode ($value);
+	
+	//Replace the html entitie of ( for the char
+	$value = str_replace("&#40;", '(', $value);
+	
+	//Replace the html entitie of ) for the char
+	$value = str_replace("&#41;", ')', $value);
+	
+	//Replace the html entitie of < for the char
+	$value = str_replace("&lt;", '<', $value);
+	
+	//Replace the html entitie of > for the char
+	$value = str_replace("&gt;", '>', $value);
+	
+	//Revert html entities to chars
+	for ($i = 0; $i < 33; $i++) {
+		$value = str_ireplace("&#x" . dechex($i) . ";",
+			io_html_to_ascii(dechex($i)), $value);
+	}
+	
+	if ($utf8) {
+		$value =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
+	}
+	else {
+		$value =  html_entity_decode ($value, ENT_QUOTES);
+	}
+	
+	return $value;
+}
+//----------------------------------------------------------
+
 /**
  * Convert the $value encode in html entity to clear char string. This function 
  * should be called always to "clean" HTML encoded data; to render to a text

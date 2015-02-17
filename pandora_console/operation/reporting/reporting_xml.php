@@ -698,7 +698,7 @@ foreach ($contents as $content) {
 				$sql = $content['external_source'];
 			}
 			
-			$sql = safe_output ($sql);
+			$sql = patched_io_safe_output($sql);
 			$result = db_get_all_rows_sql($sql);
 			if ($result === false) {
 				$result = array();

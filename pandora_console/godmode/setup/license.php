@@ -59,23 +59,27 @@ $table->data = array ();
 $table->data[0][0] = '<strong>'.__('Customer key').'</strong>';
 $table->data[0][1] = html_print_input_text ('keys[customer_key]', $settings->customer_key, '', 81, 255, true);
 
-$table->data[1][0] = '<strong>'.__('Expires').'</strong>';
-$table->data[1][1] = html_print_input_text('expires', $license['expiry_date'], '', 10, 255, true, true);
+$table->data[1][0] = '<strong>'.__('Company name').'</strong>';
+$table->data[1][1] = html_print_input_text ('company', preg_replace('/0+$/', '', substr($settings->customer_key, 0, 12)), '', 81, 255, true);
 
-$table->data[2][0] = '<strong>'.__('Platform Limit').'</strong>';
-$table->data[2][1] = html_print_input_text('expires', $license['max_agents'], '', 10, 255, true, true);
+$table->data[2][0] = '<strong>'.__('Expires').'</strong>';
+$table->data[2][1] = html_print_input_text('expires', $license['expiry_date'], '', 10, 255, true, true);
 
-$table->data[3][0] = '<strong>'.__('Current Platform Count').'</strong>';
-$table->data[3][1] = html_print_input_text('expires', $license['agent_count'], '', 10, 255, true, true);
+$table->data[3][0] = '<strong>'.__('Platform Limit').'</strong>';
+$table->data[3][1] = html_print_input_text('expires', $license['max_agents'], '', 10, 255, true, true);
 
-$table->data[4][0] = '<strong>'.__('License Mode').'</strong>';
-$table->data[4][1] = html_print_input_text('expires', $license['license_mode'], '', 10, 255, true, true);
+$table->data[4][0] = '<strong>'.__('Current Platform Count').'</strong>';
+$table->data[4][1] = html_print_input_text('expires', $license['agent_count'], '', 10, 255, true, true);
+
+$table->data[5][0] = '<strong>'.__('License Mode').'</strong>';
+$table->data[5][1] = html_print_input_text('expires', $license['license_mode'], '', 10, 255, true, true);
 
 html_print_table ($table);
 if (enterprise_installed()) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	html_print_input_hidden ('update_settings', 1);
 	html_print_submit_button (__('Validate'), 'update_button', false, 'class="sub upd"');
+	echo '&nbsp';
 	html_print_button(__('Request new license'), '', false, 'generate_request_code()', 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub next"');
 	echo '</div>';
 }

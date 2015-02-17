@@ -505,6 +505,7 @@ function treeview_printTree($type) {
 				else {
 					$list[$server_item['_name_']]['_num_ok_'] += $server_item['_num_ok_'];
 					$list[$server_item['_name_']]['_num_critical_'] += $server_item['_num_critical_'];
+					$list[$server_item['_name_']]['_num_not_init_'] += $server_item['_num_not_init_'];
 					$list[$server_item['_name_']]['_num_warning_'] += $server_item['_num_warning_'];
 					$list[$server_item['_name_']]['_num_unknown_'] += $server_item['_num_unknown_'];
 				}
@@ -567,6 +568,7 @@ function treeview_printTree($type) {
 				'total_count' => $item['_num_total_'],
 				'normal_count' => $item['_num_ok_'],
 				'critical_count' => $item['_num_critical_'],
+				'not_init_count' => $item['_num_not_init_'],
 				'warning_count' => $item['_num_warning_'],
 				'unknown_count' => $item['_num_unknown_']);
 			

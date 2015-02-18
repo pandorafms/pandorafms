@@ -46,6 +46,7 @@ $snmpwalk = (int) get_parameter("snmpwalk", 0);
 $create_modules = (int) get_parameter("create_modules", 0);
 
 $interfaces = array();
+$interfaces_ip = array();
 
 if ($snmpwalk) {
 	// OID Used is for SNMP MIB-2 Interfaces
@@ -57,10 +58,36 @@ if ($snmpwalk) {
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
 		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.31.1.1", $tcp_port);
 
+	// Get the interfaces IPV4/IPV6
+	$snmp_int_ip = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
+		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.4.34.1.3", $tcp_port);
+
+	// Build a [<interface id>] => [<interface ip>] array
+	if (!empty($snmp_int_ip)) {
+		foreach ($snmp_int_ip as $key => $value) {
+			// The key is something like IP-MIB::ipAddressIfIndex.ipv4."<ip>"
+			// or IP-MIB::ipAddressIfIndex.ipv6."<ip>"
+			// The value is something like INTEGER: <interface id>
+
+			$data = explode(': ',$value);
+			$interface_id = !empty($data) && isset($data[1]) ? $data[1] : false;
+
+			if (preg_match("/^.+\"(.+)\"$/", $key, $matches) && isset($matches[1])) {
+				$interface_ip = $matches[1];
+			}
+
+			// Get the first ip
+			if ($interface_id !== false && !empty($interface_ip) && !isset($interfaces_ip[$interface_id]))
+				$interfaces_ip[$interface_id] = $interface_ip;
+		}
+		unset($snmp_int_ip);
+	}
+
 	$snmpis = array_merge(($snmpis === false ? array() : $snmpis), ($ifxitems === false ? array() : $ifxitems));
 	
 	$interfaces = array();
-	
+
 	// We get here only the interface part of the MIB, not full mib
 	foreach($snmpis as $key => $snmp) {
 		
@@ -92,9 +119,15 @@ if ($snmpwalk) {
 if ($create_modules) {
 	$id_snmp_serialize = get_parameter_post('id_snmp_serialize');
 	$interfaces = unserialize_in_temp($id_snmp_serialize);
+
+	$id_snmp_int_ip_serialize = get_parameter_post('id_snmp_int_ip_serialize');
+	$interfaces_ip = unserialize_in_temp($id_snmp_int_ip_serialize);
 	
 	if (!$interfaces) {
 		$interfaces = array();
+	}
+	if (!$interfaces_ip) {
+		$interfaces_ip = array();
 	}
 	
 	$values = array();
@@ -147,6 +180,9 @@ if ($create_modules) {
 	$done = 0;
 	
 	foreach ($id_snmp as $id) {
+		$ifname = '';
+		$ifPhysAddress = '';
+
 		if (isset($interfaces[$id]['ifName']) && $interfaces[$id]['ifName']['value'] != "") {
 			$ifname = $interfaces[$id]['ifName']['value'];
 		}
@@ -155,6 +191,7 @@ if ($create_modules) {
 		}
 		if (isset($interfaces[$id]['ifPhysAddress']) && $interfaces[$id]['ifPhysAddress']['value'] != "") {
 			$ifPhysAddress = $interfaces[$id]['ifPhysAddress']['value'];
+			$ifPhysAddress = strtoupper($ifPhysAddress);
 		}
 		foreach ($modules as $module) {
 			$oid_array = explode('.', $module);
@@ -208,10 +245,18 @@ if ($create_modules) {
 			
 			$values['id_tipo_modulo'] = $module_type;
 			
-			if (!empty($ifPhysAddress))
-				$values['descripcion'] = io_safe_input("(".$ip_target." - ".$ifPhysAddress." - ".$name.") " . $interfaces[$id]['ifDescr']['value']);
-			else
-				$values['descripcion'] = io_safe_input("(".$ip_target." - ".$name.") " . $interfaces[$id]['ifDescr']['value']);
+			if (!empty($ifPhysAddress) && isset($interfaces_ip[$id])) {
+				$values['descripcion'] = io_safe_input("(IP: ".$interfaces_ip[$id]." - MAC: ".$ifPhysAddress." - ".$name.") " . $interfaces[$id]['ifDescr']['value']);
+			}
+			else if (!empty($ifPhysAddress)) {
+				$values['descripcion'] = io_safe_input("(MAC: ".$ifPhysAddress." - ".$name.") " . $interfaces[$id]['ifDescr']['value']);
+			}
+			else if (isset($interfaces_ip[$id])) {
+				$values['descripcion'] = io_safe_input("(IP: ".$interfaces_ip[$id]." - ".$name.") " . $interfaces[$id]['ifDescr']['value']);
+			}
+			else {
+				$values['descripcion'] = io_safe_input("(".$name.") " . $interfaces[$id]['ifDescr']['value']);
+			}
 			
 			$values['snmp_oid'] = $oid;
 			$values['id_modulo'] = 2;
@@ -360,6 +405,9 @@ if (!empty($interfaces_list)) {
 	
 	$id_snmp_serialize = serialize_in_temp($interfaces, $config['id_user']."_snmp");
 	html_print_input_hidden('id_snmp_serialize', $id_snmp_serialize);
+	
+	$id_snmp_int_ip_serialize = serialize_in_temp($interfaces_ip, $config['id_user']."_snmp_int_ip");
+	html_print_input_hidden('id_snmp_int_ip_serialize', $id_snmp_int_ip_serialize);
 	
 	html_print_input_hidden('create_modules', 1);
 	html_print_input_hidden('ip_target', $ip_target);

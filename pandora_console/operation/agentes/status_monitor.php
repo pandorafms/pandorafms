@@ -45,6 +45,8 @@ else {
 	ui_meta_print_header(__("Monitor view"));
 }
 
+
+
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
 if (!defined('METACONSOLE')) {
@@ -220,8 +222,10 @@ if ($tag_filter !== 0) {
 	}
 }
 
+
 // Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 $groups = users_get_groups($config["id_user"]);
+
 if ($ag_group !== 0) {
 	$sql_conditions_tags = tags_get_acl_tags($config['id_user'], $ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
 } else {
@@ -345,7 +349,9 @@ if (defined('METACONSOLE')) {
 		
 		// Get all info for filters of all nodes
 		$modules_temp = db_get_all_rows_sql($sql);
-			
+		
+		
+		
 		$rows_temp = db_get_all_rows_sql("SELECT distinct name
 			FROM tmodule_group
 			ORDER BY name");
@@ -390,8 +396,10 @@ echo '
 		false, 'width:150px;', false, false,
 		'id_grupo', $strict_user) . '
 </td>';
-		
+
 echo '<td>' . __('Monitor status') . "</td>";
+
+
 
 echo "<td>";
 
@@ -406,6 +414,8 @@ $fields[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 html_print_select ($fields, "status", $status, '', __('All'), -1,
 	false, false, true, '', false, 'width: 150px;');
 echo '</td>';
+
+
 
 echo '<td valign="middle">' . __('Module group') . '</td>';
 echo '<td valign="middle">';
@@ -424,9 +434,13 @@ $rows_select[0] = __('Not assigned');
 html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'),-1,false, false, true, '', false, 'width: 120px;');
 echo '</td>';
 
+
+
 echo '</tr>';
 
 echo '<tr>';
+
+
 
 echo '<td valign="middle">' . __('Module name') . '</td>';
 echo '<td valign="middle">';
@@ -438,6 +452,7 @@ html_print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 	$ag_modulename, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
 
 echo '</td>';
+
 
 
 echo '<td valign="middle" align="right">' .
@@ -458,10 +473,16 @@ if (empty($tags)) {
 	echo __('No tags');
 }
 else {
-
-	html_print_select ($tags, "tag_filter", $tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
+	
+	html_print_select ($tags, "tag_filter",
+		$tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
 }
 echo '</td>';
+
+
+
+
+
 
 echo '<td valign="middle">';
 html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
@@ -807,7 +828,7 @@ else {
 		WHERE disabled = 0");
 	if ($servers === false)
 		$servers = array();
-
+	
 	$result = array();
 	$count_modules = 0;
 	foreach ($servers as $server) {
@@ -1251,6 +1272,8 @@ foreach ($result as $row) {
 					}
 				}
 				
+				
+				
 				if ($module_value == $sub_string) {
 					$salida = $module_value;
 				}
@@ -1329,7 +1352,7 @@ ui_require_javascript_file('pandora_modules');
 			$("#tag_td").css('display', '');
 		}
 	});
-
+	
 	function toggle_full_value(id) {
 		text = $("#hidden_value_module_" + id).html();
 		old_text = $("#value_module_text_" + id).html();
@@ -1342,7 +1365,12 @@ ui_require_javascript_file('pandora_modules');
 	// Show the modal window of an module
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
 		if (period == -1) {
-			period = $('#period').val();
+			if ($("#period").length == 1) {
+				period = $('#period').val();
+			}
+			else {
+				period = <?php echo SECONDS_1DAY; ?>;
+			}
 		}
 		
 		$.ajax({

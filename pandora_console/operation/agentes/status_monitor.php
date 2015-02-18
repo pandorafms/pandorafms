@@ -34,6 +34,7 @@ enterprise_include_once ('include/functions_metaconsole.php');
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
+
 if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header (__("Monitor detail"), "images/brick.png", false);
@@ -108,6 +109,7 @@ else {
 	$id_ag_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $ag_group);
 }
 
+
 // Agent group selector
 if (!defined('METACONSOLE')) {
 	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
@@ -119,6 +121,7 @@ if (!defined('METACONSOLE')) {
 	}
 }
 else {
+
 	if ($ag_group != "0" && check_acl ($config["id_user"], $id_ag_group, "AR")) {
 		$sql_conditions_group = sprintf (" AND tagente.id_grupo IN ( SELECT id_grupo FROM tgrupo where nombre = '%s') ", $ag_group);
 	}
@@ -229,6 +232,7 @@ if (is_numeric($sql_conditions_tags)) {
 // Two modes of filter. All the filters and only ACLs filter
 $sql_conditions_all = $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
 $sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
+
 
 // Get count to paginate
 if (!defined('METACONSOLE')) 
@@ -406,6 +410,7 @@ else {
 				false, 'width:150px;') . '
 		</td>';
 }
+
 echo '<td>' . __('Monitor status') . "</td>";
 
 
@@ -732,6 +737,7 @@ switch ($config["dbtype"]) {
 			$sql_from . $sql_conditions_all . "
 			ORDER BY " . $order['field'] . " " . $order['order'] . "
 			LIMIT ".$offset.",".$limit_sql;
+
 		break;
 	case "postgresql":
 		if (strstr($config['dbversion'], "8.4") !== false) {
@@ -1186,7 +1192,9 @@ foreach ($result as $row) {
 		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
 		
 		if (defined('METACONSOLE'))
-			$link ="winopeng('" . $row['server_url'] . "operation/agentes/stat_win.php?type=$graph_type&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . str_rot13($row["user"]) . "&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
+			$link ="winopeng('" .
+				$row['server_url'] . "operation/agentes/stat_win.php?" .
+				"type=$graph_type&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . str_rot13($row["user"]) . "&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
 		else
 			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
 		
@@ -1202,7 +1210,9 @@ foreach ($result as $row) {
 		
 	}
 	
-	$data[8] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
+	$data[8] = ui_print_module_warn_value($row['max_warning'],
+		$row['min_warning'], $row['str_warning'], $row['max_critical'],
+		$row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
 		$salida = format_numeric($row["datos"]);
@@ -1314,12 +1324,15 @@ else {
 
 echo "<div id='monitor_details_window'></div>";
 
+
+
 enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file('pandora_modules');
 
 ?>
 <script type="text/javascript">
+	
 	function toggle_full_value(id) {
 		text = $("#hidden_value_module_" + id).html();
 		old_text = $("#value_module_text_" + id).html();
@@ -1333,7 +1346,15 @@ ui_require_javascript_file('pandora_modules');
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
 		var extra_parameters = '';
 		var f = new Date();
-		period = $('#period').val();
+		
+		if ($("#period").length == 1) {
+			period = $('#period').val();
+		}
+		else {
+			period = <?php echo SECONDS_1DAY; ?>;
+		}
+		
+		
 		var selection_mode = $('input[name=selection_mode]:checked').val();
 		if(!selection_mode){selection_mode='fromnow';}
 		var date_from = $('#text-date_from').val();

@@ -736,7 +736,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	
 	var stack = 0, bars = true, lines = false, steps = false;
 	
-	var plot = $.plot($('#'+graph_id), datas, options);
+	var plot = $.plot($('#' + graph_id), datas, options);
 	
 	// Adjust the overview plot to the width and position of the main plot
 	adjust_left_width_canvas(graph_id, 'overview_'+graph_id);
@@ -789,7 +789,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			}));
 		
 		$('#menu_cancelzoom_' + graph_id)
-			.attr('src',homeurl + '/images/zoom_cross.png');
+			.attr('src', homeurl + '/images/zoom_cross.png');
 		
 		currentRanges = ranges;
 		// don't fire event on the overview to prevent eternal loop
@@ -896,7 +896,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	}
 	
 	// Events
-	$('#'+graph_id).bind('plothover',  function (event, pos, item) {
+	$('#' + graph_id).bind('plothover',  function (event, pos, item) {
 		overview.setCrosshair({ x: pos.x, y: 0 });
 		currentPlot = plot;
 		latestPosition = pos;
@@ -906,7 +906,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		
 	});
 	
-	$('#'+graph_id).bind("plotclick", function (event, pos, item) {
+	$('#' + graph_id).bind("plotclick", function (event, pos, item) {
 		plot.unhighlight();
 		if (item && item.series.label != '' && (item.series.label == legend_events || item.series.label == legend_events+series_suffix_str || item.series.label == legend_alerts || item.series.label == legend_alerts+series_suffix_str)) {
 			plot.unhighlight();

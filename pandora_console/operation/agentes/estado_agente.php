@@ -197,12 +197,14 @@ echo '</td><td style="width:5%;">&nbsp;</form></td>';
 
 echo '</tr></table>';
 
-echo '<div style="text-align: right; float: right;">';
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-	html_print_input_hidden ('new_agent', 1);
-	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-echo "</form>";
-echo '</div>';
+if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "AM")) {
+	echo '<div style="text-align: right; float: right;">';
+	echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+		html_print_input_hidden ('new_agent', 1);
+		html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+	echo "</form>";
+	echo '</div>';
+}
 
 if ($search != "") {
 	$filter = array ("string" => '%' . $search . '%');
@@ -349,6 +351,11 @@ else {
 
 if ($strict_user) {
 	
+	$count_filter = array (
+		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		'disabled' => 0,
+		'status' => $status,
+		'search' => $search);
 	$filter = array (
 		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
 		'disabled' => 0,
@@ -363,23 +370,21 @@ if ($strict_user) {
 			$groups = groups_get_id_recursive($group_id, true);
 		}
 		$filter['id_group'] = implode(',', $groups);
+		$count_filter['id_group'] = $filter['id_group'];
 	}
 	
 	$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
 		'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count');
 	
-	$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+	$acltags = tags_get_user_module_and_tags ($config['id_user'], 'AR', $strict_user);
 	
+	$total_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $count_filter, $fields, false, $strict_user, true);
+	$total_agents = count($total_agents);
 	$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 	
-	$total_agents = count($agents);
 	
 }
 else {
-	$total_agents = 0;
-	$agents = false;
-	
-	
 	$total_agents = agents_get_agents(array (
 		'disabled' => 0,
 		'id_grupo' => $groups,
@@ -396,7 +401,7 @@ else {
 		'status' => $status,
 		'search' => $search_sql,
 		'offset' => (int) get_parameter ('offset'),
-		'limit' => (int) $config['block_size']  ),
+		'limit' => (int) $config['block_size']),
 		
 		array ('id_agente',
 			'id_grupo',

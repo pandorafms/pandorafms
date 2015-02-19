@@ -20,144 +20,6 @@
  */
 
  /**
- * Get critical agents by using the status code in modules by filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search module with critical state
- * 
- * @return mixed Returns count of agents in critical status or false if they aren't.
- */
-function tags_agent_critical ($id_tag) {
-	
-	return db_get_sql ("SELECT COUNT(*)
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-			AND tagente.disabled=0
-			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-			AND ttag_module.id_tag = $id_tag
-			AND critical_count>0");
-}
-
- /**
- * Get unknown agents by using the status code in modules by filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search module with unknown state
- * 
- * @return mixed Returns count of agents in unknown status or false if they aren't.
- */
-function tags_agent_unknown ($id_tag) {
-	
-	return db_get_sql ("SELECT COUNT(*)
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-			AND tagente.disabled=0
-			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-			AND ttag_module.id_tag = $id_tag
-			AND critical_count=0 AND warning_count=0 AND unknown_count>0");
-}
-
-/**
- * Get total agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search total agents
- * 
- * @return mixed Returns count of agents with this tag or false if they aren't.
- */
-function tags_total_agents ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-	
-	$total_agents = "SELECT COUNT(DISTINCT tagente.id_agente) 
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-		AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-		AND ttag_module.id_tag = " . $id_tag .
-		$groups_clause;
-
-	return db_get_sql ($total_agents);	
-}
-
- /**
- * Get normal agents by using the status code in modules by filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search module with normal state
- * 
- * @return mixed Returns count of agents in normal status or false if they aren't.
- */
-function tags_agent_ok ($id_tag, $groups_and_tags = array()) {
-
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-			
-	return db_get_sql ("SELECT COUNT(*)
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-			AND tagente.disabled=0
-			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-			AND ttag_module.id_tag = $id_tag
-			AND normal_count=total_count
-			$groups_clause");
-}
-
- /**
- * Get warning agents by using the status code in modules by filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search module with warning state
- * 
- * @return mixed Returns count of agents in warning status or false if they aren't.
- */
-function tags_agent_warning ($id_tag, $groups_and_tags = array()) {
-	 
-	return db_get_sql ("SELECT COUNT(*)
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-			AND tagente.disabled=0
-			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-			AND ttag_module.id_tag = $id_tag
-			AND critical_count=0 AND warning_count>0");
-}
- 
- /**
  * Find a tag searching by tag's or description name. 
  * 
  * @param string $tag_name_description Name or description of the tag that it's currently searched. 
@@ -1431,6 +1293,196 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 }
 
 /**
+ * Get total agents filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search total agents
+ * 
+ * @return mixed Returns count of agents with this tag or false if they aren't.
+ */
+function tags_get_total_agents ($id_tag, $groups_and_tags = array()) {
+	
+	// Avoid mysql error
+	if (empty($id_tag))
+		return;
+	
+	$groups_clause = "";
+	if (!empty($groups_and_tags)) {
+		
+		$groups_id = array();
+		foreach ($groups_and_tags as $group_id => $tags) {
+			if (!empty($tags)) {
+				$tags_arr = explode(',', $tags);
+				foreach ($tags_arr as $tag) {
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
+				}
+			}
+		}
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
+		}
+	}
+	
+	$total_agents = "SELECT COUNT(DISTINCT ta.id_agente) 
+					FROM tagente AS ta
+					INNER JOIN tagente_modulo AS tam
+						ON ta.id_agente = tam.id_agente
+							AND tam.disabled = 0
+					INNER JOIN ttag_module AS ttm
+						ON ttm.id_tag = $id_tag
+							AND tam.id_agente_modulo = ttm.id_agente_modulo
+					WHERE ta.disabled = 0
+						$groups_clause";
+
+	return db_get_sql($total_agents);
+}
+
+ /**
+ * Get normal agents by using the status code in modules by filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search module with normal state
+ * 
+ * @return mixed Returns count of agents in normal status or false if they aren't.
+ */
+function tags_get_normal_agents ($id_tag, $groups_and_tags = array()) {
+
+	// Avoid mysql error
+	if (empty($id_tag))
+		return;
+	
+	$groups_clause = "";
+	if (!empty($groups_and_tags)) {
+		
+		$groups_id = array();
+		foreach ($groups_and_tags as $group_id => $tags) {
+			if (!empty($tags)) {
+				$tags_arr = explode(',', $tags);
+				foreach ($tags_arr as $tag) {
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
+				}
+			}
+		}
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
+		}
+	}
+	
+	$ok_agents = "SELECT COUNT(DISTINCT ta.id_agente) 
+					FROM tagente AS ta
+					INNER JOIN tagente_modulo AS tam
+						ON ta.id_agente = tam.id_agente
+							AND tam.disabled = 0
+					INNER JOIN ttag_module AS ttm
+						ON ttm.id_tag = $id_tag
+							AND tam.id_agente_modulo = ttm.id_agente_modulo
+					WHERE ta.disabled = 0
+						AND ta.total_count > 0
+						AND ta.normal_count = ta.total_count
+						$groups_clause";
+
+	return db_get_sql($ok_agents);
+}
+
+ /**
+ * Get warning agents by using the status code in modules by filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search module with warning state
+ * 
+ * @return mixed Returns count of agents in warning status or false if they aren't.
+ */
+function tags_get_warning_agents ($id_tag, $groups_and_tags = array()) {
+	
+	// Avoid mysql error
+	if (empty($id_tag))
+		return;
+	
+	$groups_clause = "";
+	if (!empty($groups_and_tags)) {
+		
+		$groups_id = array();
+		foreach ($groups_and_tags as $group_id => $tags) {
+			if (!empty($tags)) {
+				$tags_arr = explode(',', $tags);
+				foreach ($tags_arr as $tag) {
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
+				}
+			}
+		}
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
+		}
+	}
+	
+	$warning_agents = "SELECT COUNT(DISTINCT ta.id_agente) 
+						FROM tagente AS ta
+						INNER JOIN tagente_modulo AS tam
+							ON ta.id_agente = tam.id_agente
+								AND tam.disabled = 0
+						INNER JOIN ttag_module AS ttm
+							ON ttm.id_tag = $id_tag
+								AND tam.id_agente_modulo = ttm.id_agente_modulo
+						WHERE ta.disabled = 0
+							AND ta.total_count > 0
+							AND ta.critical_count = 0
+							AND ta.warning_count > 0
+							$groups_clause";
+
+	return db_get_sql($warning_agents);
+}
+
+/**
+ * Get unknown agents filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search unknown agents
+ * 
+ * @return mixed Returns count of unknown agents with this tag or false if they aren't.
+ */
+function tags_get_critical_agents ($id_tag, $groups_and_tags = array()) {
+	
+	// Avoid mysql error
+	if (empty($id_tag))
+		return;
+	
+	$groups_clause = "";
+	if (!empty($groups_and_tags)) {
+		
+		$groups_id = array();
+		foreach ($groups_and_tags as $group_id => $tags) {
+			if (!empty($tags)) {
+				$tags_arr = explode(',', $tags);
+				foreach ($tags_arr as $tag) {
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
+				}
+			}
+		}
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
+		}
+	}
+	
+	$critical_agents = "SELECT COUNT(DISTINCT ta.id_agente) 
+						FROM tagente AS ta
+						INNER JOIN tagente_modulo AS tam
+							ON ta.id_agente = tam.id_agente
+								AND tam.disabled = 0
+						INNER JOIN ttag_module AS ttm
+							ON ttm.id_tag = $id_tag
+								AND tam.id_agente_modulo = ttm.id_agente_modulo
+						WHERE ta.disabled = 0
+							AND ta.critical_count > 0
+							$groups_clause";
+
+	return db_get_sql($critical_agents);
+}
+
+/**
  * Get unknown agents filtering by id_tag.
  * 
  * @param int $id_tag Id of the tag to search unknown agents
@@ -1445,159 +1497,174 @@ function tags_get_unknown_agents ($id_tag, $groups_and_tags = array()) {
 	
 	$groups_clause = "";
 	if (!empty($groups_and_tags)) {
-		$i = 0;
+		
+		$groups_id = array();
 		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
+			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
 				}
 			}
 		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
+		}
 	}
 	
-	$total_agents = "SELECT COUNT(DISTINCT tagente.id_agente) 
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-			AND ttag_module.id_tag = " . $id_tag . " 
-			AND tagente.critical_count=0
-			AND tagente.warning_count=0
-			AND tagente.unknown_count>0
-			$groups_clause";
+	$unknown_agents = "SELECT COUNT(DISTINCT ta.id_agente) 
+						FROM tagente AS ta
+						INNER JOIN tagente_modulo AS tam
+							ON ta.id_agente = tam.id_agente
+								AND tam.disabled = 0
+						INNER JOIN ttag_module AS ttm
+							ON ttm.id_tag = $id_tag
+								AND tam.id_agente_modulo = ttm.id_agente_modulo
+						WHERE ta.disabled = 0
+							AND ta.critical_count = 0
+							AND ta.warning_count = 0
+							AND ta.unknown_count > 0
+							$groups_clause";
 
-	return db_get_sql ($total_agents);	
+	return db_get_sql($unknown_agents);
 }
 
-function tags_monitors_ok ($id_tag, $groups_and_tags = array()) {
+/**
+ * Get not init agents filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search not init agents
+ * 
+ * @return mixed Returns count of not init agents with this tag or false if they aren't.
+ */
+function tags_get_not_init_agents ($id_tag, $groups_and_tags = array()) {
 	
 	// Avoid mysql error
 	if (empty($id_tag))
 		return;
-
+	
 	$groups_clause = "";
 	if (!empty($groups_and_tags)) {
-		$i = 0;
+		
+		$groups_id = array();
 		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
+			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
 				}
 			}
 		}
-		$groups_clause = " AND id_grupo IN ($groups_id)"; 
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
+		}
 	}
-			
-	$sql = "SELECT COUNT(*) FROM tagente_modulo, tagente_estado
-			WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo
-			AND tagente_estado.estado = 0
-			AND tagente_modulo.id_agente IN (SELECT id_agente FROM tagente
-							WHERE disabled = 0
-							$groups_clause) 
-			AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module
-							WHERE ttag_module.id_tag = " . $id_tag .")";
+	
+	$not_init_agents = "SELECT COUNT(DISTINCT ta.id_agente) 
+						FROM tagente AS ta
+						INNER JOIN tagente_modulo AS tam
+							ON ta.id_agente = tam.id_agente
+								AND tam.disabled = 0
+						INNER JOIN ttag_module AS ttm
+							ON ttm.id_tag = $id_tag
+								AND tam.id_agente_modulo = ttm.id_agente_modulo
+						WHERE ta.disabled = 0
+							AND ta.total_count = ta.notinit_count
+							$groups_clause";
+
+	return db_get_sql($not_init_agents);
+}
+
+function tags_monitors_count ($type, $id_tag, $groups_and_tags = array()) {
+	
+	// Avoid mysql error
+	if (empty($id_tag))
+		return;
+	
+	$groups_clause = "";
+	if (!empty($groups_and_tags)) {
+		
+		$groups_id = array();
+		foreach ($groups_and_tags as $group_id => $tags) {
+			if (!empty($tags)) {
+				$tags_arr = explode(',', $tags);
+				foreach ($tags_arr as $tag) {
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
+				}
+			}
+		}
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
+		}
+	}
+
+	switch ($type) {
+		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+		case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			$status = AGENT_MODULE_STATUS_CRITICAL_ALERT.",".AGENT_MODULE_STATUS_CRITICAL_BAD;
+			break;
+		case AGENT_MODULE_STATUS_WARNING_ALERT:
+		case AGENT_MODULE_STATUS_WARNING:
+			$status = AGENT_MODULE_STATUS_WARNING_ALERT.",".AGENT_MODULE_STATUS_WARNING;
+			break;
+		case AGENT_MODULE_STATUS_UNKNOWN:
+			$status = AGENT_MODULE_STATUS_UNKNOWN;
+			break;
+		case AGENT_MODULE_STATUS_NO_DATA:
+		case AGENT_MODULE_STATUS_NOT_INIT:
+			$status = AGENT_MODULE_STATUS_NO_DATA.",".AGENT_MODULE_STATUS_NOT_INIT;
+			break;
+		case AGENT_MODULE_STATUS_NORMAL_ALERT:
+		case AGENT_MODULE_STATUS_NORMAL:
+			$status = AGENT_MODULE_STATUS_NORMAL_ALERT.",".AGENT_MODULE_STATUS_NORMAL;
+			break;
+		default:
+			// The type doesn't exist
+			return;
+	}
+	
+	$sql = "SELECT COUNT(DISTINCT tam.id_agente_modulo)
+			FROM tagente_modulo AS tam
+			INNER JOIN tagente_estado AS tae
+				ON tam.id_agente_modulo = tae.id_agente_modulo
+					AND tae.estado IN ($status)
+			INNER JOIN ttag_module AS ttm
+				ON ttm.id_tag = $id_tag
+					AND tam.id_agente_modulo = ttm.id_agente_modulo
+			INNER JOIN tagente AS ta
+				ON tam.id_agente = ta.id_agente
+					AND ta.disabled = 0
+					$groups_clause
+			WHERE tam.disabled = 0";
 			
 	$count = db_get_sql ($sql);
 
 	return $count;	
+}
+
+function tags_monitors_normal ($id_tag, $groups_and_tags = array()) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_NORMAL, $id_tag, $groups_and_tags);
 }
 
 function tags_monitors_critical ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND id_grupo IN ($groups_id)"; 
-	}
-	
-	$sql = "SELECT COUNT(*) FROM tagente_modulo, tagente_estado
-			WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo
-			AND tagente_estado.estado = 1
-			AND tagente_modulo.id_agente IN (SELECT id_agente FROM tagente
-							WHERE disabled = 0
-							$groups_clause) 
-			AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module
-							WHERE ttag_module.id_tag = " . $id_tag .")";
-			
-	$count = db_get_sql ($sql);
-			
-	return $count;	
+	return tags_monitors_count(AGENT_MODULE_STATUS_CRITICAL_BAD, $id_tag, $groups_and_tags);
 }
 
 function tags_monitors_warning ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND id_grupo IN ($groups_id)"; 
-	}
-			
-	$sql = "SELECT COUNT(*) FROM tagente_modulo, tagente_estado
-			WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo
-			AND tagente_estado.estado = 2
-			AND tagente_modulo.id_agente IN (SELECT id_agente FROM tagente
-							WHERE disabled = 0
-							$groups_clause) 
-			AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module
-							WHERE ttag_module.id_tag = " . $id_tag .")";
-			
-	$count = db_get_sql ($sql);
-			
-	return $count;	
+	return tags_monitors_count(AGENT_MODULE_STATUS_WARNING, $id_tag, $groups_and_tags);
+}
+
+function tags_monitors_not_init ($id_tag, $groups_and_tags = array()) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_NOT_INIT, $id_tag, $groups_and_tags);
+}
+
+function tags_monitors_unknown ($id_tag, $groups_and_tags = array()) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_UNKNOWN, $id_tag, $groups_and_tags);
 }
 
 function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
@@ -1605,26 +1672,24 @@ function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
 	// Avoid mysql error
 	if (empty($id_tag))
 		return;
-		
+	
 	$groups_clause = "";
 	if (!empty($groups_and_tags)) {
-		$i = 0;
+		
+		$groups_id = array();
 		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
+			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
 				}
 			}
 		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND tagente.id_grupo IN ($groups_id_str)"; 
+		}
 	}
 							
 	$sql = "SELECT COUNT(talert_template_modules.id)
@@ -1695,76 +1760,29 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	return $acltags;
 }
 
-/**
- * Get unknown agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search unknown agents
- * 
- * @return mixed Returns count of unknown agents with this tag or false if they aren't.
- */
-function tags_get_critical_agents ($id_tag, $groups_and_tags = array()) {
-	
-	// Avoid mysql error
-	if (empty($id_tag))
-		return;
-	
-	$groups_clause = "";
-	if (!empty($groups_and_tags)) {
-		$i = 0;
-		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
-				$tags_arr = explode(',', $tags);
-				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
-				}
-			}
-		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
-	}
-	
-	$total_agents = "SELECT COUNT(DISTINCT tagente.id_agente) 
-		FROM tagente, tagente_modulo, ttag_module 
-		WHERE tagente.id_agente = tagente_modulo.id_agente
-			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-			AND ttag_module.id_tag = " . $id_tag . " 
-			AND tagente.critical_count>0
-			$groups_clause";
-
-	return db_get_sql ($total_agents);	
-}
-
 function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array()) {
 	
 	// Avoid mysql error
 	if (empty($id_tag))
 		return;
-		
+	
 	$groups_clause = "";
 	if (!empty($groups_and_tags)) {
-		$i = 0;
+		
+		$groups_id = array();
 		foreach ($groups_and_tags as $group_id => $tags) {
-			if ($tags != "") {
+			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag) {
-						if ($i == 0) {
-							$groups_id = $group_id;
-						} else {
-							$groups_id .= ','.$group_id;
-						}
-						$i++;
-					}
+					if ($tag == $id_tag)
+						$groups_id[] = $group_id;
 				}
 			}
 		}
-		$groups_clause = " AND tagente.id_grupo IN ($groups_id)"; 
+		if (array_search(0, $groups_id) === false) {
+			$groups_id_str = implode(",", $groups_id);
+			$groups_clause = " AND tagente.id_grupo IN ($groups_id_str)"; 
+		}
 	}
 								
 	$sql = "SELECT COUNT(talert_template_modules.id)

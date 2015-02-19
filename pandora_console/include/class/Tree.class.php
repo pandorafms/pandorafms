@@ -329,8 +329,10 @@ class Tree {
 								$groups[] = $group_id;
 						}
 						if (!empty($groups)) {
-							$user_groups_str = implode(",", $groups);
-							$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+							if (array_search(0, $groups) === false) {
+								$user_groups_str = implode(",", $groups);
+								$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+							}
 						}
 						else {
 							$group_acl = "AND ta.id_grupo = -1";
@@ -455,8 +457,10 @@ class Tree {
 							}
 						}
 						if (!empty($groups)) {
-							$user_groups_str = implode(",", $groups);
-							$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+							if (array_search(0, $groups) === false) {
+								$user_groups_str = implode(",", $groups);
+								$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
+							}
 						}
 						else {
 							$group_acl = "AND ta.id_grupo = -1";
@@ -912,12 +916,10 @@ class Tree {
 
 	protected function getItems ($item_for_count = false) {
 		$sql = $this->getSql($item_for_count);
-		
 		if (empty($sql))
 			return array();
 
 		$data = db_process_sql($sql);
-		
 		if (empty($data))
 			return array();
 		

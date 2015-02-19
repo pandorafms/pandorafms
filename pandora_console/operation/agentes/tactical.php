@@ -32,7 +32,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
  
 $is_admin = check_acl ($config['id_user'], 0, "PM");
-$user_strict = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+$user_strict = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 $force_refresh = get_parameter ("force_refresh", "");
 if ($force_refresh == 1) {
@@ -81,38 +81,81 @@ $data['agent_unknown'] = 0;
 $data['agent_not_init'] = 0;
 $data['global_health'] = 0;
 foreach ($all_data as $item) {
-	$data['monitor_checks'] += $item['_monitor_checks_'];
-	$data['monitor_not_init'] += $item['_monitors_not_init_'];
-	$data['monitor_unknown'] += $item['_monitors_unknown_'];
-	$data['monitor_ok'] += $item['_monitors_ok_'];
-	$data['monitor_bad'] += $item['_monitor_bad_'];
-	$data['monitor_warning'] += $item['_monitors_warning_'];
-	$data['monitor_critical'] += $item['_monitors_critical_'];
-	$data['monitor_not_normal'] += $item['_monitor_not_normal_'];
-	$data['monitor_alerts'] += $item['_monitors_alerts_'];
-	$data['monitor_alerts_fired'] += $item['_monitors_alerts_fired_'];
+	$data['monitor_checks'] += (int) $item['_monitor_checks_'];
+	$data['monitor_not_init'] += (int) $item['_monitors_not_init_'];
+	$data['monitor_unknown'] += (int) $item['_monitors_unknown_'];
+	$data['monitor_ok'] += (int) $item['_monitors_ok_'];
+	$data['monitor_bad'] += (int) $item['_monitor_bad_'];
+	$data['monitor_warning'] += (int) $item['_monitors_warning_'];
+	$data['monitor_critical'] += (int) $item['_monitors_critical_'];
+	$data['monitor_not_normal'] += (int) $item['_monitor_not_normal_'];
+	$data['monitor_alerts'] += (int) $item['_monitors_alerts_'];
+	$data['monitor_alerts_fired'] += (int) $item['_monitors_alerts_fired_'];
 
 	if (isset($item['_total_agents_']))
-		$data['total_agents'] += $item['_total_agents_'];
+		$data['total_agents'] += (int) $item['_total_agents_'];
 	
 	if (isset($item['_total_alerts_']))
-		$data['total_alerts'] += $item['_total_alerts_'];
+		$data['total_alerts'] += (int) $item['_total_alerts_'];
 	
 	if (isset($item['_total_checks_']))
-		$data['total_checks'] += $item['_total_checks_'];
+		$data['total_checks'] += (int) $item['_total_checks_'];
 
-	$data['alerts'] += $item['_alerts_'];
-	$data['agents_unknown'] += $item['_agents_unknown_'];
-	$data['monitor_health'] += $item['_monitor_health_'];
-	$data['alert_level'] += $item['_alert_level_'];
-	$data['module_sanity'] += $item['_module_sanity_'];
-	$data['server_sanity'] += $item['_server_sanity_'];
-	$data['agent_ok'] += $item['_agents_ok_'];
-	$data['agent_warning'] += $item['_agents_warning_'];
-	$data['agent_critical'] += $item['_agents_critical_'];
-	$data['agent_unknown'] += $item['_agents_unknown_'];
-	$data['agent_not_init'] += $item['_agents_not_init_'];
-	$data['global_health'] += $item['_global_health_'];
+	$data['alerts'] += (int) $item['_alerts_'];
+	$data['agent_ok'] += (int) $item['_agents_ok_'];
+	$data['agents_unknown'] += (int) $item['_agents_unknown_'];
+	$data['agent_warning'] += (int) $item['_agents_warning_'];
+	$data['agent_critical'] += (int) $item['_agents_critical_'];
+	$data['agent_unknown'] += (int) $item['_agents_unknown_'];
+	$data['agent_not_init'] += (int) $item['_agents_not_init_'];
+
+	// Percentages
+	$data['server_sanity'] += (int) $item['_server_sanity_'];
+	$data['monitor_health'] += (int) $item['_monitor_health_'];
+	$data['module_sanity'] += (int) $item['_module_sanity_'];
+	$data['alert_level'] += (int) $item['_alert_level_'];
+	$data['global_health'] += (int) $item['_global_health_'];
+}
+
+// Percentages
+if (!empty($all_data)) {
+	if ($data["monitor_not_normal"] > 0 && $data["monitor_checks"] > 0) {
+		$data['monitor_health'] = format_numeric (100 - ($data["monitor_not_normal"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["monitor_health"] = 100;
+	}
+	
+	if ($data["monitor_not_init"] > 0 && $data["monitor_checks"] > 0) {
+		$data["module_sanity"] = format_numeric (100 - ($data["monitor_not_init"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["module_sanity"] = 100;
+	}
+	
+	if (isset($data["alerts"])) {
+		if ($data["monitor_alerts_fired"] > 0 && $data["alerts"] > 0) {
+			$data["alert_level"] = format_numeric (100 - ($data["monitor_alerts_fired"] / ($data["alerts"] / 100)), 1);
+		}
+		else {
+			$data["alert_level"] = 100;
+		}
+	} 
+	else {
+		$data["alert_level"] = 100;
+		$data["alerts"] = 0;
+	}
+	
+	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_warning"];
+	
+	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
+		$data["global_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["global_health"] = 100;
+	}
+	
+	$data["server_sanity"] = format_numeric (100 - $data["module_sanity"], 1);
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
@@ -132,7 +175,6 @@ $table->style = array ();
 $table->data[0][0] = reporting_get_stats_indicators($data, 120, 20);
 $table->rowclass[] = '';
 
-
 html_print_table ($table);
 unset($table);
 
@@ -148,8 +190,16 @@ $table->head = array ();
 $table->data = array ();
 $table->style = array ();
 
+$data_agents = array(
+		__('Critical') => $data['monitor_critical'],
+		__('Warning') => $data['monitor_warning'],
+		__('Normal') => $data['monitor_ok'],
+		__('Unknown') => $data['monitor_unknown'],
+		__('Not init') => $data['monitor_not_init']
+	);
+
 $table->data[0][0] = reporting_get_stats_alerts($data);
-$table->data[0][0] .= reporting_get_stats_modules_status($data, 180, 100);
+$table->data[0][0] .= reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
 $table->data[0][0] .= reporting_get_stats_agents_monitors($data);
 $table->rowclass[] = '';
 
@@ -185,9 +235,14 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // ---------------------------------------------------------------------
 
 $acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $user_strict);
-$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
 
-events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%");
+if (!empty($acltags)) {
+	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
+
+	if (!empty($tags_condition)) {
+		events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%");
+	}
+}
 
 // ---------------------------------------------------------------------
 // Server information

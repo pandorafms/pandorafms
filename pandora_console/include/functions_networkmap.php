@@ -689,6 +689,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 		}
 		
 		$filter['id_grupo'] = $id_groups;
+		$filter['id_group'] = $id_groups;
 	}
 	else {
 		if ($strict_user) {

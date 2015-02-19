@@ -1838,7 +1838,11 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	}
 	
 	if (!empty($filter['id_group'])) {
-		$groups_clause .= " AND tagente.id_grupo IN (".$filter['id_group'].")";
+		if (is_array($filter['id_group']))
+			$groups_str = implode(",", $filter['id_group']);
+		else
+			$groups_str = $filter['id_group'];
+		$groups_clause .= " AND tagente.id_grupo IN ($groups_str)";
 	}
 
 	$status_sql = '';

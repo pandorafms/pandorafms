@@ -773,7 +773,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 	
 	// Build the data of the current period
-	$data_returned = grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
+	$data_returned = grafico_modulo_sparse_data ($agent_module_id,
+		$period, $show_events,
 		$width, $height , $title, $unit_name,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
@@ -801,8 +802,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$flash_chart = false;
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
+	$water_mark = array('file' =>
+		$config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png");
 	
 	if ($compare === 'separated') {
 		return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,

@@ -292,7 +292,13 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		}
 		
 		$menu_width = 25 * $nbuttons + 15;
-		$return .= "<div id='menu_$graph_id' class='menu_graph' style='display:none; text-align:center; width:".$menu_width."px; border: solid 1px #666; border-bottom: 0px; padding: 4px 4px 4px 4px'>
+		$return .= "<div id='menu_$graph_id' class='menu_graph' " .
+			"style='display: none; " .
+				"text-align: center; " .
+				"width: " . $menu_width . "px; ".
+				"border: solid 1px #666; ".
+				"border-bottom: 0px; " .
+				"padding: 4px 4px 4px 4px'>
 			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 		if ($threshold) {
 			$return .= "<a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
@@ -382,7 +388,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		"$watermark, " .
 		"$width, " .
 		"$max_x, " .
-		"'" . $config['homeurl'] . "', " .
+		"'" . $homeurl . "', " .
 		"'$unit', " .
 		"$font_size, " .
 		"$menu, " .

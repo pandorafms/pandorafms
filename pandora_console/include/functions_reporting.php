@@ -2499,7 +2499,9 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 	$data[__('Alerts not fired')] = $not_fired_percentage;
 	
 	$output .= pie3d_graph(false, $data, 280, 150,
-		__("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
+		__("other"),
+		ui_get_full_url(false, false, false, false) . '/',
+		ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']); 
 	
 	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
@@ -2575,7 +2577,9 @@ function reporting_monitor_health ($id_group, $period = 0, $date = 0, $return = 
 	$data[__('Monitors BAD')] = $not_down_percentage;
 	
 	$output .= pie3d_graph(false, $data, 280, 150,
-		__("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
+		__("other"),
+		ui_get_full_url(false, false, false, false) . '/',
+		ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']); 
 	
 	if (!$return)
@@ -3472,20 +3476,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[$next_row][0] = 3;
 			$table->cellstyle[$next_row][0] = 'text-align: center;';
-				
+			
 			$data = array ();
 			
 			$moduletype_name = modules_get_moduletype_name(
 				modules_get_agentmodule_type(
 					$content['id_agent_module']));
-
+			
 			$only_avg = true;
 			// Due to database compatibility problems, the 'only_avg' value
 			// is stored into the json contained into the 'style' column.
 			if (isset($content['style'])) {
 				$style_json = io_safe_output($content['style']);
 				$style = json_decode($style_json, true);
-
+				
 				if (isset($style['only_avg'])) {
 					$only_avg = (bool) $style['only_avg'];
 				}
@@ -3519,7 +3523,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					0,
 					true,
 					$only_image,
-					ui_get_full_url(false) . '/',
+					ui_get_full_url(false, false, false, false),
 					1,
 					false,
 					'',
@@ -3578,7 +3582,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$report["datetime"],
 				true,
-				ui_get_full_url(false) . '/',
+				ui_get_full_url(false, false, false, false) . '/',
 				1,
 				// Important parameter, this tell to graphic_combined_module function that is a projection graph
 				$output_projection,
@@ -3645,7 +3649,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', true, 0, true, $only_image, ui_get_full_url(false) . '/');
+				$report["datetime"], '', true, 0, true, $only_image,
+				ui_get_full_url(false, false, false, false));
 			
 			/*$data[0] = 	graphic_combined_module(
 				$modules,
@@ -3717,7 +3722,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$graph["stacked"],
 				$report["datetime"],
 				$only_image,
-				ui_get_full_url(false) . '/');
+				ui_get_full_url(false, false, false, false));
 			array_push ($table->data, $data);
 			
 			break;
@@ -4240,47 +4245,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// $data = array();
 			// $data_pie_graph = json_encode ($data_graph);
 			if ($show_graphs && !empty($slas)) {
-				// $data[0] = pie3d_graph(false, $data_graph,
-				// 	500, 150, __("other"),
-				// 	ui_get_full_url(false, false, false, false),
-				// 	$config['homedir'] .  "/images/logo_vertical_water.png",
-				// 	$config['fontpath'], $config['font_size']);
-				
-				
-				// //Print resume
-				// $table_resume = null;
-				// $table_resume->head[0] = __('Average Value');
-				
-				// $table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
-				// $table_resume->data[0][0] .= format_numeric($total_SLA / count($sla_showed), 2);
-				// $table_resume->data[0][0] .= "%</span>";
-				
-				// $data[1] = html_print_table($table_resume, true);
-				
-				// $table_resume = null;
-				// $table_resume->head[0] = __('SLA Compliance');
-				
-				// if ($total_result_SLA == 'ok') {
-				// 	$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
-				// }
-				// if ($total_result_SLA == 'fail') {
-				// 	$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
-				// }
-				// if ($total_result_SLA == 'unknown') {
-				// 	$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
-				// }
-				
-				// $data[2] = html_print_table($table_resume, true);
-				// $next_row++;
-				// array_push ($table->data, $data);
-				
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 				$data = array();
 				$data[0] = html_print_table($tableslice, true);
 				array_push ($table->data, $data);
 			}
-
+			
 			if (!empty($table_planned_downtimes)) {
 				$data = array();
 				$data[0] = html_print_table($table_planned_downtimes, true);
@@ -4532,7 +4503,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
-					$config['homedir'] .  "/images/logo_vertical_water.png",
+					ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']);
 				
 				$data[0] = html_print_table($table_event_graph, true);
@@ -4560,7 +4531,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
-					$config['homedir'] .  "/images/logo_vertical_water.png",
+					ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size'], 1, false, $colors);
 				
 				$data[0] = html_print_table($table_event_graph, true);
@@ -4586,7 +4557,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
-					$config['homedir'] .  "/images/logo_vertical_water.png",
+					ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']);
 				
 				$data[0] = html_print_table($table_event_graph, true);
@@ -4735,7 +4706,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			
-			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, $sizgraph_h, $content["type"], true, ui_get_full_url(false) . '/');
+			$data[0] = graph_custom_sql_graph(
+				$content["id_rc"],
+				$sizgraph_w,
+				$sizgraph_h,
+				$content["type"],
+				true,
+				ui_get_full_url(false, false, false, false));
 			
 			array_push($table->data, $data);
 			break;
@@ -4801,7 +4778,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
-					$config['homedir'] .  "/images/logo_vertical_water.png",
+					ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']);
 				
 				$data[0] = html_print_table($table_event_graph, true);
@@ -4827,7 +4804,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
-					$config['homedir'] .  "/images/logo_vertical_water.png",
+					ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']);
 				
 				$data[0] = html_print_table($table_event_graph, true);
@@ -4845,9 +4822,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_critical,
 					$filter_event_warning,
 					$filter_event_no_validated);
-								
+				
 				$colors = get_criticity_pie_colors($data_graph);
-
+				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events by criticity');
 				$table_event_graph->width = '100%';
@@ -4855,7 +4832,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
-					$config['homedir'] .  "/images/logo_vertical_water.png",
+					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size'], 1, false, $colors);
 				
 				$data[0] = html_print_table($table_event_graph, true);
@@ -4881,7 +4858,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_event_graph->data[0][0] = pie3d_graph(
 					false, $data_graph, 500, 150, __("other"), "",
-					$config['homedir'] .  "/images/logo_vertical_water.png",
+					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']);
 				
 				$data[0] = html_print_table($table_event_graph, true);
@@ -6107,7 +6084,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$data[0] = pie3d_graph(false, $data_pie_graph,
 					$sizgraph_w, $sizgraph_h, __("other"),
-					ui_get_full_url(false, true, false, false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
+					ui_get_full_url(false, true, false, false) . '/',
+					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']);
 				
 				
@@ -6502,7 +6480,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,
-					600, 150, __("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
+					600, 150, __("other"),
+					ui_get_full_url(false, false, false, false),
+					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				array_push ($table->data, $data);
 				//Display bars graph
@@ -6511,7 +6491,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$height = count($data_pie_graph) * 20 + 85;
 				$data = array();
 				
-				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, 600, $height,
+					array(), array(), "", "", true,
+					ui_get_full_url(false, false, false, false),
+					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png", '', '', true, 1, true);
 				
 				array_push ($table->data, $data);
 			}

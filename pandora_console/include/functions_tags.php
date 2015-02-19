@@ -1739,6 +1739,29 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 			$acltags[$id] = '';
 		}
 	} else {
+		// Change the 'All' group with all groups
+		$all_group_ids = array();
+		$all_groups = groups_get_all();
+		if (!empty($all_groups))
+			$all_group_ids = array_keys($all_groups);
+
+		$tags_and_groups_aux = array();
+		foreach ($tags_and_groups as $data) {
+			if ($data['id_grupo'] == 0) {
+				foreach ($all_group_ids as $group_id) {
+					$tags_and_groups_aux[] = array(
+							'id_grupo' => $group_id,
+							'tags' => $data['tags']
+						);
+				}
+			}
+			else {
+				$tags_and_groups_aux[] = $data;
+			}
+		}
+		$tags_and_groups = $tags_and_groups_aux;
+		unset($tags_and_groups_aux);
+
 		foreach ($tags_and_groups as $group_tag) {
 			$acltags[$group_tag['id_grupo']] = $group_tag['tags'];
 			$propagate = db_get_value('propagate', 'tgrupo', 'id_grupo', $group_tag['id_grupo']);

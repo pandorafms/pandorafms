@@ -383,15 +383,15 @@ foreach ($contents as $content) {
 			
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
 			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
-			html_debug_print($content, true);
+			
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			$data["title"] = __('Custom graph');
 			$data["objdata"] = array();
-			html_debug_print($graph, true);
+			
 			$result = db_get_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
 			$modules = array ();
 			$weights = array ();
-			html_debug_print($result, true);
+			
 			if ($result === false) {
 				$result = array();
 			}

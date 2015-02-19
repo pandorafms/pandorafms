@@ -528,7 +528,7 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 	
 	$types['SLA'] = array('optgroup' => __('SLA'),
 		'name' => __('S.L.A.'));
-	if ($config['enterprise_installed']) {
+	if (!$template && $config['enterprise_installed']) {
 		$types['SLA_monthly'] = array('optgroup' => __('SLA'),
 			'name' => __('Monthly S.L.A.'));
 		$types['SLA_services'] = array('optgroup' => __('SLA'),
@@ -590,8 +590,10 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		'name' => __('Alert report module')); 
 	$types['alert_report_agent'] = array('optgroup' => __('Alerts'),
 		'name' => __('Alert report agent'));
-	$types['alert_report_group'] = array('optgroup' => __('Alerts'),
-			'name' => __('Alert report group'));
+	if (!$template) {
+		$types['alert_report_group'] = array('optgroup' => __('Alerts'),
+				'name' => __('Alert report group'));
+	}
 	
 	
 	

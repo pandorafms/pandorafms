@@ -92,7 +92,10 @@ function tags_agent_ok ($id_tag) {
 			AND tagente.disabled=0
 			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 			AND ttag_module.id_tag = $id_tag
-			AND normal_count=total_count");
+			AND critical_count = 0
+			AND warning_count = 0
+			AND unknown_count = 0
+			AND normal_count > 0");
 }
 
  /**

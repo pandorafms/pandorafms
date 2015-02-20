@@ -1143,11 +1143,8 @@ function groups_agent_not_init ($group_array) {
 	$count = db_get_sql ("SELECT COUNT(*)
 		FROM tagente
 		WHERE disabled = 0
-			AND critical_count = 0
-			AND warning_count = 0
-			AND unknown_count = 0
-			AND normal_count = 0
-			AND (notinit_count > 0 OR total_count = 0)
+			AND (total_count = 0
+				OR total_count = notinit_count)
 			AND id_grupo IN $group_clause");
 	
 	return $count > 0 ? $count : 0;
@@ -1212,8 +1209,10 @@ function groups_agent_ok ($group_array) {
 	$count = db_get_sql ("SELECT COUNT(*)
 		FROM tagente
 		WHERE tagente.disabled = 0
-			AND normal_count > 0 
-			AND normal_count = total_count
+			AND critical_count = 0
+			AND warning_count = 0
+			AND unknown_count = 0
+			AND normal_count > 0
 			AND id_grupo IN $group_clause");
 	
 	

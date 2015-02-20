@@ -1237,22 +1237,26 @@ function groups_agent_total($group_array, $strict_user = false, $id_group_strict
 	}
 	
 	$group_clause = implode (",", $group_array);
-	$group_clause = "(" . $group_clause . ")";
+	$group_clause = "($group_clause)";
 	
 	if ($strict_user) {
-		$tags_clause = " AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo
+		$tags_clause = " AND ta.id_agente IN (SELECT id_agente FROM tagente_modulo
 												WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM ttag_module))";
-		$sql = "SELECT COUNT(*) FROM tagente
-							WHERE tagente.disabled = 0
-							AND id_grupo = ".$id_group_strict .
-							$tags_clause;
+		$sql = "SELECT COUNT(ta.id_agente)
+				FROM tagente AS ta
+				WHERE ta.disabled = 0
+					AND ta.id_grupo = ".$id_group_strict .
+					$tags_clause;
+
 		$count = db_get_sql($sql);
 														
 	} else {
-		$count = db_get_sql ("SELECT COUNT(*)
-		FROM tagente
-		WHERE tagente.disabled = 0
-		AND id_grupo IN $group_clause");
+		$sql = "SELECT COUNT(ta.id_agente)
+				FROM tagente AS ta
+				WHERE ta.disabled = 0
+					AND ta.id_grupo IN $group_clause";
+
+		$count = db_get_sql($sql);
 	}
 	
 	return $count > 0 ? $count : 0;
@@ -1271,24 +1275,33 @@ function groups_agent_ok ($group_array, $strict_user = false, $id_group_strict =
 	}
 	
 	$group_clause = implode (",", $group_array);
-	$group_clause = "(" . $group_clause . ")";
+	$group_clause = "($group_clause)";
 	
 	if ($strict_user) {
-		$tags_clause = " AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo
+		$tags_clause = " AND ta.id_agente IN (SELECT id_agente
+												FROM tagente_modulo
 												WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM ttag_module))";
-		$sql = "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 
-						AND id_grupo=$id_group_strict
-						AND critical_count=0 
-						AND warning_count=0 AND normal_count = total_count
-						$tags_clause";
+		$sql = "SELECT COUNT(ta.id_agente)
+				FROM tagente AS ta
+				WHERE ta.disabled = 0 
+					AND ta.id_grupo = $id_group_strict
+					AND ta.critical_count = 0
+					AND ta.warning_count = 0
+					AND ta.normal_count = total_count
+					$tags_clause";
 
 		$count = db_get_sql ($sql);
 	} else {
-		$count = db_get_sql ("SELECT COUNT(*)
-			FROM tagente
-			WHERE tagente.disabled = 0
-				AND normal_count = total_count
-				AND id_grupo IN $group_clause");
+		$sql = "SELECT COUNT(ta.id_agente)
+				FROM tagente AS ta
+				WHERE ta.disabled = 0
+					AND ta.critical_count = 0
+					AND ta.warning_count = 0
+					AND ta.unknown_count = 0
+					AND ta.normal_count > 0
+					AND ta.id_grupo IN $group_clause";
+
+		$count = db_get_sql ($sql);
 	}
 		
 	return $count > 0 ? $count : 0;
@@ -1307,21 +1320,29 @@ function groups_agent_critical ($group_array, $strict_user = false, $id_group_st
 	}
 	
 	$group_clause = implode (",", $group_array);
-	$group_clause = "(" . $group_clause . ")";
+	$group_clause = "($group_clause)";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
 	
 	if ($strict_user) {
-		$tags_clause = " AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo
+		$tags_clause = " AND ta.id_agente IN (SELECT id_agente FROM tagente_modulo
 												WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM ttag_module))";
-		$sql = "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 
-						AND id_grupo=$id_group_strict
-						AND critical_count>0 
-						$tags_clause";
+		$sql = "SELECT COUNT(ta.id_agente)
+				FROM tagente AS ta
+				WHERE ta.disabled = 0 
+					AND ta.id_grupo = $id_group_strict
+					AND ta.critical_count > 0 
+					$tags_clause";
 
 		$count = db_get_sql ($sql);
 	} else {
-		$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_grupo IN $group_clause");
+		$sql = "SELECT COUNT(ta.id_agente)
+				FROM tagente AS ta
+				WHERE ta.disabled = 0
+					AND ta.critical_count > 0
+					AND ta.id_grupo IN $group_clause";
+
+		$count = db_get_sql ($sql);
 	}
 	
 	return $count > 0 ? $count : 0;	
@@ -1340,20 +1361,29 @@ function groups_agent_warning ($group_array, $strict_user = false, $id_group_str
 	}
 	
 	$group_clause = implode (",", $group_array);
-	$group_clause = "(" . $group_clause . ")";
+	$group_clause = "($group_clause)";
 	
 	if ($strict_user) {
-		$tags_clause = " AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo
+		$tags_clause = " AND ta.id_agente IN (SELECT id_agente FROM tagente_modulo
 												WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM ttag_module))";
-		$sql = "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 
-						AND id_grupo=$id_group_strict
-						AND critical_count=0 
-						AND warning_count>0
-						$tags_clause";
+		$sql = "SELECT COUNT(ta.id_agente)
+				FROM tagente AS ta
+				WHERE ta.disabled = 0 
+					AND ta.id_grupo = $id_group_strict
+					AND ta.critical_count = 0 
+					AND ta.warning_count > 0
+					$tags_clause";
 
 		$count = db_get_sql ($sql);
 	} else {
-		$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo IN $group_clause");	
+		$sql = "SELECT COUNT(ta.id_agente)
+				FROM tagente AS ta
+				WHERE ta.disabled = 0
+					AND ta.critical_count = 0
+					AND ta.warning_count > 0
+					AND ta.id_grupo IN $group_clause";
+
+		$count = db_get_sql ($sql);
 	}
 	
 	return $count > 0 ? $count : 0;

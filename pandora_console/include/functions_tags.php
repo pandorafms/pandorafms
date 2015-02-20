@@ -1379,8 +1379,10 @@ function tags_get_normal_agents ($id_tag, $groups_and_tags = array()) {
 						ON ttm.id_tag = $id_tag
 							AND tam.id_agente_modulo = ttm.id_agente_modulo
 					WHERE ta.disabled = 0
-						AND ta.total_count > 0
-						AND ta.normal_count = ta.total_count
+						AND ta.critical_count = 0
+						AND ta.warning_count = 0
+						AND ta.unknown_count = 0
+						AND ta.normal_count > 0
 						$groups_clause";
 
 	return db_get_sql($ok_agents);

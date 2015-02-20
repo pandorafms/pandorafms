@@ -1574,7 +1574,8 @@ function tags_get_not_init_agents ($id_tag, $groups_and_tags = array()) {
 							ON ttm.id_tag = $id_tag
 								AND tam.id_agente_modulo = ttm.id_agente_modulo
 						WHERE ta.disabled = 0
-							AND ta.total_count = ta.notinit_count
+							AND (ta.total_count = 0
+								OR ta.total_count = ta.notinit_count)
 							$groups_clause";
 
 	return db_get_sql($not_init_agents);

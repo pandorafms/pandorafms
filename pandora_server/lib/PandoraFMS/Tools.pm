@@ -872,9 +872,12 @@ sub pandora_ping ($$$$) {
 	# Windows XP .. Windows 7
 	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
 		my $ms_timeout = $timeout * 1000;
-		$output = `ping -n $retries -w $ms_timeout $host`;
-		if ($output =~ /TTL/){
-			return 1;
+		for ($i=0; $i < $retries; $i++) {
+			$output = `ping -n 1 -w $ms_timeout $host`;
+			if ($output =~ /TTL/){
+				return 1;
+			}
+			sleep 1;
 		}
 		return 0;
 	}
@@ -890,9 +893,12 @@ sub pandora_ping ($$$$) {
 		# 'networktimeout' is not used by ping on Solaris.
 		
 		# Ping the host
-		`$ping_command -s -n $host 56 $retries >$DEVNULL 2>&1`;
-		if ($? == 0) {
-			return 1;
+		for ($i=0; $i < $retries; $i++) {
+			`$ping_command -s -n $host 56 1 >$DEVNULL 2>&1`;
+			if ($? == 0) {
+				return 1;
+			}
+			sleep 1;
 		}
 		return 0;
 	}
@@ -908,9 +914,12 @@ sub pandora_ping ($$$$) {
 		# 'networktimeout' is not used by ping6 on FreeBSD.
 		
 		# Ping the host
-		`$ping_command -q -n -c $retries $host >$DEVNULL 2>&1`;
-		if ($? == 0) {
-			return 1;
+		for ($i=0; $i < $retries; $i++) {
+			`$ping_command -q -n -c 1 $host >$DEVNULL 2>&1`;
+			if ($? == 0) {
+				return 1;
+			}
+			sleep 1;
 		}
 		return 0;
 	}
@@ -926,9 +935,12 @@ sub pandora_ping ($$$$) {
 		# 'networktimeout' is not used by ping6 on NetBSD.
 
 		# Ping the host
-		`$ping_command -q -n -c $retries $host >$DEVNULL 2>&1`;
-		if ($? == 0) {
-			return 1;
+		for ($i=0; $i < $retries; $i++) {
+			`$ping_command -q -n -c 1 $host >$DEVNULL 2>&1`;
+			if ($? == 0) {
+				return 1;
+			}
+			sleep 1;
 		}
 		return 0;
 	}
@@ -943,9 +955,12 @@ sub pandora_ping ($$$$) {
 		}
 		
 		# Ping the host
-		`$ping_command -q -W $timeout -n -c $retries $host >$DEVNULL 2>&1`;	
-		if ($? == 0) {
-			return 1;
+		for ($i=0; $i < $retries; $i++) {
+			`$ping_command -q -W $timeout -n -c 1 $host >$DEVNULL 2>&1`;	
+			if ($? == 0) {
+				return 1;
+			}
+			sleep 1;
 		}
 		return 0;
 	}

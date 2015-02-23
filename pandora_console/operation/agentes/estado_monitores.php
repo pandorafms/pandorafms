@@ -448,7 +448,7 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	}
 	$table->data[0][5] = html_print_select ($rows_select,'status_module_group', $status_module_group, '', '',0, true);
 	$table->data[0][6] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
-	$table->data[0][7] .= '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd"', true);
+	$table->data[0][7] = '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd"', true);
 	$form_text .= html_print_table($table, true);
 	
 	$filter_hidden = false;

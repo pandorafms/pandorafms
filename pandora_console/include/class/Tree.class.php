@@ -1200,7 +1200,7 @@ class Tree {
 		$module['serverTypeHTML'] = servers_show_type($module['server_type']);
 		
 		// Link to the Module graph
-		$graphType = return_graphtype($module['id']);
+		$graphType = return_graphtype($module['id_module_type']);
 		$winHandle = dechex(crc32($module['id'] . $module['name']));
 		
 		if (!defined('METACONSOLE')) {
@@ -1216,7 +1216,7 @@ class Tree {
 			$moduleGraphURL = ui_meta_get_url_console_child(
 				$server, null, null, null, null,
 				"operation/agentes/stat_win.php?" .
-				"type=$graph_type&" .
+				"type=$graphType&" .
 				"period=" . SECONDS_1DAY . "&" .
 				"id=" . $module["id"] . "&" .
 				"label=" . rawurlencode(urlencode(base64_encode($module['name']))) . "&" .

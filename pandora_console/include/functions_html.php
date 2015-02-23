@@ -748,7 +748,13 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
-		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'), 'style' => 'width: 18px;')).'</a>';
+		echo ' <a href="javascript:">' .
+			html_print_image('images/pencil.png', true,
+				array('class' => $uniq_name . '_toggler',
+					'alt' => __('Custom'),
+					'title' => __('Custom'),
+					'style' => 'width: 18px;')) .
+			'</a>';
 	echo '</div>';
 	
 	echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
@@ -757,7 +763,12 @@ function html_print_extended_select_for_time ($name, $selected = '',
 		html_print_input_hidden ($name, $selected, false, $uniq_name);
 		html_print_select ($units, $uniq_name . '_units', 1, "" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
-		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'), 'style' => 'width: 18px;')).'</a>';
+		echo ' <a href="javascript:">' .
+			html_print_image('images/default_list.png', true,
+				array('class' => $uniq_name . '_toggler',
+					'alt' => __('List'),
+					'title' => __('List'), 'style' => 'width: 18px;')) .
+			'</a>';
 	echo '</div>';
 	echo "<script type='text/javascript'>
 		$(document).ready (function () {

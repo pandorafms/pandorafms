@@ -69,8 +69,16 @@ if ($get_module_detail) {
 	
 	ui_include_time_picker();
 	
-	$module_id = get_parameter ('id_module');
-	$period = get_parameter ("period", 86400);
+	$module_id = (int)get_parameter('id_module');
+	$period = get_parameter("period", SECONDS_1DAY);
+	if ($period === 'undefined') {
+		$period = SECONDS_1DAY;
+	}
+	else {
+		$period = (int)$period;
+	}
+	
+	
 	$group = agents_get_agentmodule_group ($module_id);
 	$agentId = get_parameter("id_agent");
 	$server_name = get_parameter('server_name');

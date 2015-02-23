@@ -565,25 +565,27 @@ function post_process_select_events(name) {
  */
 function period_select_init(name) {
 	// Manual mode is hidden by default
-	$('#'+name+'_manual').hide();
-	$('#'+name+'_default').show();
+	$('#' + name + '_manual').hide();
+	$('#' + name + '_default').show();
 	
 	// If the text input is empty, we put on it 5 minutes by default
-	if($('#text-'+name+'_text').val() == '') {
-		$('#text-'+name+'_text').val(300);
+	if ($('#text-' + name + '_text').val() == '') {
+		$('#text-' + name + '_text').val(300);
 		// Set the value in the hidden field too
-		$('.'+name).val(300);
-		if($('#'+name+'_select option:eq(0)').val() == 0) {
-			$('#'+name+'_select option:eq(2)').attr('selected', 'selected');
+		$('.' + name).val(300);
+		if ($('#' + name + '_select option:eq(0)').val() == 0) {
+			$('#' + name + '_select option:eq(2)')
+				.attr('selected', 'selected');
 		}
 		else {
-			$('#'+name+'_select option:eq(1)').attr('selected', 'selected');
+			$('#' + name + '_select option:eq(1)')
+				.attr('selected', 'selected');
 		}
 	}
-	else if($('#text-'+name+'_text').val() == 0) {
-		$('#'+name+'_units option:last').removeAttr('selected');
-		$('#'+name+'_manual').show();
-		$('#'+name+'_default').hide();
+	else if ($('#text-' + name + '_text').val() == 0) {
+		$('#' + name + '_units option:last').removeAttr('selected');
+		$('#' + name + '_manual').show();
+		$('#' + name + '_default').hide();
 	}
 }
 
@@ -596,48 +598,57 @@ function period_select_init(name) {
  * @param name string with the name of the select for time
  */
 function period_select_events(name) {
-	$('.'+name+'_toggler').click(function() {
+	$('.' + name + '_toggler').click(function() {
 		toggleBoth(name);
-		$('#text-'+name+'_text').focus();
+		$('#text-' + name + '_text').focus();
 	});
 	
 	adjustTextUnits(name);
 	
 	// When select a default period, is setted in seconds
-	$('#'+name+'_select').change(function() {
-		var value = $('#'+name+'_select').val();
+	$('#' + name + '_select').change(function() {
+		var value = $('#' + name + '_select').val();
 		
-		if(value == -1) {
+		if (value == -1) {
 			value = 300;
 			toggleBoth(name);
-			$('#text-'+name+'_text').focus();
+			$('#text-' + name + '_text').focus();
 		}
 		
-		$('.'+name).val(value);
-		$('#text-'+name+'_text').val(value);
+		$('.' + name).val(value);
+		$('#text-' + name + '_text').val(value);
 		adjustTextUnits(name);
 	});
 	
-	// When select a custom units, the default period changes to 'custom' and
-	// the time in seconds is calculated into hidden input
-	$('#'+name+'_units').change(function() {
+	// When select a custom units, the default period changes to
+	// 'custom' and the time in seconds is calculated into hidden input
+	$('#' + name + '_units').change(function() {
 		selectFirst(name);
 		calculateSeconds(name);
 	});
 	
-	// When write any character into custom input, it check to convert it to 
-	// integer and calculate in seconds into hidden input
-	$('#text-'+name+'_text').keyup (function () {
-		var cleanValue = parseInt($('#text-'+name+'_text').val());
-		if(isNaN(cleanValue)) {
+	// When write any character into custom input, it check to convert
+	// it to integer and calculate in seconds into hidden input
+	$('#text-' + name + '_text').keyup (function () {
+		var cleanValue = parseInt($('#text-' + name + '_text').val());
+		if (isNaN(cleanValue)) {
 			cleanValue = '';
 		}
 		
-		$('#text-'+name+'_text').val(cleanValue);
+		$('#text-' + name + '_text').val(cleanValue);
 		
-		selectFirst(name+'_select');
+		selectFirst(name + '_select');
 		calculateSeconds(name);
 	});
+}
+
+function period_set_value(name, value) {
+	$("#text-" + name + "_text").val(value);
+	adjustTextUnits(name);
+	calculateSeconds(name);
+	selectFirst(name + '_select');
+	$("#" + name + "_manual").hide();
+	$("#" + name + "_default").show();
 }
 
 /**
@@ -645,9 +656,8 @@ function period_select_events(name) {
  * Select first option of a select if is not value=0
  * 
  */
-
 function selectFirst(name) {
-	if($('#'+name+' option:eq(0)').val() == 0) {
+	if ($('#'+name+' option:eq(0)').val() == 0) {
 		$('#'+name+' option:eq(1)').attr('selected', 'selected');
 	}
 	else {
@@ -662,16 +672,15 @@ function selectFirst(name) {
  * work properly when the divs are into a hiden div
  * 
  */
-	
 function toggleBoth(name) {
-	if($('#'+name+'_default').css('display') == 'none') {
+	if ($('#'+name+'_default').css('display') == 'none') {
 		$('#'+name+'_default').css('display','inline');
 	}
 	else {
 		$('#'+name+'_default').css('display','none');
 	}
 	
-	if($('#'+name+'_manual').css('display') == 'none') {
+	if ($('#'+name+'_manual').css('display') == 'none') {
 		$('#'+name+'_manual').css('display','inline');
 	}
 	else {
@@ -685,9 +694,10 @@ function toggleBoth(name) {
  * 
  */
 function calculateSeconds(name) {
-	var calculated = $('#text-'+name+'_text').val()*$('#'+name+'_units').val();
+	var calculated =
+		$('#text-' + name + '_text').val() * $('#' + name + '_units').val();
 	
-	$('.'+name).val(calculated);
+	$('.' + name).val(calculated);
 }
 
 /**
@@ -696,11 +706,11 @@ function calculateSeconds(name) {
  * 
  */
 function period_select_update(name, seconds) {
-	$('#text-'+name+'_text').val(seconds);
+	$('#text-' + name + '_text').val(seconds);
 	adjustTextUnits(name);
 	calculateSeconds(name);
-	$('#'+name+'_manual').show();	
-	$('#'+name+'_default').hide();
+	$('#' + name + '_manual').show();
+	$('#' + name + '_default').hide();
 }
 
 /**

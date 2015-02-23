@@ -71,8 +71,16 @@ if ($get_module_detail) {
 	ui_include_time_picker();
 	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 	
-	$module_id = (int) get_parameter('id_module');
-	$period = (int) get_parameter("period", SECONDS_1DAY);
+	$module_id = (int)get_parameter('id_module');
+	$period = get_parameter("period", SECONDS_1DAY);
+	if ($period === 'undefined') {
+		$period = SECONDS_1DAY;
+	}
+	else {
+		$period = (int)$period;
+	}
+	
+	
 	$group = agents_get_agentmodule_group ($module_id);
 	$agentId = (int) get_parameter("id_agent");
 	$server_name = (string) get_parameter('server_name');

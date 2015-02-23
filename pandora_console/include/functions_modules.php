@@ -866,6 +866,14 @@ function modules_is_string_type ($id_type) {
 	return (bool)preg_match('/_string$/', $type_name);
 }
 
+function modules_is_string($id_agentmodule) {
+	$id_type = db_get_value('id_tipo_modulo',
+		'tagente_modulo', 'id_agente_modulo',
+		(int) $id_agentmodule);
+	
+	return modules_is_string_type($id_type);
+}
+
 /**
  * Get the icon of a module type
  *

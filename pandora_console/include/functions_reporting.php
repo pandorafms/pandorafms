@@ -5461,8 +5461,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								$data[3] = '--';
 							}
 							else {
-							$data[3] = format_for_graph($d, 2) . " " .
-								$units[$i];
+								if (!is_numeric($d)) {
+									$data[3] = $d;
+								}
+								else {
+									$data[3] = format_for_graph($d, 2) . " " .
+										$units[$i];
+								}
 							}
 							array_push ($table1->data, $data);
 							$i++;
@@ -5631,7 +5636,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 										$data[$i] = '--';
 									}
 									else {
-										$data[$i] = format_for_graph($value_res, 2) . " " . $unit;
+										if (!is_numeric($d)) {
+											$data[$i] = $value_res;
+										}
+										else {
+											$data[$i] = format_for_graph($value_res, 2) . " " . $unit;
+										}
+										
 									}
 									$found = true;
 								}

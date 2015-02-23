@@ -568,8 +568,25 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="">
 				<?php
 				html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
-				?></td>
+				?>
+			</td>
 		</tr>
+		
+		<tr id="row_last_value" style="" class="datos">
+			<td style="vertical-align: top;" class="datos">
+				<?php
+				echo __('Last value');
+				ui_print_help_tip(__('Warning: period 0 reports cannot be used to show information back in time. Information contained in this kind of reports will be always reporting the most recent information'));
+				?>
+			</td>
+			<td style="">
+				<?php
+				html_print_checkbox('last_value', '1',
+					($period === 0), false, false, 'set_last_value_period();');
+				?>
+			</td>
+		</tr>
+		
 		<tr id="row_resolution" style="" class="datos">
 			<td style="vertical-align: top;">
 				<?php
@@ -1186,17 +1203,17 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$server_name_element = '';
 						if ($meta && $server_name != '') 
 							$server_name_element .= ' (' . $server_name . ')';
-
+						
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">';
 						echo 	'<td class="sla_list_agent_col">' . printSmallFont($nameAgent) . $server_name_element .  '</td>';
 						echo 	'<td class="sla_list_module_col">' . printSmallFont($nameModule) . '</td>';
-
+						
 						if (enterprise_installed() && $report_item_type == 'SLA_services') {
 							enterprise_include_once("include/functions_services.php");
 							$nameService = enterprise_hook('services_get_name', array($item['id_agent_module']));
 							echo '<td class="sla_list_service_col">' . printSmallFont($nameService) . '</th>';
 						}
-
+						
 						echo 	'<td class="sla_list_sla_min_col">' . $item['sla_min'] . '</td>';
 						echo 	'<td class="sla_list_sla_max_col">' . $item['sla_max'] . '</td>';
 						echo 	'<td class="sla_list_sla_limit_col">' . $item['sla_limit'] . '</td>';
@@ -1424,7 +1441,8 @@ $(document).ready (function () {
 		minuteText: '<?php echo __('Minute');?>',
 		secondText: '<?php echo __('Second');?>',
 		currentText: '<?php echo __('Now');?>',
-		closeText: '<?php echo __('Close');?>'});
+		closeText: '<?php echo __('Close');?>'
+	});
 });
 
 function create_custom_graph() {
@@ -1451,7 +1469,11 @@ function create_custom_graph() {
 			jQuery.ajax ({
 				data: params1.join ("&"),
 				type: 'POST',
-				url: action= <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?> + "/ajax.php",
+				url: action= <?php
+					echo '"' .
+						ui_get_full_url(false, false, false, false) .
+						'"';
+					?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1659,13 +1681,13 @@ function addSLARow() {
 	var slaMin = $("input[name=sla_min]").val();
 	var slaMax = $("input[name=sla_max]").val();
 	var slaLimit = $("input[name=sla_limit]").val();
-
+	
 	var serviceId = $("select#id_service>option:selected").val();
 	var serviceName = $("select#id_service>option:selected").text();
 	
 	if (((idAgent != '') && (slaMin != '') && (slaMax != '')
 		&& (slaLimit != '')) || serviceId != '') {
-
+			
 			if (nameAgent != '') {
 				//Truncate nameAgent
 				var params = [];
@@ -1682,7 +1704,7 @@ function addSLARow() {
 						nameAgent = data;
 					}
 				});
-
+				
 				//Truncate nameModule
 				var params = [];
 				params.push("truncate_text=1");
@@ -1708,7 +1730,7 @@ function addSLARow() {
 			params.push("sla_max=" + slaMax);
 			params.push("sla_limit=" + slaLimit);
 			params.push("server_id=" + serverId);
-
+			
 			if (serviceId != '') {
 				params.push("id_service=" + serviceId);
 			}
@@ -1899,7 +1921,8 @@ function chooseType() {
 	$("#row_netflow_filter").hide();
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
-
+	$("#row_last_value").hide();
+	
 	// SLA list default state
 	$("#sla_list").hide();
 	$(".sla_list_agent_col").show();
@@ -1983,7 +2006,7 @@ function chooseType() {
 			$("#row_only_display_wrong").show();
 			$("#row_working_time").show();
 			$("#row_sort").show();
-
+			
 			$(".sla_list_agent_col").hide();
 			$(".sla_list_module_col").hide();
 			$(".sla_list_service_col").show();
@@ -2137,7 +2160,7 @@ function chooseType() {
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
 			$("#row_event_graph_by_agent").hide();
-		
+			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			break;
@@ -2159,6 +2182,12 @@ function chooseType() {
 			$("#row_order_uptodown").show();
 			$("#row_show_resume").show();
 			$("#row_show_in_two_columns").show();
+			
+			$("#row_last_value").show();
+			if ($("#hidden-period").val() == 0) {
+				$("#row_period").hide();
+				$("input[name='last_value']").prop("checked", true);
+			}
 			break;
 		case 'group_report':
 			$("#row_group").show();
@@ -2191,6 +2220,12 @@ function chooseType() {
 			$("#row_show_resume").show();
 			$("#row_show_graph").show();
 			$("#row_show_in_two_columns").show();
+			
+			$("#row_last_value").show();
+			if ($("#hidden-period").val() == 0) {
+				$("#row_period").hide();
+				$("input[name='last_value']").prop("checked", true);
+			}
 			break;
 		case 'agent_module':
 			$("#row_description").show();
@@ -2290,6 +2325,21 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+	}
+}
+
+function set_last_value_period() {
+	var checked = $("input[name='last_value']").prop("checked");
+	
+	if (checked) {
+		$("#row_period").hide();
+		period_set_value($("#hidden-period").attr('class'), 0);
+		alert("<?php
+			echo __('Warning: period 0 reports cannot be used to show information back in time. Information contained in this kind of reports will be always reporting the most recent information');
+			?>");
+	}
+	else {
+		$("#row_period").show();
 	}
 }
 </script>

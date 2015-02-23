@@ -52,7 +52,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $d
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	$datelimit = $date - $period;
-
+	
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
@@ -157,9 +157,9 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period=0, $date 
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	$datelimit = $date - $period;
-
+	
 	$search_in_history_db = db_search_in_history_db($datelimit);
-
+	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
 	$uncompressed_module = is_module_uncompressed ($module_type);
@@ -308,16 +308,21 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period=0, $date 
  * 
  * @return float The sumatory of the module values in the interval.
  */
-function reporting_get_agentmodule_data_sum ($id_agent_module, $period=0, $date = 0) {
+function reporting_get_agentmodule_data_sum ($id_agent_module,
+	$period = 0, $date = 0) {
+	
 	global $config;
+	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	$datelimit = $date - $period;
-
+	
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
-	$id_module_type = db_get_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
-	$module_name = db_get_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
+	$id_module_type = db_get_value ('id_tipo_modulo', 'tagente_modulo',
+		'id_agente_modulo', $id_agent_module);
+	$module_name = db_get_value ('nombre', 'ttipo_modulo', 'id_tipo',
+		$id_module_type);
 	$module_interval = modules_get_interval ($id_agent_module);
 	$uncompressed_module = is_module_uncompressed ($module_name);
 	
@@ -330,11 +335,12 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period=0, $date 
 	$module_inc = is_module_inc ($module_name);
 	
 	// Get module data
-	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = ' . (int) $id_agent_module .
-			' AND utimestamp > ' . (int) $datelimit .
-			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', $search_in_history_db);
+	$interval_data = db_get_all_rows_sql('
+			SELECT * FROM tagente_datos 
+			WHERE id_agente_modulo = ' . (int) $id_agent_module . '
+				AND utimestamp > ' . (int) $datelimit . '
+				AND utimestamp < ' . (int) $date . '
+			ORDER BY utimestamp ASC', $search_in_history_db);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Uncompressed module data
@@ -412,7 +418,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period=0, $date 
  */
 function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
-
+	
 	if (empty($id_agent_module))
 		return false;
 	
@@ -425,7 +431,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	}
 	// Limit date to start searching data
 	$datelimit = $date - $period;
-
+	
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get interval data
@@ -581,7 +587,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
  */
 function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
-
+	
 	if (empty($id_agent_module))
 		return false;
 	
@@ -681,15 +687,15 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	// Add unknown periods to data
 	for ($i = 0; isset($events_unknown[$i]); $i++) {
 		$eu = $events_unknown[$i];
-
+		
 		if ($eu['event_type'] == 'going_unknown') {
 			$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
 			$interval_data_indexed[$eu['utimestamp']]['status'] = 4;
-
+			
 			// Search the corresponding recovery event.
 			for ($j = $i+1; isset($events_unknown[$j]); $j++) {
 				$eu = $events_unknown[$j];
-
+				
 				if ($eu['event_type'] != 'going_unknown' && substr ($eu['event_type'], 0, 5) == 'going') {
 					$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
 					$interval_data_indexed[$eu['utimestamp']]['status'] = 6;
@@ -5360,28 +5366,34 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
 						$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
 						
-						switch ($row['operation']) {
-							case 'sum':
-								$data_res[$key] =
-									reporting_get_agentmodule_data_sum(
-										$row['id_agent_module'], $content['period'], $report["datetime"]);
-								break;
-							case 'max':
-								$data_res[$key] =
-									reporting_get_agentmodule_data_max(
-										$row['id_agent_module'], $content['period']);
-								break;
-							case 'min':
-								$data_res[$key] =
-									reporting_get_agentmodule_data_min(
-										$row['id_agent_module'], $content['period']);
-								break;
-							case 'avg':
-							default:
-								$data_res[$key] =
-									reporting_get_agentmodule_data_average(
-										$row['id_agent_module'], $content['period']);
-								break;
+						if ($content['period'] == 0) {
+							$data_res[$key] =
+								modules_get_last_value($row['id_agent_module']);
+						}
+						else {
+							switch ($row['operation']) {
+								case 'sum':
+									$data_res[$key] =
+										reporting_get_agentmodule_data_sum(
+											$row['id_agent_module'], $content['period'], $report["datetime"]);
+									break;
+								case 'max':
+									$data_res[$key] =
+										reporting_get_agentmodule_data_max(
+											$row['id_agent_module'], $content['period']);
+									break;
+								case 'min':
+									$data_res[$key] =
+										reporting_get_agentmodule_data_min(
+											$row['id_agent_module'], $content['period']);
+									break;
+								case 'avg':
+								default:
+									$data_res[$key] =
+										reporting_get_agentmodule_data_average(
+											$row['id_agent_module'], $content['period']);
+									break;
+							}
 						}
 						
 						$unit = db_get_value('unit', 'tagente_modulo',
@@ -5592,20 +5604,27 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								$found = false;
 								if (strcmp($a, $agent_name) == 0
 									&& strcmp($m, $module_name . ' (' . $g['operation'] . ')') == 0) {
-									switch ($g['operation']) {
-										case 'sum':
-											$value_res = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
-											break;
-										case 'max':
-											$value_res = reporting_get_agentmodule_data_max ($g['id_agent_module'], $content['period']);
-											break;
-										case 'min':
-											$value_res = reporting_get_agentmodule_data_min ($g['id_agent_module'], $content['period']);
-											break;
-										case 'avg':
-										default:
-											$value_res = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
-											break;
+									
+									if ($content['period'] == 0) {
+										$value_res =
+											modules_get_last_value($g['id_agent_module']);
+									}
+									else {
+										switch ($g['operation']) {
+											case 'sum':
+												$value_res = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
+												break;
+											case 'max':
+												$value_res = reporting_get_agentmodule_data_max ($g['id_agent_module'], $content['period']);
+												break;
+											case 'min':
+												$value_res = reporting_get_agentmodule_data_min ($g['id_agent_module'], $content['period']);
+												break;
+											case 'avg':
+											default:
+												$value_res = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
+												break;
+										}
 									}
 									
 									if ($value_res === false) {
@@ -5666,20 +5685,27 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							continue;
 						}
 					}
-					switch ($generals[$i]['operation']) {
-						case 'sum':
-							$min = reporting_get_agentmodule_data_sum ($generals[$i]['id_agent_module'], $content['period'], $report["datetime"]);
-							break;
-						case 'max':
-							$min = reporting_get_agentmodule_data_max ($generals[$i]['id_agent_module'], $content['period']);
-							break;
-						case 'min':
-							$min = reporting_get_agentmodule_data_min ($generals[$i]['id_agent_module'], $content['period']);
-							break;
-						case 'avg':
-						default:
-							$min = reporting_get_agentmodule_data_average ($generals[$i]['id_agent_module'], $content['period']);
-							break;
+					
+					if ($content['period'] == 0) {
+						$min =
+							modules_get_last_value($generals[$i]['id_agent_module']);
+					}
+					else {
+						switch ($generals[$i]['operation']) {
+							case 'sum':
+								$min = reporting_get_agentmodule_data_sum ($generals[$i]['id_agent_module'], $content['period'], $report["datetime"]);
+								break;
+							case 'max':
+								$min = reporting_get_agentmodule_data_max ($generals[$i]['id_agent_module'], $content['period']);
+								break;
+							case 'min':
+								$min = reporting_get_agentmodule_data_min ($generals[$i]['id_agent_module'], $content['period']);
+								break;
+							case 'avg':
+							default:
+								$min = reporting_get_agentmodule_data_average ($generals[$i]['id_agent_module'], $content['period']);
+								break;
+						}
 					}
 					$i++;
 					
@@ -5718,20 +5744,27 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							continue;
 						}
 					}
-					switch ($g['operation']) {
-						case 'sum':
-							$value = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
-							break;
-						case 'max':
-							$value = reporting_get_agentmodule_data_max ($g['id_agent_module'], $content['period']);
-							break;
-						case 'min':
-							$value = reporting_get_agentmodule_data_min ($g['id_agent_module'], $content['period']);
-							break;
-						case 'avg':
-						default:
-							$value = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
-							break;
+					
+					if ($content['period'] == 0) {
+						$value =
+							modules_get_last_value($g['id_agent_module']);
+					}
+					else {
+						switch ($g['operation']) {
+							case 'sum':
+								$value = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
+								break;
+							case 'max':
+								$value = reporting_get_agentmodule_data_max ($g['id_agent_module'], $content['period']);
+								break;
+							case 'min':
+								$value = reporting_get_agentmodule_data_min ($g['id_agent_module'], $content['period']);
+								break;
+							case 'avg':
+							default:
+								$value = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
+								break;
+						}
 					}
 					
 					if ($value !== false) {
@@ -6247,16 +6280,25 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 				
-				switch ($exceptions[$i]['operation']) {
-					case 'avg':
-						$min = reporting_get_agentmodule_data_average($exceptions[$i]['id_agent_module'], $content['period']);
-						break;
-					case 'max':
-						$min = reporting_get_agentmodule_data_max($exceptions[$i]['id_agent_module'], $content['period']);
-						break;
-					case 'min':
-						$min = reporting_get_agentmodule_data_min($exceptions[$i]['id_agent_module'], $content['period']);
-						break;
+				if ($content['period'] == 0) {
+					$min =
+						modules_get_last_value($exceptions[$i]['id_agent_module']);
+				}
+				else {
+					switch ($exceptions[$i]['operation']) {
+						case 'avg':
+							$min = reporting_get_agentmodule_data_average(
+								$exceptions[$i]['id_agent_module'], $content['period']);
+							break;
+						case 'max':
+							$min = reporting_get_agentmodule_data_max(
+								$exceptions[$i]['id_agent_module'], $content['period']);
+							break;
+						case 'min':
+							$min = reporting_get_agentmodule_data_min(
+								$exceptions[$i]['id_agent_module'], $content['period']);
+							break;
+					}
 				}
 				$i++;
 				
@@ -6286,16 +6328,22 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$unit = db_get_value('unit', 'tagente_modulo',
 					'id_agente_modulo', $exc['id_agent_module']);
 				
-				switch ($exc['operation']) {
-					case 'avg':
-						$value = reporting_get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
-						break;
-					case 'max':
-						$value = reporting_get_agentmodule_data_max ($exc['id_agent_module'], $content['period']);
-						break;
-					case 'min':
-						$value = reporting_get_agentmodule_data_min ($exc['id_agent_module'], $content['period']);
-						break;
+				if ($content['period'] == 0) {
+					$value =
+						modules_get_last_value($exceptions[$i]['id_agent_module']);
+				}
+				else {
+					switch ($exc['operation']) {
+						case 'avg':
+							$value = reporting_get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
+							break;
+						case 'max':
+							$value = reporting_get_agentmodule_data_max ($exc['id_agent_module'], $content['period']);
+							break;
+						case 'min':
+							$value = reporting_get_agentmodule_data_min ($exc['id_agent_module'], $content['period']);
+							break;
+					}
 				}
 				
 				if ($value !== false) {
@@ -6476,7 +6524,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[3][0] = 3;
 			$table->cellstyle[3][0] = 'text-align: center;';
-
+			
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,

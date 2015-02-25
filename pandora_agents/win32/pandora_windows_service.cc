@@ -370,7 +370,7 @@ Pandora_Windows_Service::launchTentacleProxy() {
 string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
-	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd, temp_agent_name;
+	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd;
 	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
@@ -385,7 +385,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	agent_name_cmd = conf->getValue ("agent_name_cmd");
 	if (agent_name_cmd != "") {
 		agent_name_cmd = "cmd.exe /c \"" + agent_name_cmd + "\"";
-		temp_agent_name = getCoordinatesFromCmdExec(agent_name_cmd);
+		static string temp_agent_name = getCoordinatesFromCmdExec(agent_name_cmd);
 		// Delete carriage return if is provided
 		pos = temp_agent_name.find("\n");
 		if(pos != string::npos) {

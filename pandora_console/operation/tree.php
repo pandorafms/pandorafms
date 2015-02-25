@@ -703,7 +703,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	 * id_father int use in js and ajax php, its useful when you have a two subtrees with same agent for diferent each one
 	 */
 	function loadSubTree(type, div_id, less_branchs, id_father, server_name) {
-		var id = id_father + '_' + type + '_' + server_name.replace('.','\\.') + '_' + div_id;
+		var id = id_father + '_' + type + '_' + server_name.replace(/[.]/g, '\\.') + '_' + div_id;
 		var hiddenDiv = $('#tree_div' + id).attr('hiddenDiv');
 		var loadDiv = $('#tree_div' + id).attr('loadDiv');
 		

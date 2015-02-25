@@ -352,7 +352,12 @@ $table->data['edit1'][1] = '<table width="100%">';
 			$table->data['edit1'][1] .= '<em>'.__('Inverse interval').'</em>';
 		$table->data['edit1'][1] .= '</td>';
 		$table->data['edit1'][1] .= '<td align="right">';
-			$table->data['edit1'][1] .= html_print_checkbox ("warning_inverse", 1, '', true);
+			$table->data['edit1'][1] .= 
+				html_print_select(
+					array('' => __('No change'),
+						'1' => __('Yes'),
+						'0' => __('No')),
+					'warning_inverse','','','', '', true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
 $table->data['edit1'][1] .= '</table>';
@@ -389,7 +394,12 @@ $table->data['edit1'][3] = '<table width="100%">';
 			$table->data['edit1'][3] .= '<em>'.__('Inverse interval').'</em>';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
-			$table->data['edit1'][3] .= html_print_checkbox ("critical_inverse", 1, '', true);
+			$table->data['edit1'][3] .=
+				html_print_select(
+					array('' => __('No change'),
+						'1' => __('Yes'),
+						'0' => __('No')),
+					'critical_inverse','','','', '', true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
 $table->data['edit1'][3] .= '</table>';

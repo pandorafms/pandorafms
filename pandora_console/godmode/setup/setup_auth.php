@@ -94,13 +94,22 @@ if (enterprise_installed()) {
 	add_enterprise_auth_options($table, 12);
 }
 
+$config_double_auth_enabled = false;
+if (isset($config['double_auth_enabled'])) {
+	$config_double_auth_enabled = $config['double_auth_enabled'];
+}
+
 // Enable double authentication
 $row = array();
 $row[] = __('Double authentication')
 	. ui_print_help_tip(__("If this option is enabled, the users can use double authentication with their accounts"), true);
-$row[] = __('Yes').'&nbsp;'.html_print_radio_button('double_auth_enabled', 1, '', $config['double_auth_enabled'], true)
+$row[] = __('Yes') . '&nbsp;' .
+	html_print_radio_button('double_auth_enabled', 1, '',
+		$config_double_auth_enabled, true)
 	.'&nbsp;&nbsp;'
-	. __('No').'&nbsp;'.html_print_radio_button('double_auth_enabled', 0, '', $config['double_auth_enabled'], true);
+	. __('No') .'&nbsp;' .
+	html_print_radio_button('double_auth_enabled', 0, '',
+		$config_double_auth_enabled, true);
 $table->data[] = $row;
 
 echo '<form id="form_setup" method="post">';

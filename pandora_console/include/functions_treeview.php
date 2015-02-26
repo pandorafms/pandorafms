@@ -279,6 +279,7 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	include_graphs_dependencies();
 	require_once ($config['homedir'] . '/include/functions_groups.php');
 	require_once ($config['homedir'] . '/include/functions_gis.php');
+	enterprise_include_once ('meta/include/functions_ui_meta.php');
 	
 	$agent = db_get_row ("tagente", "id_agente", $id_agente);
 	
@@ -502,7 +503,7 @@ function treeview_printTable($id_agente, $server_data = array()) {
 				}
 				else if (!empty($server)) {
 					$graph_url = ui_meta_get_url_console_child(
-						$server_id, null, null, null, null,
+						$server_data, null, null, null, null,
 						"operation/agentes/interface_traffic_graph_win.php?" .
 						"params=$params_encoded");
 				}

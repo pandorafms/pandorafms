@@ -719,7 +719,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			$('#tree_div' + id)
 				.html("<img style='padding-top:10px;padding-bottom:10px;padding-left:20px;' src=images/spinner.gif>");
 			$('#tree_div' + id)
-				.show('normal');
+				.show();
 			
 			$('#tree_div'+id).attr('loadDiv', 2);
 			$.ajax({
@@ -740,7 +740,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 					if (msg.length != 0) {
 						$('#tree_div'+id).hide();
 						$('#tree_div'+id).html(msg);
-						$('#tree_div'+id).show('normal');
+						$('#tree_div'+id).show();
 						
 						//change image of tree [+] to [-]
 						<?php if (! defined ('METACONSOLE')) {
@@ -783,7 +783,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			}
 			?>
 			if (hiddenDiv == 0) {
-				$('#tree_div'+id).hide('normal');
+				$('#tree_div'+id).hide();
 				$('#tree_div'+id).attr('hiddenDiv',1);
 				
 				//change image of tree [-] to [+]
@@ -819,7 +819,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 						break;
 				}
 				
-				$('#tree_div'+id).show('normal');
+				$('#tree_div'+id).show();
 				$('#tree_div'+id).attr('hiddenDiv',0);
 			}
 		}

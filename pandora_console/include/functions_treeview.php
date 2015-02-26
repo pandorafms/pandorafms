@@ -561,7 +561,7 @@ function treeview_printTable($id_agente, $server_data = array()) {
 						"operation/agentes/interface_traffic_graph_win.php?" .
 						"params=$params_encoded";
 				}
-				else if (!empty($server)) {
+				else if (!empty($server_id)) {
 					$graph_url = ui_meta_get_url_console_child(
 						$server_id, null, null, null, null,
 						"operation/agentes/interface_traffic_graph_win.php?" .

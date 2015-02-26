@@ -5343,7 +5343,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table1->head = array ();
 					$table1->head[0] = __('Agent');
 					$table1->head[1] = __('Module');
-					$table1->head[2] = __('Operation');
+					if ($content['period'] != 0) {
+						$table1->head[2] = __('Operation');
+					}
 					$table1->head[3] = __('Value');
 					$table1->style[0] = 'text-align: left';
 					$table1->style[1] = 'text-align: left';
@@ -5440,22 +5442,24 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$data[0] = $agent_name[$i];
 							$data[1] = $module_name[$i];
 							
-							switch ($operations[$i]) {
-								case 'sum':
-									$op = __('Summatory');
-									break;
-								case 'min':
-									$op = __('Minimal');
-									break;
-								case 'max':
-									$op = __('Maximun');
-									break;
-								case 'avg':
-								default:
-									$op = __('Rate');
-									break;
+							if ($content['period'] != 0) {
+								switch ($operations[$i]) {
+									case 'sum':
+										$op = __('Summatory');
+										break;
+									case 'min':
+										$op = __('Minimal');
+										break;
+									case 'max':
+										$op = __('Maximun');
+										break;
+									case 'avg':
+									default:
+										$op = __('Rate');
+										break;
+								}
+								$data[2] = $op;
 							}
-							$data[2] = $op;
 							
 							if ($d === false) {
 								$data[3] = '--';

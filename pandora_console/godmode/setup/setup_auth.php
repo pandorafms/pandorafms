@@ -85,6 +85,11 @@ for ($i = 2; $i <= 11; $i++) {
 	$table->rowclass[$i] = 'ldap';
 }
 
+// Set the rows autocreation for Active Directory
+for ($i = 2; $i <= 5; $i++) {
+	$table->rowclass[$i] .= ' ' . 'ad';
+}
+
 // Hide fallback option when local authentication is selected.
 $table->rowstyle[1] = $config['auth'] == 'mysql' ? 'display: none;' : '';
 $table->rowclass[1] = 'remote';

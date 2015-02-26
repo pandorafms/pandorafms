@@ -554,7 +554,21 @@ function treeview_printTable($id_agente, $server_data = array()) {
 				$params_json = json_encode($params);
 				$params_encoded = base64_encode($params_json);
 				$win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-				$graph_link = "<a href=\"javascript:winopeng('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle')\">" .
+				
+				$graph_url = '';
+				if (!defined('METACONSOLE')) {
+					$graph_url = $config['homeurl'] .
+						"operation/agentes/interface_traffic_graph_win.php?" .
+						"params=$params_encoded";
+				}
+				else if (!empty($server)) {
+					$graph_url = ui_meta_get_url_console_child(
+						$server_id, null, null, null, null,
+						"operation/agentes/interface_traffic_graph_win.php?" .
+						"params=$params_encoded");
+				}
+				
+				$graph_link = "<a href=\"javascript:winopeng('$graph_url','$win_handle')\">" .
 					html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";
 			}
 			else {

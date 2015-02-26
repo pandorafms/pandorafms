@@ -234,6 +234,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 	// The user does not exist and can not be created
 	if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted ($login)) {
 		$config["auth_error"] = "Ooops User not found in database or incorrect password";
+		
 		return false;
 	}
 	

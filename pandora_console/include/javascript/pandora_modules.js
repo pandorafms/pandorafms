@@ -227,6 +227,7 @@ function configure_modules_form () {
 	
 	flag_load_plugin_component = false;
 	$("#network_component").change (function () {
+		
 		if (this.value == 0)
 			return;
 		$("#component_loading").show ();
@@ -240,25 +241,29 @@ function configure_modules_form () {
 			function (data, status) {
 				flag_load_plugin_component = true;
 				
-				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
-				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
+				$("#text-name").attr("value",
+					js_html_entity_decode (data["name"]));
+				$("#textarea_description").attr("value",
+					js_html_entity_decode (data["description"]));
 				$("#id_module_type").val(data["type"]);
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
 				// Workaround to update the advanced select control from html and ajax
 				if (typeof 'period_select_module_interval_update' == 'function') {
-					period_select_module_interval_update(data["module_interval"]);
+					period_select_module_interval_update(
+						data["module_interval"]);
 				}
 				else {
-					period_select_update('module_interval', data["module_interval"]);
+					period_select_update('module_interval',
+						data["module_interval"]);
 				}
 				$("#text-tcp_port").attr ("value", data["tcp_port"]);
 				$("#textarea_tcp_send")
-					.attr ("value", js_html_entity_decode (data["tcp_send"]));
+					.attr("value", js_html_entity_decode (data["tcp_send"]));
 				$("#textarea_tcp_rcv")
-					.attr ("value", js_html_entity_decode (data["tcp_rcv"]));
+					.attr("value", js_html_entity_decode (data["tcp_rcv"]));
 				$("#text-snmp_community")
-					.attr ("value", js_html_entity_decode (data["snmp_community"]));
+					.attr("value", js_html_entity_decode (data["snmp_community"]));
 				$("#text-snmp_oid")
 					.val( js_html_entity_decode (data["snmp_oid"]));
 				$("#oid, img#edit_oid").hide ();
@@ -269,24 +274,38 @@ function configure_modules_form () {
 					$("#id_plugin").val(data["id_plugin"]);
 				}
 				$("#id_plugin").trigger('change');
-				$("#text-plugin_user").attr ("value", js_html_entity_decode (data["plugin_user"]));
-				$("#password-plugin_pass").attr ("value", js_html_entity_decode (data["plugin_pass"]));
-				$("#text-plugin_parameter").attr ("value", js_html_entity_decode (data["plugin_parameter"]));
+				$("#text-plugin_user")
+					.attr("value", js_html_entity_decode (data["plugin_user"]));
+				$("#password-plugin_pass")
+					.attr("value", js_html_entity_decode (data["plugin_pass"]));
+				$("#text-plugin_parameter")
+					.attr("value", js_html_entity_decode (data["plugin_parameter"]));
 				if (data["history_data"])
 					$("#checkbox-history_data").check ();
 				else
 					$("#checkbox-history_data").uncheck ();
-				$("#text-min_warning").attr ("value", (data["min_warning"] == 0) ? 0 : data["min_warning"]);
-				$("#text-max_warning").attr ("value", (data["max_warning"] == 0) ? 0 : data["max_warning"]);
-				$("#text-str_warning").attr ("value", data["str_warning"]);
-				$("#text-min_critical").attr ("value", (data["min_critical"] == 0) ? 0 : data["min_critical"]);
-				$("#text-max_critical").attr ("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
-				$("#text-str_critical").attr ("value", data["str_critical"]);
-				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
-				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
-				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"]);
-				$("#text-critical_inverse").attr ("value", (data["critical_inverse"] == 0) ? 0 : data["critical_inverse"]);
-				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
+				$("#text-min_warning")
+					.attr("value", (data["min_warning"] == 0) ? 0 : data["min_warning"]);
+				$("#text-max_warning")
+					.attr("value", (data["max_warning"] == 0) ? 0 : data["max_warning"]);
+				$("#text-str_warning")
+					.attr("value", data["str_warning"]);
+				$("#text-min_critical")
+					.attr("value", (data["min_critical"] == 0) ? 0 : data["min_critical"]);
+				$("#text-max_critical")
+					.attr("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
+				$("#text-str_critical")
+					.attr("value", data["str_critical"]);
+				$("#text-ff_event")
+					.attr("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
+				$("#text-post_process")
+					.attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
+				$("#text-unit")
+					.attr("value", (data["unit"] == '') ? '' : data["unit"]);
+				$("#text-critical_inverse")
+					.attr ("value", (data["critical_inverse"] == 0) ? 0 : data["critical_inverse"]);
+				$("#text-warning_inverse")
+					.attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				if ($("#id_category").is("select")) {
@@ -301,15 +320,21 @@ function configure_modules_form () {
 				// Reset the selection of tags (put all of them into available box)
 				$("#id_tag_selected option").each(function() {
 					if ($(this).attr('value') != '') {
-						$("#id_tag_selected").find("option[value='" + $(this).attr('value') + "']").remove();
-						$("select[name='id_tag_available[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
+						$("#id_tag_selected")
+							.find("option[value='" + $(this).attr('value') + "']").remove();
+						$("select[name='id_tag_available[]']")
+							.append($("<option></option>").val($(this).attr('value')).html($(this).text()));
 					}
 				});
 				if ($("#id_tag_available option").length > 1) {
 					$("#id_tag_available").find("option[value='']").remove();
 				}
 				if ($("#id_tag_selected option").length == 0) {
-					$("select[name='id_tag_selected[]']").append($("<option></option>").val('').html('<i>None</i>'));
+					$("select[name='id_tag_selected[]']")
+						.append(
+							$("<option></option>")
+							.val('').html('<i>None</i>')
+						);
 				}
 				
 				if (tags != '') {
@@ -319,14 +344,21 @@ function configure_modules_form () {
 					for (i = 0; i < tags.length; i++){
 						$("#id_tag_available option").each(function(){
 							if (tags[i] == $(this).text()) {
-								$("#id_tag_available").find("option[value='" + $(this).attr('value') + "']").remove();
-								$("select[name='id_tag_selected[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
-								$("#id_tag_selected").find("option[value='']").remove();
+								$("#id_tag_available")
+									.find("option[value='" + $(this).attr('value') + "']").remove();
+								$("select[name='id_tag_selected[]']")
+									.append($("<option></option>").val($(this).attr('value')).html($(this).text()));
+								$("#id_tag_selected")
+									.find("option[value='']").remove();
 							}
 						});
 						
 						if ($("#id_tag_available option").length == 0) {
-							$("select[name='id_tag_available[]']").append($("<option></option>").val('').html('<i>None</i>'));
+							$("select[name='id_tag_available[]']")
+								.append(
+									$("<option></option>").val('')
+										.html('<i>None</i>')
+								);
 						}
 					}
 				}
@@ -367,6 +399,11 @@ function configure_modules_form () {
 					$("input[name='throw_unknown_events']").check();
 				else
 					$("input[name='throw_unknown_events']").uncheck();
+				
+				
+				if (data["id_plugin"] != undefined) {
+					$("#id_plugin").trigger("change");
+				}
 			},
 			"json"
 		);
@@ -613,6 +650,7 @@ function add_macro_field(macro, row_model_id) {
 	}
 	else {
 		var field_desc = $('#'+row_id).children().eq(0).html();
+		
 		field_desc = field_desc.replace('macro_desc',macro_desc);
 		field_desc = field_desc.replace('macro_help',macro_help);
 		

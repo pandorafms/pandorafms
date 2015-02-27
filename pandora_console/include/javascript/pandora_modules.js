@@ -367,6 +367,10 @@ function configure_modules_form () {
 					$("input[name='throw_unknown_events']").check();
 				else
 					$("input[name='throw_unknown_events']").uncheck();
+				
+				if (data["id_plugin"] != undefined) {
+					$("#id_plugin").trigger("change");
+				}
 			},
 			"json"
 		);
@@ -580,7 +584,7 @@ function new_macro(prefix) {
 function add_macro_field(macro, row_model_id) {
 	var macro_desc = macro['desc'];
 	// Change the carriage returns by html returns <br> in help
-	var macro_help = macro['help'].replace(/&#x0d;/g,"<br>");
+	var macro_help = macro['help'].replace(/&#x0d;/g, "<br>");
 	var macro_macro = macro['macro'];
 	var macro_value =  $('<div />').html(macro['value']).text();
 	var macro_hide = macro['hide'];
@@ -592,8 +596,8 @@ function add_macro_field(macro, row_model_id) {
 	var $macro_field = $('#'+ row_model_id +'_field').clone(true);
 	
 	// Change attributes to be unique and with identificable class
-	$macro_field.attr('id',row_id);
-	$macro_field.attr('class','macro_field');
+	$macro_field.attr('id', row_id);
+	$macro_field.attr('class', 'macro_field');
 	
 	// Get the number of fields already printed
 	var fields = $('.macro_field').size();
@@ -613,16 +617,9 @@ function add_macro_field(macro, row_model_id) {
 	}
 	else {
 		var field_desc = $('#'+row_id).children().eq(0).html();
+		
 		field_desc = field_desc.replace('macro_desc',macro_desc);
 		field_desc = field_desc.replace('macro_help',macro_help);
-		
-		// Get the cloned forced title id and replace for a uniq id
-		regex = /forced_title_(\w+)/;
-		var forced_title_id = field_desc.match(regex)[1];
-		var uniq_id = 'id' + (new Date()).getTime();
-		
-		field_desc = field_desc.replace(forced_title_id, uniq_id);
-		field_desc = field_desc.replace(forced_title_id, uniq_id);
 		
 		$('#'+row_id).children().eq(0).html(field_desc);
 	}

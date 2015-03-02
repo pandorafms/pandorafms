@@ -206,7 +206,9 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		return;
 	}
 	
-	
+	if (empty($homeurl)) {
+		$homeurl = ui_get_full_url(false, false, false, false);
+	}
 	
 	$output = graphic_combined_module($modules,
 		$weights,

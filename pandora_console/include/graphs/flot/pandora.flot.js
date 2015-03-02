@@ -1053,7 +1053,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		
 		$('#menu_cancelzoom_' + graph_id).click(function() {
 			// cancel the zooming
-			plot = $.plot($('#'+graph_id), data_base,
+			plot = $.plot($('#' + graph_id), data_base,
 				$.extend(true, {}, options, {
 					xaxis: {max: max_x },
 					legend: { show: false }
@@ -1075,9 +1075,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// Add bottom margin in the legend
 		// Estimated height of 24 (works fine with this data in all browsers)
 		menu_height = 24;
-		var legend_margin_bottom = parseInt($('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
+		var legend_margin_bottom = parseInt(
+			$('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
 		$('#legend_'+graph_id).css('margin-bottom', menu_height+legend_margin_bottom+'px');
-		parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
+		parent_height = parseInt(
+			$('#menu_'+graph_id).parent().css('height').split('px')[0]);
 		adjust_menu(graph_id, plot, parent_height);
 	}
 	

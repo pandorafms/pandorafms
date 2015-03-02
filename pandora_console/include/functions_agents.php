@@ -2188,18 +2188,32 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 		$agent_group_id = $agent['id_grupo'];
 		$agent_name = $agent['nombre'];
 		$agent_interfaces = array();
-
+		
+		$accepted_module_types = array();
+		$remote_snmp_proc = (int) db_get_value("id_tipo", "ttipo_modulo", "nombre", "remote_snmp_proc");
+		if ($remote_snmp_proc)
+			$accepted_module_types[] = $remote_snmp_proc;
+		$remote_icmp_proc = (int) db_get_value("id_tipo", "ttipo_modulo", "nombre", "remote_icmp_proc");
+		if ($remote_icmp_proc)
+			$accepted_module_types[] = $remote_icmp_proc;
+		$remote_tcp_proc = (int) db_get_value("id_tipo", "ttipo_modulo", "nombre", "remote_tcp_proc");
+		if ($remote_tcp_proc)
+			$accepted_module_types[] = $remote_tcp_proc;
+		$generic_proc = (int) db_get_value("id_tipo", "ttipo_modulo", "nombre", "generic_proc");
+		if ($generic_proc)
+			$accepted_module_types[] = $generic_proc;
+		
+		if (empty($accepted_module_types))
+			$accepted_module_types[] = 0; // No modules will be returned
+		
 		$columns = array(
 				"id_agente_modulo",
 				"nombre",
 				"descripcion",
 				"ip_target"
 			);
-		$filter = array(
-				"id_agente" => $agent_id,
-				"id_tipo_modulo" => (int) db_get_value("id_tipo", "ttipo_modulo", "nombre", "remote_snmp_proc"),
-				"disabled" => 0
-			);
+		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).")";
+		
 		$modules = agents_get_modules($agent_id, $columns, $filter, true, false);
 
 		if (!empty($modules)) {

@@ -940,15 +940,13 @@ class Tree {
 		return strcmp($a["name"], $b["name"]);
 	}
 
-	protected function getGroupsChildren($groups, $parent_id, $server = false) {
+	protected function getGroupsChildren($groups, $parent_id, $server = false, $remove_empty = false) {
 		$children = array();
 		foreach ($groups as $key => $group) {
-			unset($groups[$key]);
-
 			if ((isset($group['parent']) && $group['parent'] == $parent_id)
 					|| (isset($group['_parent_id_']) && $group['_parent_id_'] == $parent_id)) {
 
-				$children_aux = $this->getProcessedItem($group, $server, $groups);
+				$children_aux = $this->getProcessedItem($group, $server, $groups, $remove_empty);
 				if (!empty($children_aux))
 					$children[] = $children_aux;
 			}
@@ -957,7 +955,7 @@ class Tree {
 		return $children;
 	}
 
-	protected function getProcessedItem ($item, $server = false, $items = array()) {
+	protected function getProcessedItem ($item, $server = false, $items = array(), $remove_empty = false) {
 		$processed_item = array();
 		$processed_item['id'] = $item['id'];
 		$processed_item['name'] = $item['name'];
@@ -1006,7 +1004,7 @@ class Tree {
 		
 		if ($processed_item['type'] == 'group' && !empty($items)) {
 
-			$children = $this->getGroupsChildren($items, $item['id'], $server);
+			$children = $this->getGroupsChildren($items, $item['id'], $server, $remove_empty);
 			if (!empty($children)) {
 				$processed_item['children'] = $children;
 
@@ -1023,6 +1021,12 @@ class Tree {
 
 		if (!empty($counters))
 			$processed_item['counters'] = $counters;
+		
+		if ($remove_empty && $processed_item['type'] == 'group'
+				&& (!isset($processed_item['counters']['total'])
+					|| empty($processed_item['counters']['total']))) {
+			$processed_item = array();
+		}
 
 		return $processed_item;
 	}
@@ -1626,7 +1630,7 @@ class Tree {
 					if (empty($item['parent'])) {
 						
 						unset($items[$key]);
-						$processed_item = $this->getProcessedItem($item, false, $items);
+						$processed_item = $this->getProcessedItem($item, false, $items, true);
 						
 						if (!empty($processed_item)
 								&& isset($processed_item['counters'])

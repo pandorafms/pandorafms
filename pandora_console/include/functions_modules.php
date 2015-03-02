@@ -1553,7 +1553,9 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  *
  * @return array The module value and the timestamp
  */
-function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0, $trash=false, $conexion = false, $order = 'ASC') {
+function modules_get_agentmodule_data ($id_agent_module, $period,
+	$date = 0, $trash=false, $conexion = false, $order = 'ASC') {
+	
 	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
 		$id_agent_module);
 	
@@ -1578,7 +1580,7 @@ function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0, $tr
 				WHERE id_agente_modulo = %d
 					AND utimestamp > %d AND utimestamp <= %d
 				ORDER BY utimestamp %s",
-			$id_agent_module, $datelimit, $date, $order);
+				$id_agent_module, $datelimit, $date, $order);
 			break;
 		//log4x
 		case 24:
@@ -1587,7 +1589,7 @@ function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0, $tr
 				WHERE id_agente_modulo = %d
 					AND utimestamp > %d AND utimestamp <= %d
 				ORDER BY utimestamp %s",
-			$id_agent_module, $datelimit, $date, $order);
+				$id_agent_module, $datelimit, $date, $order);
 			break;
 		default:
 			$sql = sprintf ("SELECT datos AS data, utimestamp
@@ -1595,7 +1597,7 @@ function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0, $tr
 				WHERE id_agente_modulo = %d
 					AND utimestamp > %d AND utimestamp <= %d
 				ORDER BY utimestamp %s",
-			$id_agent_module, $datelimit, $date, $order);
+				$id_agent_module, $datelimit, $date, $order);
 			break;
 	}
 	

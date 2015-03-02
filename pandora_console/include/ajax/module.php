@@ -85,9 +85,10 @@ if ($get_module_detail) {
 	
 	if (defined ('METACONSOLE')) {
 		$server = metaconsole_get_connection ($server_name);
-		$conexion = mysql_connect ($server['dbhost'], $server['dbuser'],
-			$server['dbpass']);
-		$select_db = mysql_select_db ($server['dbname'], $conexion);
+		
+		if (metaconsole_connect($server) != NOERR)
+			return;
+		$conexion = false;
 	}
 	else {
 		$conexion = false;

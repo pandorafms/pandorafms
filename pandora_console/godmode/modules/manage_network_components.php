@@ -58,9 +58,8 @@ $id_module_group = (int) get_parameter ('id_module_group');
 $module_interval = (int) get_parameter ('module_interval');
 $id_group = (int) get_parameter ('id_group');
 $plugin_user = (string) get_parameter ('plugin_user');
-$plugin_pass = (string) get_parameter ('plugin_pass');
+$plugin_pass = io_input_password((string) get_parameter ('plugin_pass'));
 $plugin_parameter = (string) get_parameter ('plugin_parameter');
-
 $macros = (string) get_parameter ('macros');
 
 if (!empty($macros)) {
@@ -117,10 +116,10 @@ else {
 
 $snmp_version = (string) get_parameter('snmp_version');
 $snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
-$snmp3_auth_pass = (string) get_parameter('snmp3_auth_pass');
+$snmp3_auth_pass = io_input_password((string) get_parameter('snmp3_auth_pass'));
 $snmp3_auth_method = (string) get_parameter('snmp3_auth_method');
 $snmp3_privacy_method = (string) get_parameter('snmp3_privacy_method');
-$snmp3_privacy_pass = (string) get_parameter('snmp3_privacy_pass');
+$snmp3_privacy_pass = io_input_password((string) get_parameter('snmp3_privacy_pass'));
 $snmp3_security_level = (string) get_parameter('snmp3_security_level');
 
 

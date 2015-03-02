@@ -56,7 +56,7 @@ $table->data[1][0] = __('Remote config directory') .
 $table->data[1][1] = html_print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
 
 $table->data[6][0] = __('Auto login (hash) password');
-$table->data[6][1] = html_print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
+$table->data[6][1] = html_print_input_text ('loginhash_pwd', io_output_password($config["loginhash_pwd"]), '', 15, 15, true);
 
 $table->data[9][0] = __('Time source') . ui_print_help_icon ("timesource", true);
 $sources["system"] = __('System');
@@ -85,7 +85,7 @@ $table->data[15][1] = html_print_textarea('list_ACL_IPs_for_API', 2, 25, $list_A
 
 $table->data[16][0] = __('API password') . 
 	ui_print_help_tip (__("Please be careful if you put a password put https access."), true);
-$table->data[16][1] = html_print_input_text('api_password', $config['api_password'], '', 25, 255, true);
+$table->data[16][1] = html_print_input_text('api_password', io_output_password($config['api_password']), '', 25, 255, true);
 
 $table->data[17][0] = __('Enable GIS features in Pandora Console');
 $table->data[17][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
@@ -97,7 +97,7 @@ $table->data[18][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('i
 
 if ($config["integria_enabled"]) {
 	require_once('include/functions_incidents.php');
-	$invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories"); 
+	$invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".io_output_password($config['integria_api_password'])."&op=get_inventories"); 
 	$bad_input = false;
 	// Wrong connection to api, bad password
 	if (empty($invent)) {
@@ -138,7 +138,7 @@ if ($config["integria_enabled"]) {
 	}
 	
 	$table->data[21][0] = __('Integria API password');
-	$table->data[21][1] = html_print_input_text ('integria_api_password', $config["integria_api_password"], '', 25, 25, true);
+	$table->data[21][1] = html_print_input_text ('integria_api_password', io_output_password($config["integria_api_password"]), '', 25, 25, true);
 	
 	if (!$bad_input) {
 		foreach ($invent as $inv) {

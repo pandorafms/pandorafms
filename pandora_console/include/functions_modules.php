@@ -454,6 +454,18 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 		return ERR_EXIST;
 	}
 	
+	// Encrypt passwords
+	if (isset ($values['plugin_pass'])) {
+		$values['plugin_pass'] = io_input_password($values['plugin_pass']);
+	}
+
+	// Encrypt SNMPv3 passwords
+	if (isset ($values['id_tipo_modulo']) && ($values['id_tipo_modulo'] >= 15 && $values['id_tipo_modulo'] <= 18) &&
+		isset ($values['tcp_send']) && ($values['tcp_send'] == 3) &&
+		isset ($values['custom_string_2'])) {
+		$values['custom_string_2'] = io_input_password($values['custom_string_2']);
+	}
+
 	$id_agent_module = db_process_sql_insert ('tagente_modulo', $values);
 	
 	if ($id_agent_module === false)

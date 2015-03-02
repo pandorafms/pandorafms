@@ -832,6 +832,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^console_pass\s(.*)/i) {
 			$pa_config->{'console_pass'}= safe_input($1);
 		}
+		elsif ($parametro =~ m/^encryption_passphrase\s(.*)/i) {
+			$pa_config->{'encryption_passphrase'}= safe_input($1);
+		}
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

@@ -667,6 +667,9 @@ sub md5 ($) {
 		return "";
 	}
 
+	# Initialize once.
+	md5_init() if (!defined($R[0]));
+
 	# Note: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating
 
 	# Initialize variables

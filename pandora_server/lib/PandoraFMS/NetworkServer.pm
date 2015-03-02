@@ -344,10 +344,10 @@ sub pandora_query_snmp ($$$) {
 
 	my $snmp_version = $module->{"tcp_send"}; # (1, 2, 2c or 3)
 	my $snmp3_privacy_method = $module->{"custom_string_1"}; # DES/AES
-	my $snmp3_privacy_pass = $module->{"custom_string_2"};
+	my $snmp3_privacy_pass = pandora_output_password($pa_config, $module->{"custom_string_2"});
 	my $snmp3_security_level = $module->{"custom_string_3"}; # noAuthNoPriv|authNoPriv|authPriv
 	my $snmp3_auth_user = $module->{"plugin_user"};
-	my $snmp3_auth_pass = $module->{"plugin_pass"};
+	my $snmp3_auth_pass = pandora_output_password($pa_config, $module->{"plugin_pass"});
 	my $snmp3_auth_method = $module->{"plugin_parameter"}; #MD5/SHA1
 	my $snmp_community = $module->{"snmp_community"};
 	my $snmp_target = $module->{"ip_target"};

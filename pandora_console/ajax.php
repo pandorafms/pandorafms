@@ -75,9 +75,9 @@ if (file_exists ('./include/languages/'.$user_language.'.mo')) {
 	$l10n->load_tables();
 }
 
-if (isset($_SERVER['HTTP_REFERER'])) {
+if (isset($config['metaconsole'])) {
 	// Not cool way of know if we are executing from metaconsole or normal console
-	if (strpos($_SERVER['HTTP_REFERER'], ENTERPRISE_DIR . '/meta/') !== false)
+	if ($config['metaconsole'])
 		define ('METACONSOLE', true);
 }
 session_write_close ();

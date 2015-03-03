@@ -2212,7 +2212,7 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 				"descripcion",
 				"ip_target"
 			);
-		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).")";
+		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND nombre LIKE 'ifOperStatus_%'";
 		
 		$modules = agents_get_modules($agent_id, $columns, $filter, true, false);
 
@@ -2228,9 +2228,7 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 						$interface_name = $matches[1];
 						$interface_name_escaped = str_replace("/", "\/", $interface_name);
 
-						if (!isset($interfaces[$interface_name])
-								|| (isset($interfaces[$interface_name])
-									&& preg_match ("/^ifOperStatus_$interface_name_escaped$/i", $module_name, $matches))) {
+						if (preg_match ("/^ifOperStatus_$interface_name_escaped$/i", $module_name, $matches)) {
 							$interfaces[$interface_name] = $module;
 						}
 

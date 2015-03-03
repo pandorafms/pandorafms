@@ -74,21 +74,26 @@ if ($#ARGV == -1 ) {
 	print "\n";
 	print "Example of use \n";
 	print "perl snmp_remoto.pl -H host -c community -m (memuse|diskuse|process|cpuload) [-p process -d disk] \n";
-	print "Version=$VERSION";
+	print "\n";
+	print "Version=$VERSION\n";
 	exit;
 }
 
-my ($host,
-	$community,
-	$module,
-	$disk,
-	$process,
-	$version,
-	$user,
-	$pass,
-	$auth_method,
-	$privacy_method,
-	$privacy_pass ) = &options;
+
+my (
+	$host,				# $opts{"H"}
+	$community,			# $opts{"c"}
+	$module,			# $opts{"m"}
+	$disk,				# $opts{"d"}
+	$process,			# $opts{"p"}
+	$version,			# $opts{"v"}
+	$user,				# $opts{"u"}
+	$pass,				# $opts{"A"}
+	$security_level,	# $opts{"l"}
+	$auth_method,		# $opts{"a"}
+	$privacy_method,	# $opts{"x"}
+	$privacy_pass		# $opts{"X"}
+	) = &options;
 
 #-----------------------------------------------------------------------
 # OPTIONS
@@ -106,25 +111,37 @@ sub options {
 	#~ ' -x ' . $snmp3_privacy_method .
 	#~ ' -X' $snmp3_privacy_pass;
 	
-	$opts{"H"} = 0		unless ( exists( $opts{"H"} ) );
-	$opts{"c"} = 0		unless ( exists( $opts{"c"} ) );
-	$opts{"m"} = 0		unless ( exists( $opts{"m"} ) );
-	$opts{"d"} = "/"	unless ( exists( $opts{"d"} ) );
-	$opts{"p"} = 0		unless ( exists( $opts{"p"} ) );
-	$opts{"p"} = 0		unless ( exists( $opts{"p"} ) );
-	$opts{"v"} = 2		unless ( exists( $opts{"v"} ) );
-	$opts{"u"} = ""		unless ( exists( $opts{"u"} ) );
-	$opts{"A"} = ""		unless ( exists( $opts{"A"} ) );
-	$opts{"l"} = "noAuthNoPriv"		unless ( exists( $opts{"l"} ) );
-	$opts{"a"} = ""		unless ( exists( $opts{"a"} ) );
-	$opts{"x"} = ""		unless ( exists( $opts{"x"} ) );
-	$opts{"X"} = ""		unless ( exists( $opts{"X"} ) );
+	# host
+	$opts{"H"} = 0				unless ( exists( $opts{"H"} ) );
+	# community
+	$opts{"c"} = 0				unless ( exists( $opts{"c"} ) );
+	# module
+	$opts{"m"} = 0				unless ( exists( $opts{"m"} ) );
+	# disk
+	$opts{"d"} = "/"			unless ( exists( $opts{"d"} ) );
+	# process
+	$opts{"p"} = 0				unless ( exists( $opts{"p"} ) );
+	# version
+	$opts{"v"} = 2				unless ( exists( $opts{"v"} ) );
+	# user
+	$opts{"u"} = ""				unless ( exists( $opts{"u"} ) );
+	# auth_pass
+	$opts{"A"} = ""				unless ( exists( $opts{"A"} ) );
+	# security level
+	$opts{"l"} = "noAuthNoPriv"	unless ( exists( $opts{"l"} ) );
+	# auth method
+	$opts{"a"} = ""				unless ( exists( $opts{"a"} ) );
+	# privacy method
+	$opts{"x"} = ""				unless ( exists( $opts{"x"} ) );
+	# privacy pass
+	$opts{"X"} = ""				unless ( exists( $opts{"X"} ) );
 	
-	return ( $opts{"H"},
+	return (
+		$opts{"H"},
 		$opts{"c"},
 		$opts{"m"},
 		$opts{"d"},
-		$opts {"p"},
+		$opts{"p"},
 		$opts{"v"},
 		$opts{"u"},
 		$opts{"A"},
@@ -143,13 +160,13 @@ if ($module eq "memuse") {
 	
 	if ($version == 3) {
 		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v 3 -u $user -a $privacy_method -A $pass -l $auth_method $host";
+			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level $host";
 		}
 		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v 3 -u $user -l $auth_method $host";
+			$command_line_parammeters = "-v 3 -u $user -l $security_level $host";
 		}
 		else {
-			$command_line_parammeters = "-v 3 -u $user -a $privacy_method -A $pass -l $auth_method -x $privacy_method -X $privacy_pass $host";
+			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
 		}
 	}
 	else {
@@ -176,13 +193,13 @@ if ($module eq "diskuse") {
 	
 	if ($version == 3) {
 		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v 3 -u $user -a $privacy_method -A $pass -l $auth_method $host";
+			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level $host";
 		}
 		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v 3 -u $user -l $auth_method $host";
+			$command_line_parammeters = "-v 3 -u $user -l $security_level $host";
 		}
 		else {
-			$command_line_parammeters = "-v 3 -u $user -a $privacy_method -A $pass -l $auth_method -x $privacy_method -X $privacy_pass $host";
+			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
 		}
 	}
 	else {
@@ -215,13 +232,13 @@ if ($module eq "process") {
 	
 	if ($version == 3) {
 		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v 3 -u $user -a $privacy_method -A $pass -l $auth_method $host";
+			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level $host";
 		}
 		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v 3 -u $user -l $auth_method $host";
+			$command_line_parammeters = "-v 3 -u $user -l $security_level $host";
 		}
 		else {
-			$command_line_parammeters = "-v 3 -u $user -a $privacy_method -A $pass -l $auth_method -x $privacy_method -X $privacy_pass $host";
+			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
 		}
 	}
 	else {
@@ -242,13 +259,13 @@ if ($module eq "cpuload") {
 	
 	if ($version == 3) {
 		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v 3 -u $user -a $privacy_method -A $pass -l $auth_method $host";
+			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level $host";
 		}
 		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v 3 -u $user -l $auth_method $host";
+			$command_line_parammeters = "-v 3 -u $user -l $security_level $host";
 		}
 		else {
-			$command_line_parammeters = "-v 3 -u $user -a $privacy_method -A $pass -l $auth_method -x $privacy_method -X $privacy_pass $host";
+			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
 		}
 	}
 	else {

@@ -496,3 +496,7 @@ console_user admin
 
 # console_pass: Console password (pandora by default)
 console_pass pandora
+
+# Passphrase used to generate the key for password encryption (PANDORA FMS ENTERPRISE ONLY).
+#encryption_passphrase passphrase
+

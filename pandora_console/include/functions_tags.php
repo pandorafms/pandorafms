@@ -1025,6 +1025,10 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 	
 	// Get the tags of the required access flag for each group
 	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
+	// If there are wrong parameters or fail ACL check, return false
+	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
+		return array();
+	}
 	
 	// Merge the tags to get an array with all of them
 	$user_tags_id = array();
@@ -1295,6 +1299,10 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 	}
 	
 	$tags_user = tags_get_acl_tags($id_user, $id_group, $access, 'data', '', '', true, $childrens_ids, true);
+	// If there are wrong parameters or fail ACL check, return false
+	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
+		return false;
+	}
 
 	//check user without tags
 	$sql = "SELECT id_usuario FROM tusuario_perfil

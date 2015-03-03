@@ -366,7 +366,7 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$filter = io_safe_output((string) get_parameter ('filter'));
-		$fields = (string) get_parameter ('fields');
+		$fields = io_safe_output((string) get_parameter ('fields'));
 		$indexed = (bool) get_parameter ('indexed', true);
 		$agentName = (string) get_parameter ('agent_name', null);
 		$server_name = (string) get_parameter ('server_name', null);

@@ -1321,8 +1321,10 @@ function tags_get_total_agents ($id_tag, $groups_and_tags = array()) {
 			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag)
-						$groups_id[] = $group_id;
+					if ($tag == $id_tag) {
+						$hierarchy_groups = groups_get_id_recursive($group_id);
+						$groups_id = array_merge($groups_id, $hierarchy_groups);
+					}
 				}
 			}
 		}
@@ -1367,8 +1369,10 @@ function tags_get_normal_agents ($id_tag, $groups_and_tags = array()) {
 			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag)
-						$groups_id[] = $group_id;
+					if ($tag == $id_tag) {
+						$hierarchy_groups = groups_get_id_recursive($group_id);
+						$groups_id = array_merge($groups_id, $hierarchy_groups);
+					}
 				}
 			}
 		}
@@ -1417,8 +1421,10 @@ function tags_get_warning_agents ($id_tag, $groups_and_tags = array()) {
 			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag)
-						$groups_id[] = $group_id;
+					if ($tag == $id_tag) {
+						$hierarchy_groups = groups_get_id_recursive($group_id);
+						$groups_id = array_merge($groups_id, $hierarchy_groups);
+					}
 				}
 			}
 		}
@@ -1466,8 +1472,10 @@ function tags_get_critical_agents ($id_tag, $groups_and_tags = array()) {
 			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag)
-						$groups_id[] = $group_id;
+					if ($tag == $id_tag) {
+						$hierarchy_groups = groups_get_id_recursive($group_id);
+						$groups_id = array_merge($groups_id, $hierarchy_groups);
+					}
 				}
 			}
 		}
@@ -1513,8 +1521,10 @@ function tags_get_unknown_agents ($id_tag, $groups_and_tags = array()) {
 			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag)
-						$groups_id[] = $group_id;
+					if ($tag == $id_tag) {
+						$hierarchy_groups = groups_get_id_recursive($group_id);
+						$groups_id = array_merge($groups_id, $hierarchy_groups);
+					}
 				}
 			}
 		}
@@ -1562,8 +1572,10 @@ function tags_get_not_init_agents ($id_tag, $groups_and_tags = array()) {
 			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag)
-						$groups_id[] = $group_id;
+					if ($tag == $id_tag) {
+						$hierarchy_groups = groups_get_id_recursive($group_id);
+						$groups_id = array_merge($groups_id, $hierarchy_groups);
+					}
 				}
 			}
 		}
@@ -1603,8 +1615,10 @@ function tags_monitors_count ($type, $id_tag, $groups_and_tags = array()) {
 			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag)
-						$groups_id[] = $group_id;
+					if ($tag == $id_tag) {
+						$hierarchy_groups = groups_get_id_recursive($group_id);
+						$groups_id = array_merge($groups_id, $hierarchy_groups);
+					}
 				}
 			}
 		}
@@ -1692,8 +1706,10 @@ function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
 			if (!empty($tags)) {
 				$tags_arr = explode(',', $tags);
 				foreach ($tags_arr as $tag) {
-					if ($tag == $id_tag)
-						$groups_id[] = $group_id;
+					if ($tag == $id_tag) {
+						$hierarchy_groups = groups_get_id_recursive($group_id);
+						$groups_id = array_merge($groups_id, $hierarchy_groups);
+					}
 				}
 			}
 		}

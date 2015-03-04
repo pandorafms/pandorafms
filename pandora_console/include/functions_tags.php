@@ -1729,36 +1729,39 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	
 	$acl_column = get_acl_column($access);
 
-	$query = sprintf("SELECT tags, id_grupo 
-				FROM tusuario_perfil, tperfil
-				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-					tusuario_perfil.id_usuario = '%s' AND 
-					tperfil.%s = 1
-				ORDER BY id_grupo", $id_user, $acl_column);
-	$tags_and_groups = db_get_all_rows_sql($query);
+	$sql = sprintf("SELECT tags, id_grupo 
+					FROM tusuario_perfil, tperfil
+					WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
+						tusuario_perfil.id_usuario = '%s' AND 
+						tperfil.%s = 1
+					ORDER BY id_grupo", $id_user, $acl_column);
+	$tags_and_groups = db_get_all_rows_sql($sql);
 
-	if ($tags_and_groups == false) {
+	if ($tags_and_groups === false)
 		$tags_and_groups = array();
-	}
 	
 	$acltags = array();
 	
-	if ((count($tags_and_groups) == 1) && ($tags_and_groups[0]['id_grupo'] == 0) && ($tags_and_groups[0]['tags'] == '')){ //user with all groups without tags
-		$all_groups = groups_get_all();
+	// Change the 'All' group with all groups
+	$all_group_ids = array();
+	$all_groups = groups_get_all();
+	if (!empty($all_groups))
+		$all_group_ids = array_keys($all_groups);
 
-		foreach ($all_groups as $id => $name) {
-			$acltags[$id] = '';
-		}
-	} else {
-		// Change the 'All' group with all groups
-		$all_group_ids = array();
-		$all_groups = groups_get_all();
-		if (!empty($all_groups))
-			$all_group_ids = array_keys($all_groups);
-
-		$tags_and_groups_aux = array();
-		foreach ($tags_and_groups as $data) {
-			if ($data['id_grupo'] == 0) {
+	$tags_and_groups_aux = array();
+	foreach ($tags_and_groups as $data) {
+		// All group
+		if ($data['id_grupo'] == 0) {
+			// All group with empty tags. All groups without tags permission!
+			if (empty($data['tags'])) {
+				foreach ($all_group_ids as $group_id) {
+					$acltags[$group_id] = '';
+				}
+				
+				return $acltags; // End of the function
+			}
+			// Create a new element for every group with the tags
+			else {
 				foreach ($all_group_ids as $group_id) {
 					$tags_and_groups_aux[] = array(
 							'id_grupo' => $group_id,
@@ -1766,29 +1769,62 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 						);
 				}
 			}
-			else {
-				$tags_and_groups_aux[] = $data;
+		}
+		// Specific group
+		else {
+			$tags_and_groups_aux[] = $data;
+		}
+	}
+	$tags_and_groups = $tags_and_groups_aux;
+	unset($tags_and_groups_aux);
+	
+	function __add_acltags (&$acltags, $group_id, $tags_str) {
+		if (!isset($acltags[$group_id])) {
+			// Add the new element
+			$acltags[$group_id] = $tags_str;
+		}
+		else {
+			// Add the tags. The empty tags have priority cause mean more permissions
+			$existing_tags = $acltags[$group_id];
+			
+			if (!empty($existing_tags)) {
+				$existing_tags_array = explode(",", $existing_tags);
+				
+				// Store the empty tags
+				if (empty($tags_str)) {
+					$acltags[$group_id] = '';
+				}
+				// Merge the old and new tabs
+				else {
+					$new_tags_array = explode(",", $tags_str);
+					
+					$final_tags_array = array_merge($existing_tags_array, $new_tags_array);
+					$final_tags_str = implode(",", $final_tags_array);
+					
+					if (! empty($final_tags_str))
+						$acltags[$group_id] = $final_tags_str;
+				}
 			}
 		}
-		$tags_and_groups = $tags_and_groups_aux;
-		unset($tags_and_groups_aux);
-
-		foreach ($tags_and_groups as $group_tag) {
-			$acltags[$group_tag['id_grupo']] = $group_tag['tags'];
-			$propagate = db_get_value('propagate', 'tgrupo', 'id_grupo', $group_tag['id_grupo']);
-
-			if ($propagate) {
-				$sql = "SELECT id_grupo FROM tgrupo WHERE parent  = " .$group_tag['id_grupo'];
-				$children = db_get_all_rows_sql($sql);
-
-				if ($children == false) {
-					$children = array();
-				}
-				foreach ($children as $group) {
-					$acltags[$group['id_grupo']] = $group_tag['tags'];
-				}
+		
+		// Propagation
+		$propagate = (bool) db_get_value('propagate', 'tgrupo', 'id_grupo', $group_tag['id_grupo']);
+		if ($propagate) {
+			$sql = "SELECT id_grupo FROM tgrupo WHERE parent = $group_id";
+			$children = db_get_all_rows_sql($sql);
+			
+			if ($children === false)
+				$children = array();
+			
+			foreach ($children as $children_group) {
+				// Add the tags to the children (recursive)
+				__add_acltags($acltags, $children_group['id_grupo'], $tags_str);
 			}
 		}
+	}
+
+	foreach ($tags_and_groups as $group_tag) {
+		__add_acltags($acltags, $group_tag['id_grupo'], $group_tag['tags']);
 	}
 	
 	return $acltags;
@@ -1848,7 +1884,7 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	if (empty($id_tag)) {
 		$tag_filter = '';
 	} else {
-		$tag_filter = " AND ttag_module.id_tag = " . $id_tag;
+		$tag_filter = " AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag = $id_tag) ";
 	}
 	if (empty($id_user)) {
 		$id_user = $config['id_user'];
@@ -1960,9 +1996,8 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	}
 	
 	$user_agents_sql = "SELECT ".$select_fields ."
-		FROM tagente, tagente_modulo, ttag_module 
+		FROM tagente, tagente_modulo
 		WHERE tagente.id_agente = tagente_modulo.id_agente
-		AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 		". $tag_filter .
 		$groups_clause . $search_sql . $void_agents .
 		$status_sql .

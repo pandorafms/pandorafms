@@ -781,6 +781,8 @@ $edit_module = (bool) get_parameter ('edit_module');
 if ($update_module || $create_module) {
 	$id_grupo = agents_get_agent_group ($id_agente);
 	
+	$id_agent_module = (int) get_parameter ('id_agent_module');
+	
 	if (!check_acl ($config["id_user"], $id_grupo, "AW")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to create a module without admin rights");
@@ -800,7 +802,7 @@ if ($update_module || $create_module) {
 	
 	$post_process = (string) get_parameter ('post_process', 0.0);
 	//$prediction_module = 0;
-
+	
 	$max_timeout = (int) get_parameter ('max_timeout');
 	$max_retries = (int) get_parameter ('max_retries');
 	$min = (int) get_parameter_post ("min");
@@ -855,8 +857,8 @@ if ($update_module || $create_module) {
 		$macros = io_json_mb_encode($macros);
 		
 		$conf_array = explode("\n",$configuration_data);
-		foreach($conf_array as $line) {
-			if(preg_match("/^module_name\s*(.*)/", $line, $match)) {
+		foreach ($conf_array as $line) {
+			if (preg_match("/^module_name\s*(.*)/", $line, $match)) {
 				$new_configuration_data .= "module_name $name\n";
 			}
 			// We delete from conf all the module macros starting with _field
@@ -867,7 +869,7 @@ if ($update_module || $create_module) {
 		
 		$macros_for_data = enterprise_hook('config_agents_get_macros_data_conf', array($_POST));
 		
-		if($macros_for_data !== ENTERPRISE_NOT_HOOK && $macros_for_data != '') {
+		if ($macros_for_data !== ENTERPRISE_NOT_HOOK && $macros_for_data != '') {
 			// Add macros to configuration file
 			$new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);
 		}
@@ -947,9 +949,10 @@ if ($update_module || $create_module) {
 	$wday = get_parameter('wday');
 	$cron_interval = "$minute $hour $mday $month $wday";
 	
-	if ($prediction_module != 3) {
+	if ($prediction_module != MODULE_PREDICTION_SYNTHETIC) {
 		unset($serialize_ops);
-		enterprise_hook('modules_delete_synthetic_operations', array($id_agent_module));
+		enterprise_hook('modules_delete_synthetic_operations',
+			array($id_agent_module));
 	}
 	
 	$active_snmp_v3 = get_parameter('active_snmp_v3');
@@ -968,8 +971,11 @@ if ($update_module || $create_module) {
 	
 	// Make changes in the conf file if necessary
 	enterprise_include_once('include/functions_config_agents.php');
-	enterprise_hook('config_agents_write_module_in_conf',
-		array($id_agente, io_safe_output($old_configuration_data), io_safe_output($configuration_data), $disabled));
+	if (!policies_is_module_in_policy($id_agent_module)) {
+		enterprise_hook('config_agents_write_module_in_conf',
+			array($id_agente, io_safe_output($old_configuration_data),
+				io_safe_output($configuration_data), $disabled));
+	}
 }
 
 // MODULE UPDATE
@@ -1037,8 +1043,10 @@ if ($update_module) {
 	if ($module_kind == MODULE_DATA) {
 		unset($values['module_interval']);
 	}
-
-	if ($prediction_module == 3 && $serialize_ops == '') {
+	
+	if ($prediction_module == MODULE_PREDICTION_SYNTHETIC &&
+		$serialize_ops == '') {
+		
 		$result = false;
 	}
 	else {
@@ -1069,7 +1077,7 @@ if ($update_module) {
 		$edit_module = true;
 		
 		db_pandora_audit("Agent management",
-			"Fail to try update module '$name' for agent ".$agent["nombre"]);
+			"Fail to try update module '$name' for agent " . $agent["nombre"]);
 	}
 	else {
 		if ($prediction_module == 3) {

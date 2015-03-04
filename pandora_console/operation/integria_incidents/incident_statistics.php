@@ -28,7 +28,7 @@ if (! check_acl ($config['id_user'], 0, "IR") == 1) {
 }
 ui_print_page_header (__('Statistics'), "images/book_edit.png", false, "", false, "");
 
-$integria_api = $config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password'];
+$integria_api = $config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".io_output_password($config['integria_api_password']);
 $op = 'get_stats';
 $url = "$integria_api&op=$op";
 

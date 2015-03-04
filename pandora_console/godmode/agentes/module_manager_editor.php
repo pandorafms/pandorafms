@@ -31,7 +31,9 @@ if (is_ajax ()) {
 		
 		$component['throw_unknown_events'] =
 			!network_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
-		
+
+		// Decrypt passwords in the component.
+		$component['plugin_pass'] = io_output_password($component['plugin_pass']);
 		
 		echo io_json_mb_encode ($component);
 		return;
@@ -144,7 +146,7 @@ require_once ("include/functions_exportserver.php");
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . "/include/functions_agents.php");
 
-// Using network component to fill some fields
+// Reading a module
 if ($id_agent_module) {
 	$module = modules_get_agentmodule ($id_agent_module);
 	$moduletype = $module['id_modulo'];
@@ -170,14 +172,14 @@ if ($id_agent_module) {
 	// New support for snmp v3
 	$snmp_version = $module['tcp_send'];
 	$snmp3_auth_user = $module["plugin_user"];
-	$snmp3_auth_pass = $module["plugin_pass"];
+	$snmp3_auth_pass = io_output_password($module["plugin_pass"]);
 	
 	// Auth method could be MD5 or SHA
 	$snmp3_auth_method = $module["plugin_parameter"];
 	
 	// Privacy method could be DES or AES
 	$snmp3_privacy_method = $module["custom_string_1"];
-	$snmp3_privacy_pass = $module["custom_string_2"];
+	$snmp3_privacy_pass = io_output_password($module["custom_string_2"]);
 	
 	// Security level Could be noAuthNoPriv | authNoPriv | authPriv
 	$snmp3_security_level = $module["custom_string_3"];
@@ -186,7 +188,7 @@ if ($id_agent_module) {
 	$disabled = $module['disabled'];
 	$id_export = $module['id_export'];
 	$plugin_user = $module['plugin_user'];
-	$plugin_pass = $module['plugin_pass'];
+	$plugin_pass = io_output_password($module['plugin_pass']);
 	$plugin_parameter = $module['plugin_parameter'];
 	$id_plugin = $module['id_plugin'];
 	$post_process = $module['post_process'];

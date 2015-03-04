@@ -98,6 +98,9 @@ sub pandora_startup () {
 	# Grab config tokens shared with the console and not in the .conf	
 	pandora_get_sharedconfig (\%Config, $DBH);
 	
+	# Generate the encryption key after reading the passphrase.
+	$Config{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [\%Config, $Config{"encryption_passphrase"}]);
+
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers

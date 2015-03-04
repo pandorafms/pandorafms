@@ -62,9 +62,13 @@ Exported Functions:
 
 =item * C<pandora_generate_alerts>
 
+=item * C<pandora_input_password>
+
 =item * C<pandora_module_keep_alive>
 
 =item * C<pandora_module_keep_alive_nd>
+
+=item * C<pandora_output_password>
 
 =item * C<pandora_planned_downtime>
 
@@ -176,12 +180,14 @@ our @EXPORT = qw(
 	pandora_get_module_phone_tags
 	pandora_get_module_email_tags
 	pandora_get_os
+	pandora_input_password
 	pandora_is_master
 	pandora_mark_agent_for_alert_update
 	pandora_mark_agent_for_module_update
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
+	pandora_output_password
 	pandora_planned_downtime
 	pandora_planned_downtime_set_quiet_elements
 	pandora_planned_downtime_unset_quiet_elements
@@ -2533,7 +2539,7 @@ sub pandora_create_module_from_network_component ($$$$) {
 	$component->{'id_tipo_modulo'} = $component->{'type'};
 	delete $component->{'type'};
 	$component->{'ip_target'} = $addr;
-	
+
 	my $module_id = pandora_create_module_from_hash($pa_config, $component, $dbh); 
 	
 	# Propagate the tags to the module
@@ -2568,6 +2574,18 @@ sub pandora_create_module_from_hash ($$$) {
 	if (defined $parameters->{'id_network_component_group'}) {
 		delete $parameters->{'id_network_component_group'};
 	}
+
+	# Encrypt plug-in passwords.
+	if (defined($parameters->{'plugin_pass'})) {
+		$parameters->{'plugin_pass'} = pandora_input_password($pa_config, $parameters->{'plugin_pass'});
+	}
+
+	# Encrypt SNMP v3 passwords.
+	if ($parameters->{'id_tipo_modulo'} >= 15 && $parameters->{'id_tipo_modulo'} <= 18 &&
+		$parameters->{'tcp_send'} == 3) {
+		$parameters->{'custom_string_2'} = pandora_input_password($pa_config, $parameters->{'custom_string_2'});
+	}
+
 	my $module_id = db_process_insert($dbh, 'id_agente_modulo',
 		'tagente_modulo', $parameters);
 	
@@ -4927,6 +4945,54 @@ sub pandora_create_integria_ticket ($$$$$$$$) {
 	else {
 		return 0;
 	}
+}
+
+##########################################################################
+=head2 C<< pandora_input_password (I<$pa_config>, I<$password>) >> 
+
+Process a password to be stored in the Pandora FMS Database (encrypting it if
+necessary).
+
+=cut
+##########################################################################
+sub pandora_input_password($$) {
+	my ($pa_config, $password) = @_;
+
+	# Do not attemp to encrypt empty passwords.
+	return '' if ($password eq '');
+
+	# Encryption disabled.
+	return $password if (! defined($pa_config->{'encryption_key'}) || $pa_config->{'encryption_key'} eq '');
+
+	# Encrypt the password.
+	my $encrypted_password = enterprise_hook ('pandora_encrypt', [$pa_config, $password, $pa_config->{'encryption_key'}]);
+	return $password unless defined($encrypted_password);
+
+	return $encrypted_password;
+}
+
+##########################################################################
+=head2 C<< pandora_output_password (I<$pa_config>, I<$password>) >> 
+
+Process a password retrieved from the Pandora FMS Database (decrypting it if
+necessary).
+
+=cut
+##########################################################################
+sub pandora_output_password($$) {
+	my ($pa_config, $password) = @_;
+
+	# Do not attemp to decrypt empty passwords.
+	return '' if ($password eq '');
+
+	# Encryption disabled.
+	return $password if (! defined($pa_config->{'encryption_key'}) || $pa_config->{'encryption_key'} eq '');
+
+	# Decrypt the password.
+	my $decrypted_password = enterprise_hook ('pandora_decrypt', [$pa_config, $password, $pa_config->{'encryption_key'}]);
+	return $password unless defined($decrypted_password);
+
+	return $decrypted_password;
 }
 
 # End of function declaration

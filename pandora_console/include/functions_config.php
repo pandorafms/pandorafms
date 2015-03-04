@@ -121,7 +121,7 @@ function config_update_config () {
 						$error_update[] = __('Language code for Pandora');
 					if (!config_update_value ('remote_config', (string) get_parameter ('remote_config')))
 						$error_update[] = __('Remote config directory');
-					if (!config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd')))
+					if (!config_update_value ('loginhash_pwd', io_input_password((string) get_parameter ('loginhash_pwd'))))
 						$error_update[] = __('Auto login (hash) password');
 					
 					if (!config_update_value ('timesource', (string) get_parameter ('timesource')))
@@ -134,15 +134,15 @@ function config_update_config () {
 						$error_update[] = __('Attachment store');
 					if (!config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API')))
 						$error_update[] = __('IP list with API access');
-					if (!config_update_value ('api_password', get_parameter('api_password')))
-						$error_update[] = __('Integria API password');
+					if (!config_update_value ('api_password', io_input_password(get_parameter('api_password'))))
+						$error_update[] = __('API password');
 					if (!config_update_value ('activate_gis', (bool) get_parameter ('activate_gis')))
 						$error_update[] = __('Enable GIS features in Pandora Console');
 					if (!config_update_value ('integria_enabled', get_parameter ('integria_enabled')))
 						$error_update[] = __('Enable Integria incidents in Pandora Console');
 					if (!config_update_value ('integria_inventory', get_parameter ('integria_inventory')))
 						$error_update[] = __('Integria inventory');
-					if (!config_update_value ('integria_api_password', get_parameter ('integria_api_password')))
+					if (!config_update_value ('integria_api_password', io_input_password(get_parameter ('integria_api_password'))))
 						$error_update[] = __('Integria API password');
 					if (!config_update_value ('integria_url', get_parameter ('integria_url')))
 						$error_update[] = __('Integria URL');
@@ -210,7 +210,7 @@ function config_update_config () {
 								$error_update[] = __('Replication DB database');
 							if (!config_update_value ('replication_dbuser', (string)get_parameter('replication_dbuser')))
 								$error_update[] = __('Replication DB user');
-							if (!config_update_value ('replication_dbpass', (string)get_parameter('replication_dbpass')))
+							if (!config_update_value ('replication_dbpass', io_input_password((string)get_parameter('replication_dbpass'))))
 								$error_update[] = __('Replication DB password');
 							if (!config_update_value ('replication_dbport', (string)get_parameter('replication_dbport')))
 								$error_update[] = __('Replication DB port');
@@ -300,7 +300,7 @@ function config_update_config () {
 						$error_update[] = __('Database name');
 					if (!config_update_value ('rpandora_user', get_parameter ('rpandora_user')))
 						$error_update[] = __('User');
-					if (!config_update_value ('rpandora_pass', get_parameter ('rpandora_pass')))
+					if (!config_update_value ('rpandora_pass', io_input_password(get_parameter ('rpandora_pass'))))
 						$error_update[] = __('Password');
 					
 					if (!config_update_value ('rbabel_server', get_parameter ('rbabel_server')))
@@ -311,7 +311,7 @@ function config_update_config () {
 						$error_update[] = __('Database name');
 					if (!config_update_value ('rbabel_user', get_parameter ('rbabel_user')))
 						$error_update[] = __('User');
-					if (!config_update_value ('rbabel_pass', get_parameter ('rbabel_pass')))
+					if (!config_update_value ('rbabel_pass', io_input_password(get_parameter ('rbabel_pass'))))
 						$error_update[] = __('Password');
 					if (!config_update_value ('rintegria_server', get_parameter ('rintegria_server')))
 						$error_update[] = __('Integria host');
@@ -321,7 +321,7 @@ function config_update_config () {
 						$error_update[] = __('Database name');
 					if (!config_update_value ('rintegria_user', get_parameter ('rintegria_user')))
 						$error_update[] = __('User');
-					if (!config_update_value ('rintegria_pass', get_parameter ('rintegria_pass')))
+					if (!config_update_value ('rintegria_pass', io_input_password(get_parameter ('rintegria_pass'))))
 						$error_update[] = __('Password');
 					if (!config_update_value ('double_auth_enabled', get_parameter ('double_auth_enabled')))
 						$error_update[] = __('Double authentication');
@@ -588,7 +588,7 @@ function config_update_config () {
 					$error_update[] = __('Database name');
 				if (!config_update_value ('history_db_user', get_parameter ('history_db_user')))
 					$error_update[] = __('Database user');
-				if (!config_update_value ('history_db_pass', get_parameter ('history_db_pass')))
+				if (!config_update_value ('history_db_pass', io_input_password(get_parameter ('history_db_pass'))))
 					$error_update[] = __('Database password');
 				if (!config_update_value ('history_db_days', get_parameter ('history_db_days')))
 					$error_update[] = __('Days');
@@ -658,7 +658,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['loginhash_pwd'])) {
-		config_update_value ('loginhash_pwd', rand (0, 1000) * rand (0, 1000)."pandorahash");
+		config_update_value ('loginhash_pwd', io_input_password(rand (0, 1000) * rand (0, 1000)."pandorahash"));
 	}
 	
 	if (!isset ($config["trap2agent"])) {

@@ -20,7 +20,7 @@ $id_file = $_GET["id_file"];
 $filename = $_GET["filename"];
 $id_user = $_GET["id_user"];
 
-$integria_api = $config['integria_url']."/include/api.php?return_type=csv&user=".$config['id_user']."&pass=".$config['integria_api_password'];
+$integria_api = $config['integria_url']."/include/api.php?return_type=csv&user=".$config['id_user']."&pass=".io_output_password($config['integria_api_password']);
 
 $url = $integria_api."&op=download_file&params=".$id_file;
 

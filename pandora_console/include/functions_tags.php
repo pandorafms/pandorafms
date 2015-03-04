@@ -1906,7 +1906,7 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 				$status_sql = "AND (notinit_count = total_count)";
 				break;
 		}
-
+		
 	}
 	$disabled_sql = '';
 	if (!empty($filter['disabled'])) {
@@ -1916,7 +1916,8 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	$order_by_condition = '';
 	if (!empty($filter['order'])) {
 		$order_by_condition = " ORDER BY ".$filter['order'];
-	} else {
+	}
+	else {
 		$order_by_condition = " ORDER BY tagente.nombre ASC";
 	}
 	$limit_sql = '';
@@ -1933,15 +1934,16 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	
 	if (!empty($filter['group_by'])) {
 		$group_by = " GROUP BY ".$filter['group_by'];
-	} else {
+	}
+	else {
 		$group_by = " GROUP BY tagente.nombre";
 	}
-
+	
 	$id_agent_search = '';
 	if (!empty($filter['id_agent'])) {
 		$id_agent_search = " AND tagente.id_agente = ".$filter['id_agent'];
 	}
-
+	
 	$search_sql = "";
 	$void_agents = "";
 	if ($filter) {
@@ -1956,17 +1958,7 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 			}
 		}
 	}
-
-	//~ $user_agents_sql = "SELECT ".$select_fields ."
-		//~ FROM tagente, tagente_modulo, ttag_module 
-		//~ WHERE tagente.id_agente = tagente_modulo.id_agente
-		//~ AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-		//~ ". $tag_filter .
-		//~ $groups_clause . $search_sql . $void_agents .
-		//~ $status_sql .
-		//~ $group_by .
-		//~ " ORDER BY tagente.nombre ASC";
-		
+	
 	$user_agents_sql = "SELECT ".$select_fields ."
 		FROM tagente, tagente_modulo, ttag_module 
 		WHERE tagente.id_agente = tagente_modulo.id_agente
@@ -1978,9 +1970,9 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 		$group_by .
 		$order_by_condition .
 		$limit_sql;
-
+	
 	$user_agents = db_get_all_rows_sql($user_agents_sql);	
-
+	
 	if ($user_agents == false) {
 		$user_agents = array();
 	}
@@ -1989,7 +1981,7 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	}
 	if (!$meta){
 		$user_agents_aux = array();
-
+		
 		foreach ($user_agents as $ua) {
 			$user_agents_aux[$ua['id_agente']] = $ua['nombre'];
 		} 
@@ -2012,7 +2004,7 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 		$fields[1] = "tagente_modulo.nombre";
 	}
 	$select_fields = implode(',',$fields);
-
+	
 	if ($filter) {
 		$filter_sql = '';
 		if (isset($filter['disabled'])) {
@@ -2021,7 +2013,7 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 		if (isset($filter['nombre'])) {
 			$filter_sql .= ' AND tagente_modulo.nombre LIKE "' .$filter['nombre'].'"';
 		}
-
+		
 	}
 	
 	$tag_filter = "";
@@ -2032,7 +2024,7 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 			$tag_filter = " AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (".$groups_and_tags[$agent_group]."))";
 		}
 	}
-		
+	
 	if ($get_filter_status != -1) {
 		$agent_modules_sql = "SELECT ".$select_fields ."
 			FROM tagente_modulo, tagente_estado
@@ -2042,8 +2034,9 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 			$tag_filter .
 			$filter_sql ."
 			ORDER BY nombre";
-	} else {
-
+	}
+	else {
+		
 		$agent_modules_sql = "SELECT ".$select_fields ."
 			FROM tagente_modulo 
 			WHERE id_agente=". $id_agent .
@@ -2051,7 +2044,7 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 			$filter_sql ."
 			ORDER BY nombre";
 	}
-		
+	
 	$agent_modules = db_get_all_rows_sql($agent_modules_sql);
 	
 	if ($agent_modules == false) {
@@ -2075,7 +2068,18 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 	foreach ($agent_modules as $am) {
 		$result[$am['id_agente_modulo']] = $am['nombre'];
 	}
-		
-	return $result;	
+	
+	return $result;
+}
+
+function tags_get_module_policy_tags($id_tag, $id_module) {
+	if (empty($id_tag))
+		return false;
+	
+	$id_module_policy = db_get_value_filter('id_policy_module',
+		'ttag_module',
+		array('id_tag' => $id_tag, 'id_agente_modulo' => $id_module));
+	
+	return $id_module_policy;
 }
 ?>

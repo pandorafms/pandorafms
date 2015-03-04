@@ -370,7 +370,7 @@ Pandora_Windows_Service::launchTentacleProxy() {
 string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
-	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd, temp_agent_name;
+	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd;
 	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
@@ -385,7 +385,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	agent_name_cmd = conf->getValue ("agent_name_cmd");
 	if (agent_name_cmd != "") {
 		agent_name_cmd = "cmd.exe /c \"" + agent_name_cmd + "\"";
-		temp_agent_name = getCoordinatesFromCmdExec(agent_name_cmd);
+		static string temp_agent_name = getAgentNameFromCmdExec(agent_name_cmd);
 		// Delete carriage return if is provided
 		pos = temp_agent_name.find("\n");
 		if(pos != string::npos) {
@@ -536,7 +536,7 @@ Pandora_Windows_Service::getXmlHeader () {
 }
 
 string
-Pandora_Windows_Service::getCoordinatesFromCmdExec (string cmd_exec)
+Pandora_Windows_Service::getValueFromCmdExec (string cmd_exec, int timeout)
 {
 	PROCESS_INFORMATION pi;
 	STARTUPINFO         si;	
@@ -546,7 +546,6 @@ Pandora_Windows_Service::getCoordinatesFromCmdExec (string cmd_exec)
 	HANDLE              out, new_stdout, out_read, job;
 	string              working_dir;
 	string output = "";
-	int timeout = 30;
 		
 	/* Set the bInheritHandle flag so pipe handles are inherited. */
 	attributes.nLength = sizeof (SECURITY_ATTRIBUTES); 
@@ -658,6 +657,18 @@ Pandora_Windows_Service::getCoordinatesFromCmdExec (string cmd_exec)
 	CloseHandle (out_read);
 
 	return output;
+}
+
+string
+Pandora_Windows_Service::getAgentNameFromCmdExec (string cmd_exec)
+{
+	return getValueFromCmdExec(cmd_exec, 10000);
+}
+
+string
+Pandora_Windows_Service::getCoordinatesFromCmdExec (string cmd_exec)
+{
+	return getValueFromCmdExec(cmd_exec, 500);
 }
 
 int

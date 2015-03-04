@@ -53,6 +53,8 @@ namespace Pandora {
 		
 		string        getXmlHeader    ();
 		int           copyDataFile    (string filename);
+		string        getValueFromCmdExec (string cmd_exec, int timeout);
+		string        getAgentNameFromCmdExec (string cmd_exec);
 		string        getCoordinatesFromCmdExec (string cmd_exec);
 		int           copyTentacleDataFile (string host,
 						     string filename,

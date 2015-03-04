@@ -662,7 +662,7 @@ Pandora_Windows_Service::getValueFromCmdExec (string cmd_exec, int timeout)
 string
 Pandora_Windows_Service::getAgentNameFromCmdExec (string cmd_exec)
 {
-	return getValueFromCmdExec(cmd_exec, 10000);
+	return getValueFromCmdExec(cmd_exec, 60000);
 }
 
 string

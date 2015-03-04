@@ -1996,7 +1996,7 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 	
 	// Avoid mysql error
 	if (empty($id_agent))
-		return;
+		return false;
 	
 	if (!is_array ($fields)) {
 		$fields = array ();

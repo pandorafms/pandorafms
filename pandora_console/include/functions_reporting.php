@@ -7872,11 +7872,16 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 		$counts_info['total_count'] = $counts_info['normal_count'] + $counts_info['warning_count'] + $counts_info['critical_count'] + $counts_info['unknown_count'] + $counts_info['notinit_count'];
 		
 		$all_agent_modules = tags_get_agent_modules ($id_agent, $acltags, false, $filter);
-		$mod_clause = "(".implode(',', array_keys($all_agent_modules)).")";
-		
-		$counts_info['fired_count'] = db_get_sql ("SELECT COUNT(times_fired)
-			FROM talert_template_modules
-			WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);	
+		if (!empty($all_agent_modules)) {
+			$mod_clause = "(".implode(',', array_keys($all_agent_modules)).")";
+
+			$counts_info['fired_count'] = (int) db_get_sql ("SELECT COUNT(times_fired)
+				FROM talert_template_modules
+				WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);
+		}
+		else {
+			$counts_info['fired_count'] = 0;
+		}
 	}
 	
 	// Store the counts in a data structure to print hidden divs with titles

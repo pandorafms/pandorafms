@@ -546,7 +546,7 @@ Pandora_Windows_Service::getCoordinatesFromCmdExec (string cmd_exec)
 	HANDLE              out, new_stdout, out_read, job;
 	string              working_dir;
 	string output = "";
-	int timeout = 30;
+	int timeout = 500;
 		
 	/* Set the bInheritHandle flag so pipe handles are inherited. */
 	attributes.nLength = sizeof (SECURITY_ATTRIBUTES); 

@@ -561,7 +561,7 @@ Pandora_Windows_Service::getValueFromCmdExec (string cmd_exec, int timeout)
 	job = CreateJobObject (&attributes, NULL);
 
 	if (job == NULL) {
-		pandoraLog ("getCoordinatesFromCmdExec: CreateJobObject failed. Err: %d", GetLastError ());
+		pandoraLog ("getValueFromCmdExec: CreateJobObject failed. Err: %d", GetLastError ());
 		return "";
 	}
 
@@ -569,7 +569,7 @@ Pandora_Windows_Service::getValueFromCmdExec (string cmd_exec, int timeout)
 	out = GetStdHandle (STD_OUTPUT_HANDLE); 
 
 	if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
-		pandoraLog ("getCoordinatesFromCmdExec: CreatePipe failed. Err: %d", GetLastError ());
+		pandoraLog ("getValueFromCmdExec: CreatePipe failed. Err: %d", GetLastError ());
 		return "";
 	}
 
@@ -594,7 +594,7 @@ Pandora_Windows_Service::getValueFromCmdExec (string cmd_exec, int timeout)
 	/* Create the child process. */
 	if (CreateProcess (NULL , (CHAR *)cmd_exec.c_str (), NULL, NULL, TRUE,
 		CREATE_SUSPENDED | CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
-		pandoraLog ("getCoordinatesFromCmdExec: %s CreateProcess failed. Err: %d",
+		pandoraLog ("getValueFromCmdExec: %s CreateProcess failed. Err: %d",
 		cmd_exec.c_str (), GetLastError ());
 		return "";
 	} else {
@@ -602,7 +602,7 @@ Pandora_Windows_Service::getValueFromCmdExec (string cmd_exec, int timeout)
 		unsigned long read, avail;
 
 		if (! AssignProcessToJobObject (job, pi.hProcess)) {
-			pandoraLog ("getCoordinatesFromCmdExec: could not assign proccess to job (error %d)",
+			pandoraLog ("getValueFromCmdExec: could not assign proccess to job (error %d)",
 			GetLastError ());
 		}
 		ResumeThread (pi.hThread);
@@ -622,7 +622,7 @@ Pandora_Windows_Service::getValueFromCmdExec (string cmd_exec, int timeout)
 			} else if(timeout < GetTickCount() - tickbase) {
 				/* STILL_ACTIVE */
 				TerminateProcess(pi.hThread, STILL_ACTIVE);
-				pandoraLog ("getCoordinatesFromCmdExec: %s timed out (retcode: %d)", cmd_exec.c_str (), STILL_ACTIVE);
+				pandoraLog ("getValueFromCmdExec: %s timed out (retcode: %d)", cmd_exec.c_str (), STILL_ACTIVE);
 				break;
 			}
 		}
@@ -631,11 +631,11 @@ Pandora_Windows_Service::getValueFromCmdExec (string cmd_exec, int timeout)
 
 		if (retval != 0) {
 			if (! TerminateJobObject (job, 0)) {
-				pandoraLog ("getCoordinatesFromCmdExec: TerminateJobObject failed. (error %d)",
+				pandoraLog ("getValueFromCmdExec: TerminateJobObject failed. (error %d)",
 				GetLastError ());
 			}
 			if (retval != STILL_ACTIVE) {
-				pandoraLog ("getCoordinatesFromCmdExec: %s did not executed well (retcode: %d)",
+				pandoraLog ("getValueFromCmdExec: %s did not executed well (retcode: %d)",
 				cmd_exec.c_str (), retval);
 			}
 			/* Close job, process and thread handles. */

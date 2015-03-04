@@ -1719,6 +1719,51 @@ function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
 	return $count;	
 }
 
+function __add_acltags (&$acltags, $group_id, $tags_str) {
+	if (!isset($acltags[$group_id])) {
+		// Add the new element
+		$acltags[$group_id] = $tags_str;
+	}
+	else {
+		// Add the tags. The empty tags have priority cause mean more permissions
+		$existing_tags = $acltags[$group_id];
+		
+		if (!empty($existing_tags)) {
+			$existing_tags_array = explode(",", $existing_tags);
+			
+			// Store the empty tags
+			if (empty($tags_str)) {
+				$acltags[$group_id] = '';
+			}
+			// Merge the old and new tabs
+			else {
+				$new_tags_array = explode(",", $tags_str);
+				
+				$final_tags_array = array_merge($existing_tags_array, $new_tags_array);
+				$final_tags_str = implode(",", $final_tags_array);
+				
+				if (! empty($final_tags_str))
+					$acltags[$group_id] = $final_tags_str;
+			}
+		}
+	}
+	
+	// Propagation
+	$propagate = (bool) db_get_value('propagate', 'tgrupo', 'id_grupo', $group_tag['id_grupo']);
+	if ($propagate) {
+		$sql = "SELECT id_grupo FROM tgrupo WHERE parent = $group_id";
+		$children = db_get_all_rows_sql($sql);
+		
+		if ($children === false)
+			$children = array();
+		
+		foreach ($children as $children_group) {
+			// Add the tags to the children (recursive)
+			__add_acltags($acltags, $children_group['id_grupo'], $tags_str);
+		}
+	}
+}
+
 /* Return array with groups and their tags */
 function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $strict_user = false) {
 	global $config;
@@ -1778,51 +1823,6 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	$tags_and_groups = $tags_and_groups_aux;
 	unset($tags_and_groups_aux);
 	
-	function __add_acltags (&$acltags, $group_id, $tags_str) {
-		if (!isset($acltags[$group_id])) {
-			// Add the new element
-			$acltags[$group_id] = $tags_str;
-		}
-		else {
-			// Add the tags. The empty tags have priority cause mean more permissions
-			$existing_tags = $acltags[$group_id];
-			
-			if (!empty($existing_tags)) {
-				$existing_tags_array = explode(",", $existing_tags);
-				
-				// Store the empty tags
-				if (empty($tags_str)) {
-					$acltags[$group_id] = '';
-				}
-				// Merge the old and new tabs
-				else {
-					$new_tags_array = explode(",", $tags_str);
-					
-					$final_tags_array = array_merge($existing_tags_array, $new_tags_array);
-					$final_tags_str = implode(",", $final_tags_array);
-					
-					if (! empty($final_tags_str))
-						$acltags[$group_id] = $final_tags_str;
-				}
-			}
-		}
-		
-		// Propagation
-		$propagate = (bool) db_get_value('propagate', 'tgrupo', 'id_grupo', $group_tag['id_grupo']);
-		if ($propagate) {
-			$sql = "SELECT id_grupo FROM tgrupo WHERE parent = $group_id";
-			$children = db_get_all_rows_sql($sql);
-			
-			if ($children === false)
-				$children = array();
-			
-			foreach ($children as $children_group) {
-				// Add the tags to the children (recursive)
-				__add_acltags($acltags, $children_group['id_grupo'], $tags_str);
-			}
-		}
-	}
-
 	foreach ($tags_and_groups as $group_tag) {
 		__add_acltags($acltags, $group_tag['id_grupo'], $group_tag['tags']);
 	}

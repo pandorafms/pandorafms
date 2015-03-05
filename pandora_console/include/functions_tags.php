@@ -616,12 +616,9 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 		}
 	}
 	
-	if ((int)$id_group === 0) {
-		$id_group = array_keys(users_get_groups($id_user, $access, false));
-		
-		if (empty($id_group)) {
-			return ERR_WRONG_PARAMETERS;
-		}$id_group = array();
+	if ($id_group == 0) {
+		// Don't filter
+		$id_group = array();
 	}
 	elseif (empty($id_group)) {
 		return ERR_WRONG_PARAMETERS;

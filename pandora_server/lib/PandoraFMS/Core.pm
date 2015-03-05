@@ -3320,7 +3320,7 @@ sub process_inc_data ($$$$$) {
 	}
 
 	# Negative increment, reset inc data
-	if ($data < $data_inc->{'datos'}) {
+	if ($data < $data_inc->{'datos'} || $utimestamp < $data_inc->{'utimestamp'}) {
 		db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
 		logger($pa_config, "Discarding data and resetting counter for incremental module " . $module->{'nombre'} . "(module id " . $module->{'id_agente_modulo'} . ").", 10);
 

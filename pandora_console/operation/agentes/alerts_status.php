@@ -623,5 +623,5 @@ $('#ag_group').change (function (){
 			$("#table2-0-4").css('display', '');
 		}
 	}
-});
+}).change();
 </script>

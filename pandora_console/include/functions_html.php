@@ -606,7 +606,7 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	
 	global $config;
 	
-	require_once("include/functions_post_process.php");
+	require_once($config['homedir'] . "/include/functions_post_process.php");
 	
 	
 	$fields = post_process_get_custom_values();

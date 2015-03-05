@@ -120,9 +120,6 @@ sub run ($) {
 	# Set the initial date for storm protection.
 	$pa_config->{"__storm_ref__"} = time();
 
-	# This is the only server that reads from disk instead of from the DB. No need for a higher server threshold.
-	$pa_config->{'server_threshold'} = 1;
-
 	$self->setNumThreads ($pa_config->{'snmpconsole_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }

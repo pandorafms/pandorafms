@@ -42,30 +42,35 @@ then
 	. /etc/rc.status
 	rc_reset
 else
-	# Define rc functions for non-suse systems, "void" functions.
-	function rc_status () { VOID=1; }
-	function rc_exit () { exit; }
-	function rc_failed () { VOID=1; }
-
+	# Define part of rc functions for non-suse systems
+	function rc_status () {
+		RETVAL=$?
+		case $1 in
+			-v) RETVAL=0;;
+		esac
+	}
+	function rc_exit () { exit $RETVAL; }
+	function rc_failed () { RETVAL=${1:-1}; }
+	RETVAL=0
 fi
 	
 # This function replace pidof, not working in the same way in different linux distros
 
-function pidof_pandora () (
+function pidof_pandora () {
 	# This sets COLUMNS to XXX chars, because if command is run 
 	# in a "strech" term, ps aux don't report more than COLUMNS
 	# characters and this will not work. 
 	COLUMNS=300
 	PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON $PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
-)
+}
 
 # Main script
 
 if [ ! -f $PANDORA_DAEMON ]
 then
 	echo "Pandora FMS Server not found, please check setup and read manual"
-	rc_status -s
+	rc_failed 5 # program is not installed
 	rc_exit
 fi
 
@@ -74,9 +79,8 @@ case "$1" in
 		PANDORA_PID=`pidof_pandora`
 		if [ ! -z "$PANDORA_PID" ]
 		then
-			echo "Pandora FMS Server is currently running on this machine with PID ($PANDORA_PID). Aborting now..."
-			rc_failed 1
-			rc_exit 
+			echo "Pandora FMS Server is currently running on this machine with PID ($PANDORA_PID)."
+			rc_exit # running start on a service already running
 		fi
 	
 		$PANDORA_DAEMON $PANDORA_HOME -D
@@ -91,7 +95,7 @@ case "$1" in
 		else
 			echo "Cannot start Pandora FMS Server. Aborted."
 			echo "Check Pandora FMS log files at '/var/log/pandora/pandora_server.error & pandora_server.log'"
-			rc_status -s
+			rc_failed 7 # program is not running
 		fi
 	;;
 		
@@ -100,13 +104,13 @@ case "$1" in
 		if [ -z "$PANDORA_PID" ]
 		then
 			echo "Pandora FMS Server is not running, cannot stop it."
-			rc_failed 
+			rc_exit # running stop on a service already stopped or not running
 		else
 			echo "Stopping Pandora FMS Server"
 			kill $PANDORA_PID > /dev/null 2>&1
 			COUNTER=0
 
-		while [ $COUNTER -lt $MAXWAIT ]
+			while [ $COUNTER -lt $MAXWAIT ]
 	 		do
  				_PID=`pidof_pandora`
 				if [ "$_PID" != "$PANDORA_PID" ]
@@ -131,7 +135,7 @@ case "$1" in
 		if [ -z "$PANDORA_PID" ]
 		then
 			echo "Pandora FMS Server is not running."
-			rc_status 
+			rc_failed 7 # program is not running
 		else
 			echo "Pandora FMS Server is running with PID $PANDORA_PID."
 			rc_status

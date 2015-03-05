@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
 -- -----------------------------------------------------
 -- Table `tagente_estado`
 -- -----------------------------------------------------
-CREATE TABLE `tagente_estado` (
+CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`id_agente_estado` int(10) unsigned NOT NULL auto_increment,
 	`id_agente_modulo` int(10) NOT NULL default '0',
 	`datos` text NOT NULL,
@@ -1736,7 +1736,7 @@ CREATE TABLE IF NOT EXISTS `tupdate_settings` (
 -- ---------------------------------------------------------------------
 -- Table `tupdate_package`
 -- ---------------------------------------------------------------------
-CREATE TABLE `tupdate_package` (  
+CREATE TABLE IF NOT EXISTS `tupdate_package` (  
 	id int(11) unsigned NOT NULL auto_increment,  
 	timestamp datetime NOT NULL,  
 	description varchar(255) default '',  PRIMARY KEY (`id`) 
@@ -1745,7 +1745,7 @@ CREATE TABLE `tupdate_package` (
 -- ---------------------------------------------------------------------
 -- Table `tupdate`
 -- ---------------------------------------------------------------------
-CREATE TABLE `tupdate` (  
+CREATE TABLE IF NOT EXISTS `tupdate` (  
 	id int(11) unsigned NOT NULL auto_increment,  
 	type enum('code', 'db_data', 'db_schema', 'binary'),  
 	id_update_package int(11) unsigned NOT NULL default 0,  
@@ -1765,7 +1765,7 @@ CREATE TABLE `tupdate` (
 -- ---------------------------------------------------------------------
 -- Table `tupdate_journal`
 -- ---------------------------------------------------------------------
-CREATE TABLE `tupdate_journal` (  
+CREATE TABLE IF NOT EXISTS `tupdate_journal` (  
 	id int(11) unsigned NOT NULL auto_increment,  
 	id_update int(11) unsigned NOT NULL default 0,  PRIMARY KEY  (`id`),  
 	FOREIGN KEY (`id_update`) REFERENCES tupdate(`id`)   ON UPDATE CASCADE ON DELETE CASCADE 

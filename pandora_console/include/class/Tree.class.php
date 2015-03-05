@@ -325,8 +325,10 @@ class Tree {
 					if (!empty($this->acltags)) {
 						$groups = array();
 						foreach ($this->acltags as $group_id => $tags_str) {
-							if (empty($tags_str))
-								$groups[] = $group_id;
+							if (empty($tags_str)) {
+								$hierarchy_groups = groups_get_id_recursive($group_id);
+								$groups = array_merge($groups, $hierarchy_groups);
+							}
 						}
 						if (!empty($groups)) {
 							if (array_search(0, $groups) === false) {
@@ -452,8 +454,10 @@ class Tree {
 							if (!empty($tags_str)) {
 								$tags = explode(",", $tags_str);
 
-								if (in_array($rootID, $tags))
-									$groups[] = $group_id;
+								if (in_array($rootID, $tags)) {
+									$hierarchy_groups = groups_get_id_recursive($group_id);
+									$groups = array_merge($groups, $hierarchy_groups);
+								}
 							}
 						}
 						if (!empty($groups)) {
@@ -939,23 +943,67 @@ class Tree {
 	static function cmpSortNames($a, $b) {
 		return strcmp($a["name"], $b["name"]);
 	}
-
-	protected function getGroupsChildren($groups, $parent_id, $server = false, $remove_empty = false) {
+	
+	protected function getGroupsChildren(&$groups, &$groups_tmp, $parent_id, $server = false, $remove_empty = false) {
 		$children = array();
 		foreach ($groups as $key => $group) {
-			if ((isset($group['parent']) && $group['parent'] == $parent_id)
-					|| (isset($group['_parent_id_']) && $group['_parent_id_'] == $parent_id)) {
-
-				$children_aux = $this->getProcessedItem($group, $server, $groups, $remove_empty);
+			if (isset($group['parent']) && $group['parent'] == $parent_id) {
+				unset($groups[$key]);
+				
+				$children_aux = $this->getProcessedItem($group, $server, $groups, $groups_tmp, $remove_empty);
 				if (!empty($children_aux))
 					$children[] = $children_aux;
 			}
 		}
-
+		foreach ($groups_tmp as $key_tmp => $group_tmp) {
+			if (isset($group_tmp['parent']) && $group_tmp['parent'] == $parent_id) {
+				unset($groups_tmp[$key_tmp]);
+				
+				$children[] = $group_tmp;
+			}
+		}
+		usort($children, array("Tree", "cmpSortNames"));
+		$children = array_filter($children);
+		
 		return $children;
 	}
 
-	protected function getProcessedItem ($item, $server = false, $items = array(), $remove_empty = false) {
+	protected function getProcessedItem ($item, $server = false, &$items = array(), &$items_tmp = array(), $remove_empty = false) {
+		// For strict items
+		if (isset($item['_id_'])) {
+			$item['id'] = $item['_id_'];
+			$item['name'] = $item['_name_'];
+			
+			if (isset($item['_is_tag_']) && $item['_is_tag_']) {
+				$item['type'] = 'tag';
+				$item['rootType'] = 'tag';
+			}
+			else {
+				$item['type'] = 'group';
+				$item['rootType'] = 'group';
+				$item['parent'] = $item['_parent_id_'];
+				
+				if (!empty($item['_iconImg_']))
+					$item['iconHTML'] = $item['_iconImg_'];
+			}
+			
+			if (isset($item['_agents_unknown_']))
+				$item['total_unknown_count'] = $item['_agents_unknown_'];
+			if (isset($item['_agents_critical_']))
+				$item['total_critical_count'] = $item['_agents_critical_'];
+			if (isset($item['_agents_warning_']))
+				$item['total_warning_count'] = $item['_agents_warning_'];
+			if (isset($item['_agents_not_init_']))
+				$item['total_not_init_count'] = $item['_agents_not_init_'];
+			if (isset($item['_agents_ok_']))
+				$item['total_normal_count'] = $item['_agents_ok_'];
+			if (isset($item['_total_agents_']))
+				$item['total_count'] = $item['_total_agents_'];
+			if (isset($item['_monitors_alerts_fired_']))
+				$item['total_fired_count'] = $item['_monitors_alerts_fired_'];
+		}
+		
+		
 		$processed_item = array();
 		$processed_item['id'] = $item['id'];
 		$processed_item['name'] = $item['name'];
@@ -974,6 +1022,8 @@ class Tree {
 			$processed_item['rootType'] = $this->rootType;
 
 		if ($processed_item['type'] == 'group') {
+			$processed_item['parent'] = $item['parent'];
+			
 			if (!empty($item['iconHTML']))
 				$processed_item['iconHTML'] = $item['iconHTML'];
 			else if (!empty($item['icon']))
@@ -1002,9 +1052,9 @@ class Tree {
 		if (isset($item['total_fired_count']))
 			$counters['alerts'] = $item['total_fired_count'];
 		
-		if ($processed_item['type'] == 'group' && !empty($items)) {
+		if ($processed_item['type'] == 'group') {
 
-			$children = $this->getGroupsChildren($items, $item['id'], $server, $remove_empty);
+			$children = $this->getGroupsChildren($items, $items_tmp, $item['id'], $server, $remove_empty);
 			if (!empty($children)) {
 				$processed_item['children'] = $children;
 
@@ -1476,50 +1526,22 @@ class Tree {
 				
 				// Build the group and tag hierarchy
 				$processed_items = array();
+				$processed_items_tmp = array();
 				foreach ($items as $key => $item) {
-					if (empty($item['_parent_id_'])) {
-						unset($items[$key]);
-						
-						$item['id'] = $item['_id_'];
-						$item['name'] = $item['_name_'];
-						
-						if (isset($item['_is_tag_']) && $item['_is_tag_']) {
-							$item['type'] = 'tag';
-							$item['rootType'] = 'tag';
-						}
-						else {
-							$item['type'] = 'group';
-							$item['rootType'] = 'group';
-							$item['parent'] = $item['_parent_id_'];
-							
-							if (!empty($item['_iconImg_']))
-								$item['iconHTML'] = $item['_iconImg_'];
-						}
-						
-						if (isset($item['_agents_unknown_']))
-							$item['total_unknown_count'] = $item['_agents_unknown_'];
-						if (isset($item['_agents_critical_']))
-							$item['total_critical_count'] = $item['_agents_critical_'];
-						if (isset($item['_agents_warning_']))
-							$item['total_warning_count'] = $item['_agents_warning_'];
-						if (isset($item['_agents_not_init_']))
-							$item['total_not_init_count'] = $item['_agents_not_init_'];
-						if (isset($item['_agents_ok_']))
-							$item['total_normal_count'] = $item['_agents_ok_'];
-						if (isset($item['_total_agents_']))
-							$item['total_count'] = $item['_total_agents_'];
-						if (isset($item['_monitors_alerts_fired_']))
-							$item['total_fired_count'] = $item['_monitors_alerts_fired_'];
-						
-						$processed_item = $this->getProcessedItem($item, false, $items);
-						
-						if (!empty($processed_item)
-								&& isset($processed_item['counters'])
-								&& isset($processed_item['counters']['total'])
-								&& !empty($processed_item['counters']['total'])) {
-							$processed_items[] = $processed_item;
-						}
+					unset($items[$key]);
+					
+					$processed_item = $this->getProcessedItem($item, false, $items, $processed_items_tmp, true);
+					if (!empty($processed_item)
+							&& isset($processed_item['counters'])
+							&& isset($processed_item['counters']['total'])
+							&& !empty($processed_item['counters']['total'])) {
+						$processed_items_tmp[] = $processed_item;
 					}
+				}
+				if (!empty($processed_items_tmp)) {
+					usort($processed_items_tmp, array("Tree", "cmpSortNames"));
+					// array_filter clean the empty elements
+					$processed_items = array_filter($processed_items_tmp);
 				}
 			}
 			else {
@@ -1533,46 +1555,19 @@ class Tree {
 					
 					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
 					
-					// Build the group hierarchy
+					// Build the group and tag hierarchy
 					$processed_items = array();
+					$processed_items_tmp = array();
 					foreach ($items as $key => $item) {
-						if (empty($item['_parent_id_'])) {
-							unset($items[$key]);
-							
-							$item['id'] = $item['_id_'];
-							$item['name'] = $item['_name_'];
-							
-							if (isset($item['_is_tag_']) && $item['_is_tag_']) {
-								$item['type'] = 'tag';
-								$item['rootType'] = 'tag';
-							}
-							else {
-								$item['type'] = 'group';
-								$item['rootType'] = 'group';
-								$item['parent'] = $item['_parent_id_'];
-								
-								if (!empty($item['_iconImg_']))
-									$item['iconHTML'] = $item['_iconImg_'];
-							}
-							
-							if (isset($item['_agents_unknown_']))
-								$item['total_unknown_count'] = $item['_agents_unknown_'];
-							if (isset($item['_agents_critical_']))
-								$item['total_critical_count'] = $item['_agents_critical_'];
-							if (isset($item['_agents_warning_']))
-								$item['total_warning_count'] = $item['_agents_warning_'];
-							if (isset($item['_agents_not_init_']))
-								$item['total_not_init_count'] = $item['_agents_not_init_'];
-							if (isset($item['_agents_ok_']))
-								$item['total_normal_count'] = $item['_agents_ok_'];
-							if (isset($item['_total_agents_']))
-								$item['total_count'] = $item['_total_agents_'];
-							if (isset($item['_monitors_alerts_fired_']))
-								$item['total_fired_count'] = $item['_monitors_alerts_fired_'];
-							
-							$processed_items[] = $this->getProcessedItem($item, $server, $items);
-						}
+						unset($items[$key]);
+						$processed_items_tmp[] = $this->getProcessedItem($item, $server, $items, $processed_items_tmp);
 					}
+					if (!empty($processed_items_tmp)) {
+						usort($processed_items_tmp, array("Tree", "cmpSortNames"));
+						// array_filter clean the empty elements
+						$processed_items = array_filter($processed_items_tmp);
+					}
+					
 					$unmerged_items += $processed_items;
 					
 					metaconsole_restore_db();
@@ -1630,7 +1625,8 @@ class Tree {
 					if (empty($item['parent'])) {
 						
 						unset($items[$key]);
-						$processed_item = $this->getProcessedItem($item, false, $items, true);
+						$items_tmp = array();
+						$processed_item = $this->getProcessedItem($item, false, $items, $items_tmp, true);
 						
 						if (!empty($processed_item)
 								&& isset($processed_item['counters'])

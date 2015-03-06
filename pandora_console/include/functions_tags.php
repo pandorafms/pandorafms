@@ -1548,11 +1548,21 @@ function tags_get_not_init_agents ($id_tag, $groups_and_tags = array()) {
 	return db_get_sql($not_init_agents);
 }
 
-function tags_monitors_count ($type, $id_tag, $groups_and_tags = array()) {
+/**
+ * Get the monitors count.
+ * 
+ * @param int $type Type of the status to filter the counter.
+ * @param int $id_tag Id of the tag to filter the modules.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the modules or false on error.
+ */
+function tags_monitors_count ($type, $id_tag, $groups_and_tags = array(), $id_agente = false) {
 	
 	// Avoid mysql error
 	if (empty($id_tag))
-		return;
+		return false;
 	
 	$groups_clause = "";
 	if (!empty($groups_and_tags)) {
@@ -1574,8 +1584,22 @@ function tags_monitors_count ($type, $id_tag, $groups_and_tags = array()) {
 			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
 		}
 	}
+	$agents_clause = "";
+	if ($id_agente !== false) {
+		if (is_array($id_agente)) {
+			$id_agente = implode(",", $id_agente);
+		}
+		$agents_clause = " AND ta.id_agente IN ($id_agente)";
+	}
 
 	switch ($type) {
+		case AGENT_MODULE_STATUS_ALL:
+			$status = AGENT_MODULE_STATUS_CRITICAL_ALERT.",".AGENT_MODULE_STATUS_CRITICAL_BAD
+				. "," . AGENT_MODULE_STATUS_WARNING_ALERT.",".AGENT_MODULE_STATUS_WARNING
+				. "," . AGENT_MODULE_STATUS_UNKNOWN
+				. "," . AGENT_MODULE_STATUS_NO_DATA.",".AGENT_MODULE_STATUS_NOT_INIT
+				. "," . AGENT_MODULE_STATUS_NORMAL_ALERT.",".AGENT_MODULE_STATUS_NORMAL;
+			break;
 		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 		case AGENT_MODULE_STATUS_CRITICAL_BAD:
 			$status = AGENT_MODULE_STATUS_CRITICAL_ALERT.",".AGENT_MODULE_STATUS_CRITICAL_BAD;
@@ -1597,7 +1621,7 @@ function tags_monitors_count ($type, $id_tag, $groups_and_tags = array()) {
 			break;
 		default:
 			// The type doesn't exist
-			return;
+			return false;
 	}
 	
 	$sql = "SELECT COUNT(DISTINCT tam.id_agente_modulo)
@@ -1611,6 +1635,7 @@ function tags_monitors_count ($type, $id_tag, $groups_and_tags = array()) {
 			INNER JOIN tagente AS ta
 				ON tam.id_agente = ta.id_agente
 					AND ta.disabled = 0
+					$agents_clause
 					$groups_clause
 			WHERE tam.disabled = 0";
 			
@@ -1619,27 +1644,94 @@ function tags_monitors_count ($type, $id_tag, $groups_and_tags = array()) {
 	return $count;	
 }
 
-function tags_monitors_normal ($id_tag, $groups_and_tags = array()) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_NORMAL, $id_tag, $groups_and_tags);
+/**
+ * Get the total monitors count.
+ * 
+ * @param int $id_tag Id of the tag to filter the modules.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the total modules or false on error.
+ */
+function tags_monitors_total ($id_tag, $groups_and_tags = array(), $id_agente = false) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_ALL, $id_tag, $groups_and_tags, $id_agente);
 }
 
-function tags_monitors_critical ($id_tag, $groups_and_tags = array()) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_CRITICAL_BAD, $id_tag, $groups_and_tags);
+/**
+ * Get the normal monitors count.
+ * 
+ * @param int $id_tag Id of the tag to filter the modules.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the normal modules or false on error.
+ */
+function tags_monitors_normal ($id_tag, $groups_and_tags = array(), $id_agente = false) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_NORMAL, $id_tag, $groups_and_tags, $id_agente);
 }
 
-function tags_monitors_warning ($id_tag, $groups_and_tags = array()) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_WARNING, $id_tag, $groups_and_tags);
+/**
+ * Get the critical monitors count.
+ * 
+ * @param int $id_tag Id of the tag to filter the modules.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the critical modules or false on error.
+ */
+function tags_monitors_critical ($id_tag, $groups_and_tags = array(), $id_agente = false) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_CRITICAL_BAD, $id_tag, $groups_and_tags, $id_agente);
 }
 
-function tags_monitors_not_init ($id_tag, $groups_and_tags = array()) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_NOT_INIT, $id_tag, $groups_and_tags);
+/**
+ * Get the warning monitors count.
+ * 
+ * @param int $id_tag Id of the tag to filter the modules.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the warning modules or false on error.
+ */
+function tags_monitors_warning ($id_tag, $groups_and_tags = array(), $id_agente = false) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_WARNING, $id_tag, $groups_and_tags, $id_agente);
 }
 
-function tags_monitors_unknown ($id_tag, $groups_and_tags = array()) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_UNKNOWN, $id_tag, $groups_and_tags);
+/**
+ * Get the not init monitors count.
+ * 
+ * @param int $id_tag Id of the tag to filter the modules.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the not init modules or false on error.
+ */
+function tags_monitors_not_init ($id_tag, $groups_and_tags = array(), $id_agente = false) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_NOT_INIT, $id_tag, $groups_and_tags, $id_agente);
 }
 
-function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
+/**
+ * Get the unknown monitors count.
+ * 
+ * @param int $id_tag Id of the tag to filter the modules.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the unknown modules or false on error.
+ */
+function tags_monitors_unknown ($id_tag, $groups_and_tags = array(), $id_agente = false) {
+	return tags_monitors_count(AGENT_MODULE_STATUS_UNKNOWN, $id_tag, $groups_and_tags, $id_agente);
+}
+
+/**
+ * Get the monitors fired alerts count.
+ * 
+ * @param int $id_tag Id of the tag to filter the modules.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the modules fired alerts or false on error.
+ */
+function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array(), $id_agente = false) {
 	
 	// Avoid mysql error
 	if (empty($id_tag))
@@ -1664,6 +1756,13 @@ function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
 			$groups_id_str = implode(",", $groups_id);
 			$groups_clause = " AND tagente.id_grupo IN ($groups_id_str)"; 
 		}
+	}
+	$agents_clause = "";
+	if ($id_agente !== false) {
+		if (is_array($id_agente)) {
+			$id_agente = implode(",", $id_agente);
+		}
+		$agents_clause = " AND tagente.id_agente IN ($id_agente)";
 	}
 							
 	$sql = "SELECT COUNT(talert_template_modules.id)
@@ -1675,6 +1774,7 @@ function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
 		AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
 		AND times_fired > 0 
 		AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag = $id_tag)
+		$agents_clause
 		$groups_clause";
 
 	$count = db_get_sql ($sql);
@@ -1682,7 +1782,16 @@ function tags_monitors_fired_alerts ($id_tag, $groups_and_tags = array()) {
 	return $count;
 }
 
-function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array()) {
+/**
+ * Get the monitors alerts count.
+ * 
+ * @param int $id_tag Id of the tag to filter the modules alerts.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * 
+ * @return mixed Returns the count of the modules alerts or false on error.
+ */
+function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array(), $id_agente = false) {
 	
 	// Avoid mysql error
 	if (empty($id_tag))
@@ -1708,6 +1817,13 @@ function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array()) {
 			$groups_clause = " AND tagente.id_grupo IN ($groups_id_str)"; 
 		}
 	}
+	$agents_clause = "";
+	if ($id_agente !== false) {
+		if (is_array($id_agente)) {
+			$id_agente = implode(",", $id_agente);
+		}
+		$agents_clause = " AND tagente.id_agente IN ($id_agente)";
+	}
 								
 	$sql = "SELECT COUNT(talert_template_modules.id)
 		FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
@@ -1717,6 +1833,7 @@ function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array()) {
 		AND	talert_template_modules.disabled = 0 
 		AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
 		AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag = $id_tag)
+		$agents_clause
 		$groups_clause";
 
 	$count = db_get_sql ($sql);

@@ -8164,6 +8164,8 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 	$agent_data[0] = html_print_image('images/agent_notinit.png', true, array('title' => __('Agents not init')));
 	$agent_data[1] = "<a style='color: #729fcf;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
 	$table_agent->data[] = $agent_data;
+	$agent_data[2] = "";
+	$agent_data[3] = "";
 	
 	if (!defined('METACONSOLE')){
 		$agents_data = '<fieldset class="databox tactical_set">

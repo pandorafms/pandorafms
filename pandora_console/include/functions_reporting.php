@@ -10,7 +10,6 @@
 // as published by the Free Software Foundation; version 2
 
 // This program is distributed in the hope that it will be useful,
-// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -8144,30 +8143,55 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 	}
 	
 	$table_agent = html_get_predefined_table();
-		
+	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_critical.png', true, array('title' => __('Agents critical')));
-	$agent_data[1] = "<a style='color: #bc0000;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['agent_critical'])."</span></b></a>";
+	if (!defined('METACONSOLE')) {
+		$agent_data[1] = "<a style='color: #bc0000;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['agent_critical'])."</span></b></a>";
+	}
+	else {
+		$agent_data[1] = "<span style='color: #bc0000;'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['agent_critical'])."</span></b></span>";
+	}
 	$agent_data[2] = html_print_image('images/agent_warning.png', true, array('title' => __('Agents warning')));
-	$agent_data[3] = "<a style='color: #aba900;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['agent_warning'])."</span></b></a>";
-
+	if (!defined('METACONSOLE')) {
+		$agent_data[3] = "<a style='color: #aba900;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['agent_warning'])."</span></b></a>";
+	}
+	else {
+		$agent_data[3] = "<span style='color: #aba900;'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['agent_warning'])."</span></b></span>";
+	}
+	
 	$table_agent->data[] = $agent_data;
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_ok.png', true, array('title' => __('Agents ok')));
-	$agent_data[1] = "<a style='color: #6ec300;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['agent_ok'])."</span></b></a>";
+	if (!defined('METACONSOLE')) {
+		$agent_data[1] = "<a style='color: #6ec300;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['agent_ok'])."</span></b></a>";
+	}
+	else {
+		$agent_data[1] = "<span style='color: #6ec300;'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['agent_ok'])."</span></b></span";
+	}
 	$agent_data[2] = html_print_image('images/agent_unknown.png', true, array('title' => __('Agents unknown')));
-	$agent_data[3] = "<a style='color: #886666;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['agent_unknown'])."</span></b></a>";
+	if (!defined('METACONSOLE')) {
+		$agent_data[3] = "<a style='color: #886666;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['agent_unknown'])."</span></b></a>";
+	}
+	else {
+		$agent_data[3] = "<span style='color: #886666;'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['agent_unknown'])."</span></b></span>";
+	}
 	$table_agent->data[] = $agent_data;
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_notinit.png', true, array('title' => __('Agents not init')));
-	$agent_data[1] = "<a style='color: #729fcf;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
+	if (!defined('METACONSOLE')) {
+		$agent_data[1] = "<a style='color: #729fcf;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
+	}
+	else {
+		$agent_data[1] = "<span style='color: #729fcf;'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['agent_not_init'])."</span></b></span>";
+	}
 	$table_agent->data[] = $agent_data;
 	$agent_data[2] = "";
 	$agent_data[3] = "";
 	
-	if (!defined('METACONSOLE')){
+	if (!defined('METACONSOLE')) {
 		$agents_data = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Agents by status') . 
@@ -8241,22 +8265,24 @@ function reporting_get_total_servers ($num_servers) {
 
 function reporting_get_events ($data, $links = false) {
 	global $config;
-
+	
 	$table_events->width = "100%";
 	
-	$table_events->data[0][0] = html_print_image('images/agent_critical.png', true, array('title' => __('Critical events')));
-	$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #bc0000;' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['critical'])."</span></b></a>";
-
-	$table_events->data[0][1] = html_print_image('images/agent_warning.png', true, array('title' => __('Warning events')));
-	$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #aba900;' href='" . $links['warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['warning'])."</span></b></a>";
-	$table_events->data[0][2] = html_print_image('images/agent_ok.png', true, array('title' => __('OK events')));
-	$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #6ec300;' href='" . $links['normal'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['normal'])."</span></b></a>";
-	$table_events->data[0][3] = html_print_image('images/agent_unknown.png', true, array('title' => __('Unknown events')));
-	$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #886666;' href='" . $links['unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['unknown'])."</span></b></a>";
-	$table_events->data[0][4] = html_print_image('images/agent_notinit.png', true, array('title' => __('Not init events')));
-	$table_events->data[0][4] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #729fcf;' href='" . $links['not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['not_init'])."</span></b></a>";
+	$table_events->data[0][0] = html_print_image('images/module_critical.png', true, array('title' => __('Critical events')));
+	$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
+		"<a style='color: #bc0000;' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['critical'])."</span></b></a>";
 	
-	if(!defined('METACONSOLE')){
+	$table_events->data[0][1] = html_print_image('images/module_warning.png', true, array('title' => __('Warning events')));
+	$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;" .
+		"<a style='color: #aba900;' href='" . $links['warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['warning'])."</span></b></a>";
+	$table_events->data[0][2] = html_print_image('images/module_ok.png', true, array('title' => __('OK events')));
+	$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;" .
+		"<a style='color: #6ec300;' href='" . $links['normal'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['normal'])."</span></b></a>";
+	$table_events->data[0][3] = html_print_image('images/module_unknown.png', true, array('title' => __('Unknown events')));
+	$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
+		"<a style='color: #886666;' href='" . $links['unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['unknown'])."</span></b></a>";
+	
+	if (!defined('METACONSOLE')) {
 		$event_view = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Events by criticity') . 
@@ -8277,7 +8303,7 @@ function reporting_get_events ($data, $links = false) {
 
 function reporting_get_last_activity() {
 	global $config;
-			
+	
 	// Show last activity from this user
 	
 	$table->width = '100%';
@@ -8368,7 +8394,7 @@ function reporting_get_event_histogram ($events) {
 		EVENT_CRIT_MAJOR => COL_MAJOR,
 		EVENT_CRIT_CRITICAL => COL_CRITICAL
 	);
-					
+	
 	foreach ($events as $data) {
 	
 		switch ($data['criticity']) {

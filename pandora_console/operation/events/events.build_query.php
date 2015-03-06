@@ -20,18 +20,20 @@ $propagate = db_get_value('propagate','tgrupo','id_grupo',$id_group);
 if ($id_group > 0) {
 	if ($propagate) {
 		$childrens_ids = array($id_group);
-			
+		
 		$childrens = groups_get_childrens($id_group);
-
+		
 		if (!empty($childrens)) {
 			foreach ($childrens as $child) {
 				$childrens_ids[] = (int)$child['id_grupo'];
 			}
 		}
-	} else {
+	}
+	else {
 		$childrens_ids = array();
 	}
-} else {
+}
+else {
 	$childrens_ids = array_keys($groups);
 }
 

@@ -252,7 +252,7 @@ $table->id = 'load_filter_form';
 $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
-f(defined('METACONSOLE')){
+if(defined('METACONSOLE')){
 	$table->width = '100%';
 	$table->cellspacing = 4;
 	$table->cellpadding = 4;

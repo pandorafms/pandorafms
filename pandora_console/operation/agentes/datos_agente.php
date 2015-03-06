@@ -32,7 +32,7 @@ $freestring = get_parameter ("freestring");
 $connection = get_parameter ("connection", 'main');
 if ($connection == 'history' && $config['history_db_enabled'] == 1) {
 	if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
-		$config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
+		$config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
 	}
 	$connection_handler = $config['history_db_connection'];
 }

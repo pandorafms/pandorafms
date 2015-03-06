@@ -440,4 +440,44 @@ function io_json_mb_encode($string){
 	return $v;
 }
 
+/*
+ * Prepare the given password to be stored in the Pandora FMS Database, 
+ * encrypting it if necessary.
+ *
+ * @param string password Password to be stored.
+ *
+ * @return string The processed password.
+*/
+function io_input_password($password) {
+	global $config;
+	
+	enterprise_include_once('include/functions_crypto.php');
+	$ciphertext = enterprise_hook('crypto_encrypt', array($password));
+	if ($ciphertext === ENTERPRISE_NOT_HOOK) {
+			return $password;
+	}
+
+	return $ciphertext;
+}
+
+/*
+ * Process the given password read from the Pandora FMS Database, 
+ * decrypting it if necessary.
+ *
+ * @param string password Password read from the DB.
+ *
+ * @return string The processed password.
+*/
+function io_output_password($password) {
+	global $config;
+
+	enterprise_include_once('include/functions_crypto.php');
+	$plaintext = enterprise_hook('crypto_decrypt', array($password));
+	if ($plaintext === ENTERPRISE_NOT_HOOK) {
+			return $password;
+	}
+
+	return $plaintext;
+}
+
 ?>

@@ -186,8 +186,10 @@ sub data_consumer ($$) {
 				{
 					my $macro_field = safe_output($macros{$macro_id}{'macro'});
 					my $macro_desc  = safe_output($macros{$macro_id}{'desc'});
-					my $macro_value = safe_output($macros{$macro_id}{'value'});
-					
+					my $macro_value = (defined($macros{$macro_id}{'hide'}) && $macros{$macro_id}{'hide'} eq '1') ?
+					                  pandora_output_password($pa_config, safe_output($macros{$macro_id}{'value'})) :
+					                  safe_output($macros{$macro_id}{'value'});
+
 					# build parameters to invoke plugin
 					$parameters =~ s/$macros{$macro_id}{'macro'}/$macro_value/g;
 

@@ -32,7 +32,7 @@ $token = ';,;';
 
 $update_incident = get_parameter('update_incident', 0);
 
-$integria_api = $config['integria_url']."/include/api.php?return_type=xml&user=".$config['id_user']."&pass=".$config['integria_api_password'];
+$integria_api = $config['integria_url']."/include/api.php?return_type=xml&user=".$config['id_user']."&pass=".io_output_password($config['integria_api_password']);
 
 // Header
 if ($tab == 'list' || $tab == 'editor') {

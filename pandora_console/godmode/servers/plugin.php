@@ -383,6 +383,9 @@ if (($create != "") OR ($view != "")) {
 		
 		if(isset($macros[$i]['hide'])) {
 			$macro_hide_value_value = $macros[$i]['hide'];
+
+			// Decrypt hidden macros.
+			$macro_value_value = io_output_password($macro_value_value);
 		}
 		
 		$datam = array ();
@@ -530,7 +533,11 @@ else {
 			$macros[$i]['macro'] = $macro;
 			$macros[$i]['desc'] = $desc;
 			$macros[$i]['help'] = $help;
-			$macros[$i]['value'] = $value;
+			if ($hide == 1) {
+				$macros[$i]['value'] = io_input_password($value);
+			} else {
+				$macros[$i]['value'] = $value;
+			}
 			$macros[$i]['hide'] = $hide;
 
 			$i++;
@@ -585,7 +592,11 @@ else {
 			$macros[$i]['macro'] = $macro;
 			$macros[$i]['desc'] = $desc;
 			$macros[$i]['help'] = $help;
-			$macros[$i]['value'] = $value;
+			if ($hide == 1) {
+				$macros[$i]['value'] = io_input_password($value);
+			} else {
+				$macros[$i]['value'] = $value;
+			}
 			$macros[$i]['hide'] = $hide;
 			$i++;
 		}

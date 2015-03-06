@@ -147,7 +147,7 @@ function postgresql_db_get_all_rows_sql ($sql, $search_history_db = false, $cach
 		$history = false;
 		
 		// Connect to the history DB
-		$history_db_connection = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
+		$history_db_connection = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], io_output_password($config['history_db_port'], false));
 		if ($history_db_connection !== false) {
 			$history = postgresql_db_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
 		}
@@ -1086,7 +1086,7 @@ function postgresql_db_get_table_count($sql, $search_history_db = false) {
 		
 		// Connect to the history DB
 		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
-			$config['history_db_connection'] = postgresql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
+			$config['history_db_connection'] = postgresql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
 		}
 		if ($config['history_db_connection'] !== false) {
 			$history_count = postgresql_db_get_value_sql ($sql, $config['history_db_connection']);

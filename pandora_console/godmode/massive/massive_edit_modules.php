@@ -946,18 +946,6 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'each_ff', 'module_ff_interval', 'ff_timeout', 'max_timeout');
 	$values = array ();
 	
-	// Specific snmp reused fields
-	if (get_parameter ('tcp_send', '') == 3) {
-		$plugin_user_snmp = get_parameter ('plugin_user_snmp', '');
-		if ($plugin_user_snmp != '') {
-			$values['plugin_user'] = $plugin_user_snmp;
-		}
-		$plugin_pass_snmp = get_parameter ('plugin_pass_snmp', '');
-		if ($plugin_pass_snmp != '') {
-			$values['plugin_pass'] = $plugin_pass_snmp;
-		}
-	}
-	
 	foreach ($fields as $field) {
 		$value = get_parameter ($field, '');
 		
@@ -967,11 +955,32 @@ function process_manage_edit ($module_name, $agents_select = null) {
 					$values[$field] = $value;
 				}
 				break;
+			case 'plugin_pass':
+				if ($value != '') {
+					$values['plugin_pass'] = io_input_password($value);
+				}
+				break;
 			default:
 				if ($value != '') {
 					$values[$field] = $value;
 				}
 				break;
+		}
+	}
+
+	// Specific snmp reused fields
+	if (get_parameter ('tcp_send', '') == 3) {
+		$plugin_user_snmp = get_parameter ('plugin_user_snmp', '');
+		if ($plugin_user_snmp != '') {
+			$values['plugin_user'] = $plugin_user_snmp;
+		}
+		$plugin_pass_snmp = get_parameter ('plugin_pass_snmp', '');
+		if ($plugin_pass_snmp != '') {
+			$values['plugin_pass'] = io_input_password($plugin_pass_snmp);
+		}
+		$snmp3_privacy_pass = get_parameter ('custom_string_2', '');
+		if ($snmp3_privacy_pass != '') {
+			$values['custom_string_2'] = io_input_password($snmp3_privacy_pass);
 		}
 	}
 	

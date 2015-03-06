@@ -50,7 +50,11 @@ if (!empty($macros)) {
 		if (!empty($m['help'])) {
 			$data[0] .= ui_print_help_tip ($m['help'], true);
 		}
-		$data[1] = html_print_input_text($m['macro'], $m['value'], '', 15, 60, true);
+		if ($m['hide'] == 1) {
+			$data[1] = html_print_input_text($m['macro'], $m['value'], '', 15, 60, true);
+		} else {
+			$data[1] = html_print_input_text($m['macro'], io_output_password($m['value']), '', 15, 60, true);
+		}
 		$table->colspan['macro'.$m['macro']][1] = 3;
 		$table->rowclass['macro'.$m['macro']] = 'macro_field';
 		

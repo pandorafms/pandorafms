@@ -205,6 +205,7 @@ if ($filemanager) {
 $sec = 'gservers';
 
 if (($create != "") OR ($view != "")) {
+	enterprise_hook('open_meta_frame');
 	
 	if (defined('METACONSOLE')) {
 		components_meta_print_header();
@@ -220,7 +221,6 @@ if (($create != "") OR ($view != "")) {
 		}
 	}
 	
-	enterprise_hook('open_meta_frame');
 	
 	if ($create == "") {
 		$plugin_id = get_parameter ("view", "");
@@ -263,12 +263,24 @@ if (($create != "") OR ($view != "")) {
 	$table->colspan['plugin_desc'][1] = 3;
 	$table->data['plugin_desc'] = $data;
 	
-	echo '<br>';
-	echo '<table class="databox" style="margin: 0 auto; width: 98%;"><tr><td>';
+	if (!defined("METACONSOLE")){
+		echo '<br>';
+		echo '<table class="databox" style="margin: 0 auto; width: 98%;"><tr><td>';
+	}
 	
-	echo '<fieldset style="width:96%"><legend>'.__('General').'</legend>';
-	html_print_table($table);
-	echo '</fieldset>';
+	if (defined("METACONSOLE")){
+		$table->width = '100%';
+		$table->class = 'databox data';
+		$table->head[0] = __('General');
+		$table->head_colspan[0] = 4;
+		$table->headstyle[0] = 'text-align: center';
+		echo '<br>';
+		html_print_table($table);
+	}else{
+		echo '<fieldset style="width:96%"><legend>'.__('General').'</legend>';
+		html_print_table($table);
+		echo '</fieldset>';
+	}
 	
 	$table->data = array();
 	
@@ -318,9 +330,19 @@ if (($create != "") OR ($view != "")) {
 	$data[1] = '<div id="command_preview" style="font-style:italic"></div>';
 	$table->data['plugin_preview'] = $data;
 	
-	echo '<fieldset style="width:96%"><legend>'.__('Command').'</legend>';
-	html_print_table($table);
-	echo '</fieldset>';
+	if (defined("METACONSOLE")){
+		$table->width = '100%';
+		$table->class = 'databox data';
+		$table->head[0] = __('Command');
+		$table->head_colspan[0] = 4;
+		$table->headstyle[0] = 'text-align: center';
+		echo '<br>';
+		html_print_table($table);
+	}else{
+		echo '<fieldset style="width:96%"><legend>'.__('Command').'</legend>';
+		html_print_table($table);
+		echo '</fieldset>';
+	}
 	
 	$data = array();
 	
@@ -424,11 +446,24 @@ if (($create != "") OR ($view != "")) {
 		$table->data['plugin_action'] = $datam;
 	}
 	
-	echo '<fieldset style="width:96%"><legend>'.__('Parameters macros').ui_print_help_icon ('macros', true).'</legend>';
-	html_print_table($table);
-	echo '</fieldset>';
+	if (defined("METACONSOLE")){
+		$table->width = '100%';
+		$table->class = 'databox data';
+		$table->head[0] = __('Parameters macros');
+		$table->head_colspan[0] = 4;
+		$table->headstyle[0] = 'text-align: center';
+		echo '<br>';
+		html_print_table($table);
+	}else{
+		echo '<fieldset style="width:96%"><legend>'.__('Parameters macros').ui_print_help_icon ('macros', true).'</legend>';
+		html_print_table($table);
+		echo '</fieldset>';
+	}
 	
-	echo '<table width="98%">';
+	if (defined("METACONSOLE"))
+		echo '<table width="100%">';
+	else
+		echo '<table width="98%">';
 	echo '<tr><td align="right">';
 	
 	if ($create != "") {
@@ -441,11 +476,17 @@ if (($create != "") OR ($view != "")) {
 	}
 	echo '</form></table>';
 	
-	echo '</td></tr></table>';
+	if (defined("METACONSOLE"))
+		echo '</td></tr>';
+	else
+		echo '</td></tr></table>';
 	
 	enterprise_hook('close_meta_frame');
 }
 else {
+	
+	enterprise_hook('open_meta_frame');
+	
 	if(defined('METACONSOLE')) {
 		components_meta_print_header();
 		$sec = 'advanced';
@@ -460,8 +501,7 @@ else {
 			echo '</div>';
 		}
 	}
-	
-	enterprise_hook('open_meta_frame');
+
 	
 	// Update plugin
 	if (isset($_GET["update_plugin"])) { // if modified any parameter
@@ -609,7 +649,11 @@ else {
 	$rows = db_get_all_rows_sql('SELECT * FROM tplugin ORDER BY name');
 	
 	if ($rows !== false) {
-		echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox">';
+		if(defined('METACONSOLE'))
+			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox">';
+		else
+			echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox">';
+			
 		echo "<th>" . __('Name') . "</th>";
 		echo "<th>" . __('Type') . "</th>";
 		echo "<th>" . __('Command') . "</th>";
@@ -669,7 +713,11 @@ else {
 			'</div>';
 		echo "<br>";
 	}
-	echo "<table width='98%'>";
+	if(defined('METACONSOLE'))
+		echo "<table width='100%'>";
+	else
+		echo "<table width='98%'>";
+
 	echo "<tr><td align=right>";
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=" . $config['pure'] . "'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";

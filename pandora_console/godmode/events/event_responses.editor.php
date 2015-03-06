@@ -57,6 +57,14 @@ else {
 
 $table->width = '90%';
 
+if(defined('METACONSOLE')){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	$table->head[0] = __('Edit event responses');
+	$table->head_colspan[0] = 5;
+	$table->headstyle[0] = 'text-align: center';
+}
+
 $table->size = array();
 
 $table->style[0] = 'font-weight: bold;';
@@ -119,7 +127,10 @@ $table->data[4] = $data;
 if ($event_response_id == 0) {
 	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
 	html_print_table($table);
-	echo '<br><br><div style="width:90%;text-align:right;">';
+	if(!defined('METACONSOLE'))
+		echo '<br><br><div style="width:90%;text-align:right;">';
+	else
+		echo '<br><br><div style="width:100%;text-align:right;">';
 	html_print_submit_button(__('Create'), 'create_response_button', false, array('class' => 'sub next'));
 	echo '</div>';
 	echo '</form>';
@@ -127,7 +138,10 @@ if ($event_response_id == 0) {
 else {
 	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=update_response&amp;pure='.$config['pure'].'">';
 	html_print_table($table);
-	echo '<br><br><div style="width:90%;text-align:right;">';
+	if(!defined('METACONSOLE'))
+		echo '<br><br><div style="width:90%;text-align:right;">';
+	else
+		echo '<br><br><div style="width:100%;text-align:right;">';
 	html_print_submit_button(__('Update'), 'update_response_button', false, array('class' => 'sub next'));
 	echo '</div>';
 	echo '</form>';

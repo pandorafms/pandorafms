@@ -18,6 +18,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
@@ -89,7 +91,6 @@ else {
 	$sec = 'gusuarios';
 }
 
-enterprise_hook('open_meta_frame');
 
 if ($config['user_can_update_info']) {
 	$view_mode = false;
@@ -414,6 +415,18 @@ if ($delete_profile) {
 
 $table->id = 'user_configuration_table';
 $table->width = '98%';
+if (defined('METACONSOLE')){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	if ($id) {
+		$table->head[0] = __('Update User');
+	}
+	else {
+		$table->head[0] = __('Create User');
+	}
+	$table->head_colspan[0] = 5;
+	$table->headstyle[0] = 'text-align: center';
+}
 $table->data = array ();
 $table->colspan = array ();
 $table->size = array ();
@@ -579,15 +592,24 @@ echo '<br />';
 
 /* Don't show anything else if we're creating an user */
 if (!empty ($id) && !$new_user) {
-	echo '<h4>'. __('Profiles/Groups assigned to this user') . '</h4>';
+	if (!defined("METACONSOLE"))
+		echo '<h4>'. __('Profiles/Groups assigned to this user') . '</h4>';
 
 	$table->width = '98%';
+	if (defined("METACONSOLE")){
+		$table->head_colspan[0] = 0;
+		$table->width = '100%';
+		$table->class = 'databox_tactical data';
+		$table->title = '<span>' . __('Profiles/Groups assigned to this user') . '</span>';
+	}
 	$table->data = array ();
 	$table->head = array ();
 	$table->align = array ();
 	$table->style = array ();
-	$table->style[0] = 'font-weight: bold';
-	$table->style[1] = 'font-weight: bold';
+	if (!defined("METACONSOLE")){
+		$table->style[0] = 'font-weight: bold';
+		$table->style[1] = 'font-weight: bold';
+	}
 	$table->head[0] = __('Profile name');
 	$table->head[1] = __('Group');
 	$table->head[2] = __('Tags');

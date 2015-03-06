@@ -18,6 +18,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
@@ -122,7 +124,6 @@ else {
 	
 }
 
-enterprise_hook('open_meta_frame');
 
 $disable_user = get_parameter ("disable_user", false);
 
@@ -218,8 +219,10 @@ if (($filter_group == 0) && ($filter_search == '')) {
 }
 
 $table = null;
-$table->width = '99%';
+$table->width = '100%';
 $table->class = "databox";
+if(defined('METACONSOLE'))
+	$table->class = "databox_filters";
 $table->rowclass[0] = '';
 $table->data[0][0] = '<b>' . __('Group') . '</b>';
 $table->data[0][1] = html_print_select_groups(false, "AR", true,
@@ -232,18 +235,33 @@ $table->data[0][4] = html_print_submit_button(__('Search'), 'search',
 	false, array('class' => 'sub search'), true);
 
 
+if(defined('METACONSOLE')){
+	$table->width = '50%';
+	$form_filter = "<form class='filters_form' method='post'>";
+	$form_filter .= html_print_table($table, true);
+	$form_filter .= "</form>";
+	echo $form_filter;
+}else{
+	$form_filter = "<form method='post'>";
+	$form_filter .= html_print_table($table, true);
+	$form_filter .= "</form>";
+	ui_toggle($form_filter, __('Users control filter'), __('Toggle filter(s)'), !$search);
 
-$form_filter = "<form method='post'>";
-$form_filter .= html_print_table($table, true);
-$form_filter .= "</form>";
-
-ui_toggle($form_filter, __('Users control filter'), __('Toggle filter(s)'), !$search);
+}
 
 $table = null;
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->width = '99%';
-$table->class = "databox";
+if(defined('METACONSOLE')){
+	$table->cellpadding = 0;
+	$table->cellspacing = 0;
+	$table->width = '100%';
+	$table->class = "databox";
+}
+else{
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->width = '99%';
+	$table->class = "databox";
+}
 $table->head = array ();
 $table->data = array ();
 $table->align = array ();

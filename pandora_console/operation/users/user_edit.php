@@ -19,6 +19,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
@@ -85,7 +87,6 @@ else {
 	$url = 'index.php?sec=workspace&amp;sec2=operation/users/user_edit';
 }
 
-enterprise_hook('open_meta_frame');
 
 // Update user info
 if (isset ($_GET["modified"]) && !$view_mode) {
@@ -183,6 +184,13 @@ $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'vertical_fields';
+if (defined('METACONSOLE')){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	$table->head[0] = __('Edit my User');
+	$table->head_colspan[0] = 5;
+	$table->headstyle[0] = 'text-align: center';
+}
 $table->style[2] = 'width: 175px;';
 
 $data = array();
@@ -385,15 +393,26 @@ echo '</div></form>';
 
 unset($table);
 
-echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
+if (!defined('METACONSOLE'))
+	echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
 
 $table->width = '98%';
+if (defined('METACONSOLE')){
+	echo '<br />';
+	$table->width = '100%';
+	$table->class = 'databox_tactical data';
+	$table->title = __('Profiles/Groups assigned to this user');
+	$table->head_colspan[0] = 0;
+}
+
 $table->data = array ();
 $table->head = array ();
 $table->align = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold';
-$table->style[1] = 'font-weight: bold';
+if (!defined('METACONSOLE')){
+	$table->style[0] = 'font-weight: bold';
+	$table->style[1] = 'font-weight: bold';
+}
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Tags');

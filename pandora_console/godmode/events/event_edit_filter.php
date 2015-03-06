@@ -157,7 +157,16 @@ $table->class = "databox";
 $table->style[0] = 'vertical-align: top;';
 
 $table->valign[1] = 'top';
-
+if (defined('METACONSOLE')){
+	echo '<div class="title_tactical">' . __('Create Filter') . '</div>';
+	$table->width = '100%';
+	$table->border = 0;
+	$table->cellspacing = 3;
+	$table->cellpadding = 5;
+	$table->class = "databox data";
+	$table->style[0] = '';
+	$table->valign[1] = '';
+}
 $table->data = array ();
 $table->data[0][0] = '<b>'.__('Filter name').'</b>';
 $table->data[0][1] = html_print_input_text ('id_name', $id_name, false, 20, 80, true);

@@ -67,6 +67,11 @@ switch ($action) {
 
 $table->width = '98%';
 if (defined('METACONSOLE')) {
+	$table->width = '100%';
+	$table->class = 'databox data';
+	$table->head[0] = __("Create visual console");
+	$table->head_colspan[0] = 5;
+	$table->headstyle[0] = 'text-align: center';
 	$table->align[0] = 'left';
 	$table->align[1] = 'left';
 }

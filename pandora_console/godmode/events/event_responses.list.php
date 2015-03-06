@@ -25,11 +25,13 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
-echo '<br><br><div style="width:99%;text-align:right;">';
-echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
-html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
-echo '</form>';
-echo '</div>';
+if(!defined('METACONSOLE')){
+	echo '<br><br><div style="width:99%;text-align:right;">';
+	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
+	html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
+	echo '</form>';
+	echo '</div>';
+}
 
 if (!is_user_admin($config['id_user'])) {
 	$id_groups = array_keys(users_get_groups(false, "PM"));
@@ -47,7 +49,8 @@ if(empty($event_responses)) {
 }
 
 $table->width = '99%';
-
+if(defined('METACONSOLE'))
+	$table->width = '100%';
 $table->size = array();
 $table->size[0] = '200px';
 $table->size[2] = '70px';
@@ -75,4 +78,11 @@ foreach($event_responses as $response) {
 
 html_print_table($table);
 
+if(defined('METACONSOLE')){
+	echo '<br><br><div style="width:100%;text-align:right;">';
+	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
+	html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
+	echo '</form>';
+	echo '</div>';
+}
 ?>

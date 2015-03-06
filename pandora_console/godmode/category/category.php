@@ -19,6 +19,8 @@ global $config;
 // Check login and ACLs
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	db_pandora_audit("ACL Violation", "Trying to access Categories Management");
 	require ("general/noaccess.php");
@@ -34,11 +36,20 @@ $search = (int) get_parameter ("search_category", 0);
 $category_name = (string) get_parameter ("category_name","");
 $tab = (string) get_parameter ("tab", "list");
 
-$buttons = array(
-	'list' => array(
-		'active' => false,
-		'text' => '<a href="index.php?sec=galertas&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
-			html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
+if(defined('METACONSOLE')) {
+	$buttons = array(
+		'list' => array(
+			'active' => false,
+			'text' => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
+				html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
+}
+else{
+	$buttons = array(
+		'list' => array(
+			'active' => false,
+			'text' => '<a href="index.php?sec=galertas&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
+				html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
+}
 
 $buttons[$tab]['active'] = true;
 
@@ -50,7 +61,6 @@ else {
 	ui_print_page_header (__('Categories configuration'), "images/gm_modules.png", false, "", true, $buttons);
 }
 
-enterprise_hook('open_meta_frame');
 
 // Two actions can performed in this page: search and delete categories
 
@@ -79,16 +89,18 @@ $result = false;
 $result = categories_get_all_categories ();
 
 // Form to add new categories or search categories
-echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
-echo "<tr>";
-echo "<td align=right>";
-	echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
-	html_print_input_hidden ("create_category", "1", true);
-	html_print_submit_button (__('Create category'), 'create_button', false, 'class="sub next"');
-	echo "</form>";
-echo "</td>";
-echo "</tr>";
-echo "</table>";
+if(!defined('METACONSOLE')){
+	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox' width=98%>";
+	echo "<tr>";
+	echo "<td align=right>";
+		echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
+		html_print_input_hidden ("create_category", "1", true);
+		html_print_submit_button (__('Create category'), 'create_button', false, 'class="sub next"');
+		echo "</form>";
+	echo "</td>";
+	echo "</tr>";
+	echo "</table>";
+}
 
 // Prepare pagination
 ui_pagination ($total_categories, $url);
@@ -100,6 +112,8 @@ $iterator = 0;
 if (!empty($result)) {
 	
 	$table->width = '98%';
+	if(defined('METACONSOLE'))
+		$table->width = '100%';
 	$table->data = array ();
 	$table->head = array ();
 	$table->align = array ();
@@ -126,6 +140,19 @@ if (!empty($result)) {
 	}
 	
 	html_print_table ($table);
+	
+	if(defined('METACONSOLE')){
+		echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
+		echo "<tr>";
+		echo "<td align=right>";
+			echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
+			html_print_input_hidden ("create_category", "1", true);
+			html_print_submit_button (__('Create category'), 'create_button', false, 'class="sub next"');
+			echo "</form>";
+		echo "</td>";
+		echo "</tr>";
+		echo "</table>";
+	}
 }
 else {
 	// No categories available or selected

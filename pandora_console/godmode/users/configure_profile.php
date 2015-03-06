@@ -18,6 +18,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Profile Management");
@@ -54,7 +56,6 @@ else {
 	
 }
 
-enterprise_hook('open_meta_frame');
 
 $new_profile = (bool) get_parameter ('new_profile');
 $id_profile = (int) get_parameter ('id');
@@ -140,6 +141,16 @@ if ($id_profile || $new_profile) {
 	
 	$table->width = '98%';
 	$table->class = 'databox';
+	if (defined("METACONSOLE")){
+		$table->width = '100%';
+		$table->class = 'databox data';
+		if ($id_profile)
+			$table->head[0] = __('Update Profile');
+		else
+			$table->head[0] = __('Create Profile');
+		$table->head_colspan[0] = 4;
+		$table->headstyle[0] = 'text-align: center';
+	}
 	$table->size = array ();
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold';

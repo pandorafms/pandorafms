@@ -24,6 +24,8 @@ include_once ($config['homedir'] . "/include/functions_groups.php");
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 // Fix: Netflow have to check RW ACL
 if (! check_acl ($config["id_user"], 0, "RW")) {
 	db_pandora_audit("ACL Violation",
@@ -171,7 +173,19 @@ $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
 $table->class = "databox_color";
-$table->style[0] = 'vertical-align: top;';
+if (defined('METACONSOLE')){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	if($id)
+		$table->head[0] = __("Update filter");
+	else
+		$table->head[0] = __("Create filter");
+	$table->head_colspan[0] = 5;
+	$table->headstyle[0] = 'text-align: center';
+}
+else{
+	$table->style[0] = 'vertical-align: top;';
+}
 
 $table->data = array ();
 
@@ -234,6 +248,9 @@ else {
 }
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
+
 ?>
 
 <script type="text/javascript">

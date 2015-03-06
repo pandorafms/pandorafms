@@ -23,6 +23,8 @@ include_once($config['homedir'] . "/include/functions_netflow.php");
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config["id_user"], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
@@ -110,6 +112,9 @@ if ($filters === false)
 	$filters = array ();
 
 $table->width = '90%';
+f (defined('METACONSOLE')){
+	$table->width = '100%';
+}
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Group');
@@ -149,7 +154,11 @@ if (isset($data)) {
 	echo "<form method='post' action='" . $config['homeurl'] . "index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure=$pure'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	if (defined('METACONSOLE'))
+		echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+	else
+		echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
@@ -158,11 +167,13 @@ else {
 	echo "<div class='nf'>".__('There are no defined filters')."</div>";
 }
 
-	echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
-	html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
-	echo "</div>";
-	echo "</form>";
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
+echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
+echo "</div>";
+echo "</form>";
+
+enterprise_hook('close_meta_frame');
 
 ?>
 

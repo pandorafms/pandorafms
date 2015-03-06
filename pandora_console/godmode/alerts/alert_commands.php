@@ -22,6 +22,8 @@ enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "LM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
@@ -166,7 +168,6 @@ if (defined('METACONSOLE'))
 else
 	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/gm_alerts.png", false, "alerts_config", true);
 
-enterprise_hook('open_meta_frame');
 
 $update_command = (bool) get_parameter ('update_command');
 $create_command = (bool) get_parameter ('create_command');
@@ -293,6 +294,8 @@ if ($delete_command) {
 }
 
 $table->width = '98%';
+if (defined('METACONSOLE'))
+	$table->width = '100%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');

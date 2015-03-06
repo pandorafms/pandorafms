@@ -233,6 +233,18 @@ else {
 echo '<form name="component" method="post">';
 
 /* $table came from manage_network_components_form_common.php */
+if (defined('METACONSOLE')){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	if ($id) {
+		$table->head[0] = __('Update Network Component');
+	}
+	else {
+		$table->head[0] = __('Create Network Component');
+	}
+	$table->head_colspan[0] = 5;
+	$table->headstyle[0] = 'text-align: center';
+}
 $table->colspan['description'][1] = 3;
 $data = array ();
 $data[0] = __('Description');

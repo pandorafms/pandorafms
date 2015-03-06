@@ -89,12 +89,18 @@ if ($id_module) {
 	$ag_freestring = modules_get_agentmodule_agent_name($id_module);
 }
 
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . $sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
-
 enterprise_hook('open_meta_frame');
-
-echo '<table cellspacing="4" cellpadding="4" width="100%" class="databox">
-	<tr>';
+if (!defined('METACONSOLE')){
+	echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
+			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
+				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
+	echo '<table cellspacing="4" cellpadding="4" width="100%" class="databox"><tr>';
+}else{
+	echo '<form class="filters_form" method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
+			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
+				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
+	echo '<table cellspacing="" cellpadding="" width="70%" class="databox_filters"><tr>';
+}
 
 // Get Groups and profiles from user
 $user_groups = implode (",", array_keys (users_get_groups ()));
@@ -399,8 +405,6 @@ echo '
 
 echo '<td>' . __('Monitor status') . "</td>";
 
-
-
 echo "<td>";
 
 $fields = array ();
@@ -434,13 +438,9 @@ $rows_select[0] = __('Not assigned');
 html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'),-1,false, false, true, '', false, 'width: 120px;');
 echo '</td>';
 
-
-
 echo '</tr>';
 
 echo '<tr>';
-
-
 
 echo '<td valign="middle">' . __('Module name') . '</td>';
 echo '<td valign="middle">';
@@ -453,18 +453,27 @@ html_print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 
 echo '</td>';
 
+if (!defined('METACONSOLE'))
+	echo '<td valign="middle" align="right">' .
+		__('Search') .
+		'</td>';
+else
+	echo '<td valign="middle">' .
+		__('Search') .
+		'</td>';
 
-
-echo '<td valign="middle" align="right">' .
-	__('Search') .
-	'</td>';
 echo '<td valign="middle">';
 html_print_input_text ("ag_freestring", $ag_freestring, '', 20,30, false);
 echo '</td>';
 
-echo '<td valign="middle" align="right" id="tag_td">' .
-	__('Tags') .
-	ui_print_help_tip(__('Only it is show tags in use.'), true);
+if (!defined('METACONSOLE'))
+	echo '<td valign="middle" align="right" id="tag_td">' .
+		__('Tags') .
+		ui_print_help_tip(__('Only it is show tags in use.'), true);
+else
+	echo '<td valign="middle" id="tag_td">' .
+		__('Tags') .
+		ui_print_help_tip(__('Only it is show tags in use.'), true);
 echo '<td>';
 
 $tags = tags_get_user_tags();
@@ -479,24 +488,26 @@ else {
 }
 echo '</td>';
 
-
-
-
-
-
 echo '<td valign="middle">';
 html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
 echo "</td>";
 
 echo "</tr>";
-
 echo "<tr>";
 
 $table_custom_fields = new stdClass();
 $table_custom_fields->class = 'databox';
 $table_custom_fields->width = '99%';
+if(defined('METACONSOLE')){
+		$table_custom_fields->width = '100%';
+		$table_custom_fields->class = 'databox_filters';
+		$table_custom_fields->styleTable = 'margin-left:0px';
+		$table_custom_fields->cellpadding = '0';
+		$table_custom_fields->cellspacing = '0';
+}
 $table_custom_fields->style = array();
-$table_custom_fields->style[0] = 'font-weight: bold; width: 150px;';
+f(!defined('METACONSOLE'))
+	$table_custom_fields->style[0] = 'font-weight: bold; width: 150px;';
 $table_custom_fields->colspan = array();
 $table_custom_fields->data = array();
 
@@ -520,7 +531,10 @@ foreach ($custom_fields as $custom_field) {
 }
 
 echo '<td valign="middle" colspan=7>';
-ui_toggle(html_print_table($table_custom_fields, true), __('Agent custom fields'));
+if(defined('METACONSOLE'))
+	echo html_print_table($table_custom_fields, true);
+else
+	ui_toggle(html_print_table($table_custom_fields, true), __('Agent custom fields'));
 echo "</td>";
 
 echo "<tr>";
@@ -900,7 +914,11 @@ $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->width = "98%";
 $table->class = "databox";
-
+if(defined('METACONSOLE')){
+	$table->width = "100%";
+	$table->cellpadding = '0';
+	$table->cellspacing = '0';
+}
 $table->head = array ();
 $table->data = array ();
 $table->size = array ();
@@ -938,7 +956,8 @@ if (! defined ('METACONSOLE')) {
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
 }
 
-$table->align[5] = "center";
+if (! defined ('METACONSOLE'))
+	$table->align[5] = "center";
 
 $table->head[6] = __('Status');
 if (! defined ('METACONSOLE')) {
@@ -968,7 +987,8 @@ if (! defined ('METACONSOLE')) {
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=timestamp&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTimestampDown, "alt" => "down")) . '</a>';
 }
 
-$table->align[10] = "right";
+if (! defined ('METACONSOLE'))
+	$table->align[10] = "right";
 
 $rowPair = true;
 $iterator = 0;

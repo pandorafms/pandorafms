@@ -21,6 +21,8 @@ enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "LM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
@@ -99,7 +101,6 @@ else {
 	}
 }
 
-enterprise_hook('open_meta_frame');
 
 if ($duplicate_template) {
 	$source_id = (int) get_parameter ('source_id');
@@ -470,9 +471,18 @@ print_alert_template_steps ($step, $id);
 
 $table->id = 'template';
 $table->width = '98%';
+if(defined("METACONSOLE")){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	$table->head[0] = __('Create Template');
+	$table->head_colspan[0] = 4;
+	$table->headstyle[0] = 'text-align: center';
+}
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; vertical-align: top';
-$table->style[2] = 'font-weight: bold; vertical-align: top';
+if(!defined("METACONSOLE")){
+	$table->style[0] = 'font-weight: bold; vertical-align: top';
+	$table->style[2] = 'font-weight: bold; vertical-align: top';
+}
 $table->size = array ();
 $table->size[0] = '20%';
 $table->size[2] = '20%';

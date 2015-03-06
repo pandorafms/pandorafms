@@ -15,6 +15,8 @@
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 //Include functions code
 require_once ($config['homedir'].'/include/functions_categories.php');
 
@@ -33,11 +35,20 @@ $create_category = (int) get_parameter ("create_category", 0);
 $name_category = (string) get_parameter ("name_category", "");
 $tab = (string) get_parameter ("tab", "list");
 
-$buttons = array(
-	'list' => array(
-		'active' => false,
-		'text' => '<a href="index.php?sec=gmodules&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
-			html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
+if(defined('METACONSOLE')) {
+	$buttons = array(
+		'list' => array(
+			'active' => false,
+			'text' => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
+				html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
+}
+else{
+	$buttons = array(
+		'list' => array(
+			'active' => false,
+			'text' => '<a href="index.php?sec=gmodules&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
+				html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
+}
 
 $buttons[$tab]['active'] = false;
 
@@ -107,41 +118,90 @@ else {
 	$name_category = "";
 }
 
-enterprise_hook('open_meta_frame');
 
 // Create/Update category form 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=' . $action . '&id_category=' . $id_category . '&pure='.(int)$config['pure'].'" enctype="multipart/form-data">';
 
-echo '<div align=left style="width: 98%" class="pandora_form">';
+if(!defined('METACONSOLE'))
+	echo '<div align=left style="width: 98%" class="pandora_form">';
+else
+	echo '<div align=left style="width: 100%" class="pandora_form">';
 
-echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
+if(!defined('METACONSOLE'))
+	echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=100%>";
+else
+	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox data' width=100%>";
+	if (defined("METACONSOLE")){
+		if ($action == "update") {
+			echo "<thead>
+					<tr>
+						<th align=center colspan=5>" .
+						 __('Update category') . 
+						 "</th>
+					</tr>
+				</thead>";
+		}
+		if ($action == "new") {
+			echo "<thead>
+					<tr>
+						<th align=center colspan=5>" .
+						 __('Create category') . 
+						 "</th>
+					</tr>
+				</thead>";
+		}
+	}
 	echo "<tr>";
-		echo "<td align=center>";
+		if(defined('METACONSOLE'))
+			echo "<td>";
+		else
+			echo "<td align=center>";
 		html_print_label (__("Name"),'name');
 		echo "</td>";
-		echo "<td align=center>"; 
+		if(defined('METACONSOLE'))
+			echo "<td>";
+		else
+			echo "<td align=center>";
 		html_print_input_text ('name_category', $name_category); 
 		echo "</td>";
 	echo "</tr>";
-	echo "<tr>";
-		if ($action == "update") {
-			echo "<td align=center>";
-			html_print_input_hidden ('update_category', 1);
-			echo "</td>";
-			echo "<td align=right>";
-			html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
-			echo "</td>";
-		}
-		if ($action == "new") {
-			echo "<td align=center>";
-			html_print_input_hidden ('create_category', 1);
-			echo "</td>";
-			echo "<td align=right>";
-			html_print_submit_button (__('Create'), 'create_button', false, 'class="sub next"');
-			echo "</td>";
-		}
-	echo "</tr>";
+	if(!defined('METACONSOLE')){
+		echo "<tr>";
+			if ($action == "update") {
+				echo "<td align=center>";
+				html_print_input_hidden ('update_category', 1);
+				echo "</td>";
+				echo "<td align=right>";
+				html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
+				echo "</td>";
+			}
+			if ($action == "new") {
+				echo "<td align=center>";
+				html_print_input_hidden ('create_category', 1);
+				echo "</td>";
+				echo "<td align=right>";
+				html_print_submit_button (__('Create'), 'create_button', false, 'class="sub next"');
+				echo "</td>";
+			}
+		echo "</tr>";
+	}
 echo "</table>";
+if(defined('METACONSOLE')){
+	echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
+	echo "<tr>";
+	echo "<td align=right>";
+	if ($action == "update") {
+		html_print_input_hidden ('update_category', 1);
+		html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
+	}
+	if ($action == "new") {
+		html_print_input_hidden ('create_category', 1);
+		html_print_submit_button (__('Create'), 'create_button', false, 'class="sub next"');
+	}
+	echo "</td>";
+	echo "</tr>";
+	echo "</table>";
+}
 echo '</div>';
 echo '</form>';
 

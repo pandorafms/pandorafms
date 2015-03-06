@@ -40,6 +40,10 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	require_once ($config['homedir'] . "/include/functions_tags.php");
 	
 	$table->width = '100%';
+	if(defined('METACONSOLE')){
+		$table->class = 'databox_filters';
+		$table->width = '60%';
+	}
 	$table->data = array ();
 	$table->style = array ();
 	
@@ -79,9 +83,16 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->data[1][1] = html_print_input_text('free_search', $free_search, '', 20, 40, true);
 	$table->data[1][2] = __('Standby');
 	$table->data[1][3] = html_print_select ($alert_standby, "filter_standby", $filter_standby, '', '', '', true);
-	$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
 	
-	$data = '<form method="post" action="'.$url.'">';
+	if(defined('METACONSOLE')){
+		$table->data[0][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
+		$table->rowspan[0][4] = 2;
+	    $data = '<form style="background-color: #ECECEC;" method="post" action="'.$url.'">';
+	}
+	else{
+		$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
+		$data = '<form method="post" action="'.$url.'">';
+	}
 	$data .= html_print_table ($table, true);
 	$data .= '</form>';
 	

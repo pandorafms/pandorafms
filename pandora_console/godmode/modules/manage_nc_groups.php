@@ -18,6 +18,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access SNMP Group Management");
@@ -39,7 +41,6 @@ else {
 	$sec = 'gmodules';
 }
 
-enterprise_hook('open_meta_frame');
 
 $create = (bool) get_parameter ('create');
 $update = (bool) get_parameter ('update');
@@ -187,6 +188,8 @@ foreach ($groups as $group_key => $group_val) {
 $groups = component_groups_get_groups_tree_recursive($groups_clean,0,0);
 
 $table->width = '98%';
+if (defined('METACONSOLE'))
+	$table->width = '100%';
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Action') .

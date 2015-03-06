@@ -141,11 +141,12 @@ if (($agentFilter == 0) && ($moduleFilter == 0) && ($typeFilter == 0)) {
 
 $urlFilter = '&agent_filter=' . $agentFilter . '&module_filter=' . $moduleFilter . '&type_filter=' . $typeFilter;
 
-echo '<a href="javascript: toggleFormFilter();"><b>' .
-	__('Items filter') . '</b> ' .
-	html_print_image("images/down.png", true,
-		array("title" => __('Toggle filter(s)'),
-		"id" => 'image_form_filter')) . '</a>';
+if (!defined("METACONSOLE"))
+	echo '<a href="javascript: toggleFormFilter();"><b>' .
+		__('Items filter') . '</b> ' .
+		html_print_image("images/down.png", true,
+			array("title" => __('Toggle filter(s)'),
+			"id" => 'image_form_filter')) . '</a>';
 
 $table = null;
 $table->width = '100%';
@@ -157,17 +158,27 @@ $table->data[1][0] = __('Type');
 $table->data[1][1] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
 $table->data[1][2] = $table->data[1][3] = '';
 
-echo '<div id="form_filter" style="display: none;">';
-echo '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
-
-html_print_table ($table);
-
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"');
-html_print_input_hidden('action', 'filter');
-echo '</div>';
-echo '</form>';
-echo '</div>';
+if (!defined("METACONSOLE")){
+	echo '<div id="form_filter" style="display: none;">';
+	echo '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
+	
+	html_print_table ($table);
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"');
+	html_print_input_hidden('action', 'filter');
+	echo '</div>';
+	echo '</form>';
+	echo '</div>';
+}
+else{
+	$table->class = "databox_filters";
+	$table->width = '70%';
+	echo '<form class="filters_form" method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=
+				list_items&action=filter&id_report=' . $idReport . '">';
+	$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"',true) . html_print_input_hidden('action', 'filter',true);
+	html_print_table ($table);
+	echo '</form>';
+}
 
 $where = '1=1';
 if ($typeFilter != '0') {
@@ -232,7 +243,10 @@ $table->style[0] = 'text-align: right;';
 
 if ($items) {
 	$table->width = '98%';
-	
+	if (defined("METACONSOLE")){
+		$table->width = '100%';
+		$table->class = "databox data";
+	}
 	$table->size = array();
 	$table->size[0] = '5px';
 	$table->size[1] = '15%';
@@ -404,7 +418,11 @@ ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/repo
 
 echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
 	method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
-	echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+	if (defined("METACONSOLE"))
+		echo "<div style='text-align: right; width:100%'>";
+	else
+		echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+	
 	html_print_input_hidden('ids_items_to_delete', '');
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
@@ -418,7 +436,15 @@ $table->size[0] = '25%';
 $table->size[1] = '25%';
 $table->size[2] = '25%';
 $table->size[3] = '25%';
-$table->data[0][0] = "<b>". __("Sort items") . "</b>";
+if (defined("METACONSOLE")){
+	$table->class = "databox data";
+	$table->head[0] = __("Sort items");
+	$table->head_colspan[0] = 4;
+	$table->headstyle[0] = 'text-align: center';
+}
+else{
+	$table->data[0][0] = "<b>". __("Sort items") . "</b>";
+}
 $table->data[1][0] = __('Sort selected items from position: ');
 $table->data[1][1] = html_print_select_style(
 	array('before' => __('Move before to'), 'after' => __('Move after to')), 'move_to',
@@ -441,7 +467,15 @@ $table->size[0] = '25%';
 $table->size[1] = '25%';
 $table->size[2] = '25%';
 $table->size[3] = '25%';
-$table->data[0][0] = "<b>". __("Delete items") . "</b>";
+if (defined("METACONSOLE")){
+	$table->class = "databox data";
+	$table->head[0] = __("Delete items");
+	$table->head_colspan[0] = 4;
+	$table->headstyle[0] = 'text-align: center';
+}
+else{
+	$table->data[0][0] = "<b>". __("Delete items") . "</b>";
+}
 $table->data[1][0] = __('Delete selected items from position: ');
 $table->data[1][1] = html_print_select_style(
 	array('above' => __('Delete above to'), 'below' => __('Delete below to')), 'delete_m',

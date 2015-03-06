@@ -80,6 +80,8 @@ if (!$strict_acl) {
 	}
 }
 
+enterprise_hook('open_meta_frame');
+
 $header_title = __('Tree view');
 $header_sub_title = __('Sort the agents by %s');
 switch ($tab) {
@@ -185,15 +187,22 @@ $row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true
 
 $table->data[] = $row;
 
-enterprise_hook('open_meta_frame');
-
+if (defined('METACONSOLE')) {
+	$table->width = "70%";
+	$table->class='tree_filters';
+	echo "<div class='view_tree'>";
+}
 if (!$strict_acl) {
 	$form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
 	$form_html .= html_print_table($table, true);
 	$form_html .= '</form>';
-
-	echo "<br>";
-	ui_toggle($form_html, __('Tree search'));
+	if (defined('METACONSOLE')) {
+		echo $form_html;
+		echo "<br>";
+	}else{
+		echo "<br>";
+		ui_toggle($form_html, __('Tree search'));
+	}
 }
 // --------------------- form filter -----------------------------------
 
@@ -218,6 +227,10 @@ echo 			"</div>";
 echo 		"</div>";
 echo 	"</div>";
 echo "</div>";
+
+if (defined('METACONSOLE')) {
+	echo "</div>";
+}
 
 enterprise_hook('close_meta_frame');
 
@@ -264,7 +277,7 @@ enterprise_hook('close_meta_frame');
 						detailRecipient: $("div#tree-controller-detail-recipient"),
 						page: parameters['page'],
 						tree: data.tree,
-						baseURL: "<?php echo ui_get_full_url(false, false, false, false); ?>",
+						baseURL: "<?php echo ui_get_full_url(false, false, false, defined('METACONSOLE')); ?>",
 						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 						filter: parameters['filter'],
 						counterTitles: {

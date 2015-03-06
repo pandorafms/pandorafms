@@ -23,6 +23,8 @@ enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (is_ajax ()) {
 	$get_template_tooltip = (bool) get_parameter ('get_template_tooltip');
 	
@@ -131,7 +133,6 @@ if (!$delete_template) {
 	}
 }
 
-enterprise_hook('open_meta_frame');
 
 if ($update_template) {
 	$id = (int) get_parameter ('id');
@@ -230,11 +231,18 @@ $search_string = (string) get_parameter ('search_string');
 $search_type = (string) get_parameter ('search_type');
 
 $table->width = '98%';
+if (defined("METACONSOLE")){
+	$table->width = '50%';	
+	$table->class = 'databox_filters';	
+}
 $table->data = array ();
 $table->head = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
+
+if (!defined("METACONSOLE")){
+	$table->style[0] = 'font-weight: bold';
+	$table->style[2] = 'font-weight: bold';
+}
 
 $table->data[0][0] = __('Type');
 $table->data[0][1] = html_print_select (alerts_get_alert_templates_types (), 'search_type',
@@ -247,7 +255,11 @@ $table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
-echo '<form method="post" action="' . $url . '">';
+if (defined("METACONSOLE"))
+	echo '<form class="filters_form" method="post" action="' . $url . '">';
+else
+	echo '<form method="post" action="' . $url . '">';
+
 html_print_table ($table);
 echo '</form>';
 
@@ -271,6 +283,8 @@ if ($templates === false)
 	$templates = array ();
 
 $table->width = '98%';
+if (defined("METACONSOLE"))
+	$table->width = '100%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');

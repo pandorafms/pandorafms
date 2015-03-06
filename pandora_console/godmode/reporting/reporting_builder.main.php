@@ -45,12 +45,22 @@ $table->width = '98%';
 $table->id = 'add_alert_table';
 $table->class = 'databox';
 $table->head = array ();
+
+if(defined("METACONSOLE")){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	$table->head[0] = __('Main data');
+	$table->head_colspan[0] = 4;
+	$table->headstyle[0] = 'text-align: center';
+}
+
 $table->data = array ();
 $table->size = array ();
 $table->size = array ();
 $table->size[0] = '15%';
 $table->size[1] = '90%';
-$table->style[0] = 'font-weight: bold; vertical-align: top;';
+if(!defined("METACONSOLE"))
+	$table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 $table->data['name'][0] = __('Name');
 $table->data['name'][1] = html_print_input_text('name', $reportName,

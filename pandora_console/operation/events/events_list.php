@@ -149,7 +149,6 @@ $id_name = get_parameter('id_name', '');
 
 echo "<br>";
 
-enterprise_hook('open_meta_frame');
 
 // Trick to catch if any filter button has been pushed (don't collapse filter)
 // or the filter was open before click or autorefresh is in use (collapse filter)
@@ -168,6 +167,11 @@ $table->style[1] = 'text-align: right;';
 
 $table->data[0][1] = '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a>';
 $table->cellstyle[0][1] = 'background: #ECECEC;';
+
+if(defined('METACONSOLE')){
+	$table->width = '100%';
+	$table->class='events_list';
+}
 
 html_print_table($table);
 
@@ -192,6 +196,11 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->width = '98%';
 	$table->cellspacing = 4;
 	$table->cellpadding = 4;
+	if(defined('METACONSOLE')){
+		$table->width = '100%';
+		$table->cellspacing = 0;
+		$table->cellpadding = 0;
+	}
 	$table->class = 'databox';
 	$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
 	$table->style[0] = 'width: 50%; width:50%;';
@@ -243,6 +252,11 @@ $table->id = 'load_filter_form';
 $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
+f(defined('METACONSOLE')){
+	$table->width = '100%';
+	$table->cellspacing = 4;
+	$table->cellpadding = 4;
+}
 $table->class = 'databox';
 $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
 $table->style[0] = 'width: 50%; width:50%;';
@@ -291,6 +305,10 @@ $tabletags_with->width = '100%';
 $tabletags_with->cellspacing = 4;
 $tabletags_with->cellpadding = 4;
 $tabletags_with->class = 'noshadow';
+if(defined('METACONSOLE')){
+	$tabletags_with->width = '100%';
+	$tabletags_with->class = 'nobady';
+}
 $tabletags_with->styleTable = 'border: 0px;';
 
 $data = array();
@@ -305,13 +323,16 @@ $tabletags_with->data[] = $data;
 $tabletags_with->rowclass[] = '';
 
 
-
 $tabletags_without = html_get_predefined_table('transparent', 2);
 $tabletags_without->id = 'filter_events_tags_without';
 $tabletags_without->width = '100%';
 $tabletags_without->cellspacing = 4;
 $tabletags_without->cellpadding = 4;
 $tabletags_without->class = 'noshadow';
+if(defined('METACONSOLE')){
+	$tabletags_without->width = '100%';
+	$tabletags_without->class = 'nobady';
+}
 $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
@@ -330,8 +351,16 @@ $tabletags_without->rowclass[] = '';
 
 // EVENTS FILTER
 // Table for filter controls
-$events_filter = '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. (int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
-
+if(defined('METACONSOLE')){
+	$jump = '&nbsp;&nbsp;';
+	$events_filter = '<form id="form_filter" class="filters_form" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
+		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
+}
+else{
+	$jump = "<br>";
+	$events_filter = '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
+		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
+}
 // Hidden field with the loaded filter name
 $events_filter .= html_print_input_hidden('id_name', $id_name, true);
 
@@ -345,8 +374,6 @@ else {
 }
 
 
-
-
 //----------------------------------------------------------------------
 //- INI ADVANCE FILTER -------------------------------------------------
 $table_advanced->id = 'events_filter_form_advanced';
@@ -358,9 +385,9 @@ $table_advanced->styleTable = 'font-weight: bold; color: #555;';
 $table_advanced->data = array();
 
 $data = array();
-$data[0] = __('Free search') . '<br>';
+$data[0] = __('Free search') . $jump;
 $data[0] .= html_print_input_text ('search', $search, '', 25, 255, true);
-$data[1] = __('Agent search') . '<br>';
+$data[1] = __('Agent search') . $jump;
 $params = array();
 $params['show_helptip'] = true;
 $params['input_name'] = 'text_agent';
@@ -382,19 +409,19 @@ $table_advanced->rowclass[] = '';
 
 
 $data = array();
-$data[0] = __('User ack.') . '<br>';
+$data[0] = __('User ack.') . $jump;
 
 $user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
 
 $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 	__('Any'), 0, true);
 if (!$meta) {
-	$data[1] = __('Module search') . '<br>';
+	$data[1] = __('Module search') . $jump;
 	$data[1] .= html_print_autocomplete_modules('module_search',
 		$text_module, false, true, '', array(), true);
 }
 else {
-	$data[1] = __('Server') . '<br>';
+	$data[1] = __('Server') . $jump;
 	$data[1] .= html_print_select_from_sql(
 		'SELECT id, server_name FROM tmetaconsole_setup',
 		'server_id', $server_id, 'script', __('All'), '0', true);
@@ -404,7 +431,7 @@ $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
 $data = array();
-$data[0] = __("Alert events") . '<br>';
+$data[0] = __("Alert events") . $jump;
 $data[0] .= html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
 $data[1] = __('Block size for pagination') . '<br>';
 $lpagination[25] = 25;
@@ -417,31 +444,48 @@ $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
 $data = array();
-$data[0] = __('Date from') . '<br>';
+$data[0] = __('Date from') . $jump;
 
 $user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
 
 $data[0] .= html_print_input_text ('date_from', $date_from, '', 15, 10, true);
 
-$data[1] = __('Date to') . '<br>';
+$data[1] = __('Date to') . $jump;
 $data[1] .= html_print_input_text ('date_to', $date_to, '', 15, 10, true);
 
 $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
 $data = array();
-$data[0] = '<fieldset class="databox" style="width: 310px;">' .
-		'<legend>' .
-			__('Events with following tags') .
-		'</legend>' .
-		html_print_table($tabletags_with, true) .
-	'</fieldset>';
-$data[1] = '<fieldset class="databox" style="width: 310px;">' .
-		'<legend>' .
-			__('Events without following tags') .
-		'</legend>' .
-		html_print_table($tabletags_without, true) .
-	'</fieldset>';
+if(defined('METACONSOLE'))
+{
+	$data[0] = '<fieldset class="" style="width: 310px;">' .
+			'<legend>' .
+				__('Events with following tags') .
+			'</legend>' .
+			html_print_table($tabletags_with, true) .
+		'</fieldset>';
+	$data[1] = '<fieldset class="" style="width: 310px;">' .
+			'<legend>' .
+				__('Events without following tags') .
+			'</legend>' .
+			html_print_table($tabletags_without, true) .
+		'</fieldset>';
+}
+else{
+	$data[0] = '<fieldset class="databox" style="width: 310px;">' .
+			'<legend>' .
+				__('Events with following tags') .
+			'</legend>' .
+			html_print_table($tabletags_with, true) .
+		'</fieldset>';
+	$data[1] = '<fieldset class="databox" style="width: 310px;">' .
+			'<legend>' .
+				__('Events without following tags') .
+			'</legend>' .
+			html_print_table($tabletags_without, true) .
+		'</fieldset>';
+}
 $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 //- END ADVANCE FILTER -------------------------------------------------
@@ -455,6 +499,10 @@ $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
+if (defined('METACONSOLE')){
+	$table->width = '70%';
+	$table->class = 'databox_filters';
+}
 $table->styleTable = 'font-weight: bold; color: #555;';
 $table->data = array();
 
@@ -471,22 +519,22 @@ $data[0] .= html_print_select_groups($config["id_user"], "ER", true,
 //$data[0] .= html_print_checkbox ("recursion", 1, $recursion, true, false);
 //**********************************************************************
 
-$data[1] = __('Event type') . '<br>';
+$data[1] = __('Event type') . $jump;
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
 $types["not_normal"] = __("Not normal");
 $data[1] .= html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
 
-$data[2] = __('Severity') . '<br>';
+$data[2] = __('Severity') . $jump;
 $data[2] .= html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true, false, false);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = array();
-$data[0] = __('Event status') . '<br>';
+$data[0] = __('Event status') . $jump;
 $fields = events_get_all_status();
 $data[0] .= html_print_select ($fields, 'status', $status, '', '', '', true);
-$data[1] = __('Max. hours old') . '<br>';
+$data[1] = __('Max. hours old') . $jump;
 $data[1] .= html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
 $data[2] = __("Repeated") . '<br>';
 $repeated_sel[0] = __("All events");
@@ -540,7 +588,10 @@ unset($table);
 
 $events_filter .= "</form>"; //This is the filter div
 
-ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
+if (defined('METACONSOLE'))
+	echo $events_filter;
+else
+	ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
 
 $event_table = events_get_events_table($meta, $history);
 

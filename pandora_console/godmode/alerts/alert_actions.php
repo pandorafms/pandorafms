@@ -23,6 +23,8 @@ enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "LM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert actions");
@@ -65,7 +67,6 @@ if ((!$copy_action) && (!$delete_action) && (!$update_action)) {
 	}
 }
 
-enterprise_hook('open_meta_frame');
 
 if ($copy_action) {
 	$id = get_parameter ('id');
@@ -333,6 +334,8 @@ if ($delete_action) {
 }
 
 $table->width = '98%';
+if (defined('METACONSOLE')) 
+	$table->width = '100%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');

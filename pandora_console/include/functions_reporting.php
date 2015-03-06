@@ -10,6 +10,7 @@
 // as published by the Free Software Foundation; version 2
 
 // This program is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -1610,12 +1611,21 @@ function reporting_get_stats_alerts($data, $links = false) {
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
-	$output = '<fieldset class="databox tactical_set">
-				<legend>' . 
-					__('Defined and fired alerts') . 
-				'</legend>' . 
-				html_print_table($table_al, true) . '</fieldset>';
-	
+	if(!defined('METACONSOLE')){
+		$output = '<fieldset class="databox tactical_set">
+					<legend>' . 
+						__('Defined and fired alerts') . 
+					'</legend>' . 
+					html_print_table($table_al, true) . '</fieldset>';
+	}else{
+		$table_al->class = "tactical_view";
+		$table_al->style = array();
+		$output = '<fieldset class="tactical_set">
+					<legend>' . 
+						__('Defined and fired alerts') . 
+					'</legend>' . 
+					html_print_table($table_al, true) . '</fieldset>';
+	}
 	return $output;
 }
 
@@ -8155,12 +8165,23 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 	$agent_data[1] = "<a style='color: #729fcf;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
 	$table_agent->data[] = $agent_data;
 	
-	$agents_data = '<fieldset class="databox tactical_set">
+	if (!defined('METACONSOLE')){
+		$agents_data = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Agents by status') . 
 					'</legend>' . 
 					html_print_table($table_agent, true) . '</fieldset>';
-					
+	}
+	else{
+		$table_agent->style=array();
+		$table_agent->class = "tactical_view";
+		$agents_data = '<fieldset class="tactical_set">
+					<legend>' . 
+						__('Agents by status') . 
+					'</legend>' . 
+					html_print_table($table_agent, true) . '</fieldset>';
+	}
+	
 	return $agents_data;
 }
 
@@ -8196,11 +8217,23 @@ function reporting_get_total_servers ($num_servers) {
 	$node_data[0] = html_print_image('images/server_export.png', true, array('title' => __('Nodes')));
 	$node_data[1] = "<b><span style='font-size: 12pt; font-weight: bold; color: black;'>".format_numeric($num_servers)."</span></b>";
 	$table_node->data[] = $node_data;
-	$node_overview = '<fieldset class="databox tactical_set">
+	
+	if (!defined('METACONSOLE')){
+		$node_overview = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Node overview') . 
 					'</legend>' . 
 					html_print_table($table_node, true) . '</fieldset>';
+	}else{
+		$table_node->style = array();
+		$table_node->class = "tactical_view";
+		$node_overview = '<fieldset class="tactical_set">
+					<legend>' . 
+						__('Node overview') . 
+					'</legend>' . 
+					html_print_table($table_node, true) . '</fieldset>';
+	}
+	
 	return $node_overview;
 }
 
@@ -8221,12 +8254,22 @@ function reporting_get_events ($data, $links = false) {
 	$table_events->data[0][4] = html_print_image('images/agent_notinit.png', true, array('title' => __('Not init events')));
 	$table_events->data[0][4] .= "&nbsp;&nbsp;&nbsp;"."<a style='color: #729fcf;' href='" . $links['not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['not_init'])."</span></b></a>";
 	
-	$event_view = '<fieldset class="databox tactical_set">
+	if(!defined('METACONSOLE')){
+		$event_view = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Events by criticity') . 
 					'</legend>' . 
 					html_print_table($table_events, true) . '</fieldset>';
-					
+	}
+	else{
+		$table_events->class="tactical_view";
+		$event_view = '<fieldset class="tactical_set">
+					<legend>' . 
+						__('Events by criticity') . 
+					'</legend>' . 
+					html_print_table($table_events, true) . '</fieldset>';
+	}
+	
 	return $event_view;
 }
 
@@ -8375,12 +8418,19 @@ function reporting_get_event_histogram ($events) {
 		$table->data[0][0] = __('No events');
 	}
 	
-	$event_graph = '<fieldset class="databox tactical_set">
+	if(!defined('METACONSOLE')){
+		$event_graph = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Events info (1hr)') . 
 					'</legend>' . 
 					html_print_table($table, true) . '</fieldset>';
-					
+	}
+	else{
+		$table->class='tactical_view';
+		$event_graph = '<fieldset class="tactical_set">' . 
+					html_print_table($table, true) . '</fieldset>';
+	}
+	
 	return $event_graph;
 }
 ?>

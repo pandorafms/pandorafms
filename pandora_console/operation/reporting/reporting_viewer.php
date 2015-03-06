@@ -18,6 +18,8 @@ global $config;
 
 check_login();
 
+enterprise_hook('open_meta_frame');
+
 $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
@@ -131,6 +133,14 @@ if ($enable_init_date) {
 $table->id = 'controls_table';
 $table->width = '99%';
 $table->class = 'databox';
+if (defined("METACONSOLE")){
+	$table->width = '100%';
+	$table->class = 'databox data';
+
+	$table->head[0] = __('View Report');
+	$table->head_colspan[0] = 5;
+	$table->headstyle[0] = 'text-align: center';
+}
 $table->style = array ();
 $table->style[0] = 'width: 60px;';
 $table->rowspan[0][0] = 2;
@@ -178,7 +188,6 @@ $table->data[1][2] .= html_print_input_text ('date', $date, '', 12, 10, true). '
 $table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true). ' ';
 $table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
 
-enterprise_hook('open_meta_frame');
 
 echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'" style="margin-right: 0px;">';
 html_print_table ($table);

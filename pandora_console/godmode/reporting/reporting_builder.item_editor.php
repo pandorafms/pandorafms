@@ -502,8 +502,25 @@ $urlForm = $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/
 
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
+
+if (defined("METACONSOLE"))
+	$class = 'databox data';
+else
+	$class = 'databox';
+
 ?>
-<table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="98%">
+<table style="" class="<?php echo $class;?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
+	<?php 
+			if (defined("METACONSOLE")){
+				echo "<thead>
+						<tr>
+							<th align=center colspan=5>
+								" . __('Wizard') . "
+							</th>
+						</tr>
+					</thead>";			
+			}
+		?>
 	<tbody>
 		<tr id="row_type" style="" class="datos">
 			<td style="vertical-align: top; width: 220px;"><?php echo __('Type'); ?></td>
@@ -1126,7 +1143,7 @@ html_print_input_hidden('id_item', $idItem);
 <?php
 print_SLA_list('95%', $action, $idItem);
 print_General_list('95%', $action, $idItem);
-echo '<div class="action-buttons" style="width: 95%">';
+echo '<div class="action-buttons" style="width: 100%">';
 if ($action == 'new') {
 	html_print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
 }
@@ -1153,7 +1170,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 	
 	$report_item_type = db_get_value ('type', 'treport_content', 'id_rc', $idItem);
 	?>
-	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="98%">
+	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
 		<thead>
 			<tr>
 				<th class="header sla_list_agent_col" scope="col"><?php echo __('Agent');?></th>
@@ -1317,7 +1334,7 @@ function print_General_list($width, $action, $idItem = null) {
 	
 	include_once($config['homedir'] . '/include/functions_html.php');
 	?>
-	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="98%">
+	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
 		<thead>
 			<tr>
 				<th class="header" scope="col"><?php echo __('Agent');?></th>

@@ -18,6 +18,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config["id_user"], 0, "EW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event manage");
@@ -86,7 +88,6 @@ switch ($section) {
 
 include_once($config["homedir"] . '/include/functions_events.php');
 
-enterprise_hook('open_meta_frame');
 
 switch($section) {
 	case 'edit_filter':

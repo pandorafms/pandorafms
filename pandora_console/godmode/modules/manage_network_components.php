@@ -18,6 +18,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Agent Management");
@@ -42,7 +44,6 @@ else {
 	$sec = 'gmodules';
 }
 
-enterprise_hook('open_meta_frame');
 
 $type = (int) get_parameter ('type');
 $name = (string) get_parameter ('name');
@@ -442,9 +443,15 @@ $search_id_group = (int) get_parameter ('search_id_group');
 $search_string = (string) get_parameter ('search_string');
 
 $table->width = '98%';
+if(defined("METACONSOLE")){
+	$table->width = '50%';
+	$table->class = 'databox_filters';
+}
 $table->style = array ();
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
+if (!defined('METACONSOLE')){
+	$table->style[0] = 'font-weight: bold';
+	$table->style[2] = 'font-weight: bold';
+}
 $table->data = array ();
 
 $table->data[0][0] = __('Group');
@@ -492,7 +499,10 @@ $table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
-echo '<form method="post" action="'.$url.'">';
+if(defined("METACONSOLE"))
+	echo '<form class="filters_form" method="post" action="'.$url.'">';
+else
+	echo '<form method="post" action="'.$url.'">';
 html_print_table ($table);
 echo '</form>';
 

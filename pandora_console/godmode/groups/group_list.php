@@ -19,6 +19,8 @@ global $config;
 
 check_login();
 
+enterprise_hook('open_meta_frame');
+
 require_once($config['homedir'] . "/include/functions_groups.php");
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_users.php');
@@ -154,7 +156,6 @@ else {
 
 }
 
-enterprise_hook('open_meta_frame');
 
 $create_group = (bool) get_parameter ('create_group');
 $update_group = (bool) get_parameter ('update_group');
@@ -290,6 +291,8 @@ db_clean_cache();
 $groups = users_get_groups_tree ($config['id_user'], "AR", true);
 
 $table->width = '98%';
+if (defined("METACONSOLE"))
+	$table->width = '100%';
 
 $all_parents = array();
 $groups_count = 0;
@@ -316,12 +319,14 @@ foreach ($all_parents as $parent) {
 $groups_count = count($groups);
 
 if (check_acl($config['id_user'], 0, "PM")) {
-	echo '<br />';
-	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
-	echo '</div>';
-	echo '</form>';
+	if (!defined("METACONSOLE")){
+		echo '<br />';
+		echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
+		echo '<div class="action-buttons" style="width: '.$table->width.'">';
+		html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
+		echo '</div>';
+		echo '</form>';
+	}
 }
 
 if (!empty($groups)) {

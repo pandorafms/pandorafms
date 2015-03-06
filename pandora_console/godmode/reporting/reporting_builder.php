@@ -20,6 +20,8 @@ global $config;
 // Login check
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "RR")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
@@ -307,7 +309,6 @@ switch ($action) {
 		else
 			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons);
 		
-		enterprise_hook('open_meta_frame');
 		
 		if ($action == 'delete_report') {
 			$delete = false;
@@ -367,6 +368,10 @@ switch ($action) {
 		}
 		
 		$table_aux->width = '99%';
+		if(defined('METACONSOLE')){
+			$table_aux->class = 'databox_filters';
+			$table_aux->width = '70%';
+		}
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		
@@ -377,8 +382,14 @@ switch ($action) {
 		
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
 		
-		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
-			method='post'>";
+		if(defined('METACONSOLE')){
+			echo "<form class ='filters_form' action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
+				method='post'>";
+		}
+		else{
+			echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
+				method='post'>";
+		}
 			html_print_table($table_aux);
 		echo "</form>";
 		
@@ -438,6 +449,10 @@ switch ($action) {
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
 			$table->width = '98%';
+			if(defined('METACONSOLE')){
+				echo "<br>";
+				$table->width = '100%';
+			}
 			$table->head = array ();
 			$table->align = array ();
 			$table->align[2] = 'center';
@@ -611,7 +626,10 @@ switch ($action) {
 		
 		if (check_acl ($config['id_user'], 0, "RW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
-			echo '<div class="action-buttons" style="width: 98%; margin-top: 5px;">';
+			if (defined("METACONSOLE"))
+				echo '<div class="action-buttons" style="width: 100%; ">';
+			else
+				echo '<div class="action-buttons" style="width: 98%; margin-top: 5px;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 			echo "</div>";
 			echo "</form>";

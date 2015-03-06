@@ -373,13 +373,21 @@ if ($pure) {
 
 // Filter form
 if ($print_agent) {
-	echo '<br>';
-	ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Alert control filter'), __('Toggle filter(s)'));
+	if(defined('METACONSOLE')){
+		echo printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user);
+	}
+	else{
+		echo '<br>';
+		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Alert control filter'), __('Toggle filter(s)'));
+	}
 }
 
 $table->width = '100%';
 $table->class = "databox";
-
+if(defined('METACONSOLE')){
+	$table->cellpadding = '0';
+	$table->cellspacing = '0';
+}
 $table->size = array ();
 $table->head = array ();
 $table->align = array ();

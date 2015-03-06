@@ -18,6 +18,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
@@ -56,7 +58,6 @@ else {
 	$sec = 'advanced';
 }
 
-enterprise_hook('open_meta_frame');
 
 $delete_profile = (bool) get_parameter ('delete_profile');
 $create_profile = (bool) get_parameter ('create_profile');
@@ -208,6 +209,8 @@ $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = 'databox';
 $table->width = '98%';
+if (defined("METACONSOLE"))
+	$table->width = '100%';
 
 $table->head = array ();
 $table->data = array ();

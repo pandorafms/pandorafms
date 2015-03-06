@@ -19,6 +19,8 @@ global $config;
 // Check login and ACLs
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	db_pandora_audit("ACL Violation", "Trying to access Tag Management");
 	require ("general/noaccess.php");
@@ -82,7 +84,6 @@ else {
 	
 }
 
-enterprise_hook('open_meta_frame');
 
 // Two actions can performed in this page: search and delete tags
 
@@ -117,6 +118,7 @@ else {
 }
 
 // Form to add new tags or search tags
+if (!defined('METACONSOLE')) {
 echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 echo "<tr>";
 echo "<td>";
@@ -138,6 +140,24 @@ echo "<td align=right>";
 echo "</td>";
 echo "</tr>";
 echo "</table>";
+}else{
+	
+	echo '<form method=post class="filters_form" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
+		echo "<table border=0 cellpadding=0 cellspacing=0 class=databox_filters width=50%>";
+			echo "<tr>";
+				echo "<td>";
+					echo __("Name") . "/" . __("Description");
+					echo "&nbsp;&nbsp;";
+					html_print_input_hidden ("search_tag", "1");
+					html_print_input_text ('tag_name', $tag_name, '', 30, 255, false);
+				echo "</td>";
+				echo "<td>";
+					html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"');
+				echo "</td>";
+			echo "</tr>";
+		echo "</table>";
+	echo "</form>";
+}
 
 // Prepare pagination
 ui_pagination ($total_tags, $url);
@@ -149,6 +169,8 @@ $iterator = 0;
 if (!empty($result)) {
 	
 	$table->width = '98%';
+	if (defined("METACONSOLE"))
+		$table->width = '100%';
 	$table->data = array ();
 	$table->head = array ();
 	$table->align = array ();
@@ -219,6 +241,18 @@ if (!empty($result)) {
 	}
 	
 	html_print_table ($table);
+}
+if(defined("METACONSOLE")){
+	echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
+		echo "<tr>";
+			echo "<td align=right>";
+				echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
+					html_print_input_hidden ("create_tag", "1", true);
+					html_print_submit_button (__('Create tag'), 'create_button', false, 'class="sub next"');
+				echo "</form>";
+			echo "</td>";
+		echo "</tr>";
+	echo "</table>";
 }
 
 enterprise_hook('close_meta_frame');

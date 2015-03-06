@@ -543,7 +543,11 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 	$table->width = '98%';
 	$table->id = 'table_filemanager';
 	$table->class = 'databox alternate';
-	
+	if (defined('METACONSOLE')){
+		$table->width = '100%';
+		$table->class = 'databox_tactical';
+		$table->title = '<span>' . __('Index of images') . '</span>';
+	}
 	$table->colspan = array ();
 	$table->data = array ();
 	$table->head = array ();
@@ -730,7 +734,10 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		if (is_writable ($real_directory)) {
 			//The buttons to make actions
 			
-			echo "<div style='text-align: right; width: " . $table->width . ";'>";
+			if (defined("METACONSOLE"))
+				echo "<div style='text-align: left; width: " . $table->width . ";'>";
+			else
+				echo "<div style='text-align: right; width: " . $table->width . ";'>";
 			
 			echo "<a href='javascript: show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
 			echo html_print_image('images/create_directory.png', true,

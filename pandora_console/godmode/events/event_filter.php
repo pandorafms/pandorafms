@@ -85,6 +85,8 @@ if ($filters === false)
 	$filters = array ();
 
 $table->width = '98%';
+if(defined("METACONSOLE"))
+	$table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Filter group');

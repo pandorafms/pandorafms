@@ -177,8 +177,15 @@ if (isset($config['netflow_disable_custom_lvfilters'])) {
 
 enterprise_hook('open_meta_frame');
 
+if (defined ('METACONSOLE')){
+	echo "<div class='title_tactical'>". __("Draw live filter")."</div>";
+	$class = "databox data";
+}else{
+	$class = "databox";
+}
+
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
-	echo "<table class='databox' width='99%'>";
+	echo "<table class='databox' width='100%'>";
 	
 	if (defined ('METACONSOLE')) {
 		$list_servers = array();
@@ -375,7 +382,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "<br />";
 	
 	if (defined ('METACONSOLE')) {
-		echo "<table class='databox' width='99%' style='border: 0px;'><tr><td>";
+		echo "<table class='' width='100%' style='border: 0px;'><tr><td>";
 	}
 	
 	

@@ -22,6 +22,8 @@ enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "LM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
@@ -61,7 +63,6 @@ else {
 		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "alert_config", true);
 }
 
-enterprise_hook('open_meta_frame');
 
 $name = '';
 $id_command = '';
@@ -82,6 +83,19 @@ html_print_div(array('id' => 'help_alert_macros_hint', 'content' => ui_print_hel
 
 $table->id = 'table_macros';
 $table->width = '98%';
+if (defined('METACONSOLE')){
+	$table->class = 'databox data';
+	$table->width = '100%';
+	if ($id) {
+		$table->head[0] = __('Update Action');
+	}
+	else {
+		$table->head[0] = __('Create Action');
+	}
+	
+	$table->head_colspan[0] = 4;
+	$table->headstyle[0] = 'text-align: center';
+}
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();

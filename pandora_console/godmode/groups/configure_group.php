@@ -18,6 +18,8 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation", "Trying to access Group Management2");
 	require ("general/noaccess.php");
@@ -94,9 +96,18 @@ else {
 
 }
 
-enterprise_hook('open_meta_frame');
 
 $table->width = '98%';
+if (defined("METACONSOLE")){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	if ($id_group)
+		$table->head[0] = __('Update Group');
+	else
+		$table->head[0] = __('Create Group');
+	$table->head_colspan[0] = 4;
+	$table->headstyle[0] = 'text-align: center';
+}
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);

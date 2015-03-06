@@ -45,6 +45,18 @@ else {
 }
 
 $table->width = '98%';
+if (defined('METACONSOLE')){
+	$table->width = '100%';
+	$table->class = 'databox data';
+	if ($id) {
+		$table->head[0] = __('Update Group Component');
+	}
+	else {
+		$table->head[0] = __('Create Group Component');
+	}
+	$table->head_colspan[0] = 4;
+	$table->headstyle[0] = 'text-align: center';
+}
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->data = array ();

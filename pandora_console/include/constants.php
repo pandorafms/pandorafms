@@ -154,6 +154,7 @@ define('GENERIC_SIZE_TEXT',	25);
 
 
 /* Agent module status */
+define('AGENT_MODULE_STATUS_ALL',				-1);
 define('AGENT_MODULE_STATUS_CRITICAL_BAD',		1);
 define('AGENT_MODULE_STATUS_CRITICAL_ALERT',	100);
 define('AGENT_MODULE_STATUS_NO_DATA',			4);

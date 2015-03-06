@@ -506,7 +506,7 @@ if(defined('METACONSOLE')){
 		$table_custom_fields->cellspacing = '0';
 }
 $table_custom_fields->style = array();
-f(!defined('METACONSOLE'))
+if(!defined('METACONSOLE'))
 	$table_custom_fields->style[0] = 'font-weight: bold; width: 150px;';
 $table_custom_fields->colspan = array();
 $table_custom_fields->data = array();

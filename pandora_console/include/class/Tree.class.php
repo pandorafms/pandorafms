@@ -110,8 +110,6 @@ class Tree {
 	protected function getAgentCounterColumnsSql ($agent_table) {
 		// Add the agent counters to the columns
 
-		$agent_status_filter = "";
-
 		if ($this->filter['statusAgent'] == -1) {
 			// Critical
 			$agent_critical_filter = $this->getAgentStatusFilter(AGENT_STATUS_CRITICAL);
@@ -1312,6 +1310,30 @@ class Tree {
 		
 		if (defined("METACONSOLE") && !empty($server))
 			$agent['serverID'] = $server['id'];
+
+		// Realtime counters for Strict ACL
+		if ($this->strictACL) {
+			if ($agent['rootType'] == "group") {
+				$agent['counters'] = array();
+				$agent['counters']['unknown'] = agents_monitor_unknown($agent['id']);
+				$agent['counters']['critical'] = agents_monitor_critical($agent['id']);
+				$agent['counters']['warning'] = agents_monitor_warning($agent['id']);
+				$agent['counters']['not_init'] = agents_monitor_notinit($agent['id']);
+				$agent['counters']['ok'] = agents_monitor_ok($agent['id']);
+				$agent['counters']['total'] = agents_monitor_total($agent['id']);
+				$agent['counters']['alerts'] = agents_get_alerts_fired($agent['id']);
+			}
+			else if ($agent['rootType'] == "tag") {
+				$agent['counters'] = array();
+				$agent['counters']['unknown'] = tags_monitors_unknown($agent['rootID'], $this->acltags, $agent['id']);
+				$agent['counters']['critical'] = tags_monitors_critical($agent['rootID'], $this->acltags, $agent['id']);
+				$agent['counters']['warning'] = tags_monitors_warning($agent['rootID'], $this->acltags, $agent['id']);
+				$agent['counters']['not_init'] = tags_monitors_not_init($agent['rootID'], $this->acltags, $agent['id']);
+				$agent['counters']['ok'] = tags_monitors_normal($agent['rootID'], $this->acltags, $agent['id']);
+				$agent['counters']['total'] = tags_monitors_total($agent['rootID'], $this->acltags, $agent['id']);
+				$agent['counters']['alerts'] = tags_monitors_fired_alerts($agent['rootID'], $this->acltags, $agent['id']);
+			}
+		}
 		
 		// Counters
 		if (empty($agent['counters'])) {

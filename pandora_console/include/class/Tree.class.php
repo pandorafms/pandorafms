@@ -1463,8 +1463,16 @@ class Tree {
 				continue;
 			
 			// Item found
-			if ($item["id"] == $item_id)
-				return $item;
+			if (! defined("METACONSOLE")) {
+				if ($item["id"] == $item_id)
+					return $item;
+			}
+			else {
+				foreach ($item["id"] as $server_id => $id) {
+					if ($id == $item_id)
+						return $item;
+				}
+			}
 			
 			if ($item["type"] == "group" && !empty($item["children"])) {
 				$result = self::extractItemWithID($item["children"], $item_id, $item_type);

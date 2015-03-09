@@ -1630,15 +1630,20 @@ class Tree {
 			if (!empty($processed_items)) {
 				if (!empty($this->filter["groupID"])) {
 					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group");
-					$processed_items = array($result);
+					
+					if ($processed_items === false)
+						$processed_items = array();
+					else
+						$processed_items = array($result);
 				}
 				else if (!empty($this->filter["tagID"])) {
 					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag");
-					$processed_items = array($result);
+					
+					if ($processed_items === false)
+						$processed_items = array();
+					else
+						$processed_items = array($result);
 				}
-				
-				if ($processed_items === false)
-					$processed_items = array();
 			}
 		}
 		// Agents
@@ -1736,6 +1741,8 @@ class Tree {
 				
 				if ($processed_items === false)
 					$processed_items = array();
+				else
+					$processed_items = array($result);
 			}
 		}
 		// Agents

@@ -86,7 +86,7 @@ if ($filters === false)
 
 $table->width = '98%';
 if(defined("METACONSOLE"))
-	$table->width = '98%';
+	$table->width = '100%';
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Filter group');
@@ -100,7 +100,8 @@ $table->style[0] = 'font-weight: bold';
 $table->align = array ();
 $table->align[1] = 'center';
 $table->align[2] = 'center';
-$table->align[3] = 'center';
+if(!defined("METACONSOLE"))
+	$table->align[3] = 'center';
 $table->align[4] = 'center';
 $table->align[5] = 'center';
 $table->size = array ();
@@ -137,7 +138,10 @@ if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=geventos&sec2=godmode/events/events&amp;pure=".$config['pure']."'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	if(!defined("METACONSOLE"))
+		echo "<div style='padding-bottom: 20px; text-align: right; width:100%;'>";
+	else
+		echo "<div style='text-align: right; width:100%;'>";
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
@@ -148,7 +152,10 @@ else {
 }
 
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	if(!defined("METACONSOLE"))
+		echo "<div style='padding-bottom: 20px; text-align: right; width:100%;'>";
+	else
+		echo "<div style='text-align: right; width:100%;'>";
 	html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
 	echo "</div>";
 	echo '</form>';

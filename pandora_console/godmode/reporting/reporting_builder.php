@@ -475,7 +475,10 @@ switch ($action) {
 				
 				$table->head[$next] = __('Private');
 				$table->size[$next] = '40px';
-				$table->align[$next] = 'center';
+				if(defined('METACONSOLE'))
+					$table->align[$next] = '';
+				else
+					$table->align[$next] = 'center';
 				$next++;
 				$table->head[$next] = __('Group');
 				$table->align[$next] = 'center';
@@ -1590,9 +1593,9 @@ switch ($action) {
 			else
 				ui_print_page_header (__('Reporting') . $subsection, "images/op_reporting.png", false, "", false, $buttons);
 			
-			enterprise_hook('open_meta_frame');
+			
 			reporting_enterprise_select_main_tab($action);
-			enterprise_hook('close_meta_frame');
+			
 		}
 		
 		return;
@@ -1661,7 +1664,7 @@ else {
 		"reporting_" . $activeTab . "_tab", false, $buttons);
 }
 
-enterprise_hook('open_meta_frame');
+
 
 if ($resultOperationDB !== null) {
 	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action'));

@@ -37,7 +37,10 @@ else {
 //headers
 $i = 0;
 $table->head[$i] = __('ID');
-$table->align[$i] = 'center';
+if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 $i++;
 if (in_array('server_name', $show_fields)) {
 	$table->head[$i] = __('Server');
@@ -51,7 +54,10 @@ if (in_array('estado', $show_fields)) {
 }
 if (in_array('id_evento', $show_fields)) {
 	$table->head[$i] = __('Event ID');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('evento', $show_fields)) {
@@ -68,79 +74,124 @@ if (in_array('id_agente', $show_fields)) {
 }
 if (in_array('timestamp', $show_fields)) {
 	$table->head[$i] = __('Timestamp');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('id_usuario', $show_fields)) {
 	$table->head[$i] = __('User');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('owner_user', $show_fields)) {
 	$table->head[$i] = __('Owner');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('id_grupo', $show_fields)) {
 	$table->head[$i] = __('Group');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('event_type', $show_fields)) {
 	$table->head[$i] = __('Event type');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$table->style[$i] = 'min-width: 85px;';
 	$i++;
 }
 if (in_array('id_agentmodule', $show_fields)) {
 	$table->head[$i] = __('Agent Module');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('id_alert_am', $show_fields)) {
 	$table->head[$i] = __('Alert');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 
 if (in_array('criticity', $show_fields)) {
 	$table->head[$i] = __('Severity');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('user_comment', $show_fields)) {
 	$table->head[$i] = __('Comment');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('tags', $show_fields)) {
 	$table->head[$i] = __('Tags');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('source', $show_fields)) {
 	$table->head[$i] = __('Source');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('id_extra', $show_fields)) {
 	$table->head[$i] = __('Extra ID');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('ack_utimestamp', $show_fields)) {
 	$table->head[$i] = __('ACK Timestamp');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if (in_array('instructions', $show_fields)) {
 	$table->head[$i] = __('Instructions');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$i++;
 }
 if ($i != 0 && $allow_action) {
 	$table->head[$i] = __('Action');
-	$table->align[$i] = 'center';
+	if(defined("METACONSOLE"))
+		$table->align[$i] = 'left';
+	else
+		$table->align[$i] = 'center';
 	$table->size[$i] = '80px';
 	$i++;
 	if (check_acl ($config["id_user"], 0, "EW") == 1 && !$readonly) {
@@ -597,7 +648,10 @@ if (!empty ($table->data)) {
 		echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 	}
 	
-	echo '<div style="width: ' . $table->width . '; overflow-x: auto;">';
+	if (defined("METACONSOLE"))
+		echo '<div style="width: ' . $table->width . ';">';
+	else
+		echo '<div style="width: ' . $table->width . '; overflow-x: auto;">';
 	html_print_table ($table);
 	echo '</div>';
 	

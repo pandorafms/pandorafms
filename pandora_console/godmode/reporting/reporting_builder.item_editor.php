@@ -515,7 +515,7 @@ else
 				echo "<thead>
 						<tr>
 							<th align=center colspan=5>
-								" . __('Wizard') . "
+								" . __('Item Editor') . "
 							</th>
 						</tr>
 					</thead>";			
@@ -1140,6 +1140,8 @@ else
 		</tr>
 	</tbody>
 </table>
+<br />
+<br />
 <?php
 print_SLA_list('95%', $action, $idItem);
 print_General_list('95%', $action, $idItem);
@@ -1220,17 +1222,17 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$server_name_element = '';
 						if ($meta && $server_name != '') 
 							$server_name_element .= ' (' . $server_name . ')';
-						
+
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">';
 						echo 	'<td class="sla_list_agent_col">' . printSmallFont($nameAgent) . $server_name_element .  '</td>';
 						echo 	'<td class="sla_list_module_col">' . printSmallFont($nameModule) . '</td>';
-						
+
 						if (enterprise_installed() && $report_item_type == 'SLA_services') {
 							enterprise_include_once("include/functions_services.php");
 							$nameService = enterprise_hook('services_get_name', array($item['id_agent_module']));
 							echo '<td class="sla_list_service_col">' . printSmallFont($nameService) . '</th>';
 						}
-						
+
 						echo 	'<td class="sla_list_sla_min_col">' . $item['sla_min'] . '</td>';
 						echo 	'<td class="sla_list_sla_max_col">' . $item['sla_max'] . '</td>';
 						echo 	'<td class="sla_list_sla_limit_col">' . $item['sla_limit'] . '</td>';
@@ -1458,8 +1460,7 @@ $(document).ready (function () {
 		minuteText: '<?php echo __('Minute');?>',
 		secondText: '<?php echo __('Second');?>',
 		currentText: '<?php echo __('Now');?>',
-		closeText: '<?php echo __('Close');?>'
-	});
+		closeText: '<?php echo __('Close');?>'});
 });
 
 function create_custom_graph() {
@@ -1698,13 +1699,13 @@ function addSLARow() {
 	var slaMin = $("input[name=sla_min]").val();
 	var slaMax = $("input[name=sla_max]").val();
 	var slaLimit = $("input[name=sla_limit]").val();
-	
+
 	var serviceId = $("select#id_service>option:selected").val();
 	var serviceName = $("select#id_service>option:selected").text();
 	
 	if (((idAgent != '') && (slaMin != '') && (slaMax != '')
 		&& (slaLimit != '')) || serviceId != '') {
-			
+
 			if (nameAgent != '') {
 				//Truncate nameAgent
 				var params = [];
@@ -1721,7 +1722,7 @@ function addSLARow() {
 						nameAgent = data;
 					}
 				});
-				
+
 				//Truncate nameModule
 				var params = [];
 				params.push("truncate_text=1");
@@ -1747,7 +1748,7 @@ function addSLARow() {
 			params.push("sla_max=" + slaMax);
 			params.push("sla_limit=" + slaLimit);
 			params.push("server_id=" + serverId);
-			
+
 			if (serviceId != '') {
 				params.push("id_service=" + serviceId);
 			}
@@ -2023,7 +2024,7 @@ function chooseType() {
 			$("#row_only_display_wrong").show();
 			$("#row_working_time").show();
 			$("#row_sort").show();
-			
+
 			$(".sla_list_agent_col").hide();
 			$(".sla_list_module_col").hide();
 			$(".sla_list_service_col").show();
@@ -2177,7 +2178,7 @@ function chooseType() {
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
 			$("#row_event_graph_by_agent").hide();
-			
+		
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			break;

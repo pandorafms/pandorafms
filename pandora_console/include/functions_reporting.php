@@ -1512,14 +1512,25 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$table_mbs->data[] = $tdata;
 	}
 	
-	$output = '
-		<fieldset class="databox tactical_set">
-			<legend>' . 
-				__('Monitors by status') . 
-			'</legend>' . 
-			html_print_table($table_mbs, true) .
-		'</fieldset>';
-	
+	if(!defined("METACONSOLE")){
+		$output = '
+			<fieldset class="databox tactical_set">
+				<legend>' . 
+					__('Monitors by status') . 
+				'</legend>' . 
+				html_print_table($table_mbs, true) .
+			'</fieldset>';
+	}
+	else{
+		$table_mbs->class = "tactical_view";
+		$output = '
+			<fieldset class="tactical_set">
+				<legend>' . 
+					__('Monitors by status') . 
+				'</legend>' . 
+				html_print_table($table_mbs, true) .
+			'</fieldset>';
+	}
 	return $output;
 }
 
@@ -8375,7 +8386,8 @@ function reporting_get_last_activity() {
 	}
 	
 	if(defined("METACONSOLE"))
-		$table->class = "databox_tactical";
+		$table->class="databox_tactical";
+		
 	return html_print_table ($table, true);
 	
 }
@@ -8458,7 +8470,7 @@ function reporting_get_event_histogram ($events) {
 	}
 	else{
 		$table->class='tactical_view';
-		$event_graph = '<fieldset class="tactical_set">' . 
+		$event_graph = '<fieldset id="event_tactical" class="tactical_set">' . 
 					html_print_table($table, true) . '</fieldset>';
 	}
 	

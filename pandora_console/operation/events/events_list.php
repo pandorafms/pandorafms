@@ -125,9 +125,6 @@ if (is_ajax()) {
 // Get the tags where the user have permissions in Events reading tasks
 $tags = tags_get_user_tags($config['id_user'], 'ER');
 
-// Error div for ajax messages
-echo "<div id='show_filter_error'>";
-echo "</div>";
 
 if ($id_agent == 0 && $text_agent != __('All')) {
 	$id_agent = -1;
@@ -147,7 +144,8 @@ require('events.build_query.php');
 
 $id_name = get_parameter('id_name', '');
 
-echo "<br>";
+if(!defined("METACONSOLE"))
+	echo "<br>";
 
 
 // Trick to catch if any filter button has been pushed (don't collapse filter)
@@ -158,23 +156,22 @@ $update_pressed = (int) !empty($update_pressed);
 if ($update_pressed || $open_filter) {
 	$open_filter = true;
 }
+if(!defined("METACONSOLE")){
+	$table = html_get_predefined_table('transparent', 2);
+	$table->styleTable = 'width: 23px; float: right; background: #ECECEC;';
+	$table->width = '98%';
+	$table->style[0] = 'text-align: left;';
+	$table->style[1] = 'text-align: right;';
 
-$table = html_get_predefined_table('transparent', 2);
-$table->styleTable = 'width: 23px; float: right; background: #ECECEC;';
-$table->width = '98%';
-$table->style[0] = 'text-align: left;';
-$table->style[1] = 'text-align: right;';
+	$table->data[0][1] = '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a>';
+	$table->cellstyle[0][1] = 'background: #ECECEC;';
 
-$table->data[0][1] = '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a>';
-$table->cellstyle[0][1] = 'background: #ECECEC;';
-
-if(defined('METACONSOLE')){
-	$table->width = '100%';
-	$table->class='events_list';
+	if(defined('METACONSOLE')){
+		$table->width = '100%';
+		$table->class='events_list';
+	}
+	html_print_table($table);
 }
-
-html_print_table($table);
-
 unset($table);
 
 $filters = events_get_event_filter_select();
@@ -238,6 +235,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	
 	$data[0] .= html_print_select ($_filters_update, "overwrite_filter", '', '', '', 0, true);
 	$data[1] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
@@ -500,7 +498,7 @@ $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
 if (defined('METACONSOLE')){
-	$table->width = '70%';
+	$table->width = '96%';
 	$table->class = 'databox_filters';
 }
 $table->styleTable = 'font-weight: bold; color: #555;';
@@ -536,7 +534,7 @@ $fields = events_get_all_status();
 $data[0] .= html_print_select ($fields, 'status', $status, '', '', '', true);
 $data[1] = __('Max. hours old') . $jump;
 $data[1] .= html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
-$data[2] = __("Repeated") . '<br>';
+$data[2] = __("Repeated") . $jump;
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
 $data[2] .= html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', 0, true);
@@ -561,18 +559,42 @@ $table->rowclass[] = '';
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
 if (check_acl ($config["id_user"], 0, "EW")) {
-	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
+	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . 
+				html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
-$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a><br>';
-if (empty($id_name)) {
-	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' .
-		__('No filter loaded') .
-		'</span>]';
+if(defined("METACONSOLE")){
+	$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
+				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> &nbsp;';
+	$data[0] .= '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . 
+						html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a> <br />';
 }
-else {
-	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' .
-		__('Filter loaded') . ': ' . $id_name .
-		'</span>]';
+else
+	$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
+				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> <br />';
+if(defined("METACONSOLE")){
+	if (empty($id_name)) {
+		$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
+			__('No filter loaded') .
+			']</div>';
+	}
+	else {
+		$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
+			__('Filter loaded') . ': ' . $id_name .
+			']</div>';
+	}
+}
+else{
+	if (empty($id_name)) {
+		$data[0] .= '<span id="filter_loaded_span" style="font-weight: normal">[' .
+			__('No filter loaded') .
+			']</span>';
+	}
+	else {
+		$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' .
+			__('Filter loaded') . ': ' . $id_name .
+			'</span>]';
+	}
+
 }
 $data[0] .= '</div>';
 
@@ -592,6 +614,10 @@ if (defined('METACONSOLE'))
 	echo $events_filter;
 else
 	ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
+
+// Error div for ajax messages
+echo "<div id='show_filter_error'>";
+echo "</div>";
 
 $event_table = events_get_events_table($meta, $history);
 
@@ -637,7 +663,7 @@ if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
 	//~ with several tags
 	$acltags = tags_get_user_module_and_tags ($config['id_user'],'ER', true);
-	
+
 	foreach ($result as $key=>$event_data) {
 		$has_tags = events_checks_event_tags($event_data, $acltags);
 		if (!$has_tags) {

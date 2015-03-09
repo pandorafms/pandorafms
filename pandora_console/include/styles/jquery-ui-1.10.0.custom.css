@@ -423,7 +423,7 @@ button.ui-button::-moz-focus-inner {
 	position: absolute;
 	right: .3em;
 	width: 21px;
-	margin: -2px 0 0 0;
+	margin: 0px 0 0 0;
 	padding: 1px;
 	height: 20px;
 }

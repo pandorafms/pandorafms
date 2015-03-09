@@ -1917,6 +1917,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				$("#background").css('height', values['height'] + 'px');
 			}
 			break;
+		case 'service':
+			refresh_lines(lines, 'background', true);
+			break;
 	}
 	
 	draw_user_lines("", 0, 0, 0 , 0, 0, true);

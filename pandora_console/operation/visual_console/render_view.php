@@ -268,5 +268,11 @@ ui_require_javascript_file ('pandora_visual_console');
 		}
 		?>
 	});
+	
+	$(window).load(function() {
+		if (typeof(lines) != 'undefined') {
+			draw_lines (lines, 'layout_map');
+		}
+	});
 	/* ]]> */
 </script>

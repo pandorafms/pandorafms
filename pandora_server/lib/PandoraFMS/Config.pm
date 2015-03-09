@@ -349,6 +349,12 @@ sub pandora_load_config {
 	$pa_config->{"console_user"} = 'admin'; # 6.0
 	$pa_config->{"console_pass"} = 'pandora'; # 6.0
 
+	# Database password encryption passphrase
+	$pa_config->{"encryption_passphrase"} = ''; # 6.0
+
+	# Unknown interval (as a multiple of the module's interval)
+	$pa_config->{"unknown_interval"} = 2; # > 5.1SP2
+
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -832,8 +838,11 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^console_pass\s(.*)/i) {
 			$pa_config->{'console_pass'}= safe_input($1);
 		}
-		elsif ($parametro =~ m/^encryption_passphrase\s(.*)/i) {
+		elsif ($parametro =~ m/^encryption_passphrase\s(.*)/i) { # 6.0
 			$pa_config->{'encryption_passphrase'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^unknown_interval\s([0-9]*)/i) { # > 5.1SP2
+			$pa_config->{'unknown_interval'}= safe_input($1);
 		}
 	} # end of loop for parameter #
 

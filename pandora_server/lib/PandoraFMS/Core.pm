@@ -3008,7 +3008,7 @@ sub pandora_module_keep_alive_nd {
 					AND tagente_modulo.disabled = 0 
 					AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()))
 					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-					AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
+					AND ( tagente_estado.utimestamp + (tagente.intervalo * ?) < UNIX_TIMESTAMP())', $pa_config->{'unknown_interval'});
 
 	my %data = ('data' => 0);
 	foreach my $module (@modules) {
@@ -4406,7 +4406,7 @@ sub pandora_module_unknown ($$) {
 			AND ((tagente_estado.estado <> 3 AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100))
 				OR (tagente_estado.estado <> 0 AND tagente_modulo.id_tipo_modulo IN (21, 22, 23)))
 			AND tagente_estado.utimestamp != 0
-			AND (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP()');
+			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP()', $pa_config->{'unknown_interval'});
 	
 	foreach my $module (@modules) {
 		

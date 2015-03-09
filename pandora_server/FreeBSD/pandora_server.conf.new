@@ -476,3 +476,7 @@ claim_back_snmp_modules 1
 # If set to 1 asynchronous modules that do not receive data for twice their
 # interval will become normal. Set to 0 to disable.
 async_recovery 1
+
+# Time interval (as a multiple of the module interval) before a module becomes unknown. Twice the module's interval by default.
+#unknown_interval 2
+

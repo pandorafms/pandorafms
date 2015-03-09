@@ -343,6 +343,9 @@ sub pandora_load_config {
 	# Auto-recovery of asynchronous modules.
 	$pa_config->{"async_recovery"} = 1; # 5.1SP1
 
+	# Unknown interval (as a multiple of the module's interval)
+	$pa_config->{"unknown_interval"} = 2; # > 5.1SP2
+
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -813,6 +816,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^async_recovery\s+([0-1])/i) {
 			$pa_config->{'async_recovery'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^unknown_interval\s([0-9]*)/i) { # > 5.1SP2
+			$pa_config->{'unknown_interval'}= safe_input($1);
 		}
 	} # end of loop for parameter #
 

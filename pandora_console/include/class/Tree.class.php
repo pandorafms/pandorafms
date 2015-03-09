@@ -1630,15 +1630,15 @@ class Tree {
 			if (!empty($processed_items)) {
 				if (!empty($this->filter["groupID"])) {
 					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group");
+					$processed_items = array($result);
 				}
 				else if (!empty($this->filter["tagID"])) {
 					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag");
+					$processed_items = array($result);
 				}
 				
-				if ($result === false)
+				if ($processed_items === false)
 					$processed_items = array();
-				else
-					$processed_items = array($result);
 			}
 		}
 		// Agents
@@ -1732,11 +1732,10 @@ class Tree {
 			// groupID filter. To access the view from tactical views f.e.
 			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
 				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group");
+				$processed_items = array($result);
 				
-				if ($result === false)
+				if ($processed_items === false)
 					$processed_items = array();
-				else
-					$processed_items = array($result);
 			}
 		}
 		// Agents

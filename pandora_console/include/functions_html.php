@@ -82,6 +82,11 @@ function html_debug_print ($var, $file = '') {
 	}
 }
 
+// Alias for "html_debug_print"
+function html_debug ($var, $file = '') {
+	html_debug_print ($var, $file);
+}
+
 function html_f2str($function, $params) {
 	ob_start();
 	

@@ -36,7 +36,10 @@ if (defined('METACONSOLE'))
 else
 	$sec = 'galertas';
 
-$pure = get_parameter('pure', 0);
+$pure = (int)get_parameter('pure', 0);
+$update_command = (bool) get_parameter ('update_command');
+$create_command = (bool) get_parameter ('create_command');
+$delete_command = (bool) get_parameter ('delete_command');
 
 if (is_ajax ()) {
 	$get_alert_command = (bool) get_parameter ('get_alert_command');
@@ -137,7 +140,7 @@ if (is_ajax ()) {
 				$ffield = html_print_textarea ('field'.$i.'_value', 1, 1, '', 'style="min-height:40px" class="fields"', true);
 				$rfield = html_print_textarea ('field'.$i.'_recovery_value', 1, 1, '', 'style="min-height:40px" class="fields_recovery"', true);
 			}
-				
+			
 			
 			// The empty descriptions will be ignored
 			if ($fdesc == '') {
@@ -162,6 +165,12 @@ if (is_ajax ()) {
 	return;
 }
 
+
+if ($update_command) {
+	require_once("configure_alert_command.php");
+	return;
+}
+
 // Header
 if (defined('METACONSOLE'))
 	alerts_meta_print_header();
@@ -169,9 +178,7 @@ else
 	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/gm_alerts.png", false, "alerts_config", true);
 
 
-$update_command = (bool) get_parameter ('update_command');
-$create_command = (bool) get_parameter ('create_command');
-$delete_command = (bool) get_parameter ('delete_command');
+
 
 if ($create_command) {
 	$name = (string) get_parameter ('name');
@@ -216,57 +223,6 @@ if ($create_command) {
 		__('Could not be created'));
 }
 
-if ($update_command) {
-	$id = (int) get_parameter ('id');
-	$alert = alerts_get_alert_command ($id);
-	if ($alert['internal']) {
-		db_pandora_audit("ACL Violation", "Trying to access Alert Management");
-		require ("general/noaccess.php");
-		exit;
-	}
-	
-	$name = (string) get_parameter ('name');
-	$command = (string) get_parameter ('command');
-	$description = (string) get_parameter ('description');
-	
-	$fields_descriptions = array();
-	$fields_values = array();
-	$info_fields = '';
-	$values = array();
-	for ($i=1;$i<=10;$i++) {
-		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
-		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
-		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];
-	}
-	
-	$values['fields_values'] = io_json_mb_encode($fields_values);
-	$values['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
-	
-	$values['name'] = $name;
-	$values['command'] = $command;
-	$values['description'] = $description;
-	
-	//Check it the new name is used in the other command.
-	$id_check = db_get_value ('id', 'talert_commands', 'name', $name);
-	if (($id_check != $id) && (!empty($id_check))) {
-		$result = '';
-	}
-	else {
-		$result = alerts_update_alert_command ($id, $values);
-		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description. ' ' .$info_fields;
-	}
-	
-	if ($result) {
-		db_pandora_audit("Command management", "Update alert command #" . $id, false, false, $info);
-	}
-	else {
-		db_pandora_audit("Command management", "Fail to update alert command #" . $id, false, false);
-	}
-	
-	ui_print_result_message ($result,
-		__('Successfully updated'),
-		__('Could not be updated'));
-}
 
 if ($delete_command) {
 	$id = (int) get_parameter ('id');
@@ -291,6 +247,8 @@ if ($delete_command) {
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
+	
+	
 }
 
 $table->width = '98%';

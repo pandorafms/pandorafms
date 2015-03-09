@@ -1594,16 +1594,6 @@ class Tree {
 					// array_filter clean the empty elements
 					$processed_items = array_filter($processed_items_tmp);
 				}
-				
-				// groupID filter. To access the view from tactical views f.e.
-				if (!empty($processed_items) && !empty($this->filter['groupID'])) {
-					$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group");
-					
-					if ($result === false)
-						$processed_items = array();
-					else
-						$processed_items = array($result);
-				}
 			}
 			else {
 				$unmerged_items = array();

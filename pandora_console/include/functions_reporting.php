@@ -8271,17 +8271,17 @@ function reporting_get_events ($data, $links = false) {
 	
 	$table_events->data[0][0] = html_print_image('images/module_critical.png', true, array('title' => __('Critical events')));
 	$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
-		"<a style='color: #bc0000;' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['critical'])."</span></b></a>";
+		"<a style='color: #FC4444;' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".format_numeric($data['critical'])."</span></b></a>";
 	
 	$table_events->data[0][1] = html_print_image('images/module_warning.png', true, array('title' => __('Warning events')));
 	$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;" .
-		"<a style='color: #aba900;' href='" . $links['warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['warning'])."</span></b></a>";
+		"<a style='color: #FAD403;' href='" . $links['warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".format_numeric($data['warning'])."</span></b></a>";
 	$table_events->data[0][2] = html_print_image('images/module_ok.png', true, array('title' => __('OK events')));
 	$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;" .
-		"<a style='color: #6ec300;' href='" . $links['normal'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['normal'])."</span></b></a>";
+		"<a style='color: #80BA27;' href='" . $links['normal'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".format_numeric($data['normal'])."</span></b></a>";
 	$table_events->data[0][3] = html_print_image('images/module_unknown.png', true, array('title' => __('Unknown events')));
 	$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
-		"<a style='color: #886666;' href='" . $links['unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['unknown'])."</span></b></a>";
+		"<a style='color: #B2B2B2;' href='" . $links['unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".format_numeric($data['unknown'])."</span></b></a>";
 	
 	if (!defined('METACONSOLE')) {
 		$event_view = '<fieldset class="databox tactical_set">

@@ -15,6 +15,7 @@
 
 // Load global vars
 global $config;
+
 require_once ($config['homedir'] . "/include/functions_alerts.php");
 enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
@@ -27,8 +28,71 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 	exit;
 }
 
+$update_command = (bool) get_parameter ('update_command');
 $id = (int) get_parameter ('id');
 $pure = get_parameter('pure', 0);
+
+// Header
+if (defined('METACONSOLE'))
+	alerts_meta_print_header();
+else
+	ui_print_page_header (__('Alerts') . ' &raquo; ' .
+		__('Configure alert command'), "images/gm_alerts.png", false, "alerts_config", true);
+
+enterprise_hook('open_meta_frame');
+
+if ($update_command) {
+	$id = (int) get_parameter ('id');
+	$alert = alerts_get_alert_command ($id);
+	if ($alert['internal']) {
+		db_pandora_audit("ACL Violation", "Trying to access Alert Management");
+		require ("general/noaccess.php");
+		exit;
+	}
+	
+	$name = (string) get_parameter ('name');
+	$command = (string) get_parameter ('command');
+	$description = (string) get_parameter ('description');
+	
+	$fields_descriptions = array();
+	$fields_values = array();
+	$info_fields = '';
+	$values = array();
+	for ($i=1;$i<=10;$i++) {
+		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
+		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
+		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];
+	}
+	
+	$values['fields_values'] = io_json_mb_encode($fields_values);
+	$values['fields_descriptions'] = io_json_mb_encode($fields_descriptions);
+	
+	$values['name'] = $name;
+	$values['command'] = $command;
+	$values['description'] = $description;
+	
+	//Check it the new name is used in the other command.
+	$id_check = db_get_value ('id', 'talert_commands', 'name', $name);
+	if (($id_check != $id) && (!empty($id_check))) {
+		$result = '';
+	}
+	else {
+		$result = alerts_update_alert_command ($id, $values);
+		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description. ' ' .$info_fields;
+	}
+	
+	if ($result) {
+		db_pandora_audit("Command management", "Update alert command #" . $id, false, false, $info);
+	}
+	else {
+		db_pandora_audit("Command management", "Fail to update alert command #" . $id, false, false);
+	}
+	
+	ui_print_result_message ($result,
+		__('Successfully updated'),
+		__('Could not be updated'));
+}
+
 
 $name = '';
 $command = '';
@@ -45,22 +109,13 @@ if ($id) {
 	$fields_values = $alert['fields_values'];
 }
 
-if(!empty($fields_descriptions)) {
+if (!empty($fields_descriptions)) {
 	$fields_descriptions = json_decode($fields_descriptions, true);
 }
 
-if(!empty($fields_values)) {
+if (!empty($fields_values)) {
 	$fields_values = json_decode($fields_values, true);
 }
-
-// Header
-if (defined('METACONSOLE'))
-	alerts_meta_print_header();
-else
-	ui_print_page_header (__('Alerts') . ' &raquo; ' .
-		__('Configure alert command'), "images/gm_alerts.png", false, "alerts_config", true);
-
-enterprise_hook('open_meta_frame');
 
 $table->width = '98%';
 $table->style = array ();
@@ -83,7 +138,7 @@ $table->colspan[2][1] = 3;
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 10, 30, $description, '', true);
 
-for ($i=1; $i<=10; $i++) {
+for ($i = 1; $i <= 10; $i++) {
 	
 	$table->data['field'.$i][0] = sprintf(__('Field %s description'), $i);
 	

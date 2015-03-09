@@ -243,6 +243,10 @@ $(document).ready (function () {
 		<?php
 	}
 	?>
+	
+});
+
+$(window).load(function() {
 	if (typeof(lines) != 'undefined') {
 		draw_lines (lines, 'layout_map');
 	}

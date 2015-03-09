@@ -160,6 +160,9 @@ $(document).ready (function () {
 	<?php
 	}
 	?>
+});
+
+$(window).load(function() {
 	draw_lines (lines, 'layout_map');
 });
 /* ]]> */

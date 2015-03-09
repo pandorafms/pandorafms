@@ -1311,7 +1311,7 @@ function tags_get_agents_counter ($type, $id_tag, $groups_and_tags = array(), $i
 
 		if ($type == AGENT_STATUS_ALL)
 			return count($agents);
-		// html_debug_print($agents);
+		
 		foreach ($agents as $agent) {
 			$total = (int) tags_monitors_total($id_tag, $groups_and_tags, $agent['id_agente']);
 			$critical = (int) tags_monitors_critical($id_tag, $groups_and_tags, $agent['id_agente']);
@@ -1319,7 +1319,7 @@ function tags_get_agents_counter ($type, $id_tag, $groups_and_tags = array(), $i
 			$unknown = (int) tags_monitors_unknown($id_tag, $groups_and_tags, $agent['id_agente']);
 			$not_init = (int) tags_monitors_not_init($id_tag, $groups_and_tags, $agent['id_agente']);
 			$normal = (int) tags_monitors_normal($id_tag, $groups_and_tags, $agent['id_agente']);
-			// html_debug_print($total);html_debug_print($critical);html_debug_print($warning);html_debug_print($unknown);html_debug_print($unknown);html_debug_print($not_init);html_debug_print($normal);html_debug_print("----------");
+			
 			switch ($type) {
 				case AGENT_STATUS_CRITICAL:
 					if ($critical > 0)

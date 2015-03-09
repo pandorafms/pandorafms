@@ -8147,17 +8147,17 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_critical.png', true, array('title' => __('Agents critical')));
 	if (!defined('METACONSOLE')) {
-		$agent_data[1] = "<a style='color: #bc0000;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['agent_critical'])."</span></b></a>";
+		$agent_data[1] = "<a style='color: #FC4444;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".format_numeric($data['agent_critical'])."</span></b></a>";
 	}
 	else {
-		$agent_data[1] = "<span style='color: #bc0000;'><b><span style='font-size: 12pt; font-weight: bold; color: #bc0000;'>".format_numeric($data['agent_critical'])."</span></b></span>";
+		$agent_data[1] = "<span style='color: #FC4444;'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".format_numeric($data['agent_critical'])."</span></b></span>";
 	}
 	$agent_data[2] = html_print_image('images/agent_warning.png', true, array('title' => __('Agents warning')));
 	if (!defined('METACONSOLE')) {
-		$agent_data[3] = "<a style='color: #aba900;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['agent_warning'])."</span></b></a>";
+		$agent_data[3] = "<a style='color: #FAD403;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".format_numeric($data['agent_warning'])."</span></b></a>";
 	}
 	else {
-		$agent_data[3] = "<span style='color: #aba900;'><b><span style='font-size: 12pt; font-weight: bold; color: #aba900;'>".format_numeric($data['agent_warning'])."</span></b></span>";
+		$agent_data[3] = "<span style='color: #FAD403;'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".format_numeric($data['agent_warning'])."</span></b></span>";
 	}
 	
 	$table_agent->data[] = $agent_data;
@@ -8165,31 +8165,32 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_ok.png', true, array('title' => __('Agents ok')));
 	if (!defined('METACONSOLE')) {
-		$agent_data[1] = "<a style='color: #6ec300;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['agent_ok'])."</span></b></a>";
+		$agent_data[1] = "<a style='color: #80BA27;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".format_numeric($data['agent_ok'])."</span></b></a>";
 	}
 	else {
-		$agent_data[1] = "<span style='color: #6ec300;'><b><span style='font-size: 12pt; font-weight: bold; color: #6ec300;'>".format_numeric($data['agent_ok'])."</span></b></span";
+		$agent_data[1] = "<span style='color: #80BA27;'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".format_numeric($data['agent_ok'])."</span></b></span";
 	}
 	$agent_data[2] = html_print_image('images/agent_unknown.png', true, array('title' => __('Agents unknown')));
 	if (!defined('METACONSOLE')) {
-		$agent_data[3] = "<a style='color: #886666;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['agent_unknown'])."</span></b></a>";
+		$agent_data[3] = "<a style='color: #B2B2B2;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".format_numeric($data['agent_unknown'])."</span></b></a>";
 	}
 	else {
-		$agent_data[3] = "<span style='color: #886666;'><b><span style='font-size: 12pt; font-weight: bold; color: #886666;'>".format_numeric($data['agent_unknown'])."</span></b></span>";
+		$agent_data[3] = "<span style='color: #B2B2B2;'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".format_numeric($data['agent_unknown'])."</span></b></span>";
 	}
 	$table_agent->data[] = $agent_data;
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_notinit.png', true, array('title' => __('Agents not init')));
 	if (!defined('METACONSOLE')) {
-		$agent_data[1] = "<a style='color: #729fcf;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
+		$agent_data[1] = "<a style='color: #5BB6E5;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #5BB6E5;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
 	}
 	else {
-		$agent_data[1] = "<span style='color: #729fcf;'><b><span style='font-size: 12pt; font-weight: bold; color: #729fcf;'>".format_numeric($data['agent_not_init'])."</span></b></span>";
+		$agent_data[1] = "<span style='color: #5BB6E5;'><b><span style='font-size: 12pt; font-weight: bold; color: #5BB6E5;'>".format_numeric($data['agent_not_init'])."</span></b></span>";
 	}
-	$table_agent->data[] = $agent_data;
 	$agent_data[2] = "";
 	$agent_data[3] = "";
+	$table_agent->data[] = $agent_data;
+	
 	
 	if (!defined('METACONSOLE')) {
 		$agents_data = '<fieldset class="databox tactical_set">
@@ -8372,8 +8373,10 @@ function reporting_get_last_activity() {
 		
 		array_push ($table->data, $data);
 	}
-
-	 return html_print_table ($table, true);
+	
+	if(defined("METACONSOLE"))
+		$table->class = "databox_tactical";
+	return html_print_table ($table, true);
 	
 }
 

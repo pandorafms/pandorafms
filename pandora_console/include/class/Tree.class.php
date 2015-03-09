@@ -1631,7 +1631,7 @@ class Tree {
 				if (!empty($this->filter["groupID"])) {
 					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group");
 					
-					if ($processed_items === false)
+					if ($result === false)
 						$processed_items = array();
 					else
 						$processed_items = array($result);
@@ -1639,7 +1639,7 @@ class Tree {
 				else if (!empty($this->filter["tagID"])) {
 					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag");
 					
-					if ($processed_items === false)
+					if ($result === false)
 						$processed_items = array();
 					else
 						$processed_items = array($result);
@@ -1737,9 +1737,8 @@ class Tree {
 			// groupID filter. To access the view from tactical views f.e.
 			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
 				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group");
-				$processed_items = array($result);
 				
-				if ($processed_items === false)
+				if ($result === false)
 					$processed_items = array();
 				else
 					$processed_items = array($result);

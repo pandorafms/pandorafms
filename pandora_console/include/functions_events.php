@@ -2321,7 +2321,10 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Group');
-	$data[1] = ui_print_group_icon ($event["id_grupo"], true);
+	$data[1] = "";
+	if (!$config['show_group_name']) {
+		$data[1] = ui_print_group_icon ($event["id_grupo"], true);
+	}
 	$data[1] .= groups_get_name ($event["id_grupo"]);
 	$table_general->data[] = $data;
 	

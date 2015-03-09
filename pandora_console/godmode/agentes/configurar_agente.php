@@ -307,6 +307,9 @@ if ($id_agente) {
 	
 	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',
 		array($id_agente));
+	if ($has_remote_conf === ENTERPRISE_NOT_HOOK) {
+		$has_remote_conf = false;
+	}
 	
 	if ($has_remote_conf === true) {
 		/* Plugins */

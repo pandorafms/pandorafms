@@ -22,6 +22,8 @@ $search_agent = get_parameter('searchAgent', '');
 $status_agent = get_parameter('statusAgent', AGENT_STATUS_ALL);
 $search_module = get_parameter('searchModule', '');
 $status_module = get_parameter('statusModule', -1);
+$group_id = (int) get_parameter('group_id');
+$tag_id = (int) get_parameter('tag_id');
 
 $strict_acl = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 
@@ -204,6 +206,10 @@ if (!$strict_acl) {
 		ui_toggle($form_html, __('Tree search'));
 	}
 }
+
+html_print_input_hidden("group-id", $group_id);
+html_print_input_hidden("tag-id", $tag_id);
+
 // --------------------- form filter -----------------------------------
 
 ui_include_time_picker();
@@ -263,6 +269,8 @@ enterprise_hook('close_meta_frame');
 		parameters['filter']['statusAgent'] = $("select#status_agent").val();
 		parameters['filter']['searchModule'] = $("input#text-search_module").val();
 		parameters['filter']['statusModule'] = $("select#status_module").val();
+		parameters['filter']['groupID'] = $("input#hidden-group-id").val();
+		parameters['filter']['tagID'] = $("input#hidden-tag-id").val();
 		
 		$.ajax({
 			type: "POST",

@@ -42,6 +42,8 @@ if (is_ajax ()) {
 				'statusAgent' => AGENT_STATUS_ALL,
 				'searchModule' => '',
 				'statusModule' => -1,
+				'groupID' => 0,
+				'tagID' => 0,
 			);
 		$filter = get_parameter('filter', $default_filters);
 		

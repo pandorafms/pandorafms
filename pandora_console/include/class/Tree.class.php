@@ -479,10 +479,16 @@ class Tree {
 						if (empty($rootID) || $rootID == -1) {
 							if ($this->strictACL)
 								return false;
-
+							
+							// tagID filter. To access the view from tactical views f.e.
+							$tag_filter = '';
+							if (!empty($this->filter['tagID'])) {
+								$tag_filter = "WHERE tt.id_tag = " . $this->filter['tagID'];
+							}
+							
 							$columns = 'tt.id_tag AS id, tt.name AS name';
 							$order_fields = 'tt.name ASC, tt.id_tag ASC';
-
+							
 							// Tags SQL
 							if ($item_for_count === false) {
 								$sql = "SELECT $columns
@@ -500,6 +506,7 @@ class Tree {
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
+										$tag_filter
 										GROUP BY tt.id_tag
 										ORDER BY $order_fields";
 							}
@@ -1450,6 +1457,28 @@ class Tree {
 		}
 	}
 	
+	private static function extractItemWithID ($items, $item_id, $item_type = "group") {
+		foreach ($items as $item) {
+			if ($item["type"] != $item_type)
+				continue;
+			
+			// Item found
+			if ($item["id"] == $item_id)
+				return $item;
+			
+			if ($item["type"] == "group" && !empty($item["children"])) {
+				$result = self::extractItemWithID($item["children"], $item_id, $item_type);
+				
+				// Item found on children
+				if ($result !== false)
+					return $result;
+			}
+		}
+		
+		// Item not found
+		return false;
+	}
+	
 	public function getData() {
 		
 		if (! $this->strictACL) {
@@ -1565,6 +1594,16 @@ class Tree {
 					// array_filter clean the empty elements
 					$processed_items = array_filter($processed_items_tmp);
 				}
+				
+				// groupID filter. To access the view from tactical views f.e.
+				if (!empty($processed_items) && !empty($this->filter['groupID'])) {
+					$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group");
+					
+					if ($result === false)
+						$processed_items = array();
+					else
+						$processed_items = array($result);
+				}
 			}
 			else {
 				$unmerged_items = array();
@@ -1596,6 +1635,20 @@ class Tree {
 				}
 				
 				$processed_items = $this->getMergedItems($unmerged_items);
+			}
+			
+			if (!empty($processed_items)) {
+				if (!empty($this->filter["groupID"])) {
+					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group");
+				}
+				else if (!empty($this->filter["tagID"])) {
+					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag");
+				}
+				
+				if ($result === false)
+					$processed_items = array();
+				else
+					$processed_items = array($result);
 			}
 		}
 		// Agents
@@ -1685,6 +1738,15 @@ class Tree {
 				}
 				
 				$processed_items = $this->getMergedItems($item_list);
+			}
+			// groupID filter. To access the view from tactical views f.e.
+			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
+				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group");
+				
+				if ($result === false)
+					$processed_items = array();
+				else
+					$processed_items = array($result);
 			}
 		}
 		// Agents

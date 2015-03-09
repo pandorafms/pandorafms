@@ -306,7 +306,7 @@ TreeController = {
 									+'images/groups_small/'+element.icon+'" /> ');
 							}
 							else if (typeof element.iconHTML != 'undefined' && element.iconHTML.length > 0) {
-								$content.append(element.iconHTML);
+								$content.append(element.iconHTML + " ");
 							}
 							$content.append(element.name);
 							break;

@@ -303,7 +303,7 @@ if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0,
 	}).change();
 
 	$("form#networkmap_action").submit(function (e) {
-		if ($("input#submit-crt").prop('disabled')) {console.log("asd");
+		if ($("input#submit-crt").prop('disabled')) {
 			e.preventDefault();
 		}
 		else if ($("select#action").val() == 'delete') {
@@ -343,7 +343,6 @@ if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0,
 					$imgLoading.hide();
 				},
 				success: function (data) {
-					console.log(data);
 
 					if (data === -1) {
 						alert("<?php echo __('The session may be expired'); ?>");

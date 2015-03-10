@@ -132,7 +132,6 @@ function draw_user_lines_read() {
 	
 	// Draw the previous lines
 	for (iterator = 0; iterator < user_lines.length; iterator++) {
-		console.log(user_lines[iterator]);
 		obj_js_user_lines.setStroke(parseInt(user_lines[iterator]['line_width']));
 		obj_js_user_lines.setColor(user_lines[iterator]['line_color']);
 		obj_js_user_lines.drawLine(

@@ -550,11 +550,7 @@ function mainSystemInfo() {
 	function generate_info () {
 		$("#submit-generate").hide();
 		$("#spinner_img").show();
-
-		console.log($("#checkbox-pandora_diag").prop('checked'));
-		console.log($("#checkbox-system_info").prop('checked'));
-		console.log($("#checkbox-log_info").prop('checked'));
-
+		
 		$.ajax({
 			url: 'ajax.php',
 			type: 'POST',

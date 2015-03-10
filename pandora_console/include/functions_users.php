@@ -21,6 +21,22 @@
 
 require_once($config['homedir'] . "/include/functions_groups.php");
 
+function users_is_strict_acl($id_user = null) {
+	global $config;
+	
+	if (empty($id_user)) {
+		$id_user = $config['id_user'];
+	}
+	
+	$strict_acl = (bool)db_get_value('strict_acl', 'tusuario',
+		'id_user', $id_user);
+	
+	html_debug_print($strict_acl, true);
+	html_debug_print($id_user, true);
+	
+	return $strict_acl;
+}
+
 /**
  * Get a list of all users in an array [username] => (info)
  *

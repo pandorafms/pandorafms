@@ -888,47 +888,63 @@ function tags_has_user_acl_tags($id_user = false) {
  */
 function tags_get_user_tags($id_user = false, $access = 'AR') {
 	global $config;
-
+	
+	//users_is_strict_acl
+	
 	if ($id_user === false) {
 		$id_user = $config['id_user'];
 	}
 	
 	// Get all tags to have the name of all of them
 	$all_tags = tags_get_all_tags();
-
+	
 	// If at least one of the profiles of this access flag hasent
 	// tags restrictions, the user can see all tags
 	$acl_column = get_acl_column($access);
 	
-	if(empty($acl_column)) {
+	if (empty($acl_column)) {
 		return array();
 	}
-
-	$query = sprintf("SELECT count(*) 
-			FROM tusuario_perfil, tperfil
-			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-			tusuario_perfil.id_usuario = '%s' AND 
-			tperfil.%s = 1 AND tags <> ''", 
-			$id_user, $acl_column);
-			
+	
+	$query = sprintf("
+		SELECT count(*) 
+		FROM tusuario_perfil, tperfil
+		WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
+			AND tusuario_perfil.id_usuario = '%s'
+			AND tperfil.%s = 1
+			AND tags <> ''", 
+		$id_user, $acl_column);
+	
 	$profiles_without_tags = db_get_value_sql($query);
 	
 	if ($profiles_without_tags == 0) {
-		return $all_tags;
+		//--------------------------------------------------------------
+		// FIXED FOR TICKET #1921
+		//
+		// If the user is setted with strict ACL, the pandora does not
+		// show any tags. Thanks Mr. C from T.
+		//
+		//--------------------------------------------------------------
+		if (users_is_strict_acl($id_user)) {
+			return array();
+		}
+		else {
+			return $all_tags;
+		}
 	}
-
+	
 	// Get the tags of the required access flag for each group
-	$tags =  tags_get_acl_tags($id_user, 0, $access, 'data');
+	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
 	// If there are wrong parameters or fail ACL check, return false
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
 		return array();
 	}
-
+	
 	// Merge the tags to get an array with all of them
 	$user_tags_id = array();
 	
 	foreach ($tags as $t) {
-		if(empty($user_tags_id)) {
+		if (empty($user_tags_id)) {
 			$user_tags_id = $t;
 		}
 		else {

@@ -63,17 +63,19 @@ if (is_ajax ()) {
 		// Get the html rows of the fields form
 		
 		// Descriptions are stored in json
-		$fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode(io_safe_output($command['fields_descriptions']), true);
+		$fields_descriptions = empty($command['fields_descriptions']) ?
+			'' : json_decode(io_safe_output($command['fields_descriptions']), true);
 		
 		// Fields values are stored in json
-		$fields_values = empty($command['fields_values']) ? '' : io_safe_output(json_decode($command['fields_values'], true));
+		$fields_values = empty($command['fields_values']) ?
+			'' : io_safe_output(json_decode($command['fields_values'], true));
 		
 		$fields_rows = array();
 		for ($i = 1; $i <= 10; $i++) {
-
+			
 			$field_description = $fields_descriptions[$i - 1];
 			$field_value = $fields_values[$i - 1];
-
+			
 			if (!empty($field_description)) {
 				$fdesc = $field_description .
 					' <br><span style="font-size:xx-small; font-weight:normal;">' . sprintf(__('Field %s'), $i) . '</span>';
@@ -92,7 +94,7 @@ if (is_ajax ()) {
 				$field_value = io_safe_output($field_value);
 				// HTML type
 				if (preg_match ("/^_html_editor_$/i", $field_value)) {
-
+					
 					$editor_type_chkbx = "<div style=\"padding: 4px 0px;\"><b><small>";
 					$editor_type_chkbx .= __('Basic') . "&nbsp;&nbsp;";
 					$editor_type_chkbx .= html_print_radio_button_extended ('editor_type_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_value')", '', true);
@@ -102,7 +104,7 @@ if (is_ajax ()) {
 					$editor_type_chkbx .= "</small></b></div>";
 					$ffield = $editor_type_chkbx;
 					$ffield .= html_print_textarea ('field'.$i.'_value', 1, 1, '', 'class="fields"', true);
-
+					
 					$editor_type_chkbx = "<div style=\"padding: 4px 0px;\"><b><small>";
 					$editor_type_chkbx .= __('Basic') . "&nbsp;&nbsp;";
 					$editor_type_chkbx .= html_print_radio_button_extended ('editor_type_recovery_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_recovery_value')", '', true);
@@ -132,13 +134,18 @@ if (is_ajax ()) {
 						}
 					}
 					
-					$ffield = html_print_select($fields_value_select, 'field'.$i.'_value', '', '', '', 0, true, false, false);
-					$rfield = html_print_select($fields_value_select, 'field'.$i.'_recovery_value', '', '', '', 0, true, false, false);
+					$ffield = html_print_select($fields_value_select,
+						'field'.$i.'_value', '', '', '', 0, true, false, false, 'fields');
+					$rfield = html_print_select($fields_value_select,
+						'field'.$i.'_recovery_value', '', '', '', 0, true, false, false, 'fields_recovery');
 				}
 			}
 			else {
-				$ffield = html_print_textarea ('field'.$i.'_value', 1, 1, '', 'style="min-height:40px" class="fields"', true);
-				$rfield = html_print_textarea ('field'.$i.'_recovery_value', 1, 1, '', 'style="min-height:40px" class="fields_recovery"', true);
+				$ffield = html_print_textarea ('field' . $i . '_value',
+					1, 1, '', 'style="min-height:40px" class="fields"', true);
+				$rfield = html_print_textarea (
+					'field' . $i . '_recovery_value', 1, 1, '',
+					'style="min-height:40px" class="fields_recovery"', true);
 			}
 			
 			

@@ -53,14 +53,18 @@ if ($al_action !== false) {
 	if (defined('METACONSOLE'))
 		alerts_meta_print_header();
 	else
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "alert_config", true);
+		ui_print_page_header (__('Alerts') . ' &raquo; ' .
+			__('Configure alert action'), "images/gm_alerts.png", false,
+			"alert_config", true);
 }
 else {
 	// Header
 	if (defined('METACONSOLE'))
 		alerts_meta_print_header();
 	else
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "alert_config", true);
+		ui_print_page_header (__('Alerts') . ' &raquo; ' .
+			__('Configure alert action'), "images/gm_alerts.png", false,
+			"alert_config", true);
 }
 
 
@@ -79,11 +83,14 @@ if ($id) {
 }
 
 // Hidden div with help hint to fill with javascript
-html_print_div(array('id' => 'help_alert_macros_hint', 'content' => ui_print_help_icon ('alert_macros', true), 'hidden' => true));
+html_print_div(
+	array('id' => 'help_alert_macros_hint',
+		'content' => ui_print_help_icon ('alert_macros', true),
+	'hidden' => true));
 
 $table->id = 'table_macros';
 $table->width = '98%';
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->class = 'databox data';
 	$table->width = '100%';
 	if ($id) {
@@ -150,19 +157,30 @@ $table->data[5][2] = html_print_textarea ('command_recovery_preview', 5, 30, '',
 
 $row = 6;
 for ($i = 1; $i <= 10; $i++) {
-	$table->data['field' . $i][0] = html_print_image('images/spinner.gif', true);
-	$table->data['field' . $i][1] = html_print_image('images/spinner.gif', true);
-	$table->data['field' . $i][2] = html_print_image('images/spinner.gif', true);
+	$table->data['field' . $i][0] = html_print_image(
+		'images/spinner.gif', true);
+	$table->data['field' . $i][1] = html_print_image(
+		'images/spinner.gif', true);
+	$table->data['field' . $i][2] = html_print_image(
+		'images/spinner.gif', true);
+	
 	// Store the value in a hidden to keep it on first execution
-	$table->data['field' . $i][1] .= html_print_input_hidden('field' . $i . '_value',
+	$table->data['field' . $i][1] .= html_print_input_hidden(
+		'field' . $i . '_value',
 		!empty($action['field' . $i]) ?
-			$action['field' . $i] : '', true);
-	$table->data['field' . $i][2] .= html_print_input_hidden('field' . $i . '_recovery_value',
+			$action['field' . $i] : '',
+		true);
+	$table->data['field' . $i][2] .= html_print_input_hidden(
+		'field' . $i . '_recovery_value',
 		!empty($action['field' . $i . '_recovery']) ?
-			$action['field' . $i . '_recovery'] : '', true);
+			$action['field' . $i . '_recovery'] : '',
+		true);
 }
 
-echo '<form method="post" action="index.php?sec=' . $sec . '&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
+echo '<form method="post" action="' .
+	'index.php?sec=' . $sec . '&' .
+	'sec2=godmode/alerts/alert_actions&' .
+	'pure=' . $pure . '">';
 $table_html = html_print_table ($table, true);
 
 ////////////////////////////////////////////////////////////////////////
@@ -253,33 +271,37 @@ $(document).ready (function () {
 				render_command_preview (original_command);
 				command_description = js_html_entity_decode (data["description"]);
 				render_command_description(command_description);
-
+				
+				
 				for (i = 1; i <= 10; i++) {
 					var old_value = '';
 					var old_recovery_value = '';
 					var field_row = data["fields_rows"][i];
 					var $table_macros_field = $('#table_macros-field' + i);
-
+					
 					// If the row is empty, hide it
 					if (field_row == '') {
 						$table_macros_field.hide();
 						continue;
 					}
-
+					
 					// Only keep the value if is provided from hidden (first time)
 					if (($("[name=field" + i + "_value]").attr('id'))
-							== ("hidden-field" + i + "_value")) {
+						== ("hidden-field" + i + "_value")) {
+						
 						old_value = $("[name=field" + i + "_value]").val();
 					}
 					
 					if (($("[name=field" + i + "_recovery_value]").attr('id'))
-							== ("hidden-field" + i + "_recovery_value")) {
-						old_recovery_value = $("[name=field" + i + "_recovery_value]").val();
+						== ("hidden-field" + i + "_recovery_value")) {
+						
+						old_recovery_value =
+							$("[name=field" + i + "_recovery_value]").val();
 					}
-
+					
 					// Replace the old column with the new
 					$table_macros_field.replaceWith(field_row);
-
+					
 					$("[name=field" + i + "_value]").val(old_value);
 					$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
 					
@@ -289,7 +311,8 @@ $(document).ready (function () {
 						
 						$(td_content)
 							.html(
-								$(td_content).html() + $('#help_alert_macros_hint').html());
+								$(td_content).html() +
+							$('#help_alert_macros_hint').html());
 					}
 					
 					$table_macros_field.show();
@@ -316,10 +339,16 @@ $(document).ready (function () {
 				render_command_preview(original_command);
 				render_command_recovery_preview(original_command);
 				
-				$(".fields").keyup (function() {
+				$(".fields").keyup(function() {
 					render_command_preview(original_command);
 				});
-				$(".fields_recovery").keyup (function() {
+				$(".fields_recovery").keyup(function() {
+					render_command_recovery_preview(original_command);
+				});
+				$("select.fields").change(function() {
+					render_command_preview(original_command);
+				});
+				$("select.fields_recovery").change(function() {
 					render_command_recovery_preview(original_command);
 				});
 			},

@@ -1287,7 +1287,8 @@ function groups_agent_ok ($group_array, $strict_user = false, $id_group_strict =
 					AND ta.id_grupo = $id_group_strict
 					AND ta.critical_count = 0
 					AND ta.warning_count = 0
-					AND ta.normal_count = total_count
+					AND ta.unknown_count = 0
+					AND ta.normal_count > 0
 					$tags_clause";
 
 		$count = db_get_sql ($sql);

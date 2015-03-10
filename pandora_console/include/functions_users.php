@@ -875,4 +875,26 @@ function users_get_user_users($id_user = false, $privilege = "AR",
 	
 	return $user_users;
 }
+
+function users_get_strict_mode_groups($id_user, $return_group_all) {
+	
+	global $config;
+	
+	$sql = "SELECT * FROM tusuario_perfil WHERE id_usuario = '".$id_user."' AND tags = ''";
+	$user_groups = db_get_all_rows_sql ($sql);
+	
+	if ($user_groups == false) {
+		$user_groups = array();
+	}
+	
+	$return_user_groups = array();
+	if ($return_group_all) {
+		$return_user_groups[0] = __('All');
+	}
+	foreach ($user_groups as $group) {
+		$return_user_groups[$group['id_grupo']] = groups_get_name ($group['id_grupo']);
+	}
+	
+	return $return_user_groups;
+}
 ?>

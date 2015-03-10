@@ -122,6 +122,8 @@ if (is_ajax()) {
 	return;
 }
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 // Get the tags where the user have permissions in Events reading tasks
 $tags = tags_get_user_tags($config['id_user'], 'ER');
 
@@ -409,7 +411,6 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('User ack.') . $jump;
 
-$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 if ($strict_user) {
 	$user_users = array($config['id_user']=>$config['id_user']);
 } else {
@@ -511,8 +512,10 @@ $table->data = array();
 
 $data = array();
 $data[0] = __('Group') . '<br>';
-$data[0] .= html_print_select_groups($config["id_user"], "ER", true,
-	'id_group', $id_group, '', '', 0, true, false, false, 'w130') . '<br>';
+
+$data[0] .= html_print_select_groups($config["id_user"], "ER", true, 
+	'id_group', $id_group, '', '', 0, true, false, false, 'w130', false, false, false, false, 'id_grupo', $strict_user). '<br>';
+	
 //**********************************************************************
 // TODO
 // This code is disabled for to enabled in Pandora 5.1

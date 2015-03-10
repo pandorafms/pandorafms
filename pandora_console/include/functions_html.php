@@ -381,26 +381,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 		$returnAllGroup, true, $id_group, $keys_field);
 
 	if ($strict_user) {
-		foreach ($fields as $id => $group_name) {
-			$sql = "SELECT tags FROM tusuario_perfil WHERE id_usuario = '$id_user' AND id_grupo = $id";
-			$group_has_tag = db_get_value_sql ($sql);
-			if (!$group_has_tag) {
-
-				$sql_parent = "SELECT parent FROM tgrupo WHERE id_grupo = $id AND propagate = 1";
-				$id_parent = db_get_value_sql($sql_parent);
-
-				if ($id_parent) {
-					$sql_parent_aux = "SELECT tags FROM tusuario_perfil WHERE id_usuario = '$id_user' AND id_grupo = $id_parent";
-					$parent_has_tag = db_get_value_sql ($sql_parent_aux);
-
-					if ($parent_has_tag) {
-						unset($fields[$id]);
-					}
-				}
-			} else {
-				unset($fields[$id]);
-			}
-		}
+		$fields = users_get_strict_mode_groups($config['id_user'], $returnAllGroup);
 	}
 
 	$output = html_print_select ($fields, $name, $selected, $script,

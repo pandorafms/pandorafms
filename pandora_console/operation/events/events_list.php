@@ -409,7 +409,12 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('User ack.') . $jump;
 
-$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+if ($strict_user) {
+	$user_users = array($config['id_user']=>$config['id_user']);
+} else {
+	$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+}
 
 $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 	__('Any'), 0, true);

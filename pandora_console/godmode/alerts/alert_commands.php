@@ -123,13 +123,13 @@ if (is_ajax ()) {
 					if (!empty($fv)) {
 						foreach ($fv as $fv_option) {
 							$fv_option = explode(',', $fv_option);
-
+							
 							if (empty($fv_option))
 								continue;
-
+							
 							if (!isset($fv_option[1]))
 								$fv_option[1] = $fv_option[0];
-
+							
 							$fields_value_select[$fv_option[0]] = $fv_option[1];
 						}
 					}

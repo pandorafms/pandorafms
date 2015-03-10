@@ -61,16 +61,19 @@ if (is_ajax ()) {
 		// Get the html rows of the fields form
 		
 		// Descriptions are stored in json
-		$fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode(io_safe_output($command['fields_descriptions']), true);
+		$fields_descriptions = empty($command['fields_descriptions']) ?
+			'' : json_decode(io_safe_output($command['fields_descriptions']), true);
 		
 		// Fields values are stored in json
-		$fields_values = empty($command['fields_values']) ? '' : io_safe_output(json_decode($command['fields_values'], true));
+		$fields_values = empty($command['fields_values']) ?
+			'' : io_safe_output(json_decode($command['fields_values'], true));
 		
 		$fields_rows = array();
 		for ($i = 1; $i <= 10; $i++) {
 			if (!empty($fields_descriptions[$i - 1])) {
 				$fdesc = $fields_descriptions[$i - 1] .
-					' <br><span style="font-size:xx-small; font-weight:normal;">' . sprintf(__('Field %s'), $i) . '</span>';
+					' <br><span style="font-size:xx-small; font-weight:normal;">' .
+					sprintf(__('Field %s'), $i) . '</span>';
 			}
 			else {
 				// If the macro hasn't description and doesnt appear in command, set with empty description to dont show it
@@ -82,9 +85,9 @@ if (is_ajax ()) {
 				}
 			}
 			
-			if (!empty($fields_values[$i-1])) {
+			if (!empty($fields_values[$i - 1])) {
 				$fields_value_select = array();
-				$fv = $fields_values[$i-1];
+				$fv = $fields_values[$i - 1];
 				$fv = explode(';', $fv);
 				
 				if (empty($fv)) {
@@ -96,12 +99,18 @@ if (is_ajax ()) {
 					$fields_value_select[$fv_option[0]] = $fv_option[1];
 				}
 				
-				$ffield = html_print_select($fields_value_select, 'field'.$i.'_value', '', '', '', 0, true, false, false);
-				$rfield = html_print_select($fields_value_select, 'field'.$i.'_recovery_value', '', '', '', 0, true, false, false);
+				
+				$ffield = html_print_select($fields_value_select,
+					'field' . $i . '_value', '', '', '', 0, true, false, false, 'fields');
+				$rfield = html_print_select($fields_value_select,
+					'field' . $i . '_recovery_value', '', '', '', 0, true, false, false, 'fields_recovery');
 			}
 			else {
-				$ffield = html_print_textarea ('field'.$i.'_value', 1, 1, '', 'style="min-height:40px" class="fields"', true);
-				$rfield = html_print_textarea ('field'.$i.'_recovery_value', 1, 1, '', 'style="min-height:40px" class="fields_recovery"', true);
+				$ffield = html_print_textarea ('field' . $i . '_value',
+					1, 1, '', 'style="min-height:40px" class="fields"', true);
+				$rfield = html_print_textarea (
+					'field' . $i . '_recovery_value', 1, 1, '',
+					'style="min-height:40px" class="fields_recovery"', true);
 			}
 			
 			

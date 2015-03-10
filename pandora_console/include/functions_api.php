@@ -6707,7 +6707,13 @@ function api_set_create_tag ($id, $trash1, $other, $returnType) {
 		}
 	}
 	
-	tags_create_tag ($data);
+	if (tags_create_tag ($data)) {
+		returnData('string',
+			array('type' => 'string', 'data' => '1'));
+	}
+	else {
+		returnError('error_set_tag_user_profile', 'Error create tag user profile.');
+	}
 }
 
 

@@ -85,8 +85,8 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->data[1][3] = html_print_select ($alert_standby, "filter_standby", $filter_standby, '', '', '', true);
 	
 	if(defined('METACONSOLE')){
-		$table->data[0][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
-		$table->rowspan[0][4] = 2;
+		$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
+		$table->rowspan[1][4] = 2;
 	    $data = '<form style="background-color: #ECECEC;" method="post" action="'.$url.'">';
 	}
 	else{

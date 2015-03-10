@@ -1182,6 +1182,7 @@ function treeview_getData ($type) {
 				$list[$key]['_num_critical_'] = os_agents_critical($id);
 				$list[$key]['_num_warning_'] = os_agents_warning($id);
 				$list[$key]['_num_unknown_'] = os_agents_unknown($id);
+				$list[$key]['_num_total_'] = $list[$key]['_num_ok_'] + $list[$key]['_num_critical_'] + $list[$key]['_num_warning_'] + $list[$key]['_num_unknown_'];
 				break;
 			case 'group':
 				$id = $item['id_grupo'];
@@ -1204,6 +1205,7 @@ function treeview_getData ($type) {
 				$list[$key]['_num_critical_'] = modules_group_agent_critical ($id);
 				$list[$key]['_num_warning_'] = modules_group_agent_warning($id);
 				$list[$key]['_num_unknown_'] = modules_group_agent_unknown($id);
+				$list[$key]['_num_total_'] = $list[$key]['_num_ok_'] + $list[$key]['_num_critical_'] + $list[$key]['_num_warning_'] + $list[$key]['_num_unknown_'];
 				break;
 			case 'policies':
 				$id = $item['id'];
@@ -1214,6 +1216,7 @@ function treeview_getData ($type) {
 				$list[$key]['_num_critical_'] = policies_agents_critical($id);
 				$list[$key]['_num_warning_'] = policies_agents_warning($id);
 				$list[$key]['_num_unknown_'] = policies_agents_unknown($id);
+				$list[$key]['_num_total_'] = $list[$key]['_num_ok_'] + $list[$key]['_num_critical_'] + $list[$key]['_num_warning_'] + $list[$key]['_num_unknown_'];
 				break;
 			default:
 			case 'module':
@@ -1230,6 +1233,7 @@ function treeview_getData ($type) {
 				$list[$key]['_num_critical_'] = modules_agents_critical($module_name);
 				$list[$key]['_num_warning_'] = modules_agents_warning($module_name);
 				$list[$key]['_num_unknown_'] = modules_agents_unknown($module_name);
+				$list[$key]['_num_total_'] = $list[$key]['_num_ok_'] + $list[$key]['_num_critical_'] + $list[$key]['_num_warning_'] + $list[$key]['_num_unknown_'];
 				break;
 			case 'tag':
 				$id = db_get_value('id_tag', 'ttag', 'name', $item['name']);
@@ -1240,6 +1244,7 @@ function treeview_getData ($type) {
 				$list[$key]['_num_critical_'] = tags_agent_critical($id);
 				$list[$key]['_num_warning_'] = tags_agent_warning($id);
 				$list[$key]['_num_unknown_'] = tags_agent_unknown($id);
+				$list[$key]['_num_total_'] = $list[$key]['_num_ok_'] + $list[$key]['_num_critical_'] + $list[$key]['_num_warning_'] + $list[$key]['_num_unknown_'];
 				break;
 		}
 		

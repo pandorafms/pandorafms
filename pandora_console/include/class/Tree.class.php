@@ -228,7 +228,8 @@ class Tree {
 		// Agent status filter
 		$agent_status_filter = "";
 		if (isset($this->filter['statusAgent'])
-				&& $this->filter['statusAgent'] != AGENT_STATUS_ALL) {
+				&& $this->filter['statusAgent'] != AGENT_STATUS_ALL
+				&& !$this->strictACL) {
 			$agent_status_filter = $this->getAgentStatusFilter($this->filter['statusAgent']);
 		}
 

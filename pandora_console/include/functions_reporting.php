@@ -5590,7 +5590,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$data[$agent_name][$module_name] = '--';
 						}
 						else {
-							if (!is_numeric($d)) {
+							if (!is_numeric($value_res)) {
 								$data[$agent_name][$module_name] = $value_res;
 							}
 							else {

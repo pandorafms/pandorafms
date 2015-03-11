@@ -1264,17 +1264,24 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 }
 
 /**
- * Get the agents counters by filtering by id_tag.
- * 
- * @param int $type Type of the status to filter the counter.
- * @param int $id_tag Id of the tag to filter the modules.
+ * Get the number of the agents that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
- * @param mixed $id_agent Id or ids of the agent to filter the modules.
- * @param bool $realtime Realime or preprocessed (realtime is slower).
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'status': (mixed) Agent status. Single or grouped into an array. e.g.: AGENT_STATUS_CRITICAL.
+ * -'name': (string) Agent name. e.g.: "agent_1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ * @param bool $realtime Search realtime values or the values processed by the server.
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns count of agents of the selected status or false on error.
  */
-function tags_get_agents_counter ($type, $id_tag, $groups_and_tags = array(), $id_agent = false, $realtime = true) {
+function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array(), $realtime = true) {
 
 	// Avoid mysql error
 	if (empty($id_tag))
@@ -1296,15 +1303,94 @@ function tags_get_agents_counter ($type, $id_tag, $groups_and_tags = array(), $i
 			}
 		}
 		if (array_search(0, $groups_id) === false) {
+			$groups_id = array_unique($groups_id);
 			$groups_id_str = implode(",", $groups_id);
 			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
 		}
 	}
-	$agents_clause = "";
-	if ($id_agent !== false) {
-		if (is_array($id_agent))
-			$id_agent = implode(",", $id_agent);
-		$agents_clause = " AND ta.id_agente IN ($id_agent)";
+	
+	$agent_name_filter = "";
+	$agent_status = AGENT_STATUS_ALL;
+	if (!empty($agent_filter)) {
+		// Name
+		if (isset($agent_filter["name"]) && !empty($agent_filter["name"])) {
+			$agent_name_filter = "AND ta.nombre LIKE '%" . $agent_filter["name"] . "%'";
+		}
+		// Status
+		if (isset($agent_filter["status"])) {
+			if (is_array($agent_filter["status"]))
+				$agent_status = array_unique($agent_filter["status"]);
+			else
+				$agent_status = $agent_filter["status"];
+		}
+	}
+	
+	$module_name_filter = "";
+	$module_status_filter = "";
+	if (!empty($module_filter)) {
+		// IMPORTANT: The module filters will force the realtime search
+		$realtime = true;
+		
+		// Name
+		if (isset($module_filter["name"]) && !empty($module_filter["name"])) {
+			$module_name_filter = "AND tam.nombre LIKE '%" . $module_filter["name"] . "%'";
+		}
+		// Status
+		if (isset($module_filter["status"])) {
+			$module_status = $module_filter["status"];
+			if (is_array($module_status))
+				$module_status = array_unique($module_status);
+			else
+				$module_status = array($module_status);
+			
+			$status_array = "";
+			foreach ($module_status as $status) {
+				switch ($status) {
+					case AGENT_MODULE_STATUS_ALL:
+						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+						$status_array[] = AGENT_MODULE_STATUS_WARNING_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_WARNING;
+						$status_array[] = AGENT_MODULE_STATUS_UNKNOWN;
+						$status_array[] = AGENT_MODULE_STATUS_NO_DATA;
+						$status_array[] = AGENT_MODULE_STATUS_NOT_INIT;
+						$status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_NORMAL;
+						break;
+					case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+					case AGENT_MODULE_STATUS_CRITICAL_BAD:
+						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+						break;
+					case AGENT_MODULE_STATUS_WARNING_ALERT:
+					case AGENT_MODULE_STATUS_WARNING:
+						$status_array[] = AGENT_MODULE_STATUS_WARNING_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_WARNING;
+						break;
+					case AGENT_MODULE_STATUS_UNKNOWN:
+						$status_array[] = AGENT_MODULE_STATUS_UNKNOWN;
+						break;
+					case AGENT_MODULE_STATUS_NO_DATA:
+					case AGENT_MODULE_STATUS_NOT_INIT:
+						$status_array[] = AGENT_MODULE_STATUS_NO_DATA;
+						$status_array[] = AGENT_MODULE_STATUS_NOT_INIT;
+						break;
+					case AGENT_MODULE_STATUS_NORMAL_ALERT:
+					case AGENT_MODULE_STATUS_NORMAL:
+						$status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_NORMAL;
+						break;
+				}
+			}
+			if (!empty($status_array)) {
+				$status_array = array_unique($status_array);
+				$status_str = implode(",", $status_array);
+				
+				$module_status_filter = "INNER JOIN tagente_estado AS tae
+											ON tam.id_agente_modulo = tae.id_agente_modulo
+												AND tae.estado IN ($status_str)";
+			}
+		}
 	}
 	
 	$count = 0;
@@ -1314,191 +1400,304 @@ function tags_get_agents_counter ($type, $id_tag, $groups_and_tags = array(), $i
 				INNER JOIN tagente_modulo AS tam
 					ON ta.id_agente = tam.id_agente
 						AND tam.disabled = 0
+						$module_name_filter
+				$module_status_filter
 				INNER JOIN ttag_module AS ttm
 					ON ttm.id_tag = $id_tag
 						AND tam.id_agente_modulo = ttm.id_agente_modulo
 				WHERE ta.disabled = 0
-					$agents_clause
+					$agent_name_filter
 					$groups_clause";
 		$agents = db_get_all_rows_sql($sql);
 
 		if ($agents === false)
-			return false;
+			return $count;
 
-		if ($type == AGENT_STATUS_ALL)
+		if ($agent_status == AGENT_STATUS_ALL)
 			return count($agents);
 		
 		foreach ($agents as $agent) {
-			$total = (int) tags_monitors_total($id_tag, $groups_and_tags, $agent['id_agente']);
-			$critical = (int) tags_monitors_critical($id_tag, $groups_and_tags, $agent['id_agente']);
-			$warning = (int) tags_monitors_warning($id_tag, $groups_and_tags, $agent['id_agente']);
-			$unknown = (int) tags_monitors_unknown($id_tag, $groups_and_tags, $agent['id_agente']);
-			$not_init = (int) tags_monitors_not_init($id_tag, $groups_and_tags, $agent['id_agente']);
-			$normal = (int) tags_monitors_normal($id_tag, $groups_and_tags, $agent['id_agente']);
+			$agent_filter["id"] = $agent["id"];
+			$total = (int) tags_get_total_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+			$critical = (int) tags_get_critical_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+			$warning = (int) tags_get_warning_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+			$unknown = (int) tags_get_unknown_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+			$not_init = (int) tags_get_not_init_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+			$normal = (int) tags_get_normal_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 			
-			switch ($type) {
-				case AGENT_STATUS_CRITICAL:
+			if (!is_array($agent_status)) {
+				switch ($agent_status) {
+					case AGENT_STATUS_CRITICAL:
+						if ($critical > 0)
+							$count ++;
+						break;
+					case AGENT_STATUS_WARNING:
+						if ($total > 0 && $critical = 0 && $warning > 0)
+							$count ++;
+						break;
+					case AGENT_STATUS_UNKNOWN:
+						if ($critical == 0 && $warning == 0 && $unknown > 0)
+							$count ++;
+						break;
+					case AGENT_STATUS_NOT_INIT:
+						if ($total == 0 || $total == $not_init)
+							$count ++;
+						break;
+					case AGENT_STATUS_NORMAL:
+						if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0)
+							$count ++;
+						break;
+					default:
+						// The status doesn't exist
+						return 0;
+				}
+			}
+			else {
+				if (array_search(AGENT_STATUS_CRITICAL, $agent_status) !== false) {
 					if ($critical > 0)
 						$count ++;
-					break;
-				case AGENT_STATUS_WARNING:
+				}
+				else if (array_search(AGENT_STATUS_WARNING, $agent_status) !== false) {
 					if ($total > 0 && $critical = 0 && $warning > 0)
 						$count ++;
-					break;
-				case AGENT_STATUS_UNKNOWN:
+				}
+				else if (array_search(AGENT_STATUS_UNKNOWN, $agent_status) !== false) {
 					if ($critical == 0 && $warning == 0 && $unknown > 0)
 						$count ++;
-					break;
-				case AGENT_STATUS_NOT_INIT:
+				}
+				else if (array_search(AGENT_STATUS_NOT_INIT, $agent_status) !== false) {
 					if ($total == 0 || $total == $not_init)
 						$count ++;
-					break;
-				case AGENT_STATUS_NORMAL:
+				}
+				else if (array_search(AGENT_STATUS_NORMAL, $agent_status) !== false) {
 					if ($critical == 0 && $warning == 0 && $unknown == 0 && $normal > 0)
 						$count ++;
-					break;
-				default:
-					// The type doesn't exist
-					return false;
+				}
+				// Invalid status
+				else {
+					return 0;
+				}
 			}
 		}
 	}
 	else {
 		$status_filter = "";
-		switch ($type) {
-			case AGENT_STATUS_ALL:
-				$status_filter = "";
-				break;
-			case AGENT_STATUS_CRITICAL:
-				$status_filter = "AND ta.critical_count > 0";
-				break;
-			case AGENT_STATUS_WARNING:
-				$status_filter = "AND ta.total_count > 0
-								AND ta.critical_count = 0
-								AND ta.warning_count > 0";
-				break;
-			case AGENT_STATUS_UNKNOWN:
-				$status_filter = "AND ta.critical_count = 0
-								AND ta.warning_count = 0
-								AND ta.unknown_count > 0";
-				break;
-			case AGENT_STATUS_NOT_INIT:
-				$status_filter = "AND (ta.total_count = 0
-									OR ta.total_count = ta.notinit_count)";
-				break;
-			case AGENT_STATUS_NORMAL:
-				$status_filter = "AND ta.critical_count = 0
-								AND ta.warning_count = 0
-								AND ta.unknown_count = 0
-								AND ta.normal_count > 0";
-				break;
-			default:
-				// The type doesn't exist
-				return false;
-		}
+		// Transform the element into a one element array
+		if (!is_array($agent_status))
+			$agent_status = array($agent_status);
 		
-		$sql = "SELECT COUNT(DISTINCT ta.id_agente) 
-				FROM tagente AS ta
-				INNER JOIN tagente_modulo AS tam
-					ON ta.id_agente = tam.id_agente
-						AND tam.disabled = 0
-				INNER JOIN ttag_module AS ttm
-					ON ttm.id_tag = $id_tag
-						AND tam.id_agente_modulo = ttm.id_agente_modulo
-				WHERE ta.disabled = 0
-					$status_filter
-					$agents_clause
-					$groups_clause";
-
-		$count = db_get_sql($sql);
+		// Support for multiple status. It counts the agents for each status and sum the result
+		foreach ($agent_status as $status) {
+			switch ($agent_status) {
+				case AGENT_STATUS_ALL:
+					$status_filter = "";
+					break;
+				case AGENT_STATUS_CRITICAL:
+					$status_filter = "AND ta.critical_count > 0";
+					break;
+				case AGENT_STATUS_WARNING:
+					$status_filter = "AND ta.total_count > 0
+									AND ta.critical_count = 0
+									AND ta.warning_count > 0";
+					break;
+				case AGENT_STATUS_UNKNOWN:
+					$status_filter = "AND ta.critical_count = 0
+									AND ta.warning_count = 0
+									AND ta.unknown_count > 0";
+					break;
+				case AGENT_STATUS_NOT_INIT:
+					$status_filter = "AND (ta.total_count = 0
+										OR ta.total_count = ta.notinit_count)";
+					break;
+				case AGENT_STATUS_NORMAL:
+					$status_filter = "AND ta.critical_count = 0
+									AND ta.warning_count = 0
+									AND ta.unknown_count = 0
+									AND ta.normal_count > 0";
+					break;
+				default:
+					// The type doesn't exist
+					return 0;
+			}
+			
+			$sql = "SELECT COUNT(DISTINCT ta.id_agente) 
+					FROM tagente AS ta
+					INNER JOIN tagente_modulo AS tam
+						ON ta.id_agente = tam.id_agente
+							AND tam.disabled = 0
+							$module_name_filter
+					$module_status_filter
+					INNER JOIN ttag_module AS ttm
+						ON ttm.id_tag = $id_tag
+							AND tam.id_agente_modulo = ttm.id_agente_modulo
+					WHERE ta.disabled = 0
+						$status_filter
+						$agent_name_filter
+						$groups_clause";
+			
+			$count += (int) db_get_sql($sql);
+		}
 	}
 
 	return $count;
 }
 
 /**
- * Get total agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search total agents.
+ * Get the number of the agents that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'name': (string) Agent name. e.g.: "agent_1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ * @param bool $realtime Search realtime values or the values processed by the server.
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns count of agents with this tag or false if they aren't.
  */
-function tags_get_total_agents ($id_tag, $groups_and_tags = array()) {
-	return tags_get_agents_counter(AGENT_STATUS_ALL, $id_tag, $groups_and_tags);
-}
-
- /**
- * Get normal agents by using the status code in modules by filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search normal agents.
- * @param array $groups_and_tags Array with strict ACL rules.
- * 
- * @return mixed Returns count of agents in normal status or false if they aren't.
- */
-function tags_get_normal_agents ($id_tag, $groups_and_tags = array()) {
-	return tags_get_agents_counter(AGENT_STATUS_NORMAL, $id_tag, $groups_and_tags);
-}
-
- /**
- * Get warning agents by using the status code in modules by filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search warning agents.
- * @param array $groups_and_tags Array with strict ACL rules.
- * 
- * @return mixed Returns count of agents in warning status or false if they aren't.
- */
-function tags_get_warning_agents ($id_tag, $groups_and_tags = array()) {
-	return tags_get_agents_counter(AGENT_STATUS_WARNING, $id_tag, $groups_and_tags);
+function tags_get_total_agents ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array(), $realtime = true) {
+	// Always modify the agent status filter
+	$agent_filter["status"] = AGENT_STATUS_ALL;
+	return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
 
 /**
- * Get unknown agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search unknown agents.
+ * Get the number of the normal agents that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'name': (string) Agent name. e.g.: "agent_1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ * @param bool $realtime Search realtime values or the values processed by the server.
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns count of unknown agents with this tag or false if they aren't.
  */
-function tags_get_critical_agents ($id_tag, $groups_and_tags = array()) {
-	return tags_get_agents_counter(AGENT_STATUS_CRITICAL, $id_tag, $groups_and_tags);
+function tags_get_normal_agents ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array(), $realtime = true) {
+	// Always modify the agent status filter
+	$agent_filter["status"] = AGENT_STATUS_NORMAL;
+	return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
 
 /**
- * Get unknown agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search unknown agents.
+ * Get the number of the warning agents that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'name': (string) Agent name. e.g.: "agent_1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ * @param bool $realtime Search realtime values or the values processed by the server.
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns count of unknown agents with this tag or false if they aren't.
  */
-function tags_get_unknown_agents ($id_tag, $groups_and_tags = array()) {
-	return tags_get_agents_counter(AGENT_STATUS_UNKNOWN, $id_tag, $groups_and_tags);
+function tags_get_warning_agents ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array(), $realtime = true) {
+	// Always modify the agent status filter
+	$agent_filter["status"] = AGENT_STATUS_WARNING;
+	return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
 
 /**
- * Get not init agents filtering by id_tag.
- * 
- * @param int $id_tag Id of the tag to search not init agents.
+ * Get the number of the critical agents that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'name': (string) Agent name. e.g.: "agent_1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ * @param bool $realtime Search realtime values or the values processed by the server.
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns count of not init agents with this tag or false if they aren't.
  */
-function tags_get_not_init_agents ($id_tag, $groups_and_tags = array()) {
-	return tags_get_agents_counter(AGENT_STATUS_NOT_INIT, $id_tag, $groups_and_tags);
+function tags_get_critical_agents ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array(), $realtime = true) {
+	// Always modify the agent status filter
+	$agent_filter["status"] = AGENT_STATUS_CRITICAL;
+	return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
 }
 
 /**
- * Get the monitors count.
- * 
- * @param int $type Type of the status to filter the counter.
- * @param int $id_tag Id of the tag to filter the modules.
+ * Get the number of the unknown agents that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
- * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'name': (string) Agent name. e.g.: "agent_1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ * @param bool $realtime Search realtime values or the values processed by the server.
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns the count of the modules or false on error.
  */
-function tags_monitors_count ($type, $id_tag, $groups_and_tags = array(), $id_agente = false) {
+function tags_get_unknown_agents ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array(), $realtime = true) {
+	// Always modify the agent status filter
+	$agent_filter["status"] = AGENT_STATUS_UNKNOWN;
+	return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
+}
+
+/**
+ * Get the number of the not init agents that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'name': (string) Agent name. e.g.: "agent_1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ * @param bool $realtime Search realtime values or the values processed by the server.
+ *
+ * @return int Number of monitors.
+ * 
+ */
+function tags_get_not_init_agents ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array(), $realtime = true) {
+	// Always modify the agent status filter
+	$agent_filter["status"] = AGENT_STATUS_NOT_INIT;
+	return tags_get_agents_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter, $realtime);
+}
+
+/**
+ * Get the number of the monitors that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
+ * @param array $groups_and_tags Array with strict ACL rules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'name': (string) Agent name. e.g.: "agent_1".
+ * -'id': (mixed) Agent id. e.g.: "1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ *
+ * @return int Number of monitors.
+ * 
+ */
+function tags_get_monitors_counter ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array()) {
 	
 	// Avoid mysql error
 	if (empty($id_tag))
@@ -1520,64 +1719,113 @@ function tags_monitors_count ($type, $id_tag, $groups_and_tags = array(), $id_ag
 			}
 		}
 		if (array_search(0, $groups_id) === false) {
+			$groups_id = array_unique($groups_id);
 			$groups_id_str = implode(",", $groups_id);
 			$groups_clause = " AND ta.id_grupo IN ($groups_id_str)"; 
 		}
 	}
+	
+	$agent_name_filter = "";
 	$agents_clause = "";
-	if ($id_agente !== false) {
-		if (is_array($id_agente)) {
-			$id_agente = implode(",", $id_agente);
+	if (!empty($agent_filter)) {
+		// Name
+		if (isset($agent_filter["name"]) && !empty($agent_filter["name"])) {
+			$agent_name_filter = "AND ta.nombre LIKE '%" . $agent_filter["name"] . "%'";
 		}
-		$agents_clause = " AND ta.id_agente IN ($id_agente)";
+		// ID
+		if (isset($agent_filter["id"])) {
+			if (is_array($agent_filter["id"]))
+				$agents = array_unique($agent_filter["id"]);
+			else
+				$agents = array($agent_filter["id"]);
+			$agents_str = implode (",", $agents);
+			$agents_clause = "AND ta.id_agente IN ($agents_str)";
+		}
 	}
-
-	switch ($type) {
-		case AGENT_MODULE_STATUS_ALL:
-			$status = AGENT_MODULE_STATUS_CRITICAL_ALERT.",".AGENT_MODULE_STATUS_CRITICAL_BAD
-				. "," . AGENT_MODULE_STATUS_WARNING_ALERT.",".AGENT_MODULE_STATUS_WARNING
-				. "," . AGENT_MODULE_STATUS_UNKNOWN
-				. "," . AGENT_MODULE_STATUS_NO_DATA.",".AGENT_MODULE_STATUS_NOT_INIT
-				. "," . AGENT_MODULE_STATUS_NORMAL_ALERT.",".AGENT_MODULE_STATUS_NORMAL;
-			break;
-		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-		case AGENT_MODULE_STATUS_CRITICAL_BAD:
-			$status = AGENT_MODULE_STATUS_CRITICAL_ALERT.",".AGENT_MODULE_STATUS_CRITICAL_BAD;
-			break;
-		case AGENT_MODULE_STATUS_WARNING_ALERT:
-		case AGENT_MODULE_STATUS_WARNING:
-			$status = AGENT_MODULE_STATUS_WARNING_ALERT.",".AGENT_MODULE_STATUS_WARNING;
-			break;
-		case AGENT_MODULE_STATUS_UNKNOWN:
-			$status = AGENT_MODULE_STATUS_UNKNOWN;
-			break;
-		case AGENT_MODULE_STATUS_NO_DATA:
-		case AGENT_MODULE_STATUS_NOT_INIT:
-			$status = AGENT_MODULE_STATUS_NO_DATA.",".AGENT_MODULE_STATUS_NOT_INIT;
-			break;
-		case AGENT_MODULE_STATUS_NORMAL_ALERT:
-		case AGENT_MODULE_STATUS_NORMAL:
-			$status = AGENT_MODULE_STATUS_NORMAL_ALERT.",".AGENT_MODULE_STATUS_NORMAL;
-			break;
-		default:
-			// The type doesn't exist
-			return false;
+	
+	$module_name_filter = "";
+	$module_status_array = "";
+	$modules_clause = "";
+	if (!empty($module_filter)) {
+		// Name
+		if (isset($module_filter["name"]) && !empty($module_filter["name"])) {
+			$module_name_filter = "AND tam.nombre LIKE '%" . $module_filter["name"] . "%'";
+		}
+		// Status
+		if (isset($module_filter["status"])) {
+			$module_status = $module_filter["status"];
+			if (is_array($module_status))
+				$module_status = array_unique($module_status);
+			else
+				$module_status = array($module_status);
+			
+			$status_array = "";
+			foreach ($module_status as $status) {
+				switch ($status) {
+					case AGENT_MODULE_STATUS_ALL:
+						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+						$status_array[] = AGENT_MODULE_STATUS_WARNING_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_WARNING;
+						$status_array[] = AGENT_MODULE_STATUS_UNKNOWN;
+						$status_array[] = AGENT_MODULE_STATUS_NO_DATA;
+						$status_array[] = AGENT_MODULE_STATUS_NOT_INIT;
+						$status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_NORMAL;
+						break;
+					case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+					case AGENT_MODULE_STATUS_CRITICAL_BAD:
+						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+						break;
+					case AGENT_MODULE_STATUS_WARNING_ALERT:
+					case AGENT_MODULE_STATUS_WARNING:
+						$status_array[] = AGENT_MODULE_STATUS_WARNING_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_WARNING;
+						break;
+					case AGENT_MODULE_STATUS_UNKNOWN:
+						$status_array[] = AGENT_MODULE_STATUS_UNKNOWN;
+						break;
+					case AGENT_MODULE_STATUS_NO_DATA:
+					case AGENT_MODULE_STATUS_NOT_INIT:
+						$status_array[] = AGENT_MODULE_STATUS_NO_DATA;
+						$status_array[] = AGENT_MODULE_STATUS_NOT_INIT;
+						break;
+					case AGENT_MODULE_STATUS_NORMAL_ALERT:
+					case AGENT_MODULE_STATUS_NORMAL:
+						$status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
+						$status_array[] = AGENT_MODULE_STATUS_NORMAL;
+						break;
+					default:
+						// The status doesn't exist
+						return false;
+				}
+			}
+			if (!empty($status_array)) {
+				$status_array = array_unique($status_array);
+				$status_str = implode(",", $status_array);
+				
+				$modules_clause = "AND tae.estado IN ($status_str)";
+			}
+		}
 	}
 	
 	$sql = "SELECT COUNT(DISTINCT tam.id_agente_modulo)
 			FROM tagente_modulo AS tam
 			INNER JOIN tagente_estado AS tae
 				ON tam.id_agente_modulo = tae.id_agente_modulo
-					AND tae.estado IN ($status)
+					$modules_clause
 			INNER JOIN ttag_module AS ttm
 				ON ttm.id_tag = $id_tag
 					AND tam.id_agente_modulo = ttm.id_agente_modulo
 			INNER JOIN tagente AS ta
 				ON tam.id_agente = ta.id_agente
 					AND ta.disabled = 0
+					$agent_name_filter
 					$agents_clause
 					$groups_clause
-			WHERE tam.disabled = 0";
+			WHERE tam.disabled = 0
+				$module_name_filter";
 			
 	$count = db_get_sql ($sql);
 
@@ -1585,81 +1833,135 @@ function tags_monitors_count ($type, $id_tag, $groups_and_tags = array(), $id_ag
 }
 
 /**
- * Get the total monitors count.
- * 
- * @param int $id_tag Id of the tag to filter the modules.
+ * Get the number of the total monitors that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
- * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'id': (mixed) Agent id. e.g.: "1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns the count of the total modules or false on error.
  */
-function tags_monitors_total ($id_tag, $groups_and_tags = array(), $id_agente = false) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_ALL, $id_tag, $groups_and_tags, $id_agente);
+function tags_get_total_monitors ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array()) {
+	// Always modify the module status filter
+	$module_filter["status"] = AGENT_MODULE_STATUS_ALL;
+	return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
 
 /**
- * Get the normal monitors count.
- * 
- * @param int $id_tag Id of the tag to filter the modules.
+ * Get the number of the normal monitors that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
- * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'id': (mixed) Agent id. e.g.: "1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns the count of the normal modules or false on error.
  */
-function tags_monitors_normal ($id_tag, $groups_and_tags = array(), $id_agente = false) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_NORMAL, $id_tag, $groups_and_tags, $id_agente);
+function tags_get_normal_monitors ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array()) {
+	// Always modify the module status filter
+	$module_filter["status"] = AGENT_MODULE_STATUS_NORMAL;
+	return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
 
 /**
- * Get the critical monitors count.
- * 
- * @param int $id_tag Id of the tag to filter the modules.
+ * Get the number of the critical monitors that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
- * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'id': (mixed) Agent id. e.g.: "1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns the count of the critical modules or false on error.
  */
-function tags_monitors_critical ($id_tag, $groups_and_tags = array(), $id_agente = false) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_CRITICAL_BAD, $id_tag, $groups_and_tags, $id_agente);
+function tags_get_critical_monitors ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array()) {
+	// Always modify the module status filter
+	$module_filter["status"] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+	return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
 
 /**
- * Get the warning monitors count.
- * 
- * @param int $id_tag Id of the tag to filter the modules.
+ * Get the number of the warning monitors that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
- * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'id': (mixed) Agent id. e.g.: "1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns the count of the warning modules or false on error.
  */
-function tags_monitors_warning ($id_tag, $groups_and_tags = array(), $id_agente = false) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_WARNING, $id_tag, $groups_and_tags, $id_agente);
+function tags_get_warning_monitors ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array()) {
+	// Always modify the module status filter
+	$module_filter["status"] = AGENT_MODULE_STATUS_WARNING;
+	return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
 
 /**
- * Get the not init monitors count.
- * 
- * @param int $id_tag Id of the tag to filter the modules.
+ * Get the number of the not init monitors that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
- * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'id': (mixed) Agent id. e.g.: "1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns the count of the not init modules or false on error.
  */
-function tags_monitors_not_init ($id_tag, $groups_and_tags = array(), $id_agente = false) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_NOT_INIT, $id_tag, $groups_and_tags, $id_agente);
+function tags_get_not_init_monitors ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array()) {
+	// Always modify the module status filter
+	$module_filter["status"] = AGENT_MODULE_STATUS_NOT_INIT;
+	return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
 
 /**
- * Get the unknown monitors count.
- * 
- * @param int $id_tag Id of the tag to filter the modules.
+ * Get the number of the unknown monitors that pass the filters.
+ *
+ * @param mixed $id_tag Id in integer or a set of ids into an array.
  * @param array $groups_and_tags Array with strict ACL rules.
- * @param mixed $id_agente Id or ids of the agent to filter the modules.
+ * @param array $agent_filter Filter of the agents.
+ * This filter support the following fields:
+ * -'id': (mixed) Agent id. e.g.: "1".
+ * @param array $module_filter Filter of the modules.
+ * This filter support the following fields:
+ * -'status': (mixed) Module status. Single or grouped into an array. e.g.: AGENT_MODULE_STATUS_CRITICAL.
+ * -'name': (string) Module name. e.g.: "module_1".
+ *
+ * @return int Number of monitors.
  * 
- * @return mixed Returns the count of the unknown modules or false on error.
  */
-function tags_monitors_unknown ($id_tag, $groups_and_tags = array(), $id_agente = false) {
-	return tags_monitors_count(AGENT_MODULE_STATUS_UNKNOWN, $id_tag, $groups_and_tags, $id_agente);
+function tags_get_unknown_monitors ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array()) {
+	// Always modify the module status filter
+	$module_filter["status"] = AGENT_MODULE_STATUS_UNKNOWN;
+	return tags_get_monitors_counter($id_tag, $groups_and_tags, $agent_filter, $module_filter);
 }
 
 /**

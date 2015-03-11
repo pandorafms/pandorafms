@@ -1006,6 +1006,52 @@ class Tree {
 				$item['total_count'] = $item['_total_agents_'];
 			if (isset($item['_monitors_alerts_fired_']))
 				$item['total_fired_count'] = $item['_monitors_alerts_fired_'];
+			
+			// Agent filter for Strict ACL users
+			if ($this->filter["statusAgent"] != -1) {
+				switch ($this->filter["statusAgent"]) {
+					case AGENT_STATUS_NOT_INIT:
+						$item['total_count'] = $item['total_not_init_count'];
+						
+						$item['total_unknown_count'] = 0;
+						$item['total_critical_count'] = 0;
+						$item['total_warning_count'] = 0;
+						$item['total_normal_count'] = 0;
+						break;
+					case AGENT_STATUS_CRITICAL:
+						$item['total_count'] = $item['total_critical_count'];
+						
+						$item['total_unknown_count'] = 0;
+						$item['total_warning_count'] = 0;
+						$item['total_not_init_count'] = 0;
+						$item['total_normal_count'] = 0;
+						break;
+					case AGENT_STATUS_WARNING:
+						$item['total_count'] = $item['total_warning_count'];
+						
+						$item['total_unknown_count'] = 0;
+						$item['total_critical_count'] = 0;
+						$item['total_not_init_count'] = 0;
+						$item['total_normal_count'] = 0;
+						break;
+					case AGENT_STATUS_UNKNOWN:
+						$item['total_count'] = $item['total_unknown_count'];
+						
+						$item['total_critical_count'] = 0;
+						$item['total_warning_count'] = 0;
+						$item['total_not_init_count'] = 0;
+						$item['total_normal_count'] = 0;
+						break;
+					case AGENT_STATUS_NORMAL:
+						$item['total_count'] = $item['total_normal_count'];
+						
+						$item['total_unknown_count'] = 0;
+						$item['total_critical_count'] = 0;
+						$item['total_warning_count'] = 0;
+						$item['total_not_init_count'] = 0;
+						break;
+				}
+			}
 		}
 		
 		
@@ -1320,25 +1366,33 @@ class Tree {
 
 		// Realtime counters for Strict ACL
 		if ($this->strictACL) {
+			$agent_filter = array("id" => $agent['id']);
+			$module_filter = array();
+
+			if (isset($this->filter["statusModule"]))
+				$module_filter["status"] = $this->filter["statusModule"];
+			if (isset($this->filter["searchModule"]))
+				$module_filter["name"] = $this->filter["searchModule"];
+
 			if ($agent['rootType'] == "group") {
 				$agent['counters'] = array();
-				$agent['counters']['unknown'] = agents_monitor_unknown($agent['id']);
-				$agent['counters']['critical'] = agents_monitor_critical($agent['id']);
-				$agent['counters']['warning'] = agents_monitor_warning($agent['id']);
-				$agent['counters']['not_init'] = agents_monitor_notinit($agent['id']);
-				$agent['counters']['ok'] = agents_monitor_ok($agent['id']);
-				$agent['counters']['total'] = agents_monitor_total($agent['id']);
+				$agent['counters']['unknown'] = (int) groups_get_unknown_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+				$agent['counters']['critical'] = (int) groups_get_critical_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+				$agent['counters']['warning'] = (int) groups_get_warning_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+				$agent['counters']['not_init'] = (int) groups_get_not_init_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+				$agent['counters']['ok'] = (int) groups_get_normal_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+				$agent['counters']['total'] = (int) groups_get_total_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
 				$agent['counters']['alerts'] = agents_get_alerts_fired($agent['id']);
 			}
 			else if ($agent['rootType'] == "tag") {
 				$agent['counters'] = array();
-				$agent['counters']['unknown'] = tags_monitors_unknown($agent['rootID'], $this->acltags, $agent['id']);
-				$agent['counters']['critical'] = tags_monitors_critical($agent['rootID'], $this->acltags, $agent['id']);
-				$agent['counters']['warning'] = tags_monitors_warning($agent['rootID'], $this->acltags, $agent['id']);
-				$agent['counters']['not_init'] = tags_monitors_not_init($agent['rootID'], $this->acltags, $agent['id']);
-				$agent['counters']['ok'] = tags_monitors_normal($agent['rootID'], $this->acltags, $agent['id']);
-				$agent['counters']['total'] = tags_monitors_total($agent['rootID'], $this->acltags, $agent['id']);
-				$agent['counters']['alerts'] = tags_monitors_fired_alerts($agent['rootID'], $this->acltags, $agent['id']);
+				$agent['counters']['unknown'] = (int) tags_get_unknown_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+				$agent['counters']['critical'] = (int) tags_get_critical_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+				$agent['counters']['warning'] = (int) tags_get_warning_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+				$agent['counters']['not_init'] = (int) tags_get_not_init_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+				$agent['counters']['ok'] = (int) tags_get_normal_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+				$agent['counters']['total'] = (int) tags_get_total_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+				$agent['counters']['alerts'] = (int) tags_monitors_fired_alerts($agent['rootID'], $this->acltags, $agent['id']);
 			}
 		}
 		
@@ -1580,8 +1634,20 @@ class Tree {
 		
 		// Groups and tags
 		if ($this->id == -1) {
+			$agent_filter = array();
+			if (isset($this->filter["statusAgent"]))
+				$agent_filter["status"] = $this->filter["statusAgent"];
+			if (isset($this->filter["searchAgent"]))
+				$agent_filter["name"] = $this->filter["searchAgent"];
+
+			$module_filter = array();
+			if (isset($this->filter["statusModule"]))
+				$module_filter["status"] = $this->filter["statusModule"];
+			if (isset($this->filter["searchModule"]))
+				$module_filter["name"] = $this->filter["searchModule"];
+			
 			if (! defined ('METACONSOLE')) {
-				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
+				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
 				
 				// Build the group and tag hierarchy
 				$processed_items = array();
@@ -1612,7 +1678,7 @@ class Tree {
 						continue;
 					db_clean_cache();
 					
-					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree');
+					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
 					
 					// Build the group and tag hierarchy
 					$processed_items = array();

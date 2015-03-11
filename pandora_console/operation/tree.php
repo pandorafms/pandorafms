@@ -122,28 +122,6 @@ else{
 }
 // ---------------------Tabs -------------------------------------------
 
-
-if (! defined ('METACONSOLE')) {
-
-}
-else {
-	// Check if the loaded tab is allowed or not
-	// $allowed_tabs = array('group');
-	
-	// if ($config['enable_tags_tree']) {
-	// 	$allowed_tabs[] = 'tag';
-	// }
-	
-	// if (!in_array($activeTab, $allowed_tabs)) {
-	// 	db_pandora_audit("HACK Attempt",
-	// 		"Trying to access to not allowed tab on tree view");
-	// 	include ("general/noaccess.php");
-		
-	// 	exit;
-	// }
-	// End of tab check
-}
-
 // --------------------- form filter -----------------------------------
 
 $table = new StdClass();
@@ -164,56 +142,48 @@ $row = array();
 $row[] = __('Agent status');
 $row[] = html_print_select($agent_status_arr, "status_agent", $status_agent, '', '', 0, true);
 $row[] = __('Search agent');
-if (defined('METACONSOLE'))
-	$row[] = html_print_input_text("search_agent", $search_agent, '', 70, 30, true);
-else
-	$row[] = html_print_input_text("search_agent", $search_agent, '', 40, 30, true);
-	
+$row[] = html_print_input_text("search_agent", $search_agent, '', 40, 30, true);
+
 // Button
 $row[] = html_print_submit_button(__('Filter'), "uptbutton", false, 'class="sub search"', true);
 $table->rowspan[][count($row)-1] = 2;
 
 $table->data[] = $row;
 
-// Module filter
-$module_status_arr = array();
-$module_status_arr[-1] = __('All'); //default
-$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
-$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
-$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
-$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
-$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+if (!$strict_acl) {
+	// Module filter
+	$module_status_arr = array();
+	$module_status_arr[-1] = __('All'); //default
+	$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
+	$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+	$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+	$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
+	$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 
-$row = array();
-$row[] = __('Module status');
-$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
-$row[] = __('Search module');
-if (defined('METACONSOLE'))
-	$row[] = html_print_input_text("search_module", $search_module, '', 70, 30, true);
-else
+	$row = array();
+	$row[] = __('Module status');
+	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
+	$row[] = __('Search module');
 	$row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true);
 
-$table->data[] = $row;
+	$table->data[] = $row;
+}
 
 if (defined('METACONSOLE')) {
-	$table->width = "96%";
-	$table->cellpadding = "0";
-	$table->cellspacing = "0";
-	$table->class='databox_filters';
-	$table->styleTable='padding-top:0px';
+	$table->width = "70%";
+	$table->class='tree_filters';
+	echo "<div class='view_tree'>";
 }
-if (!$strict_acl) {
-	$form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
-	$form_html .= html_print_table($table, true);
-	$form_html .= '</form>';
-	if (defined('METACONSOLE')) {
-		echo "<div class='view_tree'>";
-		ui_toggle($form_html, __('Show Options'));
-		echo "<br>";
-	}else{
-		echo "<br>";
-		ui_toggle($form_html, __('Tree search'));
-	}
+
+$form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
+$form_html .= html_print_table($table, true);
+$form_html .= '</form>';
+if (defined('METACONSOLE')) {
+	echo $form_html;
+	echo "<br>";
+}else{
+	echo "<br>";
+	ui_toggle($form_html, __('Tree search'));
 }
 
 html_print_input_hidden("group-id", $group_id);

@@ -1023,12 +1023,16 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	global $hack_networkmap_mobile;
 	
 	if ($strict_user) {
-		$strict_data['normal_count'] = groups_agent_ok ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
-		$strict_data['warning_count'] = groups_agent_warning ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
-		$strict_data['critical_count'] = groups_agent_critical ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
-		$strict_data['unknown_count'] = groups_agent_unknown ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
-		$strict_data['notinit_count'] = groups_agent_not_init ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
-		$strict_data['total_count'] = groups_agent_total ($agent['id_grupo'], $strict_user, $agent['id_grupo']);
+		require_once($config['homedir']."/include/functions_tags.php");
+		$acltags = tags_get_user_module_and_tags ($config["id_user"], 'AR', $strict_user);
+		
+		$agent_filter = array("id" => $agent["id_agente"]);
+		$strict_data['normal_count'] = (int) groups_get_normal_monitors ($agent['id_grupo'], $agent_filter, array(), $strict_user, $acltags);
+		$strict_data['warning_count'] = (int) groups_get_warning_monitors ($agent['id_grupo'], $agent_filter, array(), $strict_user, $acltags);
+		$strict_data['critical_count'] = (int) groups_get_critical_monitors ($agent['id_grupo'], $agent_filter, array(), $strict_user, $acltags);
+		$strict_data['unknown_count'] = (int) groups_get_unknown_monitors ($agent['id_grupo'], $agent_filter, array(), $strict_user, $acltags);
+		$strict_data['notinit_count'] = (int) groups_get_not_init_monitors ($agent['id_grupo'], $agent_filter, array(), $strict_user, $acltags);
+		$strict_data['total_count'] = (int) groups_get_total_monitors ($agent['id_grupo'], $agent_filter, array(), $strict_user, $acltags);
 		$status = agents_get_status_from_counts($strict_data);
 	} else {
 		$status = agents_get_status_from_counts($agent);

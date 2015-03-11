@@ -51,8 +51,6 @@ $idItem = get_parameter('id_item', 0);
 $pure = get_parameter('pure',0);
 $schedule_report = get_parameter('schbutton', '');
 
-$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
-
 if ($schedule_report != '') {
 	
 	$id_user_task = 1;
@@ -372,12 +370,14 @@ switch ($action) {
 		$table_aux->width = '99%';
 		if(defined('METACONSOLE')){
 			$table_aux->class = 'databox_filters';
-			$table_aux->width = '70%';
+			$table_aux->width = '96%';
+			$table_aux->cellpadding = 0;
+			$table_aux->cellspacing = 0;
 		}
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		
-		$table_aux->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px', false, false, 'id_grupo', $strict_user);
+		$table_aux->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px');
 		
 		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . "</b>";
 		$table_aux->data[0][3] = html_print_input_text ("search", $search, '', 30, '', true);
@@ -385,15 +385,19 @@ switch ($action) {
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
 		
 		if(defined('METACONSOLE')){
-			echo "<form class ='filters_form' action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
+			$filter = "<form class ='filters_form' action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
 				method='post'>";
+			$filter .= html_print_table($table_aux,true);
+			$filter .= "</form>";
+			ui_toggle($filter, __("Show Option"));
 		}
 		else{
 			echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
 				method='post'>";
-		}
 			html_print_table($table_aux);
-		echo "</form>";
+			echo "</form>";
+		}
+			
 		
 		ui_require_jquery_file ('pandora.controls');
 		ui_require_jquery_file ('ajaxqueue');
@@ -452,7 +456,6 @@ switch ($action) {
 			$table->id = 'report_list';
 			$table->width = '98%';
 			if(defined('METACONSOLE')){
-				echo "<br>";
 				$table->width = '100%';
 			}
 			$table->head = array ();
@@ -534,8 +537,7 @@ switch ($action) {
 				if (enterprise_hook ('load_custom_reporting_2') !== ENTERPRISE_NOT_HOOK) {
 					$next = 7;
 				}
-				
-				
+
 				//Admin options only for RM flag
 				if (check_acl ($config['id_user'], 0, "RM")) {
 					

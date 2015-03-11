@@ -232,8 +232,11 @@ $search_type = (string) get_parameter ('search_type');
 
 $table->width = '98%';
 if (defined("METACONSOLE")){
-	$table->width = '50%';	
-	$table->class = 'databox_filters';	
+	$table->width = '96%';	
+	$table->class = 'databox_filters';
+	$table->cellspacing = 0;
+	$table->cellpadding = 0;
+	
 }
 $table->data = array ();
 $table->head = array ();

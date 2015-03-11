@@ -42,10 +42,19 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->width = '100%';
 	if(defined('METACONSOLE')){
 		$table->class = 'databox_filters';
-		$table->width = '60%';
+		$table->width = '96%';
+		$table->cellpadding = '0';
+		$table->cellspacing = '0';
 	}
 	$table->data = array ();
 	$table->style = array ();
+	if(defined('METACONSOLE')){
+		$table->style[0] = 'vertical-align:middle; font-weight: bold;';
+		$table->style[1] = 'vertical-align:middle; font-weight: bold;';
+		$table->style[2] = 'vertical-align:middle; font-weight: bold;';
+		$table->style[3] = 'vertical-align:middle; font-weight: bold;';
+		$table->style[4] = 'vertical-align:middle; font-weight: bold;';
+	}
 	
 	$table->data[0][0] = __('Group');
 	$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "ag_group", $id_group, '', '', '', true, false, false, '', false, '', false, false, 'id_grupo', $strict_user);
@@ -85,8 +94,8 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->data[1][3] = html_print_select ($alert_standby, "filter_standby", $filter_standby, '', '', '', true);
 	
 	if(defined('METACONSOLE')){
-		$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
-		$table->rowspan[1][4] = 2;
+		$table->data[0][7] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
+		$table->rowspan[0][7] = 2;
 	    $data = '<form style="background-color: #ECECEC;" method="post" action="'.$url.'">';
 	}
 	else{

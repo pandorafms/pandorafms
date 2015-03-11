@@ -36,6 +36,12 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
+if(defined('METACONSOLE')){
+	$jump = '&nbsp;&nbsp;';
+}
+else{
+	$jump = "<br>";
+}
 if (is_ajax()) {
 	$get_filter_values = get_parameter('get_filter_values', 0);
 	$save_event_filter = get_parameter('save_event_filter', 0);
@@ -195,14 +201,16 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->width = '98%';
 	$table->cellspacing = 4;
 	$table->cellpadding = 4;
+	$table->class = 'databox';
 	if(defined('METACONSOLE')){
 		$table->width = '100%';
+		$table->class = 'databox data';
 		$table->cellspacing = 0;
 		$table->cellpadding = 0;
 	}
-	$table->class = 'databox';
 	$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-	$table->style[0] = 'width: 50%; width:50%;';
+	if(!defined("METACONSOLE"))
+		$table->style[0] = 'width: 50%; width:50%;';
 	
 	$data = array();
 	$table->rowid[0] = 'update_save_selector';
@@ -213,9 +221,9 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	
 	$data = array();
 	$table->rowid[1] = 'save_filter_row1';
-	$data[0] = __('Filter name') . '<br>';
+	$data[0] = __('Filter name') . $jump;
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
-	$data[1] = __('Filter group') . '<br>';
+	$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
 	$data[1] .= html_print_select_groups($config["id_user"], "ER", users_can_manage_group_all(), 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
 	$table->data[] = $data;
@@ -225,13 +233,14 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->rowid[2] = 'save_filter_row2';
 	$data[0] = html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"', true);
 	$table->colspan[2][0] = 2;
-	$table->cellstyle[2][0] = 'text-align:right;';
+	if(!defined("METACONSOLE"))
+		$table->cellstyle[2][0] = 'text-align:right;';
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
 	$data = array();
 	$table->rowid[3] = 'update_filter_row1';
-	$data[0] = __("Overwrite filter") . '<br>';
+	$data[0] = __("Overwrite filter") . $jump;
 	# Fix  : Only admin user can see filters of group ALL for update
 	$_filters_update = events_get_event_filter_select(false);
 	
@@ -252,18 +261,20 @@ $table->id = 'load_filter_form';
 $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
+$table->class = 'databox';
 if(defined('METACONSOLE')){
 	$table->width = '100%';
-	$table->cellspacing = 4;
-	$table->cellpadding = 4;
+	$table->cellspacing = 0;
+	$table->cellpadding = 0;
+	$table->class = 'databox data';
 }
-$table->class = 'databox';
-$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-$table->style[0] = 'width: 50%; width:50%;';
 
+$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+if(!defined("METACONSOLE"))
+	$table->style[0] = 'width: 50%; width:50%;';
 $data = array();
 $table->rowid[3] = 'update_filter_row1';
-$data[0] = __("Load filter") . '<br>';
+$data[0] = __("Load filter") . $jump;
 $data[0] .= html_print_select ($filters, "filter_id", '', '', __('None'), 0, true);
 $data[1] = html_print_submit_button (__('Load filter'), 'load_filter', false, 'class="sub upd"', true);
 $table->data[] = $data;
@@ -305,11 +316,15 @@ $tabletags_with->width = '100%';
 $tabletags_with->cellspacing = 4;
 $tabletags_with->cellpadding = 4;
 $tabletags_with->class = 'noshadow';
+$tabletags_with->styleTable = 'border: 0px;';
 if(defined('METACONSOLE')){
 	$tabletags_with->width = '100%';
 	$tabletags_with->class = 'nobady';
+	$tabletags_with->cellspacing = 0;
+	$tabletags_with->cellpadding = 0;
+	$tabletags_with->styleTable = 'border: 0px; margin-top:10px';
 }
-$tabletags_with->styleTable = 'border: 0px;';
+
 
 $data = array();
 $data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
@@ -332,6 +347,8 @@ $tabletags_without->class = 'noshadow';
 if(defined('METACONSOLE')){
 	$tabletags_without->width = '100%';
 	$tabletags_without->class = 'nobady';
+	$tabletags_without->cellspacing = 0;
+	$tabletags_without->cellpadding = 0;
 }
 $tabletags_without->styleTable = 'border: 0px;';
 
@@ -352,12 +369,10 @@ $tabletags_without->rowclass[] = '';
 // EVENTS FILTER
 // Table for filter controls
 if(defined('METACONSOLE')){
-	$jump = '&nbsp;&nbsp;';
 	$events_filter = '<form id="form_filter" class="filters_form" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
 		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 }
 else{
-	$jump = "<br>";
 	$events_filter = '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
 		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 }
@@ -437,7 +452,7 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __("Alert events") . $jump;
 $data[0] .= html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
-$data[1] = __('Block size for pagination') . '<br>';
+$data[1] = __('Block size for pagination') . $jump;
 $lpagination[25] = 25;
 $lpagination[50] = 50;
 $lpagination[100] = 100;
@@ -495,9 +510,6 @@ $table_advanced->rowclass[] = '';
 //- END ADVANCE FILTER -------------------------------------------------
 
 
-
-
-
 $table->id = 'events_filter_form';
 $table->width = '100%';
 $table->cellspacing = 4;
@@ -511,10 +523,10 @@ $table->styleTable = 'font-weight: bold; color: #555;';
 $table->data = array();
 
 $data = array();
-$data[0] = __('Group') . '<br>';
+$data[0] = __('Group') . $jump;
 
 $data[0] .= html_print_select_groups($config["id_user"], "ER", true, 
-	'id_group', $id_group, '', '', 0, true, false, false, 'w130', false, false, false, false, 'id_grupo', $strict_user). '<br>';
+	'id_group', $id_group, '', '', 0, true, false, false, 'w130', false, false, false, false, 'id_grupo', $strict_user). $jump;
 	
 //**********************************************************************
 // TODO
@@ -619,7 +631,7 @@ unset($table);
 $events_filter .= "</form>"; //This is the filter div
 
 if (defined('METACONSOLE'))
-	echo $events_filter;
+	ui_toggle($events_filter, __("Show Options"));
 else
 	ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
 

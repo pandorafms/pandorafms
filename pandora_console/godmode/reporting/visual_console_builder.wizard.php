@@ -28,23 +28,31 @@ require_once ($config['homedir'] . '/include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 
 $table->id = 'wizard_table';
+$table->head = array ();
 if (!defined('METACONSOLE')) {
 	$metaconsole_hack = '';
 	$table->width = '98%';
 }
 else {
 	$metaconsole_hack = '../../';
-	$table->width = '600';
-	
+	$table->width = '100%';
+	$table->class = 'databox data';
+	$table->styleTable = 'padding-top: 15px; margin-top:0px';
 	require_once($config['homedir'] .
 		"/enterprise/meta/include/functions_html_meta.php");
 }
 
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; vertical-align: text-top;';
-$table->style[1] = 'font-weight: bold; vertical-align: middle;';
-$table->style[2] = 'font-weight: bold; vertical-align: top';
-
+if (!defined('METACONSOLE')) {
+	$table->style[0] = 'font-weight: bold; vertical-align: text-top;';
+	$table->style[1] = 'font-weight: bold; vertical-align: middle;';
+	$table->style[2] = 'font-weight: bold; vertical-align: top';
+}
+else{
+	$table->style[0] = 'font-weight: bold; ';
+	$table->style[1] = 'font-weight: bold; ';
+	$table->style[2] = 'font-weight: bold; ';
+}
 $table->size = array ();
 $table->size[0] = "20%";
 $table->size[1] = "20%";
@@ -248,6 +256,10 @@ else {
 		onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
 }
 
+if(defined("METACONSOLE")){
+	echo "<div class='title_tactical' style='margin-top: 15px; '>" . __('Wizard') . "</div>";
+}
+
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -285,7 +297,7 @@ $(document).ready (function () {
 	$("#process_value").change(function () {
 		selected = $("#process_value").val();
 		
-		if (selected == <?php echo PROCESS_VALUE_NONE;?>) {
+		if (selected == <?php echo PROCESS_VALUE_NONE; ?>) {
 			$("tr", "#wizard_table").filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).hide();
 		}
 		else {

@@ -148,36 +148,49 @@ if (!defined("METACONSOLE"))
 			array("title" => __('Toggle filter(s)'),
 			"id" => 'image_form_filter')) . '</a>';
 
-$table = null;
-$table->width = '100%';
-$table->data[0][0] = __('Agents');
-$table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
-$table->data[0][2] = __('Modules');
-$table->data[0][3] = html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
-$table->data[1][0] = __('Type');
-$table->data[1][1] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
-$table->data[1][2] = $table->data[1][3] = '';
-
 if (!defined("METACONSOLE")){
-	echo '<div id="form_filter" style="display: none;">';
-	echo '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
+	$table = null;
+	$table->width = '100%';
+	$table->data[0][0] = __('Agents');
+	$table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
+	$table->data[0][2] = __('Modules');
+	$table->data[0][3] = html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
+	$table->data[1][0] = __('Type');
+	$table->data[1][1] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
+	$table->data[1][2] = $table->data[1][3] = '';
 	
-	html_print_table ($table);
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"');
-	html_print_input_hidden('action', 'filter');
-	echo '</div>';
-	echo '</form>';
+	echo '<div id="form_filter" style="display: none;">';
+		echo '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
+			html_print_table ($table);
+			echo '<div class="action-buttons" style="width: '.$table->width.'">';
+				html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"');
+				html_print_input_hidden('action', 'filter');
+			echo '</div>';
+		echo '</form>';
 	echo '</div>';
 }
 else{
+	$table = null;
+	$table->width = '96%';
 	$table->class = "databox_filters";
-	$table->width = '70%';
-	echo '<form class="filters_form" method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=
+	$table->cellpadding = 0;
+	$table->cellspacing = 0;
+	$table->data[0][0] = __('Agents');
+	$table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
+	$table->data[0][2] = __('Modules');
+	$table->data[0][3] = html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
+	$table->data[0][4] = __('Type');
+	$table->data[0][5] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
+	$table->style[6] = "text-align:right;";
+	$table->data[0][6] = html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"',true) . 
+							html_print_input_hidden('action', 'filter',true);
+	
+	$filters = '<form class="filters_form" method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=
 				list_items&action=filter&id_report=' . $idReport . '">';
-	$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"',true) . html_print_input_hidden('action', 'filter',true);
-	html_print_table ($table);
-	echo '</form>';
+	
+	$filters .= html_print_table ($table,true);
+	$filters .= '</form>';
+	ui_toggle($filters, __("Show Options"));
 }
 
 $where = '1=1';

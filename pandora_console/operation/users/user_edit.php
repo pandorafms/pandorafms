@@ -178,13 +178,14 @@ if ($status != -1) {
 		__('User info successfully updated'),
 		__('Error updating user info'));
 }
-
+$jump = "<br />";
 $table->id = 'user_form';
 $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'vertical_fields';
 if (defined('METACONSOLE')){
+	$jump = "&nbsp;&nbsp;";
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head[0] = __('Edit my User');
@@ -195,9 +196,9 @@ $table->style[2] = 'width: 175px;';
 
 $data = array();
 $data[0] = '<b>' . __('User ID') . '</b>';
-$data[0] .= '<br><br><span style="font-weight: normal;">' . $id . '</span>';
+$data[0] .= $jump . '<span style="font-weight: normal;">' . $id . '</span>';
 $data[1] = '<b>' . __('Full (display) name') . '</b>';
-$data[1] .= '<br>' . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true);
+$data[1] .= $jump . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true);
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 
 if (is_user_admin ($id)) {
@@ -219,9 +220,9 @@ $table->data[] = $data;
 
 $data = array();
 $data[0] = __('E-mail');
-$data[0] .= '<br>' . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true);
+$data[0] .= $jump . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true);
 $data[1] = __('Phone number');
-$data[1] .= '<br>' . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true);
+$data[1] .= $jump . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true);
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
@@ -230,9 +231,9 @@ if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		$data = array();
 		$data[0] = __('New Password');
-		$data[0] .= '<br>' . html_print_input_text_extended ("password_new", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
+		$data[0] .= $jump . html_print_input_text_extended ("password_new", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
 		$data[1] = __('Password confirmation');
-		$data[1] .= '<br>' . html_print_input_text_extended ("password_conf", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
+		$data[1] .= $jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
 		$table->rowclass[] = '';
 		$table->rowstyle[] = 'font-weight: bold;';
 		$table->data[] = $data;
@@ -255,18 +256,18 @@ if ($user_info["block_size"] == 0) {
 else {
 	$block_size = $user_info["block_size"];
 }
-$data[0] .= '<br>' . html_print_input_text ('block_size', $block_size, '', 5, 5, true);
-$data[0] .= '<br>' . html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
+$data[0] .= $jump . html_print_input_text ('block_size', $block_size, '', 5, 5, true);
+$data[0] .= $jump . html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
 $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 
 $data[1] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
-$data[1] .= '<br>' . html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
+$data[1] .= $jump . html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
 
 
 $data[2] = __('Language');
-$data[2] .= '<br>' . html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
+$data[2] .= $jump . html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $user_info["language"], '', __('Default'), 'default', true);
 
 $table->rowclass[] = '';
@@ -285,7 +286,7 @@ $id_usr = $config['id_user'];
 if (!$meta) {
 	$data = array();
 	$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
-	$data[0] .= '<br>' . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
+	$data[0] .= $jump . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
 	
 	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
 	$values = array (
@@ -301,7 +302,7 @@ if (!$meta) {
 		$values['Dashboard'] = __('Dashboard');
 	}
 	
-	$data[1] .= '<br>' . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
+	$data[1] .= $jump . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
 		
 	if (enterprise_installed()) {
 		$dashboards = get_user_dashboards ($config['id_user']);
@@ -337,7 +338,7 @@ if (!$meta) {
 	if (function_exists('skins_print_select')) {
 		if (count($usr_groups) > 1) {
 			$data[2] = __('Skin');
-			$data[2] .= '<br>' . skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+			$data[2] .= $jump . skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
 		}
 	}
 	$table->rowclass[] = '';
@@ -349,7 +350,7 @@ if (!$meta) {
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 $data = array();
 $data[0] = __('Double authentication');
-$data[0] .= '<br>';
+$data[0] .= $jump;
 $data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true);
 if ($double_auth_enabled) {
 	$data[0] .= '&nbsp;&nbsp;';

@@ -1523,6 +1523,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	}
 	else{
 		$table_mbs->class = "tactical_view";
+		$table_mbs->style=array();
 		$output = '
 			<fieldset class="tactical_set">
 				<legend>' . 
@@ -8279,21 +8280,47 @@ function reporting_get_events ($data, $links = false) {
 	global $config;
 	
 	$table_events->width = "100%";
-	
-	$table_events->data[0][0] = html_print_image('images/module_critical.png', true, array('title' => __('Critical events')));
-	$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
-		"<a style='color: #FC4444;' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".format_numeric($data['critical'])."</span></b></a>";
-	
-	$table_events->data[0][1] = html_print_image('images/module_warning.png', true, array('title' => __('Warning events')));
-	$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;" .
-		"<a style='color: #FAD403;' href='" . $links['warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".format_numeric($data['warning'])."</span></b></a>";
-	$table_events->data[0][2] = html_print_image('images/module_ok.png', true, array('title' => __('OK events')));
-	$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;" .
-		"<a style='color: #80BA27;' href='" . $links['normal'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".format_numeric($data['normal'])."</span></b></a>";
-	$table_events->data[0][3] = html_print_image('images/module_unknown.png', true, array('title' => __('Unknown events')));
-	$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
-		"<a style='color: #B2B2B2;' href='" . $links['unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".format_numeric($data['unknown'])."</span></b></a>";
-	
+	if (defined('METACONSOLE'))
+		$style = " vertical-align:middle;";
+	else
+		$style = "";
+	if (defined('METACONSOLE')){
+		$table_events->style[0] = "background-color:#FC4444";
+		$table_events->data[0][0] = html_print_image('images/module_event_critical.png', true, array('title' => __('Critical events')));
+		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['critical'] . "'>" . format_numeric($data['critical'])."</a>";
+		$table_events->style[1] = "background-color:#FAD403";
+		$table_events->data[0][1] = html_print_image('images/module_event_warning.png', true, array('title' => __('Warning events')));
+		$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['warning'] . "'>" . format_numeric($data['warning'])."</a>";
+		$table_events->style[2] = "background-color:#80BA27";
+		$table_events->data[0][2] = html_print_image('images/module_event_ok.png', true, array('title' => __('OK events')));
+		$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['normal'] . "'>" . format_numeric($data['normal'])."</a>";
+		$table_events->style[3] = "background-color:#B2B2B2";
+		$table_events->data[0][3] = html_print_image('images/module_event_unknown.png', true, array('title' => __('Unknown events')));
+		$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['unknown'] . "'>" . format_numeric($data['unknown'])."</a>";
+		}
+	else{
+		$table_events->data[0][0] = html_print_image('images/module_critical.png', true, array('title' => __('Critical events')));
+		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color: #FC4444;" . $style . "' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".
+						format_numeric($data['critical'])."</span></b></a>";
+		$table_events->data[0][1] = html_print_image('images/module_warning.png', true, array('title' => __('Warning events')));
+		$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color: #FAD403;" . $style . "' href='" . $links['warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".
+						format_numeric($data['warning'])."</span></b></a>";
+		$table_events->data[0][2] = html_print_image('images/module_ok.png', true, array('title' => __('OK events')));
+		$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color: #80BA27;" . $style . "' href='" . $links['normal'] . "'><b style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".
+						format_numeric($data['normal'])."</b></a>";
+		$table_events->data[0][3] = html_print_image('images/module_unknown.png', true, array('title' => __('Unknown events')));
+		$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color: #B2B2B2;" . $style . "' href='" . $links['unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".
+						format_numeric($data['unknown'])."</span></b></a>";
+
+	}
 	if (!defined('METACONSOLE')) {
 		$event_view = '<fieldset class="databox tactical_set">
 					<legend>' . 
@@ -8303,6 +8330,11 @@ function reporting_get_events ($data, $links = false) {
 	}
 	else{
 		$table_events->class="tactical_view";
+		$table_events->size[0]="10%";
+		$table_events->size[1]="10%";
+		$table_events->size[2]="10%";
+		$table_events->size[3]="10%";
+		
 		$event_view = '<fieldset class="tactical_set">
 					<legend>' . 
 						__('Events by criticity') . 

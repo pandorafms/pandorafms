@@ -656,7 +656,8 @@ if (!empty ($table->data)) {
 	echo '</div>';
 	
 	if ($allow_action) {
-		echo '<div style="width: 98%;" class="action-buttons">';
+		
+		echo '<div style="width:' . $table->width . ';" class="action-buttons">';
 		if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 			html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
 			// Fix: validated_selected JS function has to be included with the proper user ACLs 

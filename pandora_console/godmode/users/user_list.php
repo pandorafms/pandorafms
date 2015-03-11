@@ -281,10 +281,12 @@ $table->head[3] = __('Admin');
 $table->head[4] = __('Profile');
 $table->head[5] = __('Description');
 $table->head[6] = '<span title="Operations">' . __('Op.') . '</span>';
+if (!defined('METACONSOLE')) {
+	$table->align[2] = "right";
+	$table->size[2] = '150px';
+}
 
-$table->align[2] = "right";
 $table->align[3] = "center";
-$table->size[2] = '150px';
 
 if (defined('METACONSOLE')) {
 	$table->size[6] = '110px';
@@ -292,15 +294,15 @@ if (defined('METACONSOLE')) {
 else {
 	$table->size[6] = '85px';
 }
-
-$table->valign[0] = 'top';
-$table->valign[1] = 'top';
-$table->valign[2] = 'top';
-$table->valign[3] = 'top';
-$table->valign[4] = 'top';
-$table->valign[5] = 'top';
-$table->valign[6] = 'top';
-
+if (!defined('METACONSOLE')) {
+	$table->valign[0] = 'top';
+	$table->valign[1] = 'top';
+	$table->valign[2] = 'top';
+	$table->valign[3] = 'top';
+	$table->valign[4] = 'top';
+	$table->valign[5] = 'top';
+	$table->valign[6] = 'top';
+}
 
 
 $info1 = array ();
@@ -428,18 +430,34 @@ foreach ($info as $user_id => $user_info) {
 	$data[4] = "";
 	$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
 	if ($result !== false) {
-		$data[4] .= "<table width='100%'>";
-		foreach ($result as $row) {
-			$data[4] .= "<tr>";
-			$data[4] .= "<td>";
-			$data[4] .= profile_get_name ($row["id_perfil"]);
-			$data[4] .= "</td>";
-			$data[4] .= "<td align='right'>";
-			$data[4] .= groups_get_name ($row["id_grupo"], true);
-			$data[4] .= "</td>";
-			$data[4] .= "</tr>";
+		if (defined("METACONSOLE")){
+			$data[4] .= "<div width='100%'>";
+			foreach ($result as $row) {
+				$data[4] .= "<div style='float:left;'>";
+				$data[4] .= profile_get_name ($row["id_perfil"]);
+				$data[4] .= "</div>";
+				$data[4] .= "<div style='float:right; padding-right:10px;'>";
+				$data[4] .= groups_get_name ($row["id_grupo"], true);
+				$data[4] .= "</div>";
+				$data[4] .= "<br />";
+				$data[4] .= "<br />";
+			}
+			$data[4] .= "</div>";
 		}
-		$data[4] .= "</table>";
+		else{
+			$data[4] .= "<table width='100%'>";
+			foreach ($result as $row) {
+				$data[4] .= "<tr>";
+				$data[4] .= "<td>";
+				$data[4] .= profile_get_name ($row["id_perfil"]);
+				$data[4] .= "</td>";
+				$data[4] .= "<td align='right'>";
+				$data[4] .= groups_get_name ($row["id_grupo"], true);
+				$data[4] .= "</td>";
+				$data[4] .= "</tr>";
+			}
+			$data[4] .= "</table>";
+		}
 	}
 	else {
 		$data[4] .= __('The user doesn\'t have any assigned profile/group');

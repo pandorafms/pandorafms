@@ -51,7 +51,8 @@ if (!defined('METACONSOLE')) {
 	$table->width = '100%';
 }
 else {
-	$table->width = '780';
+	$table->width = '100%';
+	$table->class = 'databox';
 }
 $table->head = array();
 $table->head['icon'] = '';
@@ -69,15 +70,16 @@ $table->head[5] .= '<span title="' . __('Action') . '">' .
 $table->size = array();
 $table->size['icon'] = '1%';
 $table->size[0] = '25%';
-
 $table->align = array();
-$table->align[0] = "left";
-$table->align[1] = "right";
-$table->align[2] = "center";
-$table->align[3] = "center";
-$table->align[4] = "right";
-$table->align[5] = "center";
 
+if (!defined('METACONSOLE')) {
+	$table->align[0] = "left";
+	$table->align[1] = "right";
+	$table->align[2] = "center";
+	$table->align[3] = "center";
+	$table->align[4] = "right";
+	$table->align[5] = "center";
+}
 $table->data = array();
 
 //Background
@@ -454,21 +456,23 @@ if (!defined('METACONSOLE')) {
 else {
 	echo "<form method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=" . $idVisualConsole . "'>";
 }
-echo '<div class="action-buttons" style="width: ' . $table->width . '">';
+if (!defined('METACONSOLE')) 
+	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 if (!defined('METACONSOLE')) {
 	html_print_input_hidden ('action', 'update');
 }
 else {
 	html_print_input_hidden ('action2', 'update');
 }
+if (!defined('METACONSOLE')) {
+	echo "<br>";
 
-echo "<br>";
-
-html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
-html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
-echo "&nbsp;";
-html_print_button(__('Delete'), 'delete', false, 'submit_delete_multiple_items();', 'class="sub delete"');
-echo '</div>';
+	html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
+	html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
+	echo "&nbsp;";
+	html_print_button(__('Delete'), 'delete', false, 'submit_delete_multiple_items();', 'class="sub delete"');
+	echo '</div>';
+}
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: ' . $table->width . '">';

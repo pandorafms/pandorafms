@@ -5593,12 +5593,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						break;
 					}
 					
-					$agent_list = array();
-					$modules_list = array();
-					$operation_list = array();
-					foreach ($generals as $general) {
+					$list_modules = array();
+					$data = array();
+					foreach ($generals as $g) {
 						//Metaconsole connection
-						$server_name = $general ['server_name'];
+						$server_name = $g ['server_name'];
 						if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
@@ -5607,22 +5606,52 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							}
 						}
 						
-						$ag_name = modules_get_agentmodule_agent_name(
-							$general ['id_agent_module']);
-						if (!in_array ($ag_name, $agent_list)) {
-							array_push ($agent_list, $ag_name);
+						
+						$agent_name = modules_get_agentmodule_agent_name ($g['id_agent_module']);
+						$module_name = modules_get_agentmodule_name ($g['id_agent_module']);
+						$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $g['id_agent_module']);
+						
+						
+						
+						
+						if ($content['period'] == 0) {
+							$value_res =
+								modules_get_last_value($g['id_agent_module']);
+						}
+						else {
+							switch ($g['operation']) {
+								case 'sum':
+									$value_res = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
+									break;
+								case 'max':
+									$value_res = reporting_get_agentmodule_data_max ($g['id_agent_module'], $content['period']);
+									break;
+								case 'min':
+									$value_res = reporting_get_agentmodule_data_min ($g['id_agent_module'], $content['period']);
+									break;
+								case 'avg':
+								default:
+									$value_res = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
+									break;
+							}
 						}
 						
-						$mod_name = modules_get_agentmodule_name(
-							$general ['id_agent_module'])
-							. ' (' . $general['operation'] . ')';
-						if (!in_array ($mod_name, $modules_list)) {
-							array_push ($modules_list, $mod_name);
+						if ($value_res === false) {
+							$data[$agent_name][$module_name] = '--';
+						}
+						else {
+							if (!is_numeric($d)) {
+								$data[$agent_name][$module_name] = $value_res;
+							}
+							else {
+								$data[$agent_name][$module_name] = format_for_graph($value_res, 2) . " " . $unit;
+							}
 						}
 						
-						array_push($operation_list, $general['operation']);
+						// Save the modules
+						$list_modules[$module_name] = null;
 						
-						//Restore dbconnection
+						// Restore dbconnection
 						if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 							metaconsole_restore_db();
 						}
@@ -5634,97 +5663,29 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table2->head[0] = __('Agent');
 					$table2->style[0] = 'text-align: left';
 					$i = 1;
-					foreach ($modules_list as $m) {
+					foreach (array_keys($list_modules) as $module) {
 						$table2->head[$i] =
-							ui_print_truncate_text($m, 20, false);
+							ui_print_truncate_text($module, 20, false);
 						$table2->style[$i] = 'text-align: center';
 						$i++;
 					}
 					
-					foreach ($agent_list as $a) {
-						$data = array();
-						$data[0] = $a;
-						$i = 1;
-						foreach ($modules_list as $m) {
-							foreach ($generals as $g) {
-								//Metaconsole connection
-								$server_name = $g ['server_name'];
-								if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-									$connection = metaconsole_get_connection($server_name);
-									if (metaconsole_load_external_db($connection) != NOERR) {
-										//ui_print_error_message ("Error connecting to ".$server_name);
-										continue;
-									}
-								}
-								
-								$agent_name = modules_get_agentmodule_agent_name ($g['id_agent_module']);
-								$module_name = modules_get_agentmodule_name ($g['id_agent_module']);
-								$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $g['id_agent_module']);
-								$found = false;
-								if (strcmp($a, $agent_name) == 0
-									&& strcmp($m, $module_name . ' (' . $g['operation'] . ')') == 0) {
-									
-									if ($content['period'] == 0) {
-										$value_res =
-											modules_get_last_value($g['id_agent_module']);
-									}
-									else {
-										switch ($g['operation']) {
-											case 'sum':
-												$value_res = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
-												break;
-											case 'max':
-												$value_res = reporting_get_agentmodule_data_max ($g['id_agent_module'], $content['period']);
-												break;
-											case 'min':
-												$value_res = reporting_get_agentmodule_data_min ($g['id_agent_module'], $content['period']);
-												break;
-											case 'avg':
-											default:
-												$value_res = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
-												break;
-										}
-									}
-									
-									if ($value_res === false) {
-										$data[$i] = '--';
-									}
-									else {
-										if (!is_numeric($d)) {
-											$data[$i] = $value_res;
-										}
-										else {
-											$data[$i] = format_for_graph($value_res, 2) . " " . $unit;
-										}
-										
-									}
-									$found = true;
-								}
-								else {
-									$data[$i] = '--';
-								}
-								
-								if ($found == true) {
-									
-									//Restore dbconnection
-									if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-										metaconsole_restore_db();
-									}
-									
-									break;
-								}
-								
-								//Restore dbconnection
-								if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-									metaconsole_restore_db();
-								}
+					
+					
+					foreach ($data as $agent_name => $agent) {
+						$row = array();
+						$row[] = $agent_name;
+						foreach (array_keys($list_modules) as $module_name) {
+							if (!isset($agent[$module_name])) {
+								$row[] = '--';
 							}
-							$i++;
+							else {
+								$row[] = $agent[$module_name];
+							}
 						}
-						array_push($table2->data, $data);
+						$table2->data[] = $row;
 					}
 					
-					$table->colspan[2][0] = 3;
 					$data = array();
 					$data[0] = html_print_table($table2, true);
 					array_push ($table->data, $data);

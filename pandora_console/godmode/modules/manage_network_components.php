@@ -493,17 +493,25 @@ $table->data[0][1] = html_print_select ($component_groups,
 $table->data[0][2] = __('Search');
 $table->data[0][3] = html_print_input_text ('search_string', $search_string, '', 25,
 	255, true);
-$table->data[0][4] = '<div class="action-buttons">';
+if(defined("METACONSOLE"))
+	$table->data[0][4] = '<div>';
+else
+	$table->data[0][4] = '<div class="action-buttons">';
 $table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
-if(defined("METACONSOLE"))
-	echo '<form class="filters_form" method="post" action="'.$url.'">';
-else
+if(defined("METACONSOLE")){
+	$filter = '<form class="filters_form" method="post" action="'.$url.'">';
+	$filter .= html_print_table ($table,true);
+	$filter .= '</form>';
+	ui_toggle($filter, __("Show Options"));
+}
+else{
 	echo '<form method="post" action="'.$url.'">';
-html_print_table ($table);
-echo '</form>';
+	html_print_table ($table);
+	echo '</form>';
+}
 
 $filter = array ();
 if ($search_id_group)

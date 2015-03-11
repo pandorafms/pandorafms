@@ -212,8 +212,10 @@ foreach ($groups as $group) {
 	$data = array ();
 	
 	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
-	
-	$data[0] =  $tabulation . '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
+	if (defined("METACONSOLE"))
+		$data[0] =  $tabulation . '<a href="index.php?sec=advanced&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
+	else
+		$data[0] =  $tabulation . '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
 	
 	$data[1] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups&delete=1&id=".$group['id_sg']."&offset=0'>" . 

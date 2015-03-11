@@ -165,29 +165,58 @@ $table->colspan[0][1] = 2;
 $table->style[0] = 'text-align:center;';
 $table->data = array ();
 $table->data[0][0] = html_print_image("images/reporting32.png", true, array("width" => "32", "height" => "32")); 
-if ($report['description'] != '') {
-	$table->data[0][1] = '<div style="float:left">'.$report['description'].'</div>';
-}
-else {
-	$table->data[0][1] = '<div style="float:left">'.$report['name'].'</div>';
-}
+if (defined("METACONSOLE")) {
+	if ($report['description'] != '') {
+		$table->data[0][1] = '<div style="">' . __("Description: ") . $report['description'] . '</div>';
+	}
+	else {
+		$table->data[0][1] = '<div style="">' . __("Name: ") . $report['name'] . '</div>';
+	}
 
-$table->data[0][1] .= '<div style="text-align:right; width:100%; margin-right:50px">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
-$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
-if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
-	$table->data[0][1] .= $html_enterprise;
+	$table->data[0][1] .= '<div style=" width:100%;">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
+	$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
+	if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
+		$table->data[0][1] .= $html_enterprise;
+	}
+	$table->data[0][1] .= '</div>';
+
+	$table->data[1][1] = '<div style="">' . __('From') . ': ';
+	$table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
+	$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 10, 7, true). ' </div>';
+	$table->data[1][2] = '<div style="display:'.$display_item.';" id="string_items">' . __('Items period before') . ':';
+	$table->data[1][2] .= html_print_input_text ('date', $date, '', 12, 10, true) . ' ';
+	$table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true) . ' ';
+	$table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true) . ' </div>';
+	$table->data[1][2] .= '<div style="display:'.$display_to.';" id="string_to">' . __('to') . ':';
+	$table->data[1][2] .= html_print_input_text ('date', $date, '', 12, 10, true) . ' ';
+	$table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true) . ' ';
+	$table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true) . ' </div>';
 }
-$table->data[0][1] .= '</div>';
+else{
+	if ($report['description'] != '') {
+		$table->data[0][1] = '<div style="float:left">'.$report['description'].'</div>';
+	}
+	else {
+		$table->data[0][1] = '<div style="float:left">'.$report['name'].'</div>';
+	}
 
-$table->data[1][1] = '<div style="float:left;padding-top:3px;">' . __('From') . ': </div>';
-$table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
-$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 10, 7, true). ' ';
-$table->data[1][2] = '<div style="float:left;padding-top:3px;display:'.$display_item.'" id="string_items">' . __('Items period before') . ':</div>';
-$table->data[1][2] .= '<div style="float:left;padding-top:3px;display:'.$display_to.'" id="string_to">' . __('to') . ':</div>';
-$table->data[1][2] .= html_print_input_text ('date', $date, '', 12, 10, true). ' ';
-$table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true). ' ';
-$table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
+	$table->data[0][1] .= '<div style="text-align:right; width:100%; margin-right:50px">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
+	$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
+	if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
+		$table->data[0][1] .= $html_enterprise;
+	}
+	$table->data[0][1] .= '</div>';
 
+	$table->data[1][1] = '<div style="float:left;padding-top:3px;">' . __('From') . ': </div>';
+	$table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
+	$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 10, 7, true). ' ';
+	$table->data[1][2] = '<div style="float:left;padding-top:3px;display:'.$display_item.'" id="string_items">' . __('Items period before') . ':</div>';
+	$table->data[1][2] .= '<div style="float:left;padding-top:3px;display:'.$display_to.'" id="string_to">' . __('to') . ':</div>';
+	$table->data[1][2] .= html_print_input_text ('date', $date, '', 12, 10, true). ' ';
+	$table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true). ' ';
+	$table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
+	
+}
 
 echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'" style="margin-right: 0px;">';
 html_print_table ($table);

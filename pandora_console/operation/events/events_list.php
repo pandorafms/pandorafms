@@ -322,7 +322,7 @@ if(defined('METACONSOLE')){
 	$tabletags_with->class = 'nobady';
 	$tabletags_with->cellspacing = 0;
 	$tabletags_with->cellpadding = 0;
-	$tabletags_with->styleTable = 'border: 0px; margin-top:10px';
+	$tabletags_with->styleTable = 'border: 0px;';
 }
 
 

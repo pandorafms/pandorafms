@@ -8291,6 +8291,7 @@ function reporting_get_events ($data, $links = false) {
 	}
 	else{
 		$table_events->class="tactical_view";
+		$table_events->styleTable="text-align:center;";
 		$table_events->size[0]="10%";
 		$table_events->size[1]="10%";
 		$table_events->size[2]="10%";

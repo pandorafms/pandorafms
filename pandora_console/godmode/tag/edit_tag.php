@@ -144,14 +144,6 @@ else {
 	$phone_tag = "";
 }
 
-if (defined('METACONSOLE')) {
-	if ($action == "update") {
-		echo "<div class='title_tactical'>" . __("Update Tag") . "</div>";
-	}
-	if ($action == "new") {
-		echo "<div class='title_tactical'>" . __("Create Tag") . "</div>";
-	}
-}
 
 // Create/Update tag form 
 echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=' . $action . '&id_tag=' . $id_tag . '" enctype="multipart/form-data">';
@@ -162,7 +154,14 @@ if (defined('METACONSOLE'))
 	echo "<table border=0 cellpadding=0 cellspacing=0 class='databox data' width=100%>";
 else
 	echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
-
+	if (defined('METACONSOLE')) {
+		if ($action == "update") {
+			echo "<th colspan=8 style='text-align:center'>" . __("Update Tag") . "</th>";
+		}
+		if ($action == "new") {
+			echo "<th colspan=8 style='text-align:center'>" . __("Create Tag") . "</th>";
+		}
+	}
 	echo "<tr>";
 		echo "<td align='left'>";
 		html_print_label (__("Name"),'name');

@@ -425,22 +425,40 @@ foreach ($items as $item) {
 		metaconsole_restore_db();
 	}
 }
-ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
-html_print_table($table);
-ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+if (defined("METACONSOLE")){
+	if ($items != false) {
+		ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+		html_print_table($table);
+		ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
+		method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
+			if (defined("METACONSOLE"))
+				echo "<div style='text-align: right; width:100%'>";
+			else
+				echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+			
+			html_print_input_hidden('ids_items_to_delete', '');
+			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+			echo "</div>";
+		echo "</form>";
+	}
+}else{
+	ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+	html_print_table($table);
+	ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 
-echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
-	method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
-	if (defined("METACONSOLE"))
-		echo "<div style='text-align: right; width:100%'>";
-	else
-		echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
-	
-	html_print_input_hidden('ids_items_to_delete', '');
-	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-	echo "</div>";
-echo "</form>";
-
+	echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
+		method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
+		if (defined("METACONSOLE"))
+			echo "<div style='text-align: right; width:100%'>";
+		else
+			echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+		
+		html_print_input_hidden('ids_items_to_delete', '');
+		html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+		echo "</div>";
+	echo "</form>";
+}
 $table = null;
 $table->width = '100%';
 $table->colspan[0][0] = 3;

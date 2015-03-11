@@ -590,11 +590,15 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		$table->data[1][1] = '';
 		
 		$table->data[1][1] .= '<div id="create_folder" style="display: none;">';
-		$table->data[1][1] .= html_print_button(__('Close'), 'close',
-			false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
+		if(!defined("METACONSOLE"))
+			$table->data[1][1] .= html_print_button(__('Close'), 'close',
+				false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '">';
 		$table->data[1][1] .= html_print_input_text ('dirname', '', '', 15, 255, true);
 		$table->data[1][1] .= html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"', true);
+		if(defined("METACONSOLE"))
+			$table->data[1][1] .= html_print_button(__('Close'), 'close',
+				false, 'show_main_buttons_folder();', "class='sub cancel'", true);
 		$table->data[1][1] .= html_print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= html_print_input_hidden ('create_dir', 1, true);
 		$table->data[1][1] .= html_print_input_hidden('hash', md5($relative_directory . $config['dbpass']), true);
@@ -603,7 +607,9 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="upload_file" style="display: none;">';
-		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
+		if(!defined("METACONSOLE"))
+			$table->data[1][1] .= html_print_button(__('Close'), 'close',
+				false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
 		$table->data[1][1] .= ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] .= html_print_input_file ('file', true, false);
@@ -612,6 +618,9 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		$table->data[1][1] .= __('Decompress');
 		$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;';
 		$table->data[1][1] .= html_print_submit_button (__('Go'), 'go', false, 'class="sub next"', true);
+		if(defined("METACONSOLE"))
+			$table->data[1][1] .= html_print_button(__('Close'), 'close',
+				false, 'show_main_buttons_folder();', "class='sub cancel'", true);
 		$table->data[1][1] .= html_print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][1] .= html_print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
@@ -621,10 +630,15 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="create_text_file" style="display: none;">';
-		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
+		if(!defined("METACONSOLE"))
+			$table->data[1][1] .= html_print_button(__('Close'), 'close',
+				false, 'show_main_buttons_folder();', "class='sub cancel' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '">';
 		$table->data[1][1] .= html_print_input_text('name_file', '', '', 30, 50, true);
 		$table->data[1][1] .= html_print_submit_button (__('Create'), 'create', false, 'class="sub next"', true);
+		if(defined("METACONSOLE"))
+			$table->data[1][1] .= html_print_button(__('Close'), 'close',
+				false, 'show_main_buttons_folder();', "class='sub cancel'", true);
 		$table->data[1][1] .= html_print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][1] .= html_print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);

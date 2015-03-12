@@ -1374,26 +1374,99 @@ class Tree {
 				$module_filter["status"] = $this->filter["statusModule"];
 			if (isset($this->filter["searchModule"]))
 				$module_filter["name"] = $this->filter["searchModule"];
+			
+			$agent['counters'] = array();
+			$agent['counters']['unknown'] = 0;
+			$agent['counters']['critical'] = 0;
+			$agent['counters']['warning'] = 0;
+			$agent['counters']['not_init'] = 0;
+			$agent['counters']['ok'] = 0;
+			$agent['counters']['total'] = 0;
+			$agent['counters']['alerts'] = 0;
 
 			if ($agent['rootType'] == "group") {
-				$agent['counters'] = array();
-				$agent['counters']['unknown'] = (int) groups_get_unknown_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-				$agent['counters']['critical'] = (int) groups_get_critical_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-				$agent['counters']['warning'] = (int) groups_get_warning_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-				$agent['counters']['not_init'] = (int) groups_get_not_init_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-				$agent['counters']['ok'] = (int) groups_get_normal_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-				$agent['counters']['total'] = (int) groups_get_total_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
 				$agent['counters']['alerts'] = agents_get_alerts_fired($agent['id']);
+				
+				// With module filter
+				if (isset($this->filter["statusModule"]) && $this->filter["statusModule"] != AGENT_MODULE_STATUS_ALL) {
+					switch ($this->filter["statusModule"]) {
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+						case AGENT_MODULE_STATUS_CRITICAL_BAD:
+							$agent['counters']['critical'] = (int) groups_get_critical_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+							$agent['counters']['total'] = $agent['counters']['critical'];
+							break;
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
+						case AGENT_MODULE_STATUS_WARNING:
+							$agent['counters']['warning'] = (int) groups_get_warning_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+							$agent['counters']['total'] = $agent['counters']['warning'];
+							break;
+						case AGENT_MODULE_STATUS_UNKNOWN:
+							$agent['counters']['unknown'] = (int) groups_get_unknown_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+							$agent['counters']['total'] = $agent['counters']['unknown'];
+							break;
+						case AGENT_MODULE_STATUS_NO_DATA:
+						case AGENT_MODULE_STATUS_NOT_INIT:
+							$agent['counters']['not_init'] = (int) groups_get_not_init_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+							$agent['counters']['total'] = $agent['counters']['not_init'];
+							break;
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
+						case AGENT_MODULE_STATUS_NORMAL:
+							$agent['counters']['ok'] = (int) groups_get_normal_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+							$agent['counters']['total'] = $agent['counters']['ok'];
+							break;
+					}
+				}
+				// Without module filter
+				else {
+					$agent['counters']['unknown'] = (int) groups_get_unknown_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+					$agent['counters']['critical'] = (int) groups_get_critical_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+					$agent['counters']['warning'] = (int) groups_get_warning_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+					$agent['counters']['not_init'] = (int) groups_get_not_init_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+					$agent['counters']['ok'] = (int) groups_get_normal_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+					$agent['counters']['total'] = (int) groups_get_total_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
+				}
 			}
 			else if ($agent['rootType'] == "tag") {
-				$agent['counters'] = array();
-				$agent['counters']['unknown'] = (int) tags_get_unknown_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-				$agent['counters']['critical'] = (int) tags_get_critical_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-				$agent['counters']['warning'] = (int) tags_get_warning_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-				$agent['counters']['not_init'] = (int) tags_get_not_init_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-				$agent['counters']['ok'] = (int) tags_get_normal_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-				$agent['counters']['total'] = (int) tags_get_total_monitors($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-				$agent['counters']['alerts'] = (int) tags_monitors_fired_alerts($agent['rootID'], $this->acltags, $agent['id']);
+				$agent['counters']['alerts'] = (int) tags_monitors_fired_alerts ($agent['rootID'], $this->acltags, $agent['id']);
+				
+				// With module filter
+				if (isset($this->filter["statusModule"]) && $this->filter["statusModule"] != AGENT_MODULE_STATUS_ALL) {
+					switch ($this->filter["statusModule"]) {
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+						case AGENT_MODULE_STATUS_CRITICAL_BAD:
+							$agent['counters']['critical'] = (int) tags_get_critical_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+							$agent['counters']['total'] = $agent['counters']['critical'];
+							break;
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
+						case AGENT_MODULE_STATUS_WARNING:
+							$agent['counters']['warning'] = (int) tags_get_warning_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+							$agent['counters']['total'] = $agent['counters']['warning'];
+							break;
+						case AGENT_MODULE_STATUS_UNKNOWN:
+							$agent['counters']['unknown'] = (int) tags_get_unknown_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+							$agent['counters']['total'] = $agent['counters']['unknown'];
+							break;
+						case AGENT_MODULE_STATUS_NO_DATA:
+						case AGENT_MODULE_STATUS_NOT_INIT:
+							$agent['counters']['not_init'] = (int) tags_get_not_init_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+							$agent['counters']['total'] = $agent['counters']['not_init'];
+							break;
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
+						case AGENT_MODULE_STATUS_NORMAL:
+							$agent['counters']['ok'] = (int) tags_get_normal_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+							$agent['counters']['total'] = $agent['counters']['ok'];
+							break;
+					}
+				}
+				// Without module filter
+				else {
+					$agent['counters']['unknown'] = (int) tags_get_unknown_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+					$agent['counters']['critical'] = (int) tags_get_critical_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+					$agent['counters']['warning'] = (int) tags_get_warning_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+					$agent['counters']['not_init'] = (int) tags_get_not_init_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+					$agent['counters']['ok'] = (int) tags_get_normal_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+					$agent['counters']['total'] = (int) tags_get_total_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
+				}
 			}
 		}
 		

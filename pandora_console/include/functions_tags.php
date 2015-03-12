@@ -1327,6 +1327,7 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 	
 	$module_name_filter = "";
 	$module_status_filter = "";
+	$module_status_array = array();
 	if (!empty($module_filter)) {
 		// IMPORTANT: The module filters will force the realtime search
 		$realtime = true;
@@ -1343,48 +1344,47 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 			else
 				$module_status = array($module_status);
 			
-			$status_array = "";
 			foreach ($module_status as $status) {
 				switch ($status) {
 					case AGENT_MODULE_STATUS_ALL:
-						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_ALERT;
-						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_BAD;
-						$status_array[] = AGENT_MODULE_STATUS_WARNING_ALERT;
-						$status_array[] = AGENT_MODULE_STATUS_WARNING;
-						$status_array[] = AGENT_MODULE_STATUS_UNKNOWN;
-						$status_array[] = AGENT_MODULE_STATUS_NO_DATA;
-						$status_array[] = AGENT_MODULE_STATUS_NOT_INIT;
-						$status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
-						$status_array[] = AGENT_MODULE_STATUS_NORMAL;
+						$module_status_array[] = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+						$module_status_array[] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+						$module_status_array[] = AGENT_MODULE_STATUS_WARNING_ALERT;
+						$module_status_array[] = AGENT_MODULE_STATUS_WARNING;
+						$module_status_array[] = AGENT_MODULE_STATUS_UNKNOWN;
+						$module_status_array[] = AGENT_MODULE_STATUS_NO_DATA;
+						$module_status_array[] = AGENT_MODULE_STATUS_NOT_INIT;
+						$module_status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
+						$module_status_array[] = AGENT_MODULE_STATUS_NORMAL;
 						break;
 					case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 					case AGENT_MODULE_STATUS_CRITICAL_BAD:
-						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_ALERT;
-						$status_array[] = AGENT_MODULE_STATUS_CRITICAL_BAD;
+						$module_status_array[] = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+						$module_status_array[] = AGENT_MODULE_STATUS_CRITICAL_BAD;
 						break;
 					case AGENT_MODULE_STATUS_WARNING_ALERT:
 					case AGENT_MODULE_STATUS_WARNING:
-						$status_array[] = AGENT_MODULE_STATUS_WARNING_ALERT;
-						$status_array[] = AGENT_MODULE_STATUS_WARNING;
+						$module_status_array[] = AGENT_MODULE_STATUS_WARNING_ALERT;
+						$module_status_array[] = AGENT_MODULE_STATUS_WARNING;
 						break;
 					case AGENT_MODULE_STATUS_UNKNOWN:
-						$status_array[] = AGENT_MODULE_STATUS_UNKNOWN;
+						$module_status_array[] = AGENT_MODULE_STATUS_UNKNOWN;
 						break;
 					case AGENT_MODULE_STATUS_NO_DATA:
 					case AGENT_MODULE_STATUS_NOT_INIT:
-						$status_array[] = AGENT_MODULE_STATUS_NO_DATA;
-						$status_array[] = AGENT_MODULE_STATUS_NOT_INIT;
+						$module_status_array[] = AGENT_MODULE_STATUS_NO_DATA;
+						$module_status_array[] = AGENT_MODULE_STATUS_NOT_INIT;
 						break;
 					case AGENT_MODULE_STATUS_NORMAL_ALERT:
 					case AGENT_MODULE_STATUS_NORMAL:
-						$status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
-						$status_array[] = AGENT_MODULE_STATUS_NORMAL;
+						$module_status_array[] = AGENT_MODULE_STATUS_NORMAL_ALERT;
+						$module_status_array[] = AGENT_MODULE_STATUS_NORMAL;
 						break;
 				}
 			}
-			if (!empty($status_array)) {
-				$status_array = array_unique($status_array);
-				$status_str = implode(",", $status_array);
+			if (!empty($module_status_array)) {
+				$module_status_array = array_unique($module_status_array);
+				$status_str = implode(",", $module_status_array);
 				
 				$module_status_filter = "INNER JOIN tagente_estado AS tae
 											ON tam.id_agente_modulo = tae.id_agente_modulo
@@ -1418,12 +1418,50 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 		
 		foreach ($agents as $agent) {
 			$agent_filter["id"] = $agent["id"];
-			$total = (int) tags_get_total_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
-			$critical = (int) tags_get_critical_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
-			$warning = (int) tags_get_warning_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
-			$unknown = (int) tags_get_unknown_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
-			$not_init = (int) tags_get_not_init_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
-			$normal = (int) tags_get_normal_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+			
+			$total = 0;
+			$critical = 0;
+			$warning = 0;
+			$unknown = 0;
+			$not_init = 0;
+			$normal = 0;
+			// Without module filter
+			if (empty($module_status_array)) {
+				$total = (int) tags_get_total_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+				$critical = (int) tags_get_critical_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+				$warning = (int) tags_get_warning_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+				$unknown = (int) tags_get_unknown_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+				$not_init = (int) tags_get_not_init_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+				$normal = (int) tags_get_normal_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+			}
+			// With module filter
+			else {
+				foreach ($module_status_array as $status) {
+					switch ($status) {
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+						case AGENT_MODULE_STATUS_CRITICAL_BAD:
+							$critical = (int) tags_get_critical_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+							break;
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
+						case AGENT_MODULE_STATUS_WARNING:
+							$warning = (int) tags_get_warning_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+							break;
+						case AGENT_MODULE_STATUS_UNKNOWN:
+							$unknown = (int) tags_get_unknown_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+							break;
+						case AGENT_MODULE_STATUS_NO_DATA:
+						case AGENT_MODULE_STATUS_NOT_INIT:
+							$not_init = (int) tags_get_not_init_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+							break;
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
+						case AGENT_MODULE_STATUS_NORMAL:
+							$normal = (int) tags_get_normal_monitors ($id_tag, $groups_and_tags, $agent_filter, $module_filter);
+							break;
+					}
+				}
+				
+				$total = $critical + $warning + $unknown + $not_init + $normal;
+			}
 			
 			if (!is_array($agent_status)) {
 				switch ($agent_status) {

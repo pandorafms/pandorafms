@@ -1216,11 +1216,21 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 	//check user without tags
 	$sql = "SELECT id_usuario FROM tusuario_perfil
 		WHERE id_usuario = '".$config["id_user"]."' AND tags = ''
-		AND id_perfil IN (SELECT id_perfil FROM tperfil WHERE ".get_acl_column($access)."=1)";
+		AND id_perfil IN (SELECT id_perfil FROM tperfil WHERE ".get_acl_column($access)."=1)
+		AND id_grupo = ".$id_group;
 	$user_has_perm_without_tags = db_get_all_rows_sql ($sql);
 	
 	if ($user_has_perm_without_tags) {
 		return true;
+	}
+
+	$tags_str = '';
+	if (!empty($tags)) {
+		foreach ($tags as $tag) {
+			$tag_id = tags_get_id($tag);
+			$tags_aux[$tag_id] = $tag_id;
+		}
+		$tags_str = implode(',', $tags_aux);
 	}
 
 	$query = sprintf("SELECT tags, id_grupo 
@@ -1250,7 +1260,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 			$group_ids = implode(',', $childrens_ids);
 		}
 		$sql = "SELECT id_usuario FROM tusuario_perfil
-					WHERE id_usuario = '".$config["id_user"]."' AND tags = '$tags_user'
+					WHERE id_usuario = '".$config["id_user"]."' AND tags IN ('$tags_str')
 					AND id_perfil IN (SELECT id_perfil FROM tperfil WHERE ".get_acl_column($access)."=1)
 					AND id_grupo IN ($group_ids)";
 		$has_perm = db_get_value_sql ($sql);

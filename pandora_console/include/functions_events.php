@@ -77,6 +77,10 @@ function events_get_all_fields() {
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function events_get_events ($filter = false, $fields = false) {
+	if ($filter['criticity'] == EVENT_CRIT_WARNING_OR_CRITICAL) {
+		$filter['criticity'] = array(EVENT_CRIT_WARNING, EVENT_CRIT_CRITICAL);
+	}
+	
 	return db_get_all_rows_filter ('tevento', $filter, $fields);
 }
 

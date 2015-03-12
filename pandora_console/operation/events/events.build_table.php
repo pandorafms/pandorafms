@@ -206,6 +206,9 @@ if ($meta) {
 	$servers = metaconsole_get_servers();
 }
 
+$show_delete_button = false;
+$show_validate_button = false;
+
 $idx = 0;
 //Arrange data. We already did ACL's in the query
 foreach ($result as $event) {
@@ -582,6 +585,7 @@ foreach ($result as $event) {
 		if(!$readonly) {
 			// Validate event
 			if (($event["estado"] != 1) && (tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'], $childrens_ids))) {
+				$show_validate_button = true;
 				$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
 				$data[$i] .= html_print_image ("images/ok.png", true,
 					array ("title" => __('Validate event')));
@@ -591,6 +595,7 @@ foreach ($result as $event) {
 			// Delete event
 			if ((tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'],$childrens_ids) == 1)) {
 				if($event['estado'] != 2) {
+					$show_delete_button = true;
 					$data[$i] .= '<a class="delete_event" href="javascript:" id="delete-'.$event['id_evento'].'">';
 					$data[$i] .= html_print_image ("images/cross.png", true,
 						array ("title" => __('Delete event'), "id" => 'delete_cross_' . $event['id_evento']));
@@ -658,7 +663,8 @@ if (!empty ($table->data)) {
 	if ($allow_action) {
 		
 		echo '<div style="width:' . $table->width . ';" class="action-buttons">';
-		if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
+		//~ if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
+		if (!$readonly && $show_validate_button) {
 			html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
 			// Fix: validated_selected JS function has to be included with the proper user ACLs 
 			?>
@@ -673,7 +679,8 @@ if (!empty ($table->data)) {
 			</script>
 			<?php			
 		}
-		if (!$readonly && tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
+		//~ if (!$readonly && tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
+		if (!$readonly && ($show_delete_button)) {
 			html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
 			?>
 			<script type="text/javascript">

@@ -1427,7 +1427,7 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 			return count($agents);
 		
 		foreach ($agents as $agent) {
-			$agent_filter["id"] = $agent["id"];
+			$agent_filter["id"] = $agent["id_agente"];
 			
 			$total = 0;
 			$critical = 0;

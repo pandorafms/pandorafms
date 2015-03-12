@@ -1295,7 +1295,7 @@ function groups_get_agents_counter ($group, $agent_filter = array(), $module_fil
 			return count($agents);
 		
 		foreach ($agents as $agent) {
-			$agent_filter["id"] = $agent["id"];
+			$agent_filter["id"] = $agent["id_agente"];
 			
 			$total = 0;
 			$critical = 0;

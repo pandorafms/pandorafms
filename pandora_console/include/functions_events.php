@@ -1635,8 +1635,17 @@ function events_page_responses ($event, $childrens_ids = array()) {
 		}
 		// Juanma (05/05/2014) Fix : Propagate ACL hell!
 		$_user_groups = array_keys(users_get_groups($config['id_user'], 'ER', users_can_manage_group_all()));
-		$users = groups_get_users($_user_groups, array('id_perfil' => $profiles_view_events), true, true);
-		
+		$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+		if ($strict_user) {
+			$user_name = db_get_value('fullname', 'tusuario', 'id_user', $config['id_user']);
+
+			$users = array();
+			$users[0]['id_user'] = $config['id_user'];
+			$users[0]['fullname'] = $user_name;
+		} else {
+			$users = groups_get_users($_user_groups, array('id_perfil' => $profiles_view_events), true, true);
+		}
+	
 		foreach($users as $u) {
 			$owners[$u['id_user']] = $u['fullname'];
 		}

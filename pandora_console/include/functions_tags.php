@@ -2113,7 +2113,7 @@ function __add_acltags (&$acltags, $group_id, $tags_str) {
 	}
 	
 	// Propagation
-	$propagate = (bool) db_get_value('propagate', 'tgrupo', 'id_grupo', $group_tag['id_grupo']);
+	$propagate = (bool) db_get_value('propagate', 'tgrupo', 'id_grupo', $group_id);
 	if ($propagate) {
 		$sql = "SELECT id_grupo FROM tgrupo WHERE parent = $group_id";
 		$children = db_get_all_rows_sql($sql);

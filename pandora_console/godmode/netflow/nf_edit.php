@@ -124,7 +124,9 @@ $table->head[2] = __('Action') .
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
-$table->align[1] = 'center';
+if (!defined('METACONSOLE'))
+	$table->align[1] = 'center';
+
 $table->align[2] = 'center';
 $table->size = array ();
 $table->size[0] = '60%';
@@ -155,7 +157,7 @@ if (isset($data)) {
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	if (defined('METACONSOLE'))
-		echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+		echo "<div style='text-align: right; width:100%'>";
 	else
 		echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
 

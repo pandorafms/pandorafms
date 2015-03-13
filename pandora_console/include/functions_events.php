@@ -2055,6 +2055,7 @@ function events_page_details ($event, $server = "") {
 			"label=" . rawurlencode(
 				urlencode(
 					base64_encode($module_module_name))) . $hashstring . "&" .
+			(!empty($server) ? "avg_only=1&" : "") .
 			"refresh=" . SECONDS_10MINUTES . "','day_".$win_handle."')";
 		
 		$data[1] = '<a href="javascript:'.$link.'">';

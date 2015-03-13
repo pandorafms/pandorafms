@@ -1217,6 +1217,7 @@ foreach ($result as $row) {
 				"label=" . rawurlencode(
 					urlencode(
 						base64_encode($row["module_name"]))) . "&" .
+				"avg_only=1&" .
 				"refresh=" . SECONDS_10MINUTES . "', 'day_".$win_handle."')";
 		else
 			$link ="winopeng('" .

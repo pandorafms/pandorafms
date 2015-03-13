@@ -1326,7 +1326,8 @@ class Tree {
 				"period=" . SECONDS_1DAY . "&" .
 				"id=" . $module["id"] . "&" .
 				"label=" . rawurlencode(urlencode(base64_encode($module['name']))) . "&" .
-				"refresh=" . SECONDS_10MINUTES);
+				"refresh=" . SECONDS_10MINUTES . "&" .
+				"avg_only=1");
 		}
 		
 		if (!empty($moduleGraphURL)) {
@@ -1850,7 +1851,6 @@ class Tree {
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
 					$this->processAgents($newItems, $server);
-					// Remove empty entrys
 					$newItems = array_filter($newItems);
 					$items = array_merge($items, $newItems);
 					

@@ -176,7 +176,7 @@ $label = base64_decode(get_parameter('label', ''));
 				break;
 			case 'sparse':
 				echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
-					$label, null, $draw_alerts, $avg_only, false, $date, $unit, $baseline,
+					$label, $unit, $draw_alerts, $avg_only, false, $date, $unit, $baseline,
 					0, true, false, $urlImage, 1, false, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
 				echo '<br>';
 				if ($show_events_graph)
@@ -193,7 +193,7 @@ $label = base64_decode(get_parameter('label', ''));
 				break;
 			case 'log4x':
 				echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
-					$label, $unit_name, $draw_alerts, 1, $pure, $date);
+					$label, $unit, $draw_alerts, 1, $pure, $date);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,

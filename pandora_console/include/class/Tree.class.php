@@ -1369,6 +1369,11 @@ class Tree {
 		if ($this->strictACL) {
 			$agent_filter = array("id" => $agent['id']);
 			$module_filter = array();
+			
+			if (isset($this->filter["statusAgent"]))
+				$agent_filter["status"] = $this->filter["statusAgent"];
+			if (isset($this->filter["searchAgent"]))
+				$agent_filter["name"] = $this->filter["searchAgent"];
 
 			if (isset($this->filter["statusModule"]))
 				$module_filter["status"] = $this->filter["statusModule"];
@@ -1467,6 +1472,34 @@ class Tree {
 					$agent['counters']['ok'] = (int) tags_get_normal_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
 					$agent['counters']['total'] = (int) tags_get_total_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
 				}
+			}
+			
+			if (isset($this->filter["statusAgent"]) && $this->filter["statusAgent"] != AGENT_STATUS_ALL) {
+				switch ($this->filter["statusAgent"]) {
+					case AGENT_STATUS_CRITICAL:
+						if ($agent['counters']['critical'] == 0)
+							$agent = array();
+						break;
+					case AGENT_STATUS_WARNING:
+						if ($agent['counters']['total'] == 0 || $agent['counters']['critical'] > 0 || $agent['counters']['warning'] == 0)
+							$agent = array();
+						break;
+					case AGENT_STATUS_UNKNOWN:
+						if ($agent['counters']['critical'] > 0 || $agent['counters']['warning'] > 0 || $agent['counters']['unknown'] == 0)
+							$agent = array();
+						break;
+					case AGENT_STATUS_NOT_INIT:
+						if ($agent['counters']['total'] != 0 && $agent['counters']['total'] != $agent['counters']['not_init'])
+							$agent = array();
+						break;
+					case AGENT_STATUS_NORMAL:
+						if ($agent['counters']['critical'] > 0 || $agent['counters']['warning'] > 0 || $agent['counters']['unknown'] > 0 || $agent['counters']['ok'] == 0)
+							$agent = array();
+						break;
+				}
+				// Leave the function
+				if (empty($agent))
+					return;
 			}
 		}
 		
@@ -1799,7 +1832,10 @@ class Tree {
 			if (! defined ('METACONSOLE')) {
 				$items = $this->getItems();
 				$this->processAgents($items);
-				$processed_items = $items;
+				// Remove empty entrys
+				$processed_items = array_filter($items);
+				// Restart the array keys -> Important!
+				$processed_items = array_values($processed_items);
 			}
 			else {
 				$rootIDs = $this->rootID;
@@ -1814,6 +1850,8 @@ class Tree {
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
 					$this->processAgents($newItems, $server);
+					// Remove empty entrys
+					$newItems = array_filter($newItems);
 					$items = array_merge($items, $newItems);
 					
 					metaconsole_restore_db();

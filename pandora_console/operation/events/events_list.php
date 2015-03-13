@@ -743,7 +743,7 @@ html_print_input_hidden('meta', (int)$meta);
 html_print_input_hidden('history', (int)$history);
 
 ui_require_jquery_file('json');
-echo '<script type="text/javascript" src="' . ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . get_user_language(), false, false, false) . '"></script>';
+ui_include_time_picker();
 ?>
 <script language="javascript" type="text/javascript">
 /*<![CDATA[ */

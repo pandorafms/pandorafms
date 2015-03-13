@@ -79,7 +79,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$tags = tags_get_user_tags();
 
 	if (empty($tags)) {
-		$table->data[0][4] .= __('No tags');
+		$table->data[0][4] .= html_print_input_text('tags', __('No tags'), '', 20, 40, true,true);
 	}
 	else {
 		$table->data[0][4] .= html_print_select ($tags, "tag_filter", $tag_filter, '', __('All'), '', true, false, true, '', false, 'width: 150px;');

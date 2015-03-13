@@ -51,6 +51,8 @@ $idItem = get_parameter('id_item', 0);
 $pure = get_parameter('pure',0);
 $schedule_report = get_parameter('schbutton', '');
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 if ($schedule_report != '') {
 	
 	$id_user_task = 1;
@@ -377,7 +379,7 @@ switch ($action) {
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		
-		$table_aux->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px');
+		$table_aux->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px', false, false, 'id_grupo', $strict_user). '<br>';
 		
 		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . "</b>";
 		$table_aux->data[0][3] = html_print_input_text ("search", $search, '', 30, '', true);

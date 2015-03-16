@@ -327,16 +327,20 @@ enterprise_hook('close_meta_frame');
 
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
 		var params = {};
-
-		if (period == -1) {
-			period = $('#period').val();
-			params.selection_mode = $('input[name=selection_mode]:checked').val();
-			params.date_from = $('#text-date_from').val();
-			params.time_from = $('#text-time_from').val();
-			params.date_to = $('#text-date_to').val();
-			params.time_to = $('#text-time_to').val();
-		}
-
+		var f = new Date();
+		period = $('#period').val();
+		
+		params.selection_mode = $('input[name=selection_mode]:checked').val();
+		if(!params.selection_mode){params.selection_mode='fromnow';}
+		params.date_from = $('#text-date_from').val();
+		if(!params.date_from){params.date_from = f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();}
+		params.time_from = $('#text-time_from').val();
+		if(!params.time_from){params.time_from = f.getHours() + ":"  + f.getMinutes();}
+		params.date_to = $('#text-date_to').val();
+		if(!params.date_to){params.date_to =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();}
+		params.time_to = $('#text-time_to').val();
+		if(!params.time_to){params.time_to = f.getHours() + ":"  + f.getMinutes();}
+		
 		params.page = "include/ajax/module";
 		params.get_module_detail = 1;
 		params.server_name = server_name;

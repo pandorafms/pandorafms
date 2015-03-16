@@ -941,9 +941,10 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'id_export', 'history_data', 'critical_inverse',
 		'warning_inverse', 'critical_instructions',
 		'warning_instructions', 'unknown_instructions', 'policy_linked', 
-		'id_category', 'disabled_types_event', 'ip_target', 'descripcion',
-		'min_ff_event_normal', 'min_ff_event_warning', 'min_ff_event_critical',
-		'each_ff', 'module_ff_interval', 'ff_timeout', 'max_timeout');
+		'id_category', 'disabled_types_event', 'ip_target',
+		'descripcion', 'min_ff_event_normal', 'min_ff_event_warning',
+		'min_ff_event_critical', 'each_ff', 'module_ff_interval',
+		'ff_timeout', 'max_timeout');
 	$values = array ();
 	
 	foreach ($fields as $field) {
@@ -1025,7 +1026,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		else {
 			$modules = db_get_all_rows_filter ('tagente_modulo',
 				array ('id_agente' => $agents_select,
-					'nombre' => $module_name),
+					'nombre' => io_safe_input($module_name)),
 				array ('id_agente_modulo'));
 		}
 	}

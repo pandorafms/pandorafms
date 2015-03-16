@@ -286,11 +286,8 @@ ui_require_jquery_file('jquery-ui-1.10.0.custom');
 html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true));
 
 html_print_div(array('id' => 'modal_alert', 'hidden' => true));
-?>
 
-<script type="text/javascript" src="include/javascript/jquery-1.9.0.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.jquery-ui-1.10.0.custom.js"></script>
+?>
 <script type="text/javascript" language="javascript">
 	/* <![CDATA[ */
 	

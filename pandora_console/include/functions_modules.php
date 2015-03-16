@@ -23,6 +23,20 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once($config['homedir'] . '/include/functions_tags.php');
 
+function modules_is_disable_agent($id_agent_module) {
+	$sql = "
+		SELECT disabled
+		FROM tagente
+		WHERE id_agente IN (
+			SELECT id_agente
+			FROM tagente_modulo
+			WHERE id_agente_modulo = " . (int)$id_agent_module . ")";
+	
+	$disabled = db_get_value_sql($sql);
+	
+	return (bool)$disabled;
+}
+
 function modules_is_disable_type_event($id_agent_module = false, $type_event = false) {
 	if ($id_agent_module === false) {
 		switch ($type_event) {

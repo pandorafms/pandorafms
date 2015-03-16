@@ -170,13 +170,22 @@ if ($get_module_detail) {
 			"modules_format_data",
 			"align" => "left",
 			"width" => "230px"),
-		"Time" => array(
+	);
+	
+	if($config['prominent_time']=='comparation'){
+		$columns["Time"] = array(
 			"utimestamp",
 			"modules_format_time",
 			"align" => "left",
-			"width" => "50px")
-	);
-	
+			"width" => "50px");
+	}else{
+		$columns["Timestamp"] = array(
+			"utimestamp",
+			"modules_format_timestamp",
+			"align" => "left",
+			"width" => "50px");
+	}
+
 	if ($selection_mode == "fromnow") {
 		$date = get_system_time();
 		$period = $period;

@@ -1886,7 +1886,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	}
 	else {
 		
-		if (!is_array($id_group)){
+		if (!is_array($id_group)) {
 			$my_group = $id_group;
 			$id_group = array();
 			$id_group[0] = $my_group;
@@ -1903,7 +1903,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			
 			foreach ($children as $sub) {
 				// If the group is quering previously, we ingore it
-				if (!in_array($sub['id_grupo'],$covered_groups)){
+				if (!in_array($sub['id_grupo'],$covered_groups)) {
 					array_push($covered_groups, $sub['id_grupo']);
 					array_push($group_array, $sub['id_grupo']);
 				}
@@ -1912,7 +1912,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			
 			// Add id of this group to create the clause
 			// If the group is quering previously, we ingore it
-			if (!in_array($group,$covered_groups)){
+			if (!in_array($group,$covered_groups)) {
 				array_push($covered_groups, $group);
 				array_push($group_array, $group);
 			}
@@ -3848,29 +3848,29 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table1->style[5] = 'text-align: right';
 				// $table1->style[6] = 'text-align: center';
 			}
-
+			
 			// Table Planned Downtimes
 			require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
 			$metaconsole_on = ($config['metaconsole'] == 1) && defined('METACONSOLE');
 			$downtime_malformed = false;
-
+			
 			$planned_downtimes_empty = true;
 			$malformed_planned_downtimes_empty = true;
-
+			
 			if ($metaconsole_on) {
 				$id_agent_modules_by_server = array();
-
+				
 				foreach ($slas as $sla) {
 					$server = $sla['server_name'];
 					if (empty($server))
 						continue;
-
+					
 					if (!isset($id_agent_modules_by_server[$server]))
 						$id_agent_modules_by_server[$server] = array();
 					
 					$id_agent_modules_by_server[$server][] = $sla['id_agent_module'];
 				}
-
+				
 				$planned_downtimes_by_server = array();
 				$malformed_planned_downtimes_by_server = array();
 				foreach ($id_agent_modules_by_server as $server => $id_agent_modules) {
@@ -3880,10 +3880,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						if (!metaconsole_load_external_db($connection)) {
 							continue;
 						}
-
+						
 						$planned_downtimes_by_server[$server] = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
 						$malformed_planned_downtimes_by_server[$server] = planned_downtimes_get_malformed();
-
+						
 						if (!empty($planned_downtimes_by_server[$server]))
 							$planned_downtimes_empty = false;
 						if (!empty($malformed_planned_downtimes_by_server[$server]))
@@ -3893,7 +3893,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						metaconsole_restore_db();
 					}
 				}
-
+				
 				if (!$planned_downtimes_empty) {
 					$table_planned_downtimes = new StdClass();
 					$table_planned_downtimes->width = '100%';
@@ -3908,7 +3908,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table_planned_downtimes->style = array();
 					$table_planned_downtimes->cellstyle = array();
 					$table_planned_downtimes->data = array();
-
+					
 					foreach ($planned_downtimes_by_server as $server => $planned_downtimes) {
 						foreach ($planned_downtimes as $planned_downtime) {
 							$data = array();
@@ -3970,7 +3970,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 									}
 									break;
 							}
-
+							
 							if (!$malformed_planned_downtimes_empty
 									&& isset($malformed_planned_downtimes_by_server[$server])
 									&& isset($malformed_planned_downtimes_by_server[$server][$planned_downtime['id']])) {
@@ -3980,7 +3980,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								$table_planned_downtimes->cellstyle[$next_row_num][2] = 'color: red';
 								$table_planned_downtimes->cellstyle[$next_row_num][3] = 'color: red';
 								$table_planned_downtimes->cellstyle[$next_row_num][4] = 'color: red';
-
+								
 								if (!$downtime_malformed)
 									$downtime_malformed = true;
 							}
@@ -3996,15 +3996,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					if (!empty($sla['id_agent_module']))
 						$id_agent_modules[] = $sla['id_agent_module'];
 				}
-
+				
 				$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
 				$malformed_planned_downtimes = planned_downtimes_get_malformed();
-
+				
 				if (!empty($planned_downtimes))
 					$planned_downtimes_empty = false;
 				if (!empty($malformed_planned_downtimes))
 					$malformed_planned_downtimes_empty = false;
-
+				
 				if (!$planned_downtimes_empty) {
 					$table_planned_downtimes = new StdClass();
 					$table_planned_downtimes->width = '100%';
@@ -4018,9 +4018,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table_planned_downtimes->style = array();
 					$table_planned_downtimes->cellstyle = array();
 					$table_planned_downtimes->data = array();
-
+					
 					foreach ($planned_downtimes as $planned_downtime) {
-
+						
 						$data = array();
 						$data[0] = $planned_downtime['name'];
 						$data[1] = $planned_downtime['description'];
@@ -4079,14 +4079,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								}
 								break;
 						}
-
+						
 						if (!$malformed_planned_downtimes_empty && isset($malformed_planned_downtimes[$planned_downtime['id']])) {
 							$next_row_num = count($table_planned_downtimes->data);
 							$table_planned_downtimes->cellstyle[$next_row_num][0] = 'color: red';
 							$table_planned_downtimes->cellstyle[$next_row_num][1] = 'color: red';
 							$table_planned_downtimes->cellstyle[$next_row_num][2] = 'color: red';
 							$table_planned_downtimes->cellstyle[$next_row_num][3] = 'color: red';
-
+							
 							if (!$downtime_malformed)
 								$downtime_malformed = true;
 						}
@@ -4095,9 +4095,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 			}
-
+			
 			if ($downtime_malformed) {
-				$info_malformed = ui_print_error_message(__('This item is affected by a malformed planned downtime') . ". " .
+				$info_malformed = ui_print_error_message(
+					__('This item is affected by a malformed planned downtime') . ". " .
 					__('Go to the planned downtimes section to solve this') . ".", '', true);
 				
 				$data = array();
@@ -4121,9 +4122,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// $data_horin_graph[__('Unknown')] = 0;
 			
 			$data_graph[__('Plannified downtime')] = 0;
-					
+			
 			$urlImage = ui_get_full_url(false, true, false, false);
-
+			
 			$sla_failed = false;
 			$total_SLA = 0;
 			$total_result_SLA = 'ok';
@@ -4141,10 +4142,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 				
+				if (modules_is_disable_agent($sla['id_agent_module'])) {
+					continue;
+				}
+				
 				//Get the sla_value in % and store it on $sla_value
-				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
-				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
-				$content['time_to']);
+				$sla_value = reporting_get_agentmodule_sla(
+					$sla['id_agent_module'], $content['period'],
+					$sla['sla_min'], $sla['sla_max'],
+					$report["datetime"], $content,
+					$content['time_from'], $content['time_to']);
 				
 				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
 					//Restore db connection
@@ -4152,7 +4159,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				//Do not show right modules if 'only_display_wrong' is active
-				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
+				if ($content['only_display_wrong'] == 1 &&
+					$sla_value >= $sla['sla_limit']) {
+					
+					continue;
+				}
 				
 				$sla_showed[] = $sla;
 				$sla_showed_values[] = $sla_value;
@@ -5369,7 +5380,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			switch ($group_by_agent) {
 				//0 means not group by agent
 				case 0:
-					$sql = sprintf("SELECT id_agent_module,
+					$sql = sprintf("
+						SELECT id_agent_module,
 							server_name, operation
 						FROM treport_content_item
 						WHERE id_report_content = %d",
@@ -5410,6 +5422,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								//ui_print_error_message ("Error connecting to ".$server_name);
 								continue;
 							}
+						}
+						
+						if (modules_is_disable_agent($row['id_agent_module'])) {
+							continue;
 						}
 						
 						$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
@@ -5603,6 +5619,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							}
 						}
 						
+						if (modules_is_disable_agent($g['id_agent_module'])) {
+							continue;
+						}
 						
 						$agent_name = modules_get_agentmodule_agent_name ($g['id_agent_module']);
 						$module_name = modules_get_agentmodule_name ($g['id_agent_module']);

@@ -154,7 +154,7 @@ function extension_api_checker() {
 	
 	$row = array();
 	$row[] = __("Raw URL");
-	$row[] = html_print_input_text('url', $url, '', 150, 255, true);
+	$row[] = html_print_input_text('url', $url, '', 150, 2048, true);
 	$table3->data[] = $row;
 	
 	echo "<form method='post'>";

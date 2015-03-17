@@ -645,7 +645,15 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			//~ { color: criticalw, yaxis: { from: vcritical_min } },
 			//~ { color: criticalw, yaxis: { to: -1 } }
 		//~ ];
-		
+
+		lineWidht = $('#hidden-lineWidhtGraph');
+		if (typeof(lineWidht[0])=='undefined'){
+			WidhtLine = 1;
+		}
+		else{
+			WidhtLine = lineWidht[0].value;
+		}
+
 		// Data
 		data_base.push({ 
 			id: 'serie_' + i,
@@ -658,7 +666,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				fillColor: {
 					colors: [ { opacity: 0.9 }, { opacity: 0.9 } ]
 				},
-				lineWidth: 1,
+				lineWidth: WidhtLine,
 				steps: false },
 			points: { show: points_show }
 		});

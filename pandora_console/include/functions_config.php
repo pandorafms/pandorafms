@@ -451,6 +451,8 @@ function config_update_config () {
 						$error_update[] = __('Shortened module graph data');
 					if (!config_update_value ('show_group_name', get_parameter('show_group_name')))
 						$error_update[] = __('Show the group name instead the group icon.');
+					if (!config_update_value ('custom_graph_widht', get_parameter('custom_graph_widht')))
+						$error_update[] = __('Default line thickness for the Custom Graph.');
 					
 					$interval_values = get_parameter ('interval_values');
 					
@@ -1193,6 +1195,10 @@ function config_process_config () {
 	
 	if (!isset($config['show_group_name'])) {
 		config_update_value ('show_group_name', 0);
+	}
+	
+	if (!isset($config['custom_graph_widht'])) {
+		config_update_value ('custom_graph_widht', 1);
 	}
 	
 	if (!isset($config['command_snapshot'])) {

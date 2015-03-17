@@ -486,6 +486,13 @@ $table->data[$row][1] .= __('No') . '&nbsp;' .
 		$config["show_group_name"], true);
 $row++;
 
+$table->data[$row][0] = __('Default line thickness for the Custom Graph.');
+$table->data[$row][1] = html_print_input_text ('custom_graph_widht',
+	$config["custom_graph_widht"], '', 5, 5, true);
+
+$row++;
+
+
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
 html_print_table ($table);

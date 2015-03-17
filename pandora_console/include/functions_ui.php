@@ -522,7 +522,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	
 	if ($config['show_group_name']) {
 		$output .= '<span title="'. groups_get_name($id_group, true) .'">' .
-			groups_get_name($id_group, true) . '&nbsp</span>';
+			groups_get_name($id_group, true) . '&nbsp;</span>';
 	}
 	else {
 		if (empty ($icon))

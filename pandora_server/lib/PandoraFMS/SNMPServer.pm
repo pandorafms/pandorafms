@@ -90,7 +90,7 @@ sub new ($$$) {
 	}
 
 	# Skip already processed lines
-	readline SNMPLOGFILE for (1..$LAST_LINE);
+	read_snmplogfile() for (1..$LAST_LINE);
 	
 	# Initialize semaphores and queues
 	@TaskQueue = ();
@@ -140,9 +140,12 @@ sub data_producer ($) {
 		%AGENTS = ();
 	}
 
-	while (my $line = <SNMPLOGFILE>) {
+	while (my $line_with_pos = read_snmplogfile()) {
+		my $line;
+
 		$LAST_LINE++;
-		$LAST_SIZE = (stat ($pa_config->{'snmp_logfile'}))[7];
+		($LAST_SIZE, $line) = @$line_with_pos;
+
 		chomp ($line);
 
 		# Update index file
@@ -407,6 +410,52 @@ sub start_snmptrapd ($) {
 	}
 
 	return 0;
+}
+
+###############################################################################
+# Read SNMP Log file with buffering (to handle multi-line Traps).
+# Return reference of array (file-pos, line-data) if successful, undef othersise.
+###############################################################################
+my $read_ahead_line;	# buffer to save fetched ahead line
+my $read_ahead_pos;
+
+sub read_snmplogfile()
+{
+	my $line;
+	my $pos;
+
+	if(defined($read_ahead_line)) {
+		# Restore saved line
+		$line = $read_ahead_line;
+		$pos = $read_ahead_pos;
+	}
+	else {
+		# No saved line
+		$line = <SNMPLOGFILE>;
+		$pos = tell(SNMPLOGFILE);
+	}
+
+	return undef if (! defined($line));
+
+	# More lines ?
+	while($read_ahead_line = <SNMPLOGFILE>) {
+
+		# Get current file position
+		$read_ahead_pos = tell(SNMPLOGFILE);
+
+		# Get out of the loop if you find another Trap
+		last if($read_ahead_line =~ /^SNMP/ );
+
+		# $read_ahead_line looks continued line...
+
+		# Append to the line and correct the position
+		chomp($line);
+		$line .= "$read_ahead_line";
+		$pos = $read_ahead_pos;
+	}
+
+	# return fetched line with file position to be saved.
+	return [$pos, $line];
 }
 
 ###############################################################################

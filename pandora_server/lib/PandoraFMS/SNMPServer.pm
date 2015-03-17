@@ -101,24 +101,24 @@ sub pandora_snmptrapd {
 		open (SNMPLOGFILE, $log_file) or return;
 
 		# Process index file, if available
-		my ($idx_file, $last_line, $last_size) = ($log_file . '.index', 0, 0);
+		my ($idx_file, $last_line, $last_pos) = ($log_file . '.index', 0, 0);
 		if (-e  $idx_file) {
 			open (INDEXFILE, $idx_file) or return;
 			my $idx_data = <INDEXFILE>;
 			close INDEXFILE;
-			($last_line, $last_size) = split(/\s+/, $idx_data);
+			($last_line, $last_pos) = split(/\s+/, $idx_data);
 		}
 
 		my $log_size = (stat ($log_file))[7];
 
 		# New SNMP log file found
-		if ($log_size < $last_size) {
+		if ($log_size < $last_pos) {
 			unlink ($idx_file);
-			($last_line, $last_size) = (0, 0);
+			($last_line, $last_pos) = (0, 0);
 		}
 
 		# Skip already processed lines
-		readline SNMPLOGFILE for (1..$last_line);
+		read_snmplogfile() for (1..$last_line);
 
 		# Main loop
 		my $storm_ref = time ();
@@ -131,14 +131,17 @@ sub pandora_snmptrapd {
 				%AGENTS = ();
 			}
 
-			while (my $line = <SNMPLOGFILE>) {
+			while (my $line_with_pos = read_snmplogfile()) {
+				my $line;
+
 				$last_line++;
-				$last_size = (stat ($log_file))[7];
+				($last_pos, $line) = @$line_with_pos;
+
 				chomp ($line);
 
 				# Update index file
 				open INDEXFILE, '>' . $idx_file;
-				print INDEXFILE $last_line . ' ' . $last_size;
+				print INDEXFILE $last_line . ' ' . $last_pos;
 				close INDEXFILE;
 
 				# Skip lines other than SNMP Trap logs
@@ -395,6 +398,52 @@ sub start_snmptrapd ($) {
 	}
 	
 	return 0;
+}
+
+###############################################################################
+# Read SNMP Log file with buffering (to handle multi-line Traps).
+# Return reference of array (file-pos, line-data) if successful, undef othersise.
+###############################################################################
+my $read_ahead_line;	# buffer to save fetched ahead line
+my $read_ahead_pos;
+
+sub read_snmplogfile()
+{
+	my $line;
+	my $pos;
+
+	if(defined($read_ahead_line)) {
+		# Restore saved line
+		$line = $read_ahead_line;
+		$pos = $read_ahead_pos;
+	}
+	else {
+		# No saved line
+		$line = <SNMPLOGFILE>;
+		$pos = tell(SNMPLOGFILE);
+	}
+
+	return undef if (! defined($line));
+
+	# More lines ?
+	while($read_ahead_line = <SNMPLOGFILE>) {
+
+		# Get current file position
+		$read_ahead_pos = tell(SNMPLOGFILE);
+
+		# Get out of the loop if you find another Trap
+		last if($read_ahead_line =~ /^SNMP/ );
+
+		# $read_ahead_line looks continued line...
+
+		# Append to the line and correct the position
+		chomp($line);
+		$line .= "$read_ahead_line";
+		$pos = $read_ahead_pos;
+	}
+
+	# return fetched line with file position to be saved.
+	return [$pos, $line];
 }
 
 ###############################################################################

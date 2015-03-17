@@ -58,7 +58,6 @@ if (! check_acl ($config['id_user'], 0, "RW")) {
 if ($edit_graph) {
 	$graphInTgraph = db_get_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id_graph);
 	$stacked = $graphInTgraph['stacked'];
-	$events = $graphInTgraph['events'];
 	$period = $graphInTgraph['period'];
 	$name = $graphInTgraph['name'];
 	$description = $graphInTgraph['description'];
@@ -74,8 +73,6 @@ else {
 	$width = 550;
 	$height = 210;
 	$period = SECONDS_1DAY;
-	//$alerts= "";
-	$events = 0;
 	$factor = 1;
 	$stacked = 0;
 }
@@ -147,21 +144,6 @@ $stackeds = array(
 html_print_select ($stackeds, 'stacked', $stacked);
 echo "</td>";
 
-echo "<tr>";
-echo "<td class='datos'>";
-echo "<b>".__('View events')."</b></td>";
-echo "<td class='datos'>";
-html_print_checkbox('events', 1, $events);
-echo "</td>";
-
-echo "<td></td><td></td>";
-/*echo "<td class='datos'>";
-echo "<b>".__('View alerts')."</b></td>";
-echo "<td class='datos'>";
-html_print_checkbox('alerts', 1, $alerts);
-echo "</td>";*/
-
-echo "</tr>";
 echo "<tr><td colspan='4' align='right'>";
 if ($edit_graph) {
 	echo "<input type=submit name='store' class='sub upd' value='".__('Update')."'>";

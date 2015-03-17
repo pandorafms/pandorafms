@@ -71,7 +71,6 @@ if ($add_graph) {
 	$idGroup = get_parameter_post ('graph_id_group');
 	$width = get_parameter_post ("width");
 	$height = get_parameter_post ("height");
-	$events = get_parameter_post ("events");
 	$stacked = get_parameter ("stacked", 0);
 	$period = get_parameter_post ("period");
 	
@@ -79,13 +78,12 @@ if ($add_graph) {
 	$values = array(
 		'id_user' => $config['id_user'],
 		'name' => $name,
-		'description' => $description, 
+		'description' => $description,
 		'period' => $period,
 		'width' => $width,
 		'height' => $height,
 		'private' => 0,
 		'id_group' => $idGroup,
-		'events' => $events, 
 		'stacked' => $stacked);
 	
 	if (trim($name) != "") {
@@ -112,13 +110,12 @@ if ($update_graph) {
 	$height = get_parameter('height');
 	$period = get_parameter('period');
 	$stacked = get_parameter('stacked');
-	$events = get_parameter('events');
 	$alerts = get_parameter('alerts'); 
 	
 	if (trim($name) != "") {
 		
 		$success = db_process_sql_update('tgraph', 
-			array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
+			array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked), 
 			array('id_graph' => $id_graph));
 		if ($success !== false)
 			db_pandora_audit("Report management", "Update graph #$id_graph");

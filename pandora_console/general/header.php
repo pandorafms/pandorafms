@@ -17,12 +17,6 @@
 require_once ("include/functions_messages.php");
 require_once ('include/functions_servers.php');
 
-
-$msg_cnt = 0;
-$alert_cnt = 0;
-$config["alert_cnt"] = 0;
-$_SESSION["alert_msg"] = "";
-
 // Check permissions
 
 // Global errors/warnings checking.
@@ -45,8 +39,9 @@ config_check();
 						}
 						$logo_title = 'Pandora FMS Enterprise';
 					}
-				
-					echo html_print_image($custom_logo, true, array("alt" => $logo_title, "border" => '0'));
+					
+					echo html_print_image($custom_logo, true,
+						array("alt" => $logo_title, "border" => '0'));
 				?>
 			</a>
 		</td>

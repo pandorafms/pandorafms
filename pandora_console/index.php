@@ -484,13 +484,18 @@ if (isset ($_GET["bye"])) {
 	exit ("</html>");
 }
 
+clear_pandora_error_for_header();
+
+//----------------------------------------------------------------------
+// EXTENSIONS
+//----------------------------------------------------------------------
 /**
  * Load the basic configurations of extension and add extensions into menu.
  * Load here, because if not, some extensions not load well, I don't why.
  */
 
 $config['logged'] = false;
-extensions_load_extensions ($config['extensions']);
+extensions_load_extensions ($process_login);
 if ($process_login) {
 	 /* Call all extensions login function */
 	extensions_call_login_function ();
@@ -517,6 +522,7 @@ if ($process_login) {
 	
 	$config['logged'] = true;
 }
+//----------------------------------------------------------------------
 
 //Get old parameters before navigation.
 $old_sec = '';

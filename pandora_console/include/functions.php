@@ -2253,13 +2253,13 @@ function validate_double_auth_code ($user, $code) {
 	global $config;
 	require_once ($config['homedir'].'/include/auth/GAuth/Auth.php');
 	$result = false;
-
+	
 	if (empty($user) || empty($code)) {
 		$result = -1;
 	}
 	else {
 		$secret = db_get_value('secret', 'tuser_double_auth', 'id_user', $user);
-
+		
 		if ($secret === false) {
 			$result = -1;
 		}
@@ -2267,7 +2267,8 @@ function validate_double_auth_code ($user, $code) {
 			try {
 				$gAuth = new \GAuth\Auth($secret);
 				$result = $gAuth->validateCode($code);
-			} catch (Exception $e) {
+			}
+			catch (Exception $e) {
 				$result = -1;
 			}
 		}
@@ -2287,5 +2288,34 @@ function is_double_auth_enabled ($user) {
 	$result = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $user);
 	
 	return $result;
+}
+
+function clear_pandora_error_for_header() {
+	global $config;
+	
+	$config["alert_cnt"] = 0;
+	$_SESSION["alert_msg"] = "";
+}
+
+function set_pandora_error_for_header($message, $title = null) {
+	global $config;
+	
+	if (!isset($config["alert_cnt"])) {
+		$config["alert_cnt"] = 0;
+	}
+	if (!isset($_SESSION["alert_msg"])) {
+		$_SESSION["alert_msg"] = "";
+	}
+	
+	$message_config = array();
+	if (isset($title))
+		$message_config['title'] = $title;
+	$message_config['message'] = $message;
+	$message_config['no_close'] = true;
+	
+	
+	$config["alert_cnt"]++;
+	$_SESSION["alert_msg"] .= ui_print_error_message($message_config,
+		'', true);
 }
 ?>

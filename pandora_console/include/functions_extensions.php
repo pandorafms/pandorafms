@@ -291,13 +291,42 @@ function extensions_get_extension_info() {
  *
  * @param array $extensions
  */
-function extensions_load_extensions ($extensions) {
+function extensions_load_extensions ($process_login) {
 	global $config;
 	global $extension_file;
 	
-	foreach ($extensions as $extension) {
+	foreach ($config['extensions'] as $extension) {
 		$extension_file = $extension['file'];
-		require_once (realpath ($extension['dir'] . "/" . $extension_file));
+		$path_extension = realpath ($extension['dir'] . "/" . $extension_file);
+		
+		//--------------------------------------------------------------
+		//
+		// PHP BUG
+		//
+		// #66518 	need some exceptions for php's include or require
+		//
+		// https://bugs.php.net/bug.php?id=66518
+		//--------------------------------------------------------------
+		
+		
+		//~ if ($process_login) {
+			//~ //Check the syntax for avoid PHP errors
+			//~ $output = null;
+			//~ $return_var = null;
+			//~ exec('php -l ' . $path_extension, $output, $return_code);
+			//~ if ($return_code !== 0) {
+				//~ // There is a error.
+				//~ 
+				//~ set_pandora_error_for_header(
+					//~ __('There are some errors in the PHP file of extension %s .', $extension_file));
+			//~ }
+			//~ else {
+				//~ require_once($path_extension);
+			//~ }
+		//~ }
+		//~ else {
+			require_once($path_extension);
+		//~ }
 	}
 }
 

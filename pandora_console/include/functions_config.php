@@ -1327,26 +1327,23 @@ function config_check () {
 	if ($is_admin) {
 		$hashpass = db_get_sql ("SELECT password
 			FROM tusuario WHERE id_user = 'admin'");
-		if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
-			$config["alert_cnt"]++;
-			$_SESSION["alert_msg"] .= ui_print_error_message(
-				array('message' => __('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.'),
-					'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560") {
+			set_pandora_error_for_header(
+				__('Default password for "Admin" user has not been changed.'),
+				__('Please change the default password because is a common vulnerability reported.'));
 		}
 	}
 	
 	if (isset ($config['license_expired'])) {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_error_message(
-			array('message' => __('<strong style="font-size: 11pt">This license has expired.</strong> <br><br>You can not get updates until you renew the license.').'</h3>',
-				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			__('You can not get updates until you renew the license.'),
+			__('This license has expired.'));
 	}
 	
 	if (!is_writable ("attachment")) {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_error_message(
-			array('message' => __('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),
-				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),
+			__('Attachment directory is not writable by HTTP Server'));
 	}
 	
 	// Get remote file dir.
@@ -1356,29 +1353,22 @@ function config_check () {
 	
 	if (enterprise_installed()) {
 		if (!is_readable ($remote_config)) {
-			$config["alert_cnt"]++;
-			$_SESSION["alert_msg"] .= ui_print_error_message(
-				array('message' => __('Remote configuration directory is not readble for the console') .
-					' -' . $remote_config,
-				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+			set_pandora_error_for_header(
+				__('Remote configuration directory is not readble for the console') .
+				' - ' . $remote_config);
 		}
 		
 		$remote_config_conf = $remote_config . "/conf";
 		if (!is_writable ($remote_config_conf)) {
-			$config["alert_cnt"]++;
-			$_SESSION["alert_msg"] .= ui_print_error_message(
-				array('message' => __('Remote configuration directory is not writtable for the console') .
-					' - ' . $remote_config . '/conf',
-				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+			set_pandora_error_for_header(__('Remote configuration directory is not writtable for the console') .
+				' - ' . $remote_config . '/conf');
 		}
 		
 		$remote_config_col = $remote_config . "/collections";
 		if (!is_writable ($remote_config_col)) {
-			$config["alert_cnt"]++;
-			$_SESSION["alert_msg"] .= ui_print_error_message(
-				array('message' => __('Remote configuration directory is not writtable for the console') .
-					' - ' . $remote_config . '/collections',
-				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+			set_pandora_error_for_header(
+				__('Remote configuration directory is not writtable for the console') .
+				' - ' . $remote_config . '/collections');
 		}
 	}
 	
@@ -1387,69 +1377,58 @@ function config_check () {
 	$filecount = count(glob($config["homedir"]."/attachment/*"));
 	// N temporal files of trash should be enough for most people.
 	if ($filecount > $config['num_files_attachment']) {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_error_message(
-			array('title' => __('Too much files in your tempora/attachment directory'),
-			'message' => __("There are too much files in attachment directory. This is not fatal, but you should consider cleaning up your attachment directory manually"). " ( $filecount ". __("files") . " )",
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			__("There are too much files in attachment directory. This is not fatal, but you should consider cleaning up your attachment directory manually"). " ( $filecount ". __("files") . " )",
+			__('Too much files in your tempora/attachment directory'));
 	}
 	
 	// Check database maintance
-	$db_maintance = db_get_value_filter ('value', 'tconfig', array('token' => 'db_maintance')); 
+	$db_maintance = db_get_value_filter('value', 'tconfig',
+		array('token' => 'db_maintance')); 
 	
 	// If never was executed, it means we are in the first Pandora FMS execution. Set current timestamp
-	if(empty($db_maintance)) {
+	if (empty($db_maintance)) {
 		config_update_value ('db_maintance', date("U"));
 	}
 	
 	$last_maintance = date("U") - $db_maintance;
 
 	// ~ about 50 hr
-	if ($last_maintance > 190000){
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_error_message(
-			array('title' => __("Database maintance problem"),
-			'message' => __('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible'),
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	if ($last_maintance > 190000) {
+		set_pandora_error_for_header(
+			__('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible'),
+			__("Database maintance problem"));
 	}
 	
 	$fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
 	if (($fontpath == "") OR (!file_exists ($fontpath))) {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_error_message(
-			array('title' => __("Default font doesnt exist"),
-			'message' => __('Your defined font doesnt exist or is not defined. Please check font parameters in your config'),
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			__('Your defined font doesnt exist or is not defined. Please check font parameters in your config'),
+			__("Default font doesnt exist"));
 	}
 	
 	global $develop_bypass;
 	
-	if ($develop_bypass == 1){
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_error_message(
-			array('title' => __("Developer mode is enabled"),
-			'message' => __('Your Pandora FMS has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file'),
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	if ($develop_bypass == 1) {
+		set_pandora_error_for_header(
+			__('Your Pandora FMS has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file'),
+			__("Developer mode is enabled"));
 	}
 	
 	if (isset($_SESSION['new_update'])) {
 		if (!empty($_SESSION['return_installation_open'])) {
 			if (!$_SESSION['return_installation_open']['return']) {
 				foreach ($_SESSION['return_installation_open']['text'] as $message) {
-					$config["alert_cnt"]++;
-					$_SESSION["alert_msg"] .= ui_print_error_message(
-						array('title' => __("Error first setup Open update"),
-						'message' => $message,
-						'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+					set_pandora_error_for_header(
+						$message,
+						__("Error first setup Open update"));
 				}
 			}
 		}
 		if ($_SESSION['new_update'] == 'new') {
-			$config["alert_cnt"]++;
-			$_SESSION["alert_msg"] .= ui_print_info_message(
-				array('title' => __("New update of Pandora Console"),
-				'message' => __('There is a new update please go to menu Administration and into extensions <a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">go to Update Manager</a> for more details.'),
-				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+			set_pandora_error_for_header(
+				__('There is a new update please go to menu Administration and into extensions <a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">go to Update Manager</a> for more details.'),
+				__("New update of Pandora Console"));
 		}
 	}
 	
@@ -1461,47 +1440,37 @@ function config_check () {
 	$PHPsafe_mode = ini_get('safe_mode');
 	
 	if ($PHPsafe_mode === '1') {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_info_message(
-			array('title' => sprintf(__("PHP safe mode is enabled. Some features may not properly work.")),
-			'message' => '<br><br>' . __('To disable, change it on your PHP configuration file (php.ini) and put safe_mode = Off (Dont forget restart apache process after changes)'),
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			__('To disable, change it on your PHP configuration file (php.ini) and put safe_mode = Off (Dont forget restart apache process after changes)'),
+			sprintf(__("PHP safe mode is enabled. Some features may not properly work.")));
 	}
 	
 	if ($PHPmax_input_time !== '-1') {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_info_message(
-			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'max_input_time'),
-			'message' => sprintf(__('Recommended value is %s'), '-1 (' . __('Unlimited') . ')') . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			sprintf(__('Recommended value is %s'), '-1 (' . __('Unlimited') . ')') . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+			sprintf(__("Not recommended '%s' value in PHP configuration"), 'max_input_time'));
 	}
 	
 	if ($PHPmax_execution_time !== '0') {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_info_message(
-			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'max_execution_time'),
-			'message' => sprintf(__('Recommended value is: %s'), '0 (' . __('Unlimited') . ')') . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			sprintf(__('Recommended value is: %s'), '0 (' . __('Unlimited') . ')') . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+			sprintf(__("Not recommended '%s' value in PHP configuration"), 'max_execution_time'));
 	}
 	
 	$PHPupload_max_filesize_min = config_return_in_bytes('800M');
 	
 	if ($PHPupload_max_filesize < $PHPupload_max_filesize_min) {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_info_message(
-			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'upload_max_filesize'),
-			'message' => sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '800M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '800M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+			sprintf(__("Not recommended '%s' value in PHP configuration"), 'upload_max_filesize'));
 	}
 	
 	$PHPmemory_limit_min = config_return_in_bytes('500M');
 	
 	if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_info_message(
-			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'memory_limit'),
-			'message' => sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '500M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
-			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		set_pandora_error_for_header(
+			sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '500M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+			sprintf(__("Not recommended '%s' value in PHP configuration"), 'memory_limit'));
 	}
 }
 

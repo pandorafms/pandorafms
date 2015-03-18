@@ -81,7 +81,10 @@ else {
 	$agent_name = $agent_name;
 }
 
-$data[0] = ui_print_group_icon ($agent["id_grupo"], true);
+if (!$config["show_group_name"])
+	$data[0] = ui_print_group_icon ($agent["id_grupo"], true);
+else
+	$data[0] = "";
 $table_agent->cellstyle[count($table_agent->data)][0] =
 	'width: 16px; text-align:center; padding: 0px;';
 

@@ -25,8 +25,6 @@ require_once ($config['homedir'].'/include/functions_ui.php');
 
 check_login ();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl ($config["id_user"], 0, "ER")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
@@ -44,15 +42,11 @@ if (enterprise_installed() && defined("METACONSOLE")) {
 $history = (bool) get_parameter('history', 0);
 
 $readonly = false;
-
 if (!$meta) {
 	if (isset($config['event_replication']) &&  
 		$config['event_replication'] == 1) {
 		
 		if ($config['show_events_in_local'] == 0) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access event viewer. View disabled due event replication.");
-			ui_print_info_message(array('message' => __('Event viewer is disabled due event replication. For more information, please contact with the administrator'), 'no_close' => true));
 			return;
 		}
 		else {
@@ -60,6 +54,7 @@ if (!$meta) {
 		}
 	}
 }
+
 
 if (is_ajax ()) {
 	$get_event_tooltip = (bool) get_parameter ('get_event_tooltip');
@@ -127,6 +122,7 @@ if (is_ajax ()) {
 		$similars = (bool) get_parameter ('similars');
 		
 		$return = events_delete_event ($id, $similars, $meta, $history);
+		
 		if ($return)
 			echo 'ok';
 		else
@@ -180,6 +176,23 @@ if (is_ajax ()) {
 	return;
 }
 
+enterprise_hook('open_meta_frame');
+
+if (!$meta) {
+	if (isset($config['event_replication']) &&  
+		$config['event_replication'] == 1) {
+		
+		if ($config['show_events_in_local'] == 0) {
+			db_pandora_audit("ACL Violation",
+				"Trying to access event viewer. View disabled due event replication.");
+			ui_print_info_message(array('message' => __('Event viewer is disabled due event replication. For more information, please contact with the administrator'), 'no_close' => true));
+			return;
+		}
+		else {
+			$readonly = true;
+		}
+	}
+}
 
 $offset = (int) get_parameter ("offset", 0);
 $id_group = (int) get_parameter('id_group', 0);//0 all

@@ -27,6 +27,7 @@ require_once ($config['homedir'] . '/include/functions_db.php');
 require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
 
 // Hash login process
 if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
@@ -46,6 +47,21 @@ if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
 }
 
 check_login ();
+
+$server_id = (int) get_parameter("server");
+
+if (!empty($server_id) && defined('METACONSOLE')) {
+	$server = metaconsole_get_connection_by_id($server_id);
+
+	if (metaconsole_connect($server) !== NOERR) {
+		echo "<html>";
+			echo "<body>";
+				ui_print_error_message(__('There was a problem connecting with the node'));
+			echo "</body>";
+		echo "</html>";
+		exit;
+	}
+}
 
 $user_language = get_user_language ($config['id_user']);
 if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
@@ -101,22 +117,36 @@ $label = base64_decode(get_parameter('label', ''));
 		<?php
 		
 		// Get input parameters
-		$label = get_parameter ("label","");
-		if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
-			ui_print_error_message(
-				__('There was a problem locating the source of the graph'));
+		
+		// Module id
+		$id = (int) get_parameter ("id", 0);
+		// Agent id
+		$agent_id = (int) modules_get_agentmodule_agent($id);
+		if (empty($id) || empty($agent_id)) {
+			ui_print_error_message(__('There was a problem locating the source of the graph'));
 			exit;
 		}
 		
-		$period = get_parameter ( "period", SECONDS_1HOUR);
+		// ACL
+		$permission = false;
+		$agent_group = (int) agents_get_agent_group($agent_id);
+		
+		if (!empty($agent_group) && check_acl($config['id_user'], $agent_group, "RR")) {
+			$permission = true;
+		}
+		
+		if (!$permission) {
+			require ($config['homedir'] . "/general/noaccess.php");
+			exit;
+		}
+		
 		$draw_alerts = get_parameter("draw_alerts", 0);
 		$avg_only = get_parameter ("avg_only", 0);
 		$show_other = (bool)get_parameter('show_other', false);
 		if ($show_other) {
 			$avg_only = 0;
 		}
-		$period = get_parameter ("period", 86400);
-		$id = get_parameter ("id", 0);
+		$period = get_parameter ("period", SECONDS_1DAY);
 		$width = get_parameter ("width", 555);
 		$height = get_parameter ("height", 245);
 		$label = get_parameter ("label", "");

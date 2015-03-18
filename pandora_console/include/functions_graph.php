@@ -1360,7 +1360,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		'color' => COL_GRAPH12, 'alpha' => 50);
 	$color[15] = array('border' => '#000000',
 		'color' => COL_GRAPH13, 'alpha' => 50);
-
+	
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,

@@ -885,6 +885,7 @@ else {
 			
 			foreach ($result_server as $result_element_key => $result_element_value) {
 				
+				$result_server[$result_element_key]['server_id'] = $server["id"];
 				$result_server[$result_element_key]['server_name'] = $server["server_name"];
 				$result_server[$result_element_key]['server_url'] = $server["server_url"]."/";
 				$result_server[$result_element_key]['hashdata'] = $hashdata;
@@ -1185,18 +1186,29 @@ foreach ($result as $row) {
 	if ($row['history_data'] == 1) {
 		
 		$graph_type = return_graphtype ($row["module_type"]);
-		
 		$nombre_tipo_modulo = modules_get_moduletype_name ($row["module_type"]);
-		$handle = "stat".$nombre_tipo_modulo."_".$row["id_agente_modulo"];
-		$url = 'include/procesos.php?agente='.$row["id_agente_modulo"];
-		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
+		$url = "operation/agentes/stat_win.php";
+		$handle = dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
+		$win_handle = "day_$handle";
 		
-		if (defined('METACONSOLE'))
-			$link ="winopeng('" .
-				$row['server_url'] . "operation/agentes/stat_win.php?" .
-				"type=$graph_type&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . str_rot13($row["user"]) . "&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
-		else
-			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".rawurlencode(urlencode(base64_encode($row["module_name"])))."&refresh=600','day_".$win_handle."')";
+		$graph_params = array(
+				"type" => $graph_type,
+				"period" => SECONDS_1DAY,
+				"id" => $row["id_agente_modulo"],
+				"label" => rawurlencode(urlencode(base64_encode($row["module_name"]))),
+				"refresh" => SECONDS_10MINUTES
+			);
+		
+		if (defined('METACONSOLE') && isset($row["server_id"])) {
+			// Force the search of this url from the pandora_console's root homeurl
+			$url = "../../$url";
+			// Set the server id
+			$graph_params["server"] = $row["server_id"];
+		}
+		
+		$graph_params_str = http_build_query($graph_params);
+		
+		$link = "winopeng('$url?$graph_params_str','$win_handle')";
 		
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		

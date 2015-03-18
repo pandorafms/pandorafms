@@ -131,7 +131,10 @@ network_threads 5
 # that ping should be 1 to report 1. Lower value have better performance, but more probability
 # of false positives
 
-icmp_checks 3.
+icmp_checks 3
+
+# Number of ICMP packets to send per request.
+icmp_packets 1
 
 # tcp specific options :
 # tcp_checks: number of tcp retries if first attempt fails.

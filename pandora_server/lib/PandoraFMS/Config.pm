@@ -208,6 +208,7 @@ sub pandora_load_config {
 	$pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
 	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
 	$pa_config->{"icmp_checks"} = 1; # Introduced on 1.3.1
+	$pa_config->{"icmp_packets"} = 1; # > 5.1SP2
 	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
 	$pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
@@ -564,6 +565,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^icmp_checks\s([0-9]*)/i) { 
 			$pa_config->{"icmp_checks"} = clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^icmp_packets\s([0-9]*)/i) {
+			$pa_config->{"icmp_packets"} = clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmpconsole\s([0-9]*)/i) {
 			$pa_config->{"snmpconsole"} = clean_blank($1);

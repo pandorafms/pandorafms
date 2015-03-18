@@ -162,6 +162,9 @@ network_threads 4
 
 icmp_checks 3
 
+# Number of ICMP packets to send per request.
+icmp_packets 1
+
 # tcp specific options :
 # tcp_checks: number of tcp retries if first attempt fails.
 # tcp_timeout: specific timeout for tcp connections

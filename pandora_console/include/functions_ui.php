@@ -513,7 +513,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	}
 	else {
 		if (empty ($icon))
-			$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;-&nbsp</span>';
+			$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
 		else {
 			$output .= html_print_image("images/" . $path . "/" . $icon . ".png",
 				true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)));

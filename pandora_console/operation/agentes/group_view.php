@@ -156,8 +156,11 @@ if (!empty($result_groups)) {
 			if (isset($data['_iconImg_']) && !empty($data['_iconImg_']))
 				$item_icon = $data['_iconImg_'];
 			
-			echo $link . $deep . $item_icon ."&nbsp;" . $group_name . "</a>";
-			
+			if ($data['_name_'] != "All")
+				echo $deep . $link . $group_name . "</a>";
+			else
+				echo $link . $group_name . "</a>";
+
 			echo "</td>";
 			
 			// Total agents

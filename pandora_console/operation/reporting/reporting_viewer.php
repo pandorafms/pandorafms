@@ -41,6 +41,7 @@ if (empty($report) || ! check_acl ($config['id_user'], $report['id_group'], "RR"
 
 // Include with the functions to calculate each kind of report.
 require_once ($config['homedir'] . '/include/functions_reporting.php');
+require_once ($config['homedir'] . '/include/functions_reporting_html.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
 
 enterprise_include("include/functions_reporting.php");
@@ -136,7 +137,7 @@ $table->class = 'databox';
 if (defined("METACONSOLE")){
 	$table->width = '100%';
 	$table->class = 'databox data';
-
+	
 	$table->head[0] = __('View Report');
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
@@ -172,14 +173,14 @@ if (defined("METACONSOLE")) {
 	else {
 		$table->data[0][1] = '<div style="">' . __("Name: ") . $report['name'] . '</div>';
 	}
-
+	
 	$table->data[0][1] .= '<div style=" width:100%;">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
 	$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
 	if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$table->data[0][1] .= $html_enterprise;
 	}
 	$table->data[0][1] .= '</div>';
-
+	
 	$table->data[1][1] = '<div style="">' . __('From') . ': ';
 	$table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
 	$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 10, 7, true). ' </div>';
@@ -192,21 +193,21 @@ if (defined("METACONSOLE")) {
 	$table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true) . ' ';
 	$table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true) . ' </div>';
 }
-else{
+else {
 	if ($report['description'] != '') {
 		$table->data[0][1] = '<div style="float:left">'.$report['description'].'</div>';
 	}
 	else {
 		$table->data[0][1] = '<div style="float:left">'.$report['name'].'</div>';
 	}
-
+	
 	$table->data[0][1] .= '<div style="text-align:right; width:100%; margin-right:50px">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
 	$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
 	if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$table->data[0][1] .= $html_enterprise;
 	}
 	$table->data[0][1] .= '</div>';
-
+	
 	$table->data[1][1] = '<div style="float:left;padding-top:3px;">' . __('From') . ': </div>';
 	$table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
 	$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 10, 7, true). ' ';
@@ -353,7 +354,7 @@ foreach ($contents as $content) {
 	$table->rowstyle = array ();
 	
 	// Calculate new inteval for all reports
-	if ($enable_init_date){
+	if ($enable_init_date) {
 		if ($datetime_init >= $datetime) {
 			$datetime_init = $date_init_less;
 		}

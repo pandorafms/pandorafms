@@ -429,10 +429,15 @@ if ($result === false) {
 
 foreach ($result as $profile) {
 	$data[0] = '<b>'.profile_get_name ($profile["id_perfil"]).'</b>';
-	$data[1] = ui_print_group_icon ($profile["id_grupo"], true) .
-		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=' . $profile['id_grupo'] . '">' .
-		'&nbsp;' . ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), GENERIC_SIZE_TEXT) .
-		'</a>';
+	if ($config["show_group_name"])
+		$data[1] = ui_print_group_icon ($profile["id_grupo"], true) .
+			'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=' . $profile['id_grupo'] . '">' .
+			'&nbsp;' . '</a>';
+	else
+		$data[1] = ui_print_group_icon ($profile["id_grupo"], true) .
+			'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=' . $profile['id_grupo'] . '">' .
+			'&nbsp;' . ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), GENERIC_SIZE_TEXT) .
+			'</a>';
 	
 	$tags_ids = explode(',',$profile["tags"]);
 	$tags = tags_get_tags($tags_ids);

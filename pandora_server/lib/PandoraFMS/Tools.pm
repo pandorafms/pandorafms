@@ -865,6 +865,7 @@ sub pandora_ping ($$$$) {
 	if ($retries == 0) {
 		$retries = $pa_config->{'icmp_checks'};
 	}
+	my $packets = defined($pa_config->{'icmp_packets'}) ? $pa_config->{'icmp_packets'} : 1;
 	 
 	my $output = 0;
 	my $i;
@@ -876,7 +877,7 @@ sub pandora_ping ($$$$) {
 	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
 		my $ms_timeout = $timeout * 1000;
 		for ($i=0; $i < $retries; $i++) {
-			$output = `ping -n 1 -w $ms_timeout $host`;
+			$output = `ping -n $packets -w $ms_timeout $host`;
 			if ($output =~ /TTL/){
 				return 1;
 			}
@@ -897,7 +898,7 @@ sub pandora_ping ($$$$) {
 		
 		# Ping the host
 		for ($i=0; $i < $retries; $i++) {
-			`$ping_command -s -n $host 56 1 >$DEVNULL 2>&1`;
+			`$ping_command -s -n $host 56 $packets >$DEVNULL 2>&1`;
 			if ($? == 0) {
 				return 1;
 			}
@@ -918,7 +919,7 @@ sub pandora_ping ($$$$) {
 		
 		# Ping the host
 		for ($i=0; $i < $retries; $i++) {
-			`$ping_command -q -n -c 1 $host >$DEVNULL 2>&1`;
+			`$ping_command -q -n -c $packets $host >$DEVNULL 2>&1`;
 			if ($? == 0) {
 				return 1;
 			}
@@ -939,7 +940,7 @@ sub pandora_ping ($$$$) {
 
 		# Ping the host
 		for ($i=0; $i < $retries; $i++) {
-			`$ping_command -q -n -c 1 $host >$DEVNULL 2>&1`;
+			`$ping_command -q -n -c $packets $host >$DEVNULL 2>&1`;
 			if ($? == 0) {
 				return 1;
 			}
@@ -959,7 +960,7 @@ sub pandora_ping ($$$$) {
 		
 		# Ping the host
 		for ($i=0; $i < $retries; $i++) {
-			`$ping_command -q -W $timeout -n -c 1 $host >$DEVNULL 2>&1`;	
+			`$ping_command -q -W $timeout -n -c $packets $host >$DEVNULL 2>&1`;	
 			if ($? == 0) {
 				return 1;
 			}

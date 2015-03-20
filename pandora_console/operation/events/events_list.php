@@ -36,6 +36,8 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 if(defined('METACONSOLE')){
 	$jump = '&nbsp;&nbsp;';
 }
@@ -225,7 +227,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
 	$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
-	$data[1] .= html_print_select_groups($config["id_user"], "ER", users_can_manage_group_all(), 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
+	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group", $id_group, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
@@ -844,6 +846,8 @@ $(document).ready( function() {
 							$("#filter_only_alert").val(val);
 						if (i == 'id_group_filter')
 							$("#id_group").val(val);
+						if (i == 'id_group1')
+							$("#id_group1").val(val);
 					});
 					reorder_tags_inputs();
 					// Update the info with the loaded filter

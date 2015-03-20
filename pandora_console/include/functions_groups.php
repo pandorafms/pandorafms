@@ -2759,7 +2759,7 @@ function groups_get_group_deep ($id_group) {
 		$deep = "";
 	}
 	else {
-		$deep = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", count($parents));
+		$deep = str_repeat("&nbsp;&nbsp;", count($parents));
 	}
 	
 	return $deep;

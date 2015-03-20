@@ -755,7 +755,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
  * @return string SQL condition for tagente_module
  */
  
-function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group_and_tag = false) {
+function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group_and_tag = false, $force_equal = false) {
 
 	global $config;
 	$condition = '';
@@ -800,8 +800,11 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 				
 				if ($force_group_and_tag) {
 					if (!empty($all_tags[$tag])) {
-						//~ $tags_condition .= sprintf('(tags = "%s"',io_safe_input($all_tags[$tag]));
-						$tags_condition .= "(tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
+						if ($force_equal) {
+							$tags_condition .= sprintf('(tags = "%s"',io_safe_input($all_tags[$tag]));
+						} else {
+							$tags_condition .= "(tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
+						}
 						$childrens = groups_get_childrens($group_id, null, true);
 
 						if (empty($childrens)) {
@@ -819,8 +822,11 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 						$tags_condition .= "id_grupo = ".$group_id;
 					}
 				} else {
-					//~ $tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
-					$tags_condition .= "tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
+					if ($force_equal) {
+						$tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
+					} else {
+						$tags_condition .= "tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
+					}
 				}
 			}
 		}

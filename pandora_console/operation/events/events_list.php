@@ -36,6 +36,8 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 if(defined('METACONSOLE')){
 	$jump = '&nbsp;&nbsp;';
 }
@@ -225,7 +227,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
 	$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
-	$data[1] .= html_print_select_groups($config["id_user"], "ER", users_can_manage_group_all(), 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
+	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group", $id_group, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
@@ -327,13 +329,21 @@ if(defined('METACONSOLE')){
 
 
 $data = array();
-$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-	true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
+if(!defined("METACONSOLE"))
+	$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
+		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
+else
+	$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
+		true, true, true, '', false, 'width: 250px; height: 70px;') . '<br>';
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
-$data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 120px; height: 70px;");
+if(!defined("METACONSOLE"))
+	$data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
+		0, true, true, true, '', false, "width: 120px; height: 70px;");
+else
+	$data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
+		0, true, true, true, '', false, "width: 250px; height: 70px;");
 $tabletags_with->data[] = $data;
 $tabletags_with->rowclass[] = '';
 
@@ -353,13 +363,23 @@ if(defined('METACONSOLE')){
 $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
-$data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
-	true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
+if(!defined("METACONSOLE"))
+	$data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
+		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
+else
+	$data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
+		true, true, true, '', false, 'width: 250px; height: 70px;') . '<br>';
+		
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
-$data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 120px; height: 70px;");
+
+if(!defined("METACONSOLE"))
+	$data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
+		0, true, true, true, '', false, "width: 120px; height: 70px;");
+else
+	$data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
+		0, true, true, true, '', false, "width: 250px; height: 70px;");
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
 
@@ -844,6 +864,8 @@ $(document).ready( function() {
 							$("#filter_only_alert").val(val);
 						if (i == 'id_group_filter')
 							$("#id_group").val(val);
+						if (i == 'id_group1')
+							$("#id_group1").val(val);
 					});
 					reorder_tags_inputs();
 					// Update the info with the loaded filter

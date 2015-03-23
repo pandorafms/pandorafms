@@ -355,48 +355,50 @@ TreeController = {
 
 								$content.append($serverTypeImage);
 							}
-
-							// Graph pop-up
-							if (typeof element.moduleGraph != 'undefined') {
-								var $graphImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
-										+'images/chart_curve.png" /> ');
-								$graphImage
-									.addClass('module-graph')
-									.click(function (e) {
-										e.preventDefault();
-
-										try {
-											winopeng(element.moduleGraph.url, element.moduleGraph.handle);
-										}
-										catch (error) {
-											// console.log(error);
-										}
-									});
-
-								$content.append($graphImage);
-							}
 							
-							// Data pop-up
-							if (typeof element.id != 'undefined' && !isNaN(element.id)) {
+							if (typeof element.showGraphs != 'undefined' && element.showGraphs != 0) {
+								// Graph pop-up
+								if (typeof element.moduleGraph != 'undefined') {
+									var $graphImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+											+'images/chart_curve.png" /> ');
+									$graphImage
+										.addClass('module-graph')
+										.click(function (e) {
+											e.preventDefault();
 
-								var $dataImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
-										+'images/binary.png" /> ');
-								$dataImage
-									.addClass('module-data')
-									.click(function (e) {
-										e.preventDefault();
+											try {
+												winopeng(element.moduleGraph.url, element.moduleGraph.handle);
+											}
+											catch (error) {
+												// console.log(error);
+											}
+										});
 
-										try {
-											var serverName = element.serverName.length > 0 ? element.serverName : '';
-											if ($("#module_details_window").length > 0)
-												show_module_detail_dialog(element.id, '', serverName, 0, 86400);
-										}
-										catch (error) {
-											// console.log(error);
-										}
-									});
+									$content.append($graphImage);
+								}
+								
+								// Data pop-up
+								if (typeof element.id != 'undefined' && !isNaN(element.id)) {
 
-								$content.append($dataImage);
+									var $dataImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+											+'images/binary.png" /> ');
+									$dataImage
+										.addClass('module-data')
+										.click(function (e) {
+											e.preventDefault();
+
+											try {
+												var serverName = element.serverName.length > 0 ? element.serverName : '';
+												if ($("#module_details_window").length > 0)
+													show_module_detail_dialog(element.id, '', serverName, 0, 86400);
+											}
+											catch (error) {
+												// console.log(error);
+											}
+										});
+
+									$content.append($dataImage);
+								}
 							}
 
 							// Alerts

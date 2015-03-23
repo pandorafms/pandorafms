@@ -2046,35 +2046,41 @@ function events_page_details ($event, $server = "") {
 		}
 		$table_details->data[] = $data;
 		
-		$data = array();
-		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Graph').'</div>';
-		$module_module_type = -1;
-		if (isset($module["module_type"])) {
-			$module_module_type = $module["module_type"];
-		}
-		$graph_type = return_graphtype ($module_module_type);
-		
-		$win_handle=dechex(crc32($module["id_agente_modulo"] .
-			$module["nombre"]));
-		
-		$module_module_name = '';
-		if (isset($module["module_name"])) {
-			$module_module_name = $module["module_name"];
-		}
-		$link ="winopeng('" . $serverstring .
-			"operation/agentes/stat_win.php?type=" . $graph_type."&" .
-			"period=" . SECONDS_1DAY . "&" .
-			"id=" . $module["id_agente_modulo"] . "&" .
-			"label=" . rawurlencode(
-				urlencode(
-					base64_encode($module_module_name))) . $hashstring . "&" .
-			(!empty($server) ? "avg_only=1&" : "") .
-			"refresh=" . SECONDS_10MINUTES . "','day_".$win_handle."')";
-		
-		$data[1] = '<a href="javascript:'.$link.'">';
-		$data[1] .= html_print_image('images/chart_curve.png',true);
-		$data[1] .= '</a>';
-		$table_details->data[] = $data;
+		if (check_acl($config['id_user'], $agent['id_grupo'], "RR")) {
+			$data = array();
+			$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Graph').'</div>';
+			
+			$module_type = -1;
+			if (isset($module["module_type"])) {
+				$module_type = $module["module_type"];
+			}
+			$graph_type = return_graphtype ($module_type);
+			$url = ui_get_full_url("operation/agentes/stat_win.php", false, false, false);
+			$handle = dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
+			$win_handle = "day_$handle";
+			
+			$graph_params = array(
+					"type" => $graph_type,
+					"period" => SECONDS_1DAY,
+					"id" => $module["id_agente_modulo"],
+					"label" => rawurlencode(urlencode(base64_encode($module["nombre"]))),
+					"refresh" => SECONDS_10MINUTES
+				);
+			
+			if (defined('METACONSOLE')) {
+				// Set the server id
+				$graph_params["server"] = $server["id"];
+			}
+			
+			$graph_params_str = http_build_query($graph_params);
+			
+			$link = "winopeng('$url?$graph_params_str','$win_handle')";
+			
+			$data[1] = '<a href="javascript:'.$link.'">';
+			$data[1] .= html_print_image('images/chart_curve.png',true);
+			$data[1] .= '</a>';
+			$table_details->data[] = $data;
+ 		}
 	}
 	
 	$data = array();

@@ -21,31 +21,31 @@ if (! isset($_SESSION['id_usuario'])) {
 
 // Global & session management
 require_once ('../../include/config.php');
-require_once ('../../include/auth/mysql.php');
+require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
 require_once ($config['homedir'] . '/include/functions_db.php');
 require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
-
-// Hash login process
-if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
-	$loginhash_data = get_parameter("loginhash_data", "");
-	$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
-	
-	if ($config["loginhash_pwd"] != ""
-		&& $loginhash_data == md5($loginhash_user.io_output_password($config["loginhash_pwd"]))) {
-		
-		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
-		$_SESSION['id_usuario'] = $loginhash_user;
-		$config["id_user"] = $loginhash_user;
-		
-		$hash_connection_data = true;
-	}
-	
-}
+require_once ($config['homedir'] . '/include/functions_agents.php');
 
 check_login ();
+
+// Metaconsole connection to the node
+$server_id = (int) get_parameter("server");
+if ($config["metaconsole"] && !empty($server_id)) {
+	$server = metaconsole_get_connection_by_id($server_id);
+	
+	// Error connecting
+	if (metaconsole_connect($server) !== NOERR) {
+		echo "<html>";
+			echo "<body>";
+				ui_print_error_message(__('There was a problem connecting with the node'));
+			echo "</body>";
+		echo "</html>";
+		exit;
+ 	}
+}
 
 $user_language = get_user_language ($config['id_user']);
 if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
@@ -100,15 +100,28 @@ $label = base64_decode(get_parameter('label', ''));
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 		<?php
 		
-		// Get input parameters
-		$label = get_parameter ("label","");
-		if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
-			ui_print_error_message(
-				__('There was a problem locating the source of the graph'));
+		// Module id
+		$id = (int) get_parameter ("id", 0);
+		// Agent id
+		$agent_id = (int) modules_get_agentmodule_agent($id);
+		if (empty($id) || empty($agent_id)) {
+			ui_print_error_message(__('There was a problem locating the source of the graph'));
 			exit;
 		}
 		
-		$period = get_parameter ( "period", SECONDS_1HOUR);
+		// ACL
+		$permission = false;
+		$agent_group = (int) agents_get_agent_group($agent_id);
+		
+		if (!empty($agent_group) && check_acl($config['id_user'], $agent_group, "RR")) {
+			$permission = true;
+		}
+		
+		if (!$permission) {
+			require ($config['homedir'] . "/general/noaccess.php");
+ 			exit;
+ 		}
+		
 		$draw_alerts = get_parameter("draw_alerts", 0);
 		$avg_only = get_parameter ("avg_only", 0);
 		$show_other = (bool)get_parameter('show_other', false);
@@ -154,7 +167,7 @@ $label = base64_decode(get_parameter('label', ''));
 		else
 			$date = $utime;
 		
-		$urlImage = ui_get_full_url(false);
+		$urlImage = ui_get_full_url(false, false, false, false);
 		
 		$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $id);
 		
@@ -217,20 +230,10 @@ $label = base64_decode(get_parameter('label', ''));
 		// MENU
 		$params['body_text'] .= '<form method="get" action="stat_win.php">';
 		$params['body_text'] .= html_print_input_hidden ("id", $id, true);
-		$params['body_text'] .= html_print_input_hidden ("label", $label);
-		
-		if (isset($hash_connection_data)) {
-			$params['body_text'] .=
-				html_print_input_hidden("loginhash", "auto", true);
-			$params['body_text'] .=
-				html_print_input_hidden("loginhash_data", $loginhash_data, true);
-			$params['body_text'] .=
-				html_print_input_hidden("loginhash_user",
-					str_rot13($loginhash_user), true);
-		}
-		
-		$params['body_text'] .= html_print_input_hidden ("id", $id, true);
 		$params['body_text'] .= html_print_input_hidden ("label", $label, true);
+		
+		if (!empty($server_id))
+			$params['body_text'] .= html_print_input_hidden ("server", $server_id, true);
 		
 		if (isset($_GET["type"])) {
 			$type = get_parameter_get ("type");

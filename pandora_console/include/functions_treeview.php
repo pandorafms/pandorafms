@@ -545,29 +545,22 @@ function treeview_printTable($id_agente, $server_data = array()) {
 		$table->data = array();
 		
 		foreach ($network_interfaces as $interface_name => $interface) {
-			if (!empty($interface['traffic'])) {
+			if (!empty($interface['traffic']) && check_acl($config['id_user'], $agent["id_grupo"], "RR")) {
 				$params = array(
 						'interface_name' => $interface_name,
 						'agent_id' => $id_agente,
 						'traffic_module_in' => $interface['traffic']['in'],
 						'traffic_module_out' => $interface['traffic']['out']
 					);
+				
+				if (defined('METACONSOLE') && !empty($server_id))
+					$params["server"] = $server_id;
+				
 				$params_json = json_encode($params);
 				$params_encoded = base64_encode($params_json);
+				$url = ui_get_full_url("operation/agentes/interface_traffic_graph_win.php", false, false, false);
+				$graph_url = "$url?params=$params_encoded";
 				$win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-				
-				$graph_url = '';
-				if (!defined('METACONSOLE')) {
-					$graph_url = $config['homeurl'] .
-						"operation/agentes/interface_traffic_graph_win.php?" .
-						"params=$params_encoded";
-				}
-				else if (!empty($server_data)) {
-					$graph_url = ui_meta_get_url_console_child(
-						$server_data, null, null, null, null,
-						"operation/agentes/interface_traffic_graph_win.php?" .
-						"params=$params_encoded");
-				}
 				
 				$graph_link = "<a href=\"javascript:winopeng('$graph_url','$win_handle')\">" .
 					html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";

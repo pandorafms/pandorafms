@@ -1197,11 +1197,11 @@ foreach ($result as $row) {
 	
 	$data[7] = "";
 	
-	if ($row['history_data'] == 1) {
+	if ($row['history_data'] == 1 && check_acl($config['id_user'], $row['id_group'], "RR") {
 		
 		$graph_type = return_graphtype ($row["module_type"]);
 		
-		$url = "operation/agentes/stat_win.php";
+		$url = ui_get_full_url("operation/agentes/stat_win.php", false, false, false);
 		$handle = dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
 		$win_handle = "day_$handle";
 		
@@ -1214,8 +1214,6 @@ foreach ($result as $row) {
 			);
 		
 		if (defined('METACONSOLE') && isset($row["server_id"])) {
-			// Force the search of this url from the pandora_console's root homeurl
-			$url = "../../$url";
 			// Set the server id
 			$graph_params["server"] = $row["server_id"];
 		}

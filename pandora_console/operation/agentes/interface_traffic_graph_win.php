@@ -29,22 +29,26 @@ require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_custom_graphs.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 
-// Hash login process
-if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
-	$loginhash_data = get_parameter("loginhash_data", "");
-	$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
-	
-	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
-		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
-		$_SESSION['id_usuario'] = $loginhash_user;
-		$config["id_user"] = $loginhash_user;
-		
-		$hash_connection_data = true;
-	}
-	
-}
-
 check_login();
+
+$params_json = base64_decode((string) get_parameter('params'));
+$params = json_decode($params_json, true);
+
+// Metaconsole connection to the node
+$server_id = (int) (isset($params['server']) ? $params['server'] : 0);
+if (!empty($server_id) && function_exists("metaconsole_get_connection_by_id")) {
+	$server = metaconsole_get_connection_by_id($server_id);
+	
+	// Error connecting
+	if (metaconsole_connect($server) !== NOERR) {
+		echo "<html>";
+			echo "<body>";
+				ui_print_error_message(__('There was a problem connecting with the node'));
+			echo "</body>";
+		echo "</html>";
+		exit;
+	}
+}
 
 $user_language = get_user_language($config['id_user']);
 if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
@@ -53,9 +57,6 @@ if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
 }
 
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
-
-$params_json = base64_decode((string) get_parameter('params'));
-$params = json_decode($params_json, true);
 
 $interface_name = (string) $params['interface_name'];
 $agent_id = (int) $params['agent_id'];
@@ -105,6 +106,25 @@ $interface_traffic_modules = array(
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 <?php
+		
+		// ACL
+		$permission = false;
+		$agent_group = (int) agents_get_agent_group($agent_id);
+		
+		// The traffic modules should belong to the agent id
+		$in_agent_id = (int) db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $params['traffic_module_in']);
+		$out_agent_id = (int) db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $params['traffic_module_out']);
+		$traffic_modules_belong_to_agent = $agent_id == $in_agent_id && $agent_id == $out_agent_id;
+		
+		if (!empty($agent_group) && !empty($params['traffic_module_in']) && !empty($params['traffic_module_out'])
+				&& $traffic_modules_belong_to_agent && check_acl($config['id_user'], $agent_group, "RR")) {
+			$permission = true;
+		}
+		
+		if (!$permission) {
+			require ($config['homedir'] . "/general/noaccess.php");
+			exit;
+		}
 		
 		// Get input parameters
 		$period = (int) get_parameter('period', SECONDS_1HOUR);
@@ -164,16 +184,6 @@ $interface_traffic_modules = array(
 		// MENU
 		$side_layer_params['body_text'] .= '<form method="get" action="interface_traffic_graph_win.php">';
 		$side_layer_params['body_text'] .= html_print_input_hidden("params", base64_encode($params_json), true);
-		
-		if (isset($hash_connection_data)) {
-			$side_layer_params['body_text'] .=
-				html_print_input_hidden("loginhash", "auto", true);
-			$side_layer_params['body_text'] .=
-				html_print_input_hidden("loginhash_data", $loginhash_data, true);
-			$side_layer_params['body_text'] .=
-				html_print_input_hidden("loginhash_user",
-					str_rot13($loginhash_user), true);
-		}
 		
 		// FORM TABLE
 		

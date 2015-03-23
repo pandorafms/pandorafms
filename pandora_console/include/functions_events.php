@@ -1580,14 +1580,27 @@ function events_get_event_filter ($id_filter, $filter = false, $fields = false) 
  * @param boolean If event filters are used for manage/view operations (non admin users can see group ALL for manage) # Fix
  * @return array A event filter matching id and filter or false.
  */
-function events_get_event_filter_select($manage = true){
+function events_get_event_filter_select($manage = true) {
 	global $config;
 	
-	$user_groups = users_get_groups ($config['id_user'], "EW", $manage, true);
+	$strict_acl = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+	
+	if ($strict_acl) {
+		$user_groups = users_get_strict_mode_groups($config['id_user'],
+			users_can_manage_group_all());
+	}
+	else {
+		$user_groups = users_get_groups ($config['id_user'], "EW",
+			users_can_manage_group_all(), true);
+	}
+	
 	if(empty($user_groups)) {
 		return array();
 	}
-	$sql = "SELECT id_filter, id_name FROM tevent_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
+	$sql = "
+		SELECT id_filter, id_name
+		FROM tevent_filter
+		WHERE id_group IN (" . implode(',', array_keys ($user_groups)) . ")";
 	
 	$event_filters = db_get_all_rows_sql($sql);
 	

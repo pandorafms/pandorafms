@@ -421,7 +421,7 @@ function config_update_config () {
 						$error_update[] = __('Login background');
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
-					if (!config_update_value ('vc_line_thickness', get_parameter('vc_line_thickness')))
+					if (!config_update_value ('vc_line_thickness', (int) get_parameter('vc_line_thickness')))
 						$error_update[] = __('Default line thickness for the Visual Console');
 					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))
 						$error_update[] = __('Agent size text');
@@ -455,7 +455,7 @@ function config_update_config () {
 						$error_update[] = __('Shortened module graph data');
 					if (!config_update_value ('show_group_name', get_parameter('show_group_name')))
 						$error_update[] = __('Show the group name instead the group icon.');
-					if (!config_update_value ('custom_graph_widht', get_parameter('custom_graph_widht')))
+					if (!config_update_value ('custom_graph_widht', (int) get_parameter('custom_graph_widht', 1)))
 						$error_update[] = __('Default line thickness for the Custom Graph.');
 					
 					

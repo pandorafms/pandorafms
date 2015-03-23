@@ -1476,25 +1476,25 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	
 	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning')));
 	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
-	$tdata[3] .= '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
+	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal')));
 	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
-	$tdata[1] .= '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
+	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
 	
 	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown')));
 	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
-	$tdata[3] .= '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
+	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init')));
 	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
-	$tdata[1] .= '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
+	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
 	
 	$tdata[2] = $tdata[3] = '';
 	$table_mbs->rowclass[] = '';

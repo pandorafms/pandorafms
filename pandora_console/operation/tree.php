@@ -384,68 +384,62 @@ if (is_ajax ()) {
 				echo " ";
 				echo str_replace('img', 'img style="vertical-align: middle;"', servers_show_type ($row['id_modulo']));
 				echo " ";
-				$graph_type = return_graphtype ($row["id_tipo_modulo"]);
-				$win_handle=dechex(crc32($row["id_agente_modulo"] . $row["nombre"]));
 				
-				if (defined ('METACONSOLE')) {
-					$console_url = $server['server_url'] . '/';
-				}
-				else {
-					$console_url = '';
-				}
+				$id_group = (int) db_get_value("id_grupo", "tagente", "id_agente", $row["id_agente"]);
 				
-				
-				//Icon and link to the Module graph.
-				if (defined('METACONSOLE')) {
-					$url_module_graph = ui_meta_get_url_console_child(
-						$server, null, null, null, null,
-						"operation/agentes/stat_win.php?" .
-						"type=$graph_type&" .
-						"period=86400&" .
-						"id=" . $row["id_agente_modulo"] . "&" .
-						"label=" . rawurlencode(urlencode(base64_encode($row["nombre"]))) . "&" .
-						"refresh=600");
-				}
-				else {
-					$url_module_graph = $console_url .
-						"operation/agentes/stat_win.php?" .
-						"type=$graph_type&" .
-						"period=86400&" .
-						"id=" . $row["id_agente_modulo"] . "&" .
-						"label=" . rawurlencode(urlencode(base64_encode($row["nombre"]))) . "&" .
-						"refresh=600";
-				}
-				$link ="winopeng('" . $url_module_graph . "','day_".$win_handle."')";
-				echo '<a href="javascript: '.$link.'">' . html_print_image ("images/chart_curve.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . '</a>';
-				
-				
-				echo " ";
-				
-				
-				//Icon and link to the Module data.
-				if (defined('METACONSOLE')) {
+				if (check_acl($config['id_user'], $id_group, "RR")) {
+					$graph_type = return_graphtype ($row["id_tipo_modulo"]);
+					$url = ui_get_full_url("operation/agentes/stat_win.php", false, false, false);
+					$handle = dechex(crc32($row["id_agente_modulo"].$row["nombre"]));
+					$win_handle = "day_$handle";
 					
-					$url_module_data =  ui_meta_get_url_console_child(
-						$server,
-						"estado", "operation/agentes/ver_agente",
-						"id_agente=" . $row['id_agente'] . "&" .
-						"tab=data_view&" .
-						"period=86400&" .
-						"id=" . $row["id_agente_modulo"]);
+					$graph_params = array(
+							"type" => $graph_type,
+							"period" => SECONDS_1DAY,
+							"id" => $row["id_agente_modulo"],
+							"label" => rawurlencode(urlencode(base64_encode($row["nombre"]))),
+							"refresh" => SECONDS_10MINUTES
+						);
+					
+					if (defined('METACONSOLE')) {
+						// Set the server id
+						$graph_params["server"] = $server["id"];
+					}
+					
+					$graph_params_str = http_build_query($graph_params);
+					
+					$link = "winopeng('$url?$graph_params_str','$win_handle')";
+					echo '<a href="javascript: '.$link.'">' . html_print_image ("images/chart_curve.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . '</a>';
+					
+					
+					echo " ";
+					
+					
+					//Icon and link to the Module data.
+					if (defined('METACONSOLE')) {
+						
+						$url_module_data =  ui_meta_get_url_console_child(
+							$server,
+							"estado", "operation/agentes/ver_agente",
+							"id_agente=" . $row['id_agente'] . "&" .
+							"tab=data_view&" .
+							"period=86400&" .
+							"id=" . $row["id_agente_modulo"]);
+					}
+					else {
+						$url_module_data = $console_url .
+							"index.php?" .
+							"sec=estado&" .
+							"sec2=operation/agentes/ver_agente&" .
+							"id_agente=" . $row['id_agente'] . "&" .
+							"tab=data_view&" .
+							"period=86400&" .
+							"id=" . $row["id_agente_modulo"];
+					}
+					echo "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agente'].", \"" . $server_name . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+					
+					echo " ";
 				}
-				else {
-					$url_module_data = $console_url .
-						"index.php?" .
-						"sec=estado&" .
-						"sec2=operation/agentes/ver_agente&" .
-						"id_agente=" . $row['id_agente'] . "&" .
-						"tab=data_view&" .
-						"period=86400&" .
-						"id=" . $row["id_agente_modulo"];
-				}
-				echo "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agente'].", \"" . $server_name . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
-				
-				echo " ";
 				
 				$nmodule_alerts = db_get_value_sql(sprintf("SELECT count(*) FROM talert_template_modules WHERE id_agent_module = %s", $row["id_agente_modulo"]));
 				

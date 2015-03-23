@@ -8135,25 +8135,35 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_critical.png', true, array('title' => __('Agents critical')));
-	$agent_data[1] = "<a style='color: #FC4444;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".$data["agent_critical"] <= 0 ? '-' : format_numeric($data['agent_critical'])."</span></b></a>";
+	$agent_data[1] = "<a style='color: #FC4444;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>";
+	$agent_data[1] .= format_numeric($data["agent_critical"]) <= 0 ? '-' : format_numeric($data['agent_critical']);
+	$agent_data[1] .= "</span></b></a>";
 	
 	$agent_data[2] = html_print_image('images/agent_warning.png', true, array('title' => __('Agents warning')));
-	$agent_data[3] = "<a style='color: #FAD403;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".$data["agent_warning"] <= 0 ? '-' : format_numeric($data['agent_warning'])."</span></b></a>";
+	$agent_data[3] = "<a style='color: #FAD403;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>";
+	$agent_data[3] .= $data["agent_warning"] <= 0 ? '-' : format_numeric($data['agent_warning']);
+	$agent_data[3] .= "</span></b></a>";
 	
 	$table_agent->data[] = $agent_data;
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_ok.png', true, array('title' => __('Agents ok')));
-	$agent_data[1] = "<a style='color: #80BA27;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".$data["agent_ok"] <= 0 ? '-' : format_numeric($data['agent_ok'])."</span></b></a>";
+	$agent_data[1] = "<a style='color: #80BA27;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>";
+	$agent_data[1] .= $data["agent_ok"] <= 0 ? '-' : format_numeric($data['agent_ok']);
+	$agent_data[1] .= "</span></b></a>";
 	
 	$agent_data[2] = html_print_image('images/agent_unknown.png', true, array('title' => __('Agents unknown')));
-	$agent_data[3] = "<a style='color: #B2B2B2;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".$data["agent_unknown"] <= 0 ? '-' : format_numeric($data['agent_unknown'])."</span></b></a>";
+	$agent_data[3] = "<a style='color: #B2B2B2;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>";
+	$agent_data[3] .= $data["agent_unknown"] <= 0 ? '-' : format_numeric($data['agent_unknown']);
+	$agent_data[3] .= "</span></b></a>";
 	
 	$table_agent->data[] = $agent_data;
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_notinit.png', true, array('title' => __('Agents not init')));
-	$agent_data[1] = "<a style='color: #5BB6E5;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #5BB6E5;'>".$data["agent_not_init"] <= 0 ? '-' : format_numeric($data['agent_not_init'])."</span></b></a>";
+	$agent_data[1] = "<a style='color: #5BB6E5;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #5BB6E5;'>";
+	$agent_data[1] .= $data["agent_not_init"] <= 0 ? '-' : format_numeric($data['agent_not_init']);
+	$agent_data[1] .= "</span></b></a>";
 	
 	$agent_data[2] = "";
 	$agent_data[3] = "";
@@ -8210,7 +8220,9 @@ function reporting_get_total_servers ($num_servers) {
 		
 	$node_data = array();
 	$node_data[0] = html_print_image('images/server_export.png', true, array('title' => __('Nodes')));
-	$node_data[1] = "<b><span style='font-size: 12pt; font-weight: bold; color: black;'>".$num_servers <= 0 ? '-' : format_numeric($num_servers)."</span></b>";
+	$node_data[1] = "<b><span style='font-size: 12pt; font-weight: bold; color: black;'>";
+	$node_data[1] .= $num_servers <= 0 ? '-' : format_numeric($num_servers);
+	$node_data[1] .= "</span></b>";
 	$table_node->data[] = $node_data;
 	
 	if (!defined('METACONSOLE')){
@@ -8244,19 +8256,27 @@ function reporting_get_events ($data, $links = false) {
 		$table_events->style[0] = "background-color:#FC4444";
 		$table_events->data[0][0] = html_print_image('images/module_event_critical.png', true, array('title' => __('Critical events')));
 		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
-			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['critical'] . "'>" .$data['critical'] <= 0 ? '-' : format_numeric($data['critical'])."</a>";
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['critical'] . "'>";
+		$table_events->data[0][0] .= format_numeric($data['critical']) <= 0 ? ' -' : format_numeric($data['critical']);
+		$table_events->data[0][0] .= "</a>";
 		$table_events->style[1] = "background-color:#FAD403";
 		$table_events->data[0][1] = html_print_image('images/module_event_warning.png', true, array('title' => __('Warning events')));
 		$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;" .
-			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['warning'] . "'>" .$data['warning'] <= 0 ? '-' : format_numeric($data['warning'])."</a>";
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['warning'] . "'>";
+		$table_events->data[0][1] .= format_numeric($data['warning']) <= 0 ? ' -' : format_numeric($data['warning']);
+		$table_events->data[0][1] .= "</a>";
 		$table_events->style[2] = "background-color:#80BA27";
 		$table_events->data[0][2] = html_print_image('images/module_event_ok.png', true, array('title' => __('OK events')));
 		$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;" .
-			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['normal'] . "'>" .$data['normal'] <= 0 ? '-' : format_numeric($data['normal'])."</a>";
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['normal'] . "'>";
+		$table_events->data[0][2] .= format_numeric($data['normal']) <= 0 ? ' -' : format_numeric($data['normal']);
+		$table_events->data[0][2] .= "</a>";
 		$table_events->style[3] = "background-color:#B2B2B2";
 		$table_events->data[0][3] = html_print_image('images/module_event_unknown.png', true, array('title' => __('Unknown events')));
 		$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
-			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['unknown'] . "'>" .$data['unknown'] <= 0 ? '-' : format_numeric($data['unknown'])."</a>";
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['unknown'] . "'>";
+		$table_events->data[0][3] .=format_numeric($data['unknown']) <= 0 ? ' -' : format_numeric($data['unknown']);
+		$table_events->data[0][3] .="</a>";
 		}
 	else{
 		$table_events->data[0][0] = html_print_image('images/module_critical.png', true, array('title' => __('Critical events')));

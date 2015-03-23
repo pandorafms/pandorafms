@@ -111,7 +111,7 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 		//Recheck in all reports if the user have permissions to see each report.
 		$groups = users_get_groups ($config['id_user'], $privileges, $returnAllGroup);
 		if ($strict_user)
-			$groups = users_get_strict_mode_groups ($config['id_user'], $returnAllGroup)
+			$groups = users_get_strict_mode_groups ($config['id_user'], $returnAllGroup);
 	}
 	
 	foreach ($all_reports as $report) {

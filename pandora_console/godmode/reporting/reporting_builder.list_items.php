@@ -436,9 +436,10 @@ if (defined("METACONSOLE")){
 				echo "<div style='text-align: right; width:100%'>";
 			else
 				echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
-			
-			html_print_input_hidden('ids_items_to_delete', '');
-			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+			if (check_acl ($config['id_user'], 0, "RM")) {
+				html_print_input_hidden('ids_items_to_delete', '');
+				html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+			}
 			echo "</div>";
 		echo "</form>";
 	}

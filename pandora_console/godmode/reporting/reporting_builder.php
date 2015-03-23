@@ -490,8 +490,10 @@ switch ($action) {
 				$table->head[$next] = __('Group');
 				$table->align[$next] = 'center';
 				$next++;
-				$table->head[$next] = '<span title="Operations">' .
-					__('Op.') . '</span>';
+				if(!defined('METACONSOLE'))
+					$table->head[$next] = '<span title="Operations">' .
+						__('Op.') . '</span>';
+					
 				$table->size = array ();
 				$table->size[$next] = '80px';
 				$table->style[$next] = 'text-align:center;';
@@ -570,10 +572,7 @@ switch ($action) {
 						if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
 							$delete = true; //owner can delete
 						} else {
-							$delete = check_acl($config['id_user'],
-								$report['id_group'], "RM")
-								&&
-								users_can_manage_group_all($report["id_group"], "RM");
+							$delete = false;
 						}
 						break;
 					case 'group_edit':

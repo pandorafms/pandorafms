@@ -1311,7 +1311,7 @@ class Tree {
 		$module["showGraphs"] = 0;
 		
 		// ACL
-		if (!empty($group_id) {
+		if (!empty($group_id)) {
 			$module["showGraphs"] = (int) check_acl($config['id_user'], $group_id, "RR");
 		}
 		

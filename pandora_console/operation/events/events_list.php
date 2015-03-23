@@ -82,13 +82,21 @@ if (is_ajax()) {
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
 		
-		$result = db_process_sql_insert('tevent_filter', $values);
+		$exists = (bool)db_get_value_filter(
+			'id_filter', 'tevent_filter', $values);
 		
-		if ($result === false) {
+		if ($exists) {
 			echo 'error';
 		}
 		else {
-			echo $result;
+			$result = db_process_sql_insert('tevent_filter', $values);
+			
+			if ($result === false) {
+				echo 'error';
+			}
+			else {
+				echo $result;
+			}
 		}
 	}
 	

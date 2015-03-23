@@ -1197,7 +1197,7 @@ foreach ($result as $row) {
 	
 	$data[7] = "";
 	
-	if ($row['history_data'] == 1 && check_acl($config['id_user'], $row['id_group'], "RR") {
+	if ($row['history_data'] == 1 && check_acl($config['id_user'], $row['id_group'], "RR")) {
 		
 		$graph_type = return_graphtype ($row["module_type"]);
 		

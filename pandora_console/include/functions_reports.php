@@ -82,7 +82,7 @@ function reports_get_report ($id_report, $filter = false, $fields = false) {
  *
  * @return array An array with all the reports the user can view.
  */
-function reports_get_reports ($filter = false, $fields = false, $returnAllGroup = true, $privileges = 'RR', $group = false) {
+function reports_get_reports ($filter = false, $fields = false, $returnAllGroup = true, $privileges = 'RR', $group = false, $strict_user) {
 	global $config;
 	
 	if (! is_array ($filter))
@@ -110,6 +110,8 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 	else {
 		//Recheck in all reports if the user have permissions to see each report.
 		$groups = users_get_groups ($config['id_user'], $privileges, $returnAllGroup);
+		if ($strict_user)
+			$groups = users_get_strict_mode_groups ($config['id_user'], $returnAllGroup)
 	}
 	
 	foreach ($all_reports as $report) {

@@ -451,7 +451,7 @@ switch ($action) {
 		
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
-				'id_user', 'id_group', 'non_interactive'), $return_all_group, 'RR', $group);
+				'id_user', 'id_group', 'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
 		
 		$table->width = '0px';
 		if (sizeof ($reports)) {

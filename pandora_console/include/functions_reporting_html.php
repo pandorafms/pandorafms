@@ -37,6 +37,115 @@ include_once($config['homedir'] . "/include/functions_forecast.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 
+function reporting_html_header(&$table, $mini, $title, $subtitle,
+	$period, $date, $from, $to) {
+	
+	global $config;
+	
+	
+	if ($mini) {
+		$sizh = '';
+		$sizhfin = '';
+	}
+	else {
+		$sizh = '<h4>';
+		$sizhfin = '</h4>';
+	}
+	
+	
+	$date_text = "";
+	if (!empty($date)) {
+		$date_text = date($config["date_format"], $date);
+	}
+	else if (!empty($from) && !empty($to)) {
+		$date_text = 
+			"(" . human_time_description_raw ($period) . ") " .
+			__("From:") . " " . date($config["date_format"], $from) . "<br />" .
+			__("To:") . " " . date($config["date_format"], $to);
+	}
+	else if ($period > 0) {
+		$date_text = human_time_description_raw($period);
+	}
+	else if ($period === 0) {
+		$date_text = __('Last data');
+	}
+	
+	
+	$data = array();
+	if (empty($subtitle) && (empty($date_text))) {
+		$data[] = $sizh . $title . $sizhfin;
+		$table->colspan[0][0] = 3;
+	}
+	else if (empty($subtitle)) {
+		$data[] = $sizh . $title . $sizhfin;
+		$data[] = "<div style='text-align: right;'>" . $sizh . $date_text . $sizhfin . "</div>";
+		$table->colspan[0][1] = 2;
+	}
+	else if (empty($date_text)) {
+		$data[] = $sizh . $title . $sizhfin;
+		$data[] = $sizh . $subtitle . $sizhfin;
+		$table->colspan[0][1] = 2;
+	}
+	else {
+		$data[] = $sizh . $title . $sizhfin;
+		$data[] = $sizh . $subtitle . $sizhfin;
+		$data[] = "<div style='text-align: right;'>" . $sizh . $date_text . $sizhfin . "</div>";
+	}
+	
+	array_push ($table->data, $data);
+}
+
+function reporting_html_print_report($report, $mini = false) {
+	
+	foreach ($report['contents'] as $item) {
+		$table->size = array ();
+		$table->style = array ();
+		$table->width = '98%';
+		$table->class = 'databox';
+		$table->rowclass = array ();
+		$table->rowclass[0] = 'datos3';
+		$table->data = array ();
+		$table->head = array ();
+		$table->style = array ();
+		$table->colspan = array ();
+		$table->rowstyle = array ();
+		
+		
+		reporting_html_header($table,
+			$mini, $item['title'],
+			$item['subtitle'],
+			$item['date']['period'],
+			$item['date']['date'],
+			$item['date']['from'],
+			$item['date']['to']);
+		
+		if ($item["description"] != "") {
+			$table->data['description_row']['description'] = $item["description"];
+			$table->colspan['description_row']['description'] = 3;
+		}
+		
+		switch ($item['type']) {
+			case 'general':
+				break;
+			case 'sql':
+				break;
+			case 'simple_graph':
+				$table->colspan['chart']['cell'] = 3;
+				$table->cellstyle['chart']['cell'] = 'text-align: center;';
+				$table->data['chart']['cell'] = $item['chart'];
+				break;
+		}
+		
+		if ($item['type'] == 'agent_module')
+			echo '<div style="width: 99%; overflow: auto;">';
+		
+		html_print_table ($table);
+		
+		if ($item['type'] == 'agent_module')
+			echo '</div>';
+	}
+}
+
 /** 
  * Get the average value of an agent module in a period of time.
  * 
@@ -2804,7 +2913,9 @@ function sla_value_asc_cmp($a, $b) {
 /**
  * Make the header for each content.
  */
-function reporting_header_content($mini, $content, $report, &$table, $title = false, $name = false, $period = false) {
+function reporting_header_content($mini, $content, $report, &$table,
+	$title = false, $name = false, $period = false) {
+	
 	global $config;
 	
 	if ($mini) {

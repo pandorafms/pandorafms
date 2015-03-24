@@ -86,6 +86,14 @@ function reporting_get_type($content) {
 	return $content["type"];
 }
 
+function reporting_get_description($id_report) {
+	return db_get_value('description', 'treport', 'id_report', $id_report);
+}
+
+function reporting_get_name($id_report) {
+	return db_get_value('name', 'treport', 'id_report', $id_report);
+}
+
 function reporting_make_reporting_data($id_report, $date, $time,
 	$period = null, $type = 'dinamic', $force_width_chart = null,
 	$force_height_chart = null) {
@@ -161,6 +169,7 @@ function reporting_sql($report, $content) {
 	global $config;
 	
 	$return = array();
+	$return['type'] = 'sql';
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('SQL');
@@ -168,9 +177,7 @@ function reporting_sql($report, $content) {
 	
 	$return['title'] = $content['name'];
 	$return["description"] = $content["description"];
-	$return["date"] = reporting_get_date_text(
-		$report,
-		$content);
+	$return["date"] = reporting_get_date_text();
 	
 	if ($content['treport_custom_sql_id'] != 0) {
 		switch ($config["dbtype"]) {
@@ -238,6 +245,7 @@ function reporting_general($report, $content) {
 	global $config;
 	
 	$return = array();
+	$return['type'] = 'general';
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('General');
@@ -482,6 +490,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	global $config;
 	
 	$return = array();
+	$return['type'] = 'simple_graph';
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Simple graph');
@@ -598,28 +607,31 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	return reporting_check_structure_content($return);
 }
 
-function reporting_get_date_text($report, $content) {
+function reporting_get_date_text($report = null, $content = null) {
 	global $config;
 	
 	$return = array();
-	$return['date'] = "";
-	$return['period'] = "";
-	$return['from'] = "";
-	$return['to'] = "";
+	$return['date'] = null;
+	$return['period'] = null;
+	$return['from'] = null;
+	$return['to'] = null;
 	
-	if ($content['period'] == 0) {
-		$es = json_decode($content['external_source'], true);
-		if ($es['date'] == 0) {
-			$return['date'] = __('Last data');
+	if (!empty($report) && !empty($content)) {
+		
+		if ($content['period'] == 0) {
+			$es = json_decode($content['external_source'], true);
+			if ($es['date'] == 0) {
+				$return['period'] = 0;
+			}
+			else {
+				$return['date'] = $es['date'];
+			}
 		}
 		else {
-			$return['date'] = date($config["date_format"], $es['date']);
+			$return['period'] = $content['period'];
+			$return['from'] = $report["datetime"] - $content['period'];
+			$return['to'] = $report["datetime"];
 		}
-	}
-	else {
-		$return['period'] = human_time_description_raw ($content['period']);
-		$return['from'] = date($config["date_format"], $report["datetime"] - $content['period']);
-		$return['from'] = date($config["date_format"], $report["datetime"]);
 	}
 	
 	return $return;

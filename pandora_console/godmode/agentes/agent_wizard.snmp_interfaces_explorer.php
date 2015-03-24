@@ -239,6 +239,7 @@ if ($create_modules) {
 			else
 				$module_type = 15;
 			
+			$values['unit'] = "";
 			if (preg_match("/Octets/", $name_array[1])) {
 				$values['unit'] = "Bytes";
 			}

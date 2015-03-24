@@ -168,22 +168,15 @@ function reporting_general($report, $content, $type = 'dinamic') {
 		$report,
 		$content);
 	
+	$generals = db_get_all_rows_filter(
+		'treport_content_item',
+		array('id_report_content' => $content['id_rc']));
+	if (empty($generals)) {
+		$generals = array();
+	}
+	
 	switch ($content['group_by_agent']) {
 		case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
-			$sql = sprintf("
-				SELECT id_agent_module,
-					server_name, operation
-				FROM treport_content_item
-				WHERE id_report_content = %d",
-				$content['id_rc']);
-			$generals = db_process_sql ($sql);
-			$generals = db_get_all_rows_filter(
-				'treport_content_item',
-				array('id_report_content' => $content['id_rc']));
-			if (empty($generals)) {
-				$generals = array();
-			}
-			
 			foreach ($generals as $key => $row) {
 				//Metaconsole connection
 				$server_name = $row ['server_name'];
@@ -379,10 +372,6 @@ function reporting_general($report, $content, $type = 'dinamic') {
 			break;
 		case REPORT_GENERAL_GROUP_BY_AGENT:
 			break;
-	}
-	
-	if ($content['show_resume'] && count($return["data"]) > 0) {
-		
 	}
 	
 	return reporting_check_structure_content($return);

@@ -1029,8 +1029,8 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 		return false;
 	}
 	
-	// If there are not tags restrictions or tags passed, return true
-	if (empty($acls) || empty($tags)) {
+	// If there are not tags restrictions or tags passed, check the group access
+	if ((empty($acls) || empty($tags)) && check_acl($id_user, $id_group, $access)) {
 		return true;
 	}
 	
@@ -1127,8 +1127,8 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 		return false;
 	}
 
-	// If there are not tags restrictions or tags passed, return true
-	if(empty($acls) || empty($tags)) {
+	// If there are not tags restrictions or tags passed, check the group access
+	if ((empty($acls) || empty($tags)) && check_acl($id_user, $id_group, $access)) {
 		return true;
 	}
 
@@ -2195,7 +2195,7 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	}
 	
 	$acl_column = get_acl_column($access);
-
+	
 	$sql = sprintf("SELECT tags, id_grupo 
 					FROM tusuario_perfil, tperfil
 					WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND

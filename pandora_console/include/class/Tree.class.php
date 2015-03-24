@@ -46,6 +46,7 @@ class Tree {
 
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
+		include_once($config['homedir']."/include/functions_modules.php");
 
 		if (defined("METACONSOLE"))
 			enterprise_include_once("meta/include/functions_ui_meta.php");
@@ -1306,31 +1307,35 @@ class Tree {
 		$module['serverTypeHTML'] = servers_show_type($module['server_type']);
 		
 		// Link to the Module graph
-		$graphType = return_graphtype($module['id_module_type']);
-		$winHandle = dechex(crc32($module['id'] . $module['name']));
+		$group_id = (int) modules_get_agent_group($module['id']);
+		$module["showGraphs"] = 0;
 		
-		if (!defined('METACONSOLE')) {
-			$moduleGraphURL = $config['homeurl'] .
-				"/operation/agentes/stat_win.php?" .
-				"type=$graphType&" .
-				"period=" . SECONDS_1DAY . "&" .
-				"id=" . $module['id'] . "&" .
-				"label=" . rawurlencode(urlencode(base64_encode($module['name']))) . "&" .
-				"refresh=" . SECONDS_10MINUTES;
-		}
-		else if (!empty($server)) {
-			$moduleGraphURL = ui_meta_get_url_console_child(
-				$server, null, null, null, null,
-				"operation/agentes/stat_win.php?" .
-				"type=$graphType&" .
-				"period=" . SECONDS_1DAY . "&" .
-				"id=" . $module["id"] . "&" .
-				"label=" . rawurlencode(urlencode(base64_encode($module['name']))) . "&" .
-				"refresh=" . SECONDS_10MINUTES . "&" .
-				"avg_only=1");
+		// ACL
+		if (!empty($group_id)) {
+			$module["showGraphs"] = (int) check_acl($config['id_user'], $group_id, "RR");
 		}
 		
-		if (!empty($moduleGraphURL)) {
+		if ($module["showGraphs"]) {
+			$graphType = return_graphtype($module['id_module_type']);
+			$url = ui_get_full_url("operation/agentes/stat_win.php", false, false, false);
+			$winHandle = dechex(crc32($module['id'].$module['name']));
+			
+			$graph_params = array(
+					"type" => $graphType,
+					"period" => SECONDS_1DAY,
+					"id" => $module['id'],
+					"label" => rawurlencode(urlencode(base64_encode($module['name']))),
+					"refresh" => SECONDS_10MINUTES
+				);
+			
+			if (defined('METACONSOLE') && !empty($server)) {
+				// Set the server id
+				$graph_params["server"] = $module['serverID'];
+			}
+			
+			$graph_params_str = http_build_query($graph_params);
+			$moduleGraphURL = "$url?$graph_params_str";
+			
 			$module['moduleGraph'] = array(
 					'url' => $moduleGraphURL,
 					'handle' => $winHandle

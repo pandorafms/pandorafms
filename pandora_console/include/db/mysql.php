@@ -548,7 +548,7 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 			$query .= sprintf ('%s IN ("%s")', $field, implode ('", "', $value));
 		}
 		else {
-			if (empty($value)) {
+			if ($value === "") {
 				//Search empty string
 				$query .= sprintf ("%s = ''", $field);
 			}

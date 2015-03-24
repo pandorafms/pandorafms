@@ -82,13 +82,21 @@ if (is_ajax()) {
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
 		
-		$result = db_process_sql_insert('tevent_filter', $values);
+		$exists = (bool)db_get_value_filter(
+			'id_filter', 'tevent_filter', $values);
 		
-		if ($result === false) {
+		if ($exists) {
 			echo 'error';
 		}
 		else {
-			echo $result;
+			$result = db_process_sql_insert('tevent_filter', $values);
+			
+			if ($result === false) {
+				echo 'error';
+			}
+			else {
+				echo $result;
+			}
 		}
 	}
 	
@@ -334,7 +342,7 @@ if(!defined("METACONSOLE"))
 		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
 else
 	$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-		true, true, true, '', false, 'width: 250px; height: 70px;') . '<br>';
+		true, true, true, '', false, 'width: auto; height: 70px;') . '<br>';
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
@@ -343,7 +351,7 @@ if(!defined("METACONSOLE"))
 		0, true, true, true, '', false, "width: 120px; height: 70px;");
 else
 	$data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-		0, true, true, true, '', false, "width: 250px; height: 70px;");
+		0, true, true, true, '', false, "width: auto; height: 70px;");
 $tabletags_with->data[] = $data;
 $tabletags_with->rowclass[] = '';
 
@@ -368,7 +376,7 @@ if(!defined("METACONSOLE"))
 		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
 else
 	$data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
-		true, true, true, '', false, 'width: 250px; height: 70px;') . '<br>';
+		true, true, true, '', false, 'width: auto; height: 70px;') . '<br>';
 		
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
@@ -379,7 +387,7 @@ if(!defined("METACONSOLE"))
 		0, true, true, true, '', false, "width: 120px; height: 70px;");
 else
 	$data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
-		0, true, true, true, '', false, "width: 250px; height: 70px;");
+		0, true, true, true, '', false, "width: auto; height: 70px;");
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
 

@@ -684,8 +684,39 @@ function reporting_get_stats_alerts($data, $links = false) {
 		}
 	}
 	
-	// Alerts table
-	$table_al = html_get_predefined_table();
+	$table_agent = html_get_predefined_table();
+	
+	$agent_data = array();
+	$agent_data[0] = html_print_image('images/agent_critical.png', true, array('title' => __('Agents critical')));
+	$agent_data[1] = "<a style='color: #FC4444;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>";
+	$agent_data[1] .= format_numeric($data["agent_critical"]) <= 0 ? '-' : format_numeric($data['agent_critical']);
+	$agent_data[1] .= "</span></b></a>";
+	
+	$agent_data[2] = html_print_image('images/agent_warning.png', true, array('title' => __('Agents warning')));
+	$agent_data[3] = "<a style='color: #FAD403;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>";
+	$agent_data[3] .= $data["agent_warning"] <= 0 ? '-' : format_numeric($data['agent_warning']);
+	$agent_data[3] .= "</span></b></a>";
+	
+	$table_agent->data[] = $agent_data;
+	
+	$agent_data = array();
+	$agent_data[0] = html_print_image('images/agent_ok.png', true, array('title' => __('Agents ok')));
+	$agent_data[1] = "<a style='color: #80BA27;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>";
+	$agent_data[1] .= $data["agent_ok"] <= 0 ? '-' : format_numeric($data['agent_ok']);
+	$agent_data[1] .= "</span></b></a>";
+	
+	$agent_data[2] = html_print_image('images/agent_unknown.png', true, array('title' => __('Agents unknown')));
+	$agent_data[3] = "<a style='color: #B2B2B2;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>";
+	$agent_data[3] .= $data["agent_unknown"] <= 0 ? '-' : format_numeric($data['agent_unknown']);
+	$agent_data[3] .= "</span></b></a>";
+	
+	$table_agent->data[] = $agent_data;
+	
+	$agent_data = array();
+	$agent_data[0] = html_print_image('images/agent_notinit.png', true, array('title' => __('Agents not init')));
+	$agent_data[1] = "<a style='color: #5BB6E5;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #5BB6E5;'>";
+	$agent_data[1] .= $data["agent_not_init"] <= 0 ? '-' : format_numeric($data['agent_not_init']);
+	$agent_data[1] .= "</span></b></a>";
 	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts')));
@@ -721,78 +752,83 @@ function reporting_get_stats_alerts($data, $links = false) {
 function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_height = 150, $links = false, $data_agents=false) {
 	global $config;
 	
-	// Link URLS
-	if ($links === false) {
-		$urls = array();
-		$urls['monitor_critical'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "&pure=" . $config['pure'];
-		$urls['monitor_warning'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING . "&pure=" . $config['pure'];
-		$urls['monitor_ok'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL . "&pure=" . $config['pure'];
-		$urls['monitor_unknown'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN . "&pure=" . $config['pure'];
-		$urls['monitor_not_init'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
-			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT . "&pure=" . $config['pure'];
-	}
-	else {
-		$urls = array();
-		$urls['monitor_critical'] = $links['monitor_critical'];
-		$urls['monitor_warning'] = $links['monitor_warning'];
-		$urls['monitor_ok'] = $links['monitor_ok'];
-		$urls['monitor_unknown'] = $links['monitor_unknown'];
-		$urls['monitor_not_init'] = $links['monitor_not_init'];
+	$table_node = html_get_predefined_table();
+		
+	$node_data = array();
+	$node_data[0] = html_print_image('images/server_export.png', true, array('title' => __('Nodes')));
+	$node_data[1] = "<b><span style='font-size: 12pt; font-weight: bold; color: black;'>";
+	$node_data[1] .= $num_servers <= 0 ? '-' : format_numeric($num_servers);
+	$node_data[1] .= "</span></b>";
+	$table_node->data[] = $node_data;
+	
+	if (!defined('METACONSOLE')){
+		$node_overview = '<fieldset class="databox tactical_set">
+					<legend>' . 
+						__('Node overview') . 
+					'</legend>' . 
+					html_print_table($table_node, true) . '</fieldset>';
+	}else{
+		$table_node->style = array();
+		$table_node->class = "tactical_view";
+		$node_overview = '<fieldset class="tactical_set">
+					<legend>' . 
+						__('Node overview') . 
+					'</legend>' . 
+					html_print_table($table_node, true) . '</fieldset>';
 	}
 	
 	// Modules by status table
 	$table_mbs = html_get_predefined_table();
 	
-	$tdata = array();
-	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical')));
-	$tdata[1] = $data["monitor_critical"] <= 0 ? '-' : $data["monitor_critical"];
-	$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
-	
-	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning')));
-	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
-	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
-	$table_mbs->rowclass[] = '';
-	$table_mbs->data[] = $tdata;
-	
-	$tdata = array();
-	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal')));
-	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
-	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
-	
-	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown')));
-	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
-	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
-	$table_mbs->rowclass[] = '';
-	$table_mbs->data[] = $tdata;
-	
-	$tdata = array();
-	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init')));
-	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
-	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
-	
-	$tdata[2] = $tdata[3] = '';
-	$table_mbs->rowclass[] = '';
-	$table_mbs->data[] = $tdata;
-	
-	if ($data["monitor_checks"] > 0) {
-		$tdata = array();
-		$table_mbs->colspan[count($table_mbs->data)][0] = 4;
-		$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
-		$tdata[0] = '<div id="outter_status_pie" style="height: ' . $graph_height . 'px">' .
-			'<div id="status_pie" style="margin: auto; width: ' . $graph_width . 'px;">' .
-				graph_agent_status(false, $graph_width, $graph_height, true, true, $data_agents) .
-			'</div></div>';
-		$table_mbs->rowclass[] = '';
-		$table_mbs->data[] = $tdata;
+	$table_events->width = "100%";
+	if (defined('METACONSOLE'))
+		$style = " vertical-align:middle;";
+	else
+		$style = "";
+	if (defined('METACONSOLE')){
+		$table_events->style[0] = "background-color:#FC4444";
+		$table_events->data[0][0] = html_print_image('images/module_event_critical.png', true, array('title' => __('Critical events')));
+		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['critical'] . "'>";
+		$table_events->data[0][0] .= format_numeric($data['critical']) <= 0 ? ' -' : format_numeric($data['critical']);
+		$table_events->data[0][0] .= "</a>";
+		$table_events->style[1] = "background-color:#FAD403";
+		$table_events->data[0][1] = html_print_image('images/module_event_warning.png', true, array('title' => __('Warning events')));
+		$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['warning'] . "'>";
+		$table_events->data[0][1] .= format_numeric($data['warning']) <= 0 ? ' -' : format_numeric($data['warning']);
+		$table_events->data[0][1] .= "</a>";
+		$table_events->style[2] = "background-color:#80BA27";
+		$table_events->data[0][2] = html_print_image('images/module_event_ok.png', true, array('title' => __('OK events')));
+		$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['normal'] . "'>";
+		$table_events->data[0][2] .= format_numeric($data['normal']) <= 0 ? ' -' : format_numeric($data['normal']);
+		$table_events->data[0][2] .= "</a>";
+		$table_events->style[3] = "background-color:#B2B2B2";
+		$table_events->data[0][3] = html_print_image('images/module_event_unknown.png', true, array('title' => __('Unknown events')));
+		$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['unknown'] . "'>";
+		$table_events->data[0][3] .=format_numeric($data['unknown']) <= 0 ? ' -' : format_numeric($data['unknown']);
+		$table_events->data[0][3] .="</a>";
+		}
+	else{
+		$table_events->data[0][0] = html_print_image('images/module_critical.png', true, array('title' => __('Critical events')));
+		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color: #FC4444;" . $style . "' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".
+						format_numeric($data['critical'])."</span></b></a>";
+		$table_events->data[0][1] = html_print_image('images/module_warning.png', true, array('title' => __('Warning events')));
+		$table_events->data[0][1] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color: #FAD403;" . $style . "' href='" . $links['warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".
+						format_numeric($data['warning'])."</span></b></a>";
+		$table_events->data[0][2] = html_print_image('images/module_ok.png', true, array('title' => __('OK events')));
+		$table_events->data[0][2] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color: #80BA27;" . $style . "' href='" . $links['normal'] . "'><b style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".
+						format_numeric($data['normal'])."</b></a>";
+		$table_events->data[0][3] = html_print_image('images/module_unknown.png', true, array('title' => __('Unknown events')));
+		$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
+			"<a style='color: #B2B2B2;" . $style . "' href='" . $links['unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".
+						format_numeric($data['unknown'])."</span></b></a>";
+
 	}
 	
 	if (!defined("METACONSOLE")) {
@@ -866,6 +902,24 @@ function reporting_get_stats_agents_monitors($data) {
 
 function reporting_get_stats_users($data) {
 	global $config;
+	
+	include_once ('../../include/graphs/functions_gd.php');
+	$max_value = count($events);
+
+	$ttl = 1;
+	$urlImage = ui_get_full_url(false, true, false, false);
+
+	$colors = array(
+		EVENT_CRIT_MAINTENANCE => COL_MAINTENANCE,
+		EVENT_CRIT_INFORMATIONAL => COL_INFORMATIONAL,
+		EVENT_CRIT_NORMAL => COL_NORMAL,
+		EVENT_CRIT_MINOR => COL_MINOR,
+		EVENT_CRIT_WARNING => COL_WARNING,
+		EVENT_CRIT_MAJOR => COL_MAJOR,
+		EVENT_CRIT_CRITICAL => COL_CRITICAL
+	);
+	
+	foreach ($events as $data) {
 	
 	// Link URLS
 	$urls = array();

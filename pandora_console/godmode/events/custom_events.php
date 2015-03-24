@@ -28,10 +28,6 @@ if (! check_acl($config['id_user'], 0, "EW")) {
 $update = get_parameter('upd_button', '');
 $default = (int) get_parameter('default', 0);
 
-$fields_selected = array();
-$event_fields = '';
-$fields_selected = explode (',', $config['event_fields']);
-
 if ($default != 0) {
 	$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
 	$fields_selected = explode (',', $event_fields);
@@ -52,8 +48,14 @@ else if ($update != '') {
 		'value' => $event_fields
 	);
 	//update 'event_fields' in tconfig table to keep the value at update.
-	$result = db_process_sql_update('tconfig', $values, array ('token' => 'event_fields'));
+	$result = db_process_sql_update('tconfig', $values,
+		array ('token' => 'event_fields'));
+	$config['event_fields'] = $event_fields;
 }
+
+$fields_selected = array();
+$event_fields = '';
+$fields_selected = explode (',', $config['event_fields']);
 
 $result_selected = array();
 

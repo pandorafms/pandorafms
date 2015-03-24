@@ -451,7 +451,7 @@ switch ($action) {
 		
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
-				'id_user', 'id_group', 'non_interactive'), $return_all_group, 'RR', $group);
+				'id_user', 'id_group', 'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
 		
 		$table->width = '0px';
 		if (sizeof ($reports)) {
@@ -490,8 +490,10 @@ switch ($action) {
 				$table->head[$next] = __('Group');
 				$table->align[$next] = 'center';
 				$next++;
-				$table->head[$next] = '<span title="Operations">' .
-					__('Op.') . '</span>';
+				if(!defined('METACONSOLE'))
+					$table->head[$next] = '<span title="Operations">' .
+						__('Op.') . '</span>';
+					
 				$table->size = array ();
 				$table->size[$next] = '80px';
 				$table->style[$next] = 'text-align:center;';
@@ -570,10 +572,7 @@ switch ($action) {
 						if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
 							$delete = true; //owner can delete
 						} else {
-							$delete = check_acl($config['id_user'],
-								$report['id_group'], "RM")
-								&&
-								users_can_manage_group_all($report["id_group"], "RM");
+							$delete = false;
 						}
 						break;
 					case 'group_edit':

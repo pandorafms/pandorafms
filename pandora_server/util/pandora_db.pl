@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.0dev PS150320";
+my $version = "6.0dev PS150324";
 
 # Pandora server configuration
 my %conf;
@@ -204,6 +204,20 @@ sub pandora_purgedb ($$) {
 		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
 		while($events_to_delete > 0) {
 			db_do($dbh, "DELETE FROM $events_table WHERE utimestamp < ? LIMIT ?", $event_limit, $BIG_OPERATION_STEP);
+			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
+			
+			# Mark the progress
+			log_message ('', ".");
+			
+			# Do not overload the MySQL server
+			usleep (10000);
+		}
+		log_message ('', "\n");
+
+		log_message ('PURGE', "Deleting validated events from tmetaconsole_event_history.", '');
+		$events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tmetaconsole_event_history WHERE estado = 1");
+		while($events_to_delete > 0) {
+			db_do($dbh, "DELETE FROM tmetaconsole_event_history WHERE estado = 1 LIMIT ?", $BIG_OPERATION_STEP);
 			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
 			
 			# Mark the progress

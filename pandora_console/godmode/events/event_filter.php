@@ -74,11 +74,23 @@ if ($multiple_delete) {
 		__('Not deleted. Error deleting data'));
 }
 
+$strict_acl = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 $own_info = get_user_info ($config['id_user']);
 // Get group list that user has access
-$groups_user = users_get_groups ($config['id_user'], "EW", users_can_manage_group_all(), true);
+if ($strict_acl) {
+	$groups_user = users_get_strict_mode_groups($config['id_user'],
+		users_can_manage_group_all());
+}
+else {
+	$groups_user = users_get_groups ($config['id_user'], "EW",
+		users_can_manage_group_all(), true);
+}
 
-$sql = "SELECT * FROM tevent_filter WHERE id_group_filter IN (".implode(',', array_keys ($groups_user)).")";
+$sql = "
+	SELECT *
+	FROM tevent_filter
+	WHERE id_group_filter IN (".implode(',', array_keys ($groups_user)).")";
 $filters = db_get_all_rows_sql($sql);
 
 if ($filters === false)

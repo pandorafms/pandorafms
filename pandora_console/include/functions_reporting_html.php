@@ -4233,7 +4233,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_event_no_validated);
 			if(!empty($data[0])) {
 				array_push ($table->data, $data);
-								
+				
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 			}

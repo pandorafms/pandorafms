@@ -143,8 +143,12 @@ function reporting_make_reporting_data($id_report, $date, $time,
 				$report['contents'][] =
 					reporting_general(
 						$report,
-						$content,
-						$type);
+						$content);
+				break;
+			case 'sql':
+				$report['contents'][] = reporting_sql(
+					$report,
+					$content);
 				break;
 		}
 	}
@@ -152,7 +156,84 @@ function reporting_make_reporting_data($id_report, $date, $time,
 	return reporting_check_structure_report($report);
 }
 
-function reporting_general($report, $content, $type = 'dinamic') {
+function reporting_sql($report, $content) {
+	
+	global $config;
+	
+	$return = array();
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('SQL');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text(
+		$report,
+		$content);
+	
+	if ($content['treport_custom_sql_id'] != 0) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = io_safe_output (db_get_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+				break;
+			case "postgresql":
+				$sql = io_safe_output (db_get_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+				break;
+			case "oracle":
+				$sql = io_safe_output (db_get_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+				break;
+		}
+	}
+	else {
+		$sql = io_safe_output ($content['external_source']);
+	}
+	
+	// Do a security check on SQL coming from the user
+	$sql = check_sql ($sql);
+	
+	$return['sql'] = $sql;
+	$return['correct'] = 1;
+	$return['error'] = "";
+	$return['data'] = array();
+	if ($sql != '') {
+		$header = array();
+		if ($content['header_definition'] != '') {
+			$header = explode('|', $content['header_definition']);
+		}
+		
+		$result = db_get_all_rows_sql($sql);
+		if ($result !== false) {
+			
+			foreach ($result as $row) {
+				$data_row = array();
+				
+				$i = 0;
+				foreach ($row as $dbkey => $field) {
+					if (isset($header[$i])) {
+						$key = $header[$i];
+					}
+					else {
+						$key = $dbkey;
+					}
+					$data_row[$key] = $field;
+					
+					$i++;
+				}
+				
+				$return['data'][] = $data_row;
+			}
+		}
+	}
+	else {
+		$return['correct'] = 0;
+		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, union, password, pass, insert or update.');
+	}
+	
+	return reporting_check_structure_content($return);
+}
+
+function reporting_general($report, $content) {
 	
 	global $config;
 	
@@ -168,6 +249,19 @@ function reporting_general($report, $content, $type = 'dinamic') {
 		$report,
 		$content);
 	
+	$return["data"] = array();
+	$return["avg_value"] = 0;
+	$return["min"] = array();
+	$return["min"]["value"] = null;
+	$return["min"]["formated_value"] = null;
+	$return["min"]["agent"] = null;
+	$return["min"]["module"] = null;
+	$return["max"] = array();
+	$return["max"]["value"] = null;
+	$return["max"]["formated_value"] = null;
+	$return["max"]["agent"] = null;
+	$return["max"]["module"] = null;
+	
 	$generals = db_get_all_rows_filter(
 		'treport_content_item',
 		array('id_report_content' => $content['id_rc']));
@@ -175,73 +269,140 @@ function reporting_general($report, $content, $type = 'dinamic') {
 		$generals = array();
 	}
 	
-	switch ($content['group_by_agent']) {
-		case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
-			foreach ($generals as $key => $row) {
-				//Metaconsole connection
-				$server_name = $row ['server_name'];
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					$connection = metaconsole_get_connection($server_name);
-					if (metaconsole_load_external_db($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				if (modules_is_disable_agent($row['id_agent_module'])) {
-					continue;
-				}
-				
-				$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
-				$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
-				$unit = db_get_value('unit', 'tagente_modulo',
-					'id_agente_modulo',
-					$row['id_agent_module']);
-				
-				if ($content['period'] == 0) {
+	$i = 0;
+	foreach ($generals as $key => $row) {
+		//Metaconsole connection
+		$server_name = $row ['server_name'];
+		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+			$connection = metaconsole_get_connection($server_name);
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				//ui_print_error_message ("Error connecting to ".$server_name);
+				continue;
+			}
+		}
+		
+		if (modules_is_disable_agent($row['id_agent_module'])) {
+			continue;
+		}
+		
+		$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
+		$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
+		$unit = db_get_value('unit', 'tagente_modulo',
+			'id_agente_modulo',
+			$row['id_agent_module']);
+		
+		if ($content['period'] == 0) {
+			$data_res[$key] =
+				modules_get_last_value($row['id_agent_module']);
+		}
+		else {
+			switch ($row['operation']) {
+				case 'sum':
 					$data_res[$key] =
-						modules_get_last_value($row['id_agent_module']);
-				}
-				else {
-					switch ($row['operation']) {
-						case 'sum':
-							$data_res[$key] =
-								reporting_get_agentmodule_data_sum(
-									$row['id_agent_module'], $content['period'], $report["datetime"]);
-							break;
-						case 'max':
-							$data_res[$key] =
-								reporting_get_agentmodule_data_max(
-									$row['id_agent_module'], $content['period']);
-							break;
-						case 'min':
-							$data_res[$key] =
-								reporting_get_agentmodule_data_min(
-									$row['id_agent_module'], $content['period']);
-							break;
-						case 'avg':
-						default:
-							$data_res[$key] =
-								reporting_get_agentmodule_data_average(
-									$row['id_agent_module'], $content['period']);
-							break;
-					}
-				}
-				
+						reporting_get_agentmodule_data_sum(
+							$row['id_agent_module'], $content['period'], $report["datetime"]);
+					break;
+				case 'max':
+					$data_res[$key] =
+						reporting_get_agentmodule_data_max(
+							$row['id_agent_module'], $content['period']);
+					break;
+				case 'min':
+					$data_res[$key] =
+						reporting_get_agentmodule_data_min(
+							$row['id_agent_module'], $content['period']);
+					break;
+				case 'avg':
+				default:
+					$data_res[$key] =
+						reporting_get_agentmodule_data_average(
+							$row['id_agent_module'], $content['period']);
+					break;
+			}
+		}
+		
+		switch ($content['group_by_agent']) {
+			case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
 				$id_agent_module[$key] = $row['id_agent_module'];
 				$agent_name[$key] = $ag_name;
 				$module_name[$key] = $mod_name;
 				$units[$key] = $unit;
 				$operations[$key] = $row['operation'];
-				
-				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					metaconsole_restore_db();
+				break;
+			case REPORT_GENERAL_GROUP_BY_AGENT:
+				if ($data_res[$key] === false) {
+					$return["data"][$ag_name][$mod_name] = null;
+				}
+				else {
+					if (!is_numeric($value_res)) {
+						$return["data"][$ag_name][$mod_name] = $data_res[$key];
+					}
+					else {
+						$return["data"][$ag_name][$mod_name] =
+							format_for_graph($data_res[$key], 2) . " " . $unit;
+					}
+				}
+				break;
+		}
+		
+		// Calculate the avg, min and max
+		if (is_numeric($data_res[$key])) {
+			$change_min = false;
+			if (is_null($return["min"]["value"])) {
+				$change_min = true;
+			}
+			else {
+				if ($return["min"]["value"] > $data_res[$key]) {
+					$change_min = true;
+				}
+			}
+			if ($change_min) {
+				$return["min"]["value"] = $data_res[$key];
+				$return["min"]["formated_value"] =
+					format_for_graph($data_res[$key], 2) . " " . $unit;
+				$return["min"]["agent"] = $ag_name;
+				$return["min"]["module"] = $mod_name;
+			}
+			
+			$change_max = false;
+			if (is_null($return["max"]["value"])) {
+				$change_max = true;
+			}
+			else {
+				if ($return["max"]["value"] < $data_res[$key]) {
+					$change_max = true;
 				}
 			}
 			
+			if ($change_max) {
+				$return["max"]["value"] = $data_res[$key];
+				$return["max"]["formated_value"] =
+					format_for_graph($data_res[$key], 2) . " " . $unit;
+				$return["max"]["agent"] = $ag_name;
+				$return["max"]["module"] = $mod_name;
+			}
 			
-			
+			if ($i == 0) {
+				$return["avg_value"] = $data_res[$key];
+			}
+			else {
+				$return["avg_value"] =
+					(($return["avg_value"] * $i) / ($i + 1))
+					+
+					($data_res[$key] / ($i + 1));
+			}
+		}
+		
+		$i++;
+		
+		//Restore dbconnection
+		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+			metaconsole_restore_db();
+		}
+	}
+	
+	switch ($content['group_by_agent']) {
+		case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
 			switch ($content['order_uptodown']) {
 				case REPORT_ITEM_ORDER_BY_AGENT_NAME:
 					array_multisort($agent_name, SORT_ASC,
@@ -265,18 +426,8 @@ function reporting_general($report, $content, $type = 'dinamic') {
 					break;
 			}
 			
-			$return["data"] = array();
-			$return["avg_value"] = 0;
-			$return["min"] = array();
-			$return["min"]["value"] = null;
-			$return["min"]["formated_value"] = null;
-			$return["min"]["agent"] = null;
-			$return["min"]["module"] = null;
-			$return["max"] = array();
-			$return["max"]["value"] = null;
-			$return["max"]["formated_value"] = null;
-			$return["max"]["agent"] = null;
-			$return["max"]["module"] = null;
+			
+			
 			$i = 0;
 			foreach ($data_res as $d) {
 				$data = array();
@@ -304,7 +455,7 @@ function reporting_general($report, $content, $type = 'dinamic') {
 				}
 				
 				if ($d === false) {
-					$data['value'] = '--';
+					$data['value'] = null;
 				}
 				else {
 					if (!is_numeric($d)) {
@@ -313,64 +464,12 @@ function reporting_general($report, $content, $type = 'dinamic') {
 					else {
 						$data['value'] = format_for_graph($d, 2) . " " .
 							$units[$i];
-						
-						$change_min = false;
-						if (is_null($return["min"]["value"])) {
-							$change_min = true;
-						}
-						else {
-							if ($return["min"]["value"] > $d) {
-								$change_min = true;
-							}
-						}
-						if ($change_min) {
-							$return["min"]["value"] = $d;
-							$return["min"]["formated_value"] =
-								$data['value'];
-							$return["min"]["agent"] = $agent_name[$i];
-							$return["min"]["module"] = $module_name[$i];
-						}
-						
-						$change_max = false;
-						if (is_null($return["max"]["value"])) {
-							$change_max = true;
-						}
-						else {
-							if ($return["max"]["value"] < $d) {
-								$change_max = true;
-							}
-						}
-						
-						if ($change_max) {
-							$return["max"]["value"] = $d;
-							$return["max"]["formated_value"] =
-								$data['value'];
-							$return["max"]["agent"] = $agent_name[$i];
-							$return["max"]["module"] = $module_name[$i];
-						}
-						
-						if ($i == 0) {
-							$return["avg_value"] = $d;
-						}
-						else {
-							$return["avg_value"] =
-								(($return["avg_value"] * $i) / ($i + 1))
-								+
-								($d / ($i + 1));
-						}
 					}
 				}
 				$return["data"][] = $data;
 				
-				if ($return["avg_value"] > 0) {
-					$return["avg_value"] = format_for_graph(
-						$return["avg_value"], 2);
-				}
-				
 				$i++;
 			}
-			break;
-		case REPORT_GENERAL_GROUP_BY_AGENT:
 			break;
 	}
 	

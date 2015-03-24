@@ -105,7 +105,7 @@ sub data_producer ($) {
 				AND tagente_modulo.id_modulo = 5
 				AND (tagente_modulo.flag = 1
 				OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
-			ORDER BY last_execution_try ASC ', $pa_config->{'servername'});
+			ORDER BY last_execution_try ASC ', safe_input($pa_config->{'servername'}));
 	}
 	else {
 		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo),
@@ -123,7 +123,7 @@ sub data_producer ($) {
 				AND tagente_modulo.id_modulo = 5
 				AND (tagente_modulo.flag = 1
 				OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
-			ORDER BY last_execution_try ASC', $pa_config->{'servername'}, PREDICTIONSERVER);
+			ORDER BY last_execution_try ASC', safe_input($pa_config->{'servername'}), PREDICTIONSERVER);
 	}
 	
 	foreach my $row (@rows) {

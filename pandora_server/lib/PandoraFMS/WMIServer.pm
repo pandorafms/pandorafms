@@ -105,7 +105,7 @@ sub data_producer ($) {
 			AND	tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() 
 			OR tagente_modulo.flag = 1)				
-			ORDER BY tagente_modulo.flag DESC, time_left ASC, last_execution_try ASC', $pa_config->{'servername'});		
+			ORDER BY tagente_modulo.flag DESC, time_left ASC, last_execution_try ASC', safe_input($pa_config->{'servername'}));
 	} else {
 		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, tagente_estado.current_interval + tagente_estado.last_execution_try AS time_left, last_execution_try
 			FROM tagente, tagente_modulo, tagente_estado, tserver
@@ -116,7 +116,7 @@ sub data_producer ($) {
 			AND tagente_modulo.id_modulo = 6
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() OR tagente_modulo.flag = 1 )
-			ORDER BY tagente_modulo.flag DESC, time_left ASC, last_execution_try ASC', $pa_config->{'servername'}, WMISERVER);
+			ORDER BY tagente_modulo.flag DESC, time_left ASC, last_execution_try ASC', safe_input($pa_config->{'servername'}), WMISERVER);
 	}
 
 	foreach my $row (@rows) {

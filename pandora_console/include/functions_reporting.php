@@ -37,6 +37,24 @@ include_once($config['homedir'] . "/include/functions_forecast.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 
+function reporting_user_can_see_report($id_report, $id_user = null) {
+	global $config;
+	
+	if (empty($id_user)) {
+		$id_user = $config['id_user'];
+	}
+	
+	// Get Report record (to get id_group)
+	$report = db_get_row ('treport', 'id_report', $id_report);
+	
+	// Check ACL on the report to see if user has access to the report.
+	if (empty($report) || !check_acl ($config['id_user'], $report['id_group'], "RR")) {
+		return false;
+	}
+	
+	return true;
+}
+
 function reporting_get_type($content) {
 	switch ($content["type"]) {
 		case REPORT_OLD_TYPE_SIMPLE_GRAPH:
@@ -68,8 +86,15 @@ function reporting_get_type($content) {
 	return $content["type"];
 }
 
-function reporting_make_reporting_data($id_report, $date, $time, $period, $type = 'dinamic') {
+function reporting_make_reporting_data($id_report, $date, $time,
+	$period = null, $type = 'dinamic', $force_width_chart = null,
+	$force_height_chart = null) {
+	
+	global $config;
+	
 	$return = array();
+	
+	$report = db_get_row ('treport', 'id_report', $id_report);
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -94,19 +119,15 @@ function reporting_make_reporting_data($id_report, $date, $time, $period, $type 
 	$datetime = strtotime($date . ' ' . $time);
 	$report["datetime"] = $datetime;
 	
-	$report['period'] = $period;
-	
 	$report['contents'] = array();
 	
 	foreach ($contents as $content) {
-		// Calculate new inteval for all reports
-		if ($enable_init_date) {
-			if ($datetime_init >= $datetime) {
-				$datetime_init = $date_init_less;
-			}
-			$new_interval = $report['datetime'] - $datetime_init;
-			$content['period'] = $new_interval;
+		if (!empty($period)) {
+			$content['period'] = $period;
 		}
+		
+		$content['style'] = json_decode(
+			io_safe_output($content['style']), true);
 		
 		switch (reporting_get_type($content)) {
 			case 'simple_graph':
@@ -114,18 +135,263 @@ function reporting_make_reporting_data($id_report, $date, $time, $period, $type 
 					reporting_simple_graph(
 						$report,
 						$content,
+						$type,
+						$force_width_chart,
+						$force_height_chart);
+				break;
+			case 'general':
+				$report['contents'][] =
+					reporting_general(
+						$report,
+						$content,
 						$type);
 				break;
 		}
 	}
 	
-	return reporting_check_structure_report($return);
+	return reporting_check_structure_report($report);
 }
 
-function reporting_simple_graph($report, $content, $type = 'dinamic') {
+function reporting_general($report, $content, $type = 'dinamic') {
+	
 	global $config;
 	
-	//sizgraph_w ¿meter el size en la llamada general?
+	$return = array();
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('General');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text(
+		$report,
+		$content);
+	
+	switch ($content['group_by_agent']) {
+		case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
+			$sql = sprintf("
+				SELECT id_agent_module,
+					server_name, operation
+				FROM treport_content_item
+				WHERE id_report_content = %d",
+				$content['id_rc']);
+			$generals = db_process_sql ($sql);
+			$generals = db_get_all_rows_filter(
+				'treport_content_item',
+				array('id_report_content' => $content['id_rc']));
+			if (empty($generals)) {
+				$generals = array();
+			}
+			
+			foreach ($generals as $key => $row) {
+				//Metaconsole connection
+				$server_name = $row ['server_name'];
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+					$connection = metaconsole_get_connection($server_name);
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
+				if (modules_is_disable_agent($row['id_agent_module'])) {
+					continue;
+				}
+				
+				$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
+				$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
+				$unit = db_get_value('unit', 'tagente_modulo',
+					'id_agente_modulo',
+					$row['id_agent_module']);
+				
+				if ($content['period'] == 0) {
+					$data_res[$key] =
+						modules_get_last_value($row['id_agent_module']);
+				}
+				else {
+					switch ($row['operation']) {
+						case 'sum':
+							$data_res[$key] =
+								reporting_get_agentmodule_data_sum(
+									$row['id_agent_module'], $content['period'], $report["datetime"]);
+							break;
+						case 'max':
+							$data_res[$key] =
+								reporting_get_agentmodule_data_max(
+									$row['id_agent_module'], $content['period']);
+							break;
+						case 'min':
+							$data_res[$key] =
+								reporting_get_agentmodule_data_min(
+									$row['id_agent_module'], $content['period']);
+							break;
+						case 'avg':
+						default:
+							$data_res[$key] =
+								reporting_get_agentmodule_data_average(
+									$row['id_agent_module'], $content['period']);
+							break;
+					}
+				}
+				
+				$id_agent_module[$key] = $row['id_agent_module'];
+				$agent_name[$key] = $ag_name;
+				$module_name[$key] = $mod_name;
+				$units[$key] = $unit;
+				$operations[$key] = $row['operation'];
+				
+				//Restore dbconnection
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+					metaconsole_restore_db();
+				}
+			}
+			
+			
+			
+			switch ($content['order_uptodown']) {
+				case REPORT_ITEM_ORDER_BY_AGENT_NAME:
+					array_multisort($agent_name, SORT_ASC,
+						$data_res, SORT_ASC, $module_name, SORT_ASC,
+						$id_agent_module, SORT_ASC, $operations,
+						SORT_ASC);
+					break;
+				case REPORT_ITEM_ORDER_BY_ASCENDING:
+					array_multisort($data_res, SORT_ASC,
+						$agent_name, SORT_ASC, $module_name,
+						SORT_ASC, $id_agent_module,
+						SORT_ASC, $operations, SORT_ASC);
+					break;
+				case REPORT_ITEM_ORDER_BY_DESCENDING:
+					array_multisort($data_res, SORT_DESC,
+						$agent_name, SORT_ASC, $module_name,
+						SORT_ASC, $id_agent_module,
+						SORT_ASC, $operations, SORT_ASC);
+					break;
+				case REPORT_ITEM_ORDER_BY_UNSORT:
+					break;
+			}
+			
+			$return["data"] = array();
+			$return["avg_value"] = 0;
+			$return["min"] = array();
+			$return["min"]["value"] = null;
+			$return["min"]["formated_value"] = null;
+			$return["min"]["agent"] = null;
+			$return["min"]["module"] = null;
+			$return["max"] = array();
+			$return["max"]["value"] = null;
+			$return["max"]["formated_value"] = null;
+			$return["max"]["agent"] = null;
+			$return["max"]["module"] = null;
+			$i = 0;
+			foreach ($data_res as $d) {
+				$data = array();
+				$data['agent'] = $agent_name[$i];
+				$data['module'] = $module_name[$i];
+				
+				
+				$data['operator'] = "";
+				if ($content['period'] != 0) {
+					switch ($operations[$i]) {
+						case 'sum':
+							$data['operator'] = __('Summatory');
+							break;
+						case 'min':
+							$data['operator'] = __('Minimal');
+							break;
+						case 'max':
+							$data['operator'] = __('Maximun');
+							break;
+						case 'avg':
+						default:
+							$data['operator'] = __('Rate');
+							break;
+					}
+				}
+				
+				if ($d === false) {
+					$data['value'] = '--';
+				}
+				else {
+					if (!is_numeric($d)) {
+						$data['value'] = $d;
+					}
+					else {
+						$data['value'] = format_for_graph($d, 2) . " " .
+							$units[$i];
+						
+						$change_min = false;
+						if (is_null($return["min"]["value"])) {
+							$change_min = true;
+						}
+						else {
+							if ($return["min"]["value"] > $d) {
+								$change_min = true;
+							}
+						}
+						if ($change_min) {
+							$return["min"]["value"] = $d;
+							$return["min"]["formated_value"] =
+								$data['value'];
+							$return["min"]["agent"] = $agent_name[$i];
+							$return["min"]["module"] = $module_name[$i];
+						}
+						
+						$change_max = false;
+						if (is_null($return["max"]["value"])) {
+							$change_max = true;
+						}
+						else {
+							if ($return["max"]["value"] < $d) {
+								$change_max = true;
+							}
+						}
+						
+						if ($change_max) {
+							$return["max"]["value"] = $d;
+							$return["max"]["formated_value"] =
+								$data['value'];
+							$return["max"]["agent"] = $agent_name[$i];
+							$return["max"]["module"] = $module_name[$i];
+						}
+						
+						if ($i == 0) {
+							$return["avg_value"] = $d;
+						}
+						else {
+							$return["avg_value"] =
+								(($return["avg_value"] * $i) / ($i + 1))
+								+
+								($d / ($i + 1));
+						}
+					}
+				}
+				$return["data"][] = $data;
+				
+				if ($return["avg_value"] > 0) {
+					$return["avg_value"] = format_for_graph(
+						$return["avg_value"], 2);
+				}
+				
+				$i++;
+			}
+			break;
+		case REPORT_GENERAL_GROUP_BY_AGENT:
+			break;
+	}
+	
+	if ($content['show_resume'] && count($return["data"]) > 0) {
+		
+	}
+	
+	return reporting_check_structure_content($return);
+}
+
+function reporting_simple_graph($report, $content, $type = 'dinamic',
+	$force_width_chart = null, $force_height_chart = null) {
+	
+	global $config;
 	
 	$return = array();
 	
@@ -139,25 +405,18 @@ function reporting_simple_graph($report, $content, $type = 'dinamic') {
 		modules_get_agentmodule_agent_name ($content['id_agent_module']));
 	
 	
-	
-	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $agent_name . " - " . $module_name;
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text(
-		$report['id_rc'],
-		$content['id']);
+		$report,
+		$content);
 	
 	$only_avg = true;
 	// Due to database compatibility problems, the 'only_avg' value
 	// is stored into the json contained into the 'style' column.
-	if (isset($content['style'])) {
-		$style_json = io_safe_output($content['style']);
-		$style = json_decode($style_json, true);
-		
-		if (isset($style['only_avg'])) {
-			$only_avg = (bool) $style['only_avg'];
-		}
+	if (isset($style['only_avg'])) {
+		$only_avg = (bool) $style['only_avg'];
 	}
 	
 	$moduletype_name = modules_get_moduletype_name(
@@ -171,12 +430,30 @@ function reporting_simple_graph($report, $content, $type = 'dinamic') {
 	switch ($type) {
 		case 'dinamic':
 			$only_image = false;
+			$width = 900;
+			$height = 230;
 			break;
 		case 'static':
 			$only_image = true;
+			if ($content['style']['show_in_landscape']) {
+				$height = 1100;
+				$width = 1700;
+			}
+			else {
+				$height = 360;
+				$width = 780;
+			}
 			break;
 		case 'data':
 			break;
+	}
+	
+	if (!empty($force_width_chart)) {
+		$width = $force_width_chart;
+	}
+	
+	if (!empty($force_height_chart)) {
+		$height = $force_height_chart;
 	}
 	
 	switch ($type) {
@@ -190,8 +467,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic') {
 					$content['id_agent_module'],
 					$content['period'],
 					false,
-					$sizgraph_w,
-					$sizgraph_h,
+					$width,
+					$height,
 					'',
 					'',
 					false,
@@ -201,13 +478,12 @@ function reporting_simple_graph($report, $content, $type = 'dinamic') {
 				
 			}
 			else {
-				
-				$data[0] = grafico_modulo_sparse(
+				$return['chart'] = grafico_modulo_sparse(
 					$content['id_agent_module'],
 					$content['period'],
 					false,
-					$sizgraph_w,
-					$sizgraph_h,
+					$width,
+					$height,
 					'',
 					'',
 					false,
@@ -234,7 +510,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic') {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_get_date_text($id_report, $id_report_item) {
+function reporting_get_date_text($report, $content) {
 	global $config;
 	
 	$return = array();
@@ -242,9 +518,6 @@ function reporting_get_date_text($id_report, $id_report_item) {
 	$return['period'] = "";
 	$return['from'] = "";
 	$return['to'] = "";
-	
-	$report = db_get_row('treport_content_item', 'id', $id_report_item);
-	$content = db_get_row('treport', 'id_report', $id_report);
 	
 	if ($content['period'] == 0) {
 		$es = json_decode($content['external_source'], true);
@@ -283,22 +556,24 @@ function reporting_check_structure_report($return) {
 /**
  * Check the common items exits
  */
-function reporting_check_structure_content($return) {
-	if (!isset($return['title']))
-		$return['title'] = "";
-	if (!isset($return['subtitle']))
-		$return['subtitle'] = "";
-	if (!isset($return['description']))
-		$return['description'] = "";
-	if (!isset($return["date"])) {
-		$return["date"]['date'] = "";
-		$return["date"]['period'] = "";
-		$return["date"]['from'] = "";
-		$return["date"]['to'] = "";
+function reporting_check_structure_content($report) {
+	if (!isset($report['title']))
+		$report['title'] = "";
+	if (!isset($report['subtitle']))
+		$report['subtitle'] = "";
+	if (!isset($report['description']))
+		$report['description'] = "";
+	if (!isset($report["date"])) {
+		$report["date"]['date'] = "";
+		$report["date"]['period'] = "";
+		$report["date"]['from'] = "";
+		$report["date"]['to'] = "";
 	}
 	
-	return $return;
+	return $report;
 }
+
+////////////////////////////////////////////////////////////////////////
 
 /** 
  * Get general statistical info on a group

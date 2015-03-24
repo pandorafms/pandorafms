@@ -24,10 +24,49 @@ $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
 	db_pandora_audit("HACK Attempt",
-		"Trying to access graph viewer withoud ID");
+		"Trying to access report viewer withoud ID");
 	include ("general/noaccess.php");
 	return;
 }
+
+// Include with the functions to calculate each kind of report.
+require_once ($config['homedir'] . '/include/functions_reporting.php');
+require_once ($config['homedir'] . '/include/functions_reporting_html.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
+
+
+if (!reporting_user_can_see_report($id_report)) {
+	db_pandora_audit("ACL Violation", "Trying to access report viewer");
+	include ("general/noaccess.php");
+	exit;
+}
+
+// Get different date to search the report.
+$date = (string) get_parameter ('date', date(DATE_FORMAT));
+$time = (string) get_parameter ('time', date(TIME_FORMAT));
+
+$datetime = strtotime ($date . ' ' . $time);
+
+// Calculations in order to modify init date of the report
+$date_init_less = strtotime(date('Y-m-j')) - SECONDS_1DAY;
+$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+$datetime_init = strtotime ($date_init.' '.$time_init);
+$enable_init_date = get_parameter('enable_init_date', 0);
+
+$period = null;
+// Calculate new inteval for all reports
+if ($enable_init_date) {
+	if ($datetime_init >= $datetime) {
+		$datetime_init = $date_init_less;
+	}
+	$period = $datetime - $datetime_init;
+}
+
+$report = reporting_make_reporting_data($id_report, $date, $time, $period, 'dinamic');
+html_debug_print($report);
+//----------------------------------------------------------------------
+
 
 // Get Report record (to get id_group)
 $report = db_get_row ('treport', 'id_report', $id_report);
@@ -44,7 +83,7 @@ require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_reporting_html.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
 
-enterprise_include("include/functions_reporting.php");
+enterprise_include_once("include/functions_reporting.php");
 
 $pure = get_parameter('pure',0);
 

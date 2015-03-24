@@ -128,11 +128,10 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'general':
 				break;
 			case 'sql':
+				reporting_html_sql($table, $item);
 				break;
 			case 'simple_graph':
-				$table->colspan['chart']['cell'] = 3;
-				$table->cellstyle['chart']['cell'] = 'text-align: center;';
-				$table->data['chart']['cell'] = $item['chart'];
+				reporting_html_simple_graph($table, $item);
 				break;
 		}
 		
@@ -144,6 +143,42 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_sql(&$table, $item) {
+	if (!$item['correct']) {
+		$table->colspan['chart']['cell'] = 3;
+		$table->data['chart']['cell'] = $item['error'];
+	}
+	else {
+		$first = true;
+		
+		$table2->class = 'databox';
+		$table2->width = '100%';
+		
+		foreach ($item['data'] as $row) {
+			if ($first) {
+				$first = false;
+				
+				// Print the header
+				foreach ($row as $key => $value) {
+					$table2->head[] = $key;
+				}
+			}
+			
+			$table2->data[] = $row;
+		}
+		
+		$table->colspan['chart']['cell'] = 3;
+		$table->cellstyle['chart']['cell'] = 'text-align: center;';
+		$table->data['chart']['cell'] = html_print_table($table2, true);
+	}
+}
+
+function reporting_html_simple_graph(&$table, $item) {
+	$table->colspan['chart']['cell'] = 3;
+	$table->cellstyle['chart']['cell'] = 'text-align: center;';
+	$table->data['chart']['cell'] = $item['chart'];
 }
 
 /** 

@@ -33,6 +33,7 @@ if (! $id_report) {
 require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_reporting_html.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
+enterprise_include_once("include/functions_reporting.php");
 
 
 if (!reporting_user_can_see_report($id_report)) {
@@ -51,8 +52,9 @@ $datetime = strtotime ($date . ' ' . $time);
 $date_init_less = strtotime(date('Y-m-j')) - SECONDS_1DAY;
 $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
 $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
-$datetime_init = strtotime ($date_init.' '.$time_init);
+$datetime_init = strtotime ($date_init . ' ' . $time_init);
 $enable_init_date = get_parameter('enable_init_date', 0);
+$pure = (int)get_parameter('pure', 0);
 
 $period = null;
 // Calculate new inteval for all reports
@@ -63,46 +65,8 @@ if ($enable_init_date) {
 	$period = $datetime - $datetime_init;
 }
 
-$report = reporting_make_reporting_data($id_report, $date, $time, $period, 'dinamic');
-html_debug_print($report);
-//----------------------------------------------------------------------
 
-
-// Get Report record (to get id_group)
-$report = db_get_row ('treport', 'id_report', $id_report);
-
-// Check ACL on the report to see if user has access to the report.
-if (empty($report) || ! check_acl ($config['id_user'], $report['id_group'], "RR")) {
-	db_pandora_audit("ACL Violation","Trying to access graph reader");
-	include ("general/noaccess.php");
-	exit;
-}
-
-// Include with the functions to calculate each kind of report.
-require_once ($config['homedir'] . '/include/functions_reporting.php');
-require_once ($config['homedir'] . '/include/functions_reporting_html.php');
-require_once ($config['homedir'] . '/include/functions_groups.php');
-
-enterprise_include_once("include/functions_reporting.php");
-
-$pure = get_parameter('pure',0);
-
-// Get different date to search the report.
-$date = (string) get_parameter ('date', date(DATE_FORMAT));
-$time = (string) get_parameter ('time', date(TIME_FORMAT));
-
-$datetime = strtotime ($date . ' ' . $time);
-$report["datetime"] = $datetime;
-
-// Calculations in order to modify init date of the report
-$date_init_less = strtotime(date('Y-m-j')) - SECONDS_1DAY;
-$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
-$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
-$datetime_init = strtotime ($date_init.' '.$time_init);
-$enable_init_date = get_parameter('enable_init_date', 0);
-
-// Standard header
-
+//------------------- INIT HEADER --------------------------------------
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time&pure=$pure";
 
 $options = array();
@@ -160,20 +124,27 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
 	ui_meta_print_header(__('Reporting'), "", $options);
 }
 else {
-	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"],
+	ui_print_page_header (
+		__('Reporting') .
+		" &raquo;  " .
+		__('Custom reporting') .
+		" - " .
+		reporting_get_name($id_report),
 		"images/op_reporting.png", false, "", false, $options);
 }
+//------------------- END HEADER ---------------------------------------
 
-if ($enable_init_date) {
-	if ($datetime_init > $datetime) {
-		ui_print_error_message ("Invalid date selected. Initial date must be before end date.");
-	}
-}
 
+
+
+
+
+
+//------------------------ INIT FORM -----------------------------------
 $table->id = 'controls_table';
 $table->width = '99%';
 $table->class = 'databox';
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	
@@ -233,11 +204,13 @@ if (defined("METACONSOLE")) {
 	$table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true) . ' </div>';
 }
 else {
-	if ($report['description'] != '') {
-		$table->data[0][1] = '<div style="float:left">'.$report['description'].'</div>';
+	if (reporting_get_description($id_report)) {
+		$table->data[0][1] = '<div style="float:left">' .
+			reporting_get_description($id_report) . '</div>';
 	}
 	else {
-		$table->data[0][1] = '<div style="float:left">'.$report['name'].'</div>';
+		$table->data[0][1] = '<div style="float:left">' .
+			reporting_get_name($id_report) . '</div>';
 	}
 	
 	$table->data[0][1] .= '<div style="text-align:right; width:100%; margin-right:50px">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
@@ -262,6 +235,34 @@ echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'" style="marg
 html_print_table ($table);
 html_print_input_hidden ('id_report', $id_report);
 echo '</form>';
+//------------------------ END FORM ------------------------------------
+
+if ($enable_init_date) {
+	if ($datetime_init > $datetime) {
+		ui_print_error_message(
+			__("Invalid date selected. Initial date must be before end date."));
+	}
+}
+
+$report = reporting_make_reporting_data($id_report, $date, $time, $period, 'dinamic');
+//~ html_debug_print($report);
+reporting_html_print_report($report);
+
+echo "<br>";
+
+
+//----------------------------------------------------------------------
+
+
+// Get Report record (to get id_group)
+$report = db_get_row ('treport', 'id_report', $id_report);
+$report["datetime"] = $datetime;
+
+
+
+
+
+
 
 // The rowspan of the first row is only 2 in controls table. Why is used the same code here and in the items??
 $table->rowspan[0][0] = 1;

@@ -2046,7 +2046,20 @@ function events_page_details ($event, $server = "") {
 		}
 		$table_details->data[] = $data;
 		
-		if (check_acl($config['id_user'], $agent['id_grupo'], "RR")) {
+		// ACL
+		$acl_graph = false;
+		$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
+		
+		if (!empty($agent['id_grupo'])) {
+			if ($strict_user) {
+				$acl_graph = tags_check_acl_by_module($module["id_agente_modulo"], $config['id_user'], 'RR') === true;
+			}
+			else {
+				$acl_graph = check_acl($config['id_user'], $agent['id_grupo'], "RR");
+			}
+		}
+		
+		if ($acl_graph) {
 			$data = array();
 			$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Graph').'</div>';
 			

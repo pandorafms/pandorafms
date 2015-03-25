@@ -143,6 +143,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'url':
 				reporting_html_url($table, $item, $key);
 				break;
+			case 'max_value':
+				reporting_html_max_value($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -153,6 +156,22 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_max_value($table, $item, $mini) {
+	if ($mini) {
+		$font_size = '1.5';
+	}
+	else {
+		$font_size = '3';
+	}
+	
+	$table->colspan['data']['cell'] = 3;
+	$table->cellstyle['data']['cell'] = 'text-align: left;';
+	$table->data['data']['cell'] =
+		'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: #000000;">' .
+			$item['data']['formated_value'] .
+		'</p>';
 }
 
 function reporting_html_url(&$table, $item, $key) {
@@ -3851,36 +3870,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			
 			break;
-		case 8:
-		case 'max_value':
-			if (empty($item_title)) {
-				$item_title = __('Max. Value');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			
-			$value = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			
-			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">' .
-				format_for_graph($value, 2) . " " . $unit .'</p>';
-			array_push ($table->data, $data);
-			
-			break;
+		
 		case 9:
 		case 'min_value':
 			if (empty($item_title)) {

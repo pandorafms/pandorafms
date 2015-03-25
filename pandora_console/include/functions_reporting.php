@@ -179,10 +179,40 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$content,
 					$type);
 				break;
+			case 'max_value':
+				$report['contents'][] = reporting_max_value(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_max_value($report, $content) {
+	global $config;
+	
+	$return = array();
+	$return['type'] = 'max_value';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Max. Value');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text();
+	
+	$value = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]);
+	
+	$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
+	
+	$return['data'] = array(
+		'value' => $value,
+		'formated_value' => format_for_graph($value, 2) . " " . $unit);
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_url($report, $content, $type = 'dinamic') {

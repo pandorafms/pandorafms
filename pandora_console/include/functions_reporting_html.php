@@ -97,7 +97,7 @@ function reporting_html_header(&$table, $mini, $title, $subtitle,
 
 function reporting_html_print_report($report, $mini = false) {
 	
-	foreach ($report['contents'] as $item) {
+	foreach ($report['contents'] as $key => $item) {
 		$table->size = array ();
 		$table->style = array ();
 		$table->width = '98%';
@@ -140,6 +140,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'text':
 				reporting_html_text($table, $item);
 				break;
+			case 'url':
+				reporting_html_url($table, $item, $key);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -150,6 +153,21 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_url(&$table, $item, $key) {
+	$table->colspan['data']['cell'] = 3;
+	$table->cellstyle['data']['cell'] = 'text-align: left;';
+	$table->data['data']['cell'] = '
+		<iframe id="item_' . $key . '" src ="' . $item["url"] . '" width="100%" height="100%">
+		</iframe>';
+	// TODO: make this dynamic and get the height if the iframe to resize this item
+	$table->data['data']['cell'] .= '
+		<script type="text/javascript">
+			$(document).ready (function () {
+				$("#item_' . $key . '").height(500);
+			});
+		</script>';
 }
 
 function reporting_html_text(&$table, $item) {
@@ -4356,34 +4374,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[0] = reporting_alert_reporting_agent ($content['id_agent'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
 			break;
-		case 'url':
-			if (empty($item_title)) {
-				$item_title = __('Import text from URL');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($content["external_source"], 'description', false));
-			
-			$next_row = 1;
-			// Put description at the end of the module (if exists)
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			
-			$data = array();
-			$table->colspan[$next_row][0] = 3;
-			$data[0] = '<iframe id="item_' . $content['id_rc'] . '" src ="' . $content["external_source"] . '" width="100%" height="100%"></iframe>';
-			// TODO: make this dynamic and get the height if the iframe to resize this item
-			$data[0] .= '<script>
-				$(document).ready (function () {
-					$("#item_' . $content['id_rc'] . '").height(500);
-			});</script>';
-			
-			array_push ($table->data, $data);
-			break;
+		
 		case 'database_serialized':
 			if (empty($item_title)) {
 				$item_title = __('Serialize data');

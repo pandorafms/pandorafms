@@ -173,10 +173,50 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'url':
+				$report['contents'][] = reporting_url(
+					$report,
+					$content,
+					$type);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_url($report, $content, $type = 'dinamic') {
+	global $config;
+	
+	$return = array();
+	$return['type'] = 'url';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Url');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text();
+	
+	$return["url"] = $content["external_source"];
+	
+	switch ($type) {
+		case 'dinamic':
+			$return["data"] = null;
+			break;
+		case 'data':
+		case 'static':
+			$curlObj = curl_init();
+			curl_setopt($curlObj, CURLOPT_URL, $content['external_source']);
+			curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+			$output = curl_exec($curlObj);
+			curl_close($curlObj);
+			$return["data"] = $output;
+			break;
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_text($report, $content) {

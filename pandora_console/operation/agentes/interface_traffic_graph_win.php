@@ -21,13 +21,15 @@ if (! isset($_SESSION['id_usuario'])) {
 
 // Global & session management
 require_once ('../../include/config.php');
-require_once ('../../include/auth/mysql.php');
+require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
 require_once ($config['homedir'] . '/include/functions_db.php');
 require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_custom_graphs.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_tags.php');
 
 check_login();
 
@@ -36,7 +38,7 @@ $params = json_decode($params_json, true);
 
 // Metaconsole connection to the node
 $server_id = (int) (isset($params['server']) ? $params['server'] : 0);
-if (!empty($server_id) && function_exists("metaconsole_get_connection_by_id")) {
+if ($config["metaconsole"] && !empty($server_id)) {
 	$server = metaconsole_get_connection_by_id($server_id);
 
 	// Error connecting
@@ -110,15 +112,24 @@ $interface_traffic_modules = array(
 		// ACL
 		$permission = false;
 		$agent_group = (int) agents_get_agent_group($agent_id);
+		$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 		
 		// The traffic modules should belong to the agent id
 		$in_agent_id = (int) db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $params['traffic_module_in']);
 		$out_agent_id = (int) db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $params['traffic_module_out']);
 		$traffic_modules_belong_to_agent = $agent_id == $in_agent_id && $agent_id == $out_agent_id;
 		
-		if (!empty($agent_group) && !empty($params['traffic_module_in']) && !empty($params['traffic_module_out'])
-				&& $traffic_modules_belong_to_agent && check_acl($config['id_user'], $agent_group, "RR")) {
-			$permission = true;
+		if (!empty($agent_group) && !empty($params['traffic_module_in'])
+				&& !empty($params['traffic_module_out']) && $traffic_modules_belong_to_agent) {
+			
+			if ($strict_user) {
+				if (tags_check_acl_by_module($params['traffic_module_in'], $config['id_user'], 'RR') === true
+						&& tags_check_acl_by_module($params['traffic_module_out'], $config['id_user'], 'RR') === true)
+					$permission = true;
+			}
+			else {
+				$permission = check_acl($config['id_user'], $agent_group, "RR");
+			}
 		}
 		
 		if (!$permission) {

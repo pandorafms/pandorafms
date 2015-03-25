@@ -134,6 +134,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'simple_graph':
 				reporting_html_simple_graph($table, $item);
 				break;
+			case 'custom_graph':
+				reporting_html_custom_graph($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -276,116 +279,18 @@ function reporting_html_sql(&$table, $item) {
 	}
 }
 
+function reporting_html_custom_graph(&$table, $item) {
+	$table->colspan['chart']['cell'] = 3;
+	$table->cellstyle['chart']['cell'] = 'text-align: center;';
+	$table->data['chart']['cell'] = $item['chart'];
+}
+
 function reporting_html_simple_graph(&$table, $item) {
 	$table->colspan['chart']['cell'] = 3;
 	$table->cellstyle['chart']['cell'] = 'text-align: center;';
 	$table->data['chart']['cell'] = $item['chart'];
 }
 
-/** 
- * Get the average value of an agent module in a period of time.
- * 
- * @param int Agent module id
- * @param int Period of time to check (in seconds)
- * @param int Top date to check the values. Default current time.
- * 
- * @return float The average module value in the interval.
- */
-function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $date = 0) {
-	global $config;
-	
-	// Initialize variables
-	if (empty ($date)) $date = get_system_time ();
-	$datelimit = $date - $period;
-	
-	$search_in_history_db = db_search_in_history_db($datelimit);
-	
-	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
-	$module_type = modules_get_moduletype_name ($id_module_type);
-	$uncompressed_module = is_module_uncompressed ($module_type);
-	
-	// Get module data
-	$interval_data = db_get_all_rows_sql ('SELECT *
-		FROM tagente_datos 
-		WHERE id_agente_modulo = ' . (int) $id_agent_module .
-			' AND utimestamp > ' . (int) $datelimit .
-			' AND utimestamp < ' . (int) $date .
-		' ORDER BY utimestamp ASC', $search_in_history_db);
-	if ($interval_data === false) $interval_data = array ();
-	
-	// Uncompressed module data
-	if ($uncompressed_module) {
-		$min_necessary = 1;
-	
-	// Compressed module data
-	}
-	else {
-		// Get previous data
-		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-		if ($previous_data !== false) {
-			$previous_data['utimestamp'] = $datelimit;
-			array_unshift ($interval_data, $previous_data);
-		}
-		
-		// Get next data
-		$next_data = modules_get_next_data ($id_agent_module, $date);
-		if ($next_data !== false) {
-			$next_data['utimestamp'] = $date;
-			array_push ($interval_data, $next_data);
-		}
-		else if (count ($interval_data) > 0) {
-			// Propagate the last known data to the end of the interval
-			$next_data = array_pop ($interval_data);
-			array_push ($interval_data, $next_data);
-			$next_data['utimestamp'] = $date;
-			array_push ($interval_data, $next_data);
-		}
-		
-		$min_necessary = 2;
-	}
-	
-	if (count ($interval_data) < $min_necessary) {
-		return false;
-	}
-	
-	// Set initial conditions
-	$total = 0;
-	$count = 0;
-	if (! $uncompressed_module) {
-		$previous_data = array_shift ($interval_data);
-		
-		// Do not count the empty start of an interval as 0
-		if ($previous_data['utimestamp'] != $datelimit) {
-			$period = $date - $previous_data['utimestamp'];
-		}
-	}
-	foreach ($interval_data as $data) {
-		if (! $uncompressed_module) {
-			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
-			$previous_data = $data;
-		}
-		else {
-			$total += $data['datos'];
-			$count++;
-		}
-	}
-	
-	// Compressed module data
-	if (! $uncompressed_module) {
-		if ($period == 0) {
-			return 0;
-		}
-		
-		return $total / $period;
-	}
-	
-	// Uncompressed module data
-	if ($count == 0) {
-		return 0;
-	}
-	
-	return $total / $count;	
-}
 
 /** 
  * Get the maximum value of an agent module in a period of time.
@@ -3297,64 +3202,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$graph["stacked"],
 				$report["datetime"]);	*/
 			
-			array_push ($table->data, $data);
-			
-			break;
-			
-		case 2:
-		case 'custom_graph':
-		case 'automatic_custom_graph':
-			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
-			
-			if (empty($item_title)) {
-				$item_title = __('Custom graph');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($graph['name'], 'item_title', false));
-			
-			//RUNNING
-			// Put description at the end of the module (if exists)
-			
-			$table->colspan[2][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$result = db_get_all_rows_field_filter ("tgraph_source",
-				"id_graph", $content['id_gs']);
-			$modules = array ();
-			$weights = array ();
-			if ($result === false)
-				$result = array();
-			
-			foreach ($result as $content2) {
-				array_push ($modules, $content2['id_agent_module']);
-				array_push ($weights, $content2["weight"]);
-			}
-			
-			// Increase the height to fix the leyend rise
-			$sizgraph_h += count($modules) * 15;
-			
-			$table->colspan[1][0] = 3;
-			$data = array();
-
-			require_once ($config["homedir"] . '/include/functions_graph.php');
-			$data[0] = 	graphic_combined_module(
-				$modules,
-				$weights,
-				$content['period'],
-				$sizgraph_w, $sizgraph_h,
-				'Combined%20Sample%20Graph',
-				'',
-				0,
-				0,
-				0,
-				$graph["stacked"],
-				$report["datetime"],
-				$only_image,
-				ui_get_full_url(false, false, false, false));
 			array_push ($table->data, $data);
 			
 			break;

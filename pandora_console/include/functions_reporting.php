@@ -246,6 +246,8 @@ function reporting_general($report, $content) {
 	
 	$return = array();
 	$return['type'] = 'general';
+	$return['subtype'] = $content['group_by_agent'];
+	$return['resume'] = $content['show_resume'];
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('General');
@@ -342,7 +344,7 @@ function reporting_general($report, $content) {
 					$return["data"][$ag_name][$mod_name] = null;
 				}
 				else {
-					if (!is_numeric($value_res)) {
+					if (!is_numeric($data_res[$key])) {
 						$return["data"][$ag_name][$mod_name] = $data_res[$key];
 					}
 					else {

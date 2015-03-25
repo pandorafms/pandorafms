@@ -168,10 +168,35 @@ function reporting_make_reporting_data($id_report, $date, $time,
 						$force_width_chart,
 						$force_height_chart);
 				break;
+			case 'text':
+				$report['contents'][] = reporting_text(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_text($report, $content) {
+	
+	global $config;
+	
+	$return = array();
+	$return['type'] = 'text';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Text');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text();
+	
+	$return["data"] = html_entity_decode($content['text']);
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_sql($report, $content) {

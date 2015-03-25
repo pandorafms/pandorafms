@@ -137,6 +137,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'custom_graph':
 				reporting_html_custom_graph($table, $item);
 				break;
+			case 'text':
+				reporting_html_text($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -147,6 +150,12 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_text(&$table, $item) {
+	$table->colspan['data']['cell'] = 3;
+	$table->cellstyle['data']['cell'] = 'text-align: left;';
+	$table->data['data']['cell'] = $item['data'];
 }
 
 function reporting_html_general(&$table, $item) {
@@ -4056,26 +4065,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$next_row++;
 				array_push ($table->data, $data);
 			}
-			break;
-		case 'text':
-			if (empty($item_title)) {
-				$item_title = __('Text');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				"", "");
-			
-			$next_row = 1;
-			
-			if ($content["description"] != ""){
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			$data[0] = html_entity_decode($content['text']);
-			array_push($table->data, $data);
-			$table->colspan[$next_row][0] = 3;
 			break;
 		
 		case 'sql_graph_vbar':

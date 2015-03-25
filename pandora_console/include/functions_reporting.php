@@ -8405,7 +8405,9 @@ function reporting_get_event_histogram ($events) {
 	global $config;
 	include_once ('../../include/graphs/functions_gd.php');
 	$max_value = count($events);
-
+	if (defined("METACONSOLE"))
+		$max_value = SECONDS_1HOUR;
+	
 	$ttl = 1;
 	$urlImage = ui_get_full_url(false, true, false, false);
 
@@ -8418,7 +8420,11 @@ function reporting_get_event_histogram ($events) {
 		EVENT_CRIT_MAJOR => COL_MAJOR,
 		EVENT_CRIT_CRITICAL => COL_CRITICAL
 	);
-	
+	if(defined("METACONSOLE")){
+		$full_legend = array();
+		$cont = 0;
+	}
+		
 	foreach ($events as $data) {
 	
 		switch ($data['criticity']) {
@@ -8450,10 +8456,21 @@ function reporting_get_event_histogram ($events) {
 				$color = EVENT_CRIT_WARNING_OR_CRITICAL;
 			break;
 		}
-		$graph_data[] = array(
-			'data' => $color,
-			'utimestamp' => 1
-		);
+		
+		if(defined("METACONSOLE")){
+			$full_legend[$cont] = $data['timestamp'];
+			$graph_data[] = array(
+				'data' => $color,
+				'utimestamp' => $data['utimestamp'] - get_system_time ()
+			);
+			$cont++;
+		}
+		else{
+			$graph_data[] = array(
+				'data' => $color,
+				'utimestamp' => 1
+			);
+		}
 	}
 
 	$table->width = '100%';
@@ -8464,7 +8481,11 @@ function reporting_get_event_histogram ($events) {
 	$table->data[0][0] = "" ;
 	
 	if (!empty($graph_data)) {
-		$slicebar = slicesbar_graph($graph_data, $max_value, 700, 25, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
+		if (defined("METACONSOLE"))
+			$slicebar = flot_slicesbar_graph($graph_data, $max_value, "100%", 35, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $urlImage);
+		else
+			$slicebar = slicesbar_graph($graph_data, $max_value, 700, 25, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
+		
 		$table->data[0][0] = $slicebar;
 	} else {
 		$table->data[0][0] = __('No events');

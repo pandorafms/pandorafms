@@ -1229,6 +1229,7 @@ foreach ($result as $row) {
 			);
 		
 		if (defined('METACONSOLE') && isset($row["server_id"])) {
+			$graph_params["avg_only"] = 1;
 			// Set the server id
 			$graph_params["server"] = $row["server_id"];
 		}

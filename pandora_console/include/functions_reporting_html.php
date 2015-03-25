@@ -126,6 +126,7 @@ function reporting_html_print_report($report, $mini = false) {
 		
 		switch ($item['type']) {
 			case 'general':
+				reporting_html_general($table, $item);
 				break;
 			case 'sql':
 				reporting_html_sql($table, $item);
@@ -138,17 +139,117 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '<div style="width: 99%; overflow: auto;">';
 		
-		html_print_table ($table);
+		html_print_table($table);
 		
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
 }
 
+function reporting_html_general(&$table, $item) {
+	
+	if (!empty($item["data"])) {
+		switch ($item['subtype']) {
+			case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
+				$table1->width = '99%';
+				$table1->data = array ();
+				$table1->head = array ();
+				$table1->head[0] = __('Agent');
+				$table1->head[1] = __('Module');
+				if ($item['date']['period'] != 0) {
+					$table1->head[2] = __('Operation');
+				}
+				$table1->head[3] = __('Value');
+				$table1->style[0] = 'text-align: left';
+				$table1->style[1] = 'text-align: left';
+				$table1->style[2] = 'text-align: left';
+				$table1->style[3] = 'text-align: left';
+				
+				foreach ($item['data'] as $row) {
+					$table1->data[] = array(
+						$row['agent'],
+						$row['module'],
+						$row['value']);
+				}
+				break;
+			case REPORT_GENERAL_GROUP_BY_AGENT:
+				$list_modules = array();
+				foreach ($item['data'] as $modules) {
+					foreach ($modules as $name => $value) {
+						$list_modules[$name] = null;
+					}
+				}
+				$list_modules = array_keys($list_modules);
+				
+				$table1->width = '99%';
+				$table1->data = array ();
+				$table1->head = array_merge(array(__('Agent')), $list_modules);
+				foreach ($item['data'] as $agent => $modules) {
+					$row = array();
+					
+					$row['agent'] = $agent;
+					$table1->style['agent'] = 'text-align: left;';
+					foreach ($list_modules as $name) {
+						$table1->style[$name] = 'text-align: right;';
+						if (isset($modules[$name])) {
+							$row[$name] = $value;
+						}
+						else {
+							$row[$name] = "--";
+						}
+					}
+					$table1->data[] = $row;
+				}
+				break;
+		}
+		
+		$table->colspan['data']['cell'] = 3;
+		$table->cellstyle['data']['cell'] = 'text-align: center;';
+		$table->data['data']['cell'] = html_print_table($table1, true);
+	}
+	else {
+		$table->colspan['error']['cell'] = 3;
+		$table->data['error']['cell'] =
+			__('There are no Agent/Modules defined');
+	}
+	
+	if ($item['resume'] && !empty($item["data"])) {
+		$table_summary->width = '99%';
+		
+		$table_summary->data = array ();
+		$table_summary->head = array ();
+		$table_summary->head_colspan = array ();
+		$table_summary->align = array();
+		
+		$table_summary->align[0] = 'left';
+		$table_summary->align[1] = 'right';
+		$table_summary->align[2] = 'right';
+		$table_summary->align[3] = 'left';
+		$table_summary->align[4] = 'right';
+		
+		$table_summary->head_colspan[0] = 2;
+		$table_summary->head[0] = __('Min Value');
+		$table_summary->head[1] = __('Average Value');
+		$table_summary->head_colspan[2] = 2;
+		$table_summary->head[2] = __('Max Value');
+		
+		$table_summary->data[0][0] = $item['min']['agent'] . ' - ' . $item['min']['module'];
+		$table_summary->data[0][1] = $item['min']['formated_value'];
+		$table_summary->data[0][2] = format_for_graph($item['avg_value'], 2);
+		$table_summary->data[0][3] = $item['max']['agent'] . ' - ' . $item['max']['module'];
+		$table_summary->data[0][4] = $item['max']['formated_value'];
+		
+		$table->colspan['summary_title']['cell'] = 3;
+		$table->data['summary_title']['cell'] = '<b>' . __('Summary') . '</b>';
+		$table->colspan['summary_table']['cell'] = 3;
+		$table->data['summary_table']['cell'] = html_print_table($table_summary, true);
+	}
+}
+
 function reporting_html_sql(&$table, $item) {
 	if (!$item['correct']) {
-		$table->colspan['chart']['cell'] = 3;
-		$table->data['chart']['cell'] = $item['error'];
+		$table->colspan['error']['cell'] = 3;
+		$table->data['error']['cell'] = $item['error'];
 	}
 	else {
 		$first = true;
@@ -169,9 +270,9 @@ function reporting_html_sql(&$table, $item) {
 			$table2->data[] = $row;
 		}
 		
-		$table->colspan['chart']['cell'] = 3;
-		$table->cellstyle['chart']['cell'] = 'text-align: center;';
-		$table->data['chart']['cell'] = html_print_table($table2, true);
+		$table->colspan['data']['cell'] = 3;
+		$table->cellstyle['data']['cell'] = 'text-align: center;';
+		$table->data['data']['cell'] = html_print_table($table2, true);
 	}
 }
 
@@ -3064,88 +3165,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	$item_title = $content['name'];
 	
 	switch ($content["type"]) {
-		case 1:
-		case 'simple_graph':
-			if (empty($item_title)) {
-				$item_title = __('Simple graph');
-			}
-			reporting_header_content($mini, $content, $report, $table,
-				$item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false).' <br> ' .
-				ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			
-			$next_row = 1;
-			
-			// Put description at the end of the module (if exists)
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			
-			$table->colspan[$next_row][0] = 3;
-			$table->cellstyle[$next_row][0] = 'text-align: center;';
-			
-			$data = array ();
-			
-			$moduletype_name = modules_get_moduletype_name(
-				modules_get_agentmodule_type(
-					$content['id_agent_module']));
-			
-			$only_avg = true;
-			// Due to database compatibility problems, the 'only_avg' value
-			// is stored into the json contained into the 'style' column.
-			if (isset($content['style'])) {
-				$style_json = io_safe_output($content['style']);
-				$style = json_decode($style_json, true);
-				
-				if (isset($style['only_avg'])) {
-					$only_avg = (bool) $style['only_avg'];
-				}
-			}
-			
-			if (preg_match ("/string/", $moduletype_name)) {
-				
-				$urlImage = ui_get_full_url(false, false, false, false);
-				
-				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
-					false, $sizgraph_w, $sizgraph_h, '', '', false, $only_avg, false,
-					$report["datetime"], $only_image, $urlImage);
-				
-			}
-			else {
-				
-				$data[0] = grafico_modulo_sparse(
-					$content['id_agent_module'],
-					$content['period'],
-					false,
-					$sizgraph_w,
-					$sizgraph_h,
-					'',
-					'',
-					false,
-					$only_avg,
-					true,
-					$report["datetime"],
-					'',
-					0,
-					0,
-					true,
-					$only_image,
-					ui_get_full_url(false, false, false, false),
-					1,
-					false,
-					'',
-					false,
-					true);
-			}
-			
-			array_push ($table->data, $data);
-			break;
 		case 'projection_graph':
 			if (empty($item_title)) {
 				$item_title = __('Projection graph');
@@ -4211,82 +4230,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push($table->data, $data);
 			$table->colspan[$next_row][0] = 3;
 			break;
-		case 'sql':
-			if (empty($item_title)) {
-				$item_title = __('SQL');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				"", "");
-			
-			$next_row = 1;
-			// Put description at the end of the module (if exists)
-			if ($content["description"] != ""){
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			
-			$table->colspan[$next_row][0] = 3;
-
-			$table2->class = 'databox';
-			$table2->width = '100%';
-			
-			//Create the head
-			$table2->head = array();
-			if ($content['header_definition'] != '') {
-				$table2->head = explode('|', $content['header_definition']);
-			}
-			
-			if ($content['treport_custom_sql_id'] != 0) {
-				switch ($config["dbtype"]) {
-					case "mysql":
-						$sql = io_safe_output (db_get_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
-						break;
-					case "postgresql":
-						$sql = io_safe_output (db_get_value_filter('"sql"', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
-						break;
-					case "oracle":
-						$sql = io_safe_output (db_get_value_filter('sql', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
-						break;
-				}
-			}
-			else {
-				$sql = io_safe_output ($content['external_source']);
-			}
-			
-			// Do a security check on SQL coming from the user
-			$sql = check_sql ($sql);
-			
-			if ($sql != '') {
-				$result = db_get_all_rows_sql($sql);
-				if ($result === false) {
-					$result = array();
-				}
-				
-				if (isset($result[0])) {
-					if (count($result[0]) > count($table2->head)) {
-						$table2->head = array_pad($table2->head, count($result[0]), '&nbsp;');
-					}
-				}
-				
-				$table2->data = array();
-				foreach ($result as $row) {
-					array_push($table2->data, $row);
-				}
-			}
-			else {
-				$table2->data = array();
-				array_push($table2->data, array("id_user" => "<div class='nf'>[".__('Illegal query')."]<br>".
-				__('Due security restrictions, there are some tokens or words you cannot use').
-				': *, delete, drop, alter, modify, union, password, pass, insert '.__('or')." update.</div>"));
-			}
-			
-			$cellContent = html_print_table($table2, true);
-			array_push($table->data, array($cellContent));
-			break;
+		
 		case 'sql_graph_vbar':
 		case 'sql_graph_hbar':
 		case 'sql_graph_pie':

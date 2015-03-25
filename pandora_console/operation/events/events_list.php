@@ -86,7 +86,7 @@ if (is_ajax()) {
 			'id_filter', 'tevent_filter', $values);
 		
 		if ($exists) {
-			echo 'error';
+			echo 'duplicate';
 		}
 		else {
 			$result = db_process_sql_insert('tevent_filter', $values);
@@ -664,8 +664,25 @@ else
 	ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
 
 // Error div for ajax messages
-echo "<div id='show_filter_error'>";
+echo "<div id='show_filter_error' style='display: none;'>";
+ui_print_error_message(__('Error creating filter.'), 'data-type_info_box="error_create_filter"');
+ui_print_error_message(__('Error creating filter is duplicated.'), 'data-type_info_box="duplicate_create_filter"');
+ui_print_success_message(__('Filter created.'), 'data-type_info_box="success_create_filter"');
+
+ui_print_success_message(__('Filter updated.'), 'data-type_info_box="success_update_filter"');
+ui_print_error_message(__('Error updating filter.'), 'data-type_info_box="error_create_filter"');
+
 echo "</div>";
+?>
+<script type="text/javascript">
+	$(document).ready(
+		function() {
+			$(".info_box").hide();
+			$("#show_filter_error").show();
+		}
+	);
+</script>
+<?php
 
 $event_table = events_get_events_table($meta, $history);
 
@@ -918,31 +935,55 @@ $(document).ready( function() {
 		var id_filter_save;
 		
 		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-			{"page" : "operation/events/events_list",
-			"save_event_filter" : 1,
-			"id_name" : $("#text-id_name").val(),
-			"id_group" : $("#id_group").val(),
-			"event_type" : $("#event_type").val(),
-			"severity" : $("#severity").val(),
-			"status" : $("#status").val(),
-			"search" : $("#text-search").val(),
-			"text_agent" : $("#text_id_agent").val(),
-			"pagination" : $("#pagination").val(),
-			"event_view_hr" : $("#text-event_view_hr").val(),
-			"id_user_ack" : $("#id_user_ack").val(),
-			"group_rep" : $("#group_rep").val(),
-			"tag_with": Base64.decode($("#hidden-tag_with").val()),
-			"tag_without": Base64.decode($("#hidden-tag_without").val()),
-			"filter_only_alert" : $("#filter_only_alert").val(),
-			"id_group_filter": $("#id_group").val()
+			{
+				"page" : "operation/events/events_list",
+				"save_event_filter" : 1,
+				"id_name" : $("#text-id_name").val(),
+				"id_group" : $("#id_group").val(),
+				"event_type" : $("#event_type").val(),
+				"severity" : $("#severity").val(),
+				"status" : $("#status").val(),
+				"search" : $("#text-search").val(),
+				"text_agent" : $("#text_id_agent").val(),
+				"pagination" : $("#pagination").val(),
+				"event_view_hr" : $("#text-event_view_hr").val(),
+				"id_user_ack" : $("#id_user_ack").val(),
+				"group_rep" : $("#group_rep").val(),
+				"tag_with": Base64.decode($("#hidden-tag_with").val()),
+				"tag_without": Base64.decode($("#hidden-tag_without").val()),
+				"filter_only_alert" : $("#filter_only_alert").val(),
+				"id_group_filter": $("#id_group").val()
 			},
 			function (data) {
+				$(".info_box").hide();
 				if (data == 'error') {
-					$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error creating filter'); ?> </h3>');
+					$(".info_box").filter(function(i, item) {
+						if ($(item).data('type_info_box') == "error_create_filter") {
+							return true;
+						}
+						else
+							return false;
+					}).show();
+				}
+				else  if (data == 'duplicate') {
+					$(".info_box").filter(function(i, item) {
+						if ($(item).data('type_info_box') == "duplicate_create_filter") {
+							return true;
+						}
+						else
+							return false;
+					}).show();
 				}
 				else {
 					id_filter_save = data;
-					$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter created'); ?> </h3>');
+					
+					$(".info_box").filter(function(i, item) {
+						if ($(item).data('type_info_box') == "success_create_filter") {
+							return true;
+						}
+						else
+							return false;
+					}).show();
 				}
 			});
 		
@@ -978,7 +1019,7 @@ $(document).ready( function() {
 		// Update the info with the loaded filter
 		$("#hidden-id_name").val($('#text-id_name').val());
 		$('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $('#text-id_name').val());
-					
+		
 		return false;
 	});
 	
@@ -1007,11 +1048,24 @@ $(document).ready( function() {
 			"id_group_filter": $("#id_group").val()
 			},
 			function (data) {
+				$(".info_box").hide();
 				if (data == 'ok') {
-					$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter updated'); ?> </h3>');
+					$(".info_box").filter(function(i, item) {
+						if ($(item).data('type_info_box') == "success_update_filter") {
+							return true;
+						}
+						else
+							return false;
+					}).show();
 				}
 				else {
-					$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error updating filter'); ?> </h3>');
+					$(".info_box").filter(function(i, item) {
+						if ($(item).data('type_info_box') == "error_create_filter") {
+							return true;
+						}
+						else
+							return false;
+					}).show();
 				}
 			});
 			

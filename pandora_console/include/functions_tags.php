@@ -1030,8 +1030,14 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 	}
 	
 	// If there are not tags restrictions or tags passed, check the group access
-	if ((empty($acls) || empty($tags)) && check_acl($id_user, $id_group, $access)) {
-		return true;
+	if (empty($acls) || empty($tags)) {
+		if (!is_array($id_group))
+			$group_id_array = array($id_group);
+			
+		foreach ($id_group as $group) {
+			if (check_acl($id_user, $group, $access))
+				return true;
+		}
 	}
 	
 	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
@@ -1128,8 +1134,14 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 	}
 
 	// If there are not tags restrictions or tags passed, check the group access
-	if ((empty($acls) || empty($tags)) && check_acl($id_user, $id_group, $access)) {
-		return true;
+	if (empty($acls) || empty($tags)) {
+		if (!is_array($id_group))
+			$group_id_array = array($id_group);
+			
+		foreach ($id_group as $group) {
+			if (check_acl($id_user, $group, $access))
+				return true;
+		}
 	}
 
 	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array

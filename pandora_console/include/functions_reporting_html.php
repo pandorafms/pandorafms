@@ -146,6 +146,12 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'max_value':
 				reporting_html_max_value($table, $item, $mini);
 				break;
+			case 'avg_value':
+				reporting_html_avg_value($table, $item, $mini);
+				break;
+			case 'min_value':
+				reporting_html_min_value($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -158,7 +164,19 @@ function reporting_html_print_report($report, $mini = false) {
 	}
 }
 
-function reporting_html_max_value($table, $item, $mini) {
+function reporting_html_avg_value(&$table, $item, $mini) {
+	reporting_html_value($table, $item, $mini);
+}
+
+function reporting_html_max_value(&$table, $item, $mini) {
+	reporting_html_value($table, $item, $mini);
+}
+
+function reporting_html_min_value(&$table, $item, $mini) {
+	reporting_html_value($table, $item, $mini);
+}
+
+function reporting_html_value(&$table, $item, $mini) {
 	if ($mini) {
 		$font_size = '1.5';
 	}
@@ -3837,74 +3855,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			
 			break;
-		case 7:
-		case 'avg_value':
-			if (empty($item_title)) {
-				$item_title = __('Avg. Value');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']); 
-			$value = reporting_get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($value === false) {
-				$value = __('Unknown');
-			}
-			else {
-				$value = format_for_graph($value, 2) . " " . $unit;
-			}
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
-			array_push ($table->data, $data);
-			
-			break;
 		
-		case 9:
-		case 'min_value':
-			if (empty($item_title)) {
-				$item_title = __('Min. Value');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			
-			$value = reporting_get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
-			if ($value === false) {
-				$value = __('Unknown');
-			}
-			else {
-				$value = format_for_graph($value, 2) . " " . $unit;
-			}
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
-			array_push ($table->data, $data);
-			
-			break;
 		case 10:
 		case 'sumatory':
 			if (empty($item_title)) {

@@ -180,9 +180,22 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$type);
 				break;
 			case 'max_value':
-				$report['contents'][] = reporting_max_value(
+				$report['contents'][] = reporting_value(
 					$report,
-					$content);
+					$content,
+					'max');
+				break;
+			case 'avg_value':
+				$report['contents'][] = reporting_value(
+					$report,
+					$content,
+					'avg');
+				break;
+			case 'min_value':
+				$report['contents'][] = reporting_value(
+					$report,
+					$content,
+					'min');
 				break;
 		}
 	}
@@ -190,21 +203,61 @@ function reporting_make_reporting_data($id_report, $date, $time,
 	return reporting_check_structure_report($report);
 }
 
-function reporting_max_value($report, $content) {
+function reporting_value($report, $content, $type) {
 	global $config;
 	
 	$return = array();
-	$return['type'] = 'max_value';
-	
-	if (empty($content['name'])) {
-		$content['name'] = __('Max. Value');
+	switch ($type) {
+		case 'max':
+			$return['type'] = 'max_value';
+			break;
+		case 'min':
+			$return['type'] = 'min_value';
+			break;
+		case 'avg':
+			$return['type'] = 'avg_value';
+			break;
 	}
 	
-	$return['title'] = $content['name'];
-	$return["description"] = $content["description"];
-	$return["date"] = reporting_get_date_text();
 	
-	$value = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]);
+	if (empty($content['name'])) {
+		switch ($type) {
+			case 'max':
+				$content['name'] = __('Max. Value');
+				break;
+			case 'min':
+				$content['name'] = __('Min. Value');
+				break;
+			case 'avg':
+				$content['name'] = __('AVG. Value');
+				break;
+		}
+	}
+	
+	$module_name = io_safe_output(
+		modules_get_agentmodule_name($content['id_agent_module']));
+	$agent_name = io_safe_output(
+		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	
+	$return['title'] = $content['name'];
+	$return['subtitle'] = $agent_name . " - " . $module_name;
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	switch ($type) {
+		case 'max':
+			$value = reporting_get_agentmodule_data_max(
+				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			break;
+		case 'min':
+			$value = reporting_get_agentmodule_data_min(
+				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			break;
+		case 'avg':
+			$value = reporting_get_agentmodule_data_average(
+				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			break;
+	}
 	
 	$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
 	

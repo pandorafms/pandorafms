@@ -236,11 +236,11 @@ $table->data[0][4] = html_print_submit_button(__('Search'), 'search',
 
 
 if(defined('METACONSOLE')){
-	$table->width = '50%';
+	$table->width = '96%';
 	$form_filter = "<form class='filters_form' method='post'>";
 	$form_filter .= html_print_table($table, true);
 	$form_filter .= "</form>";
-	echo $form_filter;
+	ui_toggle($form_filter, __('Show Options'));
 }else{
 	$form_filter = "<form method='post'>";
 	$form_filter .= html_print_table($table, true);

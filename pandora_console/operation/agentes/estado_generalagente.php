@@ -29,6 +29,7 @@ include_once($config['homedir'] . "/include/functions_clippy.php");
 
 check_login ();
 
+$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 
 $id_agente = get_parameter_get ("id_agente", -1);
 
@@ -415,17 +416,33 @@ if (!empty($network_interfaces)) {
 	
 	foreach ($network_interfaces as $interface_name => $interface) {
 		if (!empty($interface['traffic'])) {
-			$params = array(
-					'interface_name' => $interface_name,
-					'agent_id' => $id_agente,
-					'traffic_module_in' => $interface['traffic']['in'],
-					'traffic_module_out' => $interface['traffic']['out']
-				);
-			$params_json = json_encode($params);
-			$params_encoded = base64_encode($params_json);
-			$win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
-			$graph_link = "<a href=\"javascript:winopeng('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle')\">" .
-				html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";
+			$permission = false;
+			
+			if ($strict_user) {
+				if (tags_check_acl_by_module($interface['traffic']['in'], $config['id_user'], 'RR') === true
+						&& tags_check_acl_by_module($interface['traffic']['out'], $config['id_user'], 'RR') === true)
+					$permission = true;
+			}
+			else {
+				$permission = check_acl($config['id_user'], $agent["id_grupo"], "RR");
+			}
+			
+			if ($permission) {
+				$params = array(
+						'interface_name' => $interface_name,
+						'agent_id' => $id_agente,
+						'traffic_module_in' => $interface['traffic']['in'],
+						'traffic_module_out' => $interface['traffic']['out']
+					);
+				$params_json = json_encode($params);
+				$params_encoded = base64_encode($params_json);
+				$win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+				$graph_link = "<a href=\"javascript:winopeng('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle')\">" .
+					html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";
+			}
+			else {
+				$graph_link = "";
+			}
 		}
 		else {
 			$graph_link = "";

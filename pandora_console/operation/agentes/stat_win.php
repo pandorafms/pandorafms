@@ -28,6 +28,7 @@ require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_tags.php');
 
 check_login ();
 
@@ -112,9 +113,15 @@ $label = base64_decode(get_parameter('label', ''));
 		// ACL
 		$permission = false;
 		$agent_group = (int) agents_get_agent_group($agent_id);
+		$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 		
-		if (!empty($agent_group) && check_acl($config['id_user'], $agent_group, "RR")) {
-			$permission = true;
+		if (!empty($agent_group)) {
+			if ($strict_user) {
+				$permission = tags_check_acl_by_module($id, $config['id_user'], 'RR') === true;
+			}
+			else {
+				$permission = check_acl($config['id_user'], $agent_group, "RR");
+			}
 		}
 		
 		if (!$permission) {

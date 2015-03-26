@@ -631,7 +631,10 @@ switch ($action) {
 			}
 			html_print_table ($table);
 		}
-		
+		else{
+			echo "<br />";
+			echo "<div class='nf'>".__('No data found.')."</div>";
+		}
 		if (check_acl ($config['id_user'], 0, "RW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
 			if (defined("METACONSOLE"))

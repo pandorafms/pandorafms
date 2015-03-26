@@ -596,7 +596,10 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  * @return mixed/string Tag ids
  */
  
-function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '', $meta = false, $childrens_ids = array(), $force_group_and_tag = false) {
+function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
+	$return_mode = 'module_condition', $query_prefix = '',
+	$query_table = '', $meta = false, $childrens_ids = array(),
+	$force_group_and_tag = false) {
 	
 	global $config;
 	
@@ -635,6 +638,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 	
 	$acltags = tags_get_user_module_and_tags($id_user, $access);
 	
+	
 	// Delete the groups without tag restrictions from the acl tags array if $force_group_and_tag == false
 	// Delete the groups that aren't in the received groups id
 	$acltags_aux = array();
@@ -660,7 +664,9 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 			break;
 		case 'module_condition':
 			// Return the condition of the tags for tagente_modulo table
-			$condition = tags_get_acl_tags_module_condition($acltags, $query_table, true);
+			
+			$condition = tags_get_acl_tags_module_condition($acltags,
+				$query_table);
 			if (!empty($condition)) {
 				return " $query_prefix " . $condition;
 			}
@@ -701,7 +707,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 		
 		// Fix: Wrap SQL expression with "()" to avoid bad SQL sintax that makes Pandora retrieve all modules without taking care of id_agent => id_agent = X AND (sql_tag_expression) 
 		if ($i == 0)
-			$condition .= ' ( ';
+			$condition .= ' ( ' . "\n";
 		
 		// Group condition (The module belongs to an agent of the group X)
 		// Juanma (08/05/2014) Fix: Now group and tag is checked at the same time, before only tag was checked due to a bad condition
@@ -713,7 +719,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 			//Avoid the user profiles with all group access.
 			$group_condition = " 1 = 1 ";
 		}
-			
+		
 		//When the acl is only group without tags
 		if (empty($group_tags)) {
 			$condition .= "($group_condition)\n";
@@ -727,9 +733,14 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 			// Tags condition (The module has at least one of the restricted tags)
 			$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, $group_tags_query);
 			
-			$condition .= "($group_condition AND \n$tags_condition)\n";
+			$condition .=
+				"	( \n" .
+				"		$group_condition \n" .
+				"			AND \n" .
+				"		$tags_condition \n" .
+				"	)\n";
 		}
-				
+		
 		$i++;
 	}
 	
@@ -1029,9 +1040,15 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 		return false;
 	}
 	
-	// If there are not tags restrictions or tags passed, return true
+	// If there are not tags restrictions or tags passed, check the group access
 	if (empty($acls) || empty($tags)) {
-		return true;
+		if (!is_array($id_group))
+			$group_id_array = array($id_group);
+			
+		foreach ($id_group as $group) {
+			if (check_acl($id_user, $group, $access))
+				return true;
+		}
 	}
 	
 	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
@@ -1127,9 +1144,15 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 		return false;
 	}
 
-	// If there are not tags restrictions or tags passed, return true
-	if(empty($acls) || empty($tags)) {
-		return true;
+	// If there are not tags restrictions or tags passed, check the group access
+	if (empty($acls) || empty($tags)) {
+		if (!is_array($id_group))
+			$group_id_array = array($id_group);
+			
+		foreach ($id_group as $group) {
+			if (check_acl($id_user, $group, $access))
+				return true;
+		}
 	}
 
 	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
@@ -2135,10 +2158,10 @@ function tags_get_monitors_alerts ($id_tag, $groups_and_tags = array(), $id_agen
 		AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag = $id_tag)
 		$agents_clause
 		$groups_clause";
-
+	
 	$count = db_get_sql ($sql);
-			
-	return $count;	
+	
+	return $count;
 }
 
 function __add_acltags (&$acltags, $group_id, $tags_str) {
@@ -2195,7 +2218,7 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	}
 	
 	$acl_column = get_acl_column($access);
-
+	
 	$sql = sprintf("SELECT tags, id_grupo 
 					FROM tusuario_perfil, tperfil
 					WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
@@ -2203,7 +2226,7 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 						tperfil.%s = 1
 					ORDER BY id_grupo", $id_user, $acl_column);
 	$tags_and_groups = db_get_all_rows_sql($sql);
-
+	
 	if ($tags_and_groups === false)
 		$tags_and_groups = array();
 	
@@ -2214,11 +2237,12 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	$all_groups = groups_get_all();
 	if (!empty($all_groups))
 		$all_group_ids = array_keys($all_groups);
-
+	
+	
 	$tags_and_groups_aux = array();
 	foreach ($tags_and_groups as $data) {
 		// All group
-		if ($data['id_grupo'] == 0) {
+		if ($data['id_grupo'] === 0) {
 			// All group with empty tags. All groups without tags permission!
 			if (empty($data['tags'])) {
 				foreach ($all_group_ids as $group_id) {
@@ -2245,9 +2269,11 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	$tags_and_groups = $tags_and_groups_aux;
 	unset($tags_and_groups_aux);
 	
+	
 	foreach ($tags_and_groups as $group_tag) {
 		__add_acltags($acltags, $group_tag['id_grupo'], $group_tag['tags']);
 	}
+	
 	
 	return $acltags;
 }

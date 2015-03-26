@@ -314,6 +314,8 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	enterprise_include_once ('meta/include/functions_ui_meta.php');
 	include_graphs_dependencies();
 	
+	$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
+	
 	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
 	
 	if ($is_extra === ENTERPRISE_NOT_HOOK) {
@@ -546,31 +548,40 @@ function treeview_printTable($id_agente, $server_data = array()) {
 		
 		foreach ($network_interfaces as $interface_name => $interface) {
 			if (!empty($interface['traffic'])) {
-				$params = array(
-						'interface_name' => $interface_name,
-						'agent_id' => $id_agente,
-						'traffic_module_in' => $interface['traffic']['in'],
-						'traffic_module_out' => $interface['traffic']['out']
-					);
-				$params_json = json_encode($params);
-				$params_encoded = base64_encode($params_json);
-				$win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+				$permission = false;
 				
-				$graph_url = '';
-				if (!defined('METACONSOLE')) {
-					$graph_url = $config['homeurl'] .
-						"operation/agentes/interface_traffic_graph_win.php?" .
-						"params=$params_encoded";
+				if ($strict_user) {
+					if (tags_check_acl_by_module($interface['traffic']['in'], $config['id_user'], 'RR') === true
+							&& tags_check_acl_by_module($interface['traffic']['out'], $config['id_user'], 'RR') === true)
+						$permission = true;
 				}
-				else if (!empty($server_data)) {
-					$graph_url = ui_meta_get_url_console_child(
-						$server_data, null, null, null, null,
-						"operation/agentes/interface_traffic_graph_win.php?" .
-						"params=$params_encoded");
+				else {
+					$permission = check_acl($config['id_user'], $agent["id_grupo"], "RR");
 				}
 				
-				$graph_link = "<a href=\"javascript:winopeng('$graph_url','$win_handle')\">" .
-					html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";
+				if ($permission) {
+					$params = array(
+							'interface_name' => $interface_name,
+							'agent_id' => $id_agente,
+							'traffic_module_in' => $interface['traffic']['in'],
+							'traffic_module_out' => $interface['traffic']['out']
+						);
+					
+					if (defined('METACONSOLE') && !empty($server_id))
+						$params["server"] = $server_id;
+					
+					$params_json = json_encode($params);
+					$params_encoded = base64_encode($params_json);
+					$url = ui_get_full_url("operation/agentes/interface_traffic_graph_win.php", false, false, false);
+					$graph_url = "$url?params=$params_encoded";
+					$win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+					
+					$graph_link = "<a href=\"javascript:winopeng('$graph_url','$win_handle')\">" .
+						html_print_image("images/chart_curve.png", true, array("title" => __('Interface traffic'))) . "</a>";
+				}
+				else {
+					$graph_link = "";
+				}
 			}
 			else {
 				$graph_link = "";

@@ -1197,7 +1197,22 @@ foreach ($result as $row) {
 	
 	$data[7] = "";
 	
-	if ($row['history_data'] == 1 && check_acl($config['id_user'], $row['id_group'], "RR")) {
+	$acl_graphs = false;
+	
+	// Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
+	if (!defined("METACONSOLE")) {
+		if ($strict_user) {
+			$acl_graphs = tags_check_acl_by_module($row['id_agente_modulo'], $config['id_user'], 'RR') === true;
+		}
+		else {
+			$acl_graphs = check_acl($config['id_user'], $row['id_group'], "RR");
+		}
+	}
+	else {
+		$acl_graphs = true;
+	}
+	
+	if ($row['history_data'] == 1 && $acl_graphs) {
 		
 		$graph_type = return_graphtype ($row["module_type"]);
 		
@@ -1214,6 +1229,7 @@ foreach ($result as $row) {
 			);
 		
 		if (defined('METACONSOLE') && isset($row["server_id"])) {
+			$graph_params["avg_only"] = 1;
 			// Set the server id
 			$graph_params["server"] = $row["server_id"];
 		}

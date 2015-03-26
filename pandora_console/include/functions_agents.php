@@ -1161,9 +1161,11 @@ function agents_get_modules ($id_agent = null, $details = false,
 	
 	//$where .= " AND id_policy_module = 0 ";
 	
-	$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+	$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
+		'module_condition', 'AND', 'tagente_modulo', false, array(),
+		true); 
 	
-	$where .= $where_tags;
+	$where .= "\n\n" . $where_tags;
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -1188,6 +1190,7 @@ function agents_get_modules ($id_agent = null, $details = false,
 				$where);
 			break;
 	}
+	
 	
 	$result = db_get_all_rows_sql ($sql);
 	

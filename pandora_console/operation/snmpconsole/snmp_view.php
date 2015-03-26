@@ -477,7 +477,15 @@ if ($traps !== false) {
 		
 		//OID
 		$table->cellclass[$idx][2] = get_priority_class ($severity);
-		$data[2] = '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . (empty($trap["oid"]) ? __('N/A') : $trap["oid"]) .'</a>';
+		if (! empty($trap["text"])) {
+			$enterprise_string = $trap["text"];
+		} else if (! empty($trap["oid"])) {
+			$enterprise_string = $trap["oid"];
+		} else {
+			$enterprise_string = __('N/A');
+		}
+
+		$data[2] = '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . $enterprise_string .'</a>';
 		
 		//Count
 		if ($group_by) {
@@ -588,13 +596,6 @@ if ($traps !== false) {
 			$string .= '<tr>
 					<td align="left" valign="top">' . '<b>' . __('Description:') . '</td>
 					<td align="left">' . $trap['description'] . '</td>
-				</tr>';
-		}
-		
-		if ($trap["text"] != "") {
-			$string .= '<tr>
-					<td align="left" valign="top">' . '<b>' . __('Text:') . '</td>
-					<td align="left">' . $trap['text'] . '</td>
 				</tr>';
 		}
 		

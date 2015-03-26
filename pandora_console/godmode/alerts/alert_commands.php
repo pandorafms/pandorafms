@@ -120,24 +120,32 @@ if (is_ajax ()) {
 					$fields_value_select = array();
 					$fv = explode(';', $field_value);
 					
-					if (!empty($fv)) {
-						foreach ($fv as $fv_option) {
-							$fv_option = explode(',', $fv_option);
-							
-							if (empty($fv_option))
-								continue;
-							
-							if (!isset($fv_option[1]))
-								$fv_option[1] = $fv_option[0];
-							
-							$fields_value_select[$fv_option[0]] = $fv_option[1];
+					if (count($fv) > 1) {
+						if (!empty($fv)) {
+							foreach ($fv as $fv_option) {
+								$fv_option = explode(',', $fv_option);
+								
+								if (empty($fv_option))
+									continue;
+								
+								if (!isset($fv_option[1]))
+									$fv_option[1] = $fv_option[0];
+								
+								$fields_value_select[$fv_option[0]] = $fv_option[1];
+							}
 						}
-					}
 					
-					$ffield = html_print_select($fields_value_select,
-						'field'.$i.'_value', '', '', '', 0, true, false, false, 'fields');
-					$rfield = html_print_select($fields_value_select,
-						'field'.$i.'_recovery_value', '', '', '', 0, true, false, false, 'fields_recovery');
+						$ffield = html_print_select($fields_value_select,
+							'field'.$i.'_value', '', '', '', 0, true, false, false, 'fields');
+						$rfield = html_print_select($fields_value_select,
+							'field'.$i.'_recovery_value', '', '', '', 0, true, false, false, 'fields_recovery');
+					}
+					else{
+						$ffield = html_print_textarea ('field' . $i . '_value',1, 1, $fv[0],
+											'style="min-height:40px" class="fields"', true);
+						$rfield = html_print_textarea ('field' . $i . '_recovery_value', 1, 1, $fv[0],
+											'style="min-height:40px" class="fields_recovery"', true);
+					}
 				}
 			}
 			else {

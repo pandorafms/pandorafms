@@ -1307,12 +1307,27 @@ class Tree {
 		$module['serverTypeHTML'] = servers_show_type($module['server_type']);
 		
 		// Link to the Module graph
-		$group_id = (int) modules_get_agent_group($module['id']);
-		$module["showGraphs"] = 0;
 		
 		// ACL
-		if (!empty($group_id)) {
-			$module["showGraphs"] = (int) check_acl($config['id_user'], $group_id, "RR");
+		$group_id = (int) modules_get_agent_group($module['id']);
+		$acl_graphs = false;
+		$module["showGraphs"] = 0;
+		
+		// Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
+		if (!empty($group_id) && !defined("METACONSOLE")) {
+			if ($this->strictACL) {
+				$acl_graphs = tags_check_acl_by_module($module['id'], $config['id_user'], 'RR') === true;
+			}
+			else {
+				$acl_graphs = check_acl($config['id_user'], $group_id, "RR");
+			}
+		}
+		else if (!empty($group_id)) {
+			$acl_graphs = true;
+		}
+		
+		if ($acl_graphs) {
+			$module["showGraphs"] = 1;
 		}
 		
 		if ($module["showGraphs"]) {
@@ -1329,6 +1344,7 @@ class Tree {
 				);
 			
 			if (defined('METACONSOLE') && !empty($server)) {
+				$graph_params["avg_only"] = 1;
 				// Set the server id
 				$graph_params["server"] = $module['serverID'];
 			}

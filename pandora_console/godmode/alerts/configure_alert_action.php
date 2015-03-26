@@ -263,6 +263,8 @@ $(document).ready (function () {
 					var old_recovery_value = '';
 					var field_row = data["fields_rows"][i];
 					
+					old_value = '';
+					old_recovery_value = '';
 					// Only keep the value if is provided from hidden (first time)
 					if (($("[name=field" + i + "_value]").attr('id'))
 						== ("hidden-field" + i + "_value")) {
@@ -282,11 +284,16 @@ $(document).ready (function () {
 						$('#table_macros-field' + i).hide();
 					}
 					else {
-						$('#table_macros-field' + i).replaceWith(field_row);
-						$("[name=field" + i + "_value]").val(old_value);
-						$("[name=field" + i + "_recovery_value]")
-							.val(old_recovery_value);
 						
+						$('#table_macros-field' + i).replaceWith(field_row);
+						if (old_value != '' && old_recovery_value != ''){
+							$("[name=field" + i + "_value]").val(old_value);
+							$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
+						}
+						else{
+							$("[name=field" + i + "_value]").val($("[name=field" + i + "_value]").val());
+							$("[name=field" + i + "_recovery_value]").val($("[name=field" + i + "_recovery_value]").val());
+						}
 						
 						// Add help hint only in first field
 						if (i == 1) {

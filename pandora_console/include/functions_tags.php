@@ -2242,7 +2242,7 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	$tags_and_groups_aux = array();
 	foreach ($tags_and_groups as $data) {
 		// All group
-		if ($data['id_grupo'] === 0) {
+		if ((int)$data['id_grupo'] === 0) {
 			// All group with empty tags. All groups without tags permission!
 			if (empty($data['tags'])) {
 				foreach ($all_group_ids as $group_id) {

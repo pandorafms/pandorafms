@@ -2419,13 +2419,19 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	return $user_agents;
 }
 
-function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields = false, $filter = false, $return_all_fields = false, $get_filter_status = -1) {
+function tags_get_agent_modules ($id_agent, $id_tag = false, $groups_and_tags = array(), $fields = false, $filter = false, $return_all_fields = false, $get_filter_status = -1) {
 	
 	global $config;
 	
 	// Avoid mysql error
 	if (empty($id_agent))
 		return false;
+	
+	if (empty($id_tag)) {
+		$tag_filter = "";
+	} else {
+		$tag_filter = " AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag = $id_tag) ";
+	}
 	
 	if (!is_array ($fields)) {
 		$fields = array ();
@@ -2445,12 +2451,11 @@ function tags_get_agent_modules ($id_agent, $groups_and_tags = array(), $fields 
 		
 	}
 	
-	$tag_filter = "";
 	if (!empty($groups_and_tags)) {
 		$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agent);
 		if (isset($groups_and_tags[$agent_group]) && ($groups_and_tags[$agent_group] != '')) {
 			//~ $tag_filter = " AND ttag_module.id_tag IN (".$groups_and_tags[$agent_group].")";
-			$tag_filter = " AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (".$groups_and_tags[$agent_group]."))";
+			$tag_filter .= " AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (".$groups_and_tags[$agent_group]."))";
 		}
 	}
 	

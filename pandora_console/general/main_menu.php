@@ -34,7 +34,7 @@ if ($autohidden_menu) {
 // Menu container prepared to autohide menu
 echo '<div id="' . $menu_container_id . '">';
 
-echo '<div class="tit bg titop">:: '.__('Operation').' ::</div>';
+//echo '<div class="tit bg titop">:: '.__('Operation').' ::</div>';
 require ("operation/menu.php");
 
 //Check all enterprise ACL used in godmenu items to print menu headers
@@ -47,12 +47,12 @@ if (check_acl ($config['id_user'], 0, "AW") ||
 	check_acl ($config['id_user'], 0, "EW") ||
 	check_acl ($config['id_user'], 0, "DW")) {
 	
-	echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';
+	//echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';
 }
 
 require ("godmode/menu.php");
 
-require ("links_menu.php");
+//require ("links_menu.php");
 
 echo '</div>'; //menu_container
 
@@ -67,9 +67,10 @@ if (isset($config['fixed_header'])) {
 	$config_fixed_header = $config['fixed_header'];
 }
 ?>
+
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
-
+/*
 var autohidden_menu = <?php echo $autohidden_menu; ?>;
 var fixed_menu = <?php echo json_encode((bool)$config_fixed_menu); ?>;
 var fixed_header = <?php echo json_encode((bool)$config_fixed_header); ?>;
@@ -230,4 +231,23 @@ $(document).ready( function() {
 	}
 });
 /* ]]> */
+</script>
+
+<script type="text/javascript">
+	$('.menu_icon').mouseover(function(){
+		table_hover = $(this);
+		$("ul#sub"+table_hover[0].id).show();
+	}).mouseout(function(){
+		$("ul#sub"+table_hover[0].id).hide();
+	});
+	
+	$('.has_submenu.submenu_not_selected').mouseover(function(){
+		table_hover2 = $(this);
+		$("#sub_"+table_hover2[0].id).show();
+		console.log($(this).position());
+	}).mouseout(function(){
+		$("#sub_"+table_hover2[0].id).hide();
+		
+	});
+	
 </script>

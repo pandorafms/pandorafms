@@ -124,46 +124,51 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 		$sub["godmode/reporting/map_builder"]["refr"] = 60;
 	}
 	
-	$sub2 = array ();
+	
 	
 	$layouts = db_get_all_rows_in_table ('tlayout', 'name');
 	if ($layouts === false) {
 		$layouts = array ();
 	}
-	$id = (int) get_parameter ('id', -1);
-	
-	$firstLetterNameVisualToShow = array('_', ',', '[', '(');
-	
-	$sub2 = array();
-	
-	foreach ($layouts as $layout) {
-		if (! check_acl ($config["id_user"], $layout["id_group"], "AR")) {
-			continue;
+	else{
+		$sub2 = array ();
+		$id = (int) get_parameter ('id', -1);
+		
+		$firstLetterNameVisualToShow = array('_', ',', '[', '(');
+		
+		$sub2 = array();
+		
+		foreach ($layouts as $layout) {
+			if (! check_acl ($config["id_user"], $layout["id_group"], "AR")) {
+				continue;
+			}
+			$name = io_safe_output($layout['name']);
+			if (empty($name)) {
+				$firstLetter = '';
+			}
+			else {
+				$firstLetter = $name[0];
+			}
+			if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
+				continue;
+			}
+			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
+			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
+			if (!empty($config['vc_refr'])) {
+				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
+			}
+			elseif (((int)get_parameter('refr', 0)) > 0) {
+				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = (int)get_parameter('refr', 0);
+			}
+			else {
+				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
+			}
 		}
-		$name = io_safe_output($layout['name']);
-		if (empty($name)) {
-			$firstLetter = '';
-		}
-		else {
-			$firstLetter = $name[0];
-		}
-		if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
-			continue;
-		}
-		$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
-		$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
-		if (!empty($config['vc_refr'])) {
-			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
-		}
-		elseif (((int)get_parameter('refr', 0)) > 0) {
-			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = (int)get_parameter('refr', 0);
-		}
-		else {
-			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
-		}
+		$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
 	}
 	
-	$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
+	
+	
 	
 	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');
 	//Set godomode path

@@ -1,0 +1,52 @@
+.new_task
+{
+	margin-top: 30px;
+	left: 20px;
+	padding-top: 0.5px;
+	width: 60%;
+	height: 35em;
+	background-color: #FFF;
+	border-radius: 3px 3px 3px 3px;
+}
+
+.title_task
+{
+	background: url(../../images/icono_exclamacion.png) no-repeat scroll 280px 50% #82B92E;
+	padding: 10px 5px 6px 300px;
+	margin: 5px 5px 10px 5px;
+	font-weight: bold;
+	color: #FFF;
+	border-radius: 3px 3px 3px 3px;
+}
+
+.image_task
+{
+	margin: 30px 0px 0px 50px;
+	background-color: #FFF;
+}
+
+.text_task
+{
+	width: 45em;
+	float: right;
+	padding-right: 100px;
+	margin-top: -120px;
+}
+
+.button_task
+{
+	margin-top:10px;
+	background-color: #82B92E;
+	padding: 10px 10px 10px 10px;
+	font-weight: bold;
+	color: #FFF;
+	border:none;
+}
+#description_task
+{
+	font-size: 12px;
+}
+
+#fuerte{
+	font-size: 12px;
+}

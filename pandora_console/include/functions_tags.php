@@ -2298,7 +2298,7 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 			$groups_clause = " AND ".tags_get_acl_tags_module_condition($groups_and_tags, "tagente_modulo"); 		 
 		}
 	} else {
-		$groups_clause = " AND tagente.id_grupo IN (".implode(',',$groups_and_tags).")";
+		$groups_clause = " AND tagente.id_grupo IN (".implode(',', array_keys($groups_and_tags)).")";
 	}
 	
 	if (!empty($filter['id_group'])) {

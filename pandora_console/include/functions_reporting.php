@@ -197,6 +197,12 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$content,
 					'min');
 				break;
+			case 'sumatory':
+				$report['contents'][] = reporting_value(
+					$report,
+					$content,
+					'sum');
+				break;
 		}
 	}
 	
@@ -217,6 +223,9 @@ function reporting_value($report, $content, $type) {
 		case 'avg':
 			$return['type'] = 'avg_value';
 			break;
+		case 'sum':
+			$return['type'] = 'sumatory';
+			break;
 	}
 	
 	
@@ -230,6 +239,9 @@ function reporting_value($report, $content, $type) {
 				break;
 			case 'avg':
 				$content['name'] = __('AVG. Value');
+				break;
+			case 'sum':
+				$content['name'] = __('Summatory');
 				break;
 		}
 	}
@@ -255,6 +267,10 @@ function reporting_value($report, $content, $type) {
 			break;
 		case 'avg':
 			$value = reporting_get_agentmodule_data_average(
+				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			break;
+		case 'sum':
+			$value = reporting_get_agentmodule_data_sum(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
 			break;
 	}

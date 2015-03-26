@@ -152,6 +152,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'min_value':
 				reporting_html_min_value($table, $item, $mini);
 				break;
+			case 'sumatory':
+				reporting_html_sum_value($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -162,6 +165,10 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_sum_value(&$table, $item, $mini) {
+	reporting_html_value($table, $item, $mini);
 }
 
 function reporting_html_avg_value(&$table, $item, $mini) {
@@ -3856,45 +3863,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			break;
 		
-		case 10:
-		case 'sumatory':
-			if (empty($item_title)) {
-				$item_title = __('Summatory');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			
-			$next_row = 1;
-			
-			// Put description at the end of the module (if exists)
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			
-			$table->colspan[$next_row][0] = 3;
-
-			$data = array ();
-			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
-			
-			$value = reporting_get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($value === false) {
-				$value = __('Unknown');
-			}
-			else {
-				$value = format_for_graph($value, 2) . " " . $unit;
-			}
-			
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
-			array_push ($table->data, $data);
-			
-			break;
 		case 'agent_detailed_event':
 		case 'event_report_agent':
 			if (empty($item_title)) {

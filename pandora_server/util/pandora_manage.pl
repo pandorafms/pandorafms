@@ -189,8 +189,8 @@ sub help_screen{
 	
     print "\nTAGS\n\n" unless $param ne '';
     help_screen_line('--create_tag', '<tag_name> <tag_description> [<tag_url>] [<tag_email>]', 'Create a new tag');
-    help_screen_line('--add_tag_to_user_profile', '<user_id> <tag_name> <group_name> <profile_name>', 'Add a tag to the given user profile.');
-    help_screen_line('--add_tag_to_module', '<agent_name> <module_name> <tag_name>', 'Add a tag to the given module.');
+    help_screen_line('--add_tag_to_user_profile', '<user_id> <tag_name> <group_name> <profile_name>', 'Add a tag to the given user profile');
+    help_screen_line('--add_tag_to_module', '<agent_name> <module_name> <tag_name>', 'Add a tag to the given module');
 
     print "\n";
 	exit;

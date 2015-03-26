@@ -376,7 +376,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 
 			// Get agent modules data
 			if ($strict_user) {
-				$modules = tags_get_agent_modules ($agent['id_agente'], $acltags, false, $filter, false);
+				$modules = tags_get_agent_modules ($agent['id_agente'], false, $acltags, false, $filter, false);
 			} else {
 				$modules = agents_get_modules($agent['id_agente'], '*', $filter, true, true);
 			}			
@@ -792,7 +792,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 			// Get agent modules data
 			if ($strict_user) {
 				$filter['disabled'] = 0;
-				$modules = tags_get_agent_modules ($agent['id_agente'], $acltags, false, $filter, false);
+				$modules = tags_get_agent_modules ($agent['id_agente'], false, $acltags, false, $filter, false);
 			} else {
 				$modules = agents_get_modules ($agent['id_agente'], false, array('disabled' => 0), true, false);
 			}

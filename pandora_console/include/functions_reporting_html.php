@@ -7008,7 +7008,7 @@ function reporting_get_events ($data, $links = false) {
 		
 		$event_view = '<fieldset class="tactical_set">
 					<legend>' . 
-						__('Events by criticity') . 
+						__('Important Events by Criticity') . 
 					'</legend>' . 
 					html_print_table($table_events, true) . '</fieldset>';
 	}

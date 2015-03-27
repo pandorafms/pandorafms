@@ -221,6 +221,12 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$content,
 					'TTO');
 				break;
+			case 'TTRT':
+				$report['contents'][] = reporting_value(
+					$report,
+					$content,
+					'TTRT');
+				break;
 		}
 	}
 	
@@ -253,6 +259,9 @@ function reporting_value($report, $content, $type) {
 		case 'TTO':
 			$return['type'] = 'TTO';
 			break;
+		case 'TTRT':
+			$return['type'] = 'TTRT';
+			break;
 	}
 	
 	
@@ -278,6 +287,9 @@ function reporting_value($report, $content, $type) {
 				break;
 			case 'TTO':
 				$content['name'] = __('TTO');
+				break;
+			case 'TTRT':
+				$return['type'] = __('TTRT');
 				break;
 		}
 	}
@@ -327,6 +339,16 @@ function reporting_value($report, $content, $type) {
 			break;
 		case 'TTO':
 			$value = reporting_get_agentmodule_tto(
+				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			if ($value == 0) {
+				$formated_value = null;
+			}
+			else {
+				$formated_value = human_time_description_raw ($value);
+			}
+			break;
+		case 'TTRT':
+			$value = reporting_get_agentmodule_ttr(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($value == 0) {
 				$formated_value = null;
@@ -1682,5 +1704,436 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $d
 	}
 	
 	return $total / $count;	
+}
+
+
+/** 
+ * Get the MTTR value of an agent module in a period of time. See
+ * http://en.wikipedia.org/wiki/Mean_time_to_recovery
+ * 
+ * @param int Agent module id
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ * 
+ * @return float The MTTR value in the interval.
+ */
+function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 0) {
+	
+	// Initialize variables
+	if (empty ($date)) $date = get_system_time ();
+	
+	// Read module configuration
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
+	$module = db_get_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
+		FROM tagente_modulo
+		WHERE id_agente_modulo = ' . (int) $id_agent_module);
+	if ($module === false) {
+		return false;
+	}
+	
+	$critical_min = $module['min_critical'];
+	$critical_max = $module['max_critical'];
+	$module_type = $module['id_tipo_modulo'];
+	
+	// Set critical_min and critical for proc modules
+	$module_type_str = modules_get_type_name ($module_type);
+	if (strstr ($module_type_str, 'proc') !== false &&
+		($critical_min == 0 && $critical_max == 0)) {
+		$critical_min = 1;
+	}
+	
+	// Get module data
+	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
+		' AND utimestamp > ' . (int) $datelimit .
+		' AND utimestamp < ' . (int) $date .
+		' ORDER BY utimestamp ASC', $search_in_history_db);
+	if ($interval_data === false) $interval_data = array ();
+	
+	// Get previous data
+	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $datelimit;
+		array_unshift ($interval_data, $previous_data);
+	}
+	
+	// Get next data
+	$next_data = modules_get_next_data ($id_agent_module, $date);
+	if ($next_data !== false) {
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	else if (count ($interval_data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$next_data = array_pop ($interval_data);
+		array_push ($interval_data, $next_data);
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	
+	if (count ($interval_data) < 2) {
+		return false;
+	}
+	
+	// Set initial conditions
+	$critical_period = 0;
+	$first_data = array_shift ($interval_data);
+	$previous_utimestamp = $first_data['utimestamp'];
+	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
+		($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
+		$previous_status = 1;
+		$critical_count = 1;
+	}
+	else {
+		$previous_status = 0;
+		$critical_count = 0;
+	}
+	
+	foreach ($interval_data as $data) {
+		// Previous status was critical
+		if ($previous_status == 1) {
+			$critical_period += $data['utimestamp'] - $previous_utimestamp;
+		}
+		
+		// Re-calculate previous status for the next data
+		if ((($critical_max > $critical_min AND ($data['datos'] > $critical_max OR $data['datos'] < $critical_min))) OR
+			($critical_max <= $critical_min AND $data['datos'] < $critical_min)) {
+			if ($previous_status == 0) {
+				$critical_count++;
+			}
+			$previous_status = 1;
+		}
+		else {
+			$previous_status = 0;
+		}
+		
+		$previous_utimestamp = $data['utimestamp'];
+	}
+	
+	if ($critical_count == 0) {
+		return 0;
+	}
+	
+	return $critical_period / $critical_count;
+}
+
+
+/** 
+ * Get the MTBF value of an agent module in a period of time. See
+ * http://en.wikipedia.org/wiki/Mean_time_between_failures
+ * 
+ * @param int Agent module id
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ * 
+ * @return float The MTBF value in the interval.
+ */
+function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 0) {
+	
+	// Initialize variables
+	if (empty ($date)) $date = get_system_time ();
+	
+	// Read module configuration
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
+	$module = db_get_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
+		FROM tagente_modulo
+		WHERE id_agente_modulo = ' . (int) $id_agent_module);
+	if ($module === false) {
+		return false;
+	}
+	
+	$critical_min = $module['min_critical'];
+	$critical_max = $module['max_critical'];
+	$module_type = $module['id_tipo_modulo'];
+	
+	// Set critical_min and critical for proc modules
+	$module_type_str = modules_get_type_name ($module_type);
+	if (strstr ($module_type_str, 'proc') !== false &&
+		($critical_min == 0 && $critical_max == 0)) {
+		$critical_min = 1;
+	}
+	
+	// Get module data
+	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
+		' AND utimestamp > ' . (int) $datelimit .
+		' AND utimestamp < ' . (int) $date .
+		' ORDER BY utimestamp ASC', $search_in_history_db);
+	if ($interval_data === false) $interval_data = array ();
+	
+	// Get previous data
+	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $datelimit;
+		array_unshift ($interval_data, $previous_data);
+	}
+	
+	// Get next data
+	$next_data = modules_get_next_data ($id_agent_module, $date);
+	if ($next_data !== false) {
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	else if (count ($interval_data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$next_data = array_pop ($interval_data);
+		array_push ($interval_data, $next_data);
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	
+	if (count ($interval_data) < 2) {
+		return false;
+	}
+	
+	// Set initial conditions
+	$critical_period = 0;
+	$first_data = array_shift ($interval_data);
+	$previous_utimestamp = $first_data['utimestamp'];
+	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
+			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
+		$previous_status = 1;
+		$critical_count = 1;
+	}
+	else {
+		$previous_status = 0;
+		$critical_count = 0;
+	}
+	
+	foreach ($interval_data as $data) {
+		// Previous status was critical
+		if ($previous_status == 1) {
+			$critical_period += $data['utimestamp'] - $previous_utimestamp;
+		}
+		
+		// Re-calculate previous status for the next data
+		if ((($critical_max > $critical_min AND ($data['datos'] > $critical_max OR $data['datos'] < $critical_min))) OR
+			($critical_max <= $critical_min AND $data['datos'] < $critical_min)) {
+			if ($previous_status == 0) {
+				$critical_count++;
+			}
+			$previous_status = 1;
+		}
+		else {
+			$previous_status = 0;
+		}
+		
+		$previous_utimestamp = $data['utimestamp'];
+	}
+	
+	if ($critical_count == 0) {
+		return 0;
+	}
+	
+	return ($period - $critical_period) / $critical_count;
+}
+
+
+/** 
+ * Get the TTO value of an agent module in a period of time.
+ * 
+ * @param int Agent module id
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ * 
+ * @return float The TTO value in the interval.
+ */
+function reporting_get_agentmodule_tto ($id_agent_module, $period = 0, $date = 0) {
+	
+	// Initialize variables
+	if (empty ($date)) $date = get_system_time ();
+	
+	// Read module configuration
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
+	$module = db_get_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
+		FROM tagente_modulo
+		WHERE id_agente_modulo = ' . (int) $id_agent_module);
+	if ($module === false) {
+		return false;
+	}
+	
+	$critical_min = $module['min_critical'];
+	$critical_max = $module['max_critical'];
+	$module_type = $module['id_tipo_modulo'];
+	
+	// Set critical_min and critical for proc modules
+	$module_type_str = modules_get_type_name ($module_type);
+	if (strstr ($module_type_str, 'proc') !== false &&
+		($critical_min == 0 && $critical_max == 0)) {
+		$critical_min = 1;
+	}
+	
+	// Get module data
+	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
+		' AND utimestamp > ' . (int) $datelimit .
+		' AND utimestamp < ' . (int) $date .
+		' ORDER BY utimestamp ASC', $search_in_history_db);
+	if ($interval_data === false) $interval_data = array ();
+	
+	// Get previous data
+	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $datelimit;
+		array_unshift ($interval_data, $previous_data);
+	}
+	
+	// Get next data
+	$next_data = modules_get_next_data ($id_agent_module, $date);
+	if ($next_data !== false) {
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	else if (count ($interval_data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$next_data = array_pop ($interval_data);
+		array_push ($interval_data, $next_data);
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	
+	if (count ($interval_data) < 2) {
+		return false;
+	}
+	
+	// Set initial conditions
+	$critical_period = 0;
+	$first_data = array_shift ($interval_data);
+	$previous_utimestamp = $first_data['utimestamp'];
+	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
+			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
+		$previous_status = 1;
+	}
+	else {
+		$previous_status = 0;
+	}
+	
+	foreach ($interval_data as $data) {
+		// Previous status was critical
+		if ($previous_status == 1) {
+			$critical_period += $data['utimestamp'] - $previous_utimestamp;
+		}
+		
+		// Re-calculate previous status for the next data
+		if ((($critical_max > $critical_min AND ($data['datos'] > $critical_max OR $data['datos'] < $critical_min))) OR
+			($critical_max <= $critical_min AND $data['datos'] < $critical_min)) {
+			$previous_status = 1;
+		}
+		else {
+			$previous_status = 0;
+		}
+		
+		$previous_utimestamp = $data['utimestamp'];
+	}
+	
+	return $period - $critical_period;
+}
+
+/** 
+ * Get the TTR value of an agent module in a period of time.
+ * 
+ * @param int Agent module id
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ * 
+ * @return float The TTR value in the interval.
+ */
+function reporting_get_agentmodule_ttr ($id_agent_module, $period = 0, $date = 0) {
+	
+	// Initialize variables
+	if (empty ($date)) $date = get_system_time ();
+	
+	// Read module configuration
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+
+	$module = db_get_row_sql ('SELECT max_critical, min_critical, id_tipo_modulo
+		FROM tagente_modulo
+		WHERE id_agente_modulo = ' . (int) $id_agent_module);
+	if ($module === false) {
+		return false;
+	}
+	
+	$critical_min = $module['min_critical'];
+	$critical_max = $module['max_critical'];
+	$module_type = $module['id_tipo_modulo'];
+	
+	// Set critical_min and critical for proc modules
+	$module_type_str = modules_get_type_name ($module_type);
+	if (strstr ($module_type_str, 'proc') !== false &&
+		($critical_min == 0 && $critical_max == 0)) {
+		$critical_min = 1;
+	}
+	
+	// Get module data
+	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
+		' AND utimestamp > ' . (int) $datelimit .
+		' AND utimestamp < ' . (int) $date .
+		' ORDER BY utimestamp ASC', $search_in_history_db);
+	if ($interval_data === false) $interval_data = array ();
+	
+	// Get previous data
+	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $datelimit;
+		array_unshift ($interval_data, $previous_data);
+	}
+
+	// Get next data
+	$next_data = modules_get_next_data ($id_agent_module, $date);
+	if ($next_data !== false) {
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	else if (count ($interval_data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$next_data = array_pop ($interval_data);
+		array_push ($interval_data, $next_data);
+		$next_data['utimestamp'] = $date;
+		array_push ($interval_data, $next_data);
+	}
+	
+	if (count ($interval_data) < 2) {
+		return false;
+	}
+	
+	// Set initial conditions
+	$critical_period = 0;
+	$first_data = array_shift ($interval_data);
+	$previous_utimestamp = $first_data['utimestamp'];
+	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
+			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
+		$previous_status = 1;
+	}
+	else {
+		$previous_status = 0;
+	}
+	
+	foreach ($interval_data as $data) {
+		// Previous status was critical
+		if ($previous_status == 1) {
+			$critical_period += $data['utimestamp'] - $previous_utimestamp;
+		}
+		
+		// Re-calculate previous status for the next data
+		if ((($critical_max > $critical_min AND ($data['datos'] > $critical_max OR $data['datos'] < $critical_min))) OR
+			($critical_max <= $critical_min AND $data['datos'] < $critical_min)) {
+			$previous_status = 1;
+		}
+		else {
+			$previous_status = 0;
+		}
+		
+		$previous_utimestamp = $data['utimestamp'];
+	}
+	
+	return $critical_period;
 }
 ?>

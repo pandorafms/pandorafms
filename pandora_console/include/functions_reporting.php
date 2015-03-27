@@ -203,6 +203,24 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$content,
 					'sum');
 				break;
+			case 'MTTR':
+				$report['contents'][] = reporting_value(
+					$report,
+					$content,
+					'MTTR');
+				break;
+			case 'MTBF':
+				$report['contents'][] = reporting_value(
+					$report,
+					$content,
+					'MTBF');
+				break;
+			case 'TTO':
+				$report['contents'][] = reporting_value(
+					$report,
+					$content,
+					'TTO');
+				break;
 		}
 	}
 	
@@ -226,6 +244,15 @@ function reporting_value($report, $content, $type) {
 		case 'sum':
 			$return['type'] = 'sumatory';
 			break;
+		case 'MTTR':
+			$return['type'] = 'MTTR';
+			break;
+		case 'MTBF':
+			$return['type'] = 'MTBF';
+			break;
+		case 'TTO':
+			$return['type'] = 'TTO';
+			break;
 	}
 	
 	
@@ -243,6 +270,15 @@ function reporting_value($report, $content, $type) {
 			case 'sum':
 				$content['name'] = __('Summatory');
 				break;
+			case 'MTTR':
+				$content['name'] = __('MTTR');
+				break;
+			case 'MTBF':
+				$content['name'] = __('MTBF');
+				break;
+			case 'TTO':
+				$content['name'] = __('TTO');
+				break;
 		}
 	}
 	
@@ -250,6 +286,8 @@ function reporting_value($report, $content, $type) {
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
 		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo',
+		$content ['id_agent_module']);
 	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $agent_name . " - " . $module_name;
@@ -260,26 +298,48 @@ function reporting_value($report, $content, $type) {
 		case 'max':
 			$value = reporting_get_agentmodule_data_max(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			$formated_value = format_for_graph($value, 2) . " " . $unit;
 			break;
 		case 'min':
 			$value = reporting_get_agentmodule_data_min(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			$formated_value = format_for_graph($value, 2) . " " . $unit;
 			break;
 		case 'avg':
 			$value = reporting_get_agentmodule_data_average(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			$formated_value = format_for_graph($value, 2) . " " . $unit;
 			break;
 		case 'sum':
 			$value = reporting_get_agentmodule_data_sum(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			$formated_value = format_for_graph($value, 2) . " " . $unit;
+			break;
+		case 'MTTR':
+			$value = reporting_get_agentmodule_mttr(
+				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			$formated_value = null;
+			break;
+		case 'MTBF':
+			$value = reporting_get_agentmodule_mtbf(
+				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			$formated_value = null;
+			break;
+		case 'TTO':
+			$value = reporting_get_agentmodule_tto(
+				$content['id_agent_module'], $content['period'], $report["datetime"]);
+			if ($value == 0) {
+				$formated_value = null;
+			}
+			else {
+				$formated_value = human_time_description_raw ($value);
+			}
 			break;
 	}
 	
-	$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
-	
 	$return['data'] = array(
 		'value' => $value,
-		'formated_value' => format_for_graph($value, 2) . " " . $unit);
+		'formated_value' => $formated_value);
 	
 	return reporting_check_structure_content($return);
 }

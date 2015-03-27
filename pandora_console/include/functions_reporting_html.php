@@ -155,6 +155,15 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'sumatory':
 				reporting_html_sum_value($table, $item, $mini);
 				break;
+			case 'MTTR':
+				reporting_html_MTTR_value($table, $item, $mini, true, true);
+				break;
+			case 'MTBF':
+				reporting_html_MTBF_value($table, $item, $mini, true, true);
+				break;
+			case 'TTO':
+				reporting_html_TTO_value($table, $item, $mini, false, true);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -165,6 +174,18 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_TTO_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
+	reporting_html_value($table, $item, $mini);
+}
+
+function reporting_html_MTBF_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
+	reporting_html_value($table, $item, $mini);
+}
+
+function reporting_html_MTTR_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
+	reporting_html_value($table, $item, $mini);
 }
 
 function reporting_html_sum_value(&$table, $item, $mini) {
@@ -180,10 +201,10 @@ function reporting_html_max_value(&$table, $item, $mini) {
 }
 
 function reporting_html_min_value(&$table, $item, $mini) {
-	reporting_html_value($table, $item, $mini);
+	reporting_html_value($table, $item, $mini, $only_value, $check_empty);
 }
 
-function reporting_html_value(&$table, $item, $mini) {
+function reporting_html_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
 	if ($mini) {
 		$font_size = '1.5';
 	}
@@ -193,10 +214,21 @@ function reporting_html_value(&$table, $item, $mini) {
 	
 	$table->colspan['data']['cell'] = 3;
 	$table->cellstyle['data']['cell'] = 'text-align: left;';
-	$table->data['data']['cell'] =
-		'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: #000000;">' .
-			$item['data']['formated_value'] .
-		'</p>';
+	
+	
+	$table->data['data']['cell'] = '<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: #000000;">';
+	
+	if ($check_empty && empty($item['data']['value'])) {
+		$table->data['data']['cell'] .=  __('Unknown');
+	}
+	elseif ($only_value) {
+		$table->data['data']['cell'] .= $item['data']['value'];
+	}
+	else {
+		$table->data['data']['cell'] .= $item['data']['formated_value'];
+	}
+	
+	$table->data['data']['cell'] .= '</p>';
 }
 
 function reporting_html_url(&$table, $item, $key) {
@@ -4397,100 +4429,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$ttr.'</p>';
 			array_push ($table->data, $data);
 			break;
-		case 'TTO':
-			if (empty($item_title)) {
-				$item_title = __('TTO');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$tto = reporting_get_agentmodule_tto ($content['id_agent_module'],
-				$content['period'], $report["datetime"]);
-			if ($tto === false) {
-				$tto = __('Unknown');
-			}
-			else if ($tto != 0) {
-				$tto = human_time_description_raw ($tto);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$tto.'</p>';
-			array_push ($table->data, $data);
-			break;
-		case 'MTBF':
-			if (empty($item_title)) {
-				$item_title = __('MTBF');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$mtbf = reporting_get_agentmodule_mtbf ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($mtbf === false) {
-				$mtbf = __('Unknown');
-			}
-			else if ($mtbf != 0) {
-				$mtbf = human_time_description_raw ($mtbf);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$mtbf.'</p>';
-			array_push ($table->data, $data);
-			break;
-		case 'MTTR':
-			if (empty($item_title)) {
-				$item_title = __('MTTR');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$mttr = reporting_get_agentmodule_mttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($mttr === false) {
-				$mttr = __('Unknown');
-			}
-			else if ($mttr != 0) {
-				$mttr = human_time_description_raw ($mttr);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$mttr.'</p>';
-			array_push ($table->data, $data);
-			break;
+		
 		case 'group_report':
 			$group_name = groups_get_name($content['id_group'], true);
 			$group_stats = reporting_get_group_stats($content['id_group']);
@@ -7179,7 +7118,7 @@ function reporting_get_event_histogram ($events) {
 	
 	if (!empty($graph_data)) {
 		if (defined("METACONSOLE"))
-			$slicebar = flot_slicesbar_graph($graph_data, $max_value, "100%", 35, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $urlI
+			$slicebar = flot_slicesbar_graph($graph_data, $max_value, "100%", 35, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $url);
 		else
 			$slicebar = slicesbar_graph($graph_data, $max_value, 700, 25, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
 		

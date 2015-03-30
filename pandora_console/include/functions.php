@@ -2318,4 +2318,26 @@ function set_pandora_error_for_header($message, $title = null) {
 	$_SESSION["alert_msg"] .= ui_print_error_message($message_config,
 		'', true);
 }
+
+function set_if_defined (&$var, $test) {
+	if (isset($test)) {
+		$var = $test;
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function set_unless_defined (&$var, $default) {
+	if (! isset($var)) {
+		$var = $default;
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 ?>

@@ -36,6 +36,7 @@ enterprise_include_once('include/functions_inventory.php');
 include_once($config['homedir'] . "/include/functions_forecast.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
+include_once($config['homedir'] . "/include/functions_os.php");
 
 function reporting_user_can_see_report($id_report, $id_user = null) {
 	global $config;
@@ -122,6 +123,7 @@ function reporting_make_reporting_data($id_report, $date, $time,
 		return $return;
 	}
 	
+	$report["group"] = $report['id_group'];
 	$report["group_name"] = groups_get_name ($report['id_group']);
 	
 	$datetime = strtotime($date . ' ' . $time);
@@ -227,10 +229,120 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$content,
 					'TTRT');
 				break;
+			case 'agent_configuration':
+				$report['contents'][] = reporting_agent_configuration(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_agent_configuration($report, $content) {
+	global $config;
+	
+	$return['type'] = 'agent_configuration';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Agent configuration');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	
+	$sql = "
+		SELECT *
+		FROM tagente
+		WHERE id_agente=" . $content['id_agent'];
+	$agent_data = db_get_row_sql($sql);
+	
+	$agent_configuration = array();
+	$agent_configuration['name'] = $agent_data['nombre'];
+	$agent_configuration['group'] = groups_get_name($agent_data['id_grupo']);
+	$agent_configuration['group_icon'] =
+		ui_print_group_icon ($agent_data['id_grupo'], true, '', '', false);
+	$agent_configuration['os'] = os_get_name($agent_data["id_os"]);
+	$agent_configuration['os_icon'] = ui_print_os_icon($agent_data["id_os"], true, true);
+	$agent_configuration['address'] = $agent_data['direccion'];
+	$agent_configuration['description'] =
+		strip_tags(ui_bbcode_to_html($agent_data['comentarios']));
+	$agent_configuration['enabled'] = (int)!$agent_data['disabled'];
+	$agent_configuration['group'] = $report["group"];
+	
+	$modules = agents_get_modules ($content['id_agent']);
+	
+	$agent_configuration['modules'] = array();
+	//Agent's modules
+	if (!empty($modules)) {
+		foreach ($modules as $id_agent_module => $module) {
+			$sql = "
+				SELECT *
+				FROM tagente_modulo
+				WHERE id_agente_modulo = $id_agent_module";
+			$module_db = db_get_row_sql($sql);
+			
+			
+			$data_module = array();
+			$data_module['name'] = $module_db['nombre'];
+			if ($module_db['disabled']) {
+				$data_module['name'] .= " (" . __('Disabled') . ")";
+			}
+			$data_module['type_icon'] =
+				ui_print_moduletype_icon($module_db['id_tipo_modulo'], true);
+			$data_module['type'] =
+				modules_get_type_name($module_db['id_tipo_modulo']);
+			$data_module['max_warning'] =
+				$module_db['max_warning'];
+			$data_module['min_warning'] =
+				$module_db['min_warning'];
+			$data_module['max_critical'] =
+				$module_db['max_critical'];
+			$data_module['min_critical'] =
+				$module_db['min_critical'];
+			$data_module['threshold'] = $module_db['module_ff_interval'];
+			$data_module['description'] = $module_db['descripcion'];
+			if (($module_db['module_interval'] == 0) ||
+				($module_db['module_interval'] == '')) {
+				
+				$data_module['interval'] = db_get_value('intervalo',
+					'tagente', 'id_agente', $content['id_agent']);
+			}
+			else {
+				$data_module['interval'] = $module_db['module_interval'];
+			}
+			$data_module['unit'] = $module_db['unit'];
+			$module_status = db_get_row(
+				'tagente_estado', 'id_agente_modulo', $id_agent_module);
+			modules_get_status($id_agent_module,
+				$module_status['estado'],
+				$module_status['datos'], $status, $title);
+			$data_module['status_icon'] = 
+				ui_print_status_image($status, $title, true);
+			$data_module['status'] = $title;
+			$sql_tag = "
+				SELECT name
+				FROM ttag
+				WHERE id_tag IN (
+					SELECT id_tag
+					FROM ttag_module
+					WHERE id_agente_modulo = $id_agent_module)";
+			$tags = db_get_all_rows_sql($sql_tag);
+			if ($tags === false)
+				$data_module['tags'] = array();
+			else
+				$data_module['tags'] = $tags;
+			
+			$agent_configuration['modules'][] = $data_module;
+		}
+	}
+	
+	$return['data'] = $agent_configuration;
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_value($report, $content, $type) {

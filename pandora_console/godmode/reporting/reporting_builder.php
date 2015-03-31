@@ -93,11 +93,11 @@ if ($idReport != 0) {
 				$edit = true;
 			break;
 	}
-
+	
 	if (! $edit) {
 		// The user that created the report should can delete it. Despite its permissions.
 		$delete_report_bypass = false;
-
+		
 		if ($action == 'delete_report') {
 			if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
 				$delete_report_bypass = true;
@@ -339,14 +339,14 @@ switch ($action) {
 					}
 					break;
 			}
-
+			
 			if (! $delete) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access report builder deletion");
 				require ("general/noaccess.php");
 				exit;
 			}
-
+			
 			$result = reports_delete_report ($idReport);
 			if ($result !== false)
 				db_pandora_audit("Report management", "Delete report #$idReport");
@@ -431,8 +431,14 @@ switch ($action) {
 			$filter['metaconsole'] = 0;
 		
 		$reports = reports_get_reports ($filter,
-			array ('name', 'id_report', 'description', 'private',
-				'id_user', 'id_group', 'non_interactive'), $return_all_group, 'RR', $group);
+			array (
+				'name',
+				'id_report',
+				'description',
+				'private',
+				'id_user',
+				'id_group',
+				'non_interactive'), $return_all_group, 'RR', $group);
 		
 		$table->width = '0px';
 		if (sizeof ($reports)) {
@@ -644,7 +650,7 @@ switch ($action) {
 		}
 		break;
 	case 'update':
-	case 'save': 
+	case 'save':
 		switch ($activeTab) {
 			case 'main':
 				$reportName = get_parameter('name');
@@ -724,8 +730,9 @@ switch ($action) {
 							$first_page = $config['custom_report_front_firstpage'];
 							$footer = $config['custom_report_front_footer'];							
 							
-						} else {
-						
+						}
+						else {
+							
 							$start_url = ui_get_full_url(false, false, false, false);
 							$first_page = "&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;img&#x20;src=&quot;" . $start_url . "/images/pandora_report_logo.png&quot;&#x20;alt=&quot;&quot;&#x20;width=&quot;800&quot;&#x20;/&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;xx-large;&quot;&gt;&#40;_REPORT_NAME_&#41;&lt;/span&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;large;&quot;&gt;&#40;_DATETIME_&#41;&lt;/span&gt;&lt;/p&gt;";
 							$logo = $header = $footer = null;
@@ -1548,7 +1555,7 @@ switch ($action) {
 			switch ($activeTab) {
 				case 'main':
 					$buttons['list_reports']['active'] = true;
-					$subsection = ' &raquo; '.__('Custom reporting');
+					$subsection = ' &raquo; ' . __('Custom reporting');
 					break;
 				default:
 					$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);

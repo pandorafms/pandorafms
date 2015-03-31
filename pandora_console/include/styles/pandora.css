@@ -2884,6 +2884,18 @@ table#policy_modules td * {
 	border-radius: 2px;
 }
 
+.databox.data td{
+	padding-left: 10px;
+	border: 1px solid #E2E2E2;
+}
+
+.difference{
+	border-left-width: 2px;
+	border-left-style: solid;
+	border-right-width: 2px;
+	border-right-style: solid;
+	border-color: #E2E2E2;
+}
 
 /* The items with the class 'spinner' will rotate */
 /* Not supported on IE9 and below */

@@ -116,20 +116,26 @@ ui_pagination($count);
 
 if (!empty($result_groups)) {
 
-	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="databox" border="0" width="100%">';
+	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="databox data" border="0" width="100%">';
 		echo "<tr>";
-		echo "<th style='width: 26px;'>" . __("Force") . "</th>";
-		echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Agents") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Agent unknown") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Agents not init") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Unknown") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Not Init") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Normal") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Warning") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Critical") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Alert fired") . "</th>";
+			echo "<th colspan=2 ></th>";
+			echo "<th colspan=3 class='difference'>" . __("Agents") . "</th>";
+			echo "<th colspan=6 >" . __("Modules") . "</th>";
+		echo "</tr>";
 		
+		echo "<tr>";
+			echo "<th style='width: 26px;'>" . __("Force") . "</th>";
+			echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Total") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Unknown") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Not init") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Unknown") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Not Init") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Normal") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Warning") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Critical") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;'>" . __("Alert fired") . "</th>";
+		echo "</tr>";
 		foreach ($result_groups as $data) {
 			
 			// Calculate entire row color

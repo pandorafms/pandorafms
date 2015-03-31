@@ -234,20 +234,35 @@ $(document).ready( function() {
 </script>
 
 <script type="text/javascript">
-	$('.menu_icon').mouseover(function(){
+	openTime = 0;
+	handsIn = 0;
+
+	$('.menu_icon').hover(function(){
 		table_hover = $(this);
+		handsIn = 1;
+		openTime = new Date().getTime();
+		if( typeof(table_noHover) != 'undefined')
+			if ("ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id)
+				$("ul#sub"+table_noHover[0].id).hide();
 		$("ul#sub"+table_hover[0].id).show();
 	}).mouseout(function(){
-		$("ul#sub"+table_hover[0].id).hide();
-	});
-	
-	$('.has_submenu.submenu_not_selected').mouseover(function(){
-		table_hover2 = $(this);
-		$("#sub_"+table_hover2[0].id).show();
-		console.log($(this).position());
-	}).mouseout(function(){
-		$("#sub_"+table_hover2[0].id).hide();
+		table_noHover = $(this);
+		handsIn = 0;
+		setTimeout(function() {
+			opened = new Date().getTime() - openTime;
+			if(opened >= 3000 && handsIn == 0) {
+				openTime = 4000;
+				$("ul#sub"+table_hover[0].id).hide();
+			}
+		}, 3500);
 		
 	});
 	
+	$(document).ready(function(){
+		$('#page').click(function(){
+			openTime = 4000;
+			$("ul#sub"+table_hover[0].id).hide();
+		});
+	});
+
 </script>

@@ -32,7 +32,7 @@
 	margin: 0;
 }
 .menu li.selected {
-	background-color: #d9fb86 !important;
+	background-color: #80BA27 !important;
 }
 
 .menu li a {
@@ -70,7 +70,7 @@ li:hover ul { display: block; }
 	margin: 0px 0px 0px 0px;
 	position: absolute;
 	z-index: 999;
-	left: 60px;
+	left: 44px;
 	min-height: 30px;
 	height: 30px;
 	width: 160px;
@@ -133,7 +133,6 @@ li:hover ul { display: block; }
 }
 
 .menu .menu_icon, .menu li.links {
-	background-color: #daedae;
 	background-position: 4px 4px;
 	background-repeat: no-repeat;
 	cursor: pointer;
@@ -249,9 +248,8 @@ ul li {
 	position: relative;
 	}
 	
-li ul {
+.menu li ul {
 	position: absolute;
-	left: 149px; /* Set 1px less than menu width */
 	top: 0;
 	display: none;
 }
@@ -259,12 +257,6 @@ li ul {
 /* Styles for Menu Items */
 ul li a {
 	display: block;
-	text-decoration: none;
-	color: #777;
-	background: #fff; /* IE6 Bug */
-	padding: 5px;
-	border: 1px solid #ccc;
-	border-bottom: 0;
 }
 
 /* Fix IE. Hide from IE Mac \*/
@@ -272,5 +264,5 @@ ul li a {
 * html ul li a { height: 1%; }
 /* End */
 
-ul li a:hover { color: #E2144A; background: #f9f9f9; } /* Hover Styles */
+ul li a:hover { color: #E2144A; } /* Hover Styles */
 li ul li a { padding: 2px 5px; } /* Sub Menu Styles */

@@ -235,7 +235,8 @@ div#page {
 }
 div#main {
 	width: 90%;
-	margin: 0px 0px 0px 7%;
+	margin: 0px 5% 0px 0%;
+	float: right;
 }
 div#main_help {
 	width: 100%;
@@ -308,7 +309,7 @@ div#menu_container {
 }
 
 div#menu {
-	width: 60px;
+	width: 45px;
 	float: left;
 	margin-top: 10px;
 }
@@ -1132,14 +1133,14 @@ div.title_line {
 }
 
 #menu_tab li.tab_operation, #menu_tab li.tab_godmode {
-	padding-left: 4px;
+	padding-left: 2px;
 }
 
 #menu_tab li.tab_godmode a, #menu_tab a.tab_godmode {
 	background: #666;
-	padding-left: 3px;
-	padding-right: 3px;
-	min-height: 23px;
+	padding-left: 4px;
+	padding-right: 4px;
+	min-height: 27px;
 }
 
 #menu_tab li.tab_godmode.nomn_high a, #menu_tab a.tab_godmode.nomn_high,
@@ -1150,9 +1151,9 @@ div.title_line {
 
 #menu_tab li.tab_operation a, #menu_tab a.tab_operation {
 	background: #82b92e;
-	padding-left: 3px;
-	padding-right: 3px;
-	min-height: 23px;
+	padding-left: 4px;
+	padding-right: 4px;
+	min-height: 27px;
 }
 
 #menu_tab li.tab_operation.nomn_high a, #menu_tab a.tab_operation.nomn_high,
@@ -1235,8 +1236,8 @@ div.title_line {
 
 #menu_tab_left ul.mn li.view {
 	background: #82b92e;
-	max-width: 20%;
-	min-width: 15%;
+	max-width: 40%;
+	min-width: 20%;
 	padding: 5px 5px 0px;
 	text-align: center;
 	-moz-border-top-right-radius: 3px;
@@ -1252,9 +1253,9 @@ div.title_line {
 
 #menu_tab_left ul.mn li.nomn {
 	background: #666;
-	width: 450px;
-	min-width: 300px;
-	padding: 1px 5px;
+	max-width: 40%;
+	min-width: 20%;
+	padding: 5px 5px 0px;
 	
 	-moz-border-top-right-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
@@ -1364,7 +1365,6 @@ span.rmess, span.nrmess {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	padding: 8px 8px 8px 8px;
 }
 
 table.databox {
@@ -1375,11 +1375,12 @@ table.databox {
 	box-shadow: 0px 0px 0px #DDD !important;
 }
 
-.databox td, .databox th {
+.databox td {
 	-moz-border-radius: 0px;
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
-	border: 0px none #fff;
+	border: 0px none #E2E2E2;
+	
 }
 
 .databox th {
@@ -1405,9 +1406,10 @@ table.databox {
 }
 
 .tactical_set{
-	background: #ECECEC;
-	border: 0px;
-	margin-top: -4px;
+	background: #FFF;
+	border: 1px solid #E2E2E2;
+	margin-left: 10%;
+	width: 71%;
 }
 
 /* For use in Netflow */
@@ -1933,15 +1935,6 @@ div#steps_clean {
 	display:none;
 }
 
-#main>div, #main>table, #main>fieldset, #main>form, #main>a, #main>h4 {
-	margin-left: 10px;
-	margin-right: 8px;
-}
-
-#main>form {
-	#width: 100%;
-}
-
 #menu_tab_frame, #menu_tab_frame_view {
 	width: 100%;
 	padding-right: 0px;
@@ -1974,7 +1967,7 @@ div#logo_text3 {
 	padding-top: 0px;
 }
 .pagination {
-	margin-top: 4px;
+	margin-top: 15px;
 }
 .pagination * {
 	margin-left: 0px !important;
@@ -2169,7 +2162,7 @@ tr.group_view_data, .group_view_data {
 }
 
 tr.group_view_crit, .group_view_crit {
-	background-color:  #f85858;
+	background-color:  #FC4444;
 	color: #fff;
 }
 
@@ -2177,46 +2170,46 @@ tr.group_view_norm, .group_view_norm, tr.group_view_normal, .group_view_normal {
 	#background-color: #ffffff;
 }
 tr.group_view_ok, .group_view_ok {
-	background-color: #6EB432;
+	background-color: #80BA27;
 	color: #fff;
 }
 
 tr.group_view_not_init, .group_view_not_init, tr.group_view_not_init, .group_view_not_init {
-	background-color: #5AB7E5;
+	background-color: #5BB6E5;
 	color: #fff !important;
 }
 
 tr.group_view_warn, .group_view_warn, tr.group_view_warn.a, a.group_view_warn, tr.a.group_view_warn {
-	background-color: #ffea59;
+	background-color: #FAD403;
 	color: #3F3F3F !important;
 }
 
 a.group_view_warn {
-	color: #3F3F3F !important;
+	color: #FAD403 !important;
 }
 
 tr.group_view_alrm, .group_view_alrm {
-	background-color: #FF8800;
+	background-color: #FFA631;
 	color: #FFF;
 }
 
 tr.group_view_unk, .group_view_unk {
-	background-color: #AAAAAA;
+	background-color: #B2B2B2 ;
 	color: #fff;
 }
 
 /* classes for event priorities. Sits now in functions.php */
 .datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a, .datos_green * {
-	background-color: #6EB432;
+	background-color: #80BA27;
 	color: #fff;
 }
 .datos_red, .datos_redf9, .datos_red a, .datos_redf9 a, .datos_red *{
-	background-color: #f85858;
+	background-color: #FC4444;
 	color: #fff !important;
 }
 
 .datos_yellow, .datos_yellowf9, .datos_yellow *  {
-	background-color: #ffea59;
+	background-color: #FAD403;
 	color: #111;
 }
 
@@ -2250,7 +2243,6 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 }
 
 .menu li.selected {
-	background-color: #B1B1B1 !important;
 	font-weight: bold;
 }
 
@@ -2263,7 +2255,7 @@ ul.operation li a:hover  {
 }
 
 ul.operation ul.submenu li a:hover {
-	background: #222 url('../../images/menu_op_mark.png') repeat-y right;
+	background: #373737 url('../../images/menu_op_mark.png') repeat-y right;
 	#font-weight: bold;
 }
 
@@ -2302,14 +2294,14 @@ li.links a:hover  {
 }
 
 .operation.ul, ul.operation .operation ul {
-	background-color: #00ff00 !important;
+	background-color: #373737 !important;
 }
 
 .menu ul {
 	background-color: #555 !important;
 }
 
-.menu li, .menu li.selected, .menu .li.not_selected {
+.menu li, .menu .li.not_selected {
 	border-radius: 0px 0px 0px 0px;
 	background-color: #373737 !important;
 	display: block;
@@ -2863,6 +2855,33 @@ table#policy_modules td * {
 
 .left_align {
 	text-align: left;
+}
+
+.status_tactical{
+	width: 78%;
+	margin-left: 10%;
+	background-color: #FFF !important;
+	padding: 10px;
+	border: 1px solid #E2E2E2;
+	margin-top: 5%;
+	text-align: left;
+}
+
+.status_tactical img {
+	border: 3px solid #000;
+    border-radius: 100px;
+
+}
+
+#sumary{
+	color: #FFF;
+	margin: 15px;
+	padding: 10px 30px;
+	font-size: 20px;
+	font-weight: bold;
+	height: 66px;
+	width: 191px;
+	border-radius: 2px;
 }
 
 

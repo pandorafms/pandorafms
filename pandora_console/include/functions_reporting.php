@@ -7862,14 +7862,14 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 		$id_agent = $counts_info['id_agente'];
 		
 		$counts_info = array();
-		$counts_info['normal_count'] = count(tags_get_agent_modules ($id_agent, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NORMAL));
-		$counts_info['warning_count'] = count(tags_get_agent_modules ($id_agent, $acltags, false, $filter, false, AGENT_MODULE_STATUS_WARNING));
-		$counts_info['critical_count'] = count(tags_get_agent_modules ($id_agent, $acltags, false, $filter, false, AGENT_MODULE_STATUS_CRITICAL_BAD));
-		$counts_info['notinit_count'] = count(tags_get_agent_modules ($id_agent, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NOT_INIT));
-		$counts_info['unknown_count'] = count(tags_get_agent_modules ($id_agent, $acltags, false, $filter, false, AGENT_MODULE_STATUS_UNKNOWN));
+		$counts_info['normal_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NORMAL));
+		$counts_info['warning_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_WARNING));
+		$counts_info['critical_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_CRITICAL_BAD));
+		$counts_info['notinit_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_NOT_INIT));
+		$counts_info['unknown_count'] = count(tags_get_agent_modules ($id_agent, false, $acltags, false, $filter, false, AGENT_MODULE_STATUS_UNKNOWN));
 		$counts_info['total_count'] = $counts_info['normal_count'] + $counts_info['warning_count'] + $counts_info['critical_count'] + $counts_info['unknown_count'] + $counts_info['notinit_count'];
 		
-		$all_agent_modules = tags_get_agent_modules ($id_agent, $acltags, false, $filter);
+		$all_agent_modules = tags_get_agent_modules ($id_agent, false, $acltags, false, $filter);
 		if (!empty($all_agent_modules)) {
 			$mod_clause = "(".implode(',', array_keys($all_agent_modules)).")";
 

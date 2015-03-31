@@ -233,7 +233,10 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->rowid[1] = 'save_filter_row1';
 	$data[0] = __('Filter name') . $jump;
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
-	$data[1] = __('Filter group') . $jump;
+	if(defined('METACONSOLE'))
+		$data[1] = __('Group') . $jump;
+	else
+		$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
 	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group", $id_group, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;

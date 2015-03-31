@@ -367,7 +367,8 @@ class Tree {
 												AND ta.id_grupo = tg.id_grupo
 												$group_acl
 												$agent_search_filter
-												$agent_status_filter";
+												$agent_status_filter
+												$module_search_filter";
 							$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
 							if (!empty($counter_columns))
 								$columns .= ", $counter_columns";
@@ -385,6 +386,7 @@ class Tree {
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
+											$module_search_filter
 									GROUP BY tg.id_grupo
 									ORDER BY $order_fields";
 						}
@@ -407,6 +409,7 @@ class Tree {
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
+										$module_search_filter
 									GROUP BY ta.id_agente
 									ORDER BY $order_fields";
 						}

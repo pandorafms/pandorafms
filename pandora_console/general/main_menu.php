@@ -242,9 +242,10 @@ $(document).ready( function() {
 		handsIn = 1;
 		openTime = new Date().getTime();
 		if( typeof(table_noHover) != 'undefined')
-			if ("ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id)
+			if ( "ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id )
 				$("ul#sub"+table_noHover[0].id).hide();
 		$("ul#sub"+table_hover[0].id).show();
+	
 	}).mouseout(function(){
 		table_noHover = $(this);
 		handsIn = 0;
@@ -255,7 +256,6 @@ $(document).ready( function() {
 				$("ul#sub"+table_hover[0].id).hide();
 			}
 		}, 3500);
-		
 	});
 	
 	$(document).ready(function(){

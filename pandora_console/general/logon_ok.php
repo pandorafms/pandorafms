@@ -28,7 +28,7 @@ check_login ();
 require_once ("include/functions_reporting.php");
 require_once ($config["homedir"] . '/include/functions_graph.php');
 
-ui_print_page_header (__('Welcome to Pandora FMS Web Console'));
+ui_print_page_header (__('Welcome to Pandora FMS Web Console'),'',false,"",false);
 
 if (tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
@@ -36,7 +36,7 @@ if (tags_has_user_acl_tags()) {
 
 
 ?>
-<table border="0" width="98%">
+<table border="0" width="100%">
 	<tr>
 		
 		<td width="30%" style="padding-right: 10px;" valign="top">
@@ -61,7 +61,13 @@ if (tags_has_user_acl_tags()) {
 			
 			// Indicators
 			$tdata = array();
-			$tdata[0] = reporting_get_stats_indicators($data);
+			$stats = reporting_get_stats_indicators($data, 120, 10,false);
+			$status = '<table class="status_tactical">';
+			foreach ( $stats as $stat ) {
+				$status .= '<tr><td><b>' . $stat['title'] . '</b>' . '</td><td>' . $stat['graph'] . "</td></tr>" ;
+			}
+			$status .= '</table>';
+			$table->data[0][0] = $status;
 			$table->rowclass[] = '';
 			
 			$table->data[] = $tdata;
@@ -74,7 +80,7 @@ if (tags_has_user_acl_tags()) {
 			
 			// Modules by status
 			$tdata = array();
-			$tdata[0] = reporting_get_stats_modules_status($data);
+			$tdata[0] = reporting_get_stats_modules_status($data,180, 100);
 			$table->rowclass[] = '';
 			$table->data[] = $tdata;
 			
@@ -114,7 +120,7 @@ if (tags_has_user_acl_tags()) {
 				//////////////////NEWS BOARD/////////////////////////////
 				echo '<div id="news_board">';
 				
-				echo '<table cellpadding="4" cellspacing="4" class="databox">';
+				echo '<table cellpadding="4" width=100% cellspacing="4" class="databox">';
 				echo '<tr><th><span>' . __('News board') . '</span></th></tr>';
 				if ($config["prominent_time"] == "timestamp") {
 					$comparation_suffix = "";

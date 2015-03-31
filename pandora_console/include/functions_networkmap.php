@@ -28,10 +28,6 @@ require_once ('functions_agents.php');
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . "/include/functions_groups.php");
 ui_require_css_file ('cluetip');
-$hack_metaconsole = '';
-if (defined('METACONSOLE'))
-	$hack_metaconsole = '../../';
-ui_require_jquery_file ('cluetip', $hack_metaconsole . 'include/javascript/');
 
 // Check if a node descends from a given node
 function networkmap_is_descendant ($node, $ascendant, $parents) {
@@ -1796,14 +1792,44 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask, $fields = array(), $str
 
 ?>
 <script language="javascript" type="text/javascript">
-	/* <![CDATA[ */
 	$(document).ready (function () {
-		$("area[title!='<?php echo 'Pandora FMS'; ?>']").cluetip ({
-			arrows: true,
-			attribute: 'title',
-			cluetipClass: 'default',
-			positionBy: "bottomTop"
-		});
+		// TODO: Implement the jquery tooltip functionality everywhere
+		// and remove the cluetip code.
+		$("area[title!='<?php echo 'Pandora FMS'; ?>']")
+			.each(function (index, element) {
+				// Store the title.
+				// The title stores the url into a data property
+				$(element).data('uri', $(element).prop('title'));
+			})
+			.tooltip({
+				track: true,
+				content: '<?php html_print_image("images/spinner.gif"); ?>',
+				open: function (evt, ui) {
+					var elem = $(this);
+					var uri = elem.data('uri');
+					
+					if (typeof uri != 'undefined' && uri.length > 0) {
+						var jqXHR = $.ajax(uri).done(function(data) {
+							elem.tooltip('option', 'content', data);
+						});
+						// Store the connection handler
+						elem.data('jqXHR', jqXHR);
+					}
+					
+					$(".ui-tooltip>.ui-tooltip-content").each(function(index, element) {
+						// Temporal fix. Add the cluetip styles/
+						if (! $(element).hasClass("cluetip-default"))
+							$(element).addClass("cluetip-default");
+					});
+				},
+				close: function (evt, ui) {
+					var elem = $(this);
+					var jqXHR = elem.data('jqXHR');
+					
+					// Close the connection handler
+					if (typeof jqXHR != 'undefined')
+						jqXHR.abort();
+				}
+			});
 	});
-	/* ]]> */
 </script>

@@ -38,35 +38,29 @@ if (is_ajax()) {
 
 	$delete_networkmaps = (bool) get_parameter('delete_networkmaps');
 	if ($delete_networkmaps) {
-		if ( check_acl ($config['id_user'], 0, "RW") ||  check_acl ($config['id_user'], 0, "RM") ) {
-			if (check_acl ($config['id_user'], 0, "RM")) {
-					$result = false;
-					$results = array();
-					$ids_networkmap = (array) get_parameter ('ids_networkmap');
-					foreach ($ids_networkmap as $id) {
-						$results[$id] = (bool) networkmap_delete_networkmap($id);
-					}
-					echo json_encode($results);
-					return;
-				}
-			else{
-				if (check_acl ($config['id_user'], 0, "RW")) {
-					$result = false;
-					$results = array();
-					$ids_networkmap = (array) get_parameter ('ids_networkmap');
-					foreach ($ids_networkmap as $id) {
-						$results[$id] = (bool) networkmap_delete_user_networkmap($config['id_user'], $id);
-					}
-					echo json_encode($results);
-					return;
-				}
+		
+		$results = array();
+		$ids_networkmap = (array) get_parameter('ids_networkmap');
+		
+		foreach ($ids_networkmap as $id) {
+			$store_group = (int) db_get_value('store_group', 'tnetwork_map', 'id_networkmap',$id_networkmap);
+			
+			if (check_acl ($config['id_user'], $store_group, "RM")) {
+				$results[$id] = (bool) networkmap_delete_networkmap($id);
 			}
-		}else{
-		db_pandora_audit("ACL Violation",
-				"Trying to access Networkmap deletion");
-			echo json_encode(-1);
-			return;
+			else if (check_acl ($config['id_user'], $store_group, "RW")) {
+				$results[$id] = (bool) networkmap_delete_user_networkmap($config['id_user'], $id);
+			}
 		}
+		
+		// None permission
+		if (!empty($ids_networkmap) && empty($results)) {
+			db_pandora_audit("ACL Violation", "Trying to access Networkmap deletion");
+			$results = -1;
+		}
+		
+		echo json_encode($results);
+		return;
 	}
 	return;
 }

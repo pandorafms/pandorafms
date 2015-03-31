@@ -452,14 +452,14 @@ function treeview_printTable($id_agente, $server_data = array()) {
 			
 	if ($config["agentaccess"]) {
 		$access_graph = '<div style="width: 290px; margin-left: 30px;">';
-		$access_graph .= graphic_agentaccess($id_agente, 290, 110, 86400, true);
+		$access_graph .= graphic_agentaccess($id_agente, 290, 110, SECONDS_1DAY, true);
 		$access_graph .= '</div><br>';
 				
 		ui_toggle($access_graph, __('Agent access rate (24h)'));
 	}
 	
 	$events_graph = '<div style="width: 290px; height: 15px; margin-left: 30px; position: static;">';
-	$events_graph .= graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
+	$events_graph .= graph_graphic_agentevents ($id_agente, 290, 15, SECONDS_1DAY, '', true);
 	$events_graph .= '</div><br><br>';
 	
 	ui_toggle($events_graph, __('Events (24h)'));

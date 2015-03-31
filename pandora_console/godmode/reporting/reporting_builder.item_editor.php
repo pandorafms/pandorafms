@@ -58,6 +58,7 @@ $group = 0;
 $group_by_agent = 0;
 $order_uptodown = 0;
 $show_resume = 0;
+$show_address_agent = 0;
 $top_n = 0;
 $top_n_value = 10;
 $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
@@ -419,7 +420,9 @@ switch ($action) {
 					$period = $item['period'];
 					$order_uptodown = $item['order_uptodown'];
 					$show_resume = $item['show_resume'];
-					$show_graph = $item['show_graph'];
+					// HACK it is saved in show_graph field.
+					// Show interfaces instead the modules
+					$show_address_agent = $item['show_graph'];
 					break;
 				case 'group_report':
 					$description = $item['description'];
@@ -1063,9 +1066,28 @@ html_print_input_hidden('id_item', $idItem);
 			<td><?php html_print_select ($show_graph_options, 'combo_graph_options', $show_graph);?></td>
 			
 		</tr>
-		<tr id="row_show_resume" style="" class="datos">
+		<tr id="row_show_address_agent" style="" class="datos">
+			<td>
+				<?php
+				echo __('Show address instead module name.') .
+					ui_print_help_tip(__('Show the main address of agent.'), true);
+				?>
+			</td>
+			<td>
+				<?php
+				html_print_checkbox('checkbox_show_address_agent', 1,
+					$show_address_agent);
+				?>
+			</td>
+		</tr>
+		<tr id="row_show_" style="" class="datos">
 			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
-			<td><?php html_print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
+			<td>
+				<?php
+				html_print_checkbox('checkbox_show_resume', 1,
+					$show_resume);
+				?>
+			</td>
 		</tr>
 		<tr id="row_event_filter" style="" class="datos">
 			<td><?php echo __('Event filter'); ?></td>
@@ -1313,7 +1335,8 @@ function print_General_list($width, $action, $idItem = null) {
 		'avg' => __('rate'),
 		'max' => __('max'),
 		'min' => __('min'),
-		'sum' => __('sum'));
+		'sum' => __('sum'),
+		'ava' => __('Avail'));
 	
 	include_once($config['homedir'] . '/include/functions_html.php');
 	?>
@@ -1901,6 +1924,7 @@ function chooseType() {
 	$("#general_list").hide();
 	$("#row_order_uptodown").hide();
 	$("#row_show_resume").hide();
+	$("#row_show_address_agent").hide();
 	$("#row_show_graph").hide();
 	$("#row_max_min_avg").hide();
 	$("#row_only_avg").hide();
@@ -2181,6 +2205,7 @@ function chooseType() {
 			$("#general_list").show();
 			$("#row_order_uptodown").show();
 			$("#row_show_resume").show();
+			$("#row_show_address_agent").show();
 			$("#row_show_in_two_columns").show();
 			
 			$("#row_last_value").show();

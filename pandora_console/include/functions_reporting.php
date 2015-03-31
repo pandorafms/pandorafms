@@ -5311,6 +5311,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'network_interfaces_report':
 			reporting_network_interfaces_table($content, $report, $mini, $item_title, $table);
 			break;
+		case 'availability':
+			if (empty($item_title)) {
+				$item_title = __('Availability');
+			}
+			reporting_header_content($mini, $content, $report, $table, $item_title);
+			break;
 		case 'general':
 			if (empty($item_title)) {
 				$item_title = __('General');
@@ -5329,6 +5335,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data_desc[0] = $content["description"];
 				array_push($table->data, $data_desc);
 			}
+			
+			
 			
 			switch ($group_by_agent) {
 				//0 means not group by agent

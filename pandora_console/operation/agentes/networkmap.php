@@ -66,35 +66,44 @@ if ($add_networkmap) {
 	$font_size = 12;
 	$text_filter = '';
 	$dont_show_subgroups = false;
+	$store_group = 0;
 	$group = 0;
 	$module_group = 0;
 	$center = 0;
 	$name = $activeTab;
+	$show_snmp_modules = 0;
+	$l2_network = 0;
 	$check = db_get_value('name', 'tnetwork_map', 'name', $name);
 	$sql = db_get_value_filter('COUNT(name)', 'tnetwork_map',
 		array('name' => "%$name"));
 	
-	if ($check) {
-		$id_networkmap = networkmap_create_networkmap("($sql) ".$name,
-			$activeTab, $layout, $nooverlap, $simple, $regen,
-			$font_size, $group, $module_group, $depth, $modwithalerts,
-			$hidepolicymodules, $zoom, $ranksep, $center, $text_filter,
-			$dont_show_subgroups);
+	$values = array(
+			'name' => ($check ? "($sql) $name" : $name),
+			'type' => $activeTab,
+			'layout' => $layout,
+			'nooverlap' => $nooverlap,
+			'simple' => $simple,
+			'regenerate' => $regen,
+			'font_size' => $font_size,
+			'store_group' => $store_group,
+			'id_group' => $group,
+			'id_module_group' => $module_group,
+			'depth' => $depth,
+			'only_modules_with_alerts' => $modwithalerts,
+			'hide_policy_modules' => $hidepolicymodules,
+			'zoom' => $zoom,
+			'distance_nodes' => $ranksep,
+			'text_filter' => $text_filter,
+			'dont_show_subgroups' => $dont_show_subgroups,
+			'center' => $center,
+			'show_snmp_modules' => $show_snmp_modules,
+			'l2_network' => $l2_network
+		);
+	$id_networkmap = networkmap_create_networkmap($values);
 		
-		$message = ui_print_result_message ($id_networkmap,
-			__('Network map created successfully'),
-			__('Could not create network map'), '', true);
-	}
-	else {
-		$id_networkmap = networkmap_create_networkmap($name, $activeTab,
-			$layout, $nooverlap, $simple, $regen, $font_size, $group,
-			$module_group, $depth, $modwithalerts, $hidepolicymodules,
-			$zoom, $ranksep, $center, $text_filter, $dont_show_subgroups);
-		
-		$message = ui_print_result_message ($id_networkmap,
-			__('Network map created successfully'),
-			__('Could not create network map'), '', true);
-	}
+	$message = ui_print_result_message ($id_networkmap,
+		__('Network map created successfully'),
+		__('Could not create network map'), '', true);
 }
 
 if ($save_networkmap || $update_networkmap) {
@@ -112,6 +121,7 @@ if ($save_networkmap || $update_networkmap) {
 	$font_size = (int) get_parameter ('font_size', 12);
 	$text_filter = get_parameter ('text_filter', '');
 	$dont_show_subgroups = (bool)get_parameter ('dont_show_subgroups', 0);
+	$store_group = (int) get_parameter ('store_group', 0);
 	$group = (int) get_parameter ('group', 0);
 	$module_group = (int) get_parameter ('module_group', 0);
 	$center = (int) get_parameter ('center', 0);
@@ -126,7 +136,8 @@ if ($save_networkmap || $update_networkmap) {
 				'nooverlap' => $nooverlap,
 				'simple' => $simple,
 				'regenerate' => $regen,
-				'font_size' => $font_size, 
+				'font_size' => $font_size,
+				'store_group' => $store_group,
 				'id_group' => $group,
 				'id_module_group' => $module_group,
 				'depth' => $depth,
@@ -177,6 +188,7 @@ if (!$update_networkmap && !$save_networkmap && $id_networkmap != 0) {
 	$font_size = $networkmap_data['font_size'];
 	$text_filter = $networkmap_data['text_filter'];
 	$dont_show_subgroups = $networkmap_data['dont_show_subgroups'];
+	$store_group = $networkmap_data['store_group'];
 	$group = $networkmap_data['id_group'];
 	$module_group = $networkmap_data['id_module_group'];
 	$center = $networkmap_data['center'];
@@ -252,6 +264,7 @@ if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0,
 			'tab=' . $activeTab . '&amp;' .
 			'save_networkmap=1&amp;' .
 			'name=' . $name . '&amp;' .
+			'store_group=' . $store_group . '&amp;' .
 			'group=' . $group . '&amp;' .
 			'layout=' . $layout . '&amp;' .
 			'nooverlap=' . $nooverlap . '&amp;' .
@@ -328,84 +341,88 @@ $layout_array = array (
 
 $options_form = '<form action="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;tab='.$activeTab.'&amp;pure='.$pure.'&amp;center='.$center.'" method="post">';
 
+// Fill an array with the form inputs
+$form_elems = array();
 
-
-unset($table);
-$table->width = '98%';
-$table->class = 'databox';
-$table->data = array();
-$table->data[0][] = __('Name:') . '&nbsp;' .
+// Name
+$element = __('Name') . '&nbsp;' .
 	html_print_input_text ('name', $name, '', 25, 50, true);
-if ($activeTab == 'groups'){
-	$table->data[0][0] .= clippy_context_help("topology_group");
-}
-$table->data[0][] = __('Group:') . '&nbsp;' .
+if ($activeTab == 'groups')
+	$element .= clippy_context_help("topology_group");
+$form_elems[] = $element;
+
+// Store group
+$form_elems[] = __('Store group') . '&nbsp;' .
+	html_print_select_groups(false, 'AR', false, 'store_group', $store_group, '', 'All', 0, true);
+
+// Group
+$form_elems[] = __('Group') . '&nbsp;' .
 	html_print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
+
+// Module group
 if ($activeTab == 'groups' || $activeTab == 'policies' || $activeTab == 'radial_dynamic') {
-	$table->data[0][] = __('Module group') . '&nbsp;' .
+	$form_elems[] = __('Module group') . '&nbsp;' .
 		html_print_select_from_sql ('
 			SELECT id_mg, name
 			FROM tmodule_group', 'module_group', $module_group, '', 'All', 0, true);
 }
 
+// Interfaces
 if ($activeTab == 'topology') {
-	$table->data[0][] = __('Show interfaces') . '&nbsp;' .
+	$form_elems[] = __('Show interfaces') . '&nbsp;' .
 		html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
 }
 
+// Layout
 if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
-	$table->data[0][] = __('Layout') . '&nbsp;' .
+	$form_elems[] = __('Layout') . '&nbsp;' .
 		html_print_select ($layout_array, 'layout', $layout, '', '', '', true);
 }
 
+// Depth
 if ($activeTab == 'groups') {
 	$depth_levels = array(
 		'all' => __('All'),
 		'agent' => __('Agents'),
 		'group' => __('Groups'));
-	$table->data[0][] = __('Depth') . '&nbsp;' .
+	$form_elems[] = __('Depth') . '&nbsp;' .
 		html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
 }
 
-if ($activeTab == 'policies') {
-	$depth_levels = array(
-		'all' => __('All'),
-		'agent' => __('Agents'),
-		'policy' => __('Policies'));
-	$table->data[0][] = __('Depth') . '&nbsp;' .
-		html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
-}
-
+// No overlap
 if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
-	$table->data[1][] = __('No Overlap') . '&nbsp;' .
+	$form_elems[] = __('No Overlap') . '&nbsp;' .
 		html_print_checkbox ('nooverlap', '1', $nooverlap, true);
 }
 
-if (($activeTab == 'groups' || $activeTab == 'policies') &&
-	$depth == 'all') {
-	$table->data[1][] = __('Only modules with alerts') . '&nbsp;' .
+// Modules with alerts
+if (($activeTab == 'groups' || $activeTab == 'policies') && $depth == 'all') {
+	$form_elems[] = __('Only modules with alerts') . '&nbsp;' .
 		html_print_checkbox ('modwithalerts', '1', $modwithalerts, true);
-	
-	if ($activeTab == 'groups') {
-		if ($config['enterprise_installed']) {
-			$table->data[1][] = __('Hide policy modules') . '&nbsp;' .
-				html_print_checkbox ('hidepolicymodules', '1', $hidepolicymodules, true);
-		}
+}
+
+// Hide policy modules
+if ($activeTab == 'groups') {
+	if ($config['enterprise_installed']) {
+		$form_elems[] = __('Hide policy modules') . '&nbsp;' .
+			html_print_checkbox ('hidepolicymodules', '1', $hidepolicymodules, true);
 	}
 }
 
+// Simple
 if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
-	$table->data[1][] = __('Simple') . '&nbsp;' .
+	$form_elems[] = __('Simple') . '&nbsp;' .
 		html_print_checkbox ('simple', '1', $simple, true);
 }
 
+// Regenerate
 if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
-	$table->data[1][] = __('Regenerate') . '&nbsp;' .
+	$form_elems[] = __('Regenerate') . '&nbsp;' .
 		html_print_checkbox ('regen', '1', $regen, true);
 }
 
+// Zoom
 if ($pure == "1") {
-	// Zoom
 	$zoom_array = array (
 		'1' => 'x1',
 		'1.2' => 'x2',
@@ -415,36 +432,60 @@ if ($pure == "1") {
 		'5' => 'x10',
 	);
 	
-	$table->data[1][] = __('Zoom') . '&nbsp;' .
+	$form_elems[] = __('Zoom') . '&nbsp;' .
 		html_print_select ($zoom_array, 'zoom', $zoom, '', '', '', true, false, false, false);
 	
 }
 
+// Font
 if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
-	$table->data[1][] = __('Font') . '&nbsp;' .
+	$form_elems[] = __('Font') . '&nbsp;' .
 		html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
 }
 
+// Free text
 if ($activeTab != 'radial_dynamic') {
-	$table->data[2][] = __('Free text for search (*):') . '&nbsp;' .
+	$form_elems[] = __('Free text for search (*):') . '&nbsp;' .
 		html_print_input_text('text_filter', $text_filter, '', 30, 100, true);
 }
 
+// Don't show subgroups
 if (($activeTab == 'groups') || ($activeTab == 'topology')) {
-	$table->data[2][] = __('Don\'t show subgroups:') .
+	$form_elems[] = __('Don\'t show subgroups:') .
 		ui_print_help_tip(__('Only run with it is filter for any group'), true) .
 		'&nbsp;' .
 		html_print_checkbox ('dont_show_subgroups', '1', $dont_show_subgroups, true);
 }
 
+// L2 network
 if ($activeTab == 'topology') {
-	$table->data[2][] = __('L2 network interfaces') . '&nbsp;' .
+	$form_elems[] = __('L2 network interfaces') . '&nbsp;' .
 		html_print_checkbox ('l2_network', '1', $l2_network, true);
 }
 
+// Distance between nodes
 if ($nooverlap == 1) {
-	$table->data[2][] = __('Distance between nodes') . '&nbsp;' .
+	$form_elems[] = __('Distance between nodes') . '&nbsp;' .
 		html_print_input_text ('ranksep', $ranksep, __('Separation between elements in the map (in Non-overlap mode)'), 3, 4, true);
+}
+
+unset($table);
+$table->width = '98%';
+$table->class = 'databox';
+$table->data = array();
+
+$max_col = 5;
+$col = 0;
+$row = 0;
+
+foreach ($form_elems as $key => $element) {
+	if ($col >= $max_col) {
+		$col = 0;
+		$row++;
+	}
+	
+	$table->data[$row][$col] = $element;
+	$col++;
 }
 
 $options_form .= html_print_input_hidden('update_networkmap',1, true) .

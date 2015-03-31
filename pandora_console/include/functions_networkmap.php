@@ -689,7 +689,6 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 		}
 		
 		$filter['id_grupo'] = $id_groups;
-		$filter['id_group'] = $id_groups;
 	}
 	else {
 		if ($strict_user) {
@@ -746,10 +745,12 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 	if ($depth != 'group') {
 		if ($strict_user) {
 			$filter['group_by'] = 'tagente.nombre';
+			$filter['id_group'] = $filter['id_grupo'];
 			$fields = array ('tagente.id_grupo, tagente.nombre, tagente.id_os, tagente.id_agente, 
 						tagente.normal_count, tagente.warning_count, tagente.critical_count,
 						tagente.unknown_count, tagente.total_count, tagente.notinit_count');
 			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
+			unset($filter['id_group']);
 		} else {
 		// Get agents data
 		$agents = agents_get_agents ($filter,
@@ -1491,36 +1492,40 @@ function networkmap_get_filter ($layout) {
  * 
  * @return mixed New networkmap id if created. False if it could not be created.
  */
-function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0, $text_filter = '', $dont_show_subgroups = 0, $show_groups = false, $show_modules = false, $pandoras_children = false) {
-	
+function networkmap_create_networkmap ($values) {
 	global $config;
 	
-	$values = array();
+	// The name is required
+	if (! isset($values['name']))
+		return false;
 	
-	$values['name'] = $name;
-	$values['type'] = $type;
-	$values['layout'] = $layout;
-	$values['nooverlap'] = $nooverlap;
-	$values['simple'] = $simple;
-	$values['regenerate'] = $regenerate;
-	$values['font_size'] = $font_size;
-	$values['id_group'] = $id_group;
-	$values['id_module_group'] = $id_module_group;
-	$values['depth'] = $depth;
-	$values['only_modules_with_alerts'] = $only_modules_with_alerts;
-	$values['hide_policy_modules'] = $hide_policy_modules;
-	$values['zoom'] = $zoom;
-	$values['distance_nodes'] = $distance_nodes;
-	$values['center'] = $center;
-	$values['id_user'] = $config['id_user'];
-	$values['text_filter'] = $text_filter;
-	$values['dont_show_subgroups'] = $dont_show_subgroups;
-	
-	$values['pandoras_children'] = $pandoras_children;
-	$values['show_groups'] = $show_groups;
-	$values['show_modules'] = $show_modules;
-	
-	$values['server_name'] = "";
+	// Set defaults for the empty values
+	set_unless_defined ($values['type'], 'topology');
+	set_unless_defined ($values['layout'], 'radial');
+	set_unless_defined ($values['nooverlap'], true);
+	set_unless_defined ($values['simple'], false);
+	set_unless_defined ($values['regenerate'], true);
+	set_unless_defined ($values['font_size'], 12);
+	set_unless_defined ($values['store_group'], 0);
+	set_unless_defined ($values['id_group'], 0);
+	set_unless_defined ($values['regenerate'], true);
+	set_unless_defined ($values['id_module_group'], 0);
+	set_unless_defined ($values['depth'], 'all');
+	set_unless_defined ($values['only_modules_with_alerts'], false);
+	set_unless_defined ($values['hide_policy_modules'], false);
+	set_unless_defined ($values['zoom'], 1);
+	set_unless_defined ($values['distance_nodes'], 2.5);
+	set_unless_defined ($values['center'], 0);
+	set_unless_defined ($values['id_user'], $config['id_user']);
+	set_unless_defined ($values['text_filter'], '');
+	set_unless_defined ($values['regenerate'], true);
+	set_unless_defined ($values['dont_show_subgroups'], 0);
+	set_unless_defined ($values['show_groups'], false);
+	set_unless_defined ($values['pandoras_children'], false);
+	set_unless_defined ($values['show_modules'], false);
+	set_unless_defined ($values['show_snmp_modules'], 0);
+	set_unless_defined ($values['l2_network'], 0);
+	set_unless_defined ($values['server_name'], '');
 	
 	return @db_process_sql_insert('tnetwork_map', $values);
 }

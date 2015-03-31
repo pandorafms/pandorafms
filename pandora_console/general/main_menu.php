@@ -235,25 +235,47 @@ $(document).ready( function() {
 
 <script type="text/javascript">
 	openTime = 0;
+	openTime2 = 0;
 	handsIn = 0;
+	handsIn2 = 0;
 
 	$('.menu_icon').hover(function(){
 		table_hover = $(this);
 		handsIn = 1;
 		openTime = new Date().getTime();
+		$("ul#sub"+table_hover[0].id).show().animate({opacity: "1"}, 1000);
 		if( typeof(table_noHover) != 'undefined')
 			if ( "ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id )
-				$("ul#sub"+table_noHover[0].id).hide();
-		$("ul#sub"+table_hover[0].id).show();
-	
-	}).mouseout(function(){
+				$("ul#sub"+table_noHover[0].id).animate({opacity: "0.5"}, 1000,function(){$("ul#sub"+table_noHover[0].id).hide();});
+	}).mouseleave(function(){
 		table_noHover = $(this);
 		handsIn = 0;
 		setTimeout(function() {
 			opened = new Date().getTime() - openTime;
-			if(opened >= 3000 && handsIn == 0) {
+			if(opened > 3000 && handsIn == 0) {
 				openTime = 4000;
-				$("ul#sub"+table_hover[0].id).hide();
+				$("ul#sub"+table_hover[0].id).animate({opacity: "0.5"}, 1000,function(){$("ul#sub"+table_hover[0].id).hide();});
+			}
+		}, 3500);
+	});
+	
+	
+-	$('.has_submenu.submenu_not_selected').hover(function(){
+		table_hover2 = $(this);
+		handsIn2 = 1;
+		openTime2 = new Date().getTime();
+		if( typeof(table_noHover2) != 'undefined')
+			if ( "ul#sub"+table_hover2[0].id != "ul#sub"+table_noHover2[0].id )
+				$("ul#sub"+table_noHover2[0].id).animate({opacity: "0.5"}, 1000,function(){$("ul#sub"+table_noHover2[0].id).hide();});
+		$("#sub"+table_hover2[0].id).show();
+	}).mouseleave(function(){
+		table_noHover2 = $(this);
+		handsIn2 = 0;
+		setTimeout(function() {
+		opened = new Date().getTime() - openTime2;
+			if(opened >= 3000 && handsIn2 == 0) {
+				openTime2 = 4000;
+				$("#sub"+table_hover2[0].id).animate({opacity: "0.5"}, 1000,function(){$("ul#sub"+table_noHover2[0].id).hide();});
 			}
 		}, 3500);
 	});
@@ -261,8 +283,13 @@ $(document).ready( function() {
 	$(document).ready(function(){
 		$('#page').click(function(){
 			openTime = 4000;
-			$("ul#sub"+table_hover[0].id).hide();
+			if( typeof(table_hover) != 'undefined')
+				$("ul#sub"+table_hover[0].id).animate({opacity: "0.5"}, 500,function(){$("ul#sub"+table_hover[0].id).hide();});
+			if( typeof(table_hover2) != 'undefined')
+				$("ul#sub"+table_hover2[0].id).animate({opacity: "0.5"}, 500,function(){$("ul#sub"+table_hover2[0].id).hide();});
 		});
 	});
+	
+	
 
 </script>

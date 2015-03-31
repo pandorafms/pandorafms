@@ -226,7 +226,7 @@ div#container {
 	#border-right: solid 2px #000;
 	#border-top: solid 2px #000;
 	#margin-top: 5px;
-	height: 2000px;
+	height: auto;
 	background: #FFF;
 }
 div#page {
@@ -235,7 +235,7 @@ div#page {
 }
 div#main {
 	width: 90%;
-	margin: 0px 5% 0px 0%;
+	margin: 0px 4% 0px 0%;
 	float: right;
 }
 div#main_help {
@@ -1079,12 +1079,6 @@ div.title_line {
 	-khtml-opacity: 0.5;
 }
 
-#menu_tab_frame {
-	background: #FAFAFA;
-}
-#menu_tab_frame_view {
-	background: #FFF;
-}
 
 #menu_tab_frame, #menu_tab_frame_view {
 	display: block !important;
@@ -1133,32 +1127,32 @@ div.title_line {
 }
 
 #menu_tab li.tab_operation, #menu_tab li.tab_godmode {
-	padding-left: 2px;
+	#padding-left: 2px;
 }
 
 #menu_tab li.tab_godmode a, #menu_tab a.tab_godmode {
-	background: #666;
-	padding-left: 4px;
-	padding-right: 4px;
-	min-height: 27px;
+	#background: #666;
+	#padding-left: 4px;
+	#padding-right: 4px;
+	#min-height: 27px;
 }
 
 #menu_tab li.tab_godmode.nomn_high a, #menu_tab a.tab_godmode.nomn_high,
 #menu_tab li.tab_godmode a:hover, #menu_tab a.tab_godmode:hover {
-	background: #555555;
+	#background: #555555;
 }
 
 
 #menu_tab li.tab_operation a, #menu_tab a.tab_operation {
-	background: #82b92e;
-	padding-left: 4px;
-	padding-right: 4px;
-	min-height: 27px;
+	#background: #82b92e;
+	#padding-left: 4px;
+	#padding-right: 4px;
+	#min-height: 27px;
 }
 
 #menu_tab li.tab_operation.nomn_high a, #menu_tab a.tab_operation.nomn_high,
 #menu_tab li.tab_operation a:hover, #menu_tab a.tab_operation:hover {
-	background: #3F3F3F;
+	#background: #3F3F3F;
 }
 
 
@@ -1273,7 +1267,7 @@ div.title_line {
 }
 
 #menu_tab_frame *, #menu_tab_frame_view *{
-	margin: 0px 0px 0px 0px !important;
+	#margin: 0px 0px 0px 0px !important;
 }
 
 span.users {
@@ -2305,7 +2299,7 @@ li.links a:hover  {
 	border-radius: 0px 0px 0px 0px;
 	background-color: #373737 !important;
 	display: block;
-	min-height: 50px;
+	min-height: 35px;
 	border-bottom: 0px none #424242;
 	vertical-align: middle;
 }
@@ -2592,7 +2586,21 @@ ul.subsubmenu {
 	-webkit-border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	
-	background: #555555;
+	background: #ECECEC !important;
+}
+
+ul.subsubmenu li{
+	background-color: #ECECEC;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    border-color: #E2E2E2;
+    border-style: solid;
+    border-width: 1px;
+}
+
+ul.subsubmenu li a{
+	padding: 0px 10px 5px;
 }
 
 div#agent_wizard_subtabs {
@@ -2895,6 +2903,33 @@ table#policy_modules td * {
 	border-right-width: 2px;
 	border-right-style: solid;
 	border-color: #E2E2E2;
+}
+
+
+#menu_tab li.nomn, #menu_tab li.nomn_high {
+    background-color: #ECECEC;
+    padding: 0px 10px 3px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    border-color: #E2E2E2;
+    border-style: solid;
+    border-width: 1px;
+    margin-top: -10px;
+}
+
+#menu_tab li.nomn_high, #menu_tab li.nomn_high span {
+    color: #FFF;
+    background-color: #FFF;
+}
+
+#menu_tab li.tab_operation a, #menu_tab a.tab_operation{
+	background: none !important ;
+}
+
+
+.databox.filters td{
+	padding: 10px;
 }
 
 /* The items with the class 'spinner' will rotate */

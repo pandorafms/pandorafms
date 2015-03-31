@@ -51,7 +51,7 @@ li:hover ul { display: block; }
 
 .submenu_text{
 	background-repeat: no-repeat !important;
-	padding: 10px;
+	padding: 9px;
 	margin-left: 0px;
 	color: #fff;
 	width: 88%;
@@ -74,6 +74,7 @@ li:hover ul { display: block; }
 	min-height: 30px;
 	height: 30px;
 	width: 160px;
+	opacity: 0.5;
 }
 
 .submenu2{

@@ -2,10 +2,9 @@
 {
 	margin-top: 30px;
 	left: 20px;
-	padding-top: 0.5px;
 	width: 60%;
 	height: 35em;
-	background-color: #FFF;
+	background-color: #ececec;
 	border-radius: 3px 3px 3px 3px;
 }
 
@@ -22,7 +21,6 @@
 .image_task
 {
 	margin: 30px 0px 0px 50px;
-	background-color: #FFF;
 }
 
 .text_task

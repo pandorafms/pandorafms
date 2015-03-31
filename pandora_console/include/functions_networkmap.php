@@ -1430,12 +1430,13 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $fo
 	$size = $size_x . ',' . $size_y;
 	
 	// BEWARE: graphwiz DONT use single ('), you need double (")
-	$head = "graph networkmap { bgcolor=\"transparent\"; labeljust=l; margin=0; ";
+	$head = "graph networkmap { bgcolor=\"transparent\"; labeljust=l; margin=0; pad=\"0.75,0.75\";";
 	if ($nooverlap != '') {
 		$head .= "overlap=\"$overlap\";";
 		$head .= "ranksep=\"$ranksep\";";
 		$head .= "outputorder=edgesfirst;";
-	} 
+	}
+	
 	$head .= "ratio=fill;";
 	$head .= "root=0;";
 	$head .= "size=\"$size\";";

@@ -1816,11 +1816,8 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask, $fields = array(), $str
 						elem.data('jqXHR', jqXHR);
 					}
 					
-					$(".ui-tooltip>.ui-tooltip-content").each(function(index, element) {
-						// Temporal fix. Add the cluetip styles/
-						if (! $(element).hasClass("cluetip-default"))
-							$(element).addClass("cluetip-default");
-					});
+					$(".ui-tooltip>.ui-tooltip-content:not(.cluetip-default)")
+						.addClass("cluetip-default");
 				},
 				close: function (evt, ui) {
 					var elem = $(this);

@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:53+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:29+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 "Language: \n"
 
@@ -29848,12 +29848,6 @@ msgstr "系统日志文件"
 #~ msgid "Monitors unknown"
 #~ msgstr "未知的"
 
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "最大延迟时间（秒）/最多延迟模块数量"
-
-#~ msgid "Add module macro"
-#~ msgstr "添加模块宏"
-
 #~ msgid "Sanitize my database now"
 #~ msgstr "正在清理我的数据库"
 
@@ -29887,64 +29881,8 @@ msgstr "系统日志文件"
 #~ msgid "Field 3"
 #~ msgstr "域3"
 
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "为网络索引模块留白"
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "在此为索引模块填入脚本代码"
-
-#~ msgid "Invalid license."
-#~ msgstr "无效许可"
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr "请通过info@artica.es联系Artica索要有效许可。"
-
-#~ msgid "Columns"
-#~ msgstr "栏"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "代理和监控器信息"
-
-#~ msgid "Event information"
-#~ msgstr "事件信息"
-
-#~ msgid "No servers"
-#~ msgstr "无服务器"
-
-#~ msgid "Without permissions"
-#~ msgstr "未经许可"
-
-#~ msgid "disabled"
-#~ msgstr "已禁用"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "未启用事件复制"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr "此meta控制台未适当配置事件复制"
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr "服务器似乎已配置以复制事件，但仍未收到任何事件"
-
-#~ msgid "Unknown error"
-#~ msgstr "未知错误"
-
-#~ msgid "Sort the agents by "
-#~ msgstr "代理排序按 "
-
-#~ msgid "Type:"
-#~ msgstr "类型："
-
-#~ msgid "OID:"
-#~ msgstr "对象标识："
-
 #~ msgid "Search value"
 #~ msgstr "搜索值"
-
-#~ msgid "Custom data:"
-#~ msgstr "自定义数据："
 
 #~ msgid "There's a new update for Pandora FMS"
 #~ msgstr "Pandora FMS 有新版本"
@@ -29957,15 +29895,3 @@ msgstr "系统日志文件"
 
 #~ msgid "E/D"
 #~ msgstr "E/D"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "该中断无代理存在"
-
-#~ msgid "Custom OID/Data"
-#~ msgstr "自定义OID／数据"
-
-#~ msgid "Group by OID/IP"
-#~ msgstr "OID/IP分组"
-
-#~ msgid "Contact Ãrtica ST at info@artica.es to get an auth key."
-#~ msgstr "联系Ãrtica ST at info@artica.es获得授权密钥。"

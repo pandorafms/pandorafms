@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:52+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:28+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 "Language: \n"
 
@@ -31086,9 +31086,6 @@ msgstr "System-Log"
 #~ msgid "No layouts found"
 #~ msgstr "Keine Layouts gefunden"
 
-#~ msgid "OID:"
-#~ msgstr "OID:"
-
 #~ msgid "MinMax.Al"
 #~ msgstr "MinMax.Al"
 
@@ -31117,20 +31114,11 @@ msgstr "System-Log"
 #~ msgid "%d hour"
 #~ msgstr "%d Stunde"
 
-#~ msgid "Custom data:"
-#~ msgstr "Benutzerdefinierte Daten:"
-
 #~ msgid "Download file"
 #~ msgstr "Datei herunterladen"
 
-#~ msgid "Add module macro"
-#~ msgstr "Modulmakro hinzufügen"
-
 #~ msgid "Standard user"
 #~ msgstr "Standardbenutzer"
-
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "Max. Verzögerung (Sek.) / Module verzögert"
 
 #~ msgid "Map element editor"
 #~ msgstr "Kartenelemente-Editor"
@@ -31306,64 +31294,6 @@ msgstr "System-Log"
 #~ msgid "Event not validate"
 #~ msgstr "Ereignis nicht bestätigen"
 
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "Fügen Sie hier ihren Skript-Code für das Bestandsmodul ein."
-
-#~ msgid "Invalid license."
-#~ msgstr "Ungültige Lizenz"
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr ""
-#~ "Bitte kontaktieren Sie Artica unter info@artica.es, um eine gültige Lizenz "
-#~ "zu erhalten."
-
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "Für Netzwerk-Bestandsmodule leer lassen."
-
-#~ msgid "Columns"
-#~ msgstr "Spalten"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "Beauftragten- und Überwachungsinformation"
-
-#~ msgid "No servers"
-#~ msgstr "Keine Server"
-
-#~ msgid "Event information"
-#~ msgstr "Ereignis-Information"
-
-#~ msgid "Without permissions"
-#~ msgstr "Ohne Erlaubnisse"
-
-#~ msgid "disabled"
-#~ msgstr "deaktiviert"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "Ereignis-Replikation ist nicht eingeschaltet."
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr ""
-#~ "Ereignis-Replikation ist nicht richtig für diese Meta-Konsole konfiguriert."
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr ""
-#~ "Der Server scheint richtig für die Replizierung von Ereignissen konfiguriert "
-#~ "zu sein. Es sind bis jetzt nur noch keine Ereignisse empfangen worden."
-
-#~ msgid "Unknown error"
-#~ msgstr "Unbekannter Fehler"
-
-#~ msgid "Sort the agents by "
-#~ msgstr "Sortiere die Beauftragten nach "
-
-#~ msgid "Type:"
-#~ msgstr "Typ :"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "Es gibt keine Beauftragten in dieser Gruppierung."
-
 #~ msgid "Checking tagente_estado table"
 #~ msgstr "Prüfe 'tagente_estado'-Tabelle"
 
@@ -31382,23 +31312,3 @@ msgstr "System-Log"
 #~ "Pandora FMS (Anzahl der Agenten und der laufenden Module). Wenn Sie das "
 #~ "unterbinden möchten, löschen Sie das Update Plugin oder die Adresse des "
 #~ "Remoteservers im Plugin."
-
-#~ msgid "Custom OID/Data"
-#~ msgstr "Benutzerdefinierte OIDs / Daten"
-
-#~ msgid "Group by OID/IP"
-#~ msgstr "Gruppieren nach OID / IP"
-
-#~ msgid "Contact Ãrtica ST at info@artica.es to get an auth key."
-#~ msgstr ""
-#~ "Bitte kontaktieren Sie Ãrtica ST durch 'info@artica.es', um einen "
-#~ "Authentisierungsschlüssel zu erhalten."
-
-#~ msgid "Modules status"
-#~ msgstr "Modulstatus"
-
-#~ msgid "Agents status"
-#~ msgstr "Agentenstatus"
-
-#~ msgid "Alerts status"
-#~ msgstr "Alarmstatus"

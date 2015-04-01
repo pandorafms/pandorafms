@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:54+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:30+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 "uProject-Id-Version: pandora-nl\n"
 "Taal: nl\n"
@@ -29935,20 +29935,8 @@ msgstr "Systeem log bestanden"
 #~ msgid "Agent down"
 #~ msgstr "Agent beneden"
 
-#~ msgid "Sort the agents by "
-#~ msgstr "Sorteer de agenten door "
-
 #~ msgid "Search value"
 #~ msgstr "Zoek waarde"
-
-#~ msgid "Custom data:"
-#~ msgstr "Aangepaste gegevens:"
-
-#~ msgid "OID:"
-#~ msgstr "OID:"
-
-#~ msgid "Type:"
-#~ msgstr "Type:"
 
 #~ msgid "Events generated -by module-"
 #~ msgstr "Evenementen gegenereerd -door module-"
@@ -30014,9 +30002,6 @@ msgstr "Systeem log bestanden"
 
 #~ msgid "Agent keepalive monitor"
 #~ msgstr "Agent houdt monitor levend"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "Er zijn geen agenten in deze agrupatie"
 
 #~ msgid "SLA period (seconds)"
 #~ msgstr "SLA-periode (seconden)"
@@ -30776,57 +30761,3 @@ msgstr "Systeem log bestanden"
 
 #~ msgid "Configuration detail"
 #~ msgstr "Configuration detail"
-
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "Max. Vertraging(sec)/Modules vertraagd"
-
-#~ msgid "Add module macro"
-#~ msgstr "Toevoegen module macro"
-
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "Leeg gelaten voor Netwerk Voorraad Modules"
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "Plaats hier uw script code voor de voorraad module"
-
-#~ msgid "Invalid license."
-#~ msgstr "Ongeldige licentie."
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr ""
-#~ "Neem a.u.b. contact op met Artica op info@artica.es voor een geldige "
-#~ "licentie."
-
-#~ msgid "Columns"
-#~ msgstr "Kolommen"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "Agent en monitor informatie"
-
-#~ msgid "No servers"
-#~ msgstr "Geen servers"
-
-#~ msgid "Event information"
-#~ msgstr "Gebeurtenis informatie"
-
-#~ msgid "Without permissions"
-#~ msgstr "Zonder machtigingen"
-
-#~ msgid "disabled"
-#~ msgstr "uitgeschakeld"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "Gebeurtenis replicatie is niet ingeschakeld"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr "Gebeurtenis replicatie is niet juist ingesteld voor deze metaconsole"
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr ""
-#~ "De server lijkt te zijn geconfigureerd om gebeurtenissen te repliceren, maar "
-#~ "er zijn nog geen gebeurtenissen ontvangen"
-
-#~ msgid "Unknown error"
-#~ msgstr "Onbekende fout"

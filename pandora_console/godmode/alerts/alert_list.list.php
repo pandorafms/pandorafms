@@ -50,7 +50,7 @@ else {
 // Table for filter controls
 $form_filter = '<form method="post" action="index.php?sec=' . $sec . '&amp;sec2=' . $sec2 . '&amp;refr=' . ((int)get_parameter('refr', 0)) . '&amp;pure='.$config["pure"].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />\n";
-$form_filter .= '<table style="width: 98%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
+$form_filter .= '<table style="width: 100%;" cellpadding="0" cellspacing="0" class="databox filters">'."\n";
 $form_filter .= "<tr>\n";
 $form_filter .= "<td>" . __('Template name') . "</td><td>";
 $form_filter .= html_print_input_text ('template_name', $templateName, '', 12, 255, true);
@@ -325,7 +325,7 @@ else {
 }
 
 $table->class = 'alert_list databox';
-$table->width = '98%';
+$table->width = '100%';
 $table->size = array ();
 
 $table->align[2] = 'left';

@@ -31,14 +31,14 @@ include_once($config['homedir'] . '/include/functions_users.php');
 $pure = get_parameter('pure', 0);
 
 $table->id = 'add_alert_table';
-$table->class = 'databox';
-$table->width = '98%';
+$table->class = 'databox filters';
+$table->width = '100%';
 $table->head = array ();
 $table->data = array ();
 $table->size = array ();
 $table->size = array ();
 $table->size[0] = '20%';
-$table->size[1] = '80%';
+$table->size[1] = '30%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 $table->align[0] = 'left';
 $table->align[1] = 'left';
@@ -76,7 +76,7 @@ $table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
 $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
 $table->data[0][1] .= html_print_image('images/spinner.png', true) . '</span>';
 
-$table->data[1][0] = __('Template');
+$table->data[0][2] = __('Template');
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$templates = alerts_get_alert_templates (false, array ('id', 'name'));
@@ -87,18 +87,18 @@ else {
 	$templates = alerts_get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));
 }
 
-$table->data[1][1] = html_print_select (index_array ($templates, 'id', 'name'),
+$table->data[0][3] = html_print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true, false, true, '', false, 'width: 250px;');
-$table->data[1][1] .= ' <a class="template_details invisible" href="#">' .
+$table->data[0][3] .= ' <a class="template_details invisible" href="#">' .
 	html_print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
 if (check_acl ($config['id_user'], 0, "LM")) {
-	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
-	$table->data[1][1] .= html_print_image ('images/add.png', true);
-	$table->data[1][1] .= __('Create Template');
-	$table->data[1][1] .= '</a>';
+	$table->data[0][3] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
+	$table->data[0][3] .= html_print_image ('images/add.png', true);
+	$table->data[0][3] .= __('Create Template');
+	$table->data[0][3] .= '</a>';
 }
 
-$table->data[2][0] = __('Actions');
+$table->data[1][0] = __('Actions');
 	
 $groups_user = users_get_groups($config["id_user"]);
 if (!empty($groups_user)) {
@@ -106,28 +106,27 @@ if (!empty($groups_user)) {
 	$sql = "SELECT id, name FROM talert_actions WHERE id_group IN ($groups)";
 	$actions = db_get_all_rows_sql($sql);
 }
-$table->data[2][1] = '<div class="actions_container">';
-$table->data[2][1] .= html_print_select(
+
+$table->data[1][1] = html_print_select(
 	index_array($actions, 'id', 'name'), 'action_select', '', '',
 	__('Default action'), '0', true, '', true, '', false,
 	'width: 250px;');
-$table->data[2][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
-$table->data[2][1] .= __('Number of alerts match from').' ';
-$table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
-$table->data[2][1] .= ' ' . __('to') . ' ';
-$table->data[2][1] .= html_print_input_text ('fires_max', '', '', 4, 10, true);
-$table->data[2][1] .= ui_print_help_icon ("alert-matches", true,
+$table->data[1][1] .= '<span id="advanced_action" class="advanced_actions invisible"><br>';
+$table->data[1][1] .= __('Number of alerts match from').' ';
+$table->data[1][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
+$table->data[1][1] .= ' ' . __('to') . ' ';
+$table->data[1][1] .= html_print_input_text ('fires_max', '', '', 4, 10, true);
+$table->data[1][1] .= ui_print_help_icon ("alert-matches", true,
 	ui_get_full_url(false, false, false, false));
-$table->data[2][1] .= '</span>';
-$table->data[2][1] .= '</div>';
+$table->data[1][1] .= '</span>';
 if (check_acl ($config['id_user'], 0, "LM")) {
-	$table->data[2][1] .= '<br>' . html_print_image ('images/add.png', true);
-	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
-	$table->data[2][1] .= __('Create Action');
-	$table->data[2][1] .= '</a>';
+	$table->data[1][1] .= '' . html_print_image ('images/add.png', true);
+	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
+	$table->data[1][1] .= __('Create Action');
+	$table->data[1][1] .= '</a>';
 }
-$table->data[3][0] = __('Threshold');
-$table->data[3][1] = html_print_extended_select_for_time ('module_action_threshold', 0, '', 0,
+$table->data[1][2] = __('Threshold');
+$table->data[1][3] = html_print_extended_select_for_time ('module_action_threshold', 0, '', 0,
 	__('None'), false, true) . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
 
 echo '<form class="add_alert_form" method="post">';

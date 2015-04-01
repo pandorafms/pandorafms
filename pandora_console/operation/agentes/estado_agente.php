@@ -155,9 +155,9 @@ if (isset($result_delete)) {
 		ui_print_error_message(__("There was an error message deleting the agent"));
 }
 
-echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%" style="font-weight: bold; margin-bottom: 10px;">';
-
 echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
+
+echo '<table cellpadding="4" cellspacing="4" class="databox filters" width="100%" style="font-weight: bold; margin-bottom: 10px;">';
 
 echo '<tr><td style="white-space:nowrap;">';
 
@@ -193,9 +193,9 @@ echo '</td><td style="white-space:nowrap;">';
 
 html_print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub search")); 
 
-echo '</td><td style="width:5%;">&nbsp;</form></td>';
+echo '</td><td style="width:5%;">&nbsp;</td>';
 
-echo '</tr></table>';
+echo '</tr></table></form>';
 
 if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "AM")) {
 	echo '<div style="text-align: right; float: right;">';
@@ -432,8 +432,8 @@ ui_pagination ($total_agents,
 // Show data.
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = "98%";
-$table->class = "databox";
+$table->width = "100%";
+$table->class = "databox data";
 
 $table->head = array ();
 $table->head[0] = __('Agent'). ' ' .

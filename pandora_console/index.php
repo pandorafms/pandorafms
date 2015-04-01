@@ -778,6 +778,7 @@ require('include/php_to_js_values.php');
 	
 	//Dynamically assign footer position and width.
 	function adjustFooter() {
+		/*
 		if (document.readyState !== 'complete' || $('#container').position() == undefined) {
 			return;
 		}
@@ -789,7 +790,7 @@ require('include/php_to_js_values.php');
 		var h = $('#foot').height();
 		// new top value for div#foot
 		var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
-		
+		/*
 		if ($('#foot').position().top != t) {
 			$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
 			$('#foot').height(h);
@@ -797,5 +798,6 @@ require('include/php_to_js_values.php');
 		if ($('#foot').width() !=  $(window).width()) {
 			$('#foot').width($(window).width());
 		}
+		*/
 	}
 </script>

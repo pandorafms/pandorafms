@@ -226,7 +226,7 @@ div#container {
 	#border-right: solid 2px #000;
 	#border-top: solid 2px #000;
 	#margin-top: 5px;
-	height: auto;
+	height: 100%;
 	background: #FFF;
 }
 div#page {
@@ -309,7 +309,7 @@ div#menu_container {
 }
 
 div#menu {
-	width: 45px;
+	width: 40px;
 	float: left;
 	margin-top: 10px;
 }
@@ -341,7 +341,7 @@ div#foot {
 	padding-bottom: 5px;
 	text-align: center;
 	background: #333333;
-	height: 38px;
+	height: 30px;
 	clear: both;
 	width: auto;
 }
@@ -844,6 +844,9 @@ div#cont {
 	overflow-x: hidden;
 }
 
+.termframe{
+	background-color: #80BA27 !important;
+}
 
 table, img {
 	border: 0px;
@@ -856,7 +859,6 @@ tr:first-child>th {
 th {
 	color: #fff;
 	background-color: #666;
-	text-align:center;
 	font-size: 7.5pt;
 	letter-spacing: 0.3pt;
 }
@@ -1378,7 +1380,7 @@ table.databox {
 }
 
 .databox th {
-	padding: 8px 7px;
+	padding: 10px 8px;
 	color: #fff;
 }
 

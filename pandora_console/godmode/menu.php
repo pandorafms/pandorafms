@@ -209,7 +209,39 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	
 	$sub = array ();
 	
+	$sub["godmode/setup/setup&section=general"]["text"] = __('Setup');
+	$sub["godmode/setup/setup&section=general"]["refr"] = 0;
+	
+	$sub2 = array();
+	// Options Setup
+	$sub2["godmode/setup/setup&amp;section=general"]["text"] = __('General');
+	$sub2["godmode/setup/setup&amp;section=general"]["refr"] = 0;
+	/*
+	if (enterprise_installed()) {
+		$buttons = setup_enterprise_add_Tabs($buttons);
+	}
+	*/
+	$sub2["godmode/setup/setup&amp;section=auth"]["text"] =  __('Authentication');
+	$sub2["godmode/setup/setup&amp;section=auth"]["refr"] = 0;
+	
+	$sub2["godmode/setup/setup&amp;section=perf"]["text"] = __('Performance');
+	$sub2["godmode/setup/setup&amp;section=perf"]["refr"] = 0;
+	
+	$sub2["godmode/setup/setup&amp;section=vis"]["text"] = __('Visual styles');
+	$sub2["godmode/setup/setup&amp;section=vis"]["refr"] = 0;
+	
+	
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
+	
+	
+	if (check_acl ($config['id_user'], 0, "AW")) {
+		if ($config['activate_netflow']) {
+			$sub2["godmode/setup/setup&amp;section=net"]["text"] = __('Netflow');
+			$sub2["godmode/setup/setup&amp;section=net"]["refr"] = 0;
+		}
+	}
+	$sub["godmode/setup/setup&section=general"]["sub2"] = $sub2;
+	
 	
 	if ($config['activate_gis'])
 		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');

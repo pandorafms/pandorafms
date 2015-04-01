@@ -70,11 +70,10 @@ li:hover ul { display: block; }
 	margin: 0px 0px 0px 0px;
 	position: absolute;
 	z-index: 999;
-	left: 44px;
+	left: 39px;
 	min-height: 30px;
 	height: 30px;
 	width: 160px;
-	opacity: 0.5;
 }
 
 .submenu2{

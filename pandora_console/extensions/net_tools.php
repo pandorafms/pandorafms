@@ -101,11 +101,11 @@ function main_net_tools () {
 			function mostrarColumns(ValueSelect){
 				value = ValueSelect.value;
 				if ( value==3 ) {
-					document.getElementById('netToolTable').width=800;
+					document.getElementById('netToolTable').width='100%';
 					document.getElementById('snmpcolumn').style.display='block';
 				}
 				else{
-					document.getElementById('netToolTable').width=650;
+					document.getElementById('netToolTable').width='100%';
 					document.getElementById('snmpcolumn').style.display='none';
 				}
 			}
@@ -113,7 +113,7 @@ function main_net_tools () {
 		
 	echo "<div>";
 	echo "<form name='actionbox' method='post'>";
-	echo "<table class=databox width=650 id=netToolTable>";
+	echo "<table class='databox filters' width=100% id=netToolTable>";
 	echo "<tr><td>";
 	echo __("Operation");
 	ui_print_help_tip(__('You can set the command path in the menu Administration -&gt; Extensions -&gt; Config Network Tools'));

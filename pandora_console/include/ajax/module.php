@@ -209,7 +209,8 @@ if ($get_module_detail) {
 		$result = array_slice($module_data, $offset, $block_size);
 	}
 	
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->data = array();
 	
 	$index = 0;

@@ -420,6 +420,12 @@ switch ($action) {
 					$period = $item['period'];
 					$order_uptodown = $item['order_uptodown'];
 					$show_resume = $item['show_resume'];
+					break;
+				case 'availability':
+					$description = $item['description'];
+					$period = $item['period'];
+					$order_uptodown = $item['order_uptodown'];
+					$show_resume = $item['show_resume'];
 					// HACK it is saved in show_graph field.
 					// Show interfaces instead the modules
 					$show_address_agent = $item['show_graph'];
@@ -501,7 +507,8 @@ switch ($action) {
 		break;
 }
 
-$urlForm = $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
+$urlForm = $config['homeurl'] .
+	'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
@@ -538,8 +545,8 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_netflow_filter" style="" class="datos">
 			<td><?php echo __('Filter');?></td>
-			<td><?php
-				
+			<td>
+				<?php
 				$own_info = get_user_info ($config['id_user']);
 				
 				// Get group list that user has access
@@ -1147,7 +1154,7 @@ html_print_input_hidden('id_item', $idItem);
 </table>
 <?php
 print_SLA_list('95%', $action, $idItem);
-print_General_list('95%', $action, $idItem);
+print_General_list('95%', $action, $idItem, $type);
 echo '<div class="action-buttons" style="width: 95%">';
 if ($action == 'new') {
 	html_print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
@@ -1173,7 +1180,8 @@ function print_SLA_list($width, $action, $idItem = null) {
 	global $config;
 	global $meta;
 	
-	$report_item_type = db_get_value ('type', 'treport_content', 'id_rc', $idItem);
+	$report_item_type = db_get_value('type', 'treport_content', 'id_rc',
+		$idItem);
 	?>
 	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
@@ -1325,9 +1333,10 @@ function print_SLA_list($width, $action, $idItem = null) {
 	<?php
 }
 
-function print_General_list($width, $action, $idItem = null) {
+function print_General_list($width, $action, $idItem = null, $type = 'general') {
 	global $config;
 	global $meta;
+	
 	if (!isset($meta))
 		$meta = false;
 	
@@ -1335,19 +1344,31 @@ function print_General_list($width, $action, $idItem = null) {
 		'avg' => __('rate'),
 		'max' => __('max'),
 		'min' => __('min'),
-		'sum' => __('sum'),
-		'ava' => __('Avail'));
+		'sum' => __('sum'));
 	
 	include_once($config['homedir'] . '/include/functions_html.php');
 	?>
 	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
 			<tr>
-				<th class="header" scope="col"><?php echo __('Agent');?></th>
-				<th class="header" scope="col"><?php echo __('Module');?></th>
-				<th class="header" scope="col"><?php echo __('Operation') .
-					ui_print_help_tip(__("Please be careful, when the module have diferent intervals in their life, the summatory maybe get bad result."), true);?></th>
-				<th class="header" scope="col"><?php echo __('Action');?></th>
+				<?php
+				if ($type == "availability") {
+					?>
+					<th class="header" scope="col"><?php echo __('Agent');?></th>
+					<th class="header" scope="col"><?php echo __('Module');?></th>
+					<th class="header" scope="col"><?php echo __('Action');?></th>
+					<?php
+				}
+				else {
+				?>
+					<th class="header" scope="col"><?php echo __('Agent');?></th>
+					<th class="header" scope="col"><?php echo __('Module');?></th>
+					<th class="header" scope="col"><?php echo __('Operation') .
+						ui_print_help_tip(__("Please be careful, when the module have diferent intervals in their life, the summatory maybe get bad result."), true);?></th>
+					<th class="header" scope="col"><?php echo __('Action');?></th>
+				<?php
+				}
+				?>
 			</tr>
 		</thead>
 			<?php
@@ -1363,10 +1384,13 @@ function print_General_list($width, $action, $idItem = null) {
 				case 'update':
 				case 'edit':
 					echo '<tbody id="list_general">';
-					$itemsGeneral = db_get_all_rows_filter('treport_content_item', array('id_report_content' => $idItem));
+					$itemsGeneral = db_get_all_rows_filter(
+						'treport_content_item',
+						array('id_report_content' => $idItem));
 					if ($itemsGeneral === false) {
 						$itemsGeneral = array();
 					}
+					
 					foreach ($itemsGeneral as $item) {
 						$server_name = $item ['server_name'];
 						// Metaconsole db connection
@@ -1377,22 +1401,41 @@ function print_General_list($width, $action, $idItem = null) {
 								continue;
 							}
 						}
-						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$idAgent = db_get_value_filter(
+							'id_agente', 'tagente_modulo',
+							array('id_agente_modulo' => $item['id_agent_module']));
+						
 						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						$server_name_element = '';
 						if ($meta && $server_name != '') 
-							$server_name_element .= ' (' . $server_name . ')';						
+							$server_name_element .= ' (' . $server_name . ')';
 						
-						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
+						
+						if ($type == "availability") {
+							echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
 								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
 								<td>' . printSmallFont($nameModule) . '</td>
-								<td>' . printSmallFont($operation[$item['operation']]) . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
+						}
+						else {
+							echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
+								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
+								<td>' . printSmallFont($nameModule) . '</td>
+								<td>' .
+									printSmallFont($operation[$item['operation']]) .
+								'</td>
+								<td style="text-align: center;">
+									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
+								</td>
+							</tr>';
+						}
+						
+						
 						if ($meta) {
 							//Restore db connection
 							metaconsole_restore_db();
@@ -1404,7 +1447,13 @@ function print_General_list($width, $action, $idItem = null) {
 						<tr id="row" style="display: none;" class="datos">
 							<td class="agent_name"></td>
 							<td class="module_name"></td>
-							<td class="operation_name"></td>
+							<?php
+							if ($type != "availability") {
+							?>
+								<td class="operation_name"></td>
+							<?php
+							}
+							?>
 							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteGeneralRow(0);"><?php html_print_image("images/cross.png", false); ?></a></td>
 						</tr>
 					</tbody>
@@ -1431,8 +1480,25 @@ function print_General_list($width, $action, $idItem = null) {
 								ui_print_agent_autocomplete_input($params);
 								?>
 							</td>
-							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
-							<td><?php html_print_select ($operation, 'id_operation_module_general', 0, false, '', '', false, false, true, 'width: 200px', false); ?></td>
+							<td>
+								<select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px">
+									<option value="0"><?php echo __('Select an Agent first'); ?></option>
+								</select>
+							</td>
+							<?php
+							if ($type !== "availability") {
+							?>
+								<td>
+									<?php
+									html_print_select($operation,
+										'id_operation_module_general', 0,
+										false, '', '', false, false, true,
+										'width: 200px', false);
+									?>
+								</td>
+							<?php
+							}
+							?>
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
@@ -1805,7 +1871,13 @@ function addGeneralRow() {
 	var idAgent = $("input[name=id_agent_general]").val();
 	var serverId = $("input[name=id_server]").val();
 	var idModule = $("#id_agent_module_general").val();
-	var operation = $("#id_operation_module_general").val();
+	var operation;
+	if ($("#id_operation_module_general").length) {
+		operation = $("#id_operation_module_general").val();
+	}
+	else {
+		operation = "";
+	}
 	var nameModule = $("#id_agent_module_general :selected").text();
 	var nameOperation = $("#id_operation_module_general :selected").text();
 	
@@ -1840,6 +1912,7 @@ function addGeneralRow() {
 				nameModule = data;
 			}
 		});
+		
 		//Truncate nameOperation
 		var params = [];
 		params.push("truncate_text=1");
@@ -1855,6 +1928,7 @@ function addGeneralRow() {
 				nameOperation = data;
 			}
 		});
+		
 		var params = [];
 		params.push("add_general=1");
 		params.push("id=" + $("input[name=id_item]").val());
@@ -2205,7 +2279,6 @@ function chooseType() {
 			$("#general_list").show();
 			$("#row_order_uptodown").show();
 			$("#row_show_resume").show();
-			$("#row_show_address_agent").show();
 			$("#row_show_in_two_columns").show();
 			
 			$("#row_last_value").show();
@@ -2213,6 +2286,14 @@ function chooseType() {
 				$("#row_period").hide();
 				$("input[name='last_value']").prop("checked", true);
 			}
+			break;
+		case 'availability':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#general_list").show();
+			$("#row_order_uptodown").show();
+			$("#row_show_address_agent").show();
+			$("#row_show_in_two_columns").show();
 			break;
 		case 'group_report':
 			$("#row_group").show();

@@ -46,17 +46,17 @@ enterprise_include("include/functions_reporting.php");
 $pure = get_parameter('pure',0);
 
 // Get different date to search the report.
-$date = (string) get_parameter ('date', date(DATE_FORMAT));
-$time = (string) get_parameter ('time', date(TIME_FORMAT));
+$date = (string)get_parameter('date', date(DATE_FORMAT));
+$time = (string)get_parameter('time', date(TIME_FORMAT));
 
 $datetime = strtotime ($date . ' ' . $time);
 $report["datetime"] = $datetime;
 
 // Calculations in order to modify init date of the report
-$date_init_less = strtotime(date('Y-m-j')) - 86400;
+$date_init_less = strtotime(date('Y-m-j')) - SECONDS_1DAY;
 $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
 $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
-$datetime_init = strtotime ($date_init.' '.$time_init);
+$datetime_init = strtotime($date_init . ' ' . $time_init);
 $enable_init_date = get_parameter('enable_init_date', 0);
 
 // Standard header
@@ -68,17 +68,17 @@ $options = array();
 $options['list_reports'] = array('active' => false,
 	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
 		html_print_image("images/report_list.png", true, array ("title" => __('Report list'))) .'</a>');
-		
+
 if (check_acl ($config['id_user'], 0, "RW")) {
 	$options['main']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
 		html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
-
+	
 	$options['list_items']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $id_report . '&pure='.$pure.'">' . 
 		html_print_image("images/list.png", true, array ("title" => __('List items'))) .'</a>';
-
+	
 	$options['item_editor']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $id_report . '&pure='.$pure.'">' . 
 		html_print_image("images/pen.png", true, array ("title" => __('Item editor'))) .'</a>';
-
+	
 	if (enterprise_installed()) {
 		$options = reporting_enterprise_add_Tabs($options, $id_report);
 	}

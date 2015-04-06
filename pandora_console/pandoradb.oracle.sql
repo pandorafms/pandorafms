@@ -839,7 +839,13 @@ CREATE TABLE tperfil (
 	event_view NUMBER(1, 0) default 0 NOT NULL,
 	event_edit NUMBER(1, 0) default 0 NOT NULL,
 	event_management NUMBER(1, 0) default 0 NOT NULL,
-	agent_disable NUMBER(1, 0) default 0 NOT NULL
+	agent_disable NUMBER(1, 0) default 0 NOT NULL,
+	map_view NUMBER(1, 0) default 0 NOT NULL,
+	map_edit NUMBER(1, 0) default 0 NOT NULL,
+	map_management NUMBER(1, 0) default 0 NOT NULL,
+	vconsole_view NUMBER(1, 0) default 0 NOT NULL,
+	vconsole_edit NUMBER(1, 0) default 0 NOT NULL,
+	vconsole_management NUMBER(1, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tperfil_s INCREMENT BY 1 START WITH 1;

@@ -799,6 +799,12 @@ CREATE TABLE IF NOT EXISTS `tperfil` (
 	`event_edit` tinyint(1) NOT NULL DEFAULT 0,
 	`event_management` tinyint(1) NOT NULL DEFAULT 0,
 	`agent_disable` tinyint(1) NOT NULL DEFAULT 0,
+	`map_view` tinyint(1) NOT NULL DEFAULT 0,
+	`map_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`map_management` tinyint(1) NOT NULL DEFAULT 0,
+	`vconsole_view` tinyint(1) NOT NULL DEFAULT 0,
+	`vconsole_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`vconsole_management` tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

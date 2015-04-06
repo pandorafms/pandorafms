@@ -207,7 +207,7 @@ function menu_print_menu (&$menu) {
 				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" class="'.$class.'"><a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 				
 				if (isset($sub['sub2']) || $selected) {
-					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
+					//$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 				}
 			}
 			else {
@@ -280,7 +280,7 @@ function menu_print_menu (&$menu) {
 										$sub["refr"] : '').$link_add.'"' . $title . '><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 				
 				if (isset($sub['sub2'])) {
-					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
+					//$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 				}
 			
 			}
@@ -318,8 +318,13 @@ function menu_print_menu (&$menu) {
 						$sub_tree_class = 'submenu_text submenu2_text_middle';
 					}
 					
+					if (isset($sub2['title']))
+						$sub_title = $sub2['title'];
+											
 					$submenu2_list .= '<li class="'.$class.'" style="font-weight: normal;">';
-					$submenu2_list .= '<a style="font-weight:normal;" href="'.$link.'"><div class="' . $sub_tree_class . '">'.$sub2["text"].'</div></a></li>';
+					$submenu2_list .= '<a style="font-weight:normal;" href="'.$link.'"><div class="' . $sub_tree_class . '" title="' . $sub_title . '" >'.
+											$sub2["text"].'</div></a></li>';
+					$sub_title = '';
 				}
 				
 				//Add submenu2 to submenu string
@@ -351,7 +356,7 @@ function menu_print_menu (&$menu) {
 		//Print out the first level
 		$output .= '<li class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'" 
 						onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
-		$output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
+		//$output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 		if ($submenu_output != '') {
 			//WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS
 			if ($visible || in_array ("selected", $classes)) {

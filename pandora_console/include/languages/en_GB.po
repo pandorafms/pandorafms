@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-24 17:21+0100\n"
-"PO-Revision-Date: 2014-10-30 12:03+0000\n"
-"Last-Translator: Vanessa <florecillasamarillas@hotmail.com>\n"
+"PO-Revision-Date: 2015-03-27 14:57+0000\n"
+"Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:54+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:30+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 "Language: \n"
 
@@ -50,7 +50,7 @@ msgstr "QR code of the page"
 #: ../../general/header.php:134 ../../general/header.php:135
 #: ../../include/functions_clippy.php:128
 msgid "Pandora FMS assistant"
-msgstr ""
+msgstr "Pandora FMS assistant"
 
 #: ../../general/header.php:160
 #: ../../enterprise/meta/general/main_header.php:298
@@ -521,6 +521,9 @@ msgid ""
 "learn more about Pandora FMS. Monitoring could be overwhelm, but take your "
 "time to learn how to use the power of Pandora FMS!"
 msgstr ""
+"If this is your first time with Pandora FMS, we propose you a few links to "
+"learn more about Pandora FMS. Monitoring could be overwhelm, but take your "
+"time to learn how to use the power of Pandora FMS!"
 
 #: ../../general/login_help_dialog.php:51
 #: ../../general/login_help_dialog.php:53
@@ -591,7 +594,7 @@ msgstr "You don't have access to this page"
 
 #: ../../general/noaccess.php:26
 msgid "Access to this page is restricted"
-msgstr ""
+msgstr "Access to this page is restricted"
 
 #: ../../general/noaccess.php:31 ../../enterprise/meta/general/noaccess.php:29
 #: ../../enterprise/meta/general/metaconsole_no_activated.php:21
@@ -605,6 +608,10 @@ msgid ""
 "\t\t\tPlease know that all attempts to access this page are recorded in "
 "security logs of Pandora System Database"
 msgstr ""
+"Access to this page is restricted to authorised users only, please contact "
+"system administrator if you need assistance. <br/> <br/>\n"
+"\t\t\tPlease know that all attempts to access this page are recorded in "
+"security logs of Pandora System Database"
 
 #: ../../general/shortcut_bar.php:165
 msgid "Press here to activate shortcut bar"
@@ -747,11 +754,11 @@ msgstr ""
 #: ../../general/login_page.php:140 ../../mobile/include/user.class.php:295
 #: ../../mobile/include/user.class.php:296
 msgid "Authenticator code"
-msgstr ""
+msgstr "Authenticator code"
 
 #: ../../general/login_page.php:146 ../../mobile/include/user.class.php:300
 msgid "Check code"
-msgstr ""
+msgstr "Check code"
 
 #: ../../general/login_page.php:154
 msgid "View details"
@@ -3869,25 +3876,25 @@ msgstr "Generated at"
 #: ../../mobile/include/user.class.php:171
 #: ../../mobile/include/user.class.php:178
 msgid "Double authentication failed"
-msgstr ""
+msgstr "Double authentication failed"
 
 #: ../../mobile/include/user.class.php:154
 msgid "Secret code not found"
-msgstr ""
+msgstr "Secret code not found"
 
 #: ../../mobile/include/user.class.php:155
 msgid "Please contact the administrator to reset your double authentication"
-msgstr ""
+msgstr "Please contact the administrator to reset your double authentication"
 
 #: ../../mobile/include/user.class.php:172 ../../index.php:217
 #: ../../enterprise/meta/index.php:236
 #: ../../include/ajax/double_auth.ajax.php:489
 msgid "Invalid code"
-msgstr ""
+msgstr "Invalid code"
 
 #: ../../mobile/include/user.class.php:179
 msgid "There was an error checking the code"
-msgstr ""
+msgstr "There was an error checking the code"
 
 #: ../../mobile/include/user.class.php:211
 msgid "Login Failed"
@@ -4262,7 +4269,7 @@ msgstr "Create"
 
 #: ../../godmode/reporting/visual_console_builder.data.php:72
 msgid "Create visual console"
-msgstr ""
+msgstr "Create visual console"
 
 #: ../../godmode/reporting/visual_console_builder.data.php:79
 #: ../../godmode/setup/os.builder.php:33
@@ -4682,11 +4689,11 @@ msgstr "Could not be created."
 
 #: ../../godmode/reporting/visual_console_builder.php:167
 msgid "Successfully multiple delete."
-msgstr ""
+msgstr "Successfully multiple delete."
 
 #: ../../godmode/reporting/visual_console_builder.php:168
 msgid "Unsuccessfull multiple delete."
-msgstr ""
+msgstr "Unsuccessfull multiple delete."
 
 #: ../../godmode/reporting/visual_console_builder.php:245
 msgid "Successfully delete."
@@ -4882,7 +4889,7 @@ msgstr "Icon"
 #: ../../include/functions_visual_map_editor.php:545
 #: ../../include/functions_visual_map.php:2035
 msgid "Box"
-msgstr ""
+msgstr "Box"
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:190
 #: ../../godmode/reporting/visual_console_builder.elements.php:572
@@ -5083,7 +5090,7 @@ msgstr "Filter"
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:148
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:84
 msgid "Show Options"
-msgstr ""
+msgstr "Show Options"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:270
 #: ../../godmode/agentes/module_manager.php:505
@@ -5560,7 +5567,7 @@ msgstr "Free text for search: "
 
 #: ../../godmode/reporting/reporting_builder.php:394
 msgid "Show Option"
-msgstr ""
+msgstr "Show Option"
 
 #: ../../godmode/reporting/reporting_builder.php:469
 #: ../../operation/reporting/custom_reporting.php:38
@@ -5751,7 +5758,7 @@ msgstr "Descending"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:518
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1020
 msgid "Item Editor"
-msgstr ""
+msgstr "Item Editor"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:537
 msgid "Not valid"
@@ -5761,7 +5768,7 @@ msgstr "Not valid"
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:188
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1066
 msgid "Last value"
-msgstr ""
+msgstr "Last value"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:596
 #: ../../godmode/reporting/reporting_builder.item_editor.php:2356
@@ -5774,6 +5781,9 @@ msgid ""
 "Information contained in this kind of reports will be always reporting the "
 "most recent information"
 msgstr ""
+"Warning: period 0 reports cannot be used to show information back in time. "
+"Information contained in this kind of reports will be always reporting the "
+"most recent information"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:610
 #: ../../operation/integria_incidents/incident.incident.php:97
@@ -30650,14 +30660,8 @@ msgstr "System logfiles"
 #~ msgid "From the last"
 #~ msgstr "From the last"
 
-#~ msgid "OID:"
-#~ msgstr "OID:"
-
 #~ msgid "S"
 #~ msgstr "S"
-
-#~ msgid "Custom data:"
-#~ msgstr "Custom data:"
 
 #~ msgid "Search text"
 #~ msgstr "Search text"
@@ -30973,76 +30977,3 @@ msgstr "System logfiles"
 
 #~ msgid "Total Agents"
 #~ msgstr "Total Agents"
-
-#~ msgid "Sort the agents by "
-#~ msgstr "Sort the agents by "
-
-#~ msgid "Type:"
-#~ msgstr "Type:"
-
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "Max. Delay(sec)/Modules delayed"
-
-#~ msgid "Add module macro"
-#~ msgstr "Add module macro"
-
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "Left blank for Network Inventory Modules."
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "Please place your script code here for the inventory module."
-
-#~ msgid "Columns"
-#~ msgstr "Columns"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "Agent and monitor information"
-
-#~ msgid "Event information"
-#~ msgstr "Event information"
-
-#~ msgid "No servers"
-#~ msgstr "No servers"
-
-#~ msgid "Without permissions"
-#~ msgstr "Without permissions"
-
-#~ msgid "disabled"
-#~ msgstr "Disabled"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "Event replication is not enabled"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr "Event replication is not properly configured for this metaconsole."
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr ""
-#~ "The server seems to be configured to replicate events, but no events have "
-#~ "been received yet."
-
-#~ msgid "Unknown error"
-#~ msgstr "Unknown error"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "There are no agents in this group."
-
-#~ msgid "Custom OID/Data"
-#~ msgstr "Custom OID/Data"
-
-#~ msgid "Group by OID/IP"
-#~ msgstr "Group by OID/IP"
-
-#~ msgid "Contact Ãrtica ST at info@artica.es to get an auth key."
-#~ msgstr "Contact Ãrtica ST at info@artica.es to get an auth key."
-
-#~ msgid "Invalid license."
-#~ msgstr "Invalid licence."
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr "Please contact Artica at info@artica.es for a valid licence."
-
-#~ msgid "Report group"
-#~ msgstr "Report group"

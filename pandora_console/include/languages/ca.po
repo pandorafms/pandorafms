@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:52+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:28+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 
 #: ../../general/links_menu.php:20 ../../godmode/menu.php:216
@@ -30237,12 +30237,6 @@ msgstr "Registres del sistema"
 #~ msgid "Id"
 #~ msgstr "Id"
 
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "Max. Delay (sec) / Mòduls retard"
-
-#~ msgid "Add module macro"
-#~ msgstr "Afegir macro mòdul"
-
 #~ msgid "Database sanity tool"
 #~ msgstr "Eina de base de dades del seny"
 
@@ -30278,71 +30272,8 @@ msgstr "Registres del sistema"
 #~ msgid "Field 3"
 #~ msgstr "Camp 3"
 
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "Esquerra en blanc per mòduls d'inventari de xarxa"
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr ""
-#~ "Posi aquí la seva codi de seqüència de comandaments per al mòdul d'inventari"
-
-#~ msgid "Invalid license."
-#~ msgstr "Invalid llicència."
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr ""
-#~ "Si us plau, poseu-vos en contacte amb Artica en info@artica.es d'una "
-#~ "llicència vàlida."
-
-#~ msgid "Columns"
-#~ msgstr "Columnes"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "Agent i la informació del monitor"
-
-#~ msgid "No servers"
-#~ msgstr "No hi ha servidors"
-
-#~ msgid "Event information"
-#~ msgstr "De l'esdeveniment"
-
-#~ msgid "Without permissions"
-#~ msgstr "Sense permisos"
-
-#~ msgid "disabled"
-#~ msgstr "Deshabilitat"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "Replicació Esdeveniments no està habilitat"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr ""
-#~ "Replicació Esdeveniments no està configurat correctament per a aquest "
-#~ "metaconsola"
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr ""
-#~ "El servidor sembla estar configurat per replicar els esdeveniments, però cap "
-#~ "esdeveniment s'ha rebut encara"
-
-#~ msgid "Unknown error"
-#~ msgstr "Error desconegut"
-
-#~ msgid "Sort the agents by "
-#~ msgstr "Classificar els agents de "
-
 #~ msgid "Search value"
 #~ msgstr "Valor de Recerca"
-
-#~ msgid "Custom data:"
-#~ msgstr "Dades personalitzats:"
-
-#~ msgid "OID:"
-#~ msgstr "OID:"
-
-#~ msgid "Type:"
-#~ msgstr "Tipus:"
 
 #~ msgid "Update manager settings"
 #~ msgstr "Actualització de valors del gestor"
@@ -30368,9 +30299,6 @@ msgstr "Registres del sistema"
 
 #~ msgid "Code / binary directory"
 #~ msgstr "Codi / directori de binaris"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "No hi ha agents en aquesta Agrupació"
 
 #~ msgid "Current directory is not writable by HTTP Server"
 #~ msgstr "Directori actual no té permisos d'escriptura pel servidor HTTP"

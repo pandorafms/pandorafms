@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:54+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:30+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 
 #: ../../general/links_menu.php:20 ../../godmode/menu.php:216
@@ -30271,14 +30271,8 @@ msgstr "システムログファイル"
 #~ msgid "Oper"
 #~ msgstr "演算子"
 
-#~ msgid "OID:"
-#~ msgstr "OID:"
-
 #~ msgid "S"
 #~ msgstr "状態"
-
-#~ msgid "Custom data:"
-#~ msgstr "カスタムデータ:"
 
 #~ msgid "int"
 #~ msgstr "間隔"
@@ -30288,89 +30282,3 @@ msgstr "システムログファイル"
 
 #~ msgid "Search text"
 #~ msgstr "検索文字列"
-
-#~ msgid "Add module macro"
-#~ msgstr "モジュールマクロの追加"
-
-#~ msgid "Sort the agents by "
-#~ msgstr "エージェントの並び替え: "
-
-#~ msgid "Type:"
-#~ msgstr "タイプ:"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "このグループのエージェントはありません。"
-
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "最大遅延(秒)/遅延モジュール"
-
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "ネットワークインベントリモジュールでは空にしてください"
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "インベントリモジュールのスクリプトコードをここに入力してください"
-
-#~ msgid "Invalid license."
-#~ msgstr "不正なライセンスです。"
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr "正しいライセンスについては、Artica (info@artica.es) までお問い合わせください。"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "エージェントおよびモニタ情報"
-
-#~ msgid "Columns"
-#~ msgstr "カラム"
-
-#~ msgid "Event information"
-#~ msgstr "イベント情報"
-
-#~ msgid "No servers"
-#~ msgstr "サーバがありません"
-
-#~ msgid "Without permissions"
-#~ msgstr "パーミッションなし"
-
-#~ msgid "disabled"
-#~ msgstr "無効化"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "イベント複製が有効化されていません"
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr "サーバはイベントを複製する設定がされていますが、まだイベントを受信していません"
-
-#~ msgid "Unknown error"
-#~ msgstr "不明なエラー"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr "このメタコンソールでは、イベント複製が設定されていません"
-
-#~ msgid "Custom OID/Data"
-#~ msgstr "カスタム OID/データ"
-
-#~ msgid "Group by OID/IP"
-#~ msgstr "OID/IP ごとのグループ"
-
-#~ msgid "Contact Ãrtica ST at info@artica.es to get an auth key."
-#~ msgstr "authkey の入手は、Artica ST info@artica.es までお問い合わせください。"
-
-#~ msgid "Report group"
-#~ msgstr "レポートグループ"
-
-#~ msgid "Alerts status"
-#~ msgstr "アラートの状態"
-
-#~ msgid "Modules status"
-#~ msgstr "モジュールの状態"
-
-#~ msgid "Agents status"
-#~ msgstr "エージェントの状態"
-
-#~ msgid "Trap OID"
-#~ msgstr "トラップOID"
-
-#~ msgid "Traps received by OID"
-#~ msgstr "OID ごとの受信トラップ"

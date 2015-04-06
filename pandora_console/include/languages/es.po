@@ -10,13 +10,13 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-24 17:21+0100\n"
-"PO-Revision-Date: 2015-03-24 16:46+0000\n"
-"Last-Translator: Vanessa <florecillasamarillas@hotmail.com>\n"
+"PO-Revision-Date: 2015-03-31 09:50+0000\n"
+"Last-Translator: Carlos Moreno <carlos.moreno@artica.es>\n"
 "Language-Team: Español; Castellano <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:52+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:28+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 "Language: \n"
 
@@ -597,7 +597,7 @@ msgstr "No tiene permiso para acceder a esta página"
 
 #: ../../general/noaccess.php:26
 msgid "Access to this page is restricted"
-msgstr ""
+msgstr "El acceso a esta página es restringido"
 
 #: ../../general/noaccess.php:31 ../../enterprise/meta/general/noaccess.php:29
 #: ../../enterprise/meta/general/metaconsole_no_activated.php:21
@@ -3890,7 +3890,7 @@ msgstr ""
 #: ../../enterprise/meta/index.php:236
 #: ../../include/ajax/double_auth.ajax.php:489
 msgid "Invalid code"
-msgstr ""
+msgstr "Código inválido"
 
 #: ../../mobile/include/user.class.php:179
 msgid "There was an error checking the code"
@@ -4269,7 +4269,7 @@ msgstr "Crear"
 
 #: ../../godmode/reporting/visual_console_builder.data.php:72
 msgid "Create visual console"
-msgstr ""
+msgstr "Crear consola visual"
 
 #: ../../godmode/reporting/visual_console_builder.data.php:79
 #: ../../godmode/setup/os.builder.php:33
@@ -5090,7 +5090,7 @@ msgstr "Filtro"
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:148
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:84
 msgid "Show Options"
-msgstr ""
+msgstr "Mostrar opciones"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:270
 #: ../../godmode/agentes/module_manager.php:505
@@ -5567,7 +5567,7 @@ msgstr "Texto libre de búsqueda "
 
 #: ../../godmode/reporting/reporting_builder.php:394
 msgid "Show Option"
-msgstr ""
+msgstr "Mostrar Opciones"
 
 #: ../../godmode/reporting/reporting_builder.php:469
 #: ../../operation/reporting/custom_reporting.php:38
@@ -5768,7 +5768,7 @@ msgstr "No válida"
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:188
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1066
 msgid "Last value"
-msgstr ""
+msgstr "Último valor"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:596
 #: ../../godmode/reporting/reporting_builder.item_editor.php:2356
@@ -6193,7 +6193,7 @@ msgstr "Media"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1043
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1313
 msgid "Only average"
-msgstr ""
+msgstr "Solo media"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1047
 #: ../../godmode/massive/massive_edit_modules.php:440
@@ -6851,11 +6851,11 @@ msgstr "Actualizar perfil"
 
 #: ../../godmode/users/configure_profile.php:148
 msgid "Update Profile"
-msgstr ""
+msgstr "Actualizar Perfil"
 
 #: ../../godmode/users/configure_profile.php:150
 msgid "Create Profile"
-msgstr ""
+msgstr "Crear Perfil"
 
 #: ../../godmode/users/configure_profile.php:159
 #: ../../godmode/users/configure_user.php:613
@@ -7153,11 +7153,11 @@ msgstr "El perfil no se puede añadir"
 
 #: ../../godmode/users/configure_user.php:422
 msgid "Update User"
-msgstr ""
+msgstr "Actualizar Usuario"
 
 #: ../../godmode/users/configure_user.php:425
 msgid "Create User"
-msgstr ""
+msgstr "Crear Usuario"
 
 #: ../../godmode/users/configure_user.php:442
 #: ../../operation/users/user_edit.php:200
@@ -7320,7 +7320,7 @@ msgstr "El usuario sin permiso de acceso solo puede tener acceso al API"
 
 #: ../../godmode/users/configure_user.php:539
 msgid "Strict ACL"
-msgstr ""
+msgstr "ACL Estricto"
 
 #: ../../godmode/users/configure_user.php:540
 msgid ""
@@ -8114,7 +8114,7 @@ msgstr "No se selección ningún agente"
 
 #: ../../godmode/massive/massive_delete_tags.php:107
 msgid "No tag selected"
-msgstr ""
+msgstr "Ninguna etiqueta seleccionada"
 
 #: ../../godmode/massive/massive_edit_agents.php:95
 msgid "No values changed"
@@ -8535,7 +8535,7 @@ msgstr "Alertas en standby"
 
 #: ../../godmode/massive/massive_add_tags.php:43
 msgid "No tags selected"
-msgstr ""
+msgstr "Ninguna etiqueta seleccionada"
 
 #: ../../godmode/massive/massive_delete_profiles.php:61
 msgid "Not deleted. You must select an existing user"
@@ -9006,7 +9006,7 @@ msgstr "Categoría creada con éxito"
 
 #: ../../godmode/category/edit_category.php:139
 msgid "Update category"
-msgstr ""
+msgstr "Actualizar categoría"
 
 #: ../../godmode/category/edit_category.php:148
 #: ../../godmode/category/category.php:98
@@ -9458,11 +9458,11 @@ msgstr "No se encontraron respuestas"
 
 #: ../../godmode/events/event_edit_filter.php:166
 msgid "Update Filter"
-msgstr ""
+msgstr "Actualizar Filtro"
 
 #: ../../godmode/events/event_edit_filter.php:169
 msgid "Create Filter"
-msgstr ""
+msgstr "Crear filtro"
 
 #: ../../godmode/events/event_edit_filter.php:179
 #: ../../operation/events/events_list.php:234
@@ -9590,7 +9590,7 @@ msgstr "Respuestas"
 
 #: ../../godmode/events/event_responses.editor.php:63
 msgid "Edit event responses"
-msgstr ""
+msgstr "Editar respuestas de eventos"
 
 #: ../../godmode/events/event_responses.editor.php:93
 #: ../../enterprise/extensions/ipam/ipam_network.php:125
@@ -10529,7 +10529,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor.php:467
 #: ../../godmode/agentes/module_manager_editor_common.php:579
 msgid "Custom macros"
-msgstr ""
+msgstr "Macros personalizadas"
 
 #: ../../godmode/agentes/module_manager_editor.php:469
 msgid "Module relations"
@@ -10602,11 +10602,11 @@ msgstr "Los ficheros conf o md5 han podido no ser borrados"
 
 #: ../../godmode/agentes/modificar_agente.php:143
 msgid "Show Agents"
-msgstr ""
+msgstr "Mostrar Agentes"
 
 #: ../../godmode/agentes/modificar_agente.php:145
 msgid "Everyone"
-msgstr ""
+msgstr "Todos"
 
 #: ../../godmode/agentes/modificar_agente.php:146
 msgid "Only disabled"
@@ -11392,7 +11392,7 @@ msgstr "Solo debe establecerse este valor en los módulos asíncronos"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:501
 msgid "Tags from policy"
-msgstr ""
+msgstr "Etiquetas desde política"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:514
 msgid "The module still stores data but the alerts and events will be stop"
@@ -13296,13 +13296,13 @@ msgstr ""
 #: ../../enterprise/meta/advanced/metasetup.visual.php:167
 #: ../../enterprise/meta/include/functions_meta.php:414
 msgid "Show only the group name"
-msgstr ""
+msgstr "Mostrar solo el nombre del grupo"
 
 #: ../../godmode/setup/setup_visuals.php:482
 #: ../../enterprise/meta/advanced/metasetup.visual.php:169
 #: ../../include/functions_config.php:457
 msgid "Show the group name instead the group icon."
-msgstr ""
+msgstr "Mostrar el nombre del grupo en lugar de icono del grupo"
 
 #: ../../godmode/setup/setup_visuals.php:492
 #: ../../include/functions_config.php:459
@@ -13635,11 +13635,11 @@ msgstr "Etiqueta creada satisfactoriamente"
 
 #: ../../godmode/tag/edit_tag.php:159
 msgid "Update Tag"
-msgstr ""
+msgstr "Actualizar Etiqueta"
 
 #: ../../godmode/tag/edit_tag.php:162
 msgid "Create Tag"
-msgstr ""
+msgstr "Crear etiqueta"
 
 #: ../../godmode/tag/edit_tag.php:183
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:108
@@ -13702,7 +13702,7 @@ msgstr "URL update manager"
 
 #: ../../godmode/update_manager/update_manager.setup.php:65
 msgid "Proxy server:"
-msgstr ""
+msgstr "Servidor Proxy:"
 
 #: ../../godmode/update_manager/update_manager.setup.php:67
 msgid "Proxy server"
@@ -13710,7 +13710,7 @@ msgstr "Servidor proxy"
 
 #: ../../godmode/update_manager/update_manager.setup.php:69
 msgid "Proxy port:"
-msgstr ""
+msgstr "Puerto Proxy:"
 
 #: ../../godmode/update_manager/update_manager.setup.php:71
 msgid "Proxy port"
@@ -13726,7 +13726,7 @@ msgstr "Usuario del proxy"
 
 #: ../../godmode/update_manager/update_manager.setup.php:77
 msgid "Proxy password:"
-msgstr ""
+msgstr "Contraseña del Proxy:"
 
 #: ../../godmode/update_manager/update_manager.setup.php:79
 msgid "Proxy password"
@@ -13942,11 +13942,11 @@ msgstr "Actualizar grupo"
 
 #: ../../godmode/groups/configure_group.php:105
 msgid "Update Group"
-msgstr ""
+msgstr "Actualizar Grupo"
 
 #: ../../godmode/groups/configure_group.php:107
 msgid "Create Group"
-msgstr ""
+msgstr "Crear Grupo"
 
 #: ../../godmode/groups/configure_group.php:140
 msgid "You have not access to the parent."
@@ -14405,7 +14405,7 @@ msgstr "Configurar acción de alerta"
 
 #: ../../godmode/alerts/configure_alert_action.php:97
 msgid "Update Action"
-msgstr ""
+msgstr "Actualizar Acción"
 
 #: ../../godmode/alerts/configure_alert_action.php:100
 #: ../../godmode/alerts/alert_list.builder.php:126
@@ -15624,7 +15624,7 @@ msgstr "Volver a modo normal"
 
 #: ../../operation/reporting/reporting_viewer.php:140
 msgid "View Report"
-msgstr ""
+msgstr "Ver Informe"
 
 #: ../../operation/reporting/reporting_viewer.php:170
 #: ../../enterprise/include/functions_reporting_pdf.php:3988
@@ -15956,7 +15956,7 @@ msgstr "Error al actualizar la información del usuario"
 
 #: ../../operation/users/user_edit.php:191
 msgid "Edit my User"
-msgstr ""
+msgstr "Editar mi Usuario"
 
 #: ../../operation/users/user_edit.php:233
 msgid "New Password"
@@ -16026,7 +16026,7 @@ msgstr "Detalle de alertas"
 
 #: ../../operation/users/user_edit.php:357
 msgid "Show information"
-msgstr ""
+msgstr "Mostrar información"
 
 #: ../../operation/users/user_edit.php:388
 msgid ""
@@ -16855,7 +16855,7 @@ msgstr "Estado del módulo"
 
 #: ../../operation/tree.php:168
 msgid "Search module"
-msgstr ""
+msgstr "Buscar módulo"
 
 #: ../../operation/tree.php:193
 msgid "Tree search"
@@ -16876,23 +16876,23 @@ msgstr "Alertas disparadas"
 
 #: ../../operation/tree.php:289
 msgid "Critical agents"
-msgstr ""
+msgstr "Agentes Críticos"
 
 #: ../../operation/tree.php:294
 msgid "Warning agents"
-msgstr ""
+msgstr "Agentes en advertencia"
 
 #: ../../operation/tree.php:299
 msgid "Unknown agents"
-msgstr ""
+msgstr "Agentes en desconocido"
 
 #: ../../operation/tree.php:304
 msgid "Not init agents"
-msgstr ""
+msgstr "Agentes no inicializados"
 
 #: ../../operation/tree.php:309
 msgid "Normal agents"
-msgstr ""
+msgstr "Agentes en normal"
 
 #: ../../operation/agentes/gis_view.php:93
 msgid "Last position in "
@@ -17099,7 +17099,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap_list.php:370
 msgid "None selected"
-msgstr ""
+msgstr "Nada seleccionado"
 
 #: ../../operation/agentes/custom_fields.php:28
 #: ../../operation/agentes/agent_fields.php:28
@@ -17274,7 +17274,7 @@ msgstr "Agente desconocido"
 #: ../../operation/agentes/group_view.php:90
 #: ../../include/functions_reporting.php:8163
 msgid "Agents not init"
-msgstr ""
+msgstr "Agentes no inicializados"
 
 #: ../../operation/agentes/group_view.php:92
 msgid "Not Init"
@@ -17564,7 +17564,7 @@ msgstr "Lista completa de monitores"
 
 #: ../../operation/agentes/estado_monitores.php:150
 msgid "List of modules"
-msgstr ""
+msgstr "Lista de módulos"
 
 #: ../../operation/agentes/estado_monitores.php:422
 msgid "Status:"
@@ -17664,7 +17664,7 @@ msgstr "Estado del monitor"
 
 #: ../../operation/agentes/status_monitor.php:542
 msgid "Advanced Options"
-msgstr ""
+msgstr "Opciones Avanzadas"
 
 #: ../../operation/agentes/status_monitor.php:984
 #: ../../operation/search_modules.php:52
@@ -18445,11 +18445,11 @@ msgstr "La operación no puedo completarse"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_advanced.php:107
 msgid "Advance Options"
-msgstr ""
+msgstr "Opciones Avanzadas"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:69
 msgid "Advance Reporting"
-msgstr ""
+msgstr "Opciones Avanzadas"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_editor.php:101
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:79
@@ -18611,7 +18611,7 @@ msgstr "No se pudo aplicar"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:221
 msgid "Create template report wizard"
-msgstr ""
+msgstr "Creación de informe con Asistente de Plantillas"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:261
 #: ../../enterprise/godmode/reporting/graph_template_wizard.php:142
@@ -18636,7 +18636,7 @@ msgstr "Grupo de destino"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:310
 msgid "Filter by"
-msgstr ""
+msgstr "Filtrar por"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:366
 #: ../../enterprise/godmode/reporting/graph_template_wizard.php:162
@@ -18648,7 +18648,7 @@ msgstr "Filtrar agente"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:373
 msgid "Filter tag"
-msgstr ""
+msgstr "Filtro etiqueta"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:385
 #: ../../enterprise/godmode/reporting/graph_template_wizard.php:173
@@ -18908,11 +18908,11 @@ msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:102
 msgid "Tags unused"
-msgstr ""
+msgstr "Etiquetas sin usar"
 
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:118
 msgid "Tags used"
-msgstr ""
+msgstr "Etiquetas usadas"
 
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:165
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:216
@@ -21428,7 +21428,7 @@ msgstr "Pendiente de generar"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:249
 msgid "There are no maps defined."
-msgstr ""
+msgstr "No hay mapas definidos."
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:259
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:180
@@ -21532,11 +21532,12 @@ msgstr "(Adoptados)(Desvinculados)"
 
 #: ../../enterprise/load_enterprise.php:306
 msgid "Invalid licence."
-msgstr ""
+msgstr "Licencia inválida"
 
 #: ../../enterprise/load_enterprise.php:307
 msgid "Please contact Artica at info@artica.es for a valid licence."
 msgstr ""
+"Por favor contacte con Ártica en info@artica.es para una licencia válida."
 
 #: ../../enterprise/load_enterprise.php:309
 msgid "Or disable Pandora FMS enterprise"
@@ -21601,11 +21602,11 @@ msgstr ""
 
 #: ../../enterprise/load_enterprise.php:666
 msgid "E-mail:"
-msgstr ""
+msgstr "E-mail:"
 
 #: ../../enterprise/load_enterprise.php:670
 msgid "Contact:"
-msgstr ""
+msgstr "Contacto:"
 
 #: ../../enterprise/load_enterprise.php:674
 msgid "Auth Key:"
@@ -21618,7 +21619,7 @@ msgstr ""
 
 #: ../../enterprise/load_enterprise.php:690
 msgid "ERROR:"
-msgstr ""
+msgstr "ERROR:"
 
 #: ../../enterprise/load_enterprise.php:690
 msgid "When connecting to Artica server."
@@ -21736,11 +21737,11 @@ msgstr "Vista de grupo"
 
 #: ../../enterprise/meta/monitoring/group_view.php:74
 msgid "Summary of the status groups"
-msgstr ""
+msgstr "Resumen de los grupos por estatus"
 
 #: ../../enterprise/meta/monitoring/group_view.php:94
 msgid "Group or Tag"
-msgstr ""
+msgstr "Grupo o Etiqueta"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_agent.php:40
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:84
@@ -21897,15 +21898,15 @@ msgstr "Vista táctica"
 
 #: ../../enterprise/meta/monitoring/tactical.php:215
 msgid "Report of state"
-msgstr ""
+msgstr "Informe de estado"
 
 #: ../../enterprise/meta/monitoring/tactical.php:340
 msgid "Report of events (last hour)"
-msgstr ""
+msgstr "Informe de eventos (última hora)"
 
 #: ../../enterprise/meta/monitoring/tactical.php:356
 msgid "Info of state in events (last hour)"
-msgstr ""
+msgstr "Información del estado en los eventos (última hora)"
 
 #: ../../enterprise/meta/monitoring/tactical.php:371
 msgid "More events"
@@ -21973,7 +21974,7 @@ msgstr "No se puede mover"
 
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:124
 msgid "Move Agents"
-msgstr ""
+msgstr "Mover Agentes"
 
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:137
 msgid "Source Server"
@@ -22181,7 +22182,7 @@ msgstr "Sólo bases de datos"
 
 #: ../../enterprise/meta/advanced/policymanager.apply.php:188
 msgid "Apply Policies"
-msgstr ""
+msgstr "Aplicar Políticas"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:215
 #, php-format
@@ -22225,7 +22226,7 @@ msgstr ""
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:498
 msgid "Synchronizing Users"
-msgstr ""
+msgstr "Sincronizando Usuarios"
 
 #: ../../enterprise/meta/advanced/synchronizing.user.php:553
 msgid "Profile mode"
@@ -22334,7 +22335,7 @@ msgstr "Creadas/actualizadas %s/%s plantillas"
 
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:324
 msgid "Synchronizing Alerts"
-msgstr ""
+msgstr "Sincronizando Alertas"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:103
 #, php-format
@@ -22384,7 +22385,7 @@ msgstr "NInguna actualización o creación de grupo"
 
 #: ../../enterprise/meta/advanced/synchronizing.group.php:227
 msgid "Synchronizing Groups"
-msgstr ""
+msgstr "Sincronizando Grupos"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:124
 #, php-format
@@ -22398,7 +22399,7 @@ msgstr "Creados/actualizados %s/%s tags"
 
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:138
 msgid "Synchronizing Tags"
-msgstr ""
+msgstr "Sincronizando Etiquetas"
 
 #: ../../enterprise/meta/advanced/metasetup.php:49
 msgid "Consoles Setup"
@@ -22930,7 +22931,7 @@ msgstr "Gracias por usar Pandora FMS"
 
 #: ../../enterprise/dashboard/widgets/tree_view.php:24
 msgid "Show the tree view"
-msgstr ""
+msgstr "Mostrar la vista de árbol"
 
 #: ../../enterprise/dashboard/widgets/tree_view.php:27
 #: ../../enterprise/dashboard/widgets/url.php:26
@@ -25155,11 +25156,11 @@ msgstr "Siguiente IP disponible"
 
 #: ../../enterprise/extensions/check_acls.php:16
 msgid "ACL users for this agent"
-msgstr ""
+msgstr "Usuarios ACL para este agente"
 
 #: ../../enterprise/extensions/check_acls.php:100
 msgid "There are no defined users"
-msgstr ""
+msgstr "No hay usuarios definidos"
 
 #: ../../enterprise/extensions/check_acls.php:104
 msgid "ACL module tags for the modules in this agent"
@@ -25175,7 +25176,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/check_acls.php:201
 msgid "Check ACL"
-msgstr ""
+msgstr "Chequear ACL"
 
 #: ../../enterprise/extensions/backup/main.php:53
 msgid "Pandora database backup utility"
@@ -25401,7 +25402,7 @@ msgstr "No existe un agente con este nombre"
 
 #: ../../include/functions_api.php:886
 msgid "Does not exist module with this name."
-msgstr ""
+msgstr "No existe módulos con este nombre."
 
 #: ../../include/functions_api.php:1231
 msgid "Correct Delete"
@@ -28374,20 +28375,20 @@ msgstr "Estado actual"
 
 #: ../../include/functions_reporting.php:8137
 msgid "Agents critical"
-msgstr ""
+msgstr "Agentes críticos"
 
 #: ../../include/functions_reporting.php:8142
 msgid "Agents warning"
-msgstr ""
+msgstr "Agentes warning"
 
 #: ../../include/functions_reporting.php:8150
 msgid "Agents ok"
-msgstr ""
+msgstr "Agentes ok"
 
 #: ../../include/functions_reporting.php:8176
 #: ../../include/functions_reporting.php:8185
 msgid "Agents by status"
-msgstr ""
+msgstr "Agentes por estado"
 
 #: ../../include/functions_reporting.php:8231
 #: ../../include/functions_reporting.php:8239
@@ -28397,29 +28398,29 @@ msgstr "Resumen de nodos"
 #: ../../include/functions_reporting.php:8263
 #: ../../include/functions_reporting.php:8286
 msgid "Warning events"
-msgstr ""
+msgstr "Eventos en advertencia"
 
 #: ../../include/functions_reporting.php:8269
 #: ../../include/functions_reporting.php:8290
 msgid "OK events"
-msgstr ""
+msgstr "Eventos OK"
 
 #: ../../include/functions_reporting.php:8275
 #: ../../include/functions_reporting.php:8294
 msgid "Unknown events"
-msgstr ""
+msgstr "Eventos desconocidos"
 
 #: ../../include/functions_reporting.php:8343
 msgid "Last activity in Pandora FMS console"
-msgstr ""
+msgstr "Última actividad en la consola de Pandora FMS"
 
 #: ../../include/functions_reporting.php:8463
 msgid "Events info (1hr.)"
-msgstr ""
+msgstr "Información de Eventos (1hr.)"
 
 #: ../../include/functions_reporting.php:8476
 msgid "Events info (1hr)"
-msgstr ""
+msgstr "Información de Eventos (1hr.)"
 
 #: ../../include/graphs/functions_flot.php:302
 msgid "Cancel zoom"
@@ -28509,7 +28510,7 @@ msgstr ""
 #: ../../include/ajax/double_auth.ajax.php:203
 #: ../../include/ajax/double_auth.ajax.php:294
 msgid "Continue"
-msgstr ""
+msgstr "Continuar"
 
 #: ../../include/ajax/double_auth.ajax.php:219
 msgid "Are you installed the app yet?"
@@ -28856,7 +28857,7 @@ msgstr ""
 
 #: ../../include/class/Tree.class.php:1281
 msgid "NO DATA"
-msgstr ""
+msgstr "SIN DATOS"
 
 #: ../../include/functions_visual_map.php:823
 msgid "Last value: "
@@ -28931,7 +28932,7 @@ msgstr "Ir a \"editar agentes\""
 
 #: ../../include/functions_treeview.php:433
 msgid "Agent data"
-msgstr ""
+msgstr "Datos de agentes"
 
 #: ../../include/functions_treeview.php:506
 msgid "Advanced information"
@@ -29832,7 +29833,7 @@ msgstr "Vista de Agentes/Alertas"
 
 #: ../../extensions/db_status.php:43 ../../extensions/db_status.php:365
 msgid "DB Status"
-msgstr ""
+msgstr "Estado BD"
 
 #: ../../extensions/db_status.php:56
 msgid ""
@@ -29846,7 +29847,7 @@ msgstr ""
 
 #: ../../extensions/db_status.php:63
 msgid "DB settings"
-msgstr ""
+msgstr "Configuración BD"
 
 #: ../../extensions/db_status.php:67
 msgid "DB User with privileges"
@@ -31229,14 +31230,8 @@ msgstr "Logs sistema"
 #~ msgid "hour"
 #~ msgstr "hora"
 
-#~ msgid "OID:"
-#~ msgstr "OID:"
-
 #~ msgid "Manage SNMP console"
 #~ msgstr "Consola SNMP"
-
-#~ msgid "Custom data:"
-#~ msgstr "Datos personalizados:"
 
 #~ msgid ""
 #~ "Pandora FMS Sanity tool is used to remove bad database structure data, "
@@ -31255,91 +31250,3 @@ msgstr "Logs sistema"
 #~ "datos esta también implementada en <b>Pandora_db.pl</b> de modo que debería "
 #~ "ejecutarla cada día o cada semana. Esta herramienta no COMPACTA O REDUCE su "
 #~ "base de datos, solo elimina las estructuras corruptas."
-
-#~ msgid "Sort the agents by "
-#~ msgstr "Listar los agentes por "
-
-#~ msgid "Type:"
-#~ msgstr "Tipo:"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "No hay agentes en esta agrupación"
-
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "Max. Demora (Sec)/Modulos retrasados"
-
-#~ msgid "Add module macro"
-#~ msgstr "Añadir macro de módulo"
-
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "Módulos de inventario de red en blanco"
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "Introduzca aquí el código de script para el módulo de inventario"
-
-#~ msgid "Invalid license."
-#~ msgstr "Licencia no válida"
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr ""
-#~ "Por favor, póngase en contacto con info@artica.es para obtener una licencia "
-#~ "válida."
-
-#~ msgid "Columns"
-#~ msgstr "Columnas"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "Información sobre el agente y el monitor"
-
-#~ msgid "Event information"
-#~ msgstr "Información del evento"
-
-#~ msgid "No servers"
-#~ msgstr "No hay servidores"
-
-#~ msgid "Without permissions"
-#~ msgstr "Sin permisos"
-
-#~ msgid "disabled"
-#~ msgstr "desactivado"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "La replicación de eventos no está habilitada"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr ""
-#~ "La replicación eventos no está configurado correctamente para esta "
-#~ "metaconsola"
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr ""
-#~ "El servidor parece estar configurado para replicar eventos, pero no se han "
-#~ "recibido eventos todavía"
-
-#~ msgid "Unknown error"
-#~ msgstr "Error desconocido"
-
-#~ msgid "Custom OID/Data"
-#~ msgstr "OID/Data Personalizado"
-
-#~ msgid "Contact Ãrtica ST at info@artica.es to get an auth key."
-#~ msgstr ""
-#~ "Contactar con Artica ST en info@artica.es para obtener una clave de "
-#~ "autenticación"
-
-#~ msgid "Group by OID/IP"
-#~ msgstr "Agrupar por OID/IP"
-
-#~ msgid "Report group"
-#~ msgstr "Informe de grupo"
-
-#~ msgid "Modules status"
-#~ msgstr "Estado de los módulos"
-
-#~ msgid "Agents status"
-#~ msgstr "Estado de los agentes"
-
-#~ msgid "Alerts status"
-#~ msgstr "Estado de las alertas"

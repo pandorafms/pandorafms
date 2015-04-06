@@ -477,8 +477,8 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 				$returnTime .= "$mins $minutesString ";
 			}
 			else {
-				$returnTime = sprintf("%02d",$hours) . ':' .
-					sprintf("%02d",$mins);
+				$returnTime = sprintf("%02d", $hours) . ':' .
+					sprintf("%02d", $mins);
 			}
 		}
 		

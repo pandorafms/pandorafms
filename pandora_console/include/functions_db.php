@@ -1195,16 +1195,16 @@ function db_get_fields($table) {
  */
 function db_search_in_history_db ($utimestamp) {
 	global $config;
-
+	
 	$search_in_history_db = false;
 	if ($config['history_db_enabled'] == 1) {
 		$history_db_start_period = $config['history_db_days'] * SECONDS_1DAY;
-
+		
 		// If the date is newer than the newest history db data
 		if (time() - $history_db_start_period >= $utimestamp)
 			$search_in_history_db = true;
 	}
-
+	
 	return $search_in_history_db;
 }
 

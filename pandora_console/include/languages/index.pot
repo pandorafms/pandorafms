@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-24 17:21+0100\n"
+"POT-Creation-Date: 2015-04-06 13:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -243,7 +243,7 @@ msgstr ""
 #: ../../mobile/operation/networkmaps.php:69
 #: ../../mobile/operation/networkmaps.php:129
 #: ../../mobile/operation/networkmaps.php:130
-#: ../../mobile/operation/networkmaps.php:193
+#: ../../mobile/operation/networkmaps.php:197
 #: ../../mobile/operation/agents.php:75 ../../mobile/operation/agents.php:120
 #: ../../mobile/operation/agents.php:124 ../../mobile/operation/agents.php:175
 #: ../../mobile/operation/agents.php:176 ../../mobile/operation/agents.php:280
@@ -316,18 +316,20 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:308
 #: ../../operation/incidents/incident.php:315
 #: ../../operation/events/events.build_table.php:100
-#: ../../operation/events/events_list.php:554
+#: ../../operation/events/events_list.php:237
+#: ../../operation/events/events_list.php:557
 #: ../../operation/events/sound_events.php:73
 #: ../../operation/gis_maps/index.php:34 ../../operation/gis_maps/ajax.php:309
 #: ../../operation/agentes/exportdata.php:225
-#: ../../operation/agentes/ver_agente.php:460
-#: ../../operation/agentes/networkmap_list.php:108
-#: ../../operation/agentes/networkmap_list.php:162
+#: ../../operation/agentes/ver_agente.php:461
+#: ../../operation/agentes/networkmap_list.php:102
+#: ../../operation/agentes/networkmap_list.php:156
 #: ../../operation/agentes/estado_agente.php:164
 #: ../../operation/agentes/estado_agente.php:449
 #: ../../operation/agentes/group_view.php:87
 #: ../../operation/agentes/alerts_status.functions.php:59
-#: ../../operation/agentes/estado_generalagente.php:239
+#: ../../operation/agentes/networkmap.php:359
+#: ../../operation/agentes/estado_generalagente.php:240
 #: ../../operation/agentes/status_monitor.php:418
 #: ../../operation/integria_incidents/incident.incident.php:87
 #: ../../operation/integria_incidents/incident.list.php:61
@@ -391,12 +393,12 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:4327
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1663
 #: ../../include/functions_groups.php:715
-#: ../../include/functions_networkmap.php:1710
+#: ../../include/functions_networkmap.php:1712
 #: ../../include/functions_visual_map_editor.php:60
 #: ../../include/functions_visual_map_editor.php:299
 #: ../../include/functions_visual_map_editor.php:544
 #: ../../include/functions_events.php:37
-#: ../../include/functions_events.php:2356
+#: ../../include/functions_events.php:2365
 #: ../../include/functions_graph.php:4633
 #: ../../include/functions_reporting.php:6900
 #: ../../include/functions_reporting.php:6951
@@ -580,7 +582,7 @@ msgstr ""
 #: ../../mobile/operation/events.php:425 ../../mobile/operation/groups.php:51
 #: ../../mobile/operation/networkmaps.php:99
 #: ../../mobile/operation/agents.php:145 ../../mobile/operation/agent.php:58
-#: ../../mobile/operation/networkmap.php:73
+#: ../../mobile/operation/networkmap.php:78
 #: ../../mobile/operation/alerts.php:141
 #: ../../mobile/operation/modules.php:173
 #: ../../mobile/operation/tactical.php:68 ../../mobile/index.php:200
@@ -613,7 +615,7 @@ msgstr ""
 #: ../../general/shortcut_bar.php:176 ../../general/shortcut_bar.php:178
 #: ../../mobile/operation/groups.php:126 ../../mobile/operation/groups.php:127
 #: ../../mobile/operation/groups.php:128
-#: ../../operation/agentes/ver_agente.php:586
+#: ../../operation/agentes/ver_agente.php:587
 #: ../../enterprise/operation/agentes/ver_agente.php:152
 #: ../../include/functions_groups.php:818
 #: ../../include/functions_groups.php:820
@@ -654,7 +656,7 @@ msgstr ""
 
 #: ../../general/login_page.php:46 ../../general/login_page.php:153
 #: ../../operation/reporting/graph_viewer.php:200
-#: ../../operation/agentes/networkmap.php:454
+#: ../../operation/agentes/networkmap.php:495
 #: ../../operation/servers/recon_view.php:30
 #: ../../operation/visual_console/render_view.php:176
 #: ../../operation/visual_console/public_console.php:90
@@ -844,7 +846,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:319
 #: ../../operation/incidents/incident.php:374
 #: ../../operation/events/events.build_table.php:190
-#: ../../operation/agentes/networkmap_list.php:247
+#: ../../operation/agentes/networkmap_list.php:245
 #: ../../operation/agentes/alerts_status.php:414
 #: ../../operation/agentes/alerts_status.php:452
 #: ../../operation/agentes/alerts_status.php:483
@@ -944,7 +946,7 @@ msgstr ""
 #: ../../mobile/operation/events.php:426 ../../mobile/operation/groups.php:52
 #: ../../mobile/operation/networkmaps.php:100
 #: ../../mobile/operation/agents.php:146 ../../mobile/operation/agent.php:59
-#: ../../mobile/operation/networkmap.php:74
+#: ../../mobile/operation/networkmap.php:79
 #: ../../mobile/operation/alerts.php:142
 #: ../../mobile/operation/modules.php:174
 #: ../../mobile/operation/tactical.php:69 ../../mobile/index.php:201
@@ -969,7 +971,7 @@ msgstr ""
 #: ../../mobile/operation/events.php:563 ../../mobile/operation/groups.php:67
 #: ../../mobile/operation/networkmaps.php:116
 #: ../../mobile/operation/agents.php:162 ../../mobile/operation/agent.php:100
-#: ../../mobile/operation/networkmap.php:93
+#: ../../mobile/operation/networkmap.php:98
 #: ../../mobile/operation/alerts.php:158
 #: ../../mobile/operation/modules.php:190
 #: ../../mobile/operation/tactical.php:85
@@ -1003,7 +1005,7 @@ msgid "Time compare (Overlapped)"
 msgstr ""
 
 #: ../../mobile/operation/module_graph.php:428
-#: ../../operation/agentes/stat_win.php:347
+#: ../../operation/agentes/stat_win.php:354
 msgid "Show unknown graph"
 msgstr ""
 
@@ -1017,8 +1019,8 @@ msgstr ""
 
 #: ../../mobile/operation/module_graph.php:454
 #: ../../operation/agentes/exportdata.php:300
-#: ../../operation/agentes/interface_traffic_graph_win.php:195
-#: ../../operation/agentes/stat_win.php:272
+#: ../../operation/agentes/interface_traffic_graph_win.php:216
+#: ../../operation/agentes/stat_win.php:279
 #: ../../operation/agentes/graphs.php:128
 msgid "Begin date"
 msgstr ""
@@ -1051,7 +1053,7 @@ msgstr ""
 #: ../../mobile/operation/networkmaps.php:78
 #: ../../mobile/operation/networkmaps.php:140
 #: ../../mobile/operation/networkmaps.php:141
-#: ../../mobile/operation/networkmaps.php:192
+#: ../../mobile/operation/networkmaps.php:196
 #: ../../godmode/reporting/reporting_builder.list_items.php:158
 #: ../../godmode/reporting/reporting_builder.list_items.php:182
 #: ../../godmode/reporting/reporting_builder.list_items.php:271
@@ -1075,9 +1077,9 @@ msgstr ""
 #: ../../godmode/alerts/alert_templates.php:299
 #: ../../operation/events/sound_events.php:75
 #: ../../operation/events/events.php:75
-#: ../../operation/agentes/ver_agente.php:618
-#: ../../operation/agentes/networkmap_list.php:117
-#: ../../operation/agentes/networkmap_list.php:161
+#: ../../operation/agentes/ver_agente.php:619
+#: ../../operation/agentes/networkmap_list.php:111
+#: ../../operation/agentes/networkmap_list.php:155
 #: ../../operation/agentes/status_monitor.php:950
 #: ../../operation/search_modules.php:49
 #: ../../operation/netflow/nf_live_view.php:254
@@ -1099,7 +1101,7 @@ msgstr ""
 #: ../../include/functions_snmp_browser.php:400
 #: ../../include/functions_visual_map_editor.php:363
 #: ../../include/functions_events.php:880
-#: ../../include/functions_events.php:2286
+#: ../../include/functions_events.php:2295
 #: ../../include/functions_reporting.php:2728
 #: ../../include/functions_reporting.php:2971
 #: ../../include/functions_reporting.php:3087
@@ -1114,7 +1116,7 @@ msgid "Visual consoles"
 msgstr ""
 
 #: ../../mobile/operation/visualmaps.php:139
-#: ../../mobile/operation/networkmaps.php:191
+#: ../../mobile/operation/networkmaps.php:195
 #: ../../godmode/reporting/graph_builder.main.php:94
 #: ../../godmode/reporting/reporting_builder.list_items.php:288
 #: ../../godmode/reporting/reporting_builder.main.php:65
@@ -1153,13 +1155,14 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_action.php:111
 #: ../../godmode/alerts/alert_actions.php:341
 #: ../../godmode/alerts/configure_alert_command.php:145
-#: ../../godmode/alerts/alert_commands.php:266
+#: ../../godmode/alerts/alert_commands.php:274
 #: ../../godmode/alerts/alert_templates.php:296
 #: ../../godmode/alerts/configure_alert_template.php:687
 #: ../../godmode/netflow/nf_edit_form.php:192
 #: ../../godmode/netflow/nf_edit.php:119 ../../operation/search_users.php:41
 #: ../../operation/gis_maps/index.php:33
-#: ../../operation/agentes/networkmap_list.php:160
+#: ../../operation/agentes/networkmap_list.php:154
+#: ../../operation/agentes/networkmap.php:348
 #: ../../operation/search_maps.php:31 ../../operation/extensions.php:47
 #: ../../operation/netflow/nf_live_view.php:291
 #: ../../operation/search_helps.php:36
@@ -1222,8 +1225,8 @@ msgstr ""
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1551
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1691
 #: ../../enterprise/include/functions_services.php:1060
-#: ../../include/functions_events.php:1974
-#: ../../include/functions_events.php:2029
+#: ../../include/functions_events.php:1971
+#: ../../include/functions_events.php:2021
 #: ../../include/functions_reporting.php:2970
 #: ../../include/functions_reporting.php:3086
 #: ../../include/functions_reporting.php:3903
@@ -1272,11 +1275,11 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components.php:555
 #: ../../godmode/servers/manage_recontask.php:267
 #: ../../godmode/alerts/alert_view.php:113
-#: ../../operation/agentes/estado_generalagente.php:148
-#: ../../operation/agentes/estado_generalagente.php:160
-#: ../../operation/agentes/estado_generalagente.php:173
-#: ../../operation/agentes/estado_generalagente.php:258
-#: ../../operation/agentes/estado_generalagente.php:337
+#: ../../operation/agentes/estado_generalagente.php:149
+#: ../../operation/agentes/estado_generalagente.php:161
+#: ../../operation/agentes/estado_generalagente.php:174
+#: ../../operation/agentes/estado_generalagente.php:259
+#: ../../operation/agentes/estado_generalagente.php:338
 #: ../../operation/servers/recon_view.php:133
 #: ../../operation/snmpconsole/snmp_view.php:485
 #: ../../operation/snmpconsole/snmp_view.php:504
@@ -1295,21 +1298,21 @@ msgstr ""
 #: ../../include/functions.php:934 ../../include/functions.php:937
 #: ../../include/functions_events.php:1747
 #: ../../include/functions_events.php:1900
-#: ../../include/functions_events.php:1969
-#: ../../include/functions_events.php:1985
-#: ../../include/functions_events.php:1995
-#: ../../include/functions_events.php:2000
-#: ../../include/functions_events.php:2023
-#: ../../include/functions_events.php:2088
-#: ../../include/functions_events.php:2142
-#: ../../include/functions_events.php:2154
-#: ../../include/functions_events.php:2166
-#: ../../include/functions_events.php:2178
-#: ../../include/functions_events.php:2188
-#: ../../include/functions_events.php:2274
-#: ../../include/functions_events.php:2351
-#: ../../include/functions_events.php:2373
-#: ../../include/functions_events.php:2383
+#: ../../include/functions_events.php:1966
+#: ../../include/functions_events.php:1982
+#: ../../include/functions_events.php:1992
+#: ../../include/functions_events.php:1997
+#: ../../include/functions_events.php:2015
+#: ../../include/functions_events.php:2094
+#: ../../include/functions_events.php:2148
+#: ../../include/functions_events.php:2160
+#: ../../include/functions_events.php:2172
+#: ../../include/functions_events.php:2184
+#: ../../include/functions_events.php:2194
+#: ../../include/functions_events.php:2283
+#: ../../include/functions_events.php:2360
+#: ../../include/functions_events.php:2382
+#: ../../include/functions_events.php:2392
 #: ../../include/functions_reporting.php:2796
 #: ../../include/functions_reporting.php:2834
 #: ../../include/functions_ui.php:1975 ../../include/functions_ui.php:1985
@@ -1396,8 +1399,8 @@ msgstr ""
 #: ../../enterprise/meta/advanced/metasetup.password.php:121
 #: ../../enterprise/meta/advanced/metasetup.password.php:127
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1565
-#: ../../include/functions_events.php:2294
-#: ../../include/functions_events.php:2301
+#: ../../include/functions_events.php:2303
+#: ../../include/functions_events.php:2310
 msgid "No"
 msgstr ""
 
@@ -1405,7 +1408,7 @@ msgstr ""
 #: ../../operation/events/events.build_table.php:236
 #: ../../enterprise/include/functions_reporting_pdf.php:2754
 #: ../../include/functions_events.php:905
-#: ../../include/functions_events.php:2321
+#: ../../include/functions_events.php:2330
 #: ../../include/functions_reporting.php:3008
 #: ../../include/functions_reporting.php:3115
 #: ../../include/functions_reporting.php:3235
@@ -1420,7 +1423,7 @@ msgstr ""
 #: ../../operation/events/events.php:837 ../../operation/events/events.php:838
 #: ../../enterprise/include/functions_reporting_pdf.php:2758
 #: ../../include/functions_events.php:909
-#: ../../include/functions_events.php:2325
+#: ../../include/functions_events.php:2334
 #: ../../include/functions_reporting.php:3012
 #: ../../include/functions_reporting.php:3119
 #: ../../include/functions_reporting.php:3239
@@ -1435,7 +1438,7 @@ msgstr ""
 #: ../../operation/events/events.php:856 ../../operation/events/events.php:857
 #: ../../enterprise/include/functions_reporting_pdf.php:2762
 #: ../../include/functions_events.php:913
-#: ../../include/functions_events.php:2329
+#: ../../include/functions_events.php:2338
 #: ../../include/functions_reporting.php:3016
 #: ../../include/functions_reporting.php:3123
 #: ../../include/functions_reporting.php:3243
@@ -1536,7 +1539,7 @@ msgstr ""
 #: ../../enterprise/extensions/backup/main.php:66
 #: ../../include/functions_snmp_browser.php:425
 #: ../../include/functions_events.php:38
-#: ../../include/functions_events.php:2334
+#: ../../include/functions_events.php:2343
 #: ../../include/functions_reporting.php:2102
 #: ../../include/functions_reporting.php:2968
 #: ../../include/functions_reporting.php:3085
@@ -1558,13 +1561,13 @@ msgstr ""
 #: ../../godmode/events/event_edit_filter.php:199
 #: ../../godmode/events/event_filter.php:107
 #: ../../operation/events/events.build_table.php:134
-#: ../../operation/events/events_list.php:574
+#: ../../operation/events/events_list.php:577
 #: ../../operation/snmpconsole/snmp_view.php:307
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:74
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:231
 #: ../../enterprise/dashboard/widgets/events_list.php:54
 #: ../../include/functions_events.php:877
-#: ../../include/functions_events.php:2306
+#: ../../include/functions_events.php:2315
 msgid "Severity"
 msgstr ""
 
@@ -1587,7 +1590,7 @@ msgstr ""
 
 #: ../../mobile/operation/events.php:464
 #: ../../operation/events/events.build_table.php:56
-#: ../../include/functions_events.php:2252
+#: ../../include/functions_events.php:2261
 msgid "Event ID"
 msgstr ""
 
@@ -1602,7 +1605,7 @@ msgstr ""
 #: ../../operation/agentes/exportdata.php:99
 #: ../../operation/agentes/exportdata.excel.php:76
 #: ../../operation/agentes/exportdata.csv.php:77
-#: ../../operation/agentes/estado_generalagente.php:377
+#: ../../operation/agentes/estado_generalagente.php:378
 #: ../../operation/agentes/status_monitor.php:998
 #: ../../operation/integria_incidents/incident.files.php:43
 #: ../../operation/search_modules.php:54
@@ -1614,7 +1617,7 @@ msgstr ""
 #: ../../include/functions_netflow.php:287
 #: ../../include/functions_events.php:39
 #: ../../include/functions_events.php:890
-#: ../../include/functions_events.php:2262
+#: ../../include/functions_events.php:2271
 #: ../../include/functions_reporting.php:2105
 #: ../../include/functions_reporting.php:2974
 #: ../../include/functions_reporting.php:3091
@@ -1633,7 +1636,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.list.php:101
 #: ../../enterprise/meta/include/functions_events_meta.php:100
 #: ../../include/functions_events.php:48
-#: ../../include/functions_events.php:2272
+#: ../../include/functions_events.php:2281
 msgid "Owner"
 msgstr ""
 
@@ -1648,13 +1651,13 @@ msgstr ""
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:984
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:1000
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:1016
-#: ../../operation/events/events_list.php:585
-#: ../../include/functions_events.php:2291
+#: ../../operation/events/events_list.php:588
+#: ../../include/functions_events.php:2300
 msgid "Repeated"
 msgstr ""
 
 #: ../../mobile/operation/events.php:492
-#: ../../include/functions_events.php:2340
+#: ../../include/functions_events.php:2349
 msgid "Acknowledged by"
 msgstr ""
 
@@ -1696,7 +1699,7 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:349
 #: ../../operation/gis_maps/ajax.php:216 ../../operation/gis_maps/ajax.php:247
 #: ../../operation/agentes/exportdata.php:96
-#: ../../operation/agentes/ver_agente.php:630
+#: ../../operation/agentes/ver_agente.php:631
 #: ../../operation/agentes/exportdata.excel.php:76
 #: ../../operation/agentes/estado_agente.php:439
 #: ../../operation/agentes/exportdata.csv.php:77
@@ -1796,7 +1799,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:4191
 #: ../../enterprise/include/functions_reporting_pdf.php:4332
 #: ../../include/functions_events.php:45
-#: ../../include/functions_events.php:2365
+#: ../../include/functions_events.php:2374
 #: ../../include/functions_reporting.php:6956
 #: ../../include/functions_reporting.php:7111
 #: ../../include/functions_treeview.php:159
@@ -1951,11 +1954,11 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:27
 #: ../../godmode/snmpconsole/snmp_alert.php:877
 #: ../../operation/users/user_edit.php:341
-#: ../../operation/events/events_list.php:288
-#: ../../operation/events/events_list.php:785
-#: ../../operation/agentes/ver_agente.php:625
-#: ../../operation/agentes/ver_agente.php:668
-#: ../../operation/agentes/ver_agente.php:678
+#: ../../operation/events/events_list.php:291
+#: ../../operation/events/events_list.php:805
+#: ../../operation/agentes/ver_agente.php:626
+#: ../../operation/agentes/ver_agente.php:669
+#: ../../operation/agentes/ver_agente.php:679
 #: ../../operation/integria_incidents/incident.incident.php:24
 #: ../../operation/integria_incidents/incident.list.php:42
 #: ../../operation/integria_incidents/incident.list.php:133
@@ -2095,7 +2098,7 @@ msgstr ""
 #: ../../mobile/operation/events.php:1072
 #: ../../mobile/operation/events.php:1091
 #: ../../mobile/operation/networkmaps.php:137
-#: ../../mobile/operation/networkmaps.php:223
+#: ../../mobile/operation/networkmaps.php:227
 #: ../../mobile/operation/agents.php:32 ../../mobile/operation/alerts.php:37
 #: ../../mobile/operation/alerts.php:43 ../../mobile/operation/modules.php:38
 #: ../../mobile/operation/modules.php:225
@@ -2140,23 +2143,22 @@ msgstr ""
 #: ../../operation/events/events.build_table.php:431
 #: ../../operation/events/events_rss.php:110
 #: ../../operation/events/events_list.php:147
-#: ../../operation/events/events_list.php:474
-#: ../../operation/events/events_list.php:482
-#: ../../operation/events/events_list.php:572
+#: ../../operation/events/events_list.php:477
+#: ../../operation/events/events_list.php:485
 #: ../../operation/events/events_list.php:575
-#: ../../operation/events/events_list.php:816
+#: ../../operation/events/events_list.php:578
+#: ../../operation/events/events_list.php:836
 #: ../../operation/events/events.php:226
 #: ../../operation/events/export_csv.php:54
 #: ../../operation/events/events.build_query.php:108
 #: ../../operation/gis_maps/render_view.php:136 ../../operation/tree.php:134
 #: ../../operation/tree.php:158
-#: ../../operation/agentes/networkmap_list.php:123
+#: ../../operation/agentes/networkmap_list.php:117
 #: ../../operation/agentes/estado_agente.php:190
 #: ../../operation/agentes/alerts_status.functions.php:64
 #: ../../operation/agentes/alerts_status.functions.php:70
 #: ../../operation/agentes/alerts_status.functions.php:85
-#: ../../operation/agentes/networkmap.php:363
-#: ../../operation/agentes/networkmap.php:372
+#: ../../operation/agentes/networkmap.php:385
 #: ../../operation/agentes/estado_monitores.php:424
 #: ../../operation/agentes/estado_monitores.php:445
 #: ../../operation/agentes/status_monitor.php:342
@@ -2239,7 +2241,7 @@ msgstr ""
 #: ../../mobile/operation/modules.php:254
 #: ../../godmode/events/event_edit_filter.php:207
 #: ../../godmode/snmpconsole/snmp_alert.php:868
-#: ../../operation/events/events_list.php:431
+#: ../../operation/events/events_list.php:434
 #: ../../operation/snmpconsole/snmp_view.php:319
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:164
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:215
@@ -2251,7 +2253,7 @@ msgstr ""
 #: ../../godmode/events/event_edit_filter.php:234
 #: ../../godmode/admin_access_logs.php:67
 #: ../../godmode/admin_access_logs.php:68
-#: ../../operation/events/events_list.php:583
+#: ../../operation/events/events_list.php:586
 #: ../../enterprise/dashboard/widgets/events_list.php:38
 #: ../../enterprise/dashboard/widgets/top_n_events_by_group.php:33
 #: ../../enterprise/dashboard/widgets/top_n_events_by_module.php:33
@@ -2268,12 +2270,12 @@ msgstr ""
 #: ../../mobile/operation/events.php:780
 #: ../../operation/events/events.build_table.php:701
 #: ../../include/functions_events.php:851
-#: ../../include/functions_reporting.php:8470
+#: ../../include/functions_reporting.php:8491
 msgid "No events"
 msgstr ""
 
 #: ../../mobile/operation/events.php:1060
-#: ../../mobile/operation/networkmaps.php:212
+#: ../../mobile/operation/networkmaps.php:216
 #: ../../mobile/operation/agents.php:426 ../../mobile/operation/alerts.php:306
 #: ../../mobile/operation/modules.php:674
 msgid "(Default)"
@@ -2290,7 +2292,7 @@ msgid "Severity: %s"
 msgstr ""
 
 #: ../../mobile/operation/events.php:1086
-#: ../../mobile/operation/networkmaps.php:218
+#: ../../mobile/operation/networkmaps.php:222
 #: ../../mobile/operation/agents.php:432 ../../mobile/operation/alerts.php:316
 #: ../../mobile/operation/modules.php:681
 #, php-format
@@ -2298,7 +2300,7 @@ msgid "Group: %s"
 msgstr ""
 
 #: ../../mobile/operation/events.php:1098
-#: ../../mobile/operation/networkmaps.php:225
+#: ../../mobile/operation/networkmaps.php:229
 #, php-format
 msgid "Type: %s"
 msgstr ""
@@ -2323,7 +2325,7 @@ msgstr ""
 #: ../../mobile/operation/groups.php:64 ../../mobile/operation/home.php:48
 #: ../../mobile/include/functions_web.php:26
 #: ../../godmode/reporting/visual_console_builder.wizard.php:175
-#: ../../operation/tree.php:61 ../../operation/agentes/networkmap.php:365
+#: ../../operation/tree.php:61 ../../operation/agentes/networkmap.php:387
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:177
 #: ../../enterprise/dashboard/widgets/groups_status.php:28
 #: ../../enterprise/dashboard/widgets/events_list.php:57
@@ -2355,8 +2357,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.list.php:68
 #: ../../operation/search_results.php:73
 #: ../../operation/agentes/group_view.php:88
-#: ../../operation/agentes/networkmap.php:364
-#: ../../operation/agentes/networkmap.php:373
+#: ../../operation/agentes/networkmap.php:386
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:209
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:175
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:172
@@ -2387,17 +2388,15 @@ msgstr ""
 #: ../../include/functions_groups.php:760
 #: ../../include/functions_reporting.php:5292
 #: ../../include/functions_reporting.php:6696
-#: ../../include/ajax/networkmap.ajax.php:93
-#: ../../include/ajax/networkmap.ajax.php:98
-#: ../../include/ajax/networkmap.ajax.php:156
-#: ../../include/ajax/networkmap.ajax.php:161
+#: ../../include/ajax/networkmap.ajax.php:64
+#: ../../include/ajax/networkmap.ajax.php:92
 #: ../../extensions/agents_modules.php:183
 #: ../../extensions/agents_alerts.php:168
 msgid "Agents"
 msgstr ""
 
 #: ../../mobile/operation/groups.php:99 ../../godmode/db/db_main.php:99
-#: ../../operation/tree.php:279
+#: ../../operation/tree.php:280
 #: ../../enterprise/include/functions_reporting_csv.php:775
 #: ../../include/functions_reporting.php:1702
 #: ../../include/functions_reporting.php:8202
@@ -2436,7 +2435,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_xml.php:1051
 #: ../../operation/reporting/reporting_xml.php:1063
 #: ../../operation/tree.php:138 ../../operation/tree.php:162
-#: ../../operation/tree.php:301 ../../operation/agentes/estado_agente.php:185
+#: ../../operation/tree.php:302 ../../operation/agentes/estado_agente.php:185
 #: ../../operation/agentes/group_view.php:91
 #: ../../operation/agentes/estado_monitores.php:430
 #: ../../operation/agentes/tactical.php:197
@@ -2493,7 +2492,7 @@ msgstr ""
 #: ../../include/functions_groups.php:778
 #: ../../include/functions_groups.php:779 ../../include/functions.php:1014
 #: ../../include/functions_events.php:1372
-#: ../../include/functions_events.php:2650
+#: ../../include/functions_events.php:2659
 #: ../../include/functions_reports.php:423
 #: ../../include/functions_graph.php:708
 #: ../../include/functions_graph.php:3167
@@ -2521,7 +2520,7 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: ../../mobile/operation/groups.php:107 ../../operation/tree.php:300
+#: ../../mobile/operation/groups.php:107 ../../operation/tree.php:301
 #: ../../enterprise/include/functions_reporting_csv.php:775
 msgid "Unknown modules"
 msgstr ""
@@ -2535,7 +2534,7 @@ msgstr ""
 #: ../../godmode/massive/massive_copy_modules.php:193
 #: ../../godmode/massive/massive_delete_agents.php:117
 #: ../../operation/tree.php:139 ../../operation/tree.php:163
-#: ../../operation/tree.php:306 ../../operation/agentes/estado_agente.php:187
+#: ../../operation/tree.php:307 ../../operation/agentes/estado_agente.php:187
 #: ../../operation/agentes/tactical.php:198
 #: ../../operation/agentes/status_monitor.php:434
 #: ../../enterprise/meta/monitoring/tactical.php:296
@@ -2549,7 +2548,7 @@ msgstr ""
 msgid "Not init"
 msgstr ""
 
-#: ../../mobile/operation/groups.php:111 ../../operation/tree.php:305
+#: ../../mobile/operation/groups.php:111 ../../operation/tree.php:306
 #: ../../enterprise/include/functions_reporting_csv.php:775
 msgid "Not init modules"
 msgstr ""
@@ -2563,7 +2562,7 @@ msgstr ""
 #: ../../godmode/massive/massive_copy_modules.php:188
 #: ../../godmode/massive/massive_delete_agents.php:112
 #: ../../godmode/netflow/nf_edit_form.php:210 ../../operation/tree.php:135
-#: ../../operation/tree.php:159 ../../operation/tree.php:311
+#: ../../operation/tree.php:159 ../../operation/tree.php:312
 #: ../../operation/agentes/estado_agente.php:182
 #: ../../operation/agentes/group_view.php:93
 #: ../../operation/agentes/estado_monitores.php:427
@@ -2589,7 +2588,7 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: ../../mobile/operation/groups.php:115 ../../operation/tree.php:310
+#: ../../mobile/operation/groups.php:115 ../../operation/tree.php:311
 #: ../../enterprise/include/functions_reporting_csv.php:775
 msgid "Normal modules"
 msgstr ""
@@ -2607,7 +2606,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:149
 #: ../../godmode/setup/setup_netflow.php:70
 #: ../../operation/gis_maps/render_view.php:138 ../../operation/tree.php:136
-#: ../../operation/tree.php:160 ../../operation/tree.php:296
+#: ../../operation/tree.php:160 ../../operation/tree.php:297
 #: ../../operation/agentes/estado_agente.php:183
 #: ../../operation/agentes/group_view.php:94
 #: ../../operation/agentes/estado_monitores.php:429
@@ -2653,7 +2652,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: ../../mobile/operation/groups.php:119 ../../operation/tree.php:295
+#: ../../mobile/operation/groups.php:119 ../../operation/tree.php:296
 #: ../../enterprise/include/functions_reporting_csv.php:775
 msgid "Warning modules"
 msgstr ""
@@ -2668,7 +2667,7 @@ msgstr ""
 #: ../../godmode/massive/massive_copy_modules.php:190
 #: ../../godmode/massive/massive_delete_agents.php:114
 #: ../../operation/gis_maps/render_view.php:137 ../../operation/tree.php:137
-#: ../../operation/tree.php:161 ../../operation/tree.php:291
+#: ../../operation/tree.php:161 ../../operation/tree.php:292
 #: ../../operation/agentes/estado_agente.php:184
 #: ../../operation/agentes/group_view.php:95
 #: ../../operation/agentes/estado_monitores.php:425
@@ -2715,7 +2714,7 @@ msgstr ""
 msgid "Critical"
 msgstr ""
 
-#: ../../mobile/operation/groups.php:123 ../../operation/tree.php:290
+#: ../../mobile/operation/groups.php:123 ../../operation/tree.php:291
 #: ../../enterprise/include/functions_reporting_csv.php:775
 msgid "Critical modules"
 msgstr ""
@@ -2730,8 +2729,8 @@ msgstr ""
 msgid "Filter Networkmaps by %s"
 msgstr ""
 
-#: ../../mobile/operation/networkmaps.php:198
-#: ../../mobile/operation/networkmap.php:159
+#: ../../mobile/operation/networkmaps.php:202
+#: ../../mobile/operation/networkmap.php:164
 msgid "No networkmaps"
 msgstr ""
 
@@ -2744,7 +2743,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:233
 #: ../../operation/gis_maps/ajax.php:276 ../../operation/tree.php:55
 #: ../../operation/tree.php:94 ../../operation/agentes/estado_agente.php:443
-#: ../../operation/agentes/estado_generalagente.php:124
+#: ../../operation/agentes/estado_generalagente.php:125
 #: ../../operation/search_agents.php:45 ../../operation/search_agents.php:53
 #: ../../enterprise/godmode/modules/local_components.php:435
 #: ../../enterprise/godmode/modules/local_components.php:449
@@ -2754,7 +2753,7 @@ msgstr ""
 #: ../../enterprise/godmode/modules/configure_local_component.php:161
 #: ../../enterprise/meta/agentsearch.php:93
 #: ../../enterprise/extensions/ipam/ipam_network.php:523
-#: ../../include/functions_events.php:1989
+#: ../../include/functions_events.php:1986
 msgid "OS"
 msgstr ""
 
@@ -2812,7 +2811,7 @@ msgstr ""
 #: ../../include/functions_reports.php:558
 #: ../../include/functions_reporting.php:2869
 #: ../../include/functions_reporting.php:6696
-#: ../../include/ajax/networkmap.ajax.php:104
+#: ../../include/ajax/networkmap.ajax.php:71
 #: ../../extensions/agents_modules.php:183
 msgid "Modules"
 msgstr ""
@@ -2841,7 +2840,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.php:294
 #: ../../godmode/alerts/alert_special_days.php:43
 #: ../../godmode/alerts/configure_alert_command.php:41
-#: ../../godmode/alerts/alert_commands.php:185
+#: ../../godmode/alerts/alert_commands.php:193
 #: ../../godmode/alerts/configure_alert_special_days.php:52
 #: ../../godmode/alerts/alert_templates.php:132
 #: ../../godmode/alerts/alert_templates.php:175
@@ -2851,8 +2850,8 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:82
 #: ../../godmode/alerts/configure_alert_template.php:100
 #: ../../operation/search_results.php:93
-#: ../../operation/agentes/ver_agente.php:783
-#: ../../operation/agentes/ver_agente.php:976
+#: ../../operation/agentes/ver_agente.php:784
+#: ../../operation/agentes/ver_agente.php:977
 #: ../../operation/agentes/estado_agente.php:454
 #: ../../operation/search_agents.php:65
 #: ../../enterprise/godmode/services/services.service.php:257
@@ -2896,16 +2895,16 @@ msgstr ""
 #: ../../godmode/agentes/planned_downtime.editor.php:554
 #: ../../operation/search_users.php:47 ../../operation/gis_maps/ajax.php:219
 #: ../../operation/gis_maps/ajax.php:321
-#: ../../operation/agentes/ver_agente.php:469
+#: ../../operation/agentes/ver_agente.php:470
 #: ../../operation/agentes/estado_agente.php:455
-#: ../../operation/agentes/estado_generalagente.php:201
+#: ../../operation/agentes/estado_generalagente.php:202
 #: ../../operation/search_agents.php:66
 #: ../../enterprise/operation/agentes/ver_agente.php:75
 #: ../../enterprise/operation/agentes/policy_view.php:309
 #: ../../enterprise/meta/agentsearch.php:99
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1149
-#: ../../include/functions_events.php:1994 ../../include/ajax/module.php:706
-#: ../../include/functions_treeview.php:406
+#: ../../include/functions_events.php:1991 ../../include/ajax/module.php:706
+#: ../../include/functions_treeview.php:408
 msgid "Last contact"
 msgstr ""
 
@@ -2966,8 +2965,8 @@ msgstr ""
 #: ../../godmode/alerts/alert_view.php:507
 #: ../../godmode/alerts/configure_alert_template.php:628
 #: ../../operation/agentes/alerts_status.functions.php:67
-#: ../../operation/agentes/estado_generalagente.php:76
-#: ../../operation/agentes/estado_generalagente.php:272
+#: ../../operation/agentes/estado_generalagente.php:77
+#: ../../operation/agentes/estado_generalagente.php:273
 #: ../../operation/search_agents.php:90
 #: ../../enterprise/godmode/modules/configure_local_component.php:267
 #: ../../enterprise/godmode/setup/edit_skin.php:250
@@ -2989,7 +2988,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:6926
 #: ../../include/functions_reporting.php:7070
 #: ../../include/functions_treeview.php:69
-#: ../../include/functions_treeview.php:355
+#: ../../include/functions_treeview.php:357
 msgid "Disabled"
 msgstr ""
 
@@ -3003,21 +3002,21 @@ msgstr ""
 #: ../../godmode/agentes/planned_downtime.list.php:409
 #: ../../godmode/agentes/module_manager_editor_common.php:512
 #: ../../operation/agentes/estado_agente.php:495
-#: ../../operation/agentes/estado_generalagente.php:79
-#: ../../include/ajax/module.php:821 ../../include/class/Tree.class.php:1565
+#: ../../operation/agentes/estado_generalagente.php:80
+#: ../../include/ajax/module.php:821 ../../include/class/Tree.class.php:1584
 msgid "Quiet"
 msgstr ""
 
 #: ../../mobile/operation/agent.php:131
-#: ../../operation/agentes/estado_generalagente.php:144
+#: ../../operation/agentes/estado_generalagente.php:145
 #: ../../extensions/net_tools.php:130
 msgid "IP address"
 msgstr ""
 
 #: ../../mobile/operation/agent.php:134
-#: ../../operation/agentes/estado_generalagente.php:246
+#: ../../operation/agentes/estado_generalagente.php:247
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1102
-#: ../../include/functions_treeview.php:375
+#: ../../include/functions_treeview.php:377
 msgid "Other IP addresses"
 msgstr ""
 
@@ -3059,7 +3058,7 @@ msgstr ""
 #: ../../godmode/groups/configure_group.php:168
 #: ../../godmode/alerts/alert_special_days.php:153
 #: ../../godmode/alerts/configure_alert_command.php:154
-#: ../../godmode/alerts/alert_commands.php:268
+#: ../../godmode/alerts/alert_commands.php:276
 #: ../../godmode/alerts/configure_alert_special_days.php:84
 #: ../../godmode/alerts/alert_templates.php:47
 #: ../../godmode/alerts/configure_alert_template.php:703
@@ -3077,7 +3076,7 @@ msgstr ""
 #: ../../operation/agentes/gis_view.php:165
 #: ../../operation/agentes/custom_fields.php:60
 #: ../../operation/agentes/estado_agente.php:442
-#: ../../operation/agentes/estado_generalagente.php:168
+#: ../../operation/agentes/estado_generalagente.php:169
 #: ../../operation/search_graphs.php:34
 #: ../../operation/integria_incidents/incident.tracking.php:21
 #: ../../operation/integria_incidents/incident.files.php:25
@@ -3176,7 +3175,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:7051
 #: ../../include/functions_reporting.php:7107
 #: ../../include/ajax/module.php:697 ../../include/functions_treeview.php:124
-#: ../../include/functions_treeview.php:391
+#: ../../include/functions_treeview.php:393
 #: ../../extensions/files_repo/files_repo_form.php:71
 #: ../../extensions/files_repo/files_repo_list.php:60
 msgid "Description"
@@ -3187,8 +3186,8 @@ msgid "Modules by status"
 msgstr ""
 
 #: ../../mobile/operation/agent.php:169
-#: ../../operation/agentes/estado_generalagente.php:480
-#: ../../include/functions_treeview.php:526
+#: ../../operation/agentes/estado_generalagente.php:497
+#: ../../include/functions_treeview.php:528
 msgid "Events (24h)"
 msgstr ""
 
@@ -3197,9 +3196,9 @@ msgstr ""
 msgid "Last %s Events"
 msgstr ""
 
-#: ../../mobile/operation/networkmap.php:105
-#: ../../mobile/operation/networkmap.php:124
-#: ../../mobile/operation/networkmap.php:141
+#: ../../mobile/operation/networkmap.php:110
+#: ../../mobile/operation/networkmap.php:129
+#: ../../mobile/operation/networkmap.php:146
 #: ../../operation/agentes/networkmap.groups.php:38
 #: ../../operation/agentes/networkmap.dinamic.php:58
 #: ../../operation/agentes/networkmap.topology.php:41
@@ -3209,8 +3208,8 @@ msgstr ""
 msgid "Pandora FMS"
 msgstr ""
 
-#: ../../mobile/operation/networkmap.php:217
-#: ../../mobile/operation/networkmap.php:229
+#: ../../mobile/operation/networkmap.php:222
+#: ../../mobile/operation/networkmap.php:234
 #: ../../operation/agentes/networkmap.groups.php:44
 #: ../../operation/agentes/networkmap.groups.php:95
 #: ../../operation/agentes/networkmap.groups.php:110
@@ -3292,8 +3291,8 @@ msgstr ""
 #: ../../include/functions.php:1017 ../../include/functions_events.php:1133
 #: ../../include/functions_events.php:1384
 #: ../../include/functions_reporting.php:3345
-#: ../../include/functions_ui.php:883 ../../include/functions_agents.php:2033
-#: ../../include/functions_agents.php:2045
+#: ../../include/functions_ui.php:883 ../../include/functions_agents.php:2036
+#: ../../include/functions_agents.php:2048
 #: ../../extensions/agents_alerts.php:309
 msgid "Alert fired"
 msgstr ""
@@ -3331,8 +3330,8 @@ msgstr ""
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:880
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1548
 #: ../../include/functions_reporting.php:3290
-#: ../../include/functions_ui.php:891 ../../include/functions_agents.php:2036
-#: ../../include/functions_agents.php:2048
+#: ../../include/functions_ui.php:891 ../../include/functions_agents.php:2039
+#: ../../include/functions_agents.php:2051
 #: ../../extensions/agents_alerts.php:317
 msgid "Alert not fired"
 msgstr ""
@@ -3477,7 +3476,7 @@ msgstr ""
 #: ../../godmode/massive/massive_copy_modules.php:192
 #: ../../godmode/massive/massive_delete_agents.php:116
 #: ../../godmode/events/event_edit_filter.php:194
-#: ../../operation/events/events_list.php:571
+#: ../../operation/events/events_list.php:574
 #: ../../operation/agentes/estado_agente.php:186
 #: ../../operation/agentes/status_monitor.php:433
 #: ../../enterprise/dashboard/widgets/events_list.php:34
@@ -3493,8 +3492,8 @@ msgstr ""
 #: ../../godmode/massive/massive_edit_modules.php:445
 #: ../../godmode/modules/manage_network_components_form_common.php:93
 #: ../../godmode/agentes/module_manager_editor_common.php:223
-#: ../../operation/agentes/ver_agente.php:622
-#: ../../operation/agentes/networkmap.php:345
+#: ../../operation/agentes/ver_agente.php:623
+#: ../../operation/agentes/networkmap.php:364
 #: ../../operation/agentes/estado_monitores.php:439
 #: ../../operation/agentes/status_monitor.php:439
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1189
@@ -3502,7 +3501,7 @@ msgstr ""
 #: ../../enterprise/operation/agentes/ver_agente.php:33
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:157
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1377
-#: ../../include/functions_events.php:2036
+#: ../../include/functions_events.php:2028
 #: ../../include/functions_graph.php:4444
 #: ../../include/functions_treeview.php:118
 #: ../../extensions/agents_modules.php:75
@@ -3554,7 +3553,7 @@ msgstr ""
 #: ../../include/functions_events.php:887
 #: ../../include/functions_reporting.php:6899
 #: ../../include/functions_reporting.php:7047
-#: ../../include/functions_treeview.php:359
+#: ../../include/functions_treeview.php:361
 msgid "Agent name"
 msgstr ""
 
@@ -3581,7 +3580,7 @@ msgstr ""
 #: ../../include/functions_modules.php:1726
 #: ../../include/functions_modules.php:1734
 #: ../../include/functions_reporting.php:6772
-#: ../../include/class/Tree.class.php:1289
+#: ../../include/class/Tree.class.php:1292
 msgid "NORMAL"
 msgstr ""
 
@@ -3601,7 +3600,7 @@ msgstr ""
 #: ../../include/functions_modules.php:1718
 #: ../../include/functions_modules.php:1738
 #: ../../include/functions_reporting.php:6775
-#: ../../include/class/Tree.class.php:1263
+#: ../../include/class/Tree.class.php:1266
 msgid "CRITICAL"
 msgstr ""
 
@@ -3621,7 +3620,7 @@ msgstr ""
 #: ../../include/functions_modules.php:1722
 #: ../../include/functions_modules.php:1742
 #: ../../include/functions_reporting.php:6778
-#: ../../include/class/Tree.class.php:1270
+#: ../../include/class/Tree.class.php:1273
 msgid "WARNING"
 msgstr ""
 
@@ -3650,7 +3649,7 @@ msgstr ""
 #: ../../include/functions_modules.php:1737
 #: ../../include/functions_modules.php:1741
 #: ../../include/functions_reporting.php:6781
-#: ../../include/class/Tree.class.php:1275
+#: ../../include/class/Tree.class.php:1278
 msgid "UNKNOWN"
 msgstr ""
 
@@ -3692,7 +3691,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask.php:250
 #: ../../godmode/servers/manage_recontask_form.php:206
 #: ../../operation/agentes/estado_agente.php:446
-#: ../../operation/agentes/estado_generalagente.php:196
+#: ../../operation/agentes/estado_generalagente.php:197
 #: ../../operation/agentes/status_monitor.php:967
 #: ../../operation/servers/recon_view.php:92
 #: ../../operation/search_modules.php:50
@@ -3720,7 +3719,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:6953
 #: ../../include/functions_reporting.php:7108
 #: ../../include/functions_treeview.php:80
-#: ../../include/functions_treeview.php:385
+#: ../../include/functions_treeview.php:387
 msgid "Interval"
 msgstr ""
 
@@ -3907,7 +3906,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:1019
 #: ../../operation/reporting/reporting_viewer.php:257
 #: ../../operation/reporting/reporting_viewer.php:277
-#: ../../operation/reporting/graph_viewer.php:225 ../../operation/tree.php:390
+#: ../../operation/reporting/graph_viewer.php:225 ../../operation/tree.php:391
 #: ../../operation/agentes/datos_agente.php:310
 #: ../../operation/agentes/estado_monitores.php:389
 #: ../../operation/netflow/nf_live_view.php:603
@@ -4091,7 +4090,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:193
 #: ../../operation/reporting/reporting_viewer.php:217
 #: ../../operation/users/user_edit.php:391
-#: ../../operation/events/events_list.php:649
+#: ../../operation/events/events_list.php:652
 #: ../../operation/agentes/datos_agente.php:209
 #: ../../operation/integria_incidents/incident.incident.php:117
 #: ../../operation/snmpconsole/snmp_view.php:341
@@ -4196,7 +4195,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.list.php:690
 #: ../../godmode/alerts/alert_special_days.php:225
 #: ../../godmode/alerts/configure_alert_command.php:201
-#: ../../godmode/alerts/alert_commands.php:315
+#: ../../godmode/alerts/alert_commands.php:323
 #: ../../godmode/alerts/configure_alert_special_days.php:98
 #: ../../godmode/alerts/alert_templates.php:362
 #: ../../godmode/netflow/nf_edit_form.php:247
@@ -4205,7 +4204,7 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:850
 #: ../../godmode/snmpconsole/snmp_alert.php:1150
 #: ../../operation/incidents/incident_detail.php:379
-#: ../../operation/agentes/networkmap_list.php:238
+#: ../../operation/agentes/networkmap_list.php:236
 #: ../../operation/integria_incidents/incident.incident.php:126
 #: ../../enterprise/godmode/services/services.service.php:290
 #: ../../enterprise/godmode/services/services.elements.php:355
@@ -4253,7 +4252,6 @@ msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.data.php:79
 #: ../../godmode/setup/os.builder.php:33
-#: ../../operation/agentes/networkmap.php:337
 #: ../../enterprise/godmode/agentes/collections.data.php:305
 msgid "Name:"
 msgstr ""
@@ -4265,7 +4263,6 @@ msgid ""
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.data.php:82
-#: ../../operation/agentes/networkmap.php:342
 #: ../../enterprise/godmode/agentes/collections.data.php:345
 msgid "Group:"
 msgstr ""
@@ -4348,7 +4345,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.list.php:510
 #: ../../godmode/alerts/alert_list.list.php:658
 #: ../../godmode/alerts/alert_special_days.php:155
-#: ../../godmode/alerts/alert_commands.php:269
+#: ../../godmode/alerts/alert_commands.php:277
 #: ../../godmode/alerts/alert_templates.php:342
 #: ../../godmode/extensions.php:288 ../../godmode/extensions.php:292
 #: ../../godmode/netflow/nf_edit.php:149 ../../godmode/netflow/nf_edit.php:164
@@ -4363,9 +4360,9 @@ msgstr ""
 #: ../../operation/messages/message_list.php:193
 #: ../../operation/messages/message_list.php:204
 #: ../../operation/messages/message_edit.php:107
-#: ../../operation/agentes/networkmap_list.php:165
-#: ../../operation/agentes/networkmap_list.php:215
-#: ../../operation/agentes/networkmap_list.php:239
+#: ../../operation/agentes/networkmap_list.php:159
+#: ../../operation/agentes/networkmap_list.php:208
+#: ../../operation/agentes/networkmap_list.php:237
 #: ../../operation/integria_incidents/incident.files.php:46
 #: ../../operation/snmpconsole/snmp_view.php:544
 #: ../../operation/snmpconsole/snmp_view.php:549
@@ -4429,7 +4426,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.graph_editor.php:123
 #: ../../godmode/events/event_edit_filter.php:182
 #: ../../godmode/events/event_filter.php:104
-#: ../../operation/events/events_list.php:236
+#: ../../operation/events/events_list.php:239
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:132
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:126
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:140
@@ -4464,8 +4461,8 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.list.php:580
 #: ../../godmode/snmpconsole/snmp_alert.php:1128
 #: ../../operation/incidents/incident_detail.php:402
-#: ../../operation/events/events_list.php:346
-#: ../../operation/events/events_list.php:381
+#: ../../operation/events/events_list.php:349
+#: ../../operation/events/events_list.php:384
 #: ../../operation/integria_incidents/incident.files.php:29
 #: ../../operation/integria_incidents/incident.workunits.php:35
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:222
@@ -4510,12 +4507,12 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:303
 #: ../../godmode/reporting/reporting_builder.php:308
 #: ../../godmode/reporting/reporting_builder.php:312
-#: ../../godmode/reporting/reporting_builder.php:1590
-#: ../../godmode/reporting/reporting_builder.php:1595
-#: ../../godmode/reporting/reporting_builder.php:1599
-#: ../../godmode/reporting/reporting_builder.php:1659
-#: ../../godmode/reporting/reporting_builder.php:1664
+#: ../../godmode/reporting/reporting_builder.php:1593
+#: ../../godmode/reporting/reporting_builder.php:1598
+#: ../../godmode/reporting/reporting_builder.php:1602
+#: ../../godmode/reporting/reporting_builder.php:1662
 #: ../../godmode/reporting/reporting_builder.php:1667
+#: ../../godmode/reporting/reporting_builder.php:1670
 #: ../../operation/reporting/reporting_viewer.php:115
 #: ../../operation/reporting/reporting_viewer.php:120
 #: ../../operation/reporting/reporting_viewer.php:123
@@ -4561,7 +4558,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.php:141
 #: ../../godmode/alerts/alert_list.php:183
 #: ../../godmode/alerts/alert_special_days.php:144
-#: ../../godmode/alerts/alert_commands.php:255
+#: ../../godmode/alerts/alert_commands.php:263
 #: ../../godmode/alerts/alert_templates.php:224
 #: ../../godmode/netflow/nf_edit.php:76 ../../godmode/netflow/nf_edit.php:100
 #: ../../godmode/netflow/nf_item_list.php:105
@@ -4702,7 +4699,7 @@ msgid "Show link to public Visual Console"
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.php:493
-#: ../../godmode/reporting/reporting_builder.php:1623
+#: ../../godmode/reporting/reporting_builder.php:1626
 #: ../../godmode/reporting/reporting_builder.main.php:52
 #: ../../godmode/reporting/graph_builder.php:181
 #: ../../operation/reporting/reporting_viewer.php:78
@@ -4804,8 +4801,8 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups_form.php:67
 #: ../../godmode/agentes/agent_manager.php:232
 #: ../../godmode/groups/configure_group.php:130
-#: ../../operation/agentes/ver_agente.php:666
-#: ../../operation/agentes/estado_generalagente.php:256
+#: ../../operation/agentes/ver_agente.php:667
+#: ../../operation/agentes/estado_generalagente.php:257
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1277
 #: ../../include/functions_visual_map_editor.php:468
 msgid "Parent"
@@ -4921,7 +4918,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:389
 #: ../../godmode/alerts/alert_list.list.php:773
 #: ../../godmode/alerts/alert_special_days.php:210
-#: ../../godmode/alerts/alert_commands.php:297
+#: ../../godmode/alerts/alert_commands.php:305
 #: ../../godmode/alerts/alert_templates.php:339
 #: ../../godmode/netflow/nf_edit.php:147
 #: ../../godmode/netflow/nf_item_list.php:237
@@ -4936,7 +4933,7 @@ msgstr ""
 #: ../../operation/events/events.php:745
 #: ../../operation/messages/message_list.php:186
 #: ../../operation/messages/message_list.php:192
-#: ../../operation/agentes/networkmap_list.php:215
+#: ../../operation/agentes/networkmap_list.php:208
 #: ../../operation/snmpconsole/snmp_view.php:544
 #: ../../operation/snmpconsole/snmp_view.php:549
 #: ../../operation/snmpconsole/snmp_view.php:700
@@ -5035,7 +5032,7 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_filters.php:130
 #: ../../godmode/snmpconsole/snmp_alert.php:883
 #: ../../operation/incidents/incident.php:215 ../../operation/tree.php:151
-#: ../../operation/agentes/networkmap_list.php:128
+#: ../../operation/agentes/networkmap_list.php:122
 #: ../../operation/agentes/alerts_status.functions.php:97
 #: ../../operation/agentes/alerts_status.functions.php:102
 #: ../../operation/agentes/graphs.php:162
@@ -5057,9 +5054,10 @@ msgid "Filter"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:193
+#: ../../godmode/users/user_list.php:243
 #: ../../godmode/modules/manage_network_components.php:508
 #: ../../godmode/tag/tag.php:160 ../../godmode/alerts/alert_templates.php:265
-#: ../../operation/events/events_list.php:662 ../../operation/tree.php:189
+#: ../../operation/events/events_list.php:665 ../../operation/tree.php:189
 #: ../../operation/agentes/alerts_status.php:377
 #: ../../operation/agentes/status_monitor.php:546
 #: ../../enterprise/godmode/modules/local_components.php:446
@@ -5156,7 +5154,7 @@ msgstr ""
 #: ../../godmode/servers/plugin.php:714
 #: ../../godmode/servers/servers.build_table.php:139
 #: ../../operation/search_reports.php:52
-#: ../../operation/agentes/networkmap_list.php:164
+#: ../../operation/agentes/networkmap_list.php:158
 #: ../../operation/agentes/estado_agente.php:505
 #: ../../operation/agentes/status_monitor.php:1138
 #: ../../operation/servers/recon_view.php:110
@@ -5413,7 +5411,7 @@ msgstr ""
 #: ../../godmode/agentes/planned_downtime.list.php:253
 #: ../../godmode/servers/manage_recontask.php:295
 #: ../../godmode/servers/manage_recontask_form.php:235
-#: ../../operation/events/events_list.php:464
+#: ../../operation/events/events_list.php:467
 #: ../../operation/integria_incidents/incident.list.php:33
 #: ../../enterprise/godmode/setup/setup_acl.php:123
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:142
@@ -5479,14 +5477,14 @@ msgid "An error has ocurred"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:279
-#: ../../godmode/reporting/reporting_builder.php:1568
-#: ../../godmode/reporting/reporting_builder.php:1620
+#: ../../godmode/reporting/reporting_builder.php:1571
+#: ../../godmode/reporting/reporting_builder.php:1623
 msgid "Reports list"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:290
 #: ../../godmode/reporting/reporting_builder.php:312
-#: ../../godmode/reporting/reporting_builder.php:1577
+#: ../../godmode/reporting/reporting_builder.php:1580
 #: ../../operation/reporting/reporting_viewer.php:123
 #: ../../operation/reporting/custom_reporting.php:27
 #: ../../operation/menu.php:106
@@ -5504,7 +5502,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.php:141
 #: ../../godmode/alerts/alert_list.php:183
 #: ../../godmode/alerts/alert_special_days.php:145
-#: ../../godmode/alerts/alert_commands.php:256
+#: ../../godmode/alerts/alert_commands.php:264
 #: ../../godmode/alerts/alert_templates.php:225
 #: ../../operation/incidents/incident_detail.php:86
 #: ../../operation/incidents/incident_detail.php:115
@@ -5576,18 +5574,27 @@ msgstr ""
 msgid "Export to XML"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:641
+#: ../../godmode/reporting/reporting_builder.php:636
+#: ../../enterprise/operation/log/log_viewer.php:412
+#: ../../enterprise/operation/inventory/inventory.php:249
+#: ../../enterprise/operation/agentes/agent_inventory.php:241
+#: ../../enterprise/include/functions_reporting_pdf.php:522
+#: ../../include/functions_reporting.php:6845
+msgid "No data found."
+msgstr ""
+
+#: ../../godmode/reporting/reporting_builder.php:644
 msgid "Create report"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:1626
+#: ../../godmode/reporting/reporting_builder.php:1629
 #: ../../operation/reporting/reporting_viewer.php:82
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:107
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:130
 msgid "List items"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:1629
+#: ../../godmode/reporting/reporting_builder.php:1632
 #: ../../operation/reporting/reporting_viewer.php:86
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:100
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:135
@@ -5596,17 +5603,17 @@ msgstr ""
 msgid "Item editor"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:1638
+#: ../../godmode/reporting/reporting_builder.php:1641
 #: ../../operation/reporting/reporting_viewer.php:94
 msgid "View report"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:1675
+#: ../../godmode/reporting/reporting_builder.php:1678
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1002
 msgid "Successfull action"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:1675
+#: ../../godmode/reporting/reporting_builder.php:1678
 #: ../../godmode/servers/modificar_server.php:65
 #: ../../godmode/servers/modificar_server.php:77
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1002
@@ -6035,7 +6042,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:263
 #: ../../godmode/agentes/module_manager.php:508
 #: ../../operation/events/events.build_table.php:46
-#: ../../operation/events/events_list.php:471
+#: ../../operation/events/events_list.php:474
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1140
 #: ../../enterprise/meta/agentsearch.php:91
 #: ../../enterprise/meta/advanced/policymanager.queue.php:253
@@ -6299,8 +6306,8 @@ msgstr ""
 #: ../../include/functions_events.php:1694
 #: ../../include/functions_events.php:1698
 #: ../../include/functions_events.php:1703
-#: ../../include/functions_events.php:2801
-#: ../../include/functions_events.php:2805
+#: ../../include/functions_events.php:2810
+#: ../../include/functions_events.php:2814
 #: ../../include/functions_graph.php:2314 ../../include/functions_xml.php:127
 msgid "Validated"
 msgstr ""
@@ -6435,7 +6442,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:1013
 #: ../../operation/reporting/reporting_viewer.php:251
 #: ../../operation/reporting/reporting_viewer.php:271
-#: ../../operation/reporting/graph_viewer.php:219 ../../operation/tree.php:384
+#: ../../operation/reporting/graph_viewer.php:219 ../../operation/tree.php:385
 #: ../../operation/agentes/datos_agente.php:304
 #: ../../operation/agentes/estado_monitores.php:383
 #: ../../operation/netflow/nf_live_view.php:597
@@ -6454,7 +6461,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:1014
 #: ../../operation/reporting/reporting_viewer.php:252
 #: ../../operation/reporting/reporting_viewer.php:272
-#: ../../operation/reporting/graph_viewer.php:220 ../../operation/tree.php:385
+#: ../../operation/reporting/graph_viewer.php:220 ../../operation/tree.php:386
 #: ../../operation/agentes/datos_agente.php:305
 #: ../../operation/agentes/estado_monitores.php:384
 #: ../../operation/netflow/nf_live_view.php:598
@@ -6473,7 +6480,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:1015
 #: ../../operation/reporting/reporting_viewer.php:253
 #: ../../operation/reporting/reporting_viewer.php:273
-#: ../../operation/reporting/graph_viewer.php:221 ../../operation/tree.php:386
+#: ../../operation/reporting/graph_viewer.php:221 ../../operation/tree.php:387
 #: ../../operation/agentes/datos_agente.php:306
 #: ../../operation/agentes/estado_monitores.php:385
 #: ../../operation/netflow/nf_live_view.php:599
@@ -6492,7 +6499,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:1016
 #: ../../operation/reporting/reporting_viewer.php:254
 #: ../../operation/reporting/reporting_viewer.php:274
-#: ../../operation/reporting/graph_viewer.php:222 ../../operation/tree.php:387
+#: ../../operation/reporting/graph_viewer.php:222 ../../operation/tree.php:388
 #: ../../operation/agentes/datos_agente.php:307
 #: ../../operation/agentes/estado_monitores.php:386
 #: ../../operation/netflow/nf_live_view.php:600
@@ -6511,7 +6518,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:1017
 #: ../../operation/reporting/reporting_viewer.php:255
 #: ../../operation/reporting/reporting_viewer.php:275
-#: ../../operation/reporting/graph_viewer.php:223 ../../operation/tree.php:388
+#: ../../operation/reporting/graph_viewer.php:223 ../../operation/tree.php:389
 #: ../../operation/agentes/datos_agente.php:308
 #: ../../operation/agentes/estado_monitores.php:387
 #: ../../operation/netflow/nf_live_view.php:601
@@ -6530,7 +6537,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:1018
 #: ../../operation/reporting/reporting_viewer.php:256
 #: ../../operation/reporting/reporting_viewer.php:276
-#: ../../operation/reporting/graph_viewer.php:224 ../../operation/tree.php:389
+#: ../../operation/reporting/graph_viewer.php:224 ../../operation/tree.php:390
 #: ../../operation/agentes/datos_agente.php:309
 #: ../../operation/agentes/estado_monitores.php:388
 #: ../../operation/netflow/nf_live_view.php:602
@@ -6559,7 +6566,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:185
 #: ../../godmode/alerts/alert_list.php:101
 #: ../../godmode/alerts/alert_special_days.php:87
-#: ../../godmode/alerts/alert_commands.php:230
+#: ../../godmode/alerts/alert_commands.php:238
 #: ../../godmode/alerts/configure_alert_template.php:119
 #: ../../godmode/alerts/configure_alert_template.php:411
 #: ../../enterprise/godmode/reporting/reporting_builder.template_editor.php:36
@@ -6666,7 +6673,7 @@ msgstr ""
 #: ../../godmode/setup/news.php:56 ../../godmode/alerts/alert_actions.php:184
 #: ../../godmode/alerts/alert_list.php:101
 #: ../../godmode/alerts/alert_special_days.php:86
-#: ../../godmode/alerts/alert_commands.php:229
+#: ../../godmode/alerts/alert_commands.php:237
 #: ../../godmode/alerts/configure_alert_template.php:410
 #: ../../godmode/snmpconsole/snmp_filters.php:66
 #: ../../godmode/snmpconsole/snmp_alert.php:231
@@ -7149,7 +7156,7 @@ msgstr ""
 #: ../../operation/users/user_edit.php:271
 #: ../../operation/users/user_edit.php:293
 #: ../../operation/users/user_edit.php:530
-#: ../../operation/events/events_list.php:489
+#: ../../operation/events/events_list.php:492
 #: ../../operation/snmpconsole/snmp_view.php:304
 #: ../../enterprise/godmode/reporting/reporting_builder.template_advanced.php:119
 #: ../../enterprise/godmode/reporting/reporting_builder.template_advanced.php:124
@@ -7230,7 +7237,7 @@ msgstr ""
 #: ../../godmode/events/event_edit_filter.php:231
 #: ../../godmode/setup/setup_visuals.php:198
 #: ../../operation/users/user_edit.php:252
-#: ../../operation/events/events_list.php:483
+#: ../../operation/events/events_list.php:486
 #: ../../operation/snmpconsole/snmp_view.php:298
 #: ../../enterprise/meta/advanced/metasetup.visual.php:120
 #: ../../enterprise/meta/include/functions_meta.php:374
@@ -8114,7 +8121,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:309
 #: ../../godmode/agentes/configurar_agente.php:391
 #: ../../godmode/agentes/configurar_agente.php:501
-#: ../../operation/agentes/estado_generalagente.php:270
+#: ../../operation/agentes/estado_generalagente.php:271
 #: ../../enterprise/godmode/policies/policy_agents.php:342
 msgid "Remote configuration"
 msgstr ""
@@ -8169,7 +8176,7 @@ msgstr ""
 #: ../../godmode/massive/massive_add_action_alerts.php:157
 #: ../../godmode/agentes/agent_manager.php:390
 #: ../../godmode/agentes/module_manager_editor.php:465
-#: ../../operation/events/events_list.php:594
+#: ../../operation/events/events_list.php:597
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:94
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:139
 #: ../../enterprise/godmode/alerts/alert_events_list.php:547
@@ -8184,13 +8191,13 @@ msgstr ""
 #: ../../godmode/events/events.php:51 ../../godmode/events/events.php:56
 #: ../../godmode/events/events.php:67
 #: ../../godmode/agentes/agent_manager.php:424
-#: ../../operation/agentes/ver_agente.php:851
-#: ../../operation/agentes/ver_agente.php:988
+#: ../../operation/agentes/ver_agente.php:852
+#: ../../operation/agentes/ver_agente.php:989
 #: ../../enterprise/meta/event/custom_events.php:53
 #: ../../enterprise/meta/event/custom_events.php:58
 #: ../../enterprise/meta/event/custom_events.php:69
 #: ../../enterprise/meta/event/custom_events.php:83
-#: ../../include/functions_events.php:2004
+#: ../../include/functions_events.php:2001
 msgid "Custom fields"
 msgstr ""
 
@@ -8236,8 +8243,8 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_events_meta.php:94
 #: ../../enterprise/include/functions_log.php:318
 #: ../../include/functions_events.php:46
-#: ../../include/functions_events.php:2093
-#: ../../include/functions_events.php:2183
+#: ../../include/functions_events.php:2099
+#: ../../include/functions_events.php:2189
 msgid "Source"
 msgstr ""
 
@@ -8613,7 +8620,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_common.php:137
 #: ../../godmode/setup/os.list.php:31 ../../godmode/groups/group_list.php:335
 #: ../../godmode/groups/modu_group_list.php:180
-#: ../../godmode/alerts/alert_commands.php:267
+#: ../../godmode/alerts/alert_commands.php:275
 #: ../../operation/incidents/incident.php:311
 #: ../../operation/events/events.build_table.php:39
 #: ../../operation/integria_incidents/incident.list.php:93
@@ -9226,7 +9233,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_events_meta.php:58
 #: ../../include/functions_events.php:34
 #: ../../include/functions_events.php:884
-#: ../../include/functions_events.php:2257
+#: ../../include/functions_events.php:2266
 #: ../../include/functions_reporting.php:2103
 #: ../../include/functions_reporting.php:3200
 msgid "Event name"
@@ -9237,7 +9244,7 @@ msgstr ""
 #: ../../godmode/events/event_edit_filter.php:196
 #: ../../godmode/events/event_filter.php:105
 #: ../../operation/events/events.build_table.php:108
-#: ../../operation/events/events_list.php:568
+#: ../../operation/events/events_list.php:571
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:196
 #: ../../enterprise/meta/include/functions_events_meta.php:76
 #: ../../enterprise/dashboard/widgets/events_list.php:36
@@ -9283,7 +9290,7 @@ msgstr ""
 #: ../../godmode/events/custom_events.php:163
 #: ../../enterprise/meta/include/functions_events_meta.php:97
 #: ../../include/functions_events.php:47
-#: ../../include/functions_events.php:2173
+#: ../../include/functions_events.php:2179
 msgid "Extra id"
 msgstr ""
 
@@ -9300,9 +9307,9 @@ msgstr ""
 #: ../../operation/events/events.build_table.php:182
 #: ../../enterprise/meta/include/functions_events_meta.php:106
 #: ../../include/functions_events.php:50
-#: ../../include/functions_events.php:2137
-#: ../../include/functions_events.php:2149
-#: ../../include/functions_events.php:2161
+#: ../../include/functions_events.php:2143
+#: ../../include/functions_events.php:2155
+#: ../../include/functions_events.php:2167
 msgid "Instructions"
 msgstr ""
 
@@ -9415,13 +9422,13 @@ msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:204
 #: ../../godmode/events/event_filter.php:106
-#: ../../operation/events/events_list.php:580
+#: ../../operation/events/events_list.php:583
 #: ../../enterprise/dashboard/widgets/events_list.php:46
 msgid "Event status"
 msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:210
-#: ../../operation/events/events_list.php:433
+#: ../../operation/events/events_list.php:436
 #: ../../enterprise/meta/agentsearch.php:28
 #: ../../enterprise/meta/agentsearch.php:32
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:242
@@ -9433,7 +9440,7 @@ msgid "Agent search"
 msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:237
-#: ../../operation/events/events_list.php:455
+#: ../../operation/events/events_list.php:458
 msgid "User ack."
 msgstr ""
 
@@ -9442,20 +9449,20 @@ msgid "Choose between the users who have validated an event. "
 msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:244
-#: ../../operation/events/events_list.php:586
+#: ../../operation/events/events_list.php:589
 #: ../../enterprise/godmode/setup/setup.php:87
 msgid "All events"
 msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:245
-#: ../../operation/events/events_list.php:587
+#: ../../operation/events/events_list.php:590
 msgid "Group events"
 msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:290
 #: ../../godmode/events/event_edit_filter.php:319
-#: ../../operation/events/events_list.php:511
-#: ../../operation/events/events_list.php:525
+#: ../../operation/events/events_list.php:514
+#: ../../operation/events/events_list.php:528
 msgid "Events with following tags"
 msgstr ""
 
@@ -9463,8 +9470,8 @@ msgstr ""
 #: ../../godmode/events/event_edit_filter.php:311
 #: ../../godmode/events/event_edit_filter.php:330
 #: ../../godmode/events/event_edit_filter.php:345
-#: ../../operation/events/events_list.php:348
-#: ../../operation/events/events_list.php:383
+#: ../../operation/events/events_list.php:351
+#: ../../operation/events/events_list.php:386
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:115
 #: ../../enterprise/godmode/agentes/collection_manager.php:156
 #: ../../enterprise/godmode/policies/policy_collections.php:124
@@ -9473,23 +9480,23 @@ msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:303
 #: ../../godmode/events/event_edit_filter.php:334
-#: ../../operation/events/events_list.php:517
-#: ../../operation/events/events_list.php:531
+#: ../../operation/events/events_list.php:520
+#: ../../operation/events/events_list.php:534
 msgid "Events without following tags"
 msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:349
-#: ../../operation/events/events_list.php:481
+#: ../../operation/events/events_list.php:484
 msgid "Alert events"
 msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:352
-#: ../../operation/events/events_list.php:482
+#: ../../operation/events/events_list.php:485
 msgid "Filter alert events"
 msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:353
-#: ../../operation/events/events_list.php:482
+#: ../../operation/events/events_list.php:485
 msgid "Only alert events"
 msgstr ""
 
@@ -9658,7 +9665,7 @@ msgstr ""
 #: ../../godmode/gis_maps/configure_gis_map.php:385
 #: ../../godmode/gis_maps/configure_gis_map.php:465
 #: ../../godmode/gis_maps/configure_gis_map.php:472
-#: ../../operation/agentes/networkmap.php:273
+#: ../../operation/agentes/networkmap.php:286
 msgid "Save map"
 msgstr ""
 
@@ -10102,15 +10109,15 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1302
 #: ../../enterprise/meta/include/functions_wizard_meta.php:1637
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1087
-#: ../../include/functions_events.php:1984
-#: ../../include/functions_treeview.php:379
+#: ../../include/functions_events.php:1981
+#: ../../include/functions_treeview.php:381
 msgid "IP Address"
 msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:209
 #: ../../godmode/snmpconsole/snmp_alert.php:1142
 #: ../../operation/events/events.build_table.php:684
-#: ../../operation/agentes/networkmap_list.php:243
+#: ../../operation/agentes/networkmap_list.php:241
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:249
 msgid "Delete selected"
 msgstr ""
@@ -10136,11 +10143,11 @@ msgid "Agent icon for GIS Maps."
 msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:381
-#: ../../operation/agentes/ver_agente.php:840
-#: ../../operation/agentes/ver_agente.php:1000
-#: ../../operation/agentes/estado_generalagente.php:307
+#: ../../operation/agentes/ver_agente.php:841
+#: ../../operation/agentes/ver_agente.php:1001
+#: ../../operation/agentes/estado_generalagente.php:308
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1144
-#: ../../include/functions_treeview.php:472
+#: ../../include/functions_treeview.php:474
 msgid "Url address"
 msgstr ""
 
@@ -10324,7 +10331,7 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager.php:505
 #: ../../godmode/alerts/alert_view.php:123
-#: ../../operation/agentes/ver_agente.php:994
+#: ../../operation/agentes/ver_agente.php:995
 #: ../../operation/agentes/alerts_status.php:398
 #: ../../operation/agentes/alerts_status.php:441
 #: ../../operation/agentes/status_monitor.php:942
@@ -10850,7 +10857,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:250
 #: ../../operation/incidents/incident_detail.php:244
 #: ../../operation/incidents/incident.php:313
-#: ../../operation/agentes/ver_agente.php:997
+#: ../../operation/agentes/ver_agente.php:998
 #: ../../operation/integria_incidents/incident.list.php:94
 msgid "Incident"
 msgstr ""
@@ -10865,7 +10872,7 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:318
 #: ../../operation/incidents/incident.php:230
 #: ../../operation/incidents/incident.php:314
-#: ../../operation/agentes/estado_generalagente.php:382
+#: ../../operation/agentes/estado_generalagente.php:383
 #: ../../operation/integria_incidents/incident.incident.php:90
 #: ../../operation/integria_incidents/incident.list.php:97
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:171
@@ -10873,7 +10880,7 @@ msgstr ""
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:275
 #: ../../enterprise/godmode/alerts/alert_events.php:476
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:107
-#: ../../include/functions_events.php:2120
+#: ../../include/functions_events.php:2126
 #: ../../include/functions_reporting.php:2161
 msgid "Priority"
 msgstr ""
@@ -10953,7 +10960,7 @@ msgid "There is already an agent in the database with this name"
 msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:344
-#: ../../operation/agentes/ver_agente.php:813
+#: ../../operation/agentes/ver_agente.php:814
 msgid "GIS data"
 msgstr ""
 
@@ -10964,14 +10971,14 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:368
 #: ../../godmode/agentes/configurar_agente.php:498
 #: ../../operation/incidents/incident_statistics.php:30
-#: ../../operation/menu.php:305 ../../operation/agentes/ver_agente.php:827
+#: ../../operation/menu.php:305 ../../operation/agentes/ver_agente.php:828
 #: ../../operation/integria_incidents/incident.php:43
 #: ../../operation/integria_incidents/incident.php:54
 msgid "Incidents"
 msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:471
-#: ../../operation/agentes/ver_agente.php:982
+#: ../../operation/agentes/ver_agente.php:983
 #: ../../enterprise/godmode/agentes/collections.php:180
 #: ../../enterprise/operation/agentes/ver_agente.php:190
 #: ../../enterprise/include/functions_groups.php:75
@@ -10980,7 +10987,7 @@ msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:475
 #: ../../operation/reporting/reporting_xml.php:1073
-#: ../../operation/agentes/ver_agente.php:979
+#: ../../operation/agentes/ver_agente.php:980
 #: ../../enterprise/godmode/agentes/configurar_agente.php:33
 #: ../../enterprise/operation/menu.php:19
 #: ../../enterprise/operation/inventory/inventory.php:112
@@ -11004,7 +11011,7 @@ msgid "Agent plugins"
 msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:494
-#: ../../operation/agentes/ver_agente.php:985
+#: ../../operation/agentes/ver_agente.php:986
 msgid "Gis"
 msgstr ""
 
@@ -13154,7 +13161,7 @@ msgstr ""
 
 #: ../../godmode/setup/news.php:222
 #: ../../operation/incidents/incident_detail.php:417
-#: ../../operation/agentes/estado_generalagente.php:367
+#: ../../operation/agentes/estado_generalagente.php:368
 msgid "Author"
 msgstr ""
 
@@ -13799,7 +13806,7 @@ msgid "Error deleting old events"
 msgstr ""
 
 #: ../../godmode/db/db_event.php:54 ../../godmode/db/db_audit.php:80
-#: ../../operation/tree.php:281 ../../operation/agentes/gis_view.php:176
+#: ../../operation/tree.php:282 ../../operation/agentes/gis_view.php:176
 #: ../../enterprise/operation/agentes/agent_inventory.php:229
 #: ../../enterprise/include/functions_inventory.php:244
 #: ../../enterprise/include/functions_reporting_pdf.php:823
@@ -13921,12 +13928,12 @@ msgstr ""
 #: ../../godmode/db/db_main.php:183
 #: ../../godmode/snmpconsole/snmp_alert.php:1041
 #: ../../operation/gis_maps/ajax.php:323 ../../operation/gis_maps/ajax.php:334
-#: ../../operation/agentes/estado_generalagente.php:206
+#: ../../operation/agentes/estado_generalagente.php:207
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1155
 #: ../../enterprise/extensions/ipam/ipam_ajax.php:229
 #: ../../enterprise/extensions/ipam/ipam_list.php:89
 #: ../../enterprise/extensions/cron/main.php:255
-#: ../../include/functions_ui.php:427 ../../include/functions_treeview.php:399
+#: ../../include/functions_ui.php:427 ../../include/functions_treeview.php:401
 msgid "Never"
 msgstr ""
 
@@ -14064,7 +14071,7 @@ msgstr ""
 #: ../../godmode/db/db_refine.php:42 ../../godmode/db/db_refine.php:47
 #: ../../operation/users/user_edit.php:570
 #: ../../operation/users/user_edit.php:635
-#: ../../operation/agentes/networkmap_list.php:361
+#: ../../operation/agentes/networkmap_list.php:359
 #: ../../enterprise/meta/include/functions_ui_meta.php:755
 #: ../../include/functions.php:1025 ../../include/functions_events.php:1151
 #: ../../include/functions_events.php:1402
@@ -14334,7 +14341,7 @@ msgstr ""
 
 #: ../../godmode/alerts/alert_view.php:49
 #: ../../godmode/alerts/alert_view.php:320
-#: ../../include/functions_events.php:2087
+#: ../../include/functions_events.php:2093
 msgid "Alert details"
 msgstr ""
 
@@ -14585,11 +14592,11 @@ msgstr ""
 msgid "Field %s values"
 msgstr ""
 
-#: ../../godmode/alerts/alert_commands.php:185
+#: ../../godmode/alerts/alert_commands.php:193
 msgid "Alert commands"
 msgstr ""
 
-#: ../../godmode/alerts/alert_commands.php:309
+#: ../../godmode/alerts/alert_commands.php:317
 msgid "No alert commands configured"
 msgstr ""
 
@@ -14727,7 +14734,7 @@ msgid "Alert recovery"
 msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:628
-#: ../../operation/agentes/estado_generalagente.php:275
+#: ../../operation/agentes/estado_generalagente.php:276
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:892
 #: ../../enterprise/include/functions_reporting_pdf.php:4163
 #: ../../enterprise/include/functions_reporting_pdf.php:4302
@@ -14884,7 +14891,7 @@ msgstr ""
 #: ../../godmode/netflow/nf_edit_form.php:65
 #: ../../godmode/netflow/nf_edit.php:47
 #: ../../godmode/netflow/nf_item_list.php:57
-#: ../../operation/agentes/ver_agente.php:771
+#: ../../operation/agentes/ver_agente.php:772
 #: ../../operation/netflow/nf_live_view.php:130
 #: ../../enterprise/meta/agentsearch.php:26
 #: ../../enterprise/meta/general/logon_ok.php:15
@@ -14901,7 +14908,7 @@ msgstr ""
 #: ../../godmode/netflow/nf_edit_form.php:180
 #: ../../godmode/snmpconsole/snmp_filters.php:35
 #: ../../operation/events/events_list.php:228
-#: ../../operation/events/events_list.php:258
+#: ../../operation/events/events_list.php:261
 msgid "Update filter"
 msgstr ""
 
@@ -15557,8 +15564,8 @@ msgid "There are no defined reportings"
 msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:173
-#: ../../operation/agentes/interface_traffic_graph_win.php:202
-#: ../../operation/agentes/stat_win.php:295
+#: ../../operation/agentes/interface_traffic_graph_win.php:223
+#: ../../operation/agentes/stat_win.php:302
 #: ../../operation/agentes/graphs.php:141
 msgid "Time range"
 msgstr ""
@@ -15592,8 +15599,8 @@ msgid "Zero results found"
 msgstr ""
 
 #: ../../operation/search_results.php:103
-#: ../../operation/agentes/ver_agente.php:863
-#: ../../operation/agentes/ver_agente.php:991
+#: ../../operation/agentes/ver_agente.php:864
+#: ../../operation/agentes/ver_agente.php:992
 #: ../../include/functions_groups.php:106
 #: ../../include/functions_groups.php:163
 #: ../../include/functions_reports.php:495
@@ -15987,9 +15994,9 @@ msgstr ""
 
 #: ../../operation/menu.php:86
 #: ../../operation/agentes/networkmap.groups.php:105
-#: ../../operation/agentes/networkmap_list.php:76
+#: ../../operation/agentes/networkmap_list.php:70
 #: ../../operation/agentes/networkmap.topology.php:115
-#: ../../operation/agentes/networkmap.php:300
+#: ../../operation/agentes/networkmap.php:313
 #: ../../enterprise/operation/policies/networkmap.policies.php:97
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:608
 #: ../../enterprise/dashboard/widgets/network_map.php:25
@@ -16116,33 +16123,33 @@ msgid "The URL of your feed has bad hash."
 msgstr ""
 
 #: ../../operation/events/events_list.php:184
-#: ../../operation/events/events_list.php:617
+#: ../../operation/events/events_list.php:620
 msgid "Show events graph"
 msgstr ""
 
 #: ../../operation/events/events_list.php:199
-#: ../../operation/events/events_list.php:625
-#: ../../operation/events/events_list.php:637
+#: ../../operation/events/events_list.php:628
+#: ../../operation/events/events_list.php:640
 msgid "No filter loaded"
 msgstr ""
 
 #: ../../operation/events/events_list.php:201
-#: ../../operation/events/events_list.php:630
-#: ../../operation/events/events_list.php:642
+#: ../../operation/events/events_list.php:633
+#: ../../operation/events/events_list.php:645
 msgid "Filter loaded"
 msgstr ""
 
 #: ../../operation/events/events_list.php:203
-#: ../../operation/events/events_list.php:244
-#: ../../operation/events/events_list.php:611
+#: ../../operation/events/events_list.php:247
+#: ../../operation/events/events_list.php:614
 msgid "Save filter"
 msgstr ""
 
 #: ../../operation/events/events_list.php:205
-#: ../../operation/events/events_list.php:287
-#: ../../operation/events/events_list.php:289
-#: ../../operation/events/events_list.php:615
-#: ../../operation/events/events_list.php:621
+#: ../../operation/events/events_list.php:290
+#: ../../operation/events/events_list.php:292
+#: ../../operation/events/events_list.php:618
+#: ../../operation/events/events_list.php:624
 #: ../../operation/netflow/nf_live_view.php:314
 msgid "Load filter"
 msgstr ""
@@ -16151,55 +16158,57 @@ msgstr ""
 msgid "New filter"
 msgstr ""
 
-#: ../../operation/events/events_list.php:253
+#: ../../operation/events/events_list.php:256
 msgid "Overwrite filter"
 msgstr ""
 
-#: ../../operation/events/events_list.php:466
+#: ../../operation/events/events_list.php:469
 msgid "Module search"
 msgstr ""
 
-#: ../../operation/events/events_list.php:494
+#: ../../operation/events/events_list.php:497
 msgid "Date from"
 msgstr ""
 
-#: ../../operation/events/events_list.php:500
+#: ../../operation/events/events_list.php:503
 msgid "Date to"
 msgstr ""
 
-#: ../../operation/events/events_list.php:664
+#: ../../operation/events/events_list.php:667
 msgid "Event control filter"
 msgstr ""
 
-#: ../../operation/events/events_list.php:911
+#: ../../operation/events/events_list.php:671
+msgid "Error creating filter."
+msgstr ""
+
+#: ../../operation/events/events_list.php:672
+msgid "Error creating filter is duplicated."
+msgstr ""
+
+#: ../../operation/events/events_list.php:673
+msgid "Filter created."
+msgstr ""
+
+#: ../../operation/events/events_list.php:675
+msgid "Filter updated."
+msgstr ""
+
+#: ../../operation/events/events_list.php:676
+msgid "Error updating filter."
+msgstr ""
+
+#: ../../operation/events/events_list.php:931
 msgid "Filter name cannot be left blank"
 msgstr ""
 
-#: ../../operation/events/events_list.php:941
-#: ../../operation/netflow/nf_live_view.php:147
-msgid "Error creating filter"
-msgstr ""
-
-#: ../../operation/events/events_list.php:945
-msgid "Filter created"
-msgstr ""
-
-#: ../../operation/events/events_list.php:952
-#: ../../operation/events/events_list.php:1021
+#: ../../operation/events/events_list.php:996
+#: ../../operation/events/events_list.php:1078
 #: ../../operation/netflow/nf_live_view.php:320
 msgid "none"
 msgstr ""
 
-#: ../../operation/events/events_list.php:1011
-msgid "Filter updated"
-msgstr ""
-
-#: ../../operation/events/events_list.php:1014
-#: ../../operation/netflow/nf_live_view.php:166
-msgid "Error updating filter"
-msgstr ""
-
-#: ../../operation/events/events_list.php:1347
+#: ../../operation/events/events_list.php:1404
 msgid "Events generated -by agent-"
 msgstr ""
 
@@ -16229,7 +16238,7 @@ msgid ""
 msgstr ""
 
 #: ../../operation/events/events.php:306
-#: ../../operation/agentes/networkmap.php:201
+#: ../../operation/agentes/networkmap.php:213
 #: ../../operation/snmpconsole/snmp_view.php:78
 #: ../../operation/snmpconsole/snmp_browser.php:88
 #: ../../operation/snmpconsole/snmp_statistics.php:49
@@ -16382,16 +16391,16 @@ msgid "Default position of map."
 msgstr ""
 
 #: ../../operation/gis_maps/ajax.php:315
-#: ../../operation/agentes/estado_generalagente.php:156
+#: ../../operation/agentes/estado_generalagente.php:157
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1117
-#: ../../include/functions_treeview.php:446
+#: ../../include/functions_treeview.php:448
 msgid "Agent Version"
 msgstr ""
 
 #: ../../operation/gis_maps/ajax.php:332
-#: ../../operation/agentes/estado_generalagente.php:201
+#: ../../operation/agentes/estado_generalagente.php:202
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1149
-#: ../../include/functions_treeview.php:406
+#: ../../include/functions_treeview.php:408
 msgid "Remote"
 msgstr ""
 
@@ -16514,7 +16523,7 @@ msgstr ""
 msgid "Select group"
 msgstr ""
 
-#: ../../operation/tree.php:80 ../../operation/agentes/networkmap.php:374
+#: ../../operation/tree.php:80
 #: ../../enterprise/operation/agentes/ver_agente.php:208
 #: ../../enterprise/meta/advanced/policymanager.apply.php:200
 #: ../../enterprise/include/functions_groups.php:32
@@ -16567,36 +16576,36 @@ msgstr ""
 msgid "Tree search"
 msgstr ""
 
-#: ../../operation/tree.php:280
+#: ../../operation/tree.php:281
 #: ../../enterprise/include/functions_reporting_csv.php:775
 msgid "Total modules"
 msgstr ""
 
-#: ../../operation/tree.php:284 ../../operation/tree.php:285
-#: ../../operation/tree.php:286
+#: ../../operation/tree.php:285 ../../operation/tree.php:286
+#: ../../operation/tree.php:287
 #: ../../enterprise/include/functions_reporting_csv.php:775
 #: ../../include/functions_graph.php:1490
 #: ../../include/functions_reporting.php:1619
 msgid "Fired alerts"
 msgstr ""
 
-#: ../../operation/tree.php:289
+#: ../../operation/tree.php:290
 msgid "Critical agents"
 msgstr ""
 
-#: ../../operation/tree.php:294
+#: ../../operation/tree.php:295
 msgid "Warning agents"
 msgstr ""
 
-#: ../../operation/tree.php:299
+#: ../../operation/tree.php:300
 msgid "Unknown agents"
 msgstr ""
 
-#: ../../operation/tree.php:304
+#: ../../operation/tree.php:305
 msgid "Not init agents"
 msgstr ""
 
-#: ../../operation/tree.php:309
+#: ../../operation/tree.php:310
 msgid "Normal agents"
 msgstr ""
 
@@ -16689,23 +16698,23 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#: ../../operation/agentes/ver_agente.php:459
+#: ../../operation/agentes/ver_agente.php:460
 #: ../../enterprise/operation/agentes/ver_agente.php:70
 msgid "Main IP"
 msgstr ""
 
-#: ../../operation/agentes/ver_agente.php:470
+#: ../../operation/agentes/ver_agente.php:471
 #: ../../enterprise/operation/agentes/ver_agente.php:76
-#: ../../include/functions_events.php:1999
+#: ../../include/functions_events.php:1996
 msgid "Last remote contact"
 msgstr ""
 
-#: ../../operation/agentes/ver_agente.php:531
+#: ../../operation/agentes/ver_agente.php:532
 #: ../../enterprise/operation/agentes/ver_agente.php:113
 msgid "Monitors down"
 msgstr ""
 
-#: ../../operation/agentes/ver_agente.php:634
+#: ../../operation/agentes/ver_agente.php:635
 #: ../../enterprise/godmode/servers/manage_export.php:130
 #: ../../enterprise/godmode/servers/manage_export_form.php:82
 #: ../../enterprise/extensions/ipam/ipam_ajax.php:152
@@ -16715,103 +16724,108 @@ msgstr ""
 msgid "Address"
 msgstr ""
 
-#: ../../operation/agentes/ver_agente.php:675
+#: ../../operation/agentes/ver_agente.php:676
 msgid "Sons"
 msgstr ""
 
-#: ../../operation/agentes/ver_agente.php:757
+#: ../../operation/agentes/ver_agente.php:758
 #: ../../operation/servers/recon_view.php:27
 #: ../../operation/search_agents.php:109
 msgid "Manage"
 msgstr ""
 
-#: ../../operation/agentes/ver_agente.php:881
+#: ../../operation/agentes/ver_agente.php:882
 msgid "Log Viewer"
 msgstr ""
 
-#: ../../operation/agentes/ver_agente.php:973
+#: ../../operation/agentes/ver_agente.php:974
 #: ../../enterprise/include/functions_reporting_pdf.php:4091
 #: ../../include/functions_reporting.php:3428
 #: ../../include/functions_treeview.php:186
 msgid "Last data"
 msgstr ""
 
-#: ../../operation/agentes/interface_traffic_graph_win.php:63
+#: ../../operation/agentes/interface_traffic_graph_win.php:48
+#: ../../operation/agentes/stat_win.php:44
+msgid "There was a problem connecting with the node"
+msgstr ""
+
+#: ../../operation/agentes/interface_traffic_graph_win.php:66
 msgid "In"
 msgstr ""
 
-#: ../../operation/agentes/interface_traffic_graph_win.php:64
+#: ../../operation/agentes/interface_traffic_graph_win.php:67
 msgid "Out"
 msgstr ""
 
-#: ../../operation/agentes/interface_traffic_graph_win.php:160
-#: ../../operation/agentes/stat_win.php:226
+#: ../../operation/agentes/interface_traffic_graph_win.php:191
+#: ../../operation/agentes/stat_win.php:233
 msgid "Pandora FMS Graph configuration menu"
 msgstr ""
 
-#: ../../operation/agentes/interface_traffic_graph_win.php:162
-#: ../../operation/agentes/stat_win.php:228
+#: ../../operation/agentes/interface_traffic_graph_win.php:193
+#: ../../operation/agentes/stat_win.php:235
 msgid "Please, make your changes and apply with the <i>Reload</i> button"
 msgstr ""
 
-#: ../../operation/agentes/interface_traffic_graph_win.php:189
-#: ../../operation/agentes/stat_win.php:255
+#: ../../operation/agentes/interface_traffic_graph_win.php:210
+#: ../../operation/agentes/stat_win.php:262
 msgid "Refresh time"
 msgstr ""
 
-#: ../../operation/agentes/interface_traffic_graph_win.php:208
-#: ../../operation/agentes/stat_win.php:283
+#: ../../operation/agentes/interface_traffic_graph_win.php:229
+#: ../../operation/agentes/stat_win.php:290
 #: ../../operation/agentes/graphs.php:132
 msgid "Zoom factor"
 msgstr ""
 
-#: ../../operation/agentes/interface_traffic_graph_win.php:235
-#: ../../operation/agentes/stat_win.php:372
+#: ../../operation/agentes/interface_traffic_graph_win.php:256
+#: ../../operation/agentes/stat_win.php:379
 msgid "Reload"
 msgstr ""
 
-#: ../../operation/agentes/networkmap_list.php:92
+#: ../../operation/agentes/networkmap_list.php:86
 #: ../../operation/agentes/networkmap.php:48
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:48
 msgid "Network map deleted successfully"
 msgstr ""
 
-#: ../../operation/agentes/networkmap_list.php:93
+#: ../../operation/agentes/networkmap_list.php:87
 #: ../../operation/agentes/networkmap.php:49
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:49
 msgid "Could not delete network map"
 msgstr ""
 
-#: ../../operation/agentes/networkmap_list.php:194
+#: ../../operation/agentes/networkmap_list.php:183
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:111
 msgid "Not networkmap defined."
 msgstr ""
 
-#: ../../operation/agentes/networkmap_list.php:214
+#: ../../operation/agentes/networkmap_list.php:207
 #: ../../enterprise/operation/services/services.list.php:281
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:232
 msgid "Config"
 msgstr ""
 
-#: ../../operation/agentes/networkmap_list.php:251
+#: ../../operation/agentes/networkmap_list.php:249
 #: ../../operation/extensions.php:64 ../../include/functions_events.php:1765
 #: ../../extensions/net_tools.php:146
 msgid "Execute"
 msgstr ""
 
-#: ../../operation/agentes/networkmap_list.php:348
+#: ../../operation/agentes/networkmap_list.php:346
 msgid "The session may be expired"
 msgstr ""
 
-#: ../../operation/agentes/networkmap_list.php:370
+#: ../../operation/agentes/networkmap_list.php:368
 msgid "None selected"
 msgstr ""
 
 #: ../../operation/agentes/custom_fields.php:28
 #: ../../operation/agentes/agent_fields.php:28
-#: ../../operation/agentes/estado_generalagente.php:43
+#: ../../operation/agentes/estado_generalagente.php:44
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1057
-#: ../../include/functions_treeview.php:333
+#: ../../include/functions_treeview.php:335
 msgid "There was a problem loading agent"
 msgstr ""
 
@@ -16821,48 +16835,44 @@ msgstr ""
 msgid "empty"
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:43
-msgid "There was a problem connecting with the node"
-msgstr ""
-
-#: ../../operation/agentes/stat_win.php:108
+#: ../../operation/agentes/stat_win.php:109
 msgid "There was a problem locating the source of the graph"
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:263
+#: ../../operation/agentes/stat_win.php:270
 msgid "Avg. Only"
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:302
+#: ../../operation/agentes/stat_win.php:309
 #: ../../operation/agentes/graphs.php:145
 msgid "Show events"
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:313
+#: ../../operation/agentes/stat_win.php:320
 msgid ""
 "Show events is disabled because this Pandora node is set the event "
 "replication."
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:319
+#: ../../operation/agentes/stat_win.php:326
 #: ../../operation/agentes/graphs.php:147
 msgid "Show alerts"
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:325
+#: ../../operation/agentes/stat_win.php:332
 msgid "Show event graph"
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:335
-#: ../../operation/agentes/stat_win.php:341
+#: ../../operation/agentes/stat_win.php:342
+#: ../../operation/agentes/stat_win.php:348
 msgid "Time compare"
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:335
+#: ../../operation/agentes/stat_win.php:342
 msgid "Overlapped"
 msgstr ""
 
-#: ../../operation/agentes/stat_win.php:341
+#: ../../operation/agentes/stat_win.php:348
 msgid "Separated"
 msgstr ""
 
@@ -16931,9 +16941,9 @@ msgid "Agent custom fields"
 msgstr ""
 
 #: ../../operation/agentes/agent_fields.php:45
-#: ../../operation/agentes/estado_generalagente.php:332
+#: ../../operation/agentes/estado_generalagente.php:333
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1180
-#: ../../include/functions_treeview.php:495
+#: ../../include/functions_treeview.php:497
 msgid "Custom field"
 msgstr ""
 
@@ -16956,7 +16966,7 @@ msgstr ""
 
 #: ../../operation/agentes/group_view.php:86
 #: ../../operation/agentes/group_view.php:132
-#: ../../operation/agentes/estado_generalagente.php:519
+#: ../../operation/agentes/estado_generalagente.php:536
 #: ../../operation/servers/recon_view.php:86
 #: ../../operation/servers/recon_view.php:118
 #: ../../enterprise/godmode/agentes/inventory_manager.php:264
@@ -17043,25 +17053,23 @@ msgstr ""
 msgid "No alerts found"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:85
-#: ../../operation/agentes/networkmap.php:95
+#: ../../operation/agentes/networkmap.php:105
 msgid "Network map created successfully"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:86
-#: ../../operation/agentes/networkmap.php:96
+#: ../../operation/agentes/networkmap.php:106
 msgid "Could not create network map"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:144
+#: ../../operation/agentes/networkmap.php:155
 msgid "Network map saved successfully"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:145
+#: ../../operation/agentes/networkmap.php:156
 msgid "Could not save network map"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:196
+#: ../../operation/agentes/networkmap.php:208
 #: ../../operation/snmpconsole/snmp_view.php:74
 #: ../../operation/snmpconsole/snmp_browser.php:84
 #: ../../operation/snmpconsole/snmp_statistics.php:45
@@ -17069,78 +17077,81 @@ msgstr ""
 msgid "Normal screen"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:206
-#: ../../operation/agentes/networkmap.php:286
+#: ../../operation/agentes/networkmap.php:218
+#: ../../operation/agentes/networkmap.php:299
 msgid "Policies view"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:211
-#: ../../operation/agentes/networkmap.php:283
+#: ../../operation/agentes/networkmap.php:223
+#: ../../operation/agentes/networkmap.php:296
 #: ../../enterprise/meta/general/main_header.php:92
 msgid "Groups view"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:215
-#: ../../operation/agentes/networkmap.php:280
+#: ../../operation/agentes/networkmap.php:227
+#: ../../operation/agentes/networkmap.php:293
 msgid "Topology view"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:219
-#: ../../operation/agentes/networkmap.php:289
+#: ../../operation/agentes/networkmap.php:231
+#: ../../operation/agentes/networkmap.php:302
 msgid "Dynamic view"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:224
-#: ../../operation/agentes/networkmap.php:292
+#: ../../operation/agentes/networkmap.php:236
+#: ../../operation/agentes/networkmap.php:305
 msgid "Radial dynamic view"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:229
+#: ../../operation/agentes/networkmap.php:241
 msgid "No selected"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:240
+#: ../../operation/agentes/networkmap.php:252
 msgid "Add map"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:245
+#: ../../operation/agentes/networkmap.php:257
 msgid "Delete map"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:313
+#: ../../operation/agentes/networkmap.php:326
 msgid "There are no defined maps in this view"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:352
+#: ../../operation/agentes/networkmap.php:355
+msgid "Store group"
+msgstr ""
+
+#: ../../operation/agentes/networkmap.php:372
 msgid "Show interfaces"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:357
+#: ../../operation/agentes/networkmap.php:378
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:408
 #: ../../enterprise/dashboard/widgets/maps_made_by_user.php:32
 msgid "Layout"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:366
-#: ../../operation/agentes/networkmap.php:375
+#: ../../operation/agentes/networkmap.php:388
 msgid "Depth"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:380
+#: ../../operation/agentes/networkmap.php:394
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:438
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:449
 msgid "No Overlap"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:386
+#: ../../operation/agentes/networkmap.php:400
 msgid "Only modules with alerts"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:391
+#: ../../operation/agentes/networkmap.php:407
 msgid "Hide policy modules"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:398
+#: ../../operation/agentes/networkmap.php:414
 #: ../../enterprise/godmode/services/services.service.php:207
 #: ../../enterprise/operation/services/services.list.php:132
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:457
@@ -17148,49 +17159,49 @@ msgstr ""
 msgid "Simple"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:403
+#: ../../operation/agentes/networkmap.php:420
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:424
 msgid "Regenerate"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:418
+#: ../../operation/agentes/networkmap.php:435
 msgid "Zoom"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:424
+#: ../../operation/agentes/networkmap.php:442
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:411
 msgid "Font"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:429
+#: ../../operation/agentes/networkmap.php:448
 #: ../../operation/agentes/estado_monitores.php:436
 msgid "Free text for search (*):"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:434
+#: ../../operation/agentes/networkmap.php:454
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:262
 msgid "Don't show subgroups:"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:435
+#: ../../operation/agentes/networkmap.php:455
 msgid "Only run with it is filter for any group"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:441
+#: ../../operation/agentes/networkmap.php:462
 msgid "L2 network interfaces"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:446
+#: ../../operation/agentes/networkmap.php:468
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:441
 msgid "Distance between nodes"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:447
+#: ../../operation/agentes/networkmap.php:469
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:442
 msgid "Separation between elements in the map (in Non-overlap mode)"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:458
+#: ../../operation/agentes/networkmap.php:499
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:507
 msgid "Map options"
 msgstr ""
@@ -17280,71 +17291,71 @@ msgstr ""
 msgid "Form filter"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:39
+#: ../../operation/agentes/estado_generalagente.php:40
 msgid "The agent has not assigned server. Maybe agent does not run fine."
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:116
+#: ../../operation/agentes/estado_generalagente.php:117
 msgid ""
 "Agent statuses are re-calculated by the server, they are not  shown in real "
 "time."
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:192
+#: ../../operation/agentes/estado_generalagente.php:193
 msgid "Agent contact"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:214
+#: ../../operation/agentes/estado_generalagente.php:215
 msgid "Next contact"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:235
+#: ../../operation/agentes/estado_generalagente.php:236
 msgid "Agent info"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:288
+#: ../../operation/agentes/estado_generalagente.php:289
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1124
-#: ../../include/functions_treeview.php:463
+#: ../../include/functions_treeview.php:465
 msgid "Position (Long, Lat)"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:291
+#: ../../operation/agentes/estado_generalagente.php:292
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1128
 msgid "There is no GIS data."
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:316
+#: ../../operation/agentes/estado_generalagente.php:317
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1164
-#: ../../include/functions_treeview.php:480
+#: ../../include/functions_treeview.php:482
 msgid "Timezone Offset"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:363
+#: ../../operation/agentes/estado_generalagente.php:364
 msgid "Active incident on this agent"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:372
+#: ../../operation/agentes/estado_generalagente.php:373
 #: ../../operation/integria_incidents/incident.incident.php:82
 #: ../../enterprise/dashboard/widget.php:63
 msgid "Title"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:411
-#: ../../include/functions_treeview.php:591
+#: ../../operation/agentes/estado_generalagente.php:412
+#: ../../include/functions_treeview.php:602
 msgid "Interface information"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:428
-#: ../../include/functions_treeview.php:573
+#: ../../operation/agentes/estado_generalagente.php:441
+#: ../../include/functions_treeview.php:580
 msgid "Interface traffic"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:496
-#: ../../include/functions_treeview.php:518
+#: ../../operation/agentes/estado_generalagente.php:513
+#: ../../include/functions_treeview.php:520
 msgid "Agent access rate (24h)"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:518
+#: ../../operation/agentes/estado_generalagente.php:535
 msgid "Refresh data"
 msgstr ""
 
@@ -17366,7 +17377,7 @@ msgstr ""
 #: ../../enterprise/operation/services/services.service.php:125
 #: ../../enterprise/dashboard/widgets/custom_graph.php:29
 #: ../../include/functions_visual_map_editor.php:56
-#: ../../include/functions_events.php:2051 ../../include/ajax/module.php:705
+#: ../../include/functions_events.php:2056 ../../include/ajax/module.php:705
 #: ../../extensions/realtime_graphs.php:65
 msgid "Graph"
 msgstr ""
@@ -17386,14 +17397,14 @@ msgstr ""
 msgid "(Unlinked) "
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:1276
+#: ../../operation/agentes/status_monitor.php:1292
 #: ../../operation/search_modules.php:198
 #: ../../enterprise/include/functions_services.php:1185
 #: ../../include/ajax/module.php:935
 msgid "Snapshot view"
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:1346
+#: ../../operation/agentes/status_monitor.php:1362
 msgid "This group doesn't have any monitor"
 msgstr ""
 
@@ -17667,12 +17678,20 @@ msgstr ""
 msgid "Make sure nfdump version 1.6.8 or newer is installed!"
 msgstr ""
 
+#: ../../operation/netflow/nf_live_view.php:147
+msgid "Error creating filter"
+msgstr ""
+
 #: ../../operation/netflow/nf_live_view.php:150
 msgid "Filter created successfully"
 msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:165
 msgid "Filter updated successfully"
+msgstr ""
+
+#: ../../operation/netflow/nf_live_view.php:166
+msgid "Error updating filter"
 msgstr ""
 
 #: ../../operation/netflow/nf_live_view.php:192
@@ -17730,8 +17749,8 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:314
 #: ../../operation/snmpconsole/snmp_view.php:455
 #: ../../operation/snmpconsole/snmp_view.php:709
-#: ../../include/functions_events.php:2802
-#: ../../include/functions_events.php:2808
+#: ../../include/functions_events.php:2811
+#: ../../include/functions_events.php:2817
 msgid "Not validated"
 msgstr ""
 
@@ -20175,7 +20194,7 @@ msgid "Window"
 msgstr ""
 
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:138
-#: ../../include/class/Tree.class.php:1351
+#: ../../include/class/Tree.class.php:1370
 msgid "Module alerts"
 msgstr ""
 
@@ -20870,14 +20889,6 @@ msgstr ""
 msgid "The start date cannot be greater than the end date"
 msgstr ""
 
-#: ../../enterprise/operation/log/log_viewer.php:412
-#: ../../enterprise/operation/inventory/inventory.php:249
-#: ../../enterprise/operation/agentes/agent_inventory.php:241
-#: ../../enterprise/include/functions_reporting_pdf.php:522
-#: ../../include/functions_reporting.php:6845
-msgid "No data found."
-msgstr ""
-
 #: ../../enterprise/operation/inventory/inventory.php:262
 msgid "Export this list to CSV"
 msgstr ""
@@ -21292,7 +21303,7 @@ msgid "Network traffic"
 msgstr ""
 
 #: ../../enterprise/meta/general/logon_ok.php:62
-#: ../../include/functions_networkmap.php:1709
+#: ../../include/functions_networkmap.php:1711
 msgid "Topology"
 msgstr ""
 
@@ -22257,7 +22268,7 @@ msgid "Cannot connect to %s Pandora to generate networkmap."
 msgstr ""
 
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:1170
-#: ../../include/functions_treeview.php:414
+#: ../../include/functions_treeview.php:416
 msgid "Next agent contact"
 msgstr ""
 
@@ -23650,7 +23661,6 @@ msgstr ""
 #: ../../include/functions_reporting.php:4596
 #: ../../include/functions_reporting.php:4893
 #: ../../include/functions_reporting.php:8303
-#: ../../include/functions_reporting.php:8317
 msgid "Events by criticity"
 msgstr ""
 
@@ -26221,27 +26231,27 @@ msgstr ""
 msgid "Your installation of PHP does not support LDAP"
 msgstr ""
 
-#: ../../include/functions_networkmap.php:1683
+#: ../../include/functions_networkmap.php:1685
 msgid "Create a new topology map"
 msgstr ""
 
-#: ../../include/functions_networkmap.php:1684
+#: ../../include/functions_networkmap.php:1686
 msgid "Create a new group map"
 msgstr ""
 
-#: ../../include/functions_networkmap.php:1685
+#: ../../include/functions_networkmap.php:1687
 msgid "Create a new dynamic map"
 msgstr ""
 
-#: ../../include/functions_networkmap.php:1687
+#: ../../include/functions_networkmap.php:1689
 msgid "Create a new radial dynamic map"
 msgstr ""
 
-#: ../../include/functions_networkmap.php:1711
+#: ../../include/functions_networkmap.php:1713
 msgid "Dynamic"
 msgstr ""
 
-#: ../../include/functions_networkmap.php:1713
+#: ../../include/functions_networkmap.php:1715
 msgid "Radial dynamic"
 msgstr ""
 
@@ -26452,7 +26462,7 @@ msgid "In process"
 msgstr ""
 
 #: ../../include/functions_events.php:1721
-#: ../../include/functions_events.php:2484
+#: ../../include/functions_events.php:2493
 msgid "Add comment"
 msgstr ""
 
@@ -26460,50 +26470,54 @@ msgstr ""
 msgid "Custom responses"
 msgstr ""
 
-#: ../../include/functions_events.php:1968
+#: ../../include/functions_events.php:1926
+msgid "There was an error connecting to the node"
+msgstr ""
+
+#: ../../include/functions_events.php:1965
 msgid "Agent details"
 msgstr ""
 
-#: ../../include/functions_events.php:2005
+#: ../../include/functions_events.php:2002
 msgid "View custom fields"
 msgstr ""
 
-#: ../../include/functions_events.php:2022
+#: ../../include/functions_events.php:2014
 msgid "Module details"
 msgstr ""
 
-#: ../../include/functions_events.php:2039
+#: ../../include/functions_events.php:2031
 msgid "No assigned"
 msgstr ""
 
-#: ../../include/functions_events.php:2098
-#: ../../include/functions_events.php:2102
+#: ../../include/functions_events.php:2104
+#: ../../include/functions_events.php:2108
 msgid "Go to data overview"
 msgstr ""
 
-#: ../../include/functions_events.php:2217
+#: ../../include/functions_events.php:2226
 #, php-format
 msgid "Invalid custom data: %s"
 msgstr ""
 
-#: ../../include/functions_events.php:2264
+#: ../../include/functions_events.php:2273
 msgid "First event"
 msgstr ""
 
-#: ../../include/functions_events.php:2264
+#: ../../include/functions_events.php:2273
 msgid "Last event"
 msgstr ""
 
-#: ../../include/functions_events.php:2378
+#: ../../include/functions_events.php:2387
 msgid "ID extra"
 msgstr ""
 
-#: ../../include/functions_events.php:2430
-#: ../../include/functions_events.php:2476
+#: ../../include/functions_events.php:2439
+#: ../../include/functions_events.php:2485
 msgid "There are no comments"
 msgstr ""
 
-#: ../../include/functions_events.php:2568
+#: ../../include/functions_events.php:2577
 #: ../../include/functions_reporting.php:3142
 msgid "Pandora System"
 msgstr ""
@@ -27107,22 +27121,32 @@ msgstr ""
 msgid "Default font doesnt exist"
 msgstr ""
 
-#: ../../include/functions_config.php:1414
+#: ../../include/functions_config.php:1412
+msgid "You need to restart server after altering this configuration setting."
+msgstr ""
+
+#: ../../include/functions_config.php:1413
+msgid ""
+"Event storm protection is activated. No events will be generated during this "
+"mode."
+msgstr ""
+
+#: ../../include/functions_config.php:1420
 msgid ""
 "Your Pandora FMS has the \"develop_bypass\" mode enabled. This is a "
 "developer mode and should be disabled in a production system. This value is "
 "written in the main index.php file"
 msgstr ""
 
-#: ../../include/functions_config.php:1415
+#: ../../include/functions_config.php:1421
 msgid "Developer mode is enabled"
 msgstr ""
 
-#: ../../include/functions_config.php:1424
+#: ../../include/functions_config.php:1430
 msgid "Error first setup Open update"
 msgstr ""
 
-#: ../../include/functions_config.php:1430
+#: ../../include/functions_config.php:1436
 msgid ""
 "There is a new update please go to menu Administration and into extensions "
 "<a style=\"font-weight:bold;\" href=\"index.php?sec=gsetup&sec2=godmode/"
@@ -27130,60 +27154,60 @@ msgid ""
 "details."
 msgstr ""
 
-#: ../../include/functions_config.php:1431
+#: ../../include/functions_config.php:1437
 msgid "New update of Pandora Console"
 msgstr ""
 
-#: ../../include/functions_config.php:1444
+#: ../../include/functions_config.php:1450
 msgid ""
 "To disable, change it on your PHP configuration file (php.ini) and put "
 "safe_mode = Off (Dont forget restart apache process after changes)"
 msgstr ""
 
-#: ../../include/functions_config.php:1445
+#: ../../include/functions_config.php:1451
 msgid "PHP safe mode is enabled. Some features may not properly work."
 msgstr ""
 
-#: ../../include/functions_config.php:1450
+#: ../../include/functions_config.php:1456
 #, php-format
 msgid "Recommended value is %s"
 msgstr ""
 
-#: ../../include/functions_config.php:1450
 #: ../../include/functions_config.php:1456
+#: ../../include/functions_config.php:1462
 msgid "Unlimited"
 msgstr ""
 
-#: ../../include/functions_config.php:1450
 #: ../../include/functions_config.php:1456
-#: ../../include/functions_config.php:1464
+#: ../../include/functions_config.php:1462
+#: ../../include/functions_config.php:1470
 msgid ""
 "Please, change it on your PHP configuration file (php.ini) or contact with "
 "administrator (Dont forget restart apache process after changes)"
 msgstr ""
 
-#: ../../include/functions_config.php:1451
 #: ../../include/functions_config.php:1457
-#: ../../include/functions_config.php:1465
-#: ../../include/functions_config.php:1473
+#: ../../include/functions_config.php:1463
+#: ../../include/functions_config.php:1471
+#: ../../include/functions_config.php:1479
 #, php-format
 msgid "Not recommended '%s' value in PHP configuration"
 msgstr ""
 
-#: ../../include/functions_config.php:1456
-#: ../../include/functions_config.php:1464
-#: ../../include/functions_config.php:1472
+#: ../../include/functions_config.php:1462
+#: ../../include/functions_config.php:1470
+#: ../../include/functions_config.php:1478
 #, php-format
 msgid "Recommended value is: %s"
 msgstr ""
 
-#: ../../include/functions_config.php:1464
-#: ../../include/functions_config.php:1472
+#: ../../include/functions_config.php:1470
+#: ../../include/functions_config.php:1478
 #, php-format
 msgid "%s or greater"
 msgstr ""
 
-#: ../../include/functions_config.php:1472
+#: ../../include/functions_config.php:1478
 msgid ""
 "Please, change it on your PHP configuration file (php.ini) or contact with "
 "administrator"
@@ -27471,30 +27495,30 @@ msgid "Agent without data"
 msgstr ""
 
 #: ../../include/functions_reporting.php:3326
-#: ../../include/functions_agents.php:2061
-#: ../../include/functions_agents.php:2086
-#: ../../include/functions_agents.php:2111
+#: ../../include/functions_agents.php:2064
+#: ../../include/functions_agents.php:2089
+#: ../../include/functions_agents.php:2114
 msgid "At least one module in CRITICAL status"
 msgstr ""
 
 #: ../../include/functions_reporting.php:3330
-#: ../../include/functions_agents.php:2065
-#: ../../include/functions_agents.php:2090
-#: ../../include/functions_agents.php:2115
+#: ../../include/functions_agents.php:2068
+#: ../../include/functions_agents.php:2093
+#: ../../include/functions_agents.php:2118
 msgid "At least one module in WARNING status"
 msgstr ""
 
 #: ../../include/functions_reporting.php:3334
-#: ../../include/functions_agents.php:2069
-#: ../../include/functions_agents.php:2094
-#: ../../include/functions_agents.php:2119
+#: ../../include/functions_agents.php:2072
+#: ../../include/functions_agents.php:2097
+#: ../../include/functions_agents.php:2122
 msgid "At least one module is in UKNOWN status"
 msgstr ""
 
 #: ../../include/functions_reporting.php:3338
-#: ../../include/functions_agents.php:2073
-#: ../../include/functions_agents.php:2098
-#: ../../include/functions_agents.php:2123
+#: ../../include/functions_agents.php:2076
+#: ../../include/functions_agents.php:2101
+#: ../../include/functions_agents.php:2126
 msgid "All Monitors OK"
 msgstr ""
 
@@ -27677,15 +27701,19 @@ msgstr ""
 msgid "Unknown events"
 msgstr ""
 
+#: ../../include/functions_reporting.php:8317
+msgid "Important Events by Criticity"
+msgstr ""
+
 #: ../../include/functions_reporting.php:8343
 msgid "Last activity in Pandora FMS console"
 msgstr ""
 
-#: ../../include/functions_reporting.php:8463
+#: ../../include/functions_reporting.php:8480
 msgid "Events info (1hr.)"
 msgstr ""
 
-#: ../../include/functions_reporting.php:8476
+#: ../../include/functions_reporting.php:8497
 msgid "Events info (1hr)"
 msgstr ""
 
@@ -27701,8 +27729,8 @@ msgstr ""
 msgid "Overview graph"
 msgstr ""
 
-#: ../../include/ajax/networkmap.ajax.php:107
-#: ../../include/ajax/networkmap.ajax.php:164
+#: ../../include/ajax/networkmap.ajax.php:74
+#: ../../include/ajax/networkmap.ajax.php:94
 msgid "Map summary"
 msgstr ""
 
@@ -27824,11 +27852,11 @@ msgstr ""
 msgid "3 years"
 msgstr ""
 
-#: ../../include/ajax/module.php:1056
+#: ../../include/ajax/module.php:1064
 msgid "Any monitors aren't with this filter."
 msgstr ""
 
-#: ../../include/ajax/module.php:1060
+#: ../../include/ajax/module.php:1068
 msgid "This agent doesn't have any active monitors."
 msgstr ""
 
@@ -28079,7 +28107,7 @@ msgid ""
 "for your security."
 msgstr ""
 
-#: ../../include/class/Tree.class.php:1281
+#: ../../include/class/Tree.class.php:1284
 msgid "NO DATA"
 msgstr ""
 
@@ -28150,15 +28178,15 @@ msgstr ""
 msgid "Go to alerts edition"
 msgstr ""
 
-#: ../../include/functions_treeview.php:424
+#: ../../include/functions_treeview.php:426
 msgid "Go to agent edition"
 msgstr ""
 
-#: ../../include/functions_treeview.php:433
+#: ../../include/functions_treeview.php:435
 msgid "Agent data"
 msgstr ""
 
-#: ../../include/functions_treeview.php:506
+#: ../../include/functions_treeview.php:508
 msgid "Advanced information"
 msgstr ""
 
@@ -28168,9 +28196,9 @@ msgid ""
 "cancelled"
 msgstr ""
 
-#: ../../include/functions_agents.php:2057
-#: ../../include/functions_agents.php:2082
-#: ../../include/functions_agents.php:2107
+#: ../../include/functions_agents.php:2060
+#: ../../include/functions_agents.php:2085
+#: ../../include/functions_agents.php:2110
 msgid "No Monitors"
 msgstr ""
 

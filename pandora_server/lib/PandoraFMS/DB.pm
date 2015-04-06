@@ -73,10 +73,13 @@ our @EXPORT = qw(
 		get_profile_id
 		get_priority_name
 		get_server_id
+		get_tag_id
+		get_group_name
 		get_template_id
 		get_template_module_id
 		get_user_disabled
 		get_user_exists
+		get_user_profile_id
 		is_agent_address
 		is_group_disabled
 		get_agent_status
@@ -188,6 +191,18 @@ sub get_server_id ($$$) {
 	my $rc = get_db_value ($dbh, "SELECT id_server FROM tserver
 					WHERE name = ? AND server_type = ?",
 					$server_name, $server_type);
+	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return the ID of a tag given the tag name.
+########################################################################
+sub get_tag_id ($$) {
+	my ($dbh, $tag_name) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id_tag FROM ttag
+					WHERE name = ?",
+					safe_input($tag_name));
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -547,6 +562,22 @@ sub get_nc_profile_name ($$) {
 	my ($dbh, $nc_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT * FROM tnetwork_profile WHERE id_np = ?", $nc_id);
+}
+
+##########################################################################
+## Return user profile ID given the user id, group id and profile id.
+##########################################################################
+sub get_user_profile_id ($$$$) {
+	my ($dbh, $user_id, $profile_id, $group_id) = @_;
+	
+	my $rc = get_db_value ($dbh, "SELECT id_up FROM tusuario_perfil
+	                              WHERE id_usuario = ?
+								  AND id_perfil = ?
+								  AND id_grupo = ?",
+								  safe_input($user_id),
+								  $profile_id,
+								  $group_id);
+	return defined ($rc) ? $rc : -1;
 }
 
 ##########################################################################

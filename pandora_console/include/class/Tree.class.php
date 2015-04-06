@@ -1344,6 +1344,7 @@ class Tree {
 				);
 			
 			if (defined('METACONSOLE') && !empty($server)) {
+				$graph_params["avg_only"] = 1;
 				// Set the server id
 				$graph_params["server"] = $module['serverID'];
 			}

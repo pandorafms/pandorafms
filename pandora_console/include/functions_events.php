@@ -1914,13 +1914,17 @@ function events_page_details ($event, $server = "") {
 	global $config;
 	
 	// If server is provided, get the hash parameters
-	if (!empty($server)) { 
+	if (!empty($server) && defined("METACONSOLE")) { 
 		$hashdata = metaconsole_get_server_hashdata($server);
 		$hashstring = "&amp;" .
 			"loginhash=auto&" .
 			"loginhash_data=" . $hashdata . "&" .
 			"loginhash_user=" . str_rot13($config["id_user"]);
 		$serverstring = $server['server_url'] . "/";
+		
+		if (metaconsole_connect($server) !== NOERR) {
+			return ui_print_error_message(__('There was an error connecting to the node'), '', true);
+		}
 	}
 	else {
 		$hashstring = "";
@@ -1951,14 +1955,7 @@ function events_page_details ($event, $server = "") {
 	}
 	
 	if ($event["id_agente"] != 0) {
-		if (!empty($server)) { 
-			$agent = agents_meta_get_agent(array('id_agent' => $event["id_agente"], 
-												'id_server' => $server['id'], 
-												'server_name' => $server['server_name']));
-		}
-		else {
-			$agent = db_get_row('tagente','id_agente',$event["id_agente"]);
-		}
+		$agent = db_get_row('tagente','id_agente',$event["id_agente"]);
 	}
 	else {
 		$agent = array();
@@ -2007,12 +2004,7 @@ function events_page_details ($event, $server = "") {
 	}
 	
 	if ($event["id_agentmodule"] != 0) {
-		if (!empty($server)) { 
-			$module = meta_modules_get_agentmodule ($event["id_agentmodule"], $server['id']);
-		}
-		else {
-			$module = db_get_row_filter('tagente_modulo',array('id_agente_modulo' => $event["id_agentmodule"], 'delete_pending' => 0));
-		}
+		$module = db_get_row_filter('tagente_modulo',array('id_agente_modulo' => $event["id_agentmodule"], 'delete_pending' => 0));
 	}
 	else {
 		$module = array();
@@ -2081,6 +2073,7 @@ function events_page_details ($event, $server = "") {
 				);
 			
 			if (defined('METACONSOLE')) {
+				$graph_params["avg_only"] = 1;
 				// Set the server id
 				$graph_params["server"] = $server["id"];
 			}
@@ -2203,6 +2196,9 @@ function events_page_details ($event, $server = "") {
 	$table_details->data[] = $data;
 	
 	$details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
+	
+	if (!empty($server) && defined("METACONSOLE"))
+		metaconsole_restore_db();
 	
 	return $details;
 }

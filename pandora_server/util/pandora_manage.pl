@@ -20,6 +20,7 @@ use File::Basename;
 use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Encode qw(decode encode_utf8);
+use LWP::Simple;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -34,7 +35,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "6.0dev PS150325";
+my $version = "6.0dev PS150327";
 
 # save program name for logging
 my $progname = basename($0);
@@ -186,8 +187,48 @@ sub help_screen{
     print "\nSETUP:\n\n" unless $param ne '';
 	help_screen_line('--set_event_storm_protection', '<value>', "Enable (1) or disable (0) event \n\t  storm protection");
 	
+    print "\nTAGS\n\n" unless $param ne '';
+    help_screen_line('--create_tag', '<tag_name> <tag_description> [<tag_url>] [<tag_email>]', 'Create a new tag');
+    help_screen_line('--add_tag_to_user_profile', '<user_id> <tag_name> <group_name> <profile_name>', 'Add a tag to the given user profile');
+    help_screen_line('--add_tag_to_module', '<agent_name> <module_name> <tag_name>', 'Add a tag to the given module');
+
     print "\n";
 	exit;
+}
+
+###############################################################################
+# 
+###############################################################################
+sub api_call($$$;$$$) {
+	my ($pa_config, $op, $op2, $id, $id2, $other) = @_;
+	my $content = undef;
+
+	eval {
+		# Set the parameters for the POST request.
+		my $params = {};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
+		$params->{"user"} = $pa_config->{"console_user"};
+		$params->{"pass"} = $pa_config->{"console_pass"};
+		$params->{"op"} = $op;
+		$params->{"op2"} = $op2;
+		$params->{"id"} = $id;
+		$params->{"id2"} = $id2;
+		$params->{"other"} = $other;
+		$params->{"other_mode"} = "url_encode_separator_|";
+		
+		# Call the API.
+		my $ua = new LWP::UserAgent;
+		my $url = $pa_config->{"console_api_url"};
+		my $response = $ua->post($url, $params);
+				
+		if ($response->is_success) {
+			$content = $response->decoded_content();
+		} else {
+			$content = $response->decoded_content();
+		}
+	};
+
+	return $content;
 }
 
 ###############################################################################
@@ -4083,6 +4124,18 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1);
 			cli_recreate_collection();
 		}
+		elsif ($param eq '--create_tag') {
+			param_check($ltotal, 4, 2);
+			cli_create_tag();
+		} 
+		elsif ($param eq '--add_tag_to_user_profile') {
+			param_check($ltotal, 4);
+			cli_add_tag_to_user_profile();
+		} 
+		elsif ($param eq '--add_tag_to_module') {
+			param_check($ltotal, 3);
+			cli_add_tag_to_module();
+		} 
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -4281,5 +4334,77 @@ sub cli_create_local_component() {
 	$parameters{'ff_timeout'} = $ff_timeout unless !defined ($ff_timeout);
 	
 	my $component_id = enterprise_hook('pandora_create_local_component_from_hash',[$conf, \%parameters, $dbh]);
+}
 
+##############################################################################
+# Create a new tag.
+##############################################################################
+
+sub cli_create_tag() {
+	my ($tag_name, $tag_description, $tag_url, $tag_email) = @ARGV[2..5];
+
+	# Call the API.
+	my $result = api_call(\%conf, 'set', 'create_tag', undef, undef, "$tag_name|$tag_description|$tag_url|$tag_email");
+	print "\n$result\n";
+}
+
+##############################################################################
+# Add a tag to the specified profile and group. 
+##############################################################################
+
+sub cli_add_tag_to_user_profile() {
+	my ($user_id, $tag_name, $group_name, $profile_name) = @ARGV[2..5];
+
+	# Check the user.
+	my $user_exists = get_user_exists($dbh, $user_id);
+	exist_check($user_exists, 'user', $user_id);
+
+	# Check the group.
+	my $group_id;
+	if ($group_name eq 'All') {
+		$group_id = 0;
+	} else {
+		$group_id = get_group_id($dbh, $group_name);
+		exist_check($group_id, 'group', $group_name);
+	}
+
+	# Check the profile.
+	my $profile_id = get_profile_id($dbh, $profile_name);
+	exist_check($profile_id, 'profile', $profile_name);
+
+	# Make sure the tag exists.
+	my $tag_id = get_tag_id($dbh, $tag_name);
+	exist_check($tag_id, 'tag', $tag_name);
+
+	# Make sure the profile is associated to the user.
+	my $user_profile_id = get_user_profile_id($dbh, $user_id, $profile_id, $group_id);
+	exist_check($user_profile_id, 'given profile and group combination for user', $user_id);
+
+	# Call the API.
+	my $result = api_call(\%conf, 'set', 'tag_user_profile', $user_id, $tag_id, "$group_id|$profile_id");
+	print "\n$result\n";
+}
+
+##############################################################################
+# Add a tag to the specified profile and group. 
+##############################################################################
+
+sub cli_add_tag_to_module() {
+	my ($agent_name, $module_name, $tag_name) = @ARGV[2..4];
+
+	# Check the tag.
+	my $tag_id = get_tag_id($dbh, $tag_name);
+	exist_check($tag_id, 'tag', $tag_name);
+
+	# Check the agent.
+	my $agent_id = get_agent_id($dbh, $agent_name);
+	exist_check($agent_id, 'agent', $agent_name);
+
+	# Check the module.
+	my $module_id = get_agent_module_id($dbh, $module_name, $agent_id);
+	exist_check($module_id, 'module name', $module_name);
+
+	# Call the API.
+	my $result = api_call(\%conf, 'set', 'add_tag_module', $module_id, $tag_id);
+	print "\n$result\n";
 }

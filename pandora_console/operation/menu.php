@@ -136,8 +136,6 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 		
 		$firstLetterNameVisualToShow = array('_', ',', '[', '(');
 		
-		$sub2 = array();
-		
 		foreach ($layouts as $layout) {
 			if (! check_acl ($config["id_user"], $layout["id_group"], "AR")) {
 				continue;

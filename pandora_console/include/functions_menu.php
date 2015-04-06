@@ -41,6 +41,7 @@ function menu_print_menu (&$menu) {
 		$allsec2 = $sec2;
 	}
 	
+	//Open list of menu
 	echo '<ul'.(isset ($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
 	
 	foreach ($menu as $mainsec => $main) {
@@ -67,19 +68,19 @@ function menu_print_menu (&$menu) {
 		$submenu = false;
 		$classes = array ('menu_icon');
 		if (isset ($main["sub"])) {
-			$classes[] = 'has_submenu';
+			$classes[] = '';
 			$submenu = true;
 		}
 		if (!isset ($main["refr"]))
 			$main["refr"] = 0;
 		
 		if (($sec == $mainsec) && ($showSubsection)) {
-			$classes[] = 'selected';
+			$classes[] = '';
 		}
 		else {
-			$classes[] = 'not_selected';
+			$classes[] = '';
 			if ($extensionInMenuParameter == $mainsec)
-				$classes[] = 'selected';
+				$classes[] = '';
 		}
 		
 		$output = '';
@@ -171,13 +172,14 @@ function menu_print_menu (&$menu) {
 				) {
 				//If the subclass is selected and there are options and that options value is true
 				$class .= 'submenu_selected selected';
+				$menu_selected = true;
 				$selected = true;
 				$visible = true;
 			}
 			elseif (($sec2 == $subsec2 || $allsec2 == $subsec2|| $selected_submenu2) && !isset ($sub[$subsec2]["options"])) {
 				$class .= 'submenu_selected selected';
 				$selected = true;
-				
+				$menu_selected = true;
 				$hasExtensions = (array_key_exists('hasExtensions',$main)) ? $main['hasExtensions'] : false;
 				if (($extensionInMenuParameter != '') && ($hasExtensions))
 					$visible = true;
@@ -202,7 +204,7 @@ function menu_print_menu (&$menu) {
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
+				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" class="'.$class.'"><a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 				
 				if (isset($sub['sub2']) || $selected) {
 					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
@@ -217,7 +219,7 @@ function menu_print_menu (&$menu) {
 					$link_add = "";
 				}
 				
-				$submenu_output .= '<li'.($class ? ' class="'.$class.'"' : '').'>';
+				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" '.($class ? ' class="'.$class.'"' : '').'>';
 				
 				//Ini Add icon extension
 				$secExtension = null;
@@ -230,7 +232,7 @@ function menu_print_menu (&$menu) {
 				$secExtensionBool = false;
 				
 				if ($secExtensionBool) {
-					$imageIconDefault = 'images/extensions.png';
+					//$imageIconDefault = 'images/extensions.png';
 					if (strlen($sub["icon"]) > 0) {
 						$icon_enterprise = false;
 						if (isset($sub['enterprise'])) {
@@ -251,7 +253,7 @@ function menu_print_menu (&$menu) {
 						$imageIcon = $imageIconDefault;
 					}
 					
-					$submenu_output .= '<div style="background: url('.$imageIcon.') no-repeat; width: 16px; height: 16px; float: left; margin: 5px 0px 0px 3px;">&nbsp;</div>';
+					//$submenu_output .= '<div style="background: url('.$imageIcon.') no-repeat; width: 16px; height: 16px; float: left; margin: 5px 0px 0px 3px;">&nbsp;</div>';
 				}
 				
 				
@@ -274,7 +276,8 @@ function menu_print_menu (&$menu) {
 					$title = '';
 				}
 				
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
+				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' .
+										$sub["refr"] : '').$link_add.'"' . $title . '><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 				
 				if (isset($sub['sub2'])) {
 					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
@@ -305,7 +308,7 @@ function menu_print_menu (&$menu) {
 						$display = "";	
 					}
 					
-					$class = "submenu2";
+					$class = "sub_subMenu";
 					
 					// Define submenu2 class to draw tree image
 					if($count_sub2 >= count($sub['sub2'])) {
@@ -320,7 +323,7 @@ function menu_print_menu (&$menu) {
 				}
 				
 				//Add submenu2 to submenu string
-				$submenu_output .= "<ul class=submenu2 $display>";
+				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["text"]) . "' class=submenu2 $display>";
 				$submenu_output .= $submenu2_list;
 				$submenu_output .= "</ul>";
 			}
@@ -338,11 +341,17 @@ function menu_print_menu (&$menu) {
 			else {
 				continue;
 			}
-		} 
+		}
 		
+		if ($menu_selected)
+			$seleccionado = 'selected';
+		else
+			$seleccionado = '';
+			
 		//Print out the first level
-		$output .= '<li class="'.implode (" ", $classes).'" id="icon_'.$id.'">';
-		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>' . html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
+		$output .= '<li class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'" 
+						onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
+		$output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 		if ($submenu_output != '') {
 			//WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS
 			if ($visible || in_array ("selected", $classes)) {
@@ -352,16 +361,19 @@ function menu_print_menu (&$menu) {
 				$visible = false;
 			}
 			
-			$output .= '<ul class="submenu'.($visible ? '' : ' invisible').'">';
+			$output .= '<ul id="subicon_'.$id.'" class="submenu'.($visible ? '' : ' invisible').'">';
 			$output .= $submenu_output;
 			$output .= '</ul>';
 		}
 		$output .= '</li>';
 		echo $output;
+		$menu_selected = false;
 	}
+	
+	//Finish menu
 	echo '</ul>';
 	//Invisible UL for adding border-top
-	echo '<ul style="height: 0px;"><li>&nbsp;</li></ul></div>';
+	echo '</div>';
 }
 
 /**

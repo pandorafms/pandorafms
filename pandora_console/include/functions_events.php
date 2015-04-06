@@ -848,7 +848,12 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false) {
-		echo '<div class="nf">' . __('No events') . '</div>';
+		if ($return){
+			$returned = '<div class="nf">' . __('No events') . '</div>';
+			return $returned;
+		}
+		else	
+			echo '<div class="nf">' . __('No events') . '</div>';
 	}
 	else {
 		$table->id = 'latest_events_table';

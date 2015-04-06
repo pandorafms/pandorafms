@@ -111,8 +111,8 @@ li:hover ul { display: block; }
 	/* Positions it back where it should be */
 	border-left: 1px;
 }
-.menu li.has_submenu > img.toggle{
-	#visibility: visible;
+.menu li.has_submenu > a > div {
+	background: url(../../images/arrow.png) no-repeat 90% 50% !important;
 	z-index: 1; /* Positions it on top of the rest */
 }
 

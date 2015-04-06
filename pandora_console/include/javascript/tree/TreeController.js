@@ -46,7 +46,7 @@ TreeController = {
 						$group
 							.addClass("tree-root")
 							.hide()
-							.prepend('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/pandora.ico.gif" />');
+							.prepend('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/pandora.png" />');
 					}
 					// Normal group
 					else {

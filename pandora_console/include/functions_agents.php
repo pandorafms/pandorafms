@@ -21,6 +21,7 @@
 
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once('/include/functions_agents.php');
 
 /**
  * Check the agent exists in the DB.
@@ -1828,7 +1829,9 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		db_pandora_audit( "Agent management",
 			"Deleted agent '$agent_name'");
 		
-		
+		// Delete the agent from the metaconsole cache
+		enterprise_hook('agent_delete_from_cache', array($id_agent));
+
 		/* Break the loop on error */
 		if ($error)
 			break;

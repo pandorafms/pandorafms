@@ -734,17 +734,20 @@ sub db_process_insert($$$$;@) {
 ########################################################################
 ## SQL update.
 ########################################################################
-sub db_process_update($$$$$;@) {
-	my ($dbh, $table, $parameters, $where_column, $where_value, @values) = @_;
+sub db_process_update($$$$) {
+	my ($dbh, $table, $parameters, $conditions) = @_;
 	
 	my @columns_array = keys %$parameters;
 	my @values_array = values %$parameters;
+	my @where_columns = keys %$conditions;
+	my @where_values = values %$conditions;
 	
-	if (!defined($table) || $#columns_array == -1) {
+	if (!defined($table) || $#columns_array == -1 || $#where_columns == -1) {
 		return -1;
 		exit;
 	}
 	
+	# VALUES...
 	my $fields = '';
 	for (my $i = 0; $i <= $#values_array; $i++) {
 		if (!defined($values_array[$i])) {
@@ -756,12 +759,23 @@ sub db_process_update($$$$$;@) {
 		$fields = $fields .
 			" " . $RDBMS_QUOTE . "$columns_array[$i]" . $RDBMS_QUOTE . " = ?";
 	}
-	
-	push(@values_array, $where_value);
-	
+
+	# WHERE...
+	my $where = '';
+	for (my $i = 0; $i <= $#where_columns; $i++) {
+		if (!defined($where_values[$i])) {
+			$where_values[$i] = '';
+		}
+		if ($i > 0 && $i <= $#where_values) {
+			$where = $where.' AND ';
+		}
+		$where = $where .
+			" " . $RDBMS_QUOTE . "$where_columns[$i]" . $RDBMS_QUOTE . " = ?";
+	}
+
 	my $res = db_update ($dbh, "UPDATE $table
 		SET $fields
-		WHERE $where_column = ?", @values_array);
+		WHERE $where", @values_array, @where_values);
 	
 	return $res;
 }

@@ -101,6 +101,9 @@ sub pandora_startup () {
 	# Generate the encryption key after reading the passphrase.
 	$Config{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [\%Config, $Config{"encryption_passphrase"}]);
 
+	# Update the agent cache.
+	enterprise_hook('update_agent_cache', [\%Config, $DBH]) if ($Config{'metaconsole_agent_cache'} == 1);
+
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers
@@ -291,7 +294,7 @@ sub pandora_server_tasks ($) {
 						logger ($pa_config, "Updating module status and fired alert counts for agent " . $agent->{'nombre'}, 10);
 						
 						if ($agent->{'update_module_count'} == 1) {
-							pandora_update_agent_module_count ($dbh, $agent->{'id_agente'});
+							pandora_update_agent_module_count ($pa_config, $dbh, $agent->{'id_agente'});
 						}
 						
 						if ($agent->{'update_alert_count'} == 1) {

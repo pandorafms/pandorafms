@@ -2304,7 +2304,8 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 }
 
 function visual_map_get_items_parents($idVisual) {
-	$items = db_get_all_rows_filter('tlayout_data',array('id_layout' => $idVisual));
+	$items = db_get_all_rows_sql(sprintf("SELECT * FROM tlayout_data where id_layout = %s order by label",$idVisual));
+	//$items = db_get_all_fields_in_table('tlayout_data',array('id_layout' => $idVisual));
 	if ($items == false) {
 		$items = array();
 	}

@@ -19,6 +19,7 @@
  * @subpackage Agents
  */
 
+require_once($config['homedir'] . '/include/functions.php');
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . '/include/functions_users.php');
 enterprise_include_once('/include/functions_agents.php');

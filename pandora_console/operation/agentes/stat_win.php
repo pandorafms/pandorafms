@@ -55,9 +55,10 @@ if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
 }
 
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
-
+$label = str_replace('%3D', '=', get_parameter('label', ''));
+$label = base64_decode($label);
 $id = get_parameter('id');
-$label = base64_decode(get_parameter('label', ''));
+//$label = rawurldecode(urldecode(base64_decode(get_parameter('label', ''))));
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

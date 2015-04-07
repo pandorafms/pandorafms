@@ -88,6 +88,7 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
+$time_compare_overlapped = false;
 
 //Added for events items
 $filter_event_validated = false;
@@ -188,6 +189,9 @@ switch ($action) {
 						$projection_period = $item['top_n_value'];
 						$period_pg = $item['period'];
 					}
+					
+					// HACK it is saved in show_graph field.
+					$time_compare_overlapped  = $item['show_graph'];
 					break;
 				case 'prediction_date':
 					$description = $item['description'];
@@ -1029,6 +1033,14 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_radio_button ('radiobutton_max_min_avg', 2, '', $top_n);
 				echo __('Avg');
 				html_print_radio_button ('radiobutton_max_min_avg', 3, '', $top_n);
+				?>
+			</td>
+		</tr>
+		<tr id="row_time_compare_overlapped" style="" class="datos">
+			<td><?php echo __('Time compare (Overlapped)');?></td>
+			<td>
+				<?php
+				html_print_checkbox('time_compare_overlapped', 1, $time_compare_overlapped);
 				?>
 			</td>
 		</tr>
@@ -2002,6 +2014,7 @@ function chooseType() {
 	$("#row_show_graph").hide();
 	$("#row_max_min_avg").hide();
 	$("#row_only_avg").hide();
+	$("#row_time_compare_overlapped").hide();
 	$("#row_quantity").hide();
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
@@ -2045,6 +2058,7 @@ function chooseType() {
 			$("#row_event_graphs").show();
 			break;
 		case 'simple_graph':
+			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
 			// The break hasn't be forgotten, this element
 			// only should be shown on the simple graphs.
@@ -2055,6 +2069,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
+			$("#row_time_compare_overlapped").show();
 			break;
 		case 'projection_graph':
 			$("#row_description").show();

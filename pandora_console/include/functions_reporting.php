@@ -3510,12 +3510,29 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$urlImage = ui_get_full_url(false, false, false, false);
 				
-				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
-					false, $sizgraph_w, $sizgraph_h, '', '', false, $only_avg, false,
-					$report["datetime"], $only_image, $urlImage);
+				$data[0] = grafico_modulo_string (
+					$content['id_agent_module'],
+					$content['period'],
+					false,
+					$sizgraph_w,
+					$sizgraph_h,
+					'',
+					'',
+					false,
+					$only_avg,
+					false,
+					$report["datetime"],
+					$only_image,
+					$urlImage);
 				
 			}
 			else {
+				// HACK it is saved in show_graph field.
+				$time_compare_overlapped = false;
+				if ($content['show_graph']) {
+					$time_compare_overlapped = 'overlapped';
+				}
+				
 				
 				$data[0] = grafico_modulo_sparse(
 					$content['id_agent_module'],
@@ -3538,7 +3555,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					1,
 					false,
 					'',
-					false,
+					$time_compare_overlapped,
 					true);
 			}
 			
@@ -3657,11 +3674,35 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data_desc);
 			}
 			
+			// HACK it is saved in show_graph field.
+			$time_compare_overlapped = false;
+			if ($content['show_graph']) {
+				$time_compare_overlapped = 'overlapped';
+			}
+			
 			$data = array ();
-			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
-				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', true, 0, true, $only_image,
-				ui_get_full_url(false, false, false, false));
+			$data[0] = grafico_modulo_sparse(
+				$content['id_agent_module'],
+				$content['period'],
+				false,
+				$sizgraph_w,
+				$sizgraph_h,
+				'',
+				'',
+				false,
+				true,
+				true,
+				$report["datetime"],
+				'',
+				true,
+				0,
+				true, 
+				only_image,
+				ui_get_full_url(false, false, false, false),
+				1,
+				false,
+				'',
+				$time_compare_overlapped);
 			
 			/*$data[0] = 	graphic_combined_module(
 				$modules,

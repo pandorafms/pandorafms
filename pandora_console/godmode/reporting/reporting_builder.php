@@ -851,11 +851,19 @@ switch ($action) {
 								$good_format = true;
 								break;
 							case 'availability':
-								$good_format = true;
 								// HACK it is saved in show_graph field.
 								// Show interfaces instead the modules
 								$values['show_graph'] =
 									get_parameter('checkbox_show_address_agent');
+								$good_format = true;
+								break;
+							case 'simple_graph':
+							case 'simple_baseline_graph':
+								// HACK it is saved in show_graph field.
+								$values['show_graph'] =
+									(int)get_parameter('time_compare_overlapped');
+								$values['period'] = get_parameter('period');
+								$good_format = true;
 								break;
 							default:
 								$values['period'] = get_parameter('period');
@@ -1073,11 +1081,27 @@ switch ($action) {
 								$values['top_n_value'] = get_parameter('max_values');
 								$good_format = true;
 								break;
+							case 'availability':
+								// HACK it is saved in show_graph field.
+								// Show interfaces instead the modules
+								$values['show_graph'] =
+									get_parameter('checkbox_show_address_agent');
+								$good_format = true;
+								break;
+							case 'simple_graph':
+							case 'simple_baseline_graph':
+								// HACK it is saved in show_graph field.
+								$values['show_graph'] =
+									(int)get_parameter('time_compare_overlapped');
+								$values['period'] = get_parameter('period');
+								$good_format = true;
+								break;
 							default: 
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
+								$values['show_graph'] = get_parameter('combo_graph_options');
 								$good_format = true;
 						}
 						
@@ -1125,7 +1149,6 @@ switch ($action) {
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown',0);
 						$values['exception_condition'] = (int)get_parameter('radiobutton_exception_condition', 0);
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
-						$values['show_graph'] = get_parameter('combo_graph_options');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
 						$values['server_name'] = get_parameter ('server_name');

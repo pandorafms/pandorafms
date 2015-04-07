@@ -705,8 +705,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}*/
 	
 	if ($show_unknown) {
-		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
-		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
+		$legend['unknown' . $series_suffix] = __('Unknown') . $series_suffix_str;
+		$chart_extra_data['legend_unknown'] = $legend['unknown' . $series_suffix_str];
 	}
 }
 
@@ -720,7 +720,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	
 	global $config;
 	global $graphic_type;
-	
 	
 	$flash_chart = $config['flash_charts'];
 	

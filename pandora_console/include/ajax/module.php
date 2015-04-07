@@ -66,8 +66,9 @@ if ($search_modules) {
 
 
 if ($get_module_detail) {
-	
+	// This script is included manually to be included after jquery and avoid error
 	ui_include_time_picker();
+	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 	
 	$module_id = (int)get_parameter('id_module');
 	$period = get_parameter("period", SECONDS_1DAY);
@@ -80,8 +81,8 @@ if ($get_module_detail) {
 	
 	
 	$group = agents_get_agentmodule_group ($module_id);
-	$agentId = get_parameter("id_agent");
-	$server_name = get_parameter('server_name');
+	$agentId = (int) get_parameter("id_agent");
+	$server_name = (string) get_parameter('server_name');
 	
 	if (defined ('METACONSOLE')) {
 		$server = metaconsole_get_connection ($server_name);
@@ -128,7 +129,7 @@ if ($get_module_detail) {
 	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name . "\", 0, -1)'>". html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
 	$formtable->rowspan[0][3] = 2;
 	$formtable->cellstyle[0][3] = 'vertical-align: middle;';
-
+	
 	$formtable->data[1][0] = html_print_radio_button_extended(
 		"selection_mode", 'range','', $selection_mode, false, '',
 		'style="margin-right: 15px;"', true) . __("Specify time range");
@@ -285,9 +286,8 @@ if ($get_module_detail) {
 		html_print_table($table);
 	}
 	
-	if (defined ('METACONSOLE')) {
+	if (defined ('METACONSOLE'))
 		metaconsole_restore_db();
-	}
 	
 	return;
 }

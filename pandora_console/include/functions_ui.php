@@ -2379,8 +2379,8 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	}
 	
 	if ($godmode == true) {
-		$type = "nomn";
-		$type2 = "menu_tab_frame";
+		$type = "view";
+		$type2 = "menu_tab_frame_view";
 		$separator_class = "separator";
 	} 
 	else {

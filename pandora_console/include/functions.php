@@ -1874,6 +1874,24 @@ function get_acl_column($access) {
 		case "EM":
 			return "event_management";
 			break;
+		case "MR":
+			return "map_view";
+			break;
+		case "MW":
+			return "map_edit";
+			break;
+		case "MM":
+			return "map_management";
+			break;
+		case "VR":
+			return "vconsole_view";
+			break;
+		case "VW":
+			return "vconsole_edit";
+			break;
+		case "VM":
+			return "vconsole_management";
+			break;
 		default:
 			return "";
 			break;

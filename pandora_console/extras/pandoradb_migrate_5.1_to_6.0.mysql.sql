@@ -70,3 +70,17 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES  ('post_process_custom_values', 
 ALTER TABLE `tnetwork_map` ADD COLUMN `id_tag` int(11) DEFAULT 0;
 ALTER TABLE `tnetwork_map` ADD COLUMN `store_group` int(11) DEFAULT 0;
 UPDATE `tnetwork_map` SET `store_group` = `id_group`;
+
+-- ---------------------------------------------------------------------
+-- Table `tperfil`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tperfil` ADD COLUMN `map_view` tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE `tperfil` ADD COLUMN `map_edit` tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE `tperfil` ADD COLUMN `map_management` tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE `tperfil` ADD COLUMN `vconsole_view` tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE `tperfil` ADD COLUMN `vconsole_edit` tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE `tperfil` ADD COLUMN `vconsole_management` tinyint(1) NOT NULL DEFAULT 0;
+
+UPDATE `tperfil` SET `map_view` = 1, `vconsole_view` = 1 WHERE `report_view` = 1;
+UPDATE `tperfil` SET `map_edit` = 1, `vconsole_edit` = 1 WHERE `report_edit` = 1;
+UPDATE `tperfil` SET `map_management` = 1, `vconsole_management` = 1 WHERE `report_management` = 1;

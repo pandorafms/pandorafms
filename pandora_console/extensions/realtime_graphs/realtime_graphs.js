@@ -176,7 +176,6 @@ function clearGraph() {
 	if (data.length == 0) {				
 		return;
 	}
-	console.log(data);
 	
 	for(i = 0; i < data[0].data.length; i ++) {
 		data[0].data[i][1] = 0;

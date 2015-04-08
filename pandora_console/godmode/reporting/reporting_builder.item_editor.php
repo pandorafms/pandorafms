@@ -64,10 +64,10 @@ $top_n_value = 10;
 $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
 $modulegroup = 0;
-$period = 86400;
+$period = SECONDS_1DAY;
 // Added support for projection graphs
-$period_pg = 432000;
-$projection_period = 432000;
+$period_pg = SECONDS_5DAY;
+$projection_period = SECONDS_5DAY;
 $only_display_wrong = 0;
 // Added support for prediction date report
 $min_interval = '0.00';
@@ -516,6 +516,8 @@ $urlForm = $config['homeurl'] .
 
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
+
+
 ?>
 <table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="98%">
 	<tbody>
@@ -1099,7 +1101,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
-		<tr id="row_show_" style="" class="datos">
+		<tr id="row_show_resume" style="" class="datos">
 			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
 			<td>
 				<?php
@@ -1164,6 +1166,8 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 	</tbody>
 </table>
+<br />
+<br />
 <?php
 print_SLA_list('95%', $action, $idItem);
 print_General_list('95%', $action, $idItem, $type);

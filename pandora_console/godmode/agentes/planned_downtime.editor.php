@@ -159,6 +159,9 @@ if ($create_downtime || $update_downtime) {
 	else if ($type_execution == 'once' && $datetime_from >= $datetime_to) {
 		ui_print_error_message(__('Not created. Error inserting data') . ". " .__('The end date must be higher than the start date'));
 	}
+	else if ($type_execution == 'once' && $datetime_to <= $now) {
+		ui_print_error_message(__('Not created. Error inserting data') . ". " .__('The end date must be higher than the current time'));
+	}
 	else if ($type_execution == 'periodically'
 			&& (($type_periodicity == 'weekly' && $periodically_time_from >= $periodically_time_to)
 				|| ($type_periodicity == 'monthly' && $periodically_day_from == $periodically_day_to && $periodically_time_from >= $periodically_time_to))) {
@@ -216,7 +219,6 @@ if ($create_downtime || $update_downtime) {
 					'description' => $description,
 					'date_from' => $datetime_from,
 					'date_to' => $datetime_to,
-					'executed' => 0,
 					'id_group' => $id_group,
 					'only_alerts' => 0,
 					'monday' => $monday,
@@ -307,18 +309,22 @@ if ($id_downtime > 0) {
 	$type_downtime = $result['type_downtime'];
 	$type_execution = $result['type_execution'];
 	$type_periodicity = $result['type_periodicity'];
+	$executed = $result['executed'];
 	
 	if ($id_group == 0)
 		$id_group = $result['id_group'];
 }
 
+// when the planned down time is in execution, only action to postpone on once type is enabled and the other are disabled.
+$disabled_in_execution = $executed ? 1 : 0;
+
 $table->class = 'databox_color';
 $table->width = '98%';
 $table->data = array ();
 $table->data[0][0] = __('Name');
-$table->data[0][1] = html_print_input_text ('name', $name, '', 25, 40, true);
+$table->data[0][1] = html_print_input_text ('name', $name, '', 25, 40, true, $disabled_in_execution);
 $table->data[1][0] = __('Group');
-$table->data[1][1] = html_print_select_groups(false, "AW", true, 'id_group', $id_group, '', '', 0, true);
+$table->data[1][1] = html_print_select_groups(false, "AW", true, 'id_group', $id_group, '', '', 0, true, false, true, '', $disabled_in_execution);
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 3, 35, $description, '', true);
 
@@ -329,11 +335,12 @@ $table->data[3][1] = html_print_select(array('quiet' => __('Quiet'),
 	'disable_agents' => __('Disabled Agents'),
 	'disable_agents_alerts' => __('Disabled only Alerts')),
 	'type_downtime', $type_downtime, 'change_type_downtime()', '', 0, true, false, true,
-	'');
+	'', $disabled_in_execution);
 $table->data[4][0] = __('Execution');
 $table->data[4][1] = html_print_select(array('once' => __('Once'),
 	'periodically' => __('Periodically')),
-	'type_execution', $type_execution, 'change_type_execution();', '', 0, true);
+	'type_execution', $type_execution, 'change_type_execution();', '', 0, true,
+	false, true, '', $disabled_in_execution);
 
 $days = array_combine(range(1, 31), range(1, 31));
 $table->data[5][0] = __('Configure the time') . "&nbsp;" . ui_print_help_icon ('planned_downtime_time', true);;
@@ -345,9 +352,11 @@ $table->data[5][1] = "
 					__('From:') .
 					"</td>
 				<td>".
-				html_print_input_text ('once_date_from', $once_date_from, '', 10, 10, true) .
+				html_print_input_text_extended ('once_date_from', $once_date_from, '', 10, 10, true,
+					$disabled_in_execution, '', $disabled_in_execution ? "disabled=disabled" : '') .
 				ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
-				html_print_input_text ('once_time_from', $once_time_from, '', 9, 9, true) .
+				html_print_input_text_extended ('once_time_from', $once_time_from, '', 9, 9, true, 
+					$disabled_in_execution, '', $disabled_in_execution ? "disabled=disabled" : '') .
 				ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
 				"</td>
 			</tr>
@@ -372,7 +381,8 @@ $table->data[5][1] = "
 							'weekly' => __('Weekly'),
 							'monthly' => __('Monthly')),
 						'type_periodicity', $type_periodicity,
-						'change_type_periodicity();', '', 0, true) .
+						'change_type_periodicity();', '', 0, true,
+						false, true, '', $disabled_in_execution) .
 				"</td>
 			</tr>
 			<tr>
@@ -380,25 +390,25 @@ $table->data[5][1] = "
 					<table id='weekly_item' style='display: none;'>
 						<tr>
 							<td>" . __('Mon') .
-							html_print_checkbox ('monday', 1, $monday, true) .
+							html_print_checkbox ('monday', 1, $monday, true, $disabled_in_execution) .
 							"</td>
 							<td>" . __('Tue') .
-							html_print_checkbox ('tuesday', 1, $tuesday, true) .
+							html_print_checkbox ('tuesday', 1, $tuesday, true, $disabled_in_execution) .
 							"</td>
 							<td>" . __('Wed') .
-							html_print_checkbox ('wednesday', 1, $wednesday, true) .
+							html_print_checkbox ('wednesday', 1, $wednesday, true, $disabled_in_execution) .
 							"</td>
 							<td>" . __('Thu') .
-							html_print_checkbox ('thursday', 1, $thursday, true) .
+							html_print_checkbox ('thursday', 1, $thursday, true, $disabled_in_execution) .
 							"</td>
 							<td>" . __('Fri') .
-							html_print_checkbox ('friday', 1, $friday, true) .
+							html_print_checkbox ('friday', 1, $friday, true, $disabled_in_execution) .
 							"</td>
 							<td>" . __('Sat') .
-							html_print_checkbox ('saturday', 1, $saturday, true) .
+							html_print_checkbox ('saturday', 1, $saturday, true, $disabled_in_execution) .
 							"</td>
 							<td>" . __('Sun') .
-							html_print_checkbox ('sunday', 1, $sunday, true) .
+							html_print_checkbox ('sunday', 1, $sunday, true, $disabled_in_execution) .
 							"</td>
 						</tr>
 					</table>
@@ -407,12 +417,14 @@ $table->data[5][1] = "
 							<td>" . __('From day:') . "</td>
 							<td>".
 								html_print_select($days,
-									'periodically_day_from', $periodically_day_from, '', '', 0, true) .
+									'periodically_day_from', $periodically_day_from, '', '', 0, true,
+									false, true, '', $disabled_in_execution) .
 							"</td>
 							<td>" . __('To day:') . "</td>
 							<td>".
 								html_print_select($days,
-									'periodically_day_to', $periodically_day_to, '', '', 0, true) .
+									'periodically_day_to', $periodically_day_to, '', '', 0, true,
+									false, true, '', $disabled_in_execution) .
 							"</td>
 							<td>" . ui_print_help_tip(__('The end day must be higher than the start day'), true) . "</td>
 						</tr>
@@ -423,7 +435,7 @@ $table->data[5][1] = "
 							<td>".
 							html_print_input_text (
 								'periodically_time_from',
-								$periodically_time_from, '', 7, 7, true) . 
+								$periodically_time_from, '', 7, 7, true, $disabled_in_execution) . 
 							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds').
 								".<br>".__('The end time must be higher than the start time'), true) .
 							"</td>
@@ -431,7 +443,7 @@ $table->data[5][1] = "
 							<td>".
 							html_print_input_text (
 								'periodically_time_to',
-								$periodically_time_to, '', 7, 7, true) .
+								$periodically_time_to, '', 7, 7, true, $disabled_in_execution) .
 							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds').
 								".<br>".__('The end time must be higher than the start time'), true) .
 							"</td>
@@ -498,7 +510,7 @@ if ($id_downtime > 0) {
 	}
 	
 	$disabled_add_button = false;
-	if (empty($data)) {
+	if (empty($data) || $disabled_in_execution) {
 		$disabled_add_button = true;
 	}
 	
@@ -589,11 +601,13 @@ if ($id_downtime > 0) {
 			if (($type_downtime != 'disable_agents_alerts')
 				&&  ($type_downtime != 'disable_agents')) {
 				
-				$data[5] = '<a href="javascript:show_editor_module(' . $downtime["id_agente"] . ');">' .
+				$href = $executed ? 'javascript:void(0);' : 'javascript:show_editor_module(' . $downtime["id_agente"] . ');';
+				$data[5] = '<a href="' . $href . '">' .
 					html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Delete'))) . "</a>";
 				
 			}
-			$data[5] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor'.
+			$href = $executed ? 'javascript:void(0);' : 'index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor';
+			$data[5] .= '<a href="' . $href .
 				'&amp;id_agent=' . $downtime["id_agente"] . 
 				'&amp;delete_downtime_agent=1' .
 				'&amp;id_downtime_agent=' . $downtime["id"] .

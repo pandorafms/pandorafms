@@ -17,10 +17,9 @@
 <tr><td>Tactical view<td>AR
 <tr><td>Network map view<td>AR
 <tr><td>Group view<td>AR
-<tr><td>Visual console edition<td>RW
 <tr><td>Create report<td>RW
 <tr><td>Create user custom-defined graph<td>RW
-<tr><td>View report, visual map and/or custom graph<td>RR
+<tr><td>View report or custom graph<td>RR
 <tr><td>Apply report template<td>RR
 <tr><td>Create report template<td>RM
 <tr><td>Create incident<td>IW
@@ -41,18 +40,18 @@
 <tr><td>SNMP Console view<td>AR
 <tr><td>Validate traps<td>IW
 <tr><td>Message<td>IW
-<tr><td>Cron jobs	<td>PM
-<tr><td>Tree view	<td>AR
-<tr><td>Update manager (Operation & Admin)	<td>PM
+<tr><td>Cron jobs <td>PM
+<tr><td>Tree view <td>AR
+<tr><td>Update manager (Operation & Admin)<td>PM
 <tr><td>Extension Module Group<td>AR
 <tr><td>Agent management<td>AW
-<tr><td>Remote agent configuration management <td>AW
+<tr><td>Remote agent configuration management<td>AW
 <tr><td>Assign alerts to agents<td>LW
 <tr><td>Define, alter and delete alert templates, actions and commands<td>LM
 <tr><td>Group management<td>PM
 <tr><td>Create inventory modules<td>PM
 <tr><td>Module management (includes all suboptions)<td>PM
-<tr><td>Massive management operations	<td>AW
+<tr><td>Massive management operations<td>AW
 <tr><td>Create agent<td>AW
 <tr><td>Duplicate remote configurations<td>AW
 <tr><td>Downtime management<td>AW
@@ -68,5 +67,9 @@
 <tr><td>Search bar<td>AR
 <tr><td>Policy management<td>AW
 <tr><td>Disable agent/module/alert<td>AD
+<tr><td>View visual console<td>VR
+<tr><td>Visual console edition<td>VW
+<tr><td>View network map<td>MR
+<tr><td>Network map edition<td>MW
 
 </table>

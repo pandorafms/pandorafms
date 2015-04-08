@@ -22,7 +22,7 @@
 <tr><td>Crear un visual console	<td>RW
 <tr><td>Crear un informe	<td>RW
 <tr><td>Crear una grafica combinada	<td>RW
-<tr><td>Ver informe, mapa, grafica, etc	<td>RR
+<tr><td>Ver informe, grafica, etc	<td>RR
 <tr><td>Aplicar una plantilla de informe<td>RR
 <tr><td>Crear una plantilla de informe<td>RM
 <tr><td>Crear incidente	<td>IW
@@ -70,6 +70,10 @@
 <tr><td>Barra busqueda	<td>AR
 <tr><td>Gestión de Políticas<td>AW
 <tr><td>Desactivar agente/módulo/alerta<td>AD
+<tr><td>Ver visual console<td>VR
+<tr><td>Crear un vicual console<td>VW
+<tr><td>Ver mapa de red<td>MR
+<tr><td>Editar mapa de red<td>MW
 
 </table>
 

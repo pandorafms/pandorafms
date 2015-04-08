@@ -298,20 +298,28 @@ function mainAgentsModules() {
 					echo "<td style='text-align: center;'>";
 					$win_handle = dechex(crc32($module_id.$module["name"]));
 					$graph_type = return_graphtype (modules_get_agentmodule_type($module_id));
-					$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module_id."&label=".rawurlencode(urlencode(base64_encode($module["name"])))."&refresh=600','day_".$win_handle."')";
+					$link ="winopeng('" .
+						"operation/agentes/stat_win.php?" .
+						"type=$graph_type&" .
+						"period=" . SECONDS_1DAY . "&" .
+						"id=" . $module_id . "&" .
+						"label=" . rawurlencode(
+							urlencode(
+								base64_encode($module["name"]))) . "&" .
+						"refresh=" . SECONDS_10MINUTES . "', 'day_".$win_handle."')";
 					
 					echo '<a href="javascript:'.$link.'">';
 					switch ($status) {
-						case 0:
+						case AGENT_MODULE_STATUS_NORMAL:
 							ui_print_status_image ('module_ok.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 1:
+						case AGENT_MODULE_STATUS_CRITICAL_BAD:
 							ui_print_status_image ('module_critical.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 2:
+						case AGENT_MODULE_STATUS_WARNING:
 							ui_print_status_image ('module_warning.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 3:
+						case AGENT_MODULE_STATUS_UNKNOWN:
 							ui_print_status_image ('module_unknown.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 4:

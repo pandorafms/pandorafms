@@ -413,10 +413,12 @@ $table->data['edit2'][1] = html_print_extended_select_for_time ('module_interval
 $table->data['edit2'][2] = __('Disabled');
 $table->data['edit2'][3] = html_print_select(array('' => __('No change'), '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
 
-$table->data['edit3'][0] = __('Post process').ui_print_help_icon ('postprocess', true);
+$table->data['edit3'][0] = __('Post process') .
+	ui_print_help_icon ('postprocess', true);
 $table->data['edit3'][1] = html_print_input_text ('post_process', '', '', 10, 15, true);
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '', '', 10, 15, true);
+
 $table->data['edit35'][0] = __('Target IP');
 $table->data['edit35'][1] = html_print_input_text ('ip_target', '', '', 15, 60, true);
 $table->data['edit35'][2] = __('SNMP version');
@@ -561,7 +563,10 @@ else {
 
 <script type="text/javascript">
 /* <![CDATA[ */
+
 $(document).ready (function () {
+	
+	
 	$("#id_agents").change(agent_changed_by_multiple_agents);
 	$("#module_name").change(module_changed_by_multiple_modules);
 	

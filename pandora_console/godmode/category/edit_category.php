@@ -119,7 +119,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 		echo "<td align=center>";
 		html_print_label (__("Name"),'name');
 		echo "</td>";
-		echo "<td align=center>"; 
+		echo "<td align=center>";
 		html_print_input_text ('name_category', $name_category); 
 		echo "</td>";
 	echo "</tr>";

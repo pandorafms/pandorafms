@@ -372,6 +372,8 @@ else {
 
 <script type="text/javascript">
 /* <![CDATA[ */
+
+
 $(document).ready (function () {
 	$("#id_agents").change(agent_changed_by_multiple_agents);
 	$("#module_name").change(module_changed_by_multiple_modules);
@@ -542,6 +544,7 @@ $(document).ready (function () {
 	$("#status_agents").change(function() {
 		$("#groups_select").trigger("change");
 	});
+	
 });
 /* ]]> */
 </script>

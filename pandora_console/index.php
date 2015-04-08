@@ -69,6 +69,7 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 session_start ();
 require_once ("include/config.php");
 
+
 // If metaconsole activated, redirect to it
 if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
@@ -167,7 +168,7 @@ if (strlen($search) > 0) {
 		$searchPage = true;
 }
 
-// Login process 
+// Login process
 if (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	include_once('include/functions_db.php'); //Include it to use escape_string_sql function
 	

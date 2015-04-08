@@ -52,8 +52,10 @@ else if ($update != '') {
 		'value' => $event_fields
 	);
 	//update 'event_fields' in tconfig table to keep the value at update.
-	$result = db_process_sql_update('tconfig', $values, array ('token' => 'event_fields'));
+	$result = db_process_sql_update('tconfig', $values,
+		array ('token' => 'event_fields'));
 }
+
 
 $result_selected = array();
 

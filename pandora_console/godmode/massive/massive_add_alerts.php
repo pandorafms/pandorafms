@@ -205,7 +205,10 @@ ui_require_jquery_file ('pandora.controls');
 
 <script type="text/javascript">
 /* <![CDATA[ */
+
 $(document).ready (function () {
+	
+	
 	$("#checkbox-recursion").click(function () {
 		$("#id_group").trigger("change");
 	});

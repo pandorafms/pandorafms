@@ -141,19 +141,23 @@ if ($option == '') {
 }
 
 $alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
-	. html_print_image ('images/op_alerts.png', true, array ('title' => __('Alerts operations')))
+	. html_print_image ('images/op_alerts.png', true,
+		array ('title' => __('Alerts operations')))
 	. '</a>', 'active' => $tab == 'massive_alerts');
 
 $userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
-	. html_print_image ('images/op_workspace.png', true, array ('title' => __('Users operations')))
+	. html_print_image ('images/op_workspace.png', true,
+		array ('title' => __('Users operations')))
 	. '</a>', 'active' => $tab == 'massive_users');
 
 $agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
-	. html_print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))
+	. html_print_image ('images/bricks.png', true,
+		array ('title' => __('Agents operations')))
 	. '</a>', 'active' => $tab == 'massive_agents');
 
 $modulestab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
-	. html_print_image ('images/brick.png', true, array ('title' => __('Modules operations')))
+	. html_print_image ('images/brick.png', true,
+		array ('title' => __('Modules operations')))
 	. '</a>', 'active' => $tab == 'massive_modules');
 
 

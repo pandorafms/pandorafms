@@ -70,6 +70,7 @@ if (is_ajax ()) {
 		
 		$fields_rows = array();
 		for ($i = 1; $i <= 10; $i++) {
+			
 			if (!empty($fields_descriptions[$i - 1])) {
 				$fdesc = $fields_descriptions[$i - 1] .
 					' <br><span style="font-size:xx-small; font-weight:normal;">' .

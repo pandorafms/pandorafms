@@ -472,9 +472,13 @@ if (!$meta) {
 }
 else {
 	$data[1] = __('Server') . $jump;
-	$data[1] .= html_print_select_from_sql(
-		'SELECT id, server_name FROM tmetaconsole_setup',
-		'server_id', $server_id, 'script', __('All'), '0', true);
+	if ($strict_user)
+		$data[1] .= html_print_select('','server_id',
+						$server_id, 'script', __('All'), '0', true);
+	else
+		$data[1] .= html_print_select_from_sql(
+						'SELECT id, server_name FROM tmetaconsole_setup',
+						'server_id', $server_id, 'script', __('All'), '0', true);
 }
 
 $table_advanced->data[] = $data;

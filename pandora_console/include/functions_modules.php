@@ -1379,8 +1379,6 @@ function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
 	
 	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
 	
-	//MIRAR SI ESTA ANTES DEL TIEMPO EL MODULO
-	
 	if (!is_numeric($date_init)) {
 		$date_init = strtotime($date_init);
 	}

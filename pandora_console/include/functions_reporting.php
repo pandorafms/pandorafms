@@ -400,11 +400,6 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	return $total;
 }
 
-function reporting_get_agentmodule_availability($id_agent_module, $period = 0, $timeFrom = null, $timeTo = null) {
-	global $config;
-	
-}
-
 /** 
  * Get SLA of a module.
  * 
@@ -5472,10 +5467,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$count_fails * modules_get_interval($item['id_agent_module']),
 							true);
 					}
-					
-					$availability_data =
-						reporting_get_agentmodule_availability(
-							$item['id_agent_module']);
 				}
 				
 				$data[] = $row;

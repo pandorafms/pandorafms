@@ -204,11 +204,13 @@ function menu_print_menu (&$menu) {
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" class="'.$class.'"><a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
+				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" class="'.$class.'">';
 				
-				if (isset($sub['sub2']) || $selected) {
-					//$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
+				if (isset ($sub["type"]) && $sub["subtype"] == "nolink") {
+					$submenu_output .= '<div class="flecha"><div class=" SubNoLink ' . $sub_tree_class . '">'.$sub["text"].'</div></div>';
 				}
+				else
+					$submenu_output .= '<a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 			}
 			else {
 				//This is an internal link
@@ -301,7 +303,7 @@ function menu_print_menu (&$menu) {
 				foreach ($sub['sub2'] as $key => $sub2) {
 					$count_sub2++;
 					
-					$link = "index.php?sec=".$sec."&sec2=".$key;
+					$link = "index.php?sec=".$subsec2."&sec2=".$key;
 					
 					//Display if one submenu2 was selected!
 					if (strpos($key, $sec2) !== false) {
@@ -354,8 +356,9 @@ function menu_print_menu (&$menu) {
 			$seleccionado = '';
 			
 		//Print out the first level
-		$output .= '<li class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'" 
-						onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
+		$output .= '<li class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'">';
+						//onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
+		$output .= '<div id="title_menu" style="color:#FFF">' . ui_print_truncate_text($main["text"] , 60). '</div>';
 		//$output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 		if ($submenu_output != '') {
 			//WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS

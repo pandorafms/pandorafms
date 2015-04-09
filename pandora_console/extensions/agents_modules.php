@@ -392,7 +392,7 @@ function mainAgentsModules() {
 		";
 }
 
-extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agents_modules/icon_menu.png', "v1r1");
+extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agents_modules/icon_menu.png', "v1r1","view");
 extensions_add_main_function('mainAgentsModules');
 
 ?>

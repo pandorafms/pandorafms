@@ -54,7 +54,7 @@ li:hover ul { display: block; }
 	padding: 9px;
 	margin-left: 0px;
 	color: #fff;
-	width: 88%;
+	width: 89%;
 }
 
 .menu li.subselected a{
@@ -113,6 +113,10 @@ li:hover ul { display: block; }
 }
 .menu li.has_submenu > a > div {
 	background: url(../../images/arrow.png) no-repeat 90% 50% !important;
+	z-index: 1; /* Positions it on top of the rest */
+}
+.menu li.has_submenu .flecha{
+	background: #222 url(../../images/arrow.png) no-repeat 90% 50% !important;
 	z-index: 1; /* Positions it on top of the rest */
 }
 

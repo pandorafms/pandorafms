@@ -352,11 +352,9 @@ $table->data[5][1] = "
 					__('From:') .
 					"</td>
 				<td>".
-				html_print_input_text_extended ('once_date_from', $once_date_from, '', 10, 10, true,
-					$disabled_in_execution, '', $disabled_in_execution ? "disabled=disabled" : '') .
+				html_print_input_text ('once_date_from', $once_date_from, '', 10, 10, true, $disabled_in_execution) .
 				ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
-				html_print_input_text_extended ('once_time_from', $once_time_from, '', 9, 9, true, 
-					$disabled_in_execution, '', $disabled_in_execution ? "disabled=disabled" : '') .
+				html_print_input_text ('once_time_from', $once_time_from, '', 9, 9, true, $disabled_in_execution) .
 				ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
 				"</td>
 			</tr>
@@ -1008,5 +1006,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 				}
 			});
 		}
+		// Disable datepickers when it has readonly attribute
+		$('input.hasDatepicker[readonly]').disable();
 	});
 </script>

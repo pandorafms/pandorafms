@@ -18,25 +18,65 @@ global $statusProcessInDB;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+require_once ($config['homedir'] . '/include/functions_visual_map.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
+enterprise_include_once('include/functions_visual_map.php');
+
+// Retrieve the visual console id
+set_unless_defined ($idVisualConsole, 0); // Set default
+$idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
+
+// Visual console creation tab and actions
+if ($activeTab == "data" && ($action == "new" || $action == "save")) {
+	$visualConsole = null;
+	
+	// General ACL
+	//$vconsole_read = check_acl ($config['id_user'], 0, "VR");
+	$vconsole_write = check_acl ($config['id_user'], 0, "VW");
+	$vconsole_manage = check_acl ($config['id_user'], 0, "VM");
+}
+// Retrieving the visual console data
+else if (!empty($idVisualConsole)) {
+	
+	// Load the visual console data
+	$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
+	
+	// The visual console should exist.
+	if (empty($visualConsole)) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access report builder");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	// The default group id is 0
+	set_unless_defined ($visualConsole['id_group'], 0);
+	
+	// ACL for the existing visual console
+	//$vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
+	$vconsole_write = check_acl ($config['id_user'], $visualConsole['id_group'], "VW");
+	$vconsole_manage = check_acl ($config['id_user'], $visualConsole['id_group'], "VM");
+}
+// The visual console should exist.
+// The only exception is the visual console creation.
+else {
+	db_pandora_audit("ACL Violation",
+		"Trying to access report builder");
+	require ("general/noaccess.php");
+	return;
+}
+
+// This section is only to manage the visual console
+if (!$vconsole_write && !$vconsole_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
 }
 
-require_once ($config['homedir'] . '/include/functions_visual_map.php');
-require_once($config['homedir'] . "/include/functions_agents.php");
-enterprise_include_once('include/functions_visual_map.php');
 
-$pure = (int)get_parameter('pure', 0);
-
-if (!empty($idVisualConsole)) {
-	$idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
-}
-else {
-	$idVisualConsole = get_parameter('id_visual_console', 0);
-}
+$pure = (int) get_parameter ('pure', 0);
+$refr = (int) get_parameter ('refr', $config['vc_refr']);
 
 $id_layout = 0;
 
@@ -52,8 +92,6 @@ $action = get_parameterBetweenListValues($action_name_parameter,
 	'new');
 
 $activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'wizard_services', 'editor'), 'data');
-
-$refr = (int) get_parameter ('refr', $config['vc_refr']);
 
 
 //Save/Update data in DB
@@ -71,16 +109,30 @@ switch ($activeTab) {
 			
 			case 'update':
 			case 'save':
-				$idGroup = get_parameter('id_group');
-				$background = get_parameter('background');
-				$visualConsoleName = get_parameter('name');
+				$idGroup = (int) get_parameter('id_group');
+				$background = (string) get_parameter('background');
+				$visualConsoleName = (string) get_parameter('name');
 				
-				$values = array('name' => $visualConsoleName,
-					'id_group' => $idGroup, 'background' => $background);
+				// ACL for the new visual console
+				//$vconsole_read_new = check_acl ($config['id_user'], $idGroup, "VR");
+				$vconsole_write_new = check_acl ($config['id_user'], $idGroup, "VW");
+				$vconsole_manage_new = check_acl ($config['id_user'], $idGroup, "VM");
+				
+				// The user should have permissions on the new group
+				if (!$vconsole_write_new && !$vconsole_manage_new) {
+					db_pandora_audit("ACL Violation",
+						"Trying to access report builder");
+					require ("general/noaccess.php");
+					exit;
+				}
+				
+				$values = array(
+						'name' => $visualConsoleName,
+						'id_group' => $idGroup, 
+						'background' => $background
+					);
 				
 				// If the background is changed the size is reseted
-				$visualConsole = db_get_row_filter('tlayout',
-					array('id' => $idVisualConsole));
 				$background_now = $visualConsole['background'];
 				if ($background_now != $background && $background) {
 					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
@@ -93,10 +145,18 @@ switch ($activeTab) {
 						$result = false;
 						if ($values['name'] != "" && $values['background'])
 							$result = db_process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
-						if ($result !== false && $values['background']) {
+						if ($result !== false) {
 							db_pandora_audit( "Visual console builder", "Update visual console #$idVisualConsole");
 							$action = 'edit';
 							$statusProcessInDB = array('flag' => true, 'message' => ui_print_success_message(__('Successfully update.'), '', true));
+							
+							// Return the updated visual console
+							$visualConsole = db_get_row_filter('tlayout',
+								array('id' => $idVisualConsole));
+							// Update the ACL
+							//$vconsole_read = $vconsole_read_new;
+							$vconsole_write = $vconsole_write_new;
+							$vconsole_manage = $vconsole_manage_new;
 						}
 						else {
 							db_pandora_audit( "Visual console builder", "Fail update visual console #$idVisualConsole");
@@ -116,6 +176,14 @@ switch ($activeTab) {
 								$action = 'edit';
 								$statusProcessInDB = array('flag' => true,
 									'message' => ui_print_success_message(__('Successfully created.'), '', true));
+								
+								// Return the updated visual console
+								$visualConsole = db_get_row_filter('tlayout',
+									array('id' => $idVisualConsole));
+								// Update the ACL
+								//$vconsole_read = $vconsole_read_new;
+								$vconsole_write = $vconsole_write_new;
+								$vconsole_manage = $vconsole_manage_new;
 							}
 							else {
 								db_pandora_audit( "Visual console builder", "Fail try to create visual console");
@@ -125,13 +193,9 @@ switch ($activeTab) {
 						}
 						break;
 				}
-				$visualConsole = db_get_row_filter('tlayout',
-					array('id' => $idVisualConsole));
 				break;
 			
 			case 'edit':
-				$visualConsole = db_get_row_filter('tlayout',
-					array('id' => $idVisualConsole));
 				$visualConsoleName = $visualConsole['name'];
 				$idGroup = $visualConsole['id_group'];
 				$background = $visualConsole['background'];
@@ -147,13 +211,11 @@ switch ($activeTab) {
 						json_encode(array())));
 				
 				$delete_items = json_decode($delete_items_json, true);
-				$id_visual_console = (int)get_parameter(
-					'id_visual_console', 0);
 				
 				if (!empty($delete_items)) {
 					$result = (bool)db_process_sql_delete(
 						'tlayout_data',
-						array('id_layout' => $id_visual_console,
+						array('id_layout' => $idVisualConsole,
 							'id' => $delete_items));
 					
 				}
@@ -185,6 +247,10 @@ switch ($activeTab) {
 					array('background' => $background,
 						'width' => $width,
 						'height' => $height),
+					array('id' => $idVisualConsole));
+				
+				// Return the updated visual console
+				$visualConsole = db_get_row_filter('tlayout',
 					array('id' => $idVisualConsole));
 				
 				//Update elements in visual map
@@ -246,12 +312,10 @@ switch ($activeTab) {
 				}
 				break;
 		}
-		$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 		$visualConsoleName = $visualConsole['name'];
 		$action = 'edit';
 		break;
 	case 'wizard':
-		$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 		$visualConsoleName = $visualConsole['name'];
 		$background = $visualConsole['background'];
 		switch ($action) {
@@ -430,7 +494,6 @@ switch ($activeTab) {
 		}
 		break;
 	case 'wizard_services':
-		$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 		$visualConsoleName = $visualConsole['name'];
 		switch ($action) {
 			case 'update':
@@ -453,9 +516,6 @@ switch ($activeTab) {
 			case 'new':
 			case 'update':
 			case 'edit':
-				$visualConsole = db_get_row_filter('tlayout',
-					array('id' => $idVisualConsole));
-				
 				$visualConsoleName = $visualConsole['name'];
 				$action = 'edit';
 				break;

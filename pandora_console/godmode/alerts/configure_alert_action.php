@@ -306,7 +306,7 @@ $(document).ready (function () {
 						$("[name=field" + i + "_value]").val(old_value);
 						$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
 					}
-					else{
+					else {
 						$("[name=field" + i + "_value]").val($("[name=field" + i + "_value]").val());
 						$("[name=field" + i + "_recovery_value]").val($("[name=field" + i + "_recovery_value]").val());
 					}					

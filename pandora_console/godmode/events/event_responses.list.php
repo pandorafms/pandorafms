@@ -25,7 +25,7 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
-if(!defined('METACONSOLE')){
+if(!defined('METACONSOLE')) {
 	echo '<br><br><div style="width:99%;text-align:right;">';
 	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
 	html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
@@ -78,7 +78,7 @@ foreach($event_responses as $response) {
 
 html_print_table($table);
 
-if(defined('METACONSOLE')){
+if(defined('METACONSOLE')) {
 	echo '<br><br><div style="width:100%;text-align:right;">';
 	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
 	html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));

@@ -176,7 +176,7 @@ $agents_with_templates_json = json_encode($agents_with_templates_json);
 
 echo "<input type='hidden' id='hidden-agents_with_templates' value='$agents_with_templates_json'>";
 
-echo '<div class="action-buttons" style="width: '. $table->width . '" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 html_print_input_hidden ('add', 1);
 html_print_submit_button (__('Add'), 'go', false, 'class="sub add"');
 echo '</div>';

@@ -125,6 +125,9 @@ function reporting_html_print_report($report, $mini = false) {
 		}
 		
 		switch ($item['type']) {
+			case 'availability':
+				reporting_html_availability($table, $item);
+				break;
 			case 'general':
 				reporting_html_general($table, $item);
 				break;
@@ -341,6 +344,93 @@ function reporting_html_text(&$table, $item) {
 	$table->colspan['data']['cell'] = 3;
 	$table->cellstyle['data']['cell'] = 'text-align: left;';
 	$table->data['data']['cell'] = $item['data'];
+}
+
+function reporting_html_availability(&$table, $item) {
+	
+	if (!empty($item["data"])) {
+		$table1->width = '99%';
+		$table1->data = array ();
+		$table1->head = array ();
+		$table1->head[0] = __('Agent');
+		// HACK it is saved in show_graph field.
+		// Show interfaces instead the modules
+		if ($item['kind_availability'] == 'address') {
+			$table1->head[1] = __('IP Address');
+		}
+		else {
+			$table1->head[1] = __('Module');
+		}
+		$table1->head[2] = __('# Checks');
+		$table1->head[3] = __('# Failed');
+		$table1->head[4] = __('% Fail');
+		$table1->head[5] = __('Poling time');
+		$table1->head[6] = __('Time unavailable');
+		$table1->head[7] = __('% Ok');
+		
+		$table1->style[0] = 'text-align: left';
+		$table1->style[1] = 'text-align: left';
+		$table1->style[2] = 'text-align: right';
+		$table1->style[3] = 'text-align: right';
+		$table1->style[4] = 'text-align: right';
+		$table1->style[5] = 'text-align: right';
+		$table1->style[6] = 'text-align: right';
+		$table1->style[7] = 'text-align: right';
+		
+		foreach ($item['data'] as $row) {
+			$table_row = array();
+			$table_row[] = $row['agent'];
+			$table_row[] = $row['availability_item'];
+			$table_row[] = $row['checks'];
+			$table_row[] = $row['failed'];
+			$table_row[] = $row['fail'];
+			$table_row[] = $row['poling_time'];
+			$table_row[] = $row['time_unavaliable'];
+			$table_row[] = $row['ok'];
+			
+			$table1->data[] = $table_row;
+		}
+	}
+	else {
+		$table->colspan['error']['cell'] = 3;
+		$table->data['error']['cell'] =
+			__('There are no Agent/Modules defined');
+	}
+	
+	$table->colspan[1][0] = 3;
+	$data = array();
+	$data[0] = html_print_table($table1, true);
+	array_push ($table->data, $data);
+	
+	if ($item['resume'] && !empty($item["data"])) {
+		$table1->width = '99%';
+		$table1->data = array ();
+		$table1->head = array ();
+		$table1->style = array();
+		$table1->head['min_text'] = '';
+		$table1->head['min'] = __('Min Value');
+		$table1->head['avg'] = __('Average Value');
+		$table1->head['max_text'] = '';
+		$table1->head['max'] = __('Max Value');
+		$table1->style['min_text'] = 'text-align: left';
+		$table1->style['min'] = 'text-align: right';
+		$table1->style['avg'] = 'text-align: right';
+		$table1->style['max_text'] = 'text-align: left';
+		$table1->style['max'] = 'text-align: right';
+		
+		$table1->data[] = array(
+			'min_text' => $item['resume']['min_text'],
+			'min' => format_numeric($item['resume']['min'], 2) . "%",
+			'avg' => format_numeric($item['resume']['avg'], 2) . "%",
+			'max_text' => $item['resume']['max_text'],
+			'max' => format_numeric($item['resume']['max'], 2) . "%"
+			);
+		
+		$table->colspan[2][0] = 3;
+		$data = array();
+		$data[0] = html_print_table($table1, true);
+		array_push ($table->data, $data);
+	}
 }
 
 function reporting_html_general(&$table, $item) {

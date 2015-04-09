@@ -231,7 +231,7 @@ else {
 	
 }
 
-echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'" style="margin-right: 0px;">';
+echo '<form method="post" action="' . $url . '&pure=' . $config["pure"] . '" style="margin-right: 0px;">';
 html_print_table ($table);
 html_print_input_hidden ('id_report', $id_report);
 echo '</form>';

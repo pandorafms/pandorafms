@@ -471,7 +471,7 @@ print_alert_template_steps ($step, $id);
 
 $table->id = 'template';
 $table->width = '98%';
-if(defined("METACONSOLE")){
+if(defined("METACONSOLE")) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head[0] = __('Create Template');
@@ -479,7 +479,7 @@ if(defined("METACONSOLE")){
 	$table->headstyle[0] = 'text-align: center';
 }
 $table->style = array ();
-if(!defined("METACONSOLE")){
+if(!defined("METACONSOLE")) {
 	$table->style[0] = 'font-weight: bold; vertical-align: top';
 	$table->style[2] = 'font-weight: bold; vertical-align: top';
 }

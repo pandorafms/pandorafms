@@ -155,6 +155,12 @@ function reporting_make_reporting_data($id_report, $date, $time,
 						$report,
 						$content);
 				break;
+			case 'availability':
+				$report['contents'][] =
+					reporting_availability(
+						$report,
+						$content);
+				break;
 			case 'sql':
 				$report['contents'][] = reporting_sql(
 					$report,
@@ -608,6 +614,232 @@ function reporting_sql($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
+function reporting_availability($report, $content) {
+	
+	global $config;
+	
+	$return = array();
+	$return['type'] = 'availability';
+	$return['subtype'] = $content['group_by_agent'];
+	$return['resume'] = $content['show_resume'];
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Availability');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text(
+		$report,
+		$content);
+	
+	if ($content['show_graph']) {
+		$return['kind_availability'] = "address";
+	}
+	else {
+		$return['kind_availability'] = "module";
+	}
+	
+	
+	$sql = sprintf("
+		SELECT id_agent_module,
+			server_name, operation
+		FROM treport_content_item
+		WHERE id_report_content = %d",
+		$content['id_rc']);
+	
+	$items = db_process_sql ($sql);
+	
+	
+	$data = array();
+	
+	$avg = 0;
+	$min = null;
+	$min_text = "";
+	$max = null;
+	$max_text = "";
+	$count = 0;
+	foreach ($items as $item) {
+		//aaMetaconsole connection
+		$server_name = $item ['server_name'];
+		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+			$connection = metaconsole_get_connection($server_name);
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				//ui_print_error_message ("Error connecting to ".$server_name);
+				continue;
+			}
+		}
+		
+		if (modules_is_disable_agent($item['id_agent_module'])) {
+			continue;
+		}
+		
+		$row = array();
+		
+		$text = "";
+		
+		// HACK it is saved in show_graph field.
+		// Show interfaces instead the modules
+		if ($content['show_graph']) {
+			$text = $row['availability_item'] = agents_get_address(
+				modules_get_agentmodule_agent($item['id_agent_module']));
+			
+			if (empty($text)) {
+				$text = $row['availability_item'] = __('No Address');
+			}
+		}
+		else {
+			$text = $row['availability_item'] = modules_get_agentmodule_name(
+				$item['id_agent_module']);
+		}
+		$row['agent'] = modules_get_agentmodule_agent_name(
+			$item['id_agent_module']);
+		
+		$text = $row['agent'] . " (" . $text . ")";
+		
+		$count_checks = modules_get_count_datas(
+			$item['id_agent_module'],
+			$report["datetime"] - $content['period'],
+			$report["datetime"]);
+		
+		
+		if (empty($count_checks)) {
+			$row['checks'] = __('Unknown');
+			$row['failed'] = __('Unknown');
+			$row['fail'] = __('Unknown');
+			$row['poling_time'] = __('Unknown');
+			$row['time_unavaliable'] = __('Unknown');
+			$row['ok'] = __('Unknown');
+			
+			$percent_ok = 0;
+		}
+		else {
+			$count_fails = count(
+				modules_get_data_with_value(
+					$item['id_agent_module'],
+					$report["datetime"] - $content['period'],
+					$report["datetime"],
+					0, true));
+			$percent_ok = (($count_checks - $count_fails) * 100) / $count_checks;
+			$percent_fail = 100 - $percent_ok;
+			
+			$row['ok'] = format_numeric($percent_ok, 2) . " %";
+			$row['fail'] = format_numeric($percent_fail, 2) . " %";
+			$row['checks'] = format_numeric($count_checks, 2);
+			$row['failed'] = format_numeric($count_fails ,2);
+			$row['poling_time'] = human_time_description_raw(
+				($count_checks - $count_fails) * modules_get_interval($item['id_agent_module']),
+				true);
+			$row['time_unavaliable'] = "-";
+			if ($count_fails > 0) {
+				$row['time_unavaliable'] = human_time_description_raw(
+					$count_fails * modules_get_interval($item['id_agent_module']),
+					true);
+			}
+		}
+		
+		$data[] = $row;
+		
+		
+		$avg = (($avg * $count) + $percent_ok) / ($count + 1);
+		if (is_null($min)) {
+			$min = $percent_ok;
+			$min_text = $text;
+		}
+		else {
+			if ($min > $percent_ok) {
+				$min = $percent_ok;
+				$min_text = $text;
+			}
+		}
+		if (is_null($max)) {
+			$max = $percent_ok;
+			$max_text = $text;
+		}
+		else {
+			if ($max < $percent_ok) {
+				$max = $percent_ok;
+				$max_text = $text;
+			}
+		}
+		
+		//Restore dbconnection
+		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+			metaconsole_restore_db();
+		}
+		
+		$count++;
+	}
+	
+	
+	switch ($content['order_uptodown']) {
+		case REPORT_ITEM_ORDER_BY_AGENT_NAME:
+			$temp = array();
+			foreach ($data as $row) {
+				$i = 0;
+				foreach ($temp as $t_row) {
+					if (strcmp($row['agent'], $t_row['agent']) < 0) {
+						break;
+					}
+					
+					$i++;
+				}
+				
+				array_splice($temp, $i, 0, array($row));
+			}
+			
+			$data = $temp;
+			break;
+		case REPORT_ITEM_ORDER_BY_ASCENDING:
+			$temp = array();
+			foreach ($data as $row) {
+				$i = 0;
+				foreach ($temp as $t_row) {
+					if (strcmp($row['availability_item'], $t_row['availability_item']) < 0) {
+						break;
+					}
+					
+					$i++;
+				}
+				
+				array_splice($temp, $i, 0, array($row));
+			}
+			
+			$data = $temp;
+			break;
+		case REPORT_ITEM_ORDER_BY_DESCENDING:
+			$temp = array();
+			foreach ($data as $row) {
+				$i = 0;
+				foreach ($temp as $t_row) {
+					
+					if (strcmp($row['availability_item'], $t_row['availability_item']) > 0) {
+						break;
+					}
+					
+					$i++;
+				}
+				
+				array_splice($temp, $i, 0, array($row));
+			}
+			
+			$data = $temp;
+			break;
+	}
+	
+	
+	$return["data"] = $data;
+	$return["resume"] = array();
+	$return["resume"]['min_text'] = $min_text;
+	$return["resume"]['min'] = $min;
+	$return["resume"]['avg'] = $avg;
+	$return["resume"]['max_text'] = $max_text;
+	$return["resume"]['max'] = $max;
+	
+	
+	return reporting_check_structure_content($return);
+}
+
 function reporting_general($report, $content) {
 	
 	global $config;
@@ -992,6 +1224,12 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				
 			}
 			else {
+				// HACK it is saved in show_graph field.
+				$time_compare_overlapped = false;
+				if ($content['show_graph']) {
+					$time_compare_overlapped = 'overlapped';
+				}
+				
 				$return['chart'] = grafico_modulo_sparse(
 					$content['id_agent_module'],
 					$content['period'],
@@ -1013,7 +1251,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					1,
 					false,
 					'',
-					false,
+					$time_compare_overlapped,
 					true);
 			}
 			break;

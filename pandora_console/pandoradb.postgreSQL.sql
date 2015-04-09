@@ -738,7 +738,13 @@ CREATE TABLE "tperfil" (
 	"event_view" SMALLINT NOT NULL default 0,
 	"event_edit" SMALLINT NOT NULL default 0,
 	"event_management" SMALLINT NOT NULL default 0,
-	"agent_disable" SMALLINT NOT NULL default 0
+	"agent_disable" SMALLINT NOT NULL default 0,
+	"map_view" SMALLINT NOT NULL default 0,
+	"map_edit" SMALLINT NOT NULL default 0,
+	"map_management" SMALLINT NOT NULL default 0,
+	"vconsole_view" SMALLINT NOT NULL default 0,
+	"vconsole_edit" SMALLINT NOT NULL default 0,
+	"vconsole_management" SMALLINT NOT NULL default 0
 );
 
 -- ---------------------------------------------------------------------

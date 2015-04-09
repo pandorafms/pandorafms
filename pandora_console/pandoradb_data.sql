@@ -38,7 +38,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('graph_res','5'),
 ('step_compact','1'),
 ('db_scheme_version','6.0dev'),
-('db_scheme_build','PD150406'),
+('db_scheme_build','PD150408'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
@@ -279,7 +279,7 @@ INSERT INTO `tusuario_perfil` (`id_up`, `id_usuario`, `id_perfil`, `id_grupo`, `
 -- Dumping data for table `tperfil`
 --
 
-INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,1,1,0,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,0,1),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,1,1,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
 
 --
 -- Dumping data for table `tnews`

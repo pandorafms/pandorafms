@@ -246,7 +246,12 @@ if (is_ajax ()) {
 			
 			foreach ($idAgents as $idA) {
 				if (empty($metaconsole_server_name)) {
-					$row = explode ('|', $idA);
+					if (strstr($idA, "|@_@|")) {
+							$row = explode ('|@_@|', $idA);
+					}
+					else {
+						$row = explode ('|', $idA);
+					}
 					$server_name = $row[0];
 					$id_agent = $row [1];
 				}

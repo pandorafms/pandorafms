@@ -2191,14 +2191,14 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 	font-weight: bold;
 }
 
-.menu li {
-     background-color: #fff !important;
-}
-
 ul.operation li a:hover  {
 	#font-weight: bold;
 }
 
+.menu_icon:hover{
+	background-color: #585858;
+}
+/*
 ul.operation ul.submenu li a:hover {
 	background: #373737 url('../../images/menu_op_mark.png') repeat-y right;
 	#font-weight: bold;
@@ -2237,7 +2237,7 @@ ul.godmode ul.submenu li.selected>a {
 ul.godmode ul.submenu li.selected .SubNoLink {
 	background: url('../../images/menu_gm_mark.png') repeat-y right !important;
 }
-
+*/
 li.links a:hover  {
 	#font-weight: bold;
 }
@@ -2279,6 +2279,7 @@ li.links a:hover  {
 	border-top-right-radius: 5px;
 	border-right-style: solid;
 	border-right-width: 0px;
+
 }
 
 input#text-id_parent.ac_input, input, textarea, select {

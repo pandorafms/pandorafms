@@ -32,7 +32,7 @@
 	margin: 0;
 }
 .menu li.selected {
-	background-color: #80BA27 !important;
+	box-shadow: inset 4px 0 #00AF21;
 }
 
 .menu li a {
@@ -43,18 +43,14 @@
 	text-decoration:none;
 }
 
-.menu .godmode li {
-	background-color: #B2B2B2 !important;
-}
-
 li:hover ul { display: block; }
 
 .submenu_text{
 	background-repeat: no-repeat !important;
-	padding: 9px;
+	padding: 11px;
 	margin-left: 0px;
 	color: #fff;
-	width: 89%;
+	width: 86%;
 }
 
 .menu li.subselected a{
@@ -71,8 +67,8 @@ li:hover ul { display: block; }
 	position: absolute;
 	z-index: 999;
 	left: 44px;
-	min-height: 30px;
-	height: 30px;
+	min-height: 35px;
+	height: 35px;
 	width: 160px;
 }
 
@@ -83,26 +79,26 @@ li:hover ul { display: block; }
 }
 
 .sub_subMenu{
-	min-height: 30px !important;
-	height: 30px;
+	min-height: 35px !important;
+	height: 35px;
 	width: 160px;
 }
 
 .submenu li a {
-	background-color: #222;
-	border-style: none;
-	border-color: #666;
+	#background-color: #222;
+	#border-style: none;
+	#border-color: #666;
 }
 
 .submenu2 li a {
-	background-color: #222;
+	#background-color: #222;
 	margin-left: 0px;
 	padding-left: 0px;
 	display:block;
 }
 
 .submenu2 li a:hover {
-	background-color: #111 !important;
+	#background-color: #111 !important;
 }
 
 .menu li img.toggle {
@@ -116,7 +112,7 @@ li:hover ul { display: block; }
 	z-index: 1; /* Positions it on top of the rest */
 }
 .menu li.has_submenu .flecha{
-	background: #222 url(../../images/arrow.png) no-repeat 90% 50% !important;
+	background: url(../../images/arrow.png) no-repeat 90% 50% !important;
 	z-index: 1; /* Positions it on top of the rest */
 }
 
@@ -134,6 +130,7 @@ li:hover ul { display: block; }
 
 .submenu_selected {
 	margin-bottom: 0px !important;
+	box-shadow: inset 4px 0 #00AF21 !important; 
 }
 
 .menu .menu_icon, .menu li.links {
@@ -160,6 +157,7 @@ li:hover ul { display: block; }
 #icon_oper-events {
 	background: url(../../images/op_events.png) no-repeat 50% 50%;
 }
+
 /* users */
 #icon_oper-users {
 	background: url(../../images/op_workspace.png) no-repeat 50% 50%;

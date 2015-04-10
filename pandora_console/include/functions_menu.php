@@ -305,12 +305,11 @@ function menu_print_menu (&$menu) {
 					
 					$link = "index.php?sec=".$subsec2."&sec2=".$key;
 					
-					//Display if one submenu2 was selected!
-					if (strpos($key, $sec2) !== false) {
-						$display = "";	
-					}
-					
 					$class = "sub_subMenu";
+					
+					if ($key == $sec2) {
+						$class .= " selected";
+					}
 					
 					// Define submenu2 class to draw tree image
 					if($count_sub2 >= count($sub['sub2'])) {

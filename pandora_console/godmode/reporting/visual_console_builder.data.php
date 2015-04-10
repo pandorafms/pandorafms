@@ -17,21 +17,24 @@ global $config;
 
 check_login ();
 
-// Visual console required
-if (empty($visualConsole)) {
-	db_pandora_audit("ACL Violation",
-		"Trying to access report builder");
-	require ("general/noaccess.php");
-	exit;
+if (empty($idVisualConsole)) {
+	// ACL for the a new visual console
+	// if (!isset($vconsole_read))
+	// 	$vconsole_read = check_acl ($config['id_user'], 0, "VR");
+	if (!isset($vconsole_write))
+		$vconsole_write = check_acl ($config['id_user'], 0, "VW");
+	if (!isset($vconsole_manage))
+		$vconsole_manage = check_acl ($config['id_user'], 0, "VM");
 }
-
-// ACL for the existing visual console
-// if (!isset($vconsole_read))
-// 	$vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
-if (!isset($vconsole_write))
-	$vconsole_write = check_acl ($config['id_user'], $visualConsole['id_group'], "VW");
-if (!isset($vconsole_manage))
-	$vconsole_manage = check_acl ($config['id_user'], $visualConsole['id_group'], "VM");
+else {
+	// ACL for the existing visual console
+	// if (!isset($vconsole_read))
+	// 	$vconsole_read = check_acl ($config['id_user'], $idGroup, "VR");
+	if (!isset($vconsole_write))
+		$vconsole_write = check_acl ($config['id_user'], $idGroup, "VW");
+	if (!isset($vconsole_manage))
+		$vconsole_manage = check_acl ($config['id_user'], $idGroup, "VM");
+}
 
 if (!$vconsole_write && !$vconsole_manage) {
 	db_pandora_audit("ACL Violation",

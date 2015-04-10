@@ -100,7 +100,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	enterprise_hook('agents_submenu');
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		$sub["gmassive"]["text"] = __('Massive operations');
-
+		$sub["gmassive"]["type"] = "direct";
+		$sub["gmassive"]["subtype"] = "nolink";
 		$sub2 = array ();
 		$sub2["godmode/massive/massive_operations&amp;tab=massive_agents"]["text"] = __('Agents operations');
 		$sub2["godmode/massive/massive_operations&amp;tab=massive_modules"]["text"] = __('Modules operations');
@@ -242,7 +243,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["gextmaneger"]["sub2"] = $sub2;
 	if (check_acl ($config['id_user'], 0, "DM")) {//meter en extensiones
 		$sub["gdbman"]["text"] = __('DB maintenance');
-
+		$sub["gdbman"]["type"] = "direct";
+		$sub["gdbman"]["subtype"] = "nolink";
 		$sub2 = array ();
 		$sub2["godmode/db/db_info"]["text"] = __('DB information');
 		$sub2["godmode/db/db_purge"]["text"] = __('Database purge');
@@ -261,6 +263,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 		
 		$sub = array ();
 		$sub["gextmaneger"]["text"] = __('Extension manager');
+		$sub["gextmaneger"]["type"] = "direct";
+		$sub["gextmaneger"]["subtype"] = "nolink";
 		$sub2 = array ();
 
 		foreach ($config['extensions'] as $extension) {

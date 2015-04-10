@@ -70,7 +70,7 @@ li:hover ul { display: block; }
 	margin: 0px 0px 0px 0px;
 	position: absolute;
 	z-index: 999;
-	left: 39px;
+	left: 44px;
 	min-height: 30px;
 	height: 30px;
 	width: 160px;
@@ -95,7 +95,7 @@ li:hover ul { display: block; }
 }
 
 .submenu2 li a {
-	background-color: #111;
+	background-color: #222;
 	margin-left: 0px;
 	padding-left: 0px;
 	display:block;

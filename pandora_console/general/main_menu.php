@@ -216,19 +216,16 @@ $(document).ready( function() {
 			}, 3500);
 		});
 		*/
-		$('#menu').css('width', '115px');
-		$('#main').css('margin', '0% 1.5% 0% 0%');
-		$('li.menu_icon').addClass( " no_hidden_menu" );
-		$('ul.submenu').css('left', '114px');
-		$(window).resize( function() {
-			if($(window).width() <= 1262){
-				$('#main').css('width', '86%');
-			}
-			else{
-				if($(window).width() >= 1300){
-					$('#main').css('width', '90%');
-				}
-			}
+		$('#menu').mouseenter(function() {
+			$('div#title_menu').show();
+			$('#menu').css('width', '130px');
+			$('li.menu_icon').addClass( " no_hidden_menu" );
+			$('ul.submenu').css('left', '129px');
+		}).mouseleave(function(){
+			$('#menu').css('width', '45px');
+			$('li.menu_icon').removeClass( " no_hidden_menu");
+			$('ul.submenu').css('left', '44px');
+			$('div#title_menu').hide();
 		});
 	}
 	else{
@@ -243,8 +240,8 @@ $(document).ready( function() {
 	openTime2 = 0;
 	handsIn = 0;
 	handsIn2 = 0;
-
-	$('.menu_icon').hover(function(){
+	
+	$('.menu_icon').mouseenter(function(){
 		table_hover = $(this);
 		handsIn = 1;
 		openTime = new Date().getTime();
@@ -268,7 +265,7 @@ $(document).ready( function() {
 	});
 	
 	
--	$('.has_submenu').hover(function(){
+-	$('.has_submenu').mouseenter(function(){
 		table_hover2 = $(this);
 		handsIn2 = 1;
 		openTime2 = new Date().getTime();
@@ -289,13 +286,28 @@ $(document).ready( function() {
 	});
 	
 	$(document).ready(function(){
-		$('#page').click(function(){
+		$('#container').click(function(){
 			openTime = 4000;
 			if( typeof(table_hover) != 'undefined')
 				$("ul#sub"+table_hover[0].id).hide();
 			if( typeof(table_hover2) != 'undefined')
 				$("ul#sub"+table_hover2[0].id).hide();
 		});
+		
+		$('div.menu>ul>li>ul>li>a').click(function(){
+			openTime = 4000;
+			if( typeof(table_hover) != 'undefined')
+				$("ul#sub"+table_hover[0].id).hide();
+			if( typeof(table_hover2) != 'undefined')
+				$("ul#sub"+table_hover2[0].id).hide();
+		});		
+		$('div.menu>ul>li>ul>li>ul>li>a').click(function(){
+			openTime = 4000;
+			if( typeof(table_hover) != 'undefined')
+				$("ul#sub"+table_hover[0].id).hide();
+			if( typeof(table_hover2) != 'undefined')
+				$("ul#sub"+table_hover2[0].id).hide();
+		});		
 	});
 	
 	

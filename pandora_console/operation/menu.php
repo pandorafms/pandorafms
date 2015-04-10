@@ -80,7 +80,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//SNMP Console
 	$sub["snmpconsole"]["text"] = __('SNMP');
 	$sub["snmpconsole"]["refr"] = 0;
-
+	$sub["snmpconsole"]["type"] = "direct";
+	$sub["snmpconsole"]["subtype"] = "nolink";
 	$sub2 = array();
 	$sub2["operation/snmpconsole/snmp_view"]["text"] = __("SNMP console");
 	$sub2["operation/snmpconsole/snmp_browser"]["text"] = __("SNMP browser");
@@ -135,7 +136,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	}
 	
 	
-	
+	$sub["godmode/reporting/map_builder"]["type"] = "direct";
+	$sub["godmode/reporting/map_builder"]["subtype"] = "nolink";
 	$layouts = db_get_all_rows_in_table ('tlayout', 'name');
 	if ($layouts === false) {
 		$layouts = array ();
@@ -181,7 +183,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		//INI GIS Maps
 		if ($config['activate_gis']) {
 			$sub["gismaps"]["text"] = __('GIS Maps');
-			
+			$sub["gismaps"]["type"] = "direct";
+			$sub["gismaps"]["subtype"] = "nolink";
 			$sub2 = array ();
 			
 			$gisMaps = db_get_all_rows_in_table ('tgis_map', 'map_name');
@@ -327,6 +330,8 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	}
 	
 	$sub[$sec2]["text"] = __('Incidents');
+	$sub[$sec2]["type"] = "direct";
+	$sub[$sec2]["subtype"] = "nolink";
 	$sub[$sec2]["refr"] = 0;
 	$sub[$sec2]["subsecs"] = array(
 		"operation/incidents/incident_detail",
@@ -343,7 +348,8 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 // Messages
 $sub["operation/messages/message_list"]["text"] = __('Messages');
 $sub["operation/messages/message_list"]["refr"] = 0;
-
+$sub["operation/messages/message_list"]["type"] = "direct";
+$sub["operation/messages/message_list"]["subtype"] = "nolink";
 $sub2 = array ();
 $sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
 

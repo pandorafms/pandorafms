@@ -358,7 +358,13 @@ function menu_print_menu (&$menu) {
 		//Print out the first level
 		$output .= '<li class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'">';
 						//onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
-		$output .= '<div id="title_menu" style="color:#FFF">' . ui_print_truncate_text($main["text"] , 60). '</div>';
+
+		$length = strlen(__($main["text"]));
+		$padding_top = ( $length >= 18) ? 6 : 12;
+		
+		$output .= '<div id="title_menu" style="color:#FFF; padding-top:'. $padding_top . 'px; display:none;">' . $main["text"] . '</div>';
+		$padding_top = 0;
+		$length = 0;
 		//$output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 		if ($submenu_output != '') {
 			//WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS

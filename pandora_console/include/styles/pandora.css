@@ -233,9 +233,11 @@ div#page {
 	clear: both;
 }
 div#main {
-	width: 90%;
-	margin: 0px 4% 0px 0%;
+	width: auto;
+	margin: 0px 2% 0px 0%;
 	float: right;
+	position: relative;
+	min-height: 850px;
 }
 div#main_help {
 	width: 100%;
@@ -310,10 +312,11 @@ div#menu_container {
 }
 
 div#menu {
-	width: 40px;
+	width: 45px;
 	float: left;
-	margin-top: 10px;
 	height: 828px;
+	z-index: 999;
+	position: absolute;
 }
 
 div#head {
@@ -1860,8 +1863,6 @@ div.warn {
 	padding: 2px 1px 6px 25px;
 }
 
-
-
 .submenu_not_selected {
 	font-weight: normal !important;
 }
@@ -1881,7 +1882,8 @@ div#page {
 	width: auto;
 }
 div#main {
-	min-width: 720px;
+	max-width: 93%;
+	min-width: 93%;
 }
 
 ol.steps {
@@ -2239,7 +2241,7 @@ ul.godmode ul.submenu li a:hover {
 }
 
 ul.godmode ul.submenu li .SubNoLink:hover {
-	background: url('../../images/menu_gm_mark.png') repeat-y right;
+	background: url('../../images/menu_gm_mark.png') repeat-y right !important;
 	#font-weight: bold;
 }
 
@@ -2248,7 +2250,7 @@ ul.godmode ul.submenu li.selected>a {
 }
 
 ul.godmode ul.submenu li.selected .SubNoLink {
-	background: url('../../images/menu_gm_mark.png') repeat-y right;
+	background: url('../../images/menu_gm_mark.png') repeat-y right !important;
 }
 
 li.links a:hover  {
@@ -2881,16 +2883,13 @@ table#policy_modules td * {
 	color: #FFF;
 	float: right;
 	width: 70%;
-	#padding-top: 8.75px;
-	vertical-align:middle;
 	letter-spacing: 0pt;
 	font-size: 7pt;
 	white-space: pre-wrap;
-	height: 35px;
 }
 
 .no_hidden_menu{
-	background-position: 5% 50% !important;
+	background-position: 12% 50% !important;
 }
 
 

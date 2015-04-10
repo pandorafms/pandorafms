@@ -26,8 +26,21 @@ enterprise_include_once('include/functions_visual_map.php');
 set_unless_defined ($idVisualConsole, 0); // Set default
 $idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
 
+if (!defined('METACONSOLE')) {
+	$action_name_parameter = 'action';
+}
+else {
+	$action_name_parameter = 'action2';
+}
+
+$action = get_parameterBetweenListValues($action_name_parameter,
+	array('new', 'save', 'edit', 'update', 'delete', 'multiple_delete'),
+	'new');
+
+$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'wizard_services', 'editor'), 'data');
+
 // Visual console creation tab and actions
-if ($activeTab == "data" && ($action == "new" || $action == "save")) {
+if (empty($idVisualConsole)) {
 	$visualConsole = null;
 	
 	// General ACL
@@ -35,8 +48,8 @@ if ($activeTab == "data" && ($action == "new" || $action == "save")) {
 	$vconsole_write = check_acl ($config['id_user'], 0, "VW");
 	$vconsole_manage = check_acl ($config['id_user'], 0, "VM");
 }
-// Retrieving the visual console data
-else if (!empty($idVisualConsole)) {
+// The visual console exists
+else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
 	
 	// Load the visual console data
 	$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
@@ -57,8 +70,6 @@ else if (!empty($idVisualConsole)) {
 	$vconsole_write = check_acl ($config['id_user'], $visualConsole['id_group'], "VW");
 	$vconsole_manage = check_acl ($config['id_user'], $visualConsole['id_group'], "VM");
 }
-// The visual console should exist.
-// The only exception is the visual console creation.
 else {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
@@ -74,24 +85,10 @@ if (!$vconsole_write && !$vconsole_manage) {
 	exit;
 }
 
-
 $pure = (int) get_parameter ('pure', 0);
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
 
 $id_layout = 0;
-
-if (!defined('METACONSOLE')) {
-	$action_name_parameter = 'action';
-}
-else {
-	$action_name_parameter = 'action2';
-}
-
-$action = get_parameterBetweenListValues($action_name_parameter,
-	array('new', 'save', 'edit', 'update', 'delete', 'multiple_delete'),
-	'new');
-
-$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'wizard_services', 'editor'), 'data');
 
 
 //Save/Update data in DB

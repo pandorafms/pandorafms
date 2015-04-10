@@ -260,7 +260,7 @@ if ($vconsoles_write || $vconsoles_manage) {
 	if (!defined('METACONSOLE'))
 		echo '<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
 	else {		
-		echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
+		echo '<form action="index.php?sec=screen&sec2=screens/screens&action=visualmap&action2=new&operation=new_visualmap&tab=data&pure=' . $pure . '" method="post">';
 	}
 	html_print_input_hidden ('edit_layout', 1);
 	html_print_submit_button (__('Create'), '', false, 'class="sub next"');

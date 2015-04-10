@@ -226,10 +226,6 @@ else {
 			// The value of the checkbox will be the networkmap id to recover it in js to perform the massive deletion
 			$data[4] = html_print_checkbox('check_delete', $network_map['id_networkmap'], false, true);
 		}
-		else {
-			$data[3] = '';
-			$data[4] = '';
-		}
 		
 		$table->data[] = $data;
 	}

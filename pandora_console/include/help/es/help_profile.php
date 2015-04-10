@@ -13,16 +13,16 @@
 
 <br>
 
-<table cellpadding=4 cellspacing=0 style='background-color: #f0f0f0; border: 1px solid #acacac'>
-<tr><th style='background-color: #cacaca'>Operacion<Th  style='background-color: #cacaca'>Bit de acceso
+<table cellpadding=4 cellspacing=0 style='background-color: #f0f0f0;'>
+<tr><th style='background-color: #cacaca'>Operación<th style='background-color: #cacaca'>Bit de acceso
+
 <tr><td>Ver datos agente (todas las vistas)	<td>AR
 <tr><td>Vista táctica	<td>AR
-<tr><td>Vista mapas de red	<td>AR
 <tr><td>Vista de grupos	<td>AR
 <tr><td>Crear un visual console	<td>RW
 <tr><td>Crear un informe	<td>RW
-<tr><td>Crear una grafica combinada	<td>RW
-<tr><td>Ver informe, grafica, etc	<td>RR
+<tr><td>Crear una gráfica combinada	<td>RW
+<tr><td>Ver informe, gráfica, etc	<td>RR
 <tr><td>Aplicar una plantilla de informe<td>RR
 <tr><td>Crear una plantilla de informe<td>RM
 <tr><td>Crear incidente	<td>IW
@@ -34,7 +34,7 @@
 <tr><td>Validar/Comentar evento	<td>EW
 <tr><td>Borrar evento	<td>EM
 <tr><td>Ejecutar respuestas<td>EW
-<tr><td>Crear incidencia a traves del evento (Respuesta)	<td>EW&IW
+<tr><td>Crear incidencia a través del evento (Respuesta)	<td>EW&IW
 <tr><td>Gestionar respuestas<td>PM
 <tr><td>Gestionar filtros<td>EW
 <tr><td>Personalizar columnas de eventos<td>PM
@@ -47,13 +47,13 @@
 <tr><td>Tree view	<td>AR
 <tr><td>Update manager (Operación y Administración)	<td>PM
 <tr><td>Extension Module Group<td>AR
-<tr><td>Vista de gestion agente	<td>AW
+<tr><td>Vista de gestión agente	<td>AW
 <tr><td>Edición del agente y de su .conf	<td>AW
 <tr><td>Asignación de alertas ya creadas	<td>LW
 <tr><td>Definir, modificar plantillas, comandos y acciones	<td>LM
 <tr><td>Gestión de grupos	<td>PM
-<tr><td>Crear modulos de inventario	<td>PM
-<tr><td>Gestionar modulos (Incluidas todas las subopciones)<td>PM
+<tr><td>Crear módulos de inventario	<td>PM
+<tr><td>Gestionar módulos (Incluidas todas las subopciones)<td>PM
 <tr><td>Operaciones masivas	<td>AW
 <tr><td>Crear agente	<td>AW
 <tr><td>Duplicar configuración remota<td>AW
@@ -63,17 +63,18 @@
 <tr><td>Gestión de consola SNMP<td>PM
 <tr><td>Gestión de perfiles<td>PM
 <tr><td>Gestión de servidores<td>PM
-<tr><td>Auditoría del sistema (edicion y visualizacion)<td>PM
+<tr><td>Auditoría del sistema (edición y visualización)<td>PM
 <tr><td>Setup (todas las solapas inferiores incl)	<td>PM
 <tr><td>Mantenimiento de la BBDD	<td>DM
-<tr><td>Extensiones administracion	<td>PM
-<tr><td>Barra busqueda	<td>AR
+<tr><td>Extensiones administración	<td>PM
+<tr><td>Barra búsqueda	<td>AR
 <tr><td>Gestión de Políticas<td>AW
 <tr><td>Desactivar agente/módulo/alerta<td>AD
-<tr><td>Ver visual console<td>VR
-<tr><td>Crear un vicual console<td>VW
-<tr><td>Ver mapa de red<td>MR
-<tr><td>Editar mapa de red<td>MW
+<tr><td>Validar alertas<td>LM&AR o AW&LW
+<tr><td>Vista de mapas de red<td>MR
+<tr><td>Edición de mapas de red<td>MW
+<tr><td>Borrado de mapas de red propios<td>MW
+<tr><td>Borrado de cualquier mapa de red<td>MM
 
 </table>
 

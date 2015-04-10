@@ -140,7 +140,7 @@ if ($disk_conf_delete) {
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 
-$table->width = '98%';
+$table->width = '100%';
 $table->class = "databox_color";
 
 $table->head = array ();
@@ -276,7 +276,7 @@ $table->data[7][1] = html_print_input_text ('comentarios', $comentarios,
 html_print_table ($table);
 unset($table);
 
-$table->width = '98%';
+$table->width = '100%';
 $table->class = "databox_color";
 
 $table->head = array ();
@@ -390,7 +390,7 @@ $table->data[7][1] = html_print_checkbox('quiet', 1, $quiet, true);
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 
-$table->width = '98%';
+$table->width = '100%';
 $table->class = "databox_color";
 
 $table->head = array ();
@@ -531,7 +531,7 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 			
 			echo '"' . implode(', ', $elements) . '"';
 			?>,
-			width: 300,
+			width: '100%',
 			theme : "advanced",
 			theme_advanced_path : false,
 			statusbar : false,

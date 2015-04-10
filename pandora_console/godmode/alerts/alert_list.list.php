@@ -353,7 +353,7 @@ if (! $id_agente) {
 else {
 	/* Different sizes or the layout screws up */
 	$table->size[0] = '0%';
-	$table->size[1] = '30%';
+	$table->size[1] = '10%';
 	$table->size[2] = '30%';
 /*	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[4] = '25%';

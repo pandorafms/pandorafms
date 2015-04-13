@@ -253,10 +253,74 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'simple_baseline_graph':
+				$report['contents'][] = reporting_simple_baseline_graph(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_simple_baseline_graph($report, $content,
+	$type = 'dinamic', $force_width_chart = null,
+	$force_height_chart = null) {
+	
+	global $config;
+	
+	$return['type'] = 'simple_baseline_graph';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Simple baseline graph');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	// Get chart
+	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	
+	if (!empty($force_width_chart)) {
+		$width = $force_width_chart;
+	}
+	
+	if (!empty($force_height_chart)) {
+		$height = $force_height_chart;
+	}
+	
+	switch ($type) {
+		case 'dinamic':
+		case 'static':
+			$return['chart'] = grafico_modulo_sparse(
+				$content['id_agent_module'],
+				$content['period'],
+				false,
+				$width,
+				$height,
+				'',
+				'',
+				false,
+				true,
+				true,
+				$report["datetime"],
+				'',
+				true,
+				0,
+				true,
+				false,
+				ui_get_full_url(false, false, false, false));
+			break;
+		case 'data':
+			break;
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_prediction_date($report, $content) {

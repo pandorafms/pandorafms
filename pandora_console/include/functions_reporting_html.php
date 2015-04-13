@@ -179,6 +179,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'prediction_date':
 				reporting_html_prediction_date($table, $item, $mini);
 				break;
+			case 'simple_baseline_graph':
+				reporting_html_simple_baseline_graph($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -189,6 +192,12 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_simple_baseline_graph($table, $item) {
+	$table->colspan['chart']['cell'] = 3;
+	$table->cellstyle['chart']['cell'] = 'text-align: center;';
+	$table->data['chart']['cell'] = $item['chart'];
 }
 
 function reporting_html_prediction_date($table, $item, $mini) {
@@ -3370,47 +3379,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	$item_title = $content['name'];
 	
 	switch ($content["type"]) {
-		case 'simple_baseline_graph':
-			if (empty($item_title)) {
-				$item_title = __('Simple baseline graph');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false).' <br> ' .
-				ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			$table->colspan[1][0] = 4;
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[2][0] = 4;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
-				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', true, 0, true, $only_image,
-				ui_get_full_url(false, false, false, false));
-			
-			/*$data[0] = 	graphic_combined_module(
-				$modules,
-				$weights,
-				$content['period'],
-				$sizgraph_w, $sizgraph_h,
-				'Combined%20Sample%20Graph',
-				'',
-				0,
-				0,
-				0,
-				$graph["stacked"],
-				$report["datetime"]);	*/
-			
-			array_push ($table->data, $data);
-			
-			break;
 		case 'SLA_monthly':
 			if (function_exists("reporting_enterprise_sla_monthly"))
 				reporting_enterprise_sla_monthly($mini, $content, $report, $table, $item_title);

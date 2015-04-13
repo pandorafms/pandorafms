@@ -1770,7 +1770,9 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				tperfil.report_view, tperfil.report_edit,
 				tperfil.report_management, tperfil.event_view,
 				tperfil.event_edit, tperfil.event_management, 
-				tperfil.agent_disable
+				tperfil.agent_disable,
+				tperfil.map_view, tperfil.map_edit, tperfil.map_management,
+				tperfil.vconsole_view, tperfil.vconsole_edit, tperfil.vconsole_management
 			FROM tusuario_perfil, tperfil
 			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
 				AND tusuario_perfil.id_usuario = '%s'", $id_user);
@@ -1785,7 +1787,9 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				tperfil.report_view, tperfil.report_edit,
 				tperfil.report_management, tperfil.event_view,
 				tperfil.event_edit, tperfil.event_management,
-				tperfil.agent_disable
+				tperfil.agent_disable,
+				tperfil.map_view, tperfil.map_edit, tperfil.map_management,
+				tperfil.vconsole_view, tperfil.vconsole_edit, tperfil.vconsole_management
 			FROM tusuario_perfil, tperfil
 			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
 				AND tusuario_perfil.id_usuario = '%s'
@@ -1873,6 +1877,24 @@ function get_acl_column($access) {
 			break;
 		case "EM":
 			return "event_management";
+			break;
+		case "MR":
+			return "map_view";
+			break;
+		case "MW":
+			return "map_edit";
+			break;
+		case "MM":
+			return "map_management";
+			break;
+		case "VR":
+			return "vconsole_view";
+			break;
+		case "VW":
+			return "vconsole_edit";
+			break;
+		case "VM":
+			return "vconsole_management";
 			break;
 		default:
 			return "";

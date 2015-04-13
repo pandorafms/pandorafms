@@ -1935,3 +1935,12 @@ CREATE TABLE  talert_snmp_action (
 	al_field9 CLOB default '' NOT NULL,
 	al_field10 CLOB default '' NOT NULL
 );
+
+-- ---------------------------------------------------------------------
+-- Table tsessions_php
+-- ---------------------------------------------------------------------
+CREATE TABLE tsessions_php (
+	id_session VARCHAR2(52) NOT NULL PRIMARY KEY,
+	last_active NUMBER(20, 0) NOT NULL,
+	data CLOB default ''
+);

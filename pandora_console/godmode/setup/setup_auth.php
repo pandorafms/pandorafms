@@ -117,6 +117,13 @@ $row[] = __('Yes') . '&nbsp;' .
 		$config_double_auth_enabled, true);
 $table->data[] = $row;
 
+$row_timeout = array();
+$row_timeout[] = __('Session timeout (mins)')
+	. ui_print_help_tip(__("This is defined in minutes"), true);
+if (empty($config["session_timeout"])) $config["session_timeout"] = 90;
+$row_timeout[] = html_print_input_text ('session_timeout', $config["session_timeout"], '', 10, 10, true);
+$table->data[] = $row_timeout;
+	
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
 html_print_table ($table);

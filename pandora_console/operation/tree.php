@@ -235,7 +235,8 @@ enterprise_hook('close_meta_frame');
 	
 	$("form#tree_search").submit(function(e) {
 		e.preventDefault();
-	
+		$(".tree-element-detail-content").hide();
+		$(".tree-controller-detail-recipient").hide();
 		processTreeSearch();
 	});
 	

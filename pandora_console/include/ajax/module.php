@@ -1038,6 +1038,14 @@ if ($list_modules) {
 		.click (function () {
 			return false;
 		});
+		$("a.relations_details").cluetip ({
+			arrows: true,
+			attribute: 'href',
+			cluetipClass: 'default'
+		})
+		.click (function () {
+			return false;
+		});
 		
 		function toggle_full_value(id) {
 			text = $("#hidden_value_module_" + id).html();

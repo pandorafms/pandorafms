@@ -64,24 +64,51 @@ $id_profile = (int) get_parameter ('id');
 if ($id_profile || $new_profile) {
 	
 	if ($new_profile) {
+		// Name
 		$name = '';
+		
+		// Incidents
 		$incident_view = 0;
 		$incident_edit = 0;
 		$incident_management = 0;
+		
+		// Agents
 		$agent_view = 0;
 		$agent_edit = 0;
+		$agent_disable = 0;
+		
+		// Alerts
 		$alert_edit = 0;
-		$user_management = 0;
-		$db_management = 0;
 		$alert_management = 0;
+		
+		// Users
+		$user_management = 0;
+		
+		// DB
+		$db_management = 0;
+		
+		// Pandora
 		$pandora_management = 0;
-		$report_view = 0;
-		$report_edit = 0;
-		$report_management = 0;
+		
+		// Events
 		$event_view = 0;
 		$event_edit = 0;
 		$event_management = 0;
-		$agent_disable = 0;
+		
+		// Reports
+		$report_view = 0;
+		$report_edit = 0;
+		$report_management = 0;
+		
+		// Network maps
+		$map_view = 0;
+		$map_edit = 0;
+		$map_management = 0;
+		
+		// Visual console
+		$vconsole_view = 0;
+		$vconsole_edit = 0;
+		$vconsole_management = 0;
 		
 		$page_title = __('Create profile');
 	}
@@ -101,38 +128,91 @@ if ($id_profile || $new_profile) {
 			exit;
 		}
 		
+		// Name
 		$name = $profile["name"];
+		
+		// Incidents
 		$incident_view = (bool) $profile["incident_view"];
 		$incident_edit = (bool) $profile["incident_edit"];
 		$incident_management = (bool) $profile["incident_management"];
+		
+		// Agents
 		$agent_view = (bool) $profile["agent_view"];
 		$agent_edit = (bool) $profile["agent_edit"];
+		$agent_disable = (bool) $profile["agent_disable"];
+		
+		// Alerts
 		$alert_edit = (bool) $profile["alert_edit"];
-		$user_management = (bool) $profile["user_management"];
-		$db_management = (bool) $profile["db_management"];
 		$alert_management = (bool) $profile["alert_management"];
+		
+		// Users
+		$user_management = (bool) $profile["user_management"];
+		
+		// DB
+		$db_management = (bool) $profile["db_management"];
+		
+		// Pandora
 		$pandora_management = (bool) $profile["pandora_management"];
-		$report_view = (bool) $profile["report_view"];
-		$report_edit = (bool) $profile["report_edit"];
-		$report_management = (bool) $profile["report_management"];
+		
+		// Events
 		$event_view = (bool) $profile["event_view"];
 		$event_edit = (bool) $profile["event_edit"];
 		$event_management = (bool) $profile["event_management"];
-		$agent_disable = (bool) $profile["agent_disable"];
+		
+		// Reports
+		$report_view = (bool) $profile["report_view"];
+		$report_edit = (bool) $profile["report_edit"];
+		$report_management = (bool) $profile["report_management"];
+		
+		// Network maps
+		$map_view = (bool) $profile["map_view"];
+		$map_edit = (bool) $profile["map_edit"];
+		$map_management = (bool) $profile["map_management"];
+		
+		// Visual console
+		$vconsole_view = (bool) $profile["vconsole_view"];
+		$vconsole_edit = (bool) $profile["vconsole_edit"];
+		$vconsole_management = (bool) $profile["vconsole_management"];
 		
 		$id_audit = db_pandora_audit("User management",
 			"Edit profile ". $name);
 		enterprise_include_once('include/functions_audit.php');
-		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
-			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
-			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
-			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
-			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
-			' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
-			' Report management: ' . $report_management . ' Event view: ' . $event_view .
-			' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
-			' Agent disable: ' . $agent_disable .
-			' Pandora Management: ' . $pandora_management;
+		
+		$info = 'Name: ' . $name .
+				
+				' Incident view: ' . $incident_view .
+				' Incident edit: ' . $incident_edit .
+				' Incident management: ' . $incident_management .
+				
+				' Agent view: ' . $agent_view .
+				' Agent edit: ' . $agent_edit .
+				' Agent disable: ' . $agent_disable .
+				
+				' Alert edit: ' . $alert_edit .
+				' Alert management: ' . $alert_management .
+				
+				' User management: ' . $user_management .
+				
+				' DB management: ' . $db_management .
+				
+				' Event view: ' . $event_view .
+				' Event edit: ' . $event_edit .
+				' Event management: ' . $event_management .
+				
+				' Report view: ' . $report_view .
+				' Report edit: ' . $report_edit .
+				' Report management: ' . $report_management .
+				
+				' Network map view: ' . $map_view .
+				' Network map edit: ' . $map_edit .
+				' Network map management: ' . $map_management .
+				
+				' Visual console view: ' . $vconsole_view .
+				' Visual console edit: ' . $vconsole_edit .
+				' Visual console management: ' . $vconsole_management .
+				
+				' Pandora Management: ' . $pandora_management;
+		
 		enterprise_hook('audit_pandora_enterprise', array($id_audit, $info));
 		
 		
@@ -141,7 +221,7 @@ if ($id_profile || $new_profile) {
 	
 	$table->width = '98%';
 	$table->class = 'databox';
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		if ($id_profile)
@@ -156,42 +236,123 @@ if ($id_profile || $new_profile) {
 	$table->style[0] = 'font-weight: bold';
 	$table->data = array ();
 	
-	$table->data[0][0] = __('Profile name');
-	$table->data[0][1] = html_print_input_text ('name', $name, '', 30, 60, true);
-	$table->data[1][0] = __('View incidents');
-	$table->data[1][1] = html_print_checkbox ('incident_view', 1, $incident_view, true);
-	$table->data[2][0] = __('Edit incidents');
-	$table->data[2][1] = html_print_checkbox ('incident_edit', 1, $incident_edit, true);
-	$table->data[3][0] = __('Manage incidents');
-	$table->data[3][1] = html_print_checkbox ('incident_management', 1, $incident_management, true);
-	$table->data[4][0] = __('View agents');
-	$table->data[4][1] = html_print_checkbox ('agent_view', 1, $agent_view, true);
-	$table->data[5][0] = __('Edit agents');
-	$table->data[5][1] = html_print_checkbox ('agent_edit', 1, $agent_edit, true);
-	$table->data[6][0] = __('Disable agents');
-	$table->data[6][1] = html_print_checkbox ('agent_disable', 1, $agent_disable, true);
-	$table->data[7][0] = __('Edit alerts');
-	$table->data[7][1] = html_print_checkbox ('alert_edit', 1, $alert_edit, true);
-	$table->data[8][0] = __('Manage users');
-	$table->data[8][1] = html_print_checkbox ('user_management', 1, $user_management, true);
-	$table->data[9][0] = __('Manage Database');
-	$table->data[9][1] = html_print_checkbox ('db_management', 1, $db_management, true);
-	$table->data[10][0] = __('Manage alerts');
-	$table->data[10][1] = html_print_checkbox ('alert_management', 1, $alert_management, true);
-	$table->data[11][0] = __('View reports');
-	$table->data[11][1] = html_print_checkbox ('report_view', 1, $report_view, true);
-	$table->data[12][0] = __('Edit reports');
-	$table->data[12][1] = html_print_checkbox ('report_edit', 1, $report_edit, true);
-	$table->data[13][0] = __('Manage reports');
-	$table->data[13][1] = html_print_checkbox ('report_management', 1, $report_management, true);
-	$table->data[14][0] = __('View events');
-	$table->data[14][1] = html_print_checkbox ('event_view', 1, $event_view, true);
-	$table->data[15][0] = __('Edit events');
-	$table->data[15][1] = html_print_checkbox ('event_edit', 1, $event_edit, true);
-	$table->data[16][0] = __('Manage events');
-	$table->data[16][1] = html_print_checkbox ('event_management', 1, $event_management, true);
-	$table->data[17][0] = __('Pandora management');
-	$table->data[17][1] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
+	// Name
+	$row = array();
+	$row['name'] = __('Profile name');
+	$row['input'] = html_print_input_text ('name', $name, '', 30, 60, true);
+	$table->data['name'] = $row;
+	
+	// Incidents
+	$row = array();
+	$row['name'] = __('View incidents');
+	$row['input'] = html_print_checkbox ('incident_view', 1, $incident_view, true);
+	$table->data['IR'] = $row;
+	$row = array();
+	$row['name'] = __('Edit incidents');
+	$row['input'] = html_print_checkbox ('incident_edit', 1, $incident_edit, true);
+	$table->data['IW'] = $row;
+	$row = array();
+	$row['name'] = __('Manage incidents');
+	$row['input'] = html_print_checkbox ('incident_management', 1, $incident_management, true);
+	$table->data['IM'] = $row;
+	
+	// Agents
+	$row = array();
+	$row['name'] = __('View agents');
+	$row['input'] = html_print_checkbox ('agent_view', 1, $agent_view, true);
+	$table->data['AR'] = $row;
+	$row = array();
+	$row['name'] = __('Edit agents');
+	$row['input'] = html_print_checkbox ('agent_edit', 1, $agent_edit, true);
+	$table->data['AW'] = $row;
+	$row = array();
+	$row['name'] = __('Disable agents');
+	$row['input'] = html_print_checkbox ('agent_disable', 1, $agent_disable, true);
+	$table->data['AD'] = $row;
+	
+	// Alerts
+	$row = array();
+	$row['name'] = __('Edit alerts');
+	$row['input'] = html_print_checkbox ('alert_edit', 1, $alert_edit, true);
+	$table->data['LW'] = $row;
+	$row = array();
+	$row['name'] = __('Manage alerts');
+	$row['input'] = html_print_checkbox ('alert_management', 1, $alert_management, true);
+	$table->data['LM'] = $row;
+	
+	// Users
+	$row = array();
+	$row['name'] = __('Manage users');
+	$row['input'] = html_print_checkbox ('user_management', 1, $user_management, true);
+	$table->data['UM'] = $row;
+	
+	// DB
+	$row = array();
+	$row['name'] = __('Manage database');
+	$row['input'] = html_print_checkbox ('db_management', 1, $db_management, true);
+	$table->data['DM'] = $row;
+	
+	// Events
+	$row = array();
+	$row['name'] = __('View events');
+	$row['input'] = html_print_checkbox ('event_view', 1, $event_view, true);
+	$table->data['ER'] = $row;
+	$row = array();
+	$row['name'] = __('Edit events');
+	$row['input'] = html_print_checkbox ('event_edit', 1, $event_edit, true);
+	$table->data['EW'] = $row;
+	$row = array();
+	$row['name'] = __('Manage events');
+	$row['input'] = html_print_checkbox ('event_management', 1, $event_management, true);
+	$table->data['EM'] = $row;
+	
+	// Reports
+	$row = array();
+	$row['name'] = __('View reports');
+	$row['input'] = html_print_checkbox ('report_view', 1, $report_view, true);
+	$table->data['RR'] = $row;
+	$row = array();
+	$row['name'] = __('Edit reports');
+	$row['input'] = html_print_checkbox ('report_edit', 1, $report_edit, true);
+	$table->data['RW'] = $row;
+	$row = array();
+	$row['name'] = __('Manage reports');
+	$row['input'] = html_print_checkbox ('report_management', 1, $report_management, true);
+	$table->data['RM'] = $row;
+	
+	// Network maps
+	$row = array();
+	$row['name'] = __('View network maps');
+	$row['input'] = html_print_checkbox ('map_view', 1, $map_view, true);
+	$table->data['MR'] = $row;
+	$row = array();
+	$row['name'] = __('Edit network maps');
+	$row['input'] = html_print_checkbox ('map_edit', 1, $map_edit, true);
+	$table->data['MW'] = $row;
+	$row = array();
+	$row['name'] = __('Manage network maps');
+	$row['input'] = html_print_checkbox ('map_management', 1, $map_management, true);
+	$table->data['MM'] = $row;
+	
+	// Visual console
+	$row = array();
+	$row['name'] = __('View visual console');
+	$row['input'] = html_print_checkbox ('vconsole_view', 1, $vconsole_view, true);
+	$table->data['VR'] = $row;
+	$row = array();
+	$row['name'] = __('Edit visual console');
+	$row['input'] = html_print_checkbox ('vconsole_edit', 1, $vconsole_edit, true);
+	$table->data['VW'] = $row;
+	$row = array();
+	$row['name'] = __('Manage visual console');
+	$row['input'] = html_print_checkbox ('vconsole_management', 1, $vconsole_management, true);
+	$table->data['VM'] = $row;
+	
+	// Pandora
+	$row = array();
+	$row['name'] = __('Pandora management');
+	$row['input'] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
+	$table->data['PM'] = $row;
 	
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&pure='.$pure.'">';
 	

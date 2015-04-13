@@ -21,15 +21,20 @@ class Networkmap {
 	private $id = 0;
 	private $network_map = null;
 	
-	function __construct() {
+	function __construct($id = false) {
 		$system = System::getInstance();
 		
-		if ($system->checkACL($this->acl)) {
+		if ($id === false)
+			$this->getFilters();
+		else
+			$this->id = $id;
+			
+		$store_group = db_get_value('store_group',
+			'tnetwork_map', 'id_networkmap', $this->id);
+		
+		if ($store_group !== false
+				&& $system->checkACL($this->acl, $store_group))
 			$this->correct_acl = true;
-		}
-		else {
-			$this->correct_acl = false;
-		}
 	}
 	
 	public function ajax($parameter2 = false) {

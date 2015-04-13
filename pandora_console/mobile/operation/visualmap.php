@@ -16,12 +16,16 @@ require_once ('../include/functions_visual_map.php');
 
 class Visualmap {
 	private $correct_acl = false;
-	private $acl = "RR";
+	private $acl = "VR";
 	
 	private $id = 0;
-	private $visual_map = null;
+	private $visualmap = null;
 	
 	function __construct() {
+		
+	}
+	
+	private function checkVisualmapACL($groupID = 0) {
 		$system = System::getInstance();
 		
 		if ($system->checkACL($this->acl)) {
@@ -39,17 +43,21 @@ class Visualmap {
 	}
 	
 	public function show() {
+		$this->getFilters();
+		
+		$this->visualmap = db_get_row('tlayout',
+			'id', $this->id);
+		
+		if (empty($this->visualmap)) {
+			$this->show_fail_acl();
+		}
+		
+		$this->checkVisualmapACL($this->visualmap['id_group']);
 		if (!$this->correct_acl) {
 			$this->show_fail_acl();
 		}
-		else {
-			$this->getFilters();
-			
-			$this->visualmap = db_get_row('tlayout',
-				'id', $this->id);
-			
-			$this->show_visualmap();
-		}
+		
+		$this->show_visualmap();
 	}
 	
 	private function show_fail_acl() {

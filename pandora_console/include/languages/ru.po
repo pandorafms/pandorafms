@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:53+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:29+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 "Language: ru\n"
 
@@ -30103,12 +30103,6 @@ msgstr "Система журнал фйлов"
 #~ msgid "Monitors not init"
 #~ msgstr "Мониторы не включены"
 
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "Максимальная Задержка (сек) / Модули отложены"
-
-#~ msgid "Add module macro"
-#~ msgstr "Добавить модуль макроса"
-
 #~ msgid "Checking tagente_estado table"
 #~ msgstr "Проверка таблицы tagente_estado"
 
@@ -30193,66 +30187,6 @@ msgstr "Система журнал фйлов"
 #~ msgid "Field 3"
 #~ msgstr "Поле 3"
 
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "Слева в заготовке для модулей инвентаризации Network"
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "Вставьте здесь ваш скрипт-код для инвентаризации модуля"
-
-#~ msgid "Invalid license."
-#~ msgstr "Лицензия недействительна"
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr ""
-#~ "Пожалуйста, свяжитесь с Artica на info@artica.es для действительной лицензии."
-
-#~ msgid "Columns"
-#~ msgstr "Столбцы"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "Агент и Монитор информации"
-
-#~ msgid "Event information"
-#~ msgstr "Информация о событии"
-
-#~ msgid "No servers"
-#~ msgstr "Нет серверов"
-
-#~ msgid "Without permissions"
-#~ msgstr "Без разрешения"
-
-#~ msgid "disabled"
-#~ msgstr "отключено"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "Последние событие репликации"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr ""
-#~ "События репликация не настроены должным образом для этой мета консоли"
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr ""
-#~ "Сервер, кажется, сконфигурирован для репликации событий, но никаких событий "
-#~ "не было еще получено"
-
-#~ msgid "Unknown error"
-#~ msgstr "Неизвестная ошибка"
-
-#~ msgid "Sort the agents by "
-#~ msgstr "Сорторовать агенты по "
-
-#~ msgid "Type:"
-#~ msgstr "Тип:"
-
-#~ msgid "Custom data:"
-#~ msgstr "Данные клиента:"
-
-#~ msgid "OID:"
-#~ msgstr "OID:"
-
 #~ msgid "Search value"
 #~ msgstr "Поисковое значение"
 
@@ -30265,6 +30199,3 @@ msgstr "Система журнал фйлов"
 #~ "FMS (число работующих агентов и модулей). Чтобы отключить ее, просто удалите "
 #~ "расширение или удалите дистанционный адрес сервера из настроек плагина "
 #~ "Манеджера Обновлений."
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "Нет агентов в этом agrupation"

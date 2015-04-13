@@ -171,6 +171,9 @@ my $t_proxy_socket;
 # Proxy selected handler
 my $t_proxy_select;
 
+# Use SSL for proxy, 1 true, 0 false
+my $t_proxy_ssl = 0;
+
 # Use libwrap, 1 true, 0 false
 my $t_use_libwrap = 0;
 
@@ -206,11 +209,12 @@ sub print_help {
 	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
 	print ("\t-v\t\tBe verbose.\n");
 	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
-	print ("\t-x pwd\t\tServer password.\n\n");
-	print ("\t-b proxy_ip_address\t\tProxied server address.\n\n");	
-	print ("\t-g proxy_port\t\tPort of proxied server.\n\n");
+	print ("\t-x pwd\t\tServer password.\n");
+	print ("\t-b proxy_ip_address\tProxied server address.\n");	
+	print ("\t-g proxy_port\t\tPort of proxied server.\n");
+	print ("\t-C\t\tEnable SSL for proxy connection without a client certificate.\n");
 	print ("\t-T\t\tEnable tcpwrappers support.\n");
-	print ("\t\t(To use this option, 'Authen::Libwrap' should be installed.)\n\n");
+	print ("\t\t\t(To use this option, 'Authen::Libwrap' should be installed.)\n\n");
 }
 
 ################################################################################
@@ -256,7 +260,7 @@ sub parse_options {
 	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:b:c:de:f:g:hi:k:m:op:qr:s:S:t:Tvwx:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:c:Cde:f:g:hi:k:m:op:qr:s:S:t:Tvwx:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -443,6 +447,15 @@ sub parse_options {
 			error ("Proxy port $t_port is not valid.");
 		}
 	}	
+
+	# Enable SSL without a client certificate
+	if (defined ($opts{'C'})) {
+
+		require IO::Socket::SSL;
+
+		$t_proxy_ssl = 1;
+	} 
+
 
 	# TCP wrappers support
 	if (defined ($opts{'T'})) {
@@ -659,6 +672,30 @@ sub start_ssl {
 }
 
 ################################################################################
+## SUB start_proxy_ssl
+## Convert the proxy socket to an IO::Socket::SSL socket.
+################################################################################
+sub start_proxy_ssl {
+	my $err;
+
+	if ($t_proxy_ssl != 1) {
+		return;
+	}
+
+	IO::Socket::SSL->start_SSL (
+		$t_proxy_socket,
+		SSL_verify_mode => 0x00,
+	);
+
+	$err = IO::Socket::SSL::errstr ();
+	if ($err ne '') {
+		error ($err);
+	}
+
+	print_log ("proxy SSL started for " . $t_proxy_socket->sockhost ());
+}
+
+################################################################################
 ## SUB accept_connections
 ## Manage incoming connections.
 ################################################################################
@@ -749,6 +786,11 @@ sub serve_proxy_connection {
 	
 	# Start a connection with the other Tentacle Server
 	open_proxy();		
+
+	# Start SSL for proxy
+	if ($t_proxy_ssl == 1) {
+		start_proxy_ssl();
+	}
 	
 	my $command;
 
@@ -1581,6 +1623,14 @@ __END__
 =item	I<-w>			Prompt for B<OpenSSL private key password>.
 
 =item	I<-x> pwd		B<Server password>.
+
+=item	I<-b proxy_ip_address>	B<Proxied server> address.
+
+=item	I<-g proxy_port>	B<Port> of proxied server.
+
+=item	I<-C>			Enable SSL for proxy without a client certificate.
+
+=item	I<-T>			Enable tcpwrappers support ('Authen::Libwrap' required).
 
 =back
 

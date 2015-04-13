@@ -721,6 +721,8 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$fontsize = 7;
 	
 	$extra_height = 15;
+	if (defined("METACONSOLE"))
+		$extra_height = 20;
 	
 	$return .= "<div id='extra_$graph_id' style='font-size: ".$fontsize."pt; display:none; position:absolute; overflow: auto; height: ".$extra_height."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
 	

@@ -19,7 +19,34 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AR")) {
+// Networkmap id required
+if (!isset($id_networkmap)) {
+	db_pandora_audit("ACL Violation",
+		"Trying to access node graph builder");
+	require ("general/noaccess.php");
+	exit;
+}
+
+// Get the group for ACL
+if (!isset($store_group)) {
+	$store_group = db_get_value("store_group", "tnetwork_map", "id_networkmap", $id_networkmap);
+	if ($store_group === false) {
+		db_pandora_audit("ACL Violation",
+			"Trying to accessnode graph builder");
+		require ("general/noaccess.php");
+		exit;
+	}
+}
+
+// ACL for the networkmap permission
+if (!isset($networkmap_read))
+	$networkmap_read = check_acl ($config['id_user'], $store_group, "MR");
+if (!isset($networkmap_write))
+	$networkmap_write = check_acl ($config['id_user'], $store_group, "MW");
+if (!isset($networkmap_manage))
+	$networkmap_manage = check_acl ($config['id_user'], $store_group, "MM");
+
+if (!$networkmap_read && !$networkmap_write && !$networkmap_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access node graph builder");
 	include ("general/noaccess.php");

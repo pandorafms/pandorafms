@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '6.0dev';
-use constant AGENT_BUILD => '150327';
+use constant AGENT_BUILD => '150413';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -974,6 +974,8 @@ sub launch_tentacle_proxy () {
 
 			#Execute tentacle server as a daemon
 			my $new_process = "tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
+
+			$new_process .= ' -C' if ($Conf{'server_ssl'} eq 'yes');
 
 			log_message ('setup', 'Proxy mode enabled');
 			exec ($new_process);

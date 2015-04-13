@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: pandora-fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-24 17:21+0100\n"
-"PO-Revision-Date: 2014-10-01 22:06+0000\n"
-"Last-Translator: katalina rodriguez <Unknown>\n"
+"PO-Revision-Date: 2015-03-29 11:01+0000\n"
+"Last-Translator: Jean Marc <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:52+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:28+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 "Language: fr\n"
 
@@ -61,12 +61,12 @@ msgstr "Pret"
 
 #: ../../general/header.php:107 ../../general/header.php:108
 msgid "QR Code of the page"
-msgstr ""
+msgstr "Code QR de la page"
 
 #: ../../general/header.php:112
 #: ../../operation/visual_console/public_console.php:104
 msgid "QR code of the page"
-msgstr ""
+msgstr "Code QR de la page"
 
 #: ../../general/header.php:134 ../../general/header.php:135
 #: ../../include/functions_clippy.php:128
@@ -614,7 +614,7 @@ msgstr "Vous n'avez pas l'autorisation pour accéder à cette page"
 
 #: ../../general/noaccess.php:26
 msgid "Access to this page is restricted"
-msgstr ""
+msgstr "L'accès à cette page est limité"
 
 #: ../../general/noaccess.php:31 ../../enterprise/meta/general/noaccess.php:29
 #: ../../enterprise/meta/general/metaconsole_no_activated.php:21
@@ -3877,7 +3877,7 @@ msgstr ""
 
 #: ../../mobile/include/user.class.php:154
 msgid "Secret code not found"
-msgstr ""
+msgstr "Code secret introuvable"
 
 #: ../../mobile/include/user.class.php:155
 msgid "Please contact the administrator to reset your double authentication"
@@ -3887,7 +3887,7 @@ msgstr ""
 #: ../../enterprise/meta/index.php:236
 #: ../../include/ajax/double_auth.ajax.php:489
 msgid "Invalid code"
-msgstr ""
+msgstr "Code non valide"
 
 #: ../../mobile/include/user.class.php:179
 msgid "There was an error checking the code"
@@ -5088,7 +5088,7 @@ msgstr "Filtre"
 #: ../../enterprise/meta/advanced/metasetup.translate_string.php:148
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:84
 msgid "Show Options"
-msgstr ""
+msgstr "Afficher les options"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:270
 #: ../../godmode/agentes/module_manager.php:505
@@ -5504,7 +5504,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:78
 msgid "An error has ocurred"
-msgstr ""
+msgstr "Une erreur s'est produite"
 
 #: ../../godmode/reporting/reporting_builder.php:279
 #: ../../godmode/reporting/reporting_builder.php:1568
@@ -5569,7 +5569,7 @@ msgstr "Texte libre pour la recherche: "
 
 #: ../../godmode/reporting/reporting_builder.php:394
 msgid "Show Option"
-msgstr ""
+msgstr "Afficher les options"
 
 #: ../../godmode/reporting/reporting_builder.php:469
 #: ../../operation/reporting/custom_reporting.php:38
@@ -5770,7 +5770,7 @@ msgstr "Non valide"
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:188
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1066
 msgid "Last value"
-msgstr ""
+msgstr "Dernière valeur"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:596
 #: ../../godmode/reporting/reporting_builder.item_editor.php:2356
@@ -6857,7 +6857,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_profile.php:150
 msgid "Create Profile"
-msgstr ""
+msgstr "Créer le profil"
 
 #: ../../godmode/users/configure_profile.php:159
 #: ../../godmode/users/configure_user.php:613
@@ -7160,7 +7160,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_user.php:425
 msgid "Create User"
-msgstr ""
+msgstr "Créer l'utilisateur"
 
 #: ../../godmode/users/configure_user.php:442
 #: ../../operation/users/user_edit.php:200
@@ -7944,14 +7944,14 @@ msgstr "Tout changement d'état"
 #: ../../godmode/agentes/module_manager_editor_common.php:277
 #: ../../enterprise/godmode/modules/configure_local_component.php:253
 msgid "To normal"
-msgstr ""
+msgstr "À la normale"
 
 #: ../../godmode/massive/massive_edit_modules.php:476
 #: ../../godmode/modules/manage_network_components_form_common.php:140
 #: ../../godmode/agentes/module_manager_editor_common.php:279
 #: ../../enterprise/godmode/modules/configure_local_component.php:255
 msgid "To warning"
-msgstr ""
+msgstr "Pour avertissement"
 
 #: ../../godmode/massive/massive_edit_modules.php:477
 #: ../../godmode/modules/manage_network_components_form_common.php:142
@@ -9465,7 +9465,7 @@ msgstr ""
 
 #: ../../godmode/events/event_edit_filter.php:169
 msgid "Create Filter"
-msgstr ""
+msgstr "Créer le filtre"
 
 #: ../../godmode/events/event_edit_filter.php:179
 #: ../../operation/events/events_list.php:234
@@ -9903,7 +9903,7 @@ msgstr "Exécution"
 #: ../../godmode/agentes/planned_downtime.editor.php:334
 #: ../../godmode/agentes/planned_downtime.list.php:252
 msgid "Once"
-msgstr ""
+msgstr "Une fois"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:335
 #: ../../godmode/agentes/planned_downtime.list.php:252
@@ -10614,7 +10614,7 @@ msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:145
 msgid "Everyone"
-msgstr ""
+msgstr "Tout le monde"
 
 #: ../../godmode/agentes/modificar_agente.php:146
 msgid "Only disabled"
@@ -12749,11 +12749,11 @@ msgstr ""
 
 #: ../../godmode/setup/setup_general.php:247
 msgid "On demand"
-msgstr ""
+msgstr "À la demande"
 
 #: ../../godmode/setup/setup_general.php:248
 msgid "Expert"
-msgstr ""
+msgstr "Expert"
 
 #: ../../godmode/setup/setup_general.php:250
 #: ../../include/functions_config.php:186
@@ -13329,7 +13329,7 @@ msgstr ""
 
 #: ../../godmode/setup/news.php:173 ../../godmode/setup/news.php:224
 msgid "Expiration"
-msgstr ""
+msgstr "Expiration"
 
 #: ../../godmode/setup/news.php:215
 msgid "There are no defined news"
@@ -13343,7 +13343,7 @@ msgstr "Auteur"
 
 #: ../../godmode/setup/news.php:242
 msgid "Modal"
-msgstr ""
+msgstr "Modale"
 
 #: ../../godmode/setup/news.php:245
 msgid "Board"
@@ -13429,7 +13429,7 @@ msgstr "Pour obtenir votre <b> Pandora FMS Enterprise License </ b>:"
 #: ../../godmode/setup/license.php:90
 #, php-format
 msgid "Go to %s"
-msgstr ""
+msgstr "Aller à %s"
 
 #: ../../godmode/setup/license.php:93
 msgid "Enter the <b>auth key</b> and the following <b>request key</b>:"
@@ -13924,11 +13924,11 @@ msgstr "Actualiser le groupe"
 
 #: ../../godmode/groups/configure_group.php:105
 msgid "Update Group"
-msgstr ""
+msgstr "Mettre à jour le groupe"
 
 #: ../../godmode/groups/configure_group.php:107
 msgid "Create Group"
-msgstr ""
+msgstr "Créer le groupe"
 
 #: ../../godmode/groups/configure_group.php:140
 msgid "You have not access to the parent."
@@ -14384,7 +14384,7 @@ msgstr "Configurer l'action d'alerte"
 
 #: ../../godmode/alerts/configure_alert_action.php:97
 msgid "Update Action"
-msgstr ""
+msgstr "Mettre à jour l'action"
 
 #: ../../godmode/alerts/configure_alert_action.php:100
 #: ../../godmode/alerts/alert_list.builder.php:126
@@ -15599,7 +15599,7 @@ msgstr "Retourner au mode normal"
 
 #: ../../operation/reporting/reporting_viewer.php:140
 msgid "View Report"
-msgstr ""
+msgstr "Afficher le rapport"
 
 #: ../../operation/reporting/reporting_viewer.php:170
 #: ../../enterprise/include/functions_reporting_pdf.php:3988
@@ -16000,7 +16000,7 @@ msgstr "Detail des alertes"
 
 #: ../../operation/users/user_edit.php:357
 msgid "Show information"
-msgstr ""
+msgstr "Afficher les informations"
 
 #: ../../operation/users/user_edit.php:388
 msgid ""
@@ -16038,7 +16038,7 @@ msgstr ""
 
 #: ../../operation/users/user_edit.php:674
 msgid "Deactivate"
-msgstr ""
+msgstr "Désactiver"
 
 #: ../../operation/users/user_edit.php:706
 msgid "The double autentication was deactivated successfully"
@@ -17367,7 +17367,7 @@ msgstr "Vue de la topologie"
 #: ../../operation/agentes/networkmap.php:219
 #: ../../operation/agentes/networkmap.php:289
 msgid "Dynamic view"
-msgstr ""
+msgstr "Vue dynamique"
 
 #: ../../operation/agentes/networkmap.php:224
 #: ../../operation/agentes/networkmap.php:292
@@ -17642,7 +17642,7 @@ msgstr "Status du moniteur"
 
 #: ../../operation/agentes/status_monitor.php:542
 msgid "Advanced Options"
-msgstr ""
+msgstr "Options avancées"
 
 #: ../../operation/agentes/status_monitor.php:984
 #: ../../operation/search_modules.php:52
@@ -18602,7 +18602,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:310
 msgid "Filter by"
-msgstr ""
+msgstr "Filtrer par"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:366
 #: ../../enterprise/godmode/reporting/graph_template_wizard.php:162
@@ -18666,11 +18666,11 @@ msgstr ""
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:114
 msgid "Available"
-msgstr ""
+msgstr "Disponibles"
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:116
 msgid "Selected"
-msgstr ""
+msgstr "Sélectionnés"
 
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:123
 msgid "Push the selected services into the list"
@@ -21212,7 +21212,7 @@ msgstr "Exporter au format PDF"
 #: ../../enterprise/operation/reporting/custom_reporting.php:47
 #: ../../enterprise/operation/reporting/custom_reporting.php:70
 msgid "Send by email"
-msgstr ""
+msgstr "Envoyer par courriel"
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:55
 msgid "ID Report"
@@ -21390,7 +21390,7 @@ msgstr "Avec succès supprimé"
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:176
 #: ../../include/functions_reporting.php:8222
 msgid "Nodes"
-msgstr ""
+msgstr "Nœuds"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:212
 msgid "Pending to generate"
@@ -21571,11 +21571,11 @@ msgstr ""
 
 #: ../../enterprise/load_enterprise.php:666
 msgid "E-mail:"
-msgstr ""
+msgstr "Courriel :"
 
 #: ../../enterprise/load_enterprise.php:670
 msgid "Contact:"
-msgstr ""
+msgstr "Contact :"
 
 #: ../../enterprise/load_enterprise.php:674
 msgid "Auth Key:"
@@ -21588,7 +21588,7 @@ msgstr ""
 
 #: ../../enterprise/load_enterprise.php:690
 msgid "ERROR:"
-msgstr ""
+msgstr "ERREUR :"
 
 #: ../../enterprise/load_enterprise.php:690
 msgid "When connecting to Artica server."
@@ -23268,7 +23268,7 @@ msgstr ""
 #: ../../include/functions_update_manager.php:333
 #: ../../include/functions_update_manager.php:336
 msgid "Server not found."
-msgstr ""
+msgstr "Serveur introuvable."
 
 #: ../../enterprise/include/functions_update_manager.php:146
 #: ../../enterprise/include/functions_update_manager.php:248
@@ -23283,17 +23283,17 @@ msgstr ""
 
 #: ../../enterprise/include/functions_update_manager.php:165
 msgid "Version number:"
-msgstr ""
+msgstr "Numéro de version :"
 
 #: ../../enterprise/include/functions_update_manager.php:166
 #: ../../enterprise/include/functions_networkmap_enterprise.php:596
 msgid "Show details"
-msgstr ""
+msgstr "Afficher les détails"
 
 #: ../../enterprise/include/functions_update_manager.php:173
 #: ../../include/functions_update_manager.php:355
 msgid "Update to the last version"
-msgstr ""
+msgstr "Mettre à jour vers la dernière version"
 
 #: ../../enterprise/include/functions_update_manager.php:188
 #: ../../include/functions_update_manager.php:358
@@ -23323,7 +23323,7 @@ msgstr ""
 #: ../../enterprise/include/functions_update_manager.php:350
 #: ../../include/ajax/update_manager.ajax.php:447
 msgid "progress"
-msgstr ""
+msgstr "progression"
 
 #: ../../enterprise/include/functions_update_manager.php:428
 #: ../../enterprise/include/functions_update_manager.php:432
@@ -23350,19 +23350,19 @@ msgstr ""
 #: ../../include/functions_update_manager.php:175
 #: ../../include/ajax/update_manager.ajax.php:205
 msgid "An error ocurred while reading a file."
-msgstr ""
+msgstr "Une erreur s'est produite lors de la lecture d'un fichier."
 
 #: ../../enterprise/include/functions_update_manager.php:481
 #: ../../include/functions_update_manager.php:182
 #: ../../include/ajax/update_manager.ajax.php:211
 msgid "The package does not exist"
-msgstr ""
+msgstr "Le paquet n'existe pas"
 
 #: ../../enterprise/include/functions_update_manager.php:487
 #: ../../include/functions_update_manager.php:188
 #: ../../include/ajax/update_manager.ajax.php:477
 msgid "The package is installed."
-msgstr ""
+msgstr "Le paquet est installé"
 
 #: ../../enterprise/include/functions_groups.php:47
 msgid "Metaconsole"
@@ -23417,12 +23417,12 @@ msgstr ""
 #: ../../enterprise/include/functions_license.php:35
 #: ../../enterprise/include/functions_license.php:52
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 #: ../../enterprise/include/functions_license.php:37
 #: ../../enterprise/include/functions_license.php:52
 msgid "Trial"
-msgstr ""
+msgstr "Essai"
 
 #: ../../enterprise/include/functions_policies.php:456
 #: ../../enterprise/include/functions_policies.php:471
@@ -23684,7 +23684,7 @@ msgstr "Hors des limites"
 
 #: ../../enterprise/include/functions_reporting.php:1062
 msgid "Day"
-msgstr ""
+msgstr "Jour"
 
 #: ../../enterprise/include/functions_reporting.php:1063
 #: ../../enterprise/include/functions_reporting.php:1520
@@ -23720,7 +23720,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:3906
 #: ../../include/functions_reporting.php:4016
 msgid "Dates"
-msgstr ""
+msgstr "Dates"
 
 #: ../../enterprise/include/functions_reporting.php:1386
 #: ../../enterprise/include/functions_reporting.php:2057
@@ -24212,11 +24212,11 @@ msgstr ""
 #: ../../enterprise/include/functions_networkmap_enterprise.php:602
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1630
 msgid "Add node"
-msgstr ""
+msgstr "Ajouter un nœud"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:603
 msgid "Set center"
-msgstr ""
+msgstr "Définir le centre"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:605
 msgid "Refresh Holding area"
@@ -24225,7 +24225,7 @@ msgstr ""
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1061
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1541
 msgid "Circle"
-msgstr "Cercl"
+msgstr "Cercle"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1062
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1542
@@ -24312,7 +24312,7 @@ msgstr ""
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1624
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1625
 msgid "Relations"
-msgstr ""
+msgstr "Relations"
 
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1649
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1654
@@ -24788,11 +24788,11 @@ msgstr ""
 #: ../../enterprise/extensions/ipam/ipam_network.php:521
 #: ../../enterprise/extensions/ipam/ipam_excel.php:105
 msgid "Hostname"
-msgstr ""
+msgstr "Nom d'hôte"
 
 #: ../../enterprise/extensions/ipam/ipam_ajax.php:167
 msgid "Operating system"
-msgstr ""
+msgstr "Système d'exploitation"
 
 #: ../../enterprise/extensions/ipam/ipam_ajax.php:177
 msgid "This agent has other IPs"
@@ -24828,7 +24828,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/ipam/ipam_ajax.php:252
 msgid "Ping"
-msgstr ""
+msgstr "Ping"
 
 #: ../../enterprise/extensions/ipam/ipam_ajax.php:269
 #: ../../include/ajax/events.php:157
@@ -24847,7 +24847,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/ipam/ipam_massive.php:68
 msgid "Addresses"
-msgstr ""
+msgstr "Adresses"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:89
 msgid "No addresses found on this network"
@@ -24855,7 +24855,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:106
 msgid "Subnet"
-msgstr ""
+msgstr "Sous-réseau"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:204
 msgid "Total IPs"
@@ -24890,16 +24890,16 @@ msgstr ""
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:259
 msgid "A -> Z"
-msgstr ""
+msgstr "A -> Z"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:260
 msgid "Z -> A"
-msgstr ""
+msgstr "Z -> A"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:261
 #: ../../enterprise/extensions/ipam/ipam_network.php:262
 msgid "Last check"
-msgstr ""
+msgstr "Dernière vérification"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:261
 msgid "Newer -> Older"
@@ -24923,7 +24923,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:275
 msgid "Icons style"
-msgstr ""
+msgstr "Style des icônes"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:282
 msgid "Show not alive hosts"
@@ -24947,7 +24947,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:457
 msgid "Edit address"
-msgstr ""
+msgstr "Modifier l'adresse"
 
 #: ../../enterprise/extensions/ipam/ipam_network.php:462
 msgid "Disabled address"
@@ -24983,7 +24983,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/ipam/ipam_list.php:45
 msgid "No networks found"
-msgstr ""
+msgstr "Aucun réseau trouvé"
 
 #: ../../enterprise/extensions/ipam/ipam_list.php:64
 msgid "IPs"
@@ -31035,9 +31035,6 @@ msgstr "Fichiers d'archive du sytème"
 #~ msgid "Alerts disabled"
 #~ msgstr "Alertes désactivées"
 
-#~ msgid "OID:"
-#~ msgstr "OID"
-
 #~ msgid "Remote modules rate"
 #~ msgstr "Rythme des modules á distance"
 
@@ -31102,9 +31099,6 @@ msgstr "Fichiers d'archive du sytème"
 #~ msgid "Search text"
 #~ msgstr "cherche texte"
 
-#~ msgid "Custom data:"
-#~ msgstr "Données du client"
-
 #~ msgid ""
 #~ "Red cell when the module group and agent have at least one module in "
 #~ "critical state and the others in any state."
@@ -31126,67 +31120,3 @@ msgstr "Fichiers d'archive du sytème"
 
 #~ msgid "Modules warning"
 #~ msgstr "Alerte modules"
-
-#~ msgid "Sort the agents by "
-#~ msgstr "Trier les agents de "
-
-#~ msgid "Type:"
-#~ msgstr "Type :"
-
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "Max. Retard (s) / Modules retardés"
-
-#~ msgid "Add module macro"
-#~ msgstr "Ajouter module de macro"
-
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "Gauche en blanc pour les modules d'inventaire de réseau"
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "Mettez ici votre code de script pour le module d'inventaire"
-
-#~ msgid "Invalid license."
-#~ msgstr "Licence invalide"
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr ""
-#~ "S'il vous plaît contacter Artica à info@artica.es pour une licence valide."
-
-#~ msgid "Columns"
-#~ msgstr "Colonnes"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "Agent de surveillance et d'information"
-
-#~ msgid "No servers"
-#~ msgstr "Pas de serveurs"
-
-#~ msgid "Event information"
-#~ msgstr "les informations de l'événement"
-
-#~ msgid "Without permissions"
-#~ msgstr "Sans autorisation"
-
-#~ msgid "disabled"
-#~ msgstr "désactivé"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "la réplication des événements n'est pas activée"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr ""
-#~ "la réplication des événements n'est pas correctement configuré pour cette "
-#~ "metaconsole"
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr ""
-#~ "Le serveur semble être configuré pour reproduire des événements, mais aucun "
-#~ "événement n'a encore été reçue"
-
-#~ msgid "Unknown error"
-#~ msgstr "Erreur inconnue"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "Il n'y a pas d'agents dans ce agrupation"

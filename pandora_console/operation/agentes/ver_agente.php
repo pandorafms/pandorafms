@@ -246,7 +246,12 @@ if (is_ajax ()) {
 			
 			foreach ($idAgents as $idA) {
 				if (empty($metaconsole_server_name)) {
-					$row = explode ('|', $idA);
+					if (strstr($idA, "|@_@|")) {
+							$row = explode ('|@_@|', $idA);
+					}
+					else {
+						$row = explode ('|', $idA);
+					}
 					$server_name = $row[0];
 					$id_agent = $row [1];
 				}
@@ -438,6 +443,7 @@ if (is_ajax ()) {
 		
 		$server = null;
 		if ($metaconsole) {
+			$strict_user = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 			$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
 			
 			if (metaconsole_connect($server) != NOERR) {
@@ -527,7 +533,7 @@ if (is_ajax ()) {
 			$size_bad_modules = sizeof ($bad_modules);
 		
 		// Modules down
-		if ($size_bad_modules > 0) {
+		if ($size_bad_modules > 0 && (!$metaconsole || !$strict_user)) {
 			echo '<strong>'.__('Monitors down').':</strong> '.$size_bad_modules.' / '.$total_modules;
 			echo '<ul>';
 			foreach ($bad_modules as $module) {
@@ -561,7 +567,7 @@ if (is_ajax ()) {
 			$alert_modules = db_get_sql ($sql);
 		}
 		
-		if ($alert_modules > 0) {
+		if ($alert_modules > 0 && (!$metaconsole || !$strict_user)) {
 			$sql = sprintf ('SELECT tagente_modulo.nombre, talert_template_modules.last_fired
 				FROM talert_template_modules, tagente_modulo, tagente
 				WHERE tagente.id_agente = %d

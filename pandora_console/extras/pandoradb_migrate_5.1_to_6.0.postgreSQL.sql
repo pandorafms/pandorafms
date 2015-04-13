@@ -68,3 +68,17 @@ INSERT INTO "tconfig" ("token", "value") VALUES ('post_process_custom_values', '
 ALTER TABLE "tnetwork_map" ADD COLUMN "id_tag" INTEGER DEFAULT 0;
 ALTER TABLE "tnetwork_map" ADD COLUMN "store_group" INTEGER DEFAULT 0;
 UPDATE "tnetwork_map" SET "store_group" = "id_group";
+
+-- ---------------------------------------------------------------------
+-- Table `tperfil`
+-- ---------------------------------------------------------------------
+ALTER TABLE "tperfil" ADD COLUMN "map_view" SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE "tperfil" ADD COLUMN "map_edit" SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE "tperfil" ADD COLUMN "map_management" SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE "tperfil" ADD COLUMN "vconsole_view" SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE "tperfil" ADD COLUMN "vconsole_edit" SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE "tperfil" ADD COLUMN "vconsole_management" SMALLINT NOT NULL DEFAULT 0;
+
+UPDATE "tperfil" SET "map_view" = 1, "vconsole_view" = 1 WHERE "report_view" = 1;
+UPDATE "tperfil" SET "map_edit" = 1, "vconsole_edit" = 1 WHERE "report_edit" = 1;
+UPDATE "tperfil" SET "map_management" = 1, "vconsole_management" = 1 WHERE "report_management" = 1;

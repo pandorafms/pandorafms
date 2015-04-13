@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-03-24 16:53+0000\n"
+"X-Launchpad-Export-Date: 2015-04-01 07:29+0000\n"
 "X-Generator: Launchpad (build 17413)\n"
 "Language: \n"
 
@@ -30920,76 +30920,5 @@ msgstr "Logfile do Sistema"
 #~ msgid "Create incident from event"
 #~ msgstr "Criar incidente para o evento"
 
-#~ msgid "Sort the agents by "
-#~ msgstr "Classificar os agentes por "
-
-#~ msgid "Type:"
-#~ msgstr "Tipo:"
-
-#~ msgid "Custom data:"
-#~ msgstr "Dados personalizados:"
-
-#~ msgid "OID:"
-#~ msgstr "OID:"
-
-#~ msgid "Max. Delay(sec)/Modules delayed"
-#~ msgstr "Atraso Max.(seg)/Módulos atrasados"
-
-#~ msgid "Add module macro"
-#~ msgstr "Adicionar macro do módulo"
-
 #~ msgid "E/D"
 #~ msgstr "E/D"
-
-#~ msgid "Left in blank for Network Inventory Modules"
-#~ msgstr "Deixado em branco para Módulos de Inventário de Rede"
-
-#~ msgid "Put here your script code for the inventory module"
-#~ msgstr "Coloque aqui código do seu script para o módulo de inventário"
-
-#~ msgid "Invalid license."
-#~ msgstr "Licença inválida."
-
-#~ msgid "Please contact Artica at info@artica.es for a valid license."
-#~ msgstr ""
-#~ "Por favor, entre em contato com Artica através do info@artica.es para obter "
-#~ "uma licença válida."
-
-#~ msgid "Columns"
-#~ msgstr "Colunas"
-
-#~ msgid "Agent and monitor information"
-#~ msgstr "Informação de monitor e agente"
-
-#~ msgid "Event information"
-#~ msgstr "Informação sobre o evento"
-
-#~ msgid "No servers"
-#~ msgstr "Sem servidores"
-
-#~ msgid "Without permissions"
-#~ msgstr "Sem permissões"
-
-#~ msgid "disabled"
-#~ msgstr "desabilitado"
-
-#~ msgid "Events replication is not enabled"
-#~ msgstr "A replicação de eventos não está habilitada"
-
-#~ msgid ""
-#~ "The server seems to be configurated to replicate events, but no events has "
-#~ "been received yet"
-#~ msgstr ""
-#~ "O servidor parece ter sido configurado para replicar eventos, mas nenhum "
-#~ "evento foi recebido ainda"
-
-#~ msgid "Events replication is not properly configured for this metaconsole"
-#~ msgstr ""
-#~ "A replicação de eventos não está configurada apropriadamente para este "
-#~ "metaconsole"
-
-#~ msgid "Unknown error"
-#~ msgstr "Erro desconhecido"
-
-#~ msgid "There aren't agents in this agrupation"
-#~ msgstr "Não há agentes neste agrupamento"

@@ -2473,7 +2473,7 @@ function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $
 	global $graphic_type;
 	
 	//It was urlencoded, so we urldecode it
-	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES);
+	//$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES);
 	$data = array ();
 	$loop = 0;
 	
@@ -2525,7 +2525,7 @@ function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
+		__('Others'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
 

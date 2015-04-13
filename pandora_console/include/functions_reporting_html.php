@@ -176,6 +176,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'projection_graph':
 				reporting_html_projection_graph($table, $item);
 				break;
+			case 'prediction_date':
+				reporting_html_prediction_date($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -186,6 +189,10 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_prediction_date($table, $item, $mini) {
+	reporting_html_value($table, $item, $mini, true);
 }
 
 function reporting_html_projection_graph(&$table, $item) {
@@ -3363,43 +3370,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	$item_title = $content['name'];
 	
 	switch ($content["type"]) {
-		case 'prediction_date':
-			if (empty($item_title)) {
-				$item_title = __('Prediction date');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false).' <br> ' .
-				ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			$table->colspan[1][0] = 4;
-			
-			set_time_limit(500);
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[2][0] = 4;
-			if ($content["description"] != ""){
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$intervals_text = $content['text'];
-			$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
-			$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);			
-			$value = forecast_prediction_date ($content['id_agent_module'], $content['period'],  $max_interval, $min_interval);
-			
-			if ($value === false) {
-				$value = __('Unknown');
-			}
-			else {
-				$value = date ('d M Y H:i:s', $value);
-			}
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
-			array_push ($table->data, $data);
-			break;
 		case 'simple_baseline_graph':
 			if (empty($item_title)) {
 				$item_title = __('Simple baseline graph');

@@ -248,10 +248,46 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$force_width_chart,
 					$force_height_chart);
 				break;
+			case 'prediction_date':
+				$report['contents'][] = reporting_prediction_date(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_prediction_date($report, $content) {
+	
+	global $config;
+	
+	$return['type'] = 'prediction_date';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Prediction Date');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	set_time_limit(500);
+	
+	$intervals_text = $content['text'];
+	$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
+	$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);			
+	$value = forecast_prediction_date ($content['id_agent_module'], $content['period'],  $max_interval, $min_interval);
+	
+	if ($value === false) {
+		$return["data"]['value'] = __('Unknown');
+	}
+	else {
+		$return["data"]['value'] = date ('d M Y H:i:s', $value);
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_projection_graph($report, $content,
@@ -263,7 +299,7 @@ function reporting_projection_graph($report, $content,
 	$return['type'] = 'projection_graph';
 	
 	if (empty($content['name'])) {
-		$content['name'] = __('Agent configuration');
+		$content['name'] = __('Projection Graph');
 	}
 	
 	$return['title'] = $content['name'];

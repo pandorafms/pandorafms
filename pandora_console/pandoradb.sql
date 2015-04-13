@@ -1796,3 +1796,13 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
 	`al_field10` text NOT NULL,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tsessions_php`
+-- ---------------------------------------------------------------------
+CREATE TABLE tsessions_php (
+	`id_session` CHAR(52) NOT NULL,
+	`last_active` INTEGER NOT NULL,
+	`data` TEXT,
+	PRIMARY KEY (`id_session`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;

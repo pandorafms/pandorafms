@@ -1698,3 +1698,12 @@ CREATE TABLE  "talert_snmp_action" (
 	"al_field9" TEXT default '',
 	"al_field10" TEXT default ''
 );
+
+-- ---------------------------------------------------------------------
+-- Table tsessions_php
+-- ---------------------------------------------------------------------
+CREATE TABLE "tsessions_php" (
+	"id_session" SERIAL NOT NULL PRIMARY KEY,
+	"last_active" INTEGER NOT NULL,
+	"data" TEXT default ''
+);

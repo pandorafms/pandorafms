@@ -118,6 +118,11 @@ date_default_timezone_set("Europe/Madrid");
 
 config_process_config();
 
+config_prepare_session();
+require_once ($config["homedir"].'/include/load_session.php');
+$resultado = session_start();
+
+
 if (!isset($config["homeurl_static"])) {
 	$config["homeurl_static"] = $config["homeurl"];
 }

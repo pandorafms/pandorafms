@@ -24,7 +24,10 @@ require_once ('include/functions_db.php');
 require_once ('include/auth/mysql.php');
 
 // Real start
-session_start ();
+
+if (session_id() == '') {
+	session_start();
+}
 
 // Hash login process
 if (isset ($_GET["loginhash"])) {

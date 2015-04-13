@@ -261,6 +261,7 @@ if (check_acl ($config['id_user'], 0, "ER")) {
 	$menu_operation["eventos"]["id"] = "oper-events";
 	
 	$sub = array ();
+	$sub["operation/events/events"]["text"] = __('Events');
 	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
 	
 	//RSS

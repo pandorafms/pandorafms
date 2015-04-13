@@ -190,35 +190,39 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub = array ();
 
 	// Options Setup
-	$sub["godmode/setup/setup&amp;section=general"]["text"] = __('General Setup');
-	$sub["godmode/setup/setup&amp;section=general"]["refr"] = 0;
+	$sub["general"]["text"] = __('General Setup');
+	$sub2 = array ();
+	
+	$sub2["godmode/setup/setup&amp;section=general"]["text"] = __('General Setup');
+	$sub2["godmode/setup/setup&amp;section=general"]["refr"] = 0;
 
 	enterprise_hook ('password_submenu');
 	enterprise_hook ('enterprise_submenu');
 	enterprise_hook ('historydb_submenu');
 	enterprise_hook ('log_collector_submenu');
 
-	$sub["godmode/setup/setup&amp;section=auth"]["text"] =  __('Authentication');
-	$sub["godmode/setup/setup&amp;section=auth"]["refr"] = 0;
+	$sub2["godmode/setup/setup&amp;section=auth"]["text"] =  __('Authentication');
+	$sub2["godmode/setup/setup&amp;section=auth"]["refr"] = 0;
 
-	$sub["godmode/setup/setup&amp;section=perf"]["text"] = __('Performance');
-	$sub["godmode/setup/setup&amp;section=perf"]["refr"] = 0;
+	$sub2["godmode/setup/setup&amp;section=perf"]["text"] = __('Performance');
+	$sub2["godmode/setup/setup&amp;section=perf"]["refr"] = 0;
 
-	$sub["godmode/setup/setup&amp;section=vis"]["text"] = __('Visual styles');
-	$sub["godmode/setup/setup&amp;section=vis"]["refr"] = 0;
+	$sub2["godmode/setup/setup&amp;section=vis"]["text"] = __('Visual styles');
+	$sub2["godmode/setup/setup&amp;section=vis"]["refr"] = 0;
 
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		if ($config['activate_netflow']) {
-			$sub["godmode/setup/setup&amp;section=net"]["text"] = __('Netflow');
-			$sub["godmode/setup/setup&amp;section=net"]["refr"] = 0;
+			$sub2["godmode/setup/setup&amp;section=net"]["text"] = __('Netflow');
+			$sub2["godmode/setup/setup&amp;section=net"]["refr"] = 0;
 		}
 	}
 
 
 
 	if ($config['activate_gis'])
-		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
-
+		$sub2["godmode/setup/gis"]["text"] = __('Map conections GIS');
+	
+	$sub["general"]["sub2"] = $sub2;
 	$sub["godmode/setup/os"]["text"] = __('Edit OS');
 	$sub["godmode/setup/license"]["text"] = __('License');
 

@@ -2911,7 +2911,9 @@ table#policy_modules td * {
 	padding: 10px;
 }
 
-
+.godmode{
+	border-top: 4px solid !important;
+}
 /* The items with the class 'spinner' will rotate */
 /* Not supported on IE9 and below */
 .spinner {

@@ -1770,7 +1770,9 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				tperfil.report_view, tperfil.report_edit,
 				tperfil.report_management, tperfil.event_view,
 				tperfil.event_edit, tperfil.event_management, 
-				tperfil.agent_disable
+				tperfil.agent_disable,
+				tperfil.map_view, tperfil.map_edit, tperfil.map_management,
+				tperfil.vconsole_view, tperfil.vconsole_edit, tperfil.vconsole_management
 			FROM tusuario_perfil, tperfil
 			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
 				AND tusuario_perfil.id_usuario = '%s'", $id_user);
@@ -1785,7 +1787,9 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				tperfil.report_view, tperfil.report_edit,
 				tperfil.report_management, tperfil.event_view,
 				tperfil.event_edit, tperfil.event_management,
-				tperfil.agent_disable
+				tperfil.agent_disable,
+				tperfil.map_view, tperfil.map_edit, tperfil.map_management,
+				tperfil.vconsole_view, tperfil.vconsole_edit, tperfil.vconsole_management
 			FROM tusuario_perfil, tperfil
 			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
 				AND tusuario_perfil.id_usuario = '%s'

@@ -18,7 +18,7 @@ ob_get_clean(); //Fixed unused javascript code.
 
 class Visualmaps {
 	private $correct_acl = false;
-	private $acl = "RR";
+	private $acl = "VR";
 	
 	private $default = true;
 	private $default_filters = array();

@@ -74,7 +74,12 @@ $bheight = $layout["height"];
 
 $pure_url = "&pure=" . $config["pure"];
 
-if (! check_acl ($config["id_user"], $id_group, "RR")) {
+// ACL
+$vconsole_read = check_acl ($config["id_user"], $id_group, "VR");
+$vconsole_write = check_acl ($config["id_user"], $id_group, "VW");
+$vconsole_manage = check_acl ($config["id_user"], $id_group, "VM");
+
+if (! $vconsole_read) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access visual console without group access");
 	require ("general/noaccess.php");
@@ -89,7 +94,7 @@ $options['consoles_list']['text'] =
 	html_print_image ("images/visual_console.png", true,
 		array ("title" => __('Visual consoles list'))) . '</a>';
 
-if (check_acl ($config["id_user"], $id_group, "RW")) {
+if ($vconsole_write || $vconsole_manage) {
 	$url_base = 'index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&action=';
 	
 	$hash = md5($config["dbpass"] . $id_layout . $config["id_user"]);
@@ -123,7 +128,7 @@ if (check_acl ($config["id_user"], $id_group, "RW")) {
 $options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">' . html_print_image ("images/operation.png", true, array ("title" => __('View'))) .'</a>';
 $options['view']['active'] = true;
 
-if (!defined('METACONSOLE')) {
+if (! defined('METACONSOLE')) {
 	if ($config["pure"] == 0) {
 		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.((int)get_parameter('refr', 0)).'&amp;pure=1">' . html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
@@ -138,18 +143,15 @@ if (!defined('METACONSOLE')) {
 		$options = array('view' => $options['view'], 'pure' => $options['pure']);
 	}
 	$options['pure']['active'] = false;
-}
-
-//Set the hidden value for the javascript
-if (defined('METACONSOLE')) {
-	html_print_input_hidden('metaconsole', 1);
-}
-else {
+	
+	//Set the hidden value for the javascript
 	html_print_input_hidden('metaconsole', 0);
 	ui_print_page_header ($layout_name, "images/visual_console.png", false, '', false, $options);
 }
-
-
+else {
+	//Set the hidden value for the javascript
+	html_print_input_hidden('metaconsole', 1);
+}
 
 visual_map_print_visual_map ($id_layout);
 

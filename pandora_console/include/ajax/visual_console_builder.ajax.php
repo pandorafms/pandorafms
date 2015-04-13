@@ -17,14 +17,41 @@ global $config;
 
 check_login ();
 
-// Fix: IW was the old ACL to check for report editing, now is RW
-if (! check_acl ($config['id_user'], 0, "RW")) {
+$id_visual_console = get_parameter('id_visual_console', null);
+
+// WARNING: CHECK THE ENTIRE FUNCTIONALITY
+
+// Visual console id required
+if (empty($id_visual_console)) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
 }
 
+// Get the group id for the ACL checks
+$group_id = db_get_value('id_group', 'tlayout', 'id', $id_visual_console);
+if ($group_id === false) {
+	db_pandora_audit("ACL Violation",
+		"Trying to access report builder");
+	require ("general/noaccess.php");
+	exit;
+}
+
+// ACL for the existing visual console
+// if (!isset($vconsole_read))
+// 	$vconsole_read = check_acl ($config['id_user'], $group_id, "VR");
+if (!isset($vconsole_write))
+	$vconsole_write = check_acl ($config['id_user'], $group_id, "VW");
+if (!isset($vconsole_manage))
+	$vconsole_manage = check_acl ($config['id_user'], $group_id, "VM");
+
+if (!$vconsole_write && !$vconsole_manage) {
+	db_pandora_audit("ACL Violation",
+		"Trying to access report builder");
+	require ("general/noaccess.php");
+	exit;
+}
 
 //Fix ajax to avoid include the file, 'functions_graph.php'.
 $ajax = true;
@@ -38,8 +65,6 @@ enterprise_include_once('include/functions_visual_map.php');
 
 $action = get_parameter('action');
 $type = get_parameter('type');
-
-$id_visual_console = get_parameter('id_visual_console', null);
 
 $id_element = get_parameter('id_element', null);
 

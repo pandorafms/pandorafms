@@ -129,7 +129,7 @@ li:hover ul { display: block; }
 
 .submenu_selected {
 	margin-bottom: 0px !important;
-	box-shadow: inset 4px 0 #00AF21 !important; 
+	box-shadow: inset 4px 0 #80BA27 !important; 
 }
 
 .menu .menu_icon, .menu li.links {

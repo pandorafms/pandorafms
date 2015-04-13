@@ -25,7 +25,7 @@ $menu_godmode = array ();
 $menu_godmode['class'] = 'godmode';
 
 if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "AD")) {
-	$menu_godmode["gagente"]["text"] = __('Resource management');
+	$menu_godmode["gagente"]["text"] = __('Resources');
 	$menu_godmode["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu_godmode["gagente"]["id"] = "god-agents";
 
@@ -67,7 +67,7 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 }
 
 if (check_acl ($config['id_user'], 0, "UM")) {
-	$menu_godmode["gusuarios"]["text"] = __('Profile management');
+	$menu_godmode["gusuarios"]["text"] = __('Profiles');
 	$menu_godmode["gusuarios"]["sec2"] = "godmode/users/user_list";
 	$menu_godmode["gusuarios"]["id"] = "god-users";
 
@@ -84,7 +84,7 @@ if (check_acl ($config['id_user'], 0, "UM")) {
 }
 
 if (check_acl ($config['id_user'], 0, "PM")) {
-	$menu_godmode["gmodules"]["text"] = __('Configuration management');
+	$menu_godmode["gmodules"]["text"] = __('Configuration');
 	$menu_godmode["gmodules"]["sec2"] = "godmode/modules/manage_network_templates";
 	$menu_godmode["gmodules"]["id"] = "god-modules";
 
@@ -121,7 +121,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 }
 
 if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0, "AD")) {
-	$menu_godmode["galertas"]["text"] = __('Manage alerts');
+	$menu_godmode["galertas"]["text"] = __('Alerts');
 	$menu_godmode["galertas"]["sec2"] = "godmode/alerts/alert_list";
 	$menu_godmode["galertas"]["id"] = "god-alerts";
 
@@ -143,7 +143,7 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 
 if (check_acl ($config['id_user'], 0, "EW")) {
 	// Manage events
-	$menu_godmode["geventos"]["text"] = __('Manage events');
+	$menu_godmode["geventos"]["text"] = __('Events');
 	$menu_godmode["geventos"]["sec2"] = "godmode/events/events&amp;section=filter";
 	$menu_godmode["geventos"]["id"] = "god-events";
 
@@ -161,7 +161,7 @@ if (check_acl ($config['id_user'], 0, "EW")) {
 
 if (check_acl ($config['id_user'], 0, "AW")) {
 	// Servers
-	$menu_godmode["gservers"]["text"] = __('Manage servers');
+	$menu_godmode["gservers"]["text"] = __('Servers');
 	$menu_godmode["gservers"]["sec2"] = "godmode/servers/modificar_server";
 	$menu_godmode["gservers"]["id"] = "god-servers";
 
@@ -241,11 +241,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/admin_access_logs"]["text"] = __('System audit log');
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	$sub["godmode/update_manager/update_manager"]["text"] = __('Update manager');
-	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
-	$sub["godmode/setup/news"]["text"] = __('Site news');
-	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	$sub["gextmaneger"]["sub2"] = $sub2;
-	if (check_acl ($config['id_user'], 0, "DM")) {//meter en extensiones
+	if (check_acl ($config['id_user'], 0, "DM")) {
 		$sub["gdbman"]["text"] = __('DB maintenance');
 		$sub["gdbman"]["type"] = "direct";
 		$sub["gdbman"]["subtype"] = "nolink";
@@ -258,6 +255,9 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 
 		$sub["gdbman"]["sub2"] = $sub2;
 	}
+	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
+	$sub["godmode/setup/news"]["text"] = __('Site news');
+	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	$menu_godmode["gextensions"]["sub"] = $sub;
 }
 

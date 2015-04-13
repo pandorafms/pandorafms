@@ -255,13 +255,13 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 // Events reading
 if (check_acl ($config['id_user'], 0, "ER")) {
 	// Events
-	$menu_operation["eventos"]["text"] = __('View events'); 
+	$menu_operation["eventos"]["text"] = __('Events'); 
 	$menu_operation["eventos"]["refr"] = 0;
 	$menu_operation["eventos"]["sec2"] = "operation/events/events";
 	$menu_operation["eventos"]["id"] = "oper-events";
 	
 	$sub = array ();
-	$sub["operation/events/events"]["text"] = __('Events');
+	$sub["operation/events/events"]["text"] = __('View events');
 	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
 	
 	//RSS

@@ -2196,7 +2196,16 @@ ul.operation li a:hover  {
 }
 
 .menu_icon:hover{
-	background-color: #585858;
+	background-color: #585858 !important;
+}
+.submenu_not_selected:hover{
+	background-color: #585858 !important;
+}
+.submenu_selected:hover{
+	background-color: #585858 !important;
+}
+.sub_subMenu:hover{
+	background-color: #585858 !important;
 }
 /*
 ul.operation ul.submenu li a:hover {
@@ -2254,17 +2263,12 @@ li.links a:hover  {
 	font-weight: bold;
 }
 
-.operation.ul, ul.operation .operation ul {
-	background-color: #373737 !important;
-}
-
-.menu ul {
-	background-color: #555 !important;
+.operation {
+	background-color: #333 !important;
 }
 
 .menu li, .menu .li.not_selected {
 	border-radius: 0px 0px 0px 0px;
-	background-color: #373737 !important;
 	display: block;
 	min-height: 35px;
 	border-bottom: 0px none #424242;
@@ -2870,14 +2874,13 @@ table#policy_modules td * {
 	float: right;
 	width: 70%;
 	letter-spacing: 0pt;
-	font-size: 7pt;
+	font-size: 8pt;
 	white-space: pre-wrap;
 }
 
 .no_hidden_menu{
-	background-position: 12% 50% !important;
+	background-position: 11% 50% !important;
 }
-
 
 #menu_tab li.nomn, #menu_tab li.nomn_high {
    background-color: #ECECEC;
@@ -2909,6 +2912,13 @@ table#policy_modules td * {
 
 .databox.filters td{
 	padding: 10px;
+}
+
+.godmode, .menu_icon ul li{
+	background-color: #222;
+}
+.operation .menu_icon ul li{
+	background-color: #333;
 }
 
 .godmode{

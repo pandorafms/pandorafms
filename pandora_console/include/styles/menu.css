@@ -32,7 +32,8 @@
 	margin: 0;
 }
 .menu li.selected {
-	box-shadow: inset 4px 0 #00AF21;
+	box-shadow: inset 4px 0 #80BA27;
+	background-color: #585858 !important;
 }
 
 .menu li a {
@@ -46,7 +47,6 @@
 li:hover ul { display: block; }
 
 .submenu_text{
-	background-repeat: no-repeat !important;
 	padding: 11px;
 	margin-left: 0px;
 	color: #fff;
@@ -62,7 +62,6 @@ li:hover ul { display: block; }
 	border:0px;
 }
 .submenu {
-	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
 	margin: 0px 0px 0px 0px;
 	position: absolute;
 	z-index: 999;
@@ -108,11 +107,11 @@ li:hover ul { display: block; }
 	border-left: 1px;
 }
 .menu li.has_submenu > a > div {
-	background: url(../../images/arrow.png) no-repeat 90% 50% !important;
+	background: url(../../images/arrow.png) no-repeat 90% 50%;
 	z-index: 1; /* Positions it on top of the rest */
 }
 .menu li.has_submenu .flecha{
-	background: url(../../images/arrow.png) no-repeat 90% 50% !important;
+	background: url(../../images/arrow.png) no-repeat 90% 50%;
 	z-index: 1; /* Positions it on top of the rest */
 }
 
@@ -238,7 +237,6 @@ li:hover ul { display: block; }
 	left: -80px;
 	background-color: #AAA;
 }
-
 
 ul {
 	margin: 0;

@@ -240,10 +240,86 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'projection_graph':
+				$report['contents'][] = reporting_projection_graph(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_projection_graph($report, $content,
+	$type = 'dinamic', $force_width_chart = null,
+	$force_height_chart = null) {
+	
+	global $config;
+	
+	$return['type'] = 'projection_graph';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Agent configuration');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	set_time_limit(500);
+	
+	$output_projection = forecast_projection_graph(
+		$content['id_agent_module'], $content['period'], $content['top_n_value']);
+	
+	// If projection doesn't have data then don't draw graph
+	if ($output_projection ==  NULL) {
+		$output_projection = false;
+	}
+	
+	// Get chart
+	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	
+	if (!empty($force_width_chart)) {
+		$width = $force_width_chart;
+	}
+	
+	if (!empty($force_height_chart)) {
+		$height = $force_height_chart;
+	}
+	
+	switch ($type) {
+		case 'dinamic':
+		case 'static':
+			$return['chart'] = graphic_combined_module(
+				array($content['id_agent_module']),
+				array(),
+				$content['period'],
+				$width,
+				$height,
+				'Projection%20Sample%20Graph',
+				'',
+				0,
+				0,
+				0,
+				0,
+				$report["datetime"],
+				true,
+				ui_get_full_url(false, false, false, false) . '/',
+				1,
+				// Important parameter, this tell to graphic_combined_module function that is a projection graph
+				$output_projection,
+				$content['top_n_value']
+				);
+			break;
+		case 'data':
+			break;
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_agent_configuration($report, $content) {

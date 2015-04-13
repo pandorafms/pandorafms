@@ -173,6 +173,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'agent_configuration':
 				reporting_html_agent_configuration($table, $item);
 				break;
+			case 'projection_graph':
+				reporting_html_projection_graph($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -183,6 +186,12 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_projection_graph(&$table, $item) {
+	$table->colspan['chart']['cell'] = 3;
+	$table->cellstyle['chart']['cell'] = 'text-align: center;';
+	$table->data['chart']['cell'] = $item['chart'];
 }
 
 function reporting_html_agent_configuration(&$table, $item) {
@@ -3354,63 +3363,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	$item_title = $content['name'];
 	
 	switch ($content["type"]) {
-		case 'projection_graph':
-			if (empty($item_title)) {
-				$item_title = __('Projection graph');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false).' <br> ' .
-				ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			$table->colspan[1][0] = 4;
-			
-			set_time_limit(500);
-			
-			$next_row = 1;
-			// Put description at the end of the module (if exists)
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			
-			$table->colspan[$next_row][0] = 3;
-			$table->cellstyle[$next_row][0] = 'text-align: center;';
-			$data = array ();
-			
-			$output_projection = forecast_projection_graph($content['id_agent_module'], $content['period'], $content['top_n_value']);
-			
-			// If projection doesn't have data then don't draw graph
-			if ($output_projection ==  NULL) {
-				$output_projection = false;
-			}
-			
-			$modules = array($content['id_agent_module']);
-			$weights = array();
-			$data[0] = 	graphic_combined_module(
-				$modules,
-				$weights,
-				$content['period'],
-				$sizgraph_w, $sizgraph_h,
-				'Projection%20Sample%20Graph',
-				'',
-				0,
-				0,
-				0,
-				0,
-				$report["datetime"],
-				true,
-				ui_get_full_url(false, false, false, false) . '/',
-				1,
-				// Important parameter, this tell to graphic_combined_module function that is a projection graph
-				$output_projection,
-				$content['top_n_value']
-				);
-			array_push ($table->data, $data);
-			break;
 		case 'prediction_date':
 			if (empty($item_title)) {
 				$item_title = __('Prediction date');

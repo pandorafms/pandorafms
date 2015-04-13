@@ -161,6 +161,10 @@ if ($tiny) {
 	unset($table->head[7]);
 	unset($table->head[8]);
 }
-	
-ui_toggle(html_print_table ($table,true), __('Tactical server information'));
+if ($tiny) {
+	ui_toggle(html_print_table ($table,true), __('Tactical server information'));
+}
+else{
+	html_print_table ($table);
+}
 ?>

@@ -84,3 +84,12 @@ ALTER TABLE tperfil ADD COLUMN vconsole_management NUMBER(1, 0) DEFAULT 0 NOT NU
 UPDATE tperfil SET map_view = 1, vconsole_view = 1 WHERE report_view = 1;
 UPDATE tperfil SET map_edit = 1, vconsole_edit = 1 WHERE report_edit = 1;
 UPDATE tperfil SET map_management = 1, vconsole_management = 1 WHERE report_management = 1;
+
+-- ---------------------------------------------------------------------
+-- Table tsessions_php
+-- ---------------------------------------------------------------------
+CREATE TABLE tsessions_php (
+	id_session VARCHAR2(52) NOT NULL PRIMARY KEY,
+	last_active NUMBER(20, 0) NOT NULL,
+	data CLOB default ''
+);

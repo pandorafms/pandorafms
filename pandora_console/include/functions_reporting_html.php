@@ -200,6 +200,15 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'monitor_report':
 				reporting_html_monitor_report($table, $item, $mini);
 				break;
+			case 'sql_graph_vbar':
+				reporting_html_sql_graph($table, $item);
+				break;
+			case 'sql_graph_hbar':
+				reporting_html_sql_graph($table, $item);
+				break;
+			case 'sql_graph_pie':
+				reporting_html_sql_graph($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -210,6 +219,12 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_sql_graph($table, $item) {
+	$table->colspan['chart']['cell'] = 3;
+	$table->cellstyle['chart']['cell'] = 'text-align: center;';
+	$table->data['chart']['cell'] = $item['chart'];
 }
 
 function reporting_html_monitor_report($table, $item, $mini) {
@@ -4092,57 +4107,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			break;
 		
-		case 'sql_graph_vbar':
-		case 'sql_graph_hbar':
-		case 'sql_graph_pie':
-			$sizgraph_h = 300;
-			
-			if ($content['type'] == 'sql_graph_vbar') {
-				$sizgraph_h = 400;
-			}
-			
-			if ($config['metaconsole'] == 1 && defined('METACONSOLE'))
-				metaconsole_restore_db();
-			
-			if (empty($item_title)) {
-				$item_title = __('User defined graph') . " (".__($content["type"])  .")";
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				"", "");
-			
-			// Put description at the end of the module (if exists)
-			$next_row = 1;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			
-			$table->colspan[$next_row][0] = 3;
-			
-			$table2->class = 'databox';
-			$table2->width = '100%';
-			
-			//Create the head
-			$table2->head = array();
-			if ($content['header_definition'] != '') {
-				$table2->head = explode('|', $content['header_definition']);
-			}
-			
-			$data = array ();
-			
-			$data[0] = graph_custom_sql_graph(
-				$content["id_rc"],
-				$sizgraph_w,
-				$sizgraph_h,
-				$content["type"],
-				true,
-				ui_get_full_url(false, false, false, false));
-			
-			array_push($table->data, $data);
-			break;
 		case 'event_report_group':
 			if (empty($item_title)) {
 				$item_title = __('Group detailed event');

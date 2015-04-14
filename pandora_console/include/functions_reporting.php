@@ -306,10 +306,101 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'sql_graph_vbar':
+				$report['contents'][] = reporting_sql_graph(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart,
+					'sql_graph_vbar');
+				break;
+			case 'sql_graph_hbar':
+				$report['contents'][] = reporting_sql_graph(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart,
+					'sql_graph_hbar');
+				break;
+			case 'sql_graph_pie':
+				$report['contents'][] = reporting_sql_graph(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart,
+					'sql_graph_pie');
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_sql_graph($report, $content, $type,
+	$force_width_chart, $force_height_chart, $type_sql_graph) {
+	
+	global $config;
+	
+	switch ($type_sql_graph) {
+		case 'netflow_area':
+			$return['type'] = 'sql_graph_vbar';
+			break;
+		case 'sql_graph_hbar':
+			$return['type'] = 'sql_graph_hbar';
+			break;
+		case 'sql_graph_pie':
+			$return['type'] = 'sql_graph_pie';
+			break;
+	}
+	
+	if (empty($content['name'])) {
+		switch ($type_sql_graph) {
+			case 'sql_graph_vbar':
+				$return['name'] = __('SQL Graph Vertical Bars');
+				break;
+			case 'sql_graph_hbar':
+				$return['name'] = __('SQL Graph Horizontal Bars');
+				break;
+			case 'sql_graph_pie':
+				$return['name'] = __('SQL Graph Pie');
+				break;
+		}
+	}
+	
+	// Get chart
+	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	
+	if (!empty($force_width_chart)) {
+		$width = $force_width_chart;
+	}
+	
+	if (!empty($force_height_chart)) {
+		$height = $force_height_chart;
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text();
+	
+	switch ($type) {
+		case 'dinamic':
+		case 'static':
+			$return['chart'] = graph_custom_sql_graph(
+				$content["id_rc"],
+				$width,
+				$height,
+				$content["type"],
+				true,
+				ui_get_full_url(false, false, false, false));
+			break;
+		case 'data':
+			break;
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_monitor_report($report, $content) {

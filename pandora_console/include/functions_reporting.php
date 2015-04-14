@@ -301,10 +301,52 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$force_width_chart,
 					$force_height_chart);
 				break;
+			case 'monitor_report':
+				$report['contents'][] = reporting_monitor_report(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_monitor_report($report, $content) {
+	global $config;
+	
+	
+	$return['type'] = 'monitor_report';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Monitor Report');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$value = reporting_get_agentmodule_sla(
+		$content['id_agent_module'],
+		$content['period'],
+		1,
+		false,
+		$report["datetime"]);
+	
+	if ($value === __('Unknown')) {
+		$return['data']['unknown'] = 1;
+	}
+	else {
+		$return['data']['unknown'] = 0;
+		
+		$return["data"]["ok"]["value"] = $value;
+		$return["data"]["ok"]["formated_value"] = format_numeric($value, 2);
+		
+		$return["data"]["fail"]["value"] = 100 - $return["data"]["ok"]["value"];
+		$return["data"]["fail"]["formated_value"] = (100 - $return["data"]["ok"]["formated_value"]);
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_netflow($report, $content, $type,

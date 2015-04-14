@@ -197,6 +197,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'netflow_summary':
 				reporting_html_graph($table, $item);
 				break;
+			case 'monitor_report':
+				reporting_html_monitor_report($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -207,6 +210,42 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_monitor_report($table, $item, $mini) {
+	if ($mini) {
+		$font_size = '1.5';
+	}
+	else {
+		$font_size = '3';
+	}
+	
+	$table->colspan['module']['cell'] = 3;
+	$table->cellstyle['module']['cell'] = 'text-align: center;';
+	
+	$table1->width = '99%';
+	$table1->head = array ();
+	$table1->data = array ();
+	if ($item['data']['unknown'] == 1) {
+		$table1->data['data']['unknown'] =
+			'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: ' . COL_UNKNOWN . ';">';
+		$table1->data['data']['unknown'] .= __('Unknown') . "</p>";
+	}
+	else {
+		$table1->data['data']['ok'] =
+			'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: ' . COL_NORMAL . ';">';
+		$table1->data['data']['ok'] .=
+			html_print_image("images/module_ok.png", true) . ' ' .
+				__('OK') . ': ' . $item['data']["ok"]["formated_value"].' %</p>';
+		
+		$table1->data['data']['fail'] =
+			'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: ' . COL_CRITICAL . ';">';
+		$table1->data['data']['fail'] .=
+			html_print_image("images/module_critical.png", true) . ' ' .
+				__('Not OK') . ': ' . $item['data']["fail"]["formated_value"] . ' % ' . '</p>';
+	}
+	
+	$table->data['module']['cell'] = html_print_table($table1, true);
 }
 
 function reporting_html_graph($table, $item) {
@@ -3920,47 +3959,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$next_row++;
 				array_push ($table->data, $data);
 			}
-			break;
-		case 6:
-		case 'monitor_report':
-			if (empty($item_title)) {
-				$item_title = __('Monitor report');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			//RUNNING
-			$next_row = 1;
-			
-			// Put description at the end of the module (if exists)
-			if ($content["description"] != "") {
-				$table->colspan[1][0] = 3;
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				$next_row++;
-			}
-			
-			$data = array ();
-			$monitor_value = reporting_get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $report["datetime"]);
-			if ($monitor_value === false) {
-				$monitor_value = __('Unknown');
-			}
-			else {
-				$monitor_value = format_numeric ($monitor_value);
-			}
-			
-			$table->colspan[$next_row][0] = 2;
-			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: ' . COL_NORMAL . ';">';
-			$data[0] .= html_print_image("images/module_ok.png", true) . ' ' . __('OK') . ': ' . $monitor_value.' %</p>';
-			if ($monitor_value !== __('Unknown')) {
-				$monitor_value = format_numeric (100 - $monitor_value, 2) ;
-			}
-			$data[1] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: ' . COL_CRITICAL . ';">';
-			$data[1] .= html_print_image("images/module_critical.png", true) . ' ' .__('Not OK') . ': ' .$monitor_value.' % ' . '</p>';
-			array_push ($table->data, $data);
-			
 			break;
 		
 		case 'agent_detailed_event':

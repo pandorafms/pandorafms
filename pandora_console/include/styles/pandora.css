@@ -2259,10 +2259,6 @@ li.links a:hover  {
 	background-color: #222222 !important;
 }
 
-.menu li.submenu_selected a {
-	font-weight: bold;
-}
-
 .operation {
 	background-color: #333 !important;
 }

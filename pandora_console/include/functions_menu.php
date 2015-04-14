@@ -324,8 +324,8 @@ function menu_print_menu (&$menu) {
 						$sub_title = $sub2['title'];
 					else
 						$sub_title = '';
-					$submenu2_list .= '<li class="'.$class.'" style="font-weight: normal;">';
-					$submenu2_list .= '<a style="font-weight:normal;" href="'.$link.'"><div class="' . $sub_tree_class . '" title="' . $sub_title . '" >'.
+					$submenu2_list .= '<li class="'.$class.'" style="">';
+					$submenu2_list .= '<a href="'.$link.'"><div class="' . $sub_tree_class . '" title="' . $sub_title . '" >'.
 											$sub2["text"].'</div></a></li>';
 					$sub_title = '';
 				}

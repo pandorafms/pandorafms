@@ -1288,7 +1288,7 @@ function reporting_get_stats_servers($tiny = true) {
 	$table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module.png', true, array('title' => __('Total running modules'), 'width' => '25px'));
+	$tdata[0] = html_print_image('images/module.png', true, array('title' => __('Total running modules'), ));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_modules"]) . '</span>';
 	
 	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
@@ -1304,7 +1304,7 @@ function reporting_get_stats_servers($tiny = true) {
 	$table_srv->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/database.png', true, array('title' => __('Local modules'), 'width' => '25px'));
+	$tdata[0] = html_print_image('images/database.png', true, array('title' => __('Local modules')));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
 	
 	$tdata[2] = '<span class="med_data">' .
@@ -1316,7 +1316,7 @@ function reporting_get_stats_servers($tiny = true) {
 	
 	if ($tiny) {
 		$tdata = array();
-		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '25px'));
+		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules')));
 		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
 		
 		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
@@ -1328,7 +1328,7 @@ function reporting_get_stats_servers($tiny = true) {
 	else {
 		if (isset($server_performance ["total_network_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '25px'));
+			$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules')));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' .
@@ -1342,7 +1342,7 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		if (isset($server_performance ["total_plugin_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '25px'));
+			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules')));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
@@ -1354,7 +1354,7 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		if (isset($server_performance ["total_prediction_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '25px'));
+			$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules')));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
@@ -1366,7 +1366,7 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		if (isset($server_performance ["total_wmi_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '25px'));
+			$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules')));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
@@ -1378,7 +1378,7 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		if (isset($server_performance ["total_web_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '25px'));
+			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules')));
 			$tdata[1] = '<span class="big_data">' .
 				format_numeric($server_performance ["total_web_modules"]) .
 				'</span>';
@@ -1417,7 +1417,7 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		$tdata = array();
 		$tdata[0] = html_print_image('images/lightning_go.png', true,
-			array('title' => __('Total events'), 'width' => '25px'));
+			array('title' => __('Total events')));
 		$tdata[1] = '<span class="big_data">' .
 			format_numeric($system_events) . '</span>';
 		

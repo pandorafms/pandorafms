@@ -815,7 +815,7 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
  * 
  * @return string HTML with table element 
  */
-function events_print_event_table ($filter = "", $limit = 10, $width = 440, $return = false, $agent_id = 0) {
+function events_print_event_table ($filter = "", $limit = 10, $width = 440, $return = false, $agent_id = 0, $tactical_view = false) {
 	global $config;
 	
 	if ($agent_id == 0) {
@@ -861,7 +861,8 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->cellspacing = 4;
 		$table->width = $width;
 		$table->class = "databox";
-		$table->title = __('Latest events');
+		if (!$tactical_view)
+			$table->title = __('Latest events');
 		$table->titleclass = 'tabletitle';
 		$table->titlestyle = 'text-transform:uppercase;';
 		$table->headclass = array ();
@@ -987,32 +988,33 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$out = '<table width="98%"><tr><td style="width: 90%; padding-right: 10px; vertical-align: top; padding-top: 0px;">';
 		$out .= $events_table;
 		
-		if ($agent_id != 0) {
-			$out .= '</td><td style="width: 200px; vertical-align: top;">';
-			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-			$out .= '<fieldset class="databox tactical_set">
-					<legend>' . 
-						__('Events -by module-') . 
-					'</legend>' . 
-					graph_event_module (180, 100, $event['id_agente']) . '</fieldset>';
-			$out .= '</td></tr></table>';
+		if (!$tactical_view) {
+			if ($agent_id != 0) {
+				$out .= '</td><td style="width: 200px; vertical-align: top;">';
+				$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
+				$out .= '<fieldset class="databox tactical_set">
+						<legend>' . 
+							__('Events -by module-') . 
+						'</legend>' . 
+						graph_event_module (180, 100, $event['id_agente']) . '</fieldset>';
+				$out .= '</td></tr></table>';
+			}
+			else {
+				$out .= '</td><td style="width: 200px; vertical-align: top;">';
+				$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
+				$out .= '<fieldset class="databox tactical_set">
+						<legend>' . 
+							__('Event graph') . 
+						'</legend>' . 
+						grafico_eventos_total("", 180, 60) . '</fieldset>';
+				$out .= '<fieldset class="databox tactical_set">
+						<legend>' . 
+							__('Event graph by agent') . 
+						'</legend>' . 
+						grafico_eventos_grupo(180, 60) . '</fieldset>';
+				$out .= '</td></tr></table>';
+			}
 		}
-		else {
-			$out .= '</td><td style="width: 200px; vertical-align: top;">';
-			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-			$out .= '<fieldset class="databox tactical_set">
-					<legend>' . 
-						__('Event graph') . 
-					'</legend>' . 
-					grafico_eventos_total("", 180, 60) . '</fieldset>';
-			$out .= '<fieldset class="databox tactical_set">
-					<legend>' . 
-						__('Event graph by agent') . 
-					'</legend>' . 
-					grafico_eventos_grupo(180, 60) . '</fieldset>';
-			$out .= '</td></tr></table>';
-		}
-		
 		$out .= '</td></tr></table>';
 		
 		unset ($table);

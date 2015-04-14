@@ -261,10 +261,133 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$force_width_chart,
 					$force_height_chart);
 				break;
+			case 'netflow_area':
+				$report['contents'][] = reporting_simple_baseline_graph(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
+			case 'netflow_pie':
+				$report['contents'][] = reporting_netflow_pie(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
+			case 'netflow_data':
+				$report['contents'][] = reporting_netflow_data(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
+			case 'netflow_statistics':
+				$report['contents'][] = reporting_netflow_statistics(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
+			case 'netflow_summary':
+				$report['contents'][] = reporting_netflow_summary(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_netflow($report, $content, $type,
+	$force_width_chart, $force_height_chart, $type_netflow = null) {
+	
+	global $config;
+	
+	switch ($type_netflow) {
+		case 'netflow_area':
+			$return['type'] = 'netflow_area';
+			break;
+		case 'netflow_pie':
+			$return['type'] = 'netflow_pie';
+			break;
+		case 'netflow_data':
+			$return['type'] = 'netflow_data';
+			break;
+		case 'netflow_statistics':
+			$return['type'] = 'netflow_statistics';
+			break;
+		case 'netflow_summary':
+			$return['type'] = 'netflow_summary';
+			break;
+	}
+	
+	if (empty($content['name'])) {
+		switch ($type_netflow) {
+			case 'netflow_area':
+				$return['name'] = __('Netflow Area');
+				break;
+			case 'netflow_pie':
+				$return['name'] = __('Netflow Pie');
+				break;
+			case 'netflow_data':
+				$return['name'] = __('Netflow Data');
+				break;
+			case 'netflow_statistics':
+				$return['name'] = __('Netflow Statistics');
+				break;
+			case 'netflow_summary':
+				$return['name'] = __('Netflow Summary');
+				break;
+		}
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	// Get chart
+	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	
+	if (!empty($force_width_chart)) {
+		$width = $force_width_chart;
+	}
+	
+	if (!empty($force_height_chart)) {
+		$height = $force_height_chart;
+	}
+	
+	// Get item filters
+	$filter = db_get_row_sql("SELECT *
+		FROM tnetflow_filter
+		WHERE id_sg = '" . (int)$content['text'] . "'", false, true);
+	
+	switch ($type) {
+		case 'dinamic':
+		case 'static':
+			$return['chart'] = netflow_draw_item (
+				$report['datetime'] - $content['period'],
+				$report['datetime'],
+				$content['top_n'],
+				$type_netflow,
+				$filter,
+				$content['top_n_value'],
+				$content ['server_name'],
+				'HTML');
+			break;
+		case 'data':
+			break;
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_simple_baseline_graph($report, $content,

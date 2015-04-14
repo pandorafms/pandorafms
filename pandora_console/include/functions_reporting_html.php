@@ -135,10 +135,10 @@ function reporting_html_print_report($report, $mini = false) {
 				reporting_html_sql($table, $item);
 				break;
 			case 'simple_graph':
-				reporting_html_simple_graph($table, $item);
+				reporting_html_graph($table, $item);
 				break;
 			case 'custom_graph':
-				reporting_html_custom_graph($table, $item);
+				reporting_html_graph($table, $item);
 				break;
 			case 'text':
 				reporting_html_text($table, $item);
@@ -174,13 +174,28 @@ function reporting_html_print_report($report, $mini = false) {
 				reporting_html_agent_configuration($table, $item);
 				break;
 			case 'projection_graph':
-				reporting_html_projection_graph($table, $item);
+				reporting_html_graph($table, $item);
 				break;
 			case 'prediction_date':
 				reporting_html_prediction_date($table, $item, $mini);
 				break;
 			case 'simple_baseline_graph':
-				reporting_html_simple_baseline_graph($table, $item);
+				reporting_html_graph($table, $item);
+				break;
+			case 'netflow_area':
+				reporting_html_graph($table, $item);
+				break;
+			case 'netflow_pie':
+				reporting_html_graph($table, $item);
+				break;
+			case 'netflow_data':
+				reporting_html_graph($table, $item);
+				break;
+			case 'netflow_statistics':
+				reporting_html_graph($table, $item);
+				break;
+			case 'netflow_summary':
+				reporting_html_graph($table, $item);
 				break;
 		}
 		
@@ -194,7 +209,7 @@ function reporting_html_print_report($report, $mini = false) {
 	}
 }
 
-function reporting_html_simple_baseline_graph($table, $item) {
+function reporting_html_graph($table, $item) {
 	$table->colspan['chart']['cell'] = 3;
 	$table->cellstyle['chart']['cell'] = 'text-align: center;';
 	$table->data['chart']['cell'] = $item['chart'];
@@ -202,12 +217,6 @@ function reporting_html_simple_baseline_graph($table, $item) {
 
 function reporting_html_prediction_date($table, $item, $mini) {
 	reporting_html_value($table, $item, $mini, true);
-}
-
-function reporting_html_projection_graph(&$table, $item) {
-	$table->colspan['chart']['cell'] = 3;
-	$table->cellstyle['chart']['cell'] = 'text-align: center;';
-	$table->data['chart']['cell'] = $item['chart'];
 }
 
 function reporting_html_agent_configuration(&$table, $item) {
@@ -586,18 +595,6 @@ function reporting_html_sql(&$table, $item) {
 		$table->cellstyle['data']['cell'] = 'text-align: center;';
 		$table->data['data']['cell'] = html_print_table($table2, true);
 	}
-}
-
-function reporting_html_custom_graph(&$table, $item) {
-	$table->colspan['chart']['cell'] = 3;
-	$table->cellstyle['chart']['cell'] = 'text-align: center;';
-	$table->data['chart']['cell'] = $item['chart'];
-}
-
-function reporting_html_simple_graph(&$table, $item) {
-	$table->colspan['chart']['cell'] = 3;
-	$table->cellstyle['chart']['cell'] = 'text-align: center;';
-	$table->data['chart']['cell'] = $item['chart'];
 }
 
 
@@ -5493,7 +5490,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table_data .= "</table>";
 			
 			$table_data .= "<div class='legend_basic' style='width: 96%'>";
-
+			
 			$table_data .= "<table>";
 			$table_data .= "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
 			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module has fired alerts") . "</td></tr>";
@@ -5738,43 +5735,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 			
 			}
-			break;
-		case 'netflow_area':
-		case 'netflow_pie':
-		case 'netflow_data':
-		case 'netflow_statistics':
-		case 'netflow_summary':
-			
-			// Read the report item
-			$report_id = $report['id_report'];
-			$content_id = $content['id_rc'];
-			$max_aggregates= $content['top_n_value'];
-			$type = $content['show_graph'];
-			$description = $content['description'];
-			$resolution = $content['top_n'];
-			$type = $content['type'];
-			$period = $content['period'];
-			
-			// Calculate the start and end dates
-			$end_date = $report['datetime'];
-			$start_date = $end_date - $period;
-			
-			// Get item filters
-			$filter = db_get_row_sql("SELECT *
-				FROM tnetflow_filter
-				WHERE id_sg = '" . (int)$content['text'] . "'", false, true);
-			if ($description == '') {
-				$description = $filter['id_name'];
-			}
-			
-			if (empty($item_title)) {
-				$item_title = $description;
-			}
-			
-			$table->colspan[0][0] = 4;
-			$table->data[0][0] = '<h4>' . $item_title . '</h4>';
-			$table->colspan[1][0] = 4;
-			$table->data[1][0] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $server_name, 'HTML');
 			break;
 	}
 	//Restore dbconnection

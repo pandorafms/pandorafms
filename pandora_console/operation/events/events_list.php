@@ -732,10 +732,61 @@ else {
 }
 
 if (!empty($result)) {
+	if ($group_rep == 0) {
+		$sql = "SELECT COUNT(id_evento)
+			FROM $event_table
+			WHERE 1=1 " . $sql_post;
+	}
+	else {
+		
+		$sql = "SELECT COUNT(1)
+			FROM (SELECT 1
+				FROM $event_table
+				WHERE 1=1 " . $sql_post . "
+				GROUP BY evento, id_agentmodule) AS t";
+	}
+	$limit = (int) db_get_sql ($sql);
 	
+	if ($group_rep == 0) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = "SELECT *, 1 event_rep
+					FROM $event_table
+					WHERE 1=1 " . $sql_post . "
+					ORDER BY utimestamp DESC LIMIT 0,".$limit;
+				break;
+			case "postgresql":
+				$sql = "SELECT *, 1 event_rep
+					FROM $event_table
+					WHERE 1=1 " . $sql_post . "
+					ORDER BY utimestamp DESC LIMIT ".$limit." OFFSET 0";
+				break;
+			case "oracle":
+				$set = array();
+				$set['limit'] = $pagination;
+				$set['offset'] = $offset;
+				$sql = "SELECT *, 1 event_rep
+					FROM $event_table
+					WHERE 1=1 " . $sql_post . "
+					ORDER BY utimestamp DESC"; 
+				$sql = oracle_recode_query ($sql, $set);
+				break;
+		}
+		
+		//Extract the events by filter (or not) from db
+		$results_graph = db_get_all_rows_sql ($sql);
+	}
+	else {
+		$results_graph = events_get_events_grouped($sql_post,
+											0,
+											$limit,
+											$meta,
+											$history);
+	}
+		
 	$graph = '<div style="width: 350px; margin: 0 auto;">' .
 		grafico_eventos_agente(350, 185,
-			$result, $meta, $history, $tags_acls_condition,$pagination) .
+			$results_graph, $meta, $history, $tags_acls_condition,$limit) .
 		'</div>';
 	html_print_div(array('id' => 'events_graph',
 		'hidden' => true, 'content' => $graph));

@@ -32,6 +32,7 @@ function menu_print_menu (&$menu) {
 	
 	$sec = (string) get_parameter ('sec');
 	$sec2 = (string) get_parameter ('sec2');
+	$menu_selected = false;
 	
 	$allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);
 	if (isset($allsec2[1])) {
@@ -206,7 +207,7 @@ function menu_print_menu (&$menu) {
 				//This is an external link
 				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" class="'.$class.'">';
 				
-				if (isset ($sub["type"]) && $sub["subtype"] == "nolink") {
+				if (isset ($sub["subtype"]) && $sub["subtype"] == "nolink") {
 					$submenu_output .= '<div class="flecha"><div class=" SubNoLink ' . $sub_tree_class . '">'.$sub["text"].'</div></div>';
 				}
 				else
@@ -321,7 +322,8 @@ function menu_print_menu (&$menu) {
 					
 					if (isset($sub2['title']))
 						$sub_title = $sub2['title'];
-											
+					else
+						$sub_title = '';
 					$submenu2_list .= '<li class="'.$class.'" style="font-weight: normal;">';
 					$submenu2_list .= '<a style="font-weight:normal;" href="'.$link.'"><div class="' . $sub_tree_class . '" title="' . $sub_title . '" >'.
 											$sub2["text"].'</div></a></li>';

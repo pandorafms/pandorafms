@@ -29,6 +29,8 @@ $id = (int) get_parameter ('id');
 $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 if ($id) {
 	$permission = events_check_event_filter_group ($id);
 	if (!$permission) { // User doesn't have permissions to see this filter
@@ -180,14 +182,11 @@ $table->data[0][0] = '<b>'.__('Filter name').'</b>';
 $table->data[0][1] = html_print_input_text ('id_name', $id_name, false, 20, 80, true);
 
 $table->data[1][0] = '<b>'.__('Filter group').'</b>' . ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
-$table->data[1][1] = html_print_select_groups($config['id_user'], "EW", 
-	$own_info['is_admin'], 'id_group_filter', $id_group_filter, '', '', -1, true,
-	false, false);
+$table->data[1][1] = html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', -1, true, false, false, '', false, '', false, false, 'id_group_filter', $strict_user);
 
 $table->data[2][0] = '<b>'.__('Group').'</b>';
-$table->data[2][1] = html_print_select_groups($config['id_user'], "EW", 
-	users_can_manage_group_all(), 'id_group', $id_group, '', '', -1, true,
-	false, false);
+$table->data[2][1] = html_print_select_groups($config["id_user"], "ER", true, 
+	'id_group', $id_group, '', '', -1, true, false, false, '', false, false, false, false, 'id_group', $strict_user);
 
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
@@ -236,11 +235,14 @@ $table->data[9][1] = html_print_input_text ('event_view_hr', $event_view_hr, '',
 
 $table->data[10][0] = '<b>' . __('User ack.') . '</b>'. ' ' . ui_print_help_tip (__('Choose between the users who have validated an event. '), true);
 
-# Fix : Only admin user can see all users 
-$users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+if ($strict_user) {
+	$users = array($config['id_user']=>$config['id_user']);
+} else {
+	$users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+}
 
-$table->data[10][1] = html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
-
+$table->data[10][1] =  html_print_select($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
+	
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
 $table->data[11][0] = '<b>' . __('Repeated') . '</b>';
@@ -279,6 +281,7 @@ foreach ($tags as $id_tag => $tag) {
 		$tag_without_temp[$id_tag] = $tag;
 	}
 }
+
 $add_with_tag_disabled = empty($tags_select_with);
 $remove_with_tag_disabled = empty($tag_with_temp);
 $add_without_tag_disabled = empty($tags_select_without);

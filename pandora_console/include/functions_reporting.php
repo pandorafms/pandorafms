@@ -348,10 +348,113 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'network_interfaces_report':
+				$report['contents'][] = reporting_network_interfaces_report(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_network_interfaces_report($report, $content,
+	$type = 'dinamic', $force_width_chart = null, $force_height_chart = null) {
+	
+	global $config;
+	
+	$return['type'] = 'network_interfaces_report';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Network interfaces report');
+	}
+	
+	$group_name = groups_get_name($content['id_group']);
+	
+	$return['title'] = $content['name'];
+	$return['subtitle'] = $group_name;
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	include_once($config['homedir'] . "/include/functions_custom_graphs.php");
+	
+	$filter = array(
+		'id_grupo' => $content['id_group'],
+		'disabled' => 0);
+	$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
+	
+	if (empty($network_interfaces_by_agents)) {
+		$return['error'] = 1;
+		$return['data'] = array();
+	}
+	else {
+		$return['error'] = 0;
+		$return['data'] = array();
+		
+		foreach ($network_interfaces_by_agents as $agent_id => $agent) {
+			$row_data = array();
+			
+			$row_data['agent'] = $agent['name'];
+			
+			$row_data['interfaces'] = array();
+			foreach ($agent['interfaces'] as $interface_name => $interface) {
+				$row_interface = array();
+				
+				$row_interface['name'] = $interface_name;
+				$row_interface['ip'] = $interface['ip'];
+				$row_interface['mac'] = $interface['mac'];
+				$row_interface['status'] = $interface['status_image'];
+				$row_interface['chart'] = null;
+				
+				// Get chart
+				reporting_set_conf_charts($width, $height, $only_image,
+					$type, $content, $ttl);
+				
+				if (!empty($force_width_chart)) {
+					$width = $force_width_chart;
+				}
+				
+				if (!empty($force_height_chart)) {
+					$height = $force_height_chart;
+				}
+				
+				switch ($type) {
+					case 'dinamic':
+					case 'static':
+						if (!empty($interface['traffic'])) {
+							$row_interface['chart'] = custom_graphs_print(0,
+								$height,
+								$width,
+								$content['period'],
+								null,
+								true,
+								$report["datetime"],
+								$only_image,
+								'white',
+								array_values($interface['traffic']),
+								$config['homeurl'],
+								array_keys($interface['traffic']),
+								array_fill(0, count($interface['traffic']), __("bytes/s")),
+								false,
+								true,
+								true,
+								true,
+								$ttl);
+							}
+						break;
+					case 'data':
+						break;
+				}
+				
+				$row_data['interfaces'][] = $row_interface;
+			}
+			
+			$return['data'][] = $row_data;
+		}
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_alert_report_group($report, $content) {
@@ -2078,14 +2181,16 @@ function reporting_check_structure_content($report) {
 	return $report;
 }
 
-function reporting_set_conf_charts(&$width, &$height, &$only_image, $type, $content) {
+function reporting_set_conf_charts(&$width, &$height, &$only_image, $type, $content, &$ttl) {
 	switch ($type) {
 		case 'dinamic':
 			$only_image = false;
 			$width = 900;
 			$height = 230;
+			$ttl = 1;
 			break;
 		case 'static':
+			$ttl = 2;
 			$only_image = true;
 			if ($content['style']['show_in_landscape']) {
 				$height = 1100;

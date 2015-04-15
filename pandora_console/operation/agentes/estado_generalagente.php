@@ -100,7 +100,7 @@ $table_agent->cellstyle[count($table_agent->data)][2] =
 $status_img = agents_detail_view_status_img ($agent["critical_count"],
 	$agent["warning_count"], $agent["unknown_count"], $agent["total_count"], 
 	$agent["notinit_count"]);
-$data[5] = $status_img;
+$data[2] .= "&nbsp;&nbsp;" .$status_img;
 
 $table_agent->data[] = $data;
 $table_agent->rowclass[] = '';
@@ -492,13 +492,13 @@ $table->style = array_fill(0, 3, 'vertical-align: top;');
 $data = array();
 $data[0] = html_print_table($table_agent, true);
 $data[0] .=
-	'<table width=450px class="databox" style="">
+	'<br /> <table width=455px class="databox" style="">
 		<tr><th>' . 
 			__('Events (24h)') . 
 		'</th></tr>' . 
-		'<tr><td style="text-align:center;">' .
+		'<tr><td style="text-align:center;"><br />' .
 		graph_graphic_agentevents ($id_agente, 450, 15, SECONDS_1DAY, '', true) . 
-		'</td></tr>' . 
+		'<br /></td></tr>' . 
 	'</table>';
 
 // ACCESS RATE GRAPH

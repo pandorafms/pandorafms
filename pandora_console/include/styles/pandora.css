@@ -315,7 +315,7 @@ div#menu {
 	width: 45px;
 	float: left;
 	height: 828px;
-	z-index: 999;
+	z-index: 2000;
 	position: absolute;
 }
 
@@ -613,12 +613,6 @@ input:-webkit-autofill {
 /* END OF LOGIN STYLES */
 /***********************/
 
-label {
-	display: block;
-	padding-top: 4px;
-	font-weight: bold;
-	text-align: left;
-}
 th > label {
 	padding-top: 7px;
 }
@@ -665,6 +659,7 @@ input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
 input.cancel, input.default, input.filter, input.pdf {
 	padding-right: 30px;
+	margin-top: 15px;
 	height: 23px;
 
 }
@@ -1316,6 +1311,11 @@ span.rmess, span.nrmess {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
+	padding-bottom: 5px;
+
+}
+.databox_color{
+	padding-top: 5px;
 }
 
 table.databox {
@@ -1335,8 +1335,10 @@ table.databox {
 }
 
 .databox th {
-	padding: 5px 7px;
+	padding: 9px 7px;
+	font-weight: normal;
 	color: #fff;
+	padding-left: 10px;
 }
 
 .databox th * {
@@ -1723,7 +1725,7 @@ form#filter_form {
 }
 ul.action_list {
 	margin: 0;
-	list-style: none inside url(../../images/arrow.png);
+	list-style: none inside circle;
 }
 ul.action_list li div {
 	margin-left: 15px;
@@ -2456,7 +2458,7 @@ input.search_input {
 	margin-top: 8px !important;
 }
 
-a>img, td>img, td>input, td>span {
+a>img, td>input, td>span {
 	vertical-align: middle;
 }
 
@@ -2853,8 +2855,23 @@ table#policy_modules td * {
 }
 
 .databox.data td{
-	padding-left: 5px;
-	border: 1px solid #E2E2E2;
+	padding-left: 10px;
+	border: 1px solid #EFEFEF;
+}
+
+.databox .search{
+	margin-top: 0px;
+}
+
+.databox.data td.progress_bar img{
+	border: 3px solid #000;
+	border-radius: 100px;
+}
+
+.databox td{
+	padding-left: 10px;
+	padding-top: 7px;
+	padding-bottom: 7px;
 }
 
 .difference{
@@ -2908,6 +2925,9 @@ table#policy_modules td * {
 
 .databox.filters td{
 	padding: 10px;
+}
+.databox_color td{
+	padding-left: 10px;
 }
 
 .godmode, .menu_icon ul li{

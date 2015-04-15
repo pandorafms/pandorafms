@@ -931,7 +931,7 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false, $fontsi
 	$font_size_mod = "";
 	
 	if ($fontsize > 0) {
-		$font_size_mod = "style='font-size: ".$fontsize."px'";
+		$font_size_mod = "style='font-size: ".$fontsize."pt'";
 	}
 	$string = '<span '.$font_size_mod.' title="'.io_safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
 	

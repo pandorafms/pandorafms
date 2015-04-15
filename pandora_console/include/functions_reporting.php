@@ -353,10 +353,56 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'group_configuration':
+				$report['contents'][] = reporting_group_configuration(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_group_configuration($report, $content) {
+	global $config;
+	
+	$return['type'] = 'group_configuration';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Group configuration');
+	}
+	
+	$group_name = groups_get_name($content['id_group'], true);
+	
+	$return['title'] = $content['name'];
+	$return['subtitle'] = $group_name;
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	$return['id_group'] = $content['id_group'];
+	
+	
+	if ($content['id_group'] == 0) {
+		$sql = "SELECT * FROM tagente;";
+	}
+	else {
+		$sql = "SELECT * FROM tagente WHERE id_grupo=" . $content['id_group'];
+	}
+	
+	$agents_list = db_get_all_rows_sql($sql);
+	if ($agents_list === false)
+		$agents_list = array();
+	
+	$return['data'] = array();
+	foreach ($agents_list as $agent) {
+		$content_agent = $content;
+		$content_agent['id_agent'] = $agent['id_agente'];
+		$agent_report = reporting_agent_configuration($report, $content_agent);
+		
+		$return['data'][] = $agent_report['data'];
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_network_interfaces_report($report, $content,
@@ -1192,8 +1238,11 @@ function reporting_agent_configuration($report, $content) {
 			$tags = db_get_all_rows_sql($sql_tag);
 			if ($tags === false)
 				$data_module['tags'] = array();
-			else
-				$data_module['tags'] = $tags;
+			else {
+				foreach ($tags as $tag) {
+					$data_module['tags'][] = $tag['name'];
+				}
+			}
 			
 			$agent_configuration['modules'][] = $data_module;
 		}

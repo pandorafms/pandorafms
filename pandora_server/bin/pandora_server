@@ -104,15 +104,21 @@ sub pandora_startup () {
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers
-	pandora_reset_server (\%Config, $DBH);
-	push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
+	if ($Config{"license_type"} != METACONSOLE_LICENSE) {
+		pandora_reset_server (\%Config, $DBH);
+		push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
+	} else {
+		# Metaconsole service modules are run by the prediction server
+		push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
+	}
 	
+	# There are enterprise metaconsole servers!
 	enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
 	
 	# Start the netflow daemon if necessary

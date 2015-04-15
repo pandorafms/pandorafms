@@ -185,7 +185,7 @@ $table->data[1][0] = '<b>'.__('Filter group').'</b>' . ui_print_help_tip(__('Thi
 $table->data[1][1] = html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', -1, true, false, false, '', false, '', false, false, 'id_group_filter', $strict_user);
 
 $table->data[2][0] = '<b>'.__('Group').'</b>';
-$table->data[2][1] = html_print_select_groups($config["id_user"], "ER", users_can_manage_group_all(), 
+$table->data[2][1] = html_print_select_groups($config["id_user"], "ER", true, 
 	'id_group', $id_group, '', '', -1, true, false, false, '', false, false, false, false, 'id_group', $strict_user);
 
 $types = get_event_types ();

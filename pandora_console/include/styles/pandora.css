@@ -2953,6 +2953,10 @@ table#policy_modules td * {
 
 .godmode{
 	border-top: 4px solid !important;
+	padding-bottom: 4px !important;
+	border-bottom-right-radius: 5px;
+	border-right-style: solid;
+	border-right-width: 0px;
 }
 /* The items with the class 'spinner' will rotate */
 /* Not supported on IE9 and below */

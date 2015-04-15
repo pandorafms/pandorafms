@@ -2095,6 +2095,9 @@ function ui_toggle($code, $name, $title = '', $hidden_default = true, $return = 
 	$output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">' . html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)) . '&nbsp;&nbsp;<b>'.$name.'</b></a>';
 	$output .= '<br />';
 	
+	if (!defined("METACONSOLE"))
+		$output .= '<br />';
+	
 	// Code into a div
 	$output .= "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
 	$output .= $code;

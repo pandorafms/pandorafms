@@ -242,18 +242,18 @@ if ($is_admin) {
 	require($config['homedir'] . '/godmode/servers/servers.build_table.php');
 	
 }
-$out .= '<table cellpadding=0 cellspacing=0 class="databox" style="margin-top:15px;" width=100%><tr><td>';
+$out .= '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
 	$out .= '<fieldset class="databox tactical_set">
 			<legend>' . 
 				__('Event graph') . 
 			'</legend>' . 
-			grafico_eventos_total("", 250, 80, false) . '</fieldset>';
+			grafico_eventos_total("", 250, 150, false) . '</fieldset>';
 	$out .="</td><td>";
 	$out .= '<fieldset class="databox tactical_set">
 			<legend>' . 
 				__('Event graph by agent') . 
 			'</legend>' . 
-			grafico_eventos_grupo(250, 80, "", false, false, false) . '</fieldset>';
+			grafico_eventos_grupo(250, 150, "", false, false, false) . '</fieldset>';
 	$out .= '</td></tr></table>';
 echo $out;
 

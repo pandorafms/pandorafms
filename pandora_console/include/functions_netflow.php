@@ -1103,6 +1103,12 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 	$aggregate = $filter['aggregate'];
 	$unit = $filter['output'];
 	$interval = $end_date - $start_date;
+	if (defined ('METACONSOLE')) {
+		$width = 950;
+	} else {
+		$width = 850;
+	}
+	$height = 320;
 	
 	// Process item
 	switch ($type) {
@@ -1119,7 +1125,8 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					if ($interval_length != 0) {
 						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 					}
-					$html .= graph_netflow_aggregate_area ($data, $interval, 850, 320, netflow_format_unit ($unit));
+
+					$html .= graph_netflow_aggregate_area ($data, $interval, $width, $height, netflow_format_unit ($unit));
 					return $html;
 				}
 				else if ($output == 'PDF') {
@@ -1128,7 +1135,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					if ($interval_length != 0) {
 						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 					}
-					$html .= graph_netflow_aggregate_area ($data, $interval, 850, 320, netflow_format_unit ($unit), 2, true);
+					$html .= graph_netflow_aggregate_area ($data, $interval, $width, $height, netflow_format_unit ($unit), 2, true);
 					return $html;
 				}
 				else if ($output == 'XML') {

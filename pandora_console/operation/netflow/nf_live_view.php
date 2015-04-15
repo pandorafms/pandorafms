@@ -90,6 +90,7 @@ $time = get_parameter_post ('time', date (TIME_FORMAT, get_system_time ()));
 $connection_name = get_parameter('connection_name', '');
 $interval_length = (int) get_parameter('interval_length', 300);
 $address_resolution = (int) get_parameter('address_resolution', $config['netflow_get_ip_hostname']);
+$filter_selected = (int) get_parameter('filter_selected', 0);
 
 // Read buttons
 $draw = get_parameter('draw_button', '');
@@ -301,8 +302,9 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$sql = "SELECT *
 		FROM tnetflow_filter
 		WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
-	echo "<td colspan='3'>" . html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true) . "</td>";
-	
+	echo "<td colspan='3'>" . html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('Select a filter'), 0, true);
+	html_print_input_hidden("filter_selected", $filter_selected, false);
+	echo "</td>";
 	echo "</tr>";
 	
 	
@@ -351,8 +353,13 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "</tr>";
 	echo "<tr class='filter_advance' style='display: none;'>";
 	
-	echo "<td>" . ui_print_help_icon ('pcap_filter', true, ui_get_full_url(false, false, false, false)) . "</td>";
-	echo "<td colspan='5'>" . html_print_textarea ('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true) . "</td>";
+	if ($netflow_disable_custom_lvfilters) {
+		echo "<td></td>";
+		echo "<td></td>";
+	} else {
+		echo "<td>" . ui_print_help_icon ('pcap_filter', true, ui_get_full_url(false, false, false, false)) . "</td>";
+		echo "<td colspan='5'>" . html_print_textarea ('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true) . "</td>";
+	}
 	
 	echo "</tr>";
 	echo "<tr>";
@@ -395,9 +402,17 @@ echo'</form>';
 if ($draw != '') {
 	// Draw
 	echo "<br/>";
+
+	// No filter selected
+	if ($netflow_disable_custom_lvfilters && $filter_selected == 0) {
+		ui_print_error_message(__('No filter selected'));
+	}
+	// Draw the netflow chart
+	else {
 	echo netflow_draw_item ($start_date, $end_date,
 		$interval_length, $chart_type, $filter,
 		$max_aggregates, $connection_name, 'HTML', $address_resolution);
+	}
 }
 
 enterprise_hook('close_meta_frame');
@@ -466,6 +481,7 @@ ui_include_time_picker();
 			// Check right filter type
 			$("#radiobtn0001").attr("checked", "checked");
 			
+			$("#hidden-filter_selected").val(0);
 			$("#text-ip_dst").val('');
 			$("#text-ip_src").val('');
 			$("#text-dst_port").val('');
@@ -480,6 +496,7 @@ ui_include_time_picker();
 		}
 		else {
 			// Load fields from DB
+			$("#hidden-filter_selected").val(1);
 			
 			// Get filter type
 			<?php

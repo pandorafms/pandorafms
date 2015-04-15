@@ -2434,7 +2434,10 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 					
 					$buffer .= '<li class="' . $class . '">';
 					$buffer .= $option['text'];
+					if (isset($option['sub_menu']))
+						$buffer .= $option['sub_menu'];
 					$buffer .= '</li>';
+					
 				}
 				else {
 					$buffer .= '<li class="nomn">';

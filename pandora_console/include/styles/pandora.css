@@ -1144,10 +1144,6 @@ div.title_line {
 #menu_tab li:hover a {
 	/*background: #b2b08a url("../../images/arrow.png") no-repeat right 3px;*/
 }
-#menu_tab li:hover ul a, #menu_tab .mn ul {
-	background: #db6351;
-	border-top: none;
-}
 
 #menu_tab li.nomn {
 	min-width: 30px;
@@ -2922,6 +2918,17 @@ table#policy_modules td * {
 	background: none !important ;
 }
 
+.subsubmenu{
+	position: absolute;
+	float: right;
+	z-index: 9999;
+	display: none;
+	margin-top: 6px !important ;
+	left: 0px !important;
+}
+.subsubmenu li{
+	margin-top: 0px !important ;
+}
 
 .databox.filters td{
 	padding: 10px;

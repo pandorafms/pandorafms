@@ -1582,7 +1582,6 @@ switch ($tab) {
 	*/
 	function agent_wizard_tab_show() {
 		
-		console.log("ENTRO");
 		wizard_tab_showed = wizard_tab_showed + 1;
 		
 		if(wizard_tab_showed == 1) {
@@ -1592,7 +1591,7 @@ switch ($tab) {
 	
 	function agent_wizard_tab_hide() {
 		wizard_tab_showed = wizard_tab_showed - 1;
-		console.log("salgo");
+		
 		setTimeout(function() {
 			if(wizard_tab_showed <= 0) {
 				$('.subsubmenu').hide("fast");

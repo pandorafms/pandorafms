@@ -343,10 +343,130 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'alert_report_group':
+				$report['contents'][] = reporting_alert_report_group(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_alert_report_group($report, $content) {
+	
+	global $config;
+	
+	$return['type'] = 'alert_report_group';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Alert Report Group');
+	}
+	
+	$group_name = groups_get_name($content['id_group'], true);
+	
+	$return['title'] = $content['name'];
+	$return['subtitle'] = $group_name;
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	if ($content['id_group'] == 0) {
+		$alerts = db_get_all_rows_sql('
+			SELECT *
+			FROM talert_template_modules
+			WHERE disabled = 0
+				AND id_agent_module IN (
+					SELECT id_agente_modulo
+					FROM tagente_modulo)');
+	}
+	else {
+		$alerts = db_get_all_rows_sql('
+			SELECT *
+			FROM talert_template_modules
+			WHERE disabled = 0
+				AND id_agent_module IN (
+					SELECT id_agente_modulo
+					FROM tagente_modulo
+					WHERE id_agente IN (
+						SELECT id_agente
+						FROM tagente WHERE id_grupo = ' . $content['id_group'] . '))');
+	}
+	
+	if (empty($alerts)) {
+		$alerts = array();
+	}
+	
+	
+	$data = array();
+	
+	foreach ($alerts as $alert) {
+		$data_row = array();
+		
+		$data_row['disabled'] = $alert['disabled'];
+		
+		$data_row['agent'] = io_safe_output(agents_get_name(
+			agents_get_agent_id_by_module_id($alert['id_agent_module'])));
+		$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
+			array('id_agente_modulo' => $alert['id_agent_module']));
+		$data_row['template'] = db_get_value_filter('name', 'talert_templates',
+			array('id' => $alert['id_alert_template']));
+		
+		
+		$actions = db_get_all_rows_sql('SELECT name 
+			FROM talert_actions 
+			WHERE id IN (SELECT id_alert_action 
+				FROM talert_template_module_actions 
+				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
+		
+		if (!empty($actions)) {
+			$row = db_get_row_sql('SELECT id_alert_action
+				FROM talert_templates
+				WHERE id IN (SELECT id_alert_template
+					FROM talert_template_modules
+					WHERE id = ' . $alert['id_alert_template'] . ')');
+			
+			$id_action = 0;
+			if (!empty($row))
+				$id_action = $row['id_alert_action'];
+			
+			// Prevent from void action
+			if (empty($id_action))
+				$id_action = 0;
+			
+			$actions = db_get_all_rows_sql('SELECT name 
+				FROM talert_actions 
+				WHERE id = ' . $id_action);
+			
+			if (empty($actions)) {
+				$actions = array();
+			}
+		}
+		
+		$data_row['action'] = array();
+		foreach ($actions as $action) {
+			$data_row['action'][] = $action['name'];
+		}
+		
+		$data_row['fired'] = array();
+		$firedTimes = get_module_alert_fired(
+			$content['id_agent_module'],
+			$alert['id_alert_template'],
+			(int) $content['period'],
+			(int) $report["datetime"]);
+		if (empty($firedTimes)) {
+			$firedTimes = array();
+		}
+		foreach ($firedTimes as $fireTime) {
+			$data_row['fired'][] = $fireTime['timestamp'];
+		}
+		
+		$data[] = $data_row;
+	}
+	
+	$return['data'] = $data;
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_alert_report_agent($report, $content) {

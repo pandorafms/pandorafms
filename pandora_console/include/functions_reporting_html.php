@@ -215,6 +215,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'alert_report_agent':
 				reporting_html_alert_report_agent($table, $item);
 				break;
+			case 'alert_report_group':
+				reporting_html_alert_report_group($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -225,6 +228,44 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_alert_report_group($table, $item) {
+	$table->colspan['alerts']['cell'] = 3;
+	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
+	
+	$table1->width = '99%';
+	$table1->head = array ();
+	$table1->head['agent'] = __('Agent');
+	$table1->head['module'] = __('Module');
+	$table1->head['template'] = __('Template');
+	$table1->head['actions'] = __('Actions');
+	$table1->head['fired'] = __('Fired');
+	$table1->data = array ();
+	foreach ($item['data'] as $alert) {
+		$row = array();
+		
+		$row['agent'] = $alert['agent'];
+		$row['module'] = $alert['module'];
+		$row['template'] = $alert['template'];
+		$row['actions'] = $alert['template'];
+		
+		$row['actions'] = '<ul class="action_list">' . "\n";
+		foreach ($alert['action'] as $action) {
+			$row['actions'] .= '<li>' . $action . '</li>' . "\n";
+		}
+		$row['actions'] .= '</ul>';
+		
+		$row['fired'] = '<ul style="list-style-type: disc; margin-left: 10px;">' . "\n";
+		foreach ($alert['fired'] as $fired) {
+			$row['fired'] .= '<li>' . $fired . '</li>' . "\n";
+		}
+		$row['fired'] .= '</ul>';
+		
+		$table1->data[] = $row;
+	}
+	
+	$table->data['alerts']['cell'] = html_print_table($table1, true);
 }
 
 function reporting_html_alert_report_agent($table, $item) {
@@ -2177,144 +2218,6 @@ function reporting_get_fired_alerts_table ($alerts_fired) {
 }
 
 /**
- * Get a report for alerts of group.
- *
- * It prints the numbers of alerts defined, fired and not fired of agent.
- *
- * @param int $id_agent_module Module to get info of the alerts.
- * @param int $period Period of time of the desired alert report.
- * @param int $date Beggining date of the report (current date by default).
- * @param bool $return Flag to return or echo the report (echo by default).
- * @param bool Flag to return the html or table object, by default html.
- * 
- * @return mixed A table object (XHTML) or object table is false the html.
- */
-function reporting_alert_reporting_group ($id_group, $period = 0, $date = 0, $return = true, $html = true) {
-	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	
-	$table->width = '99%';
-	$table->data = array ();
-	$table->head = array ();
-	
-	$table->head[0] = __('Agent');
-	$table->head[1] = __('Module');
-	$table->head[2] = __('Template');
-	$table->head[3] = __('Actions');
-	$table->head[4] = __('Fired');
-	
-	if ($id_group == 0) {
-		$alerts = db_get_all_rows_sql('
-			SELECT *
-			FROM talert_template_modules
-			WHERE disabled = 0
-				AND id_agent_module IN (
-					SELECT id_agente_modulo
-					FROM tagente_modulo)');
-	}
-	else {
-		$alerts = db_get_all_rows_sql('
-			SELECT *
-			FROM talert_template_modules
-			WHERE disabled = 0
-				AND id_agent_module IN (
-					SELECT id_agente_modulo
-					FROM tagente_modulo
-					WHERE id_agente IN (
-						SELECT id_agente
-						FROM tagente WHERE id_grupo = ' . $id_group . '))');
-	}
-	
-	if ($alerts === false) {
-		$alerts = array();
-	}
-	
-	$i = 0;
-	foreach ($alerts as $alert) {
-		$data = array();
-		
-		$data[] = io_safe_output(
-			agents_get_name(
-				agents_get_agent_id_by_module_id(
-					$alert['id_agent_module'])));
-		
-		$data[] = io_safe_output(
-			modules_get_agentmodule_name($alert['id_agent_module']));
-		
-		$data[] = db_get_value_filter('name',
-			'talert_templates',
-			array('id' => $alert['id_alert_template']));
-		
-		$actions = db_get_all_rows_sql('SELECT name 
-			FROM talert_actions 
-			WHERE id IN (SELECT id_alert_action 
-				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_agent_module'] . ');');
-		$list = '<ul class="action_list">';
-		if ($actions === false) {
-			$row = db_get_row_sql('SELECT id_alert_action
-				FROM talert_templates
-				WHERE id IN (SELECT id_alert_template
-					FROM talert_template_modules
-					WHERE id = ' . $alert['id'] . ')');
-			$id_action = 0;
-			if (!empty($row))
-				$id_action = $row['id_alert_action'];
-			
-			// Prevent from void action
-			if (empty($id_action))
-				$id_action = 0;
-			
-			$actions = db_get_all_rows_sql('SELECT name 
-				FROM talert_actions 
-				WHERE id = ' . $id_action);
-		}
-		
-		if ($actions == false)
-			$actions = array();
-		
-		foreach ($actions as $action) {
-			$list .= '<li>' . $action['name'] . '</li>';
-		}
-		$list .= '</ul>';
-		$data[] = $list;
-		
-		$list = '<ul style="list-style-type: disc; margin-left: 10px;">';
-		
-		$firedTimes = get_module_alert_fired(
-			$alert['id_agent_module'],
-			$alert['id'], (int) $period, (int) $date);
-		
-		if ($firedTimes === false) {
-			$firedTimes = array();
-		}
-		foreach ($firedTimes as $fireTime) {
-			$list .= '<li>' . $fireTime['timestamp'] . '</li>';
-		}
-		$list .= '</ul>';
-		
-		if ($alert['disabled']) {
-			$table->rowstyle[$i] = 'color: grey; font-style: italic;';
-		}
-		$i++;
-		$data[] = $list;
-		
-		array_push ($table->data, $data);
-	}
-	
-	if ($html) {
-		return html_print_table ($table, $return);
-	}
-	else {
-		return $table;
-	}
-}
-
-/**
  * Get a report for alerts in a group of agents.
  *
  * It prints the numbers of alerts defined, fired and not fired in a group.
@@ -4064,30 +3967,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$data[0] = reporting_get_module_detailed_event($content['id_agent_module'], $content['period'], $report["datetime"], true);
-			array_push ($table->data, $data);
-			break;
-		case 'alert_report_group':
-			if (empty($item_title)) {
-				$item_title = __('Alert report group');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text(
-					groups_get_name($content['id_group'], true),
-				60, false));
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$data[0] = reporting_alert_reporting_group(
-				$content['id_group'], $content['period'],
-				$report["datetime"], true);
 			array_push ($table->data, $data);
 			break;
 		

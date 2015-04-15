@@ -101,7 +101,7 @@ if(defined("METACONSOLE"))
 	$table->width = '100%';
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Filter group');
+$table->head[1] = __('Group');
 $table->head[2] = __('Event type');
 $table->head[3] = __('Event status');
 $table->head[4] = __('Severity');

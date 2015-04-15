@@ -181,7 +181,7 @@ $table->data = array ();
 $table->data[0][0] = '<b>'.__('Filter name').'</b>';
 $table->data[0][1] = html_print_input_text ('id_name', $id_name, false, 20, 80, true);
 
-$table->data[1][0] = '<b>'.__('Filter group').'</b>' . ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
+$table->data[1][0] = '<b>'.__('Save in group').'</b>' . ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
 $table->data[1][1] = html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', -1, true, false, false, '', false, '', false, false, 'id_group_filter', $strict_user);
 
 $table->data[2][0] = '<b>'.__('Group').'</b>';

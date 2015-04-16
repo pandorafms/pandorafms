@@ -1555,10 +1555,14 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
-	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	//$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	$colors[__('Critical')] = COL_CRITICAL;
+	$colors[__('Warning')] = COL_WARNING;
+	$colors[__('Normal')] = COL_NORMAL;
+	$colors[__('Unknown')] = COL_UNKNOWN;
 	
 	if ($show_not_init) {
-		$colors[] = COL_NOTINIT;
+		$colors[__('Not init')] = COL_NOTINIT;
 	}
 	
 	if (array_sum($data) == 0) {

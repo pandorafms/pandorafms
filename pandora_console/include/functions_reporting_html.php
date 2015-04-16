@@ -1130,7 +1130,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
  * @return float SLA percentage of the requested module. False if no data were
  * found
  */
-function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
+function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
 	
 	if (empty($id_agent_module))
@@ -1208,6 +1208,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
@@ -1215,6 +1216,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
+	
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
@@ -1255,6 +1257,8 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		$previous_status = 0;
 	}
 	
+	
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -1284,6 +1288,227 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	// Return the percentage of SLA compliance
 	return (float) (100 - ($bad_period / $period) * 100);
 }
+
+/** 
+ * Get SLA of a module.
+ * 
+ * @param int Agent module to calculate SLA
+ * @param int Period to check the SLA compliance.
+ * @param int Minimum data value the module in the right interval
+ * @param int Maximum data value the module in the right interval. False will
+ * ignore max value
+ * @param int Beginning date of the report in UNIX time (current date by default).
+ * @param array $dayWeek  Array of days week to extract as array('monday' => false, 'tuesday' => true....), and by default is null.
+ * @param string $timeFrom Time in the day to start to extract in mysql format, by default null.
+ * @param string $timeTo Time in the day to end to extract in mysql format, by default null.
+ * 
+ * @return float SLA percentage of the requested module. False if no data were
+ * found
+ */
+function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
+	$min_value = 1, $max_value = false, $date = 0, $daysWeek = null,
+	$timeFrom = null, $timeTo = null) {
+	
+	global $config;
+	
+	if (empty($id_agent_module))
+		return false;
+	
+	// Set initial conditions
+	$bad_period = 0;
+	// Limit date to start searching data
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+	
+	// Initialize variables
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if ($daysWeek === null) {
+		$daysWeek = array();
+	}
+	
+	
+	// Calculate the SLA for large time without hours
+	if ($timeFrom == $timeTo) {
+		// Get interval data
+		$sql = sprintf ('SELECT *
+			FROM tagente_datos
+			WHERE id_agente_modulo = %d
+				AND utimestamp > %d AND utimestamp <= %d',
+			$id_agent_module, $datelimit, $date);
+		
+		//Add the working times (mon - tue - wed ...) and from time to time
+		$days = array();
+		//Translate to mysql week days
+		if ($daysWeek) {
+			foreach ($daysWeek as $key => $value) {
+				if (!$value) {
+					if ($key == 'monday') {
+						$days[] = 2;
+					}
+					if ($key == 'tuesday') {
+						$days[] = 3;
+					}
+					if ($key == 'wednesday') {
+						$days[] = 4;
+					}
+					if ($key == 'thursday') {
+						$days[] = 5;
+					}
+					if ($key == 'friday') {
+						$days[] = 6;
+					}
+					if ($key == 'saturday') {
+						$days[] = 7;
+					}
+					if ($key == 'sunday') {
+						$days[] = 1;
+					}
+				}
+			}
+		}
+		
+		if (count($days) > 0) {
+			$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
+		}
+		
+		$sql .= "\n";
+		$sql .= ' ORDER BY utimestamp ASC';
+		$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
+		
+		if ($interval_data === false) {
+			$interval_data = array ();
+		}
+		
+		// Calculate planned downtime dates
+		$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
+		
+		// Get previous data
+		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+		
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($interval_data, $previous_data);
+		}
+		
+		// Get next data
+		$next_data = modules_get_next_data ($id_agent_module, $date);
+		
+		if ($next_data !== false) {
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		}
+		else if (count ($interval_data) > 0) {
+			// Propagate the last known data to the end of the interval
+			$next_data = array_pop ($interval_data);
+			array_push ($interval_data, $next_data);
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		}
+		
+		if (count ($interval_data) < 2) {
+			return false;
+		}
+		
+		
+		$first_data = array_shift ($interval_data);
+		
+		// Do not count the empty start of an interval as 0
+		if ($first_data['utimestamp'] != $datelimit) {
+			$period = $date - $first_data['utimestamp'];
+		}
+		
+		$previous_utimestamp = $first_data['utimestamp'];
+		if ((($max_value > $min_value AND ($first_data['datos'] > $max_value OR $first_data['datos'] < $min_value))) OR
+			($max_value <= $min_value AND $first_data['datos'] < $min_value)) {
+			
+			$previous_status = 1;
+			foreach ($downtime_dates as $date_dt) {
+				if (($date_dt['date_from'] <= $previous_utimestamp) AND ($date_dt['date_to'] >= $previous_utimestamp)) {
+					$previous_status = 0;
+				}
+			}
+		}
+		else {
+			$previous_status = 0;
+		}
+		
+		
+		
+		
+		
+		foreach ($interval_data as $data) {
+			// Previous status was critical
+			if ($previous_status == 1) {
+				$bad_period += $data['utimestamp'] - $previous_utimestamp;
+			}
+			
+			if (array_key_exists('datos', $data)) {
+				// Re-calculate previous status for the next data
+				if ((($max_value > $min_value AND ($data['datos'] > $max_value OR $data['datos'] < $min_value))) OR
+					($max_value <= $min_value AND $data['datos'] < $min_value)) {
+					
+					$previous_status = 1;
+					foreach ($downtime_dates as $date_dt) {
+						if (($date_dt['date_from'] <= $data['utimestamp']) AND ($date_dt['date_to'] >= $data['utimestamp'])) {
+							$previous_status = 0;
+						}
+					}
+				}
+				else {
+					$previous_status = 0;
+				}
+			}
+			
+			$previous_utimestamp = $data['utimestamp'];
+		}
+		
+		// Return the percentage of SLA compliance
+		return (float) (100 - ($bad_period / $period) * 100);
+	}
+	elseif ($period <= SECONDS_1DAY) {
+		
+		
+		return reporting_get_agentmodule_sla_day(
+			$id_agent_module,
+			$period,
+			$min_value,
+			$max_value,
+			$date,
+			$daysWeek,
+			$timeFrom,
+			$timeTo);
+	}
+	else {
+		// Extract the data each day
+		
+		$sla = 0;
+		
+		$i = 0;
+		for ($interval = 0; $interval <= $period; $interval = $interval + SECONDS_1DAY) {
+			$datelimit = $date - $interval;
+			
+			$sla_day = reporting_get_agentmodule_sla(
+				$id_agent_module,
+				SECONDS_1DAY,
+				$min_value,
+				$max_value,
+				$datelimit + $interval,
+				$daysWeek,
+				$timeFrom, $timeTo);
+			
+			
+			$sla += $sla_day;
+			$i++;
+		}
+		
+		$sla = $sla / $i;
+		
+		return $sla;
+	}
+}
+
 /** 
  * Get several SLA data for an agentmodule within a period divided on subperiods
  * 

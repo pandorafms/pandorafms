@@ -234,7 +234,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$data[0] = __('Filter name') . $jump;
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
 	if(defined('METACONSOLE'))
-		$data[1] = __('Group') . $jump;
+		$data[1] = __('Save in Group') . $jump;
 	else
 		$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL

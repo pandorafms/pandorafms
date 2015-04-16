@@ -38,7 +38,7 @@ $buttons['view'] = array('active' => false,
 			
 $buttons['filter'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
-			html_print_image("images/filter_mc.png", true, array ("title" => __('Create filter'))) . '</a>');
+			html_print_image("images/filter_mc.png", true, array ("title" => __('Filter list'))) . '</a>');
 
 if (check_acl ($config["id_user"], 0, "PM")) {
 	$buttons['responses'] = array('active' => false,
